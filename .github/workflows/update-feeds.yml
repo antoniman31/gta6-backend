@@ -5,7 +5,7 @@ on:
     # Toutes les 3 heures. Modifie cette ligne si tu veux une autre fréquence
     # (ex. "0 */1 * * *" pour toutes les heures — attention à rester dans le
     # quota gratuit, largement suffisant à ce rythme pour un usage perso).
-    - cron: "0 * * * *"
+    - cron: "0 */1 * * *"
   workflow_dispatch: # permet de lancer manuellement depuis l'onglet Actions
 
 permissions:
