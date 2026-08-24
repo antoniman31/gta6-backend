@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA6 Watch</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5493ff">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #0a0d0f;
+    --bg-panel: #10151a;
+    --bg-elevated: #161c22;
+    --line: #1e2730;
+    --text: #e4ece8;
+    --text-dim: #6b7d78;
+    --accent: #58b9ff;
+    --accent-contrast: #06131f;
+    --ok: #4ade80;
+    --warn: #facc15;
+    --grid-tint: rgba(88,185,255,0.04);
+  }
+  html[data-theme="light"]{
+    --bg: #f4f7fa;
+    --bg-panel: #ffffff;
+    --bg-elevated: #eef3f8;
+    --line: #d7e1ea;
+    --text: #10222f;
+    --text-dim: #5c7286;
+    --accent: #5493ff;
+    --accent-contrast: #06131f;
+    --ok: #16a34a;
+    --warn: #b45309;
+    --grid-tint: rgba(84,147,255,0.05);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, var(--grid-tint) 40px),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:24px 16px 60px;
+    transition:background-color .2s, color .2s;
+  }
+  .wrap{max-width:640px; margin:0 auto;}
+
+  header{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:10px; margin-bottom:20px; padding:16px; border-radius:8px;
+    background:var(--bg-panel); border:1px solid var(--line);
+  }
+  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+  .brand{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; letter-spacing:-0.02em;}
+  .mode-indicator{
+    display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px;
+    letter-spacing:0.03em; text-transform:uppercase; width:fit-content;
+  }
+  .mode-indicator.backend{background:color-mix(in srgb, var(--ok) 15%, transparent); color:var(--ok); border:1px solid var(--ok);}
+  .mode-indicator.direct{background:color-mix(in srgb, var(--accent) 12%, transparent); color:var(--accent); border:1px solid var(--accent);}
+  .mode-indicator .dot{width:5px; height:5px; border-radius:50%; background:currentColor;}
+  .countdown{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);
+    margin-top:4px; font-weight:600; letter-spacing:0.02em;
+    transition:color .4s ease;
+  }
+  /* Palier 7-30 jours : accent légèrement réchauffé, discret */
+  .countdown.soon{
+    color:#e8a33d;
+  }
+  /* Palier 24h-7 jours : couleur plus marquée + pulsation douce */
+  .countdown.urgent{
+    color:#ff8c3d; font-weight:700;
+    animation:countdown-pulse 2s ease-in-out infinite;
+  }
+  /* Palier dernières 24h : mode "urgence", rouge/orange vif + bordure clignotante */
+  .countdown.final{
+    color:#ff4d4d; font-weight:800; font-size:13px;
+    text-transform:uppercase; display:inline-block;
+    padding:4px 8px; margin:-4px 0 0 -8px; border-radius:6px;
+    animation:countdown-pulse 1s ease-in-out infinite, countdown-border-pulse 1s ease-in-out infinite;
+  }
+  @keyframes countdown-pulse{
+    0%, 100%{ opacity:1; }
+    50%{ opacity:0.55; }
+  }
+  @keyframes countdown-border-pulse{
+    0%, 100%{ box-shadow:0 0 0 0 rgba(255,77,77,0); }
+    50%{ box-shadow:0 0 0 2px rgba(255,77,77,0.5); }
+  }
+  .brand span{color:var(--accent);}
+  .status-line{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); margin-top:6px;}
+
+  .header-actions{display:flex; gap:6px; flex-shrink:0;}
+  .icon-btn{
+    background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
+    width:34px; height:34px; border-radius:6px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+    transition:border-color .15s;
+  }
+  .settings-error-badge{
+    position:absolute; top:-4px; right:-4px; width:9px; height:9px; border-radius:50%;
+    background:var(--warn); border:2px solid var(--bg);
+  }
+  .logs-error-badge{
+    position:absolute; top:-6px; right:-6px; min-width:16px; height:16px; padding:0 3px;
+    border-radius:8px; background:var(--warn); border:2px solid var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; color:#ffffff; line-height:1;
+  }
+  .logs-error-badge:empty{display:none;}
+  .icon-btn:hover{border-color:var(--accent);}
+
+  .stale-banner{
+    background:color-mix(in srgb, var(--warn) 15%, var(--bg-panel)); border:1px solid var(--warn);
+    color:var(--warn); border-radius:8px; padding:12px 14px; margin-bottom:14px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.5; font-weight:600;
+  }
+
+  .controls{display:grid; grid-template-columns:1fr; gap:8px; margin-bottom:14px;}
+  .controls button{padding:10px 6px; font-size:10.5px; text-align:center; white-space:normal; line-height:1.3;}
+  button{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+    background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
+    padding:10px 14px; border-radius:6px; cursor:pointer; letter-spacing:0.02em;
+    transition:border-color .15s;
+  }
+  button:hover{border-color:var(--accent);}
+  button:active{transform:translateY(1px);}
+  button.primary{background:var(--accent); border-color:var(--accent); color:#ffffff;}
+  button.primary:hover{filter:brightness(1.1);}
+  button:disabled{opacity:0.4; cursor:default;}
+  button.small{padding:6px 10px; font-size:11px;}
+
+  .progress-bar{
+    width:100%; height:4px; background:var(--bg-elevated); border-radius:2px;
+    overflow:hidden; margin-bottom:14px;
+  }
+  .progress-fill{
+    height:100%; width:0%; background:var(--accent);
+    transition:width .25s ease-out;
+  }
+
+  .meta-row{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+    display:flex; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;
+  }
+
+  .search-row{margin-bottom:14px; display:flex; flex-direction:row; align-items:stretch; gap:8px;}
+  .search-input-wrap{position:relative; flex:1; min-width:0;}
+  .search-row input{
+    width:100%; background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
+    font-family:'Inter',sans-serif; font-size:13px; padding:9px 32px 9px 12px; border-radius:6px;
+  }
+  .search-row input:focus{outline:none; border-color:var(--accent);}
+  .search-clear-btn{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    width:22px; height:22px; padding:0; display:flex; align-items:center; justify-content:center;
+    background:none; border:none; color:var(--text-dim); font-size:14px; cursor:pointer; border-radius:50%;
+  }
+  .search-clear-btn:active{background:var(--bg-elevated); color:var(--accent);}
+
+  .tab-row{display:flex; gap:8px; margin-bottom:12px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  .tab-row::-webkit-scrollbar{display:none;}
+  .tab-row-full .tab{flex:1; padding:10px 14px;}
+  .tab-row:not(.tab-row-full) .tab{flex:1; min-width:0; white-space:normal; text-align:center; line-height:1.3;}
+  .tab{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:6px; color:var(--text-dim);
+    padding:8px 14px; cursor:pointer; letter-spacing:0.02em;
+    white-space:nowrap; flex-shrink:0; transition:background .15s ease, border-color .15s ease, color .15s ease;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .tab:active{background:var(--bg-elevated);}
+  .tab.active{color:#ffffff; background:var(--accent); border-color:var(--accent);}
+  .tab-badge{
+    font-size:10px; font-weight:700; background:var(--bg-elevated); color:var(--text-dim);
+    padding:1px 5px; border-radius:8px; margin-left:2px;
+  }
+  .tab.active .tab-badge{background:rgba(255,255,255,0.25); color:#ffffff;}
+  .tab-badge:empty{display:none;}
+
+  .feed{display:flex; flex-direction:column; gap:4px;}
+  .day-group{display:flex; flex-direction:column; gap:10px; margin-bottom:6px;}
+  .day-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--accent);
+    text-transform:uppercase; letter-spacing:0.06em; margin-top:10px; margin-bottom:2px;
+  }
+  @keyframes card-enter{
+    from{opacity:0; transform:translateY(4px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
+    padding:14px 16px; position:relative; overflow:hidden; transition:opacity .2s;
+    animation:card-enter .25s ease-out backwards;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .card{animation:none;}
+  }
+  .card.read{opacity:0.45;}
+  .card.new{border-color:var(--accent);}
+  .card.new::before{
+    content:'NOUVEAU'; position:absolute; top:0; right:0;
+    font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700;
+    background:var(--accent); color:var(--accent-contrast); padding:3px 8px; letter-spacing:0.05em;
+    border-bottom-left-radius:6px;
+  }
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .card-body{flex:1; min-width:0;}
+  .card-actions{display:flex; flex-direction:column; gap:4px; flex-shrink:0;}
+  .card-thumb{
+    width:64px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0;
+    background:var(--bg-elevated); border:1px solid var(--line);
+  }
+  .card-favicon{width:14px; height:14px; border-radius:3px; vertical-align:middle; margin-right:5px;}
+  .card.official{
+    border-color:#FF6B00; border-width:1.5px;
+    background:linear-gradient(180deg, color-mix(in srgb, #FF6B00 8%, var(--bg-panel)), var(--bg-panel));
+  }
+  .official-badge{
+    font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:800;
+    background:#FF6B00; color:#100800; padding:2px 6px; border-radius:3px;
+    letter-spacing:0.04em; white-space:nowrap;
+  }
+  .tag-badge{
+    font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700;
+    padding:2px 6px; border-radius:3px; letter-spacing:0.03em; white-space:nowrap;
+  }
+  .tag-leak{background:#e11d48; color:#fff;}
+  .tag-video{background:#7c3aed; color:#fff;}
+  .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
+  .specialist-badge{
+    font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700;
+    background:transparent; color:var(--accent); border:1px solid var(--accent); padding:1px 5px; border-radius:3px;
+    letter-spacing:0.03em; white-space:nowrap;
+  }
+  .card-src-row{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin-bottom:6px;}
+  .card-src{
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent);
+    text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap;
+  }
+  .card-title{font-size:14px; font-weight:600; line-height:1.4; margin-bottom:6px;}
+  .card-title mark{background:var(--accent); color:var(--accent-contrast); border-radius:2px; padding:0 1px;}
+  .card-title a{color:var(--text); text-decoration:none;}
+  .card-title a:hover{color:var(--accent);}
+  .card-date{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);}
+  .card-extra{font-size:10px; color:var(--text-dim); margin-top:4px; font-style:italic;}
+  .card-mark{
+    font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text-dim);
+    background:none; border:1px solid var(--line); border-radius:4px; padding:8px 6px;
+    cursor:pointer; white-space:nowrap; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-mark:hover{border-color:var(--accent); color:var(--accent);}
+
+  /* ---------- Mode dense ---------- */
+  .feed.dense .card{padding:8px 10px;}
+  .feed.dense .card-thumb{width:36px; height:36px; flex-shrink:0;}
+  .feed.dense .card-body{min-width:0; flex:1;}
+  .feed.dense .card-title{font-size:13px; margin-bottom:2px; width:100%; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;}
+  .feed.dense .card-src-row{margin-bottom:2px;}
+  .feed.dense .card-extra{display:none;}
+  .feed.dense .card-top{gap:8px;}
+  .feed.dense .card-actions{flex-direction:column; flex-shrink:0; gap:3px;}
+  .feed.dense .card-mark{padding:2px 5px; font-size:8px;}
+
+  .empty{
+    text-align:center; padding:60px 20px; color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px;
+  }
+
+  @keyframes skeleton-pulse{
+    0%, 100%{opacity:0.5;}
+    50%{opacity:0.9;}
+  }
+  .skeleton-card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
+    padding:14px 16px; display:flex; gap:10px; align-items:flex-start;
+  }
+  .skeleton-thumb{
+    width:64px; height:64px; border-radius:6px; flex-shrink:0;
+    background:var(--bg-elevated); animation:skeleton-pulse 1.4s ease-in-out infinite;
+  }
+  .skeleton-lines{flex:1; display:flex; flex-direction:column; gap:8px; padding-top:2px;}
+  .skeleton-line{
+    height:10px; border-radius:4px; background:var(--bg-elevated);
+    animation:skeleton-pulse 1.4s ease-in-out infinite;
+  }
+  .skeleton-line.w-30{width:30%;}
+  .skeleton-line.w-90{width:90%; height:14px;}
+  .skeleton-line.w-70{width:70%; height:14px;}
+  .skeleton-line.w-20{width:20%;}
+
+  .filters-trigger{
+    display:flex; align-items:center; justify-content:center; gap:6px; flex-shrink:0;
+    padding:8px 14px; white-space:nowrap;
+  }
+
+  .info-btn{
+    display:block; margin:24px auto 8px; padding:8px 16px;
+    background:transparent; border:1px solid var(--line); border-radius:6px;
+    color:var(--text-dim); font-size:16px; cursor:pointer;
+  }
+  .info-btn:active{ background:var(--bg-panel); }
+
+  .log-entry{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:6px;
+    padding:8px 10px; display:flex; justify-content:space-between; gap:10px; align-items:baseline;
+  }
+  .log-entry.ok{border-left:3px solid var(--ok);}
+  .log-entry.fail{border-left:3px solid var(--warn);}
+  .log-entry.info{border-left:3px solid var(--accent);}
+  .log-time{color:var(--text-dim); flex-shrink:0;}
+  .log-msg{flex:1; word-break:break-word;}
+  .log-msg .src{color:var(--accent); font-weight:700;}
+
+  /* ---------- Panneau Paramètres ---------- */
+  .overlay{
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+    z-index:100; align-items:flex-start; justify-content:center; padding:16px;
+    overflow-y:auto;
+  }
+  .overlay.open{display:flex;}
+  .settings-panel{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    max-width:520px; width:100%; margin-top:24px; padding:20px;
+    max-height:calc(100vh - 48px); overflow-y:auto;
+  }
+
+  /* Bottom sheet : variante ancrée en bas d'écran, avec poignée de
+     glissement — pattern standard 2026 pour les filtres/actions
+     secondaires (confirmé Material Design, Apple Maps, Spotify). Réutilise
+     le même .overlay que les autres modales, juste un panneau différent. */
+  .overlay.bottom-sheet{align-items:flex-end; padding:0;}
+  .sheet-panel{
+    background:var(--bg-panel); border:1px solid var(--line); border-bottom:none;
+    border-radius:10px 10px 0 0; width:100%; max-width:520px;
+    padding:8px 20px 24px; max-height:80vh; overflow-y:auto;
+  }
+  .sheet-handle{
+    width:36px; height:4px; border-radius:2px; background:var(--line);
+    margin:0 auto 16px;
+  }
+  .sheet-section{margin-bottom:18px;}
+  .sheet-section:last-child{margin-bottom:0;}
+  .sheet-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+    text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:block;
+  }
+  .sheet-btn-group{display:flex; gap:8px; flex-wrap:wrap;}
+  .sheet-btn-group button{flex:1; min-width:80px;}
+  .sheet-btn-group button.active{color:#ffffff; background:var(--accent); border-color:var(--accent);}
+
+  .settings-title{
+    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:15px;
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
+  }
+  .settings-title button{padding:4px 8px; font-size:11px;}
+  .setting-group{margin-bottom:20px;}
+  .setting-label{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+    text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:block;
+  }
+  .setting-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
+  .setting-row label{font-size:13px;}
+  .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
+
+  .theme-toggle{display:flex; gap:6px;}
+  .theme-toggle button{flex:1; padding:8px; font-size:11px; opacity:0.6;}
+  .theme-toggle button.active{opacity:1; border-color:var(--accent); color:var(--accent);}
+
+  input[type="range"]{width:140px; accent-color:var(--accent);}
+  input[type="number"], input[type="text"].setting-input{
+    background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:12px; padding:6px 8px; border-radius:5px;
+    width:90px;
+  }
+  input[type="text"].setting-input.wide{width:100%;}
+
+  .switch{
+    position:relative; width:32px; height:19px; flex-shrink:0;
+  }
+  .switch input{opacity:0; width:0; height:0;}
+  .switch .slider{
+    position:absolute; inset:0; background:var(--line); border-radius:19px;
+    cursor:pointer; transition:.2s;
+  }
+  .switch .slider::before{
+    content:''; position:absolute; width:13px; height:13px; left:3px; top:3px;
+    background:var(--bg-panel); border-radius:50%; transition:.2s;
+  }
+  .switch input:checked + .slider{background:var(--accent);}
+  .switch input:checked + .slider::before{transform:translateX(13px); background:var(--accent-contrast);}
+
+  .source-list{
+    display:grid; grid-template-columns:1fr 1fr; gap:6px;
+  }
+  .source-row{
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+    background:var(--bg-elevated); border:1px solid var(--line); border-radius:6px;
+    padding:6px 8px;
+  }
+  .source-row span{font-size:11px; line-height:1.3; overflow-wrap:break-word;}
+  .source-error{font-size:9px; color:var(--warn); margin-top:2px; font-family:'JetBrains Mono',monospace;}
+
+  .settings-actions{display:flex; gap:8px; margin-top:8px;}
+
+  ::selection{background:var(--accent); color:var(--accent-contrast);}
+
+  #previewImage img{width:100%; border-radius:8px; margin-bottom:14px; max-height:220px; object-fit:cover;}
+  #previewLink{text-decoration:none; flex:1; display:flex;}
+  #previewLink button{width:100%;}
+  .preview-actions{display:flex; gap:8px; margin-top:4px;}
+  .preview-actions #previewTranslateBtn{flex:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand">GTA6<span>_WATCH</span></div>
+      <div id="countdown" class="countdown"></div>
+    </div>
+    <div class="header-right">
+      <div id="modeIndicator" class="mode-indicator"></div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème">◐</button>
+        <button class="icon-btn" onclick="openSettings()" title="Paramètres" style="position:relative;">⚙<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
+        <button class="icon-btn" onclick="setTab('logs')" title="Logs" style="position:relative;">▤<span id="badgeLogs" class="logs-error-badge"></span></button>
+        <button class="icon-btn" onclick="openInfo()" title="Informations">ⓘ</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="staleBanner" class="stale-banner" style="display:none;"></div>
+
+  <div class="controls">
+    <button class="primary" onclick="checkNow(true)">Vérifier maintenant</button>
+  </div>
+
+  <div id="progressBar" class="progress-bar" style="display:none;">
+    <div id="progressFill" class="progress-fill"></div>
+  </div>
+
+  <div class="meta-row">
+    <span id="countLine">0 article suivi</span>
+  </div>
+
+  <div class="search-row">
+    <div class="search-input-wrap">
+      <input type="text" id="searchInput" placeholder="Filtrer par mot-clé…" oninput="debouncedSearch(); toggleClearButton();">
+      <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none;" aria-label="Effacer">✕</button>
+    </div>
+    <button class="filters-trigger" onclick="openFiltersSheet()">
+      Filtres <span class="tab-badge" id="activeFiltersCount"></span>
+    </button>
+  </div>
+
+  <div class="tab-row tab-row-full">
+    <button class="tab active" id="tabAll" onclick="setTab('all')">Tous les articles <span class="tab-badge" id="badgeAll"></span></button>
+  </div>
+  <div class="tab-row">
+    <button class="tab" id="tabNonRockstar" onclick="setTab('non-rockstar')">Non Rockstar <span class="tab-badge" id="badgeNonRockstar"></span></button>
+    <button class="tab" id="tabRockstar" onclick="setTab('rockstar')">Rockstar <span class="tab-badge" id="badgeRockstar"></span></button>
+    <button class="tab" id="tabRockstarmag" onclick="setTab('rockstarmag')">RockstarMag <span class="tab-badge" id="badgeRockstarmag"></span></button>
+  </div>
+
+  <div class="feed" id="feed">
+    <div class="empty">Clique sur "Vérifier maintenant" pour charger les derniers articles.</div>
+  </div>
+
+  <div id="logsPanel" style="display:none;">
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <button class="small" onclick="clearLogs()">Vider les logs</button>
+      <button class="small" onclick="copyLogs()">Copier tout</button>
+    </div>
+    <div id="logsList" style="display:flex; flex-direction:column-reverse; gap:4px; font-family:'JetBrains Mono',monospace; font-size:11px;"></div>
+  </div>
+
+  <button class="info-btn" onclick="openInfo()" title="Informations">ⓘ</button>
+
+</div>
+
+<!-- ---------- Bottom sheet Filtres ---------- -->
+<div class="overlay bottom-sheet" id="filtersOverlay" onclick="closeFiltersSheetOnOverlay(event)">
+  <div class="sheet-panel">
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-section">
+      <span class="sheet-label">Affichage</span>
+      <div class="sheet-btn-group">
+        <button class="active" id="filterAll" onclick="setFilter('all')">Tout</button>
+        <button id="filterUnread" onclick="setFilter('unread')">Non lus</button>
+        <button id="filterNew" onclick="setFilter('new')">Nouveaux</button>
+      </div>
+    </div>
+
+    <div class="sheet-section">
+      <span class="sheet-label">Langue</span>
+      <div class="sheet-btn-group">
+        <button class="active" id="tabLangAll" onclick="setLang('all')">Toutes langues <span class="tab-badge" id="badgeLangAll"></span></button>
+        <button id="tabFr" onclick="setLang('fr')">News FR <span class="tab-badge" id="badgeFr"></span></button>
+        <button id="tabEn" onclick="setLang('en')">News EN <span class="tab-badge" id="badgeEn"></span></button>
+      </div>
+    </div>
+
+    <div class="sheet-section">
+      <span class="sheet-label">Densité</span>
+      <div class="sheet-btn-group">
+        <button id="densityBtn" onclick="toggleDensity()">Basculer mode compact</button>
+      </div>
+    </div>
+
+    <div class="sheet-section">
+      <span class="sheet-label">Actions groupées</span>
+      <div class="sheet-btn-group">
+        <button onclick="markAllRead(true)">Tout marquer lu</button>
+        <button onclick="markAllRead(false)">Tout marquer non lu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Modale Info ---------- -->
+<div class="overlay" id="infoOverlay" onclick="closeInfoOnOverlay(event)">
+  <div class="settings-panel">
+    <div class="settings-title">
+      <span>Informations</span>
+      <button onclick="closeInfo()">Fermer</button>
+    </div>
+    <div class="status-line" id="lastCheck" style="margin-bottom:4px;">jamais vérifié</div>
+    <div class="status-line" id="proxyLine" style="margin-bottom:12px;"></div>
+    <p id="infoBody" style="font-size:13px; line-height:1.6; color:var(--text-dim);"></p>
+    <p id="infoSourcesLine" style="font-size:12px; line-height:1.6; color:var(--text-dim); margin-top:12px;"></p>
+  </div>
+</div>
+
+<!-- ---------- Panneau Paramètres ---------- -->
+<div class="overlay" id="settingsOverlay" onclick="closeSettingsOnOverlay(event)">
+  <div class="settings-panel">
+    <div class="settings-title">
+      <span>PARAMÈTRES</span>
+      <button onclick="closeSettings()">Fermer</button>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Apparence</span>
+      <div class="theme-toggle">
+        <button id="themeSystemBtn" onclick="setTheme('system')">Système</button>
+        <button id="themeLightBtn" onclick="setTheme('light')">Clair</button>
+        <button id="themeDarkBtn" onclick="setTheme('dark')">Sombre</button>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Backend GitHub (optionnel)</span>
+      <input type="text" id="backendUrlInput" class="setting-input wide" placeholder="https://tonpseudo.github.io/gta6-backend/feed.json" style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;">
+      <div class="setting-desc">Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Mots-clés (un par ligne)</span>
+      <textarea id="keywordsInput" class="setting-input wide" rows="3" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px;"></textarea>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Sources actives</span>
+      <div class="source-list" id="sourceList"></div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Affichage</span>
+      <div class="setting-row">
+        <label>Articles affichés max</label>
+        <input type="number" id="maxDisplay" min="5" max="1000" value="500" onchange="saveSettings()">
+      </div>
+      <div class="setting-row">
+        <label>Seuil de similarité anti-doublon</label>
+        <input type="range" id="simRange" min="50" max="95" value="75" oninput="onSimChange(this.value)">
+        <span id="simValue" style="font-family:'JetBrains Mono',monospace; font-size:11px;">75%</span>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Export</span>
+      <button onclick="exportOpml()" style="width:100%;">Exporter les sources en OPML</button>
+      <div class="setting-desc">Format standard, réutilisable dans n'importe quel lecteur RSS (Feedly, NetNewsWire, FreshRSS…).</div>
+    </div>
+
+    <div class="settings-actions">
+      <button onclick="resetSettings()">Réinitialiser</button>
+      <button class="primary" onclick="saveSettingsAndClose()">Appliquer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Modale Aperçu article ---------- -->
+<div class="overlay" id="previewOverlay" onclick="closePreviewOnOverlay(event)">
+  <div class="settings-panel" id="previewPanel">
+    <div class="settings-title">
+      <span id="previewSource">SOURCE</span>
+      <button onclick="closePreview()">Fermer</button>
+    </div>
+    <div id="previewImage"></div>
+    <h3 id="previewTitle" style="font-size:16px; font-weight:700; line-height:1.4; margin-bottom:10px;"></h3>
+    <p id="previewBody" style="font-size:13px; line-height:1.6; color:var(--text-dim); margin-bottom:16px;"></p>
+    <div class="preview-actions">
+      <a id="previewLink" href="#" target="_blank" rel="noopener">
+        <button class="primary" onclick="markReadFromPreview()">Lire l'article</button>
+      </a>
+      <button id="previewTranslateBtn" style="display:none;" onclick="openTranslated(document.getElementById('previewLink').href)">🇫🇷 traduire</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Diagnostic temporaire ----------
+// Affiche toute erreur JS non gérée directement à l'écran, pour pouvoir
+// diagnostiquer sans accès à la console développeur (ex: Chrome mobile).
+// À retirer une fois le bug identifié et corrigé.
+window.addEventListener("error", function(e){
+  const div = document.createElement("div");
+  div.style.cssText = "position:fixed; top:0; left:0; right:0; background:#b91c1c; color:white; padding:12px; font-family:monospace; font-size:12px; z-index:99999; white-space:pre-wrap;";
+  div.textContent = "ERREUR JS : " + e.message + "\n" + (e.filename || "") + ":" + (e.lineno || "?") + ":" + (e.colno || "?");
+  document.body.appendChild(div);
+});
+
+// ---------- Sources par défaut ----------
+// Cette liste doit rester synchronisée manuellement avec FEEDS dans
+// fetch_feeds.py (le backend Python) — une vraie duplication, mais
+// volontaire : cette copie fournit les VRAIES URLs des flux RSS, requises
+// par le mode de secours direct (utilisé quand le backend GitHub est
+// justement indisponible — donc feed.json, qui contient aussi la liste
+// des sources, n'est pas accessible dans ce cas précis pour la fournir).
+// Si tu ajoutes/retires une source d'un côté, pense à reporter le
+// changement ici aussi.
+const DEFAULT_FEEDS = [
+  { id: "rockstar-en", name: "Rockstar Games (officiel EN)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
+  { id: "rockstar-fr", name: "Rockstar Games (officiel FR)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: true, lang: "fr" },
+  { id: "rockstar-announce", name: "Rockstar Games (annonces)", url: "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
+  { id: "gta6-netflix", name: "GTA 6 x Netflix", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, noFilter: true },
+  { id: "take2-ir", name: "Take-Two Investor Relations (officiel)", url: "https://ir.take2games.com/rss/news-releases.xml?items=15", enabled: true, official: true },
+  { id: "gnews-fr", name: "Google News (FR)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "gnews-en", name: "Google News (EN)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "pcgamer", name: "PC Gamer", url: "https://www.pcgamer.com/rss.xml", enabled: true, official: false },
+  { id: "insider", name: "Insider Gaming", url: "https://insider-gaming.com/feed/", enabled: true, official: false },
+  { id: "tomshw", name: "Tom's Hardware", url: "https://www.tomshardware.com/feeds/all", enabled: true, official: false },
+  { id: "jvcom", name: "Jeuxvideo.com", url: "https://www.jeuxvideo.com/rss/rss.xml", enabled: true, official: false, lang: "fr" },
+  { id: "gamekult", name: "Gamekult", url: "https://www.gamekult.com/feed.xml", enabled: true, official: false, lang: "fr" },
+  { id: "ignfr", name: "IGN France", url: "https://fr.ign.com/feed.xml", enabled: true, official: false, lang: "fr" },
+  { id: "rockstarmag", name: "RockstarMag", url: "https://rss.app/feeds/DLjO259X0dbIodkg.xml", enabled: true, official: false, rockstarmag: true, noFilter: true, lang: "fr" },
+  { id: "rockstarintel", name: "RockstarINTEL", url: "https://rss.app/feeds/SEi9eWoOTGKoeh2K.xml", enabled: true, official: false, noFilter: true },
+  { id: "ign", name: "IGN", url: "https://rss.app/feeds/h34hzwwy7imC3FZL.xml", enabled: true, official: false },
+  { id: "gamespot", name: "GameSpot", url: "https://rss.app/feeds/vjQBa27Dcc6PFmvy.xml", enabled: true, official: false },
+  { id: "polygon", name: "Polygon", url: "https://rss.app/feeds/cs8cjYH9LJUvrQxI.xml", enabled: true, official: false },
+  { id: "kotaku", name: "Kotaku", url: "https://rss.app/feeds/lxhehgdlVzWzuQMQ.xml", enabled: true, official: false },
+  { id: "gamesradar", name: "GamesRadar+", url: "https://rss.app/feeds/dhyjfZPgrCnv3JBq.xml", enabled: true, official: false },
+  { id: "vg247", name: "VG247", url: "https://rss.app/feeds/UjAtI3JL6IVYdlG7.xml", enabled: true, official: false },
+  { id: "rps", name: "Rock Paper Shotgun", url: "https://rss.app/feeds/P80yvK0878prZ0RB.xml", enabled: true, official: false },
+  { id: "eurogamer", name: "Eurogamer", url: "https://rss.app/feeds/TR4mCR6nRT4S88lX.xml", enabled: true, official: false },
+  { id: "gtaboom", name: "GTA BOOM", url: "https://www.gtaboom.com/feed.xml", enabled: true, official: false },
+  { id: "vgtimes", name: "VGTimes", url: "https://vgtimes.com/news/rss.xml", enabled: true, official: false },
+  { id: "ginjfo", name: "GinjFo", url: "https://www.ginjfo.com/feed", enabled: true, official: false, lang: "fr" },
+  { id: "gameblog", name: "Gameblog.fr", url: "https://www.gameblog.fr/rssmap/rss_all.xml", enabled: true, official: false, lang: "fr" },
+  { id: "jeuxactu", name: "JeuxActu", url: "https://www.jeuxactu.com/rss/ja.rss", enabled: true, official: false, lang: "fr" },
+  { id: "actugaming", name: "ActuGaming", url: "https://www.actugaming.net/feed/", enabled: true, official: false, lang: "fr" },
+  { id: "gamerant", name: "Game Rant", url: "https://gamerant.com/feed", enabled: true, official: false },
+  { id: "dualshockers", name: "DualShockers", url: "https://www.dualshockers.com/feed", enabled: true, official: false },
+  { id: "gta6times", name: "GTA6 Times", url: "https://gta6times.com/rss.xml", enabled: true, official: false, noFilter: true },
+  { id: "gameinformer", name: "Game Informer", url: "https://gameinformer.com/news.xml", enabled: true, official: false },
+  { id: "pcgamesn", name: "PCGamesN", url: "https://www.pcgamesn.com/mainrss.xml", enabled: true, official: false },
+  { id: "vgc", name: "VGC", url: "https://www.videogameschronicle.com/category/news/feed/", enabled: true, official: false }
+];
+
+const PROXIES = [
+  { name: "codetabs", build: (u) => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u), parse: null },
+  { name: "allorigins", build: (u) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u), parse: null },
+  { name: "corsproxy.io", build: (u) => "https://corsproxy.io/?url=" + encodeURIComponent(u), parse: null },
+  { name: "whateverorigin", build: (u) => "https://whateverorigin.org/get?url=" + encodeURIComponent(u), parse: null, xmlField: "contents" },
+  { name: "feed2json", build: (u) => "https://www.toptal.com/developers/feed2json/convert?url=" + encodeURIComponent(u), parse: (data) => data.items ? data.items.map(item => ({
+      title: item.title,
+      link: item.url,
+      pubDate: item.date_published,
+      thumbnail: item.image || null,
+      description: item.content_html || item.content_text || item.summary || ""
+    })) : null },
+  { name: "rss2json", build: (u) => "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(u), parse: (data) => data.status === "ok" ? data.items : null }
+];
+
+const DEFAULT_SETTINGS = {
+  theme: "system",
+  keywords: ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gta-6", "gta-vi", "grand-theft-auto-6", "gta_6", "gta_vi", "gtaonline6", "gta 6 news", "gta vi news", "gta6 news", "rockstar gta 6", "rockstar's gta 6", "rockstar gta vi", "rockstar's gta vi", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "new vice city", "gta vice city 2026", "leonida", "leonida state", "leonida map", "leonida gta", "cyberleek", "cyber leek", "cyberleak", "cyber leak gta", "gta 6 cyberleek", "take-two", "take two", "take-two interactive", "taketwo", "take2", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "gta 6 release date", "gta vi release date", "gta 6 launch date", "gta 6 launch", "gta 6 date", "gta 6 november", "gta 6 2026", "gta vi 2026", "gta 6 delay", "gta 6 delayed", "gta vi delay", "gta 6 postponed", "gta 6 trailer", "gta vi trailer", "gta 6 trailer 3", "gta 6 new trailer", "gta 6 teaser", "gta vi teaser", "gta 6 extended look", "gta 6 netflix", "gta 6 gameplay", "gta vi gameplay", "gta 6 gameplay leak", "gta 6 gameplay video", "gta 6 footage", "gta vi footage", "gta 6 clip", "gta 6 leak", "gta vi leak", "gta 6 leaks", "gta 6 leaked", "gta 6 leaked footage", "gta 6 leaked gameplay", "gta 6 leaked map", "gta 6 hack", "gta 6 breach", "gta 6 map", "gta vi map", "gta 6 map leak", "gta 6 characters", "gta vi characters", "lucia caminos", "jason duval", "gta 6 protagonist", "gta 6 pre-order", "gta vi pre-order", "gta 6 preorder", "gta 6 price", "gta 6 edition", "gta 6 collector", "gta 6 pc", "gta 6 ps5", "gta 6 xbox", "gta 6 console", "gta 6 xbox series", "gta 6 playstation 5", "gta 6 system requirements", "gta 6 online", "gta 6 multiplayer", "gta online 2", "gta 6 rating", "gta 6 esrb", "gta 6 age rating", "gta 6 budget", "gta 6 development", "gta 6 dev", "gta 6 news today", "gta 6 update", "gta 6 announcement", "gta 6 reveal", "gta 6 confirmed", "gta 6 rumor", "gta 6 rumors", "gta 6 speculation", "gta 6 preview event", "gta 6 media event", "gta 6 hands-on", "gta 6 preview", "gta 6 review", "gta 6 dlc", "gta 6 season pass", "gta 6 dmca", "gta 6 takedown", "gta 6 copyright", "gta 6 discord"],
+  feeds: DEFAULT_FEEDS,
+  maxDisplay: 500,
+  similarityThreshold: 75,
+  denseMode: false,
+  backendUrl: "https://antoniman31.github.io/gta6-backend/feed.json" // pré-rempli car ce fichier est hébergé sur le même domaine que le backend — modifiable dans les paramètres si besoin
+};
+
+let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+let seenMap = {};
+let readSet = new Set();
+let firstLoad = true;
+let currentFilter = "all";
+let currentTab = "all";
+let currentLang = "all";
+let lastItems = [];
+let lastNewLinks = [];
+let activeProxyIndex = 0;
+let feedErrors = {}; // feed.id -> message d'erreur ou null si OK
+let logs = []; // { time, type, message }
+const PAGE_SIZE = 30;
+let visibleCount = PAGE_SIZE; // pagination progressive du rendu de la liste
+
+function addLog(type, message){
+  logs.push({ time: new Date(), type, message });
+  if(logs.length > 300) logs.shift(); // évite une croissance illimitée
+  if(currentTab === "logs") renderLogs();
+  updateLogsBadge();
+}
+
+function renderLogs(){
+  const el = document.getElementById("logsList");
+  el.innerHTML = logs.map(l => {
+    const t = l.time.toLocaleTimeString('fr-FR');
+    return `<div class="log-entry ${l.type}"><span class="log-time">${t}</span><span class="log-msg">${l.message}</span></div>`;
+  }).join("");
+}
+
+function updateLogsBadge(){
+  const failCount = logs.filter(l => l.type === "fail").length;
+  const badge = document.getElementById("badgeLogs");
+  if(badge) badge.textContent = failCount > 0 ? failCount : "";
+}
+
+function clearLogs(){
+  logs = [];
+  renderLogs();
+  updateLogsBadge();
+}
+
+function toggleDensity(){
+  settings.denseMode = !settings.denseMode;
+  applyDensity();
+  updateActiveFiltersCount();
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){ console.error("Erreur sauvegarde du mode d'affichage", e); }
+}
+function applyDensity(){
+  document.getElementById("feed").classList.toggle("dense", settings.denseMode);
+  const btn = document.getElementById("densityBtn");
+  btn.classList.toggle("active", settings.denseMode);
+  btn.textContent = settings.denseMode ? "Revenir à l'affichage normal" : "Basculer mode compact";
+}
+
+function copyLogs(){
+  const text = logs.map(l => "[" + l.time.toLocaleTimeString('fr-FR') + "] " + l.type.toUpperCase() + " — " + l.message.replace(/<[^>]*>/g, "")).join("\n");
+  navigator.clipboard.writeText(text).catch(() => prompt("Copie les logs :", text));
+}
+
+// ---------- Persistance ----------
+// Utilise localStorage (standard navigateur, marche sur un fichier HTML
+// ouvert directement depuis Chrome, sans dépendre de l'environnement Claude.ai).
+const STORAGE_PREFIX = "gta6watch:";
+function storageGet(key){
+  try{
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    return raw === null ? null : { value: raw };
+  }catch(e){
+    console.error("Erreur lecture localStorage", key, e);
+    return null;
+  }
+}
+function storageSet(key, value){
+  try{
+    localStorage.setItem(STORAGE_PREFIX + key, value);
+    return true;
+  }catch(e){
+    console.error("Erreur écriture localStorage", key, e);
+    return false;
+  }
+}
+
+async function loadState(){
+  try{
+    const s = storageGet("settings-v1");
+    if(s && s.value){
+      const parsed = JSON.parse(s.value);
+      settings = Object.assign({}, DEFAULT_SETTINGS, parsed);
+      // fusionne les sources par défaut avec les prefs enabled sauvegardées
+      if(parsed.feeds){
+        settings.feeds = DEFAULT_FEEDS.map(f => {
+          const saved = parsed.feeds.find(sf => sf.id === f.id);
+          return saved ? Object.assign({}, f, { enabled: saved.enabled }) : f;
+        });
+      }
+    }
+  }catch(e){ /* premier lancement */ }
+
+  // Filet de sécurité : élimine tout doublon par id, quelle que soit sa cause
+  // (fusion ratée, données d'une version précédente en storage, etc.)
+  const seenIds = new Set();
+  settings.feeds = settings.feeds.filter(f => {
+    if(seenIds.has(f.id)) return false;
+    seenIds.add(f.id);
+    return true;
+  });
+
+  try{
+    const seenRes = storageGet("seen-items-v1");
+    if(seenRes && seenRes.value) seenMap = JSON.parse(seenRes.value) || {};
+  }catch(e){}
+  try{
+    const readRes = storageGet("read-items-v1");
+    if(readRes && readRes.value) readSet = new Set(JSON.parse(readRes.value));
+  }catch(e){}
+  try{
+    const itemsRes = storageGet("last-items-v1");
+    if(itemsRes && itemsRes.value){
+      lastItems = JSON.parse(itemsRes.value) || [];
+      if(lastItems.length > 0) firstLoad = false; // évite de marquer tout comme "nouveau" au chargement pour des articles déjà connus
+    }
+  }catch(e){}
+
+  applyTheme();
+  applyDensity();
+  populateSettingsUI();
+  updateSourcesLine();
+  updateFooterNote();
+  if(lastItems.length > 0){
+    applyFilters();
+  }
+}
+
+async function saveSettings(){
+  settings.backendUrl = document.getElementById("backendUrlInput").value.trim();
+  settings.keywords = document.getElementById("keywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
+  settings.maxDisplay = parseInt(document.getElementById("maxDisplay").value, 10) || 500;
+  settings.similarityThreshold = parseInt(document.getElementById("simRange").value, 10);
+
+  settings.feeds = settings.feeds.map(f => {
+    const cb = document.getElementById("src-" + f.id);
+    return Object.assign({}, f, { enabled: cb ? cb.checked : f.enabled });
+  });
+
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){ console.error("Erreur sauvegarde paramètres", e); }
+
+  updateSourcesLine();
+  updateFooterNote();
+}
+
+async function saveSeen(){
+  try{ storageSet("seen-items-v1", JSON.stringify(seenMap)); }
+  catch(e){ console.error("Erreur sauvegarde seen", e); }
+}
+async function saveRead(){
+  try{ storageSet("read-items-v1", JSON.stringify([...readSet])); }
+  catch(e){ console.error("Erreur sauvegarde read", e); }
+}
+function saveLastItems(){
+  try{ storageSet("last-items-v1", JSON.stringify(lastItems)); }
+  catch(e){ console.error("Erreur sauvegarde derniers articles", e); }
+}
+
+// ---------- Panneau Paramètres : UI ----------
+function populateSettingsUI(){
+  document.getElementById("backendUrlInput").value = settings.backendUrl || "";
+  document.getElementById("keywordsInput").value = settings.keywords.join("\n");
+  document.getElementById("maxDisplay").value = settings.maxDisplay;
+  document.getElementById("simRange").value = settings.similarityThreshold;
+  document.getElementById("simValue").textContent = settings.similarityThreshold + "%";
+
+  const list = document.getElementById("sourceList");
+  list.innerHTML = settings.feeds.map(f => `
+    <div class="source-row">
+      <div>
+        <span>${escapeHtml(f.name)}</span>
+        ${feedErrors[f.id] ? `<div class="source-error">Erreur : ${escapeHtml(feedErrors[f.id])}</div>` : ""}
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="src-${f.id}" ${f.enabled ? "checked" : ""} onchange="saveSettings()">
+        <span class="slider"></span>
+      </label>
+    </div>
+  `).join("");
+
+  updateThemeButtons();
+}
+
+function onSimChange(v){
+  document.getElementById("simValue").textContent = v + "%";
+}
+
+function openSettings(){
+  populateSettingsUI();
+  document.getElementById("settingsOverlay").classList.add("open");
+}
+function closeSettings(){
+  document.getElementById("settingsOverlay").classList.remove("open");
+}
+function closeSettingsOnOverlay(e){
+  if(e.target.id === "settingsOverlay") closeSettings();
+}
+function saveSettingsAndClose(){
+  saveSettings();
+  closeSettings();
+}
+async function resetSettings(){
+  settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  storageSet("settings-v1", JSON.stringify(settings));
+  populateSettingsUI();
+  applyTheme();
+  updateSourcesLine();
+  updateFooterNote();
+}
+
+function exportOpml(){
+  const now = new Date().toISOString();
+  const outlines = settings.feeds.map(f =>
+    `    <outline text="${escapeXml(f.name)}" title="${escapeXml(f.name)}" type="rss" xmlUrl="${escapeXml(f.url)}" />`
+  ).join("\n");
+
+  const opml = `<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>GTA6_WATCH — Sources</title>
+    <dateCreated>${now}</dateCreated>
+  </head>
+  <body>
+    <outline text="GTA6_WATCH" title="GTA6_WATCH">
+${outlines}
+    </outline>
+  </body>
+</opml>`;
+
+  const blob = new Blob([opml], { type: "text/x-opml" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "gta6-watch-sources.opml";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function escapeXml(str){
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function updateSourcesLine(){
+  const active = settings.feeds.filter(f => f.enabled).map(f => f.name);
+  document.getElementById("infoSourcesLine").textContent = "sources : " + (active.length ? active.join(" · ") : "aucune");
+}
+
+
+function updateFooterNote(){
+  document.getElementById("infoBody").textContent =
+    "Vérification manuelle uniquement — clique sur \"Vérifier maintenant\" pour rafraîchir. Dédup par lien + similarité de titre (seuil " + settings.similarityThreshold + "%). Historique et lu/non-lu sauvegardés dans ce navigateur (localStorage), propres à cet appareil et ce navigateur.";
+}
+function openInfo(){
+  document.getElementById("infoOverlay").classList.add("open");
+}
+function closeInfo(){
+  document.getElementById("infoOverlay").classList.remove("open");
+}
+function closeInfoOnOverlay(e){
+  if(e.target.id === "infoOverlay") closeInfo();
+}
+
+// ---------- Thème ----------
+function applyTheme(){
+  let effective = settings.theme;
+  if(effective === "system"){
+    effective = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+  document.documentElement.setAttribute("data-theme", effective);
+  document.getElementById("themeBtn").textContent = effective === "light" ? "◐" : "◑";
+}
+function setTheme(t){
+  settings.theme = t;
+  applyTheme();
+  updateThemeButtons();
+  saveSettings();
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute("data-theme");
+  setTheme(current === "light" ? "dark" : "light");
+}
+function updateThemeButtons(){
+  document.getElementById("themeSystemBtn").classList.toggle("active", settings.theme === "system");
+  document.getElementById("themeLightBtn").classList.toggle("active", settings.theme === "light");
+  document.getElementById("themeDarkBtn").classList.toggle("active", settings.theme === "dark");
+}
+if(window.matchMedia){
+  window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+    if(settings.theme === "system") applyTheme();
+  });
+}
+
+// ---------- Similarité de titre ----------
+function normalizeTitle(t){
+  return t.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function titleTokens(t){
+  return new Set(normalizeTitle(t).split(" ").filter(w => w.length > 2));
+}
+function titleSimilarity(a, b){
+  const ta = titleTokens(a), tb = titleTokens(b);
+  if(ta.size === 0 || tb.size === 0) return 0;
+  let inter = 0;
+  for(const w of ta) if(tb.has(w)) inter++;
+  return inter / Math.min(ta.size, tb.size);
+}
+function isDuplicate(item, list){
+  const threshold = settings.similarityThreshold / 100;
+  return list.some(other =>
+    other.link === item.link ||
+    titleSimilarity(item.title, other.title) > threshold
+  );
+}
+
+function findDuplicate(item, list){
+  const threshold = settings.similarityThreshold / 100;
+  return list.find(other =>
+    other.link === item.link ||
+    titleSimilarity(item.title, other.title) > threshold
+  ) || null;
+}
+
+// ---------- Parsing XML brut ----------
+// Nettoie le HTML brut d'une description RSS pour un affichage en texte simple.
+function stripHtml(html){
+  const d = document.createElement("div");
+  d.innerHTML = html;
+  return (d.textContent || "").replace(/\s+/g, " ").trim().slice(0, 500);
+}
+
+function relativeTime(date){
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if(diffMin < 1) return "à l'instant";
+  if(diffMin < 60) return "il y a " + diffMin + "min";
+  const diffH = Math.floor(diffMin / 60);
+  if(diffH < 24) return "il y a " + diffH + "h";
+  const diffJ = Math.floor(diffH / 24);
+  if(diffJ < 7) return "il y a " + diffJ + "j";
+  return null; // au-delà d'une semaine, le format relatif perd son intérêt
+}
+
+function parseRssXml(xmlText){
+  try{
+    const doc = new DOMParser().parseFromString(xmlText, "text/xml");
+    const items = [...doc.querySelectorAll("item")];
+    return items.map(it => {
+      const media = it.querySelector("thumbnail, [nodeName='media:thumbnail']") ||
+                    it.querySelector("content, [nodeName='media:content']") ||
+                    it.querySelector("enclosure");
+      const image = media ? (media.getAttribute("url") || media.getAttribute("href")) : null;
+      return {
+        title: it.querySelector("title")?.textContent || "",
+        link: it.querySelector("link")?.textContent || "",
+        pubDate: it.querySelector("pubDate")?.textContent || "",
+        description: it.querySelector("description")?.textContent || "",
+        image: image
+      };
+    });
+  }catch(e){
+    return null;
+  }
+}
+
+async function fetchFeedViaProxy(feed, proxyIdx){
+  const proxy = PROXIES[proxyIdx];
+  const url = proxy.build(feed.url);
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("HTTP " + res.status);
+
+  if(proxy.parse){
+    const data = await res.json();
+    const items = proxy.parse(data);
+    if(!items) throw new Error("Réponse invalide (" + proxy.name + ")");
+    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.thumbnail || item.enclosure?.link || null, description: stripHtml(item.description || item.content || "") }));
+  }else if(proxy.xmlField){
+    // Proxys qui encapsulent le XML brut dans un champ JSON (ex: whateverorigin
+    // renvoie { contents: "<rss>...</rss>" }) plutôt que de le servir tel quel.
+    const data = await res.json();
+    const xml = data[proxy.xmlField];
+    if(!xml) throw new Error("Champ " + proxy.xmlField + " absent (" + proxy.name + ")");
+    const items = parseRssXml(xml);
+    if(!items || items.length === 0) throw new Error("XML illisible (" + proxy.name + ")");
+    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: stripHtml(item.description || "") }));
+  }else{
+    const text = await res.text();
+    const items = parseRssXml(text);
+    if(!items || items.length === 0) throw new Error("XML illisible (" + proxy.name + ")");
+    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: stripHtml(item.description || "") }));
+  }
+}
+
+// Filtre un lot d'articles bruts selon le type de source : les sources
+// officielles Rockstar utilisent des mots-clés élargis (GTA 6 en toutes
+// lettres), les sources "sans filtre" (100% dédiées Rockstar) passent tout,
+// les autres utilisent les mots-clés réglables. Teste le titre ET la
+// description pour capter aussi les articles où GTA 6 n'est mentionné que
+// dans le résumé.
+function filterFeedItems(raw, feed){
+  const officialKeywords = ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6"];
+  if(feed.official){
+    // Filtre strict sur le titre uniquement : une source officielle (ex.
+    // Take-Two Investor Relations) publie aussi des communiqués sur
+    // d'autres jeux (NBA 2K, WWE, résultats financiers) qui peuvent
+    // mentionner GTA 6 en passant dans le corps du texte sans que ce soit
+    // une vraie annonce Rockstar. Exiger GTA 6 dans le titre garde
+    // uniquement les vraies annonces dédiées.
+    return raw.filter(item => {
+      const title = (item.title || "").toLowerCase();
+      return officialKeywords.some(k => title.includes(k));
+    });
+  }
+  if(feed.noFilter) return raw;
+  return raw.filter(item => {
+    const hay = ((item.title || "") + " " + (item.description || "")).toLowerCase();
+    return settings.keywords.some(k => hay.includes(k));
+  });
+}
+
+async function fetchFeed(feed){
+  // Certains sites autorisent le CORS nativement sur leur flux RSS même si
+  // le HTML de la page ne l'autorise pas. On tente donc un appel direct
+  // sans proxy en premier pour toutes les sources : plus rapide, et évite
+  // de dépendre d'un proxy tiers qui peut lui-même être bloqué. En cas
+  // d'échec (la plupart des sites bloquent le CORS sur leurs flux), on
+  // bascule silencieusement sur les proxys ci-dessous.
+  try{
+    addLog("info", `<span class="src">${escapeHtml(feed.name)}</span> — tentative directe (sans proxy)…`);
+    const res = await fetch(feed.url);
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+    const items = parseRssXml(text);
+    if(!items || items.length === 0) throw new Error("XML illisible (direct)");
+    const raw = items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: stripHtml(item.description || "") }));
+    feedErrors[feed.id] = null;
+    const filtered = filterFeedItems(raw, feed);
+    addLog("ok", `<span class="src">${escapeHtml(feed.name)}</span> — ${raw.length} article(s) reçu(s) en direct, ${filtered.length} après filtre mots-clés`);
+    return filtered.map(item => ({
+      title: item.title,
+      link: item.link,
+      date: item.date,
+      source: feed.name,
+      official: !!feed.official,
+      rockstarmag: !!feed.rockstarmag,
+      specialist: !!feed.noFilter,
+      lang: feed.lang || null,
+      // Google News RSS ne fournit jamais d'image, et son lien pointe vers
+      // une page de redirection (news.google.com), pas l'article réel — un
+      // service de récupération d'og:image scraperait donc la page Google
+      // générique, pas la vraie miniature. Pas de solution fiable ici.
+      image: item.image || null,
+      description: item.description || "",
+      // Google News RSS renvoie des liens vers news.google.com, pas vers le
+      // vrai site source : un favicon calculé à partir de ce lien afficherait
+      // le logo Google, pas celui du site qui a publié l'article. On l'omet
+      // plutôt que d'afficher une icône trompeuse.
+      favicon: feed.url.includes("news.google.com") ? null : faviconFor(item.link || feed.url)
+    }));
+  }catch(e){
+    addLog("fail", `<span class="src">${escapeHtml(feed.name)}</span> — échec direct : ${escapeHtml(e.message || "erreur inconnue")}, repli sur les proxys…`);
+    // on continue vers les proxys ci-dessous en cas d'échec
+  }
+
+  for(let i = 0; i < PROXIES.length; i++){
+    const idx = (activeProxyIndex + i) % PROXIES.length;
+    try{
+      addLog("info", `<span class="src">${escapeHtml(feed.name)}</span> — tentative via ${PROXIES[idx].name}…`);
+      const raw = await fetchFeedViaProxy(feed, idx);
+      activeProxyIndex = idx;
+      feedErrors[feed.id] = null;
+      const filtered = filterFeedItems(raw, feed);
+      addLog("ok", `<span class="src">${escapeHtml(feed.name)}</span> — ${raw.length} article(s) reçu(s) via ${PROXIES[idx].name}, ${filtered.length} après filtre mots-clés`);
+      return filtered.map(item => ({
+        title: item.title,
+        link: item.link,
+        date: item.date,
+        source: feed.name,
+        official: !!feed.official,
+        rockstarmag: !!feed.rockstarmag,
+        specialist: !!feed.noFilter,
+        lang: feed.lang || null,
+        image: item.image || null,
+        description: item.description || "",
+        favicon: feed.url.includes("news.google.com") ? null : faviconFor(item.link || feed.url)
+      }));
+    }catch(e){
+      console.warn("Proxy " + PROXIES[idx].name + " a échoué pour " + feed.name, e);
+      feedErrors[feed.id] = e.message || "erreur inconnue";
+      addLog("fail", `<span class="src">${escapeHtml(feed.name)}</span> — échec via ${PROXIES[idx].name} : ${escapeHtml(e.message || "erreur inconnue")}`);
+      continue;
+    }
+  }
+  addLog("fail", `<span class="src">${escapeHtml(feed.name)}</span> — tous les proxys ont échoué, source ignorée`);
+  return [];
+}
+
+function faviconFor(url){
+  try{
+    const host = new URL(url).hostname;
+    return "https://www.google.com/s2/favicons?domain=" + host + "&sz=64";
+  }catch(e){
+    return null;
+  }
+}
+
+// ---------- Vérification principale ----------
+let lastCheckTime = 0;
+const CACHE_DURATION_MS = 3 * 60 * 1000; // 3 min
+
+async function checkFromBackend(){
+  const url = settings.backendUrl + (settings.backendUrl.includes("?") ? "&" : "?") + "_t=" + Date.now();
+  addLog("info", `Lecture directe du backend : ${settings.backendUrl}`);
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const data = await res.json();
+
+  const all = (data.items || []).map(item => ({
+    title: item.title,
+    link: item.link,
+    date: item.date,
+    source: item.source,
+    official: !!item.official,
+    rockstarmag: !!item.rockstarmag,
+    specialist: !!item.specialist,
+    lang: item.lang || null,
+    image: item.image || null,
+    description: item.description || "",
+    favicon: faviconFor(item.link)
+  }));
+  all.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  let newOnes = [];
+  if(!firstLoad){
+    newOnes = all.filter(item => !isDuplicate(item, Object.values(seenMap)));
+  }
+  all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
+  await saveSeen();
+
+  lastItems = all;
+  lastNewLinks = newOnes.map(i => i.link);
+  saveLastItems();
+  applyFilters();
+  firstLoad = false;
+
+  const finishedAt = new Date();
+  document.getElementById("lastCheck").textContent = "dernière vérif (backend) : " + finishedAt.toLocaleTimeString('fr-FR');
+  const proxyEl = document.getElementById("proxyLine");
+
+  const generatedDate = data.generated_at ? new Date(data.generated_at) : null;
+  const ageMs = generatedDate ? (Date.now() - generatedDate.getTime()) : null;
+  const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2h : le robot tourne toutes les heures, donc 2h sans mise à jour = probablement en échec
+
+  if(generatedDate){
+    proxyEl.textContent = "généré le " + generatedDate.toLocaleString('fr-FR');
+    const banner = document.getElementById("staleBanner");
+    if(ageMs > STALE_THRESHOLD_MS){
+      const ageHours = Math.floor(ageMs / (60 * 60 * 1000));
+      proxyEl.textContent += ` ⚠️ (il y a ${ageHours}h — le robot GitHub semble ne plus tourner, vérifie l'onglet Actions de ton dépôt)`;
+      proxyEl.style.color = "var(--warn)";
+      banner.textContent = `⚠️ Le robot GitHub semble ne plus tourner depuis ${ageHours}h — vérifie l'onglet Actions de ton dépôt.`;
+      banner.style.display = "block";
+    }else{
+      proxyEl.style.color = "var(--text-dim)";
+      banner.style.display = "none";
+    }
+  }else{
+    proxyEl.textContent = "date de génération inconnue";
+    proxyEl.style.color = "var(--text-dim)";
+  }
+
+  const modeEl = document.getElementById("modeIndicator");
+  modeEl.className = "mode-indicator backend";
+  modeEl.innerHTML = '<span class="dot"></span>Backend GitHub';
+
+  document.getElementById("settingsErrorBadge").style.display = "none";
+  addLog("info", `Backend — ${all.length} article(s) au total.`);
+
+  if(document.getElementById("settingsOverlay").classList.contains("open")){
+    populateSettingsUI();
+  }
+}
+
+async function checkNow(force){
+  const now = Date.now();
+  // Stale-while-revalidate : les articles déjà chargés restent toujours
+  // affichés (jamais d'écran vide ni de blocage) ; seule la fréquence des
+  // vrais appels réseau est limitée, pour ne pas spammer les proxys sur des
+  // clics rapprochés.
+  if(!force && lastCheckTime && (now - lastCheckTime) < CACHE_DURATION_MS && lastItems.length > 0){
+    const remainingSec = Math.ceil((CACHE_DURATION_MS - (now - lastCheckTime)) / 1000);
+    addLog("info", `Résultats encore récents (il y a moins de 3 min) — affichage actuel conservé, nouvelle vérification réseau dans ${remainingSec}s.`);
+    return;
+  }
+  lastCheckTime = now;
+
+  document.getElementById("lastCheck").textContent = "vérification en cours…";
+
+  // Si un backend GitHub est configuré, on l'utilise à la place du système
+  // classique par proxys — plus rapide, plus fiable, avec de vraies
+  // miniatures. Retombe sur le mode direct si le backend échoue.
+  if(settings.backendUrl){
+    try{
+      await checkFromBackend();
+      return;
+    }catch(e){
+      addLog("fail", `Backend inaccessible (${escapeHtml(e.message || "erreur inconnue")}) — repli sur le mode direct.`);
+    }
+  }
+
+  // Les skeletons ne remplacent l'affichage que s'il n'y a encore rien à
+  // montrer (premier chargement) ; sinon les articles déjà connus restent
+  // visibles pendant que le rafraîchissement se fait en fond.
+  if(lastItems.length === 0 && currentTab !== "logs"){
+    showSkeletons(6);
+  }
+  const activeFeeds = settings.feeds.filter(f => f.enabled);
+  addLog("info", `Vérification lancée — ${activeFeeds.length} source(s) active(s), par lots de 5 en parallèle.`);
+
+  const progressBar = document.getElementById("progressBar");
+  const progressFill = document.getElementById("progressFill");
+  progressBar.style.display = "block";
+  progressFill.style.width = "0%";
+
+  // Traitement par lots plutôt que tout en parallèle d'un coup : envoyer
+  // 20+ requêtes simultanées au même proxy public (rss2json) déclenche du
+  // rate-limit (HTTP 429) en cascade. Des lots de 5 restent rapides tout
+  // en respectant les quotas des proxys gratuits.
+  const BATCH_SIZE = 5;
+  const results = [];
+  for(let i = 0; i < activeFeeds.length; i += BATCH_SIZE){
+    const batch = activeFeeds.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.allSettled(batch.map(feed => fetchFeed(feed)));
+    results.push(...batchResults);
+    const progressPct = Math.min(100, Math.round((results.length / activeFeeds.length) * 100));
+    progressFill.style.width = progressPct + "%";
+  }
+
+  setTimeout(() => { progressBar.style.display = "none"; }, 400);
+
+  let all = [];
+  let okCount = 0, failCount = 0;
+  results.forEach((result, i) => {
+    const feed = activeFeeds[i];
+    if(result.status === "rejected"){
+      console.error("Échec complet du flux " + feed.name, result.reason);
+      feedErrors[feed.id] = result.reason?.message || "erreur inattendue";
+      addLog("fail", `<span class="src">${escapeHtml(feed.name)}</span> — exception inattendue : ${escapeHtml(result.reason?.message || "inconnue")}`);
+      failCount++;
+      return;
+    }
+    if(result.value.length === 0 && feedErrors[feed.id]){
+      failCount++;
+    }else{
+      okCount++;
+    }
+    for(const item of result.value){
+      const match = findDuplicate(item, all);
+      if(match){
+        // Regroupe au lieu de jeter : on garde une trace des sources
+        // additionnelles qui couvrent la même actu.
+        if(!match.extraSources) match.extraSources = [];
+        if(!match.extraSources.some(s => s.source === item.source)){
+          match.extraSources.push({ source: item.source, link: item.link });
+        }
+      }else{
+        all.push(item);
+      }
+    }
+  });
+  all.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  let newOnes = [];
+  if(!firstLoad){
+    newOnes = all.filter(item => !isDuplicate(item, Object.values(seenMap)));
+  }
+
+  all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
+  await saveSeen();
+
+  // Fusionne avec les articles déjà connus au lieu de tout remplacer : si
+  // une source échoue temporairement lors d'une vérification, ses articles
+  // précédemment récupérés restent affichés plutôt que de disparaître.
+  const merged = [...all];
+  lastItems.forEach(oldItem => {
+    if(!findDuplicate(oldItem, merged)) merged.push(oldItem);
+  });
+  merged.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  lastItems = merged;
+  lastNewLinks = newOnes.map(i => i.link);
+  saveLastItems();
+  applyFilters();
+
+  firstLoad = false;
+
+  const finishedAt = new Date();
+  document.getElementById("lastCheck").textContent = "dernière vérif : " + finishedAt.toLocaleTimeString('fr-FR');
+  const proxyEl = document.getElementById("proxyLine");
+  proxyEl.textContent = okCount + " source(s) OK" + (failCount > 0 ? ", " + failCount + " en échec" : "");
+  proxyEl.style.color = failCount > 0 ? "var(--warn)" : "var(--text-dim)";
+
+  const modeEl = document.getElementById("modeIndicator");
+  modeEl.className = "mode-indicator direct";
+  modeEl.innerHTML = '<span class="dot"></span>Mode direct';
+
+  document.getElementById("settingsErrorBadge").style.display = failCount > 0 ? "block" : "none";
+  addLog("info", `Vérification terminée — ${all.length} article(s) trouvés cette fois, ${lastItems.length} au total conservés.`);
+
+  if(document.getElementById("settingsOverlay").classList.contains("open")){
+    populateSettingsUI();
+  }
+}
+
+// ---------- Filtres + recherche ----------
+function setTab(t){
+  currentTab = t;
+  visibleCount = PAGE_SIZE;
+  document.getElementById("tabAll").classList.toggle("active", t === "all");
+  document.getElementById("tabNonRockstar").classList.toggle("active", t === "non-rockstar");
+  document.getElementById("tabRockstar").classList.toggle("active", t === "rockstar");
+  document.getElementById("tabRockstarmag").classList.toggle("active", t === "rockstarmag");
+
+  const isLogs = (t === "logs");
+  document.getElementById("feed").style.display = isLogs ? "none" : "flex";
+  document.getElementById("logsPanel").style.display = isLogs ? "block" : "none";
+  document.querySelector(".search-row").style.display = isLogs ? "none" : "flex";
+
+  if(isLogs){
+    renderLogs();
+    updateTabBadges();
+  }else{
+    applyFilters();
+  }
+}
+
+function setLang(l){
+  currentLang = l;
+  visibleCount = PAGE_SIZE;
+  document.getElementById("tabLangAll").classList.toggle("active", l === "all");
+  document.getElementById("tabFr").classList.toggle("active", l === "fr");
+  document.getElementById("tabEn").classList.toggle("active", l === "en");
+  applyFilters();
+}
+
+function setFilter(f){
+  currentFilter = f;
+  visibleCount = PAGE_SIZE;
+  document.getElementById("filterAll").classList.toggle("active", f === "all");
+  document.getElementById("filterUnread").classList.toggle("active", f === "unread");
+  document.getElementById("filterNew").classList.toggle("active", f === "new");
+  updateActiveFiltersCount();
+  applyFilters();
+}
+
+function openFiltersSheet(){
+  document.getElementById("filtersOverlay").classList.add("open");
+}
+function closeFiltersSheet(){
+  document.getElementById("filtersOverlay").classList.remove("open");
+}
+function closeFiltersSheetOnOverlay(e){
+  if(e.target.id === "filtersOverlay") closeFiltersSheet();
+}
+
+function updateActiveFiltersCount(){
+  // Compte les filtres non-défaut actuellement actifs (pas "Tout" ni mode
+  // normal), pour afficher un badge informatif sur le bouton déclencheur —
+  // sans avoir à ouvrir le panneau pour savoir si un filtre est appliqué.
+  let count = 0;
+  if(currentFilter !== "all") count++;
+  if(settings.denseMode) count++;
+  const badge = document.getElementById("activeFiltersCount");
+  badge.textContent = count > 0 ? count : "";
+}
+
+let searchDebounceId = null;
+function debouncedSearch(){
+  clearTimeout(searchDebounceId);
+  searchDebounceId = setTimeout(() => { visibleCount = PAGE_SIZE; applyFilters(); }, 180);
+}
+
+function toggleClearButton(){
+  const hasText = document.getElementById("searchInput").value.length > 0;
+  document.getElementById("searchClearBtn").style.display = hasText ? "flex" : "none";
+}
+function clearSearch(){
+  const input = document.getElementById("searchInput");
+  input.value = "";
+  toggleClearButton();
+  visibleCount = PAGE_SIZE;
+  applyFilters();
+  input.focus();
+}
+
+function applyFilters(){
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  let items = lastItems;
+
+  if(currentTab === "rockstar") items = items.filter(i => i.official);
+  if(currentTab === "rockstarmag") items = items.filter(i => i.rockstarmag);
+  if(currentTab === "non-rockstar") items = items.filter(i => !i.official && !i.rockstarmag);
+  if(currentLang === "fr") items = items.filter(i => i.lang === "fr");
+  if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
+
+  if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
+  if(currentFilter === "new") items = items.filter(i => lastNewLinks.includes(i.link));
+  if(q) items = items.filter(i => i.title.toLowerCase().includes(q));
+
+  renderFeed(items, lastNewLinks, q);
+  updateTabBadges();
+  updateDocumentTitle();
+
+  const countEl = document.getElementById("countLine");
+  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"");
+}
+
+// Compteurs de non-lus par onglet — priorisation en un coup d'œil.
+function updateTabBadges(){
+  const unreadAll = lastItems.filter(i => !readSet.has(i.link)).length;
+  const unreadRockstar = lastItems.filter(i => i.official && !readSet.has(i.link)).length;
+  const unreadRockstarmag = lastItems.filter(i => i.rockstarmag && !readSet.has(i.link)).length;
+  const unreadNonRockstar = lastItems.filter(i => !i.official && !i.rockstarmag && !readSet.has(i.link)).length;
+  const unreadFr = lastItems.filter(i => i.lang === "fr" && !readSet.has(i.link)).length;
+  const unreadEn = lastItems.filter(i => i.lang !== "fr" && !readSet.has(i.link)).length;
+
+  document.getElementById("badgeAll").textContent = unreadAll > 0 ? unreadAll : "";
+  document.getElementById("badgeRockstar").textContent = unreadRockstar > 0 ? unreadRockstar : "";
+  document.getElementById("badgeRockstarmag").textContent = unreadRockstarmag > 0 ? unreadRockstarmag : "";
+  document.getElementById("badgeNonRockstar").textContent = unreadNonRockstar > 0 ? unreadNonRockstar : "";
+  document.getElementById("badgeLangAll").textContent = unreadAll > 0 ? unreadAll : "";
+  document.getElementById("badgeFr").textContent = unreadFr > 0 ? unreadFr : "";
+  document.getElementById("badgeEn").textContent = unreadEn > 0 ? unreadEn : "";
+}
+
+// Badge sur le titre d'onglet du navigateur, visible même en arrière-plan.
+function updateDocumentTitle(){
+  const unread = lastItems.filter(i => !readSet.has(i.link)).length;
+  document.title = unread > 0 ? "(" + unread + ") GTA6_WATCH" : "GTA6_WATCH";
+}
+
+// ---------- Rendu ----------
+let itemsById = {}; // safeId -> item, pour que la modale d'aperçu retrouve l'article
+
+function showSkeletons(count){
+  const feedEl = document.getElementById("feed");
+  const card = () => `
+    <div class="skeleton-card">
+      <div class="skeleton-thumb"></div>
+      <div class="skeleton-lines">
+        <div class="skeleton-line w-30"></div>
+        <div class="skeleton-line w-90"></div>
+        <div class="skeleton-line w-70"></div>
+        <div class="skeleton-line w-20"></div>
+      </div>
+    </div>
+  `;
+  feedEl.innerHTML = Array.from({length: count}, card).join("");
+}
+
+function dayBucket(dateStr){
+  if(!dateStr) return "Date inconnue";
+  const d = new Date(dateStr);
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfItem = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diffDays = Math.round((startOfToday - startOfItem) / 86400000);
+
+  if(diffDays === 0) return "Aujourd'hui";
+  if(diffDays === 1) return "Hier";
+  if(diffDays > 1 && diffDays <= 7) return "Cette semaine";
+  return "Plus ancien";
+}
+
+function renderFeed(items, newLinks, searchQuery){
+  const feedEl = document.getElementById("feed");
+  if(items.length === 0){
+    feedEl.innerHTML = '<div class="empty">Aucun article correspondant.</div>';
+    return;
+  }
+
+  const capped = items.slice(0, settings.maxDisplay);
+  const shown = capped.slice(0, visibleCount);
+  itemsById = {};
+
+  // Regroupement par jour : ordre fixe, on ne montre que les buckets non vides.
+  const bucketOrder = ["Aujourd'hui", "Hier", "Cette semaine", "Plus ancien", "Date inconnue"];
+  const buckets = {};
+  shown.forEach(item => {
+    const b = dayBucket(item.date);
+    if(!buckets[b]) buckets[b] = [];
+    buckets[b].push(item);
+  });
+
+  const cardsHtml = bucketOrder
+    .filter(b => buckets[b] && buckets[b].length > 0)
+    .map(bucket => `
+      <div class="day-group">
+        <div class="day-label">${bucket}</div>
+        ${buckets[bucket].map(item => renderCard(item, newLinks, searchQuery)).join("")}
+      </div>
+    `).join("");
+
+  // Pagination progressive : rendre 30 cartes d'un coup reste fluide même
+  // sur mobile ; un rendu de 500 cartes en une fois peut saccader le scroll.
+  const remaining = capped.length - shown.length;
+  const loadMoreHtml = remaining > 0
+    ? `<button class="small" id="loadMoreBtn" onclick="loadMore()" style="width:100%; margin-top:10px;">Charger ${Math.min(PAGE_SIZE, remaining)} de plus (${remaining} restants)</button>`
+    : "";
+
+  feedEl.innerHTML = cardsHtml + loadMoreHtml;
+}
+
+function loadMore(){
+  visibleCount += PAGE_SIZE;
+  applyFilters();
+}
+
+function highlightMatch(title, query){
+  const escaped = escapeHtml(title);
+  if(!query) return escaped;
+  // Recherche insensible à la casse sur le texte déjà échappé, pour ne
+  // jamais casser l'échappement HTML avec des caractères du texte original.
+  const q = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // échappe les caractères spéciaux regex
+  const re = new RegExp("(" + q + ")", "ig");
+  return escaped.replace(re, "<mark>$1</mark>");
+}
+
+function renderCard(item, newLinks, searchQuery){
+  const isNew = newLinks.includes(item.link);
+  const isRead = readSet.has(item.link);
+  const dateObj = item.date ? new Date(item.date) : null;
+  const dFixed = dateObj ? dateObj.toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : "";
+  const dRelative = dateObj ? relativeTime(dateObj) : null;
+  const d = dRelative ? `${dRelative} · ${dFixed}` : dFixed;
+  const safeId = btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, "");
+  itemsById[safeId] = item;
+
+  const favicon = item.favicon ? `<img src="${escapeHtml(item.favicon)}" class="card-favicon" alt="" onerror="this.style.display='none'">` : "";
+  const thumb = item.image ? `<img src="${escapeHtml(item.image)}" class="card-thumb" alt="" onerror="this.style.display='none'">` : "";
+  const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
+  const specialistBadge = (item.specialist && !item.official) ? `<span class="specialist-badge">SPÉCIALISTE GTA 6</span>` : "";
+
+  // Badges de contenu, détectés depuis le titre — repérage rapide du type
+  // d'article sans avoir à lire le titre en entier.
+  const titleLower = (item.title || "").toLowerCase();
+  const leakBadge = /\bleak(s|ed)?\b|\bfuite/i.test(titleLower) ? `<span class="tag-badge tag-leak">LEAK</span>` : "";
+  const videoBadge = /\btrailer\b|\bgameplay\b|\bvideo\b|\bvidéo\b|\bfootage\b|\bclip\b/i.test(titleLower) ? `<span class="tag-badge tag-video">VIDÉO</span>` : "";
+  const langBadge = item.lang === "fr" ? `<span class="tag-badge tag-lang">FR</span>` : "";
+
+  const extraSourcesLine = (item.extraSources && item.extraSources.length > 0)
+    ? `<div class="card-extra">+ ${item.extraSources.length} autre${item.extraSources.length>1?"s":""} source${item.extraSources.length>1?"s":""} : ${item.extraSources.map(s => escapeHtml(s.source)).join(", ")}</div>`
+    : "";
+
+  return `
+    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}" id="card-${safeId}">
+      <div class="card-top">
+        ${thumb}
+        <div class="card-body">
+          <div class="card-src-row">
+            <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
+            ${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
+          </div>
+          <div class="card-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a></div>
+          <div class="card-date">${d}</div>
+          ${extraSourcesLine}
+        </div>
+        <div class="card-actions">
+          <button class="card-mark" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${isRead ? "marquer non lu" : "marquer lu"}</button>
+          <button class="card-mark" onclick="copyLink('${escapeAttr(item.link)}', this)">copier</button>
+          ${item.description ? `<button class="card-mark" onclick="openPreview('${safeId}')">aperçu</button>` : ""}
+          ${item.lang !== "fr" ? `<button class="card-mark" onclick="openTranslated('${escapeAttr(item.link)}')">🇫🇷 traduire</button>` : ""}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+function escapeAttr(str){
+  return str.replace(/'/g, "\\'");
+}
+
+function copyLink(link, btn){
+  navigator.clipboard.writeText(link).then(() => {
+    if(btn){
+      const original = btn.textContent;
+      btn.textContent = "copié";
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    }
+    // Pas de bouton visible à mettre à jour (ex: appelé depuis le menu de
+    // carte, déjà fermé au moment de la copie) — la copie a quand même
+    // bien eu lieu, silencieusement.
+  }).catch(() => {
+    // Fallback si l'API clipboard est indisponible (contexte non sécurisé, permission refusée)
+    prompt("Copie le lien :", link);
+  });
+}
+
+function openTranslated(link){
+  // Ouvre l'article via le service de traduction de pages web de Google —
+  // format d'URL historique, non garanti à 100% dans la durée (Google peut
+  // le faire évoluer sans préavis), mais sans risque : en cas d'échec ça
+  // affiche juste une erreur côté Google, ça ne casse rien dans l'app.
+  const translatedUrl = "https://translate.google.com/translate?sl=auto&tl=fr&u=" + encodeURIComponent(link);
+  window.open(translatedUrl, "_blank", "noopener");
+}
+
+let previewSafeId = null;
+
+function openPreview(safeId){
+  const item = itemsById[safeId];
+  if(!item) return;
+  previewSafeId = safeId;
+
+  const sourceLabel = item.official ? "OFFICIEL ROCKSTAR" : item.source.toUpperCase();
+  const favicon = item.favicon ? `<img src="${escapeHtml(item.favicon)}" alt="" style="width:16px; height:16px; border-radius:3px; margin-right:6px; vertical-align:-3px;">` : "";
+  document.getElementById("previewSource").innerHTML = favicon + escapeHtml(sourceLabel);
+  document.getElementById("previewTitle").textContent = item.title;
+  document.getElementById("previewBody").textContent = item.description || "Aucun extrait disponible pour cet article.";
+  document.getElementById("previewLink").href = item.link;
+  document.getElementById("previewImage").innerHTML = item.image ? `<img src="${escapeHtml(item.image)}" alt="" onerror="this.parentElement.style.display='none'">` : "";
+  document.getElementById("previewTranslateBtn").style.display = item.lang !== "fr" ? "block" : "none";
+
+  document.getElementById("previewOverlay").classList.add("open");
+}
+function closePreview(){
+  document.getElementById("previewOverlay").classList.remove("open");
+}
+function closePreviewOnOverlay(e){
+  if(e.target.id === "previewOverlay") closePreview();
+}
+function markReadFromPreview(){
+  if(previewSafeId && itemsById[previewSafeId]){
+    markRead(previewSafeId, itemsById[previewSafeId].link);
+  }
+}
+
+function markRead(safeId, link){
+  readSet.add(link);
+  saveRead();
+  const el = document.getElementById("card-"+safeId);
+  if(el) el.classList.add("read");
+  applyFilters();
+}
+
+function toggleRead(safeId, link){
+  if(readSet.has(link)){
+    readSet.delete(link);
+  }else{
+    readSet.add(link);
+  }
+  saveRead();
+  applyFilters();
+}
+
+async function markAllRead(makeRead){
+  let items = lastItems;
+  if(currentTab === "rockstar") items = items.filter(i => i.official);
+  if(currentTab === "rockstarmag") items = items.filter(i => i.rockstarmag);
+  if(currentTab === "non-rockstar") items = items.filter(i => !i.official && !i.rockstarmag);
+  if(currentLang === "fr") items = items.filter(i => i.lang === "fr");
+  if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
+  items.forEach(i => {
+    if(makeRead === false){
+      readSet.delete(i.link);
+    }else{
+      readSet.add(i.link);
+    }
+  });
+  await saveRead();
+  applyFilters();
+}
+
+// ---------- Compte à rebours sortie GTA 6 ----------
+// Date officielle confirmée par Rockstar/Take-Two : 19 novembre 2026.
+const GTA6_RELEASE = new Date("2026-11-19T00:00:00-05:00"); // heure de New York (siège Rockstar/Take-Two)
+
+function updateCountdown(){
+  const el = document.getElementById("countdown");
+  const now = new Date();
+  const diff = GTA6_RELEASE - now;
+
+  if(diff <= 0){
+    el.textContent = "GTA 6 est sorti !";
+    el.className = "countdown final";
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  // 4 paliers d'intensité croissante à mesure que la sortie approche :
+  // normal (>30j) -> soon (7-30j) -> urgent (24h-7j) -> final (<24h).
+  let palier = "";
+  if(diff < 24 * 60 * 60 * 1000){
+    palier = "final";
+  }else if(diff < 7 * 24 * 60 * 60 * 1000){
+    palier = "urgent";
+  }else if(diff < 30 * 24 * 60 * 60 * 1000){
+    palier = "soon";
+  }
+  el.className = "countdown" + (palier ? " " + palier : "");
+
+  if(palier === "final"){
+    // "C'est demain" n'a vraiment de sens que dans les toutes dernières
+    // heures — à 23h restantes, ce n'est pas "demain", c'est encore
+    // aujourd'hui. Message plus honnête selon le temps réellement restant.
+    const label = hours < 6 ? "C'EST AUJOURD'HUI" : "C'EST BIENTÔT";
+    el.textContent = `${label} — ${hours}h ${String(minutes).padStart(2,"0")}m ${String(seconds).padStart(2,"0")}s`;
+  }else{
+    el.textContent = `Sortie dans ${days}j ${String(hours).padStart(2,"0")}h ${String(minutes).padStart(2,"0")}m ${String(seconds).padStart(2,"0")}s`;
+  }
+}
+
+// ---------- Init ----------
+loadState();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// Enregistrement du service worker : condition technique requise par
+// Chrome pour proposer "Installer" au lieu de la griser. Échoue
+// silencieusement si non supporté (ex: navigateur trop ancien), le
+// reste de l'app continue de fonctionner normalement dans tous les cas.
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+</script>
+</body>
+</html>
