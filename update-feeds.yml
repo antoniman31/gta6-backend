@@ -1,0 +1,63 @@
+name: Mise à jour des flux GTA 6
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Empêche deux exécutions de tourner en même temps (ex: une automatique
+# horaire + une relance manuelle) — la seconde attend que la première
+# termine au lieu de risquer un conflit de push. cancel-in-progress à
+# false : on met en file d'attente, on n'interrompt jamais une exécution
+# déjà en cours (elle pourrait avoir déjà envoyé des notifications Discord,
+# l'annuler en plein milieu laisserait le dépôt dans un état incohérent).
+concurrency:
+  group: update-feeds
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20 # le job dure ~5 min normalement ; large marge de sécurité si un site traîne, sans risquer de tourner indéfiniment
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Récupérer et traiter les flux
+        run: python fetch_feeds.py
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Publier le résultat
+        run: |
+          git config --global user.name "GTA6 Watch Bot"
+          git config --global user.email "actions@github.com"
+          git add docs/feed.json
+          # Commit systématique, même si generated_at est la seule vraie
+          # différence : Git compresse les diffs (delta), donc le coût réel
+          # en espace est minime malgré ~8760 commits/an. L'alternative
+          # (ignorer generated_at dans la comparaison) casserait
+          # l'indicateur de fraîcheur du tracker HTML, qui a justement
+          # besoin que ce champ avance à chaque passage pour distinguer
+          # "le robot tourne mais ne trouve rien de neuf" de "le robot est
+          # en panne" — un faux signal d'alerte serait pire que le bruit
+          # dans l'historique Git.
+          git diff --quiet --cached || git commit -m "Mise à jour automatique des flux"
+          for i in 1 2 3; do
+            if git push; then
+              break
+            fi
+            echo "Push rejeté (tentative $i/3), récupération des changements distants..."
+            git pull --rebase origin main
+          done
