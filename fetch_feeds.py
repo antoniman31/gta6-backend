@@ -33,6 +33,8 @@ import feedparser
 import requests
 from bs4 import BeautifulSoup
 
+import feed_store
+
 try:
     from googlenewsdecoder import gnewsdecoder
     HAS_DECODER = True
@@ -185,9 +187,16 @@ def normalize_date(entry):
         except Exception:
             pass
     # Filet de sécurité si aucune date structurée n'est disponible : on
-    # utilise le texte brut tel quel (mieux que rien), sachant qu'il pourrait
-    # se trier de façon imprécise par rapport aux autres sources.
-    return entry.get("published", entry.get("updated", ""))
+    # parse le texte brut (RFC 822 le plus souvent) pour le convertir en ISO
+    # malgré tout. Stocker la chaîne brute telle quelle, comme le faisait la
+    # version précédente, produisait un historique où ~20 % des articles
+    # avaient une date d'un autre format — et un tri par texte les remontait
+    # tous en tête du fichier (en ASCII, "W" de "Wed, ..." > "2" de "2026").
+    raw = entry.get("published", entry.get("updated", ""))
+    if not raw:
+        return ""
+    parsed = feed_store.parse_date_key(raw)
+    return raw if parsed == feed_store.DATE_FLOOR else parsed.isoformat()
 
 
 def fetch_feed(feed):
@@ -287,93 +296,43 @@ def fetch_feed(feed):
     return items
 
 
-MAX_HISTORY_SIZE = 2000  # au-delà, on retire les plus vieux articles pour garder le script rapide
+# Le plafond d'historique, le tri et l'interprétation des dates vivent
+# désormais dans feed_store.py : merge_feed.py doit appliquer exactement les
+# mêmes règles, sinon une fusion après conflit de push corromprait l'ordre
+# ou retirerait les mauvais articles.
+MAX_HISTORY_SIZE = feed_store.MAX_HISTORY_SIZE
 
-# URL du webhook Discord, configurée comme secret GitHub (voir README) —
-# jamais écrite en clair dans ce fichier. Si absente, les notifications
-# sont simplement désactivées, tout le reste du script continue de marcher.
-DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "")
+# Fichier où sont déposés les nouveaux articles de cette exécution, à
+# destination de discord_notify.py. Le workflow le place dans $RUNNER_TEMP,
+# donc hors du dépôt : aucun risque qu'il finisse committé. Absent en local,
+# ce qui désactive simplement la notification.
+NEW_ITEMS_FILE = os.environ.get("NEW_ITEMS_FILE", "")
 
 
-SITE_URL = "https://antoniman31.github.io/gta6-backend/"
+def write_new_items_file(new_items):
+    """Dépose les nouveaux articles pour l'étape de notification.
 
-
-def send_discord_notification(new_items):
-    """Envoie UN SEUL message Discord récapitulatif par vérification, avec
-    le nombre de nouveaux articles trouvés et un lien vers le site — plutôt
-    qu'un message par article. Discord mobile ouvre toujours l'app Discord
-    au tap sur une notification (jamais une URL externe directement), donc
-    le lien reste cliquable DANS le message une fois Discord ouvert, pas au
-    moment du tap sur la notification système elle-même. N'échoue jamais
-    le script principal si Discord est indisponible ou mal configuré."""
-    if not DISCORD_WEBHOOK_URL:
+    La notification Discord n'est plus envoyée d'ici : elle a lieu APRÈS que
+    le workflow a réellement publié docs/feed.json. Sinon une panne de push
+    annonçait des articles jamais publiés, puis l'exécution suivante les
+    réannonçait (arrivé les 26/08 et 28/08)."""
+    if not NEW_ITEMS_FILE:
         return
-    if not new_items:
-        return
-
-    n = len(new_items)
-    n_official = sum(1 for i in new_items if i.get("official"))
-    detail = f" (dont {n_official} officiel{'s' if n_official > 1 else ''} Rockstar)" if n_official else ""
-
-    embed = {
-        "title": f"🎮 {n} nouv{'eaux' if n > 1 else 'el'} article{'s' if n > 1 else ''} GTA 6{detail}",
-        "url": SITE_URL,
-        "description": f"[Ouvrir GTA6_WATCH]({SITE_URL})",
-        "color": 0x5493FF,
-    }
-    print(f"  [discord] envoi du récapitulatif ({n} nouvel(le)(s) article(s))...")
-    send_discord_with_retry(embed, f"récapitulatif {n} article(s)")
-
-
-def send_discord_with_retry(embed, title_for_log, max_attempts=3):
-    """Envoie un embed Discord avec nouvelle tentative en cas d'erreur
-    temporaire (429 rate-limit ou 5xx serveur). Un 429 renvoie généralement
-    un délai précis à respecter (Retry-After) — on l'utilise si présent,
-    sinon un backoff exponentiel simple (2s, 4s, 8s...). Les erreurs
-    définitives (ex: 400 webhook malformé, 404 webhook supprimé) ne sont
-    jamais retentées, ça ne changerait rien."""
-    for attempt in range(1, max_attempts + 1):
-        try:
-            resp = requests.post(DISCORD_WEBHOOK_URL, json={"embeds": [embed]}, timeout=10)
-            if resp.status_code in (200, 204):
-                return
-            if resp.status_code == 429:
-                retry_after = resp.json().get("retry_after", 2 ** attempt) if resp.text else 2 ** attempt
-                print(f"  [discord] rate-limit (tentative {attempt}/{max_attempts}), attente {retry_after}s...")
-                time.sleep(retry_after)
-                continue
-            if 500 <= resp.status_code < 600:
-                wait = 2 ** attempt
-                print(f"  [discord] erreur serveur {resp.status_code} (tentative {attempt}/{max_attempts}), attente {wait}s...")
-                time.sleep(wait)
-                continue
-            # Erreur définitive (4xx hors 429) : inutile de retenter.
-            print(f"  [discord] échec envoi ({resp.status_code}), non temporaire : {title_for_log[:50]}")
-            return
-        except Exception as e:
-            print(f"  [discord] erreur réseau (tentative {attempt}/{max_attempts}) : {e}")
-            if attempt < max_attempts:
-                time.sleep(2 ** attempt)
-
-    print(f"  [discord] abandon après {max_attempts} tentatives : {title_for_log[:50]}")
-
-
-# Note : une tentative de notification via ntfy.sh a été faite puis
-# abandonnée — le serveur confirmait l'envoi (200 OK) sans jamais relayer
-# les messages, probablement à cause d'un fail2ban/rate-limit silencieux
-# sur les IP partagées des runners GitHub Actions. Détails dans README.md.
+    try:
+        with open(NEW_ITEMS_FILE, "w", encoding="utf-8") as f:
+            json.dump(new_items, f, ensure_ascii=False)
+        print(f"  {len(new_items)} nouvel(le)(s) article(s) déposé(s) pour notification -> {NEW_ITEMS_FILE}")
+    except OSError as e:
+        # Ne doit jamais faire échouer la collecte : au pire il n'y a pas de
+        # notification, les articles eux-mêmes sont bien publiés.
+        print(f"  [notif] impossible d'écrire {NEW_ITEMS_FILE} : {e}")
 
 
 def load_existing_items():
     """Charge les articles déjà connus depuis la dernière exécution, pour ne
     jamais rien perdre même si un article sort de la fenêtre RSS récente
     d'une source (généralement limitée aux 10-30 derniers items)."""
-    try:
-        with open("docs/feed.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            return data.get("items", [])
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []
+    return feed_store.load_items()
 
 
 def recheck_official_status(items):
@@ -405,6 +364,17 @@ def main():
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
 
+    # Repasse rétroactive des dates : l'historique est rechargé tel quel et
+    # ne repasse jamais dans le pipeline de collecte, donc les articles
+    # engrangés avant l'introduction de normalize_date() gardent leur date
+    # au format brut du flux (RFC 822). Sans cette correction, un tri par
+    # date les remonte tous en tête, ce qui fausse aussi la fenêtre de
+    # déduplication par similarité de titre (elle ne compare alors plus aux
+    # articles réellement récents). Idempotente.
+    fixed_dates = feed_store.normalize_stored_dates(existing_items)
+    if fixed_dates:
+        print(f"Correction rétroactive : {fixed_dates} date(s) convertie(s) au format ISO 8601")
+
     all_items = list(existing_items)  # on part de l'historique, pas de zéro
     existing_links = {item["link"] for item in all_items}  # lookup O(1) par lien
     newly_added = []
@@ -418,14 +388,16 @@ def main():
                 newly_added.append(item)
         time.sleep(1)  # anti rate-limit entre les sources
 
-    all_items.sort(key=lambda x: x["date"], reverse=True)
+    # Tri sur la date RÉELLE (datetime), jamais sur la chaîne : des formats
+    # mélangés donnent un ordre faux en comparaison de texte.
+    all_items = feed_store.sort_items(all_items)
 
     # Plafonne la taille de l'historique : au-delà de MAX_HISTORY_SIZE, on
     # retire les articles les plus anciens plutôt que de laisser le fichier
     # (et le temps de dédup) grossir indéfiniment.
-    if len(all_items) > MAX_HISTORY_SIZE:
-        print(f"Historique plafonné : {len(all_items)} -> {MAX_HISTORY_SIZE} (les plus anciens sont retirés)")
-        all_items = all_items[:MAX_HISTORY_SIZE]
+    all_items, dropped = feed_store.cap_items(all_items)
+    if dropped:
+        print(f"Historique plafonné : {len(all_items) + dropped} -> {MAX_HISTORY_SIZE} (les {dropped} plus anciens sont retirés)")
 
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -441,8 +413,7 @@ def main():
         "items": all_items,
     }
 
-    with open("docs/feed.json", "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+    feed_store.write_feed(output)
 
     print(f"\nTerminé — {len(newly_added)} nouveau(x), {len(all_items)} au total dans docs/feed.json")
 
@@ -451,7 +422,7 @@ def main():
     # de messages d'un coup au lieu de rester silencieux jusqu'à la vraie
     # actualité suivante.
     if not is_first_run:
-        send_discord_notification(newly_added)
+        write_new_items_file(newly_added)
     elif newly_added:
         print(f"Premier lancement : {len(newly_added)} article(s) initiaux, pas de notification envoyée.")
 

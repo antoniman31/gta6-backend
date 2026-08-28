@@ -1,8 +1,8 @@
 # GTA6_WATCH
 
 Veille automatisée de l'actualité GTA 6 : un robot va chercher les news sur
-35 sources chaque heure, décode les vrais liens Google News, récupère de
-vraies miniatures, notifie sur Discord, et publie tout dans une app
+35 sources deux fois par heure, décode les vrais liens Google News, récupère
+de vraies miniatures, notifie sur Discord, et publie tout dans une app
 installable sur Android.
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
@@ -12,13 +12,14 @@ installable sur Android.
 Trois briques, aucun serveur à gérer :
 
 ```
-GitHub Actions (cron horaire)
+GitHub Actions (cron : 2 passages/heure)
         │
         ▼
   fetch_feeds.py  ──►  docs/feed.json  ──►  GitHub Pages  ──►  docs/index.html (PWA)
-        │
+        │                    ▲
+        │                    │ merge_feed.py (fusion si push concurrent)
         ▼
-  Discord (notification par nouvel article)
+  discord_notify.py (récapitulatif, APRÈS publication réussie)
 ```
 
 Le robot Python tourne côté GitHub, écrit un fichier JSON statique, et
@@ -27,8 +28,17 @@ maintenir, hébergement gratuit et illimité pour ce volume.
 
 ## Le robot — `fetch_feeds.py`
 
-Tourne automatiquement chaque heure (`cron: "0 * * * *"`), ou manuellement
-via l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow.
+Tourne automatiquement deux fois par heure (`cron: "7,37 * * * *"`), ou
+manuellement via l'onglet Actions → "Mise à jour des flux GTA 6" → Run
+workflow.
+
+Le déclencheur `schedule` de GitHub est *best-effort* : les runs partent
+avec 10 à 35 minutes de retard et sont purement abandonnés en période de
+charge — la minute 0 étant la plus congestionnée. Fin août 2026 la cadence
+réelle était tombée à un run toutes les 3 à 9 heures. Deux tentatives par
+heure à des minutes creuses ne suppriment pas les abandons (c'est un
+contournement côté GitHub, pas un correctif) mais ramènent la cadence
+effective près de l'heure.
 
 **Ce qu'il fait, dans l'ordre :**
 
@@ -60,12 +70,12 @@ via l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow.
    sont retirés. Ce n'est donc pas un historique complet et permanent,
    mais un historique glissant assez large pour ne jamais perdre l'actu
    récente ou moyennement récente.
-8. **Notifie sur Discord** — un message par nouvel article (titre,
-   description, miniature, lien), avec jusqu'à 3 tentatives automatiques
-   en cas d'erreur temporaire (429 rate-limit : respecte le délai indiqué
-   par Discord ; 5xx serveur : backoff progressif 2s/4s/8s). Aucune
-   notification au tout premier lancement (l'historique est vide, donc
-   "tout" serait considéré comme nouveau).
+8. **Dépose les nouveaux articles** dans le fichier désigné par
+   `$NEW_ITEMS_FILE` (hors du dépôt), à destination de
+   `discord_notify.py`. Le robot n'envoie plus lui-même la notification :
+   voir la section Notifications. Rien n'est déposé au tout premier
+   lancement (l'historique est vide, donc "tout" serait considéré comme
+   nouveau).
 9. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
@@ -81,10 +91,20 @@ via l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow.
 - **`timeout-minutes: 20`** — le job dure normalement ~5 minutes ; grande
   marge de sécurité si un site traîne anormalement, sans risquer qu'une
   exécution bloquée tourne indéfiniment.
-- **Retry Git** — en plus du `concurrency` ci-dessus (qui couvre la
-  quasi-totalité des cas), l'étape de publication retente jusqu'à 3 fois
-  (`git pull --rebase` + nouveau push) en cas de rejet, pour absorber tout
-  chevauchement résiduel.
+- **`ref: main` au checkout** — un run planifié peut attendre 35 minutes
+  en file avant de démarrer ; sans ça il repartirait du SHA figé au moment
+  de son déclenchement, donc d'un dépôt périmé.
+- **Publication fusionnante** — l'étape de publication retente jusqu'à 5
+  fois, et sur rejet elle fusionne les deux versions **au niveau des
+  données** via `merge_feed.py` (union des articles par lien) au lieu de
+  tenter un `git pull --rebase`. C'est indispensable : `docs/feed.json`
+  est entièrement régénéré à chaque run, donc un rebase conflicte
+  systématiquement, s'arrête, et — le shell tournant sous `bash -e` —
+  tuait tout le job dès la première tentative en emportant son travail
+  (runs du 26/08 03:42 et du 28/08 07:17). Aucun article n'est perdu,
+  quel que soit le run qui l'a trouvé.
+- **Notification après publication** — l'étape Discord ne s'exécute
+  qu'une fois le push réellement réussi.
 - **Commit systématique** — même quand seul l'horodatage
   (`generated_at`) a changé sans nouvel article, un commit est fait à
   chaque exécution. C'est un choix assumé : Git compresse les diffs
@@ -94,6 +114,30 @@ via l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow.
   l'indicateur de fraîcheur du tracker, qui a justement besoin que ce
   champ avance à chaque passage pour distinguer "le robot tourne mais ne
   trouve rien de neuf" de "le robot est en panne".
+
+## Les modules partagés
+
+- **`feed_store.py`** — le socle : interprétation des dates, tri,
+  plafonnement, lecture/écriture de `docs/feed.json`. Aucun accès réseau,
+  aucune dépendance externe. Ces trois règles doivent rester identiques
+  entre le robot et l'outil de fusion, sous peine de corrompre
+  l'historique — d'où le module commun.
+- **`merge_feed.py`** — fusionne deux versions de `docs/feed.json` au
+  niveau des données. Appelé par le workflow uniquement en cas de rejet
+  de push.
+- **`discord_notify.py`** — l'envoi Discord, appelé après publication.
+
+### Tests
+
+```
+python test_pipeline.py
+```
+
+Sans dépendance ni réseau. Couvre les dates (les trois formats présents
+dans l'historique), le tri, le plafonnement, la repasse rétroactive, et
+surtout la fusion — c'est elle qui décide si des articles sont perdus
+quand deux exécutions se chevauchent. Le dernier bloc rejoue ces règles
+sur le vrai `docs/feed.json` du dépôt.
 
 ## L'app — `docs/index.html`
 
@@ -138,6 +182,22 @@ simplicité qui n'en vaut pas la peine.
 
 **Discord** — actif, fonctionnel, confirmé en conditions réelles.
 
+UN SEUL message récapitulatif par exécution (nombre de nouveaux articles +
+lien cliquable vers le site), jamais un message par article. Aucun envoi
+s'il n'y a rien de neuf, aucun envoi au tout premier lancement. Jusqu'à 3
+tentatives en cas d'erreur temporaire (429 rate-limit : le délai indiqué
+par Discord est respecté ; 5xx serveur : backoff 2s/4s/8s) ; les erreurs
+définitives ne sont pas retentées.
+
+L'envoi est fait par `discord_notify.py`, dans une étape de workflow
+distincte qui ne s'exécute qu'**après une publication réussie**. Le robot
+se contente de déposer la liste des nouveaux articles dans
+`$NEW_ITEMS_FILE`. Auparavant l'envoi partait de `fetch_feeds.py`, donc
+avant le push : quand la publication échouait, Discord annonçait des
+articles jamais publiés, que l'exécution suivante redétectait et
+réannonçait. Conséquence assumée : un `python fetch_feeds.py` lancé à la
+main en local ne notifie plus.
+
 **ntfy.sh** — testé puis abandonné. Le serveur confirmait systématiquement
 l'envoi (200 OK) mais ne relayait jamais les messages jusqu'au téléphone,
 même avec un payload minimal (juste topic + message, sans aucun champ
@@ -150,7 +210,7 @@ commentaire).
 ## Limites connues et assumées
 
 - **Historique glissant, pas permanent** — plafonné à 2000 articles
-  (`MAX_HISTORY_SIZE` dans `fetch_feeds.py`), pas un vrai historique
+  (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique
   complet depuis toujours.
 - **Deux définitions de sources** — la liste `FEEDS` (Python, source de
   vérité) et `DEFAULT_FEEDS` (JS, utilisé uniquement par le mode de
@@ -179,10 +239,13 @@ commentaire).
 ## Ajuster quelque chose
 
 - **Fréquence** : `.github/workflows/update-feeds.yml`, ligne `cron`
+  (éviter la minute 0, la plus congestionnée côté GitHub)
 - **Sources** : liste `FEEDS` dans `fetch_feeds.py` (penser à reporter
   tout changement dans `DEFAULT_FEEDS` côté `index.html`, voir limite
   ci-dessus)
-- **Taille max de l'historique** : `MAX_HISTORY_SIZE` dans `fetch_feeds.py`
+- **Taille max de l'historique** : `MAX_HISTORY_SIZE` dans `feed_store.py`
+  (partagé par le robot et l'outil de fusion, pour que les deux appliquent
+  exactement la même règle)
 - **Webhook Discord** : secret GitHub `DISCORD_WEBHOOK_URL` (Settings →
   Secrets and variables → Actions) — ne jamais partager cette URL en
   clair ; si elle fuite, la régénérer immédiatement côté Discord
