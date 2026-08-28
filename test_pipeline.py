@@ -247,6 +247,38 @@ def test_push_payload():
     check(len(long_titre["body"]) <= 180, "corps tronqué pour ne pas déborder")
 
 
+def test_push_vapid_subject():
+    print("\n[push] identifiant de contact VAPID (le champ 'sub')")
+    import importlib
+    import os
+    import push_notify
+
+    def avec(valeur):
+        if valeur is None:
+            os.environ.pop("VAPID_SUBJECT", None)
+        else:
+            os.environ["VAPID_SUBJECT"] = valeur
+        importlib.reload(push_notify)
+        return push_notify.VAPID_SUBJECT
+
+    # Le cas qui a réellement échoué en production : un secret GitHub non
+    # configuré n'est pas absent, il est défini À VIDE. La valeur par
+    # défaut de os.environ.get ne s'applique alors pas, et le champ
+    # obligatoire "sub" partait vide — le service de push rejetait l'envoi
+    # avec « Missing 'sub' from claims ».
+    check(avec("") != "", "un secret VIDE ne laisse pas 'sub' vide (le bug du 28/08)")
+    check(avec("   ") != "", "un secret composé d'espaces non plus")
+    check(avec(None) != "", "une variable absente donne aussi une valeur")
+    check(avec("") == push_notify.SITE_URL,
+          "le repli est l'URL du site (la spécification accepte https:, "
+          "et ça évite d'inscrire une adresse e-mail dans un dépôt public)")
+    check(avec("mailto:moi@exemple.fr") == "mailto:moi@exemple.fr",
+          "un secret rempli est respecté")
+
+    os.environ.pop("VAPID_SUBJECT", None)
+    importlib.reload(push_notify)
+
+
 def test_push_subscriptions():
     print("\n[push] lecture du secret d'abonnements")
     import os
@@ -270,7 +302,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
            test_canonical_link, test_canonicalize_stored_links,
-           test_push_payload, test_push_subscriptions, test_real_history):
+           test_push_payload, test_push_subscriptions, test_push_vapid_subject,
+           test_real_history):
     fn()
 
 print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} vérifications passées")
