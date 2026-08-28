@@ -10,7 +10,7 @@ on:
     # avec "0 * * * *". Doubler les tentatives à des minutes décalées ne
     # supprime pas les abandons — c'est un contournement, pas un correctif —
     # mais ramène la cadence effective près de l'heure.
-    - cron: "30 * * * *"
+    - cron: "37 * * * *"
   workflow_dispatch:
   # Déclenchement par un planificateur EXTERNE (cron-job.org, Cloudflare
   # Workers, n'importe quel cron), via l'API GitHub :
