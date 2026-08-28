@@ -269,11 +269,34 @@ def test_push_vapid_subject():
     check(avec("") != "", "un secret VIDE ne laisse pas 'sub' vide (le bug du 28/08)")
     check(avec("   ") != "", "un secret composé d'espaces non plus")
     check(avec(None) != "", "une variable absente donne aussi une valeur")
-    check(avec("") == push_notify.SITE_URL,
-          "le repli est l'URL du site (la spécification accepte https:, "
-          "et ça évite d'inscrire une adresse e-mail dans un dépôt public)")
     check(avec("mailto:moi@exemple.fr") == "mailto:moi@exemple.fr",
           "un secret rempli est respecté")
+
+    # LE test qui manquait. La première correction produisait un repli
+    # syntaxiquement plausible mais refusé par la bibliothèque : elle
+    # n'accepte qu'un schéma et un hôte, pas de chemin. Et son message
+    # d'erreur est le même que pour un champ absent (« Missing 'sub' from
+    # claims »), donc rien ne le distinguait dans les logs.
+    #
+    # Se fier à sa propre lecture de la spécification ne suffit pas : on
+    # confronte la valeur au validateur réel.
+    defaut = avec("")
+    try:
+        from py_vapid import _check_sub
+    except ImportError:
+        print("    (py_vapid absent — validation réelle non exécutée ici, "
+              "elle tourne en CI où pywebpush est installé)")
+    else:
+        check(bool(_check_sub(defaut)),
+              f"le repli est accepté par le validateur de py_vapid ({defaut})")
+        check(not _check_sub("https://exemple.github.io/projet/"),
+              "reproduction du bug : une URL AVEC chemin est bien refusée")
+        check(bool(_check_sub("mailto:moi@exemple.fr")),
+              "une adresse mailto: reste acceptée")
+
+    check(push_notify.check_subject(defaut), "check_subject accepte le repli")
+    check(not push_notify.check_subject("https://exemple.com/avec/chemin"),
+          "check_subject refuse une URL avec chemin, avec un message clair")
 
     os.environ.pop("VAPID_SUBJECT", None)
     importlib.reload(push_notify)

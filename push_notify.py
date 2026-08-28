@@ -31,21 +31,36 @@ Décisions de notification, identiques à Discord :
 import json
 import os
 import sys
+from urllib.parse import urlparse
 
 SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 
 # Identifiant de contact exigé par la spécification VAPID : les services de
 # push (Google, Mozilla, Apple) s'en servent pour joindre l'expéditeur en
-# cas d'abus. Jamais montré à l'utilisateur. La spécification accepte une
-# adresse mailto: ou une URL https: — on prend l'URL du site par défaut,
-# plutôt que d'inscrire une adresse e-mail dans un dépôt public.
+# cas d'abus. Jamais montré à l'utilisateur.
 #
-# Le `or` est indispensable, pas cosmétique : quand un secret GitHub
-# n'existe pas, le workflow définit quand même la variable, à VIDE. Or la
-# valeur par défaut de os.environ.get ne s'applique qu'à une variable
-# ABSENTE. Sans ce garde-fou, le champ obligatoire "sub" partait vide et
-# le service de push rejetait l'envoi avec « Missing 'sub' from claims ».
-VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "").strip() or SITE_URL
+# Deux pièges, tous deux rencontrés en production :
+#
+# 1. Le `or` n'est pas cosmétique. Quand un secret GitHub n'existe pas, le
+#    workflow définit quand même la variable, à VIDE — or la valeur par
+#    défaut de os.environ.get ne s'applique qu'à une variable ABSENTE.
+#
+# 2. Le repli doit être l'ORIGINE du site, sans chemin. py_vapid valide ce
+#    champ avec une expression régulière qui n'accepte qu'un schéma et un
+#    hôte : "https://exemple.github.io" passe,
+#    "https://exemple.github.io/projet/" est refusé. Les deux échecs
+#    remontent sous le même message trompeur, « Missing 'sub' from
+#    claims », qui laisse croire que le champ est absent alors qu'il est
+#    seulement mal formé.
+#
+# Une adresse mailto: reste possible via le secret VAPID_SUBJECT ; l'URL
+# par défaut évite d'inscrire une adresse personnelle dans un dépôt public.
+def _default_subject():
+    parties = urlparse(SITE_URL)
+    return f"{parties.scheme}://{parties.netloc}"
+
+
+VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "").strip() or _default_subject()
 
 
 def load_subscriptions():
@@ -101,6 +116,27 @@ def build_payload(new_items):
         # un récapitulatif, pas douze bannières.
         "tag": "gta6watch-nouveaux",
     }
+
+
+def check_subject(subject):
+    """Valide le champ 'sub' avant l'envoi, avec un message compréhensible.
+
+    py_vapid rejette un 'sub' mal formé sous le message « Missing 'sub'
+    from claims », qui fait chercher une valeur absente alors qu'elle est
+    seulement invalide. Autant le dire clairement ici.
+    """
+    try:
+        from py_vapid import _check_sub
+    except ImportError:
+        return True
+    if _check_sub(subject):
+        return True
+    print(f"[push] identifiant de contact refusé : {subject!r}")
+    print("       Il faut soit une adresse « mailto:untel@domaine.fr », soit "
+          "une URL réduite au schéma et à l'hôte, sans chemin "
+          "(« https://exemple.com », pas « https://exemple.com/projet/ »).")
+    print("       Corrige le secret VAPID_SUBJECT.")
+    return False
 
 
 def send_all(subscriptions, payload, private_key):
@@ -159,6 +195,10 @@ def main():
 
     if not new_items:
         print("[push] aucun nouvel article à annoncer.")
+        return 0
+
+    if not check_subject(VAPID_SUBJECT):
+        print("[push] envoi abandonné — aucune notification ne partirait de toute façon.")
         return 0
 
     payload = build_payload(new_items)
