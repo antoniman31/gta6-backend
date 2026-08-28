@@ -2,7 +2,15 @@ name: Mise à jour des flux GTA 6
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    # Deux passages par heure, à des minutes creuses. Le déclencheur
+    # `schedule` de GitHub Actions est best-effort : les runs sont retardés
+    # (10 à 35 min observées) et purement abandonnés en période de charge,
+    # et la minute 0 est la plus congestionnée de l'heure. Entre le 26 et le
+    # 28/08 2026, la cadence réelle était tombée à un run toutes les 3 à 9h
+    # avec "0 * * * *". Doubler les tentatives à des minutes décalées ne
+    # supprime pas les abandons — c'est un contournement, pas un correctif —
+    # mais ramène la cadence effective près de l'heure.
+    - cron: "7,37 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -12,8 +20,12 @@ permissions:
 # horaire + une relance manuelle) — la seconde attend que la première
 # termine au lieu de risquer un conflit de push. cancel-in-progress à
 # false : on met en file d'attente, on n'interrompt jamais une exécution
-# déjà en cours (elle pourrait avoir déjà envoyé des notifications Discord,
-# l'annuler en plein milieu laisserait le dépôt dans un état incohérent).
+# déjà en cours.
+#
+# Cette file ne suffit cependant pas à elle seule : le run mis en attente a
+# été créé avec le SHA du moment de son déclenchement, donc il repart d'un
+# dépôt périmé une fois son tour venu. C'est pourquoi le checkout ci-dessous
+# force `ref: main` et pourquoi l'étape de publication sait fusionner.
 concurrency:
   group: update-feeds
   cancel-in-progress: false
@@ -25,6 +37,11 @@ jobs:
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@v4
+        with:
+          # `ref: main` au lieu du SHA figé au déclenchement : un run
+          # planifié peut avoir attendu 35 min en file avant de démarrer, et
+          # repartirait sinon d'un état du dépôt largement dépassé.
+          ref: main
 
       - name: Installer Python
         uses: actions/setup-python@v5
@@ -37,27 +54,87 @@ jobs:
       - name: Récupérer et traiter les flux
         run: python fetch_feeds.py
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # Hors du dépôt : ce fichier ne doit jamais pouvoir être committé.
+          NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
 
       - name: Publier le résultat
+        env:
+          NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
         run: |
           git config --global user.name "GTA6 Watch Bot"
           git config --global user.email "actions@github.com"
+
           git add docs/feed.json
           # Commit systématique, même si generated_at est la seule vraie
           # différence : Git compresse les diffs (delta), donc le coût réel
-          # en espace est minime malgré ~8760 commits/an. L'alternative
-          # (ignorer generated_at dans la comparaison) casserait
-          # l'indicateur de fraîcheur du tracker HTML, qui a justement
-          # besoin que ce champ avance à chaque passage pour distinguer
-          # "le robot tourne mais ne trouve rien de neuf" de "le robot est
-          # en panne" — un faux signal d'alerte serait pire que le bruit
-          # dans l'historique Git.
-          git diff --quiet --cached || git commit -m "Mise à jour automatique des flux"
-          for i in 1 2 3; do
-            if git push; then
-              break
+          # en espace est minime. L'alternative (ignorer generated_at dans
+          # la comparaison) casserait l'indicateur de fraîcheur du tracker
+          # HTML, qui a justement besoin que ce champ avance à chaque
+          # passage pour distinguer "le robot tourne mais ne trouve rien de
+          # neuf" de "le robot est en panne".
+          if git diff --quiet --cached; then
+            echo "Aucune modification à publier."
+            exit 0
+          fi
+          git commit -m "Mise à jour automatique des flux"
+
+          # Boucle de publication résistante aux exécutions concurrentes.
+          #
+          # docs/feed.json est entièrement régénéré à chaque run : quand deux
+          # exécutions se chevauchent, `git pull --rebase` conflicte
+          # SYSTÉMATIQUEMENT (les deux côtés ont réécrit les mêmes lignes),
+          # s'arrête en conflit, et sous `bash -e` tuait tout le job dès la
+          # première tentative — les tentatives suivantes n'étaient jamais
+          # atteintes et le travail du run était perdu (runs du 26/08 03:42
+          # et du 28/08 07:17).
+          #
+          # On fusionne donc les deux versions au niveau des DONNÉES via
+          # merge_feed.py (union des articles par lien), puis on rejoue le
+          # commit par-dessus l'état distant. Aucun article n'est perdu,
+          # quel que soit le côté qui l'a trouvé.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "Publication réussie (tentative $attempt)."
+              exit 0
             fi
-            echo "Push rejeté (tentative $i/3), récupération des changements distants..."
-            git pull --rebase origin main
+
+            echo "Push rejeté (tentative $attempt/5) — fusion avec la version distante..."
+            git fetch origin main || true
+
+            cp docs/feed.json "$RUNNER_TEMP/ours.json"
+            if ! git show origin/main:docs/feed.json > "$RUNNER_TEMP/theirs.json" 2>/dev/null; then
+              echo '{"items":[]}' > "$RUNNER_TEMP/theirs.json"
+            fi
+
+            if ! python merge_feed.py "$RUNNER_TEMP/theirs.json" "$RUNNER_TEMP/ours.json" "$RUNNER_TEMP/merged.json"; then
+              echo "Fusion impossible — abandon sans écraser le dépôt distant."
+              exit 1
+            fi
+
+            # On repart de l'état distant, puis on réapplique le résultat
+            # fusionné : le commit local rejeté est remplacé, jamais rebasé.
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/merged.json" docs/feed.json
+            git add docs/feed.json
+            if git diff --quiet --cached; then
+              echo "Le distant contient déjà tout — rien à republier."
+              exit 0
+            fi
+            git commit -m "Mise à jour automatique des flux"
+
+            sleep $((attempt * 3))
           done
+
+          echo "Échec de publication après 5 tentatives."
+          exit 1
+
+      # Notification envoyée UNIQUEMENT après une publication réussie.
+      # Auparavant elle partait depuis fetch_feeds.py, donc avant le push :
+      # un push en échec annonçait sur Discord des articles jamais publiés,
+      # que l'exécution suivante redétectait et réannonçait.
+      - name: Notifier Discord
+        if: success()
+        run: python discord_notify.py
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json

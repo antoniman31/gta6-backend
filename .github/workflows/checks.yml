@@ -1,0 +1,43 @@
+name: Contrôles
+
+# Sur les pull requests, et sur main hors des commits du robot.
+#
+# paths-ignore sur docs/feed.json est indispensable : le robot pousse un
+# commit deux fois par heure et ne touche QUE ce fichier. Sans ce filtre,
+# ces contrôles se déclencheraient ~48 fois par jour pour revérifier du code
+# qui n'a pas bougé, en consommant des minutes Actions et en noyant
+# l'historique des runs.
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/feed.json"
+
+jobs:
+  controles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      # Dates, tri, plafonnement, repasse rétroactive, et surtout la fusion
+      # après conflit de push — c'est elle qui décide si des articles sont
+      # perdus quand deux exécutions se chevauchent.
+      - name: Tests du pipeline de données
+        run: python test_pipeline.py
+
+      # Empêche la liste des sources et les 139 mots-clés de diverger en
+      # silence entre le backend Python et le mode de secours du tracker,
+      # comme c'était arrivé sur trois sources fin août 2026.
+      - name: Synchronisation backend / mode de secours
+        run: python check_sources_sync.py

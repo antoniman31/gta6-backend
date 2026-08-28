@@ -9,7 +9,12 @@
 // afficherait silencieusement une actu périmée en la faisant passer pour
 // à jour.
 
-const CACHE_NAME = "gta6watch-shell-v1";
+// v2 : bumpé après une refonte importante d'index.html (lots B à E).
+// Le service worker sert le squelette en réseau-d'abord, donc l'app se met
+// déjà à jour dès qu'il y a du réseau — mais changer le nom du cache force
+// le remplacement de l'ancien service worker et de la copie hors-ligne, ce
+// qui évite de revivre l'incident de cache tenace jamais élucidé.
+const CACHE_NAME = "gta6watch-shell-v2";
 const SHELL_URL = "./index.html";
 
 self.addEventListener("install", (event) => {

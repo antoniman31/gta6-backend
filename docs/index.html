@@ -374,6 +374,23 @@
   .setting-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
   .setting-row label{font-size:13px;}
   .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
+  .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
+  .token-status{
+    font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:6px;
+  }
+  .token-status.ok{color:var(--ok);}
+  .token-status.warn{color:var(--warn);}
+  .token-status.dim{color:var(--text-dim);}
+  .runs-list{display:flex; flex-direction:column; gap:6px; margin-top:8px;}
+  .run-row{
+    display:flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+  }
+  .run-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
+  .run-dot.success{background:var(--ok);}
+  .run-dot.failure{background:#ff4d4d;}
+  .run-dot.running{background:var(--accent); animation:countdown-pulse 1.2s ease-in-out infinite;}
+  .run-dot.other{background:var(--text-dim);}
 
   .theme-toggle{display:flex; gap:6px;}
   .theme-toggle button{flex:1; padding:8px; font-size:11px; opacity:0.6;}
@@ -447,7 +464,12 @@
 
   <div class="controls">
     <button class="primary" onclick="checkNow(true)">Vérifier maintenant</button>
+    <!-- Masqué tant qu'aucun token n'est enregistré : sans token, l'API
+         GitHub refuserait le déclenchement. Le bouton n'apparaît donc que
+         s'il peut réellement fonctionner. -->
+    <button id="triggerRunBtn" onclick="triggerBackendRun()" style="display:none;">Forcer une mise à jour du robot</button>
   </div>
+  <div id="triggerStatusLine" class="token-status dim" style="display:none;"></div>
 
   <div id="progressBar" class="progress-bar" style="display:none;">
     <div id="progressFill" class="progress-fill"></div>
@@ -549,6 +571,9 @@
     <div class="status-line" id="proxyLine" style="margin-bottom:12px;"></div>
     <p id="infoBody" style="font-size:13px; line-height:1.6; color:var(--text-dim);"></p>
     <p id="infoSourcesLine" style="font-size:12px; line-height:1.6; color:var(--text-dim); margin-top:12px;"></p>
+
+    <div class="setting-label" style="margin-top:18px;">Derniers passages du robot</div>
+    <div class="runs-list" id="runsList"></div>
   </div>
 </div>
 
@@ -573,6 +598,25 @@
       <span class="setting-label">Backend GitHub (optionnel)</span>
       <input type="text" id="backendUrlInput" class="setting-input wide" placeholder="https://tonpseudo.github.io/gta6-backend/feed.json" style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;">
       <div class="setting-desc">Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Déclenchement à distance (optionnel)</span>
+      <input type="password" id="githubTokenInput" class="setting-input wide" placeholder="github_pat_…" autocomplete="off" spellcheck="false" style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;">
+      <div class="setting-buttons">
+        <button class="small" onclick="saveGithubToken()">Enregistrer</button>
+        <button class="small" onclick="forgetGithubToken()">Oublier ce token</button>
+        <button class="small" onclick="testGithubToken()">Tester</button>
+      </div>
+      <div class="token-status dim" id="tokenStatusLine"></div>
+      <div class="setting-desc">
+        Permet de lancer le robot depuis le téléphone sans passer par l'onglet Actions.
+        Utilise un jeton <strong>fine-grained</strong> limité à ce seul dépôt, avec la
+        permission <strong>Actions : Read and write</strong> et une date d'expiration —
+        rien d'autre. Il est stocké uniquement dans ce navigateur, séparément des autres
+        réglages, et n'est jamais inclus dans l'export OPML ni effacé par
+        « Réinitialiser ». Il ne peut pas modifier le code du dépôt.
+      </div>
     </div>
 
     <div class="setting-group">
@@ -654,7 +698,7 @@ const DEFAULT_FEEDS = [
   { id: "rockstar-en", name: "Rockstar Games (officiel EN)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
   { id: "rockstar-fr", name: "Rockstar Games (officiel FR)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: true, lang: "fr" },
   { id: "rockstar-announce", name: "Rockstar Games (annonces)", url: "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
-  { id: "gta6-netflix", name: "GTA 6 x Netflix", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, noFilter: true },
+  { id: "gta6-netflix", name: "GTA 6 x Netflix", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, specialist: true },
   { id: "take2-ir", name: "Take-Two Investor Relations (officiel)", url: "https://ir.take2games.com/rss/news-releases.xml?items=15", enabled: true, official: true },
   { id: "gnews-fr", name: "Google News (FR)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
   { id: "gnews-en", name: "Google News (EN)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
@@ -664,8 +708,8 @@ const DEFAULT_FEEDS = [
   { id: "jvcom", name: "Jeuxvideo.com", url: "https://www.jeuxvideo.com/rss/rss.xml", enabled: true, official: false, lang: "fr" },
   { id: "gamekult", name: "Gamekult", url: "https://www.gamekult.com/feed.xml", enabled: true, official: false, lang: "fr" },
   { id: "ignfr", name: "IGN France", url: "https://fr.ign.com/feed.xml", enabled: true, official: false, lang: "fr" },
-  { id: "rockstarmag", name: "RockstarMag", url: "https://rss.app/feeds/DLjO259X0dbIodkg.xml", enabled: true, official: false, rockstarmag: true, noFilter: true, lang: "fr" },
-  { id: "rockstarintel", name: "RockstarINTEL", url: "https://rss.app/feeds/SEi9eWoOTGKoeh2K.xml", enabled: true, official: false, noFilter: true },
+  { id: "rockstarmag", name: "RockstarMag", url: "https://rss.app/feeds/DLjO259X0dbIodkg.xml", enabled: true, official: false, rockstarmag: true, specialist: true, noFilter: true, lang: "fr" },
+  { id: "rockstarintel", name: "RockstarINTEL", url: "https://rss.app/feeds/SEi9eWoOTGKoeh2K.xml", enabled: true, official: false, specialist: true },
   { id: "ign", name: "IGN", url: "https://rss.app/feeds/h34hzwwy7imC3FZL.xml", enabled: true, official: false },
   { id: "gamespot", name: "GameSpot", url: "https://rss.app/feeds/vjQBa27Dcc6PFmvy.xml", enabled: true, official: false },
   { id: "polygon", name: "Polygon", url: "https://rss.app/feeds/cs8cjYH9LJUvrQxI.xml", enabled: true, official: false },
@@ -682,7 +726,7 @@ const DEFAULT_FEEDS = [
   { id: "actugaming", name: "ActuGaming", url: "https://www.actugaming.net/feed/", enabled: true, official: false, lang: "fr" },
   { id: "gamerant", name: "Game Rant", url: "https://gamerant.com/feed", enabled: true, official: false },
   { id: "dualshockers", name: "DualShockers", url: "https://www.dualshockers.com/feed", enabled: true, official: false },
-  { id: "gta6times", name: "GTA6 Times", url: "https://gta6times.com/rss.xml", enabled: true, official: false, noFilter: true },
+  { id: "gta6times", name: "GTA6 Times", url: "https://gta6times.com/rss.xml", enabled: true, official: false, specialist: true },
   { id: "gameinformer", name: "Game Informer", url: "https://gameinformer.com/news.xml", enabled: true, official: false },
   { id: "pcgamesn", name: "PCGamesN", url: "https://www.pcgamesn.com/mainrss.xml", enabled: true, official: false },
   { id: "vgc", name: "VGC", url: "https://www.videogameschronicle.com/category/news/feed/", enabled: true, official: false }
@@ -721,12 +765,37 @@ let currentFilter = "all";
 let currentTab = "all";
 let currentLang = "all";
 let lastItems = [];
-let lastNewLinks = [];
+// Set plutôt que tableau : ce conteneur est interrogé une fois par article
+// à chaque rendu et à chaque changement de filtre.
+let lastNewLinks = new Set();
 let activeProxyIndex = 0;
 let feedErrors = {}; // feed.id -> message d'erreur ou null si OK
 let logs = []; // { time, type, message }
 const PAGE_SIZE = 30;
 let visibleCount = PAGE_SIZE; // pagination progressive du rendu de la liste
+
+// Nombre d'articles déjà vus auxquels on compare un nouvel article pour la
+// similarité de titre. Sans cette borne, la détection des nouveautés
+// coûtait |articles| × |déjà vus| comparaisons de titres à chaque
+// vérification — plus d'un million dès 1000 articles, sur mobile. Même
+// compromis que la fenêtre TITLE_SIMILARITY_WINDOW du backend : deux
+// articles qui traitent de la même actu paraissent à peu près en même
+// temps, comparer à un article vieux de plusieurs mois n'apporte rien.
+const SEEN_COMPARE_WINDOW = 300;
+
+// Plafond du journal des articles déjà vus, aligné sur MAX_HISTORY_SIZE
+// côté backend. Sans lui, seenMap grossissait indéfiniment dans
+// localStorage, qui a une capacité limitée (~5 Mo).
+const MAX_SEEN_ENTRIES = 2000;
+
+// Date exploitable pour un tri : une date absente ou illisible renvoie 0 au
+// lieu de NaN, qui rendrait l'ordre de tri imprévisible.
+function dateValue(d){
+  if(!d) return 0;
+  const t = new Date(d).getTime();
+  return isNaN(t) ? 0 : t;
+}
+function byDateDesc(a, b){ return dateValue(b.date) - dateValue(a.date); }
 
 function addLog(type, message){
   logs.push({ time: new Date(), type, message });
@@ -846,6 +915,7 @@ async function loadState(){
   applyTheme();
   applyDensity();
   populateSettingsUI();
+  refreshTokenUI();
   updateSourcesLine();
   updateFooterNote();
   if(lastItems.length > 0){
@@ -871,7 +941,17 @@ async function saveSettings(){
   updateFooterNote();
 }
 
+// Retire les entrées les plus anciennes au-delà du plafond. Sans ça le
+// journal des articles vus grossissait sans limite dans localStorage.
+function pruneSeenMap(){
+  const links = Object.keys(seenMap);
+  if(links.length <= MAX_SEEN_ENTRIES) return;
+  links.sort((a, b) => dateValue(seenMap[b].date) - dateValue(seenMap[a].date));
+  for(const link of links.slice(MAX_SEEN_ENTRIES)) delete seenMap[link];
+}
+
 async function saveSeen(){
+  pruneSeenMap();
   try{ storageSet("seen-items-v1", JSON.stringify(seenMap)); }
   catch(e){ console.error("Erreur sauvegarde seen", e); }
 }
@@ -915,6 +995,7 @@ function onSimChange(v){
 
 function openSettings(){
   populateSettingsUI();
+  refreshTokenUI();
   document.getElementById("settingsOverlay").classList.add("open");
 }
 function closeSettings(){
@@ -982,6 +1063,9 @@ function updateFooterNote(){
 }
 function openInfo(){
   document.getElementById("infoOverlay").classList.add("open");
+  // Rechargé à chaque ouverture plutôt qu'en continu : inutile d'interroger
+  // GitHub tant que personne ne regarde.
+  loadRecentRuns();
 }
 function closeInfo(){
   document.getElementById("infoOverlay").classList.remove("open");
@@ -1044,6 +1128,30 @@ function isDuplicate(item, list){
     other.link === item.link ||
     titleSimilarity(item.title, other.title) > threshold
   );
+}
+
+// Articles déjà vus les plus récents, pour la comparaison de similarité.
+// Recalculé UNE fois par vérification, jamais par article.
+function recentSeenValues(){
+  return Object.values(seenMap).sort(byDateDesc).slice(0, SEEN_COMPARE_WINDOW);
+}
+
+// Détermine les articles réellement nouveaux depuis la dernière
+// vérification. Le test par lien est un accès direct (O(1)) ; seule la
+// similarité de titre, plus coûteuse, passe par la fenêtre bornée.
+function findNewItems(all){
+  if(firstLoad) return [];
+  const recent = recentSeenValues();
+  return all.filter(item => !seenMap[item.link] && !isDuplicate(item, recent));
+}
+
+// Variante de findDuplicate pour les fusions de listes : le test par lien
+// passe par un index, la similarité de titre par une fenêtre bornée.
+function findDuplicateIndexed(item, list, linkIndex){
+  if(linkIndex.has(item.link)) return linkIndex.get(item.link);
+  const threshold = settings.similarityThreshold / 100;
+  const window = list.length > SEEN_COMPARE_WINDOW ? list.slice(0, SEEN_COMPARE_WINDOW) : list;
+  return window.find(other => titleSimilarity(item.title, other.title) > threshold) || null;
 }
 
 function findDuplicate(item, list){
@@ -1176,7 +1284,7 @@ async function fetchFeed(feed){
       source: feed.name,
       official: !!feed.official,
       rockstarmag: !!feed.rockstarmag,
-      specialist: !!feed.noFilter,
+      specialist: !!feed.specialist,
       lang: feed.lang || null,
       // Google News RSS ne fournit jamais d'image, et son lien pointe vers
       // une page de redirection (news.google.com), pas l'article réel — un
@@ -1211,7 +1319,7 @@ async function fetchFeed(feed){
         source: feed.name,
         official: !!feed.official,
         rockstarmag: !!feed.rockstarmag,
-        specialist: !!feed.noFilter,
+        specialist: !!feed.specialist,
         lang: feed.lang || null,
         image: item.image || null,
         description: item.description || "",
@@ -1261,17 +1369,14 @@ async function checkFromBackend(){
     description: item.description || "",
     favicon: faviconFor(item.link)
   }));
-  all.sort((a,b) => new Date(b.date) - new Date(a.date));
+  all.sort(byDateDesc);
 
-  let newOnes = [];
-  if(!firstLoad){
-    newOnes = all.filter(item => !isDuplicate(item, Object.values(seenMap)));
-  }
+  const newOnes = findNewItems(all);
   all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
   await saveSeen();
 
   lastItems = all;
-  lastNewLinks = newOnes.map(i => i.link);
+  lastNewLinks = new Set(newOnes.map(i => i.link));
   saveLastItems();
   applyFilters();
   firstLoad = false;
@@ -1282,16 +1387,23 @@ async function checkFromBackend(){
 
   const generatedDate = data.generated_at ? new Date(data.generated_at) : null;
   const ageMs = generatedDate ? (Date.now() - generatedDate.getTime()) : null;
-  const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2h : le robot tourne toutes les heures, donc 2h sans mise à jour = probablement en échec
+  // 4h. Le seuil était à 2h, calibré sur l'hypothèse d'un run par heure —
+  // mais le déclencheur planifié de GitHub Actions est best-effort : il
+  // part avec 10 à 35 min de retard et saute purement des créneaux en
+  // période de charge. L'écart réel entre deux runs atteignait couramment
+  // 3 à 9h, donc le bandeau était affiché la plupart du temps alors que
+  // tout allait bien — ce qui le rendait inutile le jour d'une vraie
+  // panne. Avec le cron doublé (7,37), 4h redevient une vraie anomalie.
+  const STALE_THRESHOLD_MS = 4 * 60 * 60 * 1000;
 
   if(generatedDate){
     proxyEl.textContent = "généré le " + generatedDate.toLocaleString('fr-FR');
     const banner = document.getElementById("staleBanner");
     if(ageMs > STALE_THRESHOLD_MS){
       const ageHours = Math.floor(ageMs / (60 * 60 * 1000));
-      proxyEl.textContent += ` ⚠️ (il y a ${ageHours}h — le robot GitHub semble ne plus tourner, vérifie l'onglet Actions de ton dépôt)`;
+      proxyEl.textContent += ` ⚠️ (il y a ${ageHours}h — le robot GitHub n'a pas tourné depuis un moment, vérifie l'onglet Actions de ton dépôt)`;
       proxyEl.style.color = "var(--warn)";
-      banner.textContent = `⚠️ Le robot GitHub semble ne plus tourner depuis ${ageHours}h — vérifie l'onglet Actions de ton dépôt.`;
+      banner.textContent = `⚠️ Aucune mise à jour du robot depuis ${ageHours}h — vérifie l'onglet Actions de ton dépôt.`;
       banner.style.display = "block";
     }else{
       proxyEl.style.color = "var(--text-dim)";
@@ -1372,6 +1484,10 @@ async function checkNow(force){
   setTimeout(() => { progressBar.style.display = "none"; }, 400);
 
   let all = [];
+  // Index lien -> article, pour que la fusion des résultats ne reparcoure
+  // pas toute la liste à chaque article (le mode direct tourne justement
+  // sur un téléphone quand le backend est tombé).
+  const allByLink = new Map();
   let okCount = 0, failCount = 0;
   results.forEach((result, i) => {
     const feed = activeFeeds[i];
@@ -1388,7 +1504,7 @@ async function checkNow(force){
       okCount++;
     }
     for(const item of result.value){
-      const match = findDuplicate(item, all);
+      const match = findDuplicateIndexed(item, all, allByLink);
       if(match){
         // Regroupe au lieu de jeter : on garde une trace des sources
         // additionnelles qui couvrent la même actu.
@@ -1398,15 +1514,13 @@ async function checkNow(force){
         }
       }else{
         all.push(item);
+        allByLink.set(item.link, item);
       }
     }
   });
-  all.sort((a,b) => new Date(b.date) - new Date(a.date));
+  all.sort(byDateDesc);
 
-  let newOnes = [];
-  if(!firstLoad){
-    newOnes = all.filter(item => !isDuplicate(item, Object.values(seenMap)));
-  }
+  const newOnes = findNewItems(all);
 
   all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
   await saveSeen();
@@ -1415,13 +1529,17 @@ async function checkNow(force){
   // une source échoue temporairement lors d'une vérification, ses articles
   // précédemment récupérés restent affichés plutôt que de disparaître.
   const merged = [...all];
+  const mergedByLink = new Map(merged.map(i => [i.link, i]));
   lastItems.forEach(oldItem => {
-    if(!findDuplicate(oldItem, merged)) merged.push(oldItem);
+    if(!findDuplicateIndexed(oldItem, merged, mergedByLink)){
+      merged.push(oldItem);
+      mergedByLink.set(oldItem.link, oldItem);
+    }
   });
-  merged.sort((a,b) => new Date(b.date) - new Date(a.date));
+  merged.sort(byDateDesc);
 
   lastItems = merged;
-  lastNewLinks = newOnes.map(i => i.link);
+  lastNewLinks = new Set(newOnes.map(i => i.link));
   saveLastItems();
   applyFilters();
 
@@ -1537,7 +1655,7 @@ function applyFilters(){
   if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
 
   if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
-  if(currentFilter === "new") items = items.filter(i => lastNewLinks.includes(i.link));
+  if(currentFilter === "new") items = items.filter(i => lastNewLinks.has(i.link));
   if(q) items = items.filter(i => i.title.toLowerCase().includes(q));
 
   renderFeed(items, lastNewLinks, q);
@@ -1660,7 +1778,7 @@ function highlightMatch(title, query){
 }
 
 function renderCard(item, newLinks, searchQuery){
-  const isNew = newLinks.includes(item.link);
+  const isNew = newLinks.has(item.link);
   const isRead = readSet.has(item.link);
   const dateObj = item.date ? new Date(item.date) : null;
   const dFixed = dateObj ? dateObj.toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : "";
@@ -1669,8 +1787,14 @@ function renderCard(item, newLinks, searchQuery){
   const safeId = btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, "");
   itemsById[safeId] = item;
 
-  const favicon = item.favicon ? `<img src="${escapeHtml(item.favicon)}" class="card-favicon" alt="" onerror="this.style.display='none'">` : "";
-  const thumb = item.image ? `<img src="${escapeHtml(item.image)}" class="card-thumb" alt="" onerror="this.style.display='none'">` : "";
+  // safeUrl sur tout ce qui devient une URL réellement chargée ou suivie :
+  // ces valeurs viennent de flux tiers et peuvent porter un schéma
+  // javascript:/data: ou un guillemet destiné à sortir de l'attribut.
+  const faviconUrl = safeUrl(item.favicon);
+  const imageUrl = safeUrl(item.image);
+  const linkUrl = safeUrl(item.link);
+  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" class="card-favicon" alt="" onerror="this.style.display='none'">` : "";
+  const thumb = imageUrl ? `<img src="${escapeHtml(imageUrl)}" class="card-thumb" alt="" onerror="this.style.display='none'">` : "";
   const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
   const specialistBadge = (item.specialist && !item.official) ? `<span class="specialist-badge">SPÉCIALISTE GTA 6</span>` : "";
 
@@ -1694,7 +1818,9 @@ function renderCard(item, newLinks, searchQuery){
             <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
             ${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
           </div>
-          <div class="card-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a></div>
+          <div class="card-title">${linkUrl
+            ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`
+            : highlightMatch(item.title, searchQuery)}</div>
           <div class="card-date">${d}</div>
           ${extraSourcesLine}
         </div>
@@ -1709,13 +1835,45 @@ function renderCard(item, newLinks, searchQuery){
   `;
 }
 
+// Échappement HTML complet. L'implémentation précédente passait par
+// textContent puis innerHTML, ce qui n'échappe QUE & < > : les guillemets
+// passaient tels quels. Or ces valeurs remplissent des attributs délimités
+// par des guillemets doubles (src, href) — une URL contenant un guillemet
+// sortait donc de l'attribut et pouvait injecter du code. Les données
+// viennent de 35 flux RSS tiers et, en mode de secours, de 6 proxys CORS
+// publics : ce n'est pas une menace théorique.
 function escapeHtml(str){
-  const d = document.createElement("div");
-  d.textContent = str;
-  return d.innerHTML;
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
+
+// Échappement pour une valeur insérée dans une chaîne JavaScript, elle-même
+// placée dans un attribut HTML (onclick="f('...')"). L'ordre compte :
+// l'anti-slash d'abord, sinon on ré-échapperait ses propres échappements.
 function escapeAttr(str){
-  return str.replace(/'/g, "\\'");
+  return escapeHtml(
+    String(str == null ? "" : str)
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'")
+      .replace(/\r?\n/g, " ")
+  );
+}
+
+// N'autorise que http(s). Une URL de flux tiers peut porter un schéma
+// javascript: ou data:, qui s'exécuterait au clic sur le titre d'un
+// article. Renvoie "" pour tout le reste, ce qui neutralise le lien.
+function safeUrl(url){
+  if(!url) return "";
+  try{
+    const parsed = new URL(url, window.location.href);
+    return (parsed.protocol === "http:" || parsed.protocol === "https:") ? parsed.href : "";
+  }catch(e){
+    return "";
+  }
 }
 
 function copyLink(link, btn){
@@ -1735,6 +1893,9 @@ function copyLink(link, btn){
 }
 
 function openTranslated(link){
+  const clean = safeUrl(link);
+  if(!clean) return;
+  link = clean;
   // Ouvre l'article via le service de traduction de pages web de Google —
   // format d'URL historique, non garanti à 100% dans la durée (Google peut
   // le faire évoluer sans préavis), mais sans risque : en cas d'échec ça
@@ -1751,12 +1912,14 @@ function openPreview(safeId){
   previewSafeId = safeId;
 
   const sourceLabel = item.official ? "OFFICIEL ROCKSTAR" : item.source.toUpperCase();
-  const favicon = item.favicon ? `<img src="${escapeHtml(item.favicon)}" alt="" style="width:16px; height:16px; border-radius:3px; margin-right:6px; vertical-align:-3px;">` : "";
+  const faviconUrl = safeUrl(item.favicon);
+  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" alt="" style="width:16px; height:16px; border-radius:3px; margin-right:6px; vertical-align:-3px;">` : "";
   document.getElementById("previewSource").innerHTML = favicon + escapeHtml(sourceLabel);
   document.getElementById("previewTitle").textContent = item.title;
   document.getElementById("previewBody").textContent = item.description || "Aucun extrait disponible pour cet article.";
-  document.getElementById("previewLink").href = item.link;
-  document.getElementById("previewImage").innerHTML = item.image ? `<img src="${escapeHtml(item.image)}" alt="" onerror="this.parentElement.style.display='none'">` : "";
+  document.getElementById("previewLink").href = safeUrl(item.link) || "#";
+  const previewImageUrl = safeUrl(item.image);
+  document.getElementById("previewImage").innerHTML = previewImageUrl ? `<img src="${escapeHtml(previewImageUrl)}" alt="" onerror="this.parentElement.style.display='none'">` : "";
   document.getElementById("previewTranslateBtn").style.display = item.lang !== "fr" ? "block" : "none";
 
   document.getElementById("previewOverlay").classList.add("open");
@@ -1807,6 +1970,291 @@ async function markAllRead(makeRead){
   });
   await saveRead();
   applyFilters();
+}
+
+// ---------- Déclenchement à distance du robot ----------
+// Permet de relancer le workflow GitHub Actions depuis le téléphone, sans
+// passer par l'onglet Actions. Utile parce que le déclencheur planifié de
+// GitHub est best-effort : il saute des créneaux, et il fallait jusqu'ici
+// ouvrir GitHub à la main pour rattraper.
+//
+// Le jeton vit dans SA PROPRE clé localStorage, jamais mélangé à
+// settings-v1 : il ne doit ni partir dans l'export OPML, ni être effacé par
+// « Réinitialiser les paramètres », ni se retrouver dans une sauvegarde de
+// réglages. Il est propre à cet appareil.
+//
+// Portée voulue du jeton : fine-grained, ce seul dépôt, permission
+// « Actions: Read and write », avec expiration. Il ne peut donc PAS écrire
+// dans le dépôt — au pire, quelqu'un qui le récupérerait pourrait lancer
+// des exécutions du robot. C'est le compromis assumé d'un jeton stocké
+// dans un navigateur.
+const GITHUB_REPO = "antoniman31/gta6-backend";
+const GITHUB_WORKFLOW = "update-feeds.yml";
+const GITHUB_BRANCH = "main";
+const TOKEN_STORAGE_KEY = "github-token-v1";
+
+// Deux minutes entre deux déclenchements. Le workflow a une file d'attente
+// (concurrency) côté GitHub : enchaîner les demandes ne ferait qu'empiler
+// des exécutions inutiles derrière celle qui tourne déjà.
+const TRIGGER_COOLDOWN_MS = 2 * 60 * 1000;
+let lastTriggerAt = 0;
+let runPollTimer = null;
+
+function getGithubToken(){
+  const r = storageGet(TOKEN_STORAGE_KEY);
+  return (r && r.value) ? r.value : "";
+}
+
+function githubHeaders(){
+  const headers = {
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+  const token = getGithubToken();
+  if(token) headers["Authorization"] = "Bearer " + token;
+  return headers;
+}
+
+// Traduit les codes d'erreur de l'API GitHub en quelque chose d'actionnable.
+function githubErrorMessage(status){
+  if(status === 401) return "jeton invalide ou expiré — regénère-le sur GitHub";
+  if(status === 403) return "jeton sans la permission « Actions: Read and write » sur ce dépôt";
+  if(status === 404) return "dépôt ou workflow introuvable — souvent un jeton qui n'a pas accès à ce dépôt";
+  if(status === 422) return "requête refusée : la branche « " + GITHUB_BRANCH + " » ou le workflow n'existe pas";
+  if(status === 429) return "trop de requêtes envoyées à GitHub, réessaie dans quelques minutes";
+  return "erreur GitHub " + status;
+}
+
+function setTokenStatus(message, kind){
+  const el = document.getElementById("tokenStatusLine");
+  if(!el) return;
+  el.textContent = message;
+  el.className = "token-status " + (kind || "dim");
+}
+
+function setTriggerStatus(message, kind){
+  const el = document.getElementById("triggerStatusLine");
+  if(!el) return;
+  el.textContent = message;
+  el.className = "token-status " + (kind || "dim");
+  el.style.display = message ? "block" : "none";
+}
+
+// Le bouton de déclenchement n'apparaît que si un jeton est enregistré :
+// sans lui l'API refuserait la demande, autant ne pas proposer un bouton
+// qui ne peut pas marcher.
+function refreshTokenUI(){
+  const token = getGithubToken();
+  const btn = document.getElementById("triggerRunBtn");
+  if(btn) btn.style.display = token ? "inline-flex" : "none";
+  const input = document.getElementById("githubTokenInput");
+  if(input && token && !input.value) input.placeholder = "•••••••••••••• (jeton enregistré)";
+  if(!token){
+    setTokenStatus("Aucun jeton enregistré — le déclenchement à distance est désactivé.", "dim");
+  }else{
+    setTokenStatus("Jeton enregistré sur cet appareil.", "ok");
+  }
+}
+
+function saveGithubToken(){
+  const input = document.getElementById("githubTokenInput");
+  const value = input.value.trim();
+  if(!value){
+    setTokenStatus("Champ vide — rien n'a été enregistré.", "warn");
+    return;
+  }
+  if(!storageSet(TOKEN_STORAGE_KEY, value)){
+    setTokenStatus("Impossible d'écrire dans le stockage de ce navigateur.", "warn");
+    return;
+  }
+  // On vide le champ tout de suite : inutile de laisser le jeton en clair
+  // à l'écran une fois qu'il est enregistré.
+  input.value = "";
+  refreshTokenUI();
+  addLog("ok", "Jeton GitHub enregistré sur cet appareil.");
+  testGithubToken();
+}
+
+function forgetGithubToken(){
+  try{ localStorage.removeItem(STORAGE_PREFIX + TOKEN_STORAGE_KEY); }
+  catch(e){ /* stockage indisponible : rien à effacer */ }
+  const input = document.getElementById("githubTokenInput");
+  if(input){ input.value = ""; input.placeholder = "github_pat_…"; }
+  refreshTokenUI();
+  setTokenStatus("Jeton effacé de cet appareil.", "dim");
+  addLog("info", "Jeton GitHub effacé de cet appareil.");
+}
+
+// Vérifie que le jeton est accepté ET qu'il porte bien le droit d'écriture
+// sur les Actions, sans rien déclencher. GitHub expose les permissions
+// effectives du jeton dans l'en-tête x-accepted-github-permissions sur les
+// routes concernées ; à défaut, on se contente de valider l'accès en
+// lecture et on le dit tel quel plutôt que de laisser croire à un succès
+// complet.
+async function testGithubToken(){
+  const token = getGithubToken();
+  if(!token){
+    setTokenStatus("Aucun jeton à tester.", "warn");
+    return;
+  }
+  setTokenStatus("Vérification du jeton…", "dim");
+  try{
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${GITHUB_WORKFLOW}`,
+                            { headers: githubHeaders() });
+    if(!res.ok){
+      setTokenStatus("Jeton refusé : " + githubErrorMessage(res.status), "warn");
+      addLog("fail", `Test du jeton GitHub — ${escapeHtml(githubErrorMessage(res.status))}`);
+      return;
+    }
+    setTokenStatus("Jeton accepté, le workflow est visible. Le droit d'écriture ne se confirme qu'au premier déclenchement.", "ok");
+    addLog("ok", "Test du jeton GitHub — accepté.");
+    loadRecentRuns();
+  }catch(e){
+    setTokenStatus("Réseau indisponible pour joindre GitHub.", "warn");
+  }
+}
+
+async function triggerBackendRun(){
+  const token = getGithubToken();
+  if(!token){
+    setTriggerStatus("Aucun jeton enregistré — ouvre les paramètres pour en ajouter un.", "warn");
+    return;
+  }
+
+  const since = Date.now() - lastTriggerAt;
+  if(lastTriggerAt && since < TRIGGER_COOLDOWN_MS){
+    const reste = Math.ceil((TRIGGER_COOLDOWN_MS - since) / 1000);
+    setTriggerStatus(`Déjà déclenché il y a moins de 2 min — réessaie dans ${reste}s.`, "dim");
+    return;
+  }
+
+  const btn = document.getElementById("triggerRunBtn");
+  if(btn) btn.disabled = true;
+  setTriggerStatus("Demande envoyée à GitHub…", "dim");
+
+  try{
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${GITHUB_WORKFLOW}/dispatches`, {
+      method: "POST",
+      headers: Object.assign({ "Content-Type": "application/json" }, githubHeaders()),
+      body: JSON.stringify({ ref: GITHUB_BRANCH })
+    });
+
+    if(res.status !== 204){
+      const message = githubErrorMessage(res.status);
+      setTriggerStatus("Échec : " + message, "warn");
+      addLog("fail", `Déclenchement du robot — ${escapeHtml(message)}`);
+      return;
+    }
+
+    lastTriggerAt = Date.now();
+    setTriggerStatus("Robot lancé — suivi en cours…", "ok");
+    addLog("ok", "Déclenchement du robot accepté par GitHub.");
+    watchTriggeredRun();
+  }catch(e){
+    setTriggerStatus("Réseau indisponible pour joindre GitHub.", "warn");
+    addLog("fail", `Déclenchement du robot — réseau indisponible : ${escapeHtml(e.message || "erreur inconnue")}`);
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+
+// Suit l'exécution déclenchée jusqu'à sa fin, puis recharge le feed. GitHub
+// met quelques secondes à faire apparaître le run, d'où la tolérance aux
+// premières réponses vides.
+function watchTriggeredRun(){
+  if(runPollTimer) clearInterval(runPollTimer);
+  const debut = Date.now();
+  const LIMITE_MS = 10 * 60 * 1000;
+
+  runPollTimer = setInterval(async () => {
+    if(Date.now() - debut > LIMITE_MS){
+      clearInterval(runPollTimer);
+      runPollTimer = null;
+      setTriggerStatus("Suivi interrompu au bout de 10 min — vérifie l'onglet Actions.", "warn");
+      return;
+    }
+
+    const runs = await fetchRecentRuns(1);
+    if(!runs || !runs.length) return;
+
+    const run = runs[0];
+    if(new Date(run.created_at).getTime() < debut - 60000) return; // run antérieur à notre demande
+
+    if(run.status === "queued"){
+      setTriggerStatus("En file d'attente chez GitHub…", "dim");
+    }else if(run.status === "in_progress"){
+      setTriggerStatus("Robot en cours d'exécution…", "dim");
+    }else if(run.status === "completed"){
+      clearInterval(runPollTimer);
+      runPollTimer = null;
+      if(run.conclusion === "success"){
+        setTriggerStatus("Terminé — rechargement des articles.", "ok");
+        checkNow(true);
+      }else{
+        setTriggerStatus(`Exécution terminée en échec (${run.conclusion}) — vois l'onglet Actions.`, "warn");
+        addLog("fail", `Le robot a terminé en échec : ${escapeHtml(run.conclusion || "inconnu")}`);
+      }
+      loadRecentRuns();
+    }
+  }, 10000);
+}
+
+// Le dépôt est public, donc l'état des exécutions est lisible même sans
+// jeton (quota anonyme : 60 requêtes/h par adresse IP). Le jeton, quand il
+// est là, sert surtout à relever ce quota.
+async function fetchRecentRuns(limit){
+  try{
+    const res = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${GITHUB_WORKFLOW}/runs?per_page=${limit || 5}`,
+      { headers: githubHeaders() });
+    if(!res.ok) return null;
+    const data = await res.json();
+    return data.workflow_runs || [];
+  }catch(e){
+    return null;
+  }
+}
+
+function runDotClass(run){
+  if(run.status !== "completed") return "running";
+  if(run.conclusion === "success") return "success";
+  if(run.conclusion === "failure") return "failure";
+  return "other";
+}
+
+function runLabel(run){
+  if(run.status === "queued") return "en file d'attente";
+  if(run.status === "in_progress") return "en cours";
+  if(run.conclusion === "success") return "réussi";
+  if(run.conclusion === "failure") return "ÉCHEC";
+  return run.conclusion || run.status;
+}
+
+async function loadRecentRuns(){
+  const el = document.getElementById("runsList");
+  if(!el) return;
+  el.innerHTML = '<div class="run-row">chargement…</div>';
+
+  const runs = await fetchRecentRuns(5);
+  if(runs === null){
+    el.innerHTML = '<div class="run-row">état des exécutions indisponible (GitHub injoignable ou quota atteint)</div>';
+    return;
+  }
+  if(!runs.length){
+    el.innerHTML = '<div class="run-row">aucune exécution trouvée</div>';
+    return;
+  }
+
+  el.innerHTML = runs.map(run => {
+    const debut = new Date(run.run_started_at || run.created_at);
+    const relatif = relativeTime(debut);
+    const quand = relatif ? relatif : debut.toLocaleString('fr-FR');
+    const declencheur = run.event === "schedule" ? "planifié" : (run.event === "workflow_dispatch" ? "manuel" : run.event);
+    return `<div class="run-row">
+      <span class="run-dot ${runDotClass(run)}"></span>
+      <span>${escapeHtml(runLabel(run))} · ${escapeHtml(declencheur)} · ${escapeHtml(quand)}</span>
+    </div>`;
+  }).join("");
 }
 
 // ---------- Compte à rebours sortie GTA 6 ----------

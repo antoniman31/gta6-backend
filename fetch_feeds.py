@@ -33,6 +33,8 @@ import feedparser
 import requests
 from bs4 import BeautifulSoup
 
+import feed_store
+
 try:
     from googlenewsdecoder import gnewsdecoder
     HAS_DECODER = True
@@ -185,21 +187,47 @@ def normalize_date(entry):
         except Exception:
             pass
     # Filet de sécurité si aucune date structurée n'est disponible : on
-    # utilise le texte brut tel quel (mieux que rien), sachant qu'il pourrait
-    # se trier de façon imprécise par rapport aux autres sources.
-    return entry.get("published", entry.get("updated", ""))
+    # parse le texte brut (RFC 822 le plus souvent) pour le convertir en ISO
+    # malgré tout. Stocker la chaîne brute telle quelle, comme le faisait la
+    # version précédente, produisait un historique où ~20 % des articles
+    # avaient une date d'un autre format — et un tri par texte les remontait
+    # tous en tête du fichier (en ASCII, "W" de "Wed, ..." > "2" de "2026").
+    raw = entry.get("published", entry.get("updated", ""))
+    if not raw:
+        return ""
+    parsed = feed_store.parse_date_key(raw)
+    return raw if parsed == feed_store.DATE_FLOOR else parsed.isoformat()
 
 
-def fetch_feed(feed):
+def collect_feed_items(feed, decoded_cache=None):
+    """Récupère et filtre les articles d'une source, SANS aller chercher les
+    miniatures manquantes sur les pages.
+
+    Le scraping des og:image a été sorti d'ici volontairement : il tournait
+    avant toute déduplication, donc le robot allait chercher la miniature de
+    ~30 articles par source × 35 sources à chaque exécution pour en jeter la
+    quasi-totalité juste après (sur un run typique, une vingtaine d'articles
+    sont réellement nouveaux sur près d'un millier examinés). La
+    récupération a lieu maintenant dans main(), une seule fois, sur les
+    seuls articles retenus.
+
+    decoded_cache : correspondance {lien Google News brut -> vrai lien déjà
+    résolu lors d'une exécution précédente}. Le décodage doit rester AVANT
+    la déduplication (elle travaille sur le lien final), or gnewsdecoder
+    impose une pause d'une seconde par lien — soit ~120 s par run pour les 4
+    flux Google News, payées à chaque fois sur des articles déjà connus.
+    """
     print(f"[{feed['name']}] récupération...")
     try:
         parsed = feedparser.parse(feed["url"], agent=USER_AGENT)
         if parsed.bozo and not parsed.entries:
             print(f"  échec : {parsed.bozo_exception}")
-            return []
+            return [], 0
     except Exception as e:
         print(f"  échec réseau : {e}")
-        return []
+        return [], 0
+
+    raw_count = len(parsed.entries)
 
     items = []
     for entry in parsed.entries[:30]:
@@ -227,8 +255,19 @@ def fetch_feed(feed):
         elif not matches_keywords(title + " " + description, KEYWORDS):
             continue
 
-        # Décodage du vrai lien pour les flux Google News
-        real_link = decode_google_news_link(link) if "news.google.com" in feed["url"] else link
+        # Décodage du vrai lien pour les flux Google News, en réutilisant
+        # le résultat des exécutions précédentes quand on l'a déjà.
+        # L'identifiant d'un article dans un flux Google News est stable
+        # d'une exécution à l'autre, donc le cache touche presque à chaque
+        # fois ; s'il rate, on décode comme avant (dégradation propre).
+        source_link = None
+        if "news.google.com" in feed["url"]:
+            cached = (decoded_cache or {}).get(link)
+            real_link = cached if cached else decode_google_news_link(link)
+            if real_link != link:
+                source_link = link
+        else:
+            real_link = link
 
         # Les flux "officiels" sont en réalité des recherches Google News sur
         # site:rockstargames.com — Google peut aussi indexer des articles
@@ -257,6 +296,10 @@ def fetch_feed(feed):
         items.append({
             "title": title,
             "link": real_link,
+            # Lien Google News d'origine, conservé uniquement pour éviter de
+            # repayer le décodage au prochain run. Absent pour les sources
+            # qui ne passent pas par Google News.
+            "source_link": source_link,
             "date": date,
             "source": feed["name"],
             "official": is_official,
@@ -267,113 +310,80 @@ def fetch_feed(feed):
             "description": re.sub("<[^<]+?>", "", description)[:500],
         })
 
-    # Phase 2 : récupère en parallèle (jusqu'à 5 à la fois) les miniatures
-    # des articles qui n'en ont pas déjà une venant du flux RSS lui-même.
-    # Avant cette optimisation, chaque appel était bloquant et en série —
-    # avec un timeout de 8s chacun, quelques sites lents suffisaient à
-    # ajouter plusieurs minutes au temps total d'exécution.
-    items_needing_image = [item for item in items if not item["image"] and item["link"]]
-    if items_needing_image:
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            future_to_item = {executor.submit(fetch_og_image, item["link"]): item for item in items_needing_image}
-            for future in as_completed(future_to_item):
-                item = future_to_item[future]
-                try:
-                    item["image"] = future.result()
-                except Exception as e:
-                    print(f"  [og:image] erreur inattendue pour {item['link'][:60]}... : {e}")
-
-    print(f"  {len(items)} article(s) pertinent(s)")
-    return items
+    print(f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre")
+    return items, raw_count
 
 
-MAX_HISTORY_SIZE = 2000  # au-delà, on retire les plus vieux articles pour garder le script rapide
+def fetch_missing_images(items):
+    """Récupère en parallèle (jusqu'à 5 à la fois) les miniatures manquantes.
 
-# URL du webhook Discord, configurée comme secret GitHub (voir README) —
-# jamais écrite en clair dans ce fichier. Si absente, les notifications
-# sont simplement désactivées, tout le reste du script continue de marcher.
-DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "")
+    Appelée une seule fois par exécution, sur les seuls articles retenus
+    après déduplication. En série avec un timeout de 8 s chacun, quelques
+    sites lents suffisaient à ajouter plusieurs minutes au temps total.
+    """
+    needing = [item for item in items if not item.get("image") and item.get("link")]
+    if not needing:
+        return 0
+
+    print(f"\nMiniatures manquantes à récupérer : {len(needing)} article(s)...")
+    found = 0
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_item = {executor.submit(fetch_og_image, item["link"]): item for item in needing}
+        for future in as_completed(future_to_item):
+            item = future_to_item[future]
+            try:
+                item["image"] = future.result()
+                if item["image"]:
+                    found += 1
+            except Exception as e:
+                print(f"  [og:image] erreur inattendue pour {item['link'][:60]}... : {e}")
+    print(f"  {found}/{len(needing)} miniature(s) trouvée(s)")
+    return found
 
 
-SITE_URL = "https://antoniman31.github.io/gta6-backend/"
+# Le plafond d'historique, le tri et l'interprétation des dates vivent
+# désormais dans feed_store.py : merge_feed.py doit appliquer exactement les
+# mêmes règles, sinon une fusion après conflit de push corromprait l'ordre
+# ou retirerait les mauvais articles.
+MAX_HISTORY_SIZE = feed_store.MAX_HISTORY_SIZE
+
+# Au-delà de ce délai sans le moindre article, une source est signalée comme
+# "tarie". Ce n'est pas forcément une panne — Rockstar et Take-Two
+# communiquent peu, il est normal qu'ils restent muets des semaines — mais
+# sans ce signal un flux réellement mort passerait inaperçu indéfiniment.
+SILENT_SOURCE_DAYS = 30
+
+# Fichier où sont déposés les nouveaux articles de cette exécution, à
+# destination de discord_notify.py. Le workflow le place dans $RUNNER_TEMP,
+# donc hors du dépôt : aucun risque qu'il finisse committé. Absent en local,
+# ce qui désactive simplement la notification.
+NEW_ITEMS_FILE = os.environ.get("NEW_ITEMS_FILE", "")
 
 
-def send_discord_notification(new_items):
-    """Envoie UN SEUL message Discord récapitulatif par vérification, avec
-    le nombre de nouveaux articles trouvés et un lien vers le site — plutôt
-    qu'un message par article. Discord mobile ouvre toujours l'app Discord
-    au tap sur une notification (jamais une URL externe directement), donc
-    le lien reste cliquable DANS le message une fois Discord ouvert, pas au
-    moment du tap sur la notification système elle-même. N'échoue jamais
-    le script principal si Discord est indisponible ou mal configuré."""
-    if not DISCORD_WEBHOOK_URL:
+def write_new_items_file(new_items):
+    """Dépose les nouveaux articles pour l'étape de notification.
+
+    La notification Discord n'est plus envoyée d'ici : elle a lieu APRÈS que
+    le workflow a réellement publié docs/feed.json. Sinon une panne de push
+    annonçait des articles jamais publiés, puis l'exécution suivante les
+    réannonçait (arrivé les 26/08 et 28/08)."""
+    if not NEW_ITEMS_FILE:
         return
-    if not new_items:
-        return
-
-    n = len(new_items)
-    n_official = sum(1 for i in new_items if i.get("official"))
-    detail = f" (dont {n_official} officiel{'s' if n_official > 1 else ''} Rockstar)" if n_official else ""
-
-    embed = {
-        "title": f"🎮 {n} nouv{'eaux' if n > 1 else 'el'} article{'s' if n > 1 else ''} GTA 6{detail}",
-        "url": SITE_URL,
-        "description": f"[Ouvrir GTA6_WATCH]({SITE_URL})",
-        "color": 0x5493FF,
-    }
-    print(f"  [discord] envoi du récapitulatif ({n} nouvel(le)(s) article(s))...")
-    send_discord_with_retry(embed, f"récapitulatif {n} article(s)")
-
-
-def send_discord_with_retry(embed, title_for_log, max_attempts=3):
-    """Envoie un embed Discord avec nouvelle tentative en cas d'erreur
-    temporaire (429 rate-limit ou 5xx serveur). Un 429 renvoie généralement
-    un délai précis à respecter (Retry-After) — on l'utilise si présent,
-    sinon un backoff exponentiel simple (2s, 4s, 8s...). Les erreurs
-    définitives (ex: 400 webhook malformé, 404 webhook supprimé) ne sont
-    jamais retentées, ça ne changerait rien."""
-    for attempt in range(1, max_attempts + 1):
-        try:
-            resp = requests.post(DISCORD_WEBHOOK_URL, json={"embeds": [embed]}, timeout=10)
-            if resp.status_code in (200, 204):
-                return
-            if resp.status_code == 429:
-                retry_after = resp.json().get("retry_after", 2 ** attempt) if resp.text else 2 ** attempt
-                print(f"  [discord] rate-limit (tentative {attempt}/{max_attempts}), attente {retry_after}s...")
-                time.sleep(retry_after)
-                continue
-            if 500 <= resp.status_code < 600:
-                wait = 2 ** attempt
-                print(f"  [discord] erreur serveur {resp.status_code} (tentative {attempt}/{max_attempts}), attente {wait}s...")
-                time.sleep(wait)
-                continue
-            # Erreur définitive (4xx hors 429) : inutile de retenter.
-            print(f"  [discord] échec envoi ({resp.status_code}), non temporaire : {title_for_log[:50]}")
-            return
-        except Exception as e:
-            print(f"  [discord] erreur réseau (tentative {attempt}/{max_attempts}) : {e}")
-            if attempt < max_attempts:
-                time.sleep(2 ** attempt)
-
-    print(f"  [discord] abandon après {max_attempts} tentatives : {title_for_log[:50]}")
-
-
-# Note : une tentative de notification via ntfy.sh a été faite puis
-# abandonnée — le serveur confirmait l'envoi (200 OK) sans jamais relayer
-# les messages, probablement à cause d'un fail2ban/rate-limit silencieux
-# sur les IP partagées des runners GitHub Actions. Détails dans README.md.
+    try:
+        with open(NEW_ITEMS_FILE, "w", encoding="utf-8") as f:
+            json.dump(new_items, f, ensure_ascii=False)
+        print(f"  {len(new_items)} nouvel(le)(s) article(s) déposé(s) pour notification -> {NEW_ITEMS_FILE}")
+    except OSError as e:
+        # Ne doit jamais faire échouer la collecte : au pire il n'y a pas de
+        # notification, les articles eux-mêmes sont bien publiés.
+        print(f"  [notif] impossible d'écrire {NEW_ITEMS_FILE} : {e}")
 
 
 def load_existing_items():
     """Charge les articles déjà connus depuis la dernière exécution, pour ne
     jamais rien perdre même si un article sort de la fenêtre RSS récente
     d'une source (généralement limitée aux 10-30 derniers items)."""
-    try:
-        with open("docs/feed.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            return data.get("items", [])
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []
+    return feed_store.load_items()
 
 
 def recheck_official_status(items):
@@ -382,7 +392,7 @@ def recheck_official_status(items):
     exécution précédente (avant l'ajout de cette règle, ou via une source
     qui n'est plus site:rockstargames.com/take2games.com) resterait
     mal classé indéfiniment, puisque load_existing_items() les conserve
-    tels quels sans jamais les repasser dans le pipeline de fetch_feed()."""
+    tels quels sans jamais les repasser dans le pipeline de collecte."""
     official_domains = ("rockstargames.com", "take2games.com")
     corrected = 0
     for item in items:
@@ -399,33 +409,128 @@ def recheck_official_status(items):
     return items
 
 
+def build_sources_health(all_items, raw_counts, new_counts):
+    """Dresse l'état de chaque source, pour repérer un flux mort.
+
+    Deux signaux distincts :
+      - "muette"  : le flux n'a renvoyé AUCUNE entrée brute cette fois. C'est
+                    le signal net d'une URL cassée, d'un domaine expiré ou
+                    d'un blocage — indépendant du filtre par mots-clés.
+      - "tarie"   : le flux répond, mais aucun de ses articles n'est présent
+                    dans l'historique depuis plus de SILENT_SOURCE_DAYS.
+                    Informatif : ça peut être parfaitement normal.
+    """
+    now = datetime.now(timezone.utc)
+    latest = {}
+    for item in all_items:
+        source = item.get("source")
+        if not source:
+            continue
+        when = feed_store.parse_date_key(item.get("date"))
+        if source not in latest or when > latest[source]:
+            latest[source] = when
+
+    health = []
+    for feed in FEEDS:
+        name = feed["name"]
+        last = latest.get(name)
+        days = None
+        if last and last != feed_store.DATE_FLOOR:
+            days = (now - last).days
+
+        raw = raw_counts.get(feed["id"], 0)
+        if raw == 0:
+            status = "muette"
+        elif days is None or days > SILENT_SOURCE_DAYS:
+            status = "tarie"
+        else:
+            status = "ok"
+
+        health.append({
+            "id": feed["id"],
+            "name": name,
+            "entries_fetched": raw,
+            "new_this_run": new_counts.get(feed["id"], 0),
+            "last_article": last.isoformat() if last and last != feed_store.DATE_FLOOR else None,
+            "days_since_last_article": days,
+            "status": status,
+        })
+
+    muettes = [h for h in health if h["status"] == "muette"]
+    taries = [h for h in health if h["status"] == "tarie"]
+    if muettes:
+        print(f"\n⚠ {len(muettes)} source(s) MUETTE(S) — flux sans aucune entrée, probablement cassé :")
+        for h in muettes:
+            print(f"    - {h['name']}")
+    if taries:
+        print(f"\n· {len(taries)} source(s) sans article depuis plus de {SILENT_SOURCE_DAYS} jours :")
+        for h in taries:
+            age = f"{h['days_since_last_article']} j" if h["days_since_last_article"] is not None else "jamais"
+            print(f"    - {h['name']} ({age})")
+    if not muettes and not taries:
+        print(f"\nToutes les sources ont répondu et ont publié dans les {SILENT_SOURCE_DAYS} derniers jours.")
+
+    return health
+
+
 def main():
     existing_items = load_existing_items()
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
 
+    # Repasse rétroactive des dates : l'historique est rechargé tel quel et
+    # ne repasse jamais dans le pipeline de collecte, donc les articles
+    # engrangés avant l'introduction de normalize_date() gardent leur date
+    # au format brut du flux (RFC 822). Sans cette correction, un tri par
+    # date les remonte tous en tête, ce qui fausse aussi la fenêtre de
+    # déduplication par similarité de titre (elle ne compare alors plus aux
+    # articles réellement récents). Idempotente.
+    fixed_dates = feed_store.normalize_stored_dates(existing_items)
+    if fixed_dates:
+        print(f"Correction rétroactive : {fixed_dates} date(s) convertie(s) au format ISO 8601")
+
     all_items = list(existing_items)  # on part de l'historique, pas de zéro
     existing_links = {item["link"] for item in all_items}  # lookup O(1) par lien
     newly_added = []
 
+    # Liens Google News déjà résolus lors des exécutions précédentes : évite
+    # de repayer une seconde de décodage par article déjà connu.
+    decoded_cache = {item["source_link"]: item["link"]
+                     for item in existing_items if item.get("source_link")}
+    if decoded_cache:
+        print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) déjà résolu(s)")
+
+    raw_counts = {}
+    new_counts = {}
     for feed in FEEDS:
-        items = fetch_feed(feed)
+        items, raw_count = collect_feed_items(feed, decoded_cache)
+        raw_counts[feed["id"]] = raw_count
+        new_counts[feed["id"]] = 0
         for item in items:
             if not is_duplicate(item, all_items, existing_links):
                 all_items.append(item)
                 existing_links.add(item["link"])
                 newly_added.append(item)
+                new_counts[feed["id"]] += 1
+                if item.get("source_link"):
+                    decoded_cache[item["source_link"]] = item["link"]
         time.sleep(1)  # anti rate-limit entre les sources
 
-    all_items.sort(key=lambda x: x["date"], reverse=True)
+    # Les miniatures ne sont cherchées qu'ici, sur les seuls articles
+    # réellement retenus — et non plus sur tout ce que chaque flux renvoie.
+    fetch_missing_images(newly_added)
+
+    # Tri sur la date RÉELLE (datetime), jamais sur la chaîne : des formats
+    # mélangés donnent un ordre faux en comparaison de texte.
+    all_items = feed_store.sort_items(all_items)
 
     # Plafonne la taille de l'historique : au-delà de MAX_HISTORY_SIZE, on
     # retire les articles les plus anciens plutôt que de laisser le fichier
     # (et le temps de dédup) grossir indéfiniment.
-    if len(all_items) > MAX_HISTORY_SIZE:
-        print(f"Historique plafonné : {len(all_items)} -> {MAX_HISTORY_SIZE} (les plus anciens sont retirés)")
-        all_items = all_items[:MAX_HISTORY_SIZE]
+    all_items, dropped = feed_store.cap_items(all_items)
+    if dropped:
+        print(f"Historique plafonné : {len(all_items) + dropped} -> {MAX_HISTORY_SIZE} (les {dropped} plus anciens sont retirés)")
 
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -438,11 +543,14 @@ def main():
         # pouvaient diverger si une source était ajoutée d'un côté sans
         # penser à l'autre.
         "sources": [{"id": f["id"], "name": f["name"], "official": f.get("official", False), "specialist": f.get("specialist_source", False)} for f in FEEDS],
+        # État de chaque source : permet de repérer un flux mort sans
+        # éplucher les logs du run. Exposé dans feed.json pour pouvoir être
+        # affiché plus tard par l'app sans retoucher au backend.
+        "sources_health": build_sources_health(all_items, raw_counts, new_counts),
         "items": all_items,
     }
 
-    with open("docs/feed.json", "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+    feed_store.write_feed(output)
 
     print(f"\nTerminé — {len(newly_added)} nouveau(x), {len(all_items)} au total dans docs/feed.json")
 
@@ -451,7 +559,7 @@ def main():
     # de messages d'un coup au lieu de rester silencieux jusqu'à la vraie
     # actualité suivante.
     if not is_first_run:
-        send_discord_notification(newly_added)
+        write_new_items_file(newly_added)
     elif newly_added:
         print(f"Premier lancement : {len(newly_added)} article(s) initiaux, pas de notification envoyée.")
 
