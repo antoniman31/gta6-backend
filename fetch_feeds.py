@@ -156,21 +156,63 @@ def title_similarity(a, b):
 TITLE_SIMILARITY_WINDOW = 200
 
 
-def is_duplicate(item, existing_items, existing_links=None):
-    """existing_links : set optionnel des liens déjà connus, pour un lookup
-    O(1) au lieu de reparcourir toute la liste à chaque appel. Si non fourni,
-    reconstruit la comparaison par lien à l'ancienne (plus lent mais correct)."""
-    if existing_links is not None:
-        if item["link"] in existing_links:
-            return True
+# À partir de combien de sources distinctes une actualité est considérée
+# comme majeure. Sur ce sujet, un article isolé est en général une reprise
+# ou de la supputation ; quand quatre rédactions publient la même chose
+# dans la foulée, c'est un trailer, une date ou une annonce officielle.
+HOT_SOURCE_THRESHOLD = 4
+
+# La taille du fichier allégé vit dans feed_store : l'outil de fusion doit
+# le régénérer avec exactement la même règle après un conflit de push.
+
+
+def find_duplicate(item, existing_items, links_index=None):
+    """Renvoie l'article déjà connu dont celui-ci est un doublon, ou None.
+
+    Renvoie l'article plutôt qu'un simple booléen : quand plusieurs
+    rédactions couvrent la même actualité, le robot jetait purement les
+    doublons et perdait au passage une information précieuse — le NOMBRE de
+    sources qui en parlent, qui est le meilleur indicateur qu'il se passe
+    quelque chose d'important.
+
+    links_index : correspondance lien -> article, pour un accès direct au
+    lieu de reparcourir toute la liste. Si absente, comparaison à
+    l'ancienne (plus lente mais correcte).
+    """
+    if links_index is not None:
+        connu = links_index.get(item["link"])
+        if connu is not None:
+            return connu
     else:
-        if any(item["link"] == other["link"] for other in existing_items):
-            return True
+        for other in existing_items:
+            if item["link"] == other["link"]:
+                return other
 
     for other in existing_items[:TITLE_SIMILARITY_WINDOW]:
         if title_similarity(item["title"], other["title"]) >= SIMILARITY_THRESHOLD:
-            return True
-    return False
+            return other
+    return None
+
+
+def record_coverage(existing, item):
+    """Note qu'une source de plus couvre la même actualité.
+
+    Alimente le champ extraSources, que le tracker affiche déjà sous la
+    carte (« + 3 autres sources : … ») dans son mode de secours — le
+    backend produit désormais la même chose.
+    """
+    if existing.get("source") == item.get("source"):
+        return False
+    autres = existing.setdefault("extraSources", [])
+    if any(a.get("source") == item.get("source") for a in autres):
+        return False
+    autres.append({"source": item.get("source"), "link": item.get("link")})
+    return True
+
+
+def is_hot(item):
+    """Une actualité couverte par au moins HOT_SOURCE_THRESHOLD sources."""
+    return 1 + len(item.get("extraSources") or []) >= HOT_SOURCE_THRESHOLD
 
 
 def normalize_date(entry):
@@ -458,13 +500,22 @@ def build_sources_health(all_items, feed_infos, new_counts):
     """
     now = datetime.now(timezone.utc)
     latest = {}
-    for item in all_items:
-        source = item.get("source")
+
+    def noter(source, when):
         if not source:
-            continue
-        when = feed_store.parse_date_key(item.get("date"))
+            return
         if source not in latest or when > latest[source]:
             latest[source] = when
+
+    for item in all_items:
+        when = feed_store.parse_date_key(item.get("date"))
+        noter(item.get("source"), when)
+        # Une source dont l'article a été fusionné comme doublon n'apparaît
+        # plus comme source principale, seulement dans extraSources. Sans
+        # cette boucle, elle serait signalée « tarie » alors qu'elle publie
+        # normalement — elle se contente d'arriver après les autres.
+        for autre in (item.get("extraSources") or []):
+            noter(autre.get("source"), when)
 
     health = []
     for feed in FEEDS:
@@ -543,7 +594,7 @@ def main():
               f"de pistage, {doublons} doublon(s) ainsi révélé(s) et retiré(s)")
 
     all_items = list(existing_items)  # on part de l'historique, pas de zéro
-    existing_links = {item["link"] for item in all_items}  # lookup O(1) par lien
+    links_index = {item["link"]: item for item in all_items}  # accès O(1) par lien
     newly_added = []
 
     # Liens Google News déjà résolus lors des exécutions précédentes : évite
@@ -563,14 +614,28 @@ def main():
             inchanges += 1
         new_counts[feed["id"]] = 0
         for item in items:
-            if not is_duplicate(item, all_items, existing_links):
+            deja = find_duplicate(item, all_items, links_index)
+            if deja is None:
                 all_items.append(item)
-                existing_links.add(item["link"])
+                links_index[item["link"]] = item
                 newly_added.append(item)
                 new_counts[feed["id"]] += 1
                 if item.get("source_link"):
                     decoded_cache[item["source_link"]] = item["link"]
+            else:
+                # Doublon : on ne le garde pas, mais on retient que cette
+                # source couvre aussi le sujet.
+                record_coverage(deja, item)
         time.sleep(1)  # anti rate-limit entre les sources
+
+    chaudes = [i for i in all_items if is_hot(i)]
+    chaudes_neuves = [i for i in newly_added if is_hot(i)]
+    if chaudes_neuves:
+        print(f"\n🔥 {len(chaudes_neuves)} actualité(s) majeure(s) ce passage "
+              f"({HOT_SOURCE_THRESHOLD}+ sources sur le même sujet) :")
+        for i in chaudes_neuves[:5]:
+            n = 1 + len(i.get("extraSources") or [])
+            print(f"    - [{n} sources] {i['title'][:70]}")
 
     if inchanges:
         print(f"\n{inchanges}/{len(FEEDS)} source(s) inchangée(s) depuis le dernier passage "
@@ -595,6 +660,10 @@ def main():
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "total_articles": len(all_items),
         "new_this_run": len(newly_added),
+        # Nombre d'actualités couvertes par au moins HOT_SOURCE_THRESHOLD
+        # sources : de quoi repérer un trailer ou une annonce sans lire.
+        "hot_count": len(chaudes),
+        "hot_threshold": HOT_SOURCE_THRESHOLD,
         "sources_count": len(FEEDS),
         # Liste des sources incluse ici pour que le tracker HTML puisse s'en
         # servir (ex: peupler son sélecteur de source) sans avoir à
@@ -621,7 +690,8 @@ def main():
         "items": all_items,
     }
 
-    feed_store.write_feed(output)
+    nb_allege = feed_store.write_feed_pair(output)
+    print(f"Fichier allégé écrit : {nb_allege} article(s) dans docs/feed-recent.json")
 
     print(f"\nTerminé — {len(newly_added)} nouveau(x), {len(all_items)} au total dans docs/feed.json")
 

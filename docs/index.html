@@ -375,6 +375,15 @@
   .setting-row label{font-size:13px;}
   .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
   .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
+  .tag-badge.tag-hot{
+    background:color-mix(in srgb, #ff6b35 18%, transparent);
+    color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
+  }
+  .history-line{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+    margin-bottom:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+  }
+  .history-line button{padding:3px 8px; font-size:10px;}
   .token-status{
     font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:6px;
   }
@@ -478,6 +487,8 @@
   <div class="meta-row">
     <span id="countLine">0 article suivi</span>
   </div>
+
+  <div id="historyLine" class="history-line" style="display:none;"></div>
 
   <div class="search-row">
     <div class="search-input-wrap">
@@ -1403,12 +1414,51 @@ function faviconFor(url){
 let lastCheckTime = 0;
 const CACHE_DURATION_MS = 3 * 60 * 1000; // 3 min
 
-async function checkFromBackend(){
-  const url = settings.backendUrl + (settings.backendUrl.includes("?") ? "&" : "?") + "_t=" + Date.now();
-  addLog("info", `Lecture directe du backend : ${settings.backendUrl}`);
-  const res = await fetch(url);
+// URL du fichier allégé, déduite de celle du fichier complet. Si elle
+// n'existe pas (backend d'une version antérieure), on retombe sur le
+// fichier complet — l'app reste compatible avec l'ancien format.
+function recentUrlFrom(fullUrl){
+  if(!fullUrl.endsWith("feed.json")) return null;
+  return fullUrl.replace(/feed\.json$/, "feed-recent.json");
+}
+
+function avecAntiCache(url){
+  return url + (url.includes("?") ? "&" : "?") + "_t=" + Date.now();
+}
+
+async function checkFromBackend(force){
+  const complet = settings.backendUrl;
+  const allege = recentUrlFrom(complet);
+
+  // Sauf demande explicite d'historique complet, on tente le fichier
+  // allégé : ~50 Ko compressés contre ~164 Ko, à chaque ouverture.
+  let url = complet;
+  if(allege && !force){
+    try{
+      const essai = await fetch(avecAntiCache(allege));
+      if(essai.ok){
+        const data = await essai.json();
+        addLog("info", `Lecture du backend (allégé) : ${allege}`);
+        return await applyBackendData(data, allege);
+      }
+    }catch(e){ /* pas de fichier allégé : on prend le complet */ }
+  }
+
+  addLog("info", `Lecture directe du backend : ${url}`);
+  const res = await fetch(avecAntiCache(url));
   if(!res.ok) throw new Error("HTTP " + res.status);
   const data = await res.json();
+  return await applyBackendData(data, url);
+}
+
+async function applyBackendData(data, sourceUrl){
+
+  if(typeof data.hot_threshold === "number" && data.hot_threshold > 0){
+    hotThreshold = data.hot_threshold;
+  }
+  historyPartial = !!data.partial;
+  historyFullUrl = data.full_url ? sourceUrl.replace(/[^/]+$/, data.full_url) : "";
+  updateHistoryLine();
 
   // Clé publique VAPID publiée par le backend : conditionne l'affichage de
   // la section « Notifications » dans les paramètres.
@@ -1431,6 +1481,7 @@ async function checkFromBackend(){
     lang: item.lang || null,
     image: item.image || null,
     description: item.description || "",
+    extraSources: item.extraSources || null,
     favicon: faviconFor(item.link)
   }));
   all.sort(byDateDesc);
@@ -1487,6 +1538,42 @@ async function checkFromBackend(){
 
   if(document.getElementById("settingsOverlay").classList.contains("open")){
     populateSettingsUI();
+  }
+}
+
+function updateHistoryLine(){
+  const el = document.getElementById("historyLine");
+  if(!el) return;
+  if(!historyPartial){
+    el.style.display = "none";
+    return;
+  }
+  el.style.display = "flex";
+  el.innerHTML = `<span>${lastItems.length} articles récents chargés — l'historique complet ne l'est pas encore.</span>` +
+    `<button class="small" onclick="loadFullHistory()">Tout charger</button>`;
+}
+
+// Télécharge l'historique complet. Déclenché à la demande, ou
+// automatiquement dès qu'une recherche est lancée : sans ça, chercher un
+// article de mai dans 300 articles récents renverrait « aucun résultat »
+// alors que l'article existe — le pire comportement possible pour une
+// recherche.
+async function loadFullHistory(raison){
+  if(!historyPartial || historyLoading) return;
+  historyLoading = true;
+  const el = document.getElementById("historyLine");
+  if(el) el.innerHTML = "<span>Chargement de l'historique complet…</span>";
+  addLog("info", "Chargement de l'historique complet" + (raison ? ` (${raison})` : "") + "…");
+  try{
+    await checkFromBackend(true);
+    addLog("ok", `Historique complet chargé — ${lastItems.length} article(s).`);
+  }catch(e){
+    addLog("fail", `Historique complet indisponible : ${escapeHtml(e.message || "erreur inconnue")}`);
+    if(el) el.innerHTML = `<span>Historique complet indisponible.</span>` +
+      `<button class="small" onclick="loadFullHistory()">Réessayer</button>`;
+  }finally{
+    historyLoading = false;
+    applyFilters();
   }
 }
 
@@ -1710,6 +1797,13 @@ function clearSearch(){
 
 function applyFilters(){
   const q = document.getElementById("searchInput").value.trim().toLowerCase();
+
+  // Une recherche sur un historique tronqué donnerait des résultats faux
+  // sans le dire. Dès la première recherche, on complète en arrière-plan.
+  if(q && historyPartial && !historyLoading){
+    loadFullHistory("recherche lancée");
+  }
+
   let items = lastItems;
 
   if(currentTab === "rockstar") items = items.filter(i => i.official);
@@ -1720,14 +1814,20 @@ function applyFilters(){
 
   if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
   if(currentFilter === "new") items = items.filter(i => lastNewLinks.has(i.link));
-  if(q) items = items.filter(i => i.title.toLowerCase().includes(q));
+  // La recherche porte aussi sur le résumé : beaucoup d'articles ne
+  // mentionnent le sujet cherché que dans le corps du texte.
+  if(q) items = items.filter(i =>
+    i.title.toLowerCase().includes(q) ||
+    (i.description || "").toLowerCase().includes(q));
 
   renderFeed(items, lastNewLinks, q);
   updateTabBadges();
   updateDocumentTitle();
 
   const countEl = document.getElementById("countLine");
-  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"");
+  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"")
+    + (q && historyPartial ? " (historique partiel, chargement en cours…)" : "");
+  updateHistoryLine();
 }
 
 // Compteurs de non-lus par onglet — priorisation en un coup d'œil.
@@ -1869,6 +1969,14 @@ function renderCard(item, newLinks, searchQuery){
   const videoBadge = /\btrailer\b|\bgameplay\b|\bvideo\b|\bvidéo\b|\bfootage\b|\bclip\b/i.test(titleLower) ? `<span class="tag-badge tag-video">VIDÉO</span>` : "";
   const langBadge = item.lang === "fr" ? `<span class="tag-badge tag-lang">FR</span>` : "";
 
+  // Nombre de rédactions qui couvrent la même actualité. Le backend ne
+  // jette plus les doublons de titre : il compte les sources. Quand
+  // plusieurs rédactions publient la même chose dans la foulée, c'est en
+  // général un trailer, une date ou une annonce — pas de la supputation.
+  const nbSources = 1 + (item.extraSources ? item.extraSources.length : 0);
+  const hotBadge = nbSources >= hotThreshold
+    ? `<span class="tag-badge tag-hot">🔥 ${nbSources} SOURCES</span>` : "";
+
   const extraSourcesLine = (item.extraSources && item.extraSources.length > 0)
     ? `<div class="card-extra">+ ${item.extraSources.length} autre${item.extraSources.length>1?"s":""} source${item.extraSources.length>1?"s":""} : ${item.extraSources.map(s => escapeHtml(s.source)).join(", ")}</div>`
     : "";
@@ -1880,7 +1988,7 @@ function renderCard(item, newLinks, searchQuery){
         <div class="card-body">
           <div class="card-src-row">
             <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
-            ${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
+            ${hotBadge}${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
           </div>
           <div class="card-title">${linkUrl
             ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`
@@ -2048,6 +2156,18 @@ async function markAllRead(makeRead){
 // le colles une fois dans un secret GitHub. C'est le seul geste manuel, et
 // il n'est à faire qu'une fois par appareil.
 let backendVapidKey = "";
+
+// Seuil de « grosse actu », fourni par le backend (hot_threshold) pour que
+// les deux restent cohérents sans le coder en dur des deux côtés.
+let hotThreshold = 4;
+
+// L'app charge d'abord un fichier allégé (300 articles récents) pour ne
+// pas retélécharger tout l'historique à chaque ouverture sur mobile.
+// historyPartial dit qu'on ne voit pas tout : c'est ce qui empêche une
+// recherche de renvoyer silencieusement des résultats incomplets.
+let historyPartial = false;
+let historyFullUrl = "";
+let historyLoading = false;
 
 function pushSupported(){
   return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;

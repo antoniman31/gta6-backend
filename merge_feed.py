@@ -88,7 +88,9 @@ def main():
 
     merged, recovered, removed = merge_feeds(remote, ours)
 
-    feed_store.write_feed(merged, out_path)
+    # Les deux fichiers sont réécrits : republier le complet sans
+    # régénérer l'allégé laisserait l'app sur un état périmé.
+    feed_store.write_feed_pair(merged, out_path)
 
     print(f"[merge] local {len(ours.get('items', []))} article(s) + distant "
           f"{len(remote.get('items', []))} article(s) "

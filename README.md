@@ -68,7 +68,15 @@ effective près de l'heure.
    simultanées via `ThreadPoolExecutor`) — d'abord depuis le flux RSS
    lui-même si présente, sinon en allant chercher la balise `og:image` ou
    `twitter:image` sur la vraie page de l'article.
-6. **Déduplique** — les liens sont d'abord nettoyés de leurs paramètres de
+6. **Compte les sources et déduplique** — quand plusieurs rédactions
+   couvrent la même actualité, les doublons ne sont plus jetés
+   purement : la source supplémentaire est enregistrée dans
+   `extraSources`. C'est la meilleure information disponible pour repérer
+   une actualité majeure — un article isolé est en général une reprise ou
+   de la supputation, quatre rédactions dans la foulée signalent un
+   trailer, une date ou une annonce. L'app affiche un badge « 🔥 N
+   SOURCES » au-delà de `hot_threshold` (4 par défaut).
+   Les liens sont d'abord nettoyés de leurs paramètres de
    pistage (`utm_*`, `fbclid`, `gclid`…) et de leur ancre, qui ne changent
    jamais la page servie mais faisaient compter deux fois le même article
    partagé par deux canaux. Puis dédup par lien exact (lookup instantané
@@ -87,13 +95,20 @@ effective près de l'heure.
    voir la section Notifications. Rien n'est déposé au tout premier
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
-9. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
+9. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
+   récents, ~50 Ko compressés contre ~164 Ko pour l'historique complet.
+   C'est ce fichier que l'app charge à l'ouverture ; elle télécharge le
+   complet à la demande, et automatiquement dès qu'une recherche est
+   lancée pour ne jamais renvoyer de résultats tronqués sans le dire. Les
+   deux fichiers sont toujours écrits ensemble, y compris après une
+   fusion de conflit.
+10. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
    une source « muette » n'a renvoyé aucune entrée brute, signe net d'un
    flux cassé ; une source « tarie » répond mais n'a rien publié depuis
    plus de 30 jours, ce qui peut être parfaitement normal (Rockstar et
    Take-Two communiquent peu). Sans ce signal, un flux réellement mort
    passerait inaperçu indéfiniment.
-10. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
+11. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
    propre copie séparée — voir la limite ci-dessous sur cette

@@ -79,7 +79,10 @@ jobs:
           git config --global user.name "GTA6 Watch Bot"
           git config --global user.email "actions@github.com"
 
-          git add docs/feed.json
+          # Les deux fichiers vont ensemble : l'allégé est ce que l'app
+          # charge en premier, publier l'un sans l'autre la laisserait sur
+          # un état périmé.
+          git add docs/feed.json docs/feed-recent.json
           # Commit systématique, même si generated_at est la seule vraie
           # différence : Git compresse les diffs (delta), donc le coût réel
           # en espace est minime. L'alternative (ignorer generated_at dans
@@ -121,16 +124,16 @@ jobs:
               echo '{"items":[]}' > "$RUNNER_TEMP/theirs.json"
             fi
 
-            if ! python merge_feed.py "$RUNNER_TEMP/theirs.json" "$RUNNER_TEMP/ours.json" "$RUNNER_TEMP/merged.json"; then
+            # On repart de l'état distant, puis la fusion écrit directement
+            # dans docs/ : le commit local rejeté est remplacé, jamais
+            # rebasé. merge_feed régénère aussi le fichier allégé, pour que
+            # les deux restent cohérents.
+            git reset --hard origin/main
+            if ! python merge_feed.py "$RUNNER_TEMP/theirs.json" "$RUNNER_TEMP/ours.json" docs/feed.json; then
               echo "Fusion impossible — abandon sans écraser le dépôt distant."
               exit 1
             fi
-
-            # On repart de l'état distant, puis on réapplique le résultat
-            # fusionné : le commit local rejeté est remplacé, jamais rebasé.
-            git reset --hard origin/main
-            cp "$RUNNER_TEMP/merged.json" docs/feed.json
-            git add docs/feed.json
+            git add docs/feed.json docs/feed-recent.json
             if git diff --quiet --cached; then
               echo "Le distant contient déjà tout — rien à republier."
               exit 0

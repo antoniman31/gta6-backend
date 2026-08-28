@@ -26,6 +26,10 @@ MAX_HISTORY_SIZE = 2000
 
 FEED_PATH = "docs/feed.json"
 
+# Nombre d'articles publiés dans le fichier allégé, que l'app charge en
+# premier : ~50 Ko compressés contre ~164 Ko pour l'historique complet.
+RECENT_FEED_SIZE = 300
+
 # Date de repli pour un article dont la date est absente ou illisible : le
 # plancher les envoie en fin de liste plutôt que de faire planter le tri.
 DATE_FLOOR = datetime(1970, 1, 1, tzinfo=timezone.utc)
@@ -210,6 +214,39 @@ def load_feed(path=FEED_PATH):
 def load_items(path=FEED_PATH):
     """Charge uniquement la liste des articles déjà connus."""
     return load_feed(path).get("items", [])
+
+
+def recent_path_for(path):
+    """Chemin du fichier allégé correspondant à un fichier de flux."""
+    if path.endswith("feed.json"):
+        return path[:-len("feed.json")] + "feed-recent.json"
+    return path + ".recent.json"
+
+
+def write_feed_pair(data, path=FEED_PATH):
+    """Écrit le fichier complet ET sa version allégée.
+
+    Les deux doivent toujours être générés ensemble : après une fusion
+    consécutive à un conflit de push, republier le fichier complet sans
+    régénérer l'allégé laisserait l'app afficher un état périmé sans que
+    rien ne le signale.
+    """
+    write_feed(data, path)
+
+    allege = dict(data)
+    items = data.get("items", [])
+    # Tri défensif : prendre les N premiers de la liste telle quelle
+    # supposerait qu'elle est déjà triée. C'est vrai des appelants
+    # actuels, mais un fichier allégé qui contiendrait silencieusement des
+    # articles au hasard serait invisible à l'œil nu — l'invariant est donc
+    # garanti ici plutôt que documenté. Sans effet si la liste est triée.
+    allege["items"] = sort_items(items)[:RECENT_FEED_SIZE]
+    # Prévient l'app qu'elle ne voit pas tout : sans ce drapeau, une
+    # recherche renverrait silencieusement des résultats incomplets.
+    allege["partial"] = len(items) > RECENT_FEED_SIZE
+    allege["full_url"] = os.path.basename(path)
+    write_feed(allege, recent_path_for(path))
+    return len(allege["items"])
 
 
 def write_feed(data, path=FEED_PATH):
