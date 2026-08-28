@@ -654,7 +654,7 @@ const DEFAULT_FEEDS = [
   { id: "rockstar-en", name: "Rockstar Games (officiel EN)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
   { id: "rockstar-fr", name: "Rockstar Games (officiel FR)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: true, lang: "fr" },
   { id: "rockstar-announce", name: "Rockstar Games (annonces)", url: "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
-  { id: "gta6-netflix", name: "GTA 6 x Netflix", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, noFilter: true },
+  { id: "gta6-netflix", name: "GTA 6 x Netflix", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, specialist: true },
   { id: "take2-ir", name: "Take-Two Investor Relations (officiel)", url: "https://ir.take2games.com/rss/news-releases.xml?items=15", enabled: true, official: true },
   { id: "gnews-fr", name: "Google News (FR)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
   { id: "gnews-en", name: "Google News (EN)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
@@ -664,8 +664,8 @@ const DEFAULT_FEEDS = [
   { id: "jvcom", name: "Jeuxvideo.com", url: "https://www.jeuxvideo.com/rss/rss.xml", enabled: true, official: false, lang: "fr" },
   { id: "gamekult", name: "Gamekult", url: "https://www.gamekult.com/feed.xml", enabled: true, official: false, lang: "fr" },
   { id: "ignfr", name: "IGN France", url: "https://fr.ign.com/feed.xml", enabled: true, official: false, lang: "fr" },
-  { id: "rockstarmag", name: "RockstarMag", url: "https://rss.app/feeds/DLjO259X0dbIodkg.xml", enabled: true, official: false, rockstarmag: true, noFilter: true, lang: "fr" },
-  { id: "rockstarintel", name: "RockstarINTEL", url: "https://rss.app/feeds/SEi9eWoOTGKoeh2K.xml", enabled: true, official: false, noFilter: true },
+  { id: "rockstarmag", name: "RockstarMag", url: "https://rss.app/feeds/DLjO259X0dbIodkg.xml", enabled: true, official: false, rockstarmag: true, specialist: true, noFilter: true, lang: "fr" },
+  { id: "rockstarintel", name: "RockstarINTEL", url: "https://rss.app/feeds/SEi9eWoOTGKoeh2K.xml", enabled: true, official: false, specialist: true },
   { id: "ign", name: "IGN", url: "https://rss.app/feeds/h34hzwwy7imC3FZL.xml", enabled: true, official: false },
   { id: "gamespot", name: "GameSpot", url: "https://rss.app/feeds/vjQBa27Dcc6PFmvy.xml", enabled: true, official: false },
   { id: "polygon", name: "Polygon", url: "https://rss.app/feeds/cs8cjYH9LJUvrQxI.xml", enabled: true, official: false },
@@ -682,7 +682,7 @@ const DEFAULT_FEEDS = [
   { id: "actugaming", name: "ActuGaming", url: "https://www.actugaming.net/feed/", enabled: true, official: false, lang: "fr" },
   { id: "gamerant", name: "Game Rant", url: "https://gamerant.com/feed", enabled: true, official: false },
   { id: "dualshockers", name: "DualShockers", url: "https://www.dualshockers.com/feed", enabled: true, official: false },
-  { id: "gta6times", name: "GTA6 Times", url: "https://gta6times.com/rss.xml", enabled: true, official: false, noFilter: true },
+  { id: "gta6times", name: "GTA6 Times", url: "https://gta6times.com/rss.xml", enabled: true, official: false, specialist: true },
   { id: "gameinformer", name: "Game Informer", url: "https://gameinformer.com/news.xml", enabled: true, official: false },
   { id: "pcgamesn", name: "PCGamesN", url: "https://www.pcgamesn.com/mainrss.xml", enabled: true, official: false },
   { id: "vgc", name: "VGC", url: "https://www.videogameschronicle.com/category/news/feed/", enabled: true, official: false }
@@ -1235,7 +1235,7 @@ async function fetchFeed(feed){
       source: feed.name,
       official: !!feed.official,
       rockstarmag: !!feed.rockstarmag,
-      specialist: !!feed.noFilter,
+      specialist: !!feed.specialist,
       lang: feed.lang || null,
       // Google News RSS ne fournit jamais d'image, et son lien pointe vers
       // une page de redirection (news.google.com), pas l'article réel — un
@@ -1270,7 +1270,7 @@ async function fetchFeed(feed){
         source: feed.name,
         official: !!feed.official,
         rockstarmag: !!feed.rockstarmag,
-        specialist: !!feed.noFilter,
+        specialist: !!feed.specialist,
         lang: feed.lang || null,
         image: item.image || null,
         description: item.description || "",
@@ -1338,16 +1338,23 @@ async function checkFromBackend(){
 
   const generatedDate = data.generated_at ? new Date(data.generated_at) : null;
   const ageMs = generatedDate ? (Date.now() - generatedDate.getTime()) : null;
-  const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2h : le robot tourne toutes les heures, donc 2h sans mise à jour = probablement en échec
+  // 4h. Le seuil était à 2h, calibré sur l'hypothèse d'un run par heure —
+  // mais le déclencheur planifié de GitHub Actions est best-effort : il
+  // part avec 10 à 35 min de retard et saute purement des créneaux en
+  // période de charge. L'écart réel entre deux runs atteignait couramment
+  // 3 à 9h, donc le bandeau était affiché la plupart du temps alors que
+  // tout allait bien — ce qui le rendait inutile le jour d'une vraie
+  // panne. Avec le cron doublé (7,37), 4h redevient une vraie anomalie.
+  const STALE_THRESHOLD_MS = 4 * 60 * 60 * 1000;
 
   if(generatedDate){
     proxyEl.textContent = "généré le " + generatedDate.toLocaleString('fr-FR');
     const banner = document.getElementById("staleBanner");
     if(ageMs > STALE_THRESHOLD_MS){
       const ageHours = Math.floor(ageMs / (60 * 60 * 1000));
-      proxyEl.textContent += ` ⚠️ (il y a ${ageHours}h — le robot GitHub semble ne plus tourner, vérifie l'onglet Actions de ton dépôt)`;
+      proxyEl.textContent += ` ⚠️ (il y a ${ageHours}h — le robot GitHub n'a pas tourné depuis un moment, vérifie l'onglet Actions de ton dépôt)`;
       proxyEl.style.color = "var(--warn)";
-      banner.textContent = `⚠️ Le robot GitHub semble ne plus tourner depuis ${ageHours}h — vérifie l'onglet Actions de ton dépôt.`;
+      banner.textContent = `⚠️ Aucune mise à jour du robot depuis ${ageHours}h — vérifie l'onglet Actions de ton dépôt.`;
       banner.style.display = "block";
     }else{
       proxyEl.style.color = "var(--text-dim)";

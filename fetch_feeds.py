@@ -222,10 +222,12 @@ def collect_feed_items(feed, decoded_cache=None):
         parsed = feedparser.parse(feed["url"], agent=USER_AGENT)
         if parsed.bozo and not parsed.entries:
             print(f"  échec : {parsed.bozo_exception}")
-            return []
+            return [], 0
     except Exception as e:
         print(f"  échec réseau : {e}")
-        return []
+        return [], 0
+
+    raw_count = len(parsed.entries)
 
     items = []
     for entry in parsed.entries[:30]:
@@ -308,8 +310,8 @@ def collect_feed_items(feed, decoded_cache=None):
             "description": re.sub("<[^<]+?>", "", description)[:500],
         })
 
-    print(f"  {len(items)} article(s) pertinent(s)")
-    return items
+    print(f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre")
+    return items, raw_count
 
 
 def fetch_missing_images(items):
@@ -344,6 +346,12 @@ def fetch_missing_images(items):
 # mêmes règles, sinon une fusion après conflit de push corromprait l'ordre
 # ou retirerait les mauvais articles.
 MAX_HISTORY_SIZE = feed_store.MAX_HISTORY_SIZE
+
+# Au-delà de ce délai sans le moindre article, une source est signalée comme
+# "tarie". Ce n'est pas forcément une panne — Rockstar et Take-Two
+# communiquent peu, il est normal qu'ils restent muets des semaines — mais
+# sans ce signal un flux réellement mort passerait inaperçu indéfiniment.
+SILENT_SOURCE_DAYS = 30
 
 # Fichier où sont déposés les nouveaux articles de cette exécution, à
 # destination de discord_notify.py. Le workflow le place dans $RUNNER_TEMP,
@@ -401,6 +409,70 @@ def recheck_official_status(items):
     return items
 
 
+def build_sources_health(all_items, raw_counts, new_counts):
+    """Dresse l'état de chaque source, pour repérer un flux mort.
+
+    Deux signaux distincts :
+      - "muette"  : le flux n'a renvoyé AUCUNE entrée brute cette fois. C'est
+                    le signal net d'une URL cassée, d'un domaine expiré ou
+                    d'un blocage — indépendant du filtre par mots-clés.
+      - "tarie"   : le flux répond, mais aucun de ses articles n'est présent
+                    dans l'historique depuis plus de SILENT_SOURCE_DAYS.
+                    Informatif : ça peut être parfaitement normal.
+    """
+    now = datetime.now(timezone.utc)
+    latest = {}
+    for item in all_items:
+        source = item.get("source")
+        if not source:
+            continue
+        when = feed_store.parse_date_key(item.get("date"))
+        if source not in latest or when > latest[source]:
+            latest[source] = when
+
+    health = []
+    for feed in FEEDS:
+        name = feed["name"]
+        last = latest.get(name)
+        days = None
+        if last and last != feed_store.DATE_FLOOR:
+            days = (now - last).days
+
+        raw = raw_counts.get(feed["id"], 0)
+        if raw == 0:
+            status = "muette"
+        elif days is None or days > SILENT_SOURCE_DAYS:
+            status = "tarie"
+        else:
+            status = "ok"
+
+        health.append({
+            "id": feed["id"],
+            "name": name,
+            "entries_fetched": raw,
+            "new_this_run": new_counts.get(feed["id"], 0),
+            "last_article": last.isoformat() if last and last != feed_store.DATE_FLOOR else None,
+            "days_since_last_article": days,
+            "status": status,
+        })
+
+    muettes = [h for h in health if h["status"] == "muette"]
+    taries = [h for h in health if h["status"] == "tarie"]
+    if muettes:
+        print(f"\n⚠ {len(muettes)} source(s) MUETTE(S) — flux sans aucune entrée, probablement cassé :")
+        for h in muettes:
+            print(f"    - {h['name']}")
+    if taries:
+        print(f"\n· {len(taries)} source(s) sans article depuis plus de {SILENT_SOURCE_DAYS} jours :")
+        for h in taries:
+            age = f"{h['days_since_last_article']} j" if h["days_since_last_article"] is not None else "jamais"
+            print(f"    - {h['name']} ({age})")
+    if not muettes and not taries:
+        print(f"\nToutes les sources ont répondu et ont publié dans les {SILENT_SOURCE_DAYS} derniers jours.")
+
+    return health
+
+
 def main():
     existing_items = load_existing_items()
     is_first_run = len(existing_items) == 0
@@ -429,13 +501,18 @@ def main():
     if decoded_cache:
         print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) déjà résolu(s)")
 
+    raw_counts = {}
+    new_counts = {}
     for feed in FEEDS:
-        items = collect_feed_items(feed, decoded_cache)
+        items, raw_count = collect_feed_items(feed, decoded_cache)
+        raw_counts[feed["id"]] = raw_count
+        new_counts[feed["id"]] = 0
         for item in items:
             if not is_duplicate(item, all_items, existing_links):
                 all_items.append(item)
                 existing_links.add(item["link"])
                 newly_added.append(item)
+                new_counts[feed["id"]] += 1
                 if item.get("source_link"):
                     decoded_cache[item["source_link"]] = item["link"]
         time.sleep(1)  # anti rate-limit entre les sources
@@ -466,6 +543,10 @@ def main():
         # pouvaient diverger si une source était ajoutée d'un côté sans
         # penser à l'autre.
         "sources": [{"id": f["id"], "name": f["name"], "official": f.get("official", False), "specialist": f.get("specialist_source", False)} for f in FEEDS],
+        # État de chaque source : permet de repérer un flux mort sans
+        # éplucher les logs du run. Exposé dans feed.json pour pouvoir être
+        # affiché plus tard par l'app sans retoucher au backend.
+        "sources_health": build_sources_health(all_items, raw_counts, new_counts),
         "items": all_items,
     }
 

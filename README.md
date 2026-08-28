@@ -76,7 +76,13 @@ effective près de l'heure.
    voir la section Notifications. Rien n'est déposé au tout premier
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
-9. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
+9. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
+   une source « muette » n'a renvoyé aucune entrée brute, signe net d'un
+   flux cassé ; une source « tarie » répond mais n'a rien publié depuis
+   plus de 30 jours, ce qui peut être parfaitement normal (Rockstar et
+   Take-Two communiquent peu). Sans ce signal, un flux réellement mort
+   passerait inaperçu indéfiniment.
+10. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
    propre copie séparée — voir la limite ci-dessous sur cette
@@ -127,17 +133,30 @@ effective près de l'heure.
   de push.
 - **`discord_notify.py`** — l'envoi Discord, appelé après publication.
 
-### Tests
+### Tests et contrôles
 
 ```
-python test_pipeline.py
+python test_pipeline.py        # dates, tri, plafond, fusion
+python check_sources_sync.py   # backend Python vs mode de secours JS
 ```
 
-Sans dépendance ni réseau. Couvre les dates (les trois formats présents
-dans l'historique), le tri, le plafonnement, la repasse rétroactive, et
-surtout la fusion — c'est elle qui décide si des articles sont perdus
-quand deux exécutions se chevauchent. Le dernier bloc rejoue ces règles
-sur le vrai `docs/feed.json` du dépôt.
+Les deux tournent en CI (`.github/workflows/checks.yml`) sur chaque pull
+request et sur `main` — sauf pour les commits du robot, qui ne touchent que
+`docs/feed.json` et sont exclus par `paths-ignore` (sans quoi ces contrôles
+se déclencheraient 48 fois par jour pour du code inchangé).
+
+`test_pipeline.py` n'a besoin ni de réseau ni de dépendance. Il couvre les
+dates (les trois formats présents dans l'historique), le tri, le
+plafonnement, la repasse rétroactive, et surtout la fusion — c'est elle qui
+décide si des articles sont perdus quand deux exécutions se chevauchent. Le
+dernier bloc rejoue ces règles sur le vrai `docs/feed.json` du dépôt.
+
+`check_sources_sync.py` compare `FEEDS` et les 139 mots-clés de
+`fetch_feeds.py` à leurs copies `DEFAULT_FEEDS` / `keywords` de
+`docs/index.html`, et échoue en nommant chaque écart. La duplication reste
+(voir Limites), mais elle ne peut plus dériver en silence : fin août 2026,
+trois sources étaient marquées « sans filtre » côté JS alors que le backend
+leur appliquait le filtre normal, et personne ne l'avait vu.
 
 ## L'app — `docs/index.html`
 
@@ -218,7 +237,8 @@ commentaire).
   ajoutée ou retirée. Impossible à éliminer complètement sans casser
   l'autonomie du mode de secours, qui a justement besoin des vraies URLs
   même quand `feed.json` (qui pourrait autrement centraliser cette liste)
-  est inaccessible.
+  est inaccessible. `check_sources_sync.py`, exécuté en CI, garantit au
+  moins que les deux copies ne peuvent plus diverger sans que ça se voie.
 - **Deux algorithmes de déduplication légèrement différents** — le
   backend Python utilise `SequenceMatcher`, le mode de secours JS une
   comparaison par tokens. Comme le backend est la source principale et le
