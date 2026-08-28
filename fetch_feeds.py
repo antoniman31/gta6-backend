@@ -359,6 +359,12 @@ SILENT_SOURCE_DAYS = 30
 # ce qui désactive simplement la notification.
 NEW_ITEMS_FILE = os.environ.get("NEW_ITEMS_FILE", "")
 
+# Clé publique VAPID, publiée dans feed.json pour que l'app puisse créer un
+# abonnement aux notifications push. Elle est publique par nature — c'est
+# la clé PRIVÉE, gardée en secret GitHub, qui autorise l'envoi. Absente,
+# l'app masque simplement l'option.
+VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
+
 
 def write_new_items_file(new_items):
     """Dépose les nouveaux articles pour l'étape de notification.
@@ -547,6 +553,10 @@ def main():
         # éplucher les logs du run. Exposé dans feed.json pour pouvoir être
         # affiché plus tard par l'app sans retoucher au backend.
         "sources_health": build_sources_health(all_items, raw_counts, new_counts),
+        # Permet à l'app de proposer les notifications push sans que la clé
+        # soit codée en dur dans index.html : elle suit la configuration du
+        # dépôt, et disparaît si le secret est retiré.
+        "vapid_public_key": VAPID_PUBLIC_KEY,
         "items": all_items,
     }
 

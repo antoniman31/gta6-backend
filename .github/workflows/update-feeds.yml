@@ -68,6 +68,9 @@ jobs:
         env:
           # Hors du dépôt : ce fichier ne doit jamais pouvoir être committé.
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+          # Clé PUBLIQUE : recopiée dans feed.json pour que l'app puisse
+          # créer un abonnement push. Aucun risque à l'exposer.
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
 
       - name: Publier le résultat
         env:
@@ -149,6 +152,20 @@ jobs:
         run: python discord_notify.py
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+
+      # Notification push native, en plus de Discord : taper une
+      # notification Discord ouvre Discord, jamais l'article. Comme pour
+      # Discord, l'envoi n'a lieu qu'APRÈS une publication réussie.
+      # Sans les secrets VAPID_PRIVATE_KEY et PUSH_SUBSCRIPTIONS, l'étape
+      # ne fait rien.
+      - name: Notifier par push
+        if: success()
+        run: python push_notify.py
+        env:
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
 
       # Signal de vie ("dead man's switch"). C'est l'ABSENCE de ce signal

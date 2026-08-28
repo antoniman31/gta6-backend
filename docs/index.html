@@ -600,6 +600,59 @@
       <div class="setting-desc">Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
     </div>
 
+    <div class="setting-group" id="vapidSetupGroup" style="display:none;">
+      <span class="setting-label">Notifications push — configuration initiale</span>
+      <div class="setting-desc">
+        Le dépôt n'a pas encore de clés de notification. Génère-les ici (elles sont
+        créées dans ce navigateur et ne partent nulle part), puis crée les deux
+        secrets GitHub correspondants.
+      </div>
+      <div class="setting-buttons">
+        <button class="small" onclick="generateVapidKeys()">Générer une paire de clés</button>
+      </div>
+      <div id="vapidKeysBlock" style="display:none; margin-top:8px;">
+        <div class="setting-desc"><strong>VAPID_PUBLIC_KEY</strong> — secret GitHub</div>
+        <textarea id="vapidPublicOut" readonly rows="2" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <div class="setting-desc" style="margin-top:6px;"><strong>VAPID_PRIVATE_KEY</strong> — secret GitHub, à ne jamais partager</div>
+        <textarea id="vapidPrivateOut" readonly rows="2" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <div class="setting-buttons">
+          <button class="small" onclick="copyFieldValue('vapidPublicOut', this)">Copier la publique</button>
+          <button class="small" onclick="copyFieldValue('vapidPrivateOut', this)">Copier la privée</button>
+        </div>
+        <div class="setting-desc" style="margin-top:6px;">
+          Crée les deux secrets dans Settings → Secrets and variables → Actions, puis
+          relance le robot. Cette section disparaîtra et l'abonnement deviendra possible.
+          Ne garde pas de capture d'écran de la clé privée.
+        </div>
+      </div>
+    </div>
+
+    <div class="setting-group" id="pushGroup" style="display:none;">
+      <span class="setting-label">Notifications sur cet appareil</span>
+      <div class="setting-buttons">
+        <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer les notifications</button>
+        <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Tester l'affichage</button>
+        <button class="small" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
+      </div>
+      <div class="token-status dim" id="pushStatusLine"></div>
+      <div id="pushSubscriptionBlock" style="display:none; margin-top:8px;">
+        <div class="setting-desc" style="margin-bottom:4px;">
+          Dernière étape, à faire une seule fois : copie ce bloc et colle-le dans le
+          secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong> (Settings → Secrets and
+          variables → Actions). Tant que ce n'est pas fait, le robot ne sait pas où
+          envoyer les notifications.
+        </div>
+        <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <div class="setting-buttons">
+          <button class="small" onclick="copyPushSubscription(this)">Copier l'abonnement</button>
+        </div>
+      </div>
+      <div class="setting-desc">
+        Une vraie notification système, qui ouvre l'article au lieu d'ouvrir Discord.
+        Un seul message récapitulatif par passage du robot, comme sur Discord.
+      </div>
+    </div>
+
     <div class="setting-group">
       <span class="setting-label">Déclenchement à distance (optionnel)</span>
       <input type="password" id="githubTokenInput" class="setting-input wide" placeholder="github_pat_…" autocomplete="off" spellcheck="false" style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;">
@@ -996,6 +1049,7 @@ function onSimChange(v){
 function openSettings(){
   populateSettingsUI();
   refreshTokenUI();
+  refreshPushUI();
   document.getElementById("settingsOverlay").classList.add("open");
 }
 function closeSettings(){
@@ -1355,6 +1409,16 @@ async function checkFromBackend(){
   const res = await fetch(url);
   if(!res.ok) throw new Error("HTTP " + res.status);
   const data = await res.json();
+
+  // Clé publique VAPID publiée par le backend : conditionne l'affichage de
+  // la section « Notifications » dans les paramètres.
+  if(data.vapid_public_key !== undefined){
+    const nouvelle = data.vapid_public_key || "";
+    if(nouvelle !== backendVapidKey){
+      backendVapidKey = nouvelle;
+      refreshPushUI();
+    }
+  }
 
   const all = (data.items || []).map(item => ({
     title: item.title,
@@ -1970,6 +2034,232 @@ async function markAllRead(makeRead){
   });
   await saveRead();
   applyFilters();
+}
+
+// ---------- Notifications push natives ----------
+// Le protocole Web Push ne demande pas de serveur permanent : il faut une
+// paire de clés VAPID et, par appareil, un abonnement créé par le
+// navigateur. C'est le workflow GitHub Actions qui envoie, quelques
+// secondes par passage. La clé publique arrive dans feed.json ; la clé
+// privée reste un secret GitHub.
+//
+// Contrainte assumée : sans backend, l'abonnement créé ici ne peut pas
+// être transmis automatiquement au robot. L'app l'affiche donc pour que tu
+// le colles une fois dans un secret GitHub. C'est le seul geste manuel, et
+// il n'est à faire qu'une fois par appareil.
+let backendVapidKey = "";
+
+function pushSupported(){
+  return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+}
+
+// La clé VAPID transite en base64url ; l'API PushManager veut un Uint8Array.
+function vapidKeyToBytes(base64url){
+  const padding = "=".repeat((4 - (base64url.length % 4)) % 4);
+  const base64 = (base64url + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+function setPushStatus(message, kind){
+  const el = document.getElementById("pushStatusLine");
+  if(!el) return;
+  el.textContent = message;
+  el.className = "token-status " + (kind || "dim");
+}
+
+// La section n'apparaît que si les notifications sont réellement possibles :
+// navigateur compatible ET clé publique publiée par le backend. Proposer un
+// bouton qui ne peut pas marcher serait pire que ne rien proposer.
+async function refreshPushUI(){
+  const group = document.getElementById("pushGroup");
+  if(!group) return;
+
+  const setup = document.getElementById("vapidSetupGroup");
+
+  if(!pushSupported()){
+    group.style.display = "none";
+    if(setup) setup.style.display = "none";
+    return;
+  }
+  if(!backendVapidKey){
+    // Navigateur capable, mais le dépôt n'a pas encore de clés : on propose
+    // de les générer plutôt que de masquer la fonctionnalité sans explication.
+    group.style.display = "none";
+    if(setup) setup.style.display = "block";
+    return;
+  }
+  if(setup) setup.style.display = "none";
+  group.style.display = "block";
+
+  let subscription = null;
+  try{
+    const reg = await navigator.serviceWorker.getRegistration();
+    if(reg) subscription = await reg.pushManager.getSubscription();
+  }catch(e){ /* service worker pas encore prêt */ }
+
+  const enableBtn = document.getElementById("pushEnableBtn");
+  const disableBtn = document.getElementById("pushDisableBtn");
+  const block = document.getElementById("pushSubscriptionBlock");
+
+  if(subscription){
+    enableBtn.style.display = "none";
+    disableBtn.style.display = "inline-flex";
+    block.style.display = "block";
+    document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
+    setPushStatus("Cet appareil est abonné.", "ok");
+  }else{
+    enableBtn.style.display = "inline-flex";
+    disableBtn.style.display = "none";
+    block.style.display = "none";
+    if(Notification.permission === "denied"){
+      setPushStatus("Notifications bloquées pour ce site — à réautoriser dans les réglages du navigateur.", "warn");
+      enableBtn.disabled = true;
+    }else{
+      setPushStatus("Notifications non activées sur cet appareil.", "dim");
+      enableBtn.disabled = false;
+    }
+  }
+}
+
+async function enablePush(){
+  if(!pushSupported()){
+    setPushStatus("Ce navigateur ne gère pas les notifications push.", "warn");
+    return;
+  }
+  if(!backendVapidKey){
+    setPushStatus("Le backend ne publie pas de clé VAPID — secret VAPID_PUBLIC_KEY manquant côté dépôt.", "warn");
+    return;
+  }
+
+  setPushStatus("Demande d'autorisation…", "dim");
+  let permission;
+  try{
+    permission = await Notification.requestPermission();
+  }catch(e){
+    setPushStatus("Autorisation impossible sur ce navigateur.", "warn");
+    return;
+  }
+  if(permission !== "granted"){
+    setPushStatus("Autorisation refusée — rien n'a été activé.", "warn");
+    await refreshPushUI();
+    return;
+  }
+
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const subscription = await reg.pushManager.subscribe({
+      // Obligatoire : le navigateur exige que chaque push produise une
+      // notification visible, sinon il révoque l'abonnement.
+      userVisibleOnly: true,
+      applicationServerKey: vapidKeyToBytes(backendVapidKey)
+    });
+    document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
+    addLog("ok", "Abonnement aux notifications push créé sur cet appareil.");
+    await refreshPushUI();
+    setPushStatus("Abonné. Il reste à coller le bloc ci-dessous dans le secret GitHub.", "ok");
+  }catch(e){
+    setPushStatus("Échec de l'abonnement : " + (e.message || "erreur inconnue"), "warn");
+    addLog("fail", `Abonnement push — ${escapeHtml(e.message || "erreur inconnue")}`);
+  }
+}
+
+async function disablePush(){
+  try{
+    const reg = await navigator.serviceWorker.getRegistration();
+    const subscription = reg && await reg.pushManager.getSubscription();
+    if(subscription) await subscription.unsubscribe();
+    addLog("info", "Abonnement aux notifications push retiré de cet appareil.");
+  }catch(e){ /* déjà désabonné */ }
+  await refreshPushUI();
+  setPushStatus("Désabonné. Pense à retirer l'ancien abonnement du secret PUSH_SUBSCRIPTIONS.", "dim");
+}
+
+// Affiche une notification locale, sans passer par le serveur : vérifie que
+// l'appareil sait bien les afficher (mode silencieux, ne pas déranger,
+// autorisation système…) avant de chercher pourquoi le robot n'envoie rien.
+async function testPushDisplay(){
+  if(!pushSupported()){
+    setPushStatus("Ce navigateur ne gère pas les notifications.", "warn");
+    return;
+  }
+  if(Notification.permission !== "granted"){
+    const p = await Notification.requestPermission();
+    if(p !== "granted"){
+      setPushStatus("Autorisation refusée — impossible de tester.", "warn");
+      return;
+    }
+  }
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification("GTA6_WATCH — test", {
+      body: "Si tu vois ceci, l'affichage des notifications fonctionne sur cet appareil.",
+      icon: "icon-192.png",
+      badge: "icon-192.png",
+      tag: "gta6watch-test"
+    });
+    setPushStatus("Notification de test envoyée. Ceci ne teste que l'affichage, pas l'envoi par le robot.", "ok");
+  }catch(e){
+    setPushStatus("Affichage impossible : " + (e.message || "erreur inconnue"), "warn");
+  }
+}
+
+// Génère une paire de clés VAPID directement dans le navigateur, via Web
+// Crypto. Évite d'imposer une installation Python locale pour une opération
+// à faire une seule fois. Les clés ne quittent pas l'appareil : c'est
+// l'utilisateur qui les recopie dans les secrets GitHub.
+//
+// Formats produits :
+//   - publique : point EC non compressé en base64url (ce qu'attend
+//     applicationServerKey côté navigateur) ;
+//   - privée   : le scalaire brut de 32 octets en base64url (le champ "d"
+//     du JWK), format accepté par py_vapid côté robot.
+async function generateVapidKeys(){
+  const bloc = document.getElementById("vapidKeysBlock");
+  try{
+    const paire = await crypto.subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
+
+    const brutPublic = new Uint8Array(await crypto.subtle.exportKey("raw", paire.publicKey));
+    const jwkPrivee = await crypto.subtle.exportKey("jwk", paire.privateKey);
+
+    document.getElementById("vapidPublicOut").value = bytesToBase64Url(brutPublic);
+    document.getElementById("vapidPrivateOut").value = jwkPrivee.d;
+    bloc.style.display = "block";
+    addLog("ok", "Paire de clés VAPID générée localement.");
+  }catch(e){
+    bloc.style.display = "none";
+    addLog("fail", `Génération des clés VAPID impossible : ${escapeHtml(e.message || "erreur inconnue")}`);
+    alert("Génération impossible sur ce navigateur : " + (e.message || "erreur inconnue"));
+  }
+}
+
+function bytesToBase64Url(bytes){
+  let binaire = "";
+  for(const o of bytes) binaire += String.fromCharCode(o);
+  return btoa(binaire).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function copyFieldValue(id, btn){
+  const texte = document.getElementById(id).value;
+  navigator.clipboard.writeText(texte).then(() => {
+    if(btn){
+      const original = btn.textContent;
+      btn.textContent = "copié";
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    }
+  }).catch(() => prompt("Copie la valeur :", texte));
+}
+
+function copyPushSubscription(btn){
+  const texte = document.getElementById("pushSubscriptionText").value;
+  navigator.clipboard.writeText(texte).then(() => {
+    if(btn){
+      const original = btn.textContent;
+      btn.textContent = "copié";
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    }
+  }).catch(() => prompt("Copie l'abonnement :", texte));
 }
 
 // ---------- Déclenchement à distance du robot ----------

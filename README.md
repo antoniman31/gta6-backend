@@ -132,6 +132,10 @@ effective près de l'heure.
   niveau des données. Appelé par le workflow uniquement en cas de rejet
   de push.
 - **`discord_notify.py`** — l'envoi Discord, appelé après publication.
+- **`push_notify.py`** — les notifications push natives, appelées au même
+  moment. N'importe pas `pywebpush` au niveau du module : la construction
+  du message et la lecture des abonnements restent testables sans la
+  dépendance.
 
 ### Tests et contrôles
 
@@ -183,6 +187,60 @@ rss2json). C'est redondant avec le backend, mais volontaire : sans ce
 filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
+
+## Notifications push natives
+
+Discord fonctionne, mais taper une notification Discord ouvre Discord,
+jamais l'article. Une notification push native ouvre directement le site.
+Les deux coexistent : chacune s'active par la présence de ses secrets, et
+se désactive par leur absence.
+
+Le protocole Web Push ne demande **pas de serveur permanent** : il faut
+une paire de clés VAPID et, par appareil, un abonnement créé par le
+navigateur. L'envoi tient en quelques secondes dans une étape de workflow
+(`push_notify.py`).
+
+**Mise en place** (une fois pour le dépôt) :
+
+1. Ouvrir l'app → ⚙ Paramètres. Tant que le dépôt n'a pas de clés, un bloc
+   *Configuration initiale* propose de les générer.
+2. Cliquer **Générer une paire de clés**. Elles sont créées dans le
+   navigateur par Web Crypto et ne partent nulle part — inutile
+   d'installer quoi que ce soit.
+3. Créer deux secrets GitHub (Settings → Secrets and variables → Actions) :
+   **`VAPID_PUBLIC_KEY`** et **`VAPID_PRIVATE_KEY`**.
+   Ne pas conserver de capture d'écran de la privée.
+4. Facultatif : **`VAPID_SUBJECT`**, une adresse `mailto:` que les services
+   de push utilisent pour joindre l'expéditeur en cas d'abus. Jamais
+   montrée à l'utilisateur.
+5. Relancer le robot. Il recopie la clé **publique** dans `feed.json` — le
+   bloc de configuration disparaît et l'abonnement devient possible.
+
+**Puis, par appareil :**
+
+6. ⚙ Paramètres → *Notifications sur cet appareil* → **Activer les
+   notifications**, et accepter la demande du navigateur.
+7. Copier le bloc d'abonnement affiché et le coller dans le secret
+   **`PUSH_SUBSCRIPTIONS`**. Pour plusieurs appareils, mettre un tableau
+   JSON : `[{...}, {...}]`.
+
+C'est le seul geste manuel du dispositif, et il découle directement de
+l'absence de backend : l'app ne peut pas écrire dans les secrets du dépôt
+toute seule. Le bouton **Tester l'affichage** envoie une notification
+locale — utile pour vérifier que l'appareil les affiche (mode silencieux,
+Ne pas déranger…) avant de chercher pourquoi le robot n'envoie rien.
+
+**Pourquoi les abonnements sont un secret et pas un fichier du dépôt :** un
+abonnement rendu public permettrait à n'importe qui d'envoyer des
+notifications sur l'appareil concerné.
+
+**Abonnements expirés.** Quand un navigateur renouvelle son abonnement, le
+service de push répond 404 ou 410. Le robot le signale explicitement dans
+les logs du run : il faut alors retirer l'ancienne entrée du secret et
+refaire l'abonnement depuis l'app.
+
+**Support.** Complet sur Android. Sur iPhone, l'app doit être installée sur
+l'écran d'accueil et le support y est plus restreint.
 
 ## Surveillance : savoir quand le robot s'arrête
 
