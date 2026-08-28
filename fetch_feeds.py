@@ -199,7 +199,24 @@ def normalize_date(entry):
     return raw if parsed == feed_store.DATE_FLOOR else parsed.isoformat()
 
 
-def fetch_feed(feed):
+def collect_feed_items(feed, decoded_cache=None):
+    """Récupère et filtre les articles d'une source, SANS aller chercher les
+    miniatures manquantes sur les pages.
+
+    Le scraping des og:image a été sorti d'ici volontairement : il tournait
+    avant toute déduplication, donc le robot allait chercher la miniature de
+    ~30 articles par source × 35 sources à chaque exécution pour en jeter la
+    quasi-totalité juste après (sur un run typique, une vingtaine d'articles
+    sont réellement nouveaux sur près d'un millier examinés). La
+    récupération a lieu maintenant dans main(), une seule fois, sur les
+    seuls articles retenus.
+
+    decoded_cache : correspondance {lien Google News brut -> vrai lien déjà
+    résolu lors d'une exécution précédente}. Le décodage doit rester AVANT
+    la déduplication (elle travaille sur le lien final), or gnewsdecoder
+    impose une pause d'une seconde par lien — soit ~120 s par run pour les 4
+    flux Google News, payées à chaque fois sur des articles déjà connus.
+    """
     print(f"[{feed['name']}] récupération...")
     try:
         parsed = feedparser.parse(feed["url"], agent=USER_AGENT)
@@ -236,8 +253,19 @@ def fetch_feed(feed):
         elif not matches_keywords(title + " " + description, KEYWORDS):
             continue
 
-        # Décodage du vrai lien pour les flux Google News
-        real_link = decode_google_news_link(link) if "news.google.com" in feed["url"] else link
+        # Décodage du vrai lien pour les flux Google News, en réutilisant
+        # le résultat des exécutions précédentes quand on l'a déjà.
+        # L'identifiant d'un article dans un flux Google News est stable
+        # d'une exécution à l'autre, donc le cache touche presque à chaque
+        # fois ; s'il rate, on décode comme avant (dégradation propre).
+        source_link = None
+        if "news.google.com" in feed["url"]:
+            cached = (decoded_cache or {}).get(link)
+            real_link = cached if cached else decode_google_news_link(link)
+            if real_link != link:
+                source_link = link
+        else:
+            real_link = link
 
         # Les flux "officiels" sont en réalité des recherches Google News sur
         # site:rockstargames.com — Google peut aussi indexer des articles
@@ -266,6 +294,10 @@ def fetch_feed(feed):
         items.append({
             "title": title,
             "link": real_link,
+            # Lien Google News d'origine, conservé uniquement pour éviter de
+            # repayer le décodage au prochain run. Absent pour les sources
+            # qui ne passent pas par Google News.
+            "source_link": source_link,
             "date": date,
             "source": feed["name"],
             "official": is_official,
@@ -276,24 +308,35 @@ def fetch_feed(feed):
             "description": re.sub("<[^<]+?>", "", description)[:500],
         })
 
-    # Phase 2 : récupère en parallèle (jusqu'à 5 à la fois) les miniatures
-    # des articles qui n'en ont pas déjà une venant du flux RSS lui-même.
-    # Avant cette optimisation, chaque appel était bloquant et en série —
-    # avec un timeout de 8s chacun, quelques sites lents suffisaient à
-    # ajouter plusieurs minutes au temps total d'exécution.
-    items_needing_image = [item for item in items if not item["image"] and item["link"]]
-    if items_needing_image:
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            future_to_item = {executor.submit(fetch_og_image, item["link"]): item for item in items_needing_image}
-            for future in as_completed(future_to_item):
-                item = future_to_item[future]
-                try:
-                    item["image"] = future.result()
-                except Exception as e:
-                    print(f"  [og:image] erreur inattendue pour {item['link'][:60]}... : {e}")
-
     print(f"  {len(items)} article(s) pertinent(s)")
     return items
+
+
+def fetch_missing_images(items):
+    """Récupère en parallèle (jusqu'à 5 à la fois) les miniatures manquantes.
+
+    Appelée une seule fois par exécution, sur les seuls articles retenus
+    après déduplication. En série avec un timeout de 8 s chacun, quelques
+    sites lents suffisaient à ajouter plusieurs minutes au temps total.
+    """
+    needing = [item for item in items if not item.get("image") and item.get("link")]
+    if not needing:
+        return 0
+
+    print(f"\nMiniatures manquantes à récupérer : {len(needing)} article(s)...")
+    found = 0
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_item = {executor.submit(fetch_og_image, item["link"]): item for item in needing}
+        for future in as_completed(future_to_item):
+            item = future_to_item[future]
+            try:
+                item["image"] = future.result()
+                if item["image"]:
+                    found += 1
+            except Exception as e:
+                print(f"  [og:image] erreur inattendue pour {item['link'][:60]}... : {e}")
+    print(f"  {found}/{len(needing)} miniature(s) trouvée(s)")
+    return found
 
 
 # Le plafond d'historique, le tri et l'interprétation des dates vivent
@@ -341,7 +384,7 @@ def recheck_official_status(items):
     exécution précédente (avant l'ajout de cette règle, ou via une source
     qui n'est plus site:rockstargames.com/take2games.com) resterait
     mal classé indéfiniment, puisque load_existing_items() les conserve
-    tels quels sans jamais les repasser dans le pipeline de fetch_feed()."""
+    tels quels sans jamais les repasser dans le pipeline de collecte."""
     official_domains = ("rockstargames.com", "take2games.com")
     corrected = 0
     for item in items:
@@ -379,14 +422,27 @@ def main():
     existing_links = {item["link"] for item in all_items}  # lookup O(1) par lien
     newly_added = []
 
+    # Liens Google News déjà résolus lors des exécutions précédentes : évite
+    # de repayer une seconde de décodage par article déjà connu.
+    decoded_cache = {item["source_link"]: item["link"]
+                     for item in existing_items if item.get("source_link")}
+    if decoded_cache:
+        print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) déjà résolu(s)")
+
     for feed in FEEDS:
-        items = fetch_feed(feed)
+        items = collect_feed_items(feed, decoded_cache)
         for item in items:
             if not is_duplicate(item, all_items, existing_links):
                 all_items.append(item)
                 existing_links.add(item["link"])
                 newly_added.append(item)
+                if item.get("source_link"):
+                    decoded_cache[item["source_link"]] = item["link"]
         time.sleep(1)  # anti rate-limit entre les sources
+
+    # Les miniatures ne sont cherchées qu'ici, sur les seuls articles
+    # réellement retenus — et non plus sur tout ce que chaque flux renvoie.
+    fetch_missing_images(newly_added)
 
     # Tri sur la date RÉELLE (datetime), jamais sur la chaîne : des formats
     # mélangés donnent un ordre faux en comparaison de texte.

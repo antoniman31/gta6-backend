@@ -721,12 +721,37 @@ let currentFilter = "all";
 let currentTab = "all";
 let currentLang = "all";
 let lastItems = [];
-let lastNewLinks = [];
+// Set plutôt que tableau : ce conteneur est interrogé une fois par article
+// à chaque rendu et à chaque changement de filtre.
+let lastNewLinks = new Set();
 let activeProxyIndex = 0;
 let feedErrors = {}; // feed.id -> message d'erreur ou null si OK
 let logs = []; // { time, type, message }
 const PAGE_SIZE = 30;
 let visibleCount = PAGE_SIZE; // pagination progressive du rendu de la liste
+
+// Nombre d'articles déjà vus auxquels on compare un nouvel article pour la
+// similarité de titre. Sans cette borne, la détection des nouveautés
+// coûtait |articles| × |déjà vus| comparaisons de titres à chaque
+// vérification — plus d'un million dès 1000 articles, sur mobile. Même
+// compromis que la fenêtre TITLE_SIMILARITY_WINDOW du backend : deux
+// articles qui traitent de la même actu paraissent à peu près en même
+// temps, comparer à un article vieux de plusieurs mois n'apporte rien.
+const SEEN_COMPARE_WINDOW = 300;
+
+// Plafond du journal des articles déjà vus, aligné sur MAX_HISTORY_SIZE
+// côté backend. Sans lui, seenMap grossissait indéfiniment dans
+// localStorage, qui a une capacité limitée (~5 Mo).
+const MAX_SEEN_ENTRIES = 2000;
+
+// Date exploitable pour un tri : une date absente ou illisible renvoie 0 au
+// lieu de NaN, qui rendrait l'ordre de tri imprévisible.
+function dateValue(d){
+  if(!d) return 0;
+  const t = new Date(d).getTime();
+  return isNaN(t) ? 0 : t;
+}
+function byDateDesc(a, b){ return dateValue(b.date) - dateValue(a.date); }
 
 function addLog(type, message){
   logs.push({ time: new Date(), type, message });
@@ -871,7 +896,17 @@ async function saveSettings(){
   updateFooterNote();
 }
 
+// Retire les entrées les plus anciennes au-delà du plafond. Sans ça le
+// journal des articles vus grossissait sans limite dans localStorage.
+function pruneSeenMap(){
+  const links = Object.keys(seenMap);
+  if(links.length <= MAX_SEEN_ENTRIES) return;
+  links.sort((a, b) => dateValue(seenMap[b].date) - dateValue(seenMap[a].date));
+  for(const link of links.slice(MAX_SEEN_ENTRIES)) delete seenMap[link];
+}
+
 async function saveSeen(){
+  pruneSeenMap();
   try{ storageSet("seen-items-v1", JSON.stringify(seenMap)); }
   catch(e){ console.error("Erreur sauvegarde seen", e); }
 }
@@ -1044,6 +1079,30 @@ function isDuplicate(item, list){
     other.link === item.link ||
     titleSimilarity(item.title, other.title) > threshold
   );
+}
+
+// Articles déjà vus les plus récents, pour la comparaison de similarité.
+// Recalculé UNE fois par vérification, jamais par article.
+function recentSeenValues(){
+  return Object.values(seenMap).sort(byDateDesc).slice(0, SEEN_COMPARE_WINDOW);
+}
+
+// Détermine les articles réellement nouveaux depuis la dernière
+// vérification. Le test par lien est un accès direct (O(1)) ; seule la
+// similarité de titre, plus coûteuse, passe par la fenêtre bornée.
+function findNewItems(all){
+  if(firstLoad) return [];
+  const recent = recentSeenValues();
+  return all.filter(item => !seenMap[item.link] && !isDuplicate(item, recent));
+}
+
+// Variante de findDuplicate pour les fusions de listes : le test par lien
+// passe par un index, la similarité de titre par une fenêtre bornée.
+function findDuplicateIndexed(item, list, linkIndex){
+  if(linkIndex.has(item.link)) return linkIndex.get(item.link);
+  const threshold = settings.similarityThreshold / 100;
+  const window = list.length > SEEN_COMPARE_WINDOW ? list.slice(0, SEEN_COMPARE_WINDOW) : list;
+  return window.find(other => titleSimilarity(item.title, other.title) > threshold) || null;
 }
 
 function findDuplicate(item, list){
@@ -1261,17 +1320,14 @@ async function checkFromBackend(){
     description: item.description || "",
     favicon: faviconFor(item.link)
   }));
-  all.sort((a,b) => new Date(b.date) - new Date(a.date));
+  all.sort(byDateDesc);
 
-  let newOnes = [];
-  if(!firstLoad){
-    newOnes = all.filter(item => !isDuplicate(item, Object.values(seenMap)));
-  }
+  const newOnes = findNewItems(all);
   all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
   await saveSeen();
 
   lastItems = all;
-  lastNewLinks = newOnes.map(i => i.link);
+  lastNewLinks = new Set(newOnes.map(i => i.link));
   saveLastItems();
   applyFilters();
   firstLoad = false;
@@ -1372,6 +1428,10 @@ async function checkNow(force){
   setTimeout(() => { progressBar.style.display = "none"; }, 400);
 
   let all = [];
+  // Index lien -> article, pour que la fusion des résultats ne reparcoure
+  // pas toute la liste à chaque article (le mode direct tourne justement
+  // sur un téléphone quand le backend est tombé).
+  const allByLink = new Map();
   let okCount = 0, failCount = 0;
   results.forEach((result, i) => {
     const feed = activeFeeds[i];
@@ -1388,7 +1448,7 @@ async function checkNow(force){
       okCount++;
     }
     for(const item of result.value){
-      const match = findDuplicate(item, all);
+      const match = findDuplicateIndexed(item, all, allByLink);
       if(match){
         // Regroupe au lieu de jeter : on garde une trace des sources
         // additionnelles qui couvrent la même actu.
@@ -1398,15 +1458,13 @@ async function checkNow(force){
         }
       }else{
         all.push(item);
+        allByLink.set(item.link, item);
       }
     }
   });
-  all.sort((a,b) => new Date(b.date) - new Date(a.date));
+  all.sort(byDateDesc);
 
-  let newOnes = [];
-  if(!firstLoad){
-    newOnes = all.filter(item => !isDuplicate(item, Object.values(seenMap)));
-  }
+  const newOnes = findNewItems(all);
 
   all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
   await saveSeen();
@@ -1415,13 +1473,17 @@ async function checkNow(force){
   // une source échoue temporairement lors d'une vérification, ses articles
   // précédemment récupérés restent affichés plutôt que de disparaître.
   const merged = [...all];
+  const mergedByLink = new Map(merged.map(i => [i.link, i]));
   lastItems.forEach(oldItem => {
-    if(!findDuplicate(oldItem, merged)) merged.push(oldItem);
+    if(!findDuplicateIndexed(oldItem, merged, mergedByLink)){
+      merged.push(oldItem);
+      mergedByLink.set(oldItem.link, oldItem);
+    }
   });
-  merged.sort((a,b) => new Date(b.date) - new Date(a.date));
+  merged.sort(byDateDesc);
 
   lastItems = merged;
-  lastNewLinks = newOnes.map(i => i.link);
+  lastNewLinks = new Set(newOnes.map(i => i.link));
   saveLastItems();
   applyFilters();
 
@@ -1537,7 +1599,7 @@ function applyFilters(){
   if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
 
   if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
-  if(currentFilter === "new") items = items.filter(i => lastNewLinks.includes(i.link));
+  if(currentFilter === "new") items = items.filter(i => lastNewLinks.has(i.link));
   if(q) items = items.filter(i => i.title.toLowerCase().includes(q));
 
   renderFeed(items, lastNewLinks, q);
@@ -1660,7 +1722,7 @@ function highlightMatch(title, query){
 }
 
 function renderCard(item, newLinks, searchQuery){
-  const isNew = newLinks.includes(item.link);
+  const isNew = newLinks.has(item.link);
   const isRead = readSet.has(item.link);
   const dateObj = item.date ? new Date(item.date) : null;
   const dFixed = dateObj ? dateObj.toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : "";
