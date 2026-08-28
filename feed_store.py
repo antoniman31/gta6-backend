@@ -18,6 +18,7 @@ import os
 import re
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 # Au-delà de ce nombre d'articles, les plus anciens sont retirés pour que le
 # fichier (et le temps de déduplication) n'augmentent pas indéfiniment.
@@ -121,6 +122,72 @@ def cap_items(items, max_size=MAX_HISTORY_SIZE):
     if len(items) <= max_size:
         return items, 0
     return items[:max_size], len(items) - max_size
+
+
+# Paramètres de pistage ajoutés aux URL par les régies et les réseaux
+# sociaux. Ils ne changent jamais la page servie, mais rendent deux liens
+# vers le MÊME article différents pour la déduplication — le même article
+# partagé par deux canaux passait donc deux fois.
+TRACKING_PARAMS = {
+    "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "utm_id",
+    "utm_name", "utm_reader", "utm_brand", "utm_social", "utm_social-type",
+    "fbclid", "gclid", "gbraid", "wbraid", "dclid", "msclkid", "twclid",
+    "igshid", "mc_cid", "mc_eid", "ref_src", "ref_url", "spm",
+    "at_medium", "at_campaign", "at_custom1", "at_custom2",
+    "xtor", "ncid", "cmpid", "_ga", "_gl", "yclid",
+}
+
+
+def canonical_link(url):
+    """Nettoie une URL d'article pour servir de clé de déduplication stable.
+
+    Retire les paramètres de pistage et l'ancre (#...), qui désignent une
+    position dans la page et jamais un article différent. Tout le reste est
+    conservé tel quel : certains sites font transiter l'identifiant de
+    l'article par un paramètre (?p=123, ?id=456), les supprimer casserait
+    le lien.
+
+    En cas d'URL illisible, renvoie la valeur d'origine — mieux vaut un
+    doublon qu'un lien cassé.
+    """
+    if not url or "://" not in url:
+        return url
+    try:
+        parts = urlparse(url)
+        gardes = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True)
+                  if k.lower() not in TRACKING_PARAMS]
+        return urlunparse((parts.scheme, parts.netloc, parts.path, parts.params,
+                           urlencode(gardes), ""))
+    except Exception:
+        return url
+
+
+def canonicalize_stored_links(items):
+    """Applique canonical_link à l'historique déjà stocké.
+
+    Même raison que normalize_stored_dates : l'historique n'est jamais
+    repassé dans le pipeline de collecte, donc les liens engrangés avant
+    cette règle garderaient leurs paramètres de pistage indéfiniment — et
+    continueraient de faire doublon avec leurs équivalents propres.
+
+    Les articles qui deviennent identiques après nettoyage sont fusionnés,
+    le premier rencontré étant conservé. Renvoie (liste nettoyée, liens
+    modifiés, doublons retirés).
+    """
+    nettoyes = 0
+    vus = set()
+    resultat = []
+    for item in items:
+        origine = item.get("link", "")
+        propre = canonical_link(origine)
+        if propre != origine:
+            item["link"] = propre
+            nettoyes += 1
+        if propre in vus:
+            continue
+        vus.add(propre)
+        resultat.append(item)
+    return resultat, nettoyes, len(items) - len(resultat)
 
 
 def load_feed(path=FEED_PATH):

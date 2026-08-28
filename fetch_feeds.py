@@ -199,7 +199,7 @@ def normalize_date(entry):
     return raw if parsed == feed_store.DATE_FLOOR else parsed.isoformat()
 
 
-def collect_feed_items(feed, decoded_cache=None):
+def collect_feed_items(feed, decoded_cache=None, http_state=None):
     """Récupère et filtre les articles d'une source, SANS aller chercher les
     miniatures manquantes sur les pages.
 
@@ -218,16 +218,49 @@ def collect_feed_items(feed, decoded_cache=None):
     flux Google News, payées à chaque fois sur des articles déjà connus.
     """
     print(f"[{feed['name']}] récupération...")
+
+    # Requête conditionnelle : on redemande le flux en précisant la version
+    # qu'on a déjà. Si rien n'a changé, le serveur répond 304 sans corps —
+    # quelques octets au lieu de plusieurs dizaines de kilo-octets. Sans ça
+    # le robot retélécharge intégralement 35 flux 48 fois par jour, même
+    # inchangés. Au-delà de la vitesse, c'est une question d'hygiène : la
+    # documentation de feedparser prévient qu'un client qui ignore ces
+    # en-têtes peut se faire bannir par l'éditeur.
+    precedent = (http_state or {}).get(feed["id"], {})
     try:
-        parsed = feedparser.parse(feed["url"], agent=USER_AGENT)
-        if parsed.bozo and not parsed.entries:
-            print(f"  échec : {parsed.bozo_exception}")
-            return [], 0
+        parsed = feedparser.parse(
+            feed["url"], agent=USER_AGENT,
+            etag=precedent.get("etag") or None,
+            modified=precedent.get("modified") or None,
+        )
     except Exception as e:
         print(f"  échec réseau : {e}")
-        return [], 0
+        return [], {"raw_count": 0, "not_modified": False}
+
+    statut = getattr(parsed, "status", None)
+    if statut == 304:
+        print("  inchangé depuis la dernière fois (304), rien à retélécharger")
+        # On renvoie l'état précédent tel quel : un 304 ne fournit pas de
+        # nouveaux validateurs, les réécrire à vide ferait retélécharger le
+        # flux entier au prochain passage.
+        return [], {"raw_count": 0, "not_modified": True,
+                    "etag": precedent.get("etag"), "modified": precedent.get("modified")}
+
+    if parsed.bozo and not parsed.entries:
+        print(f"  échec : {parsed.bozo_exception}")
+        return [], {"raw_count": 0, "not_modified": False}
 
     raw_count = len(parsed.entries)
+
+    # Validateurs à renvoyer au prochain passage. feedparser les expose
+    # directement quand le serveur les fournit ; beaucoup de flux n'en
+    # donnent aucun, auquel cas on retélécharge comme avant.
+    nouvel_etat = {
+        "raw_count": raw_count,
+        "not_modified": False,
+        "etag": getattr(parsed, "etag", None),
+        "modified": getattr(parsed, "modified", None),
+    }
 
     items = []
     for entry in parsed.entries[:30]:
@@ -268,6 +301,10 @@ def collect_feed_items(feed, decoded_cache=None):
                 source_link = link
         else:
             real_link = link
+
+        # Nettoyage des paramètres de pistage : deux liens vers le même
+        # article ne doivent pas compter pour deux.
+        real_link = feed_store.canonical_link(real_link)
 
         # Les flux "officiels" sont en réalité des recherches Google News sur
         # site:rockstargames.com — Google peut aussi indexer des articles
@@ -311,7 +348,7 @@ def collect_feed_items(feed, decoded_cache=None):
         })
 
     print(f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre")
-    return items, raw_count
+    return items, nouvel_etat
 
 
 def fetch_missing_images(items):
@@ -385,20 +422,13 @@ def write_new_items_file(new_items):
         print(f"  [notif] impossible d'écrire {NEW_ITEMS_FILE} : {e}")
 
 
-def load_existing_items():
-    """Charge les articles déjà connus depuis la dernière exécution, pour ne
-    jamais rien perdre même si un article sort de la fenêtre RSS récente
-    d'une source (généralement limitée aux 10-30 derniers items)."""
-    return feed_store.load_items()
-
-
 def recheck_official_status(items):
     """Réapplique la vérification de domaine officiel aux articles déjà
     stockés — sans elle, un article marqué official=True lors d'une
     exécution précédente (avant l'ajout de cette règle, ou via une source
     qui n'est plus site:rockstargames.com/take2games.com) resterait
-    mal classé indéfiniment, puisque load_existing_items() les conserve
-    tels quels sans jamais les repasser dans le pipeline de collecte."""
+    mal classé indéfiniment : l'historique est rechargé tel quel, sans
+    jamais repasser dans le pipeline de collecte."""
     official_domains = ("rockstargames.com", "take2games.com")
     corrected = 0
     for item in items:
@@ -415,7 +445,7 @@ def recheck_official_status(items):
     return items
 
 
-def build_sources_health(all_items, raw_counts, new_counts):
+def build_sources_health(all_items, feed_infos, new_counts):
     """Dresse l'état de chaque source, pour repérer un flux mort.
 
     Deux signaux distincts :
@@ -444,8 +474,12 @@ def build_sources_health(all_items, raw_counts, new_counts):
         if last and last != feed_store.DATE_FLOOR:
             days = (now - last).days
 
-        raw = raw_counts.get(feed["id"], 0)
-        if raw == 0:
+        info = feed_infos.get(feed["id"], {})
+        raw = info.get("raw_count", 0)
+        # Un flux qui répond 304 ne renvoie aucune entrée, mais il est
+        # parfaitement vivant : le confondre avec un flux mort produirait
+        # une fausse alerte à chaque passage.
+        if raw == 0 and not info.get("not_modified"):
             status = "muette"
         elif days is None or days > SILENT_SOURCE_DAYS:
             status = "tarie"
@@ -456,6 +490,7 @@ def build_sources_health(all_items, raw_counts, new_counts):
             "id": feed["id"],
             "name": name,
             "entries_fetched": raw,
+            "not_modified": bool(info.get("not_modified")),
             "new_this_run": new_counts.get(feed["id"], 0),
             "last_article": last.isoformat() if last and last != feed_store.DATE_FLOOR else None,
             "days_since_last_article": days,
@@ -480,7 +515,10 @@ def build_sources_health(all_items, raw_counts, new_counts):
 
 
 def main():
-    existing_items = load_existing_items()
+    stored = feed_store.load_feed()
+    existing_items = stored.get("items", [])
+    # Validateurs HTTP du passage précédent, par source.
+    http_state = stored.get("feed_http_state", {}) or {}
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
@@ -496,6 +534,14 @@ def main():
     if fixed_dates:
         print(f"Correction rétroactive : {fixed_dates} date(s) convertie(s) au format ISO 8601")
 
+    # Même logique pour les liens : ceux engrangés avant la règle de
+    # nettoyage gardent leurs paramètres de pistage et continueraient de
+    # faire doublon avec leurs équivalents propres. Idempotente.
+    existing_items, liens_nettoyes, doublons = feed_store.canonicalize_stored_links(existing_items)
+    if liens_nettoyes or doublons:
+        print(f"Correction rétroactive : {liens_nettoyes} lien(s) nettoyé(s) de leurs paramètres "
+              f"de pistage, {doublons} doublon(s) ainsi révélé(s) et retiré(s)")
+
     all_items = list(existing_items)  # on part de l'historique, pas de zéro
     existing_links = {item["link"] for item in all_items}  # lookup O(1) par lien
     newly_added = []
@@ -507,11 +553,14 @@ def main():
     if decoded_cache:
         print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) déjà résolu(s)")
 
-    raw_counts = {}
+    feed_infos = {}
     new_counts = {}
+    inchanges = 0
     for feed in FEEDS:
-        items, raw_count = collect_feed_items(feed, decoded_cache)
-        raw_counts[feed["id"]] = raw_count
+        items, info = collect_feed_items(feed, decoded_cache, http_state)
+        feed_infos[feed["id"]] = info
+        if info.get("not_modified"):
+            inchanges += 1
         new_counts[feed["id"]] = 0
         for item in items:
             if not is_duplicate(item, all_items, existing_links):
@@ -522,6 +571,10 @@ def main():
                 if item.get("source_link"):
                     decoded_cache[item["source_link"]] = item["link"]
         time.sleep(1)  # anti rate-limit entre les sources
+
+    if inchanges:
+        print(f"\n{inchanges}/{len(FEEDS)} source(s) inchangée(s) depuis le dernier passage "
+              "(réponse 304, rien retéléchargé)")
 
     # Les miniatures ne sont cherchées qu'ici, sur les seuls articles
     # réellement retenus — et non plus sur tout ce que chaque flux renvoie.
@@ -552,7 +605,15 @@ def main():
         # État de chaque source : permet de repérer un flux mort sans
         # éplucher les logs du run. Exposé dans feed.json pour pouvoir être
         # affiché plus tard par l'app sans retoucher au backend.
-        "sources_health": build_sources_health(all_items, raw_counts, new_counts),
+        "sources_health": build_sources_health(all_items, feed_infos, new_counts),
+        # Validateurs HTTP par source, pour la requête conditionnelle du
+        # prochain passage. Conservés dans feed.json faute d'autre stockage
+        # persistant : quelques centaines d'octets, négligeables.
+        "feed_http_state": {
+            fid: {"etag": inf.get("etag"), "modified": inf.get("modified")}
+            for fid, inf in feed_infos.items()
+            if inf.get("etag") or inf.get("modified")
+        },
         # Permet à l'app de proposer les notifications push sans que la clé
         # soit codée en dur dans index.html : elle suit la configuration du
         # dépôt, et disparaît si le secret est retiré.

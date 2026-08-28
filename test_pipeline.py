@@ -189,6 +189,41 @@ def test_real_history():
     check(len({i["link"] for i in items}) == len(items), "aucun lien dupliqué dans l'historique publié")
 
 
+def test_canonical_link():
+    print("\n[liens] nettoyage des paramètres de pistage")
+    c = feed_store.canonical_link
+    check(c("https://x.fr/a?utm_source=twitter&id=42") == "https://x.fr/a?id=42",
+          "pistage retiré, paramètre fonctionnel conservé")
+    check(c("https://x.fr/a?utm_source=x&utm_medium=y&fbclid=z") == "https://x.fr/a",
+          "tous les paramètres de pistage connus sont retirés")
+    check(c("https://x.fr/a#section") == "https://x.fr/a",
+          "l'ancre est retirée (elle désigne une position, jamais un autre article)")
+    check(c("https://x.fr/a?p=123") == "https://x.fr/a?p=123",
+          "un identifiant d'article n'est pas retiré")
+    check(c("pas une url") == "pas une url", "valeur illisible renvoyée telle quelle")
+    check(c("") == "", "valeur vide tolérée")
+    check(c("https://x.fr/a?UTM_SOURCE=X") == "https://x.fr/a",
+          "insensible à la casse du nom de paramètre")
+
+
+def test_canonicalize_stored_links():
+    print("\n[liens] repasse rétroactive sur l'historique")
+    items = [
+        article("https://x.fr/a?utm_source=rss", "2026-08-28T10:00:00+00:00", "Article A"),
+        article("https://x.fr/a", "2026-08-28T09:00:00+00:00", "Le même, partagé autrement"),
+        article("https://x.fr/b", "2026-08-28T08:00:00+00:00", "Article B"),
+    ]
+    nettoyes, modifies, doublons = feed_store.canonicalize_stored_links(items)
+    check(modifies == 1, "un seul lien portait un paramètre de pistage")
+    check(doublons == 1, "le doublon ainsi révélé est retiré")
+    check(len(nettoyes) == 2, "il reste deux articles distincts")
+    check(nettoyes[0]["title"] == "Article A",
+          "c'est la première occurrence qui est conservée (la plus récente après tri)")
+
+    encore, m2, d2 = feed_store.canonicalize_stored_links(nettoyes)
+    check(m2 == 0 and d2 == 0, "idempotente : le second passage ne change rien")
+
+
 def test_push_payload():
     print("\n[push] contenu de la notification")
     import push_notify
@@ -234,6 +269,7 @@ def test_push_subscriptions():
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
+           test_canonical_link, test_canonicalize_stored_links,
            test_push_payload, test_push_subscriptions, test_real_history):
     fn()
 

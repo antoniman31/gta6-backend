@@ -46,6 +46,13 @@ effective près de l'heure.
    repart jamais de zéro, il ajoute au fil du temps.
 2. **Récupère les 35 sources** (liste `FEEDS`), avec gestion d'erreur par
    source : si une source échoue, les 34 autres continuent normalement.
+   La requête est **conditionnelle** : le robot renvoie l'`ETag` et le
+   `Last-Modified` reçus au passage précédent, et le serveur répond `304`
+   (quelques octets, sans corps) si rien n'a changé. Sans ça il
+   retéléchargerait 35 flux entiers 48 fois par jour ; la documentation de
+   feedparser prévient qu'un client qui ignore ces en-têtes peut se faire
+   bannir par l'éditeur. Les validateurs sont conservés dans
+   `feed_http_state` de `feed.json`, faute d'autre stockage persistant.
 3. **Filtre par mots-clés** — les sources officielles (Rockstar, Take-Two)
    exigent un mot-clé GTA 6 dans le titre. Les sources "spécialistes"
    (`specialist_source: True` — RockstarMag, RockstarINTEL, GTA6 Times,
@@ -61,7 +68,11 @@ effective près de l'heure.
    simultanées via `ThreadPoolExecutor`) — d'abord depuis le flux RSS
    lui-même si présente, sinon en allant chercher la balise `og:image` ou
    `twitter:image` sur la vraie page de l'article.
-6. **Déduplique** — par lien exact (lookup instantané via un `set`), puis
+6. **Déduplique** — les liens sont d'abord nettoyés de leurs paramètres de
+   pistage (`utm_*`, `fbclid`, `gclid`…) et de leur ancre, qui ne changent
+   jamais la page servie mais faisaient compter deux fois le même article
+   partagé par deux canaux. Puis dédup par lien exact (lookup instantané
+   via un `set`), puis
    par similarité de titre (`SequenceMatcher`, seuil 75%) sur les 200
    articles les plus récents seulement — comparer un nouvel article à un
    autre vieux de plusieurs mois n'a jamais de sens en pratique, et ça
