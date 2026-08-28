@@ -189,9 +189,88 @@ def test_real_history():
     check(len({i["link"] for i in items}) == len(items), "aucun lien dupliqué dans l'historique publié")
 
 
+def test_canonical_link():
+    print("\n[liens] nettoyage des paramètres de pistage")
+    c = feed_store.canonical_link
+    check(c("https://x.fr/a?utm_source=twitter&id=42") == "https://x.fr/a?id=42",
+          "pistage retiré, paramètre fonctionnel conservé")
+    check(c("https://x.fr/a?utm_source=x&utm_medium=y&fbclid=z") == "https://x.fr/a",
+          "tous les paramètres de pistage connus sont retirés")
+    check(c("https://x.fr/a#section") == "https://x.fr/a",
+          "l'ancre est retirée (elle désigne une position, jamais un autre article)")
+    check(c("https://x.fr/a?p=123") == "https://x.fr/a?p=123",
+          "un identifiant d'article n'est pas retiré")
+    check(c("pas une url") == "pas une url", "valeur illisible renvoyée telle quelle")
+    check(c("") == "", "valeur vide tolérée")
+    check(c("https://x.fr/a?UTM_SOURCE=X") == "https://x.fr/a",
+          "insensible à la casse du nom de paramètre")
+
+
+def test_canonicalize_stored_links():
+    print("\n[liens] repasse rétroactive sur l'historique")
+    items = [
+        article("https://x.fr/a?utm_source=rss", "2026-08-28T10:00:00+00:00", "Article A"),
+        article("https://x.fr/a", "2026-08-28T09:00:00+00:00", "Le même, partagé autrement"),
+        article("https://x.fr/b", "2026-08-28T08:00:00+00:00", "Article B"),
+    ]
+    nettoyes, modifies, doublons = feed_store.canonicalize_stored_links(items)
+    check(modifies == 1, "un seul lien portait un paramètre de pistage")
+    check(doublons == 1, "le doublon ainsi révélé est retiré")
+    check(len(nettoyes) == 2, "il reste deux articles distincts")
+    check(nettoyes[0]["title"] == "Article A",
+          "c'est la première occurrence qui est conservée (la plus récente après tri)")
+
+    encore, m2, d2 = feed_store.canonicalize_stored_links(nettoyes)
+    check(m2 == 0 and d2 == 0, "idempotente : le second passage ne change rien")
+
+
+def test_push_payload():
+    print("\n[push] contenu de la notification")
+    import push_notify
+
+    un = push_notify.build_payload([{"title": "Rockstar annonce la date de sortie", "official": True}])
+    check(un["title"].startswith("1 nouvel article"), "singulier correct pour un seul article")
+    check("officiel" in un["title"], "les articles officiels sont signalés dans le titre")
+    check(un["body"] == "Rockstar annonce la date de sortie",
+          "le titre de l'article sert de corps (sinon il faut ouvrir l'app pour savoir de quoi il s'agit)")
+
+    trois = push_notify.build_payload([
+        {"title": "Un trailer inattendu", "official": False},
+        {"title": "Autre chose", "official": False},
+        {"title": "Encore autre chose", "official": False}])
+    check(trois["title"].startswith("3 nouveaux articles"), "pluriel correct")
+    check("officiel" not in trois["title"], "rien d'officiel : pas de mention parasite")
+    check("et 2 autres" in trois["body"], "le reste est résumé en nombre")
+    check(trois["tag"] == un["tag"], "tag identique : une notification remplace la précédente")
+
+    long_titre = push_notify.build_payload([{"title": "x" * 400, "official": False}])
+    check(len(long_titre["body"]) <= 180, "corps tronqué pour ne pas déborder")
+
+
+def test_push_subscriptions():
+    print("\n[push] lecture du secret d'abonnements")
+    import os
+    import push_notify
+
+    def avec(valeur):
+        os.environ["PUSH_SUBSCRIPTIONS"] = valeur
+        return push_notify.load_subscriptions()
+
+    valide = '{"endpoint":"https://fcm.example/abc","keys":{"p256dh":"x","auth":"y"}}'
+    check(len(avec("[" + valide + "]")) == 1, "tableau JSON accepté")
+    check(len(avec(valide)) == 1, "abonnement seul accepté (collé à la main depuis l'app)")
+    check(len(avec("[" + valide + "," + valide + "]")) == 2, "plusieurs appareils acceptés")
+    check(avec("") == [], "secret vide -> aucun abonnement, pas d'erreur")
+    check(avec("pas du json") == [], "secret illisible -> aucun abonnement, pas de plantage")
+    check(avec('[{"endpoint":"https://x"}]') == [], "abonnement sans clés rejeté")
+    os.environ.pop("PUSH_SUBSCRIPTIONS", None)
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
-           test_merge_refuses_empty_local, test_feed_store_io, test_real_history):
+           test_merge_refuses_empty_local, test_feed_store_io,
+           test_canonical_link, test_canonicalize_stored_links,
+           test_push_payload, test_push_subscriptions, test_real_history):
     fn()
 
 print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} vérifications passées")

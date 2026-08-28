@@ -375,6 +375,15 @@
   .setting-row label{font-size:13px;}
   .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
   .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
+  .tag-badge.tag-hot{
+    background:color-mix(in srgb, #ff6b35 18%, transparent);
+    color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
+  }
+  .history-line{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+    margin-bottom:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+  }
+  .history-line button{padding:3px 8px; font-size:10px;}
   .token-status{
     font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:6px;
   }
@@ -478,6 +487,8 @@
   <div class="meta-row">
     <span id="countLine">0 article suivi</span>
   </div>
+
+  <div id="historyLine" class="history-line" style="display:none;"></div>
 
   <div class="search-row">
     <div class="search-input-wrap">
@@ -598,6 +609,59 @@
       <span class="setting-label">Backend GitHub (optionnel)</span>
       <input type="text" id="backendUrlInput" class="setting-input wide" placeholder="https://tonpseudo.github.io/gta6-backend/feed.json" style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;">
       <div class="setting-desc">Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
+    </div>
+
+    <div class="setting-group" id="vapidSetupGroup" style="display:none;">
+      <span class="setting-label">Notifications push — configuration initiale</span>
+      <div class="setting-desc">
+        Le dépôt n'a pas encore de clés de notification. Génère-les ici (elles sont
+        créées dans ce navigateur et ne partent nulle part), puis crée les deux
+        secrets GitHub correspondants.
+      </div>
+      <div class="setting-buttons">
+        <button class="small" onclick="generateVapidKeys()">Générer une paire de clés</button>
+      </div>
+      <div id="vapidKeysBlock" style="display:none; margin-top:8px;">
+        <div class="setting-desc"><strong>VAPID_PUBLIC_KEY</strong> — secret GitHub</div>
+        <textarea id="vapidPublicOut" readonly rows="2" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <div class="setting-desc" style="margin-top:6px;"><strong>VAPID_PRIVATE_KEY</strong> — secret GitHub, à ne jamais partager</div>
+        <textarea id="vapidPrivateOut" readonly rows="2" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <div class="setting-buttons">
+          <button class="small" onclick="copyFieldValue('vapidPublicOut', this)">Copier la publique</button>
+          <button class="small" onclick="copyFieldValue('vapidPrivateOut', this)">Copier la privée</button>
+        </div>
+        <div class="setting-desc" style="margin-top:6px;">
+          Crée les deux secrets dans Settings → Secrets and variables → Actions, puis
+          relance le robot. Cette section disparaîtra et l'abonnement deviendra possible.
+          Ne garde pas de capture d'écran de la clé privée.
+        </div>
+      </div>
+    </div>
+
+    <div class="setting-group" id="pushGroup" style="display:none;">
+      <span class="setting-label">Notifications sur cet appareil</span>
+      <div class="setting-buttons">
+        <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer les notifications</button>
+        <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Tester l'affichage</button>
+        <button class="small" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
+      </div>
+      <div class="token-status dim" id="pushStatusLine"></div>
+      <div id="pushSubscriptionBlock" style="display:none; margin-top:8px;">
+        <div class="setting-desc" style="margin-bottom:4px;">
+          Dernière étape, à faire une seule fois : copie ce bloc et colle-le dans le
+          secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong> (Settings → Secrets and
+          variables → Actions). Tant que ce n'est pas fait, le robot ne sait pas où
+          envoyer les notifications.
+        </div>
+        <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <div class="setting-buttons">
+          <button class="small" onclick="copyPushSubscription(this)">Copier l'abonnement</button>
+        </div>
+      </div>
+      <div class="setting-desc">
+        Une vraie notification système, qui ouvre l'article au lieu d'ouvrir Discord.
+        Un seul message récapitulatif par passage du robot, comme sur Discord.
+      </div>
     </div>
 
     <div class="setting-group">
@@ -996,6 +1060,7 @@ function onSimChange(v){
 function openSettings(){
   populateSettingsUI();
   refreshTokenUI();
+  refreshPushUI();
   document.getElementById("settingsOverlay").classList.add("open");
 }
 function closeSettings(){
@@ -1349,12 +1414,61 @@ function faviconFor(url){
 let lastCheckTime = 0;
 const CACHE_DURATION_MS = 3 * 60 * 1000; // 3 min
 
-async function checkFromBackend(){
-  const url = settings.backendUrl + (settings.backendUrl.includes("?") ? "&" : "?") + "_t=" + Date.now();
-  addLog("info", `Lecture directe du backend : ${settings.backendUrl}`);
-  const res = await fetch(url);
+// URL du fichier allégé, déduite de celle du fichier complet. Si elle
+// n'existe pas (backend d'une version antérieure), on retombe sur le
+// fichier complet — l'app reste compatible avec l'ancien format.
+function recentUrlFrom(fullUrl){
+  if(!fullUrl.endsWith("feed.json")) return null;
+  return fullUrl.replace(/feed\.json$/, "feed-recent.json");
+}
+
+function avecAntiCache(url){
+  return url + (url.includes("?") ? "&" : "?") + "_t=" + Date.now();
+}
+
+async function checkFromBackend(force){
+  const complet = settings.backendUrl;
+  const allege = recentUrlFrom(complet);
+
+  // Sauf demande explicite d'historique complet, on tente le fichier
+  // allégé : ~50 Ko compressés contre ~164 Ko, à chaque ouverture.
+  let url = complet;
+  if(allege && !force){
+    try{
+      const essai = await fetch(avecAntiCache(allege));
+      if(essai.ok){
+        const data = await essai.json();
+        addLog("info", `Lecture du backend (allégé) : ${allege}`);
+        return await applyBackendData(data, allege);
+      }
+    }catch(e){ /* pas de fichier allégé : on prend le complet */ }
+  }
+
+  addLog("info", `Lecture directe du backend : ${url}`);
+  const res = await fetch(avecAntiCache(url));
   if(!res.ok) throw new Error("HTTP " + res.status);
   const data = await res.json();
+  return await applyBackendData(data, url);
+}
+
+async function applyBackendData(data, sourceUrl){
+
+  if(typeof data.hot_threshold === "number" && data.hot_threshold > 0){
+    hotThreshold = data.hot_threshold;
+  }
+  historyPartial = !!data.partial;
+  historyFullUrl = data.full_url ? sourceUrl.replace(/[^/]+$/, data.full_url) : "";
+  updateHistoryLine();
+
+  // Clé publique VAPID publiée par le backend : conditionne l'affichage de
+  // la section « Notifications » dans les paramètres.
+  if(data.vapid_public_key !== undefined){
+    const nouvelle = data.vapid_public_key || "";
+    if(nouvelle !== backendVapidKey){
+      backendVapidKey = nouvelle;
+      refreshPushUI();
+    }
+  }
 
   const all = (data.items || []).map(item => ({
     title: item.title,
@@ -1367,6 +1481,7 @@ async function checkFromBackend(){
     lang: item.lang || null,
     image: item.image || null,
     description: item.description || "",
+    extraSources: item.extraSources || null,
     favicon: faviconFor(item.link)
   }));
   all.sort(byDateDesc);
@@ -1423,6 +1538,42 @@ async function checkFromBackend(){
 
   if(document.getElementById("settingsOverlay").classList.contains("open")){
     populateSettingsUI();
+  }
+}
+
+function updateHistoryLine(){
+  const el = document.getElementById("historyLine");
+  if(!el) return;
+  if(!historyPartial){
+    el.style.display = "none";
+    return;
+  }
+  el.style.display = "flex";
+  el.innerHTML = `<span>${lastItems.length} articles récents chargés — l'historique complet ne l'est pas encore.</span>` +
+    `<button class="small" onclick="loadFullHistory()">Tout charger</button>`;
+}
+
+// Télécharge l'historique complet. Déclenché à la demande, ou
+// automatiquement dès qu'une recherche est lancée : sans ça, chercher un
+// article de mai dans 300 articles récents renverrait « aucun résultat »
+// alors que l'article existe — le pire comportement possible pour une
+// recherche.
+async function loadFullHistory(raison){
+  if(!historyPartial || historyLoading) return;
+  historyLoading = true;
+  const el = document.getElementById("historyLine");
+  if(el) el.innerHTML = "<span>Chargement de l'historique complet…</span>";
+  addLog("info", "Chargement de l'historique complet" + (raison ? ` (${raison})` : "") + "…");
+  try{
+    await checkFromBackend(true);
+    addLog("ok", `Historique complet chargé — ${lastItems.length} article(s).`);
+  }catch(e){
+    addLog("fail", `Historique complet indisponible : ${escapeHtml(e.message || "erreur inconnue")}`);
+    if(el) el.innerHTML = `<span>Historique complet indisponible.</span>` +
+      `<button class="small" onclick="loadFullHistory()">Réessayer</button>`;
+  }finally{
+    historyLoading = false;
+    applyFilters();
   }
 }
 
@@ -1646,6 +1797,13 @@ function clearSearch(){
 
 function applyFilters(){
   const q = document.getElementById("searchInput").value.trim().toLowerCase();
+
+  // Une recherche sur un historique tronqué donnerait des résultats faux
+  // sans le dire. Dès la première recherche, on complète en arrière-plan.
+  if(q && historyPartial && !historyLoading){
+    loadFullHistory("recherche lancée");
+  }
+
   let items = lastItems;
 
   if(currentTab === "rockstar") items = items.filter(i => i.official);
@@ -1656,14 +1814,20 @@ function applyFilters(){
 
   if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
   if(currentFilter === "new") items = items.filter(i => lastNewLinks.has(i.link));
-  if(q) items = items.filter(i => i.title.toLowerCase().includes(q));
+  // La recherche porte aussi sur le résumé : beaucoup d'articles ne
+  // mentionnent le sujet cherché que dans le corps du texte.
+  if(q) items = items.filter(i =>
+    i.title.toLowerCase().includes(q) ||
+    (i.description || "").toLowerCase().includes(q));
 
   renderFeed(items, lastNewLinks, q);
   updateTabBadges();
   updateDocumentTitle();
 
   const countEl = document.getElementById("countLine");
-  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"");
+  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"")
+    + (q && historyPartial ? " (historique partiel, chargement en cours…)" : "");
+  updateHistoryLine();
 }
 
 // Compteurs de non-lus par onglet — priorisation en un coup d'œil.
@@ -1805,6 +1969,14 @@ function renderCard(item, newLinks, searchQuery){
   const videoBadge = /\btrailer\b|\bgameplay\b|\bvideo\b|\bvidéo\b|\bfootage\b|\bclip\b/i.test(titleLower) ? `<span class="tag-badge tag-video">VIDÉO</span>` : "";
   const langBadge = item.lang === "fr" ? `<span class="tag-badge tag-lang">FR</span>` : "";
 
+  // Nombre de rédactions qui couvrent la même actualité. Le backend ne
+  // jette plus les doublons de titre : il compte les sources. Quand
+  // plusieurs rédactions publient la même chose dans la foulée, c'est en
+  // général un trailer, une date ou une annonce — pas de la supputation.
+  const nbSources = 1 + (item.extraSources ? item.extraSources.length : 0);
+  const hotBadge = nbSources >= hotThreshold
+    ? `<span class="tag-badge tag-hot">🔥 ${nbSources} SOURCES</span>` : "";
+
   const extraSourcesLine = (item.extraSources && item.extraSources.length > 0)
     ? `<div class="card-extra">+ ${item.extraSources.length} autre${item.extraSources.length>1?"s":""} source${item.extraSources.length>1?"s":""} : ${item.extraSources.map(s => escapeHtml(s.source)).join(", ")}</div>`
     : "";
@@ -1816,7 +1988,7 @@ function renderCard(item, newLinks, searchQuery){
         <div class="card-body">
           <div class="card-src-row">
             <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
-            ${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
+            ${hotBadge}${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
           </div>
           <div class="card-title">${linkUrl
             ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`
@@ -1970,6 +2142,244 @@ async function markAllRead(makeRead){
   });
   await saveRead();
   applyFilters();
+}
+
+// ---------- Notifications push natives ----------
+// Le protocole Web Push ne demande pas de serveur permanent : il faut une
+// paire de clés VAPID et, par appareil, un abonnement créé par le
+// navigateur. C'est le workflow GitHub Actions qui envoie, quelques
+// secondes par passage. La clé publique arrive dans feed.json ; la clé
+// privée reste un secret GitHub.
+//
+// Contrainte assumée : sans backend, l'abonnement créé ici ne peut pas
+// être transmis automatiquement au robot. L'app l'affiche donc pour que tu
+// le colles une fois dans un secret GitHub. C'est le seul geste manuel, et
+// il n'est à faire qu'une fois par appareil.
+let backendVapidKey = "";
+
+// Seuil de « grosse actu », fourni par le backend (hot_threshold) pour que
+// les deux restent cohérents sans le coder en dur des deux côtés.
+let hotThreshold = 4;
+
+// L'app charge d'abord un fichier allégé (300 articles récents) pour ne
+// pas retélécharger tout l'historique à chaque ouverture sur mobile.
+// historyPartial dit qu'on ne voit pas tout : c'est ce qui empêche une
+// recherche de renvoyer silencieusement des résultats incomplets.
+let historyPartial = false;
+let historyFullUrl = "";
+let historyLoading = false;
+
+function pushSupported(){
+  return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+}
+
+// La clé VAPID transite en base64url ; l'API PushManager veut un Uint8Array.
+function vapidKeyToBytes(base64url){
+  const padding = "=".repeat((4 - (base64url.length % 4)) % 4);
+  const base64 = (base64url + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+function setPushStatus(message, kind){
+  const el = document.getElementById("pushStatusLine");
+  if(!el) return;
+  el.textContent = message;
+  el.className = "token-status " + (kind || "dim");
+}
+
+// La section n'apparaît que si les notifications sont réellement possibles :
+// navigateur compatible ET clé publique publiée par le backend. Proposer un
+// bouton qui ne peut pas marcher serait pire que ne rien proposer.
+async function refreshPushUI(){
+  const group = document.getElementById("pushGroup");
+  if(!group) return;
+
+  const setup = document.getElementById("vapidSetupGroup");
+
+  if(!pushSupported()){
+    group.style.display = "none";
+    if(setup) setup.style.display = "none";
+    return;
+  }
+  if(!backendVapidKey){
+    // Navigateur capable, mais le dépôt n'a pas encore de clés : on propose
+    // de les générer plutôt que de masquer la fonctionnalité sans explication.
+    group.style.display = "none";
+    if(setup) setup.style.display = "block";
+    return;
+  }
+  if(setup) setup.style.display = "none";
+  group.style.display = "block";
+
+  let subscription = null;
+  try{
+    const reg = await navigator.serviceWorker.getRegistration();
+    if(reg) subscription = await reg.pushManager.getSubscription();
+  }catch(e){ /* service worker pas encore prêt */ }
+
+  const enableBtn = document.getElementById("pushEnableBtn");
+  const disableBtn = document.getElementById("pushDisableBtn");
+  const block = document.getElementById("pushSubscriptionBlock");
+
+  if(subscription){
+    enableBtn.style.display = "none";
+    disableBtn.style.display = "inline-flex";
+    block.style.display = "block";
+    document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
+    setPushStatus("Cet appareil est abonné.", "ok");
+  }else{
+    enableBtn.style.display = "inline-flex";
+    disableBtn.style.display = "none";
+    block.style.display = "none";
+    if(Notification.permission === "denied"){
+      setPushStatus("Notifications bloquées pour ce site — à réautoriser dans les réglages du navigateur.", "warn");
+      enableBtn.disabled = true;
+    }else{
+      setPushStatus("Notifications non activées sur cet appareil.", "dim");
+      enableBtn.disabled = false;
+    }
+  }
+}
+
+async function enablePush(){
+  if(!pushSupported()){
+    setPushStatus("Ce navigateur ne gère pas les notifications push.", "warn");
+    return;
+  }
+  if(!backendVapidKey){
+    setPushStatus("Le backend ne publie pas de clé VAPID — secret VAPID_PUBLIC_KEY manquant côté dépôt.", "warn");
+    return;
+  }
+
+  setPushStatus("Demande d'autorisation…", "dim");
+  let permission;
+  try{
+    permission = await Notification.requestPermission();
+  }catch(e){
+    setPushStatus("Autorisation impossible sur ce navigateur.", "warn");
+    return;
+  }
+  if(permission !== "granted"){
+    setPushStatus("Autorisation refusée — rien n'a été activé.", "warn");
+    await refreshPushUI();
+    return;
+  }
+
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const subscription = await reg.pushManager.subscribe({
+      // Obligatoire : le navigateur exige que chaque push produise une
+      // notification visible, sinon il révoque l'abonnement.
+      userVisibleOnly: true,
+      applicationServerKey: vapidKeyToBytes(backendVapidKey)
+    });
+    document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
+    addLog("ok", "Abonnement aux notifications push créé sur cet appareil.");
+    await refreshPushUI();
+    setPushStatus("Abonné. Il reste à coller le bloc ci-dessous dans le secret GitHub.", "ok");
+  }catch(e){
+    setPushStatus("Échec de l'abonnement : " + (e.message || "erreur inconnue"), "warn");
+    addLog("fail", `Abonnement push — ${escapeHtml(e.message || "erreur inconnue")}`);
+  }
+}
+
+async function disablePush(){
+  try{
+    const reg = await navigator.serviceWorker.getRegistration();
+    const subscription = reg && await reg.pushManager.getSubscription();
+    if(subscription) await subscription.unsubscribe();
+    addLog("info", "Abonnement aux notifications push retiré de cet appareil.");
+  }catch(e){ /* déjà désabonné */ }
+  await refreshPushUI();
+  setPushStatus("Désabonné. Pense à retirer l'ancien abonnement du secret PUSH_SUBSCRIPTIONS.", "dim");
+}
+
+// Affiche une notification locale, sans passer par le serveur : vérifie que
+// l'appareil sait bien les afficher (mode silencieux, ne pas déranger,
+// autorisation système…) avant de chercher pourquoi le robot n'envoie rien.
+async function testPushDisplay(){
+  if(!pushSupported()){
+    setPushStatus("Ce navigateur ne gère pas les notifications.", "warn");
+    return;
+  }
+  if(Notification.permission !== "granted"){
+    const p = await Notification.requestPermission();
+    if(p !== "granted"){
+      setPushStatus("Autorisation refusée — impossible de tester.", "warn");
+      return;
+    }
+  }
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification("GTA6_WATCH — test", {
+      body: "Si tu vois ceci, l'affichage des notifications fonctionne sur cet appareil.",
+      icon: "icon-192.png",
+      badge: "icon-192.png",
+      tag: "gta6watch-test"
+    });
+    setPushStatus("Notification de test envoyée. Ceci ne teste que l'affichage, pas l'envoi par le robot.", "ok");
+  }catch(e){
+    setPushStatus("Affichage impossible : " + (e.message || "erreur inconnue"), "warn");
+  }
+}
+
+// Génère une paire de clés VAPID directement dans le navigateur, via Web
+// Crypto. Évite d'imposer une installation Python locale pour une opération
+// à faire une seule fois. Les clés ne quittent pas l'appareil : c'est
+// l'utilisateur qui les recopie dans les secrets GitHub.
+//
+// Formats produits :
+//   - publique : point EC non compressé en base64url (ce qu'attend
+//     applicationServerKey côté navigateur) ;
+//   - privée   : le scalaire brut de 32 octets en base64url (le champ "d"
+//     du JWK), format accepté par py_vapid côté robot.
+async function generateVapidKeys(){
+  const bloc = document.getElementById("vapidKeysBlock");
+  try{
+    const paire = await crypto.subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
+
+    const brutPublic = new Uint8Array(await crypto.subtle.exportKey("raw", paire.publicKey));
+    const jwkPrivee = await crypto.subtle.exportKey("jwk", paire.privateKey);
+
+    document.getElementById("vapidPublicOut").value = bytesToBase64Url(brutPublic);
+    document.getElementById("vapidPrivateOut").value = jwkPrivee.d;
+    bloc.style.display = "block";
+    addLog("ok", "Paire de clés VAPID générée localement.");
+  }catch(e){
+    bloc.style.display = "none";
+    addLog("fail", `Génération des clés VAPID impossible : ${escapeHtml(e.message || "erreur inconnue")}`);
+    alert("Génération impossible sur ce navigateur : " + (e.message || "erreur inconnue"));
+  }
+}
+
+function bytesToBase64Url(bytes){
+  let binaire = "";
+  for(const o of bytes) binaire += String.fromCharCode(o);
+  return btoa(binaire).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function copyFieldValue(id, btn){
+  const texte = document.getElementById(id).value;
+  navigator.clipboard.writeText(texte).then(() => {
+    if(btn){
+      const original = btn.textContent;
+      btn.textContent = "copié";
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    }
+  }).catch(() => prompt("Copie la valeur :", texte));
+}
+
+function copyPushSubscription(btn){
+  const texte = document.getElementById("pushSubscriptionText").value;
+  navigator.clipboard.writeText(texte).then(() => {
+    if(btn){
+      const original = btn.textContent;
+      btn.textContent = "copié";
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    }
+  }).catch(() => prompt("Copie l'abonnement :", texte));
 }
 
 // ---------- Déclenchement à distance du robot ----------

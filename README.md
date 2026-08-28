@@ -46,6 +46,13 @@ effective près de l'heure.
    repart jamais de zéro, il ajoute au fil du temps.
 2. **Récupère les 35 sources** (liste `FEEDS`), avec gestion d'erreur par
    source : si une source échoue, les 34 autres continuent normalement.
+   La requête est **conditionnelle** : le robot renvoie l'`ETag` et le
+   `Last-Modified` reçus au passage précédent, et le serveur répond `304`
+   (quelques octets, sans corps) si rien n'a changé. Sans ça il
+   retéléchargerait 35 flux entiers 48 fois par jour ; la documentation de
+   feedparser prévient qu'un client qui ignore ces en-têtes peut se faire
+   bannir par l'éditeur. Les validateurs sont conservés dans
+   `feed_http_state` de `feed.json`, faute d'autre stockage persistant.
 3. **Filtre par mots-clés** — les sources officielles (Rockstar, Take-Two)
    exigent un mot-clé GTA 6 dans le titre. Les sources "spécialistes"
    (`specialist_source: True` — RockstarMag, RockstarINTEL, GTA6 Times,
@@ -61,7 +68,19 @@ effective près de l'heure.
    simultanées via `ThreadPoolExecutor`) — d'abord depuis le flux RSS
    lui-même si présente, sinon en allant chercher la balise `og:image` ou
    `twitter:image` sur la vraie page de l'article.
-6. **Déduplique** — par lien exact (lookup instantané via un `set`), puis
+6. **Compte les sources et déduplique** — quand plusieurs rédactions
+   couvrent la même actualité, les doublons ne sont plus jetés
+   purement : la source supplémentaire est enregistrée dans
+   `extraSources`. C'est la meilleure information disponible pour repérer
+   une actualité majeure — un article isolé est en général une reprise ou
+   de la supputation, quatre rédactions dans la foulée signalent un
+   trailer, une date ou une annonce. L'app affiche un badge « 🔥 N
+   SOURCES » au-delà de `hot_threshold` (4 par défaut).
+   Les liens sont d'abord nettoyés de leurs paramètres de
+   pistage (`utm_*`, `fbclid`, `gclid`…) et de leur ancre, qui ne changent
+   jamais la page servie mais faisaient compter deux fois le même article
+   partagé par deux canaux. Puis dédup par lien exact (lookup instantané
+   via un `set`), puis
    par similarité de titre (`SequenceMatcher`, seuil 75%) sur les 200
    articles les plus récents seulement — comparer un nouvel article à un
    autre vieux de plusieurs mois n'a jamais de sens en pratique, et ça
@@ -76,13 +95,20 @@ effective près de l'heure.
    voir la section Notifications. Rien n'est déposé au tout premier
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
-9. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
+9. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
+   récents, ~50 Ko compressés contre ~164 Ko pour l'historique complet.
+   C'est ce fichier que l'app charge à l'ouverture ; elle télécharge le
+   complet à la demande, et automatiquement dès qu'une recherche est
+   lancée pour ne jamais renvoyer de résultats tronqués sans le dire. Les
+   deux fichiers sont toujours écrits ensemble, y compris après une
+   fusion de conflit.
+10. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
    une source « muette » n'a renvoyé aucune entrée brute, signe net d'un
    flux cassé ; une source « tarie » répond mais n'a rien publié depuis
    plus de 30 jours, ce qui peut être parfaitement normal (Rockstar et
    Take-Two communiquent peu). Sans ce signal, un flux réellement mort
    passerait inaperçu indéfiniment.
-10. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
+11. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
    propre copie séparée — voir la limite ci-dessous sur cette
@@ -132,6 +158,10 @@ effective près de l'heure.
   niveau des données. Appelé par le workflow uniquement en cas de rejet
   de push.
 - **`discord_notify.py`** — l'envoi Discord, appelé après publication.
+- **`push_notify.py`** — les notifications push natives, appelées au même
+  moment. N'importe pas `pywebpush` au niveau du module : la construction
+  du message et la lecture des abonnements restent testables sans la
+  dépendance.
 
 ### Tests et contrôles
 
@@ -183,6 +213,118 @@ rss2json). C'est redondant avec le backend, mais volontaire : sans ce
 filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
+
+## Notifications push natives
+
+Discord fonctionne, mais taper une notification Discord ouvre Discord,
+jamais l'article. Une notification push native ouvre directement le site.
+Les deux coexistent : chacune s'active par la présence de ses secrets, et
+se désactive par leur absence.
+
+Le protocole Web Push ne demande **pas de serveur permanent** : il faut
+une paire de clés VAPID et, par appareil, un abonnement créé par le
+navigateur. L'envoi tient en quelques secondes dans une étape de workflow
+(`push_notify.py`).
+
+**Mise en place** (une fois pour le dépôt) :
+
+1. Ouvrir l'app → ⚙ Paramètres. Tant que le dépôt n'a pas de clés, un bloc
+   *Configuration initiale* propose de les générer.
+2. Cliquer **Générer une paire de clés**. Elles sont créées dans le
+   navigateur par Web Crypto et ne partent nulle part — inutile
+   d'installer quoi que ce soit.
+3. Créer deux secrets GitHub (Settings → Secrets and variables → Actions) :
+   **`VAPID_PUBLIC_KEY`** et **`VAPID_PRIVATE_KEY`**.
+   Ne pas conserver de capture d'écran de la privée.
+4. Facultatif : **`VAPID_SUBJECT`**, une adresse `mailto:` que les services
+   de push utilisent pour joindre l'expéditeur en cas d'abus. Jamais
+   montrée à l'utilisateur.
+5. Relancer le robot. Il recopie la clé **publique** dans `feed.json` — le
+   bloc de configuration disparaît et l'abonnement devient possible.
+
+**Puis, par appareil :**
+
+6. ⚙ Paramètres → *Notifications sur cet appareil* → **Activer les
+   notifications**, et accepter la demande du navigateur.
+7. Copier le bloc d'abonnement affiché et le coller dans le secret
+   **`PUSH_SUBSCRIPTIONS`**. Pour plusieurs appareils, mettre un tableau
+   JSON : `[{...}, {...}]`.
+
+C'est le seul geste manuel du dispositif, et il découle directement de
+l'absence de backend : l'app ne peut pas écrire dans les secrets du dépôt
+toute seule. Le bouton **Tester l'affichage** envoie une notification
+locale — utile pour vérifier que l'appareil les affiche (mode silencieux,
+Ne pas déranger…) avant de chercher pourquoi le robot n'envoie rien.
+
+**Pourquoi les abonnements sont un secret et pas un fichier du dépôt :** un
+abonnement rendu public permettrait à n'importe qui d'envoyer des
+notifications sur l'appareil concerné.
+
+**Abonnements expirés.** Quand un navigateur renouvelle son abonnement, le
+service de push répond 404 ou 410. Le robot le signale explicitement dans
+les logs du run : il faut alors retirer l'ancienne entrée du secret et
+refaire l'abonnement depuis l'app.
+
+**Support.** Complet sur Android. Sur iPhone, l'app doit être installée sur
+l'écran d'accueil et le support y est plus restreint.
+
+## Surveillance : savoir quand le robot s'arrête
+
+GitHub envoie un mail quand une exécution **échoue**. Il n'envoie rien
+quand aucune exécution ne **part** — et c'est exactement ce qui s'est
+produit fin août 2026 : le robot est resté muet des heures sans que rien
+ne le signale. Le bandeau dans l'app ne prévient que si on ouvre l'app.
+
+La parade est un *dead man's switch* : le robot envoie un signal de vie à
+chaque passage, et c'est l'**absence** de signal qui déclenche l'alerte.
+
+**Mise en place** (gratuit, une fois) :
+
+1. Créer un compte sur [healthchecks.io](https://healthchecks.io) —
+   gratuit jusqu'à 20 surveillances.
+2. Créer un check, régler la période sur 1 heure et le délai de grâce sur
+   3 heures (le planificateur de GitHub prend du retard, inutile de crier
+   au loup au premier créneau manqué).
+3. Copier l'URL de ping fournie (`https://hc-ping.com/…`).
+4. Dans le dépôt : Settings → Secrets and variables → Actions → New
+   repository secret, nommé **`HEALTHCHECK_URL`**.
+5. Choisir le canal d'alerte dans healthchecks.io : mail, Discord, ou
+   notification mobile.
+
+Sans ce secret, l'étape ne fait rien et le robot fonctionne normalement.
+En cas d'échec du job, le robot signale explicitement l'échec (`/fail`)
+plutôt que d'attendre l'expiration du délai.
+
+## Planificateur externe : réparer le cron plutôt que le contourner
+
+Le `schedule` de GitHub Actions est *best effort* par conception. GitHub
+documente que les exécutions planifiées peuvent être retardées, et
+purement abandonnées en période de charge. Le décalage à `7,37` réduit le
+problème sans le supprimer.
+
+Le workflow accepte donc aussi un déclenchement **externe** :
+
+```
+POST https://api.github.com/repos/antoniman31/gta6-backend/dispatches
+Authorization: Bearer <jeton fine-grained, Contents: read and write>
+Accept: application/vnd.github+json
+
+{"event_type": "run-feeds"}
+```
+
+N'importe quel planificateur sait envoyer ça — [cron-job.org](https://cron-job.org)
+est gratuit et suffit largement. À l'inverse du `schedule` de GitHub,
+l'appel part à l'heure dite et l'exécution démarre immédiatement.
+
+Le `schedule` reste actif comme filet de sécurité : si le planificateur
+externe tombe, GitHub prend le relais tant bien que mal. Les deux
+ensemble ne créent pas de doublon problématique — la file d'attente
+(`concurrency`) sérialise les exécutions, et la publication fusionnante
+absorbe les chevauchements.
+
+Note : ce déclencheur demande un jeton avec la permission **Contents**,
+plus large que celui du bouton dans l'app (Actions seul). À réserver au
+planificateur, pas à mettre dans un navigateur.
 
 ## Déclenchement à distance depuis l'app
 

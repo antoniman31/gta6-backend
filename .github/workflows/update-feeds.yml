@@ -12,6 +12,18 @@ on:
     # mais ramène la cadence effective près de l'heure.
     - cron: "7,37 * * * *"
   workflow_dispatch:
+  # Déclenchement par un planificateur EXTERNE (cron-job.org, Cloudflare
+  # Workers, n'importe quel cron), via l'API GitHub :
+  #   POST /repos/antoniman31/gta6-backend/dispatches
+  #   {"event_type": "run-feeds"}
+  #
+  # Le `schedule` de GitHub reste en place comme filet, mais il est
+  # best-effort par conception : GitHub documente que les exécutions
+  # planifiées peuvent être retardées et purement abandonnées en période de
+  # charge. Un planificateur externe, lui, appelle à l'heure dite et
+  # l'exécution part immédiatement. Voir README.
+  repository_dispatch:
+    types: [run-feeds]
 
 permissions:
   contents: write
@@ -56,6 +68,9 @@ jobs:
         env:
           # Hors du dépôt : ce fichier ne doit jamais pouvoir être committé.
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+          # Clé PUBLIQUE : recopiée dans feed.json pour que l'app puisse
+          # créer un abonnement push. Aucun risque à l'exposer.
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
 
       - name: Publier le résultat
         env:
@@ -64,7 +79,10 @@ jobs:
           git config --global user.name "GTA6 Watch Bot"
           git config --global user.email "actions@github.com"
 
-          git add docs/feed.json
+          # Les deux fichiers vont ensemble : l'allégé est ce que l'app
+          # charge en premier, publier l'un sans l'autre la laisserait sur
+          # un état périmé.
+          git add docs/feed.json docs/feed-recent.json
           # Commit systématique, même si generated_at est la seule vraie
           # différence : Git compresse les diffs (delta), donc le coût réel
           # en espace est minime. L'alternative (ignorer generated_at dans
@@ -106,16 +124,16 @@ jobs:
               echo '{"items":[]}' > "$RUNNER_TEMP/theirs.json"
             fi
 
-            if ! python merge_feed.py "$RUNNER_TEMP/theirs.json" "$RUNNER_TEMP/ours.json" "$RUNNER_TEMP/merged.json"; then
+            # On repart de l'état distant, puis la fusion écrit directement
+            # dans docs/ : le commit local rejeté est remplacé, jamais
+            # rebasé. merge_feed régénère aussi le fichier allégé, pour que
+            # les deux restent cohérents.
+            git reset --hard origin/main
+            if ! python merge_feed.py "$RUNNER_TEMP/theirs.json" "$RUNNER_TEMP/ours.json" docs/feed.json; then
               echo "Fusion impossible — abandon sans écraser le dépôt distant."
               exit 1
             fi
-
-            # On repart de l'état distant, puis on réapplique le résultat
-            # fusionné : le commit local rejeté est remplacé, jamais rebasé.
-            git reset --hard origin/main
-            cp "$RUNNER_TEMP/merged.json" docs/feed.json
-            git add docs/feed.json
+            git add docs/feed.json docs/feed-recent.json
             if git diff --quiet --cached; then
               echo "Le distant contient déjà tout — rien à republier."
               exit 0
@@ -138,3 +156,47 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+
+      # Notification push native, en plus de Discord : taper une
+      # notification Discord ouvre Discord, jamais l'article. Comme pour
+      # Discord, l'envoi n'a lieu qu'APRÈS une publication réussie.
+      # Sans les secrets VAPID_PRIVATE_KEY et PUSH_SUBSCRIPTIONS, l'étape
+      # ne fait rien.
+      - name: Notifier par push
+        if: success()
+        run: python push_notify.py
+        env:
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
+          NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+
+      # Signal de vie ("dead man's switch"). C'est l'ABSENCE de ce signal
+      # qui déclenche l'alerte, pas sa présence : un robot qui ne tourne
+      # plus du tout n'envoie aucun message d'erreur, et c'est précisément
+      # le cas qui est passé inaperçu pendant des heures fin août 2026.
+      # GitHub n'envoie un mail que si un run échoue — jamais si aucun run
+      # ne part.
+      #
+      # Sans le secret HEALTHCHECK_URL configuré, l'étape ne fait rien.
+      - name: Signaler que le robot est vivant
+        if: always()
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ -z "$HEALTHCHECK_URL" ]; then
+            echo "HEALTHCHECK_URL non configuré — surveillance externe désactivée."
+            exit 0
+          fi
+          if [ "$JOB_STATUS" = "success" ]; then
+            CIBLE="$HEALTHCHECK_URL"
+            echo "Envoi du signal de vie..."
+          else
+            CIBLE="$HEALTHCHECK_URL/fail"
+            echo "Signalement de l'échec ($JOB_STATUS)..."
+          fi
+          # Cette étape ne doit jamais faire échouer le job : le travail est
+          # déjà publié, une panne du service de surveillance n'est pas une
+          # panne du robot.
+          curl -fsS -m 10 --retry 3 "$CIBLE" > /dev/null && echo "Signal envoyé." || echo "Signal non envoyé (service injoignable)."
