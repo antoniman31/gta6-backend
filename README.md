@@ -140,6 +140,10 @@ python test_pipeline.py        # dates, tri, plafond, fusion
 python check_sources_sync.py   # backend Python vs mode de secours JS
 ```
 
+Aucun des deux n'a besoin de réseau ni des dépendances du robot : le
+contrôle de synchronisation ne lit que des constantes et neutralise les
+imports manquants, pour tourner sur n'importe quelle machine.
+
 Les deux tournent en CI (`.github/workflows/checks.yml`) sur chaque pull
 request et sur `main` — sauf pour les commits du robot, qui ne touchent que
 `docs/feed.json` et sont exclus par `paths-ignore` (sans quoi ces contrôles
@@ -179,6 +183,49 @@ rss2json). C'est redondant avec le backend, mais volontaire : sans ce
 filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
+
+## Déclenchement à distance depuis l'app
+
+Le déclencheur planifié de GitHub étant best-effort, il arrive qu'un
+créneau saute. L'app permet de relancer le robot depuis le téléphone sans
+ouvrir l'onglet Actions.
+
+**Créer le jeton** (à faire une fois, sur GitHub) :
+
+1. Settings → Developer settings → Personal access tokens →
+   **Fine-grained tokens** → Generate new token
+2. **Repository access** : *Only select repositories* → `gta6-backend`
+   uniquement
+3. **Permissions** → Repository permissions → **Actions : Read and write**.
+   Rien d'autre.
+4. Choisir une **date d'expiration**, générer, copier le jeton
+5. Dans l'app : ⚙ Paramètres → *Déclenchement à distance* → coller →
+   Enregistrer. Le bouton « Forcer une mise à jour du robot » apparaît
+   alors sous « Vérifier maintenant ».
+
+**Ce que le jeton peut et ne peut pas faire.** Avec la permission
+ci-dessus, il ne sait que lister et lancer des exécutions du workflow. Il
+**ne peut pas** modifier le code, lire les secrets, ni toucher au contenu
+du dépôt. Au pire, quelqu'un qui le récupérerait pourrait déclencher des
+mises à jour de flux.
+
+**Où il est rangé.** Dans sa propre clé `localStorage`
+(`gta6watch:github-token-v1`), jamais mélangé à `settings-v1` : il ne part
+pas dans l'export OPML et n'est pas effacé par « Réinitialiser les
+paramètres ». Le bouton « Oublier ce token » l'efface. Il est propre à cet
+appareil et à ce navigateur — c'est aussi la limite du procédé : un jeton
+stocké dans un navigateur est lisible par tout script s'exécutant sur la
+page, d'où l'insistance sur une portée minimale et une expiration.
+
+**Suivi.** Après déclenchement, l'app interroge GitHub toutes les 10 s
+(pendant 10 min maximum) et affiche l'état — en file d'attente, en cours,
+terminé — puis recharge les articles dès que l'exécution réussit. Un délai
+de garde de 2 minutes empêche d'empiler les demandes : le workflow a de
+toute façon une file d'attente côté GitHub.
+
+L'état des cinq derniers passages est visible dans la modale ⓘ. Le dépôt
+étant public, cette liste s'affiche même sans jeton (quota anonyme de
+l'API GitHub : 60 requêtes/h par adresse IP).
 
 ## PWA — installabilité
 

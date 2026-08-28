@@ -73,9 +73,35 @@ def extract_js_literal(html, start_marker):
         raise SystemExit(f"ERREUR : littéral JS illisible après {start_marker!r} : {e}")
 
 
-def main():
+def import_fetch_feeds():
+    """Importe fetch_feeds sans exiger ses dépendances réseau.
+
+    Ce contrôle ne lit que des constantes (FEEDS, KEYWORDS,
+    OFFICIAL_KEYWORDS), mais importer le module déclenche feedparser,
+    requests et bs4. On les remplace par des modules vides si elles sont
+    absentes, pour que le script tourne partout — y compris sur une machine
+    où l'environnement du robot n'est pas installé, comme test_pipeline.py.
+    """
+    import types
+    for name in ("feedparser", "requests", "bs4", "googlenewsdecoder"):
+        if name not in sys.modules:
+            try:
+                __import__(name)
+            except ImportError:
+                sys.modules[name] = types.ModuleType(name)
+    # fetch_feeds accède à ces deux attributs au moment de l'import.
+    if not hasattr(sys.modules["bs4"], "BeautifulSoup"):
+        sys.modules["bs4"].BeautifulSoup = object
+    if not hasattr(sys.modules["googlenewsdecoder"], "gnewsdecoder"):
+        sys.modules["googlenewsdecoder"].gnewsdecoder = None
+
     sys.path.insert(0, ".")
     import fetch_feeds
+    return fetch_feeds
+
+
+def main():
+    fetch_feeds = import_fetch_feeds()
 
     html = open(HTML_PATH, encoding="utf-8").read()
     js_feeds = extract_js_literal(html, "const DEFAULT_FEEDS =")
