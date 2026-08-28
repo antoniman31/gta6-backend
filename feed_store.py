@@ -22,7 +22,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 # Au-delà de ce nombre d'articles, les plus anciens sont retirés pour que le
 # fichier (et le temps de déduplication) n'augmentent pas indéfiniment.
-MAX_HISTORY_SIZE = 2000
+MAX_HISTORY_SIZE = 20000
 
 FEED_PATH = "docs/feed.json"
 
