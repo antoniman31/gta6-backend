@@ -34,10 +34,18 @@ import sys
 
 SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 
-# Adresse de contact exigée par la spécification VAPID : les services de
+# Identifiant de contact exigé par la spécification VAPID : les services de
 # push (Google, Mozilla, Apple) s'en servent pour joindre l'expéditeur en
-# cas d'abus. Elle n'est jamais montrée à l'utilisateur.
-VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "mailto:contact@example.org")
+# cas d'abus. Jamais montré à l'utilisateur. La spécification accepte une
+# adresse mailto: ou une URL https: — on prend l'URL du site par défaut,
+# plutôt que d'inscrire une adresse e-mail dans un dépôt public.
+#
+# Le `or` est indispensable, pas cosmétique : quand un secret GitHub
+# n'existe pas, le workflow définit quand même la variable, à VIDE. Or la
+# valeur par défaut de os.environ.get ne s'applique qu'à une variable
+# ABSENTE. Sans ce garde-fou, le champ obligatoire "sub" partait vide et
+# le service de push rejetait l'envoi avec « Missing 'sub' from claims ».
+VAPID_SUBJECT = os.environ.get("VAPID_SUBJECT", "").strip() or SITE_URL
 
 
 def load_subscriptions():
