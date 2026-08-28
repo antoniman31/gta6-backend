@@ -1731,8 +1731,14 @@ function renderCard(item, newLinks, searchQuery){
   const safeId = btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, "");
   itemsById[safeId] = item;
 
-  const favicon = item.favicon ? `<img src="${escapeHtml(item.favicon)}" class="card-favicon" alt="" onerror="this.style.display='none'">` : "";
-  const thumb = item.image ? `<img src="${escapeHtml(item.image)}" class="card-thumb" alt="" onerror="this.style.display='none'">` : "";
+  // safeUrl sur tout ce qui devient une URL réellement chargée ou suivie :
+  // ces valeurs viennent de flux tiers et peuvent porter un schéma
+  // javascript:/data: ou un guillemet destiné à sortir de l'attribut.
+  const faviconUrl = safeUrl(item.favicon);
+  const imageUrl = safeUrl(item.image);
+  const linkUrl = safeUrl(item.link);
+  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" class="card-favicon" alt="" onerror="this.style.display='none'">` : "";
+  const thumb = imageUrl ? `<img src="${escapeHtml(imageUrl)}" class="card-thumb" alt="" onerror="this.style.display='none'">` : "";
   const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
   const specialistBadge = (item.specialist && !item.official) ? `<span class="specialist-badge">SPÉCIALISTE GTA 6</span>` : "";
 
@@ -1756,7 +1762,9 @@ function renderCard(item, newLinks, searchQuery){
             <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
             ${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
           </div>
-          <div class="card-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a></div>
+          <div class="card-title">${linkUrl
+            ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`
+            : highlightMatch(item.title, searchQuery)}</div>
           <div class="card-date">${d}</div>
           ${extraSourcesLine}
         </div>
@@ -1771,13 +1779,45 @@ function renderCard(item, newLinks, searchQuery){
   `;
 }
 
+// Échappement HTML complet. L'implémentation précédente passait par
+// textContent puis innerHTML, ce qui n'échappe QUE & < > : les guillemets
+// passaient tels quels. Or ces valeurs remplissent des attributs délimités
+// par des guillemets doubles (src, href) — une URL contenant un guillemet
+// sortait donc de l'attribut et pouvait injecter du code. Les données
+// viennent de 35 flux RSS tiers et, en mode de secours, de 6 proxys CORS
+// publics : ce n'est pas une menace théorique.
 function escapeHtml(str){
-  const d = document.createElement("div");
-  d.textContent = str;
-  return d.innerHTML;
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
+
+// Échappement pour une valeur insérée dans une chaîne JavaScript, elle-même
+// placée dans un attribut HTML (onclick="f('...')"). L'ordre compte :
+// l'anti-slash d'abord, sinon on ré-échapperait ses propres échappements.
 function escapeAttr(str){
-  return str.replace(/'/g, "\\'");
+  return escapeHtml(
+    String(str == null ? "" : str)
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'")
+      .replace(/\r?\n/g, " ")
+  );
+}
+
+// N'autorise que http(s). Une URL de flux tiers peut porter un schéma
+// javascript: ou data:, qui s'exécuterait au clic sur le titre d'un
+// article. Renvoie "" pour tout le reste, ce qui neutralise le lien.
+function safeUrl(url){
+  if(!url) return "";
+  try{
+    const parsed = new URL(url, window.location.href);
+    return (parsed.protocol === "http:" || parsed.protocol === "https:") ? parsed.href : "";
+  }catch(e){
+    return "";
+  }
 }
 
 function copyLink(link, btn){
@@ -1797,6 +1837,9 @@ function copyLink(link, btn){
 }
 
 function openTranslated(link){
+  const clean = safeUrl(link);
+  if(!clean) return;
+  link = clean;
   // Ouvre l'article via le service de traduction de pages web de Google —
   // format d'URL historique, non garanti à 100% dans la durée (Google peut
   // le faire évoluer sans préavis), mais sans risque : en cas d'échec ça
@@ -1813,12 +1856,14 @@ function openPreview(safeId){
   previewSafeId = safeId;
 
   const sourceLabel = item.official ? "OFFICIEL ROCKSTAR" : item.source.toUpperCase();
-  const favicon = item.favicon ? `<img src="${escapeHtml(item.favicon)}" alt="" style="width:16px; height:16px; border-radius:3px; margin-right:6px; vertical-align:-3px;">` : "";
+  const faviconUrl = safeUrl(item.favicon);
+  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" alt="" style="width:16px; height:16px; border-radius:3px; margin-right:6px; vertical-align:-3px;">` : "";
   document.getElementById("previewSource").innerHTML = favicon + escapeHtml(sourceLabel);
   document.getElementById("previewTitle").textContent = item.title;
   document.getElementById("previewBody").textContent = item.description || "Aucun extrait disponible pour cet article.";
-  document.getElementById("previewLink").href = item.link;
-  document.getElementById("previewImage").innerHTML = item.image ? `<img src="${escapeHtml(item.image)}" alt="" onerror="this.parentElement.style.display='none'">` : "";
+  document.getElementById("previewLink").href = safeUrl(item.link) || "#";
+  const previewImageUrl = safeUrl(item.image);
+  document.getElementById("previewImage").innerHTML = previewImageUrl ? `<img src="${escapeHtml(previewImageUrl)}" alt="" onerror="this.parentElement.style.display='none'">` : "";
   document.getElementById("previewTranslateBtn").style.display = item.lang !== "fr" ? "block" : "none";
 
   document.getElementById("previewOverlay").classList.add("open");
