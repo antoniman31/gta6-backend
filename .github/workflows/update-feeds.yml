@@ -12,6 +12,18 @@ on:
     # mais ramène la cadence effective près de l'heure.
     - cron: "7,37 * * * *"
   workflow_dispatch:
+  # Déclenchement par un planificateur EXTERNE (cron-job.org, Cloudflare
+  # Workers, n'importe quel cron), via l'API GitHub :
+  #   POST /repos/antoniman31/gta6-backend/dispatches
+  #   {"event_type": "run-feeds"}
+  #
+  # Le `schedule` de GitHub reste en place comme filet, mais il est
+  # best-effort par conception : GitHub documente que les exécutions
+  # planifiées peuvent être retardées et purement abandonnées en période de
+  # charge. Un planificateur externe, lui, appelle à l'heure dite et
+  # l'exécution part immédiatement. Voir README.
+  repository_dispatch:
+    types: [run-feeds]
 
 permissions:
   contents: write
@@ -138,3 +150,33 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+
+      # Signal de vie ("dead man's switch"). C'est l'ABSENCE de ce signal
+      # qui déclenche l'alerte, pas sa présence : un robot qui ne tourne
+      # plus du tout n'envoie aucun message d'erreur, et c'est précisément
+      # le cas qui est passé inaperçu pendant des heures fin août 2026.
+      # GitHub n'envoie un mail que si un run échoue — jamais si aucun run
+      # ne part.
+      #
+      # Sans le secret HEALTHCHECK_URL configuré, l'étape ne fait rien.
+      - name: Signaler que le robot est vivant
+        if: always()
+        env:
+          HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ -z "$HEALTHCHECK_URL" ]; then
+            echo "HEALTHCHECK_URL non configuré — surveillance externe désactivée."
+            exit 0
+          fi
+          if [ "$JOB_STATUS" = "success" ]; then
+            CIBLE="$HEALTHCHECK_URL"
+            echo "Envoi du signal de vie..."
+          else
+            CIBLE="$HEALTHCHECK_URL/fail"
+            echo "Signalement de l'échec ($JOB_STATUS)..."
+          fi
+          # Cette étape ne doit jamais faire échouer le job : le travail est
+          # déjà publié, une panne du service de surveillance n'est pas une
+          # panne du robot.
+          curl -fsS -m 10 --retry 3 "$CIBLE" > /dev/null && echo "Signal envoyé." || echo "Signal non envoyé (service injoignable)."

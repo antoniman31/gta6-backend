@@ -184,6 +184,64 @@ filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
 
+## Surveillance : savoir quand le robot s'arrête
+
+GitHub envoie un mail quand une exécution **échoue**. Il n'envoie rien
+quand aucune exécution ne **part** — et c'est exactement ce qui s'est
+produit fin août 2026 : le robot est resté muet des heures sans que rien
+ne le signale. Le bandeau dans l'app ne prévient que si on ouvre l'app.
+
+La parade est un *dead man's switch* : le robot envoie un signal de vie à
+chaque passage, et c'est l'**absence** de signal qui déclenche l'alerte.
+
+**Mise en place** (gratuit, une fois) :
+
+1. Créer un compte sur [healthchecks.io](https://healthchecks.io) —
+   gratuit jusqu'à 20 surveillances.
+2. Créer un check, régler la période sur 1 heure et le délai de grâce sur
+   3 heures (le planificateur de GitHub prend du retard, inutile de crier
+   au loup au premier créneau manqué).
+3. Copier l'URL de ping fournie (`https://hc-ping.com/…`).
+4. Dans le dépôt : Settings → Secrets and variables → Actions → New
+   repository secret, nommé **`HEALTHCHECK_URL`**.
+5. Choisir le canal d'alerte dans healthchecks.io : mail, Discord, ou
+   notification mobile.
+
+Sans ce secret, l'étape ne fait rien et le robot fonctionne normalement.
+En cas d'échec du job, le robot signale explicitement l'échec (`/fail`)
+plutôt que d'attendre l'expiration du délai.
+
+## Planificateur externe : réparer le cron plutôt que le contourner
+
+Le `schedule` de GitHub Actions est *best effort* par conception. GitHub
+documente que les exécutions planifiées peuvent être retardées, et
+purement abandonnées en période de charge. Le décalage à `7,37` réduit le
+problème sans le supprimer.
+
+Le workflow accepte donc aussi un déclenchement **externe** :
+
+```
+POST https://api.github.com/repos/antoniman31/gta6-backend/dispatches
+Authorization: Bearer <jeton fine-grained, Contents: read and write>
+Accept: application/vnd.github+json
+
+{"event_type": "run-feeds"}
+```
+
+N'importe quel planificateur sait envoyer ça — [cron-job.org](https://cron-job.org)
+est gratuit et suffit largement. À l'inverse du `schedule` de GitHub,
+l'appel part à l'heure dite et l'exécution démarre immédiatement.
+
+Le `schedule` reste actif comme filet de sécurité : si le planificateur
+externe tombe, GitHub prend le relais tant bien que mal. Les deux
+ensemble ne créent pas de doublon problématique — la file d'attente
+(`concurrency`) sérialise les exécutions, et la publication fusionnante
+absorbe les chevauchements.
+
+Note : ce déclencheur demande un jeton avec la permission **Contents**,
+plus large que celui du bouton dans l'app (Actions seul). À réserver au
+planificateur, pas à mettre dans un navigateur.
+
 ## Déclenchement à distance depuis l'app
 
 Le déclencheur planifié de GitHub étant best-effort, il arrive qu'un
