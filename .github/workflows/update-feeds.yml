@@ -45,10 +45,10 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 20 # le job dure ~5 min normalement ; large marge de sécurité si un site traîne, sans risquer de tourner indéfiniment
+    timeout-minutes: 20 # le job dure ~1 min depuis que les sources sont interrogées en parallèle ; large marge de sécurité si un site traîne, sans risquer de tourner indéfiniment
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           # `ref: main` au lieu du SHA figé au déclenchement : un run
           # planifié peut avoir attendu 35 min en file avant de démarrer, et
@@ -56,7 +56,7 @@ jobs:
           ref: main
 
       - name: Installer Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
