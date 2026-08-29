@@ -562,7 +562,7 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
 
 
 def merge_results(feeds, resultats, all_items, links_index, newly_added,
-                  decoded_cache=None, afficher=True):
+                  decoded_cache=None, afficher=True, promus=None):
     """Fusionne les résultats des sources dans l'historique.
 
     ORDRE CRITIQUE : on parcourt `feeds`, jamais l'ordre d'arrivée des
@@ -575,7 +575,14 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
     Sorti de main() pour être testable : c'est ici que se joue l'équivalence
     entre l'ancienne récupération séquentielle et la nouvelle, parallèle.
 
-    Modifie `all_items`, `links_index` et `newly_added` sur place.
+    `promus` : liste optionnelle, remplie sur place avec les articles DÉJÀ
+    connus qui franchissent le seuil d'actu majeure grâce à une reprise
+    trouvée pendant ce passage. Sans ce signal, une couverture étalée sur
+    plusieurs passages resterait muette — chaque reprise est un doublon,
+    donc « rien de neuf » à annoncer, alors que c'est exactement le moment
+    où le sujet devient important.
+
+    Modifie `all_items`, `links_index`, `newly_added` et `promus` sur place.
     Renvoie (feed_infos, new_counts, inchanges).
     """
     # Fenêtre de comparaison par titre.
@@ -623,7 +630,13 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
             else:
                 # Doublon : on ne le garde pas, mais on retient que cette
                 # source couvre aussi le sujet.
+                avant = 1 + len(deja.get("extraSources") or [])
                 record_coverage(deja, item)
+                apres = 1 + len(deja.get("extraSources") or [])
+                # Strictement au franchissement : un sujet déjà majeur qui
+                # gagne une 6e puis une 7e reprise ne réalerte pas.
+                if promus is not None and avant < HOT_SOURCE_THRESHOLD <= apres:
+                    promus.append(deja)
     return feed_infos, new_counts, inchanges
 
 
@@ -676,6 +689,11 @@ DEAD_SOURCE_RUNS = 6
 # discord_notify.py. Même mécanique que NEW_ITEMS_FILE : le workflow le
 # place hors du dépôt, et son absence désactive simplement l'envoi.
 SOURCE_ALERTS_FILE = os.environ.get("SOURCE_ALERTS_FILE", "")
+
+# Articles déjà connus qui viennent de devenir une actu majeure. Séparé de
+# NEW_ITEMS_FILE parce qu'ils ne sont PAS nouveaux : les mélanger fausserait
+# le décompte « N nouveaux articles ».
+PROMOTED_ITEMS_FILE = os.environ.get("PROMOTED_ITEMS_FILE", "")
 
 # Fichier où sont déposés les nouveaux articles de cette exécution, à
 # destination de discord_notify.py. Le workflow le place dans $RUNNER_TEMP,
@@ -739,6 +757,18 @@ def write_source_alerts_file(alertes):
         # Comme pour les articles : une alerte non transmise ne doit jamais
         # faire échouer la collecte.
         print(f"  [alerte] impossible d'écrire {SOURCE_ALERTS_FILE} : {e}")
+
+
+def write_promoted_items_file(promus):
+    """Dépose les articles devenus majeurs, à destination des notifications."""
+    if not PROMOTED_ITEMS_FILE or not promus:
+        return
+    try:
+        with open(PROMOTED_ITEMS_FILE, "w", encoding="utf-8") as f:
+            json.dump(promus, f, ensure_ascii=False)
+        print(f"  {len(promus)} article(s) devenu(s) majeur(s) déposé(s) -> {PROMOTED_ITEMS_FILE}")
+    except OSError as e:
+        print(f"  [notif] impossible d'écrire {PROMOTED_ITEMS_FILE} : {e}")
 
 
 def write_new_items_file(new_items):
@@ -908,8 +938,16 @@ def main():
     print(f"\n{len(FEEDS)} source(s) interrogée(s) en {time.time() - depart:.0f} s "
           f"({FETCH_WORKERS} de front, {PER_HOST_LIMIT} max par domaine)\n")
 
+    promus = []
     feed_infos, new_counts, inchanges = merge_results(
-        FEEDS, resultats, all_items, links_index, newly_added, decoded_cache)
+        FEEDS, resultats, all_items, links_index, newly_added, decoded_cache,
+        promus=promus)
+    if promus:
+        print(f"\n🚨 {len(promus)} sujet(s) devenu(s) majeur(s) ce passage "
+              f"(reprises trouvées après coup) :")
+        for i in promus[:5]:
+            print(f"    - [{1 + len(i.get('extraSources') or [])} sources] {i['title'][:70]}")
+    write_promoted_items_file(promus)
 
     chaudes = [i for i in all_items if is_hot(i)]
     chaudes_neuves = [i for i in newly_added if is_hot(i)]

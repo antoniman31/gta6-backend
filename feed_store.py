@@ -329,7 +329,7 @@ def masquer_urls(texte, urls):
 # Libellé des notifications
 # ---------------------------------------------------------------------------
 
-def libelle_recap(new_items):
+def libelle_recap(new_items, promus=()):
     """Le texte du récapitulatif, écrit UNE seule fois.
 
     Discord et les notifications push doivent annoncer exactement la même
@@ -347,6 +347,12 @@ def libelle_recap(new_items):
     la différence entre être notifié d'une rumeur et être prévenu d'un
     trailer, et c'est la seule information dont on dispose sans lire les
     articles.
+
+    `promus` : les articles DÉJÀ connus qui viennent de franchir le seuil
+    parce qu'une rédaction supplémentaire les a repris. Sans eux, une
+    couverture qui s'étale sur deux heures resterait muette : chaque
+    reprise est un doublon, donc « rien de neuf » à annoncer, alors que
+    c'est précisément le moment où l'actu devient majeure.
     """
     lot = [i for i in (new_items or ()) if isinstance(i, dict)]
     n = len(lot)
@@ -355,9 +361,12 @@ def libelle_recap(new_items):
     if officiels:
         compte += f" (dont {officiels} officiel{'s' if officiels > 1 else ''} Rockstar)"
 
-    sommet = nb_sources_max(lot)
+    sommet = max(nb_sources_max(lot), nb_sources_max(promus))
     if sommet >= HOT_SOURCE_THRESHOLD:
-        return f"🚨 Actu majeure — {sommet} sources sur le même sujet · {compte}"
+        alerte = f"🚨 Actu majeure — {sommet} sources sur le même sujet"
+        # Un article promu sans aucune nouveauté : annoncer « 0 nouvel
+        # article » à côté de l'alerte serait absurde.
+        return f"{alerte} · {compte}" if n else alerte
     return f"🎮 {compte}"
 
 
@@ -371,6 +380,7 @@ def nb_sources_max(new_items):
                 for i in (new_items or ()) if isinstance(i, dict)), default=0)
 
 
-def est_actu_majeure(new_items):
+def est_actu_majeure(new_items, promus=()):
     """Le lot contient-il un sujet couvert par assez de rédactions ?"""
-    return nb_sources_max(new_items) >= HOT_SOURCE_THRESHOLD
+    return max(nb_sources_max(new_items),
+               nb_sources_max(promus)) >= HOT_SOURCE_THRESHOLD

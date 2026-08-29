@@ -250,6 +250,10 @@ Le décodage Google News (`DECODE_WORKERS`, 4) et les miniatures
   niveau des données. Appelé par le workflow uniquement en cas de rejet
   de push.
 - **`discord_notify.py`** — l'envoi Discord, appelé après publication.
+- **`weekly_digest.py`** — le récapitulatif du dimanche (voir plus bas).
+- **`dedupe_history.py`** — passage unique de nettoyage, gardé pour
+  mémoire et reproductibilité. Voir « Récupération en parallèle » pour le
+  bug qu'il a servi à réparer côté données.
 - **`push_notify.py`** — les notifications push natives, appelées au même
   moment. N'importe pas `pywebpush` au niveau du module : la construction
   du message et la lecture des abonnements restent testables sans la
@@ -364,11 +368,20 @@ articles. Côté push, l'alerte reçoit en plus **son propre `tag`** : avec le
 tag de routine, le récapitulatif du passage suivant l'effacerait en silence
 une demi-heure plus tard — précisément celle qu'on ne veut pas rater.
 
-Portée actuelle : l'alerte se déclenche quand les rédactions arrivent dans
-le **même passage**. Une couverture qui s'étale sur plusieurs passages
-alimente bien le badge 🔥 dans l'app, mais ne déclenche pas de
-notification — les articles suivants sont des doublons, donc « rien de
-neuf » à annoncer.
+**Y compris quand la couverture s'étale.** C'était la limite de la première
+version : une annonce reprise progressivement par la presse ne déclenchait
+rien, puisque chaque reprise est un doublon — donc « rien de neuf » à
+annoncer, alors que c'est précisément le moment où le sujet devient
+important. Le robot signale désormais les articles **déjà connus** qui
+franchissent le seuil grâce à une reprise (`PROMOTED_ITEMS_FILE`), et une
+notification part sur ce seul motif :
+
+```
+🚨 Actu majeure — 5 sources sur le même sujet
+```
+
+Le franchissement est détecté **au basculement uniquement** : un sujet déjà
+majeur qui gagne une 6ᵉ puis une 7ᵉ reprise ne réalerte pas.
 
 Aucun titre d'article n'y figure. Une version précédente reprenait celui du
 premier article pour éviter d'avoir à ouvrir l'app — mais « premier » ne
@@ -435,6 +448,34 @@ refaire l'abonnement depuis l'app.
 
 **Support.** Complet sur Android. Sur iPhone, l'app doit être installée sur
 l'écran d'accueil et le support y est plus restreint.
+
+## Récapitulatif hebdomadaire
+
+Un message Discord le dimanche soir (`weekly-digest.yml`, un workflow à
+part), avec les sujets les plus repris des sept derniers jours.
+
+Il répond à une autre question que le récapitulatif de passage. Celui-ci
+dit « quoi de neuf dans la dernière demi-heure » et annonce un nombre, sans
+titre : sur un téléphone, une notification se lit d'un coup d'œil. Le
+récapitulatif hebdomadaire dit « qu'est-ce que j'ai raté cette semaine »,
+on l'ouvre au lieu de le survoler — il porte donc bien des titres et des
+liens, et c'est tout son intérêt.
+
+- **Classé par nombre de rédactions**, pas par date : c'est le seul
+  indicateur d'importance disponible sans lire les articles.
+- **8 sujets maximum.** Au-delà, c'est un mur de texte que personne ne lit,
+  soit l'inverse du but.
+- **Discord seulement, pas de push** : la valeur est dans la liste
+  cliquable, ce qu'une bannière de notification ne sait pas montrer.
+- Aucun message s'il n'y a rien eu cette semaine.
+- Les crochets d'un titre et les parenthèses d'une URL sont neutralisés :
+  la syntaxe de lien Markdown casse aux deux bouts, et une URL parenthésée
+  afficherait un lien tronqué suivi d'un bout d'adresse en texte brut.
+
+⚠️ Le `schedule` de GitHub est best-effort : sur une tâche **hebdomadaire**,
+un créneau abandonné = une semaine sautée. Le workflow accepte donc aussi
+`repository_dispatch` avec `{"event_type": "weekly-digest"}` — un appel
+hebdomadaire depuis cron-job.org le fiabilise, comme pour le robot.
 
 ## Alerte quand une source tombe
 
@@ -648,6 +689,15 @@ commentaire).
 - **GTAForums et GTA Base** — jamais intégrés, ces deux sites bloquent
   activement les accès automatisés, y compris depuis un vrai serveur (pas
   seulement un navigateur).
+- **VG247 ne rapporte rien, et ce n'est pas une panne.** Diagnostiqué le
+  29/08/2026 : son flux renvoie fidèlement **25 articles à chaque passage**
+  et **zéro** passe le filtre. C'est un flux VG247 *généraliste* (tout le
+  catalogue du site), pas un flux GTA 6 — le filtre fait donc exactement
+  son travail en rejetant tout. Le correctif n'est pas de retirer la
+  source mais de remplacer son URL par un flux limité à GTA 6. Décision en
+  attente. Le tableau `sources_health` de `feed.json` permet de refaire ce
+  diagnostic pour n'importe quelle source : comparer `entries_fetched`
+  (ce que le flux renvoie) au nombre d'articles réellement retenus.
 - **Miniatures Google News** — un léger pourcentage d'articles n'a pas de
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.

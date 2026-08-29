@@ -91,7 +91,7 @@ def load_subscriptions():
     return valides
 
 
-def build_payload(new_items):
+def build_payload(new_items, promus=()):
     """Construit le contenu de la notification.
 
     Le texte est celui de `feed_store.libelle_recap`, partagé avec Discord :
@@ -103,9 +103,9 @@ def build_payload(new_items):
     importance), et un titre choisi au hasard parmi plusieurs donne une
     idée fausse de ce que contient le lot.
     """
-    majeure = feed_store.est_actu_majeure(new_items)
+    majeure = feed_store.est_actu_majeure(new_items, promus)
     return {
-        "title": feed_store.libelle_recap(new_items),
+        "title": feed_store.libelle_recap(new_items, promus),
         "body": "Ouvrir GTA6_WATCH",
         "url": SITE_URL,
         # Un tag identique remplace la notification précédente au lieu
@@ -188,6 +188,18 @@ def send_all(subscriptions, payload, private_key):
     return envoyes, expires
 
 
+def lire_liste(path):
+    """Lit un fichier JSON contenant une liste, ou renvoie []."""
+    if not path:
+        return []
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return []
+
+
 def main():
     subscriptions = load_subscriptions()
     if not subscriptions:
@@ -204,13 +216,15 @@ def main():
         print("[push] NEW_ITEMS_FILE non défini — rien à notifier.")
         return 0
 
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            new_items = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        new_items = []
+    new_items = lire_liste(path)
+    # Articles déjà connus devenus majeurs : ils justifient une notification
+    # À EUX SEULS, même sans le moindre article nouveau. C'est le cas d'une
+    # annonce reprise progressivement par la presse — chaque reprise est un
+    # doublon, donc « rien de neuf », alors que le sujet vient de devenir
+    # important.
+    promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
 
-    if not new_items:
+    if not new_items and not promus:
         print("[push] aucun nouvel article à annoncer.")
         return 0
 
@@ -218,7 +232,7 @@ def main():
         print("[push] envoi abandonné — aucune notification ne partirait de toute façon.")
         return 0
 
-    payload = build_payload(new_items)
+    payload = build_payload(new_items, promus)
     print(f"[push] envoi à {len(subscriptions)} appareil(s) : {payload['title']}")
 
     envoyes, expires = send_all(subscriptions, payload, private_key)
