@@ -128,6 +128,20 @@ FEEDS = [
     {"id": "gamekult", "name": "Gamekult", "url": "https://www.gamekult.com/feed.xml", "official": False, "lang": "fr"},
     {"id": "ignfr", "name": "IGN France", "url": "https://fr.ign.com/feed.xml", "official": False, "lang": "fr"},
     {"id": "rockstarmag", "name": "RockstarMag", "url": "https://rss.app/feeds/DLjO259X0dbIodkg.xml", "official": False, "rockstarmag": True, "specialist_source": True, "no_filter_at_all": True, "lang": "fr"},
+    # La chaîne YouTube du même média. rockstarmag=True la range dans son
+    # onglet : le lien pointe vers youtube.com, donc le classement par
+    # domaine ne peut pas la reconnaître — c'est le chemin « la source le
+    # déclare » de statut_rockstarmag qui prend le relais.
+    #
+    # PAS de no_filter_at_all, contrairement au flux d'articles : la chaîne
+    # couvre toute la production Rockstar (Red Dead, GTA Online, GTA 5), et
+    # tout accepter sans filtre y noierait GTA 6. Le filtre porte sur le
+    # titre ET la description, et le flux Atom de YouTube fournit les deux —
+    # une vidéo au titre elliptique passe donc quand même si sa description
+    # parle de GTA 6.
+    {"id": "rockstarmag-youtube", "name": "RockstarMag (YouTube)",
+     "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmU6lJbZKzpAU_S1h6Ec-dg",
+     "official": False, "rockstarmag": True, "specialist_source": True, "lang": "fr"},
     {"id": "rockstarintel", "name": "RockstarINTEL", "url": "https://rss.app/feeds/SEi9eWoOTGKoeh2K.xml", "official": False, "specialist_source": True},
     {"id": "ign", "name": "IGN", "url": "https://rss.app/feeds/h34hzwwy7imC3FZL.xml", "official": False},
     {"id": "gamespot", "name": "GameSpot", "url": "https://rss.app/feeds/vjQBa27Dcc6PFmvy.xml", "official": False},

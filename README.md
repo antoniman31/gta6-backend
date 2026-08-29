@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 49 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 50 sources en
 parallèle toutes les 30 minutes, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -55,7 +55,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 49 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 50 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 34 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -82,6 +82,16 @@ d'où le planificateur externe.
      quelques bandes-annonces GTA Online passeront aussi. Le filtre reste
      actif malgré tout (contrairement à RockstarMag) : la chaîne publie
      régulièrement du Red Dead et du GTA Online.
+
+   La **chaîne YouTube de RockstarMag** (`rockstarmag-youtube`) suit le même
+   principe pour l'autre onglet. Son lien pointe vers youtube.com, donc le
+   classement par domaine ne peut pas la reconnaître : c'est le chemin « la
+   source le déclare » de `statut_rockstarmag()` qui la range. Elle n'a
+   **pas** `no_filter_at_all`, contrairement au flux d'articles du même
+   média — la chaîne couvre toute la production Rockstar, et tout accepter y
+   noierait GTA 6. Le filtre porte sur le titre **et** la description, que
+   le flux Atom de YouTube fournit tous les deux : une vidéo au titre
+   elliptique passe donc si sa description parle du sujet.
 4. **Filtre par mots-clés** — les sources officielles (Rockstar, Take-Two)
    exigent un mot-clé GTA 6 dans le titre. Les sources "spécialistes"
    (`specialist_source: True` — RockstarMag, RockstarINTEL, GTA6 Times,
@@ -329,7 +339,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **271
+qui permet de tester tout le pipeline sans sortir de la machine. **282
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -372,7 +382,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 49 sources (~1 min).
+(instantané), l'autre fait travailler le robot sur les 50 sources (~1 min).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
 que deux qui se ressemblent, ce qui garantit qu'ils ne divergeront pas à la
@@ -493,7 +503,7 @@ non une fonction de l'app.
 
 **Mode de secours** : si `docs/feed.json` est inaccessible (backend en
 panne, GitHub Pages indisponible), l'app bascule automatiquement sur un
-ancien système de récupération directe des 49 sources via des proxys CORS
+ancien système de récupération directe des 50 sources via des proxys CORS
 publics (CodeTabs, allorigins, corsproxy.io, whateverorigin, feed2json,
 rss2json). C'est redondant avec le backend, mais volontaire : sans ce
 filet de sécurité, l'app serait totalement inutilisable si le backend

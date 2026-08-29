@@ -1188,6 +1188,57 @@ def test_doublons_de_titre():
           "et restent malgré tout séparés : le doute profite à la séparation")
 
 
+
+def test_chaine_youtube_rockstarmag():
+    print("\n[sources] la chaîne YouTube de RockstarMag dans l'onglet RockstarMag")
+    import fetch_feeds
+
+    yt = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstarmag-youtube")
+    lien = "https://www.youtube.com/watch?v=abc"
+
+    # Le classement par domaine ne peut RIEN pour elle : le lien pointe vers
+    # youtube.com, pas rockstarmag.fr. C'est la déclaration de la source qui
+    # doit prendre le relais — sans quoi les vidéos tomberaient dans
+    # « Non Rockstar ».
+    check(not fetch_feeds.statut_rockstarmag(lien, None),
+          "un lien YouTube seul ne suffit pas à désigner RockstarMag")
+    check(fetch_feeds.statut_rockstarmag(lien, yt),
+          "mais la chaîne déclarée y range bien ses vidéos")
+    check(not fetch_feeds.statut_officiel(lien, yt),
+          "et elle n'est surtout pas officielle : ce n'est pas Rockstar")
+
+    # Aucune contamination : une autre source sur YouTube reste où elle est.
+    gnews = next(f for f in fetch_feeds.FEEDS if f["id"] == "gnews-fr")
+    check(not fetch_feeds.statut_rockstarmag(lien, gnews),
+          "une vidéo trouvée par Google News ne devient pas RockstarMag")
+
+    # Pas de no_filter_at_all, contrairement au flux d'articles du même
+    # média : la chaîne couvre toute la production Rockstar.
+    check(not yt.get("no_filter_at_all"),
+          "le filtre reste actif sur la chaîne")
+    articles = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstarmag")
+    check(articles.get("no_filter_at_all") is True,
+          "alors que le flux d'articles garde son exception, elle est inchangée")
+    check(sum(1 for f in fetch_feeds.FEEDS if f.get("no_filter_at_all")) == 1,
+          "une seule source sans filtre dans tout FEEDS")
+
+    # Le filtre porte sur le titre ET la description : une vidéo au titre
+    # elliptique passe si sa description parle du sujet.
+    check(fetch_feeds.passe_le_filtre(yt, "GTA 6 | Tout sur la bande-annonce", ""),
+          "un titre explicite passe")
+    check(fetch_feeds.passe_le_filtre(yt, "On En Parle #12",
+                                      "Un point complet sur GTA 6 et Vice City"),
+          "un titre elliptique passe grâce à sa description")
+    check(not fetch_feeds.passe_le_filtre(yt, "Red Dead Redemption 2 : les secrets",
+                                          "Notre documentaire sur RDR2"),
+          "le contenu Red Dead reste écarté")
+
+    # Un onglet, un seul : official et rockstarmag ne peuvent pas coexister.
+    check(not (fetch_feeds.statut_officiel(lien, yt)
+               and not fetch_feeds.statut_rockstarmag(lien, yt)),
+          "pas de double appartenance possible")
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -1197,6 +1248,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
            test_onglets_par_domaine, test_couverture_par_lien,
+           test_chaine_youtube_rockstarmag,
            test_doublons_de_titre,
            test_garde_fou_archives,
            test_dedup_meme_passage,
