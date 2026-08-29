@@ -477,6 +477,160 @@ def test_fetch_parallele_identique():
           "les 34 autres sources s'empilent derrière dans l'ordre de FEEDS")
 
 
+def test_libelle_actu_majeure():
+    print("\n[notif] le ton change quand plusieurs rédactions couvrent le même sujet")
+    import push_notify
+
+    def art(sources, officiel=False):
+        return {"title": "peu importe", "official": officiel,
+                "extraSources": [{"source": f"src{i}"} for i in range(sources - 1)]}
+
+    seuil = feed_store.HOT_SOURCE_THRESHOLD
+    sous = feed_store.libelle_recap([art(seuil - 1), art(1)])
+    sur = feed_store.libelle_recap([art(seuil), art(1)])
+
+    check(not feed_store.est_actu_majeure([art(seuil - 1)]),
+          f"{seuil - 1} sources : ce n'est pas encore une actu majeure")
+    check(feed_store.est_actu_majeure([art(seuil)]),
+          f"{seuil} sources : c'en est une")
+    check("Actu majeure" not in sous, "sous le seuil, le libellé reste celui de routine")
+    check("Actu majeure" in sur and str(seuil) in sur,
+          "au seuil, le libellé annonce l'alerte et le nombre de rédactions")
+    check("2 nouveaux articles" in sur,
+          "le décompte habituel reste présent dans l'alerte")
+
+    # Aucun titre d'article, y compris en alerte — la règle posée le 29/08.
+    check("peu importe" not in sur, "toujours aucun titre d'article, même en alerte")
+
+    # Push et Discord doivent rester mot pour mot identiques (règle du 29/08).
+    for lot in ([art(1)], [art(seuil)], [art(seuil + 3), art(1, True)]):
+        check(push_notify.build_payload(lot)["title"] == feed_store.libelle_recap(lot),
+              f"push et Discord annoncent le même texte ({feed_store.nb_sources_max(lot)} sources)")
+
+    # Le tag distingue l'alerte : sinon le récapitulatif de routine du
+    # passage suivant l'effacerait en silence une demi-heure plus tard.
+    routine = push_notify.build_payload([art(1)])["tag"]
+    alerte = push_notify.build_payload([art(seuil)])["tag"]
+    check(routine != alerte, "une actu majeure a son propre tag de notification")
+    check(push_notify.build_payload([art(seuil)])["tag"] == alerte,
+          "deux alertes partagent le même tag : la seconde remplace la première")
+
+    check(feed_store.nb_sources_max([]) == 0, "un lot vide ne fait pas planter le comptage")
+    check(feed_store.nb_sources_max([{"title": "x"}]) == 1,
+          "un article sans extraSources compte pour une source")
+
+
+def test_suivi_sources_muettes():
+    print("\n[sources] alerte quand une source tombe, et quand elle revient")
+    import fetch_feeds
+
+    seuil = fetch_feeds.DEAD_SOURCE_RUNS
+
+    def sante(statut):
+        return [{"id": "a", "name": "VG247", "status": statut}]
+
+    # Une source muette pendant seuil-1 passages ne doit RIEN déclencher :
+    # un 503 passager ou une coupure réseau ne sont pas une panne.
+    compteurs = {}
+    for passage in range(1, seuil):
+        compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("muette"), compteurs)
+        check(alertes == [], f"passage {passage}/{seuil} muet : pas encore d'alerte")
+    check(compteurs.get("a") == seuil - 1, "le compteur suit les passages muets")
+
+    # Le passage qui franchit le seuil alerte, une seule fois.
+    compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("muette"), compteurs)
+    check(len(alertes) == 1 and alertes[0]["type"] == "tombee",
+          f"au {seuil}e passage muet, une alerte « tombée » part")
+    check(alertes[0]["name"] == "VG247", "l'alerte nomme la source")
+
+    for suite in range(2):
+        compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("muette"), compteurs)
+        check(alertes == [],
+              "la panne se prolonge : aucune répétition (sinon 48 messages par jour)")
+
+    # Le retour est annoncé, une fois.
+    compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("ok"), compteurs)
+    check(len(alertes) == 1 and alertes[0]["type"] == "retour", "le retour est annoncé")
+    check(compteurs == {}, "compteur remis à zéro, et pas conservé pour rien dans feed.json")
+
+    compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("ok"), compteurs)
+    check(alertes == [], "une source qui va bien ne dit rien")
+
+    # Une source qui hoquette sans jamais atteindre le seuil ne doit ni
+    # alerter à la panne, ni alerter au retour.
+    c = {}
+    for statut in ("muette", "muette", "ok"):
+        c, alertes = fetch_feeds.suivre_sources_muettes(sante(statut), c)
+        check(alertes == [], f"hoquet ({statut}) : silence radio")
+
+    # Un flux qui répond 304 est vivant : build_sources_health le classe
+    # « ok », donc il ne doit jamais entrer dans le comptage.
+    c, alertes = fetch_feeds.suivre_sources_muettes(sante("tarie"), {})
+    check(alertes == [] and c == {},
+          "une source « tarie » (vivante mais sans actu) n'est pas une panne")
+
+
+def test_dedup_meme_passage():
+    print("\n[dedup] deux rédactions, même sujet, même passage")
+    import fetch_feeds
+
+    # LE bug : les nouveaux articles étaient ajoutés à la FIN de all_items,
+    # donc hors des `all_items[:TITLE_SIMILARITY_WINDOW]` que consultait
+    # find_duplicate. Dès que l'historique dépassait la taille de la
+    # fenêtre, deux sources publiant le même sujet dans le même passage
+    # n'étaient plus jamais rapprochées. Conséquence mesurée sur le vrai
+    # feed.json avant correctif : 13 doublons manifestes dans les 400
+    # articles les plus récents, et le badge « N SOURCES » plafonné à 3
+    # (donc jamais affiché, le seuil étant à 4).
+    #
+    # Le test balaie de part et d'autre de la fenêtre : c'est exactement
+    # là que le comportement basculait.
+    titre = "GTA 6 First Gameplay Details Reveal the Return of RPG Mechanics"
+    redactions = [
+        {"id": "a", "name": "IGN", "url": "https://a.test/rss"},
+        {"id": "b", "name": "IGN France", "url": "https://b.test/rss"},
+        {"id": "c", "name": "GameSpot", "url": "https://c.test/rss"},
+    ]
+
+    def art(source, titre_, lien, date="2026-08-29T08:00:00+00:00"):
+        return {"title": titre_, "link": lien, "date": date, "source": source,
+                "official": False, "rockstarmag": False, "specialist": False,
+                "lang": "en", "image": None, "description": "", "source_link": None}
+
+    def passage(nb_vieux):
+        resultats = {
+            f["id"]: ([art(f["name"], titre, f"https://{f['id']}.test/article")],
+                      {"raw_count": 1, "not_modified": False}, [])
+            for f in redactions
+        }
+        # Les vieux articles sont DEVANT (plus récents dans le tri) pour
+        # reproduire l'historique réel, où les nouveaux arrivants sont
+        # repoussés hors de la fenêtre.
+        historique = [art("Ancienne source", f"Sujet sans rapport numero {i}",
+                          f"https://vieux.test/{i}", "2026-08-30T00:00:00+00:00")
+                      for i in range(nb_vieux)]
+        index = {i["link"]: i for i in historique}
+        neufs = []
+        fetch_feeds.merge_results(redactions, resultats, historique, index,
+                                  neufs, {}, afficher=False)
+        garde = [i for i in historique if i["source"] != "Ancienne source"]
+        sources = 1 + len(garde[0].get("extraSources") or []) if garde else 0
+        return len(neufs), sources
+
+    fenetre = fetch_feeds.TITLE_SIMILARITY_WINDOW
+    for nb in (0, fenetre - 1, fenetre, fenetre + 1, fenetre * 6):
+        ajoutes, sources = passage(nb)
+        check(ajoutes == 1,
+              f"{nb} articles en base : un seul gardé sur trois (obtenu : {ajoutes})")
+        check(sources == 3,
+              f"{nb} articles en base : les 3 rédactions sont comptées (obtenu : {sources})")
+
+    # Le seuil « actu majeure » doit rester atteignable : c'était le fond du
+    # problème, un compteur plafonné à 3 avec un seuil à 4.
+    check(fetch_feeds.HOT_SOURCE_THRESHOLD <= len(redactions) + 1,
+          "le seuil d'actu majeure reste atteignable par le comptage réel")
+
+
 def test_identifiants_de_sources_uniques():
     print("\n== Identifiants des vraies sources ==")
     import fetch_feeds
@@ -614,7 +768,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
            test_push_masquage_endpoint,
            test_real_history,
-           test_fetch_parallele_identique, test_identifiants_de_sources_uniques,
+           test_fetch_parallele_identique, test_dedup_meme_passage,
+           test_libelle_actu_majeure, test_suivi_sources_muettes,
+           test_identifiants_de_sources_uniques,
            test_chaines_par_hote,
            test_plafond_par_domaine, test_source_qui_plante,
            test_predecode_google_news):

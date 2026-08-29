@@ -94,11 +94,23 @@ d'où le planificateur externe.
    pistage (`utm_*`, `fbclid`, `gclid`…) et de leur ancre, qui ne changent
    jamais la page servie mais faisaient compter deux fois le même article
    partagé par deux canaux. Puis dédup par lien exact (lookup instantané
-   via un `set`), puis
-   par similarité de titre (`SequenceMatcher`, seuil 75%) sur les 200
-   articles les plus récents seulement — comparer un nouvel article à un
-   autre vieux de plusieurs mois n'a jamais de sens en pratique, et ça
-   évite que le temps de calcul augmente indéfiniment avec l'historique.
+   via un `set`), puis par similarité de titre (`SequenceMatcher`, seuil
+   75%) sur une **fenêtre** des articles les plus récents — comparer un
+   nouvel article à un autre vieux de plusieurs mois n'a jamais de sens en
+   pratique, et ça évite que le temps de calcul augmente indéfiniment avec
+   l'historique.
+
+   **Composition de la fenêtre** (corrigé le 29/08/2026) : les 200
+   articles les plus récents de l'historique **plus ceux ajoutés pendant
+   le passage en cours**. Ce second point manquait. Les nouveaux articles
+   étaient ajoutés à la *fin* de la liste, donc hors des 200 premiers, et
+   deux rédactions publiant le même sujet dans le même passage n'étaient
+   jamais rapprochées dès que l'historique dépassait 200 articles. Mesuré
+   avant correctif sur le vrai `feed.json` : 13 doublons manifestes dans
+   les 400 articles les plus récents (dont des titres strictement
+   identiques entre IGN et IGN France), et un compteur de sources plafonné
+   à 3 — donc un badge 🔥 réglé sur 4 qui n'a jamais pu s'afficher une
+   seule fois en 1 211 articles.
 7. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
    les plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant très large. Au rythme observé
@@ -123,8 +135,10 @@ d'où le planificateur externe.
    une source « muette » n'a renvoyé aucune entrée brute, signe net d'un
    flux cassé ; une source « tarie » répond mais n'a rien publié depuis
    plus de 30 jours, ce qui peut être parfaitement normal (Rockstar et
-   Take-Two communiquent peu). Sans ce signal, un flux réellement mort
-   passerait inaperçu indéfiniment.
+   Take-Two communiquent peu).
+   **Et alerte sur Discord quand une source tombe** — voir la section
+   dédiée plus bas. L'état seul ne dit que « muette maintenant » ; c'est le
+   cumul (`sources_silence`) qui distingue une panne d'un hoquet.
 11. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
@@ -337,6 +351,25 @@ diverger : le texte est écrit une seule fois dans
 🎮 3 nouveaux articles GTA 6 (dont 1 officiel Rockstar)
 ```
 
+**Deux tons.** Quand un sujet est couvert par au moins
+`HOT_SOURCE_THRESHOLD` rédactions (4), le libellé bascule en alerte :
+
+```
+🚨 Actu majeure — 5 sources sur le même sujet · 3 nouveaux articles GTA 6
+```
+
+C'est la différence entre être notifié d'une rumeur et être prévenu d'un
+trailer, et c'est la seule information dont on dispose sans lire les
+articles. Côté push, l'alerte reçoit en plus **son propre `tag`** : avec le
+tag de routine, le récapitulatif du passage suivant l'effacerait en silence
+une demi-heure plus tard — précisément celle qu'on ne veut pas rater.
+
+Portée actuelle : l'alerte se déclenche quand les rédactions arrivent dans
+le **même passage**. Une couverture qui s'étale sur plusieurs passages
+alimente bien le badge 🔥 dans l'app, mais ne déclenche pas de
+notification — les articles suivants sont des doublons, donc « rien de
+neuf » à annoncer.
+
 Aucun titre d'article n'y figure. Une version précédente reprenait celui du
 premier article pour éviter d'avoir à ouvrir l'app — mais « premier » ne
 veut rien dire ici : c'est l'ordre de `FEEDS`, pas une importance. Un titre
@@ -402,6 +435,37 @@ refaire l'abonnement depuis l'app.
 
 **Support.** Complet sur Android. Sur iPhone, l'app doit être installée sur
 l'écran d'accueil et le support y est plus restreint.
+
+## Alerte quand une source tombe
+
+`sources_health` savait déjà repérer un flux mort, mais cette information
+n'allait nulle part : il fallait ouvrir le site pour la voir. Or une source
+morte se manifeste précisément les jours où rien n'arrive — donc où aucun
+récapitulatif ne part.
+
+Le robot compte donc les passages consécutifs sans la moindre entrée brute
+(`sources_silence` dans `feed.json`, faute d'autre stockage persistant) et
+envoie un message Discord **au moment où l'état bascule** :
+
+```
+🔴 VG247 ne renvoie plus rien depuis 6 passages.
+🟢 VG247 est revenue.
+```
+
+- **`DEAD_SOURCE_RUNS = 6`** — à 30 minutes par passage, trois heures. Assez
+  pour écarter un 503 passager ou une coupure réseau ; assez peu pour ne pas
+  laisser un flux mort passer la journée inaperçu.
+- **Une alerte par bascule, jamais par passage.** Sans ça, une panne d'une
+  journée produirait 48 messages identiques.
+- Un flux qui répond `304` est vivant et n'entre pas dans le comptage ; une
+  source « tarie » (elle répond, mais l'actualité est calme) non plus.
+- Seules les sources en difficulté sont conservées dans `sources_silence` :
+  inutile d'écrire 35 zéros dans `feed.json` à chaque passage.
+
+**Exception assumée à la règle « un seul message Discord par passage ».**
+Cette règle existe pour empêcher un message par *article*. Une alerte de
+source est d'une autre nature, et surtout elle ne peut pas voyager dans le
+récapitulatif, qui n'est pas envoyé quand il n'y a rien de neuf.
 
 ## Surveillance : savoir quand le robot s'arrête
 

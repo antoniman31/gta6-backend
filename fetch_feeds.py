@@ -198,13 +198,15 @@ TITLE_SIMILARITY_WINDOW = 200
 # comme majeure. Sur ce sujet, un article isolé est en général une reprise
 # ou de la supputation ; quand quatre rédactions publient la même chose
 # dans la foulée, c'est un trailer, une date ou une annonce officielle.
-HOT_SOURCE_THRESHOLD = 4
+# Défini dans feed_store : le seuil sert aussi à décider du ton des
+# notifications, et deux valeurs séparées finiraient par diverger.
+HOT_SOURCE_THRESHOLD = feed_store.HOT_SOURCE_THRESHOLD
 
 # La taille du fichier allégé vit dans feed_store : l'outil de fusion doit
 # le régénérer avec exactement la même règle après un conflit de push.
 
 
-def find_duplicate(item, existing_items, links_index=None):
+def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None):
     """Renvoie l'article déjà connu dont celui-ci est un doublon, ou None.
 
     Renvoie l'article plutôt qu'un simple booléen : quand plusieurs
@@ -216,6 +218,12 @@ def find_duplicate(item, existing_items, links_index=None):
     links_index : correspondance lien -> article, pour un accès direct au
     lieu de reparcourir toute la liste. Si absente, comparaison à
     l'ancienne (plus lente mais correcte).
+
+    fenetre_titres : liste des articles auxquels comparer le TITRE. Doit
+    être fournie par l'appelant, qui seul sait ce qui a déjà été ajouté
+    pendant le passage en cours. À défaut, on retombe sur les premiers
+    éléments de `existing_items` — le comportement d'origine, conservé
+    pour les appels directs, mais qui ne voit pas les articles du passage.
     """
     if links_index is not None:
         connu = links_index.get(item["link"])
@@ -226,7 +234,9 @@ def find_duplicate(item, existing_items, links_index=None):
             if item["link"] == other["link"]:
                 return other
 
-    for other in existing_items[:TITLE_SIMILARITY_WINDOW]:
+    a_comparer = (fenetre_titres if fenetre_titres is not None
+                  else existing_items[:TITLE_SIMILARITY_WINDOW])
+    for other in a_comparer:
         if title_similarity(item["title"], other["title"]) >= SIMILARITY_THRESHOLD:
             return other
     return None
@@ -568,6 +578,24 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
     Modifie `all_items`, `links_index` et `newly_added` sur place.
     Renvoie (feed_infos, new_counts, inchanges).
     """
+    # Fenêtre de comparaison par titre.
+    #
+    # Elle contient les articles les plus récents de l'historique ET ceux
+    # ajoutés pendant ce passage. Ce second point est le correctif : les
+    # nouveaux articles étaient jusqu'ici ajoutés à la FIN de all_items,
+    # donc hors des `all_items[:200]` que consultait find_duplicate. Deux
+    # rédactions publiant le même sujet dans le même passage n'étaient
+    # donc jamais rapprochées dès que l'historique dépassait 200 articles
+    # — ce qui est le cas depuis longtemps. Conséquence visible : le badge
+    # « N SOURCES » n'a jamais pu dépasser 3, et 13 doublons manifestes
+    # subsistaient dans les 400 articles les plus récents.
+    #
+    # Le tri est refait ici plutôt que supposé : prendre les N premiers
+    # d'une liste tiendrait pour acquis qu'elle est déjà triée du plus
+    # récent au plus ancien. C'est vrai du fichier publié, mais l'invariant
+    # est garanti ici plutôt que documenté.
+    fenetre = feed_store.sort_items(all_items)[:TITLE_SIMILARITY_WINDOW]
+
     feed_infos = {}
     new_counts = {}
     inchanges = 0
@@ -581,9 +609,12 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
             inchanges += 1
         new_counts[feed["id"]] = 0
         for item in items:
-            deja = find_duplicate(item, all_items, links_index)
+            deja = find_duplicate(item, all_items, links_index, fenetre)
             if deja is None:
                 all_items.append(item)
+                # L'article rejoint la fenêtre : le suivant du même passage
+                # lui sera comparé, quelle que soit sa source.
+                fenetre.append(item)
                 links_index[item["link"]] = item
                 newly_added.append(item)
                 new_counts[feed["id"]] += 1
@@ -635,6 +666,17 @@ MAX_HISTORY_SIZE = feed_store.MAX_HISTORY_SIZE
 # sans ce signal un flux réellement mort passerait inaperçu indéfiniment.
 SILENT_SOURCE_DAYS = 30
 
+# Nombre de passages consécutifs sans la moindre entrée brute avant de
+# signaler une source comme tombée. À 30 minutes par passage, 6 font trois
+# heures : assez pour écarter un 503 passager ou une coupure réseau, assez
+# peu pour ne pas laisser un flux mort passer la journée inaperçu.
+DEAD_SOURCE_RUNS = 6
+
+# Fichier où sont déposées les alertes de source, à destination de
+# discord_notify.py. Même mécanique que NEW_ITEMS_FILE : le workflow le
+# place hors du dépôt, et son absence désactive simplement l'envoi.
+SOURCE_ALERTS_FILE = os.environ.get("SOURCE_ALERTS_FILE", "")
+
 # Fichier où sont déposés les nouveaux articles de cette exécution, à
 # destination de discord_notify.py. Le workflow le place dans $RUNNER_TEMP,
 # donc hors du dépôt : aucun risque qu'il finisse committé. Absent en local,
@@ -646,6 +688,57 @@ NEW_ITEMS_FILE = os.environ.get("NEW_ITEMS_FILE", "")
 # la clé PRIVÉE, gardée en secret GitHub, qui autorise l'envoi. Absente,
 # l'app masque simplement l'option.
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
+
+
+def suivre_sources_muettes(health, compteurs_precedents):
+    """Compte les passages consécutifs pendant lesquels chaque source est muette.
+
+    `sources_health` dit si une source est muette MAINTENANT. Seul le
+    cumul distingue une panne réelle d'un hoquet : un flux peut répondre
+    503 une fois sans être mort. On garde donc un compteur par source dans
+    feed.json, faute d'autre stockage persistant.
+
+    Renvoie (compteurs, alertes). Une alerte n'est émise qu'au moment où
+    l'état BASCULE — à la panne confirmée, puis au retour. Sans ça le robot
+    répéterait la même mauvaise nouvelle 48 fois par jour.
+    """
+    compteurs = {}
+    alertes = []
+    for source in health:
+        sid = source["id"]
+        avant = int((compteurs_precedents or {}).get(sid, 0) or 0)
+        if source["status"] == "muette":
+            apres = avant + 1
+            # Strictement égal : l'alerte part au passage qui franchit le
+            # seuil, pas à tous ceux qui suivent.
+            if apres == DEAD_SOURCE_RUNS:
+                alertes.append({"type": "tombee", "name": source["name"],
+                                "runs": apres})
+        else:
+            apres = 0
+            if avant >= DEAD_SOURCE_RUNS:
+                alertes.append({"type": "retour", "name": source["name"],
+                                "runs": avant})
+        # Un compteur à zéro n'apprend rien : on ne garde que les sources
+        # réellement en difficulté, pour ne pas gonfler feed.json de 35
+        # entrées inutiles à chaque passage.
+        if apres:
+            compteurs[sid] = apres
+    return compteurs, alertes
+
+
+def write_source_alerts_file(alertes):
+    """Dépose les alertes de source pour l'étape de notification."""
+    if not SOURCE_ALERTS_FILE or not alertes:
+        return
+    try:
+        with open(SOURCE_ALERTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(alertes, f, ensure_ascii=False)
+        print(f"  {len(alertes)} alerte(s) de source déposée(s) -> {SOURCE_ALERTS_FILE}")
+    except OSError as e:
+        # Comme pour les articles : une alerte non transmise ne doit jamais
+        # faire échouer la collecte.
+        print(f"  [alerte] impossible d'écrire {SOURCE_ALERTS_FILE} : {e}")
 
 
 def write_new_items_file(new_items):
@@ -773,6 +866,7 @@ def main():
     existing_items = stored.get("items", [])
     # Validateurs HTTP du passage précédent, par source.
     http_state = stored.get("feed_http_state", {}) or {}
+    silence_precedent = stored.get("sources_silence", {}) or {}
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
@@ -845,6 +939,18 @@ def main():
     if dropped:
         print(f"Historique plafonné : {len(all_items) + dropped} -> {MAX_HISTORY_SIZE} (les {dropped} plus anciens sont retirés)")
 
+    # État des sources, puis cumul des passages muets. L'état seul ne dit
+    # que « muette maintenant » ; c'est le cumul qui distingue une panne
+    # d'un hoquet, et qui permet de n'alerter qu'une fois.
+    sante = build_sources_health(all_items, feed_infos, new_counts)
+    silence, alertes_sources = suivre_sources_muettes(sante, silence_precedent)
+    for a in alertes_sources:
+        if a["type"] == "tombee":
+            print(f"⚠️  Source tombée : {a['name']} — muette depuis {a['runs']} passages")
+        else:
+            print(f"✅ Source rétablie : {a['name']} — après {a['runs']} passages muets")
+    write_source_alerts_file(alertes_sources)
+
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "total_articles": len(all_items),
@@ -863,7 +969,10 @@ def main():
         # État de chaque source : permet de repérer un flux mort sans
         # éplucher les logs du run. Exposé dans feed.json pour pouvoir être
         # affiché plus tard par l'app sans retoucher au backend.
-        "sources_health": build_sources_health(all_items, feed_infos, new_counts),
+        "sources_health": sante,
+        # Compteurs de passages muets consécutifs, uniquement pour les
+        # sources en difficulté. Sert à n'alerter qu'une fois par panne.
+        "sources_silence": silence,
         # Validateurs HTTP par source, pour la requête conditionnelle du
         # prochain passage. Conservés dans feed.json faute d'autre stockage
         # persistant : quelques centaines d'octets, négligeables.

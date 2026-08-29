@@ -105,6 +105,52 @@ def send_discord_notification(new_items):
     return send_discord_with_retry(embed, f"récapitulatif {n} article(s)")
 
 
+def send_source_alerts(alertes):
+    """Signale qu'une source est tombée, ou qu'elle est revenue.
+
+    Exception assumée à la règle « un seul message par passage ». Cette
+    règle existe pour empêcher un message par ARTICLE ; une alerte de
+    source est d'une autre nature, et surtout elle ne peut pas voyager dans
+    le récapitulatif : une source morte se manifeste précisément les jours
+    où il n'y a aucun nouvel article, donc où aucun récapitulatif ne part.
+
+    Le volume reste nul en régime normal : fetch_feeds n'émet une alerte
+    qu'au moment où l'état bascule, jamais tant qu'il dure.
+    """
+    if not DISCORD_WEBHOOK_URL or not alertes:
+        return False
+
+    tombees = [a for a in alertes if a.get("type") == "tombee"]
+    retours = [a for a in alertes if a.get("type") == "retour"]
+    lignes = []
+    for a in tombees:
+        lignes.append(f"🔴 **{a.get('name')}** ne renvoie plus rien "
+                      f"depuis {a.get('runs')} passages.")
+    for a in retours:
+        lignes.append(f"🟢 **{a.get('name')}** est revenue.")
+
+    embed = {
+        "title": "⚠️ État des sources" if tombees else "✅ État des sources",
+        "url": SITE_URL,
+        "description": "\n".join(lignes),
+        # Rouge s'il y a une panne, vert si ce sont uniquement des retours.
+        "color": 0xE04F5F if tombees else 0x4FE07A,
+    }
+    print(f"  [discord] envoi de {len(alertes)} alerte(s) de source...")
+    return send_discord_with_retry(embed, f"alerte source ({len(alertes)})")
+
+
+def load_source_alerts(path):
+    if not path:
+        return []
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return []
+
+
 # Note : une tentative de notification via ntfy.sh a été faite puis
 # abandonnée — le serveur confirmait l'envoi (200 OK) sans jamais relayer
 # les messages, probablement à cause d'un fail2ban/rate-limit silencieux
@@ -125,6 +171,12 @@ def main():
     if not path:
         print("[discord] NEW_ITEMS_FILE non défini — rien à notifier.")
         return 0
+
+    # Les alertes de source sont indépendantes des articles : elles doivent
+    # partir même — surtout — quand il n'y a rien de neuf à annoncer.
+    alertes = load_source_alerts(os.environ.get("SOURCE_ALERTS_FILE", ""))
+    if alertes:
+        send_source_alerts(alertes)
 
     new_items = load_new_items(path)
     if not new_items:

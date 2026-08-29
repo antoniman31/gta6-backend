@@ -103,6 +103,7 @@ def build_payload(new_items):
     importance), et un titre choisi au hasard parmi plusieurs donne une
     idée fausse de ce que contient le lot.
     """
+    majeure = feed_store.est_actu_majeure(new_items)
     return {
         "title": feed_store.libelle_recap(new_items),
         "body": "Ouvrir GTA6_WATCH",
@@ -110,7 +111,12 @@ def build_payload(new_items):
         # Un tag identique remplace la notification précédente au lieu
         # d'empiler : après une nuit sans regarder son téléphone, on veut
         # un récapitulatif, pas douze bannières.
-        "tag": "gta6watch-nouveaux",
+        #
+        # Sauf pour une actu majeure, qui reçoit son propre tag : sinon le
+        # récapitulatif de routine du passage suivant l'effacerait en
+        # silence une demi-heure plus tard, et c'est précisément celle
+        # qu'on ne veut pas rater.
+        "tag": "gta6watch-majeur" if majeure else "gta6watch-nouveaux",
     }
 
 
