@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-29T19:45:41.671720+00:00",
-  "total_articles": 1267,
-  "new_this_run": 0,
+  "generated_at": "2026-08-29T19:56:39.767403+00:00",
+  "total_articles": 1281,
+  "new_this_run": 14,
   "hot_count": 0,
   "hot_threshold": 4,
-  "sources_count": 49,
+  "sources_count": 50,
   "sources": [
     {
       "id": "rockstar-en",
@@ -93,6 +93,12 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
+      "official": false,
+      "specialist": true
+    },
+    {
+      "id": "rockstarmag-youtube",
+      "name": "RockstarMag (YouTube)",
       "official": false,
       "specialist": true
     },
@@ -367,7 +373,7 @@
       "name": "Google News (FR)",
       "entries_fetched": 92,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-29T17:02:53+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -375,7 +381,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 92,
+      "entries_fetched": 98,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:18:35+00:00",
@@ -435,8 +441,8 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "not_modified": false,
+      "entries_fetched": 0,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T10:02:00+00:00",
       "days_since_last_article": 0,
@@ -451,6 +457,16 @@
       "last_article": "2026-08-28T17:45:42+00:00",
       "days_since_last_article": 1,
       "status": "muette"
+    },
+    {
+      "id": "rockstarmag-youtube",
+      "name": "RockstarMag (YouTube)",
+      "entries_fetched": 15,
+      "not_modified": false,
+      "new_this_run": 13,
+      "last_article": "2026-08-29T14:52:18+00:00",
+      "days_since_last_article": 0,
+      "status": "ok"
     },
     {
       "id": "rockstarintel",
@@ -655,8 +671,8 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "not_modified": true,
+      "entries_fetched": 10,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T15:00:25+00:00",
       "days_since_last_article": 1,
@@ -794,15 +810,15 @@
     }
   ],
   "sources_silence": {
-    "rockstarmag": 19,
-    "rockstarintel": 19,
-    "ign": 19,
-    "gamespot": 19,
-    "polygon": 19,
-    "kotaku": 19,
-    "gamesradar": 19,
-    "rps": 19,
-    "eurogamer": 19
+    "rockstarmag": 20,
+    "rockstarintel": 20,
+    "ign": 20,
+    "gamespot": 20,
+    "polygon": 20,
+    "kotaku": 20,
+    "gamesradar": 20,
+    "rps": 20,
+    "eurogamer": 20
   },
   "feed_http_state": {
     "take2-ir": {
@@ -819,7 +835,7 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sat, 29 Aug 2026 19:39:03 GMT"
+      "modified": "Sat, 29 Aug 2026 19:54:59 GMT"
     },
     "ginjfo": {
       "etag": "\"1e36da6e5c29c8453b8a536212043c3a\"",
@@ -830,20 +846,20 @@
       "modified": "Sat, 29 Aug 2026 19:30:16 GMT"
     },
     "actugaming": {
-      "etag": "W/\"a62cb193e165ac11a49f75257a1daa93\"",
-      "modified": "Sat, 29 Aug 2026 19:03:50 GMT"
+      "etag": "W/\"c130ec6308e9de84b002577f613445ed\"",
+      "modified": "Sat, 29 Aug 2026 19:54:55 GMT"
     },
     "gameinformer": {
       "etag": "W/\"1788025452\"",
       "modified": "Sat, 29 Aug 2026 17:44:12 GMT"
     },
     "pcgamesn": {
-      "etag": "W/\"3c583557b1c27ed3e492eeb3c16005e0\"",
-      "modified": "Sat, 29 Aug 2026 19:41:01 GMT"
+      "etag": "W/\"1de5eabe028293c3fd9a287bc3b27a22\"",
+      "modified": "Sat, 29 Aug 2026 19:53:18 GMT"
     },
     "vgc": {
-      "etag": "\"6a931c11-b63\"",
-      "modified": "Sat, 29 Aug 2026 17:51:13 GMT"
+      "etag": "\"6a933830-b63\"",
+      "modified": "Sat, 29 Aug 2026 19:51:12 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -938,6 +954,19 @@
       "lang": "fr",
       "image": "https://pic.clubic.com/v1/images/2178880/raw",
       "description": "Star Citizen Squadron 42 reporté à 2027 à cause de GTA VI : Chris Roberts réinvente la mauvaise fois ?&nbsp;&nbsp;Clubic"
+    },
+    {
+      "title": "GTA 6 : L'ÉNORME PREVIEW DE TGG AVEC UNE VAGUE D'INFOS (HUD, MAP, POLICE, TÉLÉPHONE, CONDUITE ETC..)",
+      "link": "https://www.youtube.com/watch?v=baoyvBXLU5k",
+      "source_link": null,
+      "date": "2026-08-29T14:52:18+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/baoyvBXLU5k?version=3",
+      "description": "Découvrez la première partie des informations de TGG avec une VAGUE d'informations folles ! \n\nLire le résumé des previews de TGG :\nhttps://www.rockstarmag.fr/gta-6-de-nombreux-details-sur-le-jeu-donnes-par-tgg/\n\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ F"
     },
     {
       "title": "GTA 6 | De nombreux détails sur le jeu donnés par TGG - Rockstar Mag",
@@ -1042,6 +1071,19 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/8ncBqozL6HDJKAVUdaPae9-1280-80.jpg",
       "description": "\"How do we follow up three characters? Is it four characters now?\""
+    },
+    {
+      "title": "🇫🇷 GTA 6 : UN LARGE APERÇU (NETFLIX, FRANÇAIS - VOSTFR 🇫🇷)",
+      "link": "https://www.youtube.com/watch?v=qg2xybZ3LR0",
+      "source_link": null,
+      "date": "2026-08-29T12:44:55+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/qg2xybZ3LR0?version=3",
+      "description": "Découvrez dès maintenant la version Française de GTA 6, Un Large Aperçu ! \n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.facebook.com/RockstarMagFr/\n\nSUIVRE CHRIS :\n_ Twitter : https://twitter.com/Chris_Klippel\n_ Threads : https://www.t"
     },
     {
       "title": "GTA 6 rafle tout sur son passage : ce jeu à 1 milliard de dollars repousse encore la sortie de son mode solo - La Crème Du Gaming",
@@ -1321,6 +1363,19 @@
       "lang": "fr",
       "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/08/presentation-bluffante-gta-6-1024x575.jpg",
       "description": "GTA 6 | « la démonstration la plus impressionnante jamais vue » selon Digital Foundry&nbsp;&nbsp;Rockstar Mag"
+    },
+    {
+      "title": "GTA 6 : \"PEUT-ÊTRE LA MEILLEURE PRÉSENTATION EN TEMPS RÉEL JAMAIS VUE\" SELON DIGITAL FOUNDRY",
+      "link": "https://www.youtube.com/watch?v=v_ryBqCzk1k",
+      "source_link": null,
+      "date": "2026-08-29T08:12:41+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/v_ryBqCzk1k?version=3",
+      "description": "Selon les experts de Digital Foundry, la présentation de GTA 6 pourrait bien être la meilleure jamais réalisée ! \n\nPlus d'infos : \nhttps://www.rockstarmag.fr/gta-6-la-demonstration-la-plus-impressionnante-jamais-vue-selon-digital-foundry\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https:/"
     },
     {
       "title": "L'interface de GTA 6 ne montre plus la jauge de carburant apparue dans les fuites de Cyberleek - Numerama",
@@ -1862,6 +1917,19 @@
       "description": "GTA 6: la police ne va pas juste vous suivre, elle va vous traquer&nbsp;&nbsp;Pèse sur start"
     },
     {
+      "title": "GTA 6 EN 30 FPS, PAS DE VUE PREMIÈRE PERSONNE ET UNE DURÉE DE VIE DE 80 HEURES",
+      "link": "https://www.youtube.com/watch?v=kNER6NjFXUU",
+      "source_link": null,
+      "date": "2026-08-28T18:02:48+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/kNER6NjFXUU?version=3",
+      "description": "Des infos officielles sur les specs de GTA 6 et sa durée de vie ! \n\nPlus d'infos : \nhttps://www.rockstarmag.fr/gta-6-une-duree-de-vie-de-80h-avec-du-30fps-et-pas-de-vue-premiere-personne/\n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/2070039290084725240?s=20\n- Instagram : https://www.instagram.com/p/DZ_Lc26MfhW/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==\n- Threads : https://www.threa"
+    },
+    {
       "title": "GTA 6 Extended Look Reveals Story Missions And Massive Map Details - HotHardware",
       "link": "https://hothardware.com/news/gta-6-extended-look-reveals-story-missions-and-massive-map-details",
       "source_link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQSU9BX2Nab3d0NlVmWGo3UnIxQjN2UjMtdEF1VDZBWDc0ZTRfbVJSRVREOGMzWEhUSG1wbE1HUkotbTAxdFh3MVVHck9qWlhmb2JYd1g5bFY1WnN0bjN6c1pzbThDSHVTX1NKTExKbll1Z2prUElQN0pIbjBsMXExbEFXcEtHaUFlVEYzQUZrLXkxYWctazY5MmdaYw?oc=5",
@@ -2328,6 +2396,19 @@
       "lang": "fr",
       "image": "https://sm.ign.com/t/ign_fr/news/a/after-gta-/after-gta-6-extended-look-showed-rockstars-game-running-at-3_apes.1200.jpg",
       "description": "\n\"Y parvenir représente un véritable défi, même sur PC.\""
+    },
+    {
+      "title": "GTA 6 : TOUTES LES NOUVELLES ACTIVITÉS CONFIRMÉES DANS LE JEU",
+      "link": "https://www.youtube.com/watch?v=VbAcivGoJtM",
+      "source_link": null,
+      "date": "2026-08-28T15:18:31+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/VbAcivGoJtM?version=3",
+      "description": "Découvrez dès maintenant notre nouveau dossier consacré aux nouvelles activités de GTA 6 ! \n\nLa nouvelles activités : \nhttps://www.rockstarmag.fr/gta-vi-parlons-en-details-des-nouvelles-activites-et-mini-jeux/\n\nLa liste de TOUTES les activités du jeu : \nhttps://www.rockstarmag.fr/gta-6-quelles-sont-les-activites-qui-seront-presentes-dans-le-jeu/\n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/207"
     },
     {
       "title": "Tech Experts Call GTA 6 'the Most Impressive Example of Real-Time Rendering We've Ever Seen' - Push Square",
@@ -3474,6 +3555,19 @@
       "description": "GTA 6 Extended Look: Everything we learned from the new footage&nbsp;&nbsp;Red Bull"
     },
     {
+      "title": "\"GTA VI\" : un large aperçu du jeu vidéo le plus attendu de l'année est disponible en ligne - franceinfo",
+      "link": "https://www.franceinfo.fr/culture/jeux-video/gta-vi-un-large-apercu-du-jeu-video-le-plus-attendu-de-l-annee-est-disponible-en-ligne_8166179.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQazFZcGUxd29aRUxTWkdLeXNWVmJqSC1nNEpscUl3Q3E1ZkswLVZiRnZ0TmNuYmM1ZzhSS3VnZnZFSXZsY0lPdjBqMDZZWlAwTXlOc2M2Sk5zdklMSFFiV2tWSkZGNjBYNFd6a2pNdUZSdmgyTlUzckFNR3VkMDI4MlR3VThjNDNyMzc0LWpNZ1VwTnRwazYwcjFhalF1cjNqTUp5Sk92N2ViMVZMSzV2YlJqWXI4MTQ3Tkh1aDQ4VEtRSkZVbndjeXc1SXZMRzBiWnN5X3k5U25RQzVP?oc=5",
+      "date": "2026-08-28T09:06:16+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.franceinfo.fr/pictures/aGBSSQngN051igiayGDx9qbHPoM/0x433:6000x3808/1500x843/2026/08/28/6a914a925c03b463573943.jpg",
+      "description": "\"GTA VI\" : un large aperçu du jeu vidéo le plus attendu de l'année est disponible en ligne&nbsp;&nbsp;franceinfoNetflix aurait payé 100 millions pour diffuser le trailer de GTA 6&nbsp;&nbsp;La RéclameOn a regardé le gameplay de GTA 6 diffusé sur Netflix : on fait le point !&nbsp;&nbsp;KonbiniGTA 6 : pourquoi je me suis ennuyé devant la bande-annonce&nbsp;&nbsp;Les NumériquesGTA 6: la police ne va pas juste vous suivre, elle va vous traquer&nbsp;&nbsp;Pèse sur startGTA 6 | De nombreux détails sur"
+    },
+    {
       "title": "Fable delayed to February 2027 as Playground Games avoids GTA VI window",
       "link": "https://vgtimes.com/gaming-news/165696-fable-delayed-to-february-2027-as-playground-games-avoids-gta-vi-window.html",
       "date": "2026-08-28T08:58:26+00:00",
@@ -4018,6 +4112,19 @@
       "description": "Découvrez dès maintenant un résumé de toutes les informations que nous avons pu découvrir dans les différentes previews de GTA 6 cette nuit."
     },
     {
+      "title": "GTA 6 : 4 NOUVELLES PREVIEWS AVEC UNE PLUIE DE NOUVELLES INFOS (MAP, GAMEPLAY, HISTOIRE, CHOIX...)",
+      "link": "https://www.youtube.com/watch?v=8hBUHihO1Uc",
+      "source_link": null,
+      "date": "2026-08-28T04:24:53+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/8hBUHihO1Uc?version=3",
+      "description": "Découvrez dès maintenant notre gros dossier sur les premières previews de GTA 6 ! \n\nLire notre dossier écrit : \nhttps://www.rockstarmag.fr/gta-6-une-vague-de-nouvelles-informations-grace-aux-premieres-previews\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Fac"
+    },
+    {
       "title": "GTA 6 Gets Series First Feature To Let You Avoid Killing People",
       "link": "https://kotaku.com/gta-6-will-give-you-a-new-way-to-avoid-killing-cops-and-civilians-2000729112",
       "source_link": null,
@@ -4121,6 +4228,19 @@
       "lang": "fr",
       "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/08/gta-6-27-aout-1024x576.jpg",
       "description": "Découvrez dès maintenant la présentation officielle de GTA 6, sur Netflix, qui est désormais disponible pour tout le monde !"
+    },
+    {
+      "title": "GTA 6 - AN EXTENDED LOOK (UN LARGE APERÇU, NETFLIX)",
+      "link": "https://www.youtube.com/watch?v=0XcO338jeLw",
+      "source_link": null,
+      "date": "2026-08-28T01:33:03+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/0XcO338jeLw?version=3",
+      "description": "Découvrez dès maintenant \"Un Large Aperçu\" de Grand Theft Auto VI, l'émission qui fut diffusée en LIVE sur Netflix hier soir  à 21h. \n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.facebook.com/RockstarMagFr/\n\nSUIVRE CHRIS :\n_ Twitter : "
     },
     {
       "title": "GTA 6 Is Doing More With Two Protagonists Than GTA 5 Did With Three",
@@ -4331,6 +4451,19 @@
       "description": "Tune into Lil Wayne, Birdman, and Phil Collins radio."
     },
     {
+      "title": "[ANALYSE] GTA 6 : UN LARGE APERCU (LES PREMIERS DETAILS AVEC UNE ANALYSE À CHAUD)",
+      "link": "https://www.youtube.com/watch?v=BZMf2IdiqmU",
+      "source_link": null,
+      "date": "2026-08-28T00:31:42+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/BZMf2IdiqmU?version=3",
+      "description": "Découvrez dès maintenant notre première analyse à chaud de la présentation de GTA 6 : Un Large Aperçu. Comme toujours, une analyse \"ultime\" arrivera dans les prochains jours ! \n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.facebook.com/"
+    },
+    {
       "title": "4 Major GTA 6 Questions the Previews Haven't Answered",
       "link": "https://www.polygon.com/gta-6-major-questions/",
       "date": "2026-08-28T00:00:14+00:00",
@@ -4453,6 +4586,19 @@
       "description": "Did 'GTA 6' Extended Look live up to the hype? Fans react after years of waiting&nbsp;&nbsp;Mashable"
     },
     {
+      "title": "[RÉACT] GTA 6 - UN LARGE APERCU : PREMIÈRE DÉCOUVERTE (REPLAY LIVE)",
+      "link": "https://www.youtube.com/watch?v=lCgkkT9DDzg",
+      "source_link": null,
+      "date": "2026-08-27T22:50:09+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/lCgkkT9DDzg?version=3",
+      "description": "Découvrez ou (re)découvrez la toute première découverte de GTA 6 - Un Large Aperçu ! \n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/2070039290084725240?s=20\n- Instagram : https://www.instagram.com/p/DZ_Lc26MfhW/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==\n- Threads : https://www.threads.com/@rmagfr/post/DZ_zfJPiP9M?xmt=AQG0cge-meMox8RAQJ9gbfCtk-9VPXn0ic-dW7BH_hZ3VA\n- YouTube : http://"
+    },
+    {
       "title": "GTA 6’s NPCs and Police Will React More Realistically",
       "link": "https://insider-gaming.com/gta-6-reactive-npcs-criminal-profiles-police/",
       "date": "2026-08-27T22:49:29+00:00",
@@ -4475,6 +4621,19 @@
       "lang": null,
       "image": "https://media.gtaboom.com/variants/1920/media/images/5e/b3/what-the-gta-6-extended-look-showed-about-lucia-and-jason.jpg",
       "description": "Jason and Lucia's romance actively shapes Grand Theft Auto VI, with player choices affecting how the couple's relationship and story unfold."
+    },
+    {
+      "title": "GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE ! (FIN)",
+      "link": "https://www.youtube.com/watch?v=s-kQDWe4mmg",
+      "source_link": null,
+      "date": "2026-08-27T22:36:05+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/s-kQDWe4mmg?version=3",
+      "description": "Découvrez dès maintenant et avec nous a présentation de GTA 6 : Un Large Aperçu sur Netflix, pour une soirée exceptionnelle ! \n\nDécouvrir la première preview du jeu : \nhttps://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https:"
     },
     {
       "title": "GTA 6 Could Take About 80 Hours to Complete",
@@ -4572,6 +4731,19 @@
       "lang": null,
       "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/08/GTA-6-Could-Take-Around-80-Hours-to-Complete.jpg?w=1280",
       "description": "GTA 6 Takes Around 80 Hours to Complete, Rockstar Reveals&nbsp;&nbsp;vice.com"
+    },
+    {
+      "title": "GTA 6 : TOUTES LES NOUVELLES IMAGES (+REACT & ANALYSE À CHAUD)",
+      "link": "https://www.youtube.com/watch?v=0P5i5BfS298",
+      "source_link": null,
+      "date": "2026-08-27T22:23:36+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/0P5i5BfS298?version=3",
+      "description": "Découvrez dès maintenant les nouvelles images de GTA 6 et une petite analyse et réact à chaud ! \n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/2070039290084725240?s=20\n- Instagram : https://www.instagram.com/p/DZ_Lc26MfhW/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==\n- Threads : https://www.threads.com/@rmagfr/post/DZ_zfJPiP9M?xmt=AQG0cge-meMox8RAQJ9gbfCtk-9VPXn0ic-dW7BH_hZ3VA\n- YouTub"
     },
     {
       "title": "GTA 6 Netflix extended look: 12 details not seen in the Cyberleek videos - Mashable",
@@ -6876,6 +7048,19 @@
       "description": "Forget GTA 6, Here's the Biggest Gaming Video to Drop Today&nbsp;&nbsp;Polygon.com"
     },
     {
+      "title": "PREVIEW GTA 6 : UNE PLUIE D'INFORMATION CHEZ DAZED AVANT LA PRÉSENTATION NETFLIX",
+      "link": "https://www.youtube.com/watch?v=_yd6c5kEKEo",
+      "source_link": null,
+      "date": "2026-08-27T14:48:28+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/_yd6c5kEKEo?version=3",
+      "description": "La première preview de GTA 6 est tombée, juste avant la présentation Netflix de ce soir ! Voici tout ce qu'il faut savoir ! \n\nLa preview en FR : \nhttps://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6Bmb"
+    },
+    {
       "title": "The GTA 6 Extended Look has an official runtime of almost 30 minutes as Netflix confirms everything is 'captured entirely from in-game footage on PlayStation 5' - TechRadar",
       "link": "https://www.techradar.com/gaming/netflix-confirms-that-the-gta-6-extended-look-has-an-official-runtime-of-just-under-half-an-hour-and-is-captured-on-the-base-ps5",
       "date": "2026-08-27T14:42:03+00:00",
@@ -9100,6 +9285,19 @@
       "lang": "fr",
       "image": "https://images.rtl.fr/~c/2000v2000/funradio/www/1849831-gta-6-propose-une-edition-ultime-avec-des-tenues-specifiques-pour-les-protagonistes.jpg",
       "description": "\"GTA 6\" : Rockstar Games sort du silence, se dit \"profondément affecté\" par les leaks et promet un jeu \"presque terminé\"&nbsp;&nbsp;Fun Radio"
+    },
+    {
+      "title": "AFFAIRE DES LEAKS DE GTA 6 : ROCKSTAR GAMES PREND LA PAROLE",
+      "link": "https://www.youtube.com/watch?v=rACJi0dsffw",
+      "source_link": null,
+      "date": "2026-08-26T12:56:56+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.youtube.com/v/rACJi0dsffw?version=3",
+      "description": "Mise à jour de la situation autour des leaks de GTA 6 avec une prise de parole de Rockstar Games. \n\nLa prise de parole de Rockstar en français : \nhttps://www.rockstarmag.fr/leaks-gta-6-communique-officiel-de-rockstar-games/\n\nDossier sur les leaks : \nhttps://www.rockstarmag.fr/leaks-gta-6-levolution-de-laffaire-heure-par-heure/\n\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https:"
     },
     {
       "title": "GTA 6 Extended Look Release Date and Start Times – How to Watch - VICE",
