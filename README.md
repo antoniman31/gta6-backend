@@ -370,6 +370,32 @@ titre à 164 px sur un écran de 390 px, soit huit lignes pour un titre long ;
 il en fait 250 aujourd'hui. Chaque icône porte un `title` et un
 `aria-label`.
 
+**Gestes tactiles.** Balayer une carte vers la gauche ou la droite bascule
+lu/non lu ; le seuil est de 64 px, en deçà la carte revient en place. Tirer
+vers le bas en haut de page relance une actualisation. La direction du geste
+est figée au premier mouvement franc (8 px) et ne change plus : sans ça, un
+doigt qui dévie pendant un défilement déclencherait un balayage.
+
+**Reprise de lecture.** L'app mémorise le *lien* de l'article regardé au
+moment où on la quitte, jamais une position en pixels — au retour, de
+nouveaux articles se sont insérés en haut du fil, donc le même nombre de
+pixels ne désigne plus le même endroit. Un trait « lu jusqu'ici » se glisse
+avant cet article, et une pastille propose d'y sauter tant qu'il est hors
+écran (elle déplie la pagination si besoin).
+
+**Mots-clés à exclure.** Symétrique de la liste des mots-clés qui font entrer
+un article. Le masquage a lieu **à l'affichage** et non à la collecte :
+`lastItems` garde tout, donc retirer un mot fait réapparaître les articles
+aussitôt, sans relancer le robot. Tous les compteurs partent de
+`articlesVisibles()`, jamais de `lastItems` — un badge qui compterait les
+articles masqués annoncerait des non-lus introuvables.
+
+**Badge sur l'icône de l'app.** `navigator.setAppBadge()` affiche le nombre
+de non-lus sur l'icône de l'écran d'accueil. L'API n'existe que pour une PWA
+installée et pas sur tous les navigateurs : absence, promesse rejetée et
+exception synchrone sont toutes trois avalées, le badge étant un confort et
+non une fonction de l'app.
+
 **Mode de secours** : si `docs/feed.json` est inaccessible (backend en
 panne, GitHub Pages indisponible), l'app bascule automatiquement sur un
 ancien système de récupération directe des 35 sources via des proxys CORS

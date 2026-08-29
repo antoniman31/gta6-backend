@@ -278,6 +278,10 @@
   .card-title a:hover{color:var(--accent);}
   .card-date{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);}
   .card-extra{font-size:10px; color:var(--text-dim); margin-top:4px; font-style:italic;}
+  /* Cible tactile élargie sans grossir le texte : sur un lien de 10 px, le
+     doigt rate sinon une fois sur deux. */
+  .card-extra a{color:var(--accent); text-decoration:none; padding:3px 0; display:inline-block;}
+  .card-extra a:hover{text-decoration:underline;}
   .card-mark{
     font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim);
     background:none; border:1px solid var(--line); border-radius:4px; padding:0 6px;
@@ -301,6 +305,54 @@
   .feed.dense .card-top{gap:8px;}
   .feed.dense .card-actions{gap:3px; margin-top:5px;}
   .feed.dense .card-mark{min-width:24px; height:24px; padding:0 4px; font-size:11px;}
+
+  /* ---------- Balayage pour marquer lu ---------- */
+  /* L'indice coloré est peint SOUS la carte : c'est lui qu'on découvre à
+     mesure qu'elle glisse, sans avoir à animer deux éléments. */
+  .swipe-wrap{position:relative; overflow:hidden; border-radius:8px;}
+  .swipe-hint{
+    position:absolute; inset:0; display:flex; align-items:center;
+    padding:0 22px; font-size:20px; border-radius:8px;
+    background:color-mix(in srgb, var(--ok) 22%, var(--bg-panel));
+    color:var(--ok); pointer-events:none; opacity:0;
+  }
+  .swipe-wrap.vers-gauche .swipe-hint{justify-content:flex-end;}
+  .swipe-wrap.glisse .card{transition:none;}
+  .swipe-wrap .card{will-change:transform;}
+  .swipe-wrap.rend .card{transition:transform .18s ease-out;}
+  @media (prefers-reduced-motion: reduce){
+    .swipe-wrap.rend .card{transition:none;}
+  }
+
+  /* ---------- Tirer pour actualiser ---------- */
+  /* contain empêche le geste natif du navigateur de se déclencher en plus du
+     nôtre quand l'app tourne dans un onglet plutôt qu'installée. */
+  html, body{overscroll-behavior-y:contain;}
+  .pull-zone{
+    display:flex; align-items:center; justify-content:center;
+    height:0; overflow:hidden; color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; font-size:11px;
+  }
+  .pull-zone.rend{transition:height .18s ease-out;}
+  @media (prefers-reduced-motion: reduce){
+    .pull-zone.rend{transition:none;}
+  }
+
+  /* ---------- Repère de reprise de lecture ---------- */
+  .resume-marker{
+    display:flex; align-items:center; gap:8px; margin:2px 0 6px;
+    font-family:'JetBrains Mono',monospace; font-size:10px;
+    color:var(--accent); letter-spacing:0.06em; text-transform:uppercase;
+  }
+  .resume-marker::before, .resume-marker::after{
+    content:""; flex:1; height:1px; background:var(--accent); opacity:0.35;
+  }
+  .resume-chip{
+    position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
+    background:var(--accent); color:#ffffff; border:none; border-radius:20px;
+    padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:11px;
+    font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;
+  }
 
   .empty{
     text-align:center; padding:60px 20px; color:var(--text-dim);
@@ -540,6 +592,8 @@
     <button class="tab" id="tabRockstarmag" onclick="setTab('rockstarmag')">RockstarMag <span class="tab-badge" id="badgeRockstarmag"></span></button>
   </div>
 
+  <div class="pull-zone" id="pullZone"><span id="pullLabel"></span></div>
+
   <div class="feed" id="feed">
     <div class="empty">Clique sur "Actualiser" pour charger les derniers articles.</div>
   </div>
@@ -555,6 +609,10 @@
   <button class="info-btn" onclick="openInfo()" title="Informations">ⓘ</button>
 
 </div>
+
+<!-- Pastille de reprise : masquée par défaut, révélée seulement si un repère
+     de lecture existe et qu'il se trouve hors de l'écran. -->
+<button class="resume-chip" id="resumeChip" style="display:none;" onclick="reprendreLecture()">↓ Reprendre où j'en étais</button>
 
 <!-- ---------- Bottom sheet Filtres ---------- -->
 <div class="overlay bottom-sheet" id="filtersOverlay" onclick="closeFiltersSheetOnOverlay(event)">
@@ -720,6 +778,16 @@
     </div>
 
     <div class="setting-group">
+      <span class="setting-label">Mots-clés à exclure (un par ligne)</span>
+      <textarea id="excludeKeywordsInput" class="setting-input wide" rows="3" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px;"></textarea>
+      <div class="setting-desc">
+        Un article dont le titre ou le résumé contient l'un de ces mots est masqué.
+        Le masquage est réversible et immédiat : retire le mot, l'article revient
+        sans qu'il faille relancer le robot.
+      </div>
+    </div>
+
+    <div class="setting-group">
       <span class="setting-label">Sources actives</span>
       <div class="source-list" id="sourceList"></div>
     </div>
@@ -861,6 +929,9 @@ const DEFAULT_SETTINGS = {
   theme: "system",
   keywords: ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gta-6", "gta-vi", "grand-theft-auto-6", "gta_6", "gta_vi", "gtaonline6", "gta 6 news", "gta vi news", "gta6 news", "rockstar gta 6", "rockstar's gta 6", "rockstar gta vi", "rockstar's gta vi", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "new vice city", "gta vice city 2026", "leonida", "leonida state", "leonida map", "leonida gta", "cyberleek", "cyber leek", "cyberleak", "cyber leak gta", "gta 6 cyberleek", "take-two", "take two", "take-two interactive", "taketwo", "take2", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "gta 6 release date", "gta vi release date", "gta 6 launch date", "gta 6 launch", "gta 6 date", "gta 6 november", "gta 6 2026", "gta vi 2026", "gta 6 delay", "gta 6 delayed", "gta vi delay", "gta 6 postponed", "gta 6 trailer", "gta vi trailer", "gta 6 trailer 3", "gta 6 new trailer", "gta 6 teaser", "gta vi teaser", "gta 6 extended look", "gta 6 netflix", "gta 6 gameplay", "gta vi gameplay", "gta 6 gameplay leak", "gta 6 gameplay video", "gta 6 footage", "gta vi footage", "gta 6 clip", "gta 6 leak", "gta vi leak", "gta 6 leaks", "gta 6 leaked", "gta 6 leaked footage", "gta 6 leaked gameplay", "gta 6 leaked map", "gta 6 hack", "gta 6 breach", "gta 6 map", "gta vi map", "gta 6 map leak", "gta 6 characters", "gta vi characters", "lucia caminos", "jason duval", "gta 6 protagonist", "gta 6 pre-order", "gta vi pre-order", "gta 6 preorder", "gta 6 price", "gta 6 edition", "gta 6 collector", "gta 6 pc", "gta 6 ps5", "gta 6 xbox", "gta 6 console", "gta 6 xbox series", "gta 6 playstation 5", "gta 6 system requirements", "gta 6 online", "gta 6 multiplayer", "gta online 2", "gta 6 rating", "gta 6 esrb", "gta 6 age rating", "gta 6 budget", "gta 6 development", "gta 6 dev", "gta 6 news today", "gta 6 update", "gta 6 announcement", "gta 6 reveal", "gta 6 confirmed", "gta 6 rumor", "gta 6 rumors", "gta 6 speculation", "gta 6 preview event", "gta 6 media event", "gta 6 hands-on", "gta 6 preview", "gta 6 review", "gta 6 dlc", "gta 6 season pass", "gta 6 dmca", "gta 6 takedown", "gta 6 copyright", "gta 6 discord"],
   feeds: DEFAULT_FEEDS,
+  // Liste noire, vide par défaut : c'est à l'usage qu'on découvre le bruit
+  // qu'on veut écarter (arnaques crypto, mods GTA 5 déguisés en GTA 6…).
+  excludeKeywords: [],
   maxDisplay: 500,
   similarityThreshold: 75,
   denseMode: false,
@@ -1036,6 +1107,7 @@ async function loadState(){
 async function saveSettings(){
   settings.backendUrl = document.getElementById("backendUrlInput").value.trim();
   settings.keywords = document.getElementById("keywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
+  settings.excludeKeywords = document.getElementById("excludeKeywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
   settings.maxDisplay = parseInt(document.getElementById("maxDisplay").value, 10) || 500;
   settings.similarityThreshold = parseInt(document.getElementById("simRange").value, 10);
 
@@ -1078,6 +1150,7 @@ function saveLastItems(){
 function populateSettingsUI(){
   document.getElementById("backendUrlInput").value = settings.backendUrl || "";
   document.getElementById("keywordsInput").value = settings.keywords.join("\n");
+  document.getElementById("excludeKeywordsInput").value = (settings.excludeKeywords || []).join("\n");
   document.getElementById("maxDisplay").value = settings.maxDisplay;
   document.getElementById("simRange").value = settings.similarityThreshold;
   document.getElementById("simValue").textContent = settings.similarityThreshold + "%";
@@ -1843,6 +1916,23 @@ function clearSearch(){
   input.focus();
 }
 
+// Masquage à l'affichage et non à la collecte : lastItems garde tout, donc
+// retirer un mot de la liste noire fait réapparaître les articles aussitôt,
+// sans relancer le robot ni retélécharger le fil.
+function estExclu(item){
+  const exclus = settings.excludeKeywords;
+  if(!exclus || exclus.length === 0) return false;
+  const foin = ((item.title || "") + " " + (item.description || "")).toLowerCase();
+  return exclus.some(mot => foin.includes(mot));
+}
+
+// Tous les compteurs doivent partir d'ici, pas de lastItems : un badge qui
+// compterait les articles masqués annoncerait des non-lus introuvables.
+function articlesVisibles(){
+  if(!settings.excludeKeywords || settings.excludeKeywords.length === 0) return lastItems;
+  return lastItems.filter(i => !estExclu(i));
+}
+
 function applyFilters(){
   const q = document.getElementById("searchInput").value.trim().toLowerCase();
 
@@ -1852,7 +1942,8 @@ function applyFilters(){
     loadFullHistory("recherche lancée");
   }
 
-  let items = lastItems;
+  let items = articlesVisibles();
+  const masques = lastItems.length - items.length;
 
   if(currentTab === "rockstar") items = items.filter(i => i.official);
   if(currentTab === "rockstarmag") items = items.filter(i => i.rockstarmag);
@@ -1871,22 +1962,25 @@ function applyFilters(){
   renderFeed(items, lastNewLinks, q);
   updateTabBadges();
   updateDocumentTitle();
+  majPastilleReprise();
 
   const countEl = document.getElementById("countLine");
   // L'état de l'historique est porté par historyLine, juste à droite —
   // l'ajouter ici aussi le disait deux fois sur la même ligne.
-  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"");
+  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"")
+    + (masques > 0 ? ` · ${masques} masqué${masques>1?"s":""}` : "");
   updateHistoryLine();
 }
 
 // Compteurs de non-lus par onglet — priorisation en un coup d'œil.
 function updateTabBadges(){
-  const unreadAll = lastItems.filter(i => !readSet.has(i.link)).length;
-  const unreadRockstar = lastItems.filter(i => i.official && !readSet.has(i.link)).length;
-  const unreadRockstarmag = lastItems.filter(i => i.rockstarmag && !readSet.has(i.link)).length;
-  const unreadNonRockstar = lastItems.filter(i => !i.official && !i.rockstarmag && !readSet.has(i.link)).length;
-  const unreadFr = lastItems.filter(i => i.lang === "fr" && !readSet.has(i.link)).length;
-  const unreadEn = lastItems.filter(i => i.lang !== "fr" && !readSet.has(i.link)).length;
+  const visibles = articlesVisibles();
+  const unreadAll = visibles.filter(i => !readSet.has(i.link)).length;
+  const unreadRockstar = visibles.filter(i => i.official && !readSet.has(i.link)).length;
+  const unreadRockstarmag = visibles.filter(i => i.rockstarmag && !readSet.has(i.link)).length;
+  const unreadNonRockstar = visibles.filter(i => !i.official && !i.rockstarmag && !readSet.has(i.link)).length;
+  const unreadFr = visibles.filter(i => i.lang === "fr" && !readSet.has(i.link)).length;
+  const unreadEn = visibles.filter(i => i.lang !== "fr" && !readSet.has(i.link)).length;
 
   document.getElementById("badgeAll").textContent = unreadAll > 0 ? unreadAll : "";
   document.getElementById("badgeRockstar").textContent = unreadRockstar > 0 ? unreadRockstar : "";
@@ -1899,8 +1993,26 @@ function updateTabBadges(){
 
 // Badge sur le titre d'onglet du navigateur, visible même en arrière-plan.
 function updateDocumentTitle(){
-  const unread = lastItems.filter(i => !readSet.has(i.link)).length;
+  const unread = articlesVisibles().filter(i => !readSet.has(i.link)).length;
   document.title = unread > 0 ? "(" + unread + ") GTA6_WATCH" : "GTA6_WATCH";
+  majBadgeApplication(unread);
+}
+
+// Pastille de non-lus sur l'icône de l'app, comme un compteur de SMS : le
+// seul moyen de savoir qu'il y a du neuf SANS ouvrir l'app.
+//
+// L'API n'existe que pour une PWA installée, et pas sur tous les navigateurs.
+// Tout est donc gardé : absence de l'API, promesse rejetée (permission
+// refusée, contexte non installé), exception synchrone. Un échec ici ne doit
+// jamais interrompre le rendu du fil — le badge est un confort, pas l'app.
+function majBadgeApplication(nonLus){
+  try{
+    if(nonLus > 0){
+      if(navigator.setAppBadge) navigator.setAppBadge(nonLus).catch(() => {});
+    }else{
+      if(navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {});
+    }
+  }catch(e){ /* navigateur sans support : on n'en parle pas */ }
 }
 
 // ---------- Rendu ----------
@@ -1961,7 +2073,7 @@ function renderFeed(items, newLinks, searchQuery){
     .map(bucket => `
       <div class="day-group">
         <div class="day-label">${bucket}</div>
-        ${buckets[bucket].map(item => renderCard(item, newLinks, searchQuery)).join("")}
+        ${buckets[bucket].map(item => enveloppeCarte(item, newLinks, searchQuery)).join("")}
       </div>
     `).join("");
 
@@ -1973,6 +2085,19 @@ function renderFeed(items, newLinks, searchQuery){
     : "";
 
   feedEl.innerHTML = cardsHtml + loadMoreHtml;
+}
+
+// Chaque carte est enveloppée : l'indice coloré du balayage se peint dessous,
+// et le repère « lu jusqu'ici » se glisse juste avant l'article où la lecture
+// s'était arrêtée.
+function enveloppeCarte(item, newLinks, searchQuery){
+  const lu = readSet.has(item.link);
+  const repere = (repriseLien && item.link === repriseLien)
+    ? `<div class="resume-marker">lu jusqu'ici</div>` : "";
+  return repere
+    + `<div class="swipe-wrap"><div class="swipe-hint">${lu ? "↺" : "✓"}</div>`
+    + renderCard(item, newLinks, searchQuery)
+    + `</div>`;
 }
 
 function loadMore(){
@@ -2026,12 +2151,24 @@ function renderCard(item, newLinks, searchQuery){
   const hotBadge = nbSources >= hotThreshold
     ? `<span class="tag-badge tag-hot">🔥 ${nbSources} SOURCES</span>` : "";
 
+  // Les liens des autres sources dorment dans feed.json depuis le début : les
+  // rendre cliquables permet de lire la même actu chez la rédaction de son
+  // choix — la version française plutôt que l'anglaise, par exemple.
+  // safeUrl neutralise un lien au schéma douteux : la source redevient alors
+  // du texte simple plutôt que de disparaître.
+  const extraLien = s => {
+    const url = safeUrl(s.link);
+    const nom = escapeHtml(s.source);
+    return url
+      ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${nom}</a>`
+      : nom;
+  };
   const extraSourcesLine = (item.extraSources && item.extraSources.length > 0)
-    ? `<div class="card-extra">+ ${item.extraSources.length} autre${item.extraSources.length>1?"s":""} source${item.extraSources.length>1?"s":""} : ${item.extraSources.map(s => escapeHtml(s.source)).join(", ")}</div>`
+    ? `<div class="card-extra">+ ${item.extraSources.length} autre${item.extraSources.length>1?"s":""} source${item.extraSources.length>1?"s":""} : ${item.extraSources.map(extraLien).join(", ")}</div>`
     : "";
 
   return `
-    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}" id="card-${safeId}">
+    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
       <div class="card-top">
         ${thumb}
         <div class="card-body">
@@ -2181,7 +2318,9 @@ function toggleRead(safeId, link){
 }
 
 async function markAllRead(makeRead){
-  let items = lastItems;
+  // articlesVisibles() et non lastItems : "Tout marquer lu" ne doit pas
+  // toucher des articles que la liste noire cache.
+  let items = articlesVisibles();
   if(currentTab === "rockstar") items = items.filter(i => i.official);
   if(currentTab === "rockstarmag") items = items.filter(i => i.rockstarmag);
   if(currentTab === "non-rockstar") items = items.filter(i => !i.official && !i.rockstarmag);
@@ -2782,7 +2921,206 @@ function updateCountdown(){
   if(el.className !== classe) el.className = classe;
 }
 
+// ---------- Reprise de lecture ----------
+// On mémorise le LIEN de l'article regardé en partant, pas une position en
+// pixels : au retour, de nouveaux articles se sont insérés en haut du fil,
+// donc un même nombre de pixels ne désigne plus le même endroit.
+let repriseLien = "";
+let repriseAtteinte = false;
+
+function chargerReprise(){
+  const r = storageGet("reprise-v1");
+  repriseLien = (r && r.value) ? r.value : "";
+}
+
+function memoriserReprise(){
+  // Le premier article dont le haut est encore dans la fenêtre : c'est celui
+  // qu'on avait sous les yeux. La tolérance de 20 px évite de retenir la
+  // carte précédente quand elle dépasse à peine.
+  for(const carte of document.querySelectorAll("#feed .card")){
+    if(carte.getBoundingClientRect().top >= -20){
+      const lien = carte.dataset.lien;
+      if(lien){ repriseLien = lien; storageSet("reprise-v1", lien); }
+      return;
+    }
+  }
+}
+
+function carteDuLien(lien){
+  return [...document.querySelectorAll("#feed .card")].find(c => c.dataset.lien === lien) || null;
+}
+
+// La pastille n'a de sens que si le repère existe et qu'il est hors de vue :
+// proposer de sauter à un article déjà à l'écran n'apprendrait rien.
+function majPastilleReprise(){
+  const pastille = document.getElementById("resumeChip");
+  if(!pastille) return;
+  if(!repriseLien || repriseAtteinte){ pastille.style.display = "none"; return; }
+  const cible = carteDuLien(repriseLien);
+  if(cible){
+    const r = cible.getBoundingClientRect();
+    const aLEcran = r.top < window.innerHeight && r.bottom > 0;
+    if(aLEcran) repriseAtteinte = true;
+    pastille.style.display = aLEcran ? "none" : "block";
+  }else{
+    // Pas encore rendue : elle est plus bas que la pagination actuelle.
+    pastille.style.display = "block";
+  }
+}
+
+function reprendreLecture(){
+  // La pagination ne rend que 30 cartes à la fois : on déplie jusqu'à
+  // atteindre l'article visé, en bornant la boucle sur le nombre de pages
+  // possibles pour ne jamais tourner indéfiniment.
+  let gardeFou = Math.ceil(settings.maxDisplay / PAGE_SIZE) + 1;
+  let cible = carteDuLien(repriseLien);
+  while(!cible && gardeFou-- > 0 && document.getElementById("loadMoreBtn")){
+    loadMore();
+    cible = carteDuLien(repriseLien);
+  }
+  repriseAtteinte = true;
+  majPastilleReprise();
+  if(cible) cible.scrollIntoView({ block: "center", behavior: "smooth" });
+}
+
+// ---------- Gestes tactiles ----------
+const SEUIL_AXE = 8;         // px avant de figer la direction du geste
+const SEUIL_BALAYAGE = 64;   // px au-delà desquels le balayage bascule lu/non lu
+const TIRAGE_MAX = 90;
+const SEUIL_TIRAGE = 60;
+const RESISTANCE = 0.5;      // le doigt parcourt le double de ce que la zone s'ouvre
+
+let geste = null;
+let tirageEnCours = false;
+
+function zoneTirage(hauteur, texte){
+  const z = document.getElementById("pullZone");
+  z.classList.remove("rend");
+  z.style.height = hauteur + "px";
+  document.getElementById("pullLabel").textContent = texte;
+}
+
+function refermeZoneTirage(){
+  const z = document.getElementById("pullZone");
+  z.classList.add("rend");
+  z.style.height = "0px";
+}
+
+async function lancerTirage(){
+  if(tirageEnCours) return;
+  tirageEnCours = true;
+  zoneTirage(SEUIL_TIRAGE, "Actualisation…");
+  try{ await checkNow(true); }
+  catch(e){ /* checkNow journalise déjà ses échecs */ }
+  finally{ tirageEnCours = false; refermeZoneTirage(); }
+}
+
+function surTouchStart(e){
+  geste = null;
+  if(e.touches.length !== 1) return;
+  // Un panneau ouvert a ses propres gestes : ni balayage ni tirage par-dessous.
+  if(document.querySelector(".overlay.open")) return;
+  const t = e.touches[0];
+  const enveloppe = e.target.closest ? e.target.closest(".swipe-wrap") : null;
+  geste = {
+    x0: t.clientX, y0: t.clientY, axe: null, tirage: 0,
+    enveloppe,
+    carte: enveloppe ? enveloppe.querySelector(".card") : null,
+    enHaut: window.scrollY <= 0
+  };
+}
+
+function surTouchMove(e){
+  if(!geste || e.touches.length !== 1) return;
+  const t = e.touches[0];
+  const dx = t.clientX - geste.x0;
+  const dy = t.clientY - geste.y0;
+
+  if(!geste.axe){
+    if(Math.abs(dx) < SEUIL_AXE && Math.abs(dy) < SEUIL_AXE) return;
+    // La direction est figée au premier mouvement franc et ne change plus :
+    // sans ça, un doigt qui dévie en cours de défilement déclencherait un
+    // balayage au milieu de la liste.
+    geste.axe = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+  }
+
+  if(geste.axe === "x" && geste.carte){
+    e.preventDefault();
+    geste.dx = dx;
+    geste.enveloppe.classList.add("glisse");
+    geste.enveloppe.classList.remove("rend");
+    geste.enveloppe.classList.toggle("vers-gauche", dx < 0);
+    geste.carte.style.transform = "translateX(" + dx + "px)";
+    const indice = geste.enveloppe.querySelector(".swipe-hint");
+    if(indice) indice.style.opacity = Math.min(1, Math.abs(dx) / SEUIL_BALAYAGE);
+    return;
+  }
+
+  if(geste.axe === "y" && geste.enHaut && dy > 0 && !tirageEnCours){
+    e.preventDefault();
+    geste.tirage = Math.min(TIRAGE_MAX, dy * RESISTANCE);
+    zoneTirage(geste.tirage,
+      geste.tirage >= SEUIL_TIRAGE ? "Relâche pour actualiser" : "Tire pour actualiser");
+  }
+}
+
+function surTouchEnd(){
+  if(!geste) return;
+  const g = geste;
+  geste = null;
+
+  if(g.axe === "x" && g.carte){
+    g.enveloppe.classList.remove("glisse");
+    g.enveloppe.classList.add("rend");
+    const dx = g.dx || 0;
+    if(Math.abs(dx) >= SEUIL_BALAYAGE){
+      g.carte.style.transform = "translateX(" + (dx > 0 ? "100%" : "-100%") + ")";
+      const lien = g.carte.dataset.lien;
+      // Basculer tout de suite rerendrait le fil et couperait l'animation
+      // net : on laisse la carte finir de sortir avant.
+      setTimeout(() => {
+        // toggleRead n'utilise pas son premier paramètre — seul le lien
+        // identifie l'article dans readSet.
+        if(lien) toggleRead(null, lien);
+      }, 170);
+    }else{
+      g.carte.style.transform = "";
+      const indice = g.enveloppe.querySelector(".swipe-hint");
+      if(indice) indice.style.opacity = 0;
+    }
+  }
+
+  if(g.axe === "y" && g.tirage > 0){
+    if(g.tirage >= SEUIL_TIRAGE) lancerTirage();
+    else refermeZoneTirage();
+  }
+}
+
+document.addEventListener("touchstart", surTouchStart, { passive: true });
+document.addEventListener("touchmove", surTouchMove, { passive: false });
+document.addEventListener("touchend", surTouchEnd, { passive: true });
+document.addEventListener("touchcancel", surTouchEnd, { passive: true });
+
+// Le repère est posé au moment où l'on quitte l'app. pagehide couvre le cas
+// où l'onglet est fermé sans passer par visibilitychange.
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "hidden") memoriserReprise();
+});
+window.addEventListener("pagehide", memoriserReprise);
+
+// Une seule évaluation par trame : le défilement déclenche cet événement
+// des dizaines de fois par seconde.
+let pastilleEnAttente = false;
+window.addEventListener("scroll", () => {
+  if(pastilleEnAttente) return;
+  pastilleEnAttente = true;
+  requestAnimationFrame(() => { pastilleEnAttente = false; majPastilleReprise(); });
+}, { passive: true });
+
 // ---------- Init ----------
+// Avant loadState : le premier rendu du fil doit déjà connaître le repère,
+// sinon le trait « lu jusqu'ici » n'apparaîtrait qu'au rendu suivant.
+chargerReprise();
 loadState();
 updateCountdown();
 setInterval(updateCountdown, 1000);
