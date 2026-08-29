@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 53 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 49 sources en
 parallèle toutes les 30 minutes, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -55,7 +55,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 53 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 49 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 34 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -714,6 +714,19 @@ commentaire).
   comparaison par tokens. Comme le backend est la source principale et le
   mode de secours n'intervient qu'en cas de panne, ce n'est pas un vrai
   risque pratique.
+- **Reddit r/GTA6 : essayé, retiré.** Ajouté le 29/08/2026 en version
+  « meilleurs posts du jour » plutôt que « tous les nouveaux », précisément
+  pour limiter le bruit. Insuffisant : le premier passage a remonté 25
+  publications, dont « Sums up people born after 2002 lmao ». Un forum
+  communautaire n'a pas la même densité d'information qu'une rédaction, et
+  aucun réglage de tri ne corrige ça. Les 25 articles importés ont été
+  retirés avec la source.
+- **Millenium, XboxEra et Xbox-Mag : retirées faute de résultats.** Leurs
+  recherches Google News renvoyaient zéro entrée. Deux causes possibles,
+  indiscernables depuis l'environnement d'ajout : domaine mal orthographié,
+  ou absence d'articles GTA 6 indexés pour ce domaine. Retirées plutôt que
+  laissées muettes — une source qui ne rapporte rien déclenche l'alerte de
+  source morte à répétition et brouille le signal.
 - **17 sources ajoutées le 29/08/2026 sans que leur URL ait pu être
   testée.** L'environnement depuis lequel elles ont été ajoutées n'avait
   accès à aucun de ces sites. Elles passent donc toutes par une recherche
