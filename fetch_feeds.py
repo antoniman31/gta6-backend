@@ -88,6 +88,37 @@ FEEDS = [
     {"id": "rockstar-announce", "name": "Rockstar Games (annonces)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True},
     {"id": "gta6-netflix", "name": "GTA 6 x Netflix", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True},
     {"id": "take2-ir", "name": "Take-Two Investor Relations (officiel)", "url": "https://ir.take2games.com/rss/news-releases.xml?items=15", "official": True},
+    # Chaîne YouTube officielle de Rockstar.
+    #
+    # C'est LA source primaire : un trailer sort ici, la presse en parle dix
+    # à trente minutes plus tard. Sans elle, le robot apprend l'événement
+    # par ceux qui le commentent.
+    #
+    # Deux réglages spécifiques, sans quoi elle serait inutile :
+    #
+    #   official_domains — les liens pointent vers youtube.com, pas vers
+    #     rockstargames.com. Avec la liste par défaut, la vérification de
+    #     domaine retirerait le statut « officiel » à chaque passage et les
+    #     vidéos n'apparaîtraient jamais dans l'onglet Rockstar de l'app,
+    #     qui filtre précisément sur ce statut.
+    #
+    #   official_keywords_extra — « trailer » s'ajoute aux mots-clés GTA 6. Une
+    #     vidéo intitulée simplement « Trailer 3 » ne contient aucun de ces
+    #     mots-clés et serait rejetée : précisément le jour qui compte.
+    #     Contrepartie assumée : quelques bandes-annonces GTA Online
+    #     passeront aussi. Rater LA vidéo coûte infiniment plus cher que
+    #     d'en afficher deux de trop.
+    #
+    # Le filtre reste actif, contrairement à RockstarMag : cette chaîne
+    # publie régulièrement du contenu GTA Online et Red Dead qui n'a rien à
+    # faire dans l'onglet Rockstar.
+    {"id": "rockstar-youtube", "name": "Rockstar Games (YouTube)",
+     "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCULwHhkI31JHAKe57LZdzcA",
+     "official": True,
+     # youtu.be par précaution : le flux Atom de YouTube donne des liens
+     # complets youtube.com, mais un lien raccourci perdrait son statut.
+     "official_domains": ["youtube.com", "youtu.be"],
+     "official_keywords_extra": ["trailer"]},
     {"id": "gnews-fr", "name": "Google News (FR)", "url": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
     {"id": "gnews-en", "name": "Google News (EN)", "url": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "pcgamer", "name": "PC Gamer", "url": "https://www.pcgamer.com/rss.xml", "official": False},
@@ -169,6 +200,40 @@ KEYWORDS = [
     "gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gta-6", "gta-vi", "grand-theft-auto-6", "gta_6", "gta_vi", "gtaonline6", "gta 6 news", "gta vi news", "gta6 news", "rockstar gta 6", "rockstar's gta 6", "rockstar gta vi", "rockstar's gta vi", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "new vice city", "gta vice city 2026", "leonida", "leonida state", "leonida map", "leonida gta", "cyberleek", "cyber leek", "cyberleak", "cyber leak gta", "gta 6 cyberleek", "take-two", "take two", "take-two interactive", "taketwo", "take2", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "gta 6 release date", "gta vi release date", "gta 6 launch date", "gta 6 launch", "gta 6 date", "gta 6 november", "gta 6 2026", "gta vi 2026", "gta 6 delay", "gta 6 delayed", "gta vi delay", "gta 6 postponed", "gta 6 trailer", "gta vi trailer", "gta 6 trailer 3", "gta 6 new trailer", "gta 6 teaser", "gta vi teaser", "gta 6 extended look", "gta 6 netflix", "gta 6 gameplay", "gta vi gameplay", "gta 6 gameplay leak", "gta 6 gameplay video", "gta 6 footage", "gta vi footage", "gta 6 clip", "gta 6 leak", "gta vi leak", "gta 6 leaks", "gta 6 leaked", "gta 6 leaked footage", "gta 6 leaked gameplay", "gta 6 leaked map", "gta 6 hack", "gta 6 breach", "gta 6 map", "gta vi map", "gta 6 map leak", "gta 6 characters", "gta vi characters", "lucia caminos", "jason duval", "gta 6 protagonist", "gta 6 pre-order", "gta vi pre-order", "gta 6 preorder", "gta 6 price", "gta 6 edition", "gta 6 collector", "gta 6 pc", "gta 6 ps5", "gta 6 xbox", "gta 6 console", "gta 6 xbox series", "gta 6 playstation 5", "gta 6 system requirements", "gta 6 online", "gta 6 multiplayer", "gta online 2", "gta 6 rating", "gta 6 esrb", "gta 6 age rating", "gta 6 budget", "gta 6 development", "gta 6 dev", "gta 6 news today", "gta 6 update", "gta 6 announcement", "gta 6 reveal", "gta 6 confirmed", "gta 6 rumor", "gta 6 rumors", "gta 6 speculation", "gta 6 preview event", "gta 6 media event", "gta 6 hands-on", "gta 6 preview", "gta 6 review", "gta 6 dlc", "gta 6 season pass", "gta 6 dmca", "gta 6 takedown", "gta 6 copyright", "gta 6 discord"
 ]
 OFFICIAL_KEYWORDS = ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6"]
+
+# Domaines dont un lien peut porter le statut « officiel ». Les flux dits
+# officiels sont en réalité des recherches Google News sur un domaine : elles
+# remontent aussi des articles TIERS qui mentionnent ce domaine, d'où cette
+# vérification sur le lien réellement décodé.
+#
+# Une source peut déclarer sa propre liste via "official_domains" — c'est le
+# cas de la chaîne YouTube de Rockstar, dont les liens pointent
+# légitimement vers youtube.com et perdraient sinon leur statut officiel à
+# chaque passage.
+OFFICIAL_DOMAINS = ("rockstargames.com", "take2games.com")
+
+
+def domaines_officiels(feed):
+    return tuple(feed.get("official_domains") or OFFICIAL_DOMAINS)
+
+
+def mots_cles_officiels(feed):
+    """Mots-clés du filtre officiel, plus ceux que la source ajoute.
+
+    La source déclare un SUPPLÉMENT, pas une liste complète : recopier les
+    six mots-clés de base dans une entrée de FEEDS les ferait diverger au
+    premier ajustement. Et FEEDS est défini avant OFFICIAL_KEYWORDS, donc
+    une entrée ne peut de toute façon pas y faire référence.
+    """
+    return OFFICIAL_KEYWORDS + list(feed.get("official_keywords_extra") or [])
+
+
+def lien_officiel(url, domaines):
+    try:
+        domaine = urlparse(url).netloc.lower()
+    except Exception:
+        return False
+    return any(d in domaine for d in domaines)
 SIMILARITY_THRESHOLD = 0.75
 
 
@@ -366,7 +431,7 @@ def passe_le_filtre(feed, title, description):
     if feed.get("no_filter_at_all"):
         return True
     if feed.get("official"):
-        return matches_keywords(title, OFFICIAL_KEYWORDS)
+        return matches_keywords(title, mots_cles_officiels(feed))
     return matches_keywords(title + " " + description, KEYWORDS)
 
 
@@ -526,14 +591,8 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # On vérifie donc le vrai domaine du lien décodé avant de garder le
         # statut officiel, plutôt que de se fier uniquement au flux d'origine.
         is_official = feed.get("official", False)
-        if is_official:
-            try:
-                real_domain = urlparse(real_link).netloc.lower()
-            except Exception:
-                real_domain = ""
-            official_domains = ("rockstargames.com", "take2games.com")
-            if not any(d in real_domain for d in official_domains):
-                is_official = False
+        if is_official and not lien_officiel(real_link, domaines_officiels(feed)):
+            is_official = False
 
         # Miniature trouvée directement dans le flux RSS, si présente — pas
         # besoin d'aller la chercher sur la page dans ce cas.
@@ -882,15 +941,17 @@ def recheck_official_status(items):
     qui n'est plus site:rockstargames.com/take2games.com) resterait
     mal classé indéfiniment : l'historique est rechargé tel quel, sans
     jamais repasser dans le pipeline de collecte."""
-    official_domains = ("rockstargames.com", "take2games.com")
+    # Les domaines acceptés dépendent de la source : la chaîne YouTube de
+    # Rockstar pointe légitimement vers youtube.com. Sans cette
+    # correspondance par nom de source, cette passe rétroactive lui
+    # retirerait son statut officiel à chaque exécution — exactement le
+    # travers qu'elle est censée corriger, appliqué à tort.
+    par_source = {f["name"]: domaines_officiels(f) for f in FEEDS}
     corrected = 0
     for item in items:
         if item.get("official"):
-            try:
-                real_domain = urlparse(item["link"]).netloc.lower()
-            except Exception:
-                real_domain = ""
-            if not any(d in real_domain for d in official_domains):
+            domaines = par_source.get(item.get("source"), OFFICIAL_DOMAINS)
+            if not lien_officiel(item.get("link", ""), domaines):
                 item["official"] = False
                 corrected += 1
     if corrected:

@@ -691,6 +691,57 @@ def test_suivi_sources_muettes():
           "une source « tarie » (vivante mais sans actu) n'est pas une panne")
 
 
+def test_chaine_youtube_rockstar():
+    print("\n[sources] la chaîne YouTube de Rockstar dans l'onglet Rockstar")
+    import fetch_feeds
+
+    yt = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstar-youtube")
+    check(yt.get("official") is True, "la chaîne est déclarée officielle")
+
+    # Sans official_domains, la vérification de domaine retirerait ce statut
+    # à chaque passage (les liens pointent vers youtube.com, pas
+    # rockstargames.com) et les vidéos n'apparaîtraient JAMAIS dans l'onglet
+    # Rockstar de l'app, qui filtre précisément sur ce statut.
+    check(fetch_feeds.lien_officiel("https://www.youtube.com/watch?v=abc",
+                                    fetch_feeds.domaines_officiels(yt)),
+          "un lien YouTube conserve le statut officiel pour CETTE source")
+    check(not fetch_feeds.lien_officiel("https://www.youtube.com/watch?v=abc",
+                                        fetch_feeds.OFFICIAL_DOMAINS),
+          "mais pas avec les domaines par défaut : la règle reste stricte ailleurs")
+
+    # La passe rétroactive doit respecter la même règle, sinon elle
+    # déclasserait les vidéos à chaque exécution.
+    videos = [{"official": True, "source": "Rockstar Games (YouTube)",
+               "link": "https://www.youtube.com/watch?v=abc"},
+              {"official": True, "source": "Rockstar Games (officiel EN)",
+               "link": "https://www.youtube.com/watch?v=xyz"}]
+    fetch_feeds.recheck_official_status(videos)
+    check(videos[0]["official"] is True,
+          "la vidéo de la chaîne garde son statut à la repasse rétroactive")
+    check(videos[1]["official"] is False,
+          "un lien YouTube venu d'une AUTRE source officielle est bien déclassé")
+
+    # Le titre : une vidéo « Trailer 3 » ne contient aucun mot-clé GTA 6.
+    # Sans le supplément, elle serait rejetée le jour qui compte.
+    check(fetch_feeds.passe_le_filtre(yt, "Trailer 3", ""),
+          "« Trailer 3 » est retenu (c'est tout l'objet du mot-clé ajouté)")
+    check(fetch_feeds.passe_le_filtre(yt, "Grand Theft Auto VI: Trailer 3", ""),
+          "un titre explicite passe aussi")
+    check(not fetch_feeds.passe_le_filtre(yt, "Red Dead Online: Blood Money", ""),
+          "le contenu Red Dead reste écarté : le filtre n'est pas désactivé")
+    check(not fetch_feeds.passe_le_filtre(yt, "GTA Online Weekly Update", ""),
+          "les mises à jour GTA Online sans « trailer » restent écartées")
+
+    # Aucune contamination des autres sources officielles.
+    rs = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstar-en")
+    check(fetch_feeds.mots_cles_officiels(rs) == fetch_feeds.OFFICIAL_KEYWORDS,
+          "les autres sources officielles gardent les mots-clés d'origine")
+    check(not fetch_feeds.passe_le_filtre(rs, "Trailer 3", ""),
+          "« Trailer 3 » reste rejeté partout ailleurs")
+    check(tuple(fetch_feeds.domaines_officiels(rs)) == fetch_feeds.OFFICIAL_DOMAINS,
+          "et leurs domaines d'origine")
+
+
 def test_garde_fou_archives():
     print("\n[collecte] les archives ne sont pas des nouvelles")
     import fetch_feeds
@@ -927,7 +978,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
            test_push_masquage_endpoint,
            test_real_history,
-           test_fetch_parallele_identique, test_garde_fou_archives,
+           test_fetch_parallele_identique, test_chaine_youtube_rockstar,
+           test_garde_fou_archives,
            test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,
            test_recap_hebdomadaire, test_suivi_sources_muettes,
