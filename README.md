@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 35 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 53 sources en
 parallèle toutes les 30 minutes, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -55,7 +55,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 35 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 53 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 34 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -67,22 +67,50 @@ d'où le planificateur externe.
    feedparser prévient qu'un client qui ignore ces en-têtes peut se faire
    bannir par l'éditeur. Les validateurs sont conservés dans
    `feed_http_state` de `feed.json`, faute d'autre stockage persistant.
-3. **Filtre par mots-clés** — les sources officielles (Rockstar, Take-Two)
+3. **La chaîne YouTube de Rockstar est la source primaire.** Un trailer sort
+   là ; la presse en parle dix à trente minutes plus tard. Sans elle, le
+   robot apprend l'événement par ceux qui le commentent. Deux réglages
+   propres à cette source, sans lesquels elle serait inutile :
+   - `official_domains` — ses liens pointent vers `youtube.com`, pas vers
+     `rockstargames.com`. Avec la liste par défaut, la vérification de
+     domaine (voir ci-dessous) lui retirerait son statut officiel **à
+     chaque passage**, et les vidéos n'apparaîtraient jamais dans l'onglet
+     Rockstar de l'app — qui filtre précisément sur ce statut.
+   - `official_keywords_extra` — « trailer » s'ajoute aux mots-clés GTA 6.
+     Une vidéo intitulée simplement « Trailer 3 » n'en contient aucun et
+     serait rejetée : précisément le jour qui compte. Contrepartie assumée,
+     quelques bandes-annonces GTA Online passeront aussi. Le filtre reste
+     actif malgré tout (contrairement à RockstarMag) : la chaîne publie
+     régulièrement du Red Dead et du GTA Online.
+4. **Filtre par mots-clés** — les sources officielles (Rockstar, Take-Two)
    exigent un mot-clé GTA 6 dans le titre. Les sources "spécialistes"
    (`specialist_source: True` — RockstarMag, RockstarINTEL, GTA6 Times,
    GTA6 x Netflix) appliquent le même filtre que les sources normales :
    ce ne sont pas des flux sans filtre, juste des sites plus ciblés sur la
    série GTA en général (donc encore susceptibles de publier du contenu
    GTA Online/FiveM/RP qu'il faut écarter).
-4. **Décode les liens Google News** — ces flux renvoient normalement des
+5. **Écarte les archives** — un article jamais vu dont la date dépasse
+   `MAX_ARTICLE_AGE_DAYS` (45 jours) n'est pas importé. Un article de
+   plusieurs mois découvert aujourd'hui n'est pas une nouvelle, et le robot
+   l'annoncerait pourtant comme « nouvel article » sur Discord et sur le
+   téléphone. Le cas s'est produit le 29/08/2026 en changeant le flux
+   VG247 : une recherche Google News restreinte à un domaine classe par
+   **pertinence, pas par date**, et a remonté 8 articles de 2022 à 2024,
+   tous annoncés comme neufs. Sans ce garde-fou, ajouter une source revient
+   à déverser ses archives.
+   Ne s'applique qu'aux dates réellement lisibles : un flux sans date
+   exploitable continue de passer, sinon on rejetterait tout son contenu en
+   le prenant pour du 1ᵉʳ janvier 1970. Les archives écartées sont comptées
+   dans le journal du passage — c'est le signe qu'une source est mal réglée.
+6. **Décode les liens Google News** — ces flux renvoient normalement des
    liens de redirection chiffrés (`news.google.com/rss/articles/...`),
    inutilisables pour aller chercher une vraie miniature. Le module
    `googlenewsdecoder` résout le vrai lien de l'article.
-5. **Récupère les miniatures manquantes** en parallèle (`IMAGE_WORKERS`,
+7. **Récupère les miniatures manquantes** en parallèle (`IMAGE_WORKERS`,
    8 requêtes simultanées via `ThreadPoolExecutor`) — d'abord depuis le flux RSS
    lui-même si présente, sinon en allant chercher la balise `og:image` ou
    `twitter:image` sur la vraie page de l'article.
-6. **Compte les sources et déduplique** — quand plusieurs rédactions
+8. **Compte les sources et déduplique** — quand plusieurs rédactions
    couvrent la même actualité, les doublons ne sont plus jetés
    purement : la source supplémentaire est enregistrée dans
    `extraSources`. C'est la meilleure information disponible pour repérer
@@ -111,19 +139,19 @@ d'où le planificateur externe.
    identiques entre IGN et IGN France), et un compteur de sources plafonné
    à 3 — donc un badge 🔥 réglé sur 4 qui n'a jamais pu s'afficher une
    seule fois en 1 211 articles.
-7. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
+9. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
    les plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant très large. Au rythme observé
    (~50 articles/jour au maximum), le plafond ne sera pas atteint avant
    plus d'un an ; voir les Limites pour la conséquence sur le poids du
    fichier.
-8. **Dépose les nouveaux articles** dans le fichier désigné par
+10. **Dépose les nouveaux articles** dans le fichier désigné par
    `$NEW_ITEMS_FILE` (hors du dépôt), à destination de
    `discord_notify.py`. Le robot n'envoie plus lui-même la notification :
    voir la section Notifications. Rien n'est déposé au tout premier
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
-9. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
+11. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
    récents (`RECENT_FEED_SIZE`). Mesuré le 29/08/2026 : 258 Ko bruts /
    65 Ko compressés, contre 896 Ko / 199 Ko pour l'historique complet.
    C'est ce fichier que l'app charge à l'ouverture ; elle télécharge le
@@ -131,7 +159,7 @@ d'où le planificateur externe.
    lancée pour ne jamais renvoyer de résultats tronqués sans le dire. Les
    deux fichiers sont toujours écrits ensemble, y compris après une
    fusion de conflit.
-10. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
+12. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
    une source « muette » n'a renvoyé aucune entrée brute, signe net d'un
    flux cassé ; une source « tarie » répond mais n'a rien publié depuis
    plus de 30 jours, ce qui peut être parfaitement normal (Rockstar et
@@ -139,7 +167,7 @@ d'où le planificateur externe.
    **Et alerte sur Discord quand une source tombe** — voir la section
    dédiée plus bas. L'état seul ne dit que « muette maintenant » ; c'est le
    cumul (`sources_silence`) qui distingue une panne d'un hoquet.
-11. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
+13. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
    propre copie séparée — voir la limite ci-dessous sur cette
@@ -686,6 +714,19 @@ commentaire).
   comparaison par tokens. Comme le backend est la source principale et le
   mode de secours n'intervient qu'en cas de panne, ce n'est pas un vrai
   risque pratique.
+- **17 sources ajoutées le 29/08/2026 sans que leur URL ait pu être
+  testée.** L'environnement depuis lequel elles ont été ajoutées n'avait
+  accès à aucun de ces sites. Elles passent donc toutes par une recherche
+  Google News restreinte au domaine — le seul format dont la validité était
+  certaine, déjà éprouvé par sept sources en production — plutôt que par le
+  flux RSS natif de chaque site, dont le chemin varie (`/feed`, `/rss`,
+  `/rss.xml`…) et aurait été deviné. Une source dont le domaine serait
+  erroné renvoie zéro entrée, bascule en « muette » et déclenche l'alerte
+  de source morte sous trois heures : l'erreur se signale d'elle-même.
+  Contrepartie : Google News passe de 6 à 23 flux interrogés toutes les 30
+  minutes. Le plafond de 3 files simultanées par domaine tient (aucune
+  requête parallèle supplémentaire vers Google), mais un éventuel
+  rate-limit se verrait sur ces sources en premier.
 - **GTAForums et GTA Base** — jamais intégrés, ces deux sites bloquent
   activement les accès automatisés, y compris depuis un vrai serveur (pas
   seulement un navigateur).

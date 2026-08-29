@@ -764,6 +764,7 @@ const DEFAULT_FEEDS = [
   { id: "rockstar-announce", name: "Rockstar Games (annonces)", url: "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
   { id: "gta6-netflix", name: "GTA 6 x Netflix", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, specialist: true },
   { id: "take2-ir", name: "Take-Two Investor Relations (officiel)", url: "https://ir.take2games.com/rss/news-releases.xml?items=15", enabled: true, official: true },
+  { id: "rockstar-youtube", name: "Rockstar Games (YouTube)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCULwHhkI31JHAKe57LZdzcA", enabled: true, official: true },
   { id: "gnews-fr", name: "Google News (FR)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
   { id: "gnews-en", name: "Google News (EN)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
   { id: "pcgamer", name: "PC Gamer", url: "https://www.pcgamer.com/rss.xml", enabled: true, official: false },
@@ -793,7 +794,25 @@ const DEFAULT_FEEDS = [
   { id: "gta6times", name: "GTA6 Times", url: "https://gta6times.com/rss.xml", enabled: true, official: false, specialist: true },
   { id: "gameinformer", name: "Game Informer", url: "https://gameinformer.com/news.xml", enabled: true, official: false },
   { id: "pcgamesn", name: "PCGamesN", url: "https://www.pcgamesn.com/mainrss.xml", enabled: true, official: false },
-  { id: "vgc", name: "VGC", url: "https://www.videogameschronicle.com/category/news/feed/", enabled: true, official: false }
+  { id: "vgc", name: "VGC", url: "https://www.videogameschronicle.com/category/news/feed/", enabled: true, official: false },
+
+  { id: "xboxygen", name: "Xboxygen", url: "https://news.google.com/rss/search?q=site:xboxygen.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "xboxmag", name: "Xbox-Mag", url: "https://news.google.com/rss/search?q=site:xbox-mag.net+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "purexbox", name: "Pure Xbox", url: "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "xboxera", name: "XboxEra", url: "https://news.google.com/rss/search?q=site:xboxera.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "xboxwire", name: "Xbox Wire", url: "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "trueach", name: "TrueAchievements", url: "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "millenium", name: "Millenium", url: "https://news.google.com/rss/search?q=site:millenium.gg+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "jdg", name: "Journal du Geek", url: "https://news.google.com/rss/search?q=site:journaldugeek.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "numerama", name: "Numerama", url: "https://news.google.com/rss/search?q=site:numerama.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "gamergen", name: "Gamergen", url: "https://news.google.com/rss/search?q=site:gamergen.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "frandroid", name: "Frandroid", url: "https://news.google.com/rss/search?q=site:frandroid.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "theverge", name: "The Verge", url: "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "engadget", name: "Engadget", url: "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "arstechnica", name: "Ars Technica", url: "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "pushsquare", name: "Push Square", url: "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
+  { id: "reddit-gta6", name: "Reddit r/GTA6", url: "https://www.reddit.com/r/GTA6/top/.rss?t=day", enabled: true, official: false },
+  { id: "schreier", name: "Jason Schreier", url: "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false }
 ];
 
 const PROXIES = [
