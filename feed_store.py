@@ -313,3 +313,29 @@ def masquer_urls(texte, urls):
         if len(chemin) > 1:
             texte = texte.replace(chemin, "/<chemin masqué>")
     return texte
+
+
+# ---------------------------------------------------------------------------
+# Libellé des notifications
+# ---------------------------------------------------------------------------
+
+def libelle_recap(new_items):
+    """Le texte du récapitulatif, écrit UNE seule fois.
+
+    Discord et les notifications push doivent annoncer exactement la même
+    chose. Deux formulations écrites séparément dérivent au premier
+    ajustement — ce dépôt a déjà connu ça avec les listes de sources, où
+    trois divergences silencieuses avaient fini par échapper à tout le
+    monde. Ici l'identité est garantie par construction : un seul texte,
+    deux appelants.
+
+    Volontairement AUCUN titre d'article : un récapitulatif annonce
+    combien, pas quoi. Le détail est dans l'app, à un tap de là.
+    """
+    n = len(new_items or ())
+    officiels = sum(1 for i in (new_items or ())
+                    if isinstance(i, dict) and i.get("official"))
+    titre = f"🎮 {n} nouv{'eaux' if n > 1 else 'el'} article{'s' if n > 1 else ''} GTA 6"
+    if officiels:
+        titre += f" (dont {officiels} officiel{'s' if officiels > 1 else ''} Rockstar)"
+    return titre

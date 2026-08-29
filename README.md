@@ -222,9 +222,10 @@ Le décodage Google News (`DECODE_WORKERS`, 4) et les miniatures
 ## Les modules partagés
 
 - **`feed_store.py`** — le socle : interprétation des dates, tri,
-  plafonnement, lecture/écriture de `docs/feed.json`, plus `masquer_urls()`
-  qui empêche un secret de fuiter dans les journaux (voir Notifications
-  push). Aucun accès réseau, aucune dépendance externe. Ces trois règles doivent rester identiques
+  plafonnement, lecture/écriture de `docs/feed.json`, plus deux règles que
+  Discord et le push doivent appliquer à l'identique — `masquer_urls()`
+  (ne jamais laisser un secret dans un journal) et `libelle_recap()` (le
+  texte de la notification). Aucun accès réseau, aucune dépendance externe. Ces trois règles doivent rester identiques
   entre le robot et l'outil de fusion, sous peine de corrompre
   l'historique — d'où le module commun.
 - **`merge_feed.py`** — fusionne deux versions de `docs/feed.json` au
@@ -314,6 +315,20 @@ Discord fonctionne, mais taper une notification Discord ouvre Discord,
 jamais l'article. Une notification push native ouvre directement le site.
 Les deux coexistent : chacune s'active par la présence de ses secrets, et
 se désactive par leur absence.
+
+**Les deux annoncent mot pour mot la même chose**, et ne peuvent pas
+diverger : le texte est écrit une seule fois dans
+`feed_store.libelle_recap()`, appelé par les deux canaux.
+
+```
+🎮 3 nouveaux articles GTA 6 (dont 1 officiel Rockstar)
+```
+
+Aucun titre d'article n'y figure. Une version précédente reprenait celui du
+premier article pour éviter d'avoir à ouvrir l'app — mais « premier » ne
+veut rien dire ici : c'est l'ordre de `FEEDS`, pas une importance. Un titre
+tiré au hasard parmi plusieurs donne une idée fausse de ce que contient le
+lot. Un récapitulatif annonce combien ; le quoi est dans l'app, à un tap.
 
 Le protocole Web Push ne demande **pas de serveur permanent** : il faut
 une paire de clés VAPID et, par appareil, un abonnement créé par le
@@ -503,7 +518,8 @@ l'API GitHub : 60 requêtes/h par adresse IP).
 **Discord** — actif, fonctionnel, confirmé en conditions réelles.
 
 UN SEUL message récapitulatif par exécution (nombre de nouveaux articles +
-lien cliquable vers le site), jamais un message par article. Aucun envoi
+lien cliquable vers le site), jamais un message par article, jamais de titre
+d'article — même texte que la notification push, voir plus haut. Aucun envoi
 s'il n'y a rien de neuf, aucun envoi au tout premier lancement. Jusqu'à 3
 tentatives en cas d'erreur temporaire (429 rate-limit : le délai indiqué
 par Discord est respecté ; 5xx serveur : backoff 2s/4s/8s) ; les erreurs

@@ -94,24 +94,18 @@ def load_subscriptions():
 def build_payload(new_items):
     """Construit le contenu de la notification.
 
-    Le titre du premier article est repris tel quel : sur un téléphone, un
-    récapitulatif purement numérique ("3 nouveaux articles") oblige à ouvrir
-    l'app pour savoir s'il s'agit d'un trailer ou d'un énième article de
-    supputation.
+    Le texte est celui de `feed_store.libelle_recap`, partagé avec Discord :
+    les deux canaux annoncent mot pour mot la même chose.
+
+    Aucun titre d'article n'apparaît. Une version précédente reprenait le
+    titre du premier article pour éviter d'avoir à ouvrir l'app — mais
+    « premier » ne veut rien dire ici (c'est l'ordre de FEEDS, pas une
+    importance), et un titre choisi au hasard parmi plusieurs donne une
+    idée fausse de ce que contient le lot.
     """
-    n = len(new_items)
-    n_officiels = sum(1 for i in new_items if i.get("official"))
-
-    titre = f"{n} nouvel article GTA 6" if n == 1 else f"{n} nouveaux articles GTA 6"
-    if n_officiels:
-        titre += f" · {n_officiels} officiel" + ("s" if n_officiels > 1 else "")
-
-    premier = new_items[0].get("title", "")
-    corps = premier if n == 1 else (premier + (f" — et {n - 1} autre" + ("s" if n > 2 else "")) if premier else "")
-
     return {
-        "title": titre,
-        "body": corps[:180],
+        "title": feed_store.libelle_recap(new_items),
+        "body": "Ouvrir GTA6_WATCH",
         "url": SITE_URL,
         # Un tag identique remplace la notification précédente au lieu
         # d'empiler : après une nuit sans regarder son téléphone, on veut

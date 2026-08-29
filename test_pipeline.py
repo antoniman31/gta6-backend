@@ -229,23 +229,41 @@ def test_push_payload():
     print("\n[push] contenu de la notification")
     import push_notify
 
-    un = push_notify.build_payload([{"title": "Rockstar annonce la date de sortie", "official": True}])
-    check(un["title"].startswith("1 nouvel article"), "singulier correct pour un seul article")
-    check("officiel" in un["title"], "les articles officiels sont signalés dans le titre")
-    check(un["body"] == "Rockstar annonce la date de sortie",
-          "le titre de l'article sert de corps (sinon il faut ouvrir l'app pour savoir de quoi il s'agit)")
+    un = push_notify.build_payload([{"title": "Rockstar annonce la date de sortie",
+                                     "official": True}])
+    check("1 nouvel article" in un["title"], "singulier correct pour un seul article")
+    check("officiel" in un["title"], "les articles officiels sont signalés")
+
+    # Ce que l'utilisateur a demandé le 29/08 : le récapitulatif annonce
+    # COMBIEN, jamais QUOI. Un titre d'article choisi parmi plusieurs donne
+    # une idée fausse du lot ("premier" = ordre de FEEDS, pas importance).
+    check("Rockstar annonce" not in un["title"] and "Rockstar annonce" not in un["body"],
+          "aucun titre d'article dans la notification, ni en titre ni en corps")
 
     trois = push_notify.build_payload([
         {"title": "Un trailer inattendu", "official": False},
         {"title": "Autre chose", "official": False},
         {"title": "Encore autre chose", "official": False}])
-    check(trois["title"].startswith("3 nouveaux articles"), "pluriel correct")
+    check("3 nouveaux articles" in trois["title"], "pluriel correct")
     check("officiel" not in trois["title"], "rien d'officiel : pas de mention parasite")
-    check("et 2 autres" in trois["body"], "le reste est résumé en nombre")
+    check("trailer" not in trois["body"] and "Autre chose" not in trois["body"],
+          "trois articles : toujours aucun titre repris")
     check(trois["tag"] == un["tag"], "tag identique : une notification remplace la précédente")
 
-    long_titre = push_notify.build_payload([{"title": "x" * 400, "official": False}])
-    check(len(long_titre["body"]) <= 180, "corps tronqué pour ne pas déborder")
+    # L'exigence de fond : Discord et le push disent MOT POUR MOT la même
+    # chose. Garanti par construction (un seul libellé), vérifié ici pour
+    # que la garantie ne saute pas en silence si quelqu'un la contourne.
+    import discord_notify
+    for lot in ([{"title": "a", "official": True}],
+                [{"title": "a", "official": False}, {"title": "b", "official": True}],
+                [{"title": str(i), "official": False} for i in range(7)]):
+        check(push_notify.build_payload(lot)["title"] == feed_store.libelle_recap(lot),
+              f"push et Discord annoncent le même texte ({len(lot)} article(s))")
+
+    check(feed_store.libelle_recap([]) .startswith("🎮 0 nouvel"),
+          "un lot vide ne fait pas planter le libellé (jamais envoyé, mais jamais d'exception)")
+    check("Rockstar" in feed_store.libelle_recap([{"official": True}]),
+          "un article sans clé 'title' ne fait pas planter le libellé")
 
 
 def test_push_vapid_subject():
