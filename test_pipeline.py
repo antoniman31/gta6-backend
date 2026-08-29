@@ -322,6 +322,57 @@ def test_push_subscriptions():
     os.environ.pop("PUSH_SUBSCRIPTIONS", None)
 
 
+def test_push_masquage_endpoint():
+    print("\n[push] les journaux ne doivent jamais laisser fuiter un endpoint")
+    import push_notify
+
+    jeton = "cAAAAAAAAAAAAAAA_jeton_unique_de_l_appareil_xyz789"
+    endpoint = "https://fcm.googleapis.com/fcm/send/" + jeton
+    abonnements = [{"endpoint": endpoint, "keys": {"p256dh": "x", "auth": "y"}}]
+
+    # Message réellement produit par urllib3 : l'hôte en préfixe, et le
+    # CHEMIN SEUL après "with url:". C'est cette forme-là qui fuitait —
+    # masquer uniquement l'URL complète ne l'aurait pas attrapée.
+    reel = ("HTTPSConnectionPool(host='fcm.googleapis.com', port=443): "
+            "Max retries exceeded with url: /fcm/send/" + jeton +
+            " (Caused by ConnectTimeoutError(...))")
+    propre = push_notify.masquer_endpoints(reel, abonnements)
+    check(jeton not in propre, "le jeton de l'appareil disparaît du message urllib3")
+    check("chemin masqué" in propre, "le chemin est remplacé par un marqueur explicite")
+    check("fcm.googleapis.com" in propre,
+          "l'hôte reste visible : il aide au diagnostic et n'identifie personne")
+
+    complet = "Push failed for " + endpoint + " : 500"
+    check(jeton not in push_notify.masquer_endpoints(complet, abonnements),
+          "l'URL complète est masquée aussi")
+
+    # Robustesse : le masquage tourne dans un gestionnaire d'exception, il ne
+    # doit jamais devenir lui-même la cause d'un plantage.
+    for bancal in ([None], [{}], ["pas un dict"], [{"endpoint": None}],
+                   [{"endpoint": ""}], [{"endpoint": "https://x"}]):
+        push_notify.masquer_endpoints("un message", bancal)
+    check(True, "un abonnement mal formé ne fait pas planter le masquage")
+
+    intact = push_notify.masquer_endpoints("erreur sans URL", abonnements)
+    check(intact == "erreur sans URL", "un message sans URL n'est pas abîmé")
+
+    # Même défaut, même correctif : le webhook Discord est un secret de la
+    # même nature (qui l'a peut publier sur le salon).
+    import discord_notify
+    webhook = "https://discord.com/api/webhooks/123456789/cLE_JETON_SECRET_DU_SALON"
+    reel_discord = ("HTTPSConnectionPool(host='discord.com', port=443): "
+                    "Max retries exceeded with url: /api/webhooks/123456789/"
+                    "cLE_JETON_SECRET_DU_SALON (Caused by ...)")
+    propre_d = feed_store.masquer_urls(reel_discord, [webhook])
+    check("cLE_JETON_SECRET_DU_SALON" not in propre_d,
+          "le jeton du webhook Discord disparaît lui aussi")
+    check("discord.com" in propre_d, "l'hôte Discord reste visible")
+    check(feed_store.masquer_urls("rien", [None, "", 42]) == "rien",
+          "des URL absentes ou mal typées ne font pas planter le masquage")
+    check(feed_store.masquer_urls("a/b", ["https://h/"]) == "a/b",
+          "un chemin réduit à « / » n'est pas remplacé (illisibilité pour rien)")
+
+
 # ---------------------------------------------------------------------------
 # Récupération parallèle des sources
 #
@@ -543,6 +594,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_refuses_empty_local, test_feed_store_io,
            test_canonical_link, test_canonicalize_stored_links,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
+           test_push_masquage_endpoint,
            test_real_history,
            test_fetch_parallele_identique, test_identifiants_de_sources_uniques,
            test_chaines_par_hote,

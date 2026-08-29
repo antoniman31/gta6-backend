@@ -222,8 +222,9 @@ Le décodage Google News (`DECODE_WORKERS`, 4) et les miniatures
 ## Les modules partagés
 
 - **`feed_store.py`** — le socle : interprétation des dates, tri,
-  plafonnement, lecture/écriture de `docs/feed.json`. Aucun accès réseau,
-  aucune dépendance externe. Ces trois règles doivent rester identiques
+  plafonnement, lecture/écriture de `docs/feed.json`, plus `masquer_urls()`
+  qui empêche un secret de fuiter dans les journaux (voir Notifications
+  push). Aucun accès réseau, aucune dépendance externe. Ces trois règles doivent rester identiques
   entre le robot et l'outil de fusion, sous peine de corrompre
   l'historique — d'où le module commun.
 - **`merge_feed.py`** — fusionne deux versions de `docs/feed.json` au
@@ -245,6 +246,16 @@ python check_sources_sync.py   # backend Python vs mode de secours JS
 Aucun des deux n'a besoin de réseau ni des dépendances du robot : le
 contrôle de synchronisation ne lit que des constantes et neutralise les
 imports manquants, pour tourner sur n'importe quelle machine.
+
+**Mises à jour de dépendances.** `.github/dependabot.yml` fait ouvrir une
+pull request par GitHub quand une version corrigée sort, côté Python
+(`requirements.txt`) comme côté actions de workflow. Rien n'est appliqué
+tout seul : la PR passe par la CI comme n'importe quelle autre. C'est le
+contrepoids nécessaire à l'épinglage au numéro exact, qui garantit qu'aucun
+passage du robot ne change de comportement sans qu'on le décide — mais fige
+aussi les correctifs de sécurité. C'est aussi ce qui aurait signalé la
+dépréciation de Node 20 sans attendre qu'un avertissement jaune soit
+remarqué à l'œil.
 
 Les deux tournent en CI (`.github/workflows/checks.yml`) sur chaque pull
 request et sur `main`. Les commits du robot ne les déclenchent pas — non pas
@@ -342,6 +353,19 @@ Ne pas déranger…) avant de chercher pourquoi le robot n'envoie rien.
 **Pourquoi les abonnements sont un secret et pas un fichier du dépôt :** un
 abonnement rendu public permettrait à n'importe qui d'envoyer des
 notifications sur l'appareil concerné.
+
+**Et pourquoi les messages d'erreur sont nettoyés avant affichage.** Le même
+raisonnement s'applique aux journaux d'exécution, publics puisque le dépôt
+l'est. Les bibliothèques réseau recopient l'URL appelée dans leurs messages
+d'erreur — `Max retries exceeded with url: /fcm/send/cXXXX…` — et GitHub ne
+masque que la valeur *exacte* d'un secret, pas un fragment extrait du JSON
+qui l'entoure. Une simple panne réseau publiait donc l'endpoint en clair.
+`feed_store.masquer_urls()` retire l'URL complète **et son chemin seul**
+(urllib3 n'affiche souvent que le chemin) avant tout affichage ; l'hôte est
+conservé, il aide au diagnostic et n'identifie personne. Le webhook Discord
+est un secret exactement de la même nature — qui le possède peut publier sur
+le salon — et passe par le même filtre, d'où la fonction commune dans
+`feed_store` plutôt qu'une copie dans chaque module.
 
 **Abonnements expirés.** Quand un navigateur renouvelle son abonnement, le
 service de push répond 404 ou 410. Le robot le signale explicitement dans
@@ -558,3 +582,13 @@ commentaire).
   clair ; si elle fuite, la régénérer immédiatement côté Discord
 - **Revenir au mode direct sans backend** : vider le champ backend dans
   les paramètres de l'app
+
+## Licence
+
+[MIT](LICENSE) — réutilisation libre, y compris commerciale, à condition de
+conserver l'avis de copyright. Aucune garantie.
+
+Ne couvre que le code de ce dépôt. Les articles agrégés restent la propriété
+de leurs éditeurs respectifs, et « Grand Theft Auto » est une marque déposée
+de Take-Two Interactive : ce projet n'est ni affilié à Rockstar Games ni
+approuvé par eux.

@@ -263,3 +263,53 @@ def write_feed(data, path=FEED_PATH):
         os.makedirs(directory, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+# ---------------------------------------------------------------------------
+# Hygiène des journaux
+#
+# Vit ici plutôt que dans discord_notify.py ou push_notify.py parce que les
+# DEUX en ont besoin et qu'aucun des deux n'est importable par l'autre :
+# feed_store est déjà le socle commun sans réseau ni dépendance.
+# ---------------------------------------------------------------------------
+
+def masquer_urls(texte, urls):
+    """Retire d'un message d'erreur les URL qui sont elles-mêmes des secrets.
+
+    Un webhook Discord et un endpoint de notification push ont ceci de
+    commun : l'URL EST le pouvoir d'agir. Quiconque la possède peut publier
+    sur le salon, ou notifier l'appareil. C'est pour ça qu'elles sont
+    rangées dans des secrets GitHub et pas dans le dépôt.
+
+    Or les bibliothèques réseau recopient l'URL appelée dans leurs messages
+    d'erreur, et ces messages finissent dans les journaux d'exécution —
+    publics puisque le dépôt l'est :
+
+        HTTPSConnectionPool(host='discord.com', port=443):
+        Max retries exceeded with url: /api/webhooks/123/cXXXXXXXX
+
+    GitHub masque la valeur EXACTE d'un secret dans les journaux, pas un
+    fragment extrait au milieu : l'URL seule, sortie du JSON ou de la
+    variable qui l'entoure, passe au travers. Une simple panne réseau
+    suffisait donc à la publier.
+
+    On masque l'URL complète ET son chemin seul, parce que urllib3 n'affiche
+    souvent que le chemin (l'hôte figure déjà dans le préfixe du message).
+    L'hôte, lui, est conservé : il aide au diagnostic et n'identifie rien.
+
+    Ne lève jamais : cette fonction tourne dans un gestionnaire d'exception,
+    elle ne doit pas devenir elle-même la cause d'un plantage.
+    """
+    for url in urls or ():
+        if not isinstance(url, str) or not url:
+            continue
+        texte = texte.replace(url, "<url masquée>")
+        try:
+            chemin = urlparse(url).path
+        except Exception:
+            continue
+        # Un chemin d'un seul caractère ("/") remplacerait toutes les barres
+        # obliques du message et le rendrait illisible pour rien.
+        if len(chemin) > 1:
+            texte = texte.replace(chemin, "/<chemin masqué>")
+    return texte

@@ -31,6 +31,8 @@ import time
 
 import requests
 
+import feed_store
+
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "")
 SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 
@@ -61,7 +63,12 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3):
             print(f"  [discord] échec envoi ({resp.status_code}), non temporaire : {title_for_log[:50]}")
             return False
         except Exception as e:
-            print(f"  [discord] erreur réseau (tentative {attempt}/{max_attempts}) : {e}")
+            # Le message brut contiendrait l'URL du webhook — donc le secret
+            # DISCORD_WEBHOOK_URL — dans un journal public. Voir
+            # feed_store.masquer_urls.
+            propre = feed_store.masquer_urls(str(e), [DISCORD_WEBHOOK_URL])
+            print(f"  [discord] erreur réseau (tentative {attempt}/{max_attempts}) "
+                  f"({type(e).__name__}) : {propre}")
             if attempt < max_attempts:
                 time.sleep(2 ** attempt)
 
