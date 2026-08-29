@@ -246,7 +246,12 @@
   /* Rangée sous le titre plutôt que colonne à droite : en colonne, quatre
      boutons libellés mangeaient un tiers de la largeur et écrasaient le
      titre sur six lignes sur mobile. */
-  .card-actions{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; margin-top:8px;}
+  /* nowrap + flex:1 sur les boutons : ils se partagent TOUTE la largeur de
+     la carte et tiennent sur une seule ligne, quel qu'en soit le nombre (2 à
+     4 selon qu'il y a un aperçu et une traduction à proposer). En wrap avec
+     des boutons de 30 px, ils se tassaient à gauche en laissant un grand
+     vide à droite, et un quatrième pouvait passer à la ligne. */
+  .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap; gap:4px; margin-top:8px;}
   .card-thumb{
     width:64px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0;
     background:var(--bg-elevated); border:1px solid var(--line);
@@ -291,7 +296,11 @@
   .card-mark{
     font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim);
     background:none; border:1px solid var(--line); border-radius:4px; padding:0 6px;
-    cursor:pointer; white-space:nowrap; flex-shrink:0;
+    cursor:pointer; white-space:nowrap;
+    /* Part égale de la largeur disponible. Base 0 : la largeur ne dépend
+       plus du contenu, donc la rangée ne bouge pas quand une confirmation
+       s'écrit dans un bouton. */
+    flex:1 1 0;
     /* Taille de cible tactile : 30px de côté, sous les 44px recommandés mais
        au-dessus du seuil où l'on rate le bouton. En icône, la largeur est
        aussi la hauteur — sauf quand la confirmation "copié" s'y écrit. */

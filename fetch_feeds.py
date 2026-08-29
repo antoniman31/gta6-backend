@@ -135,7 +135,8 @@ FEEDS = [
     # panne. Rien ne serait revenu tout seul.
     #
     # Chaque flux natif retenu ici a été VÉRIFIÉ depuis un runner GitHub
-    # (sonde_flux.py, 26 URL sondées) : il répond, il est frais, et on sait
+    # (26 URL sondées avec le même agent utilisateur et le même filtre que
+    # le robot) : il répond, il est frais, et on sait
     # combien de ses entrées passent le filtre GTA 6. Deux pièges relevés au
     # passage :
     #   - RockstarINTEL DOIT rester sans « www » : les variantes www.
