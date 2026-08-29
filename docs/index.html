@@ -208,6 +208,12 @@
   }
   .tab.active .tab-badge{background:rgba(255,255,255,0.25); color:#ffffff;}
   .tab-badge:empty{display:none;}
+  /* Un drapeau n'est pas un chiffre : il lui faut sa taille propre, et le
+     fond de pastille disparaît — un emoji encadré d'une bulle grise se lit
+     mal. */
+  .tab-badge.badge-drapeau{
+    font-size:13px; background:transparent; padding:0 2px; line-height:1;
+  }
 
   .feed{display:flex; flex-direction:column; gap:4px;}
   .day-group{display:flex; flex-direction:column; gap:10px; margin-bottom:6px;}
@@ -1921,21 +1927,34 @@ function closeFiltersSheetOnOverlay(e){
   if(e.target.id === "filtersOverlay") closeFiltersSheet();
 }
 
+const DRAPEAUX = { fr: "\u{1F1EB}\u{1F1F7}", en: "\u{1F1EC}\u{1F1E7}" };
+
 function updateActiveFiltersCount(){
-  // Compte les filtres non-défaut actuellement actifs (pas "Tout" ni mode
-  // normal), pour afficher un badge informatif sur le bouton déclencheur —
-  // sans avoir à ouvrir le panneau pour savoir si un filtre est appliqué.
-  let count = 0;
-  if(currentFilter !== "all") count++;
-  // La langue était oubliée : en « News FR », le fil était filtré sans que
-  // rien ne le signale — exactement ce que ce badge existe pour éviter.
-  if(currentLang !== "all") count++;
+  // Badge informatif sur le bouton déclencheur : savoir qu'un filtre est
+  // appliqué sans avoir à ouvrir le panneau.
+  //
+  // La langue s'affiche par son drapeau plutôt que comptée : un « 1 » dit
+  // qu'il se passe quelque chose, un drapeau dit quoi. Les autres filtres
+  // restent un nombre, faute d'un symbole aussi parlant.
+  //
   // Le mode dense ne compte pas : c'est un mode d'affichage, pas un filtre,
   // et « Réinitialiser les filtres » ne le touche pas volontairement. Le
   // compter laissait le badge à 1 après une réinitialisation, sans qu'on
   // puisse deviner ce qui résistait.
+  const autres = currentFilter !== "all" ? 1 : 0;
+  const drapeau = DRAPEAUX[currentLang] || "";
+
+  // Drapeau ET nombre quand les deux coexistent : n'afficher que le drapeau
+  // masquerait le filtre « Non lus » posé par-dessus.
+  const parties = [];
+  if(drapeau) parties.push(drapeau);
+  if(autres) parties.push(String(autres));
+
   const badge = document.getElementById("activeFiltersCount");
-  badge.textContent = count > 0 ? count : "";
+  badge.textContent = parties.join(" ");
+  // Le drapeau a besoin d'air : à 10 px il est illisible, et la pastille
+  // ronde taillée pour un chiffre l'écrase.
+  badge.classList.toggle("badge-drapeau", !!drapeau);
 }
 
 let searchDebounceId = null;

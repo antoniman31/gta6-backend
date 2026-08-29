@@ -415,6 +415,14 @@ aussitôt, sans relancer le robot. Tous les compteurs partent de
 `articlesVisibles()`, jamais de `lastItems` — un badge qui compterait les
 articles masqués annoncerait des non-lus introuvables.
 
+**Le badge du bouton « Filtres ».** Il dit qu'un filtre est appliqué sans
+avoir à ouvrir le panneau. La langue s'y affiche par son **drapeau** plutôt
+que comptée — un « 1 » dit qu'il se passe quelque chose, un drapeau dit quoi.
+Les autres filtres restent un nombre, faute d'un symbole aussi parlant, et
+les deux coexistent (`🇫🇷 1`) : n'afficher que le drapeau masquerait un
+« Non lus » posé par-dessus. Le mode dense ne compte pas : c'est un mode
+d'affichage, et « Réinitialiser les filtres » ne le touche pas.
+
 **Ce que `localStorage` conserve.** La copie locale des articles est
 plafonnée à **300**, la taille du fichier allégé. Elle ne sert qu'à afficher
 quelque chose à l'ouverture avant que le réseau réponde ; sans plafond elle
