@@ -126,8 +126,21 @@
     font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.5; font-weight:600;
   }
 
-  .controls{display:grid; grid-template-columns:1fr; gap:8px; margin-bottom:14px;}
-  .controls button{padding:10px 6px; font-size:10.5px; text-align:center; white-space:normal; line-height:1.3;}
+  /* ---------- Bloc de contrôle ---------- */
+  .console{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; margin-bottom:14px; overflow:hidden;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .console-status{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
+    display:flex; align-items:center; flex-wrap:wrap; gap:4px 12px;
+  }
+  /* Les boutons se partagent la ligne. En flex plutôt qu'en grille : quand
+     "Relancer le robot" est masqué faute de jeton, "Actualiser" s'étale sur
+     toute la largeur au lieu de laisser une demi-colonne vide. */
+  .controls{display:flex; gap:8px;}
+  .controls button{flex:1; min-width:0; padding:10px 6px; font-size:11px; text-align:center; white-space:normal; line-height:1.3;}
   button{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
@@ -145,14 +158,13 @@
     width:100%; height:4px; background:var(--bg-elevated); border-radius:2px;
     overflow:hidden; margin-bottom:14px;
   }
+  /* Dans le bloc, la barre épouse le bord bas : les marges négatives la
+     collent aux trois arêtes, le overflow:hidden du parent arrondit ses
+     coins. Elle n'a alors plus besoin de sa marge basse. */
+  .console .progress-bar{margin:0 -14px -12px; width:auto; border-radius:0;}
   .progress-fill{
     height:100%; width:0%; background:var(--accent);
     transition:width .25s ease-out;
-  }
-
-  .meta-row{
-    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
-    display:flex; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;
   }
 
   .search-row{margin-bottom:14px; display:flex; flex-direction:row; align-items:stretch; gap:8px;}
@@ -217,7 +229,10 @@
   }
   .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
   .card-body{flex:1; min-width:0;}
-  .card-actions{display:flex; flex-direction:column; gap:4px; flex-shrink:0;}
+  /* Rangée sous le titre plutôt que colonne à droite : en colonne, quatre
+     boutons libellés mangeaient un tiers de la largeur et écrasaient le
+     titre sur six lignes sur mobile. */
+  .card-actions{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; margin-top:8px;}
   .card-thumb{
     width:64px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0;
     background:var(--bg-elevated); border:1px solid var(--line);
@@ -256,12 +271,17 @@
   .card-date{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);}
   .card-extra{font-size:10px; color:var(--text-dim); margin-top:4px; font-style:italic;}
   .card-mark{
-    font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text-dim);
-    background:none; border:1px solid var(--line); border-radius:4px; padding:8px 6px;
+    font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim);
+    background:none; border:1px solid var(--line); border-radius:4px; padding:0 6px;
     cursor:pointer; white-space:nowrap; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
+    /* Taille de cible tactile : 30px de côté, sous les 44px recommandés mais
+       au-dessus du seuil où l'on rate le bouton. En icône, la largeur est
+       aussi la hauteur — sauf quand la confirmation "copié" s'y écrit. */
+    min-width:30px; height:30px; line-height:1;
+    display:inline-flex; align-items:center; justify-content:center;
   }
   .card-mark:hover{border-color:var(--accent); color:var(--accent);}
+  .card-mark.done{border-color:var(--ok); color:var(--ok);}
 
   /* ---------- Mode dense ---------- */
   .feed.dense .card{padding:8px 10px;}
@@ -271,8 +291,8 @@
   .feed.dense .card-src-row{margin-bottom:2px;}
   .feed.dense .card-extra{display:none;}
   .feed.dense .card-top{gap:8px;}
-  .feed.dense .card-actions{flex-direction:column; flex-shrink:0; gap:3px;}
-  .feed.dense .card-mark{padding:2px 5px; font-size:8px;}
+  .feed.dense .card-actions{gap:3px; margin-top:5px;}
+  .feed.dense .card-mark{min-width:24px; height:24px; padding:0 4px; font-size:11px;}
 
   .empty{
     text-align:center; padding:60px 20px; color:var(--text-dim);
@@ -380,12 +400,11 @@
     color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
   }
   .history-line{
-    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
-    margin-bottom:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    display:flex; gap:8px; align-items:center; flex-wrap:wrap;
   }
   .history-line button{padding:3px 8px; font-size:10px;}
   .token-status{
-    font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:6px;
+    font-family:'JetBrains Mono',monospace; font-size:11px;
   }
   .token-status.ok{color:var(--ok);}
   .token-status.warn{color:var(--warn);}
@@ -471,24 +490,28 @@
 
   <div id="staleBanner" class="stale-banner" style="display:none;"></div>
 
-  <div class="controls">
-    <button class="primary" onclick="checkNow(true)">Vérifier maintenant</button>
-    <!-- Masqué tant qu'aucun token n'est enregistré : sans token, l'API
-         GitHub refuserait le déclenchement. Le bouton n'apparaît donc que
-         s'il peut réellement fonctionner. -->
-    <button id="triggerRunBtn" onclick="triggerBackendRun()" style="display:none;">Forcer une mise à jour du robot</button>
+  <!-- Bloc unique : l'état du fil et les deux actions qui le modifient se
+       lisent ensemble. Séparés, ils formaient cinq blocs empilés dont deux
+       répétaient le même nombre d'articles. -->
+  <div class="console">
+    <div class="console-status">
+      <span id="countLine">0 article suivi</span>
+      <span id="historyLine" class="history-line" style="display:none;"></span>
+    </div>
+    <div class="controls">
+      <button class="primary" onclick="checkNow(true)">Actualiser</button>
+      <!-- Masqué tant qu'aucun token n'est enregistré : sans token, l'API
+           GitHub refuserait le déclenchement. Le bouton n'apparaît donc que
+           s'il peut réellement fonctionner. Les boutons sont en flex et non
+           en grille : seul, "Actualiser" prend toute la largeur au lieu de
+           laisser une colonne vide. -->
+      <button id="triggerRunBtn" onclick="triggerBackendRun()" style="display:none;">Relancer le robot</button>
+    </div>
+    <div id="triggerStatusLine" class="token-status dim" style="display:none;"></div>
+    <div id="progressBar" class="progress-bar" style="display:none;">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
   </div>
-  <div id="triggerStatusLine" class="token-status dim" style="display:none;"></div>
-
-  <div id="progressBar" class="progress-bar" style="display:none;">
-    <div id="progressFill" class="progress-fill"></div>
-  </div>
-
-  <div class="meta-row">
-    <span id="countLine">0 article suivi</span>
-  </div>
-
-  <div id="historyLine" class="history-line" style="display:none;"></div>
 
   <div class="search-row">
     <div class="search-input-wrap">
@@ -510,7 +533,7 @@
   </div>
 
   <div class="feed" id="feed">
-    <div class="empty">Clique sur "Vérifier maintenant" pour charger les derniers articles.</div>
+    <div class="empty">Clique sur "Actualiser" pour charger les derniers articles.</div>
   </div>
 
   <div id="logsPanel" style="display:none;">
@@ -1139,7 +1162,7 @@ function updateSourcesLine(){
 
 function updateFooterNote(){
   document.getElementById("infoBody").textContent =
-    "Vérification manuelle uniquement — clique sur \"Vérifier maintenant\" pour rafraîchir. Dédup par lien + similarité de titre (seuil " + settings.similarityThreshold + "%). Historique et lu/non-lu sauvegardés dans ce navigateur (localStorage), propres à cet appareil et ce navigateur.";
+    "Vérification manuelle uniquement — clique sur \"Actualiser\" pour rafraîchir. Dédup par lien + similarité de titre (seuil " + settings.similarityThreshold + "%). Historique et lu/non-lu sauvegardés dans ce navigateur (localStorage), propres à cet appareil et ce navigateur.";
 }
 function openInfo(){
   document.getElementById("infoOverlay").classList.add("open");
@@ -1564,7 +1587,9 @@ function updateHistoryLine(){
     return;
   }
   el.style.display = "flex";
-  el.innerHTML = `<span>${lastItems.length} articles récents chargés — l'historique complet ne l'est pas encore.</span>` +
+  // Le nombre d'articles est déjà donné juste à gauche par countLine : le
+  // répéter ici affichait deux fois "300" sur deux lignes qui se suivaient.
+  el.innerHTML = `<span>historique partiel</span>` +
     `<button class="small" onclick="loadFullHistory()">Tout charger</button>`;
 }
 
@@ -1840,8 +1865,9 @@ function applyFilters(){
   updateDocumentTitle();
 
   const countEl = document.getElementById("countLine");
-  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"")
-    + (q && historyPartial ? " (historique partiel, chargement en cours…)" : "");
+  // L'état de l'historique est porté par historyLine, juste à droite —
+  // l'ajouter ici aussi le disait deux fois sur la même ligne.
+  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"");
   updateHistoryLine();
 }
 
@@ -2010,12 +2036,12 @@ function renderCard(item, newLinks, searchQuery){
             : highlightMatch(item.title, searchQuery)}</div>
           <div class="card-date">${d}</div>
           ${extraSourcesLine}
-        </div>
-        <div class="card-actions">
-          <button class="card-mark" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${isRead ? "marquer non lu" : "marquer lu"}</button>
-          <button class="card-mark" onclick="copyLink('${escapeAttr(item.link)}', this)">copier</button>
-          ${item.description ? `<button class="card-mark" onclick="openPreview('${safeId}')">aperçu</button>` : ""}
-          ${item.lang !== "fr" ? `<button class="card-mark" onclick="openTranslated('${escapeAttr(item.link)}')">🇫🇷 traduire</button>` : ""}
+          <div class="card-actions">
+            <button class="card-mark" data-icon-only="1" title="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${isRead ? "↺" : "✓"}</button>
+            <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">⧉</button>
+            ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">👁</button>` : ""}
+            ${item.lang !== "fr" ? `<button class="card-mark" data-icon-only="1" title="Traduire en français" aria-label="Traduire en français" onclick="openTranslated('${escapeAttr(item.link)}')">🇫🇷</button>` : ""}
+          </div>
         </div>
       </div>
     </div>
@@ -2067,8 +2093,13 @@ function copyLink(link, btn){
   navigator.clipboard.writeText(link).then(() => {
     if(btn){
       const original = btn.textContent;
-      btn.textContent = "copié";
-      setTimeout(() => { btn.textContent = original; }, 1500);
+      // Sur un bouton-icône, écrire "copié" le ferait passer de 30 px à une
+      // centaine et décalerait toute la rangée pendant une seconde et demie.
+      // On échange l'icône contre une coche, à largeur constante ; le vert
+      // distingue la confirmation du bouton "marquer lu" juste à côté.
+      btn.textContent = btn.dataset.iconOnly ? "✓" : "copié";
+      btn.classList.add("done");
+      setTimeout(() => { btn.textContent = original; btn.classList.remove("done"); }, 1500);
     }
     // Pas de bouton visible à mettre à jour (ex: appelé depuis le menu de
     // carte, déjà fermé au moment de la copie) — la copie a quand même
@@ -2712,17 +2743,30 @@ function updateCountdown(){
   }else if(diff < 30 * 24 * 60 * 60 * 1000){
     palier = "soon";
   }
-  el.className = "countdown" + (palier ? " " + palier : "");
+  const classe = "countdown" + (palier ? " " + palier : "");
 
+  // La précision suit l'urgence. À plus de 81 jours, des secondes qui
+  // défilent en permanence attirent l'œil sans rien apprendre ; dans les
+  // dernières heures, elles sont tout l'intérêt du compteur.
+  let texte;
   if(palier === "final"){
     // "C'est demain" n'a vraiment de sens que dans les toutes dernières
     // heures — à 23h restantes, ce n'est pas "demain", c'est encore
     // aujourd'hui. Message plus honnête selon le temps réellement restant.
     const label = hours < 6 ? "C'EST AUJOURD'HUI" : "C'EST BIENTÔT";
-    el.textContent = `${label} — ${hours}h ${String(minutes).padStart(2,"0")}m ${String(seconds).padStart(2,"0")}s`;
+    texte = `${label} — ${hours}h ${String(minutes).padStart(2,"0")}m ${String(seconds).padStart(2,"0")}s`;
+  }else if(palier === "urgent"){
+    texte = `Sortie dans ${days}j ${String(hours).padStart(2,"0")}h ${String(minutes).padStart(2,"0")}m`;
   }else{
-    el.textContent = `Sortie dans ${days}j ${String(hours).padStart(2,"0")}h ${String(minutes).padStart(2,"0")}m ${String(seconds).padStart(2,"0")}s`;
+    texte = `Sortie dans ${days}j ${String(hours).padStart(2,"0")}h`;
   }
+
+  // La fonction reste appelée chaque seconde pour que le passage d'un palier
+  // à l'autre soit immédiat, mais on n'écrit dans le DOM que si le texte a
+  // vraiment changé : sans ce garde-fou, afficher l'heure sans les secondes
+  // repeindrait quand même l'en-tête 3600 fois par heure pour rien.
+  if(el.textContent !== texte) el.textContent = texte;
+  if(el.className !== classe) el.className = classe;
 }
 
 // ---------- Init ----------

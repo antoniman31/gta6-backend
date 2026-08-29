@@ -359,6 +359,17 @@ d'intensité croissante (normal → teinte orangée dès 30 jours → pulsation
 orange dès 7 jours → mode urgence rouge/majuscules dernières 24h),
 persistance locale (lu/non-lu, paramètres, thème) via `localStorage`.
 
+La **précision du compte à rebours suit l'urgence** : jours et heures au
+départ, les minutes à partir de 7 jours, les secondes dans les dernières
+24 h. Des secondes qui défilent à 81 jours de la sortie attirent l'œil en
+permanence sans rien apprendre.
+
+Les actions d'un article (**marquer lu, copier, aperçu, traduire**) sont
+une rangée d'icônes sous le titre. En colonne à droite, elles ramenaient le
+titre à 164 px sur un écran de 390 px, soit huit lignes pour un titre long ;
+il en fait 250 aujourd'hui. Chaque icône porte un `title` et un
+`aria-label`.
+
 **Mode de secours** : si `docs/feed.json` est inaccessible (backend en
 panne, GitHub Pages indisponible), l'app bascule automatiquement sur un
 ancien système de récupération directe des 35 sources via des proxys CORS
@@ -615,8 +626,8 @@ ouvrir l'onglet Actions.
    Rien d'autre.
 4. Choisir une **date d'expiration**, générer, copier le jeton
 5. Dans l'app : ⚙ Paramètres → *Déclenchement à distance* → coller →
-   Enregistrer. Le bouton « Forcer une mise à jour du robot » apparaît
-   alors sous « Vérifier maintenant ».
+   Enregistrer. Le bouton « Relancer le robot » apparaît alors à côté
+   d'« Actualiser ».
 
 **Ce que le jeton peut et ne peut pas faire.** Avec la permission
 ci-dessus, il ne sait que lister et lancer des exécutions du workflow. Il
