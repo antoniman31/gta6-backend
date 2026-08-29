@@ -689,15 +689,20 @@ commentaire).
 - **GTAForums et GTA Base** — jamais intégrés, ces deux sites bloquent
   activement les accès automatisés, y compris depuis un vrai serveur (pas
   seulement un navigateur).
-- **VG247 ne rapporte rien, et ce n'est pas une panne.** Diagnostiqué le
-  29/08/2026 : son flux renvoie fidèlement **25 articles à chaque passage**
-  et **zéro** passe le filtre. C'est un flux VG247 *généraliste* (tout le
-  catalogue du site), pas un flux GTA 6 — le filtre fait donc exactement
-  son travail en rejetant tout. Le correctif n'est pas de retirer la
-  source mais de remplacer son URL par un flux limité à GTA 6. Décision en
-  attente. Le tableau `sources_health` de `feed.json` permet de refaire ce
-  diagnostic pour n'importe quelle source : comparer `entries_fetched`
-  (ce que le flux renvoie) au nombre d'articles réellement retenus.
+- **Diagnostiquer une source qui ne rapporte rien.** Le tableau
+  `sources_health` de `feed.json` le permet sans toucher au code : comparer
+  `entries_fetched` (ce que le flux renvoie vraiment) au nombre d'articles
+  de cette source dans l'historique. Un flux qui renvoie beaucoup et ne
+  produit rien n'est pas cassé — il est hors sujet.
+
+  Cas d'école, VG247 le 29/08/2026 : **25 articles récupérés par passage,
+  zéro retenu**. Son flux rss.app était un flux VG247 *généraliste* (tout
+  le catalogue du site) ; le filtre faisait exactement son travail en
+  rejetant tout. Retirer la source aurait été le mauvais geste : vérifié
+  au passage, **aucun** article vg247.com n'arrivait non plus par les
+  autres flux, donc la couverture manquait réellement. L'URL a été
+  remplacée par une recherche Google News restreinte au domaine, sur le
+  même modèle que les sources officielles.
 - **Miniatures Google News** — un léger pourcentage d'articles n'a pas de
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.

@@ -103,7 +103,14 @@ FEEDS = [
     {"id": "polygon", "name": "Polygon", "url": "https://rss.app/feeds/cs8cjYH9LJUvrQxI.xml", "official": False},
     {"id": "kotaku", "name": "Kotaku", "url": "https://rss.app/feeds/lxhehgdlVzWzuQMQ.xml", "official": False},
     {"id": "gamesradar", "name": "GamesRadar+", "url": "https://rss.app/feeds/dhyjfZPgrCnv3JBq.xml", "official": False},
-    {"id": "vg247", "name": "VG247", "url": "https://rss.app/feeds/UjAtI3JL6IVYdlG7.xml", "official": False},
+    # Flux Google News restreint au domaine plutôt que le flux maison :
+    # celui de rss.app était un flux VG247 GÉNÉRALISTE. Il renvoyait
+    # fidèlement 25 articles par passage — Nintendo, PlayStation, tout le
+    # catalogue — dont zéro sur GTA 6, tous écartés par le filtre. Vérifié
+    # le 29/08/2026 : 0 article VG247 dans l'historique, et aucun n'y était
+    # non plus arrivé via les autres flux, donc la couverture manquait
+    # réellement.
+    {"id": "vg247", "name": "VG247", "url": "https://news.google.com/rss/search?q=site:vg247.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "rps", "name": "Rock Paper Shotgun", "url": "https://rss.app/feeds/P80yvK0878prZ0RB.xml", "official": False},
     {"id": "eurogamer", "name": "Eurogamer", "url": "https://rss.app/feeds/TR4mCR6nRT4S88lX.xml", "official": False},
     {"id": "gtaboom", "name": "GTA BOOM", "url": "https://www.gtaboom.com/feed.xml", "official": False},
