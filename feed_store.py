@@ -24,6 +24,16 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 # fichier (et le temps de déduplication) n'augmentent pas indéfiniment.
 MAX_HISTORY_SIZE = 20000
 
+# Nombre de sources distinctes à partir duquel un sujet est considéré comme
+# une actualité majeure. Un article isolé est en général une reprise ou de
+# la supputation ; quatre rédactions dans la foulée signalent un trailer,
+# une date ou une annonce.
+#
+# Vit ici parce que trois modules en dépendent et doivent s'accorder :
+# fetch_feeds le publie dans feed.json (l'app y lit le seuil du badge), et
+# libelle_recap ci-dessous décide du ton de la notification.
+HOT_SOURCE_THRESHOLD = 4
+
 FEED_PATH = "docs/feed.json"
 
 # Nombre d'articles publiés dans le fichier allégé, que l'app charge en
@@ -331,11 +341,36 @@ def libelle_recap(new_items):
 
     Volontairement AUCUN titre d'article : un récapitulatif annonce
     combien, pas quoi. Le détail est dans l'app, à un tap de là.
+
+    Deux tons possibles. Quand un sujet est couvert par au moins
+    HOT_SOURCE_THRESHOLD rédactions, le libellé bascule en alerte : c'est
+    la différence entre être notifié d'une rumeur et être prévenu d'un
+    trailer, et c'est la seule information dont on dispose sans lire les
+    articles.
     """
-    n = len(new_items or ())
-    officiels = sum(1 for i in (new_items or ())
-                    if isinstance(i, dict) and i.get("official"))
-    titre = f"🎮 {n} nouv{'eaux' if n > 1 else 'el'} article{'s' if n > 1 else ''} GTA 6"
+    lot = [i for i in (new_items or ()) if isinstance(i, dict)]
+    n = len(lot)
+    officiels = sum(1 for i in lot if i.get("official"))
+    compte = f"{n} nouv{'eaux' if n > 1 else 'el'} article{'s' if n > 1 else ''} GTA 6"
     if officiels:
-        titre += f" (dont {officiels} officiel{'s' if officiels > 1 else ''} Rockstar)"
-    return titre
+        compte += f" (dont {officiels} officiel{'s' if officiels > 1 else ''} Rockstar)"
+
+    sommet = nb_sources_max(lot)
+    if sommet >= HOT_SOURCE_THRESHOLD:
+        return f"🚨 Actu majeure — {sommet} sources sur le même sujet · {compte}"
+    return f"🎮 {compte}"
+
+
+def nb_sources_max(new_items):
+    """Nombre de rédactions couvrant le sujet le plus repris du lot.
+
+    1 (la source principale) + les sources supplémentaires enregistrées à la
+    déduplication. Renvoie 0 sur un lot vide.
+    """
+    return max((1 + len(i.get("extraSources") or [])
+                for i in (new_items or ()) if isinstance(i, dict)), default=0)
+
+
+def est_actu_majeure(new_items):
+    """Le lot contient-il un sujet couvert par assez de rédactions ?"""
+    return nb_sources_max(new_items) >= HOT_SOURCE_THRESHOLD

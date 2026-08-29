@@ -2,7 +2,7 @@ name: Mise à jour des flux GTA 6
 
 on:
   schedule:
-    # Deux passages par heure, à des minutes creuses. Le déclencheur
+    # Un passage par heure, à une minute creuse. Le déclencheur
     # `schedule` de GitHub Actions est best-effort : les runs sont retardés
     # (10 à 35 min observées) et purement abandonnés en période de charge,
     # et la minute 0 est la plus congestionnée de l'heure. Entre le 26 et le
@@ -66,8 +66,11 @@ jobs:
       - name: Récupérer et traiter les flux
         run: python fetch_feeds.py
         env:
-          # Hors du dépôt : ce fichier ne doit jamais pouvoir être committé.
+          # Hors du dépôt : ces fichiers ne doivent jamais pouvoir être committés.
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+          # Alertes « source tombée / revenue », écrites seulement quand
+          # l'état d'une source bascule — donc presque jamais.
+          SOURCE_ALERTS_FILE: ${{ runner.temp }}/source_alerts.json
           # Clé PUBLIQUE : recopiée dans feed.json pour que l'app puisse
           # créer un abonnement push. Aucun risque à l'exposer.
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
@@ -156,6 +159,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
+          SOURCE_ALERTS_FILE: ${{ runner.temp }}/source_alerts.json
 
       # Notification push native, en plus de Discord : taper une
       # notification Discord ouvre Discord, jamais l'article. Comme pour
