@@ -329,14 +329,18 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **124
+qui permet de tester tout le pipeline sans sortir de la machine. **224
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
-`sub` contre le vrai validateur de `py_vapid`, l'équivalence entre
-récupération séquentielle et parallèle, et surtout la fusion — c'est elle
-qui décide si des articles sont perdus quand deux exécutions se
-chevauchent. Le dernier bloc rejoue ces règles sur le vrai
+`sub` contre le vrai validateur de `py_vapid`, le masquage des URL dans les
+messages d'erreur, l'équivalence entre récupération séquentielle et
+parallèle, le plafond de requêtes par domaine, la déduplication à
+l'intérieur d'un même passage, la promotion d'un sujet entre deux passages,
+le suivi des sources muettes, le garde-fou contre les archives, l'unicité
+des identifiants de source, le récapitulatif hebdomadaire — et surtout la
+fusion, c'est elle qui décide si des articles sont perdus quand deux
+exécutions se chevauchent. Le dernier bloc rejoue ces règles sur le vrai
 `docs/feed.json` du dépôt.
 
 `check_sources_sync.py` compare `FEEDS` et les 139 mots-clés de
@@ -358,6 +362,27 @@ FR), compte à rebours jusqu'au 19 novembre 2026 avec 4 paliers visuels
 d'intensité croissante (normal → teinte orangée dès 30 jours → pulsation
 orange dès 7 jours → mode urgence rouge/majuscules dernières 24h),
 persistance locale (lu/non-lu, paramètres, thème) via `localStorage`.
+
+**Le bloc de contrôle.** L'état du fil, les deux boutons d'action, le message
+de déclenchement et la barre de progression forment une seule carte. Ils
+étaient cinq blocs empilés, dont deux annonçaient le même nombre d'articles
+(« 300 articles affichés » suivi de « 300 articles récents chargés »).
+
+Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
+est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
+colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
+noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
+(instantané), l'autre fait travailler le robot sur les 49 sources (~1 min).
+
+Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
+que deux qui se ressemblent, ce qui garantit qu'ils ne divergeront pas à la
+prochaine retouche. Le centrage y passe par flex et non par `text-align` :
+`refreshTokenUI()` posait autrefois `display:inline-flex` en style inline
+pour révéler le bouton, ce qui en faisait un conteneur flex — et
+`text-align:center` n'a aucun effet sur un conteneur flex. Le texte était
+décalé de 30 px vers la gauche et aucune règle CSS ne pouvait le rattraper,
+un style inline l'emportant sur la feuille de style. Le JS rend maintenant
+la main à la CSS.
 
 La **précision du compte à rebours suit l'urgence** : jours et heures au
 départ, les minutes à partir de 7 jours, les secondes dans les dernières
@@ -398,7 +423,7 @@ non une fonction de l'app.
 
 **Mode de secours** : si `docs/feed.json` est inaccessible (backend en
 panne, GitHub Pages indisponible), l'app bascule automatiquement sur un
-ancien système de récupération directe des 35 sources via des proxys CORS
+ancien système de récupération directe des 49 sources via des proxys CORS
 publics (CodeTabs, allorigins, corsproxy.io, whateverorigin, feed2json,
 rss2json). C'est redondant avec le backend, mais volontaire : sans ce
 filet de sécurité, l'app serait totalement inutilisable si le backend
