@@ -1850,10 +1850,15 @@ async function checkNow(force){
     for(const item of result.value){
       const match = findDuplicateIndexed(item, all, allByLink);
       if(match){
-        // Regroupe au lieu de jeter : on garde une trace des sources
-        // additionnelles qui couvrent la même actu.
+        // Regroupe au lieu de jeter : on garde une trace des RÉDACTIONS
+        // additionnelles qui couvrent la même actu. Le lien fait foi, pas le
+        // nom du flux : quatre requêtes Google News remontent souvent la même
+        // page, et les compter comme quatre sources gonflait le badge « actu
+        // majeure » sans qu'aucune rédaction de plus n'ait rien publié.
         if(!match.extraSources) match.extraSources = [];
-        if(!match.extraSources.some(s => s.source === item.source)){
+        const dejaVus = new Set([match.link, ...match.extraSources.map(s => s.link)]);
+        const dejaNommees = match.extraSources.some(s => s.source === item.source);
+        if(!dejaNommees && !dejaVus.has(item.link)){
           match.extraSources.push({ source: item.source, link: item.link });
         }
       }else{

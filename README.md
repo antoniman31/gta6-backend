@@ -415,6 +415,23 @@ aussitôt, sans relancer le robot. Tous les compteurs partent de
 `articlesVisibles()`, jamais de `lastItems` — un badge qui compterait les
 articles masqués annoncerait des non-lus introuvables.
 
+**« N sources » compte des rédactions, pas des flux.** `record_coverage()`
+n'ajoute une source supplémentaire que si elle apporte un **lien différent**.
+Le nom du flux ne suffit pas : quatre requêtes Google News distinctes
+remontent souvent la même page, et les compter comme quatre sources gonflait
+le badge « actu majeure » sans qu'aucune rédaction de plus n'ait rien publié.
+
+Mesuré sur l'historique du 29/08 avant correctif : **136 des 168 articles
+dits « croisés » n'étaient qu'un seul lien recompté**, et le premier badge 🔥
+était un article du Newswire trouvé par quatre de nos propres requêtes. Après
+correctif : 32 articles réellement croisés (2,5 %), maximum 3 sources, aucun
+à 4. Le seuil de 4 reste en place — il ne se déclenchera plus que sur une
+actu vraiment reprise partout, ce qui est son objet.
+
+`deduplique_couverture()` reprend l'historique déjà stocké, comme
+`recheck_official_status()` : sans elle, les 136 articles gonflés avant le
+correctif garderaient leur compte faux indéfiniment.
+
 **Les onglets classent par éditeur, pas par source.** Un article est
 « Rockstar » si son lien est sur `rockstargames.com` ou `take2games.com`,
 « RockstarMag » s'il est sur `rockstarmag.fr` — quelle que soit la source qui

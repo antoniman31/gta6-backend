@@ -384,19 +384,64 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None):
 
 
 def record_coverage(existing, item):
-    """Note qu'une source de plus couvre la même actualité.
+    """Note qu'une RÉDACTION de plus couvre la même actualité.
 
-    Alimente le champ extraSources, que le tracker affiche déjà sous la
-    carte (« + 3 autres sources : … ») dans son mode de secours — le
-    backend produit désormais la même chose.
+    Alimente le champ extraSources, affiché sous la carte (« + 3 autres
+    sources : … ») et sur lequel repose le badge « actu majeure ».
+
+    Le lien fait foi, pas le nom du flux. Quatre requêtes Google News
+    différentes remontent souvent la MÊME page : les compter comme quatre
+    sources gonflait le badge sans qu'aucune rédaction supplémentaire n'ait
+    publié quoi que ce soit. Mesuré sur l'historique du 29/08 : 136 des 168
+    articles dits « croisés » n'étaient qu'un seul lien recompté, et le
+    premier 🔥 était un article du Newswire trouvé par quatre de nos propres
+    requêtes.
     """
     if existing.get("source") == item.get("source"):
+        return False
+    lien = item.get("link")
+    if lien and lien == existing.get("link"):
         return False
     autres = existing.setdefault("extraSources", [])
     if any(a.get("source") == item.get("source") for a in autres):
         return False
-    autres.append({"source": item.get("source"), "link": item.get("link")})
+    if lien and any(a.get("link") == lien for a in autres):
+        return False
+    autres.append({"source": item.get("source"), "link": lien})
     return True
+
+
+def deduplique_couverture(items):
+    """Retire des extraSources déjà stockés ceux qui répètent un lien connu.
+
+    L'historique n'est jamais rejoué dans le pipeline de collecte : sans
+    cette passe, les 136 articles gonflés avant le correctif garderaient
+    leur compte faux indéfiniment, badge « actu majeure » compris.
+    """
+    nettoyes = 0
+    retires = 0
+    for item in items:
+        autres = item.get("extraSources")
+        if not autres:
+            continue
+        vus = {item.get("link")}
+        gardes = []
+        for a in autres:
+            lien = a.get("link")
+            if lien and lien in vus:
+                retires += 1
+                continue
+            vus.add(lien)
+            gardes.append(a)
+        if len(gardes) != len(autres):
+            nettoyes += 1
+            if gardes:
+                item["extraSources"] = gardes
+            else:
+                item.pop("extraSources", None)
+    if retires:
+        print(f"Correction rétroactive : {retires} source(s) en double retirée(s) sur {nettoyes} article(s) (même lien compté plusieurs fois)")
+    return items
 
 
 def is_hot(item):
@@ -1102,6 +1147,7 @@ def main():
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
+    existing_items = deduplique_couverture(existing_items)
 
     # Repasse rétroactive des dates : l'historique est rechargé tel quel et
     # ne repasse jamais dans le pipeline de collecte, donc les articles

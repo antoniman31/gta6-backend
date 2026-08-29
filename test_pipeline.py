@@ -429,10 +429,16 @@ def _fausse_collecte(feed, decoded_cache=None, http_state=None):
     Chaque source renvoie un article qui lui est propre, plus un article
     COMMUN à toutes : c'est lui qui met à l'épreuve la déduplication et
     l'ordre d'empilement des sources supplémentaires.
+
+    Le sujet commun porte le même titre mais une URL par source, parce que
+    c'est ce que fait le monde réel : trente-cinq rédactions publient
+    trente-cinq pages sur la même annonce. Le même lien répété trente-cinq
+    fois modéliserait nos propres requêtes qui se recoupent — et depuis que
+    la couverture se compte par lien, ça n'ajoute justement aucune source.
     """
     items = [
         _article(feed["name"], f"Exclu {feed['id']}", f"https://exemple.fr/{feed['id']}"),
-        _article(feed["name"], "Le meme article partout", "https://exemple.fr/commun"),
+        _article(feed["name"], "Le meme article partout", f"https://{feed['id']}.exemple.fr/commun"),
     ]
     return items, {"raw_count": 2, "not_modified": False}, [f"[{feed['name']}] ok"]
 
@@ -468,7 +474,7 @@ def test_fetch_parallele_identique():
 
     # Le cas piégeux : l'article commun n'est gardé qu'une fois, et les 34
     # autres sources doivent s'empiler derrière dans l'ordre de FEEDS.
-    communs = [i for i in obtenu[0] if i["link"] == "https://exemple.fr/commun"]
+    communs = [i for i in obtenu[0] if i["title"] == "Le meme article partout"]
     check(len(communs) == 1, "l'article publié par les 35 sources n'est stocké qu'une fois")
     check(communs[0]["source"] == sources[0]["name"],
           "il est attribué à la PREMIÈRE source de la liste, pas à la plus rapide")
@@ -1048,6 +1054,79 @@ def test_onglets_par_domaine():
               f"pas de double appartenance : {item['source']}")
 
 
+
+def test_couverture_par_lien():
+    print("\n[couverture] « N sources » compte des rédactions, pas des flux")
+    import fetch_feeds
+
+    LIEN = "https://www.rockstargames.com/newswire/article/9k2k/extended-look"
+    base = {"source": "Rockstar Games (officiel EN)", "link": LIEN, "title": "Extended Look"}
+
+    # Le cas réel qui a produit le premier faux 🔥 : quatre requêtes Google
+    # News différentes remontent la MÊME page du Newswire.
+    for flux in ("Rockstar Games (annonces)", "Google News (EN)", "GTA 6 x Netflix"):
+        fetch_feeds.record_coverage(base, {"source": flux, "link": LIEN})
+    check(len(base.get("extraSources") or []) == 0,
+          "le même lien trouvé par trois autres flux n'ajoute aucune source")
+    check(not fetch_feeds.is_hot(base), "il ne devient donc pas une actu majeure")
+
+    # Une vraie rédaction, avec sa propre URL, compte.
+    fetch_feeds.record_coverage(base, {"source": "IGN", "link": "https://www.ign.com/a"})
+    fetch_feeds.record_coverage(base, {"source": "Kotaku", "link": "https://kotaku.com/b"})
+    check(len(base["extraSources"]) == 2, "deux rédactions distinctes sont comptées")
+
+    # Deux flux différents rapportant la même URL tierce : un seul compte.
+    fetch_feeds.record_coverage(base, {"source": "Google News (FR)", "link": "https://www.ign.com/a"})
+    check(len(base["extraSources"]) == 2,
+          "un autre flux sur une URL déjà connue n'ajoute rien")
+
+    # La règle historique tient toujours : même nom de source, on ignore.
+    fetch_feeds.record_coverage(base, {"source": "IGN", "link": "https://www.ign.com/autre"})
+    check(len(base["extraSources"]) == 2, "la même source deux fois reste ignorée")
+
+    check(1 + len(base["extraSources"]) == 3, "le compte affiché vaut 3, pas 6")
+
+    # Un article sans lien ne doit pas faire exploser la fonction.
+    vide = {"source": "A", "link": ""}
+    fetch_feeds.record_coverage(vide, {"source": "B", "link": ""})
+    check(len(vide.get("extraSources") or []) == 1,
+          "des liens vides n'empêchent pas de compter deux sources nommées")
+
+    # --- Reprise de l'historique déjà gonflé ---
+    # Sans elle, les articles enregistrés avant le correctif garderaient leur
+    # compte faux : l'historique n'est jamais rejoué dans la collecte.
+    historique = [
+        {"link": LIEN, "extraSources": [
+            {"source": "Rockstar Games (annonces)", "link": LIEN},
+            {"source": "Google News (EN)", "link": LIEN},
+            {"source": "GTA 6 x Netflix", "link": LIEN},
+        ]},
+        {"link": "https://a.fr/1", "extraSources": [
+            {"source": "IGN", "link": "https://www.ign.com/a"},
+            {"source": "Google News (FR)", "link": "https://www.ign.com/a"},
+            {"source": "Kotaku", "link": "https://kotaku.com/b"},
+        ]},
+        {"link": "https://b.fr/2", "extraSources": [{"source": "IGN", "link": "https://www.ign.com/c"}]},
+        {"link": "https://c.fr/3"},
+    ]
+    fetch_feeds.deduplique_couverture(historique)
+    check("extraSources" not in historique[0],
+          "un article gonflé par un seul lien perd entièrement ses sources en trop")
+    check(not fetch_feeds.is_hot(historique[0]), "et perd son badge d'actu majeure")
+    check(len(historique[1]["extraSources"]) == 2,
+          "un doublon est retiré, les deux vraies rédactions restent")
+    check([a["source"] for a in historique[1]["extraSources"]] == ["IGN", "Kotaku"],
+          "c'est la première occurrence qui est gardée, dans l'ordre")
+    check(len(historique[2]["extraSources"]) == 1, "un article déjà sain n'est pas touché")
+    check("extraSources" not in historique[3], "un article sans sources reste sans sources")
+
+    # Idempotence : rejouer la passe ne doit plus rien changer.
+    avant = [len(i.get("extraSources") or []) for i in historique]
+    fetch_feeds.deduplique_couverture(historique)
+    check([len(i.get("extraSources") or []) for i in historique] == avant,
+          "rejouer la passe est sans effet")
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -1056,7 +1135,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_masquage_endpoint,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
-           test_onglets_par_domaine,
+           test_onglets_par_domaine, test_couverture_par_lien,
            test_garde_fou_archives,
            test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,
