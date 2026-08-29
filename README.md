@@ -190,11 +190,15 @@ Le décodage Google News (`DECODE_WORKERS`, 4) et les miniatures
 - **`timeout-minutes: 20`** — le job dure normalement ~1 minute depuis la
   mise en parallèle ; la marge reste volontairement large si un site traîne
   anormalement, sans risquer qu'une exécution bloquée tourne indéfiniment.
-- **`actions/checkout@v5` et `actions/setup-python@v6`** — ce sont les
-  premières versions de ces actions à tourner sous Node 24. Les versions
-  précédentes (v4 / v5) affichaient un avertissement de dépréciation à
-  chaque exécution. Volontairement pas les v7, qui n'apportent rien ici et
-  dont celle de `checkout` change le comportement sur les PR issues de forks.
+- **`actions/checkout@v7` et `actions/setup-python@v7`** — passer de v4/v5
+  à v5/v6 avait d'abord servi à faire taire l'avertissement de dépréciation
+  de Node 20 ; les v7 sont arrivées ensuite par Dependabot. Leurs
+  changements de rupture ont été lus avant d'accepter, et aucun ne
+  s'applique ici : `checkout` v7 bloque la récupération des PR issues de
+  forks, mais seulement sur les déclencheurs `pull_request_target` et
+  `workflow_run`, dont aucun n'est utilisé ; `setup-python` v7 supprime
+  l'option `pip-install`, que les deux workflows n'utilisent pas (ils ne
+  passent que `python-version`).
 - **`ref: main` au checkout** — un run planifié peut attendre 35 minutes
   en file avant de démarrer ; sans ça il repartirait du SHA figé au moment
   de son déclenchement, donc d'un dépôt périmé.
@@ -257,6 +261,15 @@ passage du robot ne change de comportement sans qu'on le décide — mais fige
 aussi les correctifs de sécurité. C'est aussi ce qui aurait signalé la
 dépréciation de Node 20 sans attendre qu'un avertissement jaune soit
 remarqué à l'œil.
+
+Attention en relisant ces PR : **une CI verte ne prouve pas que le robot
+tourne encore.** `test_pipeline.py` ne touche jamais au réseau, donc une
+rupture dans `feedparser`, `requests` ou `beautifulsoup4` n'y apparaîtrait
+pas. Sur le premier lot (29/08/2026), les usages réels ont donc été rejoués
+à part avec les nouvelles versions installées — extraction `og:image` et
+repli `twitter:image`, lecture d'un flux RSS, `media:content`, conversion
+d'une date RFC 822, paramètres `etag`/`modified` — avant d'accepter. Un
+passage réel du robot après fusion reste la vérification qui compte.
 
 Les deux tournent en CI (`.github/workflows/checks.yml`) sur chaque pull
 request et sur `main`. Les commits du robot ne les déclenchent pas — non pas
