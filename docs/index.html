@@ -138,9 +138,10 @@
   }
   /* Les boutons se partagent la ligne. En flex plutôt qu'en grille : quand
      "Relancer le robot" est masqué faute de jeton, "Actualiser" s'étale sur
-     toute la largeur au lieu de laisser une demi-colonne vide. */
+     toute la largeur au lieu de laisser une demi-colonne vide.
+     L'apparence, elle, est déclarée avec celle des onglets plus bas. */
   .controls{display:flex; gap:8px;}
-  .controls button{flex:1; min-width:0; padding:10px 6px; font-size:11px; text-align:center; white-space:normal; line-height:1.3;}
+  .controls button{flex:1; min-width:0; white-space:normal; line-height:1.3;}
   button{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
@@ -185,15 +186,22 @@
   .tab-row::-webkit-scrollbar{display:none;}
   .tab-row-full .tab{flex:1; padding:10px 14px;}
   .tab-row:not(.tab-row-full) .tab{flex:1; min-width:0; white-space:normal; text-align:center; line-height:1.3;}
-  .tab{
+  /* Onglets et boutons d'action partagent une seule déclaration plutôt que
+     deux qui se ressemblent : c'est ce qui garantit qu'ils ne divergeront
+     pas à la prochaine retouche. Le centrage passe par flex et non par
+     text-align, qui reste sans effet sur un conteneur flex. */
+  .tab, .controls button{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); border:1px solid var(--line); border-radius:6px; color:var(--text-dim);
     padding:8px 14px; cursor:pointer; letter-spacing:0.02em;
-    white-space:nowrap; flex-shrink:0; transition:background .15s ease, border-color .15s ease, color .15s ease;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
     display:flex; align-items:center; justify-content:center; gap:6px;
   }
-  .tab:active{background:var(--bg-elevated);}
-  .tab.active{color:#ffffff; background:var(--accent); border-color:var(--accent);}
+  .tab{white-space:nowrap; flex-shrink:0;}
+  .tab:active, .controls button:active{background:var(--bg-elevated);}
+  /* L'onglet actif et le bouton principal sont le même état : celui vers
+     lequel on veut être conduit. */
+  .tab.active, .controls button.primary{color:#ffffff; background:var(--accent); border-color:var(--accent);}
   .tab-badge{
     font-size:10px; font-weight:700; background:var(--bg-elevated); color:var(--text-dim);
     padding:1px 5px; border-radius:8px; margin-left:2px;
@@ -2502,7 +2510,12 @@ function setTriggerStatus(message, kind){
 function refreshTokenUI(){
   const token = getGithubToken();
   const btn = document.getElementById("triggerRunBtn");
-  if(btn) btn.style.display = token ? "inline-flex" : "none";
+  // Chaîne vide et non "inline-flex" : un display posé en style inline
+  // l'emporte sur la feuille de style, et celui-ci faisait du bouton un
+  // conteneur flex dont le texte se rangeait à gauche, sourd au
+  // text-align:center. En rendant la main à la CSS, le bouton retrouve le
+  // centrage en flex qu'il partage avec les onglets.
+  if(btn) btn.style.display = token ? "" : "none";
   const input = document.getElementById("githubTokenInput");
   if(input && token && !input.value) input.placeholder = "•••••••••••••• (jeton enregistré)";
   if(!token){
