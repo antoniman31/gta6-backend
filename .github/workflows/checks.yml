@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Installer Python
         uses: actions/setup-python@v7
