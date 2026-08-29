@@ -16,6 +16,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 
 import feed_store
@@ -321,12 +322,232 @@ def test_push_subscriptions():
     os.environ.pop("PUSH_SUBSCRIPTIONS", None)
 
 
+# ---------------------------------------------------------------------------
+# Récupération parallèle des sources
+#
+# La parallélisation ne doit RIEN changer au fichier produit : c'est l'ordre
+# de FEEDS, et lui seul, qui décide quelle source possède un article et dans
+# quel ordre les sources supplémentaires s'empilent derrière. Ces tests
+# comparent donc le nouveau chemin à une exécution séquentielle de
+# référence, sur les mêmes données.
+# ---------------------------------------------------------------------------
+
+def _fausses_sources():
+    """35 sources réparties comme les vraies : un domaine à 10 flux, un à 6,
+    et 19 domaines à 1 flux."""
+    sources = []
+    for i in range(10):
+        sources.append({"id": f"rssapp{i}", "name": f"RSSApp {i}",
+                        "url": f"https://rss.app/feeds/{i}.xml"})
+    for i in range(6):
+        sources.append({"id": f"gnews{i}", "name": f"Google News {i}",
+                        "url": f"https://news.google.com/rss/search?q={i}"})
+    for i in range(19):
+        sources.append({"id": f"site{i}", "name": f"Site {i}",
+                        "url": f"https://site{i}.example/rss"})
+    return sources
+
+
+def _article(source, titre, lien, date="2026-08-28T10:00:00+00:00"):
+    return {"title": titre, "link": lien, "source_link": None, "date": date,
+            "source": source, "official": False, "rockstarmag": False,
+            "specialist": False, "lang": "en", "image": None, "description": ""}
+
+
+def _fausse_collecte(feed, decoded_cache=None, http_state=None):
+    """Récupération factice, déterministe et sans réseau.
+
+    Chaque source renvoie un article qui lui est propre, plus un article
+    COMMUN à toutes : c'est lui qui met à l'épreuve la déduplication et
+    l'ordre d'empilement des sources supplémentaires.
+    """
+    items = [
+        _article(feed["name"], f"Exclu {feed['id']}", f"https://exemple.fr/{feed['id']}"),
+        _article(feed["name"], "Le meme article partout", "https://exemple.fr/commun"),
+    ]
+    return items, {"raw_count": 2, "not_modified": False}, [f"[{feed['name']}] ok"]
+
+
+def test_fetch_parallele_identique():
+    print("\n== Récupération parallèle : résultat identique au séquentiel ==")
+    import fetch_feeds
+
+    sources = _fausses_sources()
+
+    def parcours(resultats):
+        """Rejoue la fusion et renvoie l'état final, comparable."""
+        all_items, links_index, newly = [], {}, []
+        infos, counts, inchanges = fetch_feeds.merge_results(
+            sources, resultats, all_items, links_index, newly,
+            decoded_cache={}, afficher=False)
+        return all_items, newly, infos, counts, inchanges
+
+    # Référence : récupération strictement séquentielle, comme avant.
+    sequentiel = {f["id"]: _fausse_collecte(f) for f in sources}
+    attendu = parcours(sequentiel)
+
+    # Nouveau chemin : récupération parallèle.
+    parallele = fetch_feeds.fetch_all_feeds(sources, {}, {}, collecte=_fausse_collecte)
+    obtenu = parcours(parallele)
+
+    check(set(parallele) == set(sequentiel), "toutes les sources sont revenues, aucune perdue")
+    check(obtenu[0] == attendu[0], "liste finale des articles identique (contenu ET ordre)")
+    check(obtenu[1] == attendu[1], "liste des nouveautés identique")
+    check(obtenu[2] == attendu[2], "état HTTP par source identique")
+    check(obtenu[3] == attendu[3], "compteurs de nouveautés par source identiques")
+    check(obtenu[4] == attendu[4], "nombre de sources inchangées identique")
+
+    # Le cas piégeux : l'article commun n'est gardé qu'une fois, et les 34
+    # autres sources doivent s'empiler derrière dans l'ordre de FEEDS.
+    communs = [i for i in obtenu[0] if i["link"] == "https://exemple.fr/commun"]
+    check(len(communs) == 1, "l'article publié par les 35 sources n'est stocké qu'une fois")
+    check(communs[0]["source"] == sources[0]["name"],
+          "il est attribué à la PREMIÈRE source de la liste, pas à la plus rapide")
+    empile = [s["source"] for s in (communs[0].get("extraSources") or [])]
+    check(empile == [f["name"] for f in sources[1:]],
+          "les 34 autres sources s'empilent derrière dans l'ordre de FEEDS")
+
+
+def test_identifiants_de_sources_uniques():
+    print("\n== Identifiants des vraies sources ==")
+    import fetch_feeds
+    ids = [f["id"] for f in fetch_feeds.FEEDS]
+    doublons = sorted({i for i in ids if ids.count(i) > 1})
+    # Les résultats de la récupération parallèle sont rangés par identifiant :
+    # deux sources partageant le même id verraient l'une écraser l'autre, et
+    # la seconde serait traitée deux fois. En séquentiel c'était sans effet,
+    # d'où ce garde-fou explicite.
+    check(not doublons, f"les {len(ids)} identifiants de sources sont uniques"
+                        + (f" — DOUBLONS : {doublons}" if doublons else ""))
+    check(all(f.get("id") for f in fetch_feeds.FEEDS), "aucune source sans identifiant")
+
+
+def test_chaines_par_hote():
+    print("\n== Découpage en files par domaine ==")
+    import fetch_feeds
+
+    sources = _fausses_sources()
+    chaines = fetch_feeds.chaines_par_hote(sources, par_hote=3)
+
+    plat = [f["id"] for c in chaines for f in c]
+    check(sorted(plat) == sorted(f["id"] for f in sources),
+          "chaque source apparaît une fois et une seule")
+
+    from urllib.parse import urlparse
+    par_domaine = {}
+    for chaine in chaines:
+        domaines = {urlparse(f["url"]).netloc for f in chaine}
+        check(len(domaines) == 1, f"une file ne mélange jamais deux domaines ({domaines})")
+        par_domaine.setdefault(domaines.pop(), []).append(chaine)
+
+    check(len(par_domaine["rss.app"]) == 3, "les 10 flux rss.app tiennent en 3 files, pas 10")
+    check(len(par_domaine["news.google.com"]) == 3, "les 6 flux Google News tiennent en 3 files")
+    check(len(par_domaine["site0.example"]) == 1, "un domaine à flux unique n'a qu'une file")
+
+    check(fetch_feeds.chaines_par_hote(sources, 3) == chaines,
+          "le découpage est déterministe : mêmes sources, mêmes files")
+
+
+def test_plafond_par_domaine():
+    print("\n== Politesse : plafond de requêtes simultanées par domaine ==")
+    import fetch_feeds
+    import threading
+    from urllib.parse import urlparse
+
+    verrou = threading.Lock()
+    en_cours = {}
+    maxi = {}
+
+    def collecte_observee(feed, decoded_cache=None, http_state=None):
+        hote = urlparse(feed["url"]).netloc
+        with verrou:
+            en_cours[hote] = en_cours.get(hote, 0) + 1
+            maxi[hote] = max(maxi.get(hote, 0), en_cours[hote])
+        time.sleep(0.05)  # laisse le temps aux autres fils de se chevaucher
+        with verrou:
+            en_cours[hote] -= 1
+        return [], {"raw_count": 0, "not_modified": False}, []
+
+    fetch_feeds.fetch_all_feeds(_fausses_sources(), {}, {}, collecte=collecte_observee)
+
+    check(maxi.get("rss.app", 0) <= fetch_feeds.PER_HOST_LIMIT,
+          f"rss.app n'a jamais reçu plus de {fetch_feeds.PER_HOST_LIMIT} requêtes à la fois "
+          f"(observé : {maxi.get('rss.app')})")
+    check(maxi.get("news.google.com", 0) <= fetch_feeds.PER_HOST_LIMIT,
+          f"news.google.com non plus (observé : {maxi.get('news.google.com')})")
+    check(max(maxi.values()) > 1, "mais plusieurs sources tournent bien en parallèle")
+
+
+def test_source_qui_plante():
+    print("\n== Une source qui casse n'emporte pas les autres ==")
+    import fetch_feeds
+
+    sources = _fausses_sources()
+    cassee = sources[4]["id"]
+
+    def collecte_capricieuse(feed, decoded_cache=None, http_state=None):
+        if feed["id"] == cassee:
+            raise RuntimeError("le serveur a renvoyé n'importe quoi")
+        return _fausse_collecte(feed)
+
+    resultats = fetch_feeds.fetch_all_feeds(sources, {}, {}, collecte=collecte_capricieuse)
+
+    check(len(resultats) == len(sources), "toutes les sources ont une entrée, y compris celle qui a cassé")
+    items, info, journal = resultats[cassee]
+    check(items == [], "la source cassée ne renvoie aucun article")
+    check(info["not_modified"] is False, "elle n'est pas comptée comme « inchangée »")
+    check(any("échec inattendu" in l for l in journal), "l'échec est tracé dans le journal")
+    check(resultats[sources[5]["id"]][0] != [], "les autres sources ont bien été récupérées")
+
+
+def test_predecode_google_news():
+    print("\n== Pré-décodage des liens Google News ==")
+    import fetch_feeds
+
+    appels = []
+
+    def faux_decodeur(url):
+        appels.append(url)
+        return url.replace("news.google.com/rss/articles/", "vrai-site.fr/")
+
+    vrai = fetch_feeds.decode_google_news_link
+    fetch_feeds.decode_google_news_link = faux_decodeur
+    try:
+        cache = {}
+        liens = [f"https://news.google.com/rss/articles/{i}" for i in range(5)]
+        # Un lien en double dans la même fournée : il ne doit être décodé qu'une fois.
+        resolus = fetch_feeds.predecode_links(liens + [liens[0]], cache)
+        check(len(appels) == 5, f"5 liens distincts -> 5 décodages, pas 6 (obtenu : {len(appels)})")
+        check(resolus[liens[0]] == "https://vrai-site.fr/0", "le lien est bien résolu")
+        check(cache[liens[0]] == "https://vrai-site.fr/0", "le cache partagé est alimenté")
+
+        # Deuxième fournée : tout est déjà en cache, plus aucun décodage.
+        appels.clear()
+        fetch_feeds.predecode_links(liens, cache)
+        check(appels == [], "un lien déjà connu du cache n'est pas redécodé")
+
+        # Un décodage qui échoue renvoie le lien inchangé : il ne doit PAS
+        # entrer en cache, sinon un autre flux portant le même article ne
+        # retenterait jamais, alors qu'en séquentiel il retentait.
+        appels.clear()
+        cache2 = {}
+        rate = "https://news.google.com/rss/articles/casse"
+        fetch_feeds.decode_google_news_link = lambda u: u
+        fetch_feeds.predecode_links([rate], cache2)
+        check(rate not in cache2, "un décodage raté n'est pas mis en cache")
+    finally:
+        fetch_feeds.decode_google_news_link = vrai
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
            test_canonical_link, test_canonicalize_stored_links,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
-           test_real_history):
+           test_real_history,
+           test_fetch_parallele_identique, test_identifiants_de_sources_uniques,
+           test_chaines_par_hote,
+           test_plafond_par_domaine, test_source_qui_plante,
+           test_predecode_google_news):
     fn()
 
 print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} vérifications passées")

@@ -22,6 +22,7 @@ contacter 34 flux + des proxys CORS à chaque vérification.
 
 import json
 import re
+import threading
 import time
 import os
 from datetime import datetime, timezone
@@ -42,6 +43,39 @@ except ImportError:
     HAS_DECODER = False
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+
+# ---------------------------------------------------------------------------
+# Parallélisme de la récupération.
+#
+# Les 35 sources étaient interrogées à la suite, avec une pause d'une seconde
+# entre chacune : 35 s de sommeil pur, plus ~2 min 30 d'attente réseau
+# séquentielle, pour une étape qui durait un peu plus de 3 minutes. Or ces
+# sources sont indépendantes — rien n'oblige à attendre la réponse de l'une
+# avant d'appeler l'autre.
+#
+# La règle de politesse, elle, ne concerne qu'un même serveur. On répartit
+# donc les sources en files : au plus PER_HOST_LIMIT files par domaine, et à
+# l'intérieur d'une file les sources s'enchaînent avec HOST_PAUSE entre
+# elles. Deux sources d'un même domaine ne partent donc jamais à plus de
+# PER_HOST_LIMIT en même temps, quel que soit le nombre de fils.
+#
+# Ce découpage évite aussi la famine : avec un simple sémaphore par domaine,
+# les 8 fils pouvaient tous se retrouver bloqués sur rss.app (10 flux)
+# pendant que les 19 autres domaines attendaient leur tour.
+FETCH_WORKERS = 8       # sources traitées de front, tous domaines confondus
+PER_HOST_LIMIT = 3      # files simultanées pour un même domaine
+HOST_PAUSE = 1.0        # pause entre deux requêtes d'une même file
+
+# Décodages Google News simultanés, tous flux confondus. Le plafond est
+# global (et non par flux) : sans lui, 3 flux Google News traités en même
+# temps auraient multiplié d'autant la charge envoyée à Google.
+DECODE_WORKERS = 4
+
+# Miniatures récupérées de front (lot 3 : 5 -> 8). Ces requêtes visent
+# chacune un site différent, il n'y a pas de politesse par domaine à tenir.
+IMAGE_WORKERS = 8
+
+_DECODE_SEMA = threading.Semaphore(DECODE_WORKERS)
 
 # ---------------------------------------------------------------------------
 # Liste des sources — copiée depuis DEFAULT_FEEDS dans gta6-watch.html.
@@ -107,7 +141,11 @@ def decode_google_news_link(url):
     if not HAS_DECODER or "news.google.com" not in url:
         return url
     try:
-        result = gnewsdecoder(url, interval=1)
+        # Le plafond est global : plusieurs flux Google News peuvent être
+        # traités en parallèle, mais jamais plus de DECODE_WORKERS
+        # décodages en vol au même instant.
+        with _DECODE_SEMA:
+            result = gnewsdecoder(url, interval=1)
         if result.get("status") and result.get("decoded_url"):
             return result["decoded_url"]
     except Exception as e:
@@ -241,6 +279,65 @@ def normalize_date(entry):
     return raw if parsed == feed_store.DATE_FLOOR else parsed.isoformat()
 
 
+def passe_le_filtre(feed, title, description):
+    """Décide si une entrée du flux est retenue.
+
+    Sorti de la boucle principale pour que le pré-décodage des liens Google
+    News puisse s'appliquer aux seules entrées réellement retenues. Les
+    règles sont identiques à ce qu'elles étaient à l'intérieur de la boucle.
+
+    Les sources "officielles" ont un filtre strict sur GTA 6 uniquement
+    (titre). Les sources "spécialistes" (specialist_source) sont des sites
+    dédiés à la série GTA en général — elles couvrent aussi GTA Online,
+    FiveM, GTA RP, etc., donc elles ont BESOIN du même filtre GTA 6 que les
+    sources normales pour ne pas remonter du contenu hors-sujet.
+    Exception : RockstarMag (no_filter_at_all) — choix explicite de tout
+    récupérer sans filtre, quitte à inclure du contenu GTA Online/RP en plus
+    du GTA 6, plutôt que de risquer de rater un article. Réservé à cette
+    seule source, pas aux autres spécialistes.
+    """
+    if feed.get("no_filter_at_all"):
+        return True
+    if feed.get("official"):
+        return matches_keywords(title, OFFICIAL_KEYWORDS)
+    return matches_keywords(title + " " + description, KEYWORDS)
+
+
+def predecode_links(liens, decoded_cache=None, journal=None):
+    """Résout d'un coup les liens Google News encore inconnus du cache.
+
+    gnewsdecoder impose une pause d'une seconde par lien. Résolus à la
+    suite, une poignée d'articles neufs suffisait à ajouter une dizaine de
+    secondes par flux Google News. Ils sont donc résolus à plusieurs — le
+    plafond réel reste DECODE_WORKERS pour l'ensemble du processus, tenu par
+    _DECODE_SEMA à l'intérieur de decode_google_news_link.
+
+    Renvoie {lien brut -> lien résolu} pour les seuls liens traités ici ; le
+    cache fourni est mis à jour au passage, ce qui évite à deux flux Google
+    News de résoudre deux fois le même article.
+    """
+    cache = decoded_cache if decoded_cache is not None else {}
+    a_faire = [lien for lien in dict.fromkeys(liens) if lien and lien not in cache]
+    if not a_faire:
+        return {}
+    resolus = {}
+    with ThreadPoolExecutor(max_workers=min(DECODE_WORKERS, len(a_faire))) as executor:
+        for lien, vrai in zip(a_faire, executor.map(decode_google_news_link, a_faire)):
+            resolus[lien] = vrai
+            # On ne met en cache QUE les décodages réussis. En cas d'échec
+            # la fonction renvoie le lien d'origine inchangé ; le mettre en
+            # cache empêcherait un autre flux portant le même article de
+            # retenter, alors qu'en séquentiel il retentait.
+            # Un succès, lui, ne dépend que du lien d'entrée : deux flux
+            # aboutissent au même résultat, l'écriture partagée est sûre.
+            if vrai != lien:
+                cache[lien] = vrai
+    if journal is not None:
+        journal.append(f"  {len(a_faire)} lien(s) Google News décodé(s) "
+                       f"({DECODE_WORKERS} à la fois)")
+    return resolus
+
+
 def collect_feed_items(feed, decoded_cache=None, http_state=None):
     """Récupère et filtre les articles d'une source, SANS aller chercher les
     miniatures manquantes sur les pages.
@@ -258,8 +355,13 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     la déduplication (elle travaille sur le lien final), or gnewsdecoder
     impose une pause d'une seconde par lien — soit ~120 s par run pour les 4
     flux Google News, payées à chaque fois sur des articles déjà connus.
+
+    Renvoie (items, info, journal). Le journal remplace les impressions
+    directes : plusieurs sources étant traitées en parallèle, des `print`
+    entrelaceraient les lignes de sources différentes et rendraient les logs
+    illisibles. main() les réimprime dans l'ordre de FEEDS.
     """
-    print(f"[{feed['name']}] récupération...")
+    journal = [f"[{feed['name']}] récupération..."]
 
     # Requête conditionnelle : on redemande le flux en précisant la version
     # qu'on a déjà. Si rien n'a changé, le serveur répond 304 sans corps —
@@ -276,21 +378,22 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
             modified=precedent.get("modified") or None,
         )
     except Exception as e:
-        print(f"  échec réseau : {e}")
-        return [], {"raw_count": 0, "not_modified": False}
+        journal.append(f"  échec réseau : {e}")
+        return [], {"raw_count": 0, "not_modified": False}, journal
 
     statut = getattr(parsed, "status", None)
     if statut == 304:
-        print("  inchangé depuis la dernière fois (304), rien à retélécharger")
+        journal.append("  inchangé depuis la dernière fois (304), rien à retélécharger")
         # On renvoie l'état précédent tel quel : un 304 ne fournit pas de
         # nouveaux validateurs, les réécrire à vide ferait retélécharger le
         # flux entier au prochain passage.
         return [], {"raw_count": 0, "not_modified": True,
-                    "etag": precedent.get("etag"), "modified": precedent.get("modified")}
+                    "etag": precedent.get("etag"),
+                    "modified": precedent.get("modified")}, journal
 
     if parsed.bozo and not parsed.entries:
-        print(f"  échec : {parsed.bozo_exception}")
-        return [], {"raw_count": 0, "not_modified": False}
+        journal.append(f"  échec : {parsed.bozo_exception}")
+        return [], {"raw_count": 0, "not_modified": False}, journal
 
     raw_count = len(parsed.entries)
 
@@ -304,31 +407,25 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         "modified": getattr(parsed, "modified", None),
     }
 
+    # Premier passage : on ne garde que les entrées qui passent le filtre par
+    # mots-clés, sans encore toucher au réseau.
+    retenues = [entry for entry in parsed.entries[:30]
+                if passe_le_filtre(feed, entry.get("title", ""), entry.get("summary", ""))]
+
+    # Deuxième passage : les liens Google News encore inconnus sont résolus
+    # à plusieurs, une bonne fois, au lieu d'une seconde chacun à la suite.
+    est_google = "news.google.com" in feed["url"]
+    resolus = {}
+    if est_google:
+        resolus = predecode_links([entry.get("link", "") for entry in retenues],
+                                  decoded_cache, journal)
+
     items = []
-    for entry in parsed.entries[:30]:
+    for entry in retenues:
         title = entry.get("title", "")
         link = entry.get("link", "")
         date = normalize_date(entry)
         description = entry.get("summary", "")
-
-        # Filtre par mots-clés. Les sources "officielles" ont un filtre
-        # strict sur GTA 6 uniquement (titre). Les sources "spécialistes"
-        # (specialist_source) sont des sites dédiés à la série GTA en
-        # général — elles couvrent aussi GTA Online, FiveM, GTA RP, etc.,
-        # donc elles ont BESOIN du même filtre GTA 6 que les sources
-        # normales pour ne pas remonter du contenu hors-sujet.
-        # Exception : RockstarMag (no_filter_at_all) — choix explicite de
-        # tout récupérer sans filtre, quitte à inclure du contenu GTA
-        # Online/RP en plus du GTA 6, plutôt que de risquer de rater un
-        # article. Réservé à cette seule source, pas aux autres
-        # spécialistes.
-        if feed.get("no_filter_at_all"):
-            pass
-        elif feed.get("official"):
-            if not matches_keywords(title, OFFICIAL_KEYWORDS):
-                continue
-        elif not matches_keywords(title + " " + description, KEYWORDS):
-            continue
 
         # Décodage du vrai lien pour les flux Google News, en réutilisant
         # le résultat des exécutions précédentes quand on l'a déjà.
@@ -336,9 +433,9 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # d'une exécution à l'autre, donc le cache touche presque à chaque
         # fois ; s'il rate, on décode comme avant (dégradation propre).
         source_link = None
-        if "news.google.com" in feed["url"]:
+        if est_google:
             cached = (decoded_cache or {}).get(link)
-            real_link = cached if cached else decode_google_news_link(link)
+            real_link = cached or resolus.get(link) or decode_google_news_link(link)
             if real_link != link:
                 source_link = link
         else:
@@ -389,12 +486,118 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
             "description": re.sub("<[^<]+?>", "", description)[:500],
         })
 
-    print(f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre")
-    return items, nouvel_etat
+    journal.append(f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre")
+    return items, nouvel_etat, journal
+
+
+def chaines_par_hote(feeds, par_hote=PER_HOST_LIMIT):
+    """Répartit les sources en files d'attente, au plus `par_hote` par domaine.
+
+    Chaque file est traitée séquentiellement par un fil ; les files, elles,
+    tournent en parallèle. Deux sources d'un même domaine ne partent donc
+    jamais à plus de `par_hote` en même temps — la politesse due au serveur
+    est tenue par construction, sans sémaphore et sans risque de famine.
+
+    Découpage déterministe : à liste de sources identique, mêmes files.
+    """
+    par_domaine = {}
+    for feed in feeds:
+        par_domaine.setdefault(urlparse(feed["url"]).netloc.lower(), []).append(feed)
+    chaines = []
+    for liste in par_domaine.values():
+        files = [[] for _ in range(min(par_hote, len(liste)))]
+        for rang, feed in enumerate(liste):
+            files[rang % len(files)].append(feed)
+        chaines.extend(files)
+    return chaines
+
+
+def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
+    """Interroge toutes les sources en parallèle. Renvoie {id: (items, info, journal)}.
+
+    Seul le TÉLÉCHARGEMENT est parallélisé. La fusion des résultats reste
+    faite par main() dans l'ordre de FEEDS : c'est cet ordre qui décide
+    quelle source « possède » un article et dans quel ordre les sources
+    supplémentaires s'empilent derrière lui. Le fichier produit est donc
+    identique à ce qu'il était en séquentiel.
+
+    `collecte` permet aux tests d'injecter une fausse récupération.
+    """
+    une = collecte or collect_feed_items
+    chaines = chaines_par_hote(feeds)
+
+    def traiter(chaine):
+        sortie = {}
+        for rang, feed in enumerate(chaine):
+            if rang:
+                # Politesse : jamais deux requêtes consécutives vers le même
+                # domaine sans marquer une pause.
+                time.sleep(HOST_PAUSE)
+            try:
+                sortie[feed["id"]] = une(feed, decoded_cache, http_state)
+            except Exception as e:
+                # Une source qui casse de façon imprévue ne doit pas emporter
+                # les 34 autres avec elle. En séquentiel, une exception non
+                # rattrapée ici arrêtait tout le passage.
+                sortie[feed["id"]] = ([], {"raw_count": 0, "not_modified": False},
+                                      [f"[{feed['name']}] récupération...",
+                                       f"  échec inattendu : {e}"])
+        return sortie
+
+    resultats = {}
+    with ThreadPoolExecutor(max_workers=min(FETCH_WORKERS, len(chaines) or 1)) as executor:
+        for bloc in executor.map(traiter, chaines):
+            resultats.update(bloc)
+    return resultats
+
+
+def merge_results(feeds, resultats, all_items, links_index, newly_added,
+                  decoded_cache=None, afficher=True):
+    """Fusionne les résultats des sources dans l'historique.
+
+    ORDRE CRITIQUE : on parcourt `feeds`, jamais l'ordre d'arrivée des
+    réponses réseau. C'est cet ordre qui détermine quelle source est retenue
+    comme propriétaire d'un article et dans quel ordre les sources
+    supplémentaires (badge « N SOURCES ») s'empilent derrière lui. Parcourir
+    dans l'ordre d'arrivée rendrait le fichier produit dépendant de la
+    vitesse des serveurs, donc différent d'un passage à l'autre.
+
+    Sorti de main() pour être testable : c'est ici que se joue l'équivalence
+    entre l'ancienne récupération séquentielle et la nouvelle, parallèle.
+
+    Modifie `all_items`, `links_index` et `newly_added` sur place.
+    Renvoie (feed_infos, new_counts, inchanges).
+    """
+    feed_infos = {}
+    new_counts = {}
+    inchanges = 0
+    for feed in feeds:
+        items, info, journal = resultats[feed["id"]]
+        if afficher:
+            for ligne in journal:
+                print(ligne)
+        feed_infos[feed["id"]] = info
+        if info.get("not_modified"):
+            inchanges += 1
+        new_counts[feed["id"]] = 0
+        for item in items:
+            deja = find_duplicate(item, all_items, links_index)
+            if deja is None:
+                all_items.append(item)
+                links_index[item["link"]] = item
+                newly_added.append(item)
+                new_counts[feed["id"]] += 1
+                if decoded_cache is not None and item.get("source_link"):
+                    decoded_cache[item["source_link"]] = item["link"]
+            else:
+                # Doublon : on ne le garde pas, mais on retient que cette
+                # source couvre aussi le sujet.
+                record_coverage(deja, item)
+    return feed_infos, new_counts, inchanges
 
 
 def fetch_missing_images(items):
-    """Récupère en parallèle (jusqu'à 5 à la fois) les miniatures manquantes.
+    """Récupère en parallèle (jusqu'à IMAGE_WORKERS à la fois) les miniatures manquantes.
 
     Appelée une seule fois par exécution, sur les seuls articles retenus
     après déduplication. En série avec un timeout de 8 s chacun, quelques
@@ -406,7 +609,7 @@ def fetch_missing_images(items):
 
     print(f"\nMiniatures manquantes à récupérer : {len(needing)} article(s)...")
     found = 0
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=IMAGE_WORKERS) as executor:
         future_to_item = {executor.submit(fetch_og_image, item["link"]): item for item in needing}
         for future in as_completed(future_to_item):
             item = future_to_item[future]
@@ -604,29 +807,15 @@ def main():
     if decoded_cache:
         print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) déjà résolu(s)")
 
-    feed_infos = {}
-    new_counts = {}
-    inchanges = 0
-    for feed in FEEDS:
-        items, info = collect_feed_items(feed, decoded_cache, http_state)
-        feed_infos[feed["id"]] = info
-        if info.get("not_modified"):
-            inchanges += 1
-        new_counts[feed["id"]] = 0
-        for item in items:
-            deja = find_duplicate(item, all_items, links_index)
-            if deja is None:
-                all_items.append(item)
-                links_index[item["link"]] = item
-                newly_added.append(item)
-                new_counts[feed["id"]] += 1
-                if item.get("source_link"):
-                    decoded_cache[item["source_link"]] = item["link"]
-            else:
-                # Doublon : on ne le garde pas, mais on retient que cette
-                # source couvre aussi le sujet.
-                record_coverage(deja, item)
-        time.sleep(1)  # anti rate-limit entre les sources
+    # Téléchargement des 35 sources en parallèle. Voir fetch_all_feeds :
+    # seul le réseau est parallélisé, la fusion qui suit reste séquentielle.
+    depart = time.time()
+    resultats = fetch_all_feeds(FEEDS, decoded_cache, http_state)
+    print(f"\n{len(FEEDS)} source(s) interrogée(s) en {time.time() - depart:.0f} s "
+          f"({FETCH_WORKERS} de front, {PER_HOST_LIMIT} max par domaine)\n")
+
+    feed_infos, new_counts, inchanges = merge_results(
+        FEEDS, resultats, all_items, links_index, newly_added, decoded_cache)
 
     chaudes = [i for i in all_items if is_hot(i)]
     chaudes_neuves = [i for i in newly_added if is_hot(i)]
