@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-29T20:40:39.531785+00:00",
-  "total_articles": 1299,
-  "new_this_run": 15,
-  "hot_count": 0,
-  "hot_threshold": 4,
+  "generated_at": "2026-08-29T21:02:07.757962+00:00",
+  "total_articles": 1301,
+  "new_this_run": 2,
+  "hot_count": 1,
+  "hot_threshold": 3,
   "sources_count": 50,
   "sources": [
     {
@@ -373,15 +373,15 @@
       "name": "Google News (FR)",
       "entries_fetched": 92,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T17:02:53+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-29T19:32:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 98,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:18:35+00:00",
@@ -451,8 +451,8 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "not_modified": false,
+      "entries_fetched": 0,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T17:45:42+00:00",
       "days_since_last_article": 1,
@@ -471,8 +471,8 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 10,
-      "not_modified": false,
+      "entries_fetched": 0,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T11:02:19+00:00",
       "days_since_last_article": 0,
@@ -481,19 +481,19 @@
     {
       "id": "ign",
       "name": "IGN",
-      "entries_fetched": 20,
+      "entries_fetched": 0,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T22:47:30+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "muette"
     },
     {
       "id": "gamespot",
       "name": "GameSpot",
       "entries_fetched": 30,
       "not_modified": false,
-      "new_this_run": 3,
+      "new_this_run": 0,
       "last_article": "2026-08-28T22:35:19+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -513,8 +513,8 @@
       "name": "Kotaku",
       "entries_fetched": 20,
       "not_modified": false,
-      "new_this_run": 3,
-      "last_article": "2026-08-28T23:00:13+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-29T20:39:51+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -523,7 +523,7 @@
       "name": "GamesRadar+",
       "entries_fetched": 50,
       "not_modified": false,
-      "new_this_run": 6,
+      "new_this_run": 0,
       "last_article": "2026-08-29T17:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -543,7 +543,7 @@
       "name": "Rock Paper Shotgun",
       "entries_fetched": 100,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-29T17:31:19+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -551,9 +551,9 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "not_modified": false,
-      "new_this_run": 1,
+      "entries_fetched": 0,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -591,8 +591,8 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "not_modified": true,
+      "entries_fetched": 13,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 0,
@@ -651,11 +651,11 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "not_modified": true,
+      "entries_fetched": 50,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T20:57:00+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -809,7 +809,9 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "ign": 1
+  },
   "feed_http_state": {
     "take2-ir": {
       "etag": "\"1786007541\"",
@@ -836,12 +838,12 @@
       "modified": null
     },
     "kotaku": {
-      "etag": "W/\"47b073971a1fc3c9bb09b192d3d34b0c\"",
-      "modified": "Sat, 29 Aug 2026 19:43:27 GMT"
+      "etag": "W/\"530deaf0939f660421c78004bce4973c\"",
+      "modified": "Sat, 29 Aug 2026 20:39:51 GMT"
     },
     "rps": {
       "etag": null,
-      "modified": "Sat, 29 Aug 2026 19:46:26 GMT"
+      "modified": "Sat, 29 Aug 2026 20:59:26 GMT"
     },
     "eurogamer": {
       "etag": null,
@@ -849,23 +851,23 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sat, 29 Aug 2026 20:35:23 GMT"
+      "modified": "Sat, 29 Aug 2026 21:00:48 GMT"
     },
     "ginjfo": {
       "etag": "\"1e36da6e5c29c8453b8a536212043c3a\"",
       "modified": "Sat, 29 Aug 2026 09:28:48 GMT"
     },
     "gameblog": {
-      "etag": "W/\"6a934158-3052\"",
-      "modified": "Sat, 29 Aug 2026 20:30:16 GMT"
+      "etag": "W/\"6a934861-3052\"",
+      "modified": "Sat, 29 Aug 2026 21:00:17 GMT"
     },
     "actugaming": {
       "etag": "W/\"c130ec6308e9de84b002577f613445ed\"",
       "modified": "Sat, 29 Aug 2026 19:54:55 GMT"
     },
     "gameinformer": {
-      "etag": "W/\"1788025452\"",
-      "modified": "Sat, 29 Aug 2026 17:44:12 GMT"
+      "etag": "W/\"1788036698\"",
+      "modified": "Sat, 29 Aug 2026 20:51:38 GMT"
     },
     "pcgamesn": {
       "etag": "W/\"1b6e183541a6972a43746a739c65bf47\"",
@@ -878,6 +880,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Phil Collins Returns To Vice City With An Ominous Song Choice For Jason And Lucia",
+      "link": "https://kotaku.com/phil-collins-returns-to-vice-city-with-an-ominous-song-choice-for-jason-and-lucia-2000729601",
+      "source_link": null,
+      "date": "2026-08-29T20:39:51+00:00",
+      "source": "Kotaku",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://kotaku.com/app/uploads/2026/08/philcollins.jpg",
+      "description": "On top of an extended glimpse at what the upcoming Grand Theft Auto VI will look like, Netflix gave a hint at what your crime spree playlist will sound like too"
+    },
+    {
+      "title": "Pourquoi Netflix s’invite dans l’univers de GTA 6 avec une avant-première hors norme - Journal des seniors",
+      "link": "https://journaldesseniors.20minutes.fr/loisirs/pourquoi-netflix-sinvite-dans-lunivers-de-gta-6-avec-une-avant-premiere-hors-norme/",
+      "source_link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNa2xkT19OMklkLVRmNTJocVFPN2QyTGFqSnlzSTZraTU1VjQxWHdvSGdDQnV6S3hxN1ktcTM5WjlSWTBsbkdvV3haQW5nMGJtTzV1bnAxUW1MaEc3bDlDbXpDcDFteTJ4bm5OWTQ5TXdCNG5Sdzdldm1iVklUNGFackhOeS1BelRhOGNtZ0JlQm95ZTVndHVoV0gxeUEwbVhDeVdPZjVOX0hUb3MzRWlLRkNZbmZjTWlIay1fSGh5OEVMVTRWRnVsVm1B?oc=5",
+      "date": "2026-08-29T19:32:01+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://journaldesseniors.20minutes.fr/wp-content/uploads/2026/08/pourquoi-netflix-sinvite-dans-lunivers-de-gta-6-avec-une-avant-premiere-hors-norme-featured-1787901180.jpg",
+      "description": "Pourquoi Netflix s’invite dans l’univers de GTA 6 avec une avant-première hors norme&nbsp;&nbsp;Journal des seniorsNetflix aurait payé 100 millions pour diffuser le trailer de GTA 6&nbsp;&nbsp;La RéclameOn a regardé le gameplay de GTA 6 diffusé sur Netflix : on fait le point !&nbsp;&nbsp;KonbiniGTA 6: la police ne va pas juste vous suivre, elle va vous traquer&nbsp;&nbsp;Pèse sur startGTA 6 : pourquoi je me suis ennuyé devant la bande-annonce&nbsp;&nbsp;Les NumériquesGTA 6 | De nombreux détails "
+    },
     {
       "title": "\"Absolutely Not\" Some TikTokers Aren't Letting Their Men Play GTA 6",
       "link": "https://gamerant.com/should-i-let-my-boyfriend-get-gta-6/",
@@ -4731,31 +4759,6 @@
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/08/27/gta6-romance-feature-blog-1787862386845.jpg?width=1280&format=jpg&auto=webp&quality=80",
       "description": ""
-    },
-    {
-      "title": "Poll: Are You Sold on GTA 6? - Push Square",
-      "link": "https://www.pushsquare.com/features/poll-are-you-sold-on-gta-6",
-      "source_link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9JTHNlUlg2V3RkZjA2b1RnbExvQXV0LXc0cFpod2tHTEpjVGVmQ3g5MUE1b0lvakF6aF9iLWRmNTUyX0xFdmoxY2xwMEEybUxVd2pZRzVHc0psamR3cXJhUUVsS3hHSnhwaFVLTlJ2TQ?oc=5",
-      "date": "2026-08-27T23:00:00+00:00",
-      "source": "Push Square",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://images.pushsquare.com/f206fd7e79059/large.jpg",
-      "description": "Poll: Are You Sold on GTA 6?&nbsp;&nbsp;Push Square"
-    },
-    {
-      "title": "GTA 6 Netflix extended look: Everything that was revealed - Mashable",
-      "link": "https://mashable.com/entertainment/gta-6-netflix-extended-look-everything-that-was-revealed",
-      "date": "2026-08-27T22:58:57+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://helios-i.mashable.com/imagery/articles/01OzJ26wOF4Ny2WxCh4wXHy/hero-image.fill.size_1200x675.v1787866369.jpg",
-      "description": "GTA 6 Netflix extended look: Everything that was revealed&nbsp;&nbsp;Mashable"
     }
   ],
   "partial": true,
