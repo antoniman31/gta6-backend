@@ -32,7 +32,13 @@ MAX_HISTORY_SIZE = 20000
 # Vit ici parce que trois modules en dépendent et doivent s'accorder :
 # fetch_feeds le publie dans feed.json (l'app y lit le seuil du badge), et
 # libelle_recap ci-dessous décide du ton de la notification.
-HOT_SOURCE_THRESHOLD = 4
+#
+# Abaissé de 4 à 3 le 29/08/2026. À 4, le badge était inatteignable : après
+# la correction du comptage (record_coverage n'ajoute une source que si elle
+# apporte un lien différent), le maximum réellement observé sur 1 299
+# articles est de 3 rédactions, et un seuil qu'aucun article n'atteint est
+# une fonction morte.
+HOT_SOURCE_THRESHOLD = 3
 
 FEED_PATH = "docs/feed.json"
 

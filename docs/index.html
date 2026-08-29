@@ -2451,8 +2451,10 @@ async function markAllRead(makeRead){
 let backendVapidKey = "";
 
 // Seuil de « grosse actu », fourni par le backend (hot_threshold) pour que
-// les deux restent cohérents sans le coder en dur des deux côtés.
-let hotThreshold = 4;
+// les deux restent cohérents sans le coder en dur des deux côtés. La valeur
+// ici n'est qu'un repli, le temps que feed.json réponde et pour le mode de
+// secours CORS : elle doit rester alignée sur HOT_SOURCE_THRESHOLD.
+let hotThreshold = 3;
 
 // L'app charge d'abord un fichier allégé (300 articles récents) pour ne
 // pas retélécharger tout l'historique à chaque ouverture sur mobile.
