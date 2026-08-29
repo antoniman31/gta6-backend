@@ -160,8 +160,9 @@ d'où le planificateur externe.
    avant correctif sur le vrai `feed.json` : 13 doublons manifestes dans
    les 400 articles les plus récents (dont des titres strictement
    identiques entre IGN et IGN France), et un compteur de sources plafonné
-   à 3 — donc un badge 🔥 réglé sur 4 qui n'a jamais pu s'afficher une
-   seule fois en 1 211 articles.
+   à 3 — donc un badge 🔥 alors réglé sur 4 qui n'a jamais pu s'afficher une
+   seule fois en 1 211 articles ; c'est ce constat qui a fait descendre le
+   seuil à 3 (voir plus bas).
 10. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
    les plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant très large. Au rythme observé
@@ -480,8 +481,12 @@ dits « croisés » n'étaient qu'un seul lien recompté**, et le premier badge 
 était un article du Newswire trouvé par quatre de nos propres requêtes. Après
 correctif : 32 articles réellement croisés (2,5 %), maximum 3 sources, aucun
 à 4 — 36 (2,8 %) au 29/08 après la bascule des flux rss.app, toujours 3 au
-maximum. Le seuil de 4 reste en place — il ne se déclenchera plus que sur une
-actu vraiment reprise partout, ce qui est son objet.
+maximum.
+
+**Le seuil est donc passé de 4 à 3** (`HOT_SOURCE_THRESHOLD`, le 29/08/2026).
+À 4, il était devenu inatteignable : un badge qu'aucun article ne peut
+déclencher n'est pas une garantie de rigueur, c'est une fonction morte. Le
+seuil vaut ce que vaut le comptage, et le comptage est désormais juste.
 
 `deduplique_couverture()` reprend l'historique déjà stocké, comme
 `recheck_official_status()` : sans elle, les 136 articles gonflés avant le
