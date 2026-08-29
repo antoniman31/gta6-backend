@@ -193,13 +193,12 @@ Les sources sont désormais réparties en **files d'attente par domaine**, et
 ces files tournent en parallèle :
 
 ```
-rss.app        →  file 1 ─┐
-(10 flux)         file 2 ─┤
-                  file 3 ─┤
-news.google    →  file 4 ─┤   jusqu'à FETCH_WORKERS (8)
-(6 flux)          file 5 ─┤   files en vol simultanément
-                  file 6 ─┤
-19 autres      →  1 file ─┘
+news.google    →  file 1 ─┐
+(20 flux)         file 2 ─┤   jusqu'à FETCH_WORKERS (8)
+                  file 3 ─┤   files en vol simultanément
+youtube.com    →  file 4 ─┤
+(2 flux)          file 5 ─┤
+28 autres      →  1 file ─┘
 domaines          chacun
 ```
 

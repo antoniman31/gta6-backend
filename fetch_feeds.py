@@ -60,8 +60,8 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # PER_HOST_LIMIT en même temps, quel que soit le nombre de fils.
 #
 # Ce découpage évite aussi la famine : avec un simple sémaphore par domaine,
-# les 8 fils pouvaient tous se retrouver bloqués sur rss.app (10 flux)
-# pendant que les 19 autres domaines attendaient leur tour.
+# les 8 fils pouvaient tous se retrouver bloqués sur news.google.com (20 flux
+# à lui seul) pendant que les 29 autres domaines attendaient leur tour.
 FETCH_WORKERS = 8       # sources traitées de front, tous domaines confondus
 PER_HOST_LIMIT = 3      # files simultanées pour un même domaine
 HOST_PAUSE = 1.0        # pause entre deux requêtes d'une même file
@@ -127,7 +127,27 @@ FEEDS = [
     {"id": "jvcom", "name": "Jeuxvideo.com", "url": "https://www.jeuxvideo.com/rss/rss.xml", "official": False, "lang": "fr"},
     {"id": "gamekult", "name": "Gamekult", "url": "https://www.gamekult.com/feed.xml", "official": False, "lang": "fr"},
     {"id": "ignfr", "name": "IGN France", "url": "https://fr.ign.com/feed.xml", "official": False, "lang": "fr"},
-    {"id": "rockstarmag", "name": "RockstarMag", "url": "https://rss.app/feeds/DLjO259X0dbIodkg.xml", "official": False, "rockstarmag": True, "specialist_source": True, "no_filter_at_all": True, "lang": "fr"},
+    # Les neuf sources qui suivent (RockstarMag, RockstarINTEL, IGN,
+    # GameSpot, Polygon, Kotaku, GamesRadar+, Rock Paper Shotgun, Eurogamer)
+    # passaient par rss.app. Le 29/08/2026 vers 13h00 UTC elles se sont tues
+    # toutes les neuf d'un coup : d'abord des flux valides mais vides, puis
+    # un franc HTTP 402 Payment Required — le quota du plan gratuit, pas une
+    # panne. Rien ne serait revenu tout seul.
+    #
+    # Chaque flux natif retenu ici a été VÉRIFIÉ depuis un runner GitHub
+    # (sonde_flux.py, 26 URL sondées) : il répond, il est frais, et on sait
+    # combien de ses entrées passent le filtre GTA 6. Deux pièges relevés au
+    # passage :
+    #   - RockstarINTEL DOIT rester sans « www » : les variantes www.
+    #     échouent au handshake TLS (TLSV1_ALERT_INTERNAL_ERROR) côté serveur.
+    #   - GameSpot : /feeds/news/ (30 entrées) et non /feeds/game-news/ (15),
+    #     qui donnait deux fois moins de GTA 6.
+    # Polygon est le seul dont aucune entrée récente ne passait le filtre —
+    # son flux est bien vivant, c'est leur couverture GTA 6 qui est rare.
+    #
+    # Bénéfice de structure : plus aucun point de défaillance unique à 18 %
+    # des sources, et 30 domaines distincts au lieu de 20.
+    {"id": "rockstarmag", "name": "RockstarMag", "url": "https://www.rockstarmag.fr/feed/", "official": False, "rockstarmag": True, "specialist_source": True, "no_filter_at_all": True, "lang": "fr"},
     # La chaîne YouTube du même média. rockstarmag=True la range dans son
     # onglet : le lien pointe vers youtube.com, donc le classement par
     # domaine ne peut pas la reconnaître — c'est le chemin « la source le
@@ -142,12 +162,12 @@ FEEDS = [
     {"id": "rockstarmag-youtube", "name": "RockstarMag (YouTube)",
      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmU6lJbZKzpAU_S1h6Ec-dg",
      "official": False, "rockstarmag": True, "specialist_source": True, "lang": "fr"},
-    {"id": "rockstarintel", "name": "RockstarINTEL", "url": "https://rss.app/feeds/SEi9eWoOTGKoeh2K.xml", "official": False, "specialist_source": True},
-    {"id": "ign", "name": "IGN", "url": "https://rss.app/feeds/h34hzwwy7imC3FZL.xml", "official": False},
-    {"id": "gamespot", "name": "GameSpot", "url": "https://rss.app/feeds/vjQBa27Dcc6PFmvy.xml", "official": False},
-    {"id": "polygon", "name": "Polygon", "url": "https://rss.app/feeds/cs8cjYH9LJUvrQxI.xml", "official": False},
-    {"id": "kotaku", "name": "Kotaku", "url": "https://rss.app/feeds/lxhehgdlVzWzuQMQ.xml", "official": False},
-    {"id": "gamesradar", "name": "GamesRadar+", "url": "https://rss.app/feeds/dhyjfZPgrCnv3JBq.xml", "official": False},
+    {"id": "rockstarintel", "name": "RockstarINTEL", "url": "https://rockstarintel.com/feed/", "official": False, "specialist_source": True},
+    {"id": "ign", "name": "IGN", "url": "https://feeds.ign.com/ign/games-all", "official": False},
+    {"id": "gamespot", "name": "GameSpot", "url": "https://www.gamespot.com/feeds/news/", "official": False},
+    {"id": "polygon", "name": "Polygon", "url": "https://www.polygon.com/rss/index.xml", "official": False},
+    {"id": "kotaku", "name": "Kotaku", "url": "https://kotaku.com/rss", "official": False},
+    {"id": "gamesradar", "name": "GamesRadar+", "url": "https://www.gamesradar.com/rss/", "official": False},
     # Flux Google News restreint au domaine plutôt que le flux maison :
     # celui de rss.app était un flux VG247 GÉNÉRALISTE. Il renvoyait
     # fidèlement 25 articles par passage — Nintendo, PlayStation, tout le
@@ -156,8 +176,8 @@ FEEDS = [
     # non plus arrivé via les autres flux, donc la couverture manquait
     # réellement.
     {"id": "vg247", "name": "VG247", "url": "https://news.google.com/rss/search?q=site:vg247.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "rps", "name": "Rock Paper Shotgun", "url": "https://rss.app/feeds/P80yvK0878prZ0RB.xml", "official": False},
-    {"id": "eurogamer", "name": "Eurogamer", "url": "https://rss.app/feeds/TR4mCR6nRT4S88lX.xml", "official": False},
+    {"id": "rps", "name": "Rock Paper Shotgun", "url": "https://www.rockpapershotgun.com/feed", "official": False},
+    {"id": "eurogamer", "name": "Eurogamer", "url": "https://www.eurogamer.net/feed", "official": False},
     {"id": "gtaboom", "name": "GTA BOOM", "url": "https://www.gtaboom.com/feed.xml", "official": False},
     {"id": "vgtimes", "name": "VGTimes", "url": "https://vgtimes.com/news/rss.xml", "official": False},
     {"id": "ginjfo", "name": "GinjFo", "url": "https://www.ginjfo.com/feed", "official": False, "lang": "fr"},
