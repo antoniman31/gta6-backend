@@ -312,14 +312,6 @@ en deçà du parallélisme gagné.
 - **`dedupe_history.py`** — passage unique de nettoyage, gardé pour
   mémoire et reproductibilité. Voir « Récupération en parallèle » pour le
   bug qu'il a servi à réparer côté données.
-- **`sonde_flux.py`** — outil de diagnostic manuel (Actions → « Sonder des
-  flux candidats »), en lecture seule : il n'écrit ni dans `FEEDS`, ni dans
-  `docs/`, ni sur disque. Interroge des URL candidates **comme le robot le
-  ferait** (même agent utilisateur, `passe_le_filtre` de `fetch_feeds`) et
-  sépare quatre échecs que `feedparser` confond — injoignable, pas un flux,
-  valide mais vide, refusé. Les runners GitHub ont l'accès réseau complet
-  que n'ont pas tous les environnements de développement, d'où le
-  workflow. Voir les Limites pour ce qu'il a permis de trancher.
 - **`push_notify.py`** — les notifications push natives, appelées au même
   moment. N'importe pas `pywebpush` au niveau du module : la construction
   du message et la lecture des abonnements restent testables sans la
@@ -928,8 +920,8 @@ commentaire).
   serait revenu.
 
   Les neuf sont passées aux **flux natifs des sites**, chaque URL vérifiée
-  au préalable depuis un runner GitHub (`sonde_flux.py`, 26 candidates
-  sondées) plutôt que devinée. Deux pièges que ce sondage a évités :
+  au préalable depuis un runner GitHub (une sonde jetable, 26 candidates
+  testées, supprimée une fois le choix fait) plutôt que devinée. Deux pièges que ce sondage a évités :
   RockstarINTEL doit rester **sans `www`** (les variantes `www.` échouent
   au handshake TLS côté serveur), et GameSpot rapporte deux fois plus sur
   `/feeds/news/` que sur `/feeds/game-news/`. Aucun doublon à la bascule :
@@ -941,8 +933,9 @@ commentaire).
   sur une panne réseau (il la range dans `bozo`, au même endroit qu'un XML
   mal formé) et avale une page HTML sans protester — `bozo` reste faux et
   la liste d'entrées est vide, **exactement comme un flux valide mais
-  vide**. Seul le champ `version` les sépare. C'est ce que `sonde_flux.py`
-  distingue, et pourquoi le script est conservé plutôt que jeté.
+  vide**. Seul le champ `version` les sépare. C'est cette distinction
+  qu'une sonde doit faire, et le premier réflexe si une source se tait à
+  nouveau : la refabriquer plutôt que deviner des URL de remplacement.
 - **GTAForums et GTA Base** — jamais intégrés, ces deux sites bloquent
   activement les accès automatisés, y compris depuis un vrai serveur (pas
   seulement un navigateur).
