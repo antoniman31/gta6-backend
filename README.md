@@ -415,6 +415,16 @@ aussitôt, sans relancer le robot. Tous les compteurs partent de
 `articlesVisibles()`, jamais de `lastItems` — un badge qui compterait les
 articles masqués annoncerait des non-lus introuvables.
 
+**Ce que `localStorage` conserve.** La copie locale des articles est
+plafonnée à **300**, la taille du fichier allégé. Elle ne sert qu'à afficher
+quelque chose à l'ouverture avant que le réseau réponde ; sans plafond elle
+suivait l'historique — 0,8 Mo pour 1260 articles, donc environ 13 Mo aux
+20 000 du backend, très au-delà du quota de 5 Mo. Un drapeau accompagne la
+troncature : sans lui, la liste restaurée au démarrage paraîtrait complète
+et une recherche renverrait « aucun résultat » pour un article qui existe.
+Un quota dépassé est désormais **signalé dans le journal** — il ne faisait
+qu'échouer les écritures en silence.
+
 **Badge sur l'icône de l'app.** `navigator.setAppBadge()` affiche le nombre
 de non-lus sur l'icône de l'écran d'accueil. L'API n'existe que pour une PWA
 installée et pas sur tous les navigateurs : absence, promesse rejetée et

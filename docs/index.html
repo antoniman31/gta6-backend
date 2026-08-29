@@ -540,10 +540,10 @@
     <div class="header-right">
       <div id="modeIndicator" class="mode-indicator"></div>
       <div class="header-actions">
-        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème">◐</button>
-        <button class="icon-btn" onclick="openSettings()" title="Paramètres" style="position:relative;">⚙<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
-        <button class="icon-btn" onclick="setTab('logs')" title="Logs" style="position:relative;">▤<span id="badgeLogs" class="logs-error-badge"></span></button>
-        <button class="icon-btn" onclick="openInfo()" title="Informations">ⓘ</button>
+        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">◐</button>
+        <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
+        <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">▤<span id="badgeLogs" class="logs-error-badge"></span></button>
+        <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ⓘ</button>
       </div>
     </div>
   </header>
@@ -969,6 +969,15 @@ const SEEN_COMPARE_WINDOW = 300;
 // localStorage, qui a une capacité limitée (~5 Mo).
 const MAX_SEEN_ENTRIES = 2000;
 
+// Nombre d'articles recopiés dans localStorage. Cette copie ne sert qu'à
+// afficher quelque chose à l'ouverture avant que le réseau réponde : 300
+// suffisent, c'est déjà la taille du fichier allégé que l'app charge en
+// premier. Sans plafond, le stockage grossissait avec l'historique — 0,8 Mo
+// pour 1260 articles, donc environ 13 Mo aux 20 000 du backend, très
+// au-delà du quota de 5 Mo. Le dépassement n'aurait rien affiché : il
+// n'aurait fait qu'échouer une écriture sur deux.
+const MAX_PERSISTED_ITEMS = 300;
+
 // Date exploitable pour un tri : une date absente ou illisible renvoie 0 au
 // lieu de NaN, qui rendrait l'ordre de tri imprévisible.
 function dateValue(d){
@@ -1042,12 +1051,23 @@ function storageGet(key){
     return null;
   }
 }
+let quotaSignale = false;
 function storageSet(key, value){
   try{
     localStorage.setItem(STORAGE_PREFIX + key, value);
     return true;
   }catch(e){
     console.error("Erreur écriture localStorage", key, e);
+    // Un quota dépassé faisait perdre la persistance sans le moindre signe
+    // visible. Signalé une seule fois par session : l'écriture échoue à
+    // chaque passage, et trois cents lignes identiques noieraient le
+    // journal au lieu de l'alerter.
+    if(!quotaSignale){
+      quotaSignale = true;
+      try{
+        addLog("fail", "Stockage local plein — préférences et articles ne sont plus sauvegardés sur cet appareil. Vide les données du site pour repartir sur une base saine.");
+      }catch(_){ /* addLog pas encore prêt : le console.error ci-dessus suffit */ }
+    }
     return false;
   }
 }
@@ -1090,6 +1110,11 @@ async function loadState(){
     if(itemsRes && itemsRes.value){
       lastItems = JSON.parse(itemsRes.value) || [];
       if(lastItems.length > 0) firstLoad = false; // évite de marquer tout comme "nouveau" au chargement pour des articles déjà connus
+      // La copie locale est plafonnée : le signaler tout de suite, sinon une
+      // recherche lancée avant la première réponse réseau chercherait dans
+      // 300 articles en se croyant exhaustive.
+      const coupeRes = storageGet("last-items-partial-v1");
+      if(coupeRes && coupeRes.value) historyPartial = true;
     }
   }catch(e){}
 
@@ -1142,8 +1167,15 @@ async function saveRead(){
   catch(e){ console.error("Erreur sauvegarde read", e); }
 }
 function saveLastItems(){
-  try{ storageSet("last-items-v1", JSON.stringify(lastItems)); }
-  catch(e){ console.error("Erreur sauvegarde derniers articles", e); }
+  try{
+    const garde = lastItems.slice(0, MAX_PERSISTED_ITEMS);
+    const tronque = lastItems.length > garde.length;
+    storageSet("last-items-v1", JSON.stringify(garde));
+    // Drapeau indispensable : sans lui, la liste restaurée au prochain
+    // démarrage paraîtrait complète alors qu'elle est coupée, et une
+    // recherche renverrait « aucun résultat » pour un article qui existe.
+    storageSet("last-items-partial-v1", tronque ? "1" : "");
+  }catch(e){ console.error("Erreur sauvegarde derniers articles", e); }
 }
 
 // ---------- Panneau Paramètres : UI ----------
@@ -1557,13 +1589,13 @@ async function checkFromBackend(force){
       const essai = await fetch(avecAntiCache(allege));
       if(essai.ok){
         const data = await essai.json();
-        addLog("info", `Lecture du backend (allégé) : ${allege}`);
+        addLog("info", `Lecture du backend (allégé) : ${escapeHtml(allege)}`);
         return await applyBackendData(data, allege);
       }
     }catch(e){ /* pas de fichier allégé : on prend le complet */ }
   }
 
-  addLog("info", `Lecture directe du backend : ${url}`);
+  addLog("info", `Lecture directe du backend : ${escapeHtml(url)}`);
   const res = await fetch(avecAntiCache(url));
   if(!res.ok) throw new Error("HTTP " + res.status);
   const data = await res.json();
@@ -1863,6 +1895,9 @@ function setLang(l){
   document.getElementById("tabLangAll").classList.toggle("active", l === "all");
   document.getElementById("tabFr").classList.toggle("active", l === "fr");
   document.getElementById("tabEn").classList.toggle("active", l === "en");
+  // setFilter rafraîchissait le badge, pas setLang : compter la langue ne
+  // suffisait pas, encore fallait-il recompter au moment où elle change.
+  updateActiveFiltersCount();
   applyFilters();
 }
 
@@ -1892,7 +1927,13 @@ function updateActiveFiltersCount(){
   // sans avoir à ouvrir le panneau pour savoir si un filtre est appliqué.
   let count = 0;
   if(currentFilter !== "all") count++;
-  if(settings.denseMode) count++;
+  // La langue était oubliée : en « News FR », le fil était filtré sans que
+  // rien ne le signale — exactement ce que ce badge existe pour éviter.
+  if(currentLang !== "all") count++;
+  // Le mode dense ne compte pas : c'est un mode d'affichage, pas un filtre,
+  // et « Réinitialiser les filtres » ne le touche pas volontairement. Le
+  // compter laissait le badge à 1 après une réinitialisation, sans qu'on
+  // puisse deviner ce qui résistait.
   const badge = document.getElementById("activeFiltersCount");
   badge.textContent = count > 0 ? count : "";
 }
@@ -2565,14 +2606,7 @@ function copyFieldValue(id, btn){
 }
 
 function copyPushSubscription(btn){
-  const texte = document.getElementById("pushSubscriptionText").value;
-  navigator.clipboard.writeText(texte).then(() => {
-    if(btn){
-      const original = btn.textContent;
-      btn.textContent = "copié";
-      setTimeout(() => { btn.textContent = original; }, 1500);
-    }
-  }).catch(() => prompt("Copie l'abonnement :", texte));
+  copyFieldValue("pushSubscriptionText", btn);
 }
 
 // ---------- Déclenchement à distance du robot ----------
