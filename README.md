@@ -415,6 +415,25 @@ aussitôt, sans relancer le robot. Tous les compteurs partent de
 `articlesVisibles()`, jamais de `lastItems` — un badge qui compterait les
 articles masqués annoncerait des non-lus introuvables.
 
+**Les onglets classent par éditeur, pas par source.** Un article est
+« Rockstar » si son lien est sur `rockstargames.com` ou `take2games.com`,
+« RockstarMag » s'il est sur `rockstarmag.fr` — quelle que soit la source qui
+l'a trouvé. La déclaration de la source reste honorée en complément, ce qui
+couvre la chaîne YouTube de Rockstar : ses liens pointent légitimement vers
+youtube.com, domaine impossible à mettre dans la liste globale sans rendre
+officielle n'importe quelle vidéo.
+
+Avant, le drapeau était recopié depuis le flux : un article du Newswire ou de
+Rockstar Mag remonté par Google News atterrissait dans « Non Rockstar ». Comme
+la déduplication garde le premier trouvé, **le même article changeait d'onglet
+selon le flux qui gagnait la course**. Cinq articles étaient concernés dans
+l'historique.
+
+La repasse rétroactive `recheck_official_status()` corrige désormais **dans
+les deux sens**. Ne rétrograder que les faux officiels laissait le défaut
+inverse à l'abandon : l'historique n'est jamais rejoué dans le pipeline de
+collecte, donc rien ne serait jamais venu chercher les articles mal classés.
+
 **Le badge du bouton « Filtres ».** Il dit qu'un filtre est appliqué sans
 avoir à ouvrir le panneau. La langue s'y affiche par son **drapeau** plutôt
 que comptée — un « 1 » dit qu'il se passe quelque chose, un drapeau dit quoi.

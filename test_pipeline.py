@@ -971,6 +971,83 @@ def test_predecode_google_news():
     finally:
         fetch_feeds.decode_google_news_link = vrai
 
+
+def test_onglets_par_domaine():
+    print("\n[onglets] le classement suit l'éditeur, pas la source qui a trouvé")
+    import fetch_feeds
+
+    gnews_fr = next(f for f in fetch_feeds.FEEDS if f["id"] == "gnews-fr")
+    gnews_en = next(f for f in fetch_feeds.FEEDS if f["id"] == "gnews-en")
+    rmag = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstarmag")
+    yt = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstar-youtube")
+
+    # Le défaut d'origine : Google News trouve un article du Newswire, et il
+    # atterrit dans « Non Rockstar » parce que la SOURCE n'est pas officielle.
+    newswire = "https://www.rockstargames.com/newswire/article/517oa1/gta-vi-pre-orders"
+    check(fetch_feeds.statut_officiel(newswire, gnews_en),
+          "un lien Newswire trouvé par Google News est officiel")
+    check(fetch_feeds.statut_officiel(newswire, None),
+          "il l'est même sans source connue : le domaine suffit")
+    check(fetch_feeds.statut_officiel("https://ir.take2games.com/news/x", gnews_en),
+          "Take-Two aussi")
+
+    # Symétrique pour Rockstar Mag.
+    art_rmag = "https://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/"
+    check(fetch_feeds.statut_rockstarmag(art_rmag, gnews_fr),
+          "un article rockstarmag.fr trouvé par Google News va dans son onglet")
+    check(fetch_feeds.statut_rockstarmag(art_rmag, None),
+          "le domaine suffit là aussi")
+    check(fetch_feeds.statut_rockstarmag("https://www.jeuxvideo.com/news/x", rmag),
+          "la déclaration de source reste honorée si le lien sort du domaine")
+
+    # Et surtout : aucune contamination.
+    check(not fetch_feeds.statut_officiel("https://www.ign.com/articles/gta-6", gnews_en),
+          "un article IGN ne devient pas officiel")
+    check(not fetch_feeds.statut_rockstarmag("https://www.ign.com/articles/gta-6", gnews_en),
+          "ni RockstarMag")
+    check(not fetch_feeds.statut_officiel("https://www.youtube.com/watch?v=abc", gnews_en),
+          "une vidéo YouTube trouvée par Google News n'est PAS officielle")
+    check(fetch_feeds.statut_officiel("https://www.youtube.com/watch?v=abc", yt),
+          "mais elle l'est venant de la chaîne de Rockstar, qui déclare ce domaine")
+    check(not fetch_feeds.statut_officiel("", gnews_en),
+          "un lien vide ne fait rien passer")
+
+    # La repasse rétroactive corrige DANS LES DEUX SENS. Ne rétrograder que
+    # les faux officiels laissait les vrais non détectés à l'abandon :
+    # l'historique n'est jamais rejoué dans le pipeline de collecte.
+    historique = [
+        # à promouvoir : publiés par Rockstar / Rockstar Mag, trouvés ailleurs
+        {"source": "Google News (EN)", "link": newswire, "official": False, "rockstarmag": False},
+        {"source": "Google News (FR)", "link": art_rmag, "official": False, "rockstarmag": False},
+        # à rétrograder : marqué officiel alors que le lien ne l'est pas
+        {"source": "Rockstar Games (officiel EN)", "link": "https://www.ign.com/a",
+         "official": True, "rockstarmag": False},
+        # à laisser tel quel
+        {"source": "Rockstar Games (YouTube)", "link": "https://www.youtube.com/watch?v=abc",
+         "official": True, "rockstarmag": False},
+        {"source": "PC Gamer", "link": "https://www.pcgamer.com/gta6",
+         "official": False, "rockstarmag": False},
+        # source disparue de FEEDS (ancien nom) : jugée sur son seul domaine
+        {"source": "RockstarMag.fr", "link": art_rmag, "official": False, "rockstarmag": True},
+    ]
+    fetch_feeds.recheck_official_status(historique)
+    check(historique[0]["official"] is True, "le Newswire est promu officiel rétroactivement")
+    check(historique[1]["rockstarmag"] is True, "l'article Rockstar Mag est promu rétroactivement")
+    check(historique[2]["official"] is False, "le faux officiel est toujours rétrogradé")
+    check(historique[3]["official"] is True, "la vidéo de la chaîne garde son statut")
+    check(historique[4]["official"] is False and historique[4]["rockstarmag"] is False,
+          "un article tiers reste dans « Non Rockstar »")
+    check(historique[5]["rockstarmag"] is True,
+          "une source renommée garde son onglet grâce au domaine")
+
+    # Un article ne doit jamais tomber dans deux onglets : les trois filtres
+    # de l'app (official / rockstarmag / ni l'un ni l'autre) se partagent le
+    # fil, et un doublon fausserait les compteurs.
+    for item in historique:
+        check(not (item["official"] and item["rockstarmag"]),
+              f"pas de double appartenance : {item['source']}")
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -979,6 +1056,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_masquage_endpoint,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
+           test_onglets_par_domaine,
            test_garde_fou_archives,
            test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,
