@@ -17,7 +17,7 @@ Trois briques, aucun serveur à gérer :
 cron-job.org (toutes les 30 min)          ← horloge principale
         │  POST /dispatches
         ▼
-GitHub Actions  ◄── cron GitHub "7,37"    ← filet de secours, best-effort
+GitHub Actions  ◄── cron GitHub "37"      ← filet de secours, best-effort
         │
         ▼
   fetch_feeds.py  ──►  docs/feed.json          ──►  GitHub Pages  ──►  docs/index.html (PWA)
@@ -329,7 +329,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **224
+qui permet de tester tout le pipeline sans sortir de la machine. **271
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -414,6 +414,22 @@ un article. Le masquage a lieu **à l'affichage** et non à la collecte :
 aussitôt, sans relancer le robot. Tous les compteurs partent de
 `articlesVisibles()`, jamais de `lastItems` — un badge qui compterait les
 articles masqués annoncerait des non-lus introuvables.
+
+**La détection de doublons passe d'abord par le titre exact.** Un
+dictionnaire titre normalisé -> article, sans limite d'ancienneté, avant la
+comparaison floue. La fenêtre floue se compte en **articles** (200), pas en
+heures : lors d'un pic à 288 articles par jour elle ne couvre plus que douze
+heures, et onze paires de doublons parfaits lui avaient échappé au 29/08 —
+le même article sous deux URL (`ign.com` et `fr.ign.com`, `bbc.com` et
+`bbc.co.uk`). Un dictionnaire n'a ni coût ni horizon, là où élargir la
+fenêtre ne ferait que déplacer la limite.
+
+`fusionne_doublons_de_titre()` reprend l'historique déjà stocké, comme les
+deux autres passes rétroactives. Elle s'en tient au **titre exact** : rejouer
+le seuil de 0,75 sur tout l'historique fusionnerait des articles réellement
+distincts — « Our GTA 6 Extended Look Predictions » et « How Our GTA 6
+Extended Look Predictions Held Up » passent le seuil alors que l'un annonce
+ce que l'autre conclut. Le doute profite à la séparation.
 
 **« N sources » compte des rédactions, pas des flux.** `record_coverage()`
 n'ajoute une source supplémentaire que si elle apporte un **lien différent**.

@@ -347,7 +347,8 @@ HOT_SOURCE_THRESHOLD = feed_store.HOT_SOURCE_THRESHOLD
 # le régénérer avec exactement la même règle après un conflit de push.
 
 
-def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None):
+def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None,
+                   titles_index=None):
     """Renvoie l'article déjà connu dont celui-ci est un doublon, ou None.
 
     Renvoie l'article plutôt qu'un simple booléen : quand plusieurs
@@ -356,15 +357,25 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None):
     sources qui en parlent, qui est le meilleur indicateur qu'il se passe
     quelque chose d'important.
 
-    links_index : correspondance lien -> article, pour un accès direct au
-    lieu de reparcourir toute la liste. Si absente, comparaison à
-    l'ancienne (plus lente mais correcte).
+    Trois passes, de la moins chère à la plus chère :
 
-    fenetre_titres : liste des articles auxquels comparer le TITRE. Doit
-    être fournie par l'appelant, qui seul sait ce qui a déjà été ajouté
-    pendant le passage en cours. À défaut, on retombe sur les premiers
-    éléments de `existing_items` — le comportement d'origine, conservé
-    pour les appels directs, mais qui ne voit pas les articles du passage.
+    1. `links_index` — correspondance lien -> article. Deux flux qui
+       remontent exactement la même URL.
+
+    2. `titles_index` — correspondance titre normalisé -> article, SANS
+       limite d'ancienneté. C'est ce qui rattrape le même article publié
+       sous deux URL (ign.com et fr.ign.com, bbc.com et bbc.co.uk) : la
+       fenêtre de la passe 3 se compte en articles, pas en heures, et lors
+       d'un pic à 288 articles/jour elle ne couvre plus que douze heures.
+       Onze paires de doublons parfaits avaient ainsi échappé à la
+       détection dans l'historique du 29/08. Un dictionnaire n'a ni coût ni
+       horizon, là où élargir la fenêtre ne ferait que déplacer la limite.
+
+    3. `fenetre_titres` — comparaison floue, pour les titres seulement
+       PROCHES. Doit être fournie par l'appelant, qui seul sait ce qui a
+       déjà été ajouté pendant le passage en cours. À défaut, on retombe
+       sur les premiers éléments de `existing_items` — le comportement
+       d'origine, conservé pour les appels directs.
     """
     if links_index is not None:
         connu = links_index.get(item["link"])
@@ -374,6 +385,15 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None):
         for other in existing_items:
             if item["link"] == other["link"]:
                 return other
+
+    if titles_index is not None:
+        # Un titre vide ne prouve rien : deux articles sans titre ne sont
+        # pas le même article, et les fusionner ferait disparaître le second.
+        cle = normalize_title(item.get("title", ""))
+        if cle:
+            connu = titles_index.get(cle)
+            if connu is not None:
+                return connu
 
     a_comparer = (fenetre_titres if fenetre_titres is not None
                   else existing_items[:TITLE_SIMILARITY_WINDOW])
@@ -809,6 +829,15 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
     # est garanti ici plutôt que documenté.
     fenetre = feed_store.sort_items(all_items)[:TITLE_SIMILARITY_WINDOW]
 
+    # Index par titre exact sur TOUT l'historique, pas seulement la fenêtre.
+    # Le premier inscrit gagne : l'ordre de FEEDS décide déjà quelle source
+    # possède un article, et setdefault préserve cette règle.
+    titles_index = {}
+    for connu in all_items:
+        cle = normalize_title(connu.get("title", ""))
+        if cle:
+            titles_index.setdefault(cle, connu)
+
     feed_infos = {}
     new_counts = {}
     inchanges = 0
@@ -822,13 +851,16 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
             inchanges += 1
         new_counts[feed["id"]] = 0
         for item in items:
-            deja = find_duplicate(item, all_items, links_index, fenetre)
+            deja = find_duplicate(item, all_items, links_index, fenetre, titles_index)
             if deja is None:
                 all_items.append(item)
-                # L'article rejoint la fenêtre : le suivant du même passage
-                # lui sera comparé, quelle que soit sa source.
+                # L'article rejoint la fenêtre ET l'index : le suivant du
+                # même passage lui sera comparé, quelle que soit sa source.
                 fenetre.append(item)
                 links_index[item["link"]] = item
+                cle = normalize_title(item.get("title", ""))
+                if cle:
+                    titles_index.setdefault(cle, item)
                 newly_added.append(item)
                 new_counts[feed["id"]] += 1
                 if decoded_cache is not None and item.get("source_link"):
@@ -1060,6 +1092,45 @@ def recheck_official_status(items):
     return items
 
 
+def fusionne_doublons_de_titre(items):
+    """Fusionne les articles déjà stockés qui portent le MÊME titre exact.
+
+    L'historique n'est jamais rejoué dans le pipeline de collecte : les
+    doublons entrés avant l'ajout de l'index par titre y resteraient
+    indéfiniment. Onze paires étaient dans ce cas au 29/08 — le même article
+    sous deux URL (ign.com et fr.ign.com, bbc.com et bbc.co.uk), séparés par
+    plus que ce que la fenêtre floue pouvait couvrir pendant un pic.
+
+    Titre exact UNIQUEMENT, jamais la similarité floue. Rejouer le seuil de
+    0,75 sur tout l'historique fusionnerait des articles réellement
+    distincts : « Our GTA 6 Extended Look Predictions » et « How Our GTA 6
+    Extended Look Predictions Held Up » passent le seuil alors que l'un
+    annonce ce que l'autre conclut. Le doute profite à la séparation.
+
+    Le plus ANCIEN est conservé : c'est la publication d'origine, et sa date
+    est celle qui situe l'actualité. Le plus récent devient une source
+    supplémentaire.
+    """
+    chronologique = sorted(items, key=lambda i: feed_store.parse_date_key(i.get("date")))
+    par_titre = {}
+    fusionnes = set()
+    for item in chronologique:
+        cle = normalize_title(item.get("title", ""))
+        if not cle:
+            continue
+        garde = par_titre.get(cle)
+        if garde is None:
+            par_titre[cle] = item
+        else:
+            record_coverage(garde, item)
+            fusionnes.add(id(item))
+    if not fusionnes:
+        return items
+    restants = [i for i in items if id(i) not in fusionnes]
+    print(f"Correction rétroactive : {len(fusionnes)} doublon(s) de titre fusionné(s) dans l'historique")
+    return restants
+
+
 def build_sources_health(all_items, feed_infos, new_counts):
     """Dresse l'état de chaque source, pour repérer un flux mort.
 
@@ -1148,6 +1219,7 @@ def main():
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
+    existing_items = fusionne_doublons_de_titre(existing_items)
 
     # Repasse rétroactive des dates : l'historique est rechargé tel quel et
     # ne repasse jamais dans le pipeline de collecte, donc les articles

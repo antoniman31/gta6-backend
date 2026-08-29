@@ -253,7 +253,6 @@ def test_push_payload():
     # L'exigence de fond : Discord et le push disent MOT POUR MOT la même
     # chose. Garanti par construction (un seul libellé), vérifié ici pour
     # que la garantie ne saute pas en silence si quelqu'un la contourne.
-    import discord_notify
     for lot in ([{"title": "a", "official": True}],
                 [{"title": "a", "official": False}, {"title": "b", "official": True}],
                 [{"title": str(i), "official": False} for i in range(7)]):
@@ -376,7 +375,6 @@ def test_push_masquage_endpoint():
 
     # Même défaut, même correctif : le webhook Discord est un secret de la
     # même nature (qui l'a peut publier sur le salon).
-    import discord_notify
     webhook = "https://discord.com/api/webhooks/123456789/cLE_JETON_SECRET_DU_SALON"
     reel_discord = ("HTTPSConnectionPool(host='discord.com', port=443): "
                     "Max retries exceeded with url: /api/webhooks/123456789/"
@@ -1127,6 +1125,69 @@ def test_couverture_par_lien():
           "rejouer la passe est sans effet")
 
 
+
+def test_doublons_de_titre():
+    print("\n[doublons] même titre exact, quelle que soit l'ancienneté")
+    import fetch_feeds
+
+    # Le cas réel : le même article sous deux URL, découvert par deux flux à
+    # des heures différentes. La fenêtre floue se compte en ARTICLES, pas en
+    # heures : lors d'un pic à 288 articles/jour elle ne couvre plus que
+    # douze heures, et ces paires lui échappaient.
+    a = {"title": "We've Seen GTA 6 Gameplay IRL", "link": "https://ign.com/a",
+         "source": "IGN", "date": "2026-08-28T01:07:00+00:00"}
+    b = {"title": "We’ve Seen GTA 6 Gameplay IRL", "link": "https://fr.ign.com/b",
+         "source": "IGN France", "date": "2026-08-28T01:07:00+00:00"}
+    index = {fetch_feeds.normalize_title(a["title"]): a}
+    # Fenêtre VIDE : c'est tout l'intérêt, l'index n'a pas d'horizon.
+    check(fetch_feeds.find_duplicate(b, [a], {a["link"]: a}, [], index) is a,
+          "reconnu alors que la fenetre floue ne le voyait plus")
+    check(fetch_feeds.find_duplicate(b, [a], {a["link"]: a}, []) is None,
+          "sans l'index, il passait entre les mailles — le défaut d'origine")
+
+    # Un titre vide ne prouve rien : deux articles sans titre ne sont pas le
+    # même article, et les fusionner ferait disparaître le second.
+    v1 = {"title": "", "link": "https://x.fr/1", "source": "A"}
+    v2 = {"title": "", "link": "https://x.fr/2", "source": "B"}
+    check(fetch_feeds.find_duplicate(v2, [v1], {v1["link"]: v1}, [], {"": v1}) is None,
+          "deux titres vides ne fusionnent pas")
+
+    # --- Reprise de l'historique ---
+    hist = [
+        {"title": "Même titre", "link": "https://a.fr/1", "source": "A", "date": "2026-08-02T00:00:00+00:00"},
+        {"title": "MÊME TITRE !", "link": "https://b.fr/2", "source": "B", "date": "2026-08-01T00:00:00+00:00"},
+        {"title": "Autre sujet", "link": "https://c.fr/3", "source": "C", "date": "2026-08-03T00:00:00+00:00"},
+        {"title": "", "link": "https://d.fr/4", "source": "D", "date": "2026-08-04T00:00:00+00:00"},
+        {"title": "", "link": "https://e.fr/5", "source": "E", "date": "2026-08-05T00:00:00+00:00"},
+    ]
+    r = fetch_feeds.fusionne_doublons_de_titre(list(hist))
+    check(len(r) == 4, "une seule fusion sur cinq articles")
+    garde = next(i for i in r if i["link"] == "https://b.fr/2")
+    check(garde is not None, "c'est le PLUS ANCIEN qui est conservé")
+    check([e["source"] for e in garde.get("extraSources") or []] == ["A"],
+          "le plus récent devient une source supplémentaire")
+    check(sum(1 for i in r if i["title"] == "") == 2,
+          "les deux titres vides survivent tous les deux")
+
+    # Idempotence : rejouer la passe ne doit plus rien changer.
+    r2 = fetch_feeds.fusionne_doublons_de_titre(list(r))
+    check(len(r2) == len(r), "rejouer la passe est sans effet")
+
+    # Jamais de fusion floue rétroactive : deux titres proches mais distincts
+    # doivent rester séparés, même au-dessus du seuil de similarité.
+    proches = [
+        {"title": "Our GTA 6 Extended Look Predictions", "link": "https://g.fr/1",
+         "source": "GTA BOOM", "date": "2026-08-01T00:00:00+00:00"},
+        {"title": "How Our GTA 6 Extended Look Predictions Held Up", "link": "https://g.fr/2",
+         "source": "GTA BOOM", "date": "2026-08-02T00:00:00+00:00"},
+    ]
+    check(fetch_feeds.title_similarity(proches[0]["title"], proches[1]["title"])
+          >= fetch_feeds.SIMILARITY_THRESHOLD,
+          "ces deux titres passent pourtant le seuil de similarité")
+    check(len(fetch_feeds.fusionne_doublons_de_titre(list(proches))) == 2,
+          "et restent malgré tout séparés : le doute profite à la séparation")
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -1136,6 +1197,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
            test_onglets_par_domaine, test_couverture_par_lien,
+           test_doublons_de_titre,
            test_garde_fou_archives,
            test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,
