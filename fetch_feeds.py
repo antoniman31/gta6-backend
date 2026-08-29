@@ -125,6 +125,40 @@ FEEDS = [
     {"id": "gameinformer", "name": "Game Informer", "url": "https://gameinformer.com/news.xml", "official": False},
     {"id": "pcgamesn", "name": "PCGamesN", "url": "https://www.pcgamesn.com/mainrss.xml", "official": False},
     {"id": "vgc", "name": "VGC", "url": "https://www.videogameschronicle.com/category/news/feed/", "official": False},
+
+    # ------------------------------------------------------------------
+    # Sources ajoutées le 29/08/2026.
+    #
+    # Toutes passent par une recherche Google News restreinte au domaine
+    # plutôt que par le flux RSS natif de chaque site. Ce n'est pas un
+    # choix esthétique : les adresses de flux natives n'étaient pas
+    # vérifiables au moment de l'ajout, alors que ce format-là est déjà
+    # éprouvé par sept sources en production. Une recherche qui ne renvoie
+    # rien (domaine erroné) fait basculer la source en « muette » et
+    # déclenche l'alerte de source morte sous trois heures — l'erreur se
+    # signale donc d'elle-même.
+    #
+    # Le garde-fou MAX_ARTICLE_AGE_DAYS est indispensable ici : ces
+    # recherches classent par pertinence et remontent volontiers des
+    # archives de plusieurs années.
+    # ------------------------------------------------------------------
+    {"id": "xboxygen", "name": "Xboxygen", "url": "https://news.google.com/rss/search?q=site:xboxygen.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "xboxmag", "name": "Xbox-Mag", "url": "https://news.google.com/rss/search?q=site:xbox-mag.net+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "purexbox", "name": "Pure Xbox", "url": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "xboxera", "name": "XboxEra", "url": "https://news.google.com/rss/search?q=site:xboxera.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "xboxwire", "name": "Xbox Wire", "url": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "trueach", "name": "TrueAchievements", "url": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "millenium", "name": "Millenium", "url": "https://news.google.com/rss/search?q=site:millenium.gg+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "jdg", "name": "Journal du Geek", "url": "https://news.google.com/rss/search?q=site:journaldugeek.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "numerama", "name": "Numerama", "url": "https://news.google.com/rss/search?q=site:numerama.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "gamergen", "name": "Gamergen", "url": "https://news.google.com/rss/search?q=site:gamergen.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "frandroid", "name": "Frandroid", "url": "https://news.google.com/rss/search?q=site:frandroid.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "theverge", "name": "The Verge", "url": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "engadget", "name": "Engadget", "url": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "arstechnica", "name": "Ars Technica", "url": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "pushsquare", "name": "Push Square", "url": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "reddit-gta6", "name": "Reddit r/GTA6", "url": "https://www.reddit.com/r/GTA6/top/.rss?t=day", "official": False},
+    {"id": "schreier", "name": "Jason Schreier", "url": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en&gl=US&ceid=US:en", "official": False},
 ]
 
 # Liste enrichie fournie par l'utilisateur (139 mots-clés) — remplace
@@ -296,6 +330,22 @@ def normalize_date(entry):
     return raw if parsed == feed_store.DATE_FLOOR else parsed.isoformat()
 
 
+def trop_vieux(date_iso, maintenant=None):
+    """L'article est-il une archive plutôt qu'une nouvelle ?
+
+    Renvoie False quand la date est absente ou illisible : dans le doute on
+    garde. Rejeter un article parce qu'on ne sait pas le dater reviendrait
+    à vider les flux qui ne fournissent pas de date propre.
+    """
+    if not date_iso:
+        return False
+    quand = feed_store.parse_date_key(date_iso)
+    if quand == feed_store.DATE_FLOOR:
+        return False
+    maintenant = maintenant or datetime.now(timezone.utc)
+    return (maintenant - quand).days > MAX_ARTICLE_AGE_DAYS
+
+
 def passe_le_filtre(feed, title, description):
     """Décide si une entrée du flux est retenue.
 
@@ -438,11 +488,18 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
                                   decoded_cache, journal)
 
     items = []
+    vieux = 0
     for entry in retenues:
         title = entry.get("title", "")
         link = entry.get("link", "")
         date = normalize_date(entry)
         description = entry.get("summary", "")
+
+        # Écarté AVANT le décodage Google News : inutile de payer une
+        # seconde de décodage pour un article qu'on ne gardera pas.
+        if trop_vieux(date):
+            vieux += 1
+            continue
 
         # Décodage du vrai lien pour les flux Google News, en réutilisant
         # le résultat des exécutions précédentes quand on l'a déjà.
@@ -503,7 +560,12 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
             "description": re.sub("<[^<]+?>", "", description)[:500],
         })
 
-    journal.append(f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre")
+    resume = f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre"
+    if vieux:
+        # Rendu visible : c'est le signe qu'une source déverse ses archives,
+        # et donc qu'il faut regarder si son flux est bien réglé.
+        resume += f" ({vieux} archive(s) de plus de {MAX_ARTICLE_AGE_DAYS} jours écartée(s))"
+    journal.append(resume)
     return items, nouvel_etat, journal
 
 
@@ -685,6 +747,22 @@ MAX_HISTORY_SIZE = feed_store.MAX_HISTORY_SIZE
 # communiquent peu, il est normal qu'ils restent muets des semaines — mais
 # sans ce signal un flux réellement mort passerait inaperçu indéfiniment.
 SILENT_SOURCE_DAYS = 30
+
+# Âge maximal d'un article JAMAIS VU pour être importé.
+#
+# Un article vieux de plusieurs mois découvert aujourd'hui n'est pas une
+# nouvelle : c'est une archive. Le robot l'annoncerait pourtant comme
+# « nouvel article », sur Discord et sur le téléphone.
+#
+# Le cas s'est produit le 29/08/2026 en changeant le flux VG247 : une
+# recherche Google News restreinte à un domaine classe par PERTINENCE, pas
+# par date, et a remonté 8 articles de 2022 à 2024 — annoncés comme neufs.
+# Sans ce garde-fou, ajouter une source revient à déverser ses archives.
+#
+# Ne s'applique QU'AUX articles dont la date est réellement lisible : un
+# flux sans date exploitable continue de passer, sinon on rejetterait tout
+# son contenu en le prenant pour du 1ᵉʳ janvier 1970.
+MAX_ARTICLE_AGE_DAYS = 45
 
 # Nombre de passages consécutifs sans la moindre entrée brute avant de
 # signaler une source comme tombée. À 30 minutes par passage, 6 font trois

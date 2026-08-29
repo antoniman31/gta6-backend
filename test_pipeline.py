@@ -691,6 +691,44 @@ def test_suivi_sources_muettes():
           "une source « tarie » (vivante mais sans actu) n'est pas une panne")
 
 
+def test_garde_fou_archives():
+    print("\n[collecte] les archives ne sont pas des nouvelles")
+    import fetch_feeds
+    from datetime import datetime, timedelta, timezone
+
+    maintenant = datetime(2026, 8, 29, 12, 0, tzinfo=timezone.utc)
+    plafond = fetch_feeds.MAX_ARTICLE_AGE_DAYS
+
+    def il_y_a(jours):
+        return (maintenant - timedelta(days=jours)).isoformat()
+
+    check(not fetch_feeds.trop_vieux(il_y_a(0), maintenant), "un article du jour passe")
+    check(not fetch_feeds.trop_vieux(il_y_a(plafond), maintenant),
+          f"un article de {plafond} jours passe encore (le seuil est un « au-delà »)")
+    check(fetch_feeds.trop_vieux(il_y_a(plafond + 1), maintenant),
+          f"un article de {plafond + 1} jours est écarté")
+
+    # Le cas réel du 29/08 : la recherche Google News restreinte au domaine
+    # VG247 a remonté 8 articles de 2022 à 2024, annoncés comme « nouveaux ».
+    check(fetch_feeds.trop_vieux("2024-07-26T00:00:00+00:00", maintenant),
+          "reproduction : l'archive VG247 de 2024 aurait été écartée")
+    check(fetch_feeds.trop_vieux("2022-02-04T00:00:00+00:00", maintenant),
+          "reproduction : celle de 2022 aussi")
+
+    # LE piège : une date absente ou illisible ne doit PAS valoir 1970.
+    # normalize_date renvoie "" quand le flux ne fournit aucune date, et
+    # parse_date_key retombe sur DATE_FLOOR — traiter ça comme « vieux de
+    # 56 ans » viderait tout flux mal daté.
+    check(not fetch_feeds.trop_vieux("", maintenant), "sans date : on garde (dans le doute)")
+    check(not fetch_feeds.trop_vieux(None, maintenant), "date absente : on garde")
+    check(not fetch_feeds.trop_vieux("pas une date", maintenant), "date illisible : on garde")
+
+    # Une date dans le futur (horloge d'éditeur mal réglée) ne doit pas non
+    # plus faire disparaître l'article.
+    futur = (maintenant + timedelta(days=3)).isoformat()
+    check(not fetch_feeds.trop_vieux(futur, maintenant), "date future : on garde")
+
+
 def test_dedup_meme_passage():
     print("\n[dedup] deux rédactions, même sujet, même passage")
     import fetch_feeds
@@ -889,7 +927,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
            test_push_masquage_endpoint,
            test_real_history,
-           test_fetch_parallele_identique, test_dedup_meme_passage,
+           test_fetch_parallele_identique, test_garde_fou_archives,
+           test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,
            test_recap_hebdomadaire, test_suivi_sources_muettes,
            test_identifiants_de_sources_uniques,
