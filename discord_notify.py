@@ -76,7 +76,7 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3):
     return False
 
 
-def send_discord_notification(new_items):
+def send_discord_notification(new_items, promus=()):
     """Envoie UN SEUL message Discord récapitulatif, avec le nombre de
     nouveaux articles trouvés et un lien vers le site — plutôt qu'un message
     par article. Discord mobile ouvre toujours l'app Discord au tap sur une
@@ -87,22 +87,28 @@ def send_discord_notification(new_items):
     if not DISCORD_WEBHOOK_URL:
         print("[discord] DISCORD_WEBHOOK_URL absent — notification désactivée.")
         return False
-    if not new_items:
+    if not new_items and not promus:
         return False
 
     n = len(new_items)
+    majeure = feed_store.est_actu_majeure(new_items, promus)
 
     embed = {
         # Texte partagé avec les notifications push : voir
         # feed_store.libelle_recap. Les deux canaux disent mot pour mot la
         # même chose, et ne peuvent plus diverger.
-        "title": feed_store.libelle_recap(new_items),
+        "title": feed_store.libelle_recap(new_items, promus),
         "url": SITE_URL,
         "description": f"[Ouvrir GTA6_WATCH]({SITE_URL})",
-        "color": 0x5493FF,
+        # Rouge d'alerte pour une actu majeure, bleu habituel sinon : la
+        # couleur se repère d'un coup d'œil dans un salon Discord.
+        "color": 0xE04F5F if majeure else 0x5493FF,
     }
-    print(f"  [discord] envoi du récapitulatif ({n} nouvel(le)(s) article(s))...")
-    return send_discord_with_retry(embed, f"récapitulatif {n} article(s)")
+    detail = f"{n} nouvel(le)(s) article(s)"
+    if promus:
+        detail += f", {len(promus)} sujet(s) devenu(s) majeur(s)"
+    print(f"  [discord] envoi du récapitulatif ({detail})...")
+    return send_discord_with_retry(embed, f"récapitulatif {detail}")
 
 
 def send_source_alerts(alertes):
@@ -140,7 +146,8 @@ def send_source_alerts(alertes):
     return send_discord_with_retry(embed, f"alerte source ({len(alertes)})")
 
 
-def load_source_alerts(path):
+def lire_liste(path):
+    """Lit un fichier JSON contenant une liste, ou renvoie []."""
     if not path:
         return []
     try:
@@ -157,15 +164,6 @@ def load_source_alerts(path):
 # sur les IP partagées des runners GitHub Actions. Détails dans README.md.
 
 
-def load_new_items(path):
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return data if isinstance(data, list) else []
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return []
-
-
 def main():
     path = os.environ.get("NEW_ITEMS_FILE", "")
     if not path:
@@ -174,16 +172,20 @@ def main():
 
     # Les alertes de source sont indépendantes des articles : elles doivent
     # partir même — surtout — quand il n'y a rien de neuf à annoncer.
-    alertes = load_source_alerts(os.environ.get("SOURCE_ALERTS_FILE", ""))
+    alertes = lire_liste(os.environ.get("SOURCE_ALERTS_FILE", ""))
     if alertes:
         send_source_alerts(alertes)
 
-    new_items = load_new_items(path)
-    if not new_items:
+    new_items = lire_liste(path)
+    # Un sujet devenu majeur justifie un message même sans article nouveau :
+    # voir feed_store.libelle_recap.
+    promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
+
+    if not new_items and not promus:
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 
-    send_discord_notification(new_items)
+    send_discord_notification(new_items, promus)
     # Cette étape ne doit JAMAIS faire échouer le workflow : les articles
     # sont déjà publiés à ce stade, une panne de Discord n'est pas une
     # panne du robot.

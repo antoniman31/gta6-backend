@@ -520,6 +520,127 @@ def test_libelle_actu_majeure():
           "un article sans extraSources compte pour une source")
 
 
+def test_promotion_entre_passages():
+    print("\n[notif] un sujet qui devient majeur au fil des passages")
+    import fetch_feeds
+
+    seuil = feed_store.HOT_SOURCE_THRESHOLD
+    titre = "Rockstar annonce la date de sortie de GTA 6"
+
+    def art(source, lien, date="2026-08-29T08:00:00+00:00"):
+        return {"title": titre, "link": lien, "date": date, "source": source,
+                "official": False, "rockstarmag": False, "specialist": False,
+                "lang": "en", "image": None, "description": "", "source_link": None}
+
+    # L'article existe déjà, repris par seuil-1 rédactions. Une de plus le
+    # fait basculer — mais elle arrive dans un passage ULTÉRIEUR, donc c'est
+    # un doublon : rien de « nouveau » à annoncer. Sans le signal de
+    # promotion, l'utilisateur ne serait jamais prévenu.
+    connu = art("IGN", "https://ign.com/a")
+    connu["extraSources"] = [{"source": f"Redac{i}"} for i in range(seuil - 2)]
+    # Les distracteurs sont PLUS ANCIENS : l'article connu doit rester dans
+    # la fenêtre de comparaison, sinon on testerait le bug déjà corrigé
+    # ailleurs plutôt que la promotion.
+    historique = [connu] + [art("Vieux", f"https://v/{i}", "2026-08-01T00:00:00+00:00")
+                            for i in range(300)]
+    for vieux in historique[1:]:
+        vieux["title"] = f"Sujet sans rapport {vieux['link']}"
+    index = {i["link"]: i for i in historique}
+
+    feeds = [{"id": "z", "name": "GameSpot", "url": "https://z.test/rss"}]
+    resultats = {"z": ([art("GameSpot", "https://gamespot.com/a")],
+                       {"raw_count": 1, "not_modified": False}, [])}
+    neufs, promus = [], []
+    fetch_feeds.merge_results(feeds, resultats, historique, index, neufs, {},
+                              afficher=False, promus=promus)
+
+    check(neufs == [], "la reprise est bien un doublon : aucun article nouveau")
+    check(len(promus) == 1, "le sujet qui franchit le seuil est signalé comme promu")
+    check(1 + len(promus[0].get("extraSources") or []) == seuil,
+          f"il compte désormais {seuil} rédactions")
+
+    # Sans promotion, il n'y aurait rien à dire. Avec, l'alerte part quand
+    # même — c'est tout l'intérêt.
+    check(feed_store.est_actu_majeure([], promus),
+          "l'alerte se déclenche sur la seule promotion, sans article nouveau")
+    libelle = feed_store.libelle_recap([], promus)
+    check("Actu majeure" in libelle, "le libellé annonce bien l'alerte")
+    check("0 nouvel" not in libelle,
+          "sans article nouveau, on n'annonce pas « 0 nouvel article »")
+
+    import push_notify
+    check(push_notify.build_payload([], promus)["title"] == libelle,
+          "push et Discord restent identiques sur une promotion seule")
+
+    # Une reprise DE PLUS ne doit pas réalerter : le sujet est déjà majeur.
+    resultats2 = {"z": ([art("Kotaku", "https://kotaku.com/a")],
+                        {"raw_count": 1, "not_modified": False}, [])}
+    promus2 = []
+    fetch_feeds.merge_results(feeds, resultats2, historique, index, [], {},
+                              afficher=False, promus=promus2)
+    check(promus2 == [], "un sujet déjà majeur ne réalerte pas à chaque reprise")
+
+
+def test_recap_hebdomadaire():
+    print("\n[hebdo] récapitulatif du dimanche")
+    import weekly_digest
+    from datetime import datetime, timedelta, timezone
+
+    maintenant = datetime(2026, 8, 30, 18, 0, tzinfo=timezone.utc)
+
+    def art(titre, jours, sources=1, officiel=False):
+        return {"title": titre, "link": f"https://x/{titre}",
+                "date": (maintenant - timedelta(days=jours)).isoformat(),
+                "official": officiel,
+                "extraSources": [{"source": str(i)} for i in range(sources - 1)]}
+
+    items = [
+        art("Sujet très repris", 2, sources=5),
+        art("Sujet moyennement repris", 1, sources=2),
+        art("Sujet isolé mais frais", 0),
+        art("Sujet de la semaine dernière", 9, sources=9),
+    ]
+    recents = weekly_digest.articles_de_la_semaine(items, maintenant)
+    check(len(recents) == 3, "les articles de plus de 7 jours sont écartés")
+    check(all("semaine dernière" not in i["title"] for i in recents),
+          "même très repris, un vieux sujet n'entre pas dans la semaine")
+
+    classe = weekly_digest.classer(recents)
+    check(classe[0]["title"] == "Sujet très repris",
+          "le classement est piloté par le nombre de rédactions, pas par la date")
+    check(classe[-1]["title"] == "Sujet isolé mais frais",
+          "l'article le moins repris ferme la marche malgré sa fraîcheur")
+
+    embed = weekly_digest.construire_embed(items, maintenant)
+    check(embed is not None, "un embed est produit")
+    check("3 articles" in embed["description"], "le décompte porte sur la semaine seule")
+    check("🔥" in embed["description"], "le sujet au-delà du seuil porte la flamme")
+    check("https://x/Sujet très repris" in embed["description"],
+          "les liens sont présents — c'est un récapitulatif qu'on lit, pas une bannière")
+
+    check(weekly_digest.construire_embed([], maintenant) is None,
+          "aucun article : aucun message (pas d'embed vide)")
+    check(weekly_digest.construire_embed([art("Vieux", 30)], maintenant) is None,
+          "rien cette semaine : aucun message non plus")
+
+    # Le Markdown de Discord est fragile aux deux bouts : un crochet dans le
+    # titre ferme le libellé trop tôt, une parenthèse dans l'URL ferme la
+    # cible trop tôt. Les deux produiraient un message cassé.
+    lien = weekly_digest.lien_markdown("Titre [avec] crochets", "https://x/page")
+    check("[avec]" not in lien, "les crochets d'un titre sont neutralisés")
+    check(lien.startswith("[Titre (avec) crochets]"), "le titre reste lisible")
+
+    lien2 = weekly_digest.lien_markdown("Normal", "https://x/GTA_(serie)")
+    check("(serie)" not in lien2.split("](")[1],
+          "les parenthèses d'une URL sont encodées (sinon le lien Discord casse)")
+    check("%28serie%29" in lien2, "elles sont encodées, pas supprimées")
+
+    long_titre = weekly_digest.lien_markdown("x" * 300, "https://x/y")
+    check(len(long_titre.split("](")[0]) <= 92, "un titre à rallonge est tronqué")
+    check(weekly_digest.lien_markdown(None, None).startswith("[sans titre]"),
+          "un article sans titre ni lien ne fait pas planter le récapitulatif")
+
+
 def test_suivi_sources_muettes():
     print("\n[sources] alerte quand une source tombe, et quand elle revient")
     import fetch_feeds
@@ -769,7 +890,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_masquage_endpoint,
            test_real_history,
            test_fetch_parallele_identique, test_dedup_meme_passage,
-           test_libelle_actu_majeure, test_suivi_sources_muettes,
+           test_libelle_actu_majeure, test_promotion_entre_passages,
+           test_recap_hebdomadaire, test_suivi_sources_muettes,
            test_identifiants_de_sources_uniques,
            test_chaines_par_hote,
            test_plafond_par_domaine, test_source_qui_plante,

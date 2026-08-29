@@ -1,0 +1,49 @@
+name: Récapitulatif hebdomadaire
+
+# Un message Discord le dimanche soir avec les sujets les plus repris de la
+# semaine. Séparé de update-feeds.yml : ce n'est pas la même cadence, et une
+# panne de l'un ne doit pas emporter l'autre.
+on:
+  schedule:
+    # Dimanche 18h00 UTC (20h en France l'été, 19h l'hiver). Minute 0 évitée
+    # ailleurs dans ce dépôt parce qu'elle est congestionnée, mais ici le
+    # `schedule` de GitHub est de toute façon best-effort et un retard d'une
+    # heure sur un récapitulatif hebdomadaire n'a aucune importance.
+    - cron: "0 18 * * 0"
+  workflow_dispatch:
+  # Même porte d'entrée que le robot, pour un planificateur externe. Le
+  # `schedule` de GitHub abandonne purement des exécutions en période de
+  # charge : sur une tâche hebdomadaire, un abandon = une semaine sautée.
+  # Si ça arrive, ajouter un appel hebdomadaire sur cron-job.org avec
+  # {"event_type": "weekly-digest"} suffit à fiabiliser.
+  repository_dispatch:
+    types: [weekly-digest]
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Installer Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # weekly_digest n'a besoin que de requests (via discord_notify) et de
+      # feed_store, qui n'a aucune dépendance. Inutile d'installer feedparser
+      # et le reste pour poster un message.
+      - name: Installer les dépendances
+        run: pip install requests
+
+      - name: Envoyer le récapitulatif
+        run: python weekly_digest.py
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
