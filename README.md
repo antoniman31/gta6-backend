@@ -56,14 +56,14 @@ d'où le planificateur externe.
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
 2. **Récupère les 50 sources** (liste `FEEDS`) **en parallèle**, avec
-   gestion d'erreur par source : si une source échoue, les 34 autres
+   gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
    3 min 04, elle prend maintenant ~35 s.
    La requête est **conditionnelle** : le robot renvoie l'`ETag` et le
    `Last-Modified` reçus au passage précédent, et le serveur répond `304`
    (quelques octets, sans corps) si rien n'a changé. Sans ça il
-   retéléchargerait 35 flux entiers 48 fois par jour ; la documentation de
+   retéléchargerait 50 flux entiers 48 fois par jour ; la documentation de
    feedparser prévient qu'un client qui ignore ces en-têtes peut se faire
    bannir par l'éditeur. Les validateurs sont conservés dans
    `feed_http_state` de `feed.json`, faute d'autre stockage persistant.
@@ -92,14 +92,27 @@ d'où le planificateur externe.
    noierait GTA 6. Le filtre porte sur le titre **et** la description, que
    le flux Atom de YouTube fournit tous les deux : une vidéo au titre
    elliptique passe donc si sa description parle du sujet.
-4. **Filtre par mots-clés** — les sources officielles (Rockstar, Take-Two)
+4. **Ne lit que les 30 premières entrées de chaque flux**
+   (`parsed.entries[:30]` dans `fetch_feeds.py`). Les flux ne sont pas de
+   la même profondeur : RockstarMag en publie 10, Eurogamer et Rock Paper
+   Shotgun 100. Au-delà de 30, ce sont des articles déjà vus aux passages
+   précédents — à un passage toutes les 30 minutes, aucun site suivi ne
+   publie 30 articles dans l'intervalle.
+
+   **Ce plafond se lit dans les chiffres** et il faut y penser avant de
+   comparer un flux à ce qu'il rapporte. Mesuré le 29/08/2026, entrées
+   retenues par le filtre GTA 6 sur le flux entier contre les 30 premières
+   seulement : GamesRadar+ 13 sur 50 → **6**, Rock Paper Shotgun 16 sur
+   100 → **7**, Eurogamer 24 sur 100 → **18**. Les flux courts ne sont pas
+   concernés (RockstarMag 10/10, GameSpot 20 sur 30, IGN 6 sur 20).
+5. **Filtre par mots-clés** — les sources officielles (Rockstar, Take-Two)
    exigent un mot-clé GTA 6 dans le titre. Les sources "spécialistes"
    (`specialist_source: True` — RockstarMag, RockstarINTEL, GTA6 Times,
    GTA6 x Netflix) appliquent le même filtre que les sources normales :
    ce ne sont pas des flux sans filtre, juste des sites plus ciblés sur la
    série GTA en général (donc encore susceptibles de publier du contenu
    GTA Online/FiveM/RP qu'il faut écarter).
-5. **Écarte les archives** — un article jamais vu dont la date dépasse
+6. **Écarte les archives** — un article jamais vu dont la date dépasse
    `MAX_ARTICLE_AGE_DAYS` (45 jours) n'est pas importé. Un article de
    plusieurs mois découvert aujourd'hui n'est pas une nouvelle, et le robot
    l'annoncerait pourtant comme « nouvel article » sur Discord et sur le
@@ -112,15 +125,15 @@ d'où le planificateur externe.
    exploitable continue de passer, sinon on rejetterait tout son contenu en
    le prenant pour du 1ᵉʳ janvier 1970. Les archives écartées sont comptées
    dans le journal du passage — c'est le signe qu'une source est mal réglée.
-6. **Décode les liens Google News** — ces flux renvoient normalement des
+7. **Décode les liens Google News** — ces flux renvoient normalement des
    liens de redirection chiffrés (`news.google.com/rss/articles/...`),
    inutilisables pour aller chercher une vraie miniature. Le module
    `googlenewsdecoder` résout le vrai lien de l'article.
-7. **Récupère les miniatures manquantes** en parallèle (`IMAGE_WORKERS`,
+8. **Récupère les miniatures manquantes** en parallèle (`IMAGE_WORKERS`,
    8 requêtes simultanées via `ThreadPoolExecutor`) — d'abord depuis le flux RSS
    lui-même si présente, sinon en allant chercher la balise `og:image` ou
    `twitter:image` sur la vraie page de l'article.
-8. **Compte les sources et déduplique** — quand plusieurs rédactions
+9. **Compte les sources et déduplique** — quand plusieurs rédactions
    couvrent la même actualité, les doublons ne sont plus jetés
    purement : la source supplémentaire est enregistrée dans
    `extraSources`. C'est la meilleure information disponible pour repérer
@@ -149,27 +162,28 @@ d'où le planificateur externe.
    identiques entre IGN et IGN France), et un compteur de sources plafonné
    à 3 — donc un badge 🔥 réglé sur 4 qui n'a jamais pu s'afficher une
    seule fois en 1 211 articles.
-9. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
+10. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
    les plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant très large. Au rythme observé
    (~50 articles/jour au maximum), le plafond ne sera pas atteint avant
    plus d'un an ; voir les Limites pour la conséquence sur le poids du
    fichier.
-10. **Dépose les nouveaux articles** dans le fichier désigné par
+11. **Dépose les nouveaux articles** dans le fichier désigné par
    `$NEW_ITEMS_FILE` (hors du dépôt), à destination de
    `discord_notify.py`. Le robot n'envoie plus lui-même la notification :
    voir la section Notifications. Rien n'est déposé au tout premier
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
-11. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
-   récents (`RECENT_FEED_SIZE`). Mesuré le 29/08/2026 : 258 Ko bruts /
-   65 Ko compressés, contre 896 Ko / 199 Ko pour l'historique complet.
+12. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
+   récents (`RECENT_FEED_SIZE`). Mesuré le 29/08/2026 sur 1 299 articles :
+   267 Ko bruts / 75 Ko compressés, contre 966 Ko / 233 Ko pour
+   l'historique complet.
    C'est ce fichier que l'app charge à l'ouverture ; elle télécharge le
    complet à la demande, et automatiquement dès qu'une recherche est
    lancée pour ne jamais renvoyer de résultats tronqués sans le dire. Les
    deux fichiers sont toujours écrits ensemble, y compris après une
    fusion de conflit.
-12. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
+13. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
    une source « muette » n'a renvoyé aucune entrée brute, signe net d'un
    flux cassé ; une source « tarie » répond mais n'a rien publié depuis
    plus de 30 jours, ce qui peut être parfaitement normal (Rockstar et
@@ -177,7 +191,7 @@ d'où le planificateur externe.
    **Et alerte sur Discord quand une source tombe** — voir la section
    dédiée plus bas. L'état seul ne dit que « muette maintenant » ; c'est le
    cumul (`sources_silence`) qui distingue une panne d'un hoquet.
-13. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
+14. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
    propre copie séparée — voir la limite ci-dessous sur cette
@@ -225,12 +239,18 @@ vérifie que le résultat est identique, ordre compris.
 Le décodage Google News (`DECODE_WORKERS`, 4) et les miniatures
 (`IMAGE_WORKERS`, 8) sont parallélisés selon le même principe.
 
-**Résultat mesuré** (passage n°167, 29/08/2026) :
+**Résultat mesuré** (passage n°167, 29/08/2026), la liste comptant alors
+35 sources :
 
 | | Avant | Après |
 |---|---|---|
 | Récupération des 35 sources | 3 min 04 | **35 s** |
 | Passage complet | 3 min 10 | **1 min 03** |
+
+Depuis, la liste est passée à 50 sources. Mesuré sur le passage n°207 du
+29/08/2026 : **1 min 25** de bout en bout, dont **72 s** de récupération et
+de traitement. Le surcoût des 15 sources supplémentaires reste donc très
+en deçà du parallélisme gagné.
 
 ## Le workflow — `.github/workflows/update-feeds.yml`
 
@@ -291,6 +311,14 @@ Le décodage Google News (`DECODE_WORKERS`, 4) et les miniatures
 - **`dedupe_history.py`** — passage unique de nettoyage, gardé pour
   mémoire et reproductibilité. Voir « Récupération en parallèle » pour le
   bug qu'il a servi à réparer côté données.
+- **`sonde_flux.py`** — outil de diagnostic manuel (Actions → « Sonder des
+  flux candidats »), en lecture seule : il n'écrit ni dans `FEEDS`, ni dans
+  `docs/`, ni sur disque. Interroge des URL candidates **comme le robot le
+  ferait** (même agent utilisateur, `passe_le_filtre` de `fetch_feeds`) et
+  sépare quatre échecs que `feedparser` confond — injoignable, pas un flux,
+  valide mais vide, refusé. Les runners GitHub ont l'accès réseau complet
+  que n'ont pas tous les environnements de développement, d'où le
+  workflow. Voir les Limites pour ce qu'il a permis de trancher.
 - **`push_notify.py`** — les notifications push natives, appelées au même
   moment. N'importe pas `pywebpush` au niveau du module : la construction
   du message et la lecture des abonnements restent testables sans la
@@ -381,7 +409,8 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 50 sources (~1 min).
+(instantané), l'autre fait travailler le robot sur les 50 sources
+(~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
 que deux qui se ressemblent, ce qui garantit qu'ils ne divergeront pas à la
@@ -450,7 +479,8 @@ Mesuré sur l'historique du 29/08 avant correctif : **136 des 168 articles
 dits « croisés » n'étaient qu'un seul lien recompté**, et le premier badge 🔥
 était un article du Newswire trouvé par quatre de nos propres requêtes. Après
 correctif : 32 articles réellement croisés (2,5 %), maximum 3 sources, aucun
-à 4. Le seuil de 4 reste en place — il ne se déclenchera plus que sur une
+à 4 — 36 (2,8 %) au 29/08 après la bascule des flux rss.app, toujours 3 au
+maximum. Le seuil de 4 reste en place — il ne se déclenchera plus que sur une
 actu vraiment reprise partout, ce qui est son objet.
 
 `deduplique_couverture()` reprend l'historique déjà stocké, comme
@@ -487,7 +517,7 @@ d'affichage, et « Réinitialiser les filtres » ne le touche pas.
 **Ce que `localStorage` conserve.** La copie locale des articles est
 plafonnée à **300**, la taille du fichier allégé. Elle ne sert qu'à afficher
 quelque chose à l'ouverture avant que le réseau réponde ; sans plafond elle
-suivait l'historique — 0,8 Mo pour 1260 articles, donc environ 13 Mo aux
+suivait l'historique — 0,97 Mo pour 1 299 articles, donc environ 15 Mo aux
 20 000 du backend, très au-delà du quota de 5 Mo. Un drapeau accompagne la
 troncature : sans lui, la liste restaurée au démarrage paraîtrait complète
 et une recherche renverrait « aucun résultat » pour un article qui existe.
@@ -835,13 +865,13 @@ commentaire).
 - **Historique glissant, pas permanent** — plafonné à 20 000 articles
   (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique complet
   depuis toujours.
-- **Poids de `feed.json` à terme** — 896 Ko aujourd'hui pour 1 208 articles ;
-  au plafond de 20 000 il approcherait 15 Mo (~3 Mo compressés). L'ouverture
+- **Poids de `feed.json` à terme** — 966 Ko aujourd'hui pour 1 299 articles ;
+  au plafond de 20 000 il approcherait 15 Mo (~3,5 Mo compressés). L'ouverture
   de l'app n'est pas concernée (elle charge `feed-recent.json`), mais toute
   recherche déclenche le téléchargement de l'historique complet. Côté dépôt
   en revanche il n'y a pas de problème : Git ne stocke que les lignes
   changées (~30 à 90 lignes par passage), et l'ensemble du dépôt tient
-  aujourd'hui dans **676 Ko compactés pour 112 commits**.
+  aujourd'hui dans **700 Ko compactés pour 204 commits**.
 - **Deux définitions de sources** — la liste `FEEDS` (Python, source de
   vérité) et `DEFAULT_FEEDS` (JS, utilisé uniquement par le mode de
   secours) doivent être synchronisées manuellement si une source est
@@ -878,9 +908,36 @@ commentaire).
   erroné renvoie zéro entrée, bascule en « muette » et déclenche l'alerte
   de source morte sous trois heures : l'erreur se signale d'elle-même.
   Contrepartie : Google News passe de 6 à 23 flux interrogés toutes les 30
-  minutes. Le plafond de 3 files simultanées par domaine tient (aucune
-  requête parallèle supplémentaire vers Google), mais un éventuel
-  rate-limit se verrait sur ces sources en premier.
+  minutes — 20 aujourd'hui, après le retrait de Millenium, XboxEra et
+  Xbox-Mag, soit 40 % des 50 sources sur un seul fournisseur — la plus
+  grosse dépendance qui reste, désormais loin devant toutes les autres.
+  Le plafond de 3 files simultanées par domaine tient (aucune requête
+  parallèle supplémentaire vers Google), mais un éventuel rate-limit se
+  verrait sur ces sources en premier.
+- **rss.app : neuf sources dessus, épuisé d'un coup.** RockstarMag,
+  RockstarINTEL, IGN, GameSpot, Polygon, Kotaku, GamesRadar+, Rock Paper
+  Shotgun et Eurogamer y passaient — **18 % des sources sur un seul
+  fournisseur gratuit**. Le 29/08/2026 vers 13h00 UTC, les neuf se sont
+  tues simultanément : d'abord des flux valides mais vides, puis un franc
+  **HTTP 402 Payment Required**. Quota épuisé, pas une panne : rien ne
+  serait revenu.
+
+  Les neuf sont passées aux **flux natifs des sites**, chaque URL vérifiée
+  au préalable depuis un runner GitHub (`sonde_flux.py`, 26 candidates
+  sondées) plutôt que devinée. Deux pièges que ce sondage a évités :
+  RockstarINTEL doit rester **sans `www`** (les variantes `www.` échouent
+  au handshake TLS côté serveur), et GameSpot rapporte deux fois plus sur
+  `/feeds/news/` que sur `/feeds/game-news/`. Aucun doublon à la bascule :
+  rss.app relayait les liens d'origine des articles, donc l'index par lien
+  a reconnu l'existant. Les 50 sources se répartissent maintenant sur
+  **30 domaines distincts au lieu de 20**.
+
+  La leçon vaut au-delà de rss.app : `feedparser` ne lève pas d'exception
+  sur une panne réseau (il la range dans `bozo`, au même endroit qu'un XML
+  mal formé) et avale une page HTML sans protester — `bozo` reste faux et
+  la liste d'entrées est vide, **exactement comme un flux valide mais
+  vide**. Seul le champ `version` les sépare. C'est ce que `sonde_flux.py`
+  distingue, et pourquoi le script est conservé plutôt que jeté.
 - **GTAForums et GTA Base** — jamais intégrés, ces deux sites bloquent
   activement les accès automatisés, y compris depuis un vrai serveur (pas
   seulement un navigateur).
@@ -898,11 +955,19 @@ commentaire).
   autres flux, donc la couverture manquait réellement. L'URL a été
   remplacée par une recherche Google News restreinte au domaine, sur le
   même modèle que les sources officielles.
+
+  **Le remplacement n'a rien changé, et c'est l'information utile.** Au
+  passage n°207 du 29/08/2026 : 100 entrées récupérées, **zéro retenue**,
+  et toujours aucun article vg247.com dans l'historique — 764 jours depuis
+  le dernier. Le diagnostic « le flux marche, le site ne publie pas sur
+  GTA 6 » se confirme donc sur deux formats de flux différents. La source
+  reste en place : elle ne coûte qu'une requête, et le jour où VG247
+  publiera, elle remontera.
 - **Miniatures Google News** — un léger pourcentage d'articles n'a pas de
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.
 - **Fichier HTML monolithique** — `index.html` regroupe CSS, HTML et JS
-  dans un seul fichier de ~2700 lignes plutôt que d'être séparé en
+  dans un seul fichier de ~3230 lignes plutôt que d'être séparé en
   plusieurs fichiers. Choix assumé : ça simplifie l'upload manuel (un seul
   fichier à remplacer au lieu de plusieurs à garder synchronisés), au
   prix d'un fichier plus long à parcourir si besoin d'y retoucher.
