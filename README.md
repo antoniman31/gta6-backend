@@ -1,9 +1,11 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot va chercher les news sur
-35 sources deux fois par heure, décode les vrais liens Google News, récupère
-de vraies miniatures, notifie sur Discord, et publie tout dans une app
-installable sur Android.
+Veille automatisée de l'actualité GTA 6 : un robot interroge 35 sources en
+parallèle toutes les 30 minutes, décode les vrais liens Google News, récupère
+de vraies miniatures, notifie sur Discord et par notification push, et publie
+tout dans une app installable sur Android.
+
+Un passage complet dure **environ une minute**.
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
@@ -12,14 +14,21 @@ installable sur Android.
 Trois briques, aucun serveur à gérer :
 
 ```
-GitHub Actions (cron : 2 passages/heure)
+cron-job.org (toutes les 30 min)          ← horloge principale
+        │  POST /dispatches
+        ▼
+GitHub Actions  ◄── cron GitHub "7,37"    ← filet de secours, best-effort
         │
         ▼
-  fetch_feeds.py  ──►  docs/feed.json  ──►  GitHub Pages  ──►  docs/index.html (PWA)
+  fetch_feeds.py  ──►  docs/feed.json          ──►  GitHub Pages  ──►  docs/index.html (PWA)
+        │          └─►  docs/feed-recent.json  ──►
         │                    ▲
         │                    │ merge_feed.py (fusion si push concurrent)
         ▼
-  discord_notify.py (récapitulatif, APRÈS publication réussie)
+  discord_notify.py + push_notify.py (APRÈS publication réussie)
+        │
+        ▼
+  healthchecks.io (signal de vie ; l'absence de signal déclenche l'alerte)
 ```
 
 Le robot Python tourne côté GitHub, écrit un fichier JSON statique, et
@@ -28,24 +37,29 @@ maintenir, hébergement gratuit et illimité pour ce volume.
 
 ## Le robot — `fetch_feeds.py`
 
-Tourne automatiquement deux fois par heure (`cron: "7,37 * * * *"`), ou
-manuellement via l'onglet Actions → "Mise à jour des flux GTA 6" → Run
-workflow.
+Tourne toutes les 30 minutes, déclenché par un planificateur **externe**
+(cron-job.org) — voir la section dédiée. Le `cron` de GitHub reste déclaré
+comme filet de secours, et le déclenchement manuel reste possible via
+l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow, ou depuis
+l'app.
 
-Le déclencheur `schedule` de GitHub est *best-effort* : les runs partent
-avec 10 à 35 minutes de retard et sont purement abandonnés en période de
-charge — la minute 0 étant la plus congestionnée. Fin août 2026 la cadence
-réelle était tombée à un run toutes les 3 à 9 heures. Deux tentatives par
-heure à des minutes creuses ne suppriment pas les abandons (c'est un
-contournement côté GitHub, pas un correctif) mais ramènent la cadence
-effective près de l'heure.
+Pourquoi un planificateur externe : le déclencheur `schedule` de GitHub est
+*best-effort*. Les runs partent avec 10 à 35 minutes de retard et sont
+purement abandonnés en période de charge. Fin août 2026 la cadence réelle
+était tombée à un run toutes les 3 à 9 heures ; décaler le cron à `7,37`
+n'a rien changé — sur les 12 heures suivant ce changement, **zéro**
+exécution planifiée n'est partie. C'est un contournement qui ne marche pas,
+d'où le planificateur externe.
 
 **Ce qu'il fait, dans l'ordre :**
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 35 sources** (liste `FEEDS`), avec gestion d'erreur par
-   source : si une source échoue, les 34 autres continuent normalement.
+2. **Récupère les 35 sources** (liste `FEEDS`) **en parallèle**, avec
+   gestion d'erreur par source : si une source échoue, les 34 autres
+   continuent normalement. Le détail du parallélisme est décrit plus bas
+   (« Récupération en parallèle ») ; en séquentiel cette étape prenait
+   3 min 04, elle prend maintenant ~35 s.
    La requête est **conditionnelle** : le robot renvoie l'`ETag` et le
    `Last-Modified` reçus au passage précédent, et le serveur répond `304`
    (quelques octets, sans corps) si rien n'a changé. Sans ça il
@@ -64,8 +78,8 @@ effective près de l'heure.
    liens de redirection chiffrés (`news.google.com/rss/articles/...`),
    inutilisables pour aller chercher une vraie miniature. Le module
    `googlenewsdecoder` résout le vrai lien de l'article.
-5. **Récupère les miniatures manquantes** en parallèle (5 requêtes
-   simultanées via `ThreadPoolExecutor`) — d'abord depuis le flux RSS
+5. **Récupère les miniatures manquantes** en parallèle (`IMAGE_WORKERS`,
+   8 requêtes simultanées via `ThreadPoolExecutor`) — d'abord depuis le flux RSS
    lui-même si présente, sinon en allant chercher la balise `og:image` ou
    `twitter:image` sur la vraie page de l'article.
 6. **Compte les sources et déduplique** — quand plusieurs rédactions
@@ -85,10 +99,12 @@ effective près de l'heure.
    articles les plus récents seulement — comparer un nouvel article à un
    autre vieux de plusieurs mois n'a jamais de sens en pratique, et ça
    évite que le temps de calcul augmente indéfiniment avec l'historique.
-7. **Plafonne l'historique à 2000 articles** — au-delà, les plus anciens
-   sont retirés. Ce n'est donc pas un historique complet et permanent,
-   mais un historique glissant assez large pour ne jamais perdre l'actu
-   récente ou moyennement récente.
+7. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
+   les plus anciens sont retirés. Ce n'est donc pas un historique complet et
+   permanent, mais un historique glissant très large. Au rythme observé
+   (~50 articles/jour au maximum), le plafond ne sera pas atteint avant
+   plus d'un an ; voir les Limites pour la conséquence sur le poids du
+   fichier.
 8. **Dépose les nouveaux articles** dans le fichier désigné par
    `$NEW_ITEMS_FILE` (hors du dépôt), à destination de
    `discord_notify.py`. Le robot n'envoie plus lui-même la notification :
@@ -96,7 +112,8 @@ effective près de l'heure.
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
 9. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
-   récents, ~50 Ko compressés contre ~164 Ko pour l'historique complet.
+   récents (`RECENT_FEED_SIZE`). Mesuré le 29/08/2026 : 258 Ko bruts /
+   65 Ko compressés, contre 896 Ko / 199 Ko pour l'historique complet.
    C'est ce fichier que l'app charge à l'ouverture ; elle télécharge le
    complet à la demande, et automatiquement dès qu'une recherche est
    lancée pour ne jamais renvoyer de résultats tronqués sans le dire. Les
@@ -114,15 +131,70 @@ effective près de l'heure.
    propre copie séparée — voir la limite ci-dessous sur cette
    synchronisation).
 
+## Récupération en parallèle
+
+Interroger 35 sources l'une après l'autre coûtait **3 min 04** par passage :
+35 allers-retours réseau en file indienne, plus une seconde de pause entre
+chaque source. C'était la quasi-totalité du temps d'exécution.
+
+Les sources sont désormais réparties en **files d'attente par domaine**, et
+ces files tournent en parallèle :
+
+```
+rss.app        →  file 1 ─┐
+(10 flux)         file 2 ─┤
+                  file 3 ─┤
+news.google    →  file 4 ─┤   jusqu'à FETCH_WORKERS (8)
+(6 flux)          file 5 ─┤   files en vol simultanément
+                  file 6 ─┤
+19 autres      →  1 file ─┘
+domaines          chacun
+```
+
+- `PER_HOST_LIMIT` (3) — un même domaine n'est jamais interrogé par plus de
+  3 files à la fois. La politesse due au serveur est tenue **par
+  construction**, sans sémaphore et sans risque de famine.
+- `HOST_PAUSE` (1 s) — la pause d'une seconde subsiste, mais uniquement
+  entre deux requêtes d'une **même** file. Elle ne bloque plus les 34 autres
+  sources.
+- Le découpage est **déterministe** : à liste de sources identique, mêmes
+  files.
+
+**Ce qui n'a pas changé, et c'est le point important.** Seul le
+*téléchargement* est parallélisé. La fusion dans l'historique
+(`merge_results`) parcourt toujours `FEEDS` **dans l'ordre déclaré**, jamais
+dans l'ordre d'arrivée des réponses. C'est cet ordre qui détermine quelle
+source « possède » un article et dans quel ordre les sources supplémentaires
+s'empilent derrière lui pour le badge « 🔥 N SOURCES ». Parcourir dans
+l'ordre d'arrivée rendrait le fichier produit dépendant de la vitesse des
+serveurs — donc différent d'un passage à l'autre. Un test dédié rejoue
+l'ancienne boucle séquentielle et la nouvelle sur les mêmes données et
+vérifie que le résultat est identique, ordre compris.
+
+Le décodage Google News (`DECODE_WORKERS`, 4) et les miniatures
+(`IMAGE_WORKERS`, 8) sont parallélisés selon le même principe.
+
+**Résultat mesuré** (passage n°167, 29/08/2026) :
+
+| | Avant | Après |
+|---|---|---|
+| Récupération des 35 sources | 3 min 04 | **35 s** |
+| Passage complet | 3 min 10 | **1 min 03** |
+
 ## Le workflow — `.github/workflows/update-feeds.yml`
 
 - **`concurrency: group: update-feeds, cancel-in-progress: false`** —
   empêche deux exécutions de tourner en même temps (ex: une automatique
   horaire qui démarre pendant qu'une relance manuelle tourne encore) ; la
   seconde attend en file d'attente au lieu de risquer un conflit de push.
-- **`timeout-minutes: 20`** — le job dure normalement ~5 minutes ; grande
-  marge de sécurité si un site traîne anormalement, sans risquer qu'une
-  exécution bloquée tourne indéfiniment.
+- **`timeout-minutes: 20`** — le job dure normalement ~1 minute depuis la
+  mise en parallèle ; la marge reste volontairement large si un site traîne
+  anormalement, sans risquer qu'une exécution bloquée tourne indéfiniment.
+- **`actions/checkout@v5` et `actions/setup-python@v6`** — ce sont les
+  premières versions de ces actions à tourner sous Node 24. Les versions
+  précédentes (v4 / v5) affichaient un avertissement de dépréciation à
+  chaque exécution. Volontairement pas les v7, qui n'apportent rien ici et
+  dont celle de `checkout` change le comportement sur les PR issues de forks.
 - **`ref: main` au checkout** — un run planifié peut attendre 35 minutes
   en file avant de démarrer ; sans ça il repartirait du SHA figé au moment
   de son déclenchement, donc d'un dépôt périmé.
@@ -150,8 +222,9 @@ effective près de l'heure.
 ## Les modules partagés
 
 - **`feed_store.py`** — le socle : interprétation des dates, tri,
-  plafonnement, lecture/écriture de `docs/feed.json`. Aucun accès réseau,
-  aucune dépendance externe. Ces trois règles doivent rester identiques
+  plafonnement, lecture/écriture de `docs/feed.json`, plus `masquer_urls()`
+  qui empêche un secret de fuiter dans les journaux (voir Notifications
+  push). Aucun accès réseau, aucune dépendance externe. Ces trois règles doivent rester identiques
   entre le robot et l'outil de fusion, sous peine de corrompre
   l'historique — d'où le module commun.
 - **`merge_feed.py`** — fusionne deux versions de `docs/feed.json` au
@@ -174,16 +247,37 @@ Aucun des deux n'a besoin de réseau ni des dépendances du robot : le
 contrôle de synchronisation ne lit que des constantes et neutralise les
 imports manquants, pour tourner sur n'importe quelle machine.
 
-Les deux tournent en CI (`.github/workflows/checks.yml`) sur chaque pull
-request et sur `main` — sauf pour les commits du robot, qui ne touchent que
-`docs/feed.json` et sont exclus par `paths-ignore` (sans quoi ces contrôles
-se déclencheraient 48 fois par jour pour du code inchangé).
+**Mises à jour de dépendances.** `.github/dependabot.yml` fait ouvrir une
+pull request par GitHub quand une version corrigée sort, côté Python
+(`requirements.txt`) comme côté actions de workflow. Rien n'est appliqué
+tout seul : la PR passe par la CI comme n'importe quelle autre. C'est le
+contrepoids nécessaire à l'épinglage au numéro exact, qui garantit qu'aucun
+passage du robot ne change de comportement sans qu'on le décide — mais fige
+aussi les correctifs de sécurité. C'est aussi ce qui aurait signalé la
+dépréciation de Node 20 sans attendre qu'un avertissement jaune soit
+remarqué à l'œil.
 
-`test_pipeline.py` n'a besoin ni de réseau ni de dépendance. Il couvre les
-dates (les trois formats présents dans l'historique), le tri, le
-plafonnement, la repasse rétroactive, et surtout la fusion — c'est elle qui
-décide si des articles sont perdus quand deux exécutions se chevauchent. Le
-dernier bloc rejoue ces règles sur le vrai `docs/feed.json` du dépôt.
+Les deux tournent en CI (`.github/workflows/checks.yml`) sur chaque pull
+request et sur `main`. Les commits du robot ne les déclenchent pas — non pas
+grâce au `paths-ignore`, mais parce que GitHub ne déclenche aucun workflow
+sur un push signé par le `GITHUB_TOKEN` d'un workflow. Vérifié : 65 commits
+du robot le 28/08, zéro exécution de contrôle. Le `paths-ignore` sur
+`docs/feed.json` est une ceinture en plus de ces bretelles — et il est
+d'ailleurs incomplet, puisqu'il ne mentionne pas `docs/feed-recent.json`,
+écrit par le même commit. Sans conséquence aujourd'hui, mais à corriger si
+le robot venait à pousser avec un autre jeton.
+
+`test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
+récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
+qui permet de tester tout le pipeline sans sortir de la machine. **124
+vérifications** couvrant les dates (les trois formats présents dans
+l'historique), le tri, le plafonnement, la repasse rétroactive, le
+nettoyage des liens, le cache de décodage, la validation du champ VAPID
+`sub` contre le vrai validateur de `py_vapid`, l'équivalence entre
+récupération séquentielle et parallèle, et surtout la fusion — c'est elle
+qui décide si des articles sont perdus quand deux exécutions se
+chevauchent. Le dernier bloc rejoue ces règles sur le vrai
+`docs/feed.json` du dépôt.
 
 `check_sources_sync.py` compare `FEEDS` et les 139 mots-clés de
 `fetch_feeds.py` à leurs copies `DEFAULT_FEEDS` / `keywords` de
@@ -260,6 +354,19 @@ Ne pas déranger…) avant de chercher pourquoi le robot n'envoie rien.
 abonnement rendu public permettrait à n'importe qui d'envoyer des
 notifications sur l'appareil concerné.
 
+**Et pourquoi les messages d'erreur sont nettoyés avant affichage.** Le même
+raisonnement s'applique aux journaux d'exécution, publics puisque le dépôt
+l'est. Les bibliothèques réseau recopient l'URL appelée dans leurs messages
+d'erreur — `Max retries exceeded with url: /fcm/send/cXXXX…` — et GitHub ne
+masque que la valeur *exacte* d'un secret, pas un fragment extrait du JSON
+qui l'entoure. Une simple panne réseau publiait donc l'endpoint en clair.
+`feed_store.masquer_urls()` retire l'URL complète **et son chemin seul**
+(urllib3 n'affiche souvent que le chemin) avant tout affichage ; l'hôte est
+conservé, il aide au diagnostic et n'identifie personne. Le webhook Discord
+est un secret exactement de la même nature — qui le possède peut publier sur
+le salon — et passe par le même filtre, d'où la fonction commune dans
+`feed_store` plutôt qu'une copie dans chaque module.
+
 **Abonnements expirés.** Quand un navigateur renouvelle son abonnement, le
 service de push répond 404 ou 410. Le robot le signale explicitement dans
 les logs du run : il faut alors retirer l'ancienne entrée du secret et
@@ -297,10 +404,15 @@ plutôt que d'attendre l'expiration du délai.
 
 ## Planificateur externe : réparer le cron plutôt que le contourner
 
+**En place et vérifié depuis le 28/08/2026.** cron-job.org appelle le dépôt
+toutes les 30 minutes ; sur la nuit du 28 au 29 août, les 22 créneaux sont
+partis sans exception, à la minute près. À comparer aux 12 créneaux
+consécutifs purement abandonnés par le `schedule` de GitHub la veille.
+
 Le `schedule` de GitHub Actions est *best effort* par conception. GitHub
-documente que les exécutions planifiées peuvent être retardées, et
-purement abandonnées en période de charge. Le décalage à `7,37` réduit le
-problème sans le supprimer.
+documente que les exécutions planifiées peuvent être retardées, et purement
+abandonnées en période de charge. Le décalage à `7,37` n'a rien changé en
+pratique.
 
 Le workflow accepte donc aussi un déclenchement **externe** :
 
@@ -417,9 +529,16 @@ commentaire).
 
 ## Limites connues et assumées
 
-- **Historique glissant, pas permanent** — plafonné à 2000 articles
-  (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique
-  complet depuis toujours.
+- **Historique glissant, pas permanent** — plafonné à 20 000 articles
+  (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique complet
+  depuis toujours.
+- **Poids de `feed.json` à terme** — 896 Ko aujourd'hui pour 1 208 articles ;
+  au plafond de 20 000 il approcherait 15 Mo (~3 Mo compressés). L'ouverture
+  de l'app n'est pas concernée (elle charge `feed-recent.json`), mais toute
+  recherche déclenche le téléchargement de l'historique complet. Côté dépôt
+  en revanche il n'y a pas de problème : Git ne stocke que les lignes
+  changées (~30 à 90 lignes par passage), et l'ensemble du dépôt tient
+  aujourd'hui dans **676 Ko compactés pour 112 commits**.
 - **Deux définitions de sources** — la liste `FEEDS` (Python, source de
   vérité) et `DEFAULT_FEEDS` (JS, utilisé uniquement par le mode de
   secours) doivent être synchronisées manuellement si une source est
@@ -440,15 +559,18 @@ commentaire).
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.
 - **Fichier HTML monolithique** — `index.html` regroupe CSS, HTML et JS
-  dans un seul fichier de ~1600 lignes plutôt que d'être séparé en
+  dans un seul fichier de ~2700 lignes plutôt que d'être séparé en
   plusieurs fichiers. Choix assumé : ça simplifie l'upload manuel (un seul
   fichier à remplacer au lieu de plusieurs à garder synchronisés), au
   prix d'un fichier plus long à parcourir si besoin d'y retoucher.
 
 ## Ajuster quelque chose
 
-- **Fréquence** : `.github/workflows/update-feeds.yml`, ligne `cron`
-  (éviter la minute 0, la plus congestionnée côté GitHub)
+- **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
+  de `.github/workflows/update-feeds.yml` n'est qu'un filet de secours
+  best-effort — la changer n'a pratiquement aucun effet.
+- **Parallélisme** : `FETCH_WORKERS`, `PER_HOST_LIMIT`, `HOST_PAUSE`,
+  `DECODE_WORKERS`, `IMAGE_WORKERS` en tête de `fetch_feeds.py`
 - **Sources** : liste `FEEDS` dans `fetch_feeds.py` (penser à reporter
   tout changement dans `DEFAULT_FEEDS` côté `index.html`, voir limite
   ci-dessus)
@@ -460,3 +582,13 @@ commentaire).
   clair ; si elle fuite, la régénérer immédiatement côté Discord
 - **Revenir au mode direct sans backend** : vider le champ backend dans
   les paramètres de l'app
+
+## Licence
+
+[MIT](LICENSE) — réutilisation libre, y compris commerciale, à condition de
+conserver l'avis de copyright. Aucune garantie.
+
+Ne couvre que le code de ce dépôt. Les articles agrégés restent la propriété
+de leurs éditeurs respectifs, et « Grand Theft Auto » est une marque déposée
+de Take-Two Interactive : ce projet n'est ni affilié à Rockstar Games ni
+approuvé par eux.

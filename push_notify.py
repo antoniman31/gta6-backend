@@ -33,6 +33,8 @@ import os
 import sys
 from urllib.parse import urlparse
 
+import feed_store
+
 SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 
 # Identifiant de contact exigé par la spécification VAPID : les services de
@@ -139,6 +141,18 @@ def check_subject(subject):
     return False
 
 
+def masquer_endpoints(texte, subscriptions):
+    """Masque, dans un message d'erreur, les endpoints des abonnements.
+
+    L'endpoint EST le secret : quiconque le possède peut notifier
+    l'appareil. Le masquage lui-même vit dans feed_store, partagé avec
+    discord_notify qui a exactement le même besoin sur son webhook.
+    """
+    endpoints = [sub.get("endpoint") for sub in subscriptions or ()
+                 if isinstance(sub, dict)]
+    return feed_store.masquer_urls(texte, endpoints)
+
+
 def send_all(subscriptions, payload, private_key):
     from pywebpush import webpush, WebPushException
 
@@ -164,9 +178,12 @@ def send_all(subscriptions, payload, private_key):
                 print(f"[push] abonnement #{i + 1} expiré (HTTP {statut}) — "
                       "à retirer du secret PUSH_SUBSCRIPTIONS et à recréer depuis l'app.")
             else:
-                print(f"[push] échec sur l'abonnement #{i + 1} : {e}")
+                print(f"[push] échec sur l'abonnement #{i + 1} : "
+                      f"{masquer_endpoints(str(e), subscriptions)}")
         except Exception as e:
-            print(f"[push] erreur inattendue sur l'abonnement #{i + 1} : {e}")
+            print(f"[push] erreur inattendue sur l'abonnement #{i + 1} "
+                  f"({type(e).__name__}) : "
+                  f"{masquer_endpoints(str(e), subscriptions)}")
 
     return envoyes, expires
 

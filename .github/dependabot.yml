@@ -1,0 +1,35 @@
+# Mises à jour de dépendances proposées automatiquement, sous forme de pull
+# request — jamais appliquées toutes seules. La CI (checks.yml) tourne sur
+# chaque PR ouverte ici, donc une montée de version qui casserait les 130
+# vérifications se voit avant d'être fusionnée.
+#
+# Raison d'être : les versions sont épinglées au numéro exact dans
+# requirements.txt, ce qui est le bon choix (aucune surprise entre deux
+# passages du robot) mais fige aussi les correctifs de sécurité. Sans ce
+# fichier, rien ne signale qu'une version corrigée est sortie.
+version: 2
+
+updates:
+  # Dépendances Python du robot (requirements.txt).
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # Le robot pousse déjà 48 commits par jour ; inutile que Dependabot
+    # ajoute une pile de PR ouvertes en parallèle.
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps"
+
+  # Les actions utilisées par les deux workflows. C'est ce qui aurait
+  # signalé de lui-même la dépréciation de Node 20 sur checkout@v4 et
+  # setup-python@v5, au lieu d'un avertissement jaune remarqué à l'œil.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps"
