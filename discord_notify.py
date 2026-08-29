@@ -91,11 +91,12 @@ def send_discord_notification(new_items):
         return False
 
     n = len(new_items)
-    n_official = sum(1 for i in new_items if i.get("official"))
-    detail = f" (dont {n_official} officiel{'s' if n_official > 1 else ''} Rockstar)" if n_official else ""
 
     embed = {
-        "title": f"🎮 {n} nouv{'eaux' if n > 1 else 'el'} article{'s' if n > 1 else ''} GTA 6{detail}",
+        # Texte partagé avec les notifications push : voir
+        # feed_store.libelle_recap. Les deux canaux disent mot pour mot la
+        # même chose, et ne peuvent plus diverger.
+        "title": feed_store.libelle_recap(new_items),
         "url": SITE_URL,
         "description": f"[Ouvrir GTA6_WATCH]({SITE_URL})",
         "color": 0x5493FF,
