@@ -37,6 +37,10 @@ FIELDS = {
     "rockstarmag": ("rockstarmag", False),
     "specialist_source": ("specialist", False),
     "no_filter_at_all": ("noFilter", False),
+    # Décide de l'onglet « Rockstar » quand le backend est injoignable : une
+    # divergence ici enverrait la chaîne YouTube dans le mauvais onglet en
+    # mode de secours, sans que rien ne le signale.
+    "official_domains": ("officialDomains", None),
 }
 
 

@@ -429,10 +429,16 @@ def _fausse_collecte(feed, decoded_cache=None, http_state=None):
     Chaque source renvoie un article qui lui est propre, plus un article
     COMMUN à toutes : c'est lui qui met à l'épreuve la déduplication et
     l'ordre d'empilement des sources supplémentaires.
+
+    Le sujet commun porte le même titre mais une URL par source, parce que
+    c'est ce que fait le monde réel : trente-cinq rédactions publient
+    trente-cinq pages sur la même annonce. Le même lien répété trente-cinq
+    fois modéliserait nos propres requêtes qui se recoupent — et depuis que
+    la couverture se compte par lien, ça n'ajoute justement aucune source.
     """
     items = [
         _article(feed["name"], f"Exclu {feed['id']}", f"https://exemple.fr/{feed['id']}"),
-        _article(feed["name"], "Le meme article partout", "https://exemple.fr/commun"),
+        _article(feed["name"], "Le meme article partout", f"https://{feed['id']}.exemple.fr/commun"),
     ]
     return items, {"raw_count": 2, "not_modified": False}, [f"[{feed['name']}] ok"]
 
@@ -468,7 +474,7 @@ def test_fetch_parallele_identique():
 
     # Le cas piégeux : l'article commun n'est gardé qu'une fois, et les 34
     # autres sources doivent s'empiler derrière dans l'ordre de FEEDS.
-    communs = [i for i in obtenu[0] if i["link"] == "https://exemple.fr/commun"]
+    communs = [i for i in obtenu[0] if i["title"] == "Le meme article partout"]
     check(len(communs) == 1, "l'article publié par les 35 sources n'est stocké qu'une fois")
     check(communs[0]["source"] == sources[0]["name"],
           "il est attribué à la PREMIÈRE source de la liste, pas à la plus rapide")
@@ -971,6 +977,156 @@ def test_predecode_google_news():
     finally:
         fetch_feeds.decode_google_news_link = vrai
 
+
+def test_onglets_par_domaine():
+    print("\n[onglets] le classement suit l'éditeur, pas la source qui a trouvé")
+    import fetch_feeds
+
+    gnews_fr = next(f for f in fetch_feeds.FEEDS if f["id"] == "gnews-fr")
+    gnews_en = next(f for f in fetch_feeds.FEEDS if f["id"] == "gnews-en")
+    rmag = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstarmag")
+    yt = next(f for f in fetch_feeds.FEEDS if f["id"] == "rockstar-youtube")
+
+    # Le défaut d'origine : Google News trouve un article du Newswire, et il
+    # atterrit dans « Non Rockstar » parce que la SOURCE n'est pas officielle.
+    newswire = "https://www.rockstargames.com/newswire/article/517oa1/gta-vi-pre-orders"
+    check(fetch_feeds.statut_officiel(newswire, gnews_en),
+          "un lien Newswire trouvé par Google News est officiel")
+    check(fetch_feeds.statut_officiel(newswire, None),
+          "il l'est même sans source connue : le domaine suffit")
+    check(fetch_feeds.statut_officiel("https://ir.take2games.com/news/x", gnews_en),
+          "Take-Two aussi")
+
+    # Symétrique pour Rockstar Mag.
+    art_rmag = "https://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/"
+    check(fetch_feeds.statut_rockstarmag(art_rmag, gnews_fr),
+          "un article rockstarmag.fr trouvé par Google News va dans son onglet")
+    check(fetch_feeds.statut_rockstarmag(art_rmag, None),
+          "le domaine suffit là aussi")
+    check(fetch_feeds.statut_rockstarmag("https://www.jeuxvideo.com/news/x", rmag),
+          "la déclaration de source reste honorée si le lien sort du domaine")
+
+    # Et surtout : aucune contamination.
+    check(not fetch_feeds.statut_officiel("https://www.ign.com/articles/gta-6", gnews_en),
+          "un article IGN ne devient pas officiel")
+    check(not fetch_feeds.statut_rockstarmag("https://www.ign.com/articles/gta-6", gnews_en),
+          "ni RockstarMag")
+    check(not fetch_feeds.statut_officiel("https://www.youtube.com/watch?v=abc", gnews_en),
+          "une vidéo YouTube trouvée par Google News n'est PAS officielle")
+    check(fetch_feeds.statut_officiel("https://www.youtube.com/watch?v=abc", yt),
+          "mais elle l'est venant de la chaîne de Rockstar, qui déclare ce domaine")
+    check(not fetch_feeds.statut_officiel("", gnews_en),
+          "un lien vide ne fait rien passer")
+
+    # La repasse rétroactive corrige DANS LES DEUX SENS. Ne rétrograder que
+    # les faux officiels laissait les vrais non détectés à l'abandon :
+    # l'historique n'est jamais rejoué dans le pipeline de collecte.
+    historique = [
+        # à promouvoir : publiés par Rockstar / Rockstar Mag, trouvés ailleurs
+        {"source": "Google News (EN)", "link": newswire, "official": False, "rockstarmag": False},
+        {"source": "Google News (FR)", "link": art_rmag, "official": False, "rockstarmag": False},
+        # à rétrograder : marqué officiel alors que le lien ne l'est pas
+        {"source": "Rockstar Games (officiel EN)", "link": "https://www.ign.com/a",
+         "official": True, "rockstarmag": False},
+        # à laisser tel quel
+        {"source": "Rockstar Games (YouTube)", "link": "https://www.youtube.com/watch?v=abc",
+         "official": True, "rockstarmag": False},
+        {"source": "PC Gamer", "link": "https://www.pcgamer.com/gta6",
+         "official": False, "rockstarmag": False},
+        # source disparue de FEEDS (ancien nom) : jugée sur son seul domaine
+        {"source": "RockstarMag.fr", "link": art_rmag, "official": False, "rockstarmag": True},
+    ]
+    fetch_feeds.recheck_official_status(historique)
+    check(historique[0]["official"] is True, "le Newswire est promu officiel rétroactivement")
+    check(historique[1]["rockstarmag"] is True, "l'article Rockstar Mag est promu rétroactivement")
+    check(historique[2]["official"] is False, "le faux officiel est toujours rétrogradé")
+    check(historique[3]["official"] is True, "la vidéo de la chaîne garde son statut")
+    check(historique[4]["official"] is False and historique[4]["rockstarmag"] is False,
+          "un article tiers reste dans « Non Rockstar »")
+    check(historique[5]["rockstarmag"] is True,
+          "une source renommée garde son onglet grâce au domaine")
+
+    # Un article ne doit jamais tomber dans deux onglets : les trois filtres
+    # de l'app (official / rockstarmag / ni l'un ni l'autre) se partagent le
+    # fil, et un doublon fausserait les compteurs.
+    for item in historique:
+        check(not (item["official"] and item["rockstarmag"]),
+              f"pas de double appartenance : {item['source']}")
+
+
+
+def test_couverture_par_lien():
+    print("\n[couverture] « N sources » compte des rédactions, pas des flux")
+    import fetch_feeds
+
+    LIEN = "https://www.rockstargames.com/newswire/article/9k2k/extended-look"
+    base = {"source": "Rockstar Games (officiel EN)", "link": LIEN, "title": "Extended Look"}
+
+    # Le cas réel qui a produit le premier faux 🔥 : quatre requêtes Google
+    # News différentes remontent la MÊME page du Newswire.
+    for flux in ("Rockstar Games (annonces)", "Google News (EN)", "GTA 6 x Netflix"):
+        fetch_feeds.record_coverage(base, {"source": flux, "link": LIEN})
+    check(len(base.get("extraSources") or []) == 0,
+          "le même lien trouvé par trois autres flux n'ajoute aucune source")
+    check(not fetch_feeds.is_hot(base), "il ne devient donc pas une actu majeure")
+
+    # Une vraie rédaction, avec sa propre URL, compte.
+    fetch_feeds.record_coverage(base, {"source": "IGN", "link": "https://www.ign.com/a"})
+    fetch_feeds.record_coverage(base, {"source": "Kotaku", "link": "https://kotaku.com/b"})
+    check(len(base["extraSources"]) == 2, "deux rédactions distinctes sont comptées")
+
+    # Deux flux différents rapportant la même URL tierce : un seul compte.
+    fetch_feeds.record_coverage(base, {"source": "Google News (FR)", "link": "https://www.ign.com/a"})
+    check(len(base["extraSources"]) == 2,
+          "un autre flux sur une URL déjà connue n'ajoute rien")
+
+    # La règle historique tient toujours : même nom de source, on ignore.
+    fetch_feeds.record_coverage(base, {"source": "IGN", "link": "https://www.ign.com/autre"})
+    check(len(base["extraSources"]) == 2, "la même source deux fois reste ignorée")
+
+    check(1 + len(base["extraSources"]) == 3, "le compte affiché vaut 3, pas 6")
+
+    # Un article sans lien ne doit pas faire exploser la fonction.
+    vide = {"source": "A", "link": ""}
+    fetch_feeds.record_coverage(vide, {"source": "B", "link": ""})
+    check(len(vide.get("extraSources") or []) == 1,
+          "des liens vides n'empêchent pas de compter deux sources nommées")
+
+    # --- Reprise de l'historique déjà gonflé ---
+    # Sans elle, les articles enregistrés avant le correctif garderaient leur
+    # compte faux : l'historique n'est jamais rejoué dans la collecte.
+    historique = [
+        {"link": LIEN, "extraSources": [
+            {"source": "Rockstar Games (annonces)", "link": LIEN},
+            {"source": "Google News (EN)", "link": LIEN},
+            {"source": "GTA 6 x Netflix", "link": LIEN},
+        ]},
+        {"link": "https://a.fr/1", "extraSources": [
+            {"source": "IGN", "link": "https://www.ign.com/a"},
+            {"source": "Google News (FR)", "link": "https://www.ign.com/a"},
+            {"source": "Kotaku", "link": "https://kotaku.com/b"},
+        ]},
+        {"link": "https://b.fr/2", "extraSources": [{"source": "IGN", "link": "https://www.ign.com/c"}]},
+        {"link": "https://c.fr/3"},
+    ]
+    fetch_feeds.deduplique_couverture(historique)
+    check("extraSources" not in historique[0],
+          "un article gonflé par un seul lien perd entièrement ses sources en trop")
+    check(not fetch_feeds.is_hot(historique[0]), "et perd son badge d'actu majeure")
+    check(len(historique[1]["extraSources"]) == 2,
+          "un doublon est retiré, les deux vraies rédactions restent")
+    check([a["source"] for a in historique[1]["extraSources"]] == ["IGN", "Kotaku"],
+          "c'est la première occurrence qui est gardée, dans l'ordre")
+    check(len(historique[2]["extraSources"]) == 1, "un article déjà sain n'est pas touché")
+    check("extraSources" not in historique[3], "un article sans sources reste sans sources")
+
+    # Idempotence : rejouer la passe ne doit plus rien changer.
+    avant = [len(i.get("extraSources") or []) for i in historique]
+    fetch_feeds.deduplique_couverture(historique)
+    check([len(i.get("extraSources") or []) for i in historique] == avant,
+          "rejouer la passe est sans effet")
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -979,6 +1135,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_masquage_endpoint,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
+           test_onglets_par_domaine, test_couverture_par_lien,
            test_garde_fou_archives,
            test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,

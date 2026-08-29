@@ -230,6 +230,45 @@ def lien_officiel(url, domaines):
     except Exception:
         return False
     return any(d in domaine for d in domaines)
+
+
+# Domaine de Rockstar Mag. Même logique que pour les domaines officiels : ce
+# qui compte est QUI PUBLIE, pas qui a trouvé l'article.
+ROCKSTARMAG_DOMAINS = ("rockstarmag.fr",)
+
+
+def statut_officiel(url, feed=None):
+    """Un article est officiel s'il est PUBLIÉ par Rockstar ou Take-Two.
+
+    Deux chemins, parce qu'il y a deux façons de tomber dessus :
+
+    - le lien est sur un domaine officiel, quelle que soit la source qui l'a
+      remonté. Sans ce cas, un article du Newswire trouvé par Google News
+      atterrissait dans « Non Rockstar » alors que son lien est
+      irréprochable — et comme la déduplication garde le premier trouvé, le
+      même article changeait d'onglet selon le flux qui gagnait la course ;
+    - la source est déclarée officielle ET le lien confirme SES domaines.
+      Ce second cas existe pour la chaîne YouTube de Rockstar, dont les
+      liens pointent légitimement vers youtube.com : ce domaine ne peut pas
+      entrer dans la liste globale, sinon n'importe quelle vidéo deviendrait
+      officielle.
+    """
+    if lien_officiel(url, OFFICIAL_DOMAINS):
+        return True
+    if feed and feed.get("official") and lien_officiel(url, domaines_officiels(feed)):
+        return True
+    return False
+
+
+def statut_rockstarmag(url, feed=None):
+    """Même principe : le domaine prime, la déclaration de source complète.
+
+    La déclaration reste utile pour les liens que le flux RSS ne fait pas
+    pointer directement sur le site (redirections, agrégateurs).
+    """
+    if lien_officiel(url, ROCKSTARMAG_DOMAINS):
+        return True
+    return bool(feed and feed.get("rockstarmag"))
 SIMILARITY_THRESHOLD = 0.75
 
 
@@ -345,19 +384,64 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None):
 
 
 def record_coverage(existing, item):
-    """Note qu'une source de plus couvre la même actualité.
+    """Note qu'une RÉDACTION de plus couvre la même actualité.
 
-    Alimente le champ extraSources, que le tracker affiche déjà sous la
-    carte (« + 3 autres sources : … ») dans son mode de secours — le
-    backend produit désormais la même chose.
+    Alimente le champ extraSources, affiché sous la carte (« + 3 autres
+    sources : … ») et sur lequel repose le badge « actu majeure ».
+
+    Le lien fait foi, pas le nom du flux. Quatre requêtes Google News
+    différentes remontent souvent la MÊME page : les compter comme quatre
+    sources gonflait le badge sans qu'aucune rédaction supplémentaire n'ait
+    publié quoi que ce soit. Mesuré sur l'historique du 29/08 : 136 des 168
+    articles dits « croisés » n'étaient qu'un seul lien recompté, et le
+    premier 🔥 était un article du Newswire trouvé par quatre de nos propres
+    requêtes.
     """
     if existing.get("source") == item.get("source"):
+        return False
+    lien = item.get("link")
+    if lien and lien == existing.get("link"):
         return False
     autres = existing.setdefault("extraSources", [])
     if any(a.get("source") == item.get("source") for a in autres):
         return False
-    autres.append({"source": item.get("source"), "link": item.get("link")})
+    if lien and any(a.get("link") == lien for a in autres):
+        return False
+    autres.append({"source": item.get("source"), "link": lien})
     return True
+
+
+def deduplique_couverture(items):
+    """Retire des extraSources déjà stockés ceux qui répètent un lien connu.
+
+    L'historique n'est jamais rejoué dans le pipeline de collecte : sans
+    cette passe, les 136 articles gonflés avant le correctif garderaient
+    leur compte faux indéfiniment, badge « actu majeure » compris.
+    """
+    nettoyes = 0
+    retires = 0
+    for item in items:
+        autres = item.get("extraSources")
+        if not autres:
+            continue
+        vus = {item.get("link")}
+        gardes = []
+        for a in autres:
+            lien = a.get("link")
+            if lien and lien in vus:
+                retires += 1
+                continue
+            vus.add(lien)
+            gardes.append(a)
+        if len(gardes) != len(autres):
+            nettoyes += 1
+            if gardes:
+                item["extraSources"] = gardes
+            else:
+                item.pop("extraSources", None)
+    if retires:
+        print(f"Correction rétroactive : {retires} source(s) en double retirée(s) sur {nettoyes} article(s) (même lien compté plusieurs fois)")
+    return items
 
 
 def is_hot(item):
@@ -586,9 +670,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # Rockstar (ex: un article IGN qui cite une page du site officiel).
         # On vérifie donc le vrai domaine du lien décodé avant de garder le
         # statut officiel, plutôt que de se fier uniquement au flux d'origine.
-        is_official = feed.get("official", False)
-        if is_official and not lien_officiel(real_link, domaines_officiels(feed)):
-            is_official = False
+        is_official = statut_officiel(real_link, feed)
 
         # Miniature trouvée directement dans le flux RSS, si présente — pas
         # besoin d'aller la chercher sur la page dans ce cas.
@@ -608,7 +690,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
             "date": date,
             "source": feed["name"],
             "official": is_official,
-            "rockstarmag": feed.get("rockstarmag", False),
+            "rockstarmag": statut_rockstarmag(real_link, feed),
             "specialist": feed.get("specialist_source", False),
             "lang": feed.get("lang"),
             "image": image,
@@ -931,27 +1013,50 @@ def write_new_items_file(new_items):
 
 
 def recheck_official_status(items):
-    """Réapplique la vérification de domaine officiel aux articles déjà
-    stockés — sans elle, un article marqué official=True lors d'une
-    exécution précédente (avant l'ajout de cette règle, ou via une source
-    qui n'est plus site:rockstargames.com/take2games.com) resterait
-    mal classé indéfiniment : l'historique est rechargé tel quel, sans
-    jamais repasser dans le pipeline de collecte."""
-    # Les domaines acceptés dépendent de la source : la chaîne YouTube de
-    # Rockstar pointe légitimement vers youtube.com. Sans cette
-    # correspondance par nom de source, cette passe rétroactive lui
-    # retirerait son statut officiel à chaque exécution — exactement le
-    # travers qu'elle est censée corriger, appliqué à tort.
-    par_source = {f["name"]: domaines_officiels(f) for f in FEEDS}
-    corrected = 0
+    """Recalcule les drapeaux d'onglet sur les articles déjà stockés.
+
+    L'historique est rechargé tel quel, sans jamais repasser dans le
+    pipeline de collecte : sans cette passe, un article mal classé le
+    resterait indéfiniment.
+
+    Elle corrige dans LES DEUX SENS. Ne rétrograder que les faux officiels,
+    comme avant, laissait à l'abandon le défaut inverse : un article publié
+    par Rockstar ou Rockstar Mag mais découvert par Google News n'avait
+    jamais été marqué, et rien ne serait jamais venu le chercher.
+
+    La source est retrouvée par son nom pour honorer les domaines qu'elle
+    déclare — la chaîne YouTube de Rockstar pointe légitimement vers
+    youtube.com et perdrait son statut à chaque passage sinon. Un article
+    dont la source a disparu de FEEDS (renommage, retrait) n'est jugé que
+    sur son domaine, ce qui reste la bonne réponse.
+    """
+    par_source = {f["name"]: f for f in FEEDS}
+    promus = 0
+    retrogrades = 0
     for item in items:
-        if item.get("official"):
-            domaines = par_source.get(item.get("source"), OFFICIAL_DOMAINS)
-            if not lien_officiel(item.get("link", ""), domaines):
-                item["official"] = False
-                corrected += 1
-    if corrected:
-        print(f"Correction rétroactive : {corrected} article(s) reclassé(s) de officiel à non-officiel (domaine réel ne correspondant pas)")
+        feed = par_source.get(item.get("source"))
+        lien = item.get("link", "")
+
+        officiel = statut_officiel(lien, feed)
+        if bool(item.get("official")) != officiel:
+            item["official"] = officiel
+            if officiel:
+                promus += 1
+            else:
+                retrogrades += 1
+
+        rmag = statut_rockstarmag(lien, feed)
+        if bool(item.get("rockstarmag")) != rmag:
+            item["rockstarmag"] = rmag
+            if rmag:
+                promus += 1
+            else:
+                retrogrades += 1
+
+    if retrogrades:
+        print(f"Correction rétroactive : {retrogrades} drapeau(x) retiré(s) (domaine réel ne correspondant pas)")
+    if promus:
+        print(f"Correction rétroactive : {promus} drapeau(x) posé(s) (article publié par Rockstar ou Rockstar Mag, trouvé via une autre source)")
     return items
 
 
@@ -1042,6 +1147,7 @@ def main():
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
+    existing_items = deduplique_couverture(existing_items)
 
     # Repasse rétroactive des dates : l'historique est rechargé tel quel et
     # ne repasse jamais dans le pipeline de collecte, donc les articles

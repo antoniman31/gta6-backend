@@ -869,7 +869,7 @@ const DEFAULT_FEEDS = [
   { id: "rockstar-announce", name: "Rockstar Games (annonces)", url: "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", enabled: true, official: true },
   { id: "gta6-netflix", name: "GTA 6 x Netflix", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, specialist: true },
   { id: "take2-ir", name: "Take-Two Investor Relations (officiel)", url: "https://ir.take2games.com/rss/news-releases.xml?items=15", enabled: true, official: true },
-  { id: "rockstar-youtube", name: "Rockstar Games (YouTube)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCULwHhkI31JHAKe57LZdzcA", enabled: true, official: true },
+  { id: "rockstar-youtube", name: "Rockstar Games (YouTube)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCULwHhkI31JHAKe57LZdzcA", enabled: true, official: true, officialDomains: ["youtube.com", "youtu.be"] },
   { id: "gnews-fr", name: "Google News (FR)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
   { id: "gnews-en", name: "Google News (EN)", url: "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
   { id: "pcgamer", name: "PC Gamer", url: "https://www.pcgamer.com/rss.xml", enabled: true, official: false },
@@ -1504,8 +1504,8 @@ async function fetchFeed(feed){
       link: item.link,
       date: item.date,
       source: feed.name,
-      official: !!feed.official,
-      rockstarmag: !!feed.rockstarmag,
+      official: estOfficiel(item.link, feed),
+      rockstarmag: estRockstarmag(item.link, feed),
       specialist: !!feed.specialist,
       lang: feed.lang || null,
       // Google News RSS ne fournit jamais d'image, et son lien pointe vers
@@ -1539,8 +1539,8 @@ async function fetchFeed(feed){
         link: item.link,
         date: item.date,
         source: feed.name,
-        official: !!feed.official,
-        rockstarmag: !!feed.rockstarmag,
+        official: estOfficiel(item.link, feed),
+        rockstarmag: estRockstarmag(item.link, feed),
         specialist: !!feed.specialist,
         lang: feed.lang || null,
         image: item.image || null,
@@ -1556,6 +1556,40 @@ async function fetchFeed(feed){
   }
   addLog("fail", `<span class="src">${escapeHtml(feed.name)}</span> — tous les proxys ont échoué, source ignorée`);
   return [];
+}
+
+// Domaines qui décident de l'onglet. Ce qui compte est QUI PUBLIE, pas quelle
+// source a trouvé l'article : le même article de Rockstar Mag remonté par
+// Google News atterrissait sinon dans « Non Rockstar », et comme la
+// déduplication garde le premier trouvé, l'onglet dépendait d'une course
+// entre deux flux. Doit rester aligné sur OFFICIAL_DOMAINS et
+// ROCKSTARMAG_DOMAINS de fetch_feeds.py.
+const DOMAINES_OFFICIELS = ["rockstargames.com", "take2games.com"];
+const DOMAINES_ROCKSTARMAG = ["rockstarmag.fr"];
+
+function surDomaine(url, domaines){
+  try{
+    const hote = new URL(url, window.location.href).hostname.toLowerCase();
+    return domaines.some(d => hote.includes(d));
+  }catch(e){ return false; }
+}
+
+// La source déclarée complète le domaine ; elle ne le remplace pas. Le
+// second cas couvre la chaîne YouTube de Rockstar, dont les liens pointent
+// légitimement vers youtube.com — domaine impossible à mettre dans la liste
+// globale sans rendre officielle n'importe quelle vidéo.
+function estOfficiel(url, feed){
+  if(surDomaine(url, DOMAINES_OFFICIELS)) return true;
+  if(feed && feed.official){
+    const propres = feed.officialDomains || DOMAINES_OFFICIELS;
+    if(surDomaine(url, propres)) return true;
+  }
+  return false;
+}
+
+function estRockstarmag(url, feed){
+  if(surDomaine(url, DOMAINES_ROCKSTARMAG)) return true;
+  return !!(feed && feed.rockstarmag);
 }
 
 function faviconFor(url){
@@ -1816,10 +1850,15 @@ async function checkNow(force){
     for(const item of result.value){
       const match = findDuplicateIndexed(item, all, allByLink);
       if(match){
-        // Regroupe au lieu de jeter : on garde une trace des sources
-        // additionnelles qui couvrent la même actu.
+        // Regroupe au lieu de jeter : on garde une trace des RÉDACTIONS
+        // additionnelles qui couvrent la même actu. Le lien fait foi, pas le
+        // nom du flux : quatre requêtes Google News remontent souvent la même
+        // page, et les compter comme quatre sources gonflait le badge « actu
+        // majeure » sans qu'aucune rédaction de plus n'ait rien publié.
         if(!match.extraSources) match.extraSources = [];
-        if(!match.extraSources.some(s => s.source === item.source)){
+        const dejaVus = new Set([match.link, ...match.extraSources.map(s => s.link)]);
+        const dejaNommees = match.extraSources.some(s => s.source === item.source);
+        if(!dejaNommees && !dejaVus.has(item.link)){
           match.extraSources.push({ source: item.source, link: item.link });
         }
       }else{
