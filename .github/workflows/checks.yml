@@ -2,17 +2,23 @@ name: Contrôles
 
 # Sur les pull requests, et sur main hors des commits du robot.
 #
-# paths-ignore sur docs/feed.json est indispensable : le robot pousse un
-# commit deux fois par heure et ne touche QUE ce fichier. Sans ce filtre,
-# ces contrôles se déclencheraient ~48 fois par jour pour revérifier du code
-# qui n'a pas bougé, en consommant des minutes Actions et en noyant
-# l'historique des runs.
+# paths-ignore couvre les DEUX fichiers que le robot pousse. Il les committe
+# ensemble (feed.json et sa version allégée), et paths-ignore ne saute un
+# push que si TOUS les chemins modifiés y figurent : n'en lister qu'un
+# rendait le filtre inopérant.
+#
+# Aujourd'hui il ne sert de toute façon à rien : GitHub ne déclenche aucun
+# workflow sur un push signé par le GITHUB_TOKEN d'un autre workflow, ce qui
+# est le cas du robot. Le filtre reste le filet si le robot passait un jour
+# à un jeton personnel — sinon ces contrôles partiraient ~48 fois par jour
+# pour revérifier du code qui n'a pas bougé.
 on:
   pull_request:
   push:
     branches: [main]
     paths-ignore:
       - "docs/feed.json"
+      - "docs/feed-recent.json"
 
 jobs:
   controles:

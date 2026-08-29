@@ -21,7 +21,6 @@ seul indicateur d'importance dont on dispose sans lire les articles, et
 c'est déjà celui qui pilote le badge « N SOURCES » de l'app.
 """
 
-import os
 import sys
 from datetime import datetime, timedelta, timezone
 
@@ -130,7 +129,7 @@ def main():
         print("[hebdo] aucun article cette semaine — rien à envoyer.")
         return 0
 
-    print(f"[hebdo] envoi du récapitulatif hebdomadaire...")
+    print("[hebdo] envoi du récapitulatif hebdomadaire...")
     discord_notify.send_discord_with_retry(embed, "récapitulatif hebdomadaire")
     # Comme les autres notifications : jamais faire échouer le workflow.
     return 0

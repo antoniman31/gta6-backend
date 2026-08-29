@@ -43,18 +43,25 @@ def fusionner_doublons(items):
     chronologique = sorted(items, key=lambda i: feed_store.parse_date_key(i.get("date")))
     gardes = []
     fusions = []
+    par_titre = {}
     for item in chronologique:
-        # Même fenêtre que la déduplication en direct : les N derniers
-        # articles conservés, c'est-à-dire les plus récents à cet instant.
-        fenetre = gardes[-fetch_feeds.TITLE_SIMILARITY_WINDOW:]
-        jumeau = None
-        for autre in reversed(fenetre):
-            if fetch_feeds.title_similarity(item.get("title", ""),
-                                            autre.get("title", "")) >= fetch_feeds.SIMILARITY_THRESHOLD:
-                jumeau = autre
-                break
+        cle = fetch_feeds.normalize_title(item.get("title", ""))
+        # Même règle que la déduplication en direct : d'abord le titre exact,
+        # sans limite d'ancienneté, puis seulement la fenêtre floue. Sans la
+        # première passe, deux publications du même article espacées de plus
+        # de N articles restaient toutes deux dans l'historique.
+        jumeau = par_titre.get(cle) if cle else None
+        if jumeau is None:
+            fenetre = gardes[-fetch_feeds.TITLE_SIMILARITY_WINDOW:]
+            for autre in reversed(fenetre):
+                if fetch_feeds.title_similarity(item.get("title", ""),
+                                                autre.get("title", "")) >= fetch_feeds.SIMILARITY_THRESHOLD:
+                    jumeau = autre
+                    break
         if jumeau is None:
             gardes.append(item)
+            if cle:
+                par_titre.setdefault(cle, item)
         else:
             fetch_feeds.record_coverage(jumeau, item)
             fusions.append((jumeau, item))
