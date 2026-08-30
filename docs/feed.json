@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-29T23:31:51.048349+00:00",
+  "generated_at": "2026-08-30T00:02:14.699995+00:00",
   "total_articles": 1306,
-  "new_this_run": 4,
+  "new_this_run": 0,
   "hot_count": 2,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -343,7 +343,7 @@
       "name": "GTA 6 x Netflix",
       "entries_fetched": 100,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-29T22:33:20+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -351,8 +351,8 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "not_modified": true,
+      "entries_fetched": 10,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 66,
@@ -373,7 +373,7 @@
       "name": "Google News (FR)",
       "entries_fetched": 92,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-29T23:13:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -381,9 +381,9 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 92,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-29T22:46:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -451,8 +451,8 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "not_modified": false,
+      "entries_fetched": 0,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T17:45:42+00:00",
       "days_since_last_article": 1,
@@ -671,8 +671,8 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "not_modified": true,
+      "entries_fetched": 10,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T15:00:25+00:00",
       "days_since_last_article": 1,
@@ -701,7 +701,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 9,
+      "entries_fetched": 8,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": null,
@@ -781,7 +781,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 33,
+      "entries_fetched": 34,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": null,
@@ -810,13 +810,13 @@
     }
   ],
   "sources_silence": {
-    "ign": 1,
-    "kotaku": 7
+    "ign": 2,
+    "kotaku": 8
   },
   "feed_http_state": {
     "take2-ir": {
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "etag": "W/\"d1bd5399e62f12a7c37d00201da2c715\"",
@@ -852,15 +852,15 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sat, 29 Aug 2026 23:28:00 GMT"
+      "modified": "Sun, 30 Aug 2026 00:00:55 GMT"
     },
     "ginjfo": {
       "etag": "\"1e36da6e5c29c8453b8a536212043c3a\"",
       "modified": "Sat, 29 Aug 2026 09:28:48 GMT"
     },
     "gameblog": {
-      "etag": "W/\"6a936b87-3052\"",
-      "modified": "Sat, 29 Aug 2026 23:30:15 GMT"
+      "etag": "W/\"6a937292-3052\"",
+      "modified": "Sun, 30 Aug 2026 00:00:18 GMT"
     },
     "actugaming": {
       "etag": "W/\"c130ec6308e9de84b002577f613445ed\"",
@@ -875,8 +875,8 @@
       "modified": "Sat, 29 Aug 2026 20:04:20 GMT"
     },
     "vgc": {
-      "etag": "\"6a93544f-b64\"",
-      "modified": "Sat, 29 Aug 2026 21:51:11 GMT"
+      "etag": "\"6a93707e-b68\"",
+      "modified": "Sat, 29 Aug 2026 23:51:26 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -2191,7 +2191,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/08/gta_6_press_screenshot_2_3840x2160.jpg?w=1600&h=900&fit=crop",
-      "description": "Rockstar Games Issues New Official Statement on GTA 6 Microtransactions&nbsp;&nbsp;GameRant"
+      "description": "Rockstar Games Issues New Official Statement on GTA 6 Microtransactions&nbsp;&nbsp;GameRant",
+      "extraSources": [
+        {
+          "source": "Game Rant",
+          "link": "https://gamerant.com/gta-6-generative-ai-use/"
+        }
+      ]
     },
     {
       "title": "8 Incredible Details In GTA 6's Extended Look That Blew Us Away",
