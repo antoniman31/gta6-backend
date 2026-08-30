@@ -1333,6 +1333,75 @@ def test_compteur_echecs_decodage():
     check(fetch_feeds.echecs_decodage() == 0, "et le compteur se réinitialise")
 
 
+def test_historique_entrees():
+    print("\n[sources] repérer une source qui se dégrade sans mourir")
+    import fetch_feeds
+
+    # Une réponse 304 ne dit rien du volume du flux : l'empiler comme un
+    # zéro ferait chuter la référence de toutes les sources bien élevées.
+    s = fetch_feeds.maj_historique_entrees(
+        {"b": {"raw_count": 0, "not_modified": True}}, {"b": "30,30,30"})
+    check(s["b"] == "30,30,30", "une réponse 304 n'ajoute pas de faux zéro")
+
+    s = fetch_feeds.maj_historique_entrees(
+        {"a": {"raw_count": 19, "not_modified": False}}, {"a": "20,20,18"})
+    check(s["a"] == "20,20,18,19", "un passage normal est empilé")
+
+    long = ",".join(["30"] * 30)
+    s = fetch_feeds.maj_historique_entrees(
+        {"a": {"raw_count": 30, "not_modified": False}}, {"a": long})
+    check(len(fetch_feeds._serie(s["a"])) == fetch_feeds.HISTORIQUE_PASSAGES,
+          f"la série est plafonnée à {fetch_feeds.HISTORIQUE_PASSAGES} passages")
+
+    def baisse(serie):
+        return "x" in fetch_feeds.sources_en_baisse({"x": serie})
+
+    # Le cas qu'on cherche : la source répond toujours, mais amputée.
+    check(baisse("30,28,31,29,30,32,30,2,1,2"),
+          "un effondrement de 30 à 2 est signalé")
+    # Et tout ce qui ne doit PAS déclencher, sous peine de crier au loup.
+    check(not baisse("30,28,31,29,30,32,30,30,30,2"),
+          "un creux d'un seul passage ne suffit pas")
+    check(not baisse("3,2,4,1,3,2,0,0,0"),
+          "une petite source qui varie n'est pas signalée")
+    check(not baisse("30,28,31,29,30,32,30,29,31,30"),
+          "un régime stable ne déclenche rien")
+    check(not baisse("30,30"),
+          "une série trop courte ne conclut pas")
+
+
+def test_validation_avant_ecriture():
+    print("\n[écriture] un flux abîmé n'est jamais publié")
+    import feed_store
+
+    bon = {"items": [{"link": "https://a/1", "title": "un"},
+                     {"link": "https://a/2", "title": "deux"}]}
+    check(feed_store.valide_avant_ecriture(bon) == 2, "un flux sain passe")
+
+    def refuse(data, precedent=None):
+        try:
+            feed_store.valide_avant_ecriture(data, precedent)
+            return False
+        except feed_store.FeedInvalide:
+            return True
+
+    check(refuse({"items": [{"title": "sans lien"}]}), "un article sans lien est refusé")
+    check(refuse({"items": [{"link": "https://a/1"}]}), "un article sans titre est refusé")
+    check(refuse({"items": [{"link": "https://a/1", "title": "x"},
+                            {"link": "https://a/1", "title": "y"}]}),
+          "deux fois le même lien est refusé")
+    check(refuse({"items": "pas une liste"}), "un « items » qui n'est pas une liste est refusé")
+
+    # Une purge rétroactive retire légitimement quelques articles ; en perdre
+    # un dixième d'un coup est un bug, pas un nettoyage.
+    gros = {"items": [{"link": f"https://a/{i}", "title": str(i)} for i in range(1000)]}
+    presque = {"items": gros["items"][:980]}
+    maigre = {"items": gros["items"][:800]}
+    check(not refuse(presque, gros), "perdre 2 % des articles reste toléré")
+    check(refuse(maigre, gros), "en perdre 20 % arrête la publication")
+
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -1353,7 +1422,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_par_domaine, test_source_qui_plante,
            test_predecode_google_news,
            test_timeout_reseau, test_source_cassee_vs_muette,
-           test_compteur_echecs_decodage):
+           test_compteur_echecs_decodage,
+           test_historique_entrees, test_validation_avant_ecriture):
     fn()
 
 print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} vérifications passées")

@@ -265,6 +265,59 @@ def write_feed_pair(data, path=FEED_PATH):
     return len(allege["items"])
 
 
+class FeedInvalide(Exception):
+    """Le fichier qu'on s'apprête à écrire est abîmé — on n'écrit pas."""
+
+
+# En dessous de ce seuil on considère que la perte est trop grosse pour être
+# une purge légitime. Les deux conditions sont exigées ensemble : un dépôt
+# jeune peut perdre un fort pourcentage sur quelques articles sans que ce
+# soit grave, et un gros historique peut perdre 50 articles sur 20 000 lors
+# d'une déduplication normale.
+PERTE_MAX_RATIO = 0.10
+PERTE_MAX_ABSOLUE = 50
+
+
+def valide_avant_ecriture(data, precedent=None):
+    """Vérifie qu'un flux est publiable, et lève FeedInvalide sinon.
+
+    Publier un fichier abîmé est pire que ne rien publier : l'app le charge,
+    l'affiche, et le prochain passage repart de cet état corrompu. Mieux
+    vaut échouer bruyamment — le job passe en échec, le signal de vie part
+    en /fail, et l'ancien feed.json reste en place et servi.
+
+    `precedent` : le flux tel qu'il était avant ce passage, pour détecter une
+    chute anormale du nombre d'articles. Une déduplication rétroactive en
+    retire légitimement quelques-uns ; en perdre un dixième d'un coup est un
+    bug, pas un nettoyage.
+    """
+    items = data.get("items")
+    if not isinstance(items, list):
+        raise FeedInvalide("« items » absent ou n'est pas une liste")
+
+    sans_lien = sum(1 for i in items if not (isinstance(i, dict) and i.get("link")))
+    if sans_lien:
+        raise FeedInvalide(f"{sans_lien} article(s) sans lien exploitable")
+
+    sans_titre = sum(1 for i in items if not i.get("title"))
+    if sans_titre:
+        raise FeedInvalide(f"{sans_titre} article(s) sans titre")
+
+    liens = [i["link"] for i in items]
+    doublons = len(liens) - len(set(liens))
+    if doublons:
+        raise FeedInvalide(f"{doublons} lien(s) en double — la déduplication a échoué")
+
+    avant = len((precedent or {}).get("items") or [])
+    perdus = avant - len(items)
+    if avant and perdus > PERTE_MAX_ABSOLUE and perdus > avant * PERTE_MAX_RATIO:
+        raise FeedInvalide(
+            f"{perdus} articles perdus sur {avant} "
+            f"({100 * perdus / avant:.0f} %) — trop pour une purge normale")
+
+    return len(items)
+
+
 def write_feed(data, path=FEED_PATH):
     """Écrit le fichier de sortie.
 

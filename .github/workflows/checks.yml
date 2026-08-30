@@ -47,3 +47,12 @@ jobs:
       # comme c'était arrivé sur trois sources fin août 2026.
       - name: Synchronisation backend / mode de secours
         run: python check_sources_sync.py
+
+      # Audit des DONNÉES publiées, pas du code. Volontairement sans
+      # `--strict` : ces anomalies sont des symptômes qui peuvent être
+      # légitimes ou déjà connus (un site qui republie un article sous deux
+      # URL n'est pas un bug du robot). Bloquer les PR dessus rendrait
+      # l'outil insupportable et on finirait par l'ignorer — il est là pour
+      # être LU dans le journal de la CI, pas pour barrer la route.
+      - name: Audit des données publiées
+        run: python audit_donnees.py
