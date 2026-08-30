@@ -401,7 +401,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **328
+qui permet de tester tout le pipeline sans sortir de la machine. **332
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -902,7 +902,16 @@ l'API GitHub : 60 requêtes/h par adresse IP).
   les regardait pas. Une ligne sous le compteur d'articles dit maintenant
   « passage en 1 min 25 · 15 nouveaux · toutes les sources répondent », et
   passe en alerte quand une source est muette, cassée, ou quand un décodage
-  Google News a échoué. Seule la durée manquait côté backend
+  Google News a échoué. Placée **sous les deux boutons** : au-dessus, elle
+  séparait le nombre d'articles des actions qui le modifient, alors que ce
+  bloc existe pour les tenir ensemble.
+
+  `sources_silence` compte **toutes** les sources qui ne rapportent rien —
+  muettes et cassées confondues, c'est voulu côté robot. Les recompter
+  séparément à l'affichage annonçait « 3 sources muettes · 3 cassées » pour
+  trois sources en tout : **six problèmes affichés, trois réels**. Les
+  muettes excluent donc celles déjà nommées comme cassées, et « toutes les
+  sources répondent » exige que les deux comptes soient nuls. Seule la durée manquait côté backend
   (`duration_seconds`). Masquée en mode de secours, où aucun robot ne tourne :
   y laisser l'état du dernier passage backend annoncerait un état qui n'a
   plus cours.
