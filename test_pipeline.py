@@ -1340,6 +1340,79 @@ def test_titres_numerotes_pas_fusionnes():
           "mais deux fois le même titre restent bien un doublon")
 
 
+def test_fusion_retroactive_des_ressemblances():
+    print("\n[doublons] rejeu de la ressemblance sur l'historique")
+    import fetch_feeds
+
+    avant = fetch_feeds._SUFFIXES_MEDIAS
+    try:
+        fetch_feeds.memorise_suffixes_medias([])
+
+        def art(titre, source, date, lien=None):
+            return {"title": titre, "source": source, "date": date,
+                    "link": lien or f"https://ex.com/{abs(hash(titre)) % 10**8}"}
+
+        # Le cas que la fenêtre glissante laissait passer : deux rédactions
+        # qui titrent la même actu, séparées dans l'historique.
+        base = [art("GTA 6 Map Is 3X Bigger Than Red Dead Redemption 2's",
+                    "GameSpot", "2026-08-27T10:00:00+00:00"),
+                art("GTA 6 Map Is Three Times Bigger Than Red Dead Redemption 2",
+                    "VGC", "2026-08-28T10:00:00+00:00")]
+        sortie = fetch_feeds.fusionne_ressemblances_de_titre(list(base))
+        check(len(sortie) == 1, "les deux reprises ne font plus qu'une carte")
+        check(sortie[0]["source"] == "GameSpot",
+              "le plus ancien est gardé — c'est lui qui situe l'actualité")
+        check([a["source"] for a in sortie[0]["extraSources"]] == ["VGC"],
+              "et l'autre est créditée en source supplémentaire, rien n'est perdu")
+
+        # Idempotence : le passage suivant ne doit RIEN refaire, sinon le
+        # robot grignote l'historique 48 fois par jour.
+        check(len(fetch_feeds.fusionne_ressemblances_de_titre(list(sortie))) == 1,
+              "un second passage ne fusionne rien de plus")
+
+        # Jamais deux fois la même source : une rédaction ne republie pas le
+        # même article, elle publie une suite. Cas réel de RockstarMag.
+        suite = [art("GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !",
+                     "RockstarMag (YouTube)", "2026-08-27T10:00:00+00:00"),
+                 art("GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE ! (SUITE)",
+                     "RockstarMag (YouTube)", "2026-08-27T12:00:00+00:00")]
+        check(len(fetch_feeds.fusionne_ressemblances_de_titre(list(suite))) == 2,
+              "« (SUITE) » de la même chaîne reste une carte à part")
+
+        # Le contre-exemple qui servait d'argument pour ne rien faire.
+        gtaboom = [art("Our GTA 6 Extended Look Predictions",
+                       "GTA BOOM", "2026-08-27T08:00:00+00:00"),
+                   art("How Our GTA 6 Extended Look Predictions Held Up",
+                       "GTA BOOM", "2026-08-27T20:00:00+00:00")]
+        check(len(fetch_feeds.fusionne_ressemblances_de_titre(list(gtaboom))) == 2,
+              "« Predictions » et « Predictions Held Up » restent séparés")
+
+        # Une vidéo et un article ne sont pas le même contenu : l'un se
+        # regarde, l'autre se lit. Sans cette règle, l'annonce du 6 août
+        # avalait la vidéo du 27 et la carte perdait sa miniature.
+        video = [art("Grand Theft Auto VI: An Extended Look",
+                     "Rockstar Games (officiel EN)", "2026-08-06T10:00:00+00:00",
+                     "https://www.rockstargames.com/newswire/extended-look"),
+                 art("Grand Theft Auto VI: An Extended Look",
+                     "Rockstar Games (YouTube)", "2026-08-27T10:00:00+00:00",
+                     "https://www.youtube.com/watch?v=tJbzMqJGH4k")]
+        check(len(fetch_feeds.fusionne_ressemblances_de_titre(list(video))) == 2,
+              "la vidéo ne disparaît pas derrière la page qui l'annonce")
+
+        # Pas de chaînage : chaque membre doit ressembler au GARDIEN, pas
+        # seulement à celui qui l'a attiré. Sans ça, la transitivité
+        # ressoudait le Trailer 1 et le Trailer 2 par le milieu.
+        chaine = [art("Grand Theft Auto VI Trailer 1", "A", "2023-12-05T10:00:00+00:00"),
+                  art("Grand Theft Auto VI Trailer 1 en ligne", "B", "2023-12-06T10:00:00+00:00"),
+                  art("Grand Theft Auto VI Trailer 2", "C", "2025-05-06T10:00:00+00:00")]
+        sortie = fetch_feeds.fusionne_ressemblances_de_titre(list(chaine))
+        restants = {i["title"] for i in sortie}
+        check("Grand Theft Auto VI Trailer 2" in restants,
+              "le Trailer 2 n'est pas absorbé par ricochet")
+    finally:
+        fetch_feeds._SUFFIXES_MEDIAS = avant
+
+
 def test_suffixe_du_media_appris():
     print("\n[doublons] le « - Nom du média » final ne sépare plus")
     import fetch_feeds
@@ -2374,7 +2447,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_reparation_vignettes_stockees,
            test_sonde_decouvre_les_flux_declares,
            test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
-           test_suffixe_du_media_appris,
+           test_suffixe_du_media_appris, test_fusion_retroactive_des_ressemblances,
            test_reparation_attributions_croisees, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
