@@ -290,6 +290,36 @@ FEEDS = [
     {"id": "schreier", "name": "Jason Schreier", "url": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en&gl=US&ceid=US:en", "official": False},
 ]
 
+# Vidéos trop anciennes pour le flux de leur chaîne.
+#
+# Le flux Atom d'une chaîne YouTube ne porte que 15 entrées et ne pagine
+# pas : tout ce qui précède est hors de portée du robot, définitivement.
+# Les deux bandes-annonces de GTA 6 comptent trop pour qu'on les laisse
+# manquer sous prétexte que Rockstar a publié quinze vidéos depuis.
+#
+# CHAQUE CHAMP VIENT D'UNE MESURE, jamais de mémoire. Les titres sortent
+# de `--video` (oEmbed, lancé depuis un runner) ; les vignettes se
+# déduisent de l'identifiant ; les dates ont été lues sur les fiches
+# YouTube elles-mêmes. Deux tentatives automatiques les avaient données
+# fausses — « 2 days ago » pour une vidéo de 2025, puis un dateCreated de
+# 2026 — parce que la page servie à un serveur n'est pas celle d'un
+# navigateur. Une date approximative rangerait la vidéo au mauvais endroit
+# du fil et plus rien ne viendrait la corriger.
+#
+# Midi UTC quand seul le jour est connu : à minuit, un décalage horaire
+# ferait afficher la veille.
+VIDEOS_ARCHIVEES = [
+    {"source": "rockstar-youtube", "video": "QdBZY2fkU-0",
+     "title": "Grand Theft Auto VI Trailer 1",
+     "date": "2023-12-05T12:00:00+00:00"},
+    {"source": "rockstar-youtube", "video": "VQRLujxTm3c",
+     "title": "Grand Theft Auto VI Trailer 2",
+     "date": "2025-05-06T12:00:00+00:00"},
+    {"source": "rockstar-youtube", "video": "tJbzMqJGH4k",
+     "title": "Grand Theft Auto VI: An Extended Look",
+     "date": "2026-08-27T18:00:48-07:00"},
+]
+
 # Liste enrichie fournie par l'utilisateur (139 mots-clés) — remplace
 # l'ancienne liste courte de 19 termes, jamais synchronisée avec celle-ci
 # jusqu'à présent malgré la duplication FEEDS/DEFAULT_FEEDS déjà documentée
@@ -480,6 +510,32 @@ def normalize_title(title):
     return re.sub(r"[^\w\s]", "", title.lower()).strip()
 
 
+def _sans_nombres(titre):
+    return re.sub(r"\s+", " ", re.sub(r"\d+", "", normalize_title(titre))).strip()
+
+
+def titres_dune_meme_serie(a, b):
+    """Deux titres identiques À LEUR NUMÉRO PRÈS — donc deux contenus distincts.
+
+    « Grand Theft Auto VI Trailer 1 » et « Grand Theft Auto VI Trailer 2 »
+    se ressemblent à 0,966 : très au-dessus de n'importe quel seuil
+    raisonnable, alors que ce sont deux vidéos différentes séparées d'un an
+    et demi. Le numéro EST l'information qui les distingue, et c'est le seul
+    endroit d'un titre où un caractère de différence change tout.
+
+    Constaté en versant les bandes-annonces dans l'historique : le Trailer 2
+    disparaissait, absorbé par le Trailer 1, et se retrouvait crédité comme
+    « autre source » de celui-ci — un lien qui emmène le lecteur sur un
+    autre contenu. Le Trailer 3 sortira avant novembre.
+
+    On préfère ici rater une fusion que d'en faire une fausse : deux cartes
+    en double se voient et se corrigent, un article escamoté ne se voit pas.
+    """
+    if _sans_nombres(a) != _sans_nombres(b):
+        return False
+    return re.findall(r"\d+", a) != re.findall(r"\d+", b)
+
+
 def title_similarity(a, b):
     return SequenceMatcher(None, normalize_title(a), normalize_title(b)).ratio()
 
@@ -562,6 +618,8 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None,
     a_comparer = (fenetre_titres if fenetre_titres is not None
                   else existing_items[:TITLE_SIMILARITY_WINDOW])
     for other in a_comparer:
+        if titres_dune_meme_serie(item["title"], other["title"]):
+            continue
         if title_similarity(item["title"], other["title"]) >= SIMILARITY_THRESHOLD:
             return other
     return None
@@ -1013,6 +1071,56 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         resume += f" ({vieux} archive(s) de plus de {MAX_ARTICLE_AGE_DAYS} jours écartée(s))"
     journal.append(resume)
     return items, nouvel_etat, journal
+
+
+def item_video_archivee(video, feed):
+    """Construit l'article d'une vidéo archivée, comme le ferait le flux."""
+    lien = f"https://www.youtube.com/watch?v={video['video']}"
+    return {
+        "title": video["title"],
+        "link": lien,
+        "source_link": None,
+        "date": video["date"],
+        "source": feed["name"],
+        "official": statut_officiel(lien, feed),
+        "rockstarmag": statut_rockstarmag(lien, feed),
+        "specialist": feed.get("specialist_source", False),
+        "lang": feed.get("lang"),
+        "image": vignette_youtube(lien),
+        "description": "",
+        # Une bande-annonce de 2023 ne s'annonce pas comme une nouveauté.
+        # Le drapeau les tient hors des notifications, comme les archives
+        # rapatriées des flux — voir `a_annoncer` dans main().
+        "archive": True,
+    }
+
+
+def ajoute_videos_archivees(resultats):
+    """Verse les vidéos archivées dans le résultat de leur source.
+
+    Versées dans le résultat de la source plutôt qu'importées à part :
+    elles empruntent alors exactement le même chemin que tout le reste —
+    déduplication par lien puis par titre, statut d'onglet, validation
+    avant écriture. Une seconde voie d'entrée serait une seconde occasion
+    de diverger.
+
+    Les rejouer à chaque passage est sans effet : la déduplication les
+    reconnaît par leur lien, et record_coverage refuse d'ajouter une source
+    supplémentaire à un article qui porte déjà le même lien et le même nom
+    de source.
+    """
+    par_id = {f["id"]: f for f in FEEDS}
+    ajoutees = 0
+    for video in VIDEOS_ARCHIVEES:
+        feed = par_id.get(video["source"])
+        entree = resultats.get(video["source"])
+        if feed is None or entree is None:
+            # Source retirée de FEEDS, ou passage où elle n'a pas répondu :
+            # on ne fabrique pas un résultat pour une source absente.
+            continue
+        entree[0].append(item_video_archivee(video, feed))
+        ajoutees += 1
+    return ajoutees
 
 
 def chaines_par_hote(feeds, par_hote=PER_HOST_LIMIT):
@@ -1860,6 +1968,11 @@ def main():
         print(f"  ↻ {len(reprises)} source(s) reprise(s), {len(sauvees)} rattrapée(s)"
               + (f" : {', '.join(sauvees)}" if sauvees else ""))
     print()
+
+    ajoutees = ajoute_videos_archivees(resultats)
+    if ajoutees:
+        print(f"  + {ajoutees} vidéo(s) archivée(s) versée(s) dans leur source "
+              f"(trop anciennes pour son flux)")
 
     promus = []
     feed_infos, new_counts, inchanges = merge_results(
