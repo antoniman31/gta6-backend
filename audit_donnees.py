@@ -162,6 +162,38 @@ def audite(data):
                     f"{len(manquants)} article(s) du fichier allégé absent(s) "
                     f"de l'historique complet", manquants)
 
+    # ---- Croissance : voir l'échéance arriver plutôt que la découvrir ----
+    #
+    # Le plafond de MAX_HISTORY_SIZE borne le FICHIER. Ce qu'il ne borne pas,
+    # c'est le temps que met chaque passage à le relire et le réécrire, ni le
+    # poids du téléchargement quand l'app demande l'historique complet.
+    #
+    # Le dépôt git, lui, n'est PAS un souci : entre deux passages presque
+    # rien ne change, git compresse en conséquence — 186 versions d'un
+    # fichier d'un Mo tenaient dans 2,4 Mo au 30/08/2026. Mesuré après un
+    # `git gc`, parce que les objets en vrac d'avant donnaient un chiffre
+    # vingt fois trop gros.
+    if items:
+        octets = len(json.dumps(data, ensure_ascii=False).encode("utf-8"))
+        par_article = octets / len(items)
+        recents = collections.Counter(
+            (i.get("date") or "")[:10] for i in items if i.get("date"))
+        derniers = [n for _, n in sorted(recents.items())[-14:]]
+        rythme = sum(derniers) / len(derniers) if derniers else 0
+        plafond = feed_store.MAX_HISTORY_SIZE
+        reste = plafond - len(items)
+        details = [
+            f"{len(items)} articles, {octets / 1048576:.2f} Mo "
+            f"({par_article:.0f} o/article)",
+        ]
+        if rythme > 0 and reste > 0:
+            jours = reste / rythme
+            details.append(f"rythme {rythme:.0f} articles/jour → plafond de "
+                           f"{plafond} dans {jours / 30:.0f} mois")
+            details.append(f"à plafond : {plafond * par_article / 1048576:.1f} Mo "
+                           f"par écriture")
+        signale("info", "croissance", "Croissance de l'historique", details)
+
     return anomalies
 
 

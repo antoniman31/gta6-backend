@@ -1340,6 +1340,391 @@ def test_titres_numerotes_pas_fusionnes():
           "mais deux fois le même titre restent bien un doublon")
 
 
+def test_description_video_youtube():
+    print("\n[archive] lire titre et date d'une vidéo sans clé d'API")
+    import fetch_feeds
+
+    class FausseReponse:
+        def __init__(self, texte="", data=None, code=200):
+            self.text = texte
+            self._data = data
+            self.status_code = code
+            self.ok = code == 200
+
+        def json(self):
+            return self._data
+
+    vrai = fetch_feeds.requests.get
+    try:
+        page = {"html": ""}
+
+        def faux_get(url, **kw):
+            if "oembed" in url:
+                return FausseReponse(data={"title": "Grand Theft Auto VI Trailer 2"})
+            return FausseReponse(texte=page["html"])
+
+        fetch_feeds.requests.get = faux_get
+
+        check(fetch_feeds.decris_video_youtube("pas une url") is None,
+              "un lien qui n'est pas une vidéo est refusé")
+
+        # Cinq écritures possibles : la page d'une vidéo ne rend pas le même
+        # balisage selon qu'elle sert une fiche complète ou une version
+        # allégée. Le premier essai n'avait trouvé la date que sur 1 vidéo
+        # sur 5 — chercher une seule forme ne suffit pas.
+        for balise in ('<meta itemprop="datePublished" content="2025-05-06">',
+                       '<meta itemprop="uploadDate" content="2025-05-06">',
+                       '"datePublished":"2025-05-06"',
+                       '"uploadDate":"2025-05-06"',
+                       '"publishDate":"2025-05-06"'):
+            page["html"] = balise
+            infos = fetch_feeds.decris_video_youtube(
+                "https://youtu.be/VQRLujxTm3c")
+            check(infos["date"] == "2025-05-06",
+                  f"date lue dans {balise[:34]}…")
+
+        check(infos["id"] == "VQRLujxTm3c", "l'identifiant est extrait du lien")
+        check(infos["title"] == "Grand Theft Auto VI Trailer 2",
+              "le titre vient d'oEmbed")
+        # image attend une URL, pas l'identifiant nu : lui passer `vid`
+        # renvoyait None sans broncher.
+        check(infos["image"] and "VQRLujxTm3c" in infos["image"],
+              "la miniature est déduite du lien complet")
+
+        # LE piège : `publishedTimeText` porte un texte relatif, et peut
+        # appartenir à une vidéo recommandée dans la marge. Le 30/08/2026 il
+        # a rendu « 2 days ago » pour le Trailer 2, sorti en 2025. Une date
+        # fausse est PIRE que pas de date : elle range la vidéo au mauvais
+        # endroit du fil et plus rien ne vient la corriger.
+        page["html"] = '"publishedTimeText":{"simpleText":"2 days ago"}'
+        infos = fetch_feeds.decris_video_youtube("https://youtu.be/VQRLujxTm3c")
+        check(infos["date"] is None,
+              "une date relative est refusée, jamais repêchée")
+
+        # Réseau en panne : on rend ce qu'on a, on ne lève pas.
+        def get_qui_explose(url, **kw):
+            raise RuntimeError("réseau coupé")
+
+        fetch_feeds.requests.get = get_qui_explose
+        infos = fetch_feeds.decris_video_youtube("https://youtu.be/VQRLujxTm3c")
+        check(infos and infos["id"] == "VQRLujxTm3c" and infos["date"] is None,
+              "réseau coupé : la fonction rend l'identifiant sans planter")
+    finally:
+        fetch_feeds.requests.get = vrai
+
+
+def test_recuperation_des_miniatures():
+    print("\n[miniatures] la récupération en parallèle")
+    import fetch_feeds
+
+    vrai = fetch_feeds.fetch_og_image
+    try:
+        appels = []
+
+        def faux(url, timeout=8):
+            appels.append(url)
+            return None if "muet" in url else f"{url}/og.jpg"
+
+        fetch_feeds.fetch_og_image = faux
+
+        # On ne va chercher que ce qui manque : re-télécharger une image
+        # déjà connue coûterait une requête par article à chaque passage.
+        items = [
+            {"title": "A", "link": "https://a.tld/1", "image": "deja.jpg"},
+            {"title": "B", "link": "https://b.tld/2", "image": None},
+            {"title": "C", "link": "https://muet.tld/3", "image": ""},
+            {"title": "D", "link": None, "image": None},
+        ]
+        fetch_feeds.fetch_missing_images(items)
+        check(sorted(appels) == ["https://b.tld/2", "https://muet.tld/3"],
+              "on n'interroge que les articles sans image ET avec un lien")
+        check(items[0]["image"] == "deja.jpg", "une image déjà là n'est pas touchée")
+        check(items[1]["image"] == "https://b.tld/2/og.jpg", "celle trouvée est posée")
+        check(not items[2].get("image"),
+              "une page sans og:image laisse l'article sans image, sans planter")
+        check(items[3].get("image") is None, "un article sans lien est ignoré")
+
+        appels.clear()
+        fetch_feeds.fetch_missing_images([{"title": "E", "link": "x", "image": "y"}])
+        check(appels == [], "rien à chercher → aucune requête")
+
+        # Une page qui explose ne doit pas emporter le passage entier : les
+        # autres miniatures doivent quand même arriver.
+        def explose(url, timeout=8):
+            if "boom" in url:
+                raise RuntimeError("page cassée")
+            return f"{url}/og.jpg"
+
+        fetch_feeds.fetch_og_image = explose
+        mixte = [{"title": "F", "link": "https://boom.tld/1", "image": None},
+                 {"title": "G", "link": "https://ok.tld/2", "image": None}]
+        fetch_feeds.fetch_missing_images(mixte)
+        check(mixte[1]["image"] == "https://ok.tld/2/og.jpg",
+              "une page qui plante n'empêche pas les autres d'aboutir")
+    finally:
+        fetch_feeds.fetch_og_image = vrai
+
+
+def test_fenetre_en_heures():
+    print("\n[doublons] la fenêtre se compte en heures, pas en articles")
+    import fetch_feeds
+    from datetime import datetime, timedelta, timezone
+
+    base = datetime(2026, 8, 27, 12, 0, tzinfo=timezone.utc)
+
+    def art(heures, n):
+        return {"title": f"Article {n}", "link": f"https://ex.tld/{n}",
+                "date": (base - timedelta(hours=heures)).isoformat()}
+
+    # Comptée en articles, la fenêtre se refermait exactement quand il aurait
+    # fallu qu'elle s'ouvre : 200 articles valaient 50 h en régime normal
+    # mais 16 h le 27/08/2026, jour à 293 articles. Le robot voyait donc le
+    # moins loin quand il se passait quelque chose.
+    dense = [art(h * 0.05, n) for n, h in enumerate(range(600))]  # 30 h serrées
+    fen = fetch_feeds.fenetre_recente(dense, heures=24)
+    check(all(f in dense for f in fen), "la fenêtre ne contient que des articles du fil")
+    plus_vieux = min(fetch_feeds.feed_store.parse_date_key(f["date"]) for f in fen)
+    check((base - plus_vieux).total_seconds() / 3600 <= 24.01,
+          "aucun article plus vieux que la durée demandée")
+
+    # Plancher : trois jours creux ne doivent pas réduire la fenêtre à rien.
+    # Sans lui, une accalmie rendrait la déduplication myope.
+    creux = [art(h * 12, n) for n, h in enumerate(range(400))]
+    fen = fetch_feeds.fenetre_recente(creux, heures=24)
+    check(len(fen) == fetch_feeds.TITLE_SIMILARITY_WINDOW,
+          f"sur un fil calme, on compare quand même aux "
+          f"{fetch_feeds.TITLE_SIMILARITY_WINDOW} derniers")
+
+    # Plafond : rien n'interdit à un événement futur de produire des
+    # milliers d'articles en trois jours ; le coût doit rester borné.
+    deluge = [art(h * 0.001, n) for n, h in enumerate(range(3000))]
+    check(len(fetch_feeds.fenetre_recente(deluge, heures=72))
+          == fetch_feeds.FENETRE_MAX,
+          f"et jamais plus de {fetch_feeds.FENETRE_MAX}, quel que soit le pic")
+
+    check(fetch_feeds.fenetre_recente([]) == [], "un fil vide ne casse rien")
+
+    # Le tri est refait dans la fonction : lui passer une liste en désordre
+    # ne doit pas lui faire prendre les mauvais articles.
+    desordre = [art(200, 0), art(1, 1), art(100, 2), art(2, 3)]
+    fen = fetch_feeds.fenetre_recente(desordre, heures=24)
+    check(fen[0]["link"].endswith("/1"),
+          "la fenêtre trie elle-même, elle ne suppose pas l'ordre")
+
+
+def test_source_renommee():
+    print("\n[données] une source débaptisée retrouve son nom")
+    import fetch_feeds
+
+    # Neuf articles portaient « RockstarMag.fr » au 30/08/2026, un nom
+    # absent de FEEDS : ils ne comptaient plus pour la santé de leur source
+    # et l'audit les signalait sans fin.
+    ancien, (nouveau, domaine) = next(iter(fetch_feeds.SOURCES_RENOMMEES.items()))
+    items = [{"title": "A", "source": ancien,
+              "link": f"https://www.{domaine}/gta6-article"}]
+    fetch_feeds.repare_noms_de_sources(items)
+    check(items[0]["source"] == nouveau,
+          f"« {ancien} » devient « {nouveau} »")
+
+    # Le domaine doit confirmer : ce qui compte est QUI PUBLIE. Un article
+    # d'ailleurs qui porterait ce nom par accident n'est pas rebranché.
+    ailleurs = [{"title": "B", "source": ancien, "link": "https://autre.tld/x"}]
+    fetch_feeds.repare_noms_de_sources(ailleurs)
+    check(ailleurs[0]["source"] == ancien,
+          "un lien sur un autre domaine n'est pas rebranché")
+
+    intact = [{"title": "C", "source": "IGN", "link": "https://ign.com/x"}]
+    fetch_feeds.repare_noms_de_sources(intact)
+    check(intact[0]["source"] == "IGN", "les autres sources ne bougent pas")
+
+    # Idempotente, comme toutes les réparations rétroactives.
+    fetch_feeds.repare_noms_de_sources(items)
+    check(items[0]["source"] == nouveau, "un second passage ne change rien")
+
+
+def test_titre_trop_court_n_attire_personne():
+    print("\n[doublons] un titre réduit à deux mots ne fusionne plus")
+    import fetch_feeds
+
+    avant = fetch_feeds._SUFFIXES_MEDIAS
+    try:
+        fetch_feeds.memorise_suffixes_medias([])
+        # Une fois le nom du jeu retiré, « extended look gta 6 - GamerGen »
+        # ne pèse plus que « extended look » — soit exactement la page
+        # officielle de Rockstar nettoyée. 1,00 de similarité pour deux
+        # pages différentes : l'aimant sous une autre forme.
+        court = [
+            {"title": "Grand Theft Auto VI: An Extended Look",
+             "source": "Rockstar Games (officiel EN)", "date": "2026-08-06T10:00:00+00:00",
+             "link": "https://www.rockstargames.com/newswire/extended-look"},
+            {"title": "extended look gta 6", "source": "Gamergen",
+             "date": "2026-08-23T10:00:00+00:00", "link": "https://gamergen.tld/a"},
+        ]
+        check(len(fetch_feeds.fusionne_ressemblances_de_titre(list(court))) == 2,
+              "deux mots génériques ne suffisent pas à confondre deux pages")
+
+        # Mesuré : le minimum de 3 mots écarte ce cas-là et AUCUN autre. La
+        # plus courte des fusions légitimes de l'historique en compte 3.
+        trois = [
+            {"title": "New Grand Theft Auto 6 Screenshots Revealed",
+             "source": "VGTimes", "date": "2026-08-27T10:00:00+00:00",
+             "link": "https://vgtimes.tld/a"},
+            {"title": "20+ New GTA 6 Screenshots Released",
+             "source": "RockstarINTEL", "date": "2026-08-27T12:00:00+00:00",
+             "link": "https://rockstarintel.tld/b"},
+        ]
+        check(len(fetch_feeds.fusionne_ressemblances_de_titre(list(trois))) == 1,
+              "trois mots suffisent, eux — la fusion légitime survit")
+    finally:
+        fetch_feeds._SUFFIXES_MEDIAS = avant
+
+
+def test_audit_signale_la_croissance():
+    print("\n[audit] l'échéance du plafond est visible, pas à découvrir")
+    import audit_donnees
+    from datetime import datetime, timedelta, timezone
+
+    base = datetime.now(timezone.utc)
+    items = [{"title": f"T{n}", "link": f"https://ex.tld/{n}",
+              "date": (base - timedelta(days=n // 40)).isoformat()}
+             for n in range(400)]
+    codes = {a["code"]: a for a in audit_donnees.audite({"items": items})}
+    check("croissance" in codes, "l'audit rend compte de la croissance")
+    croissance = codes["croissance"]
+    check(croissance["gravite"] == "info",
+          "en info : c'est une échéance à voir venir, pas une anomalie")
+    texte = " ".join(croissance["exemples"])
+    check("o/article" in texte, "il donne le poids par article")
+    check("plafond" in texte, "et la date d'échéance du plafond")
+
+    # Un fil vide ne doit pas produire de division par zéro.
+    check(all(a["code"] != "croissance" for a in audit_donnees.audite({"items": []})),
+          "un fil vide ne déclenche aucun calcul de croissance")
+
+
+def test_filtre_par_mots_cles():
+    print("\n[filtre] la règle qui décide ce qui entre au fil")
+    import fetch_feeds
+
+    # C'est LA règle métier du robot : elle décide, article par article, de
+    # ce qui atterrit sur le téléphone. Elle n'avait aucun test direct.
+
+    check(fetch_feeds.matches_keywords("Le GTA 6 arrive", ["gta 6"]),
+          "un mot-clé présent est reconnu")
+    check(fetch_feeds.matches_keywords("LE GTA 6 ARRIVE", ["gta 6"]),
+          "la casse n'a pas d'importance")
+    check(not fetch_feeds.matches_keywords("Le nouveau Zelda", ["gta 6"]),
+          "un texte hors sujet est refusé")
+    check(not fetch_feeds.matches_keywords("GTA 6", []),
+          "une liste vide ne laisse rien passer — jamais de tout-venant")
+    # La recherche est une sous-chaîne, pas un mot entier : c'est voulu,
+    # « gta6news » doit matcher « gta6 ». Le noter pour que personne ne
+    # « corrige » ça un jour en croyant à un oubli.
+    check(fetch_feeds.matches_keywords("voir gta6news.com", ["gta6"]),
+          "la recherche porte sur la sous-chaîne, volontairement")
+
+    # Les trois chemins de passe_le_filtre, un par type de source.
+    normale = {"id": "x", "name": "X"}
+    officielle = {"id": "o", "name": "O", "official": True}
+    rockstarmag = {"id": "r", "name": "R", "no_filter_at_all": True}
+
+    check(fetch_feeds.passe_le_filtre(rockstarmag, "Un tuto FiveM", ""),
+          "RockstarMag passe tout — seule source sans filtre, choix explicite")
+
+    check(fetch_feeds.passe_le_filtre(officielle, "Grand Theft Auto VI Trailer 2", ""),
+          "une source officielle retient un titre qui nomme le jeu")
+    check(not fetch_feeds.passe_le_filtre(officielle, "Red Dead Online update", ""),
+          "et refuse un titre qui parle d'un autre jeu")
+    # Le filtre officiel ne lit QUE le titre : un flux officiel est une
+    # recherche Google News, sa description charrie n'importe quoi.
+    check(not fetch_feeds.passe_le_filtre(officielle, "Nouveautés du mois",
+                                          "on y parle aussi de GTA 6"),
+          "le filtre officiel ignore la description, volontairement")
+
+    # Une source normale lit titre ET description : beaucoup de flux
+    # résument dans la description ce que le titre laisse deviner.
+    check(fetch_feeds.passe_le_filtre(normale, "Le jeu le plus attendu",
+                                      "Rockstar prépare GTA 6 pour novembre"),
+          "une source normale accepte un mot-clé trouvé dans la description")
+    check(not fetch_feeds.passe_le_filtre(normale, "Test du dernier Mario",
+                                          "un excellent jeu de plateforme"),
+          "et refuse ce qui ne parle pas du jeu")
+
+    # Un supplément déclaré par la source s'AJOUTE aux six mots de base,
+    # il ne les remplace pas.
+    avec_extra = {"id": "o2", "name": "O2", "official": True,
+                  "official_keywords_extra": ["leonida"]}
+    check(fetch_feeds.passe_le_filtre(avec_extra, "Bienvenue en Leonida", ""),
+          "le supplément de mots-clés d'une source est pris en compte")
+    check(fetch_feeds.passe_le_filtre(avec_extra, "Grand Theft Auto 6", ""),
+          "sans faire perdre les mots-clés de base")
+
+    # Les 139 mots-clés doivent rester exploitables : aucun vide, aucune
+    # majuscule (la comparaison se fait en minuscules), aucun doublon.
+    mots = fetch_feeds.KEYWORDS
+    check(all(m and m == m.lower().strip() for m in mots),
+          f"les {len(mots)} mots-clés sont en minuscules, sans espace superflu")
+    check(len(set(mots)) == len(mots), "et aucun n'est en double")
+    check(all(m in mots for m in fetch_feeds.OFFICIAL_KEYWORDS),
+          "les mots-clés officiels sont tous dans la liste générale")
+
+
+def test_jours_depuis():
+    print("\n[dates] l'âge d'un article")
+    import fetch_feeds
+    from datetime import datetime, timedelta, timezone
+
+    check(fetch_feeds.jours_depuis(None) is None, "pas de date → pas d'âge")
+    check(fetch_feeds.jours_depuis("") is None, "date vide → pas d'âge")
+    # Une date illisible tombe sur DATE_FLOOR ; la rendre « vieille de
+    # 700 000 jours » ferait passer la source pour morte.
+    check(fetch_feeds.jours_depuis("pas une date") is None,
+          "date illisible → pas d'âge, surtout pas un âge géant")
+    hier = (datetime.now(timezone.utc) - timedelta(days=1, hours=1)).isoformat()
+    check(fetch_feeds.jours_depuis(hier) == 1, "hier vaut 1 jour")
+
+
+def test_depots_pour_les_notifications():
+    print("\n[notifications] les fichiers déposés pour l'étape suivante")
+    import fetch_feeds, json, os, tempfile
+
+    dossier = tempfile.mkdtemp()
+    alertes_src = fetch_feeds.SOURCE_ALERTS_FILE
+    promus_src = fetch_feeds.PROMOTED_ITEMS_FILE
+    try:
+        # Rien à dire = aucun fichier. C'est l'étape suivante du workflow qui
+        # décide de notifier ou non selon la présence du fichier : en écrire
+        # un vide enverrait une notification pour rien.
+        fetch_feeds.SOURCE_ALERTS_FILE = os.path.join(dossier, "a.json")
+        fetch_feeds.PROMOTED_ITEMS_FILE = os.path.join(dossier, "p.json")
+        fetch_feeds.write_source_alerts_file([])
+        fetch_feeds.write_promoted_items_file([])
+        check(not os.path.exists(fetch_feeds.SOURCE_ALERTS_FILE),
+              "aucune alerte → aucun fichier déposé")
+        check(not os.path.exists(fetch_feeds.PROMOTED_ITEMS_FILE),
+              "aucune promotion → aucun fichier déposé")
+
+        fetch_feeds.write_source_alerts_file([{"source": "X", "raison": "muette"}])
+        with open(fetch_feeds.SOURCE_ALERTS_FILE, encoding="utf-8") as f:
+            check(json.load(f)[0]["source"] == "X", "l'alerte déposée est relisible")
+
+        fetch_feeds.write_promoted_items_file([{"title": "Ç a chauffe", "link": "u"}])
+        with open(fetch_feeds.PROMOTED_ITEMS_FILE, encoding="utf-8") as f:
+            check(json.load(f)[0]["title"] == "Ç a chauffe",
+                  "les accents survivent au dépôt (ensure_ascii=False)")
+
+        # Sans chemin configuré — le cas d'un lancement à la main — on
+        # n'écrit nulle part et surtout on ne plante pas.
+        fetch_feeds.SOURCE_ALERTS_FILE = None
+        fetch_feeds.PROMOTED_ITEMS_FILE = None
+        fetch_feeds.write_source_alerts_file([{"source": "X"}])
+        fetch_feeds.write_promoted_items_file([{"title": "T"}])
+        check(True, "sans chemin configuré, aucun dépôt et aucune erreur")
+    finally:
+        fetch_feeds.SOURCE_ALERTS_FILE = alertes_src
+        fetch_feeds.PROMOTED_ITEMS_FILE = promus_src
+
+
 def test_index_compte_les_sources_supplementaires():
     print("\n[doublons] un article fusionné ne peut pas rentrer une 2e fois")
     import fetch_feeds
@@ -2482,6 +2867,12 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
            test_suffixe_du_media_appris, test_fusion_retroactive_des_ressemblances,
            test_index_compte_les_sources_supplementaires,
+           test_recuperation_des_miniatures, test_description_video_youtube,
+           test_fenetre_en_heures, test_source_renommee,
+           test_titre_trop_court_n_attire_personne,
+           test_audit_signale_la_croissance,
+           test_filtre_par_mots_cles, test_jours_depuis,
+           test_depots_pour_les_notifications,
            test_reparation_attributions_croisees, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,

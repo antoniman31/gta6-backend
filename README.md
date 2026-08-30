@@ -351,9 +351,6 @@ en deçà du parallélisme gagné.
 
   Il existe parce que chacune de ces vérifications avait déjà été écrite à
   la main un jour de panne, utilisée une fois, puis perdue.
-- **`dedupe_history.py`** — passage unique de nettoyage, gardé pour
-  mémoire et reproductibilité. Voir « Récupération en parallèle » pour le
-  bug qu'il a servi à réparer côté données.
 - **`push_notify.py`** — les notifications push natives, appelées au même
   moment. N'importe pas `pywebpush` au niveau du module : la construction
   du message et la lecture des abonnements restent testables sans la
