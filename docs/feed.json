@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T10:31:47.356353+00:00",
-  "duration_seconds": 64.9,
+  "generated_at": "2026-08-30T11:01:58.597125+00:00",
+  "duration_seconds": 68.6,
   "decode_failures": 0,
-  "total_articles": 1332,
-  "new_this_run": 1,
+  "total_articles": 1334,
+  "new_this_run": 2,
   "hot_count": 2,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -341,8 +341,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T03:29:20+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-30T10:48:08+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 67,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-30T09:53:19+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -517,14 +517,14 @@
     {
       "id": "ign",
       "name": "IGN",
-      "entries_fetched": 0,
+      "entries_fetched": 20,
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T22:33:20+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gamespot",
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 0,
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-27T20:57:00+00:00",
       "days_since_last_article": 2,
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 2,
@@ -799,7 +799,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T10:37:36+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -845,7 +845,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T10:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -911,36 +911,35 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "ign": 1
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,99,99,99,99,99,100,99,100",
+    "rockstar-fr": "100,100,100,99,99,99,99,99,100,99,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "take2-ir": "10,10,10,10,10",
-    "rockstar-youtube": "15,0,0,15,15,15,15,15,15,15,15,15",
+    "take2-ir": "10,10,10,10,10,10",
+    "rockstar-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "98,99,99,99,99,99,100,99,98,98,99,99",
+    "gnews-en": "99,99,99,99,99,100,99,98,98,99,99,99",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40",
     "rockstarmag": "10",
-    "rockstarmag-youtube": "15,0,0,15,15,15,15,15,15,15,15,15",
-    "ign": "20,0,20,0,20,0,20,0,20,0,20,0",
+    "rockstarmag-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
+    "ign": "0,20,0,20,0,20,0,20,0,20,0,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "kotaku": "20,20,0,20,20,20,20,20,20,20,20,20",
+    "kotaku": "20,0,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100",
+    "eurogamer": "100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
     "ginjfo": "50",
-    "gameblog": "13,13,13,13,13,13,13,13,13",
+    "gameblog": "13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -957,7 +956,7 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,92,100,100,100,100,100,100",
+    "theverge": "100,100,100,100,92,100,100,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
     "arstechnica": "32,32,32,32,32,32,32,32,32,32,32,32",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -966,8 +965,8 @@
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "etag": "W/\"d1bd5399e62f12a7c37d00201da2c715\"",
@@ -985,9 +984,13 @@
       "etag": "\"e4507bbee601715f6bbcc452dd0da2da\"",
       "modified": "Sat, 29 Aug 2026 13:20:16 GMT"
     },
+    "ign": {
+      "etag": "W/\"27e00-bjTl6dt+qKOKWkZ9AoWbncze0AY\"",
+      "modified": null
+    },
     "kotaku": {
-      "etag": "W/\"0b0830563c2943f40e3a7287bff9dc17\"",
-      "modified": "Sun, 30 Aug 2026 10:30:13 GMT"
+      "etag": "W/\"531ec8957b97c8df2af89f1b0fa10ffc\"",
+      "modified": "Sun, 30 Aug 2026 11:00:09 GMT"
     },
     "rps": {
       "etag": null,
@@ -995,19 +998,19 @@
     },
     "eurogamer": {
       "etag": null,
-      "modified": "Sat, 29 Aug 2026 14:56:18 GMT"
+      "modified": "Sun, 30 Aug 2026 10:48:08 GMT"
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 10:28:42 GMT"
+      "modified": "Sun, 30 Aug 2026 11:00:07 GMT"
     },
     "ginjfo": {
       "etag": "\"0b330cb5eb9bb42bbe933115d7a735b3\"",
       "modified": "Sun, 30 Aug 2026 09:23:47 GMT"
     },
     "gameblog": {
-      "etag": "W/\"6a940637-2f7c\"",
-      "modified": "Sun, 30 Aug 2026 10:30:15 GMT"
+      "etag": "W/\"6a940d40-2f7c\"",
+      "modified": "Sun, 30 Aug 2026 11:00:16 GMT"
     },
     "actugaming": {
       "etag": "W/\"f883eea91b0269268828f6f4be946cf2\"",
@@ -1028,6 +1031,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar rules out GTA 6 microtransactions and AI – but there's still a catch - Eurogamer.net",
+      "link": "https://www.eurogamer.net/gta-6-microtransactions-generative-ai-rockstar",
+      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTFA3RVZHOFVLcXVUeFdfVFVPYkFsSzhFemlmb2VjVktHWE4xNlBmR2w5WE84VE03N1BuQVhoeDc5ZzVweWNncG9xOEJENjkwUmZCcGxjdTFVb3c0ZGc3cS02MFBlcnFVLXVPX2JBLXNVZ0tGYkIxVkQ5d1NLb2Y?oc=5",
+      "date": "2026-08-30T10:48:08+00:00",
+      "source": "Rockstar Games (annonces)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/GTA-6-Lucia-Caminos.jpg?width=1200&height=630&fit=crop&enable=upscale&auto=webp",
+      "description": "Rockstar rules out GTA 6 microtransactions and AI – but there's still a catch&nbsp;&nbsp;Eurogamer.net"
+    },
     {
       "title": "Aperçu large de GTA 6, design du Samsung Galaxy S27 Ultra et robot plus rapide qu'Usain Bolt : le récap de la semaine - Frandroid",
       "link": "https://www.frandroid.com/actualites-generales/3225631_apercu-large-de-gta-6-design-du-samsung-galaxy-s27-ultra-et-robot-plus-rapide-quusain-bolt-le-recap-de-la-semaine",
@@ -1079,6 +1095,19 @@
       "lang": "fr",
       "image": "https://static.actugaming.net/media/2026/08/gta-6-official-screenshot-aout-2026-8.jpg",
       "description": "ActuGaming.net\nGTA VI : La présentation du gameplay qualifiée de « la plus impressionnante jamais vue » selon Digital Foundry\n\nDepuis le 27 août dernier et la présentation officielle du gameplay de GTA VI sur [&#8230;]\nL'article GTA VI : La présentation du gameplay qualifiée de « la plus impressionnante jamais vue » selon Digital Foundry est disponible sur ActuGaming.net"
+    },
+    {
+      "title": "GTA 6 a failli avoir quatre protagonistes avant Jason et Lucia - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-a-failli-avoir-quatre-protagonistes-avant-jason-et-lucia-223892.html",
+      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxQMmpGYnczVjVKcTR0X1dhMllGVlJNcnI5dWo2N19xOTRoeUluUXd1blBUU2dDSmpwTWU4ZFl5YmtLa3VEODFMdklEMGJ3cDhxQ0xoR29BaXE0bG9kQU9McUVocmtkS3NnSnI0MnN4aUtZRERyRF80bTNER3JYZ0luVXNGeXRjeWtrS2w0MHkzRjR5eUh0OTViblc1LU05blItR1cya2kxMWxYZzc4TEY0cWp6dGVzV04tZVd1WA?oc=5",
+      "date": "2026-08-30T09:30:36+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/08/gta-6-a-failli-avoir-quatre-protagonistes-avant-jason-et-lucia.webp",
+      "description": "GTA 6 a failli avoir quatre protagonistes avant Jason et Lucia&nbsp;&nbsp;La Crème Du Gaming"
     },
     {
       "title": "GTA 6 et le détail important : un personnage de GTA Online a été repéré - GinjFo",
