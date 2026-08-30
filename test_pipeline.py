@@ -1340,6 +1340,76 @@ def test_titres_numerotes_pas_fusionnes():
           "mais deux fois le même titre restent bien un doublon")
 
 
+def test_suffixe_du_media_appris():
+    print("\n[doublons] le « - Nom du média » final ne sépare plus")
+    import fetch_feeds
+
+    S = fetch_feeds.SIMILARITY_THRESHOLD
+    avant = fetch_feeds._SUFFIXES_MEDIAS
+    try:
+        # 60 % des titres du fil finissent par le nom de leur média. On ne
+        # coupe pas à l'aveugle : couper TOUT suffixe court avait fait
+        # PERDRE 2 fusions justes sur les 500 derniers titres, en mangeant
+        # la vraie fin d'un titre. On n'apprend donc que ce qui REVIENT.
+        historique = (
+            [{"title": f"Sujet {n} - Kotaku"} for n in range(3)]
+            + [{"title": f"Autre {n} - Rockstar Games"} for n in range(3)]
+            + [{"title": "GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !"}]
+            + [{"title": "Une exclu - British GQ"}]
+        )
+        appris = fetch_feeds.memorise_suffixes_medias(historique)
+        check("kotaku" in appris, "un suffixe vu 3 fois est un nom de média")
+        check("rockstar games" in appris, "celui du studio aussi")
+        check("british gq" not in appris,
+              "un suffixe vu une seule fois n'est pas retenu")
+        check("on découvre cela ensemble" not in appris
+              and "on decouvre cela ensemble" not in appris,
+              "la vraie fin d'un titre unique n'est pas prise pour un média")
+
+        # Ce qu'on gagne : quatre reprises du même article étaient affichées
+        # séparément le 30/08/2026 alors que seul le suffixe les distinguait.
+        check(fetch_feeds.sans_suffixe_media("Sujet 9 - Kotaku") == "Sujet 9",
+              "le suffixe connu est retiré avant comparaison")
+        check(fetch_feeds.sans_suffixe_media(
+                  "GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !")
+              == "GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !",
+              "un suffixe inconnu laisse le titre entier")
+
+        fetch_feeds.memorise_suffixes_medias(
+            [{"title": f"Sujet {n} - Push Square"} for n in range(3)]
+            + [{"title": f"Divers {n} - GamesRadar"} for n in range(3)])
+        check(fetch_feeds.title_similarity(
+                  "GTA 6 Contains No Microtransactions or Generative AI, "
+                  "Rockstar Says - Push Square",
+                  "GTA 6 Contains No Microtransactions or Generative AI, "
+                  "Rockstar Says - GamesRadar") == 1.0,
+              "le même titre chez deux médias se rejoint enfin")
+
+        # Vice est un média (vice.com), mais Vice City est la ville du jeu :
+        # un titre qui finit par la ville doit rester entier.
+        protege = fetch_feeds.apprend_suffixes_medias(
+            [{"title": f"Balade {n} - Vice City"} for n in range(6)])
+        check("vice city" not in protege,
+              "« Vice City » n'est jamais pris pour un nom de média")
+
+        # Sans historique appris, rien n'est coupé : le comportement d'avant.
+        fetch_feeds.memorise_suffixes_medias([])
+        check(fetch_feeds.sans_suffixe_media("Sujet 9 - Kotaku")
+              == "Sujet 9 - Kotaku",
+              "sans liste apprise on ne coupe rien")
+
+        # Et le garde-fou des numéros passe toujours avant la fusion.
+        fetch_feeds.memorise_suffixes_medias(
+            [{"title": f"X {n} - Rockstar Games"} for n in range(3)])
+        check(fetch_feeds.titres_dune_meme_serie(
+                  "Grand Theft Auto VI Trailer 1 - Rockstar Games",
+                  "Grand Theft Auto VI Trailer 2 - Rockstar Games"),
+              "deux bandes-annonces numérotées restent séparées")
+        _ = S
+    finally:
+        fetch_feeds._SUFFIXES_MEDIAS = avant
+
+
 def test_similarite_ignore_le_nom_du_jeu():
     print("\n[doublons] le nom du jeu ne compte plus dans la comparaison")
     import fetch_feeds
@@ -2292,6 +2362,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_reparation_vignettes_stockees,
            test_sonde_decouvre_les_flux_declares,
            test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
+           test_suffixe_du_media_appris,
            test_reparation_attributions_croisees, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
