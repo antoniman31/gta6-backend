@@ -27,6 +27,7 @@ import sys
 import threading
 import time
 import os
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -623,9 +624,15 @@ def titres_dune_meme_serie(a, b):
     On préfère ici rater une fusion que d'en faire une fausse : deux cartes
     en double se voient et se corrigent, un article escamoté ne se voit pas.
     """
-    if _sans_nombres(a) != _sans_nombres(b):
+    # Sur le titre débarrassé du nom du média, comme title_similarity : sans
+    # ça, « Trailer 1 » et « Trailer 2 - Rockstar Games » n'étaient PAS vus
+    # comme une même série (le suffixe faisait diverger _sans_nombres), et
+    # se retrouvaient à 0,889 sans garde-fou. Le Trailer 3 sortira avant
+    # novembre et se serait fait absorber par le Trailer 2.
+    ta, tb = sans_suffixe_media(a), sans_suffixe_media(b)
+    if _sans_nombres(ta) != _sans_nombres(tb):
         return False
-    return re.findall(r"\d+", a) != re.findall(r"\d+", b)
+    return re.findall(r"\d+", ta) != re.findall(r"\d+", tb)
 
 
 def title_similarity(a, b):
@@ -1947,6 +1954,135 @@ def fusionne_doublons_de_titre(items):
     return restants
 
 
+# Le rejeu de la ressemblance sur l'historique compare chaque article aux
+# autres : c'est le seul endroit du script dont le coût grandit avec le
+# carré de l'historique. Trois limites le tiennent.
+FUSION_RETRO_MAX = 3000          # articles les plus récents balayés
+FUSION_RETRO_MOT_COMMUN = 0.15   # un mot présent dans plus de 15 % des titres
+                                 # ne désigne plus personne
+FUSION_RETRO_MOTS_PARTAGES = 2   # deux candidats en partagent au moins deux
+
+
+def _paires_candidates(comparables):
+    """Les paires qui partagent assez de mots rares pour valoir la comparaison.
+
+    Comparer les 1366 titres deux à deux coûtait 92 s — plus que le passage
+    entier. Les mots rares font le tri : deux articles qui parlent de la
+    même chose partagent « microtransactions » ou « subpoena », deux qui
+    n'ont rien à voir ne partagent que « the » et « new ». Mesuré : 7,7 s,
+    et aucune paire manquée par rapport au balayage complet.
+    """
+    index = defaultdict(list)
+    for position, titre in enumerate(comparables):
+        for mot in set(titre.split()):
+            index[mot].append(position)
+    plafond = max(2, int(FUSION_RETRO_MOT_COMMUN * len(comparables)))
+    partages = defaultdict(int)
+    for positions in index.values():
+        if len(positions) > plafond:
+            continue
+        for rang, gauche in enumerate(positions):
+            for droite in positions[rang + 1:]:
+                partages[(gauche, droite)] += 1
+    return sorted(paire for paire, combien in partages.items()
+                  if combien >= FUSION_RETRO_MOTS_PARTAGES)
+
+
+def fusionne_ressemblances_de_titre(items):
+    """Fusionne dans l'historique les articles qui se RESSEMBLENT.
+
+    fusionne_doublons_de_titre ne rapproche que les titres strictement
+    identiques. Tout ce que la fenêtre glissante de la collecte a laissé
+    passer — deux rédactions qui titrent la même actu à quelques mots près,
+    séparées par plus de TITLE_SIMILARITY_WINDOW articles pendant un pic —
+    restait affiché deux fois. Mesuré au 30/08 : 26 paquets, 28 cartes.
+
+    Rejouer le seuil de 0,75 tel quel sur tout l'historique était refusé
+    jusqu'ici, et à raison : sans garde-fou, ça fusionnait aussi trois
+    contenus réellement distincts. Deux règles suffisent à les écarter, et
+    elles disent POURQUOI le rapprochement serait faux :
+
+    - **jamais deux fois la même source.** Une rédaction ne republie pas le
+      même article ; quand elle republie, c'est une suite. C'est ce qui
+      sépare les trois vidéos « ON DÉCOUVRE CELA ENSEMBLE ! / (SUITE) /
+      (FIN) » de RockstarMag, et « Our GTA 6 Predictions » de « How Our GTA
+      6 Predictions Held Up » chez GTA BOOM — le contre-exemple qui servait
+      justement d'argument pour ne rien faire.
+
+    - **pas de chaînage.** Un article ne rejoint un paquet que s'il
+      ressemble à TOUS ses membres, pas seulement à celui qui l'a attiré.
+      Sans ça, la transitivité rassemblait le Trailer 1 et le Trailer 2 :
+      chacun ressemble à sa propre reprise, et les deux paquets se
+      soudaient par le milieu alors que la comparaison directe est interdite
+      par le garde-fou des numéros.
+
+    Le plus ANCIEN est conservé : c'est la publication d'origine, et sa date
+    situe l'actualité. Les autres deviennent des sources supplémentaires.
+    """
+    chronologique = sorted(items, key=lambda i: feed_store.parse_date_key(i.get("date")))
+    balayes = chronologique[-FUSION_RETRO_MAX:]
+    comparables = [titre_comparable(item.get("title", "")) for item in balayes]
+
+    paquets = {}      # position du gardien -> positions absorbées
+    gardien_de = {}   # position absorbée -> position du gardien
+
+    def sources_deja_la(gardien):
+        """Le gardien et toutes les rédactions déjà créditées sous lui."""
+        noms = {balayes[gardien].get("source")}
+        noms.update(autre.get("source")
+                    for autre in (balayes[gardien].get("extraSources") or []))
+        return noms
+
+    def peut_rejoindre(candidat, gardien):
+        # Le candidat se compare au GARDIEN, jamais à un membre absorbé.
+        # C'est ce qui interdit le chaînage — chaque membre ressemble
+        # directement à l'ancre — et c'est aussi ce qui rend la passe
+        # stable : le gardien, lui, ne disparaît jamais du fil, donc le
+        # passage suivant reprend exactement la même décision.
+        if balayes[candidat].get("source") in sources_deja_la(gardien):
+            return False
+        # Une vidéo et un article ne sont pas le même contenu, même sous le
+        # même titre : l'un se regarde, l'autre se lit. La page du Newswire
+        # « Trailer 1 » et le Trailer 1 lui-même restent deux cartes, sinon
+        # la vidéo disparaît derrière l'annonce — et pour « An Extended
+        # Look », l'annonce du 6 août aurait mangé la vidéo du 27.
+        if bool(vignette_youtube(balayes[candidat].get("link") or "")) != \
+           bool(vignette_youtube(balayes[gardien].get("link") or "")):
+            return False
+        if titres_dune_meme_serie(balayes[candidat].get("title", ""),
+                                  balayes[gardien].get("title", "")):
+            return False
+        a, b = comparables[candidat], comparables[gardien]
+        if abs(len(a) - len(b)) > 0.4 * max(len(a), len(b)):
+            return False
+        return SequenceMatcher(None, a, b).ratio() >= SIMILARITY_THRESHOLD
+
+    for ancien, recent in _paires_candidates(comparables):
+        if not comparables[ancien] or not comparables[recent]:
+            continue
+        # Le plus récent ne rejoint qu'un seul paquet, et n'en amène jamais
+        # un autre avec lui : deux paquets ne fusionnent pas entre eux.
+        if recent in gardien_de or recent in paquets:
+            continue
+        gardien = gardien_de.get(ancien, ancien)
+        if not peut_rejoindre(recent, gardien):
+            continue
+        paquets.setdefault(gardien, []).append(recent)
+        gardien_de[recent] = gardien
+
+    fusionnes = set()
+    for gardien, absorbes in paquets.items():
+        for position in absorbes:
+            if record_coverage(balayes[gardien], balayes[position]):
+                fusionnes.add(id(balayes[position]))
+    if not fusionnes:
+        return items
+    restants = [item for item in items if id(item) not in fusionnes]
+    print(f"Correction rétroactive : {len(fusionnes)} article(s) ressemblant(s) "
+          f"fusionné(s) dans l'historique ({len(paquets)} paquet(s))")
+    return restants
+
+
 def build_sources_health(all_items, feed_infos, new_counts):
     """Dresse l'état de chaque source, pour repérer un flux mort.
 
@@ -2061,6 +2197,7 @@ def main():
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
     existing_items = fusionne_doublons_de_titre(existing_items)
+    existing_items = fusionne_ressemblances_de_titre(existing_items)
 
     # Repasse rétroactive des dates : l'historique est rechargé tel quel et
     # ne repasse jamais dans le pipeline de collecte, donc les articles
