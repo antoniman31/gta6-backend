@@ -709,6 +709,21 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
                     "injoignable": True}, journal
 
     statut = getattr(parsed, "status", None)
+
+    # Où la requête a réellement abouti. feedparser suit les redirections et
+    # expose l'adresse finale dans `href` : quand elle diffère de l'URL
+    # demandée, c'est le flux qui a déménagé, et cette adresse est
+    # exactement ce qu'il faut mettre dans FEEDS.
+    #
+    # Sans ça, une redirection vers une page d'accueil produit « 0 entrée »
+    # et un code 301/302 — on sait que ça a bougé, pas vers où. Constaté le
+    # 30/08/2026 sur IGN (302) et Kotaku (301), deux sources qu'il a fallu
+    # laisser muettes le temps d'un passage de plus faute de cette ligne.
+    arrivee = getattr(parsed, "href", None)
+    redirige = arrivee if arrivee and arrivee != feed["url"] else None
+    if redirige:
+        journal.append(f"  redirigé vers {redirige}")
+
     if statut == 304:
         journal.append("  inchangé depuis la dernière fois (304), rien à retélécharger")
         # On renvoie l'état précédent tel quel : un 304 ne fournit pas de
@@ -734,7 +749,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         pas_un_flux = (statut is not None
                        and not (getattr(parsed, "version", "") or ""))
         return [], {"raw_count": 0, "not_modified": False,
-                    "http_status": statut,
+                    "http_status": statut, "redirect": redirige,
                     "not_a_feed": pas_un_flux,
                     "injoignable": statut is None}, journal
 
@@ -753,12 +768,15 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     if not parsed.entries:
         version = getattr(parsed, "version", "") or ""
         if not version:
+            cause = ("redirigé vers une page qui n'est pas un flux — "
+                     "corriger l'URL dans FEEDS" if redirige
+                     else "page de blocage ? URL devenue une page web ?")
             journal.append(
                 f"  PAS UN FLUX — réponse HTTP {statut or '?'} reçue mais ce "
-                f"n'est pas du RSS/Atom (page de blocage ? URL devenue une "
-                f"page web ?)")
+                f"n'est pas du RSS/Atom ({cause})")
             return [], {"raw_count": 0, "not_modified": False,
-                        "http_status": statut, "not_a_feed": True}, journal
+                        "http_status": statut, "redirect": redirige,
+                        "not_a_feed": True}, journal
         journal.append(f"  flux {version} valide mais vide "
                        f"(HTTP {statut or '?'}) — le site ne publie rien")
 
@@ -771,6 +789,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         "raw_count": raw_count,
         "not_modified": False,
         "http_status": statut,
+        "redirect": redirige,
         "etag": getattr(parsed, "etag", None),
         "modified": getattr(parsed, "modified", None),
     }
@@ -1415,6 +1434,9 @@ def build_sources_health(all_items, feed_infos, new_counts):
             # Code HTTP du dernier passage, pour lire un 403 sans ouvrir
             # les logs du run. None quand la requête n'a pas abouti.
             "http_status": info.get("http_status"),
+            # Adresse d'arrivée si le flux a déménagé — l'URL à recopier
+            # dans FEEDS pour réparer la source.
+            "redirect": info.get("redirect"),
             "not_modified": bool(info.get("not_modified")),
             "new_this_run": new_counts.get(feed["id"], 0),
             "last_article": last.isoformat() if last and last != feed_store.DATE_FLOOR else None,
@@ -1429,6 +1451,8 @@ def build_sources_health(all_items, feed_infos, new_counts):
         for h in muettes:
             if h["status"] == "cassee":
                 detail = f"réponse HTTP {h.get('http_status') or '?'} mais ce n'est pas un flux"
+                if h.get("redirect"):
+                    detail += f"\n      redirigé vers : {h['redirect']}"
             else:
                 detail = "flux vide"
             print(f"    - {h['name']} — {detail}")
@@ -1676,6 +1700,8 @@ def sonde(url):
 
     statut = info.get("http_status")
     print(f"\n  code HTTP        : {statut if statut is not None else 'aucune réponse'}")
+    if info.get("redirect"):
+        print(f"  redirigé vers    : {info['redirect']}")
     print(f"  entrées brutes   : {info.get('raw_count', 0)}")
     print(f"  après filtre     : {len(items)}")
     if info.get("not_modified"):

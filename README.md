@@ -401,7 +401,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **314
+qui permet de tester tout le pipeline sans sortir de la machine. **318
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -922,6 +922,14 @@ l'endroit qui les empêche de diverger ou de disparaître.
   Cinq verdicts, là où « 0 entrée » ne disait rien : **OK**, **VIDE** (flux
   valide sans article), **PAS UN FLUX** (page de blocage, ou URL qui ne sert
   plus de RSS), **INJOIGNABLE** (aucune réponse HTTP), **INCHANGÉ** (304).
+
+  **Et elle dit vers où le flux a déménagé.** feedparser suit les
+  redirections et expose l'adresse finale : quand elle diffère de l'URL
+  demandée, c'est exactement ce qu'il faut recopier dans `FEEDS`. Sans cette
+  ligne, une redirection vers une page d'accueil ne produit qu'un code 301
+  et « 0 entrée » — on sait que ça a bougé, pas où. C'est arrivé le
+  30/08/2026 sur IGN (302) et Kotaku (301), et il a fallu un passage de plus
+  pour l'apprendre.
 
   La distinction INJOIGNABLE / PAS UN FLUX n'est pas cosmétique :
   `feedparser` range une panne réseau au même endroit qu'un XML mal formé.

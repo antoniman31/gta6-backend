@@ -1370,6 +1370,47 @@ def test_historique_entrees():
           "une série trop courte ne conclut pas")
 
 
+def test_diagnostic_redirection():
+    print("\n[sources] une redirection dit vers OÙ le flux a déménagé")
+    import fetch_feeds
+
+    # Le cas réel du 30/08/2026 : IGN répondait 302 et Kotaku 301, avec
+    # « 0 entrée » pour tout diagnostic. On savait que ça avait bougé, pas
+    # vers où — il a fallu un passage de plus pour l'apprendre.
+    class FauxParse:
+        bozo = False
+        entries = []
+        version = ""
+        status = 301
+        href = "https://exemple.com/nouveau-flux"
+
+    info = {"http_status": 301, "redirect": FauxParse.href, "not_a_feed": True,
+            "raw_count": 0, "not_modified": False}
+    feeds_avant = fetch_feeds.FEEDS
+    fetch_feeds.FEEDS = [{"id": "x", "name": "X", "url": "", "official": False}]
+    try:
+        sante = fetch_feeds.build_sources_health([], {"x": info}, {})[0]
+    finally:
+        fetch_feeds.FEEDS = feeds_avant
+
+    check(sante["status"] == "cassee", "une redirection vers une page donne « cassee »")
+    check(sante["http_status"] == 301, "le code de redirection est conservé")
+    check(sante["redirect"] == FauxParse.href,
+          "et surtout l'adresse d'arrivée, qui est la correction à appliquer")
+
+    # Une redirection vers un vrai flux ne doit RIEN signaler : beaucoup de
+    # sites redirigent http vers https ou ajoutent une barre oblique.
+    sain = {"http_status": 301, "redirect": FauxParse.href, "raw_count": 20,
+            "not_modified": False}
+    fetch_feeds.FEEDS = [{"id": "x", "name": "X", "url": "", "official": False}]
+    try:
+        s2 = fetch_feeds.build_sources_health([], {"x": sain}, {})[0]
+    finally:
+        fetch_feeds.FEEDS = feeds_avant
+    check(s2["status"] != "cassee",
+          "une redirection qui aboutit sur un vrai flux n'est pas une panne")
+
+
 def test_validation_avant_ecriture():
     print("\n[écriture] un flux abîmé n'est jamais publié")
     import feed_store
@@ -1423,7 +1464,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_predecode_google_news,
            test_timeout_reseau, test_source_cassee_vs_muette,
            test_compteur_echecs_decodage,
-           test_historique_entrees, test_validation_avant_ecriture):
+           test_historique_entrees, test_diagnostic_redirection,
+           test_validation_avant_ecriture):
     fn()
 
 print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} vérifications passées")
