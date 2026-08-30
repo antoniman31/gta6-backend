@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T15:59:55.913748+00:00",
-  "duration_seconds": 83.0,
+  "generated_at": "2026-08-30T16:02:13.412167+00:00",
+  "duration_seconds": 82.0,
   "decode_failures": 0,
-  "total_articles": 1366,
-  "new_this_run": 7,
+  "total_articles": 1367,
+  "new_this_run": 1,
   "hot_count": 1,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -317,7 +317,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -329,7 +329,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-30T11:00:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 67,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T15:30:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T15:30:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -545,8 +545,8 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T13:00:14+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-30T16:00:14+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T15:00:25+00:00",
       "days_since_last_article": 2,
@@ -775,7 +775,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T16:00:00+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -793,7 +793,7 @@
     {
       "id": "trueach",
       "name": "TrueAchievements",
-      "entries_fetched": 100,
+      "entries_fetched": 80,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,13 +914,13 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,99,99,99,99,99,99,99",
+    "rockstar-fr": "100,100,100,100,99,99,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,92,92,92,92,92,92,92,92,92,92,92",
+    "gnews-en": "92,92,92,92,92,92,92,92,92,92,92,92",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -932,7 +932,7 @@
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,10,0,10,10",
+    "polygon": "10,10,10,10,10,10,10,10,0,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -944,23 +944,23 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,10,0,10,10",
-    "dualshockers": "10,10,10,10,10,10,10,10,10,0,10,10",
+    "gamerant": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "dualshockers": "10,10,10,10,10,10,10,10,0,10,10,10",
     "gta6times": "29,29,29,29,29,29,29,29,29,29,29,29",
     "gameinformer": "50,50,50",
-    "pcgamesn": "75,75,75,75,75,75,75,75,75,75",
+    "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,8,9,9,7,7,7,7,7,7",
-    "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "9,9,8,9,9,7,7,7,7,7,7,7",
+    "trueach": "100,100,100,100,100,100,100,100,100,100,100,80",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,43,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "43,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,83,83,84,84,84,84,84,84,84,84",
-    "arstechnica": "30,31,31,31,31,31,31,31,31,31,31,31",
+    "engadget": "84,83,83,84,84,84,84,84,84,84,84,84",
+    "arstechnica": "31,31,31,31,31,31,31,31,31,31,31,31",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 15:58:35 GMT"
+      "modified": "Sun, 30 Aug 2026 16:00:53 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a944c87-2f67\"",
-      "modified": "Sun, 30 Aug 2026 15:30:15 GMT"
+      "etag": "W/\"6a94538f-2f67\"",
+      "modified": "Sun, 30 Aug 2026 16:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"ed70b5eea986292d48cee03e725d4d20\"",
-      "modified": "Sun, 30 Aug 2026 15:49:24 GMT"
+      "etag": "W/\"28c994f00148c0225dfa4fc3c8e31b7d\"",
+      "modified": "Sun, 30 Aug 2026 15:59:02 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Maybe It's a Good Thing AAA Games Take 13 Years to Make",
+      "link": "https://www.polygon.com/patch-notes-gta-6-the-witcher-3-gamescom/",
+      "source_link": null,
+      "date": "2026-08-30T16:00:14+00:00",
+      "source": "Polygon",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/06/the-witcher-3-songs-of-the-past-key-art-cropped.png?w=1600&h=900&fit=crop",
+      "description": "Gamescom may have been overshadowed by GTA 6, but The Witcher 3 shows the other side of the blockbuster coin"
+    },
     {
       "title": "Who is N3on? The controversial streamer fans think appears in GTA 6 - thenationalnews.com",
       "link": "https://www.thenationalnews.com/arts-culture/pop-culture/2026/08/30/gta-6-n3on-netflix-kick/",
@@ -5207,13 +5220,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://www.rockstargames.com/VI/-/opengraph-image.jpg?opengraph-image.0t8ty~nlmxq2s.jpg",
-      "description": "Grand Theft Auto VI Trailer 1&nbsp;&nbsp;Rockstar Games",
-      "extraSources": [
-        {
-          "source": "Rockstar Games (officiel FR)",
-          "link": "https://www.rockstargames.com/fr/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look?amp%3Bamp%3Bamp%3Butm_medium=o_social&amp%3Bamp%3Bamp%3Bamp%3Butm_campaign=gtaplus-event54-20260813"
-        }
-      ]
+      "description": "Grand Theft Auto VI Trailer 1&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "GTA 6 Extended Look Is Now Free on YouTube – How to Download in 4K - vice.com",
@@ -17438,13 +17445,7 @@
       "specialist": false,
       "lang": null,
       "image": null,
-      "description": "Grand Theft Auto VI Pre-Order Details&nbsp;&nbsp;Rockstar Games",
-      "extraSources": [
-        {
-          "source": "Rockstar Games (officiel FR)",
-          "link": "https://www.rockstargames.com/fr/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look?amp%3Bamp%3Bamp%3Butm_medium=o_social&amp%3Bamp%3Bamp%3Bamp%3Butm_campaign=gtaplus-event54-20260813"
-        }
-      ]
+      "description": "Grand Theft Auto VI Pre-Order Details&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "Grand Theft Auto VI - Rockstar Store",
@@ -17659,13 +17660,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://www.rockstargames.com/VI/-/opengraph-image.jpg?opengraph-image.0t8ty~nlmxq2s.jpg",
-      "description": "Grand Theft Auto VI&nbsp;&nbsp;Rockstar Games",
-      "extraSources": [
-        {
-          "source": "Rockstar Games (officiel FR)",
-          "link": "https://www.rockstargames.com/fr/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look?amp%3Bamp%3Bamp%3Butm_medium=o_social&amp%3Bamp%3Bamp%3Bamp%3Butm_campaign=gtaplus-event54-20260813"
-        }
-      ]
+      "description": "Grand Theft Auto VI&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "Grand Theft Auto VI: Official Cover Art Reveal",
@@ -17847,13 +17842,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://media-rockstargames-com.akamaized.net/tina-uploads/posts/3928aaa9471o3a/87db5089306344e0854cffb1b3bf15e6d71b465b.jpg",
-      "description": "Grand Theft Auto VI — Watch Trailer 2 Now&nbsp;&nbsp;Rockstar Games",
-      "extraSources": [
-        {
-          "source": "Rockstar Games (officiel FR)",
-          "link": "https://www.rockstargames.com/fr/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look?amp%3Bamp%3Bamp%3Butm_medium=o_social&amp%3Bamp%3Bamp%3Bamp%3Butm_campaign=gtaplus-event54-20260813"
-        }
-      ]
+      "description": "Grand Theft Auto VI — Watch Trailer 2 Now&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "Grand Theft Auto VI Trailer 2 - Rockstar Games",
