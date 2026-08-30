@@ -401,7 +401,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **318
+qui permet de tester tout le pipeline sans sortir de la machine. **328
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -868,6 +868,35 @@ l'API GitHub : 60 requêtes/h par adresse IP).
   données d'actualité) n'est jamais mis en cache — toujours 100% réseau,
   pour ne jamais afficher silencieusement une actu périmée en la faisant
   passer pour à jour.
+- **Le panneau Paramètres en trois onglets.** Il faisait **2384 px**, soit
+  2,8 écrans, dont **1075 px pour la seule liste des sources** : les réglages
+  qu'on touche souvent étaient derrière ceux qu'on ne touche jamais, et
+  « Appliquer » n'était atteignable qu'après avoir tout défilé. Découpé en
+  **Affichage · Contenu · Avancé**, chaque onglet tient entre 362 et 878 px
+  et les boutons restent visibles.
+
+  **La barre réutilise la classe `.tab` du site**, pas une copie qui lui
+  ressemble : le panneau suivra donc toute évolution des onglets d'articles
+  sans qu'on y pense. C'est le point qui manquait — le panneau avait accumulé
+  trois variantes de bouton à lui seul, et **dix attributs `style=` en ligne,
+  plus que tout le reste du corps du document réuni**. Ils sont remplacés par
+  trois classes. Le sélecteur de thème disait « sélectionné » en contour bleu
+  quand les onglets le disent en aplat blanc sur accent : il adopte celui du
+  site.
+
+  La liste des sources défile **chez elle** (34 vh) au lieu d'allonger le
+  panneau, avec filtre par nom, compteur et tout activer/désactiver. Une
+  colonne sous 520 px : à 390 px, deux colonnes tronquaient « Rockstar Games
+  (officiel EN) » en « (offi… », indistinguable de la version FR. Les
+  explications passent derrière un « ? » — le texte reste dans le DOM, mais
+  ne mange plus la moitié de l'écran une fois lu.
+
+  **23 des 24 éléments du panneau sont pilotés par le JS**, et déplacer les
+  blocs est exactement le geste qui en fait disparaître un en silence : un
+  test vérifie que les 24 identifiants sont toujours présents, qu'aucun
+  `getElementById` ne vise un élément disparu, qu'un seul onglet est visible
+  au départ, que les boutons utilisent bien `.tab`, et qu'aucun style en
+  ligne long n'est revenu.
 - **L'état du dernier passage, dans l'app.** `feed.json` publiait déjà
   `generated_at`, `new_this_run`, `hot_count` et `sources_health` — l'app ne
   les regardait pas. Une ligne sous le compteur d'articles dit maintenant
@@ -1088,7 +1117,7 @@ commentaire).
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.
 - **Fichier HTML monolithique** — `index.html` regroupe CSS, HTML et JS
-  dans un seul fichier de ~3350 lignes plutôt que d'être séparé en
+  dans un seul fichier de ~3600 lignes plutôt que d'être séparé en
   plusieurs fichiers. Choix assumé : ça simplifie l'upload manuel (un seul
   fichier à remplacer au lieu de plusieurs à garder synchronisés), au
   prix d'un fichier plus long à parcourir si besoin d'y retoucher.

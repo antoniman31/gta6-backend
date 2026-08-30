@@ -1443,6 +1443,72 @@ def test_validation_avant_ecriture():
 
 
 
+def test_panneau_parametres_intact():
+    print("\n[app] réorganiser le panneau n'a perdu aucun élément piloté par le JS")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    deb = html.index("<!-- ---------- Panneau Paramètres ---------- -->")
+    fin = html.index("<!-- ---------- Modale Aperçu article ---------- -->")
+    panneau = html[deb:fin]
+    js = html[html.index("<script>"):]
+
+    # 23 des 24 éléments du panneau sont adressés par getElementById depuis le
+    # JS. Déplacer les blocs entre onglets est exactement le geste qui en fait
+    # disparaître un en silence : l'app continue de se charger, et le réglage
+    # concerné ne répond simplement plus.
+    ATTENDUS = [
+        "settingsOverlay", "themeSystemBtn", "themeLightBtn", "themeDarkBtn",
+        "backendUrlInput", "vapidSetupGroup", "vapidKeysBlock", "vapidPublicOut",
+        "vapidPrivateOut", "pushGroup", "pushEnableBtn", "pushTestBtn",
+        "pushDisableBtn", "pushStatusLine", "pushSubscriptionBlock",
+        "pushSubscriptionText", "githubTokenInput", "tokenStatusLine",
+        "keywordsInput", "excludeKeywordsInput", "sourceList", "maxDisplay",
+        "simRange", "simValue",
+    ]
+    presents = set(re.findall(r'id="([^"]+)"', panneau))
+    manquants = [i for i in ATTENDUS if i not in presents]
+    check(not manquants, f"les {len(ATTENDUS)} identifiants du panneau sont toujours là"
+                         + (f" — manquants : {manquants}" if manquants else ""))
+
+    # Et qu'aucun ne soit référencé par le JS sans exister dans le balisage.
+    orphelins = [i for i in re.findall(r'getElementById\("([^"]+)"\)', js)
+                 if i in ATTENDUS and i not in presents]
+    check(not orphelins, "aucun getElementById ne vise un élément disparu")
+
+    # Chaque élément doit vivre dans exactement un onglet, sinon il serait
+    # masqué en permanence ou affiché dans deux onglets à la fois.
+    onglets = re.findall(r'data-onglet="([a-z]+)"', panneau)
+    check(len(onglets) == 3, f"trois onglets déclarés (obtenu {len(onglets)})")
+    check(len(set(onglets)) == 3, "leurs clés sont distinctes")
+    cibles = set(re.findall(r'data-cible="([a-z]+)"', panneau))
+    check(cibles == set(onglets),
+          "chaque bouton d'onglet pointe vers un panneau existant, et réciproquement")
+
+    # Un seul onglet visible au chargement, sinon deux se superposent.
+    caches = len(re.findall(r'data-onglet="[a-z]+" hidden', panneau))
+    check(caches == 2, f"deux onglets masqués au départ, un visible (obtenu {caches})")
+
+    # La barre réutilise .tab : c'est ce qui garantit l'harmonie avec les
+    # onglets d'articles. Une classe propre au panneau dériverait avec le temps.
+    barre = re.search(r'<div class="panneau-tabs">(.*?)</div>', panneau, re.S).group(1)
+    check(barre.count('class="tab') == 3,
+          "les trois boutons utilisent la classe .tab du site")
+    # Sur les boutons eux-mêmes, et non sur le conteneur .panneau-tabs qui,
+    # lui, ne porte que la mise en page.
+    boutons = re.findall(r'<button[^>]*>', barre)
+    check(len(boutons) == 3, f"trois boutons dans la barre (obtenu {len(boutons)})")
+    reinventes = [b for b in boutons
+                  if not re.search(r'class="tab(?: active)?"', b)]
+    check(not reinventes,
+          "aucun bouton n'a de classe propre au panneau" +
+          (f" — {reinventes}" if reinventes else ""))
+
+    # Le balisage du panneau ne doit plus porter de style= long : il en avait
+    # dix, plus que tout le reste du corps du document réuni.
+    longs = [s for s in re.findall(r'style="([^"]*)"', panneau) if len(s) > 24]
+    check(not longs, f"plus aucun style en ligne long dans le panneau (reste {len(longs)})")
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -1465,6 +1531,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_timeout_reseau, test_source_cassee_vs_muette,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
+           test_panneau_parametres_intact,
            test_validation_avant_ecriture):
     fn()
 
