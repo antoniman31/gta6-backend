@@ -126,6 +126,22 @@
     font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.5; font-weight:600;
   }
 
+  /* Même gabarit que .stale-banner, mais en accent et non en avertissement :
+     une nouvelle version n'est pas un problème, c'est une bonne nouvelle. */
+  .update-banner{
+    background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+    border:1px solid var(--accent); color:var(--accent);
+    border-radius:8px; padding:10px 12px; margin-bottom:14px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.4;
+    font-weight:600;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .update-banner button{
+    flex-shrink:0; background:var(--accent); color:#fff; border:none;
+    border-radius:5px; padding:6px 12px; font-family:'JetBrains Mono',monospace;
+    font-size:11px; font-weight:700; cursor:pointer; height:30px;
+  }
+
   /* ---------- Bloc de contrôle ---------- */
   .console{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
@@ -565,6 +581,13 @@
 
   <div id="staleBanner" class="stale-banner" style="display:none;"></div>
 
+  <!-- Nouvelle version du fichier HTML détectée sur le serveur. Masqué par
+       défaut : il n'apparaît que quand il y a réellement du neuf. -->
+  <div id="updateBanner" class="update-banner" style="display:none;">
+    <span>Nouvelle version de l'app disponible.</span>
+    <button onclick="rechargerApp()">Recharger</button>
+  </div>
+
   <!-- Bloc unique : l'état du fil et les deux actions qui le modifient se
        lisent ensemble. Séparés, ils formaient cinq blocs empilés dont deux
        répétaient le même nombre d'articles. -->
@@ -818,6 +841,16 @@
         <input type="range" id="simRange" min="50" max="95" value="75" oninput="onSimChange(this.value)">
         <span id="simValue" style="font-family:'JetBrains Mono',monospace; font-size:11px;">75%</span>
       </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Version de l'app</span>
+      <button onclick="rechargerApp()" style="width:100%;">Recharger l'app</button>
+      <div class="setting-desc">Installée sur l'écran d'accueil, l'app ne recharge
+        jamais son propre code : une fois lancée, plus aucune navigation n'a lieu
+        et le fichier HTML servi reste celui du démarrage. Ce bouton force le
+        rechargement sans avoir à fermer l'app. Rien n'est perdu — réglages,
+        articles, lu/non-lu et position de lecture sont conservés.</div>
     </div>
 
     <div class="setting-group">
@@ -1782,6 +1815,12 @@ async function loadFullHistory(raison){
 
 async function checkNow(force){
   const now = Date.now();
+  // Greffé sur la vérification des données : le geste qui dit « montre-moi
+  // du neuf » est aussi le bon moment pour regarder s'il y a une nouvelle
+  // version de l'app. Volontairement sans await — la détection est un
+  // confort, elle ne doit pas retarder l'affichage des articles. Sa propre
+  // limite de fréquence évite d'interroger le serveur à chaque clic.
+  verifieVersionApp();
   // Stale-while-revalidate : les articles déjà chargés restent toujours
   // affichés (jamais d'écran vide ni de blocage) ; seule la fréquence des
   // vrais appels réseau est limitée, pour ne pas spammer les proxys sur des
@@ -3221,12 +3260,81 @@ window.addEventListener("scroll", () => {
   requestAnimationFrame(() => { pastilleEnAttente = false; majPastilleReprise(); });
 }, { passive: true });
 
+// ---------- Détection d'une nouvelle version de l'app ----------
+// Installée sur l'écran d'accueil, une PWA ne fait plus AUCUNE navigation
+// après son lancement : le service worker sert bien le squelette en
+// réseau-d'abord (cache "no-store"), mais il n'intercepte que les requêtes
+// de navigation, et il n'y en a plus. Le HTML servi reste donc celui du
+// démarrage jusqu'à ce que l'app soit tuée et relancée.
+//
+// On interroge donc le serveur en HEAD — quelques octets, pas les ~150 Ko
+// du fichier — et on compare sa signature à celle relevée au démarrage.
+// L'ETag de GitHub Pages change à chaque déploiement : c'est le vrai
+// signal, contrairement à un numéro de version qu'il faudrait penser à
+// incrémenter à la main.
+//
+// Cette requête part en fetch classique, donc mode "cors" et non
+// "navigate" : le service worker ne l'intercepte pas et elle atteint
+// toujours le réseau.
+let signatureAppInitiale = null;
+let derniereVerifVersion = 0;
+const INTERVALLE_VERIF_VERSION_MS = 60000;
+
+async function signatureApp(){
+  // ETag d'abord, Last-Modified ensuite, taille en dernier recours. Si le
+  // serveur n'envoie aucun des trois, on renvoie null et la détection reste
+  // silencieuse : mieux vaut ne rien signaler que signaler à tort.
+  const r = await fetch("./index.html", { method: "HEAD", cache: "no-store" });
+  if(!r.ok) return null;
+  return r.headers.get("ETag")
+      || r.headers.get("Last-Modified")
+      || r.headers.get("Content-Length")
+      || null;
+}
+
+async function verifieVersionApp(){
+  const now = Date.now();
+  if(now - derniereVerifVersion < INTERVALLE_VERIF_VERSION_MS) return;
+  derniereVerifVersion = now;
+  try{
+    const sig = await signatureApp();
+    if(!sig) return;
+    // Première signature obtenue : elle sert de référence. Au démarrage
+    // c'est bien la version en train de tourner, puisque le service worker
+    // vient de la servir depuis le réseau. Si ce tout premier relevé
+    // échoue (app ouverte hors-ligne), la référence est prise au premier
+    // relevé réussi : on peut alors manquer UNE mise à jour, jamais plus.
+    if(signatureAppInitiale === null){
+      signatureAppInitiale = sig;
+      return;
+    }
+    if(sig !== signatureAppInitiale){
+      const b = document.getElementById("updateBanner");
+      if(b) b.style.display = "flex";
+    }
+  }catch(e){
+    // Hors-ligne, HEAD refusé, CDN capricieux : la détection est un confort,
+    // elle ne doit jamais remonter d'erreur ni polluer le journal.
+  }
+}
+
+function rechargerApp(){
+  // Un rechargement EST une navigation : le service worker l'intercepte et
+  // va chercher le HTML sur le réseau. Rien n'est perdu au passage, tout
+  // l'état vit dans localStorage et reprendreLecture() ramène à l'article
+  // en cours.
+  location.reload();
+}
+
 // ---------- Init ----------
 // Avant loadState : le premier rendu du fil doit déjà connaître le repère,
 // sinon le trait « lu jusqu'ici » n'apparaîtrait qu'au rendu suivant.
 chargerReprise();
 loadState();
 updateCountdown();
+// Relève la signature de référence sans attendre : c'est celle de la
+// version en train de tourner.
+verifieVersionApp();
 setInterval(updateCountdown, 1000);
 
 // Enregistrement du service worker : condition technique requise par

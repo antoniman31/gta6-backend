@@ -826,6 +826,35 @@ l'API GitHub : 60 requêtes/h par adresse IP).
   données d'actualité) n'est jamais mis en cache — toujours 100% réseau,
   pour ne jamais afficher silencieusement une actu périmée en la faisant
   passer pour à jour.
+- **Recharger l'app sans la tuer.** Le service worker sert bien le squelette
+  en réseau-d'abord, mais il n'intercepte que les requêtes de **navigation**
+  — et une PWA installée n'en fait plus aucune après son lancement.
+  « Actualiser » et le tirer-pour-rafraîchir vont chercher `feed.json`,
+  jamais le HTML. Le
+  code de l'app servi restait donc celui du démarrage jusqu'à ce qu'on tue
+  l'app et qu'on la relance.
+
+  Une requête **HEAD** sur `index.html` (quelques octets, pas les ~150 Ko du
+  fichier) relève l'`ETag` au démarrage, puis le compare à chaque
+  vérification — au plus une fois par minute, greffée sur « Actualiser ».
+  S'il a changé, un bandeau « Nouvelle version disponible » propose de
+  recharger ; le bouton existe aussi en permanence dans les Paramètres, pour
+  forcer. `location.reload()` **est** une navigation : le service worker la
+  voit passer et va chercher le HTML sur le réseau.
+
+  L'`ETag` de GitHub Pages change à chaque déploiement : pas de numéro de
+  version à incrémenter à la main, donc pas d'oubli possible. Repli sur
+  `Last-Modified` puis `Content-Length` ; si le serveur n'envoie aucun des
+  trois, ou si la requête échoue (hors-ligne), la détection reste
+  **silencieuse** plutôt que de signaler à tort. Un rechargement ne coûte
+  rien : réglages, articles, lu/non-lu et position de lecture vivent dans
+  `localStorage`.
+
+  Limite connue : GitHub Pages sert via un CDN dont le cache tient quelques
+  minutes. Le `no-store` contourne le cache du navigateur, pas celui de
+  GitHub — un rechargement lancé juste après un déploiement peut encore
+  servir l'ancienne version. Le bandeau aide justement là : il n'apparaît
+  qu'une fois le CDN réellement basculé.
 
 ## Notifications — historique des deux systèmes testés
 
@@ -965,7 +994,7 @@ commentaire).
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.
 - **Fichier HTML monolithique** — `index.html` regroupe CSS, HTML et JS
-  dans un seul fichier de ~3230 lignes plutôt que d'être séparé en
+  dans un seul fichier de ~3350 lignes plutôt que d'être séparé en
   plusieurs fichiers. Choix assumé : ça simplifie l'upload manuel (un seul
   fichier à remplacer au lieu de plusieurs à garder synchronisés), au
   prix d'un fichier plus long à parcourir si besoin d'y retoucher.
