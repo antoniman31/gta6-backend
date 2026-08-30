@@ -1239,6 +1239,100 @@ def test_chaine_youtube_rockstarmag():
           "pas de double appartenance possible")
 
 
+def test_timeout_reseau():
+    print("\n[réseau] un délai maximal existe et vaut ce qui est documenté")
+    import socket
+    import fetch_feeds
+
+    # feedparser n'accepte aucun paramètre de timeout : il passe par urllib,
+    # qui suit le défaut des sockets. Sans ce défaut, une source qui accepte
+    # la connexion puis se tait bloque son fil indéfiniment et le passage ne
+    # se termine jamais. Ce test garde le garde-fou en place.
+    check(socket.getdefaulttimeout() == fetch_feeds.FETCH_TIMEOUT,
+          f"importer fetch_feeds pose un timeout global de {fetch_feeds.FETCH_TIMEOUT} s")
+    check(socket.getdefaulttimeout() is not None,
+          "le timeout n'est pas None (attente infinie)")
+    check(0 < fetch_feeds.FETCH_TIMEOUT <= 60,
+          "le timeout est dans une plage raisonnable")
+
+
+def test_source_cassee_vs_muette():
+    print("\n[sources] une page HTML ne se confond plus avec un flux vide")
+    import fetch_feeds
+
+    # Cas réel du 30/08/2026 : IGN et Kotaku renvoyaient « 0 entrée » sans
+    # qu'on puisse savoir si le flux était vide ou si la réponse n'était pas
+    # un flux du tout. Les deux appellent des gestes différents.
+    infos = {
+        "bloquee": {"raw_count": 0, "not_modified": False,
+                    "http_status": 403, "not_a_feed": True},
+        "vide":    {"raw_count": 0, "not_modified": False, "http_status": 200},
+        "trois_zero": {"raw_count": 0, "not_modified": True, "http_status": 304},
+    }
+    feeds_avant = fetch_feeds.FEEDS
+    fetch_feeds.FEEDS = [{"id": k, "name": k, "url": "", "official": False}
+                         for k in infos]
+    try:
+        sante = {s["id"]: s for s in fetch_feeds.build_sources_health([], infos, {})}
+    finally:
+        fetch_feeds.FEEDS = feeds_avant
+
+    check(sante["bloquee"]["status"] == "cassee",
+          "une réponse qui n'est pas un flux donne le statut « cassee »")
+    check(sante["bloquee"]["http_status"] == 403,
+          "le code HTTP est conservé pour le diagnostic")
+    check(sante["vide"]["status"] == "muette",
+          "un flux valide mais vide reste « muette »")
+    check(sante["trois_zero"]["status"] != "muette",
+          "une réponse 304 n'est jamais prise pour une panne")
+
+    # Le point qui casse en silence si on l'oublie : « cassee » doit compter
+    # comme « ne rapporte rien », sinon le compteur de passages muets repart
+    # à zéro et une fausse alerte de rétablissement part sur Discord.
+    check(fetch_feeds.ne_rapporte_rien(sante["bloquee"]),
+          "une source cassée compte comme ne rapportant rien")
+    check(fetch_feeds.ne_rapporte_rien(sante["vide"]),
+          "une source muette aussi")
+    check(not fetch_feeds.ne_rapporte_rien({"status": "ok"}),
+          "une source qui répond, non")
+
+    seuil = fetch_feeds.DEAD_SOURCE_RUNS
+    liste = [dict(sante["bloquee"])]
+    compteurs, alertes = fetch_feeds.suivre_sources_muettes(liste, {"bloquee": seuil - 1})
+    check(compteurs.get("bloquee") == seuil,
+          "le compteur continue de monter quand une muette devient cassée")
+    check(any(a["type"] == "tombee" for a in alertes),
+          "et l'alerte part bien au franchissement du seuil")
+
+
+def test_compteur_echecs_decodage():
+    print("\n[Google News] les décodages ratés sont comptés, pas seulement tracés")
+    import fetch_feeds
+
+    fetch_feeds.reinitialise_echecs_decodage()
+    check(fetch_feeds.echecs_decodage() == 0, "compteur remis à zéro au début du passage")
+
+    # decode_google_news_link renvoie le lien inchangé quand il échoue :
+    # c'est ce que predecode_links compte, sans jamais perdre l'article.
+    liens = ["https://news.google.com/rss/articles/AAA",
+             "https://news.google.com/rss/articles/BBB"]
+    reel = fetch_feeds.decode_google_news_link
+    fetch_feeds.decode_google_news_link = lambda u: u  # échec pour les deux
+    try:
+        journal = []
+        resolus = fetch_feeds.predecode_links(liens, {}, journal)
+    finally:
+        fetch_feeds.decode_google_news_link = reel
+
+    check(fetch_feeds.echecs_decodage() == 2, "deux échecs comptés")
+    check(all(resolus[l] == l for l in liens),
+          "le lien d'origine est conservé : aucun article perdu")
+    check(any("échec" in l for l in journal), "l'échec apparaît dans le journal")
+
+    fetch_feeds.reinitialise_echecs_decodage()
+    check(fetch_feeds.echecs_decodage() == 0, "et le compteur se réinitialise")
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -1257,7 +1351,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_identifiants_de_sources_uniques,
            test_chaines_par_hote,
            test_plafond_par_domaine, test_source_qui_plante,
-           test_predecode_google_news):
+           test_predecode_google_news,
+           test_timeout_reseau, test_source_cassee_vs_muette,
+           test_compteur_echecs_decodage):
     fn()
 
 print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} vérifications passées")

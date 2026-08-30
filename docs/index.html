@@ -493,6 +493,15 @@
   .history-line{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap;
   }
+  /* État du dernier passage du robot. Même famille que .console-status,
+     en un cran plus discret : c'est une information de fond, pas une
+     action. Sur toute la largeur pour ne pas se battre avec countLine. */
+  .run-line{
+    font-family:'JetBrains Mono',monospace; font-size:10px;
+    color:var(--text-dim); opacity:0.85; width:100%;
+    display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .run-line .alerte{color:var(--warn); font-weight:700;}
   .history-line button{padding:3px 8px; font-size:10px;}
   .token-status{
     font-family:'JetBrains Mono',monospace; font-size:11px;
@@ -595,6 +604,11 @@
     <div class="console-status">
       <span id="countLine">0 article suivi</span>
       <span id="historyLine" class="history-line" style="display:none;"></span>
+      <!-- Ce que le robot a fait à son dernier passage. Les données sont
+           déjà publiées dans feed.json (durée, nouveaux, sources muettes,
+           décodages ratés) ; il ne manquait que de les montrer. Masqué en
+           mode direct, où aucun robot ne tourne. -->
+      <span id="runLine" class="run-line" style="display:none;"></span>
     </div>
     <div class="controls">
       <button class="primary" onclick="checkNow(true)">Actualiser</button>
@@ -1730,6 +1744,8 @@ async function applyBackendData(data, sourceUrl){
   applyFilters();
   firstLoad = false;
 
+  majLigneRun(data);
+
   const finishedAt = new Date();
   document.getElementById("lastCheck").textContent = "dernière vérif (backend) : " + finishedAt.toLocaleTimeString('fr-FR');
   const proxyEl = document.getElementById("proxyLine");
@@ -1945,6 +1961,10 @@ async function checkNow(force){
 
   const finishedAt = new Date();
   document.getElementById("lastCheck").textContent = "dernière vérif : " + finishedAt.toLocaleTimeString('fr-FR');
+  // Mode direct : aucun robot n'a tourné, laisser l'état du dernier passage
+  // backend reviendrait à annoncer un état qui n'a plus cours.
+  const ligneRun = document.getElementById("runLine");
+  if(ligneRun) ligneRun.style.display = "none";
   const proxyEl = document.getElementById("proxyLine");
   proxyEl.textContent = okCount + " source(s) OK" + (failCount > 0 ? ", " + failCount + " en échec" : "");
   proxyEl.style.color = failCount > 0 ? "var(--warn)" : "var(--text-dim)";
@@ -3259,6 +3279,52 @@ window.addEventListener("scroll", () => {
   pastilleEnAttente = true;
   requestAnimationFrame(() => { pastilleEnAttente = false; majPastilleReprise(); });
 }, { passive: true });
+
+// Rend lisible ce que le robot a fait à son dernier passage. Toutes ces
+// valeurs sont déjà publiées dans feed.json — l'app se contentait de ne
+// pas les regarder. Rien de neuf n'est calculé ici.
+function majLigneRun(data){
+  const el = document.getElementById("runLine");
+  if(!el) return;
+  const morceaux = [];
+
+  if(typeof data.duration_seconds === "number"){
+    const s = data.duration_seconds;
+    morceaux.push("passage en " + (s < 60
+      ? s.toFixed(0) + " s"
+      : Math.floor(s / 60) + " min " + String(Math.round(s % 60)).padStart(2, "0")));
+  }
+  if(typeof data.new_this_run === "number"){
+    morceaux.push(data.new_this_run + " nouveau" + (data.new_this_run > 1 ? "x" : ""));
+  }
+
+  // sources_silence ne contient QUE les sources en difficulté : son nombre
+  // de clés est directement le compte des sources qui ne répondent plus.
+  const muettes = Object.keys(data.sources_silence || {}).length;
+  morceaux.push(muettes
+    ? '<span class="alerte">' + muettes + " source" + (muettes > 1 ? "s" : "") + " muette" + (muettes > 1 ? "s" : "") + "</span>"
+    : "toutes les sources répondent");
+
+  // Une source « cassée » répond mais ne renvoie pas un flux : page de
+  // blocage, ou URL devenue une page web. Ça ne se répare pas tout seul,
+  // contrairement à une source simplement muette — d'où la mention à part.
+  const cassees = (data.sources_health || []).filter(s => s.status === "cassee");
+  if(cassees.length){
+    morceaux.push('<span class="alerte">' + cassees.length + " cassée" +
+      (cassees.length > 1 ? "s" : "") + " : " +
+      cassees.map(s => escapeHtml(s.name)).join(", ") + "</span>");
+  }
+
+  // Zéro en régime normal : on ne l'affiche que si c'est arrivé, sinon la
+  // ligne se remplirait d'une bonne nouvelle sans intérêt.
+  if(data.decode_failures){
+    morceaux.push('<span class="alerte">' + data.decode_failures + " décodage" +
+      (data.decode_failures > 1 ? "s" : "") + " Google News en échec</span>");
+  }
+
+  el.innerHTML = morceaux.join(" · ");
+  el.style.display = morceaux.length ? "flex" : "none";
+}
 
 // ---------- Détection d'une nouvelle version de l'app ----------
 // Installée sur l'écran d'accueil, une PWA ne fait plus AUCUNE navigation

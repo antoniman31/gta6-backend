@@ -67,6 +67,20 @@ d'où le planificateur externe.
    feedparser prévient qu'un client qui ignore ces en-têtes peut se faire
    bannir par l'éditeur. Les validateurs sont conservés dans
    `feed_http_state` de `feed.json`, faute d'autre stockage persistant.
+
+   **Délai maximal : 20 s par opération réseau** (`FETCH_TIMEOUT`, posé par
+   `socket.setdefaulttimeout`). `feedparser.parse()` n'accepte aucun
+   paramètre de timeout — il passe par urllib, qui suit le défaut des
+   sockets, et ce défaut est `None`, c'est-à-dire une attente infinie. Une
+   source qui accepte la connexion puis ne répond jamais bloquait son fil
+   sans fin : les autres sources continuaient, mais le passage ne se
+   terminait pas et rien n'était publié, jusqu'à ce que le
+   `timeout-minutes` du workflow tue le job vingt minutes plus tard. Un
+   seul site qui traîne coûtait le run entier.
+
+   Le timeout se manifeste comme une **exception levée**, pas comme un
+   `bozo` : `collect_feed_items` l'attrape, trace « échec réseau » et
+   abandonne la source proprement.
 3. **La chaîne YouTube de Rockstar est la source primaire.** Un trailer sort
    là ; la presse en parle dix à trente minutes plus tard. Sans elle, le
    robot apprend l'événement par ceux qui le commentent. Deux réglages
@@ -184,7 +198,23 @@ d'où le planificateur externe.
    lancée pour ne jamais renvoyer de résultats tronqués sans le dire. Les
    deux fichiers sont toujours écrits ensemble, y compris après une
    fusion de conflit.
-13. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
+13. **Distingue une source vide d'une source cassée.** `feedparser` avale
+   une page HTML sans protester : `bozo` reste faux et la liste d'entrées
+   est vide — **exactement comme un flux valide mais sans article**. Seul le
+   champ `version` les sépare (renseigné uniquement quand le document est un
+   flux). Sans ce test, une page de blocage anti-robot et un site qui ne
+   publie rien produisent la même ligne « 0 entrée » : arrivé le 30/08/2026
+   sur IGN et Kotaku, sans qu'on puisse trancher depuis le journal. Le code
+   HTTP est tracé pour la même raison — un 403 déguisé en page HTML se lit
+   alors d'un coup d'œil.
+
+   D'où un statut `cassee`, distinct de `muette` : une source muette peut
+   revenir seule, une URL qui ne renvoie plus de flux demande d'aller voir.
+   **Les deux comptent comme « ne rapporte rien »** (`ne_rapporte_rien()`) —
+   les séparer ferait repartir à zéro le compteur de passages muets le jour
+   où une muette devient cassée, et enverrait une fausse alerte de
+   rétablissement sur Discord.
+14. **Dresse l'état de chaque source** (`sources_health` dans `feed.json`) —
    une source « muette » n'a renvoyé aucune entrée brute, signe net d'un
    flux cassé ; une source « tarie » répond mais n'a rien publié depuis
    plus de 30 jours, ce qui peut être parfaitement normal (Rockstar et
@@ -192,7 +222,7 @@ d'où le planificateur externe.
    **Et alerte sur Discord quand une source tombe** — voir la section
    dédiée plus bas. L'état seul ne dit que « muette maintenant » ; c'est le
    cumul (`sources_silence`) qui distingue une panne d'un hoquet.
-14. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
+15. **Écrit `docs/feed.json`** avec l'historique complet, les métadonnées
    (date de génération, nombre d'articles), et la liste des sources (pour
    que le tracker HTML puisse afficher leurs noms sans maintenir sa
    propre copie séparée — voir la limite ci-dessous sur cette
@@ -359,7 +389,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **282
+qui permet de tester tout le pipeline sans sortir de la machine. **299
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -826,6 +856,15 @@ l'API GitHub : 60 requêtes/h par adresse IP).
   données d'actualité) n'est jamais mis en cache — toujours 100% réseau,
   pour ne jamais afficher silencieusement une actu périmée en la faisant
   passer pour à jour.
+- **L'état du dernier passage, dans l'app.** `feed.json` publiait déjà
+  `generated_at`, `new_this_run`, `hot_count` et `sources_health` — l'app ne
+  les regardait pas. Une ligne sous le compteur d'articles dit maintenant
+  « passage en 1 min 25 · 15 nouveaux · toutes les sources répondent », et
+  passe en alerte quand une source est muette, cassée, ou quand un décodage
+  Google News a échoué. Seule la durée manquait côté backend
+  (`duration_seconds`). Masquée en mode de secours, où aucun robot ne tourne :
+  y laisser l'état du dernier passage backend annoncerait un état qui n'a
+  plus cours.
 - **Recharger l'app sans la tuer.** Le service worker sert bien le squelette
   en réseau-d'abord, mais il n'intercepte que les requêtes de **navigation**
   — et une PWA installée n'en fait plus aucune après son lancement.
