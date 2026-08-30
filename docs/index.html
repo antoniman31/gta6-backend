@@ -483,6 +483,20 @@
     text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:block;
   }
   .setting-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
+  /* Ces trois classes remplacent dix attributs style= qui vivaient dans le
+     balisage du panneau — plus que dans tout le reste du corps du document
+     réuni. Le panneau redisait à la main ce que le CSS savait déjà faire,
+     et chaque retouche devait être répétée à cinq endroits. */
+  .champ-mono{
+    font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px;
+    background:var(--bg-elevated); border:1px solid var(--line);
+    color:var(--text); border-radius:5px; width:100%;
+  }
+  textarea.champ-mono{resize:vertical;}
+  textarea.champ-mono.petit{font-size:10px;}
+  .valeur-mono{font-family:'JetBrains Mono',monospace; font-size:11px;}
+  .bloc-replie{display:none; margin-top:8px;}
+  .pleine-largeur{width:100%;}
   .setting-row label{font-size:13px;}
   .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
   .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
@@ -521,8 +535,13 @@
   .run-dot.other{background:var(--text-dim);}
 
   .theme-toggle{display:flex; gap:6px;}
-  .theme-toggle button{flex:1; padding:8px; font-size:11px; opacity:0.6;}
-  .theme-toggle button.active{opacity:1; border-color:var(--accent); color:var(--accent);}
+  .theme-toggle button{flex:1;}
+  /* Le sélecteur de thème disait « sélectionné » en contour bleu tandis que
+     les onglets et le bouton principal le disent en aplat blanc sur accent —
+     deux langages à vingt pixels d'écart. Il adopte celui du site. */
+  .theme-toggle button.active{
+    color:#ffffff; background:var(--accent); border-color:var(--accent);
+  }
 
   input[type="range"]{width:140px; accent-color:var(--accent);}
   input[type="number"], input[type="text"].setting-input{
@@ -559,6 +578,49 @@
   .source-error{font-size:9px; color:var(--warn); margin-top:2px; font-family:'JetBrains Mono',monospace;}
 
   .settings-actions{display:flex; gap:8px; margin-top:8px;}
+
+  /* ---------- Onglets du panneau Paramètres ---------- */
+  /* La barre réutilise .tab et .tab.active : la classe du site, pas une
+     copie. Elle n'ajoute donc que la mise en page, jamais l'apparence —
+     c'est ce qui garantit que le panneau suivra toute évolution des
+     onglets d'articles sans qu'on y pense. */
+  .panneau-tabs{
+    display:flex; gap:4px; margin-bottom:16px;
+    border-bottom:1px solid var(--line); padding-bottom:12px;
+  }
+  .panneau-tabs .tab{flex:1 1 0; padding:8px 6px; min-width:0;}
+
+  /* Le mur de cinquante bascules défile chez lui au lieu d'allonger tout le
+     panneau : les boutons Appliquer et Réinitialiser restent atteignables. */
+  .panneau-onglet #sourceList{max-height:34vh; overflow-y:auto; padding-right:4px;}
+  .src-outils{margin-bottom:10px;}
+  .src-count-ligne{margin-top:8px;}
+  .src-actions{display:flex; gap:6px; margin-top:8px;}
+  .src-actions button{flex:1 1 0;}
+
+  /* Une seule colonne sous 520 px. À 390 px, deux colonnes laissent ~150 px
+     par nom : « Rockstar Games (officiel EN) » se tronque en « (offi… », qui
+     ne se distingue plus de la version FR. Un nom illisible ne sert à rien,
+     et la liste défile déjà chez elle. */
+  .panneau-onglet .source-list{grid-template-columns:minmax(0,1fr);}
+  @media (min-width:520px){
+    .panneau-onglet .source-list{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  }
+  #sourceList .source-row > div:first-child{min-width:0;}
+  #sourceList .source-row > div:first-child > span{
+    display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* Les explications se lisent une fois puis encombrent. Elles passent
+     derrière un « ? » — le texte reste dans le DOM, donc toujours
+     consultable, mais ne mange plus la moitié de l'écran en permanence. */
+  .aide{
+    background:none; border:1px solid var(--line); color:var(--text-dim);
+    border-radius:50%; width:18px; height:18px; padding:0; margin-left:6px;
+    font-size:10px; line-height:1; cursor:pointer; vertical-align:middle;
+  }
+  .aide[aria-expanded="true"]{border-color:var(--accent); color:var(--accent);}
+  .setting-label{display:flex; align-items:center;}
 
   ::selection{background:var(--accent); color:var(--accent-contrast);}
 
@@ -737,6 +799,13 @@
       <button onclick="closeSettings()">Fermer</button>
     </div>
 
+    <div class="panneau-tabs">
+      <button class="tab active" data-cible="aff" onclick="ongletParam('aff')">Affichage</button>
+      <button class="tab" data-cible="src" onclick="ongletParam('src')">Contenu</button>
+      <button class="tab" data-cible="adv" onclick="ongletParam('adv')">Avancé</button>
+    </div>
+
+    <div class="panneau-onglet" data-onglet="aff">
     <div class="setting-group">
       <span class="setting-label">Apparence</span>
       <div class="theme-toggle">
@@ -747,14 +816,61 @@
     </div>
 
     <div class="setting-group">
+      <span class="setting-label">Affichage</span>
+      <div class="setting-row">
+        <label>Articles affichés max</label>
+        <input type="number" id="maxDisplay" min="5" max="1000" value="500" onchange="saveSettings()">
+      </div>
+      <div class="setting-row">
+        <label>Seuil de similarité anti-doublon</label>
+        <input type="range" id="simRange" min="50" max="95" value="75" oninput="onSimChange(this.value)">
+        <span id="simValue" class="valeur-mono">75%</span>
+      </div>
+    </div>
+
+    </div>
+
+    <div class="panneau-onglet" data-onglet="src" hidden>
+    <div class="setting-group">
+      <span class="setting-label">Sources actives</span>
+      <div class="src-outils">
+        <input type="text" id="sourceFilter" class="setting-input wide champ-mono" placeholder="Filtrer les sources…">
+        <div class="src-count-ligne"><span id="sourceCount" class="valeur-mono"></span></div>
+        <div class="src-actions">
+          <button class="small" onclick="toutesSources(true)">Tout activer</button>
+          <button class="small" onclick="toutesSources(false)">Tout désactiver</button>
+        </div>
+      </div>
+      <div class="source-list" id="sourceList"></div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Mots-clés (un par ligne)</span>
+      <textarea id="keywordsInput" class="setting-input wide champ-mono" rows="6"></textarea>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Mots-clés à exclure (un par ligne)</span>
+      <textarea id="excludeKeywordsInput" class="setting-input wide champ-mono" rows="4"></textarea>
+      <div class="setting-desc" hidden>
+        Un article dont le titre ou le résumé contient l'un de ces mots est masqué.
+        Le masquage est réversible et immédiat : retire le mot, l'article revient
+        sans qu'il faille relancer le robot.
+      </div>
+    </div>
+
+    </div>
+
+    <div class="panneau-onglet" data-onglet="adv" hidden>
+    <div class="setting-group">
       <span class="setting-label">Backend GitHub (optionnel)</span>
-      <input type="text" id="backendUrlInput" class="setting-input wide" placeholder="https://tonpseudo.github.io/gta6-backend/feed.json" style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;">
-      <div class="setting-desc">Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
+      <input type="text" id="backendUrlInput" class="setting-input wide champ-mono" placeholder="https://tonpseudo.github.io/gta6-backend/feed.json">
+      <div class="setting-desc" hidden>Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
     </div>
 
     <div class="setting-group" id="vapidSetupGroup" style="display:none;">
       <span class="setting-label">Notifications push — configuration initiale</span>
-      <div class="setting-desc">
+      <div class="setting-desc" hidden>
         Le dépôt n'a pas encore de clés de notification. Génère-les ici (elles sont
         créées dans ce navigateur et ne partent nulle part), puis crée les deux
         secrets GitHub correspondants.
@@ -762,11 +878,11 @@
       <div class="setting-buttons">
         <button class="small" onclick="generateVapidKeys()">Générer une paire de clés</button>
       </div>
-      <div id="vapidKeysBlock" style="display:none; margin-top:8px;">
+      <div id="vapidKeysBlock" class="bloc-replie">
         <div class="setting-desc"><strong>VAPID_PUBLIC_KEY</strong> — secret GitHub</div>
-        <textarea id="vapidPublicOut" readonly rows="2" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <textarea id="vapidPublicOut" readonly rows="2" class="setting-input wide champ-mono petit"></textarea>
         <div class="setting-desc" style="margin-top:6px;"><strong>VAPID_PRIVATE_KEY</strong> — secret GitHub, à ne jamais partager</div>
-        <textarea id="vapidPrivateOut" readonly rows="2" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <textarea id="vapidPrivateOut" readonly rows="2" class="setting-input wide champ-mono petit"></textarea>
         <div class="setting-buttons">
           <button class="small" onclick="copyFieldValue('vapidPublicOut', this)">Copier la publique</button>
           <button class="small" onclick="copyFieldValue('vapidPrivateOut', this)">Copier la privée</button>
@@ -787,19 +903,19 @@
         <button class="small" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
       </div>
       <div class="token-status dim" id="pushStatusLine"></div>
-      <div id="pushSubscriptionBlock" style="display:none; margin-top:8px;">
-        <div class="setting-desc" style="margin-bottom:4px;">
+      <div id="pushSubscriptionBlock" class="bloc-replie">
+        <div class="setting-desc" hidden>
           Dernière étape, à faire une seule fois : copie ce bloc et colle-le dans le
           secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong> (Settings → Secrets and
           variables → Actions). Tant que ce n'est pas fait, le robot ne sait pas où
           envoyer les notifications.
         </div>
-        <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:10px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;"></textarea>
+        <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide champ-mono petit"></textarea>
         <div class="setting-buttons">
           <button class="small" onclick="copyPushSubscription(this)">Copier l'abonnement</button>
         </div>
       </div>
-      <div class="setting-desc">
+      <div class="setting-desc" hidden>
         Une vraie notification système, qui ouvre l'article au lieu d'ouvrir Discord.
         Un seul message récapitulatif par passage du robot, comme sur Discord.
       </div>
@@ -807,14 +923,14 @@
 
     <div class="setting-group">
       <span class="setting-label">Déclenchement à distance (optionnel)</span>
-      <input type="password" id="githubTokenInput" class="setting-input wide" placeholder="github_pat_…" autocomplete="off" spellcheck="false" style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px; width:100%;">
+      <input type="password" id="githubTokenInput" class="setting-input wide champ-mono" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
       <div class="setting-buttons">
         <button class="small" onclick="saveGithubToken()">Enregistrer</button>
         <button class="small" onclick="forgetGithubToken()">Oublier ce token</button>
         <button class="small" onclick="testGithubToken()">Tester</button>
       </div>
       <div class="token-status dim" id="tokenStatusLine"></div>
-      <div class="setting-desc">
+      <div class="setting-desc" hidden>
         Permet de lancer le robot depuis le téléphone sans passer par l'onglet Actions.
         Utilise un jeton <strong>fine-grained</strong> limité à ce seul dépôt, avec la
         permission <strong>Actions : Read and write</strong> et une date d'expiration —
@@ -825,42 +941,9 @@
     </div>
 
     <div class="setting-group">
-      <span class="setting-label">Mots-clés (un par ligne)</span>
-      <textarea id="keywordsInput" class="setting-input wide" rows="3" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px;"></textarea>
-    </div>
-
-    <div class="setting-group">
-      <span class="setting-label">Mots-clés à exclure (un par ligne)</span>
-      <textarea id="excludeKeywordsInput" class="setting-input wide" rows="3" style="resize:vertical; font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:5px;"></textarea>
-      <div class="setting-desc">
-        Un article dont le titre ou le résumé contient l'un de ces mots est masqué.
-        Le masquage est réversible et immédiat : retire le mot, l'article revient
-        sans qu'il faille relancer le robot.
-      </div>
-    </div>
-
-    <div class="setting-group">
-      <span class="setting-label">Sources actives</span>
-      <div class="source-list" id="sourceList"></div>
-    </div>
-
-    <div class="setting-group">
-      <span class="setting-label">Affichage</span>
-      <div class="setting-row">
-        <label>Articles affichés max</label>
-        <input type="number" id="maxDisplay" min="5" max="1000" value="500" onchange="saveSettings()">
-      </div>
-      <div class="setting-row">
-        <label>Seuil de similarité anti-doublon</label>
-        <input type="range" id="simRange" min="50" max="95" value="75" oninput="onSimChange(this.value)">
-        <span id="simValue" style="font-family:'JetBrains Mono',monospace; font-size:11px;">75%</span>
-      </div>
-    </div>
-
-    <div class="setting-group">
       <span class="setting-label">Version de l'app</span>
-      <button onclick="rechargerApp()" style="width:100%;">Recharger l'app</button>
-      <div class="setting-desc">Installée sur l'écran d'accueil, l'app ne recharge
+      <button onclick="rechargerApp()" class="pleine-largeur">Recharger l'app</button>
+      <div class="setting-desc" hidden>Installée sur l'écran d'accueil, l'app ne recharge
         jamais son propre code : une fois lancée, plus aucune navigation n'a lieu
         et le fichier HTML servi reste celui du démarrage. Ce bouton force le
         rechargement sans avoir à fermer l'app. Rien n'est perdu — réglages,
@@ -869,8 +952,10 @@
 
     <div class="setting-group">
       <span class="setting-label">Export</span>
-      <button onclick="exportOpml()" style="width:100%;">Exporter les sources en OPML</button>
-      <div class="setting-desc">Format standard, réutilisable dans n'importe quel lecteur RSS (Feedly, NetNewsWire, FreshRSS…).</div>
+      <button onclick="exportOpml()" class="pleine-largeur">Exporter les sources en OPML</button>
+      <div class="setting-desc" hidden>Format standard, réutilisable dans n'importe quel lecteur RSS (Feedly, NetNewsWire, FreshRSS…).</div>
+    </div>
+
     </div>
 
     <div class="settings-actions">
@@ -1275,7 +1360,25 @@ function openSettings(){
   populateSettingsUI();
   refreshTokenUI();
   refreshPushUI();
+  // populateSettingsUI reconstruit la liste des sources à chaque ouverture :
+  // les greffes doivent donc être rejouées ici, pas une fois au démarrage.
+  greffeAides();
+  majCompteurSources();
+  brancheOutilsSources();
   document.getElementById("settingsOverlay").classList.add("open");
+}
+
+// Écouteurs délégués : posés une seule fois sur des conteneurs qui, eux, ne
+// sont jamais reconstruits. Les brancher sur chaque case les perdrait au
+// prochain rendu de la liste.
+let outilsSourcesBranches = false;
+function brancheOutilsSources(){
+  if(outilsSourcesBranches) return;
+  const liste = document.getElementById("sourceList");
+  if(liste) liste.addEventListener("change", majCompteurSources);
+  const champ = document.getElementById("sourceFilter");
+  if(champ) champ.addEventListener("input", filtreSources);
+  outilsSourcesBranches = !!(liste && champ);
 }
 function closeSettings(){
   document.getElementById("settingsOverlay").classList.remove("open");
@@ -3398,6 +3501,79 @@ function rechargerApp(){
   // l'état vit dans localStorage et reprendreLecture() ramène à l'article
   // en cours.
   location.reload();
+}
+
+// ---------- Onglets du panneau Paramètres ----------
+// Le panneau faisait 2384 px de haut, soit 2,8 écrans, dont 1075 px pour la
+// seule liste des sources. Les réglages qu'on touche souvent étaient derrière
+// ceux qu'on ne touche jamais, et les boutons Appliquer / Réinitialiser
+// n'étaient atteignables qu'après avoir tout défilé.
+function ongletParam(cle){
+  document.querySelectorAll("#settingsOverlay .panneau-onglet").forEach(o => {
+    o.hidden = o.dataset.onglet !== cle;
+  });
+  document.querySelectorAll(".panneau-tabs .tab").forEach(b => {
+    b.classList.toggle("active", b.dataset.cible === cle);
+  });
+  // Changer d'onglet sans remonter laisserait le nouvel onglet ouvert à
+  // mi-hauteur, sur une section coupée.
+  const p = document.querySelector("#settingsOverlay .settings-panel");
+  if(p) p.scrollTop = 0;
+}
+
+function bascules(){
+  return [...document.querySelectorAll("#sourceList input[type=checkbox]")];
+}
+
+function toutesSources(actif){
+  bascules().forEach(c => { c.checked = actif; });
+  saveSettings();
+  majCompteurSources();
+}
+
+function majCompteurSources(){
+  const el = document.getElementById("sourceCount");
+  if(!el) return;
+  const tous = bascules();
+  el.textContent = tous.filter(c => c.checked).length + " / " + tous.length + " actives";
+}
+
+// Filtre la liste sur le nom. Cinquante lignes à parcourir à l'œil pour en
+// désactiver une, c'était le vrai coût de cette liste.
+function filtreSources(){
+  const champ = document.getElementById("sourceFilter");
+  const q = (champ ? champ.value : "").trim().toLowerCase();
+  document.querySelectorAll("#sourceList .source-row").forEach(l => {
+    l.style.display = !q || l.textContent.toLowerCase().includes(q) ? "" : "none";
+  });
+}
+
+// Greffe un « ? » sur chaque libellé dont l'explication est repliée. Fait en
+// JS plutôt que dans le balisage pour ne pas répéter onze fois le même
+// bouton, et pour qu'une explication ajoutée plus tard en hérite seule.
+function greffeAides(){
+  document.querySelectorAll("#settingsOverlay .setting-group").forEach(g => {
+    // [hidden] et non .setting-desc : certains groupes commencent par une
+    // étiquette de champ, elle aussi en .setting-desc mais toujours visible.
+    // Sans ce filtre, le « ? » masquait l'étiquette et laissait la vraie
+    // explication inatteignable.
+    const desc = g.querySelector(".setting-desc[hidden]");
+    const lab = g.querySelector(".setting-label");
+    if(!desc || !lab || lab.querySelector(".aide")) return;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "aide";
+    b.textContent = "?";
+    b.title = "Afficher l'explication";
+    b.setAttribute("aria-expanded", String(!desc.hidden));
+    b.setAttribute("aria-label", "Afficher l'explication");
+    b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      desc.hidden = !desc.hidden;
+      b.setAttribute("aria-expanded", String(!desc.hidden));
+    });
+    lab.appendChild(b);
+  });
 }
 
 // ---------- Init ----------
