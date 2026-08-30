@@ -675,6 +675,37 @@ HOT_SOURCE_THRESHOLD = feed_store.HOT_SOURCE_THRESHOLD
 # le régénérer avec exactement la même règle après un conflit de push.
 
 
+def index_des_liens(items):
+    """Lien -> article, en comptant AUSSI les liens des sources supplémentaires.
+
+    Un article fusionné dans un autre ne figure plus au fil sous son propre
+    lien : il n'y survit que comme source supplémentaire. Sans lui dans
+    l'index, son flux le rapporte au passage suivant, il n'est reconnu nulle
+    part et il RENTRE une seconde fois — la fusion est défaite, et le
+    lecteur reçoit une notification pour un article qu'il a déjà lu.
+
+    La troisième passe de find_duplicate ne rattrape pas le cas : elle ne
+    compare qu'aux TITLE_SIMILARITY_WINDOW articles les plus récents, et
+    pendant un pic à 288 articles par jour cette fenêtre ne couvre plus une
+    journée. Le gardien, lui, peut être vieux de plusieurs jours.
+
+    Constaté le 30/08/2026, juste après le premier rejeu de l'historique :
+    5 des 21 articles fusionnés étaient revenus dans le même passage.
+
+    Le lien principal l'emporte sur un lien de source supplémentaire : un
+    article présent en propre reste son propre représentant.
+    """
+    index = {}
+    for item in items:
+        for autre in (item.get("extraSources") or []):
+            if autre.get("link"):
+                index.setdefault(autre["link"], item)
+    for item in items:
+        if item.get("link"):
+            index[item["link"]] = item
+    return index
+
+
 def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None,
                    titles_index=None):
     """Renvoie l'article déjà connu dont celui-ci est un doublon, ou None.
@@ -1451,7 +1482,11 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
                 # Doublon : on ne le garde pas, mais on retient que cette
                 # source couvre aussi le sujet.
                 avant = 1 + len(deja.get("extraSources") or [])
-                record_coverage(deja, item)
+                if record_coverage(deja, item) and item.get("link"):
+                    # Le lien vient d'être crédité sous « deja » : il doit
+                    # être reconnu tout de suite, sinon un flux suivant du
+                    # même passage le rapporterait comme un article neuf.
+                    links_index.setdefault(item["link"], deja)
                 apres = 1 + len(deja.get("extraSources") or [])
                 # Strictement au franchissement : un sujet déjà majeur qui
                 # gagne une 6e puis une 7e reprise ne réalerte pas.
@@ -2219,7 +2254,7 @@ def main():
               f"de pistage, {doublons} doublon(s) ainsi révélé(s) et retiré(s)")
 
     all_items = list(existing_items)  # on part de l'historique, pas de zéro
-    links_index = {item["link"]: item for item in all_items}  # accès O(1) par lien
+    links_index = index_des_liens(all_items)  # accès O(1) par lien
     newly_added = []
 
     # Liens Google News déjà résolus lors des exécutions précédentes : évite
