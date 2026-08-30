@@ -1340,39 +1340,62 @@ def test_titres_numerotes_pas_fusionnes():
           "mais deux fois le même titre restent bien un doublon")
 
 
-def test_titre_generique_naspire_pas_tout():
-    print("\n[doublons] un titre réduit au nom du jeu n'absorbe plus rien")
+def test_similarite_ignore_le_nom_du_jeu():
+    print("\n[doublons] le nom du jeu ne compte plus dans la comparaison")
     import fetch_feeds
 
-    # Constaté en production le 30/08/2026. « Grand Theft Auto VI -
-    # Rockstar Games » — le nom du jeu plus celui du studio — atteint 0,750
-    # de similarité avec « Grand Theft Auto VI Trailer 1 », soit PILE le
-    # seuil. Le Trailer 1 y a été absorbé ; le Trailer 2 derrière lui a été
-    # PERDU, parce que record_coverage refuse une seconde source du même
-    # nom. Un article escamoté ne se voit pas.
+    S = fetch_feeds.SIMILARITY_THRESHOLD
+
+    # Il est dans TOUS les titres : le compter brouille la mesure dans les
+    # deux sens, mesuré sur les 500 articles les plus récents.
+    #
+    # Sens 1 — l'aimant. « Grand Theft Auto VI - Rockstar Games » n'est que
+    # le nom du jeu et celui du studio. Il atteignait 0,750, pile le seuil.
+    # Le 30/08/2026 il a absorbé le Trailer 1 en production, et fait PERDRE
+    # le Trailer 2 derrière lui — record_coverage refuse une seconde source
+    # du même nom. Nettoyé, il ne reste rien de ce titre.
     aimant = "Grand Theft Auto VI - Rockstar Games"
+    check(fetch_feeds.titre_comparable(aimant) == "",
+          "un titre réduit au nom du jeu et du studio ne laisse rien")
     for autre in ("Grand Theft Auto VI Trailer 1",
                   "Grand Theft Auto VI Trailer 2",
                   "Grand Theft Auto VI: An Extended Look"):
-        check(fetch_feeds.rien_en_commun_sauf_le_jeu(aimant, autre),
-              f"« {autre[:40]} » n'est plus aspiré par le titre générique")
+        check(fetch_feeds.title_similarity(aimant, autre) == 0.0,
+              f"il ne ressemble plus à « {autre[:38]} »")
 
-    check(fetch_feeds.title_similarity(aimant, "Grand Theft Auto VI Trailer 1")
-          >= fetch_feeds.SIMILARITY_THRESHOLD,
-          "et pourtant la similarité seule les donnait pour identiques")
+    # Sens 2 — les vrais doublons que le nom du jeu séparait. Deux
+    # graphies différentes comptaient comme une différence, alors que c'est
+    # le même article montré deux fois dans le fil.
+    for a, b in (("20+ New GTA 6 Screenshots Released",
+                  "New Grand Theft Auto 6 Screenshots Revealed"),
+                 ("Grand Theft Auto 6 Playthroughs Can Last 80 Hours",
+                  "GTA 6 Playthrough Can Last Roughly 80 Hours")):
+        check(fetch_feeds.title_similarity(a, b) >= S,
+              f"« {a[:40]} » et « {b[:40]} » se rejoignent enfin")
 
-    # L'inverse : deux titres qui partagent un vrai mot restent fusionnables.
-    for a, b in (("GTA 6 : la map dévoilée", "GTA 6 : la map devoilee"),
-                 ("GTA 6 arrive enfin", "GTA 6 arrive"),
-                 ("Rockstar annonce la date", "Rockstar confirme la date")):
-        check(not fetch_feeds.rien_en_commun_sauf_le_jeu(a, b),
-              f"« {a} » et « {b} » restent comparables")
+    # Le suffixe de marque ne doit pas séparer non plus.
+    check(fetch_feeds.title_similarity(
+              "Grand Theft Auto VI - An Extended Look - Rockstar Games",
+              "Grand Theft Auto VI: An Extended Look") == 1.0,
+          "le même article avec et sans le suffixe du studio se rejoint")
+
+    # Et deux sujets distincts restent distincts.
+    check(fetch_feeds.title_similarity(
+              "Grand Theft Auto VI - An Extended Look - Rockstar Games",
+              "Grand Theft Auto VI Trailer 1 - Rockstar Games") < S,
+          "« An Extended Look » et « Trailer 1 » ne se confondent pas")
 
     existant = [{"title": aimant, "link": "https://www.rockstargames.com/VI"}]
     item = {"title": "Grand Theft Auto VI Trailer 1",
             "link": "https://www.youtube.com/watch?v=QdBZY2fkU-0"}
     check(fetch_feeds.find_duplicate(item, existant, {}, existant, {}) is None,
           "le Trailer 1 n'est plus absorbé par la page générique")
+
+    # Le garde-fou des numéros reste indispensable : nettoyés, « trailer 1 »
+    # et « trailer 2 » se ressemblent encore à 0,89.
+    check(fetch_feeds.title_similarity("Grand Theft Auto VI Trailer 1",
+                                       "Grand Theft Auto VI Trailer 2") >= S,
+          "le nettoyage seul ne sépare pas les numéros — d'où l'autre garde-fou")
 
 
 def test_reparation_attributions_croisees():
@@ -2268,7 +2291,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_miniature_youtube, test_media_content_non_declare_reste_accepte,
            test_reparation_vignettes_stockees,
            test_sonde_decouvre_les_flux_declares,
-           test_titres_numerotes_pas_fusionnes, test_titre_generique_naspire_pas_tout,
+           test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
            test_reparation_attributions_croisees, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,

@@ -514,38 +514,38 @@ def _sans_nombres(titre):
     return re.sub(r"\s+", " ", re.sub(r"\d+", "", normalize_title(titre))).strip()
 
 
-# Mots que TOUT article du fil contient : ils ne distinguent rien. Le nom
-# du jeu sous ses graphies courantes, et rien d'autre — une liste plus
-# longue empêcherait de vraies fusions.
-_MOTS_SANS_VALEUR = {"grand", "theft", "auto", "vi", "6", "gta", "gta6", "gtavi"}
+# Mots présents dans presque TOUS les titres du fil : ils ne distinguent
+# rien, et les compter fait ressembler entre eux des articles qui n'ont
+# rien à voir. Le nom du jeu sous ses graphies courantes, et le nom du
+# studio qui sert de suffixe à quantité de pages (« … - Rockstar Games »).
+#
+# Volontairement court. Chaque mot retiré rapproche TOUS les titres entre
+# eux ; une liste bavarde ferait fusionner des articles distincts.
+_MOTS_SANS_VALEUR = {"grand", "theft", "auto", "vi", "6", "gta", "gta6",
+                     "gtavi", "rockstar", "games"}
 
 
-def _mots_distinctifs(titre):
-    return {m for m in normalize_title(titre).split() if m not in _MOTS_SANS_VALEUR}
+def titre_comparable(titre):
+    """Le titre débarrassé de ce que tous les articles ont en commun.
 
+    Comparer les titres entiers donnait un score trompeur dans les deux
+    sens, mesuré sur les 500 articles les plus récents :
 
-def rien_en_commun_sauf_le_jeu(a, b):
-    """Deux titres dont le seul point commun est le nom du jeu.
+    - « Grand Theft Auto VI - Rockstar Games » n'est QUE le nom du jeu et
+      celui du studio. Il atteignait 0,750 avec « … Trailer 1 » — pile le
+      seuil — et se comportait en aimant. Le 30/08/2026 il a absorbé le
+      Trailer 1 et fait PERDRE le Trailer 2 derrière lui. Nettoyé, il ne
+      reste rien de ce titre : il ne peut plus rien attirer.
 
-    « Grand Theft Auto VI - Rockstar Games » — le nom du jeu plus celui du
-    studio — atteint 0,750 de similarité avec « Grand Theft Auto VI
-    Trailer 1 », soit PILE le seuil. Un tel titre est un aimant : presque
-    tout ce qui commence par le nom du jeu vient s'y coller.
+    - à l'inverse, « 20+ New GTA 6 Screenshots Released » et « New Grand
+      Theft Auto 6 Screenshots Revealed » restaient sous le seuil (0,71)
+      parce que les deux graphies du nom du jeu comptaient comme une
+      différence. C'est le MÊME article, montré deux fois dans le fil.
 
-    Constaté en production le 30/08/2026. Le Trailer 1 y a été absorbé, et
-    le Trailer 2 derrière lui a été purement PERDU : record_coverage refuse
-    une seconde source portant le même nom, donc il n'a même pas été
-    conservé comme source supplémentaire. Un article escamoté ne se voit
-    pas — c'est le pire des défauts.
-
-    La règle est plus sûre qu'un seuil relevé au jugé : si tout ce que deux
-    titres partagent est le nom du jeu, ils ne parlent pas de la même chose.
+    Nettoyage : 14 paires rapprochées contre 9, sur les mêmes 500 titres.
     """
-    da, db = _mots_distinctifs(a), _mots_distinctifs(b)
-    if not da or not db:
-        # Un titre réduit au seul nom du jeu ne peut rien confirmer.
-        return True
-    return not (da & db)
+    return " ".join(m for m in normalize_title(titre).split()
+                    if m not in _MOTS_SANS_VALEUR)
 
 
 def titres_dune_meme_serie(a, b):
@@ -571,7 +571,16 @@ def titres_dune_meme_serie(a, b):
 
 
 def title_similarity(a, b):
-    return SequenceMatcher(None, normalize_title(a), normalize_title(b)).ratio()
+    """Ressemblance de deux titres, nom du jeu et du studio mis de côté.
+
+    Voir titre_comparable : ces mots-là sont dans presque tous les titres,
+    les compter brouille la mesure au lieu de l'affiner. Un titre qui n'en
+    contient rien d'autre ne ressemble à rien — c'est le bon résultat.
+    """
+    ta, tb = titre_comparable(a), titre_comparable(b)
+    if not ta or not tb:
+        return 0.0
+    return SequenceMatcher(None, ta, tb).ratio()
 
 
 # Un doublon de titre proche n'a de sens qu'entre articles publiés à peu
@@ -653,8 +662,6 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None,
                   else existing_items[:TITLE_SIMILARITY_WINDOW])
     for other in a_comparer:
         if titres_dune_meme_serie(item["title"], other["title"]):
-            continue
-        if rien_en_commun_sauf_le_jeu(item["title"], other["title"]):
             continue
         if title_similarity(item["title"], other["title"]) >= SIMILARITY_THRESHOLD:
             return other
