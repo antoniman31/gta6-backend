@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-30T06:47:55.752046+00:00",
-  "duration_seconds": 75.6,
+  "generated_at": "2026-08-30T07:02:06.603227+00:00",
+  "duration_seconds": 79.9,
   "decode_failures": 0,
-  "total_articles": 1317,
+  "total_articles": 1318,
   "new_this_run": 1,
   "hot_count": 2,
   "hot_threshold": 3,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 66,
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 2,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T05:00:31+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-30T06:49:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:52:18+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "rockstarintel",
@@ -517,14 +517,14 @@
     {
       "id": "ign",
       "name": "IGN",
-      "entries_fetched": 20,
+      "entries_fetched": 0,
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T22:33:20+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gamespot",
@@ -553,14 +553,14 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
+      "entries_fetched": 20,
       "http_status": 301,
       "redirect": "https://kotaku.com/feed",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T20:39:51+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gamesradar",
@@ -583,7 +583,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2024-07-26T07:00:00+00:00",
-      "days_since_last_article": 764,
+      "days_since_last_article": 765,
       "status": "tarie"
     },
     {
@@ -629,7 +629,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T06:43:31+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -649,13 +649,13 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -912,51 +912,49 @@
     }
   ],
   "sources_silence": {
-    "rockstar-youtube": 2,
-    "rockstarmag-youtube": 2,
-    "kotaku": 1
+    "ign": 1
   },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100",
-    "rockstar-fr": "100,100,100",
-    "rockstar-announce": "100,100,100",
-    "gta6-netflix": "100,100,100",
+    "rockstar-en": "100,100,100,100",
+    "rockstar-fr": "100,100,100,100",
+    "rockstar-announce": "100,100,100,100",
+    "gta6-netflix": "100,100,100,100",
     "take2-ir": "10,10",
-    "rockstar-youtube": "15,0,0",
-    "gnews-fr": "92,92,92",
-    "gnews-en": "98,99,99",
-    "pcgamer": "50,50,50",
-    "tomshw": "50,50,50",
-    "jvcom": "20,20,20",
-    "gamekult": "50,50,50",
-    "rockstarmag-youtube": "15,0,0",
-    "ign": "20,0,20",
-    "gamespot": "30,30,30",
-    "polygon": "10,10,10",
-    "kotaku": "20,20,0",
-    "gamesradar": "50,50,50",
-    "vg247": "100,100,100",
-    "gtaboom": "30,30,30",
-    "vgtimes": "40,40,40",
-    "gameblog": "13",
-    "jeuxactu": "20,20,20",
-    "actugaming": "10,10,10",
-    "gamerant": "10,10,10",
-    "dualshockers": "10,10,10",
-    "gta6times": "29,29,29",
-    "xboxygen": "100,100,100",
-    "purexbox": "100,100,100",
-    "xboxwire": "9,9,9",
-    "trueach": "100,100,100",
-    "jdg": "100,100,100",
-    "numerama": "100,100,100",
-    "gamergen": "100,100,100",
-    "frandroid": "100,100,100",
-    "theverge": "100,100,100",
-    "engadget": "84,84,84",
-    "arstechnica": "32,32,32",
-    "pushsquare": "100,100,100",
-    "schreier": "100,100,100"
+    "rockstar-youtube": "15,0,0,15",
+    "gnews-fr": "92,92,92,92",
+    "gnews-en": "98,99,99,99",
+    "pcgamer": "50,50,50,50",
+    "tomshw": "50,50,50,50",
+    "jvcom": "20,20,20,20",
+    "gamekult": "50,50,50,50",
+    "rockstarmag-youtube": "15,0,0,15",
+    "ign": "20,0,20,0",
+    "gamespot": "30,30,30,30",
+    "polygon": "10,10,10,10",
+    "kotaku": "20,20,0,20",
+    "gamesradar": "50,50,50,50",
+    "vg247": "100,100,100,100",
+    "gtaboom": "30,30,30,30",
+    "vgtimes": "40,40,40,40",
+    "gameblog": "13,13",
+    "jeuxactu": "20,20,20,20",
+    "actugaming": "10,10,10,10",
+    "gamerant": "10,10,10,10",
+    "dualshockers": "10,10,10,10",
+    "gta6times": "29,29,29,29",
+    "xboxygen": "100,100,100,100",
+    "purexbox": "100,100,100,100",
+    "xboxwire": "9,9,9,9",
+    "trueach": "100,100,100,100",
+    "jdg": "100,100,100,100",
+    "numerama": "100,100,100,100",
+    "gamergen": "100,100,100,100",
+    "frandroid": "100,100,100,100",
+    "theverge": "100,100,100,100",
+    "engadget": "84,84,84,84",
+    "arstechnica": "32,32,32,32",
+    "pushsquare": "100,100,100,100",
+    "schreier": "100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -980,9 +978,9 @@
       "etag": "\"e4507bbee601715f6bbcc452dd0da2da\"",
       "modified": "Sat, 29 Aug 2026 13:20:16 GMT"
     },
-    "ign": {
-      "etag": "W/\"27fcc-yTLfbnkfcYV5NOkFFdJNshAOPCk\"",
-      "modified": null
+    "kotaku": {
+      "etag": "W/\"b6d548927fcf44082f0d21474f92a190\"",
+      "modified": "Sun, 30 Aug 2026 06:11:11 GMT"
     },
     "rps": {
       "etag": null,
@@ -994,15 +992,15 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 06:46:42 GMT"
+      "modified": "Sun, 30 Aug 2026 07:00:49 GMT"
     },
     "ginjfo": {
       "etag": "\"1e36da6e5c29c8453b8a536212043c3a\"",
       "modified": "Sat, 29 Aug 2026 09:28:48 GMT"
     },
     "gameblog": {
-      "etag": "W/\"6a93cdf9-30f2\"",
-      "modified": "Sun, 30 Aug 2026 06:30:17 GMT"
+      "etag": "W/\"6a93d501-30d8\"",
+      "modified": "Sun, 30 Aug 2026 07:00:17 GMT"
     },
     "actugaming": {
       "etag": "W/\"c130ec6308e9de84b002577f613445ed\"",
@@ -1023,6 +1021,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : pas d’IA générative ni de microtransactions, confirme Rockstar - KultureGeek",
+      "link": "https://kulturegeek.fr/news-357946/gta-6-dia-generative-microtransactions-confirme-rockstar",
+      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNQjFnNFdJSWp4RHI5YXZEdmJ2Y180TWNvMWh6NThkUHhiS19YYnJSU0dFOXBJd3h3aXdKWUZwN25aY3dyWnlFbFZicWtKV3ZkWFhGQTBkZDJSMFp4b3RQUG9SLU03QXdGSGtfWGVDWGd5bmNhZDl5TzBiX3N1LTNNMlJ3Q24tcHBEelZBMG9hTGpqMWhJeEE?oc=5",
+      "date": "2026-08-30T06:49:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn.kulturegeek.fr/wp-content/uploads/2026/08/GTA-6-Lucia-Voiture.jpg",
+      "description": "GTA 6 : pas d’IA générative ni de microtransactions, confirme Rockstar&nbsp;&nbsp;KultureGeek"
+    },
     {
       "title": "Kinda Funny Says GTA 6 Includes a Furry-Related Random Event",
       "link": "https://vgtimes.com/gaming-news/165878-kinda-funny-says-gta-6-includes-a-furry-related-random-event.html",
@@ -4917,19 +4928,6 @@
       "lang": "fr",
       "image": "https://m1.quebecormedia.com/emp/emp/Media_2026_08_27T180235.918ce9c2879-9f90-43df-8d2e-fec23b134e60_ORIGINAL.jpg?impolicy=crop-resize&x=0&y=0&w=1200&h=675&width=1200",
       "description": "GTA 6 : voyez la nouvelle bande-annonce de 26 minutes&nbsp;&nbsp;Pèse sur start"
-    },
-    {
-      "title": "The GTA VI ‘extended look’ is now streaming on YouTube - The Verge",
-      "link": "https://www.theverge.com/games/985910/grand-theft-auto-gta-vi-extended-look-youtube-netflix-stream",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNU09hbXk5el9DazZLRzRxLWwzc0R6LTgwTTFEN0h1Mk5vSVh1WjlFc0xNclowcm9FRTRBTEpicFJZamVBYXkxZnQ3MjNzTFJIanlfM0Qxbks2MzNZWjRXUGlMQXUxOUxPMVpmOU5kNVhJUVA3aEF2SnF5NjlRQld2Z2hKWmpnX05pZEtCUGlwMUcxY2YtcDFxWE55WVRUU0U?oc=5",
-      "date": "2026-08-28T01:05:00+00:00",
-      "source": "The Verge",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/06/ULTIMATE_EDITION_SARAS_SALON_03_f66931.jpg?quality=90&strip=all&crop=0%2C3.4613147178592%2C100%2C93.077370564282&w=1200",
-      "description": "The GTA VI ‘extended look’ is now streaming on YouTube&nbsp;&nbsp;The Verge"
     }
   ],
   "partial": true,
