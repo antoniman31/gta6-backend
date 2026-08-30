@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T09:02:04.301578+00:00",
-  "duration_seconds": 70.2,
+  "generated_at": "2026-08-30T09:31:51.494260+00:00",
+  "duration_seconds": 69.9,
   "decode_failures": 0,
-  "total_articles": 1325,
-  "new_this_run": 3,
+  "total_articles": 1327,
+  "new_this_run": 2,
   "hot_count": 2,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -390,7 +390,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 2,
-      "last_article": "2026-08-30T08:51:00+00:00",
+      "last_article": "2026-08-30T09:29:33+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T10:02:00+00:00",
       "days_since_last_article": 0,
@@ -517,14 +517,14 @@
     {
       "id": "ign",
       "name": "IGN",
-      "entries_fetched": 20,
+      "entries_fetched": 0,
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T22:33:20+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gamespot",
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T17:31:19+00:00",
       "days_since_last_article": 0,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T08:26:11+00:00",
       "days_since_last_article": 1,
@@ -689,7 +689,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T09:00:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 2,
@@ -911,50 +911,55 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "ign": 1
+  },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,99,99,99,99,99",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,99,99,99,99,99,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10",
-    "rockstar-youtube": "15,0,0,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,92",
-    "gnews-en": "98,99,99,99,99,99,100,99,98",
-    "pcgamer": "50,50,50,50,50,50,50,50,50",
-    "tomshw": "50,50,50,50,50,50,50,50,50",
-    "jvcom": "20,20,20,20,20,20,20,20,20",
-    "gamekult": "50,50,50,50,50,50,50,50,50",
-    "rockstarmag-youtube": "15,0,0,15,15,15,15,15,15",
-    "ign": "20,0,20,0,20,0,20,0,20",
-    "gamespot": "30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,10",
-    "kotaku": "20,20,0,20,20,20,20,20,20",
-    "gamesradar": "50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,100",
-    "gtaboom": "30,30,30,30,30,30,30,30,30",
-    "vgtimes": "40,40,40,40,40,40,40,40,40",
-    "gameblog": "13,13,13,13,13,13",
-    "jeuxactu": "20,20,20,20,20,20,20,20,20",
-    "actugaming": "10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,10",
-    "dualshockers": "10,10,10,10,10,10,10,10,10",
-    "gta6times": "29,29,29,29,29,29,29,29,29",
+    "rockstar-youtube": "15,0,0,15,15,15,15,15,15,15",
+    "gnews-fr": "92,92,92,92,92,92,92,92,92,92",
+    "gnews-en": "98,99,99,99,99,99,100,99,98,98",
+    "pcgamer": "50,50,50,50,50,50,50,50,50,50",
+    "tomshw": "50,50,50,50,50,50,50,50,50,50",
+    "jvcom": "20,20,20,20,20,20,20,20,20,20",
+    "gamekult": "50,50,50,50,50,50,50,50,50,50",
+    "ignfr": "40",
+    "rockstarmag-youtube": "15,0,0,15,15,15,15,15,15,15",
+    "ign": "20,0,20,0,20,0,20,0,20,0",
+    "gamespot": "30,30,30,30,30,30,30,30,30,30",
+    "polygon": "10,10,10,10,10,10,10,10,10,10",
+    "kotaku": "20,20,0,20,20,20,20,20,20,20",
+    "gamesradar": "50,50,50,50,50,50,50,50,50,50",
+    "vg247": "100,100,100,100,100,100,100,100,100,100",
+    "rps": "100",
+    "gtaboom": "30,30,30,30,30,30,30,30,30,30",
+    "vgtimes": "40,40,40,40,40,40,40,40,40,40",
+    "ginjfo": "50",
+    "gameblog": "13,13,13,13,13,13,13",
+    "jeuxactu": "20,20,20,20,20,20,20,20,20,20",
+    "actugaming": "10,10,10,10,10,10,10,10,10,10",
+    "gamerant": "10,10,10,10,10,10,10,10,10,10",
+    "dualshockers": "10,10,10,10,10,10,10,10,10,10",
+    "gta6times": "29,29,29,29,29,29,29,29,29,29",
     "pcgamesn": "75",
     "vgc": "10",
-    "xboxygen": "100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,9,9,9,9,9",
-    "trueach": "100,100,100,100,100,100,100,100,100",
-    "jdg": "100,100,100,100,100,100,100,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100",
-    "frandroid": "100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,92,100,100,100",
-    "engadget": "84,84,84,84,84,84,84,84,84",
-    "arstechnica": "32,32,32,32,32,32,32,32,32",
-    "pushsquare": "100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100"
+    "xboxygen": "100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "9,9,9,9,9,9,9,9,9,9",
+    "trueach": "100,100,100,100,100,100,100,100,100,100",
+    "jdg": "100,100,100,100,100,100,100,100,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "100,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,100,100,92,100,100,100,100",
+    "engadget": "84,84,84,84,84,84,84,84,84,84",
+    "arstechnica": "32,32,32,32,32,32,32,32,32,32",
+    "pushsquare": "100,100,100,100,100,100,100,100,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -968,7 +973,7 @@
     },
     "ignfr": {
       "etag": null,
-      "modified": "Sat, 29 Aug 2026 19:28:21 GMT"
+      "modified": "Sun, 30 Aug 2026 08:51:50 GMT"
     },
     "rockstarmag": {
       "etag": null,
@@ -978,17 +983,13 @@
       "etag": "\"e4507bbee601715f6bbcc452dd0da2da\"",
       "modified": "Sat, 29 Aug 2026 13:20:16 GMT"
     },
-    "ign": {
-      "etag": "W/\"27fcc-yTLfbnkfcYV5NOkFFdJNshAOPCk\"",
-      "modified": null
-    },
     "kotaku": {
-      "etag": "W/\"e208cae9cb658db7fd0186574ca7b9c6\"",
-      "modified": "Sun, 30 Aug 2026 09:00:16 GMT"
+      "etag": "W/\"5368acc6376616a2004b223ee439bdf5\"",
+      "modified": "Sun, 30 Aug 2026 09:30:11 GMT"
     },
     "rps": {
       "etag": null,
-      "modified": "Sat, 29 Aug 2026 21:54:13 GMT"
+      "modified": "Sun, 30 Aug 2026 09:00:00 GMT"
     },
     "eurogamer": {
       "etag": null,
@@ -996,15 +997,15 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 08:55:41 GMT"
+      "modified": "Sun, 30 Aug 2026 09:26:28 GMT"
     },
     "ginjfo": {
-      "etag": "\"1e36da6e5c29c8453b8a536212043c3a\"",
-      "modified": "Sat, 29 Aug 2026 09:28:48 GMT"
+      "etag": "\"0b330cb5eb9bb42bbe933115d7a735b3\"",
+      "modified": "Sun, 30 Aug 2026 09:23:47 GMT"
     },
     "gameblog": {
-      "etag": "W/\"6a93f121-309a\"",
-      "modified": "Sun, 30 Aug 2026 09:00:17 GMT"
+      "etag": "W/\"6a93f827-30cb\"",
+      "modified": "Sun, 30 Aug 2026 09:30:15 GMT"
     },
     "actugaming": {
       "etag": "W/\"c130ec6308e9de84b002577f613445ed\"",
@@ -1025,6 +1026,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 et le détail important : un personnage de GTA Online a été repéré - GinjFo",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-et-le-detail-important-un-personnage-de-gta-online-a-ete-repere-20260830",
+      "source_link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxOd3B1SGdUX3hsaVBkQlFJa0I0eHRFc1BfcWNiaW1scW15MUFqYnhSUExoS1BYcThqLVhLUVVNNHJNV1pZaGd5Q29KRExVSjB0X0N0LUU4aEJTRVpwWU9fZnFoUmR3MnlYTFF2QkxZbl9hTXIxZ1AxWi1ramppVW5EWWlKcmw1YkdYd003VEQzb09xVFBPelBoTXRyaFFrb0NfNzR5aWMtRVJNaUFJdHB3Y2VJUUNrSVhVV0l1b3FQZjNIOS1hckFSRWVBYk1CZlpoTVNIcEVoYlN6WnM?oc=5",
+      "date": "2026-08-30T09:29:33+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2026/06/Official_Cover_Art_GTA6-scaled.jpg",
+      "description": "GTA 6 et le détail important : un personnage de GTA Online a été repéré&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "Quand est-ce que GTA 6 a démarré son développement ? - 01net.com",
+      "link": "https://www.01net.com/actualites/quand-est-ce-que-gta-6-a-demarre-son-developpement.html",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPcjBBQVNLeTd1SFhEV1c5SEczWVZDa0pqNWZGVV95MGpfdm1kaElmY3RBUTZsZVBFZnZMdEkza0pxREhoWnF1cWlYRk1vYVhaeC1xek1uWXRfQlNzd1JYSHNiZ2YwYWtzbGV4UWRHZ2FWcjAweEhvMGtXX21iT0RHMWtZTmhIaUNBbDVNdmFjelE1UQ?oc=5",
+      "date": "2026-08-30T09:17:44+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.01net.com/app/uploads/2026/08/Canva-1920x1440-75-1600x900.jpg",
+      "description": "Quand est-ce que GTA 6 a démarré son développement ?&nbsp;&nbsp;01net.com"
+    },
     {
       "title": "Kick Streamer N3on Reacts to GTA 6 Lookalike",
       "link": "https://gamerant.com/gta-6-n3on-streamer/",
