@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T12:31:59.195233+00:00",
-  "duration_seconds": 79.4,
+  "generated_at": "2026-08-30T13:02:03.112600+00:00",
+  "duration_seconds": 76.2,
   "decode_failures": 0,
-  "total_articles": 1338,
-  "new_this_run": 0,
+  "total_articles": 1339,
+  "new_this_run": 1,
   "hot_count": 2,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T10:02:00+00:00",
       "days_since_last_article": 1,
@@ -545,9 +545,9 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-28T19:00:16+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-08-30T13:00:14+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 9,
+      "entries_fetched": 8,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,23 +914,23 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,99,100,99,100,100,99,100,100,100",
+    "rockstar-fr": "99,99,99,100,99,100,100,99,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "take2-ir": "10,10,10,10,10,10,10,10,10",
+    "take2-ir": "10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "99,100,99,98,98,99,99,99,100,100,92,92",
+    "gnews-en": "100,99,98,98,99,99,99,100,100,92,92,92",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "ignfr": "40,40,40",
+    "ignfr": "40,40,40,40",
     "rockstarmag": "10,10",
     "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10",
-    "ign": "0,20,0,20,0,20,0,20,0,20,20,20",
+    "ign": "20,0,20,0,20,0,20,0,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -948,19 +948,19 @@
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "29,29,29,29,29,29,29,29,29,29,29,29",
     "gameinformer": "50,50",
-    "pcgamesn": "75,75,75,75,75",
+    "pcgamesn": "75,75,75,75,75,75",
     "vgc": "10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,9,9,9,9,9,9,9,9",
+    "xboxwire": "9,9,9,9,9,9,9,9,9,9,9,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,43,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,43,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "92,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,84,84,84,84,84,84,84,84,83",
-    "arstechnica": "32,32,32,32,32,32,32,32,31,30,31,31",
+    "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "84,84,84,84,84,84,84,84,84,84,83,83",
+    "arstechnica": "32,32,32,32,32,32,32,31,30,31,31,31",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 11:36:16 GMT"
+      "modified": "Sun, 30 Aug 2026 12:39:05 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"d722aeb3aa431a6e97f3733ef4ac8e29\"",
-      "modified": "Sun, 30 Aug 2026 12:29:43 GMT"
+      "etag": "W/\"69275abb187ee31e0af88d232c21d00b\"",
+      "modified": "Sun, 30 Aug 2026 13:00:39 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 12:30:42 GMT"
+      "modified": "Sun, 30 Aug 2026 12:59:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a942257-2f76\"",
-      "modified": "Sun, 30 Aug 2026 12:30:15 GMT"
+      "etag": "W/\"6a94295f-2f67\"",
+      "modified": "Sun, 30 Aug 2026 13:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"4a446c51f4ad7e10409f94b589966580\"",
-      "modified": "Sun, 30 Aug 2026 12:21:19 GMT"
+      "etag": "W/\"9e9b6c23d339c3ab2a066bb6900f6525\"",
+      "modified": "Sun, 30 Aug 2026 13:00:19 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "October 2026 Has Way Too Many Games Trying to Escape GTA 6",
+      "link": "https://www.polygon.com/october-2026-new-video-games/",
+      "source_link": null,
+      "date": "2026-08-30T13:00:14+00:00",
+      "source": "Polygon",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/08/gears-of-war-e-day-enemy-with-gun.jpg?w=1600&h=900&fit=crop",
+      "description": "Thanks to Grand Theft Auto 6's November release date, this October is unusually busy for new video games."
+    },
     {
       "title": "Rockstar rules out GTA 6 microtransactions and AI – but there's still a catch - Eurogamer.net",
       "link": "https://www.eurogamer.net/gta-6-microtransactions-generative-ai-rockstar",
@@ -1085,7 +1098,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/TXsd53UiklU?version=3",
+      "image": "https://i.ytimg.com/vi/TXsd53UiklU/hqdefault.jpg",
       "description": "Les dernières previews de GTA 6 se dévoilent avec, encore une fois, une pluie d'informations ! \n\nLire le résumé des previews : \nhttps://www.rockstarmag.fr/gta-6-de-nouvelles-previews-nous-en-apprennent-un-peu-plus-sur-le-jeu/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/"
     },
     {
@@ -1598,7 +1611,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/baoyvBXLU5k?version=3",
+      "image": "https://i.ytimg.com/vi/baoyvBXLU5k/hqdefault.jpg",
       "description": "Découvrez la première partie des informations de TGG avec une VAGUE d'informations folles ! \n\nLire le résumé des previews de TGG :\nhttps://www.rockstarmag.fr/gta-6-de-nombreux-details-sur-le-jeu-donnes-par-tgg/\n\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ F"
     },
     {
@@ -1728,7 +1741,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/qg2xybZ3LR0?version=3",
+      "image": "https://i.ytimg.com/vi/qg2xybZ3LR0/hqdefault.jpg",
       "description": "Découvrez dès maintenant la version Française de GTA 6, Un Large Aperçu ! \n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.facebook.com/RockstarMagFr/\n\nSUIVRE CHRIS :\n_ Twitter : https://twitter.com/Chris_Klippel\n_ Threads : https://www.t"
     },
     {
@@ -2020,7 +2033,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/v_ryBqCzk1k?version=3",
+      "image": "https://i.ytimg.com/vi/v_ryBqCzk1k/hqdefault.jpg",
       "description": "Selon les experts de Digital Foundry, la présentation de GTA 6 pourrait bien être la meilleure jamais réalisée ! \n\nPlus d'infos : \nhttps://www.rockstarmag.fr/gta-6-la-demonstration-la-plus-impressionnante-jamais-vue-selon-digital-foundry\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https:/"
     },
     {
@@ -2637,7 +2650,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/kNER6NjFXUU?version=3",
+      "image": "https://i.ytimg.com/vi/kNER6NjFXUU/hqdefault.jpg",
       "description": "Des infos officielles sur les specs de GTA 6 et sa durée de vie ! \n\nPlus d'infos : \nhttps://www.rockstarmag.fr/gta-6-une-duree-de-vie-de-80h-avec-du-30fps-et-pas-de-vue-premiere-personne/\n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/2070039290084725240?s=20\n- Instagram : https://www.instagram.com/p/DZ_Lc26MfhW/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==\n- Threads : https://www.threa"
     },
     {
@@ -3202,7 +3215,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/VbAcivGoJtM?version=3",
+      "image": "https://i.ytimg.com/vi/VbAcivGoJtM/hqdefault.jpg",
       "description": "Découvrez dès maintenant notre nouveau dossier consacré aux nouvelles activités de GTA 6 ! \n\nLa nouvelles activités : \nhttps://www.rockstarmag.fr/gta-vi-parlons-en-details-des-nouvelles-activites-et-mini-jeux/\n\nLa liste de TOUTES les activités du jeu : \nhttps://www.rockstarmag.fr/gta-6-quelles-sont-les-activites-qui-seront-presentes-dans-le-jeu/\n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/207"
     },
     {
@@ -4961,7 +4974,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/8hBUHihO1Uc?version=3",
+      "image": "https://i.ytimg.com/vi/8hBUHihO1Uc/hqdefault.jpg",
       "description": "Découvrez dès maintenant notre gros dossier sur les premières previews de GTA 6 ! \n\nLire notre dossier écrit : \nhttps://www.rockstarmag.fr/gta-6-une-vague-de-nouvelles-informations-grace-aux-premieres-previews\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Fac"
     },
     {
@@ -5083,7 +5096,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/0XcO338jeLw?version=3",
+      "image": "https://i.ytimg.com/vi/0XcO338jeLw/hqdefault.jpg",
       "description": "Découvrez dès maintenant \"Un Large Aperçu\" de Grand Theft Auto VI, l'émission qui fut diffusée en LIVE sur Netflix hier soir  à 21h. \n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.facebook.com/RockstarMagFr/\n\nSUIVRE CHRIS :\n_ Twitter : "
     },
     {
@@ -5304,7 +5317,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/BZMf2IdiqmU?version=3",
+      "image": "https://i.ytimg.com/vi/BZMf2IdiqmU/hqdefault.jpg",
       "description": "Découvrez dès maintenant notre première analyse à chaud de la présentation de GTA 6 : Un Large Aperçu. Comme toujours, une analyse \"ultime\" arrivera dans les prochains jours ! \n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.facebook.com/"
     },
     {
@@ -5439,7 +5452,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/lCgkkT9DDzg?version=3",
+      "image": "https://i.ytimg.com/vi/lCgkkT9DDzg/hqdefault.jpg",
       "description": "Découvrez ou (re)découvrez la toute première découverte de GTA 6 - Un Large Aperçu ! \n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/2070039290084725240?s=20\n- Instagram : https://www.instagram.com/p/DZ_Lc26MfhW/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==\n- Threads : https://www.threads.com/@rmagfr/post/DZ_zfJPiP9M?xmt=AQG0cge-meMox8RAQJ9gbfCtk-9VPXn0ic-dW7BH_hZ3VA\n- YouTube : http://"
     },
     {
@@ -5476,7 +5489,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/s-kQDWe4mmg?version=3",
+      "image": "https://i.ytimg.com/vi/s-kQDWe4mmg/hqdefault.jpg",
       "description": "Découvrez dès maintenant et avec nous a présentation de GTA 6 : Un Large Aperçu sur Netflix, pour une soirée exceptionnelle ! \n\nDécouvrir la première preview du jeu : \nhttps://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https:"
     },
     {
@@ -5586,7 +5599,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/0P5i5BfS298?version=3",
+      "image": "https://i.ytimg.com/vi/0P5i5BfS298/hqdefault.jpg",
       "description": "Découvrez dès maintenant les nouvelles images de GTA 6 et une petite analyse et réact à chaud ! \n\nLE CONCOURS DE GTA 6 :\n- Facebook : https://www.facebook.com/20531316728/posts/10154009990506729/\n- Twitter / X : https://x.com/Rockstar_Mag/status/2070039290084725240?s=20\n- Instagram : https://www.instagram.com/p/DZ_Lc26MfhW/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==\n- Threads : https://www.threads.com/@rmagfr/post/DZ_zfJPiP9M?xmt=AQG0cge-meMox8RAQJ9gbfCtk-9VPXn0ic-dW7BH_hZ3VA\n- YouTub"
     },
     {
@@ -5660,7 +5673,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/gshLRPahf70?version=3",
+      "image": "https://i.ytimg.com/vi/gshLRPahf70/hqdefault.jpg",
       "description": "Découvrez dès maintenant et avec nous a présentation de GTA 6 : Un Large Aperçu sur Netflix, pour une soirée exceptionnelle ! \n\nDécouvrir la première preview du jeu : \nhttps://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https:"
     },
     {
@@ -6108,7 +6121,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/djnkOg7_Qrw?version=3",
+      "image": "https://i.ytimg.com/vi/djnkOg7_Qrw/hqdefault.jpg",
       "description": "Découvrez dès maintenant et avec nous a présentation de GTA 6 : Un Large Aperçu sur Netflix, pour une soirée exceptionnelle ! \n\nDécouvrir la première preview du jeu : \nhttps://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https:"
     },
     {
@@ -7953,7 +7966,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/_yd6c5kEKEo?version=3",
+      "image": "https://i.ytimg.com/vi/_yd6c5kEKEo/hqdefault.jpg",
       "description": "La première preview de GTA 6 est tombée, juste avant la présentation Netflix de ce soir ! Voici tout ce qu'il faut savoir ! \n\nLa preview en FR : \nhttps://www.rockstarmag.fr/gta-6-decouvrez-la-nouvelle-preview-du-jeu/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6Bmb"
     },
     {
@@ -10199,7 +10212,7 @@
       "rockstarmag": true,
       "specialist": true,
       "lang": "fr",
-      "image": "https://www.youtube.com/v/rACJi0dsffw?version=3",
+      "image": "https://i.ytimg.com/vi/rACJi0dsffw/hqdefault.jpg",
       "description": "Mise à jour de la situation autour des leaks de GTA 6 avec une prise de parole de Rockstar Games. \n\nLa prise de parole de Rockstar en français : \nhttps://www.rockstarmag.fr/leaks-gta-6-communique-officiel-de-rockstar-games/\n\nDossier sur les leaks : \nhttps://www.rockstarmag.fr/leaks-gta-6-levolution-de-laffaire-heure-par-heure/\n\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https:"
     },
     {
@@ -16868,7 +16881,7 @@
       "rockstarmag": false,
       "specialist": false,
       "lang": null,
-      "image": "https://www.youtube.com/v/0H94XV8aPVY?version=3",
+      "image": "https://i.ytimg.com/vi/0H94XV8aPVY/hqdefault.jpg",
       "description": "Grand Theft Auto VI: An Extended Look will premiere on Netflix Thursday, August 27 at 3 p.m. ET and will also launch on the official Rockstar Games YouTube channel and the Grand Theft Auto VI site at 9 p.m. ET on August 27.\n\nhttps://netflix.com/GTAVI\n\nGrand Theft Auto VI is coming November 19 to PlayStation 5 and Xbox Series X|S. Visit https://www.rockstargames.com/VI to pre-order now."
     },
     {
