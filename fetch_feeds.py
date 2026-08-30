@@ -2119,6 +2119,77 @@ def flux_declares(url_page):
     return trouves
 
 
+def decris_video_youtube(url):
+    """Titre et date de publication d'une vidéo, sans clé d'API.
+
+    Sert à constituer l'archive des vidéos trop anciennes pour le flux :
+    celui d'une chaîne YouTube ne porte que 15 entrées et ne pagine pas,
+    donc tout ce qui est plus vieux est hors de portée du robot.
+
+    Deux sources, parce qu'aucune ne donne les deux informations :
+      - oEmbed, l'API publique de YouTube, donne le titre. Pas la date.
+      - la page de la vidéo porte la date dans une balise `datePublished`.
+
+    Et non `videos.xml?video_id=` : ce paramètre n'existe pas, le flux Atom
+    n'accepte que channel_id et playlist_id. Essayé le 30/08/2026, HTTP 400
+    sur les cinq vidéos.
+    """
+    trouve = _ID_YOUTUBE.search(url or "")
+    if not trouve:
+        print(f"  {url} : pas un lien de vidéo YouTube reconnaissable")
+        return None
+    vid = trouve.group(1)
+
+    titre = date = None
+    try:
+        r = requests.get("https://www.youtube.com/oembed",
+                         params={"url": f"https://www.youtube.com/watch?v={vid}",
+                                 "format": "json"},
+                         timeout=FETCH_TIMEOUT,
+                         headers={"User-Agent": USER_AGENT})
+        if r.ok:
+            titre = (r.json() or {}).get("title")
+        else:
+            print(f"  [{vid}] oEmbed a répondu {r.status_code}")
+    except Exception as e:
+        print(f"  [{vid}] oEmbed illisible : {e}")
+
+    try:
+        page = requests.get(f"https://www.youtube.com/watch?v={vid}",
+                            timeout=FETCH_TIMEOUT,
+                            headers={"User-Agent": USER_AGENT})
+        m = re.search(r'itemprop="datePublished"[^>]*content="([^"]+)"', page.text)
+        if not m:
+            m = re.search(r'"publishDate"\s*:\s*"([^"]+)"', page.text)
+        if not m:
+            m = re.search(r'"uploadDate"\s*:\s*"([^"]+)"', page.text)
+        if m:
+            date = m.group(1)
+        else:
+            print(f"  [{vid}] date introuvable dans la page")
+    except Exception as e:
+        print(f"  [{vid}] page illisible : {e}")
+
+    return {"id": vid, "title": titre, "date": date,
+            "link": f"https://www.youtube.com/watch?v={vid}",
+            "image": vignette_youtube(vid)}
+
+
+def decris_videos(urls):
+    """Affiche, prêt à recopier, ce qu'il faut pour archiver ces vidéos."""
+    trouves = []
+    for url in urls:
+        infos = decris_video_youtube(url)
+        if infos:
+            trouves.append(infos)
+            print(f"\n  {infos['id']}")
+            print(f"    titre : {infos['title'] or '— INTROUVABLE —'}")
+            print(f"    date  : {infos['date'] or '— INTROUVABLE —'}")
+    print("\n--- à recopier ---")
+    print(json.dumps(trouves, ensure_ascii=False, indent=2))
+    return 0
+
+
 def jours_depuis(date_iso):
     """Âge d'un article en jours, ou None si la date est inexploitable."""
     if not date_iso:
@@ -2144,4 +2215,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--sonde":
         print("usage : python fetch_feeds.py --sonde <url> [url...]")
         sys.exit(2)
+    # Décrit des vidéos YouTube pour constituer l'archive des anciennes,
+    # celles que le flux de la chaîne ne porte plus. Lecture seule.
+    if len(sys.argv) > 2 and sys.argv[1] == "--video":
+        sys.exit(decris_videos(sys.argv[2:]))
     main()

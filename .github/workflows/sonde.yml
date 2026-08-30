@@ -18,6 +18,12 @@ on:
         description: "Adresses à sonder, séparées par des espaces"
         required: true
         type: string
+      mode:
+        description: "sonde (flux) ou video (titre et date de vidéos YouTube)"
+        required: false
+        default: sonde
+        type: choice
+        options: [sonde, video]
 
 permissions:
   contents: read
@@ -39,4 +45,5 @@ jobs:
       - name: Sonder
         env:
           URLS: ${{ inputs.urls }}
-        run: python fetch_feeds.py --sonde $URLS
+          MODE: ${{ inputs.mode }}
+        run: python fetch_feeds.py --${MODE:-sonde} $URLS
