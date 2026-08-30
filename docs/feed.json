@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T16:28:14.193933+00:00",
-  "duration_seconds": 86.3,
+  "generated_at": "2026-08-30T16:32:07.177893+00:00",
+  "duration_seconds": 85.5,
   "decode_failures": 0,
   "total_articles": 1349,
-  "new_this_run": 8,
+  "new_this_run": 5,
   "hot_count": 3,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -449,7 +449,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T14:00:08+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T10:02:00+00:00",
       "days_since_last_article": 1,
@@ -481,11 +481,11 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-08-30T16:08:31+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -577,7 +577,7 @@
     {
       "id": "vg247",
       "name": "VG247",
-      "entries_fetched": 60,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:vg247.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 1,
@@ -845,7 +845,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 1,
       "last_article": "2026-08-30T10:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,99,99,99,99,99,99,99,99,99",
+    "rockstar-fr": "100,100,99,99,99,99,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -932,10 +932,10 @@
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,0,10,10,10,10",
+    "polygon": "10,10,10,10,10,10,0,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,100,100,100,60",
+    "vg247": "100,100,100,100,100,100,100,100,100,100,60,100",
     "rps": "100,100",
     "eurogamer": "100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -944,22 +944,22 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,0,10,10,10,10",
-    "dualshockers": "10,10,10,10,10,10,10,0,10,10,10,10",
+    "gamerant": "10,10,10,10,10,10,0,10,10,10,10,10",
+    "dualshockers": "10,10,10,10,10,10,0,10,10,10,10,10",
     "gta6times": "29,29,29,29,29,29,29,29,29,29,29,29",
     "gameinformer": "50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,8,9,9,7,7,7,7,7,7,7,7",
-    "trueach": "100,100,100,100,100,100,100,100,100,100,80,100",
+    "xboxwire": "8,9,9,7,7,7,7,7,7,7,7,7",
+    "trueach": "100,100,100,100,100,100,100,100,100,80,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,84,84,84,84,84,84,84,84,84,84",
+    "engadget": "83,84,84,84,84,84,84,84,84,84,84,84",
     "arstechnica": "31,31,31,31,31,31,31,31,31,31,31,31",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 16:25:41 GMT"
+      "modified": "Sun, 30 Aug 2026 16:30:51 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a94538f-2f67\"",
-      "modified": "Sun, 30 Aug 2026 16:00:15 GMT"
+      "etag": "W/\"6a945a98-2f67\"",
+      "modified": "Sun, 30 Aug 2026 16:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"7a9388d429c24b47cc5c897daf575eb3\"",
-      "modified": "Sun, 30 Aug 2026 16:19:28 GMT"
+      "etag": "W/\"bd6761449ef22c4f3df4001fb487c336\"",
+      "modified": "Sun, 30 Aug 2026 16:30:06 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -6506,6 +6506,10 @@
           "link": "https://pk.ign.com/grand-theft-auto-vi-rumored-title/260268/gta-6-will-have-no-microtransactions-or-generative-ai-at-launch-rockstar-says"
         },
         {
+          "source": "Google News (EN)",
+          "link": "https://www.ign.com/articles/gta-6-will-have-no-microtransactions-or-generative-ai-at-launch-rockstar-says"
+        },
+        {
           "source": "Rockstar Games (annonces)",
           "link": "https://gamesreviews.com/news/08/gta-6-ships-without-microtransactions-or-generative-ai-rockstar-confirms/"
         }
@@ -9099,13 +9103,7 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/grand-theft-auto-vi-an-extended-look-18-50-screenshot.jpg?resize=1600,900&key=7ded4fed",
-      "description": "GTA 6 : fini l’exclusivité Netflix, la vidéo est en ligne sur YouTube pour tout le monde&nbsp;&nbsp;Frandroid",
-      "extraSources": [
-        {
-          "source": "Google News (FR)",
-          "link": "https://www.frandroid.com/produits-android/console/3224517_gta-6-fini-lexclusivite-netflix-la-video-est-en-ligne-sur-youtube-pour-tout-le-monde"
-        }
-      ]
+      "description": "GTA 6 : fini l’exclusivité Netflix, la vidéo est en ligne sur YouTube pour tout le monde&nbsp;&nbsp;Frandroid"
     },
     {
       "title": "Games Inbox: What will be in the Netflix GTA 6 show? - Metro.co.uk",
