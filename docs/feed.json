@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T07:02:06.603227+00:00",
-  "duration_seconds": 79.9,
+  "generated_at": "2026-08-30T07:22:46.810847+00:00",
+  "duration_seconds": 70.1,
   "decode_failures": 0,
-  "total_articles": 1318,
-  "new_this_run": 1,
+  "total_articles": 1321,
+  "new_this_run": 3,
   "hot_count": 2,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 66,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T06:49:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T23:47:50+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-30T07:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -517,14 +517,14 @@
     {
       "id": "ign",
       "name": "IGN",
-      "entries_fetched": 0,
+      "entries_fetched": 20,
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T22:33:20+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gamespot",
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 1,
@@ -797,7 +797,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T10:37:36+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -845,7 +845,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-29T02:21:15+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -911,56 +911,54 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "ign": 1
-  },
+  "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100",
-    "rockstar-fr": "100,100,100,100",
-    "rockstar-announce": "100,100,100,100",
-    "gta6-netflix": "100,100,100,100",
-    "take2-ir": "10,10",
-    "rockstar-youtube": "15,0,0,15",
-    "gnews-fr": "92,92,92,92",
-    "gnews-en": "98,99,99,99",
-    "pcgamer": "50,50,50,50",
-    "tomshw": "50,50,50,50",
-    "jvcom": "20,20,20,20",
-    "gamekult": "50,50,50,50",
-    "rockstarmag-youtube": "15,0,0,15",
-    "ign": "20,0,20,0",
-    "gamespot": "30,30,30,30",
-    "polygon": "10,10,10,10",
-    "kotaku": "20,20,0,20",
-    "gamesradar": "50,50,50,50",
-    "vg247": "100,100,100,100",
-    "gtaboom": "30,30,30,30",
-    "vgtimes": "40,40,40,40",
+    "rockstar-en": "100,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,99",
+    "rockstar-announce": "100,100,100,100,100",
+    "gta6-netflix": "100,100,100,100,100",
+    "take2-ir": "10,10,10",
+    "rockstar-youtube": "15,0,0,15,15",
+    "gnews-fr": "92,92,92,92,92",
+    "gnews-en": "98,99,99,99,99",
+    "pcgamer": "50,50,50,50,50",
+    "tomshw": "50,50,50,50,50",
+    "jvcom": "20,20,20,20,20",
+    "gamekult": "50,50,50,50,50",
+    "rockstarmag-youtube": "15,0,0,15,15",
+    "ign": "20,0,20,0,20",
+    "gamespot": "30,30,30,30,30",
+    "polygon": "10,10,10,10,10",
+    "kotaku": "20,20,0,20,20",
+    "gamesradar": "50,50,50,50,50",
+    "vg247": "100,100,100,100,100",
+    "gtaboom": "30,30,30,30,30",
+    "vgtimes": "40,40,40,40,40",
     "gameblog": "13,13",
-    "jeuxactu": "20,20,20,20",
-    "actugaming": "10,10,10,10",
-    "gamerant": "10,10,10,10",
-    "dualshockers": "10,10,10,10",
-    "gta6times": "29,29,29,29",
-    "xboxygen": "100,100,100,100",
-    "purexbox": "100,100,100,100",
-    "xboxwire": "9,9,9,9",
-    "trueach": "100,100,100,100",
-    "jdg": "100,100,100,100",
-    "numerama": "100,100,100,100",
-    "gamergen": "100,100,100,100",
-    "frandroid": "100,100,100,100",
-    "theverge": "100,100,100,100",
-    "engadget": "84,84,84,84",
-    "arstechnica": "32,32,32,32",
-    "pushsquare": "100,100,100,100",
-    "schreier": "100,100,100,100"
+    "jeuxactu": "20,20,20,20,20",
+    "actugaming": "10,10,10,10,10",
+    "gamerant": "10,10,10,10,10",
+    "dualshockers": "10,10,10,10,10",
+    "gta6times": "29,29,29,29,29",
+    "xboxygen": "100,100,100,100,100",
+    "purexbox": "100,100,100,100,100",
+    "xboxwire": "9,9,9,9,9",
+    "trueach": "100,100,100,100,100",
+    "jdg": "100,100,100,100,100",
+    "numerama": "100,100,100,100,100",
+    "gamergen": "100,100,100,100,100",
+    "frandroid": "100,100,100,100,100",
+    "theverge": "100,100,100,100,100",
+    "engadget": "84,84,84,84,84",
+    "arstechnica": "32,32,32,32,32",
+    "pushsquare": "100,100,100,100,100",
+    "schreier": "100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "etag": "W/\"d1bd5399e62f12a7c37d00201da2c715\"",
@@ -978,9 +976,13 @@
       "etag": "\"e4507bbee601715f6bbcc452dd0da2da\"",
       "modified": "Sat, 29 Aug 2026 13:20:16 GMT"
     },
+    "ign": {
+      "etag": "W/\"27fcc-yTLfbnkfcYV5NOkFFdJNshAOPCk\"",
+      "modified": null
+    },
     "kotaku": {
-      "etag": "W/\"b6d548927fcf44082f0d21474f92a190\"",
-      "modified": "Sun, 30 Aug 2026 06:11:11 GMT"
+      "etag": "W/\"30f64e059726664ed61f9bd609e5e01c\"",
+      "modified": "Sun, 30 Aug 2026 07:21:15 GMT"
     },
     "rps": {
       "etag": null,
@@ -992,7 +994,7 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 07:00:49 GMT"
+      "modified": "Sun, 30 Aug 2026 07:16:09 GMT"
     },
     "ginjfo": {
       "etag": "\"1e36da6e5c29c8453b8a536212043c3a\"",
@@ -1021,6 +1023,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "6 killer criminal romance movies to tie you over 'til GTA 6 - British GQ",
+      "link": "https://www.gq-magazine.co.uk/article/gta-6-criminal-romance-movies",
+      "source_link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE8wSnJVeWI4b0JTbTRZUmlwRV9GTlozU2RqYVNwazYtek5QWG9ER3ZKM2hUUGJndGFoYTE1Rm50VGlFdmdoY001SFZyS2d0WjFnd0sxMDRWUGI4MTVJUXVKUTNFOXNjWnZ1QURUR3p4bnF4QmpLbHc?oc=5",
+      "date": "2026-08-30T07:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gq-magazine.co.uk/photos/6a91a702c2d4329aa18d3cba/16:9/w_1280,c_limit/MSDTRRO_EC027.jpg",
+      "description": "6 killer criminal romance movies to tie you over 'til GTA 6&nbsp;&nbsp;British GQ"
+    },
     {
       "title": "GTA 6 : pas d’IA générative ni de microtransactions, confirme Rockstar - KultureGeek",
       "link": "https://kulturegeek.fr/news-357946/gta-6-dia-generative-microtransactions-confirme-rockstar",
@@ -8690,6 +8705,19 @@
       "description": "GTA 6 \"Most Detailed & Varied Population\" Game by Rockstar&nbsp;&nbsp;MP1st"
     },
     {
+      "title": "GTA 6 : fini l’exclusivité Netflix, la vidéo est en ligne sur YouTube pour tout le monde - Frandroid",
+      "link": "https://www.frandroid.com/actualites-generales/3224517_gta-6-fini-lexclusivite-netflix-la-video-est-en-ligne-sur-youtube-pour-tout-le-monde",
+      "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxOSDgxZTZmanB4eXFibERPMGx4VmdlZUxhVmNxWGNOajZQNlZvVjdFcWdXZ2dtb0hyWmZLWjhtZGlGNEJGRmF3dXdwYkJra184SldySE5yZXRpeURONkRSTi1FYWx4UGFpc18yaDJ5ZGtvVzFVQ3dxTmdWWGhvSmthOHhKWDJmNjVFUC1vdFBhMmVpNng1b0dZR1NpM1RyY2JYU0ZYcHlLS0M3ZlFvamU0TXVUZEpYOXpDUlpraVdWWVAtLWVKNXNtN3k4WTNNUENyQVp1azV3?oc=5",
+      "date": "2026-08-27T01:08:02+00:00",
+      "source": "Frandroid",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/grand-theft-auto-vi-an-extended-look-18-50-screenshot.jpg?resize=1600,900&key=7ded4fed",
+      "description": "GTA 6 : fini l’exclusivité Netflix, la vidéo est en ligne sur YouTube pour tout le monde&nbsp;&nbsp;Frandroid"
+    },
+    {
       "title": "Games Inbox: What will be in the Netflix GTA 6 show? - Metro.co.uk",
       "link": "https://metro.co.uk/2026/08/27/games-inbox-will-netflix-gta-6-show-29471954/",
       "date": "2026-08-27T00:00:00+00:00",
@@ -10511,6 +10539,19 @@
       "lang": null,
       "image": "https://egamers.io/wp-content/uploads/2026/08/gta-6-leak-drops-two-more-clips-and-vice-city-keeps-getting-bigger.jpg",
       "description": "GTA 6 Leak Drops Two More Clips, And Vice City Keeps Getting Bigger&nbsp;&nbsp;eGamers.io"
+    },
+    {
+      "title": "Grand Theft Auto VI News and Videos - TrueAchievements",
+      "link": "https://www.trueachievements.com/game/Grand-Theft-Auto-VI",
+      "source_link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBwSWlxQnRVZXZJTndEQTdrNXNxTmE0M0M4U19NVkM2VGRoRUNxVXFWN1VHUTkyWXJkUUFkeVdQYm1yUGQtZklvSUNTQ1c5X3hmWHYxa2p6cE5LNW5Hb1A5Mk56U1ZoTVZ1?oc=5",
+      "date": "2026-08-26T10:44:35+00:00",
+      "source": "TrueAchievements",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Grand Theft Auto VI News and Videos&nbsp;&nbsp;TrueAchievements"
     },
     {
       "title": "GTA 6 : la 14e fuite dévoile un magasin rempli de jeux, et certaines bornes d’arcade seraient jouables - La Crème Du Gaming",
