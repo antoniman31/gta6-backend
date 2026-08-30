@@ -510,10 +510,12 @@
   /* État du dernier passage du robot. Même famille que .console-status,
      en un cran plus discret : c'est une information de fond, pas une
      action. Sur toute la largeur pour ne pas se battre avec countLine. */
+  /* Flux de texte normal, pas flex : les morceaux sont déjà séparés par des
+     « · » dans le texte, et un gap flex par-dessus laissait le séparateur
+     pendre en fin de ligne au moment du retour à la ligne. */
   .run-line{
     font-family:'JetBrains Mono',monospace; font-size:10px;
-    color:var(--text-dim); opacity:0.85; width:100%;
-    display:flex; gap:10px; flex-wrap:wrap;
+    color:var(--text-dim); opacity:0.85; line-height:1.7; margin-top:10px;
   }
   .run-line .alerte{color:var(--warn); font-weight:700;}
   .history-line button{padding:3px 8px; font-size:10px;}
@@ -666,11 +668,6 @@
     <div class="console-status">
       <span id="countLine">0 article suivi</span>
       <span id="historyLine" class="history-line" style="display:none;"></span>
-      <!-- Ce que le robot a fait à son dernier passage. Les données sont
-           déjà publiées dans feed.json (durée, nouveaux, sources muettes,
-           décodages ratés) ; il ne manquait que de les montrer. Masqué en
-           mode direct, où aucun robot ne tourne. -->
-      <span id="runLine" class="run-line" style="display:none;"></span>
     </div>
     <div class="controls">
       <button class="primary" onclick="checkNow(true)">Actualiser</button>
@@ -681,6 +678,12 @@
            laisser une colonne vide. -->
       <button id="triggerRunBtn" onclick="triggerBackendRun()" style="display:none;">Relancer le robot</button>
     </div>
+    <!-- Ce que le robot a fait à son dernier passage. Placé SOUS les deux
+         boutons : au-dessus, il séparait le nombre d'articles des actions
+         qui le modifient, alors que ce bloc existe justement pour les tenir
+         ensemble. C'est aussi un bilan, donc sa place est après l'action.
+         Masqué en mode direct, où aucun robot ne tourne. -->
+    <div id="runLine" class="run-line" style="display:none;"></div>
     <div id="triggerStatusLine" class="token-status dim" style="display:none;"></div>
     <div id="progressBar" class="progress-bar" style="display:none;">
       <div id="progressFill" class="progress-fill"></div>
@@ -3401,21 +3404,32 @@ function majLigneRun(data){
     morceaux.push(data.new_this_run + " nouveau" + (data.new_this_run > 1 ? "x" : ""));
   }
 
-  // sources_silence ne contient QUE les sources en difficulté : son nombre
-  // de clés est directement le compte des sources qui ne répondent plus.
-  const muettes = Object.keys(data.sources_silence || {}).length;
-  morceaux.push(muettes
-    ? '<span class="alerte">' + muettes + " source" + (muettes > 1 ? "s" : "") + " muette" + (muettes > 1 ? "s" : "") + "</span>"
-    : "toutes les sources répondent");
-
   // Une source « cassée » répond mais ne renvoie pas un flux : page de
   // blocage, ou URL devenue une page web. Ça ne se répare pas tout seul,
-  // contrairement à une source simplement muette — d'où la mention à part.
+  // contrairement à une source simplement muette — d'où la mention à part,
+  // avec les noms.
   const cassees = (data.sources_health || []).filter(s => s.status === "cassee");
+  const idsCassees = new Set(cassees.map(s => s.id));
+
+  // sources_silence compte TOUTES les sources qui ne rapportent rien —
+  // muettes ET cassées confondues, c'est voulu côté robot. Les recompter ici
+  // annonçait « 3 sources muettes · 3 cassées » pour trois sources en tout :
+  // six problèmes affichés, trois réels. On ne garde donc que celles qui ne
+  // sont pas déjà nommées comme cassées.
+  const muettes = Object.keys(data.sources_silence || {})
+    .filter(id => !idsCassees.has(id)).length;
+
+  if(muettes){
+    morceaux.push('<span class="alerte">' + muettes + " source" +
+      (muettes > 1 ? "s" : "") + " muette" + (muettes > 1 ? "s" : "") + "</span>");
+  }
   if(cassees.length){
     morceaux.push('<span class="alerte">' + cassees.length + " cassée" +
       (cassees.length > 1 ? "s" : "") + " : " +
       cassees.map(s => escapeHtml(s.name)).join(", ") + "</span>");
+  }
+  if(!muettes && !cassees.length){
+    morceaux.push("toutes les sources répondent");
   }
 
   // Le signal le plus discret des trois : la source répond, elle n'est ni
@@ -3434,7 +3448,7 @@ function majLigneRun(data){
   }
 
   el.innerHTML = morceaux.join(" · ");
-  el.style.display = morceaux.length ? "flex" : "none";
+  el.style.display = morceaux.length ? "" : "none";
 }
 
 // ---------- Détection d'une nouvelle version de l'app ----------

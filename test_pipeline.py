@@ -1443,6 +1443,34 @@ def test_validation_avant_ecriture():
 
 
 
+def test_ligne_etat_sans_double_compte():
+    print("\n[app] la ligne d'état ne compte pas deux fois la même source")
+    html = open("docs/index.html", encoding="utf-8").read()
+    fn = html[html.index("function majLigneRun("):]
+    fn = fn[:fn.index("\n}")]
+
+    # sources_silence contient TOUTES les sources qui ne rapportent rien —
+    # muettes ET cassées, c'est voulu côté robot (ne_rapporte_rien). Les
+    # recompter séparément ici annonçait « 3 sources muettes · 3 cassées »
+    # pour trois sources en tout : six problèmes affichés, trois réels.
+    check("idsCassees" in fn,
+          "les sources cassées sont identifiées avant de compter les muettes")
+    check("!idsCassees.has(id)" in fn,
+          "les muettes excluent celles déjà nommées comme cassées")
+
+    # Le message « tout va bien » ne doit sortir que si les DEUX comptes sont
+    # nuls, sinon il cohabiterait avec une alerte.
+    check("if(!muettes && !cassees.length)" in fn,
+          "« toutes les sources répondent » exige zéro muette ET zéro cassée")
+
+    # La ligne se place sous les deux boutons : au-dessus, elle séparait le
+    # nombre d'articles des actions qui le modifient.
+    console = html[html.index('<div class="console">'):]
+    console = console[:console.index("<div class=\"search-row\">")]
+    check(console.index('id="runLine"') > console.index('class="controls"'),
+          "la ligne d'état est placée après le bloc des boutons")
+
+
 def test_panneau_parametres_intact():
     print("\n[app] réorganiser le panneau n'a perdu aucun élément piloté par le JS")
     import re
@@ -1531,7 +1559,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_timeout_reseau, test_source_cassee_vs_muette,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
-           test_panneau_parametres_intact,
+           test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
            test_validation_avant_ecriture):
     fn()
 
