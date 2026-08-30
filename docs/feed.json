@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-30T11:01:58.597125+00:00",
-  "duration_seconds": 68.6,
+  "generated_at": "2026-08-30T11:31:58.572239+00:00",
+  "duration_seconds": 72.7,
   "decode_failures": 0,
-  "total_articles": 1334,
+  "total_articles": 1336,
   "new_this_run": 2,
   "hot_count": 2,
   "hot_threshold": 3,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T09:53:19+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,11 +397,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-30T07:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -439,7 +439,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T11:30:00+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -511,20 +511,20 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T11:02:19+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
       "id": "ign",
       "name": "IGN",
-      "entries_fetched": 20,
+      "entries_fetched": 0,
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T22:33:20+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gamespot",
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 0,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 32,
+      "entries_fetched": 31,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -911,27 +911,29 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "ign": 1
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,99,99,99,99,99,100,99,100,100",
+    "rockstar-fr": "100,100,99,99,99,99,99,100,99,100,100,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "take2-ir": "10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
+    "take2-ir": "10,10,10,10,10,10,10",
+    "rockstar-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "99,99,99,99,99,100,99,98,98,99,99,99",
+    "gnews-en": "99,99,99,99,100,99,98,98,99,99,99,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40",
     "rockstarmag": "10",
-    "rockstarmag-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
-    "ign": "0,20,0,20,0,20,0,20,0,20,0,20",
+    "rockstarmag-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
+    "ign": "20,0,20,0,20,0,20,0,20,0,20,0",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "kotaku": "20,0,20,20,20,20,20,20,20,20,20,20",
+    "kotaku": "0,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100",
@@ -939,7 +941,7 @@
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
     "ginjfo": "50",
-    "gameblog": "13,13,13,13,13,13,13,13,13,13",
+    "gameblog": "13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -956,17 +958,17 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,92,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,92,100,100,100,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "32,32,32,32,32,32,32,32,32,32,32,32",
+    "arstechnica": "32,32,32,32,32,32,32,32,32,32,32,31",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "etag": "W/\"d1bd5399e62f12a7c37d00201da2c715\"",
@@ -984,13 +986,9 @@
       "etag": "\"e4507bbee601715f6bbcc452dd0da2da\"",
       "modified": "Sat, 29 Aug 2026 13:20:16 GMT"
     },
-    "ign": {
-      "etag": "W/\"27e00-bjTl6dt+qKOKWkZ9AoWbncze0AY\"",
-      "modified": null
-    },
     "kotaku": {
-      "etag": "W/\"531ec8957b97c8df2af89f1b0fa10ffc\"",
-      "modified": "Sun, 30 Aug 2026 11:00:09 GMT"
+      "etag": "W/\"7c4d560e91d992342864b85e68eb73ea\"",
+      "modified": "Sun, 30 Aug 2026 11:29:56 GMT"
     },
     "rps": {
       "etag": null,
@@ -1002,15 +1000,15 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 11:00:07 GMT"
+      "modified": "Sun, 30 Aug 2026 11:28:22 GMT"
     },
     "ginjfo": {
       "etag": "\"0b330cb5eb9bb42bbe933115d7a735b3\"",
       "modified": "Sun, 30 Aug 2026 09:23:47 GMT"
     },
     "gameblog": {
-      "etag": "W/\"6a940d40-2f7c\"",
-      "modified": "Sun, 30 Aug 2026 11:00:16 GMT"
+      "etag": "W/\"6a941448-2f7c\"",
+      "modified": "Sun, 30 Aug 2026 11:30:16 GMT"
     },
     "actugaming": {
       "etag": "W/\"f883eea91b0269268828f6f4be946cf2\"",
@@ -1400,6 +1398,19 @@
       "lang": null,
       "image": "https://kotaku.com/app/uploads/2026/08/philcollins.jpg",
       "description": "On top of an extended glimpse at what the upcoming Grand Theft Auto VI will look like, Netflix gave a hint at what your crime spree playlist will sound like too"
+    },
+    {
+      "title": "GTA 6 Locked at 30 FPS on Consoles, PS5 Pro No Exception - tech-insider.org",
+      "link": "https://tech-insider.org/gta-6-30-fps-consoles-ps5-pro-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBFZ0pnQnhNeWNpdWJwbVlSd29aV3hpS0RsakhlQmxqdjZBQ0RoMHByUzJEQnM1SHY5WGlEdndMWkdFa1VmR2RuakU1VWF0Z181aS1mZFNMOW1udEluZHg4Ylh0X2Qxd2FNSzdkQQ?oc=5",
+      "date": "2026-08-29T20:33:41+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 Locked at 30 FPS on Consoles, PS5 Pro No Exception&nbsp;&nbsp;tech-insider.org"
     },
     {
       "title": "Pourquoi Netflix s’invite dans l’univers de GTA 6 avec une avant-première hors norme - Journal des seniors",
@@ -2757,6 +2768,19 @@
       "lang": null,
       "image": "https://www.gamespot.com/wp-content/uploads/2026/08/star-wars-zero-company-tactics.jpg?w=300",
       "description": "The XCOM series has been effectively on hiatus for many years now, and AAA turn-based-tactics games have been pretty hard to come by recently. That's changing, however, starting with this week's launch of Star Wars Zero Company. It's effectively a marriage of classic XCOM gameplay and Clone Wars-era Star Wars storytelling, and within a few minutes of starting it, I got that same rush of excitement I got the first time I played an XCOM game. \n\n\n\nTypically, I try to savor turn-based tactical exper"
+    },
+    {
+      "title": "Rockstar confirms if GTA 6 single-player contains microtransactions or generative AI - TweakTown",
+      "link": "https://www.tweaktown.com/news/113329/rockstar-confirms-if-gta-6-single-player-contains-microtransactions-or-generative-ai/index.html",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNRFlBLTVMRjI1ZTNESUpHMUhueExhVUxlWWV5VU1ON0FYT05zczNlVFJnOHl5eGpYS2RIV1EzamM3MHhHTzBoeWg0dDVCb3A0eXBIckpGdzFwa0ZrcW16ektpWWlWMHNSTjBGV1JRR0lBblNqM21EbTdubmtFeDFjaVAwLXdkRXRGWE9GbFBIM0g0UU1KRDdabXV0REM2RXJKSVBMSWhLU3J0ODl2Q3J6QWtVMlAxN200ZThMOTJpY1A3YUswUmRVUUxoVG5DUQ?oc=5",
+      "date": "2026-08-28T17:11:05+00:00",
+      "source": "Rockstar Games (annonces)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static.tweaktown.com/news/1/1/113329_2_rockstar-confirms-if-gta-6-single-player-contains-microtransactions-or-generative-ai_full.png",
+      "description": "Rockstar confirms if GTA 6 single-player contains microtransactions or generative AI&nbsp;&nbsp;TweakTown"
     },
     {
       "title": "Was the GTA 6 Extended Look a Show of Rockstar's Confidence or Hubris?",
