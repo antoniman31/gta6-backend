@@ -2164,8 +2164,13 @@ def decris_video_youtube(url):
         r'"datePublished"\s*:\s*"([^"]+)"',
         r'"uploadDate"\s*:\s*"([^"]+)"',
         r'"publishDate"\s*:\s*"([^"]+)"',
-        r'"publishedTimeText":\{"simpleText":"([^"]+)"\}',
     )
+    # PAS de repêchage sur `publishedTimeText` : il porte un texte relatif
+    # (« 1 year ago »), inexploitable comme date — et surtout il peut
+    # appartenir à une vidéo recommandée dans la marge. Le 30/08/2026 il a
+    # rendu « 2 days ago » pour le Trailer 2, sorti en 2025. Une date fausse
+    # est pire que pas de date : elle range la vidéo au mauvais endroit du
+    # fil et plus rien ne vient la corriger.
     try:
         page = requests.get(f"https://www.youtube.com/watch?v={vid}",
                             timeout=FETCH_TIMEOUT,
@@ -2176,12 +2181,21 @@ def decris_video_youtube(url):
                 date = m.group(1)
                 break
         if not date:
-            # Dire ce qu'on a reçu plutôt que « introuvable » tout court :
-            # sans ça, impossible de savoir si la page est une page de
-            # consentement, une redirection, ou juste un balisage différent.
-            print(f"  [{vid}] date introuvable — HTTP {page.status_code}, "
-                  f"{len(page.text)} caractères, "
-                  f"« date » apparaît {page.text.lower().count('date')} fois")
+            # Montrer ce que la page contient VRAIMENT plutôt que d'essayer
+            # un motif de plus au jugé. Deux tours de devinette coûtent plus
+            # cher qu'un tour de mesure.
+            print(f"  [{vid}] aucune date ISO — HTTP {page.status_code}, "
+                  f"{len(page.text)} caractères. Champs contenant « date » :")
+            vus = []
+            for cle, valeur in re.findall(
+                    r'"([A-Za-z]*[Dd]ate[A-Za-z]*)"\s*:\s*"([^"]{4,40})"',
+                    page.text):
+                if (cle, valeur) not in vus:
+                    vus.append((cle, valeur))
+            for cle, valeur in vus[:8]:
+                print(f"       {cle} = {valeur}")
+            if not vus:
+                print("       (aucun)")
     except Exception as e:
         print(f"  [{vid}] page illisible : {e}")
 
