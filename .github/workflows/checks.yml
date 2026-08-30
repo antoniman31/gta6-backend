@@ -20,6 +20,12 @@ on:
       - "docs/feed.json"
       - "docs/feed-recent.json"
 
+# Ces contrôles ne font que lire le dépôt et lancer des scripts : aucun
+# besoin d'écrire. Déclaré explicitement plutôt que laissé au réglage par
+# défaut du dépôt, qui peut changer sans qu'on s'en aperçoive.
+permissions:
+  contents: read
+
 jobs:
   controles:
     runs-on: ubuntu-latest

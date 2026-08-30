@@ -649,18 +649,58 @@ def title_similarity(a, b):
 
 
 # Un doublon de titre proche n'a de sens qu'entre articles publiés à peu
-# près en même temps (deux sources qui couvrent la même actu du jour) —
-# comparer un nouvel article à un autre vieux de plusieurs mois pour la
-# similarité de titre n'arrive jamais en pratique, et ça coûte cher inutilement
-# une fois que l'historique grossit. On ne compare donc la similarité qu'aux
-# TITLE_SIMILARITY_WINDOW articles les plus récents de la liste.
-# Note : pendant la collecte, la liste n'est pas re-triée à chaque ajout (le
-# tri final n'a lieu qu'à la fin) — les nouveaux articles ajoutés tôt dans la
-# boucle ne sont donc comparés qu'à l'historique initial, pas aux nouveaux
-# articles ajoutés ensuite par d'autres sources. Compromis volontaire pour
-# la vitesse ; en pratique la dédup par lien exact reste la protection
-# principale, la similarité de titre n'est qu'un filet de sécurité en plus.
-TITLE_SIMILARITY_WINDOW = 200
+# près en MÊME TEMPS : deux rédactions qui couvrent l'actu du jour. Comparer
+# un article à un autre vieux de plusieurs mois n'arrive jamais en pratique
+# et coûte cher une fois l'historique grossi.
+#
+# La fenêtre se compte donc en HEURES, pas en articles. Comptée en articles,
+# elle se refermait exactement quand il aurait fallu qu'elle s'ouvre :
+#
+#     régime normal      200 articles = 50 h
+#     pic du 27/08/2026  200 articles = 16 h     (293 articles ce jour-là)
+#
+# Autrement dit, le robot voyait le moins loin les jours où il se passait
+# quelque chose. Mesuré sur les 26 doublons que la fenêtre avait laissés
+# passer : 5 l'étaient uniquement à cause de cette bordure, et une fenêtre
+# de 72 h les aurait tous rattrapés avant qu'ils ne fassent sonner le
+# téléphone. Les 18 autres étaient à portée et ont été ratés par la règle
+# de comparaison, corrigée depuis.
+FENETRE_HEURES = 72
+
+# Deux bornes autour de la fenêtre en heures.
+#
+# Le plancher garantit qu'on ne compare jamais à MOINS qu'avant : trois
+# jours creux ne doivent pas réduire la fenêtre à vingt articles.
+# Le plafond borne le coût : une fenêtre de 72 h vaut 534 articles
+# aujourd'hui et 593 au pic, mais rien n'interdit à un événement futur de
+# produire trois mille articles en trois jours.
+TITLE_SIMILARITY_WINDOW = 200          # plancher
+FENETRE_MAX = 1500                     # plafond
+
+
+def fenetre_recente(items, heures=FENETRE_HEURES):
+    """Les articles publiés dans les dernières `heures`, bornés.
+
+    Le tri est refait ici plutôt que supposé : prendre les N premiers d'une
+    liste tiendrait pour acquis qu'elle est déjà triée du plus récent au
+    plus ancien. C'est vrai du fichier publié, l'invariant est garanti ici.
+
+    Note : pendant la collecte, la liste n'est pas re-triée à chaque ajout —
+    les nouveaux articles rejoignent la fenêtre par la fin. Compromis
+    volontaire pour la vitesse ; la dédup par lien exact reste la protection
+    principale, la similarité de titre n'est qu'un filet en plus.
+    """
+    tries = feed_store.sort_items(items)
+    if not tries:
+        return []
+    limite = feed_store.parse_date_key(tries[0].get("date")) - timedelta(hours=heures)
+    dedans = 0
+    for item in tries:
+        if feed_store.parse_date_key(item.get("date")) < limite:
+            break
+        dedans += 1
+    taille = min(max(dedans, TITLE_SIMILARITY_WINDOW), FENETRE_MAX)
+    return tries[:taille]
 
 
 # À partir de combien de sources distinctes une actualité est considérée
@@ -1440,7 +1480,7 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
     # d'une liste tiendrait pour acquis qu'elle est déjà triée du plus
     # récent au plus ancien. C'est vrai du fichier publié, mais l'invariant
     # est garanti ici plutôt que documenté.
-    fenetre = feed_store.sort_items(all_items)[:TITLE_SIMILARITY_WINDOW]
+    fenetre = fenetre_recente(all_items)
 
     # Index par titre exact sur TOUT l'historique, pas seulement la fenêtre.
     # Le premier inscrit gagne : l'ordre de FEEDS décide déjà quelle source
@@ -1864,6 +1904,43 @@ def repare_vignettes_stockees(items):
     return items
 
 
+# Une source débaptisée laisse ses anciens articles orphelins : ils portent
+# un nom qui n'existe plus dans FEEDS, donc ils ne comptent plus pour la
+# santé de leur source et l'audit les signale sans fin. Neuf articles
+# étaient dans ce cas au 30/08/2026.
+#
+# Une correspondance EXPLICITE, jamais une devinette : un nom proche ne
+# prouve rien. Et le domaine du lien doit confirmer, parce que ce qui compte
+# est qui publie — même règle que pour le statut officiel.
+SOURCES_RENOMMEES = {
+    "RockstarMag.fr": ("RockstarMag", "rockstarmag.fr"),
+}
+
+
+def repare_noms_de_sources(items):
+    """Rebranche les articles d'une source débaptisée sur son nom actuel."""
+    connus = {feed["name"] for feed in FEEDS}
+    corriges = 0
+    for item in items:
+        cible = SOURCES_RENOMMEES.get(item.get("source"))
+        if not cible:
+            continue
+        nom, domaine = cible
+        if nom not in connus:
+            continue
+        try:
+            if domaine not in urlparse(item.get("link") or "").netloc.lower():
+                continue
+        except Exception:
+            continue
+        item["source"] = nom
+        corriges += 1
+    if corriges:
+        print(f"Correction rétroactive : {corriges} article(s) rebranché(s) "
+              f"sur le nom actuel de leur source")
+    return items
+
+
 def repare_attributions_croisees(items):
     """Retire les « autres sources » qui pointent vers un AUTRE article du fil.
 
@@ -1997,6 +2074,18 @@ FUSION_RETRO_MOT_COMMUN = 0.15   # un mot présent dans plus de 15 % des titres
                                  # ne désigne plus personne
 FUSION_RETRO_MOTS_PARTAGES = 2   # deux candidats en partagent au moins deux
 
+# Une fois le nom du jeu et celui du média retirés, certains titres ne
+# pèsent plus que deux mots — et deux mots génériques se ressemblent
+# forcément. « extended look gta 6 - GamerGen » se réduit à « extended
+# look », soit exactement la page officielle de Rockstar une fois nettoyée :
+# 1,00 de similarité pour deux pages différentes.
+#
+# C'est le problème de l'aimant sous une autre forme : un titre qui ne dit
+# presque rien ne doit attirer personne. Mesuré sur l'historique, le
+# minimum de 3 mots écarte cette fusion-là et AUCUNE autre — la plus courte
+# des fusions légitimes en compte 3 (« new screenshots revealed »).
+FUSION_MOTS_MINIMUM = 3
+
 
 def _paires_candidates(comparables):
     """Les paires qui partagent assez de mots rares pour valoir la comparaison.
@@ -2093,7 +2182,8 @@ def fusionne_ressemblances_de_titre(items):
         return SequenceMatcher(None, a, b).ratio() >= SIMILARITY_THRESHOLD
 
     for ancien, recent in _paires_candidates(comparables):
-        if not comparables[ancien] or not comparables[recent]:
+        if min(len(comparables[ancien].split()),
+               len(comparables[recent].split())) < FUSION_MOTS_MINIMUM:
             continue
         # Le plus récent ne rejoint qu'un seul paquet, et n'en amène jamais
         # un autre avec lui : deux paquets ne fusionnent pas entre eux.
@@ -2228,6 +2318,7 @@ def main():
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     memorise_suffixes_medias(existing_items)
     existing_items = repare_vignettes_stockees(existing_items)
+    existing_items = repare_noms_de_sources(existing_items)
     existing_items = repare_attributions_croisees(existing_items)
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
