@@ -2154,25 +2154,42 @@ def decris_video_youtube(url):
     except Exception as e:
         print(f"  [{vid}] oEmbed illisible : {e}")
 
+    # Plusieurs écritures possibles : la page d'une vidéo YouTube ne rend
+    # pas le même balisage selon qu'elle sert une fiche complète ou une
+    # version allégée. Le premier essai n'a trouvé la date que sur 1 vidéo
+    # sur 5 — chercher une seule forme ne suffit pas.
+    motifs = (
+        r'itemprop="datePublished"[^>]*content="([^"]+)"',
+        r'itemprop="uploadDate"[^>]*content="([^"]+)"',
+        r'"datePublished"\s*:\s*"([^"]+)"',
+        r'"uploadDate"\s*:\s*"([^"]+)"',
+        r'"publishDate"\s*:\s*"([^"]+)"',
+        r'"publishedTimeText":\{"simpleText":"([^"]+)"\}',
+    )
     try:
         page = requests.get(f"https://www.youtube.com/watch?v={vid}",
                             timeout=FETCH_TIMEOUT,
                             headers={"User-Agent": USER_AGENT})
-        m = re.search(r'itemprop="datePublished"[^>]*content="([^"]+)"', page.text)
-        if not m:
-            m = re.search(r'"publishDate"\s*:\s*"([^"]+)"', page.text)
-        if not m:
-            m = re.search(r'"uploadDate"\s*:\s*"([^"]+)"', page.text)
-        if m:
-            date = m.group(1)
-        else:
-            print(f"  [{vid}] date introuvable dans la page")
+        for motif in motifs:
+            m = re.search(motif, page.text)
+            if m:
+                date = m.group(1)
+                break
+        if not date:
+            # Dire ce qu'on a reçu plutôt que « introuvable » tout court :
+            # sans ça, impossible de savoir si la page est une page de
+            # consentement, une redirection, ou juste un balisage différent.
+            print(f"  [{vid}] date introuvable — HTTP {page.status_code}, "
+                  f"{len(page.text)} caractères, "
+                  f"« date » apparaît {page.text.lower().count('date')} fois")
     except Exception as e:
         print(f"  [{vid}] page illisible : {e}")
 
     return {"id": vid, "title": titre, "date": date,
             "link": f"https://www.youtube.com/watch?v={vid}",
-            "image": vignette_youtube(vid)}
+            # L'URL complète, pas l'identifiant nu : vignette_youtube attend
+            # un lien à analyser. Passer `vid` renvoyait None sans broncher.
+            "image": vignette_youtube(f"https://www.youtube.com/watch?v={vid}")}
 
 
 def decris_videos(urls):
