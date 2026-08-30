@@ -1340,6 +1340,39 @@ def test_titres_numerotes_pas_fusionnes():
           "mais deux fois le même titre restent bien un doublon")
 
 
+def test_index_compte_les_sources_supplementaires():
+    print("\n[doublons] un article fusionné ne peut pas rentrer une 2e fois")
+    import fetch_feeds
+
+    # Un article fusionné ne figure plus au fil sous son propre lien : il
+    # n'y survit que comme source supplémentaire. Sans lui dans l'index, son
+    # flux le rapporte au passage suivant et il RENTRE une seconde fois —
+    # la fusion défaite, et une notification pour un article déjà lu.
+    #
+    # Constaté le 30/08/2026, juste après le premier rejeu de l'historique :
+    # 5 des 21 articles fusionnés étaient revenus dans le même passage. La
+    # 3e passe de find_duplicate ne rattrape pas le cas : elle ne compare
+    # qu'aux 200 articles les plus récents, et le gardien peut être plus
+    # vieux que ça.
+    gardien = {"title": "Le gardien", "link": "https://a.tld/1",
+               "source": "A",
+               "extraSources": [{"source": "B", "link": "https://b.tld/2"}]}
+    index = fetch_feeds.index_des_liens([gardien])
+    check(index.get("https://b.tld/2") is gardien,
+          "le lien d'une source supplémentaire mène à l'article qui la porte")
+
+    revenant = {"title": "Un titre sans rapport", "link": "https://b.tld/2"}
+    check(fetch_feeds.find_duplicate(revenant, [gardien], index, [], {}) is gardien,
+          "le revenant est reconnu, même si son titre ne ressemble à rien")
+
+    # Le lien principal l'emporte : un article présent en propre reste son
+    # propre représentant, jamais celui d'un autre.
+    propre = {"title": "B chez lui", "link": "https://b.tld/2", "source": "B"}
+    index = fetch_feeds.index_des_liens([gardien, propre])
+    check(index["https://b.tld/2"] is propre,
+          "un article présent en propre reste son propre représentant")
+
+
 def test_fusion_retroactive_des_ressemblances():
     print("\n[doublons] rejeu de la ressemblance sur l'historique")
     import fetch_feeds
@@ -2448,6 +2481,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_sonde_decouvre_les_flux_declares,
            test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
            test_suffixe_du_media_appris, test_fusion_retroactive_des_ressemblances,
+           test_index_compte_les_sources_supplementaires,
            test_reparation_attributions_croisees, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
