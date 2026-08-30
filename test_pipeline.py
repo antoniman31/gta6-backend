@@ -1254,6 +1254,52 @@ def test_media_content_non_declare_reste_accepte():
           "une entrée sans média ne lève pas d'erreur")
 
 
+def test_sonde_decouvre_les_flux_declares():
+    print("\n[sonde] quand ce n'est pas un flux, demander à la page où est le sien")
+    import fetch_feeds
+
+    # Essayer des adresses au hasard n'apprend rien sur un site qui répond
+    # 500 pour tout chemin inconnu — mesuré le 30/08/2026 sur
+    # rockstargames.com, où une adresse inventée de toutes pièces renvoyait
+    # 500 comme les six candidates. La page, elle, déclare ses flux.
+    html = """<html><head>
+      <link rel="alternate" type="application/rss+xml" href="/newswire/feed.rss">
+      <link rel="alternate" type="application/atom+xml" href="https://ailleurs.fr/atom">
+      <link rel="alternate" type="text/html" href="/version-imprimable">
+      <link rel="stylesheet" href="/style.css">
+    </head><body>rien</body></html>"""
+
+    class Reponse:
+        text = html
+
+    vrai = fetch_feeds.requests.get
+    fetch_feeds.requests.get = lambda *a, **k: Reponse()
+    try:
+        trouves = fetch_feeds.flux_declares("https://exemple.fr/newswire")
+    finally:
+        fetch_feeds.requests.get = vrai
+
+    check("https://exemple.fr/newswire/feed.rss" in trouves,
+          "une adresse relative est résolue contre celle de la page")
+    check("https://ailleurs.fr/atom" in trouves,
+          "une adresse absolue est gardée telle quelle")
+    check(not any("imprimable" in t for t in trouves),
+          "un rel=alternate qui n'est pas un flux est ignoré")
+    check(not any("style" in t for t in trouves),
+          "et une feuille de style n'est pas un flux non plus")
+
+    # Une page illisible ne doit pas faire exploser la sonde : elle est là
+    # pour diagnostiquer, pas pour ajouter une panne de plus.
+    def boum(*a, **k):
+        raise RuntimeError("réseau coupé")
+    fetch_feeds.requests.get = boum
+    try:
+        check(fetch_feeds.flux_declares("https://exemple.fr/x") == [],
+              "une page injoignable renvoie une liste vide, sans lever")
+    finally:
+        fetch_feeds.requests.get = vrai
+
+
 def test_couverture_rockstar():
     print("\n[Rockstar] tout ce que publie Rockstar, archives comprises")
     import fetch_feeds
@@ -2053,6 +2099,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_predecode_google_news,
            test_miniature_youtube, test_media_content_non_declare_reste_accepte,
            test_reparation_vignettes_stockees,
+           test_sonde_decouvre_les_flux_declares,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
            test_validateurs_lies_a_leur_url,
