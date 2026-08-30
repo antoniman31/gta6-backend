@@ -1802,10 +1802,64 @@ def test_ligne_etat_sans_double_compte():
 
     # La ligne se place sous les deux boutons : au-dessus, elle séparait le
     # nombre d'articles des actions qui le modifient.
-    console = html[html.index('<div class="console">'):]
-    console = console[:console.index("<div class=\"search-row\">")]
-    check(console.index('id="runLine"') > console.index('class="controls"'),
+    carte = html[html.index('<header class="console">'):]
+    carte = carte[:carte.index("</header>")]
+    check(carte.index('id="runLine"') > carte.index('class="controls"'),
           "la ligne d'état est placée après le bloc des boutons")
+
+
+def test_haut_de_page_une_seule_carte():
+    print("\n[app] une seule carte en haut, et le compteur sous les onglets")
+    html = open("docs/index.html", encoding="utf-8").read()
+    corps = html[html.index("<body>"):html.index('<div class="pull-zone"')]
+
+    # Une seule carte : l'en-tête PORTE la classe .console au lieu d'être un
+    # bloc distinct suivi d'un second. Deux cartes coûtaient une bordure, un
+    # fond et deux rembourrages pour une frontière qui ne correspondait à
+    # rien — les boutons agissent sur ce que le titre annonce.
+    check('<header class="console">' in corps,
+          "l'en-tête et la console ne forment plus qu'une carte")
+    check(corps.count('class="console"') == 1,
+          "et il n'y a bien qu'une seule carte en haut de page")
+    for quoi in ('class="brand"', 'id="countdown"', 'id="modeIndicator"',
+                 'class="controls"', 'id="runLine"', 'id="progressBar"'):
+        check(corps.index(quoi) < corps.index("</header>"),
+              f"{quoi} est dans la carte fusionnée")
+
+    # Le compteur décrit la liste : il descend entre les onglets et elle.
+    pos_onglets = corps.rindex('id="tabRockstarmag"')
+    check(corps.index('id="countLine"') > pos_onglets,
+          "le compteur est placé APRÈS la rangée d'onglets")
+    check(corps.index('id="historyLine"') > pos_onglets,
+          "« historique partiel » et son bouton le suivent — une seule phrase")
+    check('id="countLine"' not in corps[:corps.index("</header>")],
+          "et il ne reste rien de lui dans la carte du haut")
+
+    # La pastille de « Tous les articles » est absorbée par la ligne, qui
+    # dit explicitement ce que chaque nombre compte.
+    check('id="badgeAll"' not in corps,
+          "la pastille de « Tous les articles » a disparu du balisage")
+    check("poseBadge(" in html and "if(el) el.textContent" in html,
+          "et l'écriture des pastilles tolère son absence, sinon la première "
+          "ligne aurait planté en emportant toutes les suivantes")
+    check('" non lu"' in html or "non lu${" in html,
+          "la ligne distingue les affichés des non-lus")
+
+    # Piège CSS : la barre de progression est collée au bord de la carte par
+    # des marges négatives calées sur son rembourrage. Désaccordées, elle
+    # déborde ou laisse un liseré.
+    import re
+    pad = re.search(r"\.console\{[^}]*padding:(\d+)px", html)
+    marge = re.search(r"\.console \.progress-bar\{margin:0 -(\d+)px -(\d+)px", html)
+    check(pad and marge and pad.group(1) == marge.group(1) == marge.group(2),
+          f"les marges de la barre de progression suivent le rembourrage de "
+          f"la carte ({pad.group(1) if pad else '?'}px)")
+
+    # Les deux bandeaux d'alerte étaient ENTRE les deux cartes. Ils ne
+    # doivent pas se retrouver coincés dans l'en-tête fusionné.
+    for banniere in ('id="staleBanner"', 'id="updateBanner"'):
+        check(corps.index(banniere) > corps.index("</header>"),
+              f"{banniere} est sorti de la carte, sous elle")
 
 
 def test_panneau_parametres_intact():
@@ -1901,6 +1955,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
+           test_haut_de_page_une_seule_carte,
            test_validation_avant_ecriture):
     fn()
 
