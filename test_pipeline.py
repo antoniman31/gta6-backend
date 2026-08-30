@@ -1398,13 +1398,25 @@ def test_suffixe_du_media_appris():
               == "Sujet 9 - Kotaku",
               "sans liste apprise on ne coupe rien")
 
-        # Et le garde-fou des numéros passe toujours avant la fusion.
+        # Le garde-fou des numéros doit lire le titre NETTOYÉ, comme la
+        # similarité. Sinon « Trailer 1 » et « Trailer 2 - Rockstar Games »
+        # ne sont pas vus comme une même série — leurs formes sans chiffres
+        # diffèrent par le suffixe — et se retrouvent à 0,889 sans filet.
+        # Le Trailer 3 sort avant novembre : il serait absorbé.
         fetch_feeds.memorise_suffixes_medias(
             [{"title": f"X {n} - Rockstar Games"} for n in range(3)])
-        check(fetch_feeds.titres_dune_meme_serie(
+        for a, b in (("Grand Theft Auto VI Trailer 1 - Rockstar Games",
+                      "Grand Theft Auto VI Trailer 2 - Rockstar Games"),
+                     ("Grand Theft Auto VI Trailer 1",
+                      "Grand Theft Auto VI Trailer 2 - Rockstar Games"),
+                     ("Grand Theft Auto VI Trailer 2",
+                      "Grand Theft Auto VI Trailer 3 - Rockstar Games")):
+            check(fetch_feeds.titres_dune_meme_serie(a, b),
+                  f"« {a[:34]} » et « {b[:34]} » restent séparés")
+        check(not fetch_feeds.titres_dune_meme_serie(
                   "Grand Theft Auto VI Trailer 1 - Rockstar Games",
-                  "Grand Theft Auto VI Trailer 2 - Rockstar Games"),
-              "deux bandes-annonces numérotées restent séparées")
+                  "Grand Theft Auto VI Trailer 1"),
+              "mais la MÊME vidéo avec et sans suffixe reste fusionnable")
         _ = S
     finally:
         fetch_feeds._SUFFIXES_MEDIAS = avant

@@ -623,9 +623,15 @@ def titres_dune_meme_serie(a, b):
     On préfère ici rater une fusion que d'en faire une fausse : deux cartes
     en double se voient et se corrigent, un article escamoté ne se voit pas.
     """
-    if _sans_nombres(a) != _sans_nombres(b):
+    # Sur le titre débarrassé du nom du média, comme title_similarity : sans
+    # ça, « Trailer 1 » et « Trailer 2 - Rockstar Games » n'étaient PAS vus
+    # comme une même série (le suffixe faisait diverger _sans_nombres), et
+    # se retrouvaient à 0,889 sans garde-fou. Le Trailer 3 sortira avant
+    # novembre et se serait fait absorber par le Trailer 2.
+    ta, tb = sans_suffixe_media(a), sans_suffixe_media(b)
+    if _sans_nombres(ta) != _sans_nombres(tb):
         return False
-    return re.findall(r"\d+", a) != re.findall(r"\d+", b)
+    return re.findall(r"\d+", ta) != re.findall(r"\d+", tb)
 
 
 def title_similarity(a, b):
