@@ -53,10 +53,12 @@
   }
   .wrap{max-width:640px; margin:0 auto;}
 
-  header{
+  /* L'en-tête EST la carte : il porte la classe .console, qui fournit le
+     fond, la bordure et le rembourrage. Ne reste ici que la disposition de
+     sa première rangée — titre à gauche, indicateurs et icônes à droite. */
+  .header-haut{
     display:flex; justify-content:space-between; align-items:flex-start;
-    gap:10px; margin-bottom:20px; padding:16px; border-radius:8px;
-    background:var(--bg-panel); border:1px solid var(--line);
+    gap:10px;
   }
   .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
   .brand{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; letter-spacing:-0.02em;}
@@ -145,7 +147,7 @@
   /* ---------- Bloc de contrôle ---------- */
   .console{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
-    padding:12px 14px; margin-bottom:14px; overflow:hidden;
+    padding:14px; margin-bottom:14px; overflow:hidden;
     display:flex; flex-direction:column; gap:10px;
   }
   .console-status{
@@ -178,7 +180,9 @@
   /* Dans le bloc, la barre épouse le bord bas : les marges négatives la
      collent aux trois arêtes, le overflow:hidden du parent arrondit ses
      coins. Elle n'a alors plus besoin de sa marge basse. */
-  .console .progress-bar{margin:0 -14px -12px; width:auto; border-radius:0;}
+  /* Les marges négatives DOIVENT valoir le rembourrage de .console — 14px
+     depuis la fusion. Désaccordées, la barre déborde ou laisse un liseré. */
+  .console .progress-bar{margin:0 -14px -14px; width:auto; border-radius:0;}
   .progress-fill{
     height:100%; width:0%; background:var(--accent);
     transition:width .25s ease-out;
@@ -507,15 +511,25 @@
   .history-line{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap;
   }
+  /* Le compteur vit maintenant hors carte, entre les onglets et la liste.
+     Pas de fond ni de bordure : il légende la liste, il ne la surplombe
+     pas. Le retrait latéral l'aligne sur le texte des cartes d'articles. */
+  .feed-count{
+    margin:-4px 2px 12px; justify-content:flex-start;
+  }
   /* État du dernier passage du robot. Même famille que .console-status,
      en un cran plus discret : c'est une information de fond, pas une
      action. Sur toute la largeur pour ne pas se battre avec countLine. */
   /* Flux de texte normal, pas flex : les morceaux sont déjà séparés par des
      « · » dans le texte, et un gap flex par-dessus laissait le séparateur
      pendre en fin de ligne au moment du retour à la ligne. */
+  /* Pas de margin-top : la carte est un flex column avec gap:10px, qui
+     espace déjà cette ligne des boutons. Cumuler les deux donnait 20px et
+     détachait le bilan de l'action qu'il commente — même erreur que le
+     « · » orphelin, un gap et une marge qui font double emploi. */
   .run-line{
     font-family:'JetBrains Mono',monospace; font-size:10px;
-    color:var(--text-dim); opacity:0.85; line-height:1.7; margin-top:10px;
+    color:var(--text-dim); opacity:0.85; line-height:1.7;
   }
   .run-line .alerte{color:var(--warn); font-weight:700;}
   .history-line button{padding:3px 8px; font-size:10px;}
@@ -636,38 +650,27 @@
 <body>
 <div class="wrap">
 
-  <header>
-    <div>
-      <div class="brand">GTA6<span>_WATCH</span></div>
-      <div id="countdown" class="countdown"></div>
-    </div>
-    <div class="header-right">
-      <div id="modeIndicator" class="mode-indicator"></div>
-      <div class="header-actions">
-        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">◐</button>
-        <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
-        <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">▤<span id="badgeLogs" class="logs-error-badge"></span></button>
-        <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ⓘ</button>
+  <!-- Une seule carte : l'identité du site, les actions qui modifient le
+       fil, et le bilan du dernier passage. Deux cartes séparées coûtaient
+       une bordure, un fond et deux rembourrages pour une frontière qui ne
+       correspondait à rien — les boutons agissent sur ce que le titre
+       annonce. Le compteur d'articles, lui, est descendu sous les onglets :
+       il décrit la liste, sa place est contre elle. -->
+  <header class="console">
+    <div class="header-haut">
+      <div>
+        <div class="brand">GTA6<span>_WATCH</span></div>
+        <div id="countdown" class="countdown"></div>
       </div>
-    </div>
-  </header>
-
-  <div id="staleBanner" class="stale-banner" style="display:none;"></div>
-
-  <!-- Nouvelle version du fichier HTML détectée sur le serveur. Masqué par
-       défaut : il n'apparaît que quand il y a réellement du neuf. -->
-  <div id="updateBanner" class="update-banner" style="display:none;">
-    <span>Nouvelle version de l'app disponible.</span>
-    <button onclick="rechargerApp()">Recharger</button>
-  </div>
-
-  <!-- Bloc unique : l'état du fil et les deux actions qui le modifient se
-       lisent ensemble. Séparés, ils formaient cinq blocs empilés dont deux
-       répétaient le même nombre d'articles. -->
-  <div class="console">
-    <div class="console-status">
-      <span id="countLine">0 article suivi</span>
-      <span id="historyLine" class="history-line" style="display:none;"></span>
+      <div class="header-right">
+        <div id="modeIndicator" class="mode-indicator"></div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">◐</button>
+          <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
+          <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">▤<span id="badgeLogs" class="logs-error-badge"></span></button>
+          <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ⓘ</button>
+        </div>
+      </div>
     </div>
     <div class="controls">
       <button class="primary" onclick="checkNow(true)">Actualiser</button>
@@ -688,6 +691,17 @@
     <div id="progressBar" class="progress-bar" style="display:none;">
       <div id="progressFill" class="progress-fill"></div>
     </div>
+  </header>
+
+  <!-- Sous la carte et non plus entre les deux : ce sont des alertes de
+       page, elles doivent précéder le contenu sans couper l'en-tête. -->
+  <div id="staleBanner" class="stale-banner" style="display:none;"></div>
+
+  <!-- Nouvelle version du fichier HTML détectée sur le serveur. Masqué par
+       défaut : il n'apparaît que quand il y a réellement du neuf. -->
+  <div id="updateBanner" class="update-banner" style="display:none;">
+    <span>Nouvelle version de l'app disponible.</span>
+    <button onclick="rechargerApp()">Recharger</button>
   </div>
 
   <div class="search-row">
@@ -701,12 +715,23 @@
   </div>
 
   <div class="tab-row tab-row-full">
-    <button class="tab active" id="tabAll" onclick="setTab('all')">Tous les articles <span class="tab-badge" id="badgeAll"></span></button>
+    <button class="tab active" id="tabAll" onclick="setTab('all')">Tous les articles</button>
   </div>
   <div class="tab-row">
     <button class="tab" id="tabNonRockstar" onclick="setTab('non-rockstar')">Non Rockstar <span class="tab-badge" id="badgeNonRockstar"></span></button>
     <button class="tab" id="tabRockstar" onclick="setTab('rockstar')">Rockstar <span class="tab-badge" id="badgeRockstar"></span></button>
     <button class="tab" id="tabRockstarmag" onclick="setTab('rockstarmag')">RockstarMag <span class="tab-badge" id="badgeRockstarmag"></span></button>
+  </div>
+
+  <!-- Le compteur décrit la liste juste en dessous, pas la carte du haut.
+       Il dit AFFICHÉS et NON LUS séparément : les pastilles des onglets
+       comptent les non-lus, et un seul nombre voisin des pastilles aurait
+       laissé croire qu'il compte la même chose. La pastille de « Tous les
+       articles » a donc été retirée — cette ligne la remplace en disant
+       explicitement ce que chaque nombre veut dire. -->
+  <div class="console-status feed-count">
+    <span id="countLine">0 article suivi</span>
+    <span id="historyLine" class="history-line" style="display:none;"></span>
   </div>
 
   <div class="pull-zone" id="pullZone"><span id="pullLabel"></span></div>
@@ -2239,9 +2264,22 @@ function applyFilters(){
   majPastilleReprise();
 
   const countEl = document.getElementById("countLine");
+  // Deux nombres, dits explicitement, parce qu'ils sont voisins des
+  // pastilles d'onglet qui comptent les NON-LUS. Un seul « 300 » sous une
+  // pastille « 287 » aurait donné deux nombres d'apparence identique qui
+  // ne veulent pas dire la même chose — plus traître qu'une redondance.
+  // C'est aussi pourquoi la pastille de « Tous les articles » a disparu :
+  // cette ligne la remplace en la nommant.
+  //
+  // Les deux comptes portent sur la MÊME liste, celle qui est affichée en
+  // dessous, onglet et filtres compris. « 13 affichés · 13 non lus » dans
+  // l'onglet RockstarMag parle bien de RockstarMag.
+  //
   // L'état de l'historique est porté par historyLine, juste à droite —
   // l'ajouter ici aussi le disait deux fois sur la même ligne.
-  countEl.textContent = items.length + " article" + (items.length>1?"s":"") + " affiché" + (items.length>1?"s":"")
+  const nonLus = items.filter(i => !readSet.has(i.link)).length;
+  countEl.textContent = items.length + " affiché" + (items.length>1?"s":"")
+    + ` · ${nonLus} non lu${nonLus>1?"s":""}`
     + (masques > 0 ? ` · ${masques} masqué${masques>1?"s":""}` : "");
   updateHistoryLine();
 }
@@ -2256,13 +2294,21 @@ function updateTabBadges(){
   const unreadFr = visibles.filter(i => i.lang === "fr" && !readSet.has(i.link)).length;
   const unreadEn = visibles.filter(i => i.lang !== "fr" && !readSet.has(i.link)).length;
 
-  document.getElementById("badgeAll").textContent = unreadAll > 0 ? unreadAll : "";
-  document.getElementById("badgeRockstar").textContent = unreadRockstar > 0 ? unreadRockstar : "";
-  document.getElementById("badgeRockstarmag").textContent = unreadRockstarmag > 0 ? unreadRockstarmag : "";
-  document.getElementById("badgeNonRockstar").textContent = unreadNonRockstar > 0 ? unreadNonRockstar : "";
-  document.getElementById("badgeLangAll").textContent = unreadAll > 0 ? unreadAll : "";
-  document.getElementById("badgeFr").textContent = unreadFr > 0 ? unreadFr : "";
-  document.getElementById("badgeEn").textContent = unreadEn > 0 ? unreadEn : "";
+  // Écriture tolérante à l'absence : la pastille de « Tous les articles »
+  // a été retirée du balisage (la ligne de compteur sous les onglets la
+  // remplace), et un getElementById(...).textContent aurait planté ici —
+  // emportant avec lui toutes les pastilles suivantes.
+  const poseBadge = (id, n) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = n > 0 ? n : "";
+  };
+  poseBadge("badgeAll", unreadAll);
+  poseBadge("badgeRockstar", unreadRockstar);
+  poseBadge("badgeRockstarmag", unreadRockstarmag);
+  poseBadge("badgeNonRockstar", unreadNonRockstar);
+  poseBadge("badgeLangAll", unreadAll);
+  poseBadge("badgeFr", unreadFr);
+  poseBadge("badgeEn", unreadEn);
 }
 
 // Badge sur le titre d'onglet du navigateur, visible même en arrière-plan.
