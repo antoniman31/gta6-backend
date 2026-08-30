@@ -89,6 +89,7 @@ socket.setdefaulttimeout(FETCH_TIMEOUT)
 FETCH_WORKERS = 8       # sources traitées de front, tous domaines confondus
 PER_HOST_LIMIT = 3      # files simultanées pour un même domaine
 HOST_PAUSE = 1.0        # pause entre deux requêtes d'une même file
+REPRISE_PAUSE = 3.0     # respiration avant la seconde tentative
 
 # Décodages Google News simultanés, tous flux confondus. Le plafond est
 # global (et non par flux) : sans lui, 3 flux Google News traités en même
@@ -218,7 +219,13 @@ FEEDS = [
     {"id": "ign", "name": "IGN", "url": "https://feeds.ign.com/ign/games-all", "official": False},
     {"id": "gamespot", "name": "GameSpot", "url": "https://www.gamespot.com/feeds/news/", "official": False},
     {"id": "polygon", "name": "Polygon", "url": "https://www.polygon.com/rss/index.xml", "official": False},
-    {"id": "kotaku", "name": "Kotaku", "url": "https://kotaku.com/rss", "official": False},
+    # /rss répond 301 vers /feed depuis le 29/08/2026, de façon stable et
+    # reproductible — contrairement aux 404 intermittents de YouTube, qui
+    # eux étaient du rationnement. feedparser suit bien la redirection, mais
+    # ce qu'il reçoit au bout n'est pas toujours un flux : la source
+    # apparaissait muette la moitié du temps. Autant demander directement
+    # l'adresse que le serveur réclame.
+    {"id": "kotaku", "name": "Kotaku", "url": "https://kotaku.com/feed", "official": False},
     {"id": "gamesradar", "name": "GamesRadar+", "url": "https://www.gamesradar.com/rss/", "official": False},
     # Flux Google News restreint au domaine plutôt que le flux maison :
     # celui de rss.app était un flux VG247 GÉNÉRALISTE. Il renvoyait
@@ -697,6 +704,28 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     # documentation de feedparser prévient qu'un client qui ignore ces
     # en-têtes peut se faire bannir par l'éditeur.
     precedent = (http_state or {}).get(feed["id"], {})
+
+    # Un validateur décrit une URL PRÉCISE, pas une source. Quand l'adresse
+    # d'une source change dans FEEDS, l'etag de l'ancienne ne veut plus rien
+    # dire — et le danger n'est pas qu'il soit refusé, c'est qu'il soit
+    # ACCEPTÉ : deux chemins d'un même site partagent souvent le même
+    # backend (kotaku.com/rss et kotaku.com/feed), et le serveur peut
+    # répondre 304. Le robot noterait alors « inchangé » pour un flux qu'il
+    # n'a jamais lu, indéfiniment, sans le moindre message d'erreur.
+    #
+    # Un état enregistré avant l'ajout de ce champ n'a pas d'URL : il est
+    # écarté lui aussi. Ça coûte un téléchargement complet, une fois, pour
+    # la quinzaine de sources concernées — et l'état se répare tout seul au
+    # passage suivant.
+    if precedent and precedent.get("url") != feed["url"]:
+        journal.append("  validateurs HTTP ignorés : ils ont été obtenus "
+                       "pour une autre adresse")
+        precedent = {}
+
+    # Retenu pour la reprise : une réponse obtenue AVEC validateurs et une
+    # réponse obtenue sans ne sont pas la même mesure. Voir merite_reprise.
+    conditionnelle = bool(precedent.get("etag") or precedent.get("modified"))
+
     try:
         parsed = feedparser.parse(
             feed["url"], agent=USER_AGENT,
@@ -706,6 +735,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     except Exception as e:
         journal.append(f"  échec réseau : {e}")
         return [], {"raw_count": 0, "not_modified": False,
+                    "conditionnelle": conditionnelle,
                     "injoignable": True}, journal
 
     statut = getattr(parsed, "status", None)
@@ -730,6 +760,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # nouveaux validateurs, les réécrire à vide ferait retélécharger le
         # flux entier au prochain passage.
         return [], {"raw_count": 0, "not_modified": True,
+                    "url": feed["url"],
                     "etag": precedent.get("etag"),
                     "modified": precedent.get("modified")}, journal
 
@@ -749,6 +780,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         pas_un_flux = (statut is not None
                        and not (getattr(parsed, "version", "") or ""))
         return [], {"raw_count": 0, "not_modified": False,
+                    "conditionnelle": conditionnelle,
                     "http_status": statut, "redirect": redirige,
                     "not_a_feed": pas_un_flux,
                     "injoignable": statut is None}, journal
@@ -775,6 +807,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
                 f"  PAS UN FLUX — réponse HTTP {statut or '?'} reçue mais ce "
                 f"n'est pas du RSS/Atom ({cause})")
             return [], {"raw_count": 0, "not_modified": False,
+                        "conditionnelle": conditionnelle,
                         "http_status": statut, "redirect": redirige,
                         "not_a_feed": True}, journal
         journal.append(f"  flux {version} valide mais vide "
@@ -788,6 +821,10 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     nouvel_etat = {
         "raw_count": raw_count,
         "not_modified": False,
+        "conditionnelle": conditionnelle,
+        # Enregistrée avec les validateurs pour que le passage suivant
+        # sache à quelle adresse ils se rapportent. Voir plus haut.
+        "url": feed["url"],
         "http_status": statut,
         "redirect": redirige,
         "etag": getattr(parsed, "etag", None),
@@ -903,6 +940,52 @@ def chaines_par_hote(feeds, par_hote=PER_HOST_LIMIT):
     return chaines
 
 
+def merite_reprise(info):
+    """La source n'a rien rapporté, pour une raison qui peut ne pas durer.
+
+    Trois cas sont écartés parce qu'un second essai n'y changerait rien :
+
+      - un 304 : le serveur a répondu, il dit simplement que rien n'a bougé ;
+      - la source a rapporté des entrées : il n'y a rien à rattraper ;
+      - une redirection obtenue SANS validateurs : le second essai est alors
+        strictement la même requête, elle renverra la même réponse. C'est
+        l'URL dans FEEDS qu'il faut corriger, et la réessayer masquerait le
+        déménagement.
+
+    Une redirection obtenue AVEC validateurs, elle, se réessaie — et c'est le
+    cas le moins évident des trois.
+
+    IGN alternait « 20 entrées / 0 entrée » un passage sur deux, avec une
+    régularité de métronome : la série du 30/08/2026 se lit
+    20,0,20,0,20,0,20,0,20,0,20. Ce motif corrèle 12 fois sur 12 avec la
+    présence d'un etag enregistré au passage précédent, et la mécanique est
+    la nôtre : un passage réussit et enregistre un validateur ; au passage
+    suivant le serveur d'IGN, au lieu du 304 attendu, redirige vers autre
+    chose qu'un flux ; ce chemin d'échec n'enregistre aucun validateur, donc
+    le passage d'après repart sans et réussit. IGN n'était pas en panne un
+    passage sur deux — c'est notre propre requête conditionnelle qui la
+    cassait, et la reprise, inconditionnelle par construction, la répare.
+
+    Reste ce qui est réellement volatil : panne réseau, 4xx et 5xx, et la
+    page HTML servie à la place du flux — le déguisement habituel d'un
+    blocage anti-robot.
+
+    Le 404 est délibérément inclus, alors qu'il annonce « cette ressource
+    n'existe pas ». Le 30/08/2026 les deux chaînes YouTube de Rockstar ont
+    renvoyé 500 puis 404 sur deux passages, encadrés de 61 passages normaux
+    et suivis d'un retour à 200 un quart d'heure plus tard : YouTube
+    rationnait l'IP du runner. Un 404 isolé ne prouve donc rien ici. Deux
+    404 à quelques secondes d'intervalle, si — et c'est exactement ce que
+    la reprise transforme en preuve.
+    """
+    if info.get("not_modified") or info.get("raw_count"):
+        return False
+    if info.get("redirect") and not info.get("conditionnelle"):
+        return False
+    return bool(info.get("injoignable") or info.get("not_a_feed")
+                or (info.get("http_status") or 0) >= 400)
+
+
 def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
     """Interroge toutes les sources en parallèle. Renvoie {id: (items, info, journal)}.
 
@@ -915,9 +998,8 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
     `collecte` permet aux tests d'injecter une fausse récupération.
     """
     une = collecte or collect_feed_items
-    chaines = chaines_par_hote(feeds)
 
-    def traiter(chaine):
+    def traiter(chaine, etat):
         sortie = {}
         for rang, feed in enumerate(chaine):
             if rang:
@@ -925,7 +1007,7 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
                 # domaine sans marquer une pause.
                 time.sleep(HOST_PAUSE)
             try:
-                sortie[feed["id"]] = une(feed, decoded_cache, http_state)
+                sortie[feed["id"]] = une(feed, decoded_cache, etat)
             except Exception as e:
                 # Une source qui casse de façon imprévue ne doit pas emporter
                 # les 34 autres avec elle. En séquentiel, une exception non
@@ -935,10 +1017,42 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
                                        f"  échec inattendu : {e}"])
         return sortie
 
-    resultats = {}
-    with ThreadPoolExecutor(max_workers=min(FETCH_WORKERS, len(chaines) or 1)) as executor:
-        for bloc in executor.map(traiter, chaines):
-            resultats.update(bloc)
+    def passe(liste, etat):
+        chaines = chaines_par_hote(liste)
+        sortie = {}
+        with ThreadPoolExecutor(
+                max_workers=min(FETCH_WORKERS, len(chaines) or 1)) as executor:
+            for bloc in executor.map(traiter, chaines, [etat] * len(chaines)):
+                sortie.update(bloc)
+        return sortie
+
+    resultats = passe(feeds, http_state)
+
+    # Une seule reprise, après coup, et seulement pour les sources qui
+    # n'ont rien rapporté pour une raison passagère.
+    #
+    # Après coup et pas sur place : au moment où une source échoue, son
+    # hôte vient d'être sollicité et c'est le pire instant pour insister.
+    # Quand la première passe se termine, il s'est écoulé plus d'une
+    # minute — le serveur a eu le temps de respirer, et les 45 sources
+    # saines n'ont pas attendu.
+    #
+    # Sans validateurs : une source qui vient d'échouer est justement
+    # l'endroit où l'on veut une réponse complète et sans ambiguïté, pas un
+    # « rien n'a changé » portant sur un contenu qu'on n'a pas.
+    a_reprendre = [f for f in feeds
+                   if merite_reprise((resultats.get(f["id"]) or (None, {}, None))[1])]
+    if a_reprendre:
+        time.sleep(REPRISE_PAUSE)
+        for fid, (items, info, journal) in passe(a_reprendre, None).items():
+            premier = resultats.get(fid)
+            # Le second essai fait foi : il est plus récent et inconditionnel.
+            # Le journal du premier est conservé au-dessus, sinon la reprise
+            # effacerait la trace de la panne qu'elle vient de rattraper.
+            entete = premier[2] if premier else []
+            resultats[fid] = (items, info, entete + [
+                "  rien rapporté — seconde tentative, sans requête conditionnelle :"
+            ] + journal[1:])
     return resultats
 
 
@@ -1089,9 +1203,18 @@ SILENT_SOURCE_DAYS = 30
 MAX_ARTICLE_AGE_DAYS = 45
 
 # Nombre de passages consécutifs sans la moindre entrée brute avant de
-# signaler une source comme tombée. À 30 minutes par passage, 6 font trois
-# heures : assez pour écarter un 503 passager ou une coupure réseau, assez
-# peu pour ne pas laisser un flux mort passer la journée inaperçu.
+# signaler une source comme tombée.
+#
+# Attention à ce que ce chiffre veut dire : des PASSAGES, pas des heures.
+# Mesuré sur les 158 passages du 25 au 30/08/2026, l'écart entre deux
+# passages a une médiane de 30 min mais un p90 de 100 min et un pire cas de
+# 4 h 56 — le `schedule` de GitHub abandonne des exécutions. Six passages
+# valent donc 2 h 36 en médiane, 12 h au p90, et 19 h dans le pire cas
+# observé. Le 27/08 il n'y a eu que 9 passages dans la journée entière.
+#
+# Autrement dit le seuil est prudent la plupart du temps et beaucoup trop
+# lent un jour sur trois. Compter en heures plutôt qu'en passages
+# corrigerait ça ; ce n'est pas encore tranché.
 DEAD_SOURCE_RUNS = 6
 
 # Fichier où sont déposées les alertes de source, à destination de
@@ -1519,7 +1642,18 @@ def main():
     depart = time.time()
     resultats = fetch_all_feeds(FEEDS, decoded_cache, http_state)
     print(f"\n{len(FEEDS)} source(s) interrogée(s) en {time.time() - depart:.0f} s "
-          f"({FETCH_WORKERS} de front, {PER_HOST_LIMIT} max par domaine)\n")
+          f"({FETCH_WORKERS} de front, {PER_HOST_LIMIT} max par domaine)")
+
+    # Ce que la seconde tentative a rattrapé. Sans cette ligne la reprise
+    # serait invisible : on ne saurait ni qu'elle a servi, ni qu'elle sert
+    # trop souvent — et c'est le second cas qui devrait alerter.
+    reprises = [(fid, journal) for fid, (_, _, journal) in resultats.items()
+                if any("seconde tentative" in l for l in journal)]
+    if reprises:
+        sauvees = [fid for fid, _ in reprises if resultats[fid][1].get("raw_count")]
+        print(f"  ↻ {len(reprises)} source(s) reprise(s), {len(sauvees)} rattrapée(s)"
+              + (f" : {', '.join(sauvees)}" if sauvees else ""))
+    print()
 
     promus = []
     feed_infos, new_counts, inchanges = merge_results(
@@ -1632,7 +1766,9 @@ def main():
         # prochain passage. Conservés dans feed.json faute d'autre stockage
         # persistant : quelques centaines d'octets, négligeables.
         "feed_http_state": {
-            fid: {"etag": inf.get("etag"), "modified": inf.get("modified")}
+            fid: {"url": inf.get("url"),
+                  "etag": inf.get("etag"),
+                  "modified": inf.get("modified")}
             for fid, inf in feed_infos.items()
             if inf.get("etag") or inf.get("modified")
         },

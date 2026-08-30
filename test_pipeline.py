@@ -12,11 +12,13 @@ Volontairement écrit sans pytest : le workflow n'installe que les
 dépendances de production, et ces tests doivent pouvoir tourner partout.
 """
 
+import collections
 import json
 import os
 import sys
 import tempfile
 import time
+import types
 from datetime import datetime, timezone
 
 import feed_store
@@ -937,6 +939,165 @@ def test_source_qui_plante():
     check(resultats[sources[5]["id"]][0] != [], "les autres sources ont bien été récupérées")
 
 
+def test_reprise_apres_echec_passager():
+    print("\n== Une source qui échoue une fois est réessayée, une seule fois ==")
+    import fetch_feeds
+
+    sources = _fausses_sources()
+    capricieuse = sources[3]["id"]
+    appels = collections.Counter()
+    etats_vus = {}
+
+    def collecte(feed, decoded_cache=None, http_state=None):
+        appels[feed["id"]] += 1
+        etats_vus.setdefault(feed["id"], []).append(http_state)
+        if feed["id"] == capricieuse and appels[feed["id"]] == 1:
+            # Exactement le symptôme du 30/08/2026 : YouTube renvoie 500,
+            # puis répond normalement un instant plus tard.
+            return [], {"raw_count": 0, "not_modified": False,
+                        "http_status": 500, "not_a_feed": True}, [
+                f"[{feed['name']}] récupération...", "  PAS UN FLUX — HTTP 500"]
+        return _fausse_collecte(feed)
+
+    pause = fetch_feeds.REPRISE_PAUSE
+    fetch_feeds.REPRISE_PAUSE = 0
+    try:
+        resultats = fetch_feeds.fetch_all_feeds(
+            sources, {}, {"peu importe": {}}, collecte=collecte)
+    finally:
+        fetch_feeds.REPRISE_PAUSE = pause
+
+    items, info, journal = resultats[capricieuse]
+    check(appels[capricieuse] == 2, "la source en échec a été interrogée deux fois")
+    check(all(appels[f["id"]] == 1 for f in sources if f["id"] != capricieuse),
+          "aucune des sources saines n'a été redemandée")
+    check(items != [], "le second essai a rattrapé les articles")
+    check(info.get("raw_count") == 2, "c'est le résultat du second essai qui fait foi")
+    check(any("HTTP 500" in l for l in journal),
+          "le journal garde la trace du premier échec, sinon la panne rattrapée "
+          "disparaîtrait des logs")
+    check(any("seconde tentative" in l for l in journal),
+          "et dit explicitement qu'il y a eu une reprise")
+    check(etats_vus[capricieuse][1] is None,
+          "la reprise part sans validateurs : on veut une réponse complète, "
+          "pas un « rien n'a changé » portant sur un contenu qu'on n'a pas")
+
+    # Une source qui échoue TOUJOURS ne doit pas déclencher de troisième essai.
+    def toujours_cassee(feed, decoded_cache=None, http_state=None):
+        appels[feed["id"]] += 1
+        return [], {"raw_count": 0, "not_modified": False,
+                    "http_status": 404, "not_a_feed": True}, [f"[{feed['name']}] ko"]
+
+    appels.clear()
+    fetch_feeds.REPRISE_PAUSE = 0
+    try:
+        fetch_feeds.fetch_all_feeds(sources[:2], {}, {}, collecte=toujours_cassee)
+    finally:
+        fetch_feeds.REPRISE_PAUSE = pause
+    check(all(n == 2 for n in appels.values()),
+          "une source durablement cassée est réessayée une fois, pas en boucle")
+
+
+def test_reprise_choix_des_cas():
+    print("\n== Ce qui mérite une reprise, et ce qui n'en mérite pas ==")
+    import fetch_feeds
+
+    merite = fetch_feeds.merite_reprise
+    check(merite({"raw_count": 0, "http_status": 500}) is True,
+          "500 : erreur du serveur, réessayable")
+    check(merite({"raw_count": 0, "http_status": 404, "not_a_feed": True}) is True,
+          "404 : réessayé quand même — les deux chaînes YouTube de Rockstar en ont "
+          "renvoyé un le 30/08 entre 61 passages normaux et un retour à 200")
+    check(merite({"raw_count": 0, "http_status": 403, "not_a_feed": True}) is True,
+          "403 : blocage anti-robot, souvent intermittent")
+    check(merite({"raw_count": 0, "injoignable": True}) is True,
+          "panne réseau sans code HTTP : réessayable")
+    check(merite({"raw_count": 0, "http_status": 200, "not_a_feed": True}) is True,
+          "200 mais ce n'est pas un flux : page de blocage déguisée, réessayable")
+
+    check(merite({"raw_count": 0, "not_modified": True}) is False,
+          "304 : le serveur a répondu, rien à rattraper")
+    check(merite({"raw_count": 12, "http_status": 200}) is False,
+          "une source qui a rapporté des entrées n'est pas réessayée")
+    check(merite({"raw_count": 0, "http_status": 301,
+                  "redirect": "https://ailleurs.example/feed"}) is False,
+          "une redirection obtenue sans validateurs renverra la même au second "
+          "essai — c'est l'URL dans FEEDS qu'il faut corriger, et la réessayer "
+          "masquerait le déménagement")
+
+    # Le cas IGN. Une redirection obtenue AVEC validateurs n'est pas la même
+    # mesure : la reprise part sans eux, donc ce n'est pas la même requête.
+    # Sans cette nuance, IGN resterait cassée un passage sur deux — la règle
+    # « une redirection ne se réessaie pas » l'aurait écartée pile dans le
+    # cas où la reprise la répare.
+    check(merite({"raw_count": 0, "http_status": 302, "conditionnelle": True,
+                  "not_a_feed": True,
+                  "redirect": "https://www.ign.com/rss/articles/feed"}) is True,
+          "une redirection obtenue AVEC validateurs se réessaie : la reprise "
+          "est inconditionnelle, ce n'est pas la même requête")
+    check(merite({"raw_count": 0, "http_status": 200}) is False,
+          "un flux valide mais vide n'est pas une panne : ne pas le redemander "
+          "à chaque passage")
+    check(merite({"raw_count": 0, "http_status": 302, "conditionnelle": True,
+                  "redirect": "https://ailleurs.example/feed"}) is False,
+          "et une redirection qui aboutit à un flux valide mais vide reste "
+          "hors reprise, conditionnelle ou non")
+
+
+def test_validateurs_lies_a_leur_url():
+    print("\n== Les validateurs HTTP appartiennent à une URL, pas à une source ==")
+    import fetch_feeds
+
+    # Le piège : feed_http_state est indexé par identifiant de source. Quand
+    # l'URL change (Kotaku /rss -> /feed le 30/08/2026), l'etag de l'ancienne
+    # adresse serait envoyé à la nouvelle. Deux chemins d'un même site
+    # partagent souvent le même backend : le serveur peut répondre 304, et le
+    # robot noterait « inchangé » pour un flux qu'il n'a jamais lu.
+    feed = {"id": "kotaku", "name": "Kotaku", "url": "https://kotaku.com/feed",
+            "official": False}
+    vus = {}
+
+    def faux_parse(url, agent=None, etag=None, modified=None):
+        vus["etag"] = etag
+        vus["modified"] = modified
+        return types.SimpleNamespace(status=200, bozo=False, entries=[],
+                                     version="rss20", href=url,
+                                     etag="neuf", modified="demain")
+
+    vrai = fetch_feeds.feedparser.parse
+    fetch_feeds.feedparser.parse = faux_parse
+    try:
+        perime = {"kotaku": {"url": "https://kotaku.com/rss",
+                             "etag": "ancien", "modified": "hier"}}
+        _, info, journal = fetch_feeds.collect_feed_items(feed, {}, perime)
+        check(vus["etag"] is None and vus["modified"] is None,
+              "un validateur obtenu pour une autre adresse n'est pas renvoyé")
+        check(any("autre adresse" in l for l in journal),
+              "et le journal dit pourquoi le flux est redemandé en entier")
+        check(info.get("url") == feed["url"],
+              "l'état enregistré retient l'adresse à laquelle il se rapporte")
+
+        check(info.get("conditionnelle") is False,
+              "et note que la requête est partie sans validateurs — c'est ce que "
+              "la reprise lit pour décider si une redirection vaut un second essai")
+
+        a_jour = {"kotaku": {"url": "https://kotaku.com/feed",
+                             "etag": "bon", "modified": "hier"}}
+        _, info, _ = fetch_feeds.collect_feed_items(feed, {}, a_jour)
+        check(vus["etag"] == "bon",
+              "quand l'adresse correspond, la requête conditionnelle est bien faite")
+        check(info.get("conditionnelle") is True,
+              "et la réponse est marquée comme obtenue avec validateurs")
+
+        sans_url = {"kotaku": {"etag": "legs", "modified": "hier"}}
+        fetch_feeds.collect_feed_items(feed, {}, sans_url)
+        check(vus["etag"] is None,
+              "un état enregistré avant ce champ est écarté : un téléchargement "
+              "complet une fois vaut mieux qu'un 304 sur un contenu inconnu")
+    finally:
+        fetch_feeds.feedparser.parse = vrai
+
+
 def test_predecode_google_news():
     print("\n== Pré-décodage des liens Google News ==")
     import fetch_feeds
@@ -1556,6 +1717,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_chaines_par_hote,
            test_plafond_par_domaine, test_source_qui_plante,
            test_predecode_google_news,
+           test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
+           test_validateurs_lies_a_leur_url,
            test_timeout_reseau, test_source_cassee_vs_muette,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
