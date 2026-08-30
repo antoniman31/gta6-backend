@@ -1,0 +1,42 @@
+# Sonder des adresses candidates AVANT de les mettre dans FEEDS.
+#
+# Existe parce que l'environnement de développement n'a pas le même accès
+# réseau que le robot : certains domaines y sont injoignables alors qu'ils
+# répondent parfaitement depuis un runner GitHub. Deviner une URL au lieu
+# de la mesurer, c'est exactement ce qui a fait passer une redirection
+# permanente de Kotaku pour une panne intermittente.
+#
+# En lecture seule : aucune écriture dans docs/, aucun commit. Le mode
+# --sonde emprunte le chemin de récupération du robot, donc son verdict
+# est celui que le robot rendra au prochain passage.
+name: Sonder des flux candidats
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Adresses à sonder, séparées par des espaces"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sonde:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      # La saisie passe par l'environnement, jamais interpolée dans le
+      # texte du script : `${{ inputs.urls }}` écrit directement dans un
+      # `run:` laisse injecter des commandes shell arbitraires. Le
+      # découpage sur les espaces est ici voulu — c'est ce qui permet de
+      # sonder plusieurs adresses en un déclenchement.
+      - name: Sonder
+        env:
+          URLS: ${{ inputs.urls }}
+        run: python fetch_feeds.py --sonde $URLS

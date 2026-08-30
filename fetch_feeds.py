@@ -135,11 +135,15 @@ def echecs_decodage():
 # changement ici aussi pour garder les deux synchronisés.
 # ---------------------------------------------------------------------------
 FEEDS = [
-    {"id": "rockstar-en", "name": "Rockstar Games (officiel EN)", "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en&gl=US&ceid=US:en", "official": True},
-    {"id": "rockstar-fr", "name": "Rockstar Games (officiel FR)", "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr", "official": True, "lang": "fr"},
+    {"id": "rockstar-en", "name": "Rockstar Games (officiel EN)",
+     "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en&gl=US&ceid=US:en",
+     "official": True, "max_entrees": 100, "garder_les_archives": True},
+    {"id": "rockstar-fr", "name": "Rockstar Games (officiel FR)",
+     "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr",
+     "official": True, "lang": "fr", "max_entrees": 100, "garder_les_archives": True},
     {"id": "rockstar-announce", "name": "Rockstar Games (annonces)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True},
     {"id": "gta6-netflix", "name": "GTA 6 x Netflix", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True},
-    {"id": "take2-ir", "name": "Take-Two Investor Relations (officiel)", "url": "https://ir.take2games.com/rss/news-releases.xml?items=15", "official": True},
+    {"id": "take2-ir", "name": "Take-Two Investor Relations (officiel)", "url": "https://ir.take2games.com/rss/news-releases.xml?items=15", "official": True, "garder_les_archives": True},
     # Chaîne YouTube officielle de Rockstar.
     #
     # C'est LA source primaire : un trailer sort ici, la presse en parle dix
@@ -170,7 +174,12 @@ FEEDS = [
      # youtu.be par précaution : le flux Atom de YouTube donne des liens
      # complets youtube.com, mais un lien raccourci perdrait son statut.
      "official_domains": ["youtube.com", "youtu.be"],
-     "official_keywords_extra": ["trailer"]},
+     "official_keywords_extra": ["trailer"],
+     # Une bande-annonce de GTA 6 ne périme pas. Le flux ne porte de toute
+     # façon que 15 entrées, donc l'exemption ne peut pas déverser grand-
+     # chose — mais sans elle, la seule vidéo GTA 6 un peu ancienne des 15
+     # était écartée à chaque passage.
+     "garder_les_archives": True},
     {"id": "gnews-fr", "name": "Google News (FR)", "url": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
     {"id": "gnews-en", "name": "Google News (EN)", "url": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "pcgamer", "name": "PC Gamer", "url": "https://www.pcgamer.com/rss.xml", "official": False},
@@ -895,7 +904,19 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
 
     # Premier passage : on ne garde que les entrées qui passent le filtre par
     # mots-clés, sans encore toucher au réseau.
-    retenues = [entry for entry in parsed.entries[:30]
+    #
+    # Le plafond existe pour le coût, pas pour la pertinence : chaque entrée
+    # retenue d'un flux Google News demande un décodage de lien, et ces
+    # décodages pesaient 51 s sur un passage de 74 s. Trente convient à un
+    # flux d'actualité générale, où les entrées 30 à 100 sont du bruit.
+    #
+    # Mais les recherches sur site:rockstargames.com renvoient 100 entrées
+    # classées par PERTINENCE, pas par date : les 70 qu'on ignorait ne sont
+    # pas « les plus vieilles », ce sont celles d'après — et parmi elles, des
+    # pages de Rockstar qui n'apparaissaient nulle part dans l'app. D'où un
+    # plafond réglable source par source, relevé là où il fait perdre du
+    # contenu voulu, laissé à 30 partout ailleurs.
+    retenues = [entry for entry in parsed.entries[:feed.get("max_entrees", MAX_ENTREES)]
                 if passe_le_filtre(feed, entry.get("title", ""), entry.get("summary", ""))]
 
     # Deuxième passage : les liens Google News encore inconnus sont résolus
@@ -916,7 +937,17 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
 
         # Écarté AVANT le décodage Google News : inutile de payer une
         # seconde de décodage pour un article qu'on ne gardera pas.
-        if trop_vieux(date):
+        #
+        # Sauf pour les canaux de Rockstar eux-mêmes. Le garde-fou existe
+        # contre les recherches Google News qui déversent des archives
+        # classées par pertinence — huit articles de 2022 à 2024 annoncés
+        # comme neufs le 29/08/2026. Mais sur le fil de Rockstar, une vieille
+        # publication n'est pas du bruit : c'est précisément ce qu'on
+        # cherche. Le drapeau est posé source par source, jamais déduit de
+        # `official` : « Rockstar Games (annonces) » est officiel ET une
+        # recherche web généraliste, l'exempter rouvrirait le défaut.
+        archive = trop_vieux(date)
+        if archive and not feed.get("garder_les_archives"):
             vieux += 1
             continue
 
@@ -961,6 +992,12 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
             "source_link": source_link,
             "date": date,
             "source": feed["name"],
+            # Rapatrié alors qu'il date d'avant la fenêtre habituelle. Il
+            # entre bien dans l'historique, mais ne doit déclencher AUCUNE
+            # notification : annoncer d'un coup cinquante publications de
+            # 2025 ferait vibrer le téléphone cinquante fois pour des
+            # nouvelles vieilles d'un an.
+            **({"archive": True} if archive else {}),
             "official": is_official,
             "rockstarmag": statut_rockstarmag(real_link, feed),
             "specialist": feed.get("specialist_source", False),
@@ -1202,7 +1239,15 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
                 apres = 1 + len(deja.get("extraSources") or [])
                 # Strictement au franchissement : un sujet déjà majeur qui
                 # gagne une 6e puis une 7e reprise ne réalerte pas.
-                if promus is not None and avant < HOT_SOURCE_THRESHOLD <= apres:
+                #
+                # Et jamais sur une archive. Rapatrier d'un coup les vieilles
+                # publications de Rockstar fait gagner une reprise à des
+                # sujets déjà connus : sans cette garde, une vague de « sujet
+                # devenu majeur » partirait par la bande, alors même que les
+                # archives elles-mêmes sont importées en silence. Le sujet
+                # sera promu normalement à la prochaine VRAIE reprise.
+                if (promus is not None and not item.get("archive")
+                        and avant < HOT_SOURCE_THRESHOLD <= apres):
                     promus.append(deja)
     return feed_infos, new_counts, inchanges
 
@@ -1245,6 +1290,10 @@ MAX_HISTORY_SIZE = feed_store.MAX_HISTORY_SIZE
 # communiquent peu, il est normal qu'ils restent muets des semaines — mais
 # sans ce signal un flux réellement mort passerait inaperçu indéfiniment.
 SILENT_SOURCE_DAYS = 30
+
+# Nombre d'entrées lues par flux et par passage. Une source peut le relever
+# via `max_entrees` quand son flux en offre davantage et qu'on les veut.
+MAX_ENTREES = 30
 
 # Âge maximal d'un article JAMAIS VU pour être importé.
 #
@@ -1960,8 +2009,19 @@ def main():
     # donc "tout" serait considéré comme nouveau — ça enverrait des dizaines
     # de messages d'un coup au lieu de rester silencieux jusqu'à la vraie
     # actualité suivante.
+    #
+    # Les archives rapatriées sont retirées ici, et ici seulement : elles
+    # entrent bien dans l'historique et comptent dans « N nouveaux », mais
+    # elles ne doivent faire vibrer aucun téléphone. Une notification fait
+    # sortir le téléphone à tous les coups ; cinquante publications de 2025
+    # annoncées d'un bloc, ce sont cinquante dérangements pour du vieux.
+    a_annoncer = [i for i in newly_added if not i.get("archive")]
+    archives = len(newly_added) - len(a_annoncer)
+    if archives:
+        print(f"{archives} archive(s) rapatriée(s) en silence — ajoutées à "
+              f"l'historique, aucune notification")
     if not is_first_run:
-        write_new_items_file(newly_added)
+        write_new_items_file(a_annoncer)
     elif newly_added:
         print(f"Premier lancement : {len(newly_added)} article(s) initiaux, pas de notification envoyée.")
 
@@ -2038,8 +2098,14 @@ if __name__ == "__main__":
     # pour savoir ce qu'elle renvoie réellement avant de la mettre dans
     # FEEDS, ou pour comprendre pourquoi une source déjà en place se tait.
     if len(sys.argv) > 2 and sys.argv[1] == "--sonde":
-        sys.exit(sonde(sys.argv[2]))
+        # Plusieurs adresses d'affilée : chercher le flux natif d'un site
+        # veut dire essayer cinq ou six adresses candidates, et les lancer
+        # une par une depuis Actions coûtait un déclenchement par essai.
+        code = 0
+        for url in sys.argv[2:]:
+            code = sonde(url) or code
+        sys.exit(code)
     if len(sys.argv) > 1 and sys.argv[1] == "--sonde":
-        print("usage : python fetch_feeds.py --sonde <url>")
+        print("usage : python fetch_feeds.py --sonde <url> [url...]")
         sys.exit(2)
     main()
