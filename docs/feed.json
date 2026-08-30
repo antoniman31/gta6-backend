@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-30T22:32:11.183459+00:00",
-  "duration_seconds": 88.2,
+  "generated_at": "2026-08-30T22:55:17.925701+00:00",
+  "duration_seconds": 78.6,
   "decode_failures": 0,
-  "total_articles": 1361,
+  "total_articles": 1363,
   "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -353,18 +353,18 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T14:00:12+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-30T21:40:25+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 67,
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T17:49:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 1,
@@ -521,8 +521,8 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T14:00:12+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-30T22:08:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -535,7 +535,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T22:35:19+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-30T17:11:57+00:00",
       "days_since_last_article": 0,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 1,
@@ -833,7 +833,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T19:57:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -913,16 +913,16 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,0,100,100,100,100,100,100,100,99,99",
-    "rockstar-announce": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,0,100,100,100,100,100,100,100,99,99,100",
+    "rockstar-announce": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,0,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,0,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "92,92,0,100,100,100,100,100,100,100,100,100",
+    "gnews-fr": "92,0,92,92,92,92,92,92,92,92,92,92",
+    "gnews-en": "92,0,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "insider": "10,10,10",
+    "insider": "10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "vg247": "100,0,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100",
     "eurogamer": "100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,31 +950,31 @@
     "gameinformer": "50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,9,0,9,9,9,9,9,8,9,9,9",
-    "trueach": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "jdg": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "frandroid": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,0,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "31,31,0,27,27,28,27,27,27,27,27,27",
-    "pushsquare": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,0,100,100,100,100,100,100,100,100,100"
+    "xboxygen": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "9,0,9,9,9,9,9,8,9,9,9,9",
+    "trueach": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "jdg": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "84,0,84,84,84,84,84,84,84,84,84,84",
+    "arstechnica": "31,0,27,27,28,27,27,27,27,27,27,27",
+    "pushsquare": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "100,0,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"3d41630b4c8c00c6db27acff3ad68596\"",
-      "modified": "Sun, 30 Aug 2026 18:46:48 GMT"
+      "etag": "W/\"d131d070b31fb3557d127a42ac3ddf36\"",
+      "modified": "Sun, 30 Aug 2026 22:47:31 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"290c5-b4Clkr6Is+9n7CBxLOuvn0EkjTA\"",
+      "etag": "W/\"29241-EhRCYRYzpwZM7VBuwwL0n5IxLPA\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 22:30:52 GMT"
+      "modified": "Sun, 30 Aug 2026 22:50:26 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1049,6 +1049,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 5's Michael Actor Defends GTA 6 After Doubters Say Rockstar's Games Look Too Similar",
+      "link": "https://www.ign.com/articles/gta-5s-michael-actor-defends-gta-6-after-doubters-say-rockstars-games-look-too-similar",
+      "source_link": null,
+      "date": "2026-08-30T22:08:13+00:00",
+      "source": "IGN",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/08/30/gta-5-michael-gta-6-1788126987774.png",
+      "description": "Ned Luke, the actor behind Grand Theft Auto 5's Michael De Santa, said people who think Grand Theft Auto 6 looks too much like GTA 5 are \"out of their minds.\""
+    },
+    {
+      "title": "GTA 6's Netflix teaser drop finally shows the game in motion - The Business Standard",
+      "link": "https://www.tbsnews.net/splash/gta-6s-netflix-teaser-drop-finally-shows-game-motion-1526911",
+      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPZG9EdGZsN3NHSC1Tc2tMYmpJeWZNcXNSTjZrcWNYVnJZWGtrMGtQQl9namVBc3NrN2dyVDh0MzlGc081RWdmUTZOY3RPc2xQcy1LWTlLa2J6dWpzWEp3TW9XUnlteEx5RENIMFRidzdHdnA5QnJTd0ZXelk5dzRHNUZKaUFoTWx5YV9vdTA0MS1MSkJRRVHSAZsBQVVfeXFMTlBBSVBOcHJHZDJuTWY4WnIxZ2ZJVDlyU3FmcmZ0Z1Iza2liLWk3QUpHb2JjVlZsLVFRTHpWZVc3NUFkMmlRX0Ewb3ljZ0NyQ1d1YUpPTzZrMzlycXNIZGVYMUZ4S2pRbUxadGRUcEhRRUV3V3NvWVg3dGVBNHFQNjRuRjJHMTlFMG5iLXRWMl96NlRmbWQtNFdMQ28?oc=5",
+      "date": "2026-08-30T21:40:25+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.tbsnews.net/sites/default/files/styles/social_gpi_bKash_cash_apr26/public/images/2026/08/28/img_9562_0.jpeg",
+      "description": "GTA 6's Netflix teaser drop finally shows the game in motion&nbsp;&nbsp;The Business Standard"
+    },
     {
       "title": "GTA VI : CyberLeek aurait empoché 270 000 dollars avant de disparaître… mais l’affaire n’est peut-être pas terminée - GamerGen",
       "link": "https://gamergen.com/actualites/gta-vi-cyberleek-aurait-empoche-270-000-dollars-disparaitre-mais-affaire-est-peut-etre-terminee-342611-1/amp",
