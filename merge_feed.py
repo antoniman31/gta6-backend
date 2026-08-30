@@ -90,6 +90,11 @@ def main():
 
     # Les deux fichiers sont réécrits : republier le complet sans
     # régénérer l'allégé laisserait l'app sur un état périmé.
+    # Même contrôle qu'à l'écriture normale : une fusion ratée après
+    # conflit de push est précisément le moment où un fichier abîmé
+    # pourrait être publié.
+    feed_store.valide_avant_ecriture(merged, remote)
+
     feed_store.write_feed_pair(merged, out_path)
 
     print(f"[merge] local {len(ours.get('items', []))} article(s) + distant "

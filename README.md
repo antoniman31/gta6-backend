@@ -339,6 +339,18 @@ en deçà du parallélisme gagné.
   de push.
 - **`discord_notify.py`** — l'envoi Discord, appelé après publication.
 - **`weekly_digest.py`** — le récapitulatif du dimanche (voir plus bas).
+- **`audit_donnees.py`** — audit des **données publiées**, pas du code.
+  Cherche les incohérences que `test_pipeline.py` ne peut pas voir parce
+  qu'elles ne violent aucun invariant : une source supplémentaire dont le
+  lien est celui d'un AUTRE article, un titre en double resté après
+  déduplication, un article rattaché à une source disparue de `FEEDS`, une
+  date dans le futur, un statut « officiel » hors domaine officiel, le
+  fichier allégé désynchronisé du complet. Tourne en CI **sans `--strict`**
+  : ces anomalies sont des symptômes, parfois légitimes, et bloquer les PR
+  dessus rendrait l'outil insupportable. Il est là pour être lu.
+
+  Il existe parce que chacune de ces vérifications avait déjà été écrite à
+  la main un jour de panne, utilisée une fois, puis perdue.
 - **`dedupe_history.py`** — passage unique de nettoyage, gardé pour
   mémoire et reproductibilité. Voir « Récupération en parallèle » pour le
   bug qu'il a servi à réparer côté données.
@@ -389,7 +401,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **299
+qui permet de tester tout le pipeline sans sortir de la machine. **318
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -894,6 +906,49 @@ l'API GitHub : 60 requêtes/h par adresse IP).
   GitHub — un rechargement lancé juste après un déploiement peut encore
   servir l'ancienne version. Le bandeau aide justement là : il n'apparaît
   qu'une fois le CDN réellement basculé.
+
+## Diagnostiquer, sans réécrire l'outil à chaque fois
+
+Deux outils sont nés d'une panne, ont servi une fois et ont été jetés — puis
+il a fallu les regretter. Ils vivent désormais **dans** le projet, à
+l'endroit qui les empêche de diverger ou de disparaître.
+
+- **`python fetch_feeds.py --sonde <url>`** — dit ce qu'une URL renvoie
+  réellement, sans rien écrire. C'est un **mode du robot**, pas un script à
+  côté : elle emprunte `collect_feed_items`, donc le même agent utilisateur,
+  le même délai maximal, le même filtre, les mêmes verdicts. Elle ne peut
+  pas annoncer autre chose que ce que le robot verra au prochain passage.
+
+  Cinq verdicts, là où « 0 entrée » ne disait rien : **OK**, **VIDE** (flux
+  valide sans article), **PAS UN FLUX** (page de blocage, ou URL qui ne sert
+  plus de RSS), **INJOIGNABLE** (aucune réponse HTTP), **INCHANGÉ** (304).
+
+  **Et elle dit vers où le flux a déménagé.** feedparser suit les
+  redirections et expose l'adresse finale : quand elle diffère de l'URL
+  demandée, c'est exactement ce qu'il faut recopier dans `FEEDS`. Sans cette
+  ligne, une redirection vers une page d'accueil ne produit qu'un code 301
+  et « 0 entrée » — on sait que ça a bougé, pas où. C'est arrivé le
+  30/08/2026 sur IGN (302) et Kotaku (301), et il a fallu un passage de plus
+  pour l'apprendre.
+
+  La distinction INJOIGNABLE / PAS UN FLUX n'est pas cosmétique :
+  `feedparser` range une panne réseau au même endroit qu'un XML mal formé.
+  Les confondre revient à accuser l'URL quand c'est le réseau qui n'a pas
+  répondu.
+- **`python audit_donnees.py`** — voir la liste des scripts plus haut.
+
+**Détecter la dégradation, pas seulement la mort.** Une source qui passe de
+30 entrées à 3 reste « ok » : elle répond, elle renvoie quelque chose. Elle a
+pourtant perdu 90 % de sa couverture, et rien ne le signalait. Le volume des
+**12 derniers passages** est donc conservé par source
+(`sources_entries_history`, en chaîne compacte `"20,20,18"` — une liste JSON
+mettrait une ligne par valeur dans un fichier committé toutes les 30
+minutes). Une source est dite en baisse quand ses **3 derniers passages**
+tombent sous **35 %** de sa médiane habituelle, et seulement si cette
+médiane atteint **8 entrées** : sans ce plancher, une petite source qui
+varie normalement déclencherait à tout bout de champ. Les réponses 304 ne
+sont pas empilées — elles ne disent rien du volume, et les compter comme des
+zéros ferait chuter la référence de toutes les sources bien élevées.
 
 ## Notifications — historique des deux systèmes testés
 

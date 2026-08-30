@@ -3315,6 +3315,14 @@ function majLigneRun(data){
       cassees.map(s => escapeHtml(s.name)).join(", ") + "</span>");
   }
 
+  // Le signal le plus discret des trois : la source répond, elle n'est ni
+  // muette ni cassée, mais elle rapporte une fraction de son habitude.
+  // Invisible autrement.
+  const baisse = Object.keys(data.sources_declining || {}).length;
+  if(baisse){
+    morceaux.push('<span class="alerte">' + baisse + " en forte baisse</span>");
+  }
+
   // Zéro en régime normal : on ne l'affiche que si c'est arrivé, sinon la
   // ligne se remplirait d'une bonne nouvelle sans intérêt.
   if(data.decode_failures){

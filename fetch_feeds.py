@@ -23,6 +23,7 @@ contacter 34 flux + des proxys CORS à chaque vérification.
 import json
 import re
 import socket
+import sys
 import threading
 import time
 import os
@@ -704,9 +705,25 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         )
     except Exception as e:
         journal.append(f"  échec réseau : {e}")
-        return [], {"raw_count": 0, "not_modified": False}, journal
+        return [], {"raw_count": 0, "not_modified": False,
+                    "injoignable": True}, journal
 
     statut = getattr(parsed, "status", None)
+
+    # Où la requête a réellement abouti. feedparser suit les redirections et
+    # expose l'adresse finale dans `href` : quand elle diffère de l'URL
+    # demandée, c'est le flux qui a déménagé, et cette adresse est
+    # exactement ce qu'il faut mettre dans FEEDS.
+    #
+    # Sans ça, une redirection vers une page d'accueil produit « 0 entrée »
+    # et un code 301/302 — on sait que ça a bougé, pas vers où. Constaté le
+    # 30/08/2026 sur IGN (302) et Kotaku (301), deux sources qu'il a fallu
+    # laisser muettes le temps d'un passage de plus faute de cette ligne.
+    arrivee = getattr(parsed, "href", None)
+    redirige = arrivee if arrivee and arrivee != feed["url"] else None
+    if redirige:
+        journal.append(f"  redirigé vers {redirige}")
+
     if statut == 304:
         journal.append("  inchangé depuis la dernière fois (304), rien à retélécharger")
         # On renvoie l'état précédent tel quel : un 304 ne fournit pas de
@@ -723,9 +740,18 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # flux du tout (page HTML servie en text/html, le plus souvent). Un
         # flux réellement malformé, lui, garde sa version — c'est une source
         # cassée d'une autre nature, à ne pas confondre.
+        #
+        # `statut is not None` est indispensable : feedparser range AUSSI les
+        # pannes réseau dans bozo, sans code HTTP. Sans cette condition, un
+        # site injoignable était annoncé « ce n'est pas un flux » — un
+        # diagnostic faux, et le pire genre : il accuse l'URL alors que
+        # c'est le réseau qui n'a pas répondu.
+        pas_un_flux = (statut is not None
+                       and not (getattr(parsed, "version", "") or ""))
         return [], {"raw_count": 0, "not_modified": False,
-                    "http_status": statut,
-                    "not_a_feed": not (getattr(parsed, "version", "") or "")}, journal
+                    "http_status": statut, "redirect": redirige,
+                    "not_a_feed": pas_un_flux,
+                    "injoignable": statut is None}, journal
 
     # Un flux vide ne dit pas POURQUOI il est vide, et feedparser ne aide
     # pas : il avale une page HTML sans protester — bozo reste faux et la
@@ -742,12 +768,15 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     if not parsed.entries:
         version = getattr(parsed, "version", "") or ""
         if not version:
+            cause = ("redirigé vers une page qui n'est pas un flux — "
+                     "corriger l'URL dans FEEDS" if redirige
+                     else "page de blocage ? URL devenue une page web ?")
             journal.append(
                 f"  PAS UN FLUX — réponse HTTP {statut or '?'} reçue mais ce "
-                f"n'est pas du RSS/Atom (page de blocage ? URL devenue une "
-                f"page web ?)")
+                f"n'est pas du RSS/Atom ({cause})")
             return [], {"raw_count": 0, "not_modified": False,
-                        "http_status": statut, "not_a_feed": True}, journal
+                        "http_status": statut, "redirect": redirige,
+                        "not_a_feed": True}, journal
         journal.append(f"  flux {version} valide mais vide "
                        f"(HTTP {statut or '?'}) — le site ne publie rien")
 
@@ -760,6 +789,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         "raw_count": raw_count,
         "not_modified": False,
         "http_status": statut,
+        "redirect": redirige,
         "etag": getattr(parsed, "etag", None),
         "modified": getattr(parsed, "modified", None),
     }
@@ -1101,6 +1131,78 @@ def ne_rapporte_rien(source):
     return source.get("status") in STATUTS_SANS_ARTICLE
 
 
+# Nombre de passages conservés par source pour juger de ce qui est
+# "normal". 12 passages = 6 heures : assez pour établir un régime de
+# croisière, assez court pour qu'un site qui change de rythme ne traîne pas
+# une référence obsolète pendant des jours.
+HISTORIQUE_PASSAGES = 12
+
+# Une source est "en baisse" quand ses derniers passages tombent nettement
+# sous son propre régime. Seuils volontairement prudents : on cherche une
+# chute franche, pas une variation de rythme éditorial.
+BAISSE_RATIO = 0.35        # moins de 35 % de son habitude
+BAISSE_PASSAGES = 3        # confirmée sur 3 passages de suite
+BAISSE_PLANCHER = 8        # et seulement si l'habitude est assez fournie
+
+
+def _serie(texte):
+    """Lit une série stockée sous forme « 20,20,18,0 »."""
+    valeurs = []
+    for morceau in (texte or "").split(","):
+        morceau = morceau.strip()
+        if morceau.lstrip("-").isdigit():
+            valeurs.append(int(morceau))
+    return valeurs
+
+
+def maj_historique_entrees(feed_infos, precedent):
+    """Empile le nombre d'entrées de ce passage, par source.
+
+    Stocké en chaîne « 20,20,18 » et non en liste : feed.json est écrit
+    indenté et committé toutes les 30 minutes, une liste JSON y mettrait une
+    ligne par valeur — 600 lignes de bruit dans chaque diff. Une chaîne
+    tient sur une ligne par source et se lit tout aussi bien.
+
+    Les réponses 304 ne sont pas empilées : elles ne disent rien du volume
+    du flux, seulement qu'il n'a pas changé. Les compter comme des zéros
+    ferait chuter la référence de toutes les sources bien élevées.
+    """
+    series = {}
+    for fid, info in feed_infos.items():
+        passe = _serie((precedent or {}).get(fid))
+        if not info.get("not_modified"):
+            passe.append(int(info.get("raw_count", 0) or 0))
+        passe = passe[-HISTORIQUE_PASSAGES:]
+        if passe:
+            series[fid] = ",".join(str(v) for v in passe)
+    return series
+
+
+def sources_en_baisse(series):
+    """Sources dont le volume s'est effondré sans pour autant tomber à zéro.
+
+    Le cas que rien ne détectait : une source qui passe de 30 entrées à 3
+    reste « ok » — elle répond, elle renvoie quelque chose. Elle a pourtant
+    perdu 90 % de sa couverture, et personne ne le voit avant de comparer
+    deux journaux à la main.
+    """
+    en_baisse = {}
+    for fid, texte in (series or {}).items():
+        valeurs = _serie(texte)
+        if len(valeurs) < BAISSE_PASSAGES + 2:
+            continue
+        recents = valeurs[-BAISSE_PASSAGES:]
+        avant = sorted(valeurs[:-BAISSE_PASSAGES])
+        if not avant:
+            continue
+        habituel = avant[len(avant) // 2]      # médiane, insensible à un pic
+        if habituel < BAISSE_PLANCHER:
+            continue
+        if all(v <= habituel * BAISSE_RATIO for v in recents):
+            en_baisse[fid] = {"habituel": habituel, "recents": recents}
+    return en_baisse
+
+
 def suivre_sources_muettes(health, compteurs_precedents):
     """Compte les passages consécutifs pendant lesquels chaque source est muette.
 
@@ -1332,6 +1434,9 @@ def build_sources_health(all_items, feed_infos, new_counts):
             # Code HTTP du dernier passage, pour lire un 403 sans ouvrir
             # les logs du run. None quand la requête n'a pas abouti.
             "http_status": info.get("http_status"),
+            # Adresse d'arrivée si le flux a déménagé — l'URL à recopier
+            # dans FEEDS pour réparer la source.
+            "redirect": info.get("redirect"),
             "not_modified": bool(info.get("not_modified")),
             "new_this_run": new_counts.get(feed["id"], 0),
             "last_article": last.isoformat() if last and last != feed_store.DATE_FLOOR else None,
@@ -1346,6 +1451,8 @@ def build_sources_health(all_items, feed_infos, new_counts):
         for h in muettes:
             if h["status"] == "cassee":
                 detail = f"réponse HTTP {h.get('http_status') or '?'} mais ce n'est pas un flux"
+                if h.get("redirect"):
+                    detail += f"\n      redirigé vers : {h['redirect']}"
             else:
                 detail = "flux vide"
             print(f"    - {h['name']} — {detail}")
@@ -1370,6 +1477,7 @@ def main():
     # Validateurs HTTP du passage précédent, par source.
     http_state = stored.get("feed_http_state", {}) or {}
     silence_precedent = stored.get("sources_silence", {}) or {}
+    entrees_precedentes = stored.get("sources_entries_history", {}) or {}
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = recheck_official_status(existing_items)
@@ -1467,6 +1575,23 @@ def main():
     duree = round(time.monotonic() - debut_passage, 1)
     rates_decodage = echecs_decodage()
 
+    historique_entrees = maj_historique_entrees(feed_infos, entrees_precedentes)
+    # Une source déjà muette ou cassée est signalée par ailleurs : la
+    # rapporter aussi « en baisse » dirait deux fois la même chose et
+    # noierait le signal utile, qui est la source encore vivante mais
+    # amputée.
+    deja_signalees = {h["id"] for h in sante if ne_rapporte_rien(h)}
+    en_baisse = {fid: d for fid, d in sources_en_baisse(historique_entrees).items()
+                 if fid not in deja_signalees}
+    if en_baisse:
+        noms = {f["id"]: f["name"] for f in FEEDS}
+        print(f"\n⚠ {len(en_baisse)} source(s) en forte baisse — elles "
+              f"répondent, mais rapportent bien moins qu'à l'habitude :")
+        for fid, d in en_baisse.items():
+            recents = "/".join(str(v) for v in d["recents"])
+            print(f"    - {noms.get(fid, fid)} : {recents} entrées "
+                  f"contre {d['habituel']} habituellement")
+
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         # Durée réelle du passage. Publiée pour que l'app puisse dire l'état
@@ -1497,6 +1622,12 @@ def main():
         # Compteurs de passages muets consécutifs, uniquement pour les
         # sources en difficulté. Sert à n'alerter qu'une fois par panne.
         "sources_silence": silence,
+        # Volume des derniers passages, par source, en chaîne compacte.
+        # Permet de repérer une source qui se dégrade sans mourir — invisible
+        # autrement, puisqu'elle continue de répondre.
+        "sources_entries_history": historique_entrees,
+        # Sources dont le volume s'est effondré, avec leur régime habituel.
+        "sources_declining": {fid: d["habituel"] for fid, d in en_baisse.items()},
         # Validateurs HTTP par source, pour la requête conditionnelle du
         # prochain passage. Conservés dans feed.json faute d'autre stockage
         # persistant : quelques centaines d'octets, négligeables.
@@ -1511,6 +1642,13 @@ def main():
         "vapid_public_key": VAPID_PUBLIC_KEY,
         "items": all_items,
     }
+
+    # Dernier rempart avant publication. `stored` est l'état d'avant ce
+    # passage : il sert de repère pour distinguer une purge légitime d'une
+    # perte massive. Rien n'est écrit si le contrôle échoue — l'ancien
+    # feed.json reste servi et le job passe en échec, ce qui déclenche le
+    # signalement au service de surveillance.
+    feed_store.valide_avant_ecriture(output, stored)
 
     nb_allege = feed_store.write_feed_pair(output)
     print(f"Fichier allégé écrit : {nb_allege} article(s) dans docs/feed-recent.json")
@@ -1534,5 +1672,80 @@ def main():
         print(f"Premier lancement : {len(newly_added)} article(s) initiaux, pas de notification envoyée.")
 
 
+def sonde(url):
+    """Interroge une URL et dit ce qu'elle renvoie, sans rien écrire.
+
+    Volontairement un MODE du robot et non un script à côté. La version
+    précédente était un fichier séparé (sonde_flux.py) : elle a servi à
+    choisir les remplaçants de rss.app, a été supprimée une fois le travail
+    fait, et il a fallu la regretter une heure plus tard quand IGN et Kotaku
+    se sont tues. Un diagnostic qui vit à côté du code qu'il diagnostique
+    finit toujours par en diverger, ou par disparaître.
+
+    Ici, elle emprunte exactement le chemin de récupération du robot :
+    collect_feed_items, donc le même agent utilisateur, le même timeout, le
+    même filtre, les mêmes verdicts. Elle ne peut pas dire autre chose que
+    ce que le robot verra au prochain passage.
+
+        python fetch_feeds.py --sonde https://exemple.com/feed
+    """
+    # Un feed jetable, sans identifiant réel : rien n'est lu ni écrit dans
+    # FEEDS ni dans docs/.
+    faux = {"id": "__sonde__", "name": "sonde", "url": url, "official": False}
+    items, info, journal = collect_feed_items(faux)
+
+    print(f"\n  {url}")
+    for ligne in journal[1:]:
+        print("  " + ligne.rstrip())
+
+    statut = info.get("http_status")
+    print(f"\n  code HTTP        : {statut if statut is not None else 'aucune réponse'}")
+    if info.get("redirect"):
+        print(f"  redirigé vers    : {info['redirect']}")
+    print(f"  entrées brutes   : {info.get('raw_count', 0)}")
+    print(f"  après filtre     : {len(items)}")
+    if info.get("not_modified"):
+        print("  verdict          : INCHANGÉ (304) — le flux vit, rien de neuf")
+    elif info.get("injoignable"):
+        print("  verdict          : INJOIGNABLE — aucune réponse HTTP "
+              "(DNS, TLS, réseau, ou serveur muet)")
+    elif info.get("not_a_feed"):
+        print("  verdict          : PAS UN FLUX — page de blocage, ou URL qui "
+              "ne sert plus de RSS")
+    elif info.get("raw_count", 0) == 0:
+        print("  verdict          : VIDE — flux valide, mais aucun article")
+    else:
+        print("  verdict          : OK")
+
+    ages = [jours_depuis(i.get("date")) for i in items]
+    ages = [a for a in ages if a is not None]
+    if ages:
+        print(f"  plus récent      : {min(ages)} j")
+    elif items:
+        print("  plus récent      : dates illisibles")
+
+    for i in items[:3]:
+        print(f"     · {i['title'][:70]}")
+    return 0 if items or info.get("not_modified") else 1
+
+
+def jours_depuis(date_iso):
+    """Âge d'un article en jours, ou None si la date est inexploitable."""
+    if not date_iso:
+        return None
+    quand = feed_store.parse_date_key(date_iso)
+    if quand == feed_store.DATE_FLOOR:
+        return None
+    return (datetime.now(timezone.utc) - quand).days
+
+
 if __name__ == "__main__":
+    # Un seul mode alternatif, et il est en lecture seule : sonder une URL
+    # pour savoir ce qu'elle renvoie réellement avant de la mettre dans
+    # FEEDS, ou pour comprendre pourquoi une source déjà en place se tait.
+    if len(sys.argv) > 2 and sys.argv[1] == "--sonde":
+        sys.exit(sonde(sys.argv[2]))
+    if len(sys.argv) > 1 and sys.argv[1] == "--sonde":
+        print("usage : python fetch_feeds.py --sonde <url>")
+        sys.exit(2)
     main()
