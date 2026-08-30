@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-30T00:31:54.529956+00:00",
-  "total_articles": 1307,
+  "generated_at": "2026-08-30T00:37:58.460924+00:00",
+  "total_articles": 1308,
   "new_this_run": 1,
   "hot_count": 2,
   "hot_threshold": 3,
@@ -351,8 +351,8 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "not_modified": true,
+      "entries_fetched": 10,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 66,
@@ -371,9 +371,9 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 92,
+      "entries_fetched": 100,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-29T23:13:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -481,12 +481,12 @@
     {
       "id": "ign",
       "name": "IGN",
-      "entries_fetched": 0,
+      "entries_fetched": 20,
       "not_modified": false,
       "new_this_run": 0,
-      "last_article": "2026-08-28T22:47:30+00:00",
-      "days_since_last_article": 1,
-      "status": "muette"
+      "last_article": "2026-08-29T22:33:20+00:00",
+      "days_since_last_article": 0,
+      "status": "ok"
     },
     {
       "id": "gamespot",
@@ -563,7 +563,7 @@
       "name": "GTA BOOM",
       "entries_fetched": 30,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-30T00:21:07+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -591,8 +591,8 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "not_modified": false,
+      "entries_fetched": 0,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 0,
@@ -781,7 +781,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 34,
+      "entries_fetched": 33,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": null,
@@ -810,13 +810,12 @@
     }
   ],
   "sources_silence": {
-    "ign": 3,
-    "kotaku": 9
+    "kotaku": 10
   },
   "feed_http_state": {
     "take2-ir": {
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "etag": "W/\"d1bd5399e62f12a7c37d00201da2c715\"",
@@ -835,7 +834,7 @@
       "modified": "Sat, 29 Aug 2026 13:20:16 GMT"
     },
     "ign": {
-      "etag": "W/\"27dc8-rEWcRCdijKX5sQZnBZDbfISN/yM\"",
+      "etag": "W/\"27fcc-yTLfbnkfcYV5NOkFFdJNshAOPCk\"",
       "modified": null
     },
     "kotaku": {
@@ -852,7 +851,7 @@
     },
     "gtaboom": {
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 00:26:29 GMT"
+      "modified": "Sun, 30 Aug 2026 00:31:55 GMT"
     },
     "ginjfo": {
       "etag": "\"1e36da6e5c29c8453b8a536212043c3a\"",
@@ -931,7 +930,13 @@
       "specialist": true,
       "lang": null,
       "image": "https://sm.ign.com/t/ign_pk/news/g/gta-6-will/gta-6-will-have-no-microtransactions-or-generative-ai-at-lau_cbgu.1200.jpg",
-      "description": "GTA 6 Will Have No Microtransactions or Generative AI at Launch, Rockstar Says&nbsp;&nbsp;IGN Pakistan"
+      "description": "GTA 6 Will Have No Microtransactions or Generative AI at Launch, Rockstar Says&nbsp;&nbsp;IGN Pakistan",
+      "extraSources": [
+        {
+          "source": "IGN",
+          "link": "https://www.ign.com/articles/gta-6-will-have-no-microtransactions-or-generative-ai-at-launch-rockstar-says"
+        }
+      ]
     },
     {
       "title": "The Wildest Video Game Budgets Can't Hold A Candle To GTA 6 - Engadget",
@@ -945,6 +950,19 @@
       "lang": null,
       "image": "https://www.engadget.com/img/gallery/the-wildest-video-game-budgets-cant-hold-a-candle-to-gta-6/l-intro-1787978932.jpg",
       "description": "The Wildest Video Game Budgets Can't Hold A Candle To GTA 6&nbsp;&nbsp;Engadget"
+    },
+    {
+      "title": "Jeux vidéo: «GTA VI», une stratégie marketing qui marche et déjà plus de 4 millions de précommandes - RFI",
+      "link": "https://www.rfi.fr/fr/%C3%A9conomie/20260829-jeux-vid%C3%A9o-gta-vi-une-strat%C3%A9gie-marketing-qui-marche-et-d%C3%A9j%C3%A0-plus-de-4-millions-de-pr%C3%A9commandes",
+      "source_link": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxNaWVHcTdxOWdLZDhlQ3FBNmloaEgxdVc4VHU0WEY5X2xXb2RPYXBFSkx6cG9MQkREWXMwbU56SVZEZXM1V2NBVlBtVUtqVE54SlFodXRBelFCSE1BUEtHMVVXSGswaUJlQ3FJcHhHcnRJdm82c0ZXNEF2Q2VEcHlXSmp1aG9mc2VoR2FnTGcxUEVLaHZ0VWkzeTAzNE1vSEhYWGpaWW5vbEUyNFM1OFJJd3NJRktWdFlxeko4d2VQMk95SnpYQjF2OUNrNy1YNml4RVlQSnVIS3ZqdWdZZEgzZ19RcWFmakU1QzhDTXk2eThjbVJTYjRwNg?oc=5",
+      "date": "2026-08-29T20:53:25+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Jeux vidéo: «GTA VI», une stratégie marketing qui marche et déjà plus de 4 millions de précommandes&nbsp;&nbsp;RFI"
     },
     {
       "title": "Phil Collins Returns To Vice City With An Ominous Song Choice For Jason And Lucia",
@@ -4768,19 +4786,6 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/h2cyXUQXPLehh9u6LFZ8vT-1280-80.jpg",
       "description": "Tune into Lil Wayne, Birdman, and Phil Collins radio."
-    },
-    {
-      "title": "[ANALYSE] GTA 6 : UN LARGE APERCU (LES PREMIERS DETAILS AVEC UNE ANALYSE À CHAUD)",
-      "link": "https://www.youtube.com/watch?v=BZMf2IdiqmU",
-      "source_link": null,
-      "date": "2026-08-28T00:31:42+00:00",
-      "source": "RockstarMag (YouTube)",
-      "official": false,
-      "rockstarmag": true,
-      "specialist": true,
-      "lang": "fr",
-      "image": "https://www.youtube.com/v/BZMf2IdiqmU?version=3",
-      "description": "Découvrez dès maintenant notre première analyse à chaud de la présentation de GTA 6 : Un Large Aperçu. Comme toujours, une analyse \"ultime\" arrivera dans les prochains jours ! \n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.facebook.com/"
     }
   ],
   "partial": true,
