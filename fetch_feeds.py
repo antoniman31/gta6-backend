@@ -514,6 +514,98 @@ def _sans_nombres(titre):
     return re.sub(r"\s+", " ", re.sub(r"\d+", "", normalize_title(titre))).strip()
 
 
+# Mots présents dans presque TOUS les titres du fil : ils ne distinguent
+# rien, et les compter fait ressembler entre eux des articles qui n'ont
+# rien à voir. Le nom du jeu sous ses graphies courantes, et le nom du
+# studio qui sert de suffixe à quantité de pages (« … - Rockstar Games »).
+#
+# Volontairement court. Chaque mot retiré rapproche TOUS les titres entre
+# eux ; une liste bavarde ferait fusionner des articles distincts.
+_MOTS_SANS_VALEUR = {"grand", "theft", "auto", "vi", "6", "gta", "gta6",
+                     "gtavi", "rockstar", "games"}
+
+
+# Le segment final « … - Kotaku », « … | IGN France », « … - Rockstar
+# Games » : 60 % des titres du fil en portent un. C'est le nom du média,
+# pas le sujet, et il fait diverger deux reprises du même article.
+_SUFFIXE_MEDIA = re.compile(r"\s+[-–—|]\s+([^-–—|]{2,28})$")
+
+# Un titre peut finir par autre chose qu'un nom de média : « GTA 6 : UN
+# LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE ! ». Couper à l'aveugle ces
+# suffixes-là a fait PERDRE 2 fusions justes sur les 500 derniers titres.
+# On ne coupe donc qu'un suffixe qui REVIENT : un nom de média apparaît des
+# dizaines de fois dans l'historique (mashable 30, kotaku 28, ign france
+# 21…), la fin d'un vrai titre n'apparaît qu'une fois. La liste s'apprend
+# donc toute seule sur le fil, et accueille sans rien coder les sources
+# ajoutées plus tard.
+SUFFIXE_MEDIA_MINIMUM = 3
+
+# Sauf ceux-là, qui sont AUSSI des mots du jeu. « Vice » est un média
+# (vice.com, 10 titres) mais Vice City est la ville de GTA 6 : un titre
+# finissant par « - Vice City » doit rester entier.
+_SUFFIXES_PROTEGES = {"vice city", "vice city fm"}
+
+# Appris au chargement de l'historique par memorise_suffixes_medias().
+# Vide par défaut : sans historique on ne coupe rien, ce qui est le
+# comportement d'avant.
+_SUFFIXES_MEDIAS = frozenset()
+
+
+def apprend_suffixes_medias(items, minimum=SUFFIXE_MEDIA_MINIMUM):
+    """Les fins de titre assez fréquentes pour être des noms de média."""
+    vus = {}
+    for item in items:
+        trouve = _SUFFIXE_MEDIA.search(item.get("title") or "")
+        if trouve:
+            cle = normalize_title(trouve.group(1))
+            if cle and cle not in _SUFFIXES_PROTEGES:
+                vus[cle] = vus.get(cle, 0) + 1
+    return frozenset(cle for cle, n in vus.items() if n >= minimum)
+
+
+def memorise_suffixes_medias(items, minimum=SUFFIXE_MEDIA_MINIMUM):
+    """Apprend la liste et la retient pour toutes les comparaisons du run."""
+    global _SUFFIXES_MEDIAS
+    _SUFFIXES_MEDIAS = apprend_suffixes_medias(items, minimum)
+    return _SUFFIXES_MEDIAS
+
+
+def sans_suffixe_media(titre):
+    """Le titre sans son « - Nom du média » final, s'il en a un de connu."""
+    trouve = _SUFFIXE_MEDIA.search(titre or "")
+    if trouve and normalize_title(trouve.group(1)) in _SUFFIXES_MEDIAS:
+        return titre[:trouve.start()]
+    return titre
+
+
+def titre_comparable(titre):
+    """Le titre débarrassé de ce que tous les articles ont en commun.
+
+    Comparer les titres entiers donnait un score trompeur dans les deux
+    sens, mesuré sur les 500 articles les plus récents :
+
+    - « Grand Theft Auto VI - Rockstar Games » n'est QUE le nom du jeu et
+      celui du studio. Il atteignait 0,750 avec « … Trailer 1 » — pile le
+      seuil — et se comportait en aimant. Le 30/08/2026 il a absorbé le
+      Trailer 1 et fait PERDRE le Trailer 2 derrière lui. Nettoyé, il ne
+      reste rien de ce titre : il ne peut plus rien attirer.
+
+    - à l'inverse, « 20+ New GTA 6 Screenshots Released » et « New Grand
+      Theft Auto 6 Screenshots Revealed » restaient sous le seuil (0,71)
+      parce que les deux graphies du nom du jeu comptaient comme une
+      différence. C'est le MÊME article, montré deux fois dans le fil.
+
+    Nettoyage : 14 paires rapprochées contre 9, sur les mêmes 500 titres.
+
+    S'y ajoute le retrait du « - Nom du média » final (voir
+    sans_suffixe_media) : 7 paires de plus, aucune perdue, sur ces mêmes
+    500 titres — quatre reprises du même article y étaient affichées
+    séparément parce que seul le suffixe les distinguait.
+    """
+    return " ".join(m for m in normalize_title(sans_suffixe_media(titre)).split()
+                    if m not in _MOTS_SANS_VALEUR)
+
+
 def titres_dune_meme_serie(a, b):
     """Deux titres identiques À LEUR NUMÉRO PRÈS — donc deux contenus distincts.
 
@@ -537,7 +629,16 @@ def titres_dune_meme_serie(a, b):
 
 
 def title_similarity(a, b):
-    return SequenceMatcher(None, normalize_title(a), normalize_title(b)).ratio()
+    """Ressemblance de deux titres, nom du jeu et du studio mis de côté.
+
+    Voir titre_comparable : ces mots-là sont dans presque tous les titres,
+    les compter brouille la mesure au lieu de l'affiner. Un titre qui n'en
+    contient rien d'autre ne ressemble à rien — c'est le bon résultat.
+    """
+    ta, tb = titre_comparable(a), titre_comparable(b)
+    if not ta or not tb:
+        return 0.0
+    return SequenceMatcher(None, ta, tb).ratio()
 
 
 # Un doublon de titre proche n'a de sens qu'entre articles publiés à peu
@@ -1721,6 +1822,44 @@ def repare_vignettes_stockees(items):
     return items
 
 
+def repare_attributions_croisees(items):
+    """Retire les « autres sources » qui pointent vers un AUTRE article du fil.
+
+    Une source supplémentaire est censée dire « cette rédaction couvre le
+    même sujet ». Quand son lien est le lien PRINCIPAL d'un autre article
+    de l'historique, ce n'est pas la même actu vue deux fois : c'est un
+    rapprochement erroné, et le lecteur qui clique atterrit sur un autre
+    sujet. `audit_donnees.py` les signale depuis le 30/08/2026 sans que
+    rien ne vienne les corriger.
+
+    Corrigé rétroactivement parce que rien d'autre ne le fera : un article
+    déjà stocké ne repasse jamais par la collecte. Même mécanique que
+    repare_vignettes_stockees et recheck_official_status.
+
+    Ne touche QU'AUX liens qui existent par ailleurs comme article à part
+    entière — donc à des rapprochements dont on peut prouver qu'ils sont
+    faux, jamais à une source supplémentaire légitime.
+    """
+    principaux = {i.get("link") for i in items if i.get("link")}
+    retires = 0
+    for item in items:
+        autres = item.get("extraSources")
+        if not autres:
+            continue
+        gardes = [s for s in autres
+                  if s.get("link") not in principaux or s.get("link") == item.get("link")]
+        if len(gardes) != len(autres):
+            retires += len(autres) - len(gardes)
+            if gardes:
+                item["extraSources"] = gardes
+            else:
+                item.pop("extraSources", None)
+    if retires:
+        print(f"Correction rétroactive : {retires} « autre(s) source(s) » "
+              f"retirée(s) — elles pointaient vers un autre article du fil")
+    return items
+
+
 def recheck_official_status(items):
     """Recalcule les drapeaux d'onglet sur les articles déjà stockés.
 
@@ -1916,7 +2055,9 @@ def main():
     entrees_precedentes = stored.get("sources_entries_history", {}) or {}
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
+    memorise_suffixes_medias(existing_items)
     existing_items = repare_vignettes_stockees(existing_items)
+    existing_items = repare_attributions_croisees(existing_items)
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
     existing_items = fusionne_doublons_de_titre(existing_items)

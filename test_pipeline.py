@@ -1340,6 +1340,167 @@ def test_titres_numerotes_pas_fusionnes():
           "mais deux fois le même titre restent bien un doublon")
 
 
+def test_suffixe_du_media_appris():
+    print("\n[doublons] le « - Nom du média » final ne sépare plus")
+    import fetch_feeds
+
+    S = fetch_feeds.SIMILARITY_THRESHOLD
+    avant = fetch_feeds._SUFFIXES_MEDIAS
+    try:
+        # 60 % des titres du fil finissent par le nom de leur média. On ne
+        # coupe pas à l'aveugle : couper TOUT suffixe court avait fait
+        # PERDRE 2 fusions justes sur les 500 derniers titres, en mangeant
+        # la vraie fin d'un titre. On n'apprend donc que ce qui REVIENT.
+        historique = (
+            [{"title": f"Sujet {n} - Kotaku"} for n in range(3)]
+            + [{"title": f"Autre {n} - Rockstar Games"} for n in range(3)]
+            + [{"title": "GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !"}]
+            + [{"title": "Une exclu - British GQ"}]
+        )
+        appris = fetch_feeds.memorise_suffixes_medias(historique)
+        check("kotaku" in appris, "un suffixe vu 3 fois est un nom de média")
+        check("rockstar games" in appris, "celui du studio aussi")
+        check("british gq" not in appris,
+              "un suffixe vu une seule fois n'est pas retenu")
+        check("on découvre cela ensemble" not in appris
+              and "on decouvre cela ensemble" not in appris,
+              "la vraie fin d'un titre unique n'est pas prise pour un média")
+
+        # Ce qu'on gagne : quatre reprises du même article étaient affichées
+        # séparément le 30/08/2026 alors que seul le suffixe les distinguait.
+        check(fetch_feeds.sans_suffixe_media("Sujet 9 - Kotaku") == "Sujet 9",
+              "le suffixe connu est retiré avant comparaison")
+        check(fetch_feeds.sans_suffixe_media(
+                  "GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !")
+              == "GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !",
+              "un suffixe inconnu laisse le titre entier")
+
+        fetch_feeds.memorise_suffixes_medias(
+            [{"title": f"Sujet {n} - Push Square"} for n in range(3)]
+            + [{"title": f"Divers {n} - GamesRadar"} for n in range(3)])
+        check(fetch_feeds.title_similarity(
+                  "GTA 6 Contains No Microtransactions or Generative AI, "
+                  "Rockstar Says - Push Square",
+                  "GTA 6 Contains No Microtransactions or Generative AI, "
+                  "Rockstar Says - GamesRadar") == 1.0,
+              "le même titre chez deux médias se rejoint enfin")
+
+        # Vice est un média (vice.com), mais Vice City est la ville du jeu :
+        # un titre qui finit par la ville doit rester entier.
+        protege = fetch_feeds.apprend_suffixes_medias(
+            [{"title": f"Balade {n} - Vice City"} for n in range(6)])
+        check("vice city" not in protege,
+              "« Vice City » n'est jamais pris pour un nom de média")
+
+        # Sans historique appris, rien n'est coupé : le comportement d'avant.
+        fetch_feeds.memorise_suffixes_medias([])
+        check(fetch_feeds.sans_suffixe_media("Sujet 9 - Kotaku")
+              == "Sujet 9 - Kotaku",
+              "sans liste apprise on ne coupe rien")
+
+        # Et le garde-fou des numéros passe toujours avant la fusion.
+        fetch_feeds.memorise_suffixes_medias(
+            [{"title": f"X {n} - Rockstar Games"} for n in range(3)])
+        check(fetch_feeds.titres_dune_meme_serie(
+                  "Grand Theft Auto VI Trailer 1 - Rockstar Games",
+                  "Grand Theft Auto VI Trailer 2 - Rockstar Games"),
+              "deux bandes-annonces numérotées restent séparées")
+        _ = S
+    finally:
+        fetch_feeds._SUFFIXES_MEDIAS = avant
+
+
+def test_similarite_ignore_le_nom_du_jeu():
+    print("\n[doublons] le nom du jeu ne compte plus dans la comparaison")
+    import fetch_feeds
+
+    S = fetch_feeds.SIMILARITY_THRESHOLD
+
+    # Il est dans TOUS les titres : le compter brouille la mesure dans les
+    # deux sens, mesuré sur les 500 articles les plus récents.
+    #
+    # Sens 1 — l'aimant. « Grand Theft Auto VI - Rockstar Games » n'est que
+    # le nom du jeu et celui du studio. Il atteignait 0,750, pile le seuil.
+    # Le 30/08/2026 il a absorbé le Trailer 1 en production, et fait PERDRE
+    # le Trailer 2 derrière lui — record_coverage refuse une seconde source
+    # du même nom. Nettoyé, il ne reste rien de ce titre.
+    aimant = "Grand Theft Auto VI - Rockstar Games"
+    check(fetch_feeds.titre_comparable(aimant) == "",
+          "un titre réduit au nom du jeu et du studio ne laisse rien")
+    for autre in ("Grand Theft Auto VI Trailer 1",
+                  "Grand Theft Auto VI Trailer 2",
+                  "Grand Theft Auto VI: An Extended Look"):
+        check(fetch_feeds.title_similarity(aimant, autre) == 0.0,
+              f"il ne ressemble plus à « {autre[:38]} »")
+
+    # Sens 2 — les vrais doublons que le nom du jeu séparait. Deux
+    # graphies différentes comptaient comme une différence, alors que c'est
+    # le même article montré deux fois dans le fil.
+    for a, b in (("20+ New GTA 6 Screenshots Released",
+                  "New Grand Theft Auto 6 Screenshots Revealed"),
+                 ("Grand Theft Auto 6 Playthroughs Can Last 80 Hours",
+                  "GTA 6 Playthrough Can Last Roughly 80 Hours")):
+        check(fetch_feeds.title_similarity(a, b) >= S,
+              f"« {a[:40]} » et « {b[:40]} » se rejoignent enfin")
+
+    # Le suffixe de marque ne doit pas séparer non plus.
+    check(fetch_feeds.title_similarity(
+              "Grand Theft Auto VI - An Extended Look - Rockstar Games",
+              "Grand Theft Auto VI: An Extended Look") == 1.0,
+          "le même article avec et sans le suffixe du studio se rejoint")
+
+    # Et deux sujets distincts restent distincts.
+    check(fetch_feeds.title_similarity(
+              "Grand Theft Auto VI - An Extended Look - Rockstar Games",
+              "Grand Theft Auto VI Trailer 1 - Rockstar Games") < S,
+          "« An Extended Look » et « Trailer 1 » ne se confondent pas")
+
+    existant = [{"title": aimant, "link": "https://www.rockstargames.com/VI"}]
+    item = {"title": "Grand Theft Auto VI Trailer 1",
+            "link": "https://www.youtube.com/watch?v=QdBZY2fkU-0"}
+    check(fetch_feeds.find_duplicate(item, existant, {}, existant, {}) is None,
+          "le Trailer 1 n'est plus absorbé par la page générique")
+
+    # Le garde-fou des numéros reste indispensable : nettoyés, « trailer 1 »
+    # et « trailer 2 » se ressemblent encore à 0,89.
+    check(fetch_feeds.title_similarity("Grand Theft Auto VI Trailer 1",
+                                       "Grand Theft Auto VI Trailer 2") >= S,
+          "le nettoyage seul ne sépare pas les numéros — d'où l'autre garde-fou")
+
+
+def test_reparation_attributions_croisees():
+    print("\n[données] une « autre source » ne renvoie pas vers un autre article")
+    import fetch_feeds
+
+    # Le lecteur qui clique sur « autre source » doit atterrir sur le même
+    # sujet. Quand le lien est le lien PRINCIPAL d'un autre article du fil,
+    # c'est un rapprochement erroné — audit_donnees.py les signalait sans
+    # que rien ne vienne les corriger.
+    items = [
+        {"title": "A", "link": "https://a.fr/1",
+         "extraSources": [{"source": "X", "link": "https://b.fr/2"},
+                          {"source": "Y", "link": "https://legitime.fr/9"}]},
+        {"title": "B", "link": "https://b.fr/2"},
+        {"title": "C", "link": "https://c.fr/3",
+         "extraSources": [{"source": "Z", "link": "https://b.fr/2"}]},
+    ]
+    fetch_feeds.repare_attributions_croisees(items)
+
+    liens = [s["link"] for s in items[0].get("extraSources", [])]
+    check(liens == ["https://legitime.fr/9"],
+          "le renvoi vers l'article B est retiré, la source légitime reste")
+    check("extraSources" not in items[2],
+          "un article dont toutes les sources étaient fausses n'en garde aucune")
+    check("extraSources" not in items[1],
+          "un article sans source supplémentaire n'en gagne pas")
+
+    # Idempotence : la passe tourne à chaque passage.
+    avant = json.dumps(items, sort_keys=True)
+    fetch_feeds.repare_attributions_croisees(items)
+    check(json.dumps(items, sort_keys=True) == avant,
+          "rejouer la réparation ne change plus rien")
+
+
 def test_videos_archivees():
     print("\n[Rockstar] les vidéos trop anciennes pour le flux")
     import fetch_feeds
@@ -2200,7 +2361,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_miniature_youtube, test_media_content_non_declare_reste_accepte,
            test_reparation_vignettes_stockees,
            test_sonde_decouvre_les_flux_declares,
-           test_titres_numerotes_pas_fusionnes, test_videos_archivees,
+           test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
+           test_suffixe_du_media_appris,
+           test_reparation_attributions_croisees, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
            test_validateurs_lies_a_leur_url,
