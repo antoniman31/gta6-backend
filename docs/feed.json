@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-30T15:31:55.649708+00:00",
-  "duration_seconds": 76.1,
+  "generated_at": "2026-08-30T15:59:55.913748+00:00",
+  "duration_seconds": 83.0,
   "decode_failures": 0,
-  "total_articles": 1359,
-  "new_this_run": 5,
-  "hot_count": 3,
+  "total_articles": 1366,
+  "new_this_run": 7,
+  "hot_count": 1,
   "hot_threshold": 3,
   "sources_count": 50,
   "sources": [
@@ -329,7 +329,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -353,18 +353,18 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T22:33:20+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-08-30T11:00:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 67,
@@ -377,8 +377,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-08-28T03:33:24+00:00",
+      "new_this_run": 0,
+      "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 2,
       "status": "ok"
     },
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T15:02:03+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-30T15:30:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -402,7 +402,7 @@
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-08-30T07:00:00+00:00",
+      "last_article": "2026-08-30T15:30:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T20:39:51+00:00",
       "days_since_last_article": 0,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T15:00:25+00:00",
       "days_since_last_article": 2,
@@ -911,32 +911,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "polygon": {
-      "depuis": "2026-08-30T15:16:57.825174+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gamerant": {
-      "depuis": "2026-08-30T15:16:57.825174+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "dualshockers": {
-      "depuis": "2026-08-30T15:16:57.825174+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,100,100,100,100,100,99,99,99,99,99,99",
+    "rockstar-fr": "100,100,100,100,100,99,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,92,92,92,92,92,92,92,92,92,92",
+    "gnews-en": "100,92,92,92,92,92,92,92,92,92,92,92",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,9 +930,9 @@
     "rockstarmag": "10,10,10",
     "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10",
-    "ign": "0,20,20,20,20,20,20,20,20,20,20,20",
+    "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,10,10,0,10",
+    "polygon": "10,10,10,10,10,10,10,10,10,0,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -960,23 +944,23 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,10,10,0,10",
-    "dualshockers": "10,10,10,10,10,10,10,10,10,10,0,10",
+    "gamerant": "10,10,10,10,10,10,10,10,10,0,10,10",
+    "dualshockers": "10,10,10,10,10,10,10,10,10,0,10,10",
     "gta6times": "29,29,29,29,29,29,29,29,29,29,29,29",
     "gameinformer": "50,50,50",
-    "pcgamesn": "75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,10,10",
+    "pcgamesn": "75,75,75,75,75,75,75,75,75,75",
+    "vgc": "10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,8,9,9,7,7,7,7,7",
+    "xboxwire": "9,9,9,8,9,9,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,43,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,43,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,83,83,84,84,84,84,84,84,84",
-    "arstechnica": "31,30,31,31,31,31,31,31,31,31,31,31",
+    "engadget": "84,84,83,83,84,84,84,84,84,84,84,84",
+    "arstechnica": "30,31,31,31,31,31,31,31,31,31,31,31",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -984,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1030,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 15:28:38 GMT"
+      "modified": "Sun, 30 Aug 2026 15:58:35 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1054,17 +1038,43 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"e0bcf5e32372a0abcbd119559040d77e\"",
-      "modified": "Sun, 30 Aug 2026 15:29:56 GMT"
+      "etag": "W/\"ed70b5eea986292d48cee03e725d4d20\"",
+      "modified": "Sun, 30 Aug 2026 15:49:24 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a94354d-b43\"",
-      "modified": "Sun, 30 Aug 2026 13:51:09 GMT"
+      "etag": "\"6a94516e-b42\"",
+      "modified": "Sun, 30 Aug 2026 15:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Who is N3on? The controversial streamer fans think appears in GTA 6 - thenationalnews.com",
+      "link": "https://www.thenationalnews.com/arts-culture/pop-culture/2026/08/30/gta-6-n3on-netflix-kick/",
+      "source_link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOTHMxYmd4X1otbUNLX3JMVjFMUGZoeFBFT2FVZ0J6ak9ta0RzREN5bEJrVkZNdWtrQ3FNd3ZMeWM2RzZPSGlyc2J5RXItM0tqTU8zcHprZmNON18wdWh5eEFJaXRmMFU3cUozTHp3WG5BZzlSdnlDMGxLXzVyd29WWlBIZTFYWm5Ia2pod2UzMUpfOTNMRU5Z?oc=5",
+      "date": "2026-08-30T15:30:37+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.thenationalnews.com/resizer/v2/GFSHC65B6NDMPAXIZJSP4YTRIY.jpg?smart=true&auth=427a7ae5a2bed5c01e9f7f31230fa06080a4c7d6dcb79fb78ef7f98b389debf9&width=1200&height=630",
+      "description": "Who is N3on? The controversial streamer fans think appears in GTA 6&nbsp;&nbsp;thenationalnews.com"
+    },
+    {
+      "title": "GTA 6 : Rockstar surprend encore avec une annonce à quelques mois de la sortie - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-rockstar-surprend-encore-avec-une-annonce-a-quelques-mois-de-la-sortie-223973.html",
+      "source_link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQUzJxTzZ2ZVdKZkoteU1URC1SdURndGhkeXU0U2I4S3g1Q3B5ZFBmdDBpRzNmQ0hGSDFaLVAxWTJMLUp0U2psUGh6RDdYLWJmNEFaVG9SRmtmLVV3SnlRbzFHUGQ1dVdLLUpRdlJLb3c0NjRrVEE3X0tTYVZPbWl4Wk55RHNtQTdrS2FyREFuSEJVSEVrUlRvT3BVWG5tdTJlNTZCcV94ZTVQV1BlNnJ6bnNkZVlXLXpYM0FvTlUtU1h6UVAzTmY1YlFyNHRlWXM?oc=5",
+      "date": "2026-08-30T15:30:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/08/gta-6-rockstar-surprend-encore-avec-une-annonce-a-quelques-mois-de-la-sortie.jpg",
+      "description": "GTA 6 : Rockstar surprend encore avec une annonce à quelques mois de la sortie&nbsp;&nbsp;La Crème Du Gaming"
+    },
     {
       "title": "GTA 6 : quels sont les animaux que l’on pourra chasser dans le jeu ? - Journal du Geek",
       "link": "https://www.journaldugeek.com/2026/08/30/gta-6-quels-sont-les-animaux-que-lon-pourra-chasser-dans-le-jeu/",
@@ -1181,6 +1191,32 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/08/gta-6-est-deja-bluffant-sur-une-ps5-standard-mais-les-joueurs-ps5-pro-risquent-de-dechanter-scaled.jpg",
       "description": "GTA 6 est déjà bluffant sur une PS5 standard, mais les joueurs PS5 Pro risquent de déchanter&nbsp;&nbsp;La Crème Du Gaming"
+    },
+    {
+      "title": "GTA 6 car customisation is bringing back a much-missed Midnight Club aura - GAMINGbible",
+      "link": "https://www.gamingbible.com/news/gta-6-midnight-club-rockstar-games-416576-20260828",
+      "source_link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNaU5tSVFYQWxmQlZPOUE4czVYU1h0bXdxWnFXdlNmUy1HcDNIT21OdXRlZmdaUG1qOWI5NmFsNWZCX1NuRDZlWW95TlZQb0QyYk1fVGlnSEw3NmxEQkI5ZWNZY1RSZU5iVnQtVHBBM2RzOE1BOWNfOXpubk5adjFpZnh3MXNvcDRRcmlz?oc=5",
+      "date": "2026-08-30T11:00:01+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blt9222eeeadca6aad9/6a91a33eb356dcad5fed778d/gta-6-midnight-club.jpg",
+      "description": "GTA 6 car customisation is bringing back a much-missed Midnight Club aura&nbsp;&nbsp;GAMINGbible"
+    },
+    {
+      "title": "GTA 6 Extended Look | Gaming News #23 - Buttondown",
+      "link": "https://buttondown.com/warhogy/archive/gta-6-extended-look-gaming-news-23/",
+      "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9VZGhOdkp3YUtfUmZxVDFXRERIcG9NaVRKT1R4a1gtQjhvS0Y3ckh2d0tvQWl2cFFJNkNNSk1POUg0SXV2blhYdDdFZDhWZnRsLW9pQTEtRm4tem1sb3I4dnZPR1VHaDFkYlZhd1VMV1ptYnRjVnBQOEJYLUZ5QjA?oc=5",
+      "date": "2026-08-30T10:54:48+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.keengamer.com/wp-content/uploads/2026/08/gta-6-extended-look-recap-all-gameplay-details.jpg",
+      "description": "GTA 6 Extended Look | Gaming News #23&nbsp;&nbsp;Buttondown"
     },
     {
       "title": "Rockstar rules out GTA 6 microtransactions and AI – but there's still a catch - Eurogamer.net",
@@ -3873,13 +3909,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://stevivor.com/wp-content/uploads/2026/08/rockstar-confirms-gta-6-launches-without-microtransactions.webp",
-      "description": "Rockstar Confirms GTA 6 Launches Without Microtransactions or Generative AI&nbsp;&nbsp;Stevivor",
-      "extraSources": [
-        {
-          "source": "Google News (EN)",
-          "link": "https://www.tweaktown.com/news/113329/rockstar-confirms-if-gta-6-single-player-contains-microtransactions-or-generative-ai/index.html"
-        }
-      ]
+      "description": "Rockstar Confirms GTA 6 Launches Without Microtransactions or Generative AI&nbsp;&nbsp;Stevivor"
     },
     {
       "title": "Rockstar quietly releases a 14GB, 70Mbps version of GTA 6's Extended Look that looks much better than YouTube - TweakTown",
@@ -5136,10 +5166,6 @@
       "image": "https://videos-rockstargames-com.akamaized.net/v4/rk721912/art/en-us.jpg",
       "description": "Grand Theft Auto VI - An Extended Look&nbsp;&nbsp;Rockstar Games",
       "extraSources": [
-        {
-          "source": "Rockstar Games (YouTube)",
-          "link": "https://www.youtube.com/watch?v=0H94XV8aPVY"
-        },
         {
           "source": "Rockstar Games (officiel FR)",
           "link": "https://www.rockstargames.com/fr/videos/rk721912"
@@ -7522,13 +7548,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://media-rockstargames-com.akamaized.net/tina-uploads/posts/4k138k8okkk483/ffebf733f7e03ff9ec9467471cc25a6c1117c5be.jpg",
-      "description": "Grand Theft Auto VI: An Extended Look — Now Playing&nbsp;&nbsp;Rockstar Games",
-      "extraSources": [
-        {
-          "source": "Rockstar Games (YouTube)",
-          "link": "https://www.youtube.com/watch?v=0H94XV8aPVY"
-        }
-      ]
+      "description": "Grand Theft Auto VI: An Extended Look — Now Playing&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "Cyberleek may have just cashed out on their GTA 6 leak, earning over $200,000 in the most predictable crypto rugpull ever performed",
@@ -7884,13 +7904,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/06/18/jason-and-lucia-03-landscape-1781798123709.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "Florida officials and Rockstar Games are having conversations to turn parts of Miami into Vice City for Grand Theft Auto 6's marketing campaign.",
-      "extraSources": [
-        {
-          "source": "Rockstar Games (annonces)",
-          "link": "https://pk.ign.com/grand-theft-auto-vi-rumored-title/260152/rockstar-games-and-florida-officials-are-having-conversations-to-turn-miami-into-vice-city-irl-for-g"
-        }
-      ]
+      "description": "Florida officials and Rockstar Games are having conversations to turn parts of Miami into Vice City for Grand Theft Auto 6's marketing campaign."
     },
     {
       "title": "Devolver Digital Reveals Its GTA 6 Competitor, And It’s A Remaster Of A Nonexistent Remake",
@@ -8350,13 +8364,7 @@
       "specialist": true,
       "lang": null,
       "image": "https://kotaku.com/app/uploads/2026/06/gta-6-1.jpg",
-      "description": "GTA 6's Netflix Special Is Over 20 Minutes Long And Was Captured On A PS5&nbsp;&nbsp;Kotaku",
-      "extraSources": [
-        {
-          "source": "GTA BOOM",
-          "link": "https://www.gtaboom.com/gta-6-on-netflix-is-about-26-minutes-long-and-was-captured-on-ps5-4448"
-        }
-      ]
+      "description": "GTA 6's Netflix Special Is Over 20 Minutes Long And Was Captured On A PS5&nbsp;&nbsp;Kotaku"
     },
     {
       "title": "GTA 6 Extended Look Is 26 Minutes Long, Netflix Reveals - VICE",
@@ -9977,13 +9985,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/08/26/88c551bf6d6691160b2c29e151007243-1787758366240.webp?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "Extended gameplay footage revealing Grand Theft Auto 6's story prologue has been posted online, in a significant escalation of the past week's continued leaks.",
-      "extraSources": [
-        {
-          "source": "Rockstar Games (annonces)",
-          "link": "https://pk.ign.com/grand-theft-auto-vi-rumored-title/260082/leaker-posts-extended-gameplay-from-gta-6-prologue-just-hours-after-rockstar-warns-fans-to-expect-st"
-        }
-      ]
+      "description": "Extended gameplay footage revealing Grand Theft Auto 6's story prologue has been posted online, in a significant escalation of the past week's continued leaks."
     },
     {
       "title": "Rockstar Calls GTA 6 Leaks 'Heartbreaking For Our Team' And Says The Game Is Nearly Finished - Engadget",
@@ -11296,13 +11298,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://www.gamespot.com/wp-content/uploads/2026/08/Screenshot-2026-08-25-at-2.26.27-PM.png",
-      "description": "GTA 6 x NBA 2K27 might be happening.",
-      "extraSources": [
-        {
-          "source": "GTA BOOM",
-          "link": "https://www.gtaboom.com/nba-2k27-just-teased-a-gta-6-crossover-season-12f6"
-        }
-      ]
+      "description": "GTA 6 x NBA 2K27 might be happening."
     },
     {
       "title": "'Anime GTA’ Game Ananta Gets Official Release Date Beyond GTA 6’s Blast Radius",
@@ -17181,13 +17177,7 @@
       "specialist": false,
       "lang": null,
       "image": "https://sm.ign.com/t/ign_nordic/news/g/grand-thef/grand-theft-auto-6-an-extended-look-premieres-on-netflix-thi_4ftq.1200.jpg",
-      "description": "Grand Theft Auto 6: An Extended Look Premieres on Netflix This Month, Rockstar Confirms&nbsp;&nbsp;IGN Nordic",
-      "extraSources": [
-        {
-          "source": "GTA 6 x Netflix",
-          "link": "https://www.ign.com/articles/grand-theft-auto-6-an-extended-look-premieres-on-netflix-this-month-rockstar-confirms"
-        }
-      ]
+      "description": "Grand Theft Auto 6: An Extended Look Premieres on Netflix This Month, Rockstar Confirms&nbsp;&nbsp;IGN Nordic"
     },
     {
       "title": "What To Expect From GTA 6′ s Big Netflix Reveal: Narrated Gameplay And No Delay Announcement - Kotaku",
@@ -17252,6 +17242,19 @@
       "lang": null,
       "image": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/06/Lucia_Caminos_02.jpg?quality=90&strip=all&crop=0%2C3.4613147178592%2C100%2C93.077370564282&w=1200",
       "description": "GTA VI is getting an ‘extended look’ at the end of August&nbsp;&nbsp;The Verge"
+    },
+    {
+      "title": "Grand Theft Auto VI : Un large aperçu - Rockstar Games",
+      "link": "https://www.rockstargames.com/fr/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look?amp%3Bamp%3Bamp%3Butm_medium=o_social&amp%3Bamp%3Bamp%3Bamp%3Butm_campaign=gtaplus-event54-20260813",
+      "source_link": "https://news.google.com/rss/articles/CBMipgJBVV95cUxPeGZqanl4U0VSVzZkWEJ0WVpGUUZBN0NlcVpSTWxXaDl1MWNrT1NTTkxmR1Z5aF9zMFlpN2Zod3NnMW5kdWlySWY1WlcxVlJtQkdrVjJlbjFzSFE5Qkk0X3NlcUlCbGszOGdPOWEwd1NzUkVLV2JIY2N4bmhzQ2hNa2o0bnZEdHVpSFV5bVVWSkJsSEVWeF9mMHBpVVVJTTdfZ0RkM0R5YmlDQVFPWG1jS1NRRC02bmVzZlJxajFONGlDd3d4WkxaSmt4YmdjTkZ0dXA4V3VPclZ4RUtCOU1MeWg4VmkwRUo0el9UTWR2TDl1VExEdGhrdUFkbG9DWXdXOHFQSUdXVmFwY1QtZm1lR3RhUWRsVUFRaXZaaVhKbnhlU1liUFE?oc=5",
+      "date": "2026-08-06T07:00:00+00:00",
+      "source": "Rockstar Games (officiel FR)",
+      "official": true,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://media-rockstargames-com.akamaized.net/tina-uploads/posts/9k2kaa1o3297k9/dd5cec9ec7535b66a1ed6c57865db5e6788dbff3.jpg",
+      "description": "Grand Theft Auto VI : Un large aperçu&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "GTA Online Event Week: Summer Heist Event (August 6th-12th)",
@@ -17661,10 +17664,6 @@
         {
           "source": "Rockstar Games (officiel FR)",
           "link": "https://www.rockstargames.com/fr/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look?amp%3Bamp%3Bamp%3Butm_medium=o_social&amp%3Bamp%3Bamp%3Bamp%3Butm_campaign=gtaplus-event54-20260813"
-        },
-        {
-          "source": "Rockstar Games (YouTube)",
-          "link": "https://www.youtube.com/watch?v=QdBZY2fkU-0"
         }
       ]
     },
@@ -17857,6 +17856,20 @@
       ]
     },
     {
+      "title": "Grand Theft Auto VI Trailer 2 - Rockstar Games",
+      "link": "https://www.rockstargames.com/VI/trailer-2",
+      "source_link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1uQnhrb0VnRXNaVWVkODMwSDdfOUQ4Sy1fRXJ6bDZPVXN3MHczLWtVUFRPcXhpb0NTQjRSUlVKc0F2SmcwWFp5R09QMXVKTDZnbndUVQ?oc=5",
+      "date": "2025-05-06T07:00:00+00:00",
+      "source": "Rockstar Games (officiel EN)",
+      "archive": true,
+      "official": true,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.rockstargames.com/VI/-/opengraph-image.jpg?opengraph-image.0t8ty~nlmxq2s.jpg",
+      "description": "Grand Theft Auto VI Trailer 2&nbsp;&nbsp;Rockstar Games"
+    },
+    {
       "title": "Grand Theft Auto VI sortira le 26 mai 2026 - Rockstar Games",
       "link": "https://www.rockstargames.com/fr/newswire/article/258aa538o412ok/grand-theft-auto-vi-is-now-coming-may-26-2026",
       "date": "2025-05-02T07:00:00+00:00",
@@ -17894,6 +17907,20 @@
       "image": "https://i.ytimg.com/vi/QdBZY2fkU-0/hqdefault.jpg",
       "description": "",
       "archive": true
+    },
+    {
+      "title": "Grand Theft Auto VI - Trailer 1 - Rockstar Games",
+      "link": "https://www.rockstargames.com/videos/rkoCtr1r",
+      "source_link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE8yS3I2TF9oR1V6WjU4NHliQjZfVHMyZWd4MEZUTlRCbGVsX2RBVDF3MjFKaWxxQ2Z1R3AzeHVHbjZEczExaUc2c2tNNDJGeVlfNnIwQ0hyZ2E?oc=5",
+      "date": "2023-12-05T08:00:00+00:00",
+      "source": "Rockstar Games (officiel EN)",
+      "archive": true,
+      "official": true,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://videos-rockstargames-com.akamaized.net/v4/rkoCtr1r/art/global.jpg",
+      "description": "Grand Theft Auto VI - Trailer 1&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "GTA 6 finally grows up, adopts a mature tone - VG247",
