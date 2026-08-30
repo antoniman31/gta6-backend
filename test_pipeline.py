@@ -648,53 +648,97 @@ def test_recap_hebdomadaire():
 
 
 def test_suivi_sources_muettes():
-    print("\n[sources] alerte quand une source tombe, et quand elle revient")
+    print("\n[sources] alerte après une panne de 24 h, pas après 6 passages")
     import fetch_feeds
+    from datetime import timedelta
 
-    seuil = fetch_feeds.DEAD_SOURCE_RUNS
+    heures = fetch_feeds.DEAD_SOURCE_HOURS
+    t0 = datetime(2026, 8, 30, 8, 0, tzinfo=timezone.utc)
 
     def sante(statut):
         return [{"id": "a", "name": "VG247", "status": statut}]
 
-    # Une source muette pendant seuil-1 passages ne doit RIEN déclencher :
-    # un 503 passager ou une coupure réseau ne sont pas une panne.
-    compteurs = {}
-    for passage in range(1, seuil):
-        compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("muette"), compteurs)
-        check(alertes == [], f"passage {passage}/{seuil} muet : pas encore d'alerte")
-    check(compteurs.get("a") == seuil - 1, "le compteur suit les passages muets")
+    def passage(suivi, statut, apres_heures):
+        return fetch_feeds.suivre_sources_muettes(
+            sante(statut), suivi, maintenant=t0 + timedelta(hours=apres_heures))
 
-    # Le passage qui franchit le seuil alerte, une seule fois.
-    compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("muette"), compteurs)
+    # Une panne courte ne déclenche rien, quel que soit le NOMBRE de
+    # passages : c'est tout l'intérêt de compter en heures. Dix passages en
+    # deux heures restent deux heures de panne.
+    suivi = {}
+    for i in range(10):
+        suivi, alertes = passage(suivi, "muette", i * 0.2)
+        check(alertes == [], f"panne de {i * 0.2:.1f} h sur {i + 1} passages : rien")
+    check("a" in suivi, "la source est suivie, avec la date de son premier échec")
+    check(suivi["a"]["depuis"] == t0.isoformat(),
+          "la date retenue est celle du PREMIER échec, pas du dernier")
+
+    # Juste avant le seuil : toujours rien.
+    suivi, alertes = passage(suivi, "muette", heures - 0.1)
+    check(alertes == [], f"à {heures - 0.1} h : toujours rien")
+
+    # Au seuil : une alerte, une seule.
+    suivi, alertes = passage(suivi, "muette", heures)
     check(len(alertes) == 1 and alertes[0]["type"] == "tombee",
-          f"au {seuil}e passage muet, une alerte « tombée » part")
+          f"à {heures} h de panne continue, une alerte « tombée » part")
     check(alertes[0]["name"] == "VG247", "l'alerte nomme la source")
+    check(alertes[0]["heures"] >= heures,
+          "et donne la durée en heures, pas un nombre de passages")
 
-    for suite in range(2):
-        compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("muette"), compteurs)
+    for h in (heures + 1, heures + 5, heures + 30):
+        suivi, alertes = passage(suivi, "muette", h)
         check(alertes == [],
-              "la panne se prolonge : aucune répétition (sinon 48 messages par jour)")
+              f"panne prolongée à {h} h : aucune répétition "
+              f"(sinon 48 messages par jour)")
 
-    # Le retour est annoncé, une fois.
-    compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("ok"), compteurs)
-    check(len(alertes) == 1 and alertes[0]["type"] == "retour", "le retour est annoncé")
-    check(compteurs == {}, "compteur remis à zéro, et pas conservé pour rien dans feed.json")
+    # Le retour demande DEUX passages réussis d'affilée.
+    suivi, alertes = passage(suivi, "ok", heures + 31)
+    check(alertes == [], "une seule réussite ne suffit pas à annoncer le retour")
+    check("a" in suivi, "le chronomètre tourne encore, la reprise n'est pas confirmée")
+    suivi, alertes = passage(suivi, "ok", heures + 32)
+    check(len(alertes) == 1 and alertes[0]["type"] == "retour",
+          "au second passage réussi d'affilée, le retour est annoncé")
+    check(suivi == {},
+          "et la source sort du suivi, pas conservée pour rien dans feed.json")
 
-    compteurs, alertes = fetch_feeds.suivre_sources_muettes(sante("ok"), compteurs)
+    suivi, alertes = passage(suivi, "ok", heures + 33)
     check(alertes == [], "une source qui va bien ne dit rien")
 
-    # Une source qui hoquette sans jamais atteindre le seuil ne doit ni
-    # alerter à la panne, ni alerter au retour.
-    c = {}
-    for statut in ("muette", "muette", "ok"):
-        c, alertes = fetch_feeds.suivre_sources_muettes(sante(statut), c)
-        check(alertes == [], f"hoquet ({statut}) : silence radio")
+    # LE CAS IGN. Une source qui alterne réussite et échec ne doit pas
+    # échapper à la détection : sans la reprise confirmée, la moindre
+    # réussite remettrait le chronomètre à zéro et l'alerte ne partirait
+    # jamais, alors que la source est cassée la moitié du temps.
+    suivi = {}
+    alertes = []
+    for i in range(60):
+        suivi, alertes = passage(suivi, "muette" if i % 2 == 0 else "ok", i)
+        if alertes:
+            break
+    check(any(a["type"] == "tombee" for a in alertes),
+          "une source qui alterne un passage sur deux finit par être signalée")
+    check(i >= heures,
+          f"et pas avant le seuil : signalée à {i} h de clignotement")
+
+    # Le pendant : une source vraiment rétablie ne traîne pas dans le suivi.
+    suivi = {}
+    for statut, h in (("muette", 0), ("muette", 1), ("ok", 2), ("ok", 3)):
+        suivi, alertes = passage(suivi, statut, h)
+        check(alertes == [], f"hoquet court ({statut}) : silence radio")
+    check(suivi == {}, "et le chronomètre est bien effacé après deux réussites")
 
     # Un flux qui répond 304 est vivant : build_sources_health le classe
     # « ok », donc il ne doit jamais entrer dans le comptage.
-    c, alertes = fetch_feeds.suivre_sources_muettes(sante("tarie"), {})
-    check(alertes == [] and c == {},
+    suivi, alertes = fetch_feeds.suivre_sources_muettes(sante("tarie"), {})
+    check(alertes == [] and suivi == {},
           "une source « tarie » (vivante mais sans actu) n'est pas une panne")
+
+    # Migration : l'ancien format était un simple nombre de passages, sans
+    # date. On repart de maintenant plutôt que d'inventer une ancienneté —
+    # ça retarde une alerte, ça n'en fabrique jamais une fausse.
+    suivi, alertes = passage({"a": 5}, "muette", 0)
+    check(alertes == [], "un ancien compteur ne déclenche pas d'alerte immédiate")
+    check(suivi["a"]["depuis"] == t0.isoformat(),
+          "il est converti en chronomètre démarré maintenant")
 
 
 def test_chaine_youtube_rockstar():
@@ -1457,13 +1501,21 @@ def test_source_cassee_vs_muette():
     check(not fetch_feeds.ne_rapporte_rien({"status": "ok"}),
           "une source qui répond, non")
 
-    seuil = fetch_feeds.DEAD_SOURCE_RUNS
+    # « muette » et « cassée » décrivent la même conséquence. Une source qui
+    # passe de l'une à l'autre ne doit PAS voir son chronomètre repartir de
+    # zéro : ça retarderait l'alerte de 24 h et, au retour, déclencherait un
+    # faux « source rétablie » pour une panne jamais signalée.
+    from datetime import timedelta
+    t0 = datetime(2026, 8, 30, 8, 0, tzinfo=timezone.utc)
+    depart = (t0 - timedelta(hours=fetch_feeds.DEAD_SOURCE_HOURS)).isoformat()
     liste = [dict(sante["bloquee"])]
-    compteurs, alertes = fetch_feeds.suivre_sources_muettes(liste, {"bloquee": seuil - 1})
-    check(compteurs.get("bloquee") == seuil,
-          "le compteur continue de monter quand une muette devient cassée")
+    suivi, alertes = fetch_feeds.suivre_sources_muettes(
+        liste, {"bloquee": {"depuis": depart, "succes": 0, "alertee": False}},
+        maintenant=t0)
+    check(suivi["bloquee"]["depuis"] == depart,
+          "le chronomètre continue de tourner quand une muette devient cassée")
     check(any(a["type"] == "tombee" for a in alertes),
-          "et l'alerte part bien au franchissement du seuil")
+          "et l'alerte part bien au franchissement des 24 h")
 
 
 def test_compteur_echecs_decodage():
@@ -1610,14 +1662,26 @@ def test_ligne_etat_sans_double_compte():
     fn = html[html.index("function majLigneRun("):]
     fn = fn[:fn.index("\n}")]
 
-    # sources_silence contient TOUTES les sources qui ne rapportent rien —
-    # muettes ET cassées, c'est voulu côté robot (ne_rapporte_rien). Les
-    # recompter séparément ici annonçait « 3 sources muettes · 3 cassées »
-    # pour trois sources en tout : six problèmes affichés, trois réels.
-    check("idsCassees" in fn,
-          "les sources cassées sont identifiées avant de compter les muettes")
-    check("!idsCassees.has(id)" in fn,
-          "les muettes excluent celles déjà nommées comme cassées")
+    # La garantie : « muettes » et « cassées » ne peuvent pas se recouvrir.
+    # Elle tenait par soustraction d'ensembles, elle tient désormais par
+    # construction — les deux comptes viennent de sources_health, où une
+    # source porte exactement un statut. Le symptôme qu'on empêche reste le
+    # même : « 3 sources muettes · 3 cassées » pour trois sources en tout.
+    check('filter(s => s.status === "cassee")' in fn,
+          "les cassées se comptent depuis sources_health")
+    check('filter(s => s.status === "muette")' in fn,
+          "les muettes aussi — donc les deux ensembles sont disjoints")
+
+    # Et surtout PAS depuis sources_silence : ce dictionnaire ne liste plus
+    # les sources muettes mais les chronomètres de panne en cours. Une
+    # source qui vient de répondre y reste tant que sa reprise n'est pas
+    # confirmée sur deux passages ; la compter ici l'afficherait muette
+    # alors qu'elle rapporte.
+    # L'accès à la propriété, pas le mot : les commentaires ci-dessus
+    # expliquent justement pourquoi on ne s'en sert plus, et les chercher
+    # littéralement ferait échouer le test sur sa propre documentation.
+    check("data.sources_silence" not in fn,
+          "la ligne d'état ne lit plus sources_silence, qui a changé de sens")
 
     # Le message « tout va bien » ne doit sortir que si les DEUX comptes sont
     # nuls, sinon il cohabiterait avec une alerte.

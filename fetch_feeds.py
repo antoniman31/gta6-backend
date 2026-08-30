@@ -27,7 +27,7 @@ import sys
 import threading
 import time
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
@@ -1202,20 +1202,42 @@ SILENT_SOURCE_DAYS = 30
 # son contenu en le prenant pour du 1ᵉʳ janvier 1970.
 MAX_ARTICLE_AGE_DAYS = 45
 
-# Nombre de passages consécutifs sans la moindre entrée brute avant de
-# signaler une source comme tombée.
+# Durée d'indisponibilité continue avant de signaler une source comme
+# tombée. En HEURES, pas en passages — et c'est le point important.
 #
-# Attention à ce que ce chiffre veut dire : des PASSAGES, pas des heures.
-# Mesuré sur les 158 passages du 25 au 30/08/2026, l'écart entre deux
-# passages a une médiane de 30 min mais un p90 de 100 min et un pire cas de
-# 4 h 56 — le `schedule` de GitHub abandonne des exécutions. Six passages
-# valent donc 2 h 36 en médiane, 12 h au p90, et 19 h dans le pire cas
-# observé. Le 27/08 il n'y a eu que 9 passages dans la journée entière.
+# Le seuil valait 6 passages. Un passage n'est pas une unité de temps : sur
+# les 158 passages du 25 au 30/08/2026, l'écart entre deux passages a une
+# médiane de 30 min, un p90 de 100 min et un pire cas de 4 h 56, parce que
+# le `schedule` de GitHub abandonne des exécutions. Six passages valaient
+# donc 2 h 36 en médiane mais 19 h dans le pire cas observé, et le 27/08 il
+# n'y a eu que 9 passages dans la journée entière. Le même seuil signifiait
+# des choses dix fois différentes selon le jour.
 #
-# Autrement dit le seuil est prudent la plupart du temps et beaucoup trop
-# lent un jour sur trois. Compter en heures plutôt qu'en passages
-# corrigerait ça ; ce n'est pas encore tranché.
-DEAD_SOURCE_RUNS = 6
+# 24 h plutôt que 12 : sur toute la période, la panne continue la plus
+# longue jamais observée dure 8 h 48 (Kotaku), et 6 passages se sont
+# déclenchés 10 fois pour des pannes qui se sont toutes réparées seules.
+# 12 h ne laisserait qu'une marge de 1,4× sur un maximum estimé à partir de
+# cinq jours seulement — trop mince. 24 h en laisse 2,7×.
+#
+# Ce que ça coûte : une panne de 8 h passe désormais sans alerte. C'est
+# assumé — l'app affiche l'état des sources à chaque passage, sous les
+# boutons. Cette alerte-ci n'est pas le tableau de bord, c'est le réveil.
+DEAD_SOURCE_HOURS = 24
+
+# Nombre de passages RÉUSSIS D'AFFILÉE avant de considérer qu'une source
+# est vraiment rétablie et de remettre son chronomètre à zéro.
+#
+# Sans ça, une seule réussite suffirait — et une source qui clignote
+# échapperait à la détection pour toujours. Ce n'est pas théorique : IGN a
+# alterné « 20 entrées / 0 entrée » un passage sur deux pendant des heures
+# le 30/08/2026. Elle n'aurait jamais accumulé 24 h de panne continue, ni
+# même une heure, tout en étant cassée la moitié du temps.
+#
+# Deux, et pas trois : deux réussites d'affilée veulent dire que la source
+# fonctionne, pas qu'elle a eu de la chance. Une source qui échoue un
+# passage sur trois y échappe encore, mais celle-là rapporte vraiment ses
+# articles — le passage suivant rattrape ce qui manque.
+REPRISE_CONFIRMEE = 2
 
 # Fichier où sont déposées les alertes de source, à destination de
 # discord_notify.py. Même mécanique que NEW_ITEMS_FILE : le workflow le
@@ -1326,41 +1348,85 @@ def sources_en_baisse(series):
     return en_baisse
 
 
-def suivre_sources_muettes(health, compteurs_precedents):
-    """Compte les passages consécutifs pendant lesquels chaque source est muette.
+def _chrono_precedent(valeur, maintenant):
+    """Relit une entrée de `sources_silence`, quelle que soit sa forme.
 
-    `sources_health` dit si une source est muette MAINTENANT. Seul le
-    cumul distingue une panne réelle d'un hoquet : un flux peut répondre
-    503 une fois sans être mort. On garde donc un compteur par source dans
-    feed.json, faute d'autre stockage persistant.
+    L'ancienne forme était un simple nombre de passages. Elle ne porte
+    aucune date, donc on ne peut pas reconstituer depuis quand la panne
+    dure : on repart de maintenant. Ça ne peut que RETARDER une alerte de
+    24 h, jamais en déclencher une fausse — le bon sens du choix par
+    défaut quand on migre un état persistant.
+    """
+    if isinstance(valeur, dict):
+        return {"depuis": valeur.get("depuis") or maintenant.isoformat(),
+                "succes": int(valeur.get("succes") or 0),
+                "alertee": bool(valeur.get("alertee"))}
+    if valeur:
+        return {"depuis": maintenant.isoformat(), "succes": 0, "alertee": False}
+    return None
 
-    Renvoie (compteurs, alertes). Une alerte n'est émise qu'au moment où
-    l'état BASCULE — à la panne confirmée, puis au retour. Sans ça le robot
+
+def suivre_sources_muettes(health, silence_precedent, maintenant=None):
+    """Suit DEPUIS QUAND chaque source ne rapporte plus rien.
+
+    `sources_health` dit si une source est muette MAINTENANT. Seule la
+    durée distingue une panne réelle d'un hoquet : un flux peut répondre
+    503 une fois sans être mort. On garde donc, par source et dans
+    feed.json faute d'autre stockage persistant, la date du premier échec.
+
+    En heures et non en passages : voir DEAD_SOURCE_HOURS. Un passage n'est
+    pas une unité de temps.
+
+    Le chronomètre ne repart à zéro qu'après REPRISE_CONFIRMEE passages
+    réussis d'affilée. Une source qui alterne réussite et échec garde donc
+    son chronomètre en marche et finit par être signalée, alors qu'une
+    seule réussite suffirait à la rendre invisible pour toujours. Tant que
+    la reprise n'est pas confirmée, la source reste dans le suivi mais
+    n'est plus « muette » pour autant : c'est `sources_health` qui dit
+    l'état courant, pas ce dictionnaire.
+
+    Renvoie (suivi, alertes). Une alerte n'est émise qu'au moment où l'état
+    BASCULE — à la panne confirmée, puis au retour. Sans ça le robot
     répéterait la même mauvaise nouvelle 48 fois par jour.
     """
-    compteurs = {}
+    maintenant = maintenant or datetime.now(timezone.utc)
+    limite = timedelta(hours=DEAD_SOURCE_HOURS)
+    suivi = {}
     alertes = []
     for source in health:
         sid = source["id"]
-        avant = int((compteurs_precedents or {}).get(sid, 0) or 0)
+        chrono = _chrono_precedent((silence_precedent or {}).get(sid), maintenant)
+
         if ne_rapporte_rien(source):
-            apres = avant + 1
-            # Strictement égal : l'alerte part au passage qui franchit le
-            # seuil, pas à tous ceux qui suivent.
-            if apres == DEAD_SOURCE_RUNS:
+            if chrono is None:
+                chrono = {"depuis": maintenant.isoformat(), "succes": 0,
+                          "alertee": False}
+            # Un échec annule les réussites accumulées : la reprise doit
+            # être consécutive, sinon une source un coup sur deux
+            # finirait par cumuler ses bons passages et se croire guérie.
+            chrono["succes"] = 0
+            debut = feed_store.parse_date_key(chrono["depuis"])
+            ecoule = maintenant - debut
+            # `alertee` remplace l'égalité stricte d'avant : avec une durée,
+            # la condition reste vraie à tous les passages suivants.
+            if ecoule >= limite and not chrono["alertee"]:
+                chrono["alertee"] = True
                 alertes.append({"type": "tombee", "name": source["name"],
-                                "runs": apres})
-        else:
-            apres = 0
-            if avant >= DEAD_SOURCE_RUNS:
-                alertes.append({"type": "retour", "name": source["name"],
-                                "runs": avant})
-        # Un compteur à zéro n'apprend rien : on ne garde que les sources
-        # réellement en difficulté, pour ne pas gonfler feed.json de 35
-        # entrées inutiles à chaque passage.
-        if apres:
-            compteurs[sid] = apres
-    return compteurs, alertes
+                                "heures": round(ecoule.total_seconds() / 3600, 1)})
+            suivi[sid] = chrono
+        elif chrono is not None:
+            chrono["succes"] += 1
+            if chrono["succes"] >= REPRISE_CONFIRMEE:
+                if chrono["alertee"]:
+                    ecoule = maintenant - feed_store.parse_date_key(chrono["depuis"])
+                    alertes.append({"type": "retour", "name": source["name"],
+                                    "heures": round(ecoule.total_seconds() / 3600, 1)})
+                # Rétablie : on cesse de la suivre. Une entrée par source en
+                # bonne santé gonflerait feed.json de 50 lignes inutiles à
+                # chaque passage.
+                continue
+            suivi[sid] = chrono
+    return suivi, alertes
 
 
 def write_source_alerts_file(alertes):
@@ -1701,9 +1767,10 @@ def main():
     silence, alertes_sources = suivre_sources_muettes(sante, silence_precedent)
     for a in alertes_sources:
         if a["type"] == "tombee":
-            print(f"⚠️  Source tombée : {a['name']} — muette depuis {a['runs']} passages")
+            print(f"⚠️  Source tombée : {a['name']} — ne rapporte plus rien "
+                  f"depuis {a['heures']} h")
         else:
-            print(f"✅ Source rétablie : {a['name']} — après {a['runs']} passages muets")
+            print(f"✅ Source rétablie : {a['name']} — après {a['heures']} h de panne")
     write_source_alerts_file(alertes_sources)
 
     duree = round(time.monotonic() - debut_passage, 1)
