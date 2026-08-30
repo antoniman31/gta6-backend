@@ -22,6 +22,7 @@ contacter 34 flux + des proxys CORS à chaque vérification.
 
 import json
 import re
+import socket
 import threading
 import time
 import os
@@ -43,6 +44,28 @@ except ImportError:
     HAS_DECODER = False
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+
+# Délai maximal d'attente sur une opération réseau, en secondes.
+#
+# feedparser.parse() n'accepte PAS de paramètre de timeout : il passe par
+# urllib, qui utilise le délai par défaut des sockets — et ce défaut est
+# None, c'est-à-dire une attente infinie. Une source qui accepte la
+# connexion puis ne répond jamais bloquait donc son fil indéfiniment. Les
+# autres sources continuaient (elles sont sur d'autres fils), mais le
+# passage ne se terminait jamais : rien n'était publié, et seul le
+# timeout-minutes du workflow finissait par tuer le job vingt minutes plus
+# tard. Un site qui traîne coûtait le run entier.
+#
+# 20 s est très large : un passage complet dure ~1 min 25 pour 50 sources,
+# et la source la plus lente répond en quelques secondes. Le seuil n'existe
+# que pour les cas pathologiques, pas pour discipliner les sites lents.
+#
+# setdefaulttimeout agit sur tout le processus, ce qui est exactement ce
+# qu'on veut : feedparser, mais aussi les appels réseau de googlenewsdecoder
+# qui n'en fixaient aucun non plus. fetch_og_image garde le sien (8 s), plus
+# strict, parce qu'un timeout explicite passé à requests prime sur ce défaut.
+FETCH_TIMEOUT = 20
+socket.setdefaulttimeout(FETCH_TIMEOUT)
 
 # ---------------------------------------------------------------------------
 # Parallélisme de la récupération.
@@ -76,6 +99,33 @@ DECODE_WORKERS = 4
 IMAGE_WORKERS = 8
 
 _DECODE_SEMA = threading.Semaphore(DECODE_WORKERS)
+
+# Échecs de décodage Google News du passage en cours.
+#
+# Pourquoi compter : 20 des 50 sources passent par Google News, et
+# gnewsdecoder dépend d'un format que Google peut changer sans prévenir. Un
+# échec ne perd JAMAIS l'article — decode_google_news_link renvoie le lien
+# d'origine — mais le lien reste un redirecteur news.google.com, ce qui a
+# deux conséquences discrètes : la déduplication par lien ne reconnaît plus
+# le même article vu ailleurs, et le classement par domaine ne peut plus
+# décider de l'onglet. La couverture se dégrade sans que rien n'échoue.
+#
+# Le compteur rend cette dégradation visible dans le bilan du passage, au
+# lieu de la laisser dans les logs. Verrou nécessaire : predecode_links est
+# appelé depuis plusieurs fils, un par flux Google News.
+_DECODE_ECHECS = 0
+_DECODE_ECHECS_LOCK = threading.Lock()
+
+
+def reinitialise_echecs_decodage():
+    global _DECODE_ECHECS
+    with _DECODE_ECHECS_LOCK:
+        _DECODE_ECHECS = 0
+
+
+def echecs_decodage():
+    with _DECODE_ECHECS_LOCK:
+        return _DECODE_ECHECS
 
 # ---------------------------------------------------------------------------
 # Liste des sources — copiée depuis DEFAULT_FEEDS dans gta6-watch.html.
@@ -588,9 +638,12 @@ def predecode_links(liens, decoded_cache=None, journal=None):
     if not a_faire:
         return {}
     resolus = {}
+    rates = 0
     with ThreadPoolExecutor(max_workers=min(DECODE_WORKERS, len(a_faire))) as executor:
         for lien, vrai in zip(a_faire, executor.map(decode_google_news_link, a_faire)):
             resolus[lien] = vrai
+            if vrai == lien:
+                rates += 1
             # On ne met en cache QUE les décodages réussis. En cas d'échec
             # la fonction renvoie le lien d'origine inchangé ; le mettre en
             # cache empêcherait un autre flux portant le même article de
@@ -599,9 +652,14 @@ def predecode_links(liens, decoded_cache=None, journal=None):
             # aboutissent au même résultat, l'écriture partagée est sûre.
             if vrai != lien:
                 cache[lien] = vrai
+    if rates:
+        global _DECODE_ECHECS
+        with _DECODE_ECHECS_LOCK:
+            _DECODE_ECHECS += rates
     if journal is not None:
+        detail = f" — {rates} échec(s)" if rates else ""
         journal.append(f"  {len(a_faire)} lien(s) Google News décodé(s) "
-                       f"({DECODE_WORKERS} à la fois)")
+                       f"({DECODE_WORKERS} à la fois){detail}")
     return resolus
 
 
@@ -660,7 +718,38 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
 
     if parsed.bozo and not parsed.entries:
         journal.append(f"  échec : {parsed.bozo_exception}")
-        return [], {"raw_count": 0, "not_modified": False}, journal
+        # Même test de `version` que plus bas : une réponse que feedparser
+        # refuse ET qui ne s'annonce comme aucun format de flux n'est pas un
+        # flux du tout (page HTML servie en text/html, le plus souvent). Un
+        # flux réellement malformé, lui, garde sa version — c'est une source
+        # cassée d'une autre nature, à ne pas confondre.
+        return [], {"raw_count": 0, "not_modified": False,
+                    "http_status": statut,
+                    "not_a_feed": not (getattr(parsed, "version", "") or "")}, journal
+
+    # Un flux vide ne dit pas POURQUOI il est vide, et feedparser ne aide
+    # pas : il avale une page HTML sans protester — bozo reste faux et la
+    # liste d'entrées est vide, exactement comme un flux valide mais sans
+    # article. Seul le champ `version` les sépare : il est renseigné
+    # ("rss20", "atom10"…) uniquement quand le document EST un flux.
+    #
+    # Sans cette distinction, une page de blocage anti-robot et un flux
+    # réellement vide produisent la même ligne « 0 entrée(s) » et la même
+    # source « muette » — c'est arrivé le 30/08/2026 sur IGN et Kotaku, et
+    # le journal ne permettait pas de trancher. Le code HTTP est ajouté
+    # pour la même raison : un 403 déguisé en page HTML se lit alors d'un
+    # coup d'œil.
+    if not parsed.entries:
+        version = getattr(parsed, "version", "") or ""
+        if not version:
+            journal.append(
+                f"  PAS UN FLUX — réponse HTTP {statut or '?'} reçue mais ce "
+                f"n'est pas du RSS/Atom (page de blocage ? URL devenue une "
+                f"page web ?)")
+            return [], {"raw_count": 0, "not_modified": False,
+                        "http_status": statut, "not_a_feed": True}, journal
+        journal.append(f"  flux {version} valide mais vide "
+                       f"(HTTP {statut or '?'}) — le site ne publie rien")
 
     raw_count = len(parsed.entries)
 
@@ -670,6 +759,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     nouvel_etat = {
         "raw_count": raw_count,
         "not_modified": False,
+        "http_status": statut,
         "etag": getattr(parsed, "etag", None),
         "modified": getattr(parsed, "modified", None),
     }
@@ -997,6 +1087,20 @@ NEW_ITEMS_FILE = os.environ.get("NEW_ITEMS_FILE", "")
 VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
 
 
+# "muette" et "cassee" décrivent la même conséquence — la source ne
+# rapporte rien — et se distinguent seulement par la cause. Tout ce qui
+# raisonne sur « cette source ne produit plus » doit donc les traiter
+# ensemble : le compteur de passages muets, l'alerte Discord, le bilan du
+# run. Les séparer ici ferait repartir le compteur à zéro le jour où une
+# source muette devient cassée, et déclencherait une fausse alerte de
+# rétablissement.
+STATUTS_SANS_ARTICLE = ("muette", "cassee")
+
+
+def ne_rapporte_rien(source):
+    return source.get("status") in STATUTS_SANS_ARTICLE
+
+
 def suivre_sources_muettes(health, compteurs_precedents):
     """Compte les passages consécutifs pendant lesquels chaque source est muette.
 
@@ -1014,7 +1118,7 @@ def suivre_sources_muettes(health, compteurs_precedents):
     for source in health:
         sid = source["id"]
         avant = int((compteurs_precedents or {}).get(sid, 0) or 0)
-        if source["status"] == "muette":
+        if ne_rapporte_rien(source):
             apres = avant + 1
             # Strictement égal : l'alerte part au passage qui franchit le
             # seuil, pas à tous ceux qui suivent.
@@ -1210,7 +1314,12 @@ def build_sources_health(all_items, feed_infos, new_counts):
         # parfaitement vivant : le confondre avec un flux mort produirait
         # une fausse alerte à chaque passage.
         if raw == 0 and not info.get("not_modified"):
-            status = "muette"
+            # "cassee" est un sous-cas de "muette" : le serveur a répondu,
+            # mais avec autre chose qu'un flux. Distingué parce que les
+            # gestes ne sont pas les mêmes — une source muette peut revenir
+            # seule, une URL qui ne renvoie plus de flux demande d'aller
+            # voir.
+            status = "cassee" if info.get("not_a_feed") else "muette"
         elif days is None or days > SILENT_SOURCE_DAYS:
             status = "tarie"
         else:
@@ -1220,6 +1329,9 @@ def build_sources_health(all_items, feed_infos, new_counts):
             "id": feed["id"],
             "name": name,
             "entries_fetched": raw,
+            # Code HTTP du dernier passage, pour lire un 403 sans ouvrir
+            # les logs du run. None quand la requête n'a pas abouti.
+            "http_status": info.get("http_status"),
             "not_modified": bool(info.get("not_modified")),
             "new_this_run": new_counts.get(feed["id"], 0),
             "last_article": last.isoformat() if last and last != feed_store.DATE_FLOOR else None,
@@ -1227,12 +1339,16 @@ def build_sources_health(all_items, feed_infos, new_counts):
             "status": status,
         })
 
-    muettes = [h for h in health if h["status"] == "muette"]
+    muettes = [h for h in health if ne_rapporte_rien(h)]
     taries = [h for h in health if h["status"] == "tarie"]
     if muettes:
-        print(f"\n⚠ {len(muettes)} source(s) MUETTE(S) — flux sans aucune entrée, probablement cassé :")
+        print(f"\n⚠ {len(muettes)} source(s) sans aucune entrée :")
         for h in muettes:
-            print(f"    - {h['name']}")
+            if h["status"] == "cassee":
+                detail = f"réponse HTTP {h.get('http_status') or '?'} mais ce n'est pas un flux"
+            else:
+                detail = "flux vide"
+            print(f"    - {h['name']} — {detail}")
     if taries:
         print(f"\n· {len(taries)} source(s) sans article depuis plus de {SILENT_SOURCE_DAYS} jours :")
         for h in taries:
@@ -1245,6 +1361,10 @@ def build_sources_health(all_items, feed_infos, new_counts):
 
 
 def main():
+    # Chronométré d'un bout à l'autre, y compris le chargement de
+    # l'historique : c'est la durée du passage tel que l'app l'annoncera.
+    debut_passage = time.monotonic()
+    reinitialise_echecs_decodage()
     stored = feed_store.load_feed()
     existing_items = stored.get("items", [])
     # Validateurs HTTP du passage précédent, par source.
@@ -1344,8 +1464,19 @@ def main():
             print(f"✅ Source rétablie : {a['name']} — après {a['runs']} passages muets")
     write_source_alerts_file(alertes_sources)
 
+    duree = round(time.monotonic() - debut_passage, 1)
+    rates_decodage = echecs_decodage()
+
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        # Durée réelle du passage. Publiée pour que l'app puisse dire l'état
+        # du robot sans qu'on aille ouvrir GitHub Actions : une durée qui
+        # dérive est le premier signe qu'une source traîne.
+        "duration_seconds": duree,
+        # Décodages Google News ratés. Zéro en régime normal ; tout autre
+        # chiffre annonce que gnewsdecoder se dégrade, bien avant que ça se
+        # voie dans les articles.
+        "decode_failures": rates_decodage,
         "total_articles": len(all_items),
         "new_this_run": len(newly_added),
         # Nombre d'actualités couvertes par au moins HOT_SOURCE_THRESHOLD
@@ -1384,7 +1515,14 @@ def main():
     nb_allege = feed_store.write_feed_pair(output)
     print(f"Fichier allégé écrit : {nb_allege} article(s) dans docs/feed-recent.json")
 
-    print(f"\nTerminé — {len(newly_added)} nouveau(x), {len(all_items)} au total dans docs/feed.json")
+    print(f"\nTerminé en {duree} s — {len(newly_added)} nouveau(x), "
+          f"{len(all_items)} au total dans docs/feed.json")
+    if rates_decodage:
+        # Jamais silencieux : un décodage raté ne casse rien tout de suite,
+        # mais c'est le signe avant-coureur d'une panne de gnewsdecoder qui
+        # toucherait 20 sources sur 50.
+        print(f"⚠️  {rates_decodage} décodage(s) Google News en échec — "
+              f"liens laissés sur news.google.com")
 
     # Pas de notification au tout premier lancement : l'historique est vide,
     # donc "tout" serait considéré comme nouveau — ça enverrait des dizaines
