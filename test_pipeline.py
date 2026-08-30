@@ -1340,6 +1340,74 @@ def test_titres_numerotes_pas_fusionnes():
           "mais deux fois le même titre restent bien un doublon")
 
 
+def test_titre_generique_naspire_pas_tout():
+    print("\n[doublons] un titre réduit au nom du jeu n'absorbe plus rien")
+    import fetch_feeds
+
+    # Constaté en production le 30/08/2026. « Grand Theft Auto VI -
+    # Rockstar Games » — le nom du jeu plus celui du studio — atteint 0,750
+    # de similarité avec « Grand Theft Auto VI Trailer 1 », soit PILE le
+    # seuil. Le Trailer 1 y a été absorbé ; le Trailer 2 derrière lui a été
+    # PERDU, parce que record_coverage refuse une seconde source du même
+    # nom. Un article escamoté ne se voit pas.
+    aimant = "Grand Theft Auto VI - Rockstar Games"
+    for autre in ("Grand Theft Auto VI Trailer 1",
+                  "Grand Theft Auto VI Trailer 2",
+                  "Grand Theft Auto VI: An Extended Look"):
+        check(fetch_feeds.rien_en_commun_sauf_le_jeu(aimant, autre),
+              f"« {autre[:40]} » n'est plus aspiré par le titre générique")
+
+    check(fetch_feeds.title_similarity(aimant, "Grand Theft Auto VI Trailer 1")
+          >= fetch_feeds.SIMILARITY_THRESHOLD,
+          "et pourtant la similarité seule les donnait pour identiques")
+
+    # L'inverse : deux titres qui partagent un vrai mot restent fusionnables.
+    for a, b in (("GTA 6 : la map dévoilée", "GTA 6 : la map devoilee"),
+                 ("GTA 6 arrive enfin", "GTA 6 arrive"),
+                 ("Rockstar annonce la date", "Rockstar confirme la date")):
+        check(not fetch_feeds.rien_en_commun_sauf_le_jeu(a, b),
+              f"« {a} » et « {b} » restent comparables")
+
+    existant = [{"title": aimant, "link": "https://www.rockstargames.com/VI"}]
+    item = {"title": "Grand Theft Auto VI Trailer 1",
+            "link": "https://www.youtube.com/watch?v=QdBZY2fkU-0"}
+    check(fetch_feeds.find_duplicate(item, existant, {}, existant, {}) is None,
+          "le Trailer 1 n'est plus absorbé par la page générique")
+
+
+def test_reparation_attributions_croisees():
+    print("\n[données] une « autre source » ne renvoie pas vers un autre article")
+    import fetch_feeds
+
+    # Le lecteur qui clique sur « autre source » doit atterrir sur le même
+    # sujet. Quand le lien est le lien PRINCIPAL d'un autre article du fil,
+    # c'est un rapprochement erroné — audit_donnees.py les signalait sans
+    # que rien ne vienne les corriger.
+    items = [
+        {"title": "A", "link": "https://a.fr/1",
+         "extraSources": [{"source": "X", "link": "https://b.fr/2"},
+                          {"source": "Y", "link": "https://legitime.fr/9"}]},
+        {"title": "B", "link": "https://b.fr/2"},
+        {"title": "C", "link": "https://c.fr/3",
+         "extraSources": [{"source": "Z", "link": "https://b.fr/2"}]},
+    ]
+    fetch_feeds.repare_attributions_croisees(items)
+
+    liens = [s["link"] for s in items[0].get("extraSources", [])]
+    check(liens == ["https://legitime.fr/9"],
+          "le renvoi vers l'article B est retiré, la source légitime reste")
+    check("extraSources" not in items[2],
+          "un article dont toutes les sources étaient fausses n'en garde aucune")
+    check("extraSources" not in items[1],
+          "un article sans source supplémentaire n'en gagne pas")
+
+    # Idempotence : la passe tourne à chaque passage.
+    avant = json.dumps(items, sort_keys=True)
+    fetch_feeds.repare_attributions_croisees(items)
+    check(json.dumps(items, sort_keys=True) == avant,
+          "rejouer la réparation ne change plus rien")
+
+
 def test_videos_archivees():
     print("\n[Rockstar] les vidéos trop anciennes pour le flux")
     import fetch_feeds
@@ -2200,7 +2268,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_miniature_youtube, test_media_content_non_declare_reste_accepte,
            test_reparation_vignettes_stockees,
            test_sonde_decouvre_les_flux_declares,
-           test_titres_numerotes_pas_fusionnes, test_videos_archivees,
+           test_titres_numerotes_pas_fusionnes, test_titre_generique_naspire_pas_tout,
+           test_reparation_attributions_croisees, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
            test_validateurs_lies_a_leur_url,

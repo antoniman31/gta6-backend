@@ -514,6 +514,40 @@ def _sans_nombres(titre):
     return re.sub(r"\s+", " ", re.sub(r"\d+", "", normalize_title(titre))).strip()
 
 
+# Mots que TOUT article du fil contient : ils ne distinguent rien. Le nom
+# du jeu sous ses graphies courantes, et rien d'autre — une liste plus
+# longue empêcherait de vraies fusions.
+_MOTS_SANS_VALEUR = {"grand", "theft", "auto", "vi", "6", "gta", "gta6", "gtavi"}
+
+
+def _mots_distinctifs(titre):
+    return {m for m in normalize_title(titre).split() if m not in _MOTS_SANS_VALEUR}
+
+
+def rien_en_commun_sauf_le_jeu(a, b):
+    """Deux titres dont le seul point commun est le nom du jeu.
+
+    « Grand Theft Auto VI - Rockstar Games » — le nom du jeu plus celui du
+    studio — atteint 0,750 de similarité avec « Grand Theft Auto VI
+    Trailer 1 », soit PILE le seuil. Un tel titre est un aimant : presque
+    tout ce qui commence par le nom du jeu vient s'y coller.
+
+    Constaté en production le 30/08/2026. Le Trailer 1 y a été absorbé, et
+    le Trailer 2 derrière lui a été purement PERDU : record_coverage refuse
+    une seconde source portant le même nom, donc il n'a même pas été
+    conservé comme source supplémentaire. Un article escamoté ne se voit
+    pas — c'est le pire des défauts.
+
+    La règle est plus sûre qu'un seuil relevé au jugé : si tout ce que deux
+    titres partagent est le nom du jeu, ils ne parlent pas de la même chose.
+    """
+    da, db = _mots_distinctifs(a), _mots_distinctifs(b)
+    if not da or not db:
+        # Un titre réduit au seul nom du jeu ne peut rien confirmer.
+        return True
+    return not (da & db)
+
+
 def titres_dune_meme_serie(a, b):
     """Deux titres identiques À LEUR NUMÉRO PRÈS — donc deux contenus distincts.
 
@@ -619,6 +653,8 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None,
                   else existing_items[:TITLE_SIMILARITY_WINDOW])
     for other in a_comparer:
         if titres_dune_meme_serie(item["title"], other["title"]):
+            continue
+        if rien_en_commun_sauf_le_jeu(item["title"], other["title"]):
             continue
         if title_similarity(item["title"], other["title"]) >= SIMILARITY_THRESHOLD:
             return other
@@ -1721,6 +1757,44 @@ def repare_vignettes_stockees(items):
     return items
 
 
+def repare_attributions_croisees(items):
+    """Retire les « autres sources » qui pointent vers un AUTRE article du fil.
+
+    Une source supplémentaire est censée dire « cette rédaction couvre le
+    même sujet ». Quand son lien est le lien PRINCIPAL d'un autre article
+    de l'historique, ce n'est pas la même actu vue deux fois : c'est un
+    rapprochement erroné, et le lecteur qui clique atterrit sur un autre
+    sujet. `audit_donnees.py` les signale depuis le 30/08/2026 sans que
+    rien ne vienne les corriger.
+
+    Corrigé rétroactivement parce que rien d'autre ne le fera : un article
+    déjà stocké ne repasse jamais par la collecte. Même mécanique que
+    repare_vignettes_stockees et recheck_official_status.
+
+    Ne touche QU'AUX liens qui existent par ailleurs comme article à part
+    entière — donc à des rapprochements dont on peut prouver qu'ils sont
+    faux, jamais à une source supplémentaire légitime.
+    """
+    principaux = {i.get("link") for i in items if i.get("link")}
+    retires = 0
+    for item in items:
+        autres = item.get("extraSources")
+        if not autres:
+            continue
+        gardes = [s for s in autres
+                  if s.get("link") not in principaux or s.get("link") == item.get("link")]
+        if len(gardes) != len(autres):
+            retires += len(autres) - len(gardes)
+            if gardes:
+                item["extraSources"] = gardes
+            else:
+                item.pop("extraSources", None)
+    if retires:
+        print(f"Correction rétroactive : {retires} « autre(s) source(s) » "
+              f"retirée(s) — elles pointaient vers un autre article du fil")
+    return items
+
+
 def recheck_official_status(items):
     """Recalcule les drapeaux d'onglet sur les articles déjà stockés.
 
@@ -1917,6 +1991,7 @@ def main():
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
     existing_items = repare_vignettes_stockees(existing_items)
+    existing_items = repare_attributions_croisees(existing_items)
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
     existing_items = fusionne_doublons_de_titre(existing_items)
