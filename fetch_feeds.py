@@ -30,7 +30,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import feedparser
 import requests
@@ -2080,7 +2080,43 @@ def sonde(url):
 
     for i in items[:3]:
         print(f"     · {i['title'][:70]}")
-    return 0 if items or info.get("not_modified") else 1
+
+    # Quand ce n'est pas un flux, demander à la PAGE où est le sien.
+    #
+    # Une page web déclare ses flux avec <link rel="alternate"
+    # type="application/rss+xml">, c'est le mécanisme que les navigateurs
+    # utilisent depuis toujours. Le lire vaut infiniment mieux que d'essayer
+    # des adresses au hasard : le 30/08/2026, six candidates sur
+    # rockstargames.com ont renvoyé 500 — et un chemin inventé de toutes
+    # pièces renvoyait 500 lui aussi. Ce site répond 500 là où un autre
+    # répondrait 404, donc essayer des adresses n'apprend rien.
+    if info.get("not_a_feed"):
+        for trouve in flux_declares(url):
+            print(f"  flux déclaré     : {trouve}")
+
+    # Toujours 0 : c'est un rapport, pas un test. Un job rouge parce qu'une
+    # adresse candidate n'est pas un flux ferait passer un diagnostic réussi
+    # pour une panne. Même principe que audit_donnees.py.
+    return 0
+
+
+def flux_declares(url_page):
+    """Adresses de flux que la page déclare elle-même, s'il y en a."""
+    try:
+        resp = requests.get(url_page, timeout=FETCH_TIMEOUT,
+                            headers={"User-Agent": USER_AGENT})
+        soup = BeautifulSoup(resp.text, "html.parser")
+    except Exception as e:
+        print(f"  [sonde] page illisible pour la découverte : {e}")
+        return []
+    trouves = []
+    for lien in soup.find_all("link", rel=lambda v: v and "alternate" in v):
+        type_mime = (lien.get("type") or "").lower()
+        if "rss" in type_mime or "atom" in type_mime or "xml" in type_mime:
+            href = lien.get("href")
+            if href:
+                trouves.append(urljoin(url_page, href))
+    return trouves
 
 
 def jours_depuis(date_iso):
