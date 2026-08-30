@@ -130,8 +130,12 @@ def send_source_alerts(alertes):
     retours = [a for a in alertes if a.get("type") == "retour"]
     lignes = []
     for a in tombees:
+        # En heures et non en passages : un passage n'est pas une unité de
+        # temps, l'écart entre deux va de 30 min à près de 5 h selon que
+        # GitHub honore ou abandonne l'exécution planifiée. « depuis 6
+        # passages » ne disait donc rien d'exploitable.
         lignes.append(f"🔴 **{a.get('name')}** ne renvoie plus rien "
-                      f"depuis {a.get('runs')} passages.")
+                      f"depuis {a.get('heures')} h.")
     for a in retours:
         lignes.append(f"🟢 **{a.get('name')}** est revenue.")
 

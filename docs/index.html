@@ -3408,16 +3408,19 @@ function majLigneRun(data){
   // blocage, ou URL devenue une page web. Ça ne se répare pas tout seul,
   // contrairement à une source simplement muette — d'où la mention à part,
   // avec les noms.
+  //
+  // Les deux comptes viennent de sources_health, et de lui seul : une source
+  // y porte exactement UN statut, donc « muettes » et « cassées » ne peuvent
+  // pas se recouvrir. C'est ce qui annonçait « 3 sources muettes · 3 cassées »
+  // pour trois sources en tout, du temps où les muettes se comptaient depuis
+  // sources_silence.
+  //
+  // Et sources_silence ne conviendrait plus de toute façon : il ne liste plus
+  // les sources muettes mais les CHRONOMÈTRES en cours. Une source qui vient
+  // de répondre y reste tant que sa reprise n'est pas confirmée sur deux
+  // passages — la compter ici l'afficherait muette alors qu'elle rapporte.
   const cassees = (data.sources_health || []).filter(s => s.status === "cassee");
-  const idsCassees = new Set(cassees.map(s => s.id));
-
-  // sources_silence compte TOUTES les sources qui ne rapportent rien —
-  // muettes ET cassées confondues, c'est voulu côté robot. Les recompter ici
-  // annonçait « 3 sources muettes · 3 cassées » pour trois sources en tout :
-  // six problèmes affichés, trois réels. On ne garde donc que celles qui ne
-  // sont pas déjà nommées comme cassées.
-  const muettes = Object.keys(data.sources_silence || {})
-    .filter(id => !idsCassees.has(id)).length;
+  const muettes = (data.sources_health || []).filter(s => s.status === "muette").length;
 
   if(muettes){
     morceaux.push('<span class="alerte">' + muettes + " source" +
