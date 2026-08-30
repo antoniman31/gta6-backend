@@ -1254,6 +1254,110 @@ def test_media_content_non_declare_reste_accepte():
           "une entrée sans média ne lève pas d'erreur")
 
 
+def test_couverture_rockstar():
+    print("\n[Rockstar] tout ce que publie Rockstar, archives comprises")
+    import fetch_feeds
+    from datetime import timedelta
+
+    vieux = (datetime.now(timezone.utc) - timedelta(days=400)).isoformat()
+    recent = datetime.now(timezone.utc).isoformat()
+
+    def faux_flux(nb):
+        """nb entrées, toutes anciennes sauf la première."""
+        entrees = [{"title": f"GTA 6 nouvelle {i}", "summary": "",
+                    "link": f"https://www.rockstargames.com/n{i}",
+                    "published": recent if i == 0 else vieux} for i in range(nb)]
+        return types.SimpleNamespace(status=200, bozo=False, entries=entrees,
+                                     version="rss20", href=None,
+                                     etag=None, modified=None)
+
+    def collecte(feed, entrees):
+        vrai = fetch_feeds.feedparser.parse
+        fetch_feeds.feedparser.parse = lambda *a, **k: faux_flux(entrees)
+        try:
+            return fetch_feeds.collect_feed_items(feed, {}, {})
+        finally:
+            fetch_feeds.feedparser.parse = vrai
+
+    base = {"id": "x", "name": "Rockstar Games (officiel EN)",
+            "url": "https://news.google.com/rss/search?q=site:rockstargames.com",
+            "official": True}
+
+    # Plafond de lecture : par défaut 30, même quand le flux en offre 100.
+    items, _, _ = collecte({**base, "garder_les_archives": True}, 100)
+    check(len(items) == fetch_feeds.MAX_ENTREES,
+          f"sans réglage, seules {fetch_feeds.MAX_ENTREES} entrées sont lues "
+          f"sur 100 (obtenu {len(items)})")
+
+    items, _, _ = collecte({**base, "garder_les_archives": True,
+                            "max_entrees": 100}, 100)
+    check(len(items) == 100,
+          f"avec max_entrees=100, les 100 sont lues (obtenu {len(items)}) — "
+          f"c'est 70 pages de Rockstar qui n'entraient nulle part")
+
+    # Le garde-fou d'âge, et son exemption.
+    items, _, _ = collecte({**base, "max_entrees": 100}, 100)
+    check(len(items) == 1,
+          "sans exemption, tout ce qui dépasse 45 jours est écarté : "
+          f"il ne reste que l'article récent (obtenu {len(items)})")
+
+    items, _, _ = collecte({**base, "garder_les_archives": True,
+                            "max_entrees": 100}, 100)
+    archives = [i for i in items if i.get("archive")]
+    check(len(archives) == 99,
+          f"avec exemption, les anciennes reviennent (obtenu {len(archives)})")
+    check(not items[0].get("archive"),
+          "et l'article récent n'est PAS marqué archive")
+
+    # Le drapeau se pose source par source, jamais déduit de `official` :
+    # « Rockstar Games (annonces) » est officiel ET une recherche web
+    # généraliste. L'exempter rouvrirait le déversement d'archives tierces
+    # qui a motivé le garde-fou le 29/08/2026.
+    par_id = {f["id"]: f for f in fetch_feeds.FEEDS}
+    for fid in ("rockstar-en", "rockstar-fr", "rockstar-youtube", "take2-ir"):
+        check(par_id[fid].get("garder_les_archives") is True,
+              f"{fid} garde ses archives")
+    check(not par_id["rockstar-announce"].get("garder_les_archives"),
+          "mais PAS rockstar-announce, qui cherche sur tout le web")
+    exemptees = [f["id"] for f in fetch_feeds.FEEDS if f.get("garder_les_archives")]
+    check(all(f["id"].startswith(("rockstar", "take2")) for f in fetch_feeds.FEEDS
+              if f.get("garder_les_archives")),
+          f"l'exemption reste cantonnée aux canaux de Rockstar : {exemptees}")
+
+
+def test_archives_ne_notifient_pas():
+    print("\n[Rockstar] une archive rapatriée ne fait vibrer aucun téléphone")
+
+    # Chaque notification fait sortir le téléphone. Cinquante publications
+    # de 2025 annoncées d'un bloc, ce sont cinquante dérangements pour du
+    # vieux — le contraire de ce qu'on cherche en rapatriant l'historique.
+    nouveaux = [{"title": "Neuf", "link": "https://a.fr/1"},
+                {"title": "Vieux", "link": "https://a.fr/2", "archive": True}]
+    a_annoncer = [i for i in nouveaux if not i.get("archive")]
+    check(len(a_annoncer) == 1 and a_annoncer[0]["title"] == "Neuf",
+          "seul l'article réellement nouveau part en notification")
+
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check('a_annoncer = [i for i in newly_added if not i.get("archive")]' in src,
+          "le filtre est bien posé sur le chemin des notifications")
+    check("write_new_items_file(a_annoncer)" in src,
+          "et c'est la liste filtrée qui est déposée, pas newly_added")
+
+    # Le piège indirect : rapatrier des archives fait gagner une reprise à
+    # des sujets déjà connus. Sans garde, une vague de « sujet devenu
+    # majeur » partirait par la bande alors que les archives elles-mêmes
+    # sont silencieuses.
+    check('not item.get("archive")' in src
+          and "avant < HOT_SOURCE_THRESHOLD <= apres" in src,
+          "une archive ne peut pas promouvoir un sujet en actu majeure")
+
+    # Et le compte reste honnête : l'archive EST un nouvel article de
+    # l'historique, elle doit être comptée comme tel.
+    check("len(newly_added)" in src,
+          "« N nouveaux » continue de compter les archives : elles entrent "
+          "bien dans l'historique, c'est la notification qu'on retient")
+
+
 def test_predecode_google_news():
     print("\n== Pré-décodage des liens Google News ==")
     import fetch_feeds
@@ -1949,6 +2053,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_predecode_google_news,
            test_miniature_youtube, test_media_content_non_declare_reste_accepte,
            test_reparation_vignettes_stockees,
+           test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
            test_validateurs_lies_a_leur_url,
            test_timeout_reseau, test_source_cassee_vs_muette,
