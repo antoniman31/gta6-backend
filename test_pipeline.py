@@ -1142,6 +1142,118 @@ def test_validateurs_lies_a_leur_url():
         fetch_feeds.feedparser.parse = vrai
 
 
+def test_miniature_youtube():
+    print("\n[images] la vignette d'une vidéo YouTube, et pas le lecteur Flash")
+    import fetch_feeds
+
+    # Le contenu réel du flux Atom de YouTube, tel qu'il arrivait le
+    # 30/08/2026 : media:content EXISTE mais c'est l'ancienne URL du
+    # lecteur Flash, pas une image. Comme il était pris en premier sans
+    # regarder ce qu'il annonçait, les 17 vidéos du fil enregistraient
+    # cette adresse — et l'app, qui masque une image cassée, ne montrait
+    # aucune vignette.
+    class Entree:
+        media_content = [{"url": "https://www.youtube.com/v/0H94XV8aPVY?version=3",
+                          "medium": "video",
+                          "type": "application/x-shockwave-flash"}]
+        media_thumbnail = [{"url": "https://i.ytimg.com/vi/0H94XV8aPVY/hqdefault.jpg",
+                            "width": "480", "height": "360"}]
+
+    trouvee = fetch_feeds.image_du_flux(Entree())
+    check(trouvee == "https://i.ytimg.com/vi/0H94XV8aPVY/hqdefault.jpg",
+          "c'est media:thumbnail qui est retenu, pas le lecteur vidéo")
+    check("youtube.com/v/" not in (trouvee or ""),
+          "l'URL du lecteur Flash n'est plus jamais enregistrée comme image")
+
+    # La ceinture : même sans media:thumbnail, l'adresse reste calculable.
+    class SansVignette:
+        media_content = Entree.media_content
+        media_thumbnail = []
+
+    check(fetch_feeds.image_du_flux(SansVignette()) is None,
+          "sans vignette déclarée, le flux ne fournit rien plutôt qu'un faux")
+    check(fetch_feeds.vignette_youtube("https://www.youtube.com/watch?v=0H94XV8aPVY")
+          == "https://i.ytimg.com/vi/0H94XV8aPVY/hqdefault.jpg",
+          "et la vignette se déduit du lien, sans appel réseau")
+    for lien in ("https://youtu.be/0H94XV8aPVY",
+                 "https://www.youtube.com/embed/0H94XV8aPVY",
+                 "https://www.youtube.com/shorts/0H94XV8aPVY",
+                 "https://www.youtube.com/watch?list=PL1&v=0H94XV8aPVY"):
+        check(fetch_feeds.vignette_youtube(lien) is not None,
+              f"identifiant reconnu dans {lien[:44]}")
+    check(fetch_feeds.vignette_youtube("https://kotaku.com/un-article") is None,
+          "et rien n'est inventé pour un lien qui n'est pas une vidéo")
+
+
+def test_reparation_vignettes_stockees():
+    print("\n[images] les vidéos déjà publiées récupèrent leur vignette")
+    import fetch_feeds
+
+    # Corriger la collecte ne suffit pas : un article déjà connu n'y
+    # repasse jamais. Sans cette passe rétroactive, les 17 vidéos du fil
+    # garderaient l'URL du lecteur Flash indéfiniment — c'est-à-dire que
+    # rien n'aurait changé à l'écran, qui est le seul endroit qui compte.
+    items = [
+        {"link": "https://www.youtube.com/watch?v=TXsd53UiklU",
+         "image": "https://www.youtube.com/v/TXsd53UiklU?version=3"},
+        {"link": "https://kotaku.com/article",
+         "image": "https://pic.clubic.com/v1/images/2178880/raw"},
+        {"link": "https://gta6times.com/news/machin",
+         "image": "https://gta6times.com/news/machin/opengraph-image"},
+        {"link": "https://exemple.fr/a", "image": None},
+    ]
+    fetch_feeds.repare_vignettes_stockees(items)
+
+    check(items[0]["image"] == "https://i.ytimg.com/vi/TXsd53UiklU/hqdefault.jpg",
+          "la vidéo retrouve sa vraie miniature")
+    check(items[1]["image"] == "https://pic.clubic.com/v1/images/2178880/raw",
+          "une image de CDN sans extension n'est pas touchée")
+    check(items[2]["image"] == "https://gta6times.com/news/machin/opengraph-image",
+          "une route qui génère une image Open Graph non plus "
+          "(c'est du Next.js, pas un défaut)")
+    check(items[3]["image"] is None,
+          "un article sans image reste sans image, le scraping s'en charge")
+
+    # Idempotence : la passe tourne à chaque passage, elle ne doit pas
+    # dériver au fil des exécutions.
+    avant = [i["image"] for i in items]
+    fetch_feeds.repare_vignettes_stockees(items)
+    check([i["image"] for i in items] == avant,
+          "rejouer la réparation ne change plus rien")
+
+
+def test_media_content_non_declare_reste_accepte():
+    print("\n[images] on n'écarte que ce qui s'annonce comme n'étant pas une image")
+    import fetch_feeds
+
+    # Le risque de la correction : beaucoup de CDN servent de vraies images
+    # depuis des chemins sans extension et sans rien déclarer. Rejeter par
+    # défaut ferait perdre des dizaines de vignettes valides — vérifié sur
+    # les 1269 images publiées le 30/08/2026 (Clubic, Jerusalem Post,
+    # Unsplash). On ne rejette donc que sur une déclaration explicite.
+    def entree(media):
+        return type("E", (), {"media_content": [media], "media_thumbnail": []})()
+
+    cdn = "https://pic.clubic.com/v1/images/2178880/raw"
+    check(fetch_feeds.image_du_flux(entree({"url": cdn})) == cdn,
+          "un média sans medium ni type est gardé : c'est le cas des CDN")
+    check(fetch_feeds.image_du_flux(entree({"url": cdn, "medium": "image"})) == cdn,
+          "un média déclaré image est gardé")
+    check(fetch_feeds.image_du_flux(entree({"url": cdn, "type": "image/jpeg"})) == cdn,
+          "un type image/* aussi")
+    check(fetch_feeds.image_du_flux(entree({"url": cdn, "medium": "video"})) is None,
+          "un medium video est écarté")
+    check(fetch_feeds.image_du_flux(entree({"url": cdn, "type": "video/mp4"})) is None,
+          "un type video/* aussi")
+    check(fetch_feeds.image_du_flux(entree({"url": cdn, "type": "audio/mpeg"})) is None,
+          "et un podcast n'est pas une vignette")
+
+    # Une entrée sans aucun média ne doit pas casser : c'est le cas le plus
+    # fréquent, et le scraping og:image prend le relais plus tard.
+    check(fetch_feeds.image_du_flux(type("E", (), {})()) is None,
+          "une entrée sans média ne lève pas d'erreur")
+
+
 def test_predecode_google_news():
     print("\n== Pré-décodage des liens Google News ==")
     import fetch_feeds
@@ -1781,6 +1893,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_chaines_par_hote,
            test_plafond_par_domaine, test_source_qui_plante,
            test_predecode_google_news,
+           test_miniature_youtube, test_media_content_non_declare_reste_accepte,
+           test_reparation_vignettes_stockees,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
            test_validateurs_lies_a_leur_url,
            test_timeout_reseau, test_source_cassee_vs_muette,

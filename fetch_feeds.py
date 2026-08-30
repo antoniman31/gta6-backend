@@ -387,6 +387,68 @@ def decode_google_news_link(url):
     return url
 
 
+# Identifiant d'une vidéo YouTube, dans les différentes formes d'URL que
+# le flux ou une redirection peuvent produire.
+_ID_YOUTUBE = re.compile(
+    r"(?:youtube\.com/(?:watch\?(?:[^#]*&)?v=|embed/|v/|shorts/)"
+    r"|youtu\.be/)([A-Za-z0-9_-]{11})")
+
+
+def vignette_youtube(url):
+    """Miniature déduite de l'identifiant de la vidéo, sans appel réseau.
+
+    Filet de sécurité pour les deux chaînes YouTube : même si le flux
+    cessait un jour de fournir media:thumbnail, l'adresse reste calculable
+    à partir du lien. Zéro requête, et rien à maintenir.
+
+    hqdefault et non maxresdefault : la première existe pour toute vidéo
+    publiée, la seconde manque sur les vidéos de faible définition — et une
+    vignette absente est exactement ce qu'on cherche à corriger.
+    """
+    trouve = _ID_YOUTUBE.search(url or "")
+    return f"https://i.ytimg.com/vi/{trouve.group(1)}/hqdefault.jpg" if trouve else None
+
+
+def _media_est_une_image(media):
+    """Vrai tant que rien n'indique que ce média N'EST PAS une image.
+
+    Prudence délibérée. Beaucoup de flux ne déclarent ni `medium` ni
+    `type`, et leurs URL n'ont pas d'extension : les CDN de Clubic, du
+    Jerusalem Post ou d'Unsplash servent de vraies images depuis des
+    chemins sans .jpg. Rejeter par défaut ferait perdre des dizaines de
+    vignettes valides. On n'écarte donc que ce qui s'annonce explicitement
+    comme autre chose qu'une image.
+    """
+    medium = (media.get("medium") or "").lower()
+    if medium:
+        return medium == "image"
+    type_mime = (media.get("type") or "").lower()
+    if type_mime:
+        return type_mime.startswith("image/")
+    return True
+
+
+def image_du_flux(entry):
+    """Miniature fournie par le flux lui-même, si elle en est vraiment une.
+
+    L'ordre compte, et l'ancien était faux pour YouTube. Son flux Atom
+    fournit les deux : un media:thumbnail — la vraie vignette — et un
+    media:content qui est l'ancienne URL du lecteur Flash
+    (/v/{id}?version=3, type application/x-shockwave-flash). Comme
+    media:content était pris en premier sans vérifier ce qu'il annonçait,
+    les 17 vidéos du fil enregistraient une adresse qui n'est pas une
+    image. L'app masque une image cassée (onerror), donc elles
+    s'affichaient simplement sans vignette, sans le moindre signal.
+    """
+    for media in (getattr(entry, "media_content", None) or []):
+        if _media_est_une_image(media) and media.get("url"):
+            return media["url"]
+    for media in (getattr(entry, "media_thumbnail", None) or []):
+        if media.get("url"):
+            return media["url"]
+    return None
+
+
 def fetch_og_image(url, timeout=8):
     """Récupère l'image de prévisualisation (og:image) d'une vraie page article."""
     try:
@@ -885,12 +947,10 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         is_official = statut_officiel(real_link, feed)
 
         # Miniature trouvée directement dans le flux RSS, si présente — pas
-        # besoin d'aller la chercher sur la page dans ce cas.
-        image = None
-        if "media_content" in entry and entry.media_content:
-            image = entry.media_content[0].get("url")
-        elif "media_thumbnail" in entry and entry.media_thumbnail:
-            image = entry.media_thumbnail[0].get("url")
+        # besoin d'aller la chercher sur la page dans ce cas. La déduction
+        # YouTube ne sert qu'en dernier recours : quand le flux donne une
+        # vraie vignette, c'est la sienne qui fait foi.
+        image = image_du_flux(entry) or vignette_youtube(real_link)
 
         items.append({
             "title": title,
@@ -1474,6 +1534,36 @@ def write_new_items_file(new_items):
         print(f"  [notif] impossible d'écrire {NEW_ITEMS_FILE} : {e}")
 
 
+def repare_vignettes_stockees(items):
+    """Remplace, dans l'historique, les fausses images des vidéos YouTube.
+
+    Corriger la collecte ne suffit pas : un article déjà connu n'y repasse
+    jamais, il est simplement rechargé depuis feed.json. Sans cette passe,
+    les 17 vidéos déjà publiées garderaient éternellement l'URL du lecteur
+    Flash — c'est-à-dire exactement le symptôme qu'on vient de corriger.
+
+    Même raison d'être que recheck_official_status juste en dessous, et
+    même prudence : on ne touche qu'aux images dont on peut PROUVER
+    qu'elles n'en sont pas, pas à toutes celles qui n'ont pas d'extension
+    dans l'URL. Un CDN qui sert une image depuis un chemin sans .jpg est
+    parfaitement légitime.
+    """
+    reparees = 0
+    for item in items:
+        image = item.get("image") or ""
+        # La signature du défaut : l'ancienne URL du lecteur, /v/{id}.
+        if "youtube.com/v/" not in image:
+            continue
+        vraie = vignette_youtube(image) or vignette_youtube(item.get("link", ""))
+        if vraie and vraie != image:
+            item["image"] = vraie
+            reparees += 1
+    if reparees:
+        print(f"Correction rétroactive : {reparees} vignette(s) de vidéo "
+              f"remise(s) d'aplomb (lecteur Flash -> miniature)")
+    return items
+
+
 def recheck_official_status(items):
     """Recalcule les drapeaux d'onglet sur les articles déjà stockés.
 
@@ -1669,6 +1759,7 @@ def main():
     entrees_precedentes = stored.get("sources_entries_history", {}) or {}
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
+    existing_items = repare_vignettes_stockees(existing_items)
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
     existing_items = fusionne_doublons_de_titre(existing_items)
