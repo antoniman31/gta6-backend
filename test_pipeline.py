@@ -1300,6 +1300,106 @@ def test_sonde_decouvre_les_flux_declares():
         fetch_feeds.requests.get = vrai
 
 
+def test_titres_numerotes_pas_fusionnes():
+    print("\n[doublons] « Trailer 1 » et « Trailer 2 » sont deux vidéos")
+    import fetch_feeds
+
+    # 0,966 de similarité pour un chiffre d'écart : très au-dessus du seuil
+    # de 0,75, alors que ce sont deux vidéos séparées d'un an et demi.
+    # Constaté en versant les bandes-annonces dans l'historique — le
+    # Trailer 2 disparaissait, absorbé par le Trailer 1, et se retrouvait
+    # crédité comme « autre source » de celui-ci. Le Trailer 3 sortira
+    # avant novembre.
+    t1 = "Grand Theft Auto VI Trailer 1"
+    t2 = "Grand Theft Auto VI Trailer 2"
+    check(fetch_feeds.title_similarity(t1, t2) >= fetch_feeds.SIMILARITY_THRESHOLD,
+          "les deux titres passent le seuil de similarité — d'où le piège")
+    check(fetch_feeds.titres_dune_meme_serie(t1, t2),
+          "mais ils sont reconnus comme deux numéros d'une même série")
+
+    for a, b in (("Extended Look Part 3", "Extended Look Part 4"),
+                 ("GTA 6 sort en 2026", "GTA 6 sort en 2027"),
+                 ("GTA 6 repoussé", "GTA 5 repoussé")):
+        check(fetch_feeds.titres_dune_meme_serie(a, b),
+              f"« {a} » et « {b} » ne sont pas le même sujet")
+
+    # Et l'inverse : le garde-fou ne doit pas empêcher les vraies fusions.
+    for a, b in (("GTA 6 Trailer 2", "GTA 6 Trailer 2"),
+                 ("GTA 6 : la map dévoilée", "GTA 6 : la map devoilee"),
+                 ("GTA 6 arrive", "GTA 6 arrive enfin")):
+        check(not fetch_feeds.titres_dune_meme_serie(a, b),
+              f"« {a} » et « {b} » restent fusionnables")
+
+    # Le garde-fou agit bien DANS find_duplicate, pas seulement en théorie.
+    existant = [{"title": t1, "link": "https://youtu.be/aaaaaaaaaaa"}]
+    item = {"title": t2, "link": "https://youtu.be/bbbbbbbbbbb"}
+    check(fetch_feeds.find_duplicate(item, existant, {}, existant, {}) is None,
+          "le Trailer 2 n'est plus absorbé par le Trailer 1")
+    meme = {"title": t1, "link": "https://youtu.be/ccccccccccc"}
+    check(fetch_feeds.find_duplicate(meme, existant, {}, existant, {}) is not None,
+          "mais deux fois le même titre restent bien un doublon")
+
+
+def test_videos_archivees():
+    print("\n[Rockstar] les vidéos trop anciennes pour le flux")
+    import fetch_feeds
+
+    par_id = {f["id"]: f for f in fetch_feeds.FEEDS}
+    check(bool(fetch_feeds.VIDEOS_ARCHIVEES), "l'archive n'est pas vide")
+
+    for v in fetch_feeds.VIDEOS_ARCHIVEES:
+        check(v["source"] in par_id,
+              f"{v['video']} est rattachée à une source qui existe encore")
+        check(len(v["video"]) == 11,
+              f"{v['video']} a la forme d'un identifiant YouTube")
+        # Une date approximative rangerait la vidéo au mauvais endroit du
+        # fil, et plus rien ne viendrait la corriger. Elles ont donc toutes
+        # été relevées sur les fiches YouTube, pas devinées.
+        quand = feed_store.parse_date_key(v["date"])
+        check(quand != feed_store.DATE_FLOOR,
+              f"{v['video']} porte une date lisible ({v['date'][:10]})")
+        check(quand <= datetime.now(timezone.utc),
+              f"{v['video']} n'est pas datée dans le futur")
+
+    liens = [v["video"] for v in fetch_feeds.VIDEOS_ARCHIVEES]
+    check(len(liens) == len(set(liens)), "aucune vidéo listée deux fois")
+
+    # L'article produit doit être identique en forme à ceux du flux, sinon
+    # il traverserait le pipeline différemment.
+    v = fetch_feeds.VIDEOS_ARCHIVEES[0]
+    item = fetch_feeds.item_video_archivee(v, par_id[v["source"]])
+    for champ in ("title", "link", "date", "source", "official", "rockstarmag",
+                  "specialist", "lang", "image", "description"):
+        check(champ in item, f"l'article porte le champ « {champ} »")
+    check(item["official"] is True,
+          "une vidéo de la chaîne de Rockstar est marquée officielle")
+    check(item["image"] == f"https://i.ytimg.com/vi/{v['video']}/hqdefault.jpg",
+          "sa vignette se déduit de l'identifiant, sans appel réseau")
+    check(item.get("archive") is True,
+          "et elle est marquée archive : une bande-annonce de 2023 ne "
+          "s'annonce pas comme une nouveauté")
+
+    # Versées dans le résultat de leur source, pas importées à part : c'est
+    # ce qui leur fait emprunter le même chemin que tout le reste.
+    resultats = {v["source"]: ([], {"raw_count": 0}, [])}
+    n = fetch_feeds.ajoute_videos_archivees(resultats)
+    attendu = sum(1 for x in fetch_feeds.VIDEOS_ARCHIVEES
+                  if x["source"] == v["source"])
+    check(n == attendu and len(resultats[v["source"]][0]) == attendu,
+          f"les {attendu} vidéos rejoignent la liste de leur source")
+
+    # Une source absente du résultat (retirée de FEEDS, ou muette ce
+    # passage) ne doit pas faire fabriquer un résultat de toutes pièces.
+    check(fetch_feeds.ajoute_videos_archivees({}) == 0,
+          "sans résultat pour la source, rien n'est ajouté")
+
+    # Rejouées à chaque passage : la déduplication doit les absorber sans
+    # gonfler les « sources supplémentaires » de l'article existant.
+    deja = fetch_feeds.item_video_archivee(v, par_id[v["source"]])
+    check(fetch_feeds.record_coverage(deja, dict(deja)) is False,
+          "revoir la même vidéo n'ajoute pas une source supplémentaire")
+
+
 def test_couverture_rockstar():
     print("\n[Rockstar] tout ce que publie Rockstar, archives comprises")
     import fetch_feeds
@@ -2100,6 +2200,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_miniature_youtube, test_media_content_non_declare_reste_accepte,
            test_reparation_vignettes_stockees,
            test_sonde_decouvre_les_flux_declares,
+           test_titres_numerotes_pas_fusionnes, test_videos_archivees,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
            test_validateurs_lies_a_leur_url,
