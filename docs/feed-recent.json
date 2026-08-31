@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T18:32:09.002017+00:00",
-  "duration_seconds": 83.5,
+  "generated_at": "2026-08-31T19:02:17.322284+00:00",
+  "duration_seconds": 85.0,
   "decode_failures": 0,
-  "total_articles": 1460,
-  "new_this_run": 2,
+  "total_articles": 1464,
+  "new_this_run": 4,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-31T18:27:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T16:41:12+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-08-31T18:30:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,13 +421,13 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -469,12 +469,12 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T08:02:16+00:00",
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-08-31T18:33:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T17:11:57+00:00",
       "days_since_last_article": 1,
@@ -689,8 +689,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T16:01:13+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T18:45:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 3,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 84,
+      "entries_fetched": 82,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,100,100,100,92",
+    "gnews-fr": "92,92,92,92,92,92,92,100,100,100,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -946,21 +946,21 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "29,29,29,29,29,29,29,29,29,30,30,30",
+    "gta6times": "29,29,29,29,29,29,29,29,30,30,30,30",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,6,6,6,6,6,6,6,6,6,6",
+    "xboxwire": "7,6,6,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,45,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,45,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,61,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "27,27,27,27,28,28,28,28,26,29,28,28",
+    "engadget": "84,61,84,84,84,84,84,84,84,84,84,82",
+    "arstechnica": "27,27,27,28,28,28,28,26,29,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 17:13:24 GMT"
+      "modified": "Mon, 31 Aug 2026 18:33:43 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"28d9d-Zegq1Krqdxd1g6VVnAePrhoCBag\"",
+      "etag": "W/\"27f6b-EvnIVq3FTfkiCOkS0SA4I4Q/awk\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"1f941b4dceeacfb261e638f1fdb9f660\"",
-      "modified": "Mon, 31 Aug 2026 17:57:27 GMT"
+      "etag": "W/\"b1fff4f0afee7833d812644970fd0f1d\"",
+      "modified": "Mon, 31 Aug 2026 18:30:48 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 18:30:38 GMT"
+      "modified": "Mon, 31 Aug 2026 18:56:37 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a95c838-2fe1\"",
-      "modified": "Mon, 31 Aug 2026 18:30:16 GMT"
+      "etag": "W/\"6a95cf3e-2fe1\"",
+      "modified": "Mon, 31 Aug 2026 19:00:14 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,13 +1033,13 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788201016\"",
-      "modified": "Mon, 31 Aug 2026 18:30:16 GMT"
+      "etag": "W/\"1788202823\"",
+      "modified": "Mon, 31 Aug 2026 19:00:23 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"5f4eddf485c36c9c847a773eb189e00a\"",
-      "modified": "Mon, 31 Aug 2026 16:32:14 GMT"
+      "etag": "W/\"8eaae308898a26c9074866ae27c69af4\"",
+      "modified": "Mon, 31 Aug 2026 18:34:59 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Just Gave PS5 Owners One Less Reason to Upgrade to PS5 Pro",
+      "link": "https://gamerant.com/gta-6-ps5-pro-upgrade-30-fps/",
+      "source_link": null,
+      "date": "2026-08-31T18:45:12+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/08/gta-6-ps5-image.jpg?w=1600&h=900&fit=crop",
+      "description": "GTA 6's rock solid PS5 footage and Rockstar's seemingly universal 30fps target could totally blunt the PS5 Pro's upgrade pitch among fans."
+    },
+    {
+      "title": "Ça y est, GTA VI sème déjà la panique dans certains couples !",
+      "link": "https://fr.ign.com/grand-theft-auto-6/91753/ca-y-est-gta-vi-seme-deja-la-panique-dans-certains-couples",
+      "source_link": null,
+      "date": "2026-08-31T18:33:06+00:00",
+      "source": "IGN France",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-6s-rel/gta-6s-relationship-mechanic-is-cheating-on-your-real-life-p_x23d.1200.jpg",
+      "description": "\nJouer à GTA VI, c&#x27;est tromper ? Pour certaines personnes, oui."
+    },
+    {
+      "title": "One Very Dedicated GTA 6 Fan Has Found The Real-Life Location Of Jason And Lucia’s Apartment - Kotaku",
+      "link": "https://kotaku.com/gta-6-grand-theft-auto-lucia-jason-apartment-miami-vice-city-real-location-2000729948",
+      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOVDJURF83WHRmQXBpdkh6MkdSdFZqVGt5QlczdVpzNExiQm92LWxSUTBzOGtTcXZ3ZkNvZW1mclRBekd4RUJRQ0dabGxXUWVac3dZYWNnZUh4QXJqLW9RV0NleHVNS1JWR21IQi1fTk90eFo4VzZQMWNxRE5vUVBvQ0NRc1l2SnZpWUxKN1ZYeF8zMTVhU0JPcjNRRzdqRUhTSjdQSy1kbw?oc=5",
+      "date": "2026-08-31T18:30:48+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://kotaku.com/app/uploads/2026/08/Jason-and-Lucias-apartment-from-GTA-6-extended-reveal-trailer-Rockstar-Games.jpg",
+      "description": "One Very Dedicated GTA 6 Fan Has Found The Real-Life Location Of Jason And Lucia’s Apartment&nbsp;&nbsp;Kotaku"
+    },
     {
       "title": "GTA 6 Fans Are Bracing For One Massive Download - GameSpot",
       "link": "https://www.gamespot.com/articles/gta-6-fans-are-bracing-for-one-massive-download/",
@@ -1074,6 +1113,19 @@
       "lang": null,
       "image": "https://www.techpowerup.com/img/r4vVXEzXLjpiACEI.jpg",
       "description": "GTA 6 Pre-Orders Jumped By 436% in a Single Day After Netflix Reveal, As PS5 Dominates Xbox&nbsp;&nbsp;TechPowerUp"
+    },
+    {
+      "title": "'Don't Let Your Husband Play GTA 6' - Angry Spouses Are Threatening to Break Up With Their Partners If They Play GTA 6 - ign.com",
+      "link": "https://www.ign.com/articles/gta-6s-relationship-mechanic-is-cheating-on-your-real-life-partner-and-break-up-worthy-according-to-angry-spouses",
+      "source_link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNS2dwN05tSEdsRTFZWktKRmVlQTBPaEljN0l4ZW9nT0xMQlczaWJsbi1oZktla0VlTnRUQTlDd29sb0NjdTdEZEQ3NDAySzNfNFVhQVRSM3R5QlAzcGN5RVFDS1FJUmV4bFZOT28wbGdTdTBwcUtUSW9mUjhCTVktVWpnUWhJWDRCTDFyY3pFVEFQNFhhZ3dWcXh4azdfU0J4OS1xbWk0QmYzMy1wWXlsWXVNeUZvRUNMUUZIc2dPWnZnVG94VEdCX2V6MjBXaEUxRDNYdHJfTVZBZw?oc=5",
+      "date": "2026-08-31T17:55:43+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/08/31/hrdxhdzwwaax1k-1788198129736.jpg?width=1280&format=jpg&auto=webp&quality=80",
+      "description": "'Don't Let Your Husband Play GTA 6' - Angry Spouses Are Threatening to Break Up With Their Partners If They Play GTA 6&nbsp;&nbsp;ign.com"
     },
     {
       "title": "GTA 6 : Une pluie d’informations sur Jason, Lucia, leur relation et nos planques dans le jeu - Journal du Geek",
@@ -4970,58 +5022,6 @@
       "lang": null,
       "image": "https://files.vgtimes.com/posts/2026-08/grand-theft-auto-vi-blends-gta-v-chaos-with-rdr2-realism-new-details-say-165742.webp",
       "description": "In the extended Grand Theft Auto 6 trailer, Rockstar Games showed an in-game advertisement, and Reddit user DangerousLeo managed to recognize the location from Red Dead Redemption 2. It took him just five minutes to pinpoint the exact spot on the map. GTA 6 is still scheduled to launch on November 19, 2026"
-    },
-    {
-      "title": "GTA 6 moins fun que GTA 5 : c'est la principale crainte de beaucoup de joueurs suite à la présentation Netflix",
-      "link": "https://www.jeuxvideo.com/news/2101008/gta-6-moins-fun-que-gta-5-c-est-la-principale-crainte-de-beaucoup-de-joueurs-suite-a-la-presentation-netflix.htm",
-      "source_link": null,
-      "date": "2026-08-28T14:00:10+00:00",
-      "source": "Jeuxvideo.com",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178791/1787907129-4897-card.jpg",
-      "description": "À 3 mois de sa sortie, Grand Theft Auto VI a enfin dévoilé ses premières images de gameplay. Durant 26 minutes, les joueurs ont pu découvrir ce qui les attend le 19 novembre. Et clairement, entre GTA 5 et RDR 2, le titre de Rockstar Games se rapproche plus d'un des deux... et c'est un choix particulièrement..."
-    },
-    {
-      "title": "Du Dead Eye au système d’honneur : tout ce que GTA 6 emprunte à Red Dead Redemption 2 - Numerama",
-      "link": "https://www.numerama.com/pop-culture/2320523-du-dead-eye-au-systeme-dhonneur-tout-ce-que-gta-6-emprunte-a-red-dead-redemption-2.html",
-      "source_link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQTXFjTnJnUWoxOWRWd1ROWG5KcC1xcFYxNk1BRTAyVnNzQmllVG9yVlI0N2RWS1hpZGZTQV92VDJCanZxRHVMVmtWS2h0Zm93a1ItbkFTWUpIdWJOZE5KVl9pS05ndjdpNG04VktxVm9neV9Zbi0zenZHV2hZV1dqRm9zVzZNeHZiQXFHRUFicjB1SFJBdnBWVEdwVHVDRHNKUTdJZlpKelJabVE1NWFnN29rcGNtemJ0cU9zbGl5cE14eGxGc0J3eUhYeWU?oc=5",
-      "date": "2026-08-28T14:00:00+00:00",
-      "source": "Numerama",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/08/1-9.jpg?resize=1600,900&key=5e01fd7b",
-      "description": "Du Dead Eye au système d’honneur : tout ce que GTA 6 emprunte à Red Dead Redemption 2&nbsp;&nbsp;Numerama"
-    },
-    {
-      "title": "After GTA 6: Extended Look Showed Rockstar's Game Running at 30FPS, Tech Experts Say a 60FPS Console Version Is 'Extremely Unlikely' and 'Genuinely Challenging' Even on PC",
-      "link": "https://www.ign.com/articles/after-gta-6-extended-look-showed-rockstars-game-running-at-30fps-tech-experts-say-a-60fps-console-version-is-extremely-unlikely-and-genuinely-challenging-even-on-pc",
-      "source_link": null,
-      "date": "2026-08-28T13:58:30+00:00",
-      "source": "IGN",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://assets-prd.ignimgs.com/2026/08/27/gta6-satire-news-1787848953836.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "Getting Rockstar's hugely ambitious GTA 6 running at 60fps on current consoles will be \"extremely unlikely\", the tech experts at Digital Foundry have said, after analysis of footage from the Grand Theft Auto 6: Extended Look."
-    },
-    {
-      "title": "GTA 6 a bénéficié de la création de plus 600 000 animations pour, entre autres, ses PNJ et sa faune",
-      "link": "https://www.actugaming.net/gta-6-creation-plus-600-000-animations-820799/",
-      "source_link": null,
-      "date": "2026-08-28T13:56:21+00:00",
-      "source": "ActuGaming",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://static.actugaming.net/media/2026/08/gta-6-official-screenshot-aout-2026-4.jpg",
-      "description": "ActuGaming.net\nGTA 6 a bénéficié de la création de plus 600 000 animations pour, entre autres, ses PNJ et sa faune\n\nÀ la suite de la diffusion du large aperçu de GTA 6 ce 27 août, [&#8230;]\nL'article GTA 6 a bénéficié de la création de plus 600 000 animations pour, entre autres, ses PNJ et sa faune est disponible sur ActuGaming.net"
     }
   ],
   "partial": true,
