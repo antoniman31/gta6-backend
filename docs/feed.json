@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T18:02:11.149889+00:00",
-  "duration_seconds": 79.5,
+  "generated_at": "2026-08-31T18:32:09.002017+00:00",
+  "duration_seconds": 83.5,
   "decode_failures": 0,
-  "total_articles": 1458,
-  "new_this_run": 1,
+  "total_articles": 1460,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,8 +353,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T16:13:55+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-08-31T18:27:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -385,11 +385,11 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 92,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T17:32:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 1,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-30T17:11:57+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 3,
@@ -829,7 +829,7 @@
     {
       "id": "gamergen",
       "name": "Gamergen",
-      "entries_fetched": 45,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,92,100,100,100",
+    "gnews-fr": "92,92,92,92,92,92,92,92,100,100,100,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -946,21 +946,21 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "29,29,29,29,29,29,29,29,29,29,30,30",
+    "gta6times": "29,29,29,29,29,29,29,29,29,30,30,30",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,6,6,6,6,6,6,6,6,6",
+    "xboxwire": "7,7,6,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,45",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,45,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,61,84,84,84,84,84,84,84,84",
-    "arstechnica": "27,27,27,27,27,28,28,28,28,26,29,28",
+    "engadget": "84,84,61,84,84,84,84,84,84,84,84,84",
+    "arstechnica": "27,27,27,27,28,28,28,28,26,29,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"79c77b75d6a238073742bc750213dce7\"",
-      "modified": "Mon, 31 Aug 2026 17:24:41 GMT"
+      "etag": "W/\"4e6d9969e6aad015fab3f05f9dcb17c2\"",
+      "modified": "Mon, 31 Aug 2026 18:23:09 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 17:59:38 GMT"
+      "modified": "Mon, 31 Aug 2026 18:30:38 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a95c130-2fe1\"",
-      "modified": "Mon, 31 Aug 2026 18:00:16 GMT"
+      "etag": "W/\"6a95c838-2fe1\"",
+      "modified": "Mon, 31 Aug 2026 18:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788197938\"",
-      "modified": "Mon, 31 Aug 2026 17:38:58 GMT"
+      "etag": "W/\"1788201016\"",
+      "modified": "Mon, 31 Aug 2026 18:30:16 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1049,6 +1049,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Fans Are Bracing For One Massive Download - GameSpot",
+      "link": "https://www.gamespot.com/articles/gta-6-fans-are-bracing-for-one-massive-download/",
+      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNYm1UZUFPZ3V1RURJcmVOUkF5SHNTTERLYWxpUWJ1eFhOeEVvb0w1N2RkQ0ZXdFQtaWQwYlNrV2VfWWFfSGVyQm9WaG1leTVHOTNVejBLeGx5SEFaOFVuN2hzNmZsUmo1Y2pWY2pnWmhxUC04SmROcDdTMXY5Y2dSdmlBdzIxOUx0M2c?oc=5",
+      "date": "2026-08-31T18:27:01+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 Fans Are Bracing For One Massive Download&nbsp;&nbsp;GameSpot"
+    },
+    {
+      "title": "GTA 6 Pre-Orders Jumped By 436% in a Single Day After Netflix Reveal, As PS5 Dominates Xbox - TechPowerUp",
+      "link": "https://www.techpowerup.com/352187/gta-6-pre-orders-jumped-by-436-in-a-single-day-after-netflix-reveal-as-ps5-dominates-xbox",
+      "source_link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNcmtTcld5SGNPNEhWWWFQR1JGbE83Q1V0bF9UR2xaUlZhMTA4Rk9wYmdpYi1vWVBBSzBHOS1LeW9iZmZHbkhCRktvZjk0Tnh1YkdSMzlpSWpEb1VvQmdvd3Z1N1p6WmZtUHdBNVZFZWhFUjFSMnpsNDVscnFSazJJMmtxTzE3Q2xRdmdOelR0Wlk4UzE1U0ZqU2JTaHE4N3RvZzVnSmhHbElIcS1GUUlkbWxLRm50aEJZNjU4OVJuaTBRQdIBxwFBVV95cUxQUFFJbHhlVE5ud1ZOS2xaS3h6T256Q1hrZnNWbjNPemd6b0hFMERxbkRYTUMwLU9FRFJ3R0wyTE1SYzBEUmdnQ0NCQnpnaHpxN0NsZmJkY3lvVDQ5aTFoMGtvOWNuYnVFNEhPbXBCWUxRbS1lSFluVkNlYk5SNDIwNkNuY1A5eGlzX3ZtZmIyTE5UNzM2UlRHeHRNYWZiTkdnelJ2azdkSF9JTVVOT3VaajgzaGdCU2F1bV9SSVVOSjZ6QmU4VXpz?oc=5",
+      "date": "2026-08-31T18:14:49+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.techpowerup.com/img/r4vVXEzXLjpiACEI.jpg",
+      "description": "GTA 6 Pre-Orders Jumped By 436% in a Single Day After Netflix Reveal, As PS5 Dominates Xbox&nbsp;&nbsp;TechPowerUp"
+    },
     {
       "title": "GTA 6 : Une pluie d’informations sur Jason, Lucia, leur relation et nos planques dans le jeu - Journal du Geek",
       "link": "https://www.journaldugeek.com/2026/08/31/gta-6-une-pluie-dinformations-sur-jason-lucia-leur-relation-et-nos-planques-dans-le-jeu/",
