@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T00:31:59.291055+00:00",
-  "duration_seconds": 81.7,
+  "generated_at": "2026-08-31T01:02:07.467396+00:00",
+  "duration_seconds": 80.0,
   "decode_failures": 0,
-  "total_articles": 1364,
-  "new_this_run": 0,
+  "total_articles": 1365,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -379,7 +379,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T17:49:18+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T00:17:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 1,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 27,
+      "entries_fetched": 29,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,99,99,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,99,99,100,100,100,100,100,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,7 +952,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,8,9,9,9,9,9,9,9,9",
+    "xboxwire": "9,9,8,9,9,9,9,9,9,9,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -960,7 +960,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "28,27,27,27,27,27,27,27,27,29,29,27",
+    "arstechnica": "27,27,27,27,27,27,27,27,29,29,27,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 00:25:36 GMT"
+      "modified": "Mon, 31 Aug 2026 00:57:38 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a94cb17-2f67\"",
-      "modified": "Mon, 31 Aug 2026 00:30:15 GMT"
+      "etag": "W/\"6a94d222-2f67\"",
+      "modified": "Mon, 31 Aug 2026 01:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Gracie Bon Says She Was Body Scanned for ‘GTA 6’ Despite Online Skepticism - Complex",
+      "link": "https://www.complex.com/pop-culture/a/treyalston/gracie-bon-gta-6-body-scan-rockstar-fake-dm",
+      "source_link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOcVlERnBwTjBBaks4VlBMVDRaTFZwRy1kV3JPMGpVN0FFckllSjE0d0dScHNtZi0xU1htTTRNa3JFUDAyM0lvMEptanNZcFVJcW5kZmZ0VlFHNjdDbDhsY1NCSDBmT0hCZm52am9NdHRZMnlNMmw0Y3J6SE8yUlJlRWpXSVdTQWVxZElNOVZuXzNvUXJDMEJJ?oc=5",
+      "date": "2026-08-31T00:17:04+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://images.complex.com/complex/image/upload/c_crop,h_1079,w_1919,x_0,y_0/g_auto:aoi_768_432_384_216,ar_1.91,c_fill,q_auto,w_1200/sanity-new/aa8b8eygqyvmp9xm3kwb",
+      "description": "Gracie Bon Says She Was Body Scanned for ‘GTA 6’ Despite Online Skepticism&nbsp;&nbsp;Complex"
+    },
     {
       "title": "GTA 6 Launch Predicted to Cost US Economy $1 Billion",
       "link": "https://gamerant.com/gta-6-launch-economic-impact/",
@@ -4962,18 +4975,6 @@
       "lang": "fr",
       "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA_VI_Capture_36.jpg",
       "description": "Cyberleek a publié une nouvelle séquence de GTA 6 montrant Jason naviguer de nuit dans un vaste port industriel. La vidéo révèle aussi une scène dans un restaurant et apporte de nouveaux indices sur les PNJ et les intérieurs.\nCet article GTA 6 : une 17e vidéo dévoile la navigation en bateau dans un vaste port industriel a été publié en premier par GinjFo."
-    },
-    {
-      "title": "Les équipes de Rockstar célèbrent leur réussite après le carton du grand reveal du gameplay de GTA VI (la vidéo est dispo sur YouTube !)",
-      "link": "https://fr.ign.com/grand-theft-auto-6/91651/les-equipes-de-rockstar-celebrent-leur-reussite-apres-le-carton-du-grand-reveal-du-gameplay-de-gta-v",
-      "date": "2026-08-28T07:32:55+00:00",
-      "source": "IGN France",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-6-devs/gta-6-devs-at-rockstar-celebrate-as-extended-look-finally-re_zr37.1200.jpg",
-      "description": "\nAprès des années de développement, on les comprend !"
     }
   ],
   "partial": true,
