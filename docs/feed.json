@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T07:02:26.123802+00:00",
-  "duration_seconds": 98.0,
+  "generated_at": "2026-08-31T07:32:24.950447+00:00",
+  "duration_seconds": 103.1,
   "decode_failures": 0,
-  "total_articles": 1374,
-  "new_this_run": 0,
+  "total_articles": 1377,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T05:48:46+00:00",
+      "new_this_run": 3,
+      "last_article": "2026-08-31T07:20:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T17:11:57+00:00",
       "days_since_last_article": 0,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T08:26:11+00:00",
       "days_since_last_article": 1,
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T20:57:00+00:00",
       "days_since_last_article": 3,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 26,
+      "entries_fetched": 28,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -912,11 +912,6 @@
     }
   ],
   "sources_silence": {
-    "rockstarmag-youtube": {
-      "depuis": "2026-08-31T06:32:21.991797+00:00",
-      "succes": 1,
-      "alertee": false
-    },
     "jeuxactu": {
       "depuis": "2026-08-31T06:32:21.991797+00:00",
       "succes": 0,
@@ -925,7 +920,7 @@
   },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,100,100,100,99,99,99,99,99,99,100,100",
+    "rockstar-fr": "100,100,100,99,99,99,99,99,99,100,100,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -939,7 +934,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -951,27 +946,27 @@
     "eurogamer": "100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "ginjfo": "50,50,50",
+    "ginjfo": "50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
-    "jeuxactu": "20,20,20,20,20,20,20,20,20,20,0,0",
+    "jeuxactu": "20,20,20,20,20,20,20,20,20,0,0,0",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "29,29,29,29,29,29,29,29,29,29,29,29",
-    "gameinformer": "50,50,50,50,50,50",
+    "gameinformer": "50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,7,7,7,7,7,7,7,7,7,7",
+    "xboxwire": "9,7,7,7,7,7,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,85,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,85,100,100,100,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "29,29,29,26,26,26,26,26,27,26,27,26",
+    "arstechnica": "29,29,26,26,26,26,26,27,26,27,26,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1009,8 +1004,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"36e78ecfee8ed0c879df71bbecde33a0\"",
-      "modified": "Mon, 31 Aug 2026 04:04:20 GMT"
+      "etag": "W/\"264d42d762249674ccd93f0164bf98a5\"",
+      "modified": "Mon, 31 Aug 2026 07:30:00 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1025,17 +1020,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 07:00:27 GMT"
+      "modified": "Mon, 31 Aug 2026 07:30:51 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"45a50a581c02fe03e73d05f7814dd10e\"",
-      "modified": "Mon, 31 Aug 2026 05:44:43 GMT"
+      "etag": "\"7f48aa714e129e2aa6ff88c8ac4548d8\"",
+      "modified": "Mon, 31 Aug 2026 07:27:35 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a952681-3019\"",
-      "modified": "Mon, 31 Aug 2026 07:00:17 GMT"
+      "etag": "W/\"6a952d88-3119\"",
+      "modified": "Mon, 31 Aug 2026 07:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1044,8 +1039,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788133178\"",
-      "modified": "Sun, 30 Aug 2026 23:39:38 GMT"
+      "etag": "W/\"1788159766\"",
+      "modified": "Mon, 31 Aug 2026 07:02:46 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1060,6 +1055,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "« On devait le simplifier » GTA 6 devait avoir une fonctionnalité que même Rockstar a trouvé trop réaliste. Le studio explique pourquoi c'était trop pour eux - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-refrigerateur-realisme-721900",
+      "source_link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOaFBRSXRvajBieTJoSUdNSjQtaXdhVUMwc0NtTlRybDNTQmpJUXl2cnptWWdrQVN5YWdESWV2dElNc3BLcjhyVVQ3MGV1eHN2NlpRTnRuZ3BiUlFoNm1NY1NxUjVxd2t3V1VOUlpXR3pmUXNHSm5ocnJ5aTB6cUp0R0Y4SQ?oc=5",
+      "date": "2026-08-31T07:20:36+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img//_6a3bee0986d6c.jpg",
+      "description": "« On devait le simplifier » GTA 6 devait avoir une fonctionnalité que même Rockstar a trouvé trop réaliste. Le studio explique pourquoi c'était trop pour eux&nbsp;&nbsp;Gameblog"
+    },
+    {
+      "title": "GTA 6 : PS5, PS5 Pro ou Xbox Series X, quelle console choisir avant le 19 novembre - MCE TV",
+      "link": "https://mcetv.ouest-france.fr/2026/gta-6-console-ecran-ps5-xbox/",
+      "source_link": "https://news.google.com/rss/articles/CBMickFVX3lxTE50RFNNbU5MUk11Ri1HYUFacFladmtvenpFb2tIX0xua1VlTUhLQmdfbFUzWDRSb0ZGSmpGSkQ4aFZnQjFuNkhNNGJGdDd3VFZsRFJwNGJaOGVpQTVDQW1fS2VqTHY3YXVwTzJ6YWs0dnQ1dw?oc=5",
+      "date": "2026-08-31T07:03:20+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://media-mcetv.ouest-france.fr/wp-content/uploads/2026/07/generique-jeux-video.jpg",
+      "description": "GTA 6 : PS5, PS5 Pro ou Xbox Series X, quelle console choisir avant le 19 novembre&nbsp;&nbsp;MCE TV"
+    },
+    {
+      "title": "09:15 GTA 6 fait disparaître les PS5 Pro des rayons, les scalpers réclament jusqu'à 1300 dollars - Cowcotland.com",
+      "link": "https://www.cowcotland.com/news/102221/gta-6-fait-disparaitre-les-ps5-pro-des-rayons-les-scalpers-reclament-jusqu-a-1300-dollars.html",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNTUFiRmNjWVdIZTQ5bUotQ3d1MzZQN1d3TG1haFhPaFVxdzB0VWdTOTZHOFJNTVN6ZHFvQi1UYUpwa29sNl9WOGd5a0gwVXMwMnZhSEJUWnR6ZE8zZkxFa2YzV2RqMUx5a3dYMWdUZFlMRExZTHZ1R0gzanZKLXl1bnRUQm5YRlNTdmhFa1B3R1AyZHZLRzR4MFJlckNhSWpSRl9WemNlalFTNFVxWHpZQjJEVGV2eldwRVNQNS01OWU5WXZGbHBUZ2xKeXo4Zw?oc=5",
+      "date": "2026-08-31T06:15:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.cowcotland.com/images/news/2026/08/sony-ps5-pro.jpg",
+      "description": "09:15 GTA 6 fait disparaître les PS5 Pro des rayons, les scalpers réclament jusqu'à 1300 dollars&nbsp;&nbsp;Cowcotland.com"
+    },
     {
       "title": "GTA 6 : Rockstar se veut catégorique, « il sortira à temps » - GinjFo",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-rockstar-se-veut-categorique-il-sortira-a-temps-20260831",
