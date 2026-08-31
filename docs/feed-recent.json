@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T13:02:15.677765+00:00",
-  "duration_seconds": 83.3,
+  "generated_at": "2026-08-31T13:32:08.980440+00:00",
+  "duration_seconds": 84.1,
   "decode_failures": 0,
-  "total_articles": 1415,
-  "new_this_run": 3,
+  "total_articles": 1419,
+  "new_this_run": 4,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T12:22:46+00:00",
+      "new_this_run": 3,
+      "last_article": "2026-08-31T13:00:09+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-31T12:46:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-31T08:02:16+00:00",
       "days_since_last_article": 0,
@@ -481,10 +481,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T11:15:59+00:00",
       "days_since_last_article": 0,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 1,
@@ -630,17 +630,17 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-08-31T12:48:59+00:00",
+      "last_article": "2026-08-31T13:28:14+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T08:26:11+00:00",
       "days_since_last_article": 2,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,99,99,100,100,100,99,99,100,100",
+    "rockstar-fr": "99,99,99,99,100,100,100,99,99,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -927,7 +927,7 @@
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "rockstarmag": "10,10,10,10,10,10,10,10,10,10",
+    "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10",
     "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -940,7 +940,7 @@
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "ginjfo": "50,50,50,50,50,50",
+    "ginjfo": "50,50,50,50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,6,7,7,7,7,7,6,7",
+    "xboxwire": "7,7,7,6,7,7,7,7,7,6,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,83,83,84,84,84,84,84,84,84,84",
-    "arstechnica": "28,28,28,28,28,28,28,28,27,27,26,27",
+    "engadget": "84,83,83,84,84,84,84,84,84,84,84,84",
+    "arstechnica": "28,28,28,28,28,28,28,27,27,26,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -984,7 +984,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 11:18:35 GMT"
+      "modified": "Mon, 31 Aug 2026 13:15:36 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"f81209f250bd5071d85c689d66ec16b6\"",
-      "modified": "Mon, 31 Aug 2026 12:31:51 GMT"
+      "etag": "W/\"fd7164002fe3e07c7e335a9f41b1a242\"",
+      "modified": "Mon, 31 Aug 2026 13:17:23 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,22 +1014,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 13:00:07 GMT"
+      "modified": "Mon, 31 Aug 2026 13:30:54 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"880fe4ff39446ab0d316844654ee727e\"",
-      "modified": "Mon, 31 Aug 2026 09:03:48 GMT"
+      "etag": "\"76da9779c9b25e03b48ce9add1844691\"",
+      "modified": "Mon, 31 Aug 2026 13:25:12 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a957adf-2fbe\"",
-      "modified": "Mon, 31 Aug 2026 13:00:15 GMT"
+      "etag": "W/\"6a9581e9-2fbe\"",
+      "modified": "Mon, 31 Aug 2026 13:30:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"17d683eff8162fb924d54bd5f8ab7151\"",
-      "modified": "Mon, 31 Aug 2026 13:00:59 GMT"
+      "etag": "W/\"664b27dec106a61e35d3d8ddac565205\"",
+      "modified": "Mon, 31 Aug 2026 13:30:35 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar Games Reveals New GTA 6 Screenshots",
+      "link": "https://vgtimes.com/gaming-news/165969-rockstar-games-reveals-new-gta-6-screenshots.html",
+      "source_link": null,
+      "date": "2026-08-31T13:28:14+00:00",
+      "source": "VGTimes",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://files.vgtimes.com/posts/2026-08/rockstar-games-reveals-new-gta-6-screenshots-165969.webp",
+      "description": "New screenshots from GTA 6 have surfaced online. They feature Lucia and Jason, the game's main protagonists, as well as several buildings from the game's cities"
+    },
+    {
+      "title": "GTA 6 fait exploser la demande de PS5 Pro malgré les hausses de prix - 01net.com",
+      "link": "https://www.01net.com/actualites/gta-6-fait-exploser-la-demande-de-ps5-pro-malgre-les-hausses-de-prix.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNWmo3cTZSYlB6QzRTY3draHhZSHhXem5OVF9KaFd4ZHNLNjBOZ1REdUZESGtXMU5qSV9PLVFsYncyb09Xc3U3TWlHaWlsOEI1aXd5dGZUMWxLSWpnOWcxY1otaGxjSUtUb0dMbTBJS2RRUC1QMnpBUlo0Vko4bmxIWUVlTTdiUko2MmlWWUZ5QnA4NUJKZ3U1TVdyY1o5RThoakZBaTMzSDA3QQ?oc=5",
+      "date": "2026-08-31T13:00:09+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.01net.com/app/uploads/2026/08/Canva-1920x1440-77-1600x900.jpeg",
+      "description": "GTA 6 fait exploser la demande de PS5 Pro malgré les hausses de prix&nbsp;&nbsp;01net.com"
+    },
+    {
+      "title": "Nouveaux détails sur GTA 6 : conduite, carburant, vols de voitures… Rockstar prépare un véritable tournant automobile - autonews.fr",
+      "link": "https://www.autonews.fr/actualite/nouveaux-details-sur-gta-6-conduite-carburant-vols-de-voitures-rockstar-prepare-un-veritable-tournant-automobile-148127",
+      "source_link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPd3NpcW9YQmJReWhYa3BMc3VQazBJSFl4WFRVS1JQVTZ3d3BYVUNzcGZJUTdKbG85MloxLWFpeUlyV2RJMDY1RzFmZmNtaVRyQl9WS3Z1LXlhMmtDZUxtTUVSMlRoLTItRHpLWjE3QWVwQS1mal9KUFhGTzJDbW5mSmsyTU05SWZudmRoaEJTVFU2eDIxR0hhdjRxOHdtQm9rbXQ1X1ZTdTA4ZFVvTTlRT1BndlNxeTUxNE1ndTFvN1VGUFprYXVTNW1YaW5JdUxyNm45SmtndXNxWG55RG1MSk1fOWZpRmJx?oc=5",
+      "date": "2026-08-31T12:54:04+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img5.autodeclics.com/6/2026/08/photo_article/148127/391581/1200-L-nouveaux-dtails-sur-gta-6-conduite-carburant-vols-de-voitures-rockstar-prpare-un-vritable-tournant-automobile.jpg",
+      "description": "Nouveaux détails sur GTA 6 : conduite, carburant, vols de voitures… Rockstar prépare un véritable tournant automobile&nbsp;&nbsp;autonews.fr"
+    },
     {
       "title": "Rockstar says GTA 6 has been in development since 2015",
       "link": "https://vgtimes.com/gaming-news/165965-rockstar-says-gta-6-has-been-in-development-since-2015.html",
@@ -1320,6 +1359,19 @@
       "lang": null,
       "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F08%2F31%2Fgrand-theft-auto-vi-targets-record-budget-and-2026-launch-tw.jpg?w=1080&cbr=1&q=90&fit=max",
       "description": "Analysts Estimate 'GTA VI's' Budget Exceeds $1 Billion USD, Making It the Costliest Entertainment Product Ever&nbsp;&nbsp;Hypebeast"
+    },
+    {
+      "title": "Des analystes estiment que le budget de « GTA VI » dépasse 1 milliard de dollars, un record dans le divertissement - Hypebeast",
+      "link": "https://hypebeast.com/fr/2026/8/grand-theft-auto-vi-targets-record-budget-and-2026-launch",
+      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQS1A0QjEtZFQyS3IzbXhYNDV6Z3NULTZWTUNhZlAzZVJocGxuTlY4LVpiQ1hyRmxNOFJSM2xtNWtxMmdzS0Q3TjNPdHRKb0ZoRG44NE5XR3dRXzRmbUh6dEZ5YU1BOExrRE1FMlA5LW5FWGphRzk5aWtoX3RTSWd6Yk1vdHM5d3p4NUR0bU5IMnpZTzQ?oc=5",
+      "date": "2026-08-31T09:25:12+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Ffr.hypebeast.com%2Ffiles%2F2026%2F08%2Fgrand-theft-auto-vi-targets-record-budget-and-2026-launch-tw.jpg?w=1080&cbr=1&q=90&fit=max",
+      "description": "Des analystes estiment que le budget de « GTA VI » dépasse 1 milliard de dollars, un record dans le divertissement&nbsp;&nbsp;Hypebeast"
     },
     {
       "title": "Le \"Large aperçu\" de GTA 6 a affolé les compteurs avec près de 4 millions de spectateurs en direct - Clubic",
@@ -4962,55 +5014,6 @@
           "link": "https://gamerant.com/star-citizen-squadron-42-release-date-delay-2027-gta-6/"
         }
       ]
-    },
-    {
-      "title": "GTA 6: 24 Things You Missed in the Extended Look - Substack",
-      "link": "https://postmode.substack.com/p/gta-6-extended-look-24-things-you-missed",
-      "date": "2026-08-28T11:14:05+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": null,
-      "description": "GTA 6: 24 Things You Missed in the Extended Look&nbsp;&nbsp;Substack"
-    },
-    {
-      "title": "L'histoire de GTA 6 proposera des choix « majeurs et mineurs », Rockstar portant la liberté d'action du joueur encore plus loin que dans Red Dead Redemption 2",
-      "link": "https://fr.ign.com/grand-theft-auto-6/91661/lhistoire-de-gta-6-proposera-des-choix-majeurs-et-mineurs-rockstar-portant-la-liberte-daction-du-jou",
-      "date": "2026-08-28T11:12:02+00:00",
-      "source": "IGN France",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://sm.ign.com/t/ign_fr/feature/g/gta-6-has-/gta-6-has-big-and-small-choices-in-its-story-as-rockstar-tak_hfsk.1200.jpg",
-      "description": "\nUne cavale faite d&#x27;embranchements."
-    },
-    {
-      "title": "Netflix is likely pleased as punch with the GTA 6 extended look, which more than doubled its web traffic",
-      "link": "https://www.pcgamer.com/games/grand-theft-auto/netflix-is-likely-pleased-as-punch-with-the-gta-6-extended-look-which-more-than-doubled-its-web-traffic/",
-      "date": "2026-08-28T10:55:36+00:00",
-      "source": "PC Gamer",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/a5kFkuMcP3K6N2YFbYPxyZ-1280-80.jpg",
-      "description": "Done deal."
-    },
-    {
-      "title": "Pour séduire les joueurs PS5 et Xbox en 2027, Fable évolue... et cet élément a bien changé",
-      "link": "https://www.jeuxvideo.com/news/2100952/pour-seduire-les-joueurs-ps5-et-xbox-en-2027-fable-evolue-et-cet-element-a-bien-change.htm",
-      "source_link": null,
-      "date": "2026-08-28T10:50:09+00:00",
-      "source": "Jeuxvideo.com",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178784/1787841287-7860-card.jpg",
-      "description": "Bien que tous les regards soient actuellement tournés vers GTA 6, d’autres titres font parler d’eux, durant cette gamescom. Il y en a un qui a même montré de longues séquences de gameplay : Fable. Le titre de Playground (Forza Horizon) veut moderniser tout ce qui a fait le charme des deux premiers titres..."
     }
   ],
   "partial": true,
