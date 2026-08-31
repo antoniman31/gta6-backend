@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-31T05:02:05.400545+00:00",
-  "duration_seconds": 77.2,
+  "generated_at": "2026-08-31T05:32:01.710489+00:00",
+  "duration_seconds": 83.1,
   "decode_failures": 0,
-  "total_articles": 1368,
+  "total_articles": 1369,
   "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 67,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T04:45:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-31T00:17:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 26,
+      "entries_fetched": 27,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,99,99,99,100,100,100,99,99,99,99",
+    "rockstar-fr": "100,99,99,99,100,100,100,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,9,9,7,7,7,7,7,7",
+    "xboxwire": "9,9,9,9,9,7,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,85,100,100,100",
+    "theverge": "100,100,100,100,100,100,100,85,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "29,27,29,29,29,29,29,26,26,26,26,26",
+    "arstechnica": "27,29,29,29,29,29,26,26,26,26,26,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 04:57:29 GMT"
+      "modified": "Mon, 31 Aug 2026 05:27:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a950a62-2f67\"",
-      "modified": "Mon, 31 Aug 2026 05:00:18 GMT"
+      "etag": "W/\"6a951167-2f86\"",
+      "modified": "Mon, 31 Aug 2026 05:30:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"b53090b18d5b92ba4d9289e19b046979\"",
-      "modified": "Sun, 30 Aug 2026 13:35:43 GMT"
+      "etag": "W/\"0de39adcae784141577340ae29d2e8d7\"",
+      "modified": "Mon, 31 Aug 2026 05:00:15 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1126,6 +1126,19 @@
       "lang": null,
       "image": "https://www.tbsnews.net/sites/default/files/styles/social_gpi_bKash_cash_apr26/public/images/2026/08/28/img_9562_0.jpeg",
       "description": "GTA 6's Netflix teaser drop finally shows the game in motion&nbsp;&nbsp;The Business Standard"
+    },
+    {
+      "title": "PS5 Pro out of stock as GTA 6 catapults console demand - TweakTown",
+      "link": "https://www.tweaktown.com/news/113360/ps5-pro-out-of-stock-as-gta-6-catapults-console-demand/index.html",
+      "source_link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNMmQzOFZDUldlSFFlaGU5STYyQzF0aDhETll0Rzd4Mk1nbHQ2TVZpeGphRjhuM2JTdGNUMnpud3ZUNmFYQXF4Q19iTUEtODIxcG1RXzlvay1OMnhNbktoTXRVZThDS0lGWE5mZjBZU19mSERCdXg4YjhzUWt2bjAweTI3bkl1NXRNRFhwUmd4VVlCWi1ucWFaejFCdGFwY2owdkVzcnJ3?oc=5",
+      "date": "2026-08-30T20:20:14+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static.tweaktown.com/news/1/1/113360_1_ps5-pro-out-of-stock-as-gta-6-catapults-console-demand_full.png",
+      "description": "PS5 Pro out of stock as GTA 6 catapults console demand&nbsp;&nbsp;TweakTown"
     },
     {
       "title": "GTA VI : CyberLeek aurait empoché 270 000 dollars avant de disparaître… mais l’affaire n’est peut-être pas terminée - GamerGen",
