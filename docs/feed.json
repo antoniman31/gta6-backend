@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T09:02:27.103421+00:00",
-  "duration_seconds": 80.9,
+  "generated_at": "2026-08-31T09:32:10.675581+00:00",
+  "duration_seconds": 87.9,
   "decode_failures": 0,
-  "total_articles": 1386,
-  "new_this_run": 1,
+  "total_articles": 1392,
+  "new_this_run": 6,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -317,7 +317,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-31T07:47:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T08:13:28+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-08-31T09:09:32+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T00:17:04+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T09:25:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 1,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T08:26:11+00:00",
       "days_since_last_article": 2,
@@ -761,8 +761,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T13:52:10+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T09:07:41+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -821,9 +821,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T08:01:08+00:00",
-      "days_since_last_article": 2,
+      "new_this_run": 1,
+      "last_article": "2026-08-31T09:00:00+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 84,
+      "entries_fetched": 83,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,99,99,100,100,99,99,99,99,99",
+    "rockstar-fr": "99,99,99,99,100,100,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -927,8 +927,8 @@
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "rockstarmag": "10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,15,15,15,15,15,15",
+    "rockstarmag": "10,10,10,10,10,10",
+    "rockstarmag-youtube": "15,15,15,15,0,15,15,15,15,15,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -940,9 +940,9 @@
     "eurogamer": "100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "ginjfo": "50,50,50,50,50",
+    "ginjfo": "50,50,50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
-    "jeuxactu": "20,20,20,20,20,0,0,0,0,20,20,20",
+    "jeuxactu": "20,20,20,20,0,0,0,0,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "26,26,26,27,26,27,26,28,28,28,28,28",
+    "engadget": "84,84,84,84,84,84,84,84,84,84,84,83",
+    "arstechnica": "26,26,27,26,27,26,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -984,7 +984,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 09:00:36 GMT"
+      "modified": "Mon, 31 Aug 2026 09:29:12 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5947da37734947e4797f737f94df721c\"",
-      "modified": "Mon, 31 Aug 2026 09:00:40 GMT"
+      "etag": "W/\"f57eb7ce59a2ad6d9f74fbbdf3e02e05\"",
+      "modified": "Mon, 31 Aug 2026 09:30:40 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,22 +1014,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 09:00:07 GMT"
+      "modified": "Mon, 31 Aug 2026 09:30:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"0ad89220ff6eb78acdd3d15fa3caf103\"",
-      "modified": "Mon, 31 Aug 2026 08:00:29 GMT"
+      "etag": "\"880fe4ff39446ab0d316844654ee727e\"",
+      "modified": "Mon, 31 Aug 2026 09:03:48 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9542a1-31c7\"",
-      "modified": "Mon, 31 Aug 2026 09:00:17 GMT"
+      "etag": "W/\"6a9549a8-31cc\"",
+      "modified": "Mon, 31 Aug 2026 09:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"a83f76594eebc4bcde8d002994d8dd07\"",
-      "modified": "Mon, 31 Aug 2026 08:41:46 GMT"
+      "etag": "W/\"7a385f9a4ef7340648e46aca11d89d7f\"",
+      "modified": "Mon, 31 Aug 2026 09:16:36 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"cc444cd72e4aa08cdd24234563dc3b10\"",
-      "modified": "Mon, 31 Aug 2026 08:59:12 GMT"
+      "etag": "W/\"5162b67634c0bf1127245658c43cf804\"",
+      "modified": "Mon, 31 Aug 2026 09:26:38 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,71 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Analysts Estimate 'GTA VI's' Budget Exceeds $1 Billion USD, Making It the Costliest Entertainment Product Ever - Hypebeast",
+      "link": "https://hypebeast.com/2026/8/grand-theft-auto-vi-targets-record-budget-and-2026-launch",
+      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPemwwcmNib05iMHJMNlI2bEdDeFZGV0dvd3ZFWUltTkt5UGhQSkU0bjNFM21Vd2wwZ1dFd2FLQUhFOXpCYlVjR1pwRnlXZkdjQWkwUnppbFZieVo0blJfVXpYczNYWHl0V3phdnBMNFMzLWZydFlsd3ItZng0VE9WR205UXJBQWI3TnBYdmJ4WQ?oc=5",
+      "date": "2026-08-31T09:25:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://image-cdn.hypb.st/https%3A%2F%2Fhypebeast.com%2Fimage%2F2026%2F08%2F31%2Fgrand-theft-auto-vi-targets-record-budget-and-2026-launch-tw.jpg?w=1080&cbr=1&q=90&fit=max",
+      "description": "Analysts Estimate 'GTA VI's' Budget Exceeds $1 Billion USD, Making It the Costliest Entertainment Product Ever&nbsp;&nbsp;Hypebeast"
+    },
+    {
+      "title": "GTA 6 pense à Twitch et YouTube, un mode Streamer filtre les musiques protégées - GinjFo",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-pense-a-twitch-et-youtube-un-mode-streamer-filtre-les-musiques-protegees-20260831",
+      "source_link": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxPX0hEZVQxbUtMWHZOQ2JkUThtMlZCaUszWE5rLWhzU2ZZSFpBYU5yZzJpYmoxNF9xWU82cHZ5UkYwVnUxQW9BYXRPeGllQmhGdmpBd1Uzc1gzTWxjSTREdDlkWXdhM2lkMGUzR2JKSXJsQlVsVGdmb05oRS1RNFJNbFhQVlhMeE5WRjJqV2g4N211akU4WGdrSjhJYnM3UWlGZldLZnBfek1mcVpjMDNYYkNfVUNKWFhubkkyZ1NPR2JHMnRzcGFyZGZDUE5CNmxhczhnaDFnMDhjeFRqUjJTTnNQbUV4dWs?oc=5",
+      "date": "2026-08-31T09:09:32+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA_VI_Capture_10.jpg",
+      "description": "GTA 6 pense à Twitch et YouTube, un mode Streamer filtre les musiques protégées&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "On connaît enfin le jeu Devolver Digital qui ose sortir en même temps que GTA 6 - Xboxygen",
+      "link": "https://www.xboxygen.com/News/365807-on-connait-enfin-le-jeu-devolver-digital-qui-ose-sortir-en-meme-temps-que-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQUms4Y1FwS2xwT09DRWw2Zzh6b3ZncjZkZGdjeTIwSHBlOFZrOEtxc3NoaVJGRXNpYS1va1RQOVFNcmNZWFl4emtPNmhoZ1l4VjFxeVFsUWl1NDlmQkM1NmM3NUZVTUlEcGIyZzRHb0lIOE5jMFJmalVOUDY3c2lnRk1aTU42MVF0bGdSX21UMUNfYkNqUGZiQm5rZ3BCV0pnNG1sbnhMbjBiSFMyTjFBM3Z2M3o2V00?oc=5",
+      "date": "2026-08-31T09:07:41+00:00",
+      "source": "Xboxygen",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/08/Volvys-Adventure-Reslimed.jpg",
+      "description": "On connaît enfin le jeu Devolver Digital qui ose sortir en même temps que GTA 6&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "GTA 6 fait flamber les prix de la PS5 Pro avant même sa sortie du jeu - MCE TV",
+      "link": "https://mcetv.ouest-france.fr/2026/gta-6-penurie-ps5-pro-prix-en-hausse/",
+      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1KNjc0d29vRV81Qjdlam1IRWdrUDhqbmdtVXM5TVZ1WXVFZHRUdTNFVUlpdzVTWjZSWkZEbWtZSkNlSmdOZFc5RFd1SUJFNnZxSFFzV2J0RENGaEZnMUNpNWM3LVdNSHoyc3d0clM5OFhwOEJJcDJ3RkVPMlc?oc=5",
+      "date": "2026-08-31T09:02:51+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://media-mcetv.ouest-france.fr/wp-content/uploads/2026/07/generique-jeux-video.jpg",
+      "description": "GTA 6 fait flamber les prix de la PS5 Pro avant même sa sortie du jeu&nbsp;&nbsp;MCE TV"
+    },
+    {
+      "title": "La PS5 Pro se raréfie déjà après la présentation de GTA 6 sur Netflix - Numerama",
+      "link": "https://www.numerama.com/tech/2321551-la-ps5-pro-se-rarefie-deja-apres-la-presentation-de-gta-6-sur-netflix.html",
+      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQZ3hmOHItalpVVC1RWVlJbzloMVFqM2NFblZiaTdScXQ0V3BaOTc2Nk84Sm82VkNERVdJSVZYUWUtbFRGelVtcUpoRE1SMVZoSTVnQjJjMjhycjVlbm1rRkdkOWx5RnZFQ3ZrTUtYdGhaZ21TNlZvclh5Zk9YZzJXekowLUtZc09jOGR0RWxzbGpLdUtYNGdkQkUzeWY4X0hVMHB3ZU9WLTZ2V3VLbTJmRExB?oc=5",
+      "date": "2026-08-31T09:00:00+00:00",
+      "source": "Numerama",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2024/11/ps5recafdre2.jpg?resize=1600,900&key=6824fd79",
+      "description": "La PS5 Pro se raréfie déjà après la présentation de GTA 6 sur Netflix&nbsp;&nbsp;Numerama"
+    },
     {
       "title": "GTA 6 bouleverse la conduite et le vol de voitures, voici tout ce qui change - tomsguide.fr",
       "link": "https://www.tomsguide.fr/gta-6-bouleverse-la-conduite-et-le-vol-de-voitures-voici-tout-ce-qui-change/",
@@ -1152,6 +1217,19 @@
       "lang": "fr",
       "image": "https://www.ginjfo.com/wp-content/uploads/2026/08/GTA6.jpg",
       "description": "GTA 6 : Rockstar se veut catégorique, « il sortira à temps »&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "GTA 6 has no microtransactions and no generative AI, Rockstar says - Notebookcheck",
+      "link": "https://www.notebookcheck.net/GTA-6-has-no-microtransactions-and-no-generative-AI-Rockstar-says.1383537.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOeld5N2JMYXE5VnV2S3lHemZDa1l1VnpCUkQ3RVRXVVZKUHRBcTcwMGMzemJGYjVBNFlLRm54VkpIa1JRTy10NjVJNTRJOVYyaHluSDB5eUtSdnBhWUZCMXlOdnV5VHdhaDFEOFIyUzYzWlhfY29jZHdaT0M2cWpNV3h1RUpXNDNHNUd5dnpSR2JDejJkdWtady1qVmswMkxaSlJMUjZlOU9IZzZQc1Aw?oc=5",
+      "date": "2026-08-31T05:48:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/gta-6-netfloix-deal-1.jpg",
+      "description": "GTA 6 has no microtransactions and no generative AI, Rockstar says&nbsp;&nbsp;Notebookcheck"
     },
     {
       "title": "\"Sorry, guys, you're wrong\" — GTA 5's Michael actor shuts down everyone who sees no difference between GTA 6 and the last game",
