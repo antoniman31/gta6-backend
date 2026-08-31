@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T12:32:38.667500+00:00",
-  "duration_seconds": 110.1,
+  "generated_at": "2026-08-31T13:02:15.677765+00:00",
+  "duration_seconds": 83.3,
   "decode_failures": 0,
-  "total_articles": 1412,
-  "new_this_run": 2,
+  "total_articles": 1415,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-31T12:22:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T10:00:00+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-08-31T12:46:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 1,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T08:02:16+00:00",
       "days_since_last_article": 0,
@@ -629,8 +629,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T11:11:04+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T12:48:59+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 3,
@@ -751,7 +751,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 6,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -846,8 +846,8 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
-      "last_article": "2026-08-30T10:00:00+00:00",
-      "days_since_last_article": 1,
+      "last_article": "2026-08-31T09:27:47+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 26,
+      "entries_fetched": 27,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,99,99,99,100,100,100,99,99,100",
+    "rockstar-fr": "99,99,99,99,99,100,100,100,99,99,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -937,7 +937,7 @@
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100",
-    "eurogamer": "100,100,100,100,100,100,100,100,100,100,100",
+    "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
     "ginjfo": "50,50,50,50,50,50",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,6,7,7,7,7,7,6",
+    "xboxwire": "7,7,7,7,6,7,7,7,7,7,6,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,83,83,84,84,84,84,84,84,84",
-    "arstechnica": "28,28,28,28,28,28,28,28,28,27,27,26",
+    "engadget": "84,84,83,83,84,84,84,84,84,84,84,84",
+    "arstechnica": "28,28,28,28,28,28,28,28,27,27,26,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 10:00:26 GMT"
+      "modified": "Mon, 31 Aug 2026 12:35:24 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"c295e1814390131bd91cefdb64707284\"",
-      "modified": "Mon, 31 Aug 2026 12:26:04 GMT"
+      "etag": "W/\"f81209f250bd5071d85c689d66ec16b6\"",
+      "modified": "Mon, 31 Aug 2026 12:31:51 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 12:05:49 GMT"
+      "modified": "Mon, 31 Aug 2026 12:50:46 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 12:30:57 GMT"
+      "modified": "Mon, 31 Aug 2026 13:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9573d8-2f8d\"",
-      "modified": "Mon, 31 Aug 2026 12:30:16 GMT"
+      "etag": "W/\"6a957adf-2fbe\"",
+      "modified": "Mon, 31 Aug 2026 13:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"9eb09388c659af7187fe8c865acb0c07\"",
-      "modified": "Mon, 31 Aug 2026 11:24:04 GMT"
+      "etag": "W/\"17d683eff8162fb924d54bd5f8ab7151\"",
+      "modified": "Mon, 31 Aug 2026 13:00:59 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1050,6 +1050,32 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "Rockstar says GTA 6 has been in development since 2015",
+      "link": "https://vgtimes.com/gaming-news/165965-rockstar-says-gta-6-has-been-in-development-since-2015.html",
+      "source_link": null,
+      "date": "2026-08-31T12:48:59+00:00",
+      "source": "VGTimes",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://files.vgtimes.com/posts/2026-08/rockstar-says-gta-6-has-been-in-development-since-2015-165965.webp",
+      "description": "Rockstar North co-studio head Rob Nelson says the earliest work on Grand Theft Auto 6 began years before Take-Two Interactive said full production started in 2020, even though GTA 6 is still scheduled to launch on November 19, 2026"
+    },
+    {
+      "title": "‘GTA 5’ Actor Says Fans Are ‘Out Of Their Minds’ Saying ‘GTA 6’ Looks Worse - Forbes",
+      "link": "https://www.forbes.com/sites/paultassi/2026/08/31/gta-5-actor-says-fans-are-out-of-their-minds-saying-gta-6-looks-worse/",
+      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPbS1jY3lsb3BvVUotNlhWN05qQ1VDZTBUc0FqbGRudjJYcW55YVZvR1hMREdqekFCeHVMNUp0ZHQwRExuRThRR2JyX2EyMGdNdUpkS3AzcVZDYzVlTkdvUlR6ZXIzY3puUFR6NHh1ak4wOXpqaXRVSmVkZlc0bm9lVXhzczVpaWVEcU1RVU5nbVVyeDB6cDhBVkU5dmFoYWJQOEh3RHVJSThuNkRpNnB0bEVjT0NUZUw2MFo4cg?oc=5",
+      "date": "2026-08-31T12:46:04+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "‘GTA 5’ Actor Says Fans Are ‘Out Of Their Minds’ Saying ‘GTA 6’ Looks Worse&nbsp;&nbsp;Forbes"
+    },
+    {
       "title": "GTA 6 : les artistes électro qui pourraient débarquer dans le jeu - Voltage - Addictive Radio",
       "link": "https://www.voltage.fr/gta-6-les-artistes-electro-qui-pourraient-debarquer-dans-le-jeu",
       "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQZ3VtSFpHd01ocXk0SkhMZEFtVG01Z1pEVDVXeFUtNEpMVE4wOWRsZE1Hd1I4dTlMeTE1YnJBWGoyQVBGZ19QT2F5YVZXWW9GVDlhVzFvUzRtYXdzVXZiU0RtYUdpZWJEWHVZRm5qLVY0NHRPVjU5Uy1rNTBkS1I1c043c2lhU0NrLTZBNDFIdw?oc=5",
@@ -1061,6 +1087,19 @@
       "lang": "fr",
       "image": "https://medias.lesindesradios.fr/t:app(web)/t:r(unknown)/filters:format(jpeg)/medias/Vsj0LZpM34/image/ai_generated_7932615_12801788178101606-format16by9.jpg",
       "description": "GTA 6 : les artistes électro qui pourraient débarquer dans le jeu&nbsp;&nbsp;Voltage - Addictive Radio"
+    },
+    {
+      "title": "Take-Two says its investigation into the GTA 6 leaker is ‘rapidly evolving’ as it requests another Discord subpoena - Video Games Chronicle",
+      "link": "https://www.videogameschronicle.com/news/take-two-says-its-investigation-into-the-gta-6-leaker-is-rapidly-evolving-as-it-requests-another-discord-subpoena/",
+      "source_link": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxOZjA4V2hfWTJ5a0tHVllhT0lnd1c2Q0Z6NkFvNWFVeFBmR1pzY1VPdjNkbDFEc3hucXFkMW00SW9MZHY0YmlXSlA1TUNZSXhMVFZidV9GdEZDdEd0WVFJMDdKT0pTcktTX1Z2czZNMzBMZ0ZDNFRSWjduYmJ6UGpCVW5BX3F3R1ZiZTZkbHlXUkFiMXM4S0duQkJLeFI4S3lzQ2JEY2VxX1J5cHJvX2FiUjlMbnRsMkYtTDdCdFlCZ1hXNl9qZUw2RG9jd3JoWGdYT2pQT1BwU3Z0UEZyeXYtdnhmbi0xTEpqSDdv?oc=5",
+      "date": "2026-08-31T12:11:55+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.videogameschronicle.com/files/2026/08/GTA-6.jpeg",
+      "description": "Take-Two says its investigation into the GTA 6 leaker is ‘rapidly evolving’ as it requests another Discord subpoena&nbsp;&nbsp;Video Games Chronicle"
     },
     {
       "title": "Lucia de GTA 6 était déjà présente dans GTA Online sans que les joueurs le sachent - Dexerto.fr",
@@ -1261,7 +1300,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2025/05/gta-6-screenshot-k-scaled.jpg?resize=1600,900&key=ada8a0e7",
-      "description": "GTA 6 : Rockstar promet un mode solo sans microtransactions ni IA générative&nbsp;&nbsp;Frandroid"
+      "description": "GTA 6 : Rockstar promet un mode solo sans microtransactions ni IA générative&nbsp;&nbsp;Frandroid",
+      "extraSources": [
+        {
+          "source": "Frandroid",
+          "link": "https://www.frandroid.com/produits-android/console/console-de-jeux/3226771_gta-6-rockstar-promet-un-mode-solo-sans-microtransactions-ni-ia-generative"
+        }
+      ]
     },
     {
       "title": "Analysts Estimate 'GTA VI's' Budget Exceeds $1 Billion USD, Making It the Costliest Entertainment Product Ever - Hypebeast",
