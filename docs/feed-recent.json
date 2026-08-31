@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T01:33:53.604865+00:00",
-  "duration_seconds": 82.7,
+  "generated_at": "2026-08-31T02:02:08.731568+00:00",
+  "duration_seconds": 82.0,
   "decode_failures": 0,
-  "total_articles": 1365,
-  "new_this_run": 0,
+  "total_articles": 1366,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -613,13 +613,13 @@
     {
       "id": "gtaboom",
       "name": "GTA BOOM",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T00:21:07+00:00",
-      "days_since_last_article": 1,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-08-31T01:59:08+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 2,
@@ -907,14 +907,14 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
-      "days_since_last_article": 8,
+      "days_since_last_article": 9,
       "status": "ok"
     }
   ],
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,99,99,100,100,100,100,100,99,99,99",
+    "rockstar-fr": "100,99,99,100,100,100,100,100,99,99,99,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -949,10 +949,10 @@
     "gta6times": "29,29,29,29,29,29,29,29,29,29,29,29",
     "gameinformer": "50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,10,10,10,10,10,10,10",
+    "vgc": "10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,9,9,9,9,9,9,9,9,9,9,9",
+    "xboxwire": "9,9,9,9,9,9,9,9,9,9,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -960,7 +960,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "27,27,27,27,27,27,29,29,27,29,29,29",
+    "arstechnica": "27,27,27,27,27,29,29,27,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 01:28:34 GMT"
+      "modified": "Mon, 31 Aug 2026 01:59:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a94d92a-2f67\"",
-      "modified": "Mon, 31 Aug 2026 01:30:18 GMT"
+      "etag": "W/\"6a94e032-2f67\"",
+      "modified": "Mon, 31 Aug 2026 02:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,12 +1043,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a94c1f2-b19\"",
-      "modified": "Sun, 30 Aug 2026 23:51:14 GMT"
+      "etag": "\"6a94de0e-b19\"",
+      "modified": "Mon, 31 Aug 2026 01:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "IO Interactive Dev Explains Why GTA 6 Crowds Are Years Ahead of Everyone Else",
+      "link": "https://www.gtaboom.com/io-interactive-dev-explains-why-gta-6-crowds-are-years-ahead-of-everyone-else-8d8c",
+      "source_link": null,
+      "date": "2026-08-31T01:59:08+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/22/08/io-interactive-dev-explains-why-gta-6-crowds-are-years-ahead-of-everyone-else.jpg",
+      "description": "An IO Interactive AI programmer says Grand Theft Auto VI's crowd tech is years ahead because NPCs run real AI instead of looping animations."
+    },
     {
       "title": "Gracie Bon Says She Was Body Scanned for ‘GTA 6’ Despite Online Skepticism - Complex",
       "link": "https://www.complex.com/pop-culture/a/treyalston/gracie-bon-gta-6-body-scan-rockstar-fake-dm",
@@ -4963,18 +4976,6 @@
       "lang": "fr",
       "image": "https://www.journaldugeek.com/app/uploads/2026/08/gta-6-nouvelles-infos-1600x900.jpg",
       "description": "GTA 6 : d’innombrables détails sur le jeu, le gameplay, les personnages…&nbsp;&nbsp;Journal du Geek"
-    },
-    {
-      "title": "GTA 6 : une 17e vidéo dévoile la navigation en bateau dans un vaste port industriel",
-      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-une-17e-video-devoile-la-navigation-en-bateau-dans-un-vaste-port-industriel-20260828",
-      "date": "2026-08-28T07:38:50+00:00",
-      "source": "GinjFo",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA_VI_Capture_36.jpg",
-      "description": "Cyberleek a publié une nouvelle séquence de GTA 6 montrant Jason naviguer de nuit dans un vaste port industriel. La vidéo révèle aussi une scène dans un restaurant et apporte de nouveaux indices sur les PNJ et les intérieurs.\nCet article GTA 6 : une 17e vidéo dévoile la navigation en bateau dans un vaste port industriel a été publié en premier par GinjFo."
     }
   ],
   "partial": true,
