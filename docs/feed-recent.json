@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T06:02:09.869965+00:00",
-  "duration_seconds": 79.8,
+  "generated_at": "2026-08-31T06:32:21.992207+00:00",
+  "duration_seconds": 97.6,
   "decode_failures": 0,
-  "total_articles": 1372,
-  "new_this_run": 3,
+  "total_articles": 1374,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -353,8 +353,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T21:40:25+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-08-31T04:53:20+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-31T05:48:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T10:02:00+00:00",
       "days_since_last_article": 1,
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T18:30:21+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -629,7 +629,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T05:37:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T08:26:11+00:00",
       "days_since_last_article": 1,
@@ -661,14 +661,14 @@
     {
       "id": "jeuxactu",
       "name": "JeuxActu",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-19T01:04:01+00:01",
       "days_since_last_article": 12,
-      "status": "ok"
+      "status": "muette"
     },
     {
       "id": "actugaming",
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 2,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 26,
+      "entries_fetched": 27,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -911,10 +911,21 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstarmag-youtube": {
+      "depuis": "2026-08-31T06:32:21.991797+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "jeuxactu": {
+      "depuis": "2026-08-31T06:32:21.991797+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,100,100,100,99,99,99,99,99,99",
+    "rockstar-fr": "99,99,100,100,100,99,99,99,99,99,99,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -928,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -942,7 +953,7 @@
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
     "ginjfo": "50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
-    "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
+    "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,0",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +963,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,7,7,7,7,7,7,7,7",
+    "xboxwire": "9,9,9,7,7,7,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,85,100,100,100,100,100",
+    "theverge": "100,100,100,100,100,85,100,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "29,29,29,29,29,26,26,26,26,26,27,26",
+    "arstechnica": "29,29,29,29,26,26,26,26,26,27,26,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1014,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 06:00:59 GMT"
+      "modified": "Mon, 31 Aug 2026 06:28:42 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1034,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a951870-2f94\"",
-      "modified": "Mon, 31 Aug 2026 06:00:16 GMT"
+      "etag": "W/\"6a951f78-3019\"",
+      "modified": "Mon, 31 Aug 2026 06:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"a9efd119eba569bc1dda4331098c3ce0\"",
-      "modified": "Mon, 31 Aug 2026 05:30:10 GMT"
+      "etag": "W/\"89d36ddba7fe31ed8430a8b24201cde3\"",
+      "modified": "Mon, 31 Aug 2026 06:17:14 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1089,6 +1100,19 @@
       "description": "GTA 6 : Rockstar confirme l'absence de microtransactions et d'IA générative pour le lancement du jeu&nbsp;&nbsp;Gamekult"
     },
     {
+      "title": "GTA VI reveal signals Netflix’s emerging role in global gaming ecosystem - The Korea Herald",
+      "link": "https://www.koreaherald.com/article/10857444",
+      "source_link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE1GTElOcjVmT2duYVltMTlRblRzT1BMcERXY1RnbFZYaVg1YllDU0NzdWFsSXFPcllucHF5eUV5LWJ6LWotNllQR2JNZUhFZlo4VWhUOFNfVQ?oc=5",
+      "date": "2026-08-31T04:53:20+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://wimg.heraldcorp.com/news/cms/2026/08/31/news-a.v1.20260831.538d185aeca5492f9e4be804054f85f3_T1.jpg",
+      "description": "GTA VI reveal signals Netflix’s emerging role in global gaming ecosystem&nbsp;&nbsp;The Korea Herald"
+    },
+    {
       "title": "GTA 6 provoque une ruée sur la PS5 : les stocks fondent, les prix s'envolent - Les Numériques",
       "link": "https://www.lesnumeriques.com/jeux-video/gta-6-provoque-une-ruee-sur-la-ps5-les-stocks-fondent-les-prix-s-envolent-n261102.html",
       "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNZ1h0cV83WnR2aDE2MHhocEZCWi15SWxLbHlsWU55MUxmREZEallKbUU0UzVJOUlNN3lQY0VPSm4yREtia0tfVFpOVEwwdFdITG9IOUlNR1pjZzd3N1RGQmtKalpCVU90ZW02dXRlWG9MenAwVkQ2dEZNeDVxZVMybkhicTE0QlF2TnVPTVBRV2FqQ1V6SnFPTWlZYVNKelBpaGM2S2ZTRzJiaWJrbWdHOV9naTFrQUt1cTRVek55dS1uUUNCWEE?oc=5",
@@ -1139,6 +1163,19 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/08/gta-6-launch-could-cost-the-us-economy-over-a-billion-dollars.jpg?w=1600&h=900&fit=crop",
       "description": "The November 19 launch of Grand Theft Auto 6 could be a costly endeavor for the US economy, with an estimated $1 billion price tag attached to it."
+    },
+    {
+      "title": "GTA 6 pre-orders rose 436% after Netflix trailer, with PS5 sales dominating Xbox - Notebookcheck",
+      "link": "https://www.notebookcheck.net/GTA-6-pre-orders-rose-436-after-Netflix-trailer-with-PS5-sales-dominating-Xbox.1383393.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNa3ExNzF6R3kwM3FKMXB6cHM4b0p0T2NzYllEQ0tEbjFGTE5JMGhOVklEcEg5VzJBb0xfM1FkaXZWcXdRVnFueGkxdFFPak1xYk84MlZxVkgtZTROOXc0aDJXek9NUGFINlBZVURyOEx2TWtjeUc1SWZLWVBxSFo3WjMydXZ3SklWT0FzYzRCLWpFdWo4S0xBLWdIUEVpcjdQVTVpaU5STDc1S2lJSjA4TEJPTlY0TmRINmpsS1VDSWU?oc=5",
+      "date": "2026-08-30T23:26:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6NetflixSales.jpg",
+      "description": "GTA 6 pre-orders rose 436% after Netflix trailer, with PS5 sales dominating Xbox&nbsp;&nbsp;Notebookcheck"
     },
     {
       "title": "GTA 5's Michael Actor Defends GTA 6 After Doubters Say Rockstar's Games Look Too Similar",
@@ -4956,31 +4993,6 @@
       "lang": null,
       "image": "https://images.t2online.in/cdn-cgi/image/width=1200,fit=pad,gravity=auto,quality=50,format=auto/https://apis.t2online.in/getImageStream/8942/1787905280452.jpg",
       "description": "Grand Theft Auto VI trailer feels like a movie and reveals new gameplay mechanics&nbsp;&nbsp;t2online.in"
-    },
-    {
-      "title": "Sensor Tower: Netflix US mobile viewership increased 35% during GTA 6 extended preview - GamesIndustry.biz",
-      "link": "https://www.gamesindustry.biz/sensor-tower-netflix-us-mobile-viewership-increased-35-during-gta-6-extended-preview",
-      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOem1qSUVGOWYyN0lqSEdBQWdoTWtBOTBaektucmpHVkQtQko0Qkc1TDZqYnhRUXNQYWlrOFlXRGQzRC1OeEdMWGtJNUwydzFqQjRrSlNlMEZIeERCYnhzcmNnTk4xN1pzUm50d19kTkp4UlJ0bGc2azNvVjk5dmhSbl9iMGVJcENZYXRwdFB0Z2xuVFJJM3JmQnpNLURVWmVMUmZRZ0hOU1NlbDZQNXFRbkVkVG0?oc=5",
-      "date": "2026-08-28T08:09:05+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://assetsio.gnwcdn.com/lucia-jason-gta.jpg?width=1200&height=630&fit=crop&enable=upscale&auto=webp",
-      "description": "Sensor Tower: Netflix US mobile viewership increased 35% during GTA 6 extended preview&nbsp;&nbsp;GamesIndustry.biz"
-    },
-    {
-      "title": "Une déception ? « Juste GTA » : ce qui cloche avec l’aperçu étendu de GTA 6 - frandroid.com",
-      "link": "https://www.frandroid.com/produits-android/console/3224599_une-deception-juste-gta-ce-qui-cloche-avec-lapercu-etendu-de-gta-6",
-      "date": "2026-08-28T08:07:38+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/gta-6-apres.jpg?resize=1600,900&key=22a20a6f",
-      "description": "Une déception ? « Juste GTA » : ce qui cloche avec l’aperçu étendu de GTA 6&nbsp;&nbsp;frandroid.com"
     }
   ],
   "partial": true,
