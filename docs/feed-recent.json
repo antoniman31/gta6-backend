@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T10:16:52.487356+00:00",
-  "duration_seconds": 90.5,
+  "generated_at": "2026-08-31T10:24:22.862400+00:00",
+  "duration_seconds": 83.2,
   "decode_failures": 0,
-  "total_articles": 1402,
-  "new_this_run": 2,
+  "total_articles": 1403,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -341,8 +341,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T10:48:08+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T09:50:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 68,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T10:05:07+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T10:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-31T08:02:16+00:00",
       "days_since_last_article": 0,
@@ -481,10 +481,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T16:08:31+00:00",
       "days_since_last_article": 0,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 1,
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 6,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,100,100,99,99,99,99,99,99,99,99",
+    "rockstar-fr": "99,100,100,99,99,99,99,99,99,99,99,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -927,8 +927,8 @@
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "rockstarmag": "10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,0,15,15,15,15,15,15,15,15,15",
+    "rockstarmag": "10,10,10,10,10,10,10,10",
+    "rockstarmag-youtube": "15,0,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -942,7 +942,7 @@
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
     "ginjfo": "50,50,50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
-    "jeuxactu": "20,20,0,0,0,0,20,20,20,20,20,20",
+    "jeuxactu": "20,0,0,0,0,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,7,7,7,7,6",
+    "xboxwire": "7,7,7,7,7,7,7,7,7,7,6,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,84,84,84,84,84,84,83,83,84",
-    "arstechnica": "27,26,27,26,28,28,28,28,28,28,28,28",
+    "engadget": "84,84,84,84,84,84,84,84,83,83,84,84",
+    "arstechnica": "26,27,26,28,28,28,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -984,7 +984,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 09:53:13 GMT"
+      "modified": "Mon, 31 Aug 2026 10:21:44 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"a735c196970831a9f620fd92f4eb7bcf\"",
-      "modified": "Mon, 31 Aug 2026 10:14:59 GMT"
+      "etag": "W/\"658831686e2724d60c32ab69cfaf9ec8\"",
+      "modified": "Mon, 31 Aug 2026 10:22:17 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 10:15:31 GMT"
+      "modified": "Mon, 31 Aug 2026 10:23:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1087,6 +1087,19 @@
       "lang": "fr",
       "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/08/personnages-gta-6-mise-a-jour-1024x576.jpg",
       "description": "GTA 6 | Un nouvel aperçu des personnages et de nouveaux arrivants grâce à la présentation Netflix&nbsp;&nbsp;Rockstar Mag"
+    },
+    {
+      "title": "GTA 6 Extended Look: Rockstar Reveals Vice City Gameplay - Analytics Insight",
+      "link": "https://www.analyticsinsight.net/news/gta-6-extended-look-rockstar-reveals-vice-city-gameplay",
+      "source_link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOVDRiV3F3TDNmTVlGWEQyWGRYU3Z1U1dueUliNXBiLV9vdjZYTTdHN2poSXMyZTI0YW9ONDBydXFmLVhJSEVzaGlzdWpwZzlhX1dGclF2R0I1WkZBUGdoaDQ0RkdiTzdmUEx1SGc3LWpnWEhhTUpaRGJIMV9oQmxsTXZUT3ltbXlsT3dDT21zR0JnZ0pQdExFYtIBpgFBVV95cUxNbzRZY21YTEIxY2w4M2lkYkVGVW5SR21DS0ZrVFFCeHRNNEl0T1NFcjVzQjduaW5GazUxWUFTUE9MVTJZQ2NneGtweXpwRHdKR1ZRZFRYN0ZCUXVNUkRVZUNOUnRDXzdsa2lfSmpWcENzM08yNEZzbW50akxQYXQyOTFrVnRBSmFmbWwxOVIwbjVBZXNMOFkyXzRYTl9CVE9Ibzd3ZUxn?oc=5",
+      "date": "2026-08-31T09:50:44+00:00",
+      "source": "Rockstar Games (annonces)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.assettype.com/analyticsinsight%2F2026-08-31%2Fm12krn5e%2FGTA-6-Extended-Look-Rockstar-Reveals-Vice-City-Gameplay-3pm.jpg?w=1200&ar=40%3A21&auto=format%2Ccompress&ogImage=true&mode=crop&enlarge=true&overlay=false&overlay_position=bottom&overlay_width=100",
+      "description": "GTA 6 Extended Look: Rockstar Reveals Vice City Gameplay&nbsp;&nbsp;Analytics Insight"
     },
     {
       "title": "Fans Think GTA 6's Vice City Apartment Matches a Real Miami Building",
@@ -4981,18 +4994,6 @@
       "lang": "fr",
       "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/08/ps5-gta-6.jpg?resize=1600,900&key=38e240f4",
       "description": "Deux offres permettent de se procurer la PS5 à son ancien prix avant l’arrivée de GTA 6&nbsp;&nbsp;Numerama"
-    },
-    {
-      "title": "GTA 6 Is Taking One of Red Dead Redemption 2’s Best Ideas Even Further",
-      "link": "https://www.ign.com/articles/gta-6-story-choices-explained",
-      "date": "2026-08-28T10:15:00+00:00",
-      "source": "IGN",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://assets-prd.ignimgs.com/2026/08/27/gta6-5-blogroll-1787855617077.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "Rockstar took things to the next level with Red Dead Redemption 2’s story, and now it’s building on that for GTA 6’s story, which will feature “big and small choices” that impact Jason and Lucia’s journey."
     }
   ],
   "partial": true,
