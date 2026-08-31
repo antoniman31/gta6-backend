@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T08:32:03.931553+00:00",
-  "duration_seconds": 81.1,
+  "generated_at": "2026-08-31T09:02:27.103421+00:00",
+  "duration_seconds": 80.9,
   "decode_failures": 0,
-  "total_articles": 1385,
-  "new_this_run": 3,
+  "total_articles": 1386,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -317,7 +317,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 67,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T08:13:28+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,11 +469,11 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-08-31T08:02:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -481,10 +481,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T16:08:31+00:00",
       "days_since_last_article": 0,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 1,
@@ -665,7 +665,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-27T21:58:01+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 3,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,99,99,99,100,100,99,99,99,99",
+    "rockstar-fr": "99,99,99,99,99,100,100,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -927,8 +927,8 @@
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "rockstarmag": "10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,15,15,15,15,15",
+    "rockstarmag": "10,10,10,10,10",
+    "rockstarmag-youtube": "15,15,15,15,15,0,15,15,15,15,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -937,12 +937,12 @@
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100",
-    "eurogamer": "100,100,100,100,100,100",
+    "eurogamer": "100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
     "ginjfo": "50,50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
-    "jeuxactu": "20,20,20,20,20,20,0,0,0,0,20,20",
+    "jeuxactu": "20,20,20,20,20,0,0,0,0,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -958,9 +958,9 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "85,100,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "26,26,26,26,27,26,27,26,28,28,28,28",
+    "arstechnica": "26,26,26,27,26,27,26,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -984,7 +984,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 16:11:36 GMT"
+      "modified": "Mon, 31 Aug 2026 09:00:36 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"75138b325be8197221878404b68e2168\"",
-      "modified": "Mon, 31 Aug 2026 08:30:46 GMT"
+      "etag": "W/\"5947da37734947e4797f737f94df721c\"",
+      "modified": "Mon, 31 Aug 2026 09:00:40 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 16:48:46 GMT"
+      "modified": "Mon, 31 Aug 2026 08:35:55 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 08:30:07 GMT"
+      "modified": "Mon, 31 Aug 2026 09:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a953b98-320b\"",
-      "modified": "Mon, 31 Aug 2026 08:30:16 GMT"
+      "etag": "W/\"6a9542a1-31c7\"",
+      "modified": "Mon, 31 Aug 2026 09:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"90b5cd5f2c629dc7cecb21f272b8f46a\"",
-      "modified": "Mon, 31 Aug 2026 08:23:41 GMT"
+      "etag": "W/\"a83f76594eebc4bcde8d002994d8dd07\"",
+      "modified": "Mon, 31 Aug 2026 08:41:46 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"bd6761449ef22c4f3df4001fb487c336\"",
-      "modified": "Sun, 30 Aug 2026 16:30:06 GMT"
+      "etag": "W/\"cc444cd72e4aa08cdd24234563dc3b10\"",
+      "modified": "Mon, 31 Aug 2026 08:59:12 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -18263,6 +18263,20 @@
       "lang": "fr",
       "image": "https://media-rockstargames-com.akamaized.net/tina-uploads/posts/258aa538o412ok/5690872e70df76d5d63638c12e7eb5b746f83c3a.jpg",
       "description": "Grand Theft Auto VI sortira le 26 mai 2026&nbsp;&nbsp;Rockstar Games"
+    },
+    {
+      "title": "Grand Theft Auto VI is Now Coming May 26, 2026 - Rockstar Games",
+      "link": "https://www.rockstargames.com/newswire/article/258aa538o412ok/grand-theft-auto-vi-is-now-coming-may-26-2026",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPMnAwTUpDTXM0cFdqUXAyVzZaTkd4LVdoWkFlem12aGd2Z0RpdTlNNjlNWEZOUGxxUUJrVGpwVWZJWUhmUVlLcEJKMnNYdGczck9SSmVMYXlkOVJMdkJRRlphRmpES0NoNW5vVTl3VjctSVlMdEtYRGdFc2ppSzU4Ql9ZUFJkTGs4YmpPVFpPWUgzR21udzk5blFNdVdnZm4yeWc0bkZYazlSSms?oc=5",
+      "date": "2025-05-02T07:00:00+00:00",
+      "source": "Rockstar Games (officiel EN)",
+      "archive": true,
+      "official": true,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media-rockstargames-com.akamaized.net/tina-uploads/posts/258aa538o412ok/5690872e70df76d5d63638c12e7eb5b746f83c3a.jpg",
+      "description": "Grand Theft Auto VI is Now Coming May 26, 2026&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "Publishers of GTA 6, Call of Duty, and more to be impacted as video game voice actors strike over AI implementation - VG247",
