@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T19:02:17.322284+00:00",
-  "duration_seconds": 85.0,
+  "generated_at": "2026-08-31T19:32:34.016011+00:00",
+  "duration_seconds": 84.1,
   "decode_failures": 0,
-  "total_articles": 1464,
-  "new_this_run": 4,
+  "total_articles": 1466,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-31T18:27:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 68,
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 1,
       "last_article": "2026-08-31T18:30:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,11 +469,11 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-08-31T18:33:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -689,7 +689,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T18:45:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 3,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 28,
+      "entries_fetched": 29,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,100,100,100,92,92",
+    "gnews-fr": "92,92,92,92,92,92,100,100,100,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -946,21 +946,21 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "29,29,29,29,29,29,29,29,30,30,30,30",
+    "gta6times": "29,29,29,29,29,29,29,30,30,30,30,30",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,6,6,6,6,6,6,6,6,6,6,6",
+    "xboxwire": "6,6,6,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,45,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,45,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,61,84,84,84,84,84,84,84,84,84,82",
-    "arstechnica": "27,27,27,28,28,28,28,26,29,28,28,28",
+    "engadget": "61,84,84,84,84,84,84,84,84,84,82,82",
+    "arstechnica": "27,27,28,28,28,28,26,29,28,28,28,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"b1fff4f0afee7833d812644970fd0f1d\"",
-      "modified": "Mon, 31 Aug 2026 18:30:48 GMT"
+      "etag": "W/\"d6fafee7398a7f7059b1c7c60534fae4\"",
+      "modified": "Mon, 31 Aug 2026 19:30:23 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 18:56:37 GMT"
+      "modified": "Mon, 31 Aug 2026 19:31:17 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a95cf3e-2fe1\"",
-      "modified": "Mon, 31 Aug 2026 19:00:14 GMT"
+      "etag": "W/\"6a95d648-2fe1\"",
+      "modified": "Mon, 31 Aug 2026 19:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788202823\"",
-      "modified": "Mon, 31 Aug 2026 19:00:23 GMT"
+      "etag": "W/\"1788204330\"",
+      "modified": "Mon, 31 Aug 2026 19:25:30 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1152,6 +1152,19 @@
       "lang": null,
       "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/08/7-upcoming-jrpgs-to-play-if-you-re-skipping-gta-6.jpg?w=1600&h=900&fit=crop",
       "description": "If your only crime is an insatiable urge to grind, then I recommend these JRPGs for anyone skipping GTA 6."
+    },
+    {
+      "title": "Netflix’s GTA VI first look sparks massive pre-order surge and app download boom - JoBlo",
+      "link": "https://www.joblo.com/grand-theft-auto-6-netflix-first-look/",
+      "source_link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBEOWNGUjNQZzBwVlFwVjlGYzZNZHJaandtaVRJV1g5RWxXdjdvQm5mY0ZGY2RsWl9NUlRHQVhGa2dDS3NsaW1vMWMzLVUtUzB0TW5jRU5YSDY2dGtINERmbmtCQUNPNjNKM1ZnZdIBckFVX3lxTE1JRWZtcWFMcUhZbnpCakw2dENZX205MEN1RlZHR0YyRHVnb3czVE5qbW9KZ2lsQWFkZUJJVW92a0pSNVo0b3gyaTJLVTFKSjl5RHQzRjRfR1NlTEotV3VZeDFWVkt2ellaTVZQMEI5RlIzQQ?oc=5",
+      "date": "2026-08-31T17:29:52+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.joblo.com/wp-content/uploads/2026/08/grand_theft_auto_6_netflix_increase.jpg",
+      "description": "Netflix’s GTA VI first look sparks massive pre-order surge and app download boom&nbsp;&nbsp;JoBlo"
     },
     {
       "title": "Sony lawyers argue that nobody is stupid enough to believe they actually own digital games, because then only one person could buy GTA 6",
@@ -1360,6 +1373,19 @@
       "lang": "fr",
       "image": "https://www.xboxygen.com/wp-content/uploads/2026/08/GTA-6-Jason-et-Lucia.jpg",
       "description": "GTA 6 : après les énormes fuites, Take-Two durcit sa traque contre les responsables&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "GTA 6 Leak Sends Take-Two (NASDAQ:TTWO) Stock Down 7%. What TTWO Investors Need to Know - Stocks Down Under",
+      "link": "https://stocksdownunder.com/gta-6-leak-take-two-stock-falling-ttwo/",
+      "source_link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9BckN2YnQxN2tVNUNNLUhubXRRUG1RcXU3YUdDalI3VFZfeUFpNm91TzZLR1RWMVdxNGpENF9KM1drZC1PVnVnY1YtMFZlMXM1WGxTWVlNN29CRG9VNlFMQ0FRZ0NWYVhsVVA0RVRzRTZ6WExEalE?oc=5",
+      "date": "2026-08-31T15:55:51+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 Leak Sends Take-Two (NASDAQ:TTWO) Stock Down 7%. What TTWO Investors Need to Know&nbsp;&nbsp;Stocks Down Under"
     },
     {
       "title": "Fetishists Spent the Weekend Perving Over the New GTA 6 Trailer - vice.com",
