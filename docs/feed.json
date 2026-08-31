@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-31T22:32:18.505559+00:00",
-  "duration_seconds": 92.2,
+  "generated_at": "2026-08-31T23:02:08.060921+00:00",
+  "duration_seconds": 80.3,
   "decode_failures": 0,
-  "total_articles": 1481,
+  "total_articles": 1482,
   "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -317,7 +317,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 68,
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T19:44:49+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 2,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-30T17:11:57+00:00",
       "days_since_last_article": 1,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 28,
+      "entries_fetched": 29,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,92,92,92,92,92,92,92,92,92,92",
+    "gnews-fr": "100,92,92,92,92,92,92,92,92,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,6,6,7,6,7,6,7,7,7",
+    "xboxwire": "6,6,6,6,7,6,7,6,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,45,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "45,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "29,28,28,28,29,29,29,29,29,29,29,28",
+    "engadget": "84,84,82,82,82,82,82,82,82,82,82,82",
+    "arstechnica": "28,28,28,29,29,29,29,29,29,29,28,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,13 +968,13 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"4e6d9969e6aad015fab3f05f9dcb17c2\"",
-      "modified": "Mon, 31 Aug 2026 18:23:09 GMT"
+      "etag": "W/\"68a49856107044a7d08f3ea96ccba897\"",
+      "modified": "Mon, 31 Aug 2026 22:59:56 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2570e-x1d0JrPJorc1cmSUr+V2McXNIpU\"",
+      "etag": "W/\"24d90-aYLUo9F2kyPTEoG1Y3WVc9fqaHk\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 22:27:31 GMT"
+      "modified": "Mon, 31 Aug 2026 22:58:13 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a960078-2fe1\"",
-      "modified": "Mon, 31 Aug 2026 22:30:16 GMT"
+      "etag": "W/\"6a96077e-2fe1\"",
+      "modified": "Mon, 31 Aug 2026 23:00:14 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -19522,6 +19522,20 @@
       "lang": null,
       "image": "https://www.rockstargames.com/VI/-/opengraph-image.jpg?opengraph-image.0t8ty~nlmxq2s.jpg",
       "description": "Grand Theft Auto VI Trailer 2&nbsp;&nbsp;Rockstar Games"
+    },
+    {
+      "title": "Grand Theft Auto VI - Trailer 2 - Rockstar Games",
+      "link": "https://www.rockstargames.com/videos/cpys7u21",
+      "source_link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1ldXhPSDNXZDhtaGpKRzJBdHBuS1R1Ti1tOS00UmNWdVQ3Sk12NXZOTF9uYVk1Nk1yRHQ5bGNFajd0dEZURHAwemk2NzhJUV9RZmlJZVhvbDI?oc=5",
+      "date": "2025-05-06T07:00:00+00:00",
+      "source": "Rockstar Games (officiel EN)",
+      "archive": true,
+      "official": true,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://videos-rockstargames-com.akamaized.net/v4/cpys7u21/art/global.jpg",
+      "description": "Grand Theft Auto VI - Trailer 2&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "Grand Theft Auto VI sortira le 26 mai 2026 - Rockstar Games",
