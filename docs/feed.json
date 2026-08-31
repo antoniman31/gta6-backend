@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T05:32:01.710489+00:00",
-  "duration_seconds": 83.1,
+  "generated_at": "2026-08-31T06:02:09.869965+00:00",
+  "duration_seconds": 79.8,
   "decode_failures": 0,
-  "total_articles": 1369,
-  "new_this_run": 1,
+  "total_articles": 1372,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 67,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T04:45:00+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-08-31T05:48:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T00:17:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T10:02:00+00:00",
       "days_since_last_article": 1,
@@ -629,18 +629,18 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T19:12:32+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T05:37:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T08:26:11+00:00",
       "days_since_last_article": 1,
@@ -715,7 +715,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T05:37:38+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 2,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 27,
+      "entries_fetched": 26,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,99,99,99,100,100,100,99,99,99,99,99",
+    "rockstar-fr": "99,99,99,100,100,100,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -926,7 +926,7 @@
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "ignfr": "40,40,40,40,40,40,40,40,40,40,40",
+    "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10",
     "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10",
@@ -940,7 +940,7 @@
     "eurogamer": "100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "ginjfo": "50,50",
+    "ginjfo": "50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,9,7,7,7,7,7,7,7",
+    "xboxwire": "9,9,9,9,7,7,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,85,100,100,100,100",
+    "theverge": "100,100,100,100,100,100,85,100,100,100,100,100",
     "engadget": "84,84,84,84,84,84,84,84,84,84,84,84",
-    "arstechnica": "27,29,29,29,29,29,26,26,26,26,26,27",
+    "arstechnica": "29,29,29,29,29,26,26,26,26,26,27,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 30 Aug 2026 20:02:56 GMT"
+      "modified": "Mon, 31 Aug 2026 05:44:46 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"29198-o9jUzz2mcVZOgnSBeEyIDg+LThU\"",
+      "etag": "W/\"28be0-yHR07CtUctQOdhl2uHWAYyJ0Rf4\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,22 +1014,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 05:27:30 GMT"
+      "modified": "Mon, 31 Aug 2026 06:00:59 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"0b330cb5eb9bb42bbe933115d7a735b3\"",
-      "modified": "Sun, 30 Aug 2026 09:23:47 GMT"
+      "etag": "\"45a50a581c02fe03e73d05f7814dd10e\"",
+      "modified": "Mon, 31 Aug 2026 05:44:43 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a951167-2f86\"",
-      "modified": "Mon, 31 Aug 2026 05:30:15 GMT"
+      "etag": "W/\"6a951870-2f94\"",
+      "modified": "Mon, 31 Aug 2026 06:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"0de39adcae784141577340ae29d2e8d7\"",
-      "modified": "Mon, 31 Aug 2026 05:00:15 GMT"
+      "etag": "W/\"a9efd119eba569bc1dda4331098c3ce0\"",
+      "modified": "Mon, 31 Aug 2026 05:30:10 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1043,12 +1043,51 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a94fa2e-af6\"",
-      "modified": "Mon, 31 Aug 2026 03:51:10 GMT"
+      "etag": "\"6a951650-af6\"",
+      "modified": "Mon, 31 Aug 2026 05:51:12 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : Rockstar se veut catégorique, « il sortira à temps » - GinjFo",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-rockstar-se-veut-categorique-il-sortira-a-temps-20260831",
+      "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQal9ESU1WV0JIR0JpZnVYYzlqWE9wWDYycVFvYkQ3WlJrV2lrSUhqdDhKOXRYVWdSY2JNSzdYbWNINGdVeEJmdk9QNTNqVjFKYVM4ZlU4WlVCa2doSzZfTXg4S1h1RWI3UUgtbUVoQ0JKaXNaeTlRdW9wdkVITk5vYjYtYmpCU0lmcEg0Rkl6U2RQQVhHdDR5ZzltZW9TbW5HeHFFQzhUaEJqT2ZQNWpEVHBDVGZ0WnJIWWVRNnVOUE9XcGItemc?oc=5",
+      "date": "2026-08-31T05:48:46+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2026/08/GTA6.jpg",
+      "description": "GTA 6 : Rockstar se veut catégorique, « il sortira à temps »&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "\"Sorry, guys, you're wrong\" — GTA 5's Michael actor shuts down everyone who sees no difference between GTA 6 and the last game",
+      "link": "https://vgtimes.com/gaming-news/165925-sorry-guys-youre-wrong-gta-5s-michael-actor-shuts-down-everyone-who-sees-no-difference-between-gta-6-and-the-last-game.html",
+      "source_link": null,
+      "date": "2026-08-31T05:37:37+00:00",
+      "source": "VGTimes",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://files.vgtimes.com/posts/2026-08/sorry-guys-youre-wrong-gta-5s-michael-actor-shuts-down-everyone-who-sees-no-difference-between-gta-6-and-the-last-game-165925.webp",
+      "description": "The argument over how far Grand Theft Auto VI has moved beyond its predecessor flared up right after the Extended Look — and it was joined by a man who, by all indications, isn't in the new game at all. Ned Luke, who gave Michael De Santa his voice and face in Grand Theft Auto V, responded to those who saw the same old GTA 5 with a fresh coat of paint in those 27 minutes of gameplay. His main argument is the way pedestrians walk — and Rockstar Games' own numbers unexpectedly back him up"
+    },
+    {
+      "title": "GTA 6 : Rockstar confirme l'absence de microtransactions et d'IA générative pour le lancement du jeu - Gamekult",
+      "link": "https://www.gamekult.com/actualite/gta-6-rockstar-confirme-l-absence-de-microtransactions-et-d-ia-generative-pour-le-lancement-du-jeu-3050871822.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxNNmY0YTBZTUFPRDdmb1JDSXdFOGFBS2ZZby1Dem0ySWZGSXpSSTk0aTJpczRZVXZWTlhzNFJKOThLTzdmSWVBYy1mRGZ6QjdiS09pcWZYUUdOUmhCdDh6SHZ1NE9xclMtZzVna1ZOZ2dHdXdsMUcyb2FPeE9HYkludVZSQ2ZyX0daUjFNSFNXUXBDRm82WWtTbWR3UHVyZE1CUVJhVW8zNmFtUEJ0b0lHZXU1Q3kzRmNlUWhqRTlmR2RkTkJ0cDdDNmc1QTBucXZOZDIzNEhpcHBDcDJPSGZPYnBiRQ?oc=5",
+      "date": "2026-08-31T05:34:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn.gamekult.com/optim/images/news/30/3050871822/gta-6-rockstar-confirme-l-absence-de-microtransactions-et-d-ia-generative-pour-le-lancement-du-jeu-82c0c342__w1920.jpg",
+      "description": "GTA 6 : Rockstar confirme l'absence de microtransactions et d'IA générative pour le lancement du jeu&nbsp;&nbsp;Gamekult"
+    },
     {
       "title": "GTA 6 provoque une ruée sur la PS5 : les stocks fondent, les prix s'envolent - Les Numériques",
       "link": "https://www.lesnumeriques.com/jeux-video/gta-6-provoque-une-ruee-sur-la-ps5-les-stocks-fondent-les-prix-s-envolent-n261102.html",
