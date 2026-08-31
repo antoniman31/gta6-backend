@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T17:32:14.195053+00:00",
-  "duration_seconds": 87.5,
+  "generated_at": "2026-08-31T18:02:11.149889+00:00",
+  "duration_seconds": 79.5,
   "decode_failures": 0,
-  "total_articles": 1457,
-  "new_this_run": 5,
+  "total_articles": 1458,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,7 +390,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-08-31T17:03:28+00:00",
+      "last_article": "2026-08-31T17:32:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-08-31T16:41:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 1,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-31T08:02:16+00:00",
       "days_since_last_article": 0,
@@ -569,7 +569,7 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T17:18:02+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -701,7 +701,7 @@
       "http_status": 301,
       "redirect": "https://www.dualshockers.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-31T17:30:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T13:48:34+00:00",
       "days_since_last_article": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 3,
@@ -829,7 +829,7 @@
     {
       "id": "gamergen",
       "name": "Gamergen",
-      "entries_fetched": 100,
+      "entries_fetched": 45,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 29,
+      "entries_fetched": 28,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,100,100",
+    "gnews-fr": "92,92,92,92,92,92,92,92,92,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -946,21 +946,21 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "29,29,29,29,29,29,29,29,29,29,29,30",
+    "gta6times": "29,29,29,29,29,29,29,29,29,29,30,30",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,7,7,7,6,6,6,6,6,6,6,6",
+    "xboxwire": "7,7,7,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,45",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,84,61,84,84,84,84,84,84,84",
-    "arstechnica": "26,27,27,27,27,27,28,28,28,28,26,29",
+    "engadget": "84,84,84,61,84,84,84,84,84,84,84,84",
+    "arstechnica": "27,27,27,27,27,28,28,28,28,26,29,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2a048-kfCcmNnSq2okl2iMswF1cnIBgmk\"",
+      "etag": "W/\"28d9d-Zegq1Krqdxd1g6VVnAePrhoCBag\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"f28657d60cf99433447d48b52e15e8a2\"",
-      "modified": "Mon, 31 Aug 2026 17:21:39 GMT"
+      "etag": "W/\"1f941b4dceeacfb261e638f1fdb9f660\"",
+      "modified": "Mon, 31 Aug 2026 17:57:27 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 17:29:28 GMT"
+      "modified": "Mon, 31 Aug 2026 17:59:38 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a95ba27-2fe1\"",
-      "modified": "Mon, 31 Aug 2026 17:30:15 GMT"
+      "etag": "W/\"6a95c130-2fe1\"",
+      "modified": "Mon, 31 Aug 2026 18:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788194331\"",
-      "modified": "Mon, 31 Aug 2026 16:38:51 GMT"
+      "etag": "W/\"1788197938\"",
+      "modified": "Mon, 31 Aug 2026 17:38:58 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1043,12 +1043,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a95a545-a4f\"",
-      "modified": "Mon, 31 Aug 2026 16:01:09 GMT"
+      "etag": "\"6a95bf10-a50\"",
+      "modified": "Mon, 31 Aug 2026 17:51:12 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : Une pluie d’informations sur Jason, Lucia, leur relation et nos planques dans le jeu - Journal du Geek",
+      "link": "https://www.journaldugeek.com/2026/08/31/gta-6-une-pluie-dinformations-sur-jason-lucia-leur-relation-et-nos-planques-dans-le-jeu/",
+      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPUklTYmFKQnVsbG04SUgwZThHZzdYNlRNc2NXTEIxTFlGSjhCZm9zcFdvbDBCVmdVS0YtdlItMWE3ZUZ5WlF3eThDWnRheG1CM3BHd3RpSlhHTU11alFnNWhMUlprdHdVTzBSVWwyZUc0QmtlQU1YV2ZYd1hOT1p5TUFZeUFOdjg4d2E4X0N2ZUpXZEEzVWlUX0dEWG1ycHdXZHFtS091enI0WjlOU3hUZVFnY2pSQWtoV2FKTC1tUFpEMGRhWUdwSQ?oc=5",
+      "date": "2026-08-31T17:32:57+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/08/nouvelles-infos-jason-lucia-gta-6-1600x900.jpg",
+      "description": "GTA 6 : Une pluie d’informations sur Jason, Lucia, leur relation et nos planques dans le jeu&nbsp;&nbsp;Journal du Geek"
+    },
     {
       "title": "7 Upcoming JRPGs to Play If You're Skipping GTA 6",
       "link": "https://www.dualshockers.com/upcoming-jrpgs-to-play-if-youre-skipping-gta-6/",
@@ -5009,19 +5022,6 @@
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/08/28/breakout2-br-1787875270726.png?width=1280&format=jpg&auto=webp&quality=80",
       "description": ""
-    },
-    {
-      "title": "Rockstar reveals the approximate length of GTA 6 - Diario AS",
-      "link": "https://en.as.com/meristation/news/rockstar-reveals-the-approximate-length-of-gta-6-f202608-n/",
-      "source_link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNQ1U0c29yWmMwOTRXR0Q0aWUzeTRjUmlIVENfUWFZZExGcjNHbDZCWFVrRjBwd2hpR3B2TUZja1RDUklJd1VWU1MxaWh3RlZpS2RQZXpvOG1uWnd0amtzZXFxaERIb2NhQ1V1dXZDYUFhTUQydWtQX1h5REo2V0JFV2xPUjFYbnhiSzlOeXVCTDdNTzA5b0tsNU930gGuAUFVX3lxTE55eTVacmlVQnlycWpwajlGbEhnZWpHU1lTZjE3TFVSQ0Q5WFB3X1FpeWpxQlFkcE9FTXUzbGFNcUkxUTk5MTBITmlZX1Z3ZmJXTC1tcjlRYXgweVlzTE45d2NieDl3a2pOVGkzZVN5d2VfZGJoVGVQWUwtdHdPbndreE5fZk42VXhJeEZGRU5UeUl1ekMwWFo5elRUV3FNNHEzV05yOUpwQVNPeG5DZw?oc=5",
-      "date": "2026-08-28T13:41:17+00:00",
-      "source": "Rockstar Games (annonces)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://img.asmedia.epimg.net/resizer/v2/NRSHKUF35FGWZHS4HGIVJT5TKA.jpg?auth=fedcb6114f3ee63fd7e98b0d48149caaf155e502bbfef3044bd2934c4abf1f2f&width=1472&height=828&smart=true",
-      "description": "Rockstar reveals the approximate length of GTA 6&nbsp;&nbsp;Diario AS"
     }
   ],
   "partial": true,
