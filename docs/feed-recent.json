@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-31T10:31:59.016673+00:00",
-  "duration_seconds": 78.9,
+  "generated_at": "2026-08-31T11:02:20.959261+00:00",
+  "duration_seconds": 87.6,
   "decode_failures": 0,
-  "total_articles": 1403,
-  "new_this_run": 0,
+  "total_articles": 1404,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 68,
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 1,
@@ -481,10 +481,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T16:08:31+00:00",
       "days_since_last_article": 0,
@@ -511,7 +511,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T11:02:19+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T14:25:56+00:00",
       "days_since_last_article": 1,
@@ -689,8 +689,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T00:00:12+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-08-31T11:00:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -799,7 +799,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T10:37:36+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -914,7 +914,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,99,99,99,99,99,99,99,99,100,100",
+    "rockstar-fr": "100,99,99,99,99,99,99,99,99,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -922,13 +922,13 @@
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "insider": "10,10,10,10,10,10,10",
+    "insider": "10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jvcom": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "rockstarmag": "10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag": "10,10,10,10,10,10,10,10,10",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -937,12 +937,12 @@
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100",
-    "eurogamer": "100,100,100,100,100,100,100,100",
+    "eurogamer": "100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
     "ginjfo": "50,50,50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
-    "jeuxactu": "0,0,0,0,20,20,20,20,20,20,20,20",
+    "jeuxactu": "0,0,0,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,7,7,6,7,7",
+    "xboxwire": "7,7,7,7,7,7,7,7,6,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "84,84,84,84,84,84,84,83,83,84,84,84",
-    "arstechnica": "27,26,28,28,28,28,28,28,28,28,28,28",
+    "engadget": "84,84,84,84,84,84,83,83,84,84,84,84",
+    "arstechnica": "26,28,28,28,28,28,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,13 +968,13 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"d91bc57ec9cd05bfac83c8dc58c588b3\"",
-      "modified": "Mon, 31 Aug 2026 00:04:57 GMT"
+      "etag": "W/\"4bb37acce9e263c3659fe37de4fc99db\"",
+      "modified": "Mon, 31 Aug 2026 10:57:45 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -984,7 +984,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 10:21:44 GMT"
+      "modified": "Mon, 31 Aug 2026 10:35:51 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"41c0a1f5214f565b318c0bf55686699e\"",
-      "modified": "Mon, 31 Aug 2026 10:30:33 GMT"
+      "etag": "W/\"e10a2ab8efe201675df79c222b52841d\"",
+      "modified": "Mon, 31 Aug 2026 11:00:23 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 10:10:17 GMT"
+      "modified": "Mon, 31 Aug 2026 10:41:24 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 10:27:46 GMT"
+      "modified": "Mon, 31 Aug 2026 11:01:03 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9557b8-30ae\"",
-      "modified": "Mon, 31 Aug 2026 10:30:16 GMT"
+      "etag": "W/\"6a955ec0-30ae\"",
+      "modified": "Mon, 31 Aug 2026 11:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"203fde176694449ee118523bc096c88f\"",
-      "modified": "Mon, 31 Aug 2026 10:28:19 GMT"
+      "etag": "W/\"7caedf03e0950cc705f3506436d57a47\"",
+      "modified": "Mon, 31 Aug 2026 11:00:14 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "First Official GTA 6 Merch Is Out, But There's a Catch",
+      "link": "https://gamerant.com/gta-6-official-merch-revealed/",
+      "source_link": null,
+      "date": "2026-08-31T11:00:13+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/08/gta-6-official-merch-not-for-sale-revealed-gamerant.jpg?w=1600&h=900&fit=crop",
+      "description": "Rockstar Games officially unveils the first physical Grand Theft Auto 6 merch, but there's one disappointing detail fans need to know."
+    },
     {
       "title": "« On comprend pourquoi ça a pris aussi longtemps » GTA 6 aura plus de 600 000 animations faites à la main du jamais vu dans un jeu - Gameblog",
       "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-600-000-animations-721917",
@@ -4981,19 +4994,6 @@
           "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-rafle-tout-sur-son-passage-ce-jeu-a-1-milliard-de-dollars-repousse-encore-la-sortie-de-son-mode-solo-223863.html"
         }
       ]
-    },
-    {
-      "title": "Deux offres permettent de se procurer la PS5 à son ancien prix avant l’arrivée de GTA 6 - Numerama",
-      "link": "https://www.numerama.com/tech/2320525-deux-offres-permettent-de-se-procurer-la-ps5-a-son-ancien-prix-avant-larrivee-de-gta-6.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPWllTZTN5VUNjdE9WX2syZzVuQ2U0b2lQRnZoTTBRWmtod05TNDBTWmNWdEhfV0o0UEFWVTVCbUF4Z3UtSV9abXVYTng4dFBfcHREdHkyay1WeVI3Q0lzTkhRS29DVkFHVmhqb2RlaWlfZjByQW1rMUxUTHRnLVQ1OS0zMEh6bHVhNEUzMWxxRzl6dGJEQ1hRQlM3QldwRWRwc3RzbW1sdkhoZXhDOHpBRXdGcThmc1UtOTdudlY1SUFMTFE1R0lQNg?oc=5",
-      "date": "2026-08-28T10:19:30+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/08/ps5-gta-6.jpg?resize=1600,900&key=38e240f4",
-      "description": "Deux offres permettent de se procurer la PS5 à son ancien prix avant l’arrivée de GTA 6&nbsp;&nbsp;Numerama"
     }
   ],
   "partial": true,
