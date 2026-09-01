@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T11:31:47.940627+00:00",
-  "duration_seconds": 62.5,
+  "generated_at": "2026-09-01T12:01:44.957289+00:00",
+  "duration_seconds": 50.8,
   "decode_failures": 0,
-  "total_articles": 1522,
-  "new_this_run": 2,
+  "total_articles": 1525,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 2,
       "last_article": "2026-09-01T10:30:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T07:59:47+00:00",
       "days_since_last_article": 0,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T17:31:19+00:00",
       "days_since_last_article": 2,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T08:26:02+00:00",
       "days_since_last_article": 0,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T08:29:55+00:00",
       "days_since_last_article": 0,
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 4,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 3,
@@ -773,7 +773,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T11:08:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,100,100,100,100,100,100,100",
-    "gnews-en": "100,100,100,104,100,102,100,100,100,100,100,100",
+    "gnews-fr": "92,92,92,92,100,100,100,100,100,100,100,100",
+    "gnews-en": "100,100,104,100,102,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -936,7 +936,7 @@
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rps": "100,100,100,100,100",
+    "rps": "100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,8,7,8,8,8,8,7,7,7,7",
-    "trueach": "100,100,100,100,100,100,100,81,100,100,100,100",
+    "xboxwire": "7,8,7,8,8,8,8,7,7,7,7,7",
+    "trueach": "100,100,100,100,100,100,81,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "30,30,30,30,30,30,28,30,30,30,30,30",
+    "arstechnica": "30,30,30,30,30,28,30,30,30,30,30,30",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -993,28 +993,28 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"25127-TQvvvN5QDyCagzm3rf87Pxb3R/A\"",
+      "etag": "W/\"25deb-2xpXOmFLg+oI3beSuNy4ZOaiVxY\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"b851bf3b194cb31bb078ad1510772568\"",
-      "modified": "Tue, 01 Sep 2026 11:15:39 GMT"
+      "etag": "W/\"a5919d28b99ca7cdc90183f477b50325\"",
+      "modified": "Tue, 01 Sep 2026 11:36:22 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 09:33:24 GMT"
+      "modified": "Tue, 01 Sep 2026 11:44:31 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 10:42:51 GMT"
+      "modified": "Tue, 01 Sep 2026 11:36:42 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 11:30:56 GMT"
+      "modified": "Tue, 01 Sep 2026 12:00:44 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a96b749-2fce\"",
-      "modified": "Tue, 01 Sep 2026 11:30:17 GMT"
+      "etag": "W/\"6a96be4f-2fce\"",
+      "modified": "Tue, 01 Sep 2026 12:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,8 +1043,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a96a00e-ae8\"",
-      "modified": "Tue, 01 Sep 2026 09:51:10 GMT"
+      "etag": "\"6a96bc33-b0e\"",
+      "modified": "Tue, 01 Sep 2026 11:51:15 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1100,6 +1100,19 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/ne-laissez-pas-votre-mari-jouer-a-gta-6-cette-mecanique-avec-lucia-est-assimilee-a-de-linfidelite-et-declenche-une-polemique-inattendue.png",
       "description": "\"Ne laissez pas votre mari jouer à GTA 6\" : cette mécanique avec Lucia est assimilée à de l’infidélité et déclenche une polémique inattendue&nbsp;&nbsp;La Crème Du Gaming"
+    },
+    {
+      "title": "Gta 6 mise sur la profondeur narrative et les choix relationnels - Fredzone",
+      "link": "https://www.fredzone.org/gta-6-mise-sur-la-profondeur-narrative-et-les-choix-relationnels/",
+      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQcE9VbnFNUl81WGxmWG8wcmF6cTlfXy1rX3I1Q2Qwa3VOaWdOZlBZNDVGVmpUdGpVYnR0bzlrQ3UxYkE4UEFMc0VQd0o0dlB0SEdpMjlwNl8tRDRXRDI3TFowVWJ2RXQwOUJtMEQ3cUkwQVA5SDAyTXRvSG9UdFJKZmU5aVVwMi1KVEZLUENRQTVRbjV1?oc=5",
+      "date": "2026-09-01T10:30:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.fredzone.org/wp-content/uploads/2026/09/rockstar-doesnt-mind-if-you-dislike-gta-6s-romantic-side-don_ax34-scaled.jpg",
+      "description": "Gta 6 mise sur la profondeur narrative et les choix relationnels&nbsp;&nbsp;Fredzone"
     },
     {
       "title": "GTA 6 lets players \"forget it's a game\" with all its choices, and that's what Rockstar lead Rob Nelson is most proud of: \"It's up to you and what matters to you\"",
@@ -5378,6 +5391,19 @@
       "lang": "fr",
       "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/apercu-etendu-gta-6-pannes.jpg?resize=1600,900&key=e5de9de8",
       "description": "Netflix, Twitch, Discord… GTA 6 a provoqué plusieurs pannes avec l’aperçu étendu&nbsp;&nbsp;Frandroid"
+    },
+    {
+      "title": "GTA 6 sur Netflix et YouTube : voici où regarder l’aperçu de 26 minutes - frandroid.com",
+      "link": "https://www.frandroid.com/produits-android/console/3224031_gta-6-sur-netflix-apercu-large-commentaires-en-direct",
+      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNTXFCTkVCSFhWTkM3V3BaclhQUzZtbU1SaGVVcG1Ca0RIUnN5RUJ0OFZ1UU9Oa25qYnJ2NDB6a2lhU1N1XzZyWWFub0hOd0RpRHlUVDFOWTRpbEVBTDR1Y1BuVnFUd2xrTVVBNWtCcHZ3a1ltNERPTGx3WmQ4aDhTWVc0czloM0tHSC1WY2JFNWItVVhoWWVtWEg2ZXNMVnJRRG9BN2gyS0xLOVZqUkltSHRR?oc=5",
+      "date": "2026-08-28T15:56:17+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/capture-decran-2026-08-27-a-210601.png?resize=1600,900&key=8e55dfa5",
+      "description": "GTA 6 sur Netflix et YouTube : voici où regarder l’aperçu de 26 minutes&nbsp;&nbsp;frandroid.com"
     },
     {
       "title": "Les précommandes de GTA VI valident l’idée que les joueurs sont prêts pour des jeux à 100 euros - Frandroid",
@@ -10735,6 +10761,19 @@
       "lang": null,
       "image": "https://www.pcguide.com/wp-content/uploads/2026/08/GTA-6-Extended-Look-start-time.jpg",
       "description": "GTA 6 Extended Look start time & countdown clock, including Netflix and YouTube releases&nbsp;&nbsp;PC Guide"
+    },
+    {
+      "title": "What GTA 6's Extended Look tells us about Vice City, Lucia, and the biggest creative launch of the decade - Creative Boom",
+      "link": "https://www.creativeboom.com/insight/what-gta-6s-trailers-tell-us-about-vice-city-lucia-and-the-biggest-creative-launch-of-the-decade/",
+      "source_link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNd2x2MmpzZjdIV24yT01QSVNFekNJd0tYc0p1eFRTaEw4eWgtY1lTMklSU1VvMWl3S3pSUlJHeWNwT19aLUlDaWpnTDVJMEFqYmpuSVo2dVFiRk04THpYS29aVGVrZVhOSl81QmZZSmJVU2hCcnVMN3RoaTlhNWdSWjdzckdlYzJmandZdFRBd1BKRnhMMFNWdmVGRWdORVNOMGdVT0ZPWldGVTl6MEE2X3llaUxxQmlCTGJfYjJDbjhneHdKOUdKQ2JwVEV2QUU?oc=5",
+      "date": "2026-08-27T12:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.creativeboom.com/9c8bbd21-e76e-45d9-8ecd-ee3b3e701163/conversions/5caf2c947ea7618e45ba4a0c5acaf7cc705b81b1-medium.webp",
+      "description": "What GTA 6's Extended Look tells us about Vice City, Lucia, and the biggest creative launch of the decade&nbsp;&nbsp;Creative Boom"
     },
     {
       "title": "GTA 6: New Details Confirm Emphasis On Consequences And NPC Simulation - eXputer.com",
