@@ -25,6 +25,7 @@
     --accent-contrast: #06131f;
     --ok: #4ade80;
     --warn: #facc15;
+    --danger: #f87171;
     --grid-tint: rgba(88,185,255,0.04);
   }
   html[data-theme="light"]{
@@ -38,6 +39,7 @@
     --accent-contrast: #06131f;
     --ok: #16a34a;
     --warn: #b45309;
+    --danger: #dc2626;
     --grid-tint: rgba(84,147,255,0.05);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -452,6 +454,26 @@
     max-height:calc(100vh - 48px); overflow-y:auto;
   }
 
+  /* ---------- Confirmation d'une action sans retour ----------
+     Au-dessus de TOUT le reste, panneau Paramètres compris (z-index 100) :
+     c'est de là que partent la plupart des actions qu'elle protège, et une
+     confirmation cachée derrière son propre déclencheur ne sert à rien. */
+  .overlay.confirm-overlay{z-index:200; align-items:center;}
+  .confirm-panel{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    max-width:400px; width:100%; padding:20px;
+  }
+  .confirm-panel h3{font-size:15px; margin-bottom:8px;}
+  .confirm-panel p{
+    font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:18px;
+  }
+  .confirm-actions{display:flex; gap:8px; justify-content:flex-end;}
+  /* Le bouton destructif est cerné, pas rempli : sur fond sombre un aplat
+     rouge assez foncé pour porter du texte blanc devient illisible, et
+     assez clair pour être lisible ne ressemble plus à un avertissement. */
+  button.danger{border-color:var(--danger); color:var(--danger);}
+  button.danger:hover{background:var(--danger); color:#ffffff;}
+
   /* Bottom sheet : variante ancrée en bas d'écran, avec poignée de
      glissement — pattern standard 2026 pour les filtres/actions
      secondaires (confirmé Material Design, Apple Maps, Spotify). Réutilise
@@ -755,6 +777,23 @@
 <!-- Pastille de reprise : masquée par défaut, révélée seulement si un repère
      de lecture existe et qu'il se trouve hors de l'écran. -->
 <button class="resume-chip" id="resumeChip" style="display:none;" onclick="reprendreLecture()">↓ Reprendre où j'en étais</button>
+
+<!-- ---------- Confirmation d'une action sans retour ----------
+     Un seul panneau pour toutes les actions irréversibles : le jeton
+     GitHub, la réinitialisation des paramètres, les marquages en masse.
+     Aucune n'avait de garde-fou, et « Oublier ce token » est collé à
+     « Enregistrer » et « Tester ». -->
+<div class="overlay confirm-overlay" id="confirmOverlay" onclick="confirmationSurFond(event)">
+  <div class="confirm-panel" role="alertdialog" aria-modal="true"
+       aria-labelledby="confirmTitre" aria-describedby="confirmDetail">
+    <h3 id="confirmTitre"></h3>
+    <p id="confirmDetail"></p>
+    <div class="confirm-actions">
+      <button id="confirmAnnuler" onclick="repondConfirmation(false)">Annuler</button>
+      <button class="danger" id="confirmValider" onclick="repondConfirmation(true)"></button>
+    </div>
+  </div>
+</div>
 
 <!-- ---------- Bottom sheet Filtres ---------- -->
 <div class="overlay bottom-sheet" id="filtersOverlay" onclick="closeFiltersSheetOnOverlay(event)">
@@ -1419,6 +1458,11 @@ function saveSettingsAndClose(){
   closeSettings();
 }
 async function resetSettings(){
+  const ok = await demandeConfirmation(
+    "Remettre tous les paramètres par défaut ?",
+    "Les sources ajoutées, les mots-clés personnalisés, les seuils et le thème reviennent à leur état d'origine. Le jeton GitHub, lui, n'est pas touché.",
+    "Tout réinitialiser");
+  if(!ok) return;
   settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
   storageSet("settings-v1", JSON.stringify(settings));
   populateSettingsUI();
@@ -2613,6 +2657,58 @@ function closePreview(){
 function closePreviewOnOverlay(e){
   if(e.target.id === "previewOverlay") closePreview();
 }
+// ---------- Confirmation d'une action sans retour ----------
+// Une seule brique pour tout ce qui ne se rattrape pas. Le bouton ✓ des
+// cartes en est volontairement exempté : on le clique des dizaines de fois
+// par jour, et un second clic l'annule déjà.
+
+let _confirmationEnCours = null;
+let _focusAvantConfirmation = null;
+
+function demandeConfirmation(titre, detail, libelle){
+  const fond = document.getElementById("confirmOverlay");
+  // Pas de panneau (balisage amputé) : on ne bloque pas l'utilisateur, mais
+  // on ne fait pas non plus l'action en douce. Le refus est le défaut sûr.
+  if(!fond) return Promise.resolve(false);
+  // Une confirmation déjà ouverte : la précédente est refusée plutôt que
+  // laissée en suspens, sinon sa promesse ne se résoudrait jamais.
+  if(_confirmationEnCours) repondConfirmation(false);
+
+  document.getElementById("confirmTitre").textContent = titre;
+  document.getElementById("confirmDetail").textContent = detail;
+  document.getElementById("confirmValider").textContent = libelle;
+  _focusAvantConfirmation = document.activeElement;
+  fond.classList.add("open");
+  // Le focus va sur ANNULER : une validation par mégarde (Entrée, double
+  // tap) doit tomber sur l'issue inoffensive.
+  const annuler = document.getElementById("confirmAnnuler");
+  if(annuler) annuler.focus();
+  document.addEventListener("keydown", _toucheConfirmation, true);
+  return new Promise(resoud => { _confirmationEnCours = resoud; });
+}
+
+function repondConfirmation(ok){
+  const fond = document.getElementById("confirmOverlay");
+  if(fond) fond.classList.remove("open");
+  document.removeEventListener("keydown", _toucheConfirmation, true);
+  if(_focusAvantConfirmation && _focusAvantConfirmation.focus){
+    try{ _focusAvantConfirmation.focus(); }catch(e){ /* élément disparu */ }
+  }
+  _focusAvantConfirmation = null;
+  const resoud = _confirmationEnCours;
+  _confirmationEnCours = null;
+  if(resoud) resoud(!!ok);
+}
+
+function _toucheConfirmation(e){
+  if(e.key === "Escape"){ e.preventDefault(); repondConfirmation(false); }
+}
+
+// Un clic à côté ferme sur le REFUS, jamais sur l'action destructive.
+function confirmationSurFond(e){
+  if(e.target && e.target.id === "confirmOverlay") repondConfirmation(false);
+}
+
 function markReadFromPreview(){
   if(previewSafeId && itemsById[previewSafeId]){
     markRead(previewSafeId, itemsById[previewSafeId].link);
@@ -2646,6 +2742,18 @@ async function markAllRead(makeRead){
   if(currentTab === "non-rockstar") items = items.filter(i => !i.official && !i.rockstarmag);
   if(currentLang === "fr") items = items.filter(i => i.lang === "fr");
   if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
+
+  // Le NOMBRE réel dans la question, pas un « tous » vague : c'est lui qui
+  // fait voir qu'on est sur le mauvais onglet avant de valider. Et rien à
+  // confirmer quand il n'y a rien à faire.
+  if(items.length === 0) return;
+  const verbe = makeRead === false ? "non lus" : "lus";
+  const ok = await demandeConfirmation(
+    `Marquer ${items.length} article${items.length > 1 ? "s" : ""} comme ${verbe} ?`,
+    "Cela ne concerne que les articles actuellement affichés. Il n'y a pas de retour en arrière.",
+    `Marquer ${verbe}`);
+  if(!ok) return;
+
   items.forEach(i => {
     if(makeRead === false){
       readSet.delete(i.link);
@@ -2800,6 +2908,11 @@ async function enablePush(){
 }
 
 async function disablePush(){
+  const ok = await demandeConfirmation(
+    "Ne plus recevoir de notifications sur cet appareil ?",
+    "Tu pourras te réabonner, mais il faudra remettre le nouvel abonnement dans le secret PUSH_SUBSCRIPTIONS.",
+    "Se désabonner");
+  if(!ok) return;
   try{
     const reg = await navigator.serviceWorker.getRegistration();
     const subscription = reg && await reg.pushManager.getSubscription();
@@ -2850,6 +2963,11 @@ async function testPushDisplay(){
 //   - privée   : le scalaire brut de 32 octets en base64url (le champ "d"
 //     du JWK), format accepté par py_vapid côté robot.
 async function generateVapidKeys(){
+  const ok = await demandeConfirmation(
+    "Générer une nouvelle paire de clés ?",
+    "Si tu recopies la nouvelle clé dans les secrets GitHub, tous les appareils déjà abonnés cesseront de recevoir les notifications et devront se réabonner.",
+    "Générer");
+  if(!ok) return;
   const bloc = document.getElementById("vapidKeysBlock");
   try{
     const paire = await crypto.subtle.generateKey(
@@ -2998,7 +3116,12 @@ function saveGithubToken(){
   testGithubToken();
 }
 
-function forgetGithubToken(){
+async function forgetGithubToken(){
+  const ok = await demandeConfirmation(
+    "Effacer le jeton GitHub de cet appareil ?",
+    "GitHub ne réaffiche jamais un jeton déjà créé : il faudra en générer un nouveau pour retrouver le déclenchement à distance.",
+    "Effacer le jeton");
+  if(!ok) return;
   try{ localStorage.removeItem(STORAGE_PREFIX + TOKEN_STORAGE_KEY); }
   catch(e){ /* stockage indisponible : rien à effacer */ }
   const input = document.getElementById("githubTokenInput");
