@@ -165,12 +165,21 @@ d'où le planificateur externe.
    pratique, et ça évite que le temps de calcul augmente indéfiniment avec
    l'historique.
 
-   **Composition de la fenêtre** (corrigé le 29/08/2026) : les 200
-   articles les plus récents de l'historique **plus ceux ajoutés pendant
-   le passage en cours**. Ce second point manquait. Les nouveaux articles
-   étaient ajoutés à la *fin* de la liste, donc hors des 200 premiers, et
-   deux rédactions publiant le même sujet dans le même passage n'étaient
-   jamais rapprochées dès que l'historique dépassait 200 articles. Mesuré
+   **Composition de la fenêtre** : les articles publiés dans les
+   dernières **72 heures** (`FENETRE_HEURES`), **plus ceux ajoutés pendant
+   le passage en cours**.
+
+   Elle se comptait en ARTICLES jusqu'au 30/08/2026, et se refermait alors
+   exactement quand il aurait fallu qu'elle s'ouvre : 200 articles valaient
+   50 h en régime normal, mais 16 h le 27/08 — jour à 293 articles. Le robot
+   voyait donc le moins loin les jours où il se passait quelque chose. Un
+   plancher de 200 articles garantit qu'on ne compare jamais à moins
+   qu'avant, un plafond de 1500 borne le coût.
+
+   Le second point — les articles du passage en cours — manquait jusqu'au
+   29/08/2026 : ils étaient ajoutés à la *fin* de la liste, donc hors des
+   200 premiers, et deux rédactions publiant le même sujet dans le même
+   passage n'étaient jamais rapprochées. Mesuré
    avant correctif sur le vrai `feed.json` : 13 doublons manifestes dans
    les 400 articles les plus récents (dont des titres strictement
    identiques entre IGN et IGN France), et un compteur de sources plafonné
@@ -179,10 +188,19 @@ d'où le planificateur externe.
    seuil à 3 (voir plus bas).
 10. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
    les plus anciens sont retirés. Ce n'est donc pas un historique complet et
-   permanent, mais un historique glissant très large. Au rythme observé
-   (~50 articles/jour au maximum), le plafond ne sera pas atteint avant
-   plus d'un an ; voir les Limites pour la conséquence sur le poids du
-   fichier.
+   permanent, mais un historique glissant très large.
+
+   **Échéance** (mesurée le 01/09/2026) : au rythme des deux dernières
+   semaines — **98 articles/jour**, et non ~50 comme annoncé ici jusque-là —
+   le plafond tombe dans **environ 6 mois**, et `feed.json` pèsera alors
+   ~13 Mo. `audit_donnees.py` recalcule cette projection à chaque passage de
+   CI, pour qu'on la voie venir au lieu de la découvrir. Voir les Limites
+   pour la conséquence sur le poids du fichier.
+
+   Le dépôt git, lui, n'est pas un souci : entre deux passages presque rien
+   ne change dans le fichier, donc git compresse en conséquence — 186
+   versions d'un fichier d'un Mo tenaient dans 2,4 Mo, mesuré après un
+   `git gc`.
 11. **Dépose les nouveaux articles** dans le fichier désigné par
    `$NEW_ITEMS_FILE` (hors du dépôt), à destination de
    `discord_notify.py`. Le robot n'envoie plus lui-même la notification :

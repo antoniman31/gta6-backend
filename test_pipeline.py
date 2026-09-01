@@ -2088,6 +2088,65 @@ def test_videos_archivees():
           "revoir la même vidéo n'ajoute pas une source supplémentaire")
 
 
+def test_archives_ecartees_avant_le_decodage():
+    print("\n[Google News] on ne décode pas ce qu'on jette")
+    import fetch_feeds, types
+    from datetime import timedelta
+
+    vieux = (datetime.now(timezone.utc) - timedelta(days=400)).isoformat()
+    recent = datetime.now(timezone.utc).isoformat()
+
+    # 3 récents, 7 archives — tous passent le filtre par mots-clés.
+    entrees = [{"title": f"GTA 6 sujet {i}", "summary": "",
+                "link": f"https://news.google.com/rss/articles/{i}",
+                "published": recent if i < 3 else vieux} for i in range(10)]
+    flux = types.SimpleNamespace(status=200, bozo=False, entries=entrees,
+                                 version="rss20", href=None,
+                                 etag=None, modified=None)
+
+    def collecte(feed):
+        """Renvoie (résultat, liens réellement envoyés au décodeur)."""
+        vus = []
+        vrai_parse = fetch_feeds.feedparser.parse
+        vrai_pre = fetch_feeds.predecode_links
+        fetch_feeds.feedparser.parse = lambda *a, **k: flux
+        fetch_feeds.predecode_links = lambda liens, cache=None, journal=None: (
+            vus.extend(liens) or {})
+        try:
+            return fetch_feeds.collect_feed_items(feed, {}, {}), vus
+        finally:
+            fetch_feeds.feedparser.parse = vrai_parse
+            fetch_feeds.predecode_links = vrai_pre
+
+    base = {"id": "g", "name": "Une recherche", "official": False,
+            "url": "https://news.google.com/rss/search?q=gta6", "lang": "en"}
+
+    # Le décodage coûte une seconde par lien. Le payer pour un article jeté
+    # la ligne suivante, c'est du temps pur perdu : mesuré le 01/09/2026 sur
+    # un vrai passage, 91 des 199 décodages étaient dans ce cas — 46 %.
+    (items, _, _), decodes = collecte(dict(base))
+    check(len(decodes) == 3,
+          f"seuls les 3 articles gardés sont décodés, pas les 10 ({len(decodes)})")
+    check(len(items) == 3, "et 3 articles ressortent")
+
+    # Une source qui garde ses archives les décode toutes : c'est voulu, ce
+    # sont justement les articles qu'on cherche.
+    (items, _, _), decodes = collecte(dict(base, garder_les_archives=True))
+    check(len(decodes) == 10,
+          "une source en garder_les_archives décode tout, archives comprises")
+    check(sum(1 for i in items if i.get("archive")) == 7,
+          "et les 7 archives ressortent, marquées comme telles")
+
+    # L'ordre lui-même : le commentaire du code disait déjà « écarté AVANT le
+    # décodage », mais le décodage groupé avait été posé avant le filtre
+    # d'âge. Verrouillé ici pour que la dérive ne se refasse pas.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    corps = src[src.index("def collect_feed_items("):]
+    corps = corps[:corps.index("\ndef ")]
+    check(corps.index("trop_vieux(date)") < corps.index("predecode_links("),
+          "le filtre d'âge est bien AVANT l'appel au décodage groupé")
+
+
 def test_couverture_rockstar():
     print("\n[Rockstar] tout ce que publie Rockstar, archives comprises")
     import fetch_feeds
@@ -2982,6 +3041,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_filtre_par_mots_cles, test_jours_depuis,
            test_depots_pour_les_notifications,
            test_reparation_attributions_croisees, test_videos_archivees,
+           test_archives_ecartees_avant_le_decodage,
            test_couverture_rockstar, test_archives_ne_notifient_pas,
            test_reprise_apres_echec_passager, test_reprise_choix_des_cas,
            test_validateurs_lies_a_leur_url,

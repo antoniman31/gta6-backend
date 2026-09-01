@@ -1156,37 +1156,48 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     retenues = [entry for entry in parsed.entries[:feed.get("max_entrees", MAX_ENTREES)]
                 if passe_le_filtre(feed, entry.get("title", ""), entry.get("summary", ""))]
 
+    # Les archives sont écartées AVANT le décodage Google News : inutile de
+    # payer une seconde de décodage pour un article qu'on jette la ligne
+    # suivante. L'âge se lit sur la date de l'entrée, aucun décodage requis.
+    #
+    # Le commentaire disait déjà cela, mais le code ne le faisait plus : le
+    # décodage groupé, introduit après, avait été posé AVANT la boucle, donc
+    # avant le filtre d'âge qu'il était censé suivre. Mesuré sur le passage
+    # du 01/09/2026 : 199 liens décodés, dont 91 pour des articles jetés
+    # aussitôt — 46 %, soit une vingtaine de secondes sur un passage de 90.
+    #
+    # L'exemption vaut pour les canaux de Rockstar eux-mêmes. Le garde-fou
+    # existe contre les recherches Google News qui déversent des archives
+    # classées par pertinence — huit articles de 2022 à 2024 annoncés comme
+    # neufs le 29/08/2026. Mais sur le fil de Rockstar, une vieille
+    # publication n'est pas du bruit : c'est précisément ce qu'on cherche.
+    # Le drapeau est posé source par source, jamais déduit de `official` :
+    # « Rockstar Games (annonces) » est officiel ET une recherche web
+    # généraliste, l'exempter rouvrirait le défaut.
+    garder_archives = feed.get("garder_les_archives")
+    vieux = 0
+    gardees = []
+    for entry in retenues:
+        date = normalize_date(entry)
+        archive = trop_vieux(date)
+        if archive and not garder_archives:
+            vieux += 1
+            continue
+        gardees.append((entry, date, archive))
+
     # Deuxième passage : les liens Google News encore inconnus sont résolus
     # à plusieurs, une bonne fois, au lieu d'une seconde chacun à la suite.
     est_google = "news.google.com" in feed["url"]
     resolus = {}
     if est_google:
-        resolus = predecode_links([entry.get("link", "") for entry in retenues],
+        resolus = predecode_links([entry.get("link", "") for entry, _, _ in gardees],
                                   decoded_cache, journal)
 
     items = []
-    vieux = 0
-    for entry in retenues:
+    for entry, date, archive in gardees:
         title = entry.get("title", "")
         link = entry.get("link", "")
-        date = normalize_date(entry)
         description = entry.get("summary", "")
-
-        # Écarté AVANT le décodage Google News : inutile de payer une
-        # seconde de décodage pour un article qu'on ne gardera pas.
-        #
-        # Sauf pour les canaux de Rockstar eux-mêmes. Le garde-fou existe
-        # contre les recherches Google News qui déversent des archives
-        # classées par pertinence — huit articles de 2022 à 2024 annoncés
-        # comme neufs le 29/08/2026. Mais sur le fil de Rockstar, une vieille
-        # publication n'est pas du bruit : c'est précisément ce qu'on
-        # cherche. Le drapeau est posé source par source, jamais déduit de
-        # `official` : « Rockstar Games (annonces) » est officiel ET une
-        # recherche web généraliste, l'exempter rouvrirait le défaut.
-        archive = trop_vieux(date)
-        if archive and not feed.get("garder_les_archives"):
-            vieux += 1
-            continue
 
         # Décodage du vrai lien pour les flux Google News, en réutilisant
         # le résultat des exécutions précédentes quand on l'a déjà.
