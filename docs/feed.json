@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T04:02:14.610015+00:00",
-  "duration_seconds": 83.9,
+  "generated_at": "2026-09-01T04:32:03.236332+00:00",
+  "duration_seconds": 83.1,
   "decode_failures": 0,
-  "total_articles": 1492,
-  "new_this_run": 0,
+  "total_articles": 1495,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -317,7 +317,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 4,
       "status": "ok"
@@ -353,18 +353,18 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T01:18:35+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T04:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 68,
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 104,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -617,8 +617,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T00:11:53+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T04:04:49+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 3,
@@ -853,7 +853,7 @@
     {
       "id": "theverge",
       "name": "The Verge",
-      "entries_fetched": 100,
+      "entries_fetched": 73,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 29,
+      "entries_fetched": 28,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -929,9 +929,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,104",
+    "gnews-en": "100,100,100,100,100,100,100,100,100,100,104,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -969,9 +969,9 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,100,100,100,73",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
+    "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -979,8 +979,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1009,8 +1009,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"699f3750c1d22148adb1e741e05f7a15\"",
-      "modified": "Tue, 01 Sep 2026 03:44:43 GMT"
+      "etag": "W/\"c9d59a232520d627ff5d1ab3425622d7\"",
+      "modified": "Tue, 01 Sep 2026 04:15:44 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1025,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 03:59:05 GMT"
+      "modified": "Tue, 01 Sep 2026 04:26:31 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a964dd0-2fe1\"",
-      "modified": "Tue, 01 Sep 2026 04:00:16 GMT"
+      "etag": "W/\"6a9654d9-2fe1\"",
+      "modified": "Tue, 01 Sep 2026 04:30:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1060,6 +1060,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Take-Two Is Closing In on the GTA 6 Leaker, but It May Not Matter Anymore",
+      "link": "https://www.gtaboom.com/take-two-is-closing-in-on-the-gta-6-leaker-but-it-may-not-matter-anymore-6db2",
+      "source_link": null,
+      "date": "2026-09-01T04:04:49+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/8c/a6/take-two-is-closing-in-on-the-gta-6-leaker-but-it-may-not-matter-anymore.jpg",
+      "description": "Take Two has narrowed its GTA 6 leak probe to one or two identified people and wants the new subpoena sealed so they cannot delete evidence."
+    },
+    {
+      "title": "\"GTA 6\"Netflix extended look proves the wait was worth it - thepostathens.com",
+      "link": "https://www.thepostathens.com/article/2026/09/grand-theft-auto-rockstar-games-vice-city-isabella-ardetto",
+      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNYlRSNWhuNWRJaFROTUVGRU94NkJQaXBNd041T2lSRjBCOTJDSWl3cV9KcTRvSjVha053U19iMmlFOVllVER4ZGp2YUxKTlZuSDdFTU9CUkV5dUhRSmdJOV8tNUVISlpvclRkRmRvMk9pMk5vWGNIZHZmMWtENVRFMGF1Q2o4cXpzczBVZi1iVkpPU3AtekhDVjNRQlFxNWZDZEdzRzJlbw?oc=5",
+      "date": "2026-09-01T04:00:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://snworksceo.imgix.net/ohi/2975af53-e302-481c-b3ad-7355682e7c43.sized-1000x1000.jpg?w=800&h=600",
+      "description": "\"GTA 6\"Netflix extended look proves the wait was worth it&nbsp;&nbsp;thepostathens.com"
+    },
     {
       "title": "GTA 6 Netflix preview dominates top 10 following massive gameplay leaks - NBC News",
       "link": "https://www.nbcnews.com/video/gta-6-netflix-preview-dominates-top-10-following-massive-gameplay-leaks-269133381631",
@@ -10831,6 +10857,19 @@
       "lang": "fr",
       "image": "https://www.journaldugeek.com/app/uploads/2026/08/GTA-6-detail-gameplay-1600x900.jpg",
       "description": "Système de switch, PNJ vivants, réseaux sociaux… GTA 6 révèle enfin ses mécaniques de jeu et c'est impressionnant !&nbsp;&nbsp;Journal du Geek"
+    },
+    {
+      "title": "Grand Theft Auto VI: An Extended Look - rockstargames.com",
+      "link": "https://www.rockstargames.com/VI/an-extended-look",
+      "source_link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE01UnpuaHo5T3VfT3JuQ3hFX2dRYzlCUFlETEloVlZGMlNOMHJYbGJFM2xXekpSWFZMZjUzdUtWOGRESzFra0tWUGpGdUthZjUzbWdEdTdpSFBhRnR6a1E?oc=5",
+      "date": "2026-08-27T07:00:00+00:00",
+      "source": "Rockstar Games (officiel EN)",
+      "official": true,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.rockstargames.com/VI/-/opengraph-image.jpg?opengraph-image.0t8ty~nlmxq2s.jpg",
+      "description": "Grand Theft Auto VI: An Extended Look&nbsp;&nbsp;rockstargames.com"
     },
     {
       "title": "GTA 6 : l'un des derniers leaks prouve que le jeu sera démentiel, Rockstar n'a pas menti - Gameblog",
