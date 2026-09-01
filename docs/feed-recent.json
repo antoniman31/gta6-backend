@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T08:23:07.153563+00:00",
-  "duration_seconds": 90.3,
+  "generated_at": "2026-09-01T08:32:04.752913+00:00",
+  "duration_seconds": 83.8,
   "decode_failures": 0,
-  "total_articles": 1507,
-  "new_this_run": 1,
+  "total_articles": 1509,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 104,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -473,7 +473,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T07:59:47+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -601,13 +601,13 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T14:25:56+00:00",
-      "days_since_last_article": 2,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-01T08:26:02+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -637,22 +637,22 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T05:39:04+00:00",
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-01T08:29:55+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 3,
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 8,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,0,0,0,15,15,15,15",
+    "rockstar-youtube": "0,0,0,0,0,0,0,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,104,100,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "104,100,100,100,100,100,100,100,100,100,100,104",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,0,0,0,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,0,0,15,15,15,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -940,7 +940,7 @@
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "ginjfo": "50,50,50,50,50,50,50,50,50,50",
+    "ginjfo": "50,50,50,50,50,50,50,50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,8,7,7,7,7,8",
+    "xboxwire": "7,7,7,7,7,8,7,7,7,7,8,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,73,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,73,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "29,29,28,29,29,29,29,29,29,30,30,30",
+    "arstechnica": "29,28,29,29,29,29,29,29,30,30,30,30",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 07:59:47 GMT"
+      "modified": "Tue, 01 Sep 2026 08:15:19 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"bed2d74eca55032b7b7cf309ad519741\"",
-      "modified": "Tue, 01 Sep 2026 08:21:16 GMT"
+      "etag": "W/\"b0c4305ab9ca4385bc662a581df8e088\"",
+      "modified": "Tue, 01 Sep 2026 08:30:13 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,22 +1009,22 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 15:05:47 GMT"
+      "modified": "Tue, 01 Sep 2026 08:26:02 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 08:21:47 GMT"
+      "modified": "Tue, 01 Sep 2026 08:29:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"e0441a938eeb5a67e623cc3b8c0c8cbd\"",
-      "modified": "Tue, 01 Sep 2026 05:39:04 GMT"
+      "etag": "\"efb22557a3d3b9b868fac7f4f11b5b53\"",
+      "modified": "Tue, 01 Sep 2026 08:29:55 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a96860f-3033\"",
-      "modified": "Tue, 01 Sep 2026 08:00:15 GMT"
+      "etag": "W/\"6a968d18-306e\"",
+      "modified": "Tue, 01 Sep 2026 08:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : les précommandes explosent après les 26 minutes de gameplay diffusées sur Netflix",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-les-precommandes-explosent-apres-les-26-minutes-de-gameplay-diffusees-sur-netflix-20260901",
+      "source_link": null,
+      "date": "2026-09-01T08:29:55+00:00",
+      "source": "GinjFo",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA_VI_Capture_67.jpg",
+      "description": "La présentation de GTA 6 diffusée sur Netflix a provoqué un bond spectaculaire des précommandes. La hausse est estimée à 436 % en une journée\nCet article GTA 6 : les précommandes explosent après les 26 minutes de gameplay diffusées sur Netflix a été publié en premier par GinjFo."
+    },
+    {
+      "title": "As the legal hunt for the GTA 6 leaker continues, Take-Two reportedly tries another more secretive Discord subpoena, this time specifying individuals",
+      "link": "https://www.eurogamer.net/gta-6-leaker-discord-subpoena-sealed-take-two",
+      "source_link": null,
+      "date": "2026-09-01T08:26:02+00:00",
+      "source": "Eurogamer",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/GTA-6-Extended-Look-Masks.png?width=690&quality=85&format=jpg&auto=webp",
+      "description": " Rockstar parent company Take-Two has escalated its hunt for the people behind the numerous Grand Theft Auto 6 leaks from two weeks ago. The publisher has filed a request for another subpoena, though this time it's asking the court to withhold the details from the public and keep it sealed. Read more"
+    },
     {
       "title": "Rockstar balance encore des nouvelles images de GTA VI pour préparer la sortie du jeu en novembre",
       "link": "https://fr.ign.com/grand-theft-auto-6/91759/rockstar-balance-encore-des-nouvelles-images-de-gta-vi-pour-preparer-la-sortie-du-jeu-en-novembre",
@@ -1904,7 +1930,13 @@
       "specialist": true,
       "lang": null,
       "image": "https://s.yimg.com/lo/mysterio/api/06f114f191955338751f255974897947cdc6da205cffadd5f799fc4020590d8b/lightyear_networkapi/resizefill_w1024_h576%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fthewrap.com%2F8777f3ca877a0231aec19b104c197b21.jpg",
-      "description": "Netflix’s GTA 6 Trailer Premiere Saw 24% Increase in App Downloads for Streamer&nbsp;&nbsp;Yahoo"
+      "description": "Netflix’s GTA 6 Trailer Premiere Saw 24% Increase in App Downloads for Streamer&nbsp;&nbsp;Yahoo",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://www.thewrap.com/media-platforms/streaming/netflix-gta-6-extended-look-app-downloads/"
+        }
+      ]
     },
     {
       "title": "Take-Two stock drops as GTA 6 leaks continue - StreetInsider",
@@ -5002,32 +5034,6 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/4uPSWSbRPTSGAqMdSiqYmd-1280-80.jpg",
       "description": "There are several methods for stealing cars in GTA 6, if you want to commit grand theft auto"
-    },
-    {
-      "title": "Here’s How Rockstar Started Making GTA 6",
-      "link": "https://rockstarintel.com/heres-how-rockstar-started-making-gta-6/",
-      "source_link": null,
-      "date": "2026-08-28T16:29:12+00:00",
-      "source": "RockstarINTEL",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://rockstarintel.com/wp-content/uploads/2026/08/mega-4-1787856672032-1280.webp",
-      "description": "The early stages of how Rockstar Games crafted GTA 6 have been revealed. In an interview with TroisCouleurs, Rob Nelson, Head of Development at Rockstar Games revealed just exactly how do Rockstar…"
-    },
-    {
-      "title": "Rooster Teeth's Lawrence Sonntag on Joining Funhaus, Starting Inside Games and the Hype for GTA 6",
-      "link": "https://gamerant.com/video/rooster-teeth-lawrence-sonntag-interview-funhaus/",
-      "source_link": null,
-      "date": "2026-08-28T16:23:02+00:00",
-      "source": "Game Rant",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/08/pause-for-thought-lawrence-sonntag-site.jpg?w=1600&h=900&fit=crop",
-      "description": "This week on Pause for Thought, online media powerhouse and content creator Lawrence Sonntag joins the show. We go over his career from joining Machinima and Funhaus to going independent and starting Inside Games. He talks about how his love for video games started, as well as what he thinks of GTA 6. We also go over his thoughts on the state of online media."
     }
   ],
   "partial": true,
