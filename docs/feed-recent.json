@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T12:01:44.957289+00:00",
-  "duration_seconds": 50.8,
+  "generated_at": "2026-09-01T12:31:49.556199+00:00",
+  "duration_seconds": 55.0,
   "decode_failures": 0,
-  "total_articles": 1525,
-  "new_this_run": 3,
+  "total_articles": 1527,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 69,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 1,
       "last_article": "2026-09-01T10:30:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T11:09:54+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 2,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-30T17:11:57+00:00",
       "days_since_last_article": 1,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T17:31:19+00:00",
       "days_since_last_article": 2,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T08:26:02+00:00",
       "days_since_last_article": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 3,
@@ -809,8 +809,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T14:02:05+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T12:02:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,100,104,100,102,100,100,100,100,100,100,100",
+    "gnews-fr": "92,92,92,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "100,104,100,102,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,8,7,8,8,8,8,7,7,7,7,7",
-    "trueach": "100,100,100,100,100,100,81,100,100,100,100,100",
+    "xboxwire": "8,7,8,8,8,8,7,7,7,7,7,7",
+    "trueach": "100,100,100,100,100,81,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "30,30,30,30,30,28,30,30,30,30,30,30",
+    "arstechnica": "30,30,30,30,28,30,30,30,30,30,30,30",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"1692b3ea86e7ca81cc109037bdae8db3\"",
-      "modified": "Tue, 01 Sep 2026 10:41:45 GMT"
+      "etag": "W/\"7dc81b94c9b57a450a7d80e3a23bd5de\"",
+      "modified": "Tue, 01 Sep 2026 12:20:17 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 12:00:44 GMT"
+      "modified": "Tue, 01 Sep 2026 12:31:03 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a96be4f-2fce\"",
-      "modified": "Tue, 01 Sep 2026 12:00:15 GMT"
+      "etag": "W/\"6a96c558-2fce\"",
+      "modified": "Tue, 01 Sep 2026 12:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : 4 millions de viewers en simultanés et des records de fréquentation sur Netflix - Journal du Geek",
+      "link": "https://www.journaldugeek.com/2026/09/01/gta-6-4-millions-de-viewers-en-simultanes-et-des-records-de-frequentation-sur-netflix/",
+      "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPNTlPVDVfSnNkakx1dU8tQ2VZUG4tSS14elhyaG1ncXVjS2lRU2xGb3RGeGpEVVVSVEMzX1d0cDJneTZmUVBQOUFIYlk1WnRRT1h1X3lxMm5lRXVjVHNOSUM0SGQzSVRwT1JVQUVERGRlcEtYZS1lMFBXWktwMGJMX1pycXlsTXJiZDVVRVFQRmc4alpPUC1ydzVrOFBvQWN4TEZfSzFNMWZfOXdITGZyWDZ3M0JETTg5cGJvRmVsRVRSVGxaNlE?oc=5",
+      "date": "2026-09-01T12:02:46+00:00",
+      "source": "Journal du Geek",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/09/gta-6-succes-netflix-1600x900.jpg",
+      "description": "GTA 6 : 4 millions de viewers en simultanés et des records de fréquentation sur Netflix&nbsp;&nbsp;Journal du Geek"
+    },
     {
       "title": "New GTA 6 Details Reveal a Dynamic Romance and Criminal Profile System - VICE",
       "link": "https://www.vice.com/en/article/gta-6-romance-criminal-profile-details/",
@@ -1113,6 +1126,19 @@
       "lang": "fr",
       "image": "https://www.fredzone.org/wp-content/uploads/2026/09/rockstar-doesnt-mind-if-you-dislike-gta-6s-romantic-side-don_ax34-scaled.jpg",
       "description": "Gta 6 mise sur la profondeur narrative et les choix relationnels&nbsp;&nbsp;Fredzone"
+    },
+    {
+      "title": "Record d'affluence sur Netflix : 4 millions de spectateurs en simultané grâce à GTA VI - AlloCiné",
+      "link": "https://www.allocine.fr/article/fichearticle_gen_carticle=1000220684.html",
+      "source_link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1vNUh1ZmdNRVJ1T2lmbkdwYXo4Y3BxaVZseXhNZEh1T3FsQmNONWNteWh2RGJnWnhwNFBlcGUtUnJIbTVHYlBmZ2tjZ1dTRm1XMHNxeVdFc2JDdkluOTlzM0h2X1EtUnVrczF2NDZwall0eUcxcVlyQlRiV1NQUQ?oc=5",
+      "date": "2026-09-01T10:24:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://fr.web.img6.acsta.net/img/4f/bf/4fbfc7841b4112edb1815e54de84c55e.jpg",
+      "description": "Record d'affluence sur Netflix : 4 millions de spectateurs en simultané grâce à GTA VI&nbsp;&nbsp;AlloCiné"
     },
     {
       "title": "GTA 6 lets players \"forget it's a game\" with all its choices, and that's what Rockstar lead Rob Nelson is most proud of: \"It's up to you and what matters to you\"",
@@ -5014,32 +5040,6 @@
       "lang": null,
       "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/08/image-7.png?w=1600&h=900&fit=crop",
       "description": "GTA 6's 26-minute trailer was full of small gameplay details that were easy to miss amid the shootouts and police chases"
-    },
-    {
-      "title": "\"GTA 6\": \"démonstration impressionnante\", expérience \"radicalement différente\" et \"excellence cinématographique\", ce que disent ceux qui ont déjà approché le jeu le plus attendu de l'histoire - BFM",
-      "link": "https://www.bfmtv.com/tech/gaming/gta-6-demonstration-impressionnante-experience-radicalement-differente-et-excellence-cinematographique-ce-que-disent-ceux-qui-ont-deja-approche-le-jeu-le-plus-attendu-de-l-histoire_AV-202608280727.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi1gJBVV95cUxQOUJ3c3NnQzBfN3pjNHY5ZFU3RFJXX0doVGpLeDFzVnVmR2pyWnNISzJwSkFJZEVfdmJVck1tSmx6UzlNY1VwVzBYcmlqLUZiRGtkWmZLM3BsWFg1NVV2TFBDemRWZTlld0NVTTBMWGE3cTlxQnUwSW1JTzFEYTZCaFVyQ1dwRi1WSmdHN1RUN29Tem1IWC1yQ0hyUTFTZjFkVFpQRTVLekRYSFh1WGFoMnFLZ0hKRVE2RFhWUmZ4WmN2Y3paMEpoanlOUHQ5cUwzeGoxcUtINVlFaV9rNXBLX0tMTmRIaGVZTzBOV2FHSDhIdDk3UDV0LWhBcmVsTkhCeEpBNHlsbE5XME9seHNPakxfT3FUSWtCTS1VRVE3MWdkVWQ0Z2JaMlhkRkVNQTBCMi1UdnhTZ3lBRktIVG1WaEdhLU1MMWVGMHZ5T3oyOUQyaVVaeFE?oc=5",
-      "date": "2026-08-28T17:50:34+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/es2Sx5wXZbXNklFjuz1XVt9HhMo=/0x0:1536x864/1536x0/images/Grand-Theft-Auto-VI-2338693.jpg",
-      "description": "\"GTA 6\": \"démonstration impressionnante\", expérience \"radicalement différente\" et \"excellence cinématographique\", ce que disent ceux qui ont déjà approché le jeu le plus attendu de l'histoire&nbsp;&nbsp;BFM"
-    },
-    {
-      "title": "GTA 6 | Une durée de vie de 80h, avec du 30FPS et pas de vue première personne",
-      "link": "https://www.rockstarmag.fr/gta-6-une-duree-de-vie-de-80h-avec-du-30fps-et-pas-de-vue-premiere-personne/",
-      "source_link": null,
-      "date": "2026-08-28T17:45:42+00:00",
-      "source": "RockstarMag",
-      "official": false,
-      "rockstarmag": true,
-      "specialist": true,
-      "lang": "fr",
-      "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/08/gta-6-30-fps-1024x575.jpg",
-      "description": "C'est officiel, il n'y aura pas de vue FPS pour GTA 6, le jeu offrira une durée de vie de 80h et tournera en 30 FPS sur PS5 et Xbox Series X/S !"
     }
   ],
   "partial": true,
