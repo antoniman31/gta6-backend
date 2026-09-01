@@ -1413,6 +1413,82 @@ def test_description_video_youtube():
         fetch_feeds.requests.get = vrai
 
 
+def test_miniature_absente_nest_plus_redemandee():
+    print("\n[miniatures] une page sans og:image n'est plus redemandée sans fin")
+    import fetch_feeds
+    from datetime import datetime, timedelta, timezone
+
+    maintenant = datetime(2026, 9, 1, 12, 0, tzinfo=timezone.utc)
+
+    def art(**kw):
+        base = {"title": "T", "link": "https://ex.tld/a",
+                "date": maintenant.isoformat(), "image": None}
+        base.update(kw)
+        return base
+
+    merite = fetch_feeds.merite_une_miniature
+
+    # L'échec écrivait `image = None`, soit exactement l'état de départ :
+    # rien ne distinguait « jamais essayé » de « essayé mille fois ». Mesuré
+    # le 01/09/2026, 76 articles concernés = 3 648 requêtes par jour.
+    check(merite(art(), maintenant), "un article jamais essayé est demandé")
+    check(not merite(art(image="https://x.tld/i.jpg"), maintenant),
+          "un article qui a déjà sa miniature n'est pas redemandé")
+    check(not merite(art(link=None), maintenant), "sans lien, rien à demander")
+
+    # Un échec ponctuel — timeout, 503 — mérite une seconde chance. Pas
+    # quarante-huit par jour.
+    recent = (maintenant - timedelta(hours=2)).isoformat()
+    check(not merite(art(og_absente=recent), maintenant),
+          "un échec d'il y a 2 h n'est pas retenté")
+    vieux = (maintenant - timedelta(hours=30)).isoformat()
+    check(merite(art(og_absente=vieux), maintenant),
+          "un échec d'il y a 30 h donne droit à un nouvel essai")
+
+    # Au-delà de 7 jours, une page sans image d'aperçu n'en aura pas.
+    ancien = art(date=(maintenant - timedelta(days=10)).isoformat(),
+                 og_absente=vieux)
+    check(not merite(ancien, maintenant),
+          "un article de 10 jours est définitivement abandonné")
+
+    # Une date illisible ne doit pas faire abandonner un article : DATE_FLOOR
+    # le ferait passer pour vieux de sept cent mille jours.
+    check(merite(art(date="pas une date"), maintenant),
+          "une date illisible n'abandonne pas l'article")
+    check(merite(art(og_absente="pas une date"), maintenant),
+          "une trace d'échec illisible n'empêche pas de réessayer")
+
+    # Et le champ doit vivre : posé à l'échec, retiré au succès.
+    vrai = fetch_feeds.fetch_og_image
+    try:
+        fetch_feeds.fetch_og_image = lambda url, timeout=8: None
+        items = [art()]
+        fetch_feeds.fetch_missing_images(items)
+        check(items[0].get("og_absente"), "l'échec laisse une trace datée")
+        # Deuxième passage immédiat : plus aucune requête.
+        appels = []
+        fetch_feeds.fetch_og_image = lambda url, timeout=8: appels.append(url)
+        fetch_feeds.fetch_missing_images(items)
+        check(appels == [], "le passage suivant ne redemande rien")
+
+        fetch_feeds.fetch_og_image = lambda url, timeout=8: "https://x.tld/i.jpg"
+        items = [art(og_absente=vieux)]
+        fetch_feeds.fetch_missing_images(items)
+        check(items[0]["image"] == "https://x.tld/i.jpg", "le succès pose l'image")
+        check("og_absente" not in items[0],
+              "et retire la trace : elle n'a plus à traîner dans le fichier publié")
+    finally:
+        fetch_feeds.fetch_og_image = vrai
+
+    # Le champ doit survivre à une fusion après conflit de push, sinon la
+    # trace se perdrait à chaque collision et la boucle reprendrait.
+    import merge_feed
+    marque = art(og_absente=vieux)
+    fusion, _, _ = merge_feed.merge_feeds({"items": [marque]}, {"items": []})
+    check(fusion["items"][0].get("og_absente") == vieux,
+          "la trace survit à une fusion après conflit de push")
+
+
 def test_recuperation_des_miniatures():
     print("\n[miniatures] la récupération en parallèle")
     import fetch_feeds
@@ -2773,14 +2849,36 @@ def test_confirmation_des_actions_sans_retour():
     check("repondConfirmation(false)" in bloc and "true" not in bloc,
           "un clic à côté refuse, jamais ne valide")
 
-    # Le nombre réel dans la question : c'est lui qui fait voir qu'on est
-    # sur le mauvais onglet avant de valider.
+    # Le nombre annoncé doit être celui des articles qui vont VRAIMENT
+    # changer d'état. Compter aussi les articles déjà lus annonçait « 247 »
+    # sur un onglet où 29 seulement étaient non lus.
     debut = html.index("async function markAllRead(")
     corps = html[debut:html.index("\n}", debut)]
-    check("items.length" in corps.split("demandeConfirmation(")[1][:200],
-          "le marquage en masse annonce COMBIEN d'articles il touche")
-    check(corps.index("items.length === 0") < corps.index("demandeConfirmation("),
-          "et ne demande rien quand il n'y a rien à marquer")
+    check("articlesAffiches()" in corps,
+          "le marquage en masse part de la MÊME liste que l'affichage")
+    check("readSet.has(i.link)" in corps.split("demandeConfirmation(")[0],
+          "et ne retient que les articles dont l'état va changer")
+    check("vise.length" in corps.split("demandeConfirmation(")[1][:220],
+          "c'est ce nombre-là qui est annoncé")
+    check("affiches.length" in corps.split("demandeConfirmation(")[1][:320],
+          "avec le total affiché en regard, pour repérer le mauvais onglet")
+    check(corps.index("vise.length === 0") < corps.index("demandeConfirmation("),
+          "et rien n'est demandé quand aucun article ne changerait")
+
+    # La cause du défaut : markAllRead recopiait trois des six règles de
+    # filtrage d'applyFilters, et les deux avaient dérivé. Une seule
+    # définition, désormais — verrouillée ici.
+    corps_af = html[html.index("function applyFilters("):
+                    html.index("function applyFilters(") + 900]
+    check("articlesAffiches()" in corps_af,
+          "l'affichage passe par la même fonction, pas par une copie")
+    filtre = html[html.index("function articlesAffiches("):]
+    filtre = filtre[:filtre.index("\n}")]
+    for regle, quoi in (("currentTab", "l'onglet"), ("currentLang", "la langue"),
+                        ("currentFilter", "le filtre Non lus / Nouveaux"),
+                        ("searchInput", "la recherche"),
+                        ("settings.maxDisplay", "le plafond d'affichage")):
+        check(regle in filtre, f"la liste affichée tient compte de {quoi}")
 
 
 def test_haut_de_page_une_seule_carte():
@@ -2928,6 +3026,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
            test_suffixe_du_media_appris, test_fusion_retroactive_des_ressemblances,
            test_index_compte_les_sources_supplementaires,
+           test_miniature_absente_nest_plus_redemandee,
            test_recuperation_des_miniatures, test_description_video_youtube,
            test_fenetre_en_heures, test_source_renommee,
            test_titre_trop_court_n_attire_personne,

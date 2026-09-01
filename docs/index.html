@@ -239,9 +239,17 @@
 
   .feed{display:flex; flex-direction:column; gap:4px;}
   .day-group{display:flex; flex-direction:column; gap:10px; margin-bottom:6px;}
+  /* Collant : passé trois cartes, on ne savait plus quel jour on lisait.
+     Chaque label tient le haut de l'écran tant que son groupe y est, puis
+     le groupe suivant le pousse dehors — comportement natif, aucun JS.
+     Le fond vient du jeton de thème, sinon les cartes défileraient sous un
+     texte transparent ; et z-index 5 le garde sous les panneaux (100) et
+     la confirmation (200). */
   .day-label{
     font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--accent);
     text-transform:uppercase; letter-spacing:0.06em; margin-top:10px; margin-bottom:2px;
+    position:sticky; top:0; z-index:5;
+    background:var(--bg); padding:6px 0 4px;
   }
   @keyframes card-enter{
     from{opacity:0; transform:translateY(4px);}
@@ -2276,17 +2284,13 @@ function articlesVisibles(){
   return lastItems.filter(i => !estExclu(i));
 }
 
-function applyFilters(){
-  const q = document.getElementById("searchInput").value.trim().toLowerCase();
-
-  // Une recherche sur un historique tronqué donnerait des résultats faux
-  // sans le dire. Dès la première recherche, on complète en arrière-plan.
-  if(q && historyPartial && !historyLoading){
-    loadFullHistory("recherche lancée");
-  }
-
+// La liste réellement affichée, onglet, filtres, recherche et plafond
+// compris. UNE seule définition, parce que markAllRead en recopiait trois
+// des six lignes et que les deux avaient dérivé : le marquage en masse
+// ignorait le filtre « Non lus » et la recherche, tout en affirmant dans sa
+// confirmation ne concerner « que les articles affichés ». C'était faux.
+function articlesAffiches(){
   let items = articlesVisibles();
-  const masques = lastItems.length - items.length;
 
   if(currentTab === "rockstar") items = items.filter(i => i.official);
   if(currentTab === "rockstarmag") items = items.filter(i => i.rockstarmag);
@@ -2296,11 +2300,32 @@ function applyFilters(){
 
   if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
   if(currentFilter === "new") items = items.filter(i => lastNewLinks.has(i.link));
+
   // La recherche porte aussi sur le résumé : beaucoup d'articles ne
   // mentionnent le sujet cherché que dans le corps du texte.
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
   if(q) items = items.filter(i =>
     i.title.toLowerCase().includes(q) ||
     (i.description || "").toLowerCase().includes(q));
+
+  // Le plafond d'affichage en fait partie : c'est un réglage qui dit
+  // combien d'articles la page montre. La pagination « Charger plus », en
+  // revanche, n'est que l'endroit où on en est dans le défilement — elle ne
+  // définit pas ce qui est affiché.
+  return items.slice(0, settings.maxDisplay);
+}
+
+function applyFilters(){
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+
+  // Une recherche sur un historique tronqué donnerait des résultats faux
+  // sans le dire. Dès la première recherche, on complète en arrière-plan.
+  if(q && historyPartial && !historyLoading){
+    loadFullHistory("recherche lancée");
+  }
+
+  const masques = lastItems.length - articlesVisibles().length;
+  const items = articlesAffiches();
 
   renderFeed(items, lastNewLinks, q);
   updateTabBadges();
@@ -2495,8 +2520,11 @@ function renderCard(item, newLinks, searchQuery){
   const faviconUrl = safeUrl(item.favicon);
   const imageUrl = safeUrl(item.image);
   const linkUrl = safeUrl(item.link);
-  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" class="card-favicon" alt="" onerror="this.style.display='none'">` : "";
-  const thumb = imageUrl ? `<img src="${escapeHtml(imageUrl)}" class="card-thumb" alt="" onerror="this.style.display='none'">` : "";
+  // loading="lazy" : jusqu'à deux images par carte et 30 cartes au premier
+  // rendu, soit 60 requêtes pour trois cartes visibles. decoding="async"
+  // évite en plus qu'un décodage bloque le rendu.
+  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" class="card-favicon" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : "";
+  const thumb = imageUrl ? `<img src="${escapeHtml(imageUrl)}" class="card-thumb" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : "";
   const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
   const specialistBadge = (item.specialist && !item.official) ? `<span class="specialist-badge">SPÉCIALISTE GTA 6</span>` : "";
 
@@ -2734,27 +2762,32 @@ function toggleRead(safeId, link){
 }
 
 async function markAllRead(makeRead){
-  // articlesVisibles() et non lastItems : "Tout marquer lu" ne doit pas
-  // toucher des articles que la liste noire cache.
-  let items = articlesVisibles();
-  if(currentTab === "rockstar") items = items.filter(i => i.official);
-  if(currentTab === "rockstarmag") items = items.filter(i => i.rockstarmag);
-  if(currentTab === "non-rockstar") items = items.filter(i => !i.official && !i.rockstarmag);
-  if(currentLang === "fr") items = items.filter(i => i.lang === "fr");
-  if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
+  // Exactement la liste affichée — onglet, langue, filtre « Non lus »,
+  // recherche et plafond compris. La même fonction que le rendu, pas une
+  // copie de ses règles.
+  const affiches = articlesAffiches();
 
-  // Le NOMBRE réel dans la question, pas un « tous » vague : c'est lui qui
-  // fait voir qu'on est sur le mauvais onglet avant de valider. Et rien à
-  // confirmer quand il n'y a rien à faire.
-  if(items.length === 0) return;
+  // Puis seulement ceux dont l'état va VRAIMENT changer. Marquer lu un
+  // article déjà lu ne fait rien : l'annoncer dans le compte donnait
+  // « 247 articles » sur un onglet où 29 seulement étaient non lus.
+  const vise = makeRead === false
+    ? affiches.filter(i => readSet.has(i.link))
+    : affiches.filter(i => !readSet.has(i.link));
+
+  if(vise.length === 0) return;
+
   const verbe = makeRead === false ? "non lus" : "lus";
+  const etat = makeRead === false ? "lus" : "non lus";
+  // Les DEUX nombres : l'effet réel, et de quoi voir qu'on est sur le bon
+  // onglet avant de valider.
   const ok = await demandeConfirmation(
-    `Marquer ${items.length} article${items.length > 1 ? "s" : ""} comme ${verbe} ?`,
-    "Cela ne concerne que les articles actuellement affichés. Il n'y a pas de retour en arrière.",
+    `Marquer ${vise.length} article${vise.length > 1 ? "s" : ""} comme ${verbe} ?`,
+    `${vise.length} ${etat} parmi les ${affiches.length} affichés. `
+    + "Il n'y a pas de retour en arrière.",
     `Marquer ${verbe}`);
   if(!ok) return;
 
-  items.forEach(i => {
+  vise.forEach(i => {
     if(makeRead === false){
       readSet.delete(i.link);
     }else{
