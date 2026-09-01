@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-01T21:01:46.273809+00:00",
-  "duration_seconds": 45.6,
+  "generated_at": "2026-09-01T21:31:38.746495+00:00",
+  "duration_seconds": 54.5,
   "decode_failures": 0,
-  "total_articles": 1599,
+  "total_articles": 1602,
   "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 69,
@@ -385,11 +385,11 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 92,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-01T18:30:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T19:05:25+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T12:40:06+00:00",
       "days_since_last_article": 0,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
+    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -946,23 +946,23 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "30,30,30,30,31,31,31,31,31,31,31,31",
+    "gta6times": "30,30,30,31,31,31,31,31,31,31,31,31",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,9,7,9,7,9,9,7",
+    "xboxwire": "8,8,8,8,9,7,9,7,9,9,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,70,100,100,100,100",
+    "theverge": "100,100,100,100,100,100,70,100,100,100,100,100",
     "engadget": "81,81,81,81,81,81,81,81,81,81,81,81",
-    "arstechnica": "29,29,29,29,29,29,29,28,29,29,29,29",
+    "arstechnica": "29,29,29,29,29,29,28,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,56,100,100,100,100,100,100"
+    "schreier": "100,100,100,100,56,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"fea54f6d73f60e3642b8bd72a60fb48c\"",
-      "modified": "Tue, 01 Sep 2026 21:00:53 GMT"
+      "etag": "W/\"32d982fe2b6a0dc1bb618e153e844d1f\"",
+      "modified": "Tue, 01 Sep 2026 21:21:24 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"11cdb836f56ba9186b799921e905c9ee\"",
-      "modified": "Tue, 01 Sep 2026 20:45:58 GMT"
+      "etag": "W/\"2a813d667f43815384d7aa0d02025124\"",
+      "modified": "Tue, 01 Sep 2026 21:11:55 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 21:01:09 GMT"
+      "modified": "Tue, 01 Sep 2026 21:28:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a973ce2-2ee0\"",
-      "modified": "Tue, 01 Sep 2026 21:00:18 GMT"
+      "etag": "W/\"6a9743e8-2ee0\"",
+      "modified": "Tue, 01 Sep 2026 21:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788295963\"",
-      "modified": "Tue, 01 Sep 2026 20:52:43 GMT"
+      "etag": "W/\"1788298133\"",
+      "modified": "Tue, 01 Sep 2026 21:28:53 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1074,6 +1074,19 @@
       "lang": null,
       "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/09/gta5world.jpg?w=1600&h=900&fit=crop",
       "description": "Days After GTA 6's Big Reveal, Rockstar Announces A Major GTA 5 Update&nbsp;&nbsp;Polygon.com"
+    },
+    {
+      "title": "The ‘Grand Theft Auto VI’ Preview Was the Most-Watched Movie on Netflix Last Week - ScreenCrush",
+      "link": "https://screencrush.com/gta-vi-preview-netflix-top-movie/",
+      "source_link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5RZGQ1VzZHTHlvU2xtdzFYYkpCNTVtbmZIMjlVb1JqX0M0U1FDVEwxMXloWklKeFpyMnlEWEk2bnJXdE54ZGRxNFBWaUNQSDN1MkdXRXBCMkYwVHFBcC01MjNNemJRdEh0?oc=5",
+      "date": "2026-09-01T20:34:15+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://townsquare.media/site/442/files/2026/09/attachment-social-image-442-2026-09-01-16-19-59.jpg?w=1200&q=75&format=natural",
+      "description": "The ‘Grand Theft Auto VI’ Preview Was the Most-Watched Movie on Netflix Last Week&nbsp;&nbsp;ScreenCrush"
     },
     {
       "title": "GTA 6 Extended Look Was Netflix’s Most Watched Video - Insider Gaming",
@@ -1151,7 +1164,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://www.gamespot.com/wp-content/uploads/2026/09/Screenshot-2026-09-01-at-3.16.48-PM.png?w=300",
-      "description": "Netflix has confirmed that GTA 6's recent \"extended look\" trailer was the streamer's most-viewed title overall last week, drawing 31.1 million views.\n\n\n\nThe trailer was labeled an \"English-language film\" by Netflix, and it was No. 1 by that designation in 87 of 93 regions globally that Netflix's tracks (via Variety).\n\n\n\nThe GTA 6 trailer was well ahead of the No. 2 title last week, which was the movie The Whisper Man, which had 23.2 million viewers. \n\n\n\n\nhttps://www.youtube.com/watch?v=XpPpqZwUw"
+      "description": "Netflix has confirmed that GTA 6's recent \"extended look\" trailer was the streamer's most-viewed title overall last week, drawing 31.1 million views.\n\n\n\nThe trailer was labeled an \"English-language film\" by Netflix, and it was No. 1 by that designation in 87 of 93 regions globally that Netflix's tracks (via Variety).\n\n\n\nThe GTA 6 trailer was well ahead of the No. 2 title last week, which was the movie The Whisper Man, which had 23.2 million viewers. \n\n\n\n\nhttps://www.youtube.com/watch?v=XpPpqZwUw",
+      "extraSources": [
+        {
+          "source": "GTA 6 x Netflix",
+          "link": "https://www.yahoo.com/entertainment/movies/articles/gta-6-extended-look-trailer-194523664.html"
+        }
+      ]
     },
     {
       "title": "Rockstar Games unveils its official GTA Online RP server, mere months before GTA 6",
@@ -2943,6 +2962,19 @@
       "lang": null,
       "image": null,
       "description": "GTA 6 Leak Sends Take-Two (NASDAQ:TTWO) Stock Down 7%. What TTWO Investors Need to Know&nbsp;&nbsp;Stocks Down Under"
+    },
+    {
+      "title": "GTA 6 Extended Look: Everything we learned from the new footage - Red Bull",
+      "link": "https://www.redbull.com/ca-en/gta-6-extended-look-everything-revealed",
+      "source_link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE10Z0R6VkdsWmdzTXJUdTJRdmZER0ptNF80UWxYZ1dma00zZjRMRjlHLU44S2pFa3NkS0hoM085UWFPNXE2WHoyc0dWQXVpUVB6LUhEWGNMYUxFMFJQN3BHZm56SVdveHN2a3BIWGVXQjd2SzBnVjJobA?oc=5",
+      "date": "2026-08-31T15:54:53+00:00",
+      "source": "Rockstar Games (annonces)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 Extended Look: Everything we learned from the new footage&nbsp;&nbsp;Red Bull"
     },
     {
       "title": "Fetishists Spent the Weekend Perving Over the New GTA 6 Trailer - vice.com",
@@ -4814,6 +4846,19 @@
       "lang": null,
       "image": "https://media.beehiiv.com/cdn-cgi/image/fit=scale-down,quality=80,width=1200,onerror=redirect/uploads/asset/file/321433c8-d353-45e0-9082-dd14a933ac1e/gta_trailer_odds.jpg?t=1788021061",
       "description": "GTA VI trailer odds drop after Netflix extended preview&nbsp;&nbsp;Kalshi News"
+    },
+    {
+      "title": "GTA VI : les références à la NBA et au Miami Heat disséminées dans le jeu - TrashTalk",
+      "link": "https://trashtalk.co/2026/08/29/gta-vi-les-references-a-la-nba-et-au-miami-heat-disseminees-dans-le-jeu/",
+      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNN0lzSklscVJHeWRSUWxUWjgzSndkdmNhZU44TFhZTmI3b0NXelBvMmhfT19xVzZRRHRqYTZlWjhTUzNDZFZBMmRlV1ZhVXBZUlkzb3BURnlnT1J5REV6Rk5lSVpzWjZkd19wdmFTTFJDUFNDZGRXMUZ6b0xQRUctTDFoX25BZWhuRHAtejUxRkptaURxY0Q1aUFXbTdDeGJzRHdsUkVndw?oc=5",
+      "date": "2026-08-29T15:46:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://redac.trashtalk.co/wp-content/uploads/2026/08/GTA-VI-Miami-Heat-Kaseya-Center.jpg",
+      "description": "GTA VI : les références à la NBA et au Miami Heat disséminées dans le jeu&nbsp;&nbsp;TrashTalk"
     },
     {
       "title": "GTA 6 sur PC : mauvaise nouvelle, l'une des craintes des joueurs se confirme - La Crème Du Gaming",
