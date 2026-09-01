@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T18:31:42.194548+00:00",
-  "duration_seconds": 51.0,
+  "generated_at": "2026-09-01T19:01:53.044424+00:00",
+  "duration_seconds": 51.3,
   "decode_failures": 0,
-  "total_articles": 1570,
-  "new_this_run": 4,
+  "total_articles": 1573,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T16:50:25+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T18:30:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -413,7 +413,7 @@
       "http_status": 301,
       "redirect": "https://www.pcgamer.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T18:19:56+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -427,7 +427,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -449,9 +449,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-30T14:00:08+00:00",
-      "days_since_last_article": 2,
+      "new_this_run": 1,
+      "last_article": "2026-09-01T16:45:09+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -469,11 +469,11 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-01T17:57:52+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T08:26:02+00:00",
       "days_since_last_article": 0,
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-31T13:48:34+00:00",
       "days_since_last_article": 1,
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 9,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -901,11 +901,11 @@
     {
       "id": "schreier",
       "name": "Jason Schreier",
-      "entries_fetched": 56,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
       "days_since_last_article": 10,
       "status": "ok"
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,102,100,100,100,100,100,100,100,100",
+    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
+    "gnews-en": "100,100,102,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,35 +946,35 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "30,30,30,30,30,30,30,30,30,30,31,31",
+    "gta6times": "30,30,30,30,30,30,30,30,30,31,31,31",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,9,8,8,8,8,8,8,8,8,9",
+    "xboxwire": "7,9,8,8,8,8,8,8,8,8,9,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,81,81,81,81,81,81,81,81,81",
-    "arstechnica": "30,30,30,30,29,29,29,29,29,29,29,29",
+    "engadget": "82,82,81,81,81,81,81,81,81,81,81,81",
+    "arstechnica": "30,30,30,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,100,100,56"
+    "schreier": "100,100,100,100,100,100,100,100,100,100,56,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"0bf2268017bedae608906b921690d1b5\"",
-      "modified": "Tue, 01 Sep 2026 18:29:04 GMT"
+      "etag": "W/\"2da95d77831c4033da1bf78bdfdf19cc\"",
+      "modified": "Tue, 01 Sep 2026 18:51:51 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2afc2-/UQRPJ4AR1GNdxk1vLpAqawqnag\"",
+      "etag": "W/\"29d61-ysZt5iWyWkLnDGT6FL+BsrEd7ds\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5e4e7aaef1e50fb7c326309e79bac95f\"",
-      "modified": "Tue, 01 Sep 2026 18:11:51 GMT"
+      "etag": "W/\"26724e0a755a43513ebc9b57eaf5bd05\"",
+      "modified": "Tue, 01 Sep 2026 18:46:32 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 17:39:58 GMT"
+      "modified": "Tue, 01 Sep 2026 18:35:01 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 18:27:28 GMT"
+      "modified": "Tue, 01 Sep 2026 18:58:02 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9719b7-2ee0\"",
-      "modified": "Tue, 01 Sep 2026 18:30:15 GMT"
+      "etag": "W/\"6a9720c0-2ee0\"",
+      "modified": "Tue, 01 Sep 2026 19:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Un joueur Xbox reçoit GTA 6 gratuitement sans même avoir besoin de l’acheter, et c'est possible pour tous - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/un-joueur-xbox-recoit-gta-6-gratuitement-sans-meme-avoir-besoin-de-lacheter-et-cest-possible-pour-tous-224187.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxPc2JQT2s0bHdFV2FfS3NoYWVVeE9tUGlRcXB4Yl9GQkFYcnFydjdsN1ZSVUJkbGlIMWpnNnpiWXFZX3E5SkZybWFXR09EUE0wWk5CR1dNZUxlSFB6dWM5Mkc3LWlvOW9kaWlMZHUzSnpSM0Q0bG1UNHNRSUV1dEU2VmdmS1hPNlpmY0Nvcy1QazlEYk1WNW01VU5acThOX1dYQVdhR1duZnVzZlpsTEZrNFRPQUlvWTBFSkVRSTZwWFhjcl83dUprdkJmS2ppZzVNOTQ3NU16c1ZvOHIwZFQxMm5GMHhGRDU4eFptX1dTbW51QQ?oc=5",
+      "date": "2026-09-01T18:30:58+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/un-joueur-xbox-recoit-gta-6-gratuitement-sans-meme-avoir-besoin-de-lacheter-et-cest-possible-pour-tous.png",
+      "description": "Un joueur Xbox reçoit GTA 6 gratuitement sans même avoir besoin de l’acheter, et c'est possible pour tous&nbsp;&nbsp;La Crème Du Gaming"
+    },
     {
       "title": "No Rest for the Wicked, which was slated to hit 1.0 a month before Grand Theft Auto 6, is delayed into 2027",
       "link": "https://www.pcgamer.com/games/action/no-rest-for-the-wicked-which-was-slated-to-hit-1-0-a-month-before-grand-theft-auto-6-is-delayed-into-2027/",
@@ -1165,6 +1178,19 @@
       "lang": null,
       "image": "https://kotaku.com/app/uploads/2026/08/gta-6a.jpg",
       "description": "Grand Theft Auto 6's dating options are catching some flak on TikTok, but is it all just engagement bait?"
+    },
+    {
+      "title": "L’enquête sur les énormes fuites de GTA 6 se précise, Take-Two resserre l’étau autour du leaker",
+      "link": "https://www.jeuxvideo.com/news/2101619/l-enquete-sur-les-enormes-fuites-de-gta-6-se-precise-take-two-resserre-l-etau-autour-du-leaker.htm",
+      "source_link": null,
+      "date": "2026-09-01T16:45:09+00:00",
+      "source": "Jeuxvideo.com",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178825/1788252656-9770-card.jpg",
+      "description": "Plusieurs semaines après les fuites massives de Grand Theft Auto VI, Take-Two Interactive intensifie ses démarches légales. L'éditeur américain vient d'obtenir l'émission d'assignations sous scellés pour traquer le responsable sans lui laisser le temps de disparaître."
     },
     {
       "title": "Rockstar Reveals GTA RP Updates With nopixel V",
@@ -1418,6 +1444,19 @@
       "lang": null,
       "image": "https://files.vgtimes.com/posts/2026-09/rockstar-publishes-new-gta-6-screenshots-on-the-games-official-website-166093.webp",
       "description": "Rockstar North co-head Rob Nelson has opened up about GTA 6, revealing that the game has grown so large that, according to him, there apparently isn't anyone on the team who knows it inside and out. The game is still scheduled to launch on November 19, 2026, for PlayStation 5 and Xbox Series X/S"
+    },
+    {
+      "title": "GTA 6 Makes Major Change to Classic Feature for the First Time in 25 Years - VICE",
+      "link": "https://www.vice.com/en/article/gta-6-sprint-change-first-time-25-years/",
+      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE9aQTdLbHlrMS1NSEcybkhnY1dhOVhOLUhsRHdwODVCandmVWh0TGVTUFR0RVI4R0ZyQUVLanAwdFh6clRjZ0ZKcWlvdk9UOGk5Y3p1TkRXZUZxVDdQcVFRc1Y3c2UtdS0zNWNGbDJ1ajU2ekZVU2tJS280aFQ?oc=5",
+      "date": "2026-09-01T13:59:24+00:00",
+      "source": "Rockstar Games (annonces)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/08/gta-6-30-fps-launch.jpg?w=1280",
+      "description": "GTA 6 Makes Major Change to Classic Feature for the First Time in 25 Years&nbsp;&nbsp;VICE"
     },
     {
       "title": "GTA 6 | TGG Profil Criminel + Argent - Rockstar Mag",
