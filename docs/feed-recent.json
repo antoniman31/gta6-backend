@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T07:02:14.959584+00:00",
-  "duration_seconds": 81.6,
+  "generated_at": "2026-09-01T07:32:13.134100+00:00",
+  "duration_seconds": 90.2,
   "decode_failures": 0,
-  "total_articles": 1503,
-  "new_this_run": 1,
+  "total_articles": 1505,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -329,7 +329,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 4,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 68,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T05:23:06+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T07:20:23+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T18:33:06+00:00",
       "days_since_last_article": 0,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T17:11:57+00:00",
       "days_since_last_article": 1,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 29,
+      "entries_fetched": 30,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -905,33 +905,22 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
       "days_since_last_article": 10,
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-01T03:02:14.126279+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-01T03:02:14.126279+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,0,0,0,0,0,0,0,0,0,15",
+    "rockstar-youtube": "15,0,0,0,0,0,0,0,0,0,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,104,100,100,100,100,100,100,100",
+    "gnews-en": "100,100,100,104,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,0,0,0,0,0,0,0,0,0,15",
+    "rockstarmag-youtube": "15,0,0,0,0,0,0,0,0,0,15,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,7,7,8,7,7",
+    "xboxwire": "7,7,7,7,7,7,7,7,8,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,73,100,100,100,100,100,100",
+    "theverge": "100,100,100,100,73,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "29,29,29,29,29,28,29,29,29,29,29,29",
+    "arstechnica": "29,29,29,29,28,29,29,29,29,29,29,30",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -979,18 +968,18 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"05a04408ade979e0d6b0065d7138d16a\"",
-      "modified": "Tue, 01 Sep 2026 06:48:26 GMT"
+      "etag": "W/\"91f4d06d1c5b3b0e5f7bf262aa138a9d\"",
+      "modified": "Tue, 01 Sep 2026 07:06:28 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 05:09:32 GMT"
+      "modified": "Tue, 01 Sep 2026 07:18:18 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1009,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"d709b1ecb398ce38e407f0405bfc4a64\"",
-      "modified": "Tue, 01 Sep 2026 06:00:03 GMT"
+      "etag": "W/\"af282029504ff9e568e072c62f1e9a9e\"",
+      "modified": "Tue, 01 Sep 2026 07:30:07 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1025,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 07:01:01 GMT"
+      "modified": "Tue, 01 Sep 2026 07:30:53 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a967801-3046\"",
-      "modified": "Tue, 01 Sep 2026 07:00:17 GMT"
+      "etag": "W/\"6a967f07-3012\"",
+      "modified": "Tue, 01 Sep 2026 07:30:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1060,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 prouve que vous êtes prêts à payer vos jeux 100€ puisque 4,5 millions de joueurs auraient déjà préacheté la version Ultime - gameblog.fr",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-preco-version-ultime-90-pourcents-5-millions-721956",
+      "source_link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPQWtKSmRzbmhWTjI4c3U2TnhHWjh1WFVPanJOWHBhZEJJOXZPU1ZpY2tFN2FITG50eXFmdnRJem9uc0ltWjdLMDBmWDIxemZQb2FLQ0VXU2JEU2xJdGk5UXVNU2UtbWRtRmJpeXFfVnVuQkdIanE1a2RqNEpaYTEtSGFwQmVRbWFMeE1ETDhwZmxHeDdJTF8tcFdOeTNiMmhH?oc=5",
+      "date": "2026-09-01T07:20:23+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img/news/704141_68f5e6e78c633.webp",
+      "description": "GTA 6 prouve que vous êtes prêts à payer vos jeux 100€ puisque 4,5 millions de joueurs auraient déjà préacheté la version Ultime&nbsp;&nbsp;gameblog.fr"
+    },
     {
       "title": "GTA 6 : Take-Two resserre l’étau autour de Cyberleek",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-take-two-resserre-letau-autour-de-cyberleek-20260901",
@@ -5026,19 +5028,6 @@
       "lang": "fr",
       "image": null,
       "description": "Netflix aurait payé 100 millions pour diffuser le trailer de GTA 6&nbsp;&nbsp;La Réclame"
-    },
-    {
-      "title": "GTA 6 Lets You Throw Dog Poop At People",
-      "link": "https://www.gamespot.com/articles/gta-6-lets-you-throw-dog-poop-at-people/",
-      "source_link": null,
-      "date": "2026-08-28T16:16:13+00:00",
-      "source": "GameSpot",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.gamespot.com/wp-content/uploads/2026/08/Screenshot-2026-08-28-at-12.03.38-PM.png",
-      "description": "Poop is a weapon in GTA 6."
     }
   ],
   "partial": true,
