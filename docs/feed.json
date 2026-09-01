@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T22:31:36.015522+00:00",
-  "duration_seconds": 54.8,
+  "generated_at": "2026-09-01T22:47:36.004865+00:00",
+  "duration_seconds": 48.6,
   "decode_failures": 0,
-  "total_articles": 1609,
-  "new_this_run": 2,
+  "total_articles": 1612,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-01T22:18:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -385,11 +385,11 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 92,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 2,
       "last_article": "2026-09-01T18:30:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -521,8 +521,8 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T15:00:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T22:21:27+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T16:45:18+00:00",
       "days_since_last_article": 0,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 3,
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 8,
+      "entries_fetched": 9,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -829,7 +829,7 @@
     {
       "id": "gamergen",
       "name": "Gamergen",
-      "entries_fetched": 100,
+      "entries_fetched": 45,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,92,100,92,92",
+    "gnews-fr": "92,92,92,92,92,92,92,92,100,92,92,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -946,23 +946,23 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "30,31,31,31,31,31,31,31,31,31,31,31",
+    "gta6times": "31,31,31,31,31,31,31,31,31,31,31,31",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,9,7,9,7,9,9,7,7,9,8",
+    "xboxwire": "8,9,7,9,7,9,9,7,7,9,8,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,45",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,70,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,81,81,81,81,80,81",
-    "arstechnica": "29,29,29,29,28,29,29,29,29,29,29,29",
+    "theverge": "100,100,100,70,100,100,100,100,100,100,100,100",
+    "engadget": "81,81,81,81,81,81,81,81,81,80,81,81",
+    "arstechnica": "29,29,29,28,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,56,100,100,100,100,100,100,100,100,100"
+    "schreier": "100,56,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"b96f3346167e9bcb6414a94dd8a55d2e\"",
-      "modified": "Tue, 01 Sep 2026 22:19:05 GMT"
+      "etag": "W/\"84df602dd7d02a31cb70284523cf9833\"",
+      "modified": "Tue, 01 Sep 2026 22:37:37 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2503f-y9WK0N7VvysNFMfMi897r5SUKs0\"",
+      "etag": "W/\"22be9-kwCBFLtLRjluaEjbpSLkhnnQCBE\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 22:30:07 GMT"
+      "modified": "Tue, 01 Sep 2026 22:46:59 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6's Morality Meter Will Reportedly 'Shatter' and Make You Irredeemable If You Cause Too Much Mayhem",
+      "link": "https://www.ign.com/articles/gta-6s-morality-meter-will-reportedly-shatter-and-make-you-irredeemable-if-you-cause-too-much-mayhem",
+      "source_link": null,
+      "date": "2026-09-01T22:21:27+00:00",
+      "source": "IGN",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/08/27/exclusivelookbr-gtfm-1787873244868.png",
+      "description": "Grand Theft Auto 6's morality meter can reportedly \"shatter\" and lead to you becoming essentially irredeemable for an entire playthrough of the game."
+    },
     {
       "title": "Netflix's GTA 6 Extended Look Trailer Got 31 Million Views, Beating YouTube - PCMag",
       "link": "https://www.pcmag.com/news/netflixs-gta-6-extended-look-trailer-got-31-million-views-beating-youtube",
@@ -1593,6 +1606,19 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/S9ZmAQWLf5vKjwSP59uJ5a-1280-80.jpg",
       "description": "\"I think the philosophy might be very similar in many ways\""
+    },
+    {
+      "title": "Une saison entière dédiée à GTA 6 arrive dans NBA 2K27 - gamewave",
+      "link": "https://gamewave.fr/nba-2k27/une-saison-entiere-dediee-a-gta-6-arrive-dans-nba-2k27/",
+      "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQa3BtOE1Ia0tjNEt3d210TW8weWVSY2NjaEdYNm4tSFZ2b0FEMDJPU0luUmRpZi1Xb2ZUdzdfM1BydUZkTllPLUxua2swYWhJOGtwbTFhbFpyX0pxdk5kcFRGMlZWMDI3Z3RWVEU5clRCSnBYZHprNEFiaE1WcWpoS21SeFEyTFpGREtNdg?oc=5",
+      "date": "2026-09-01T16:07:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://gamewave.fr/static/images/news/headers/ae35b-saison3-nba2k27-gta6.jpg",
+      "description": "Une saison entière dédiée à GTA 6 arrive dans NBA 2K27&nbsp;&nbsp;gamewave"
     },
     {
       "title": "GTA 6 Removes Its Most Hated Sprint Mechanic - games.gg",
@@ -3857,6 +3883,19 @@
       "lang": "fr",
       "image": "https://www.cowcotland.com/images/news/2026/08/sony-ps5-pro.jpg",
       "description": "09:15 GTA 6 fait disparaître les PS5 Pro des rayons, les scalpers réclament jusqu'à 1300 dollars&nbsp;&nbsp;Cowcotland.com"
+    },
+    {
+      "title": "GTA 6 repense complètement le système de recherche de la police - Begeek",
+      "link": "https://www.begeek.fr/gta-6-repense-completement-le-systeme-de-recherche-de-la-police-439315",
+      "source_link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNMjhkYTNNN1Q5NUx4N201cDdFS2VFRnVvZWZDYWcwM2dEc3NSZjZSaVB6Y3NmTzFxc3E3SFNKMXJaVURVWU0tTjhHcXJYbzNHaThvdVpCU2ZBU3FUUnRURlZfN0JDQ1RSOFBlYzFjTG52RFJoaW5ZYndkOHdMcDZ2WmZ5NnhFNzd0WTFQdmFwQVV4OUlTNHFn?oc=5",
+      "date": "2026-08-31T06:00:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.begeek.fr/wp-content/uploads/2026/08/gta-6.webp",
+      "description": "GTA 6 repense complètement le système de recherche de la police&nbsp;&nbsp;Begeek"
     },
     {
       "title": "GTA 6 : Rockstar se veut catégorique, « il sortira à temps » - GinjFo",
