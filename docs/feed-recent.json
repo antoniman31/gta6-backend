@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T15:01:52.696940+00:00",
-  "duration_seconds": 53.0,
+  "generated_at": "2026-09-01T15:31:42.080250+00:00",
+  "duration_seconds": 57.4,
   "decode_failures": 0,
-  "total_articles": 1540,
-  "new_this_run": 2,
+  "total_articles": 1545,
+  "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-01T13:34:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -389,20 +389,20 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T14:21:00+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-01T15:24:59+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-01T13:34:11+00:00",
+      "last_article": "2026-09-01T14:41:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 2,
@@ -569,7 +569,7 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T15:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T08:26:02+00:00",
       "days_since_last_article": 0,
@@ -689,8 +689,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T10:42:17+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T15:01:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-27T19:35:04+00:00",
       "days_since_last_article": 4,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 30,
+      "entries_fetched": 29,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,100,100,100,100,100,92,92,92",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,102",
+    "gnews-fr": "100,100,100,100,100,100,100,100,92,92,92,92",
+    "gnews-en": "100,100,100,100,100,100,100,100,100,100,102,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,7,7,7,9,8",
+    "xboxwire": "7,7,7,7,7,7,7,7,7,9,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,82,82,82,82,82,81",
-    "arstechnica": "30,30,30,30,30,30,30,30,30,30,30,30",
+    "engadget": "82,82,82,82,82,82,82,82,82,82,81,81",
+    "arstechnica": "30,30,30,30,30,30,30,30,30,30,30,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,13 +968,13 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"bd49f2d5c1440fa9694a4f02a7cb0eda\"",
-      "modified": "Tue, 01 Sep 2026 14:28:38 GMT"
+      "etag": "W/\"74689141d17168fff44c89a2a11813f9\"",
+      "modified": "Tue, 01 Sep 2026 15:28:11 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5e64de0c7e0fd17442e90c73aa3bd713\"",
-      "modified": "Tue, 01 Sep 2026 14:47:27 GMT"
+      "etag": "W/\"96ebb644041a8e6f002b73c8e6d71b0c\"",
+      "modified": "Tue, 01 Sep 2026 15:25:44 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,17 +1014,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 14:59:15 GMT"
+      "modified": "Tue, 01 Sep 2026 15:27:01 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"f48b75f99dce89ba9c4b54e82cc895b8\"",
-      "modified": "Tue, 01 Sep 2026 14:52:11 GMT"
+      "etag": "\"8c978a76ac3a6eb4e1fa056896dbb0da\"",
+      "modified": "Tue, 01 Sep 2026 15:06:53 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a96e87f-2ee0\"",
-      "modified": "Tue, 01 Sep 2026 15:00:15 GMT"
+      "etag": "W/\"6a96ef88-2ee0\"",
+      "modified": "Tue, 01 Sep 2026 15:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788274851\"",
-      "modified": "Tue, 01 Sep 2026 15:00:51 GMT"
+      "etag": "W/\"1788275762\"",
+      "modified": "Tue, 01 Sep 2026 15:16:02 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1050,6 +1050,45 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "PS5 Pro : GTA 6 provoque une hausse des prix et une pénurie - Overclocking.com",
+      "link": "https://overclocking.com/ps5-pro-tension-gta-6-hausse-prix-penurie/",
+      "source_link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE1DeDcyejZWNUF1R0tKUlpCMXFkd1VMSXpXb2t2eWd6V1J1cnR3cGxFT09qSURqbDVIdUFwN3lzcGdEOW9fOHZsYUxwSnpuY3RnR1Rha0ZMajc5N2o4Q1pKbHlpSWZiWTQycExvZ0pTMkJ2RVJOWHc?oc=5",
+      "date": "2026-09-01T15:24:59+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://overclocking.com/wp-content/medias/2026/08/GTA6-PS5pro-Titel-pcgh_artwork-featured.jpg",
+      "description": "PS5 Pro : GTA 6 provoque une hausse des prix et une pénurie&nbsp;&nbsp;Overclocking.com"
+    },
+    {
+      "title": "« Avancer sans tuer personne » : GTA 6 cache une nouveauté qui va complètement changer votre façon de jouer - 01net.com",
+      "link": "https://www.01net.com/actualites/avancer-sans-tuer-personne-gta-6-cache-nouveaute-completement-changer-votre-facon-jouer.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPZG5WSEc3YzM5WFlIczA2UUV3R3pzcXZoazFEYVBRaUFqMFlMdVYxSjJhcy1KdmZBeG1NeDVBM19PejZqbi1tWkZHSDU4M2pmYWREMTZzQS1kbnc2MWtCODFXVGxnTmc4bUNYYVZPeS13d01WbnV0eEtPU3lDMkUyR3VhUTQySGF6aGl6XzF6TWJ6MXpiTkM2Q0xpTTBfUXowRi1idEJmNGd1UG9ySkFpc3dHOWp5RnVUSm0ySVBtb1JRLVk?oc=5",
+      "date": "2026-09-01T15:21:51+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.01net.com/app/uploads/2025/08/GTA-VI-1600x900.jpg",
+      "description": "« Avancer sans tuer personne » : GTA 6 cache une nouveauté qui va complètement changer votre façon de jouer&nbsp;&nbsp;01net.com"
+    },
+    {
+      "title": "GTA 6 Fans Spot Hidden Clair Obscur Easter Egg",
+      "link": "https://gamerant.com/gta-6-clair-obscur-expedition-33-easter-egg/",
+      "source_link": null,
+      "date": "2026-09-01T15:01:46+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-clair-obscur-expedition-33-easter-egg.jpg?w=1600&h=900&fit=crop",
+      "description": "Eagle-eyed GTA 6 fans spot a Clair Obscur: Expedition 33 Easter egg in the latest gameplay footage."
+    },
+    {
       "title": "GTA 6 isn't flashy for the sake of it – I'm impressed at how additive every new detail feels to gameplay",
       "link": "https://www.gamesradar.com/games/grand-theft-auto/gta-6-isnt-flashy-for-the-sake-of-it-im-impressed-at-how-additive-every-new-detail-feels-to-gameplay/",
       "source_link": null,
@@ -1061,6 +1100,19 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/3N4MyTKS7pQQDuVc3tDDoh-1280-80.jpg",
       "description": "Rockstar Games evolve familiar mechanics with GTA 6 to reimagine the series' foundations while keeping them recognizable"
+    },
+    {
+      "title": "Rockstar explains how GTA 6 character switching will work between Jason and Lucia - TweakTown",
+      "link": "https://www.tweaktown.com/news/113383/rockstar-explains-how-gta-6-character-switching-will-work-between-jason-and-lucia/index.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOaG1OdVd1bGZpNU5ZOGFGUlE0QzdHcmlxU09uSEV1QkZfMklJRkJBTmtwaHFFSmhuV2pGR1VYakZEdDRkaWQ2YnEtaEEyb0dVWlNHbzFNZFFoa0Z3R3RmWlRqSzhnd1F5bGZJcnEzTHlTMGw2X2RPUTg1Z3VMdXpvTHVjcG1oVGxQcE85R2hwaHFwSGJnLXB4NXB3OEJPTEJrWXZoN0gydUp3amxUV3UzZV9XOV8ydWRNUDBVVmVEZjBTNWZJcFNMT0FR?oc=5",
+      "date": "2026-09-01T14:41:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static.tweaktown.com/news/1/1/113383_2_rockstar-has-explained-gta-6-character-switching-will-work-between-jason-and-lucia_full.png",
+      "description": "Rockstar explains how GTA 6 character switching will work between Jason and Lucia&nbsp;&nbsp;TweakTown"
     },
     {
       "title": "Un YouTubeur invité par Rockstar affirme que GTA 6 change complètement les commandes de la manette pour courir - Numerama",
@@ -1165,6 +1217,19 @@
       "lang": "fr",
       "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/apercu-etendu-gta-6-pannes.jpg?resize=1600,900&key=e5de9de8",
       "description": "GTA 6, le casse du siècle... pour les escrocs : des centaines de faux sites en sommeil attendent le lancement pour frapper&nbsp;&nbsp;Frandroid"
+    },
+    {
+      "title": "No GTA 6 cameo confirmed as GTA 5 Michael actor defends Rockstar’s graphics - Notebookcheck",
+      "link": "https://www.notebookcheck.net/No-GTA-6-cameo-confirmed-as-GTA-5-Michael-actor-defends-Rockstar-s-graphics.1385006.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNNmFRX25GTVFWZW1iRlRSNGRtVng1aURKNElBVHIzX3dSbmFjd0RRUE5HNzFMMEZDT0NhTXVsaFhFektCSWQxcllXTUVhMllidzk4My1JQ2NDMGVWU0cyNG1IbFZvc2Rsb2Q2UFpYaXpkS2pQa1cxdmVZd01oZzBFWDZfbmlIclJqYlNQSVJWMVRfMXJOVzVBMjhQZ0hvZHVheXg2bW9aMHEwLWtEN09neERieTNTWlgwMWMzTw?oc=5",
+      "date": "2026-09-01T13:21:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA-V-Michael-De-Santa-Actor-Ned-Luke-Reacting-to-GTA-VI-Extended-Look-Image-Source-Party-Chat-YouTube.jpg.jpeg",
+      "description": "No GTA 6 cameo confirmed as GTA 5 Michael actor defends Rockstar’s graphics&nbsp;&nbsp;Notebookcheck"
     },
     {
       "title": "The PS5 Pro is selling out everywhere following GTA 6: An Extended Look - The Independent",
@@ -4969,77 +5034,6 @@
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/08/27/gta6-8-blogroll-1787855254976.jpg?width=1280&format=jpg&auto=webp&quality=80",
       "description": "This week's trailer bounty included the extended look at Grand Theft Auto 6, tons of footage from gamescom, a first look at the new Pokémon stop-motion series coming to Disney+, a new Ali G movie, and lots more."
-    },
-    {
-      "title": "Kingdom Come Creator Criticizes GTA 6 Protagonists as Uninteresting Sociopaths",
-      "link": "https://vgtimes.com/gaming-news/165777-kingdom-come-deliverance-director-calls-gta-6-tech-amazing-but-its-heroes-uninteresting.html",
-      "source_link": null,
-      "date": "2026-08-28T19:06:23+00:00",
-      "source": "VGTimes",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://files.vgtimes.com/posts/2026-08/kingdom-come-deliverance-director-calls-gta-6-tech-amazing-but-its-heroes-uninteresting-165777.webp",
-      "description": "Kingdom Come: Deliverance creator and Warhorse Studios chief Daniel Vávra shared his thoughts following the extended look at Grand Theft Auto 6. While he called the game technically impressive, he expressed doubt that Jason and Lucia would manage to captivate him as characters"
-    },
-    {
-      "title": "Save 40% Off the PS Portal, the Only Way You'll Be Able to Play Grand Theft Auto 6 on a Handheld For a While",
-      "link": "https://www.ign.com/articles/ps-portal-deal-august-2026",
-      "source_link": null,
-      "date": "2026-08-28T19:05:00+00:00",
-      "source": "IGN",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://assets-prd.ignimgs.com/2026/08/28/psportalgta6-1787942588804.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "Forget the price hike.GTA 6 will only be available on PlayStation 5 and Xbox, to start out."
-    },
-    {
-      "title": "You Can Pet The Dog In GTA 6 And Also Throw Its Poop At NPCs - Kotaku",
-      "link": "https://kotaku.com/pet-dog-gta-6-throw-poop-2000729352",
-      "source_link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBRYXRWajlXRUpxQXRIUDA5TjBweF8yb29FTWVnaUlGdjhKTW1jVV9CSGFyWTFISjduT2VLaGF6RWdKT1p2bVZqRDU0UXdILVdJTUN6ZEh0UUlHOWdudXRZSVdUWjc?oc=5",
-      "date": "2026-08-28T19:03:13+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://kotaku.com/app/uploads/2026/08/gta-6-beach-1200x675.jpg",
-      "description": "You Can Pet The Dog In GTA 6 And Also Throw Its Poop At NPCs&nbsp;&nbsp;Kotaku"
-    },
-    {
-      "title": "Fable Dev Happy About Delay To 2027 To Avoid \"Chaotic Window,\" And We All Know That Means GTA 6",
-      "link": "https://www.gamespot.com/articles/fable-dev-happy-about-delay-to-2027-to-avoid-chaotic-window-and-we-all-know-that-means-gta-6/",
-      "source_link": null,
-      "date": "2026-08-28T19:01:23+00:00",
-      "source": "GameSpot",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.gamespot.com/wp-content/uploads/2026/08/Screenshot-2026-08-28-at-2.45.42-PM.png",
-      "description": "The reason for the delay is \"pretty apparent to everybody.\""
-    },
-    {
-      "title": "Netflix's New 26-Minute GTA 6 Release Is Already the No. 1 Movie on Streaming",
-      "link": "https://www.polygon.com/gta-6-netflix-charts/",
-      "source_link": null,
-      "date": "2026-08-28T19:00:16+00:00",
-      "source": "Polygon",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/08/gta-6-netflix-success.jpg?w=1600&h=900&fit=crop",
-      "description": "Rockstar knocked actual movies off the Netflix charts with its GTA special",
-      "extraSources": [
-        {
-          "source": "GTA 6 x Netflix",
-          "link": "https://www.imdb.com/news/ni65995866/?ref_=nmnw_art_perm"
-        }
-      ]
     }
   ],
   "partial": true,
