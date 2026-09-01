@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T05:04:03.985615+00:00",
-  "duration_seconds": 89.6,
+  "generated_at": "2026-09-01T05:49:03.086712+00:00",
+  "duration_seconds": 88.8,
   "decode_failures": 0,
-  "total_articles": 1497,
-  "new_this_run": 2,
+  "total_articles": 1502,
+  "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T19:40:09+00:00",
+      "new_this_run": 3,
+      "last_article": "2026-09-01T05:23:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T01:18:35+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T04:28:14+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -461,7 +461,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T05:01:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T18:33:06+00:00",
       "days_since_last_article": 0,
@@ -617,7 +617,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T04:39:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -637,13 +637,13 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T08:26:11+00:00",
-      "days_since_last_article": 2,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-01T05:39:04+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -715,7 +715,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-30T05:37:38+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -929,9 +929,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,104,100,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,104,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -951,7 +951,7 @@
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
-    "ginjfo": "50,50,50,50,50,50,50,50,50",
+    "ginjfo": "50,50,50,50,50,50,50,50,50,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -969,9 +969,9 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,100,73,100",
+    "theverge": "100,100,100,100,100,100,100,100,100,73,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "29,29,29,29,29,29,29,29,29,29,28,29",
+    "arstechnica": "29,29,29,29,29,29,29,29,29,28,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -979,8 +979,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -990,7 +990,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 20:25:25 GMT"
+      "modified": "Tue, 01 Sep 2026 05:09:32 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1025,22 +1025,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 05:02:18 GMT"
+      "modified": "Tue, 01 Sep 2026 05:47:31 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"fdf1130847deeba583a176cccaf1b7d0\"",
-      "modified": "Mon, 31 Aug 2026 15:18:28 GMT"
+      "etag": "\"e0441a938eeb5a67e623cc3b8c0c8cbd\"",
+      "modified": "Tue, 01 Sep 2026 05:39:04 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a965be0-2fe1\"",
-      "modified": "Tue, 01 Sep 2026 05:00:16 GMT"
+      "etag": "W/\"6a9662e8-3017\"",
+      "modified": "Tue, 01 Sep 2026 05:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"5880e78b75cdddf31c52d9b04b64665c\"",
-      "modified": "Tue, 01 Sep 2026 05:00:56 GMT"
+      "etag": "W/\"eafb51809223b49647b38fae5770abb8\"",
+      "modified": "Tue, 01 Sep 2026 05:30:18 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1060,6 +1060,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : Take-Two resserre l’étau autour de Cyberleek",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-take-two-resserre-letau-autour-de-cyberleek-20260901",
+      "source_link": null,
+      "date": "2026-09-01T05:39:04+00:00",
+      "source": "GinjFo",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2023/12/GTA6.jpg",
+      "description": "La traque des responsables des fuites de GTA 6 progresse. Take-Two demande une nouvelle assignation contre Discord\nCet article GTA 6 : Take-Two resserre l’étau autour de Cyberleek a été publié en premier par GinjFo."
+    },
+    {
+      "title": "« Improbable sur consoles, très difficile sur PC », GTA 6 est monstrueux et le paie déjà, c'est la douche froide - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-60-fps-ps5-721941",
+      "source_link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9xS2JaM3N0TXhzcXBiRlk2anlzblZGVnEwb3ZrLWZtaU9Mb1VGVlNLQ1JpNjZRaW54b0ktVUFxYkhTMXNxanJQNk9jN3gzSldXMkpKdXViUXo5aTI5ejl4MXZSQl9YcFpxaFN3TXhkcnBWOXc?oc=5",
+      "date": "2026-09-01T05:23:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img/news/720531_6a747c878ace8.jpg",
+      "description": "« Improbable sur consoles, très difficile sur PC », GTA 6 est monstrueux et le paie déjà, c'est la douche froide&nbsp;&nbsp;Gameblog"
+    },
+    {
+      "title": "GTA 6 : la mécanique qui permet d’échapper à la police sans tirer pour tuer - MCE TV",
+      "link": "https://mcetv.ouest-france.fr/2026/gta-6-mecanique-police-sans-tuer/",
+      "source_link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE14OHNxNVpURzNLZ1AycGhJTTZDc1dsVVhzdkYzY1RaUzFDTndwcXRSb18yZ1lNcWJMcDk1TEtEcE92MVBoS3Q5NE5yRy1wNmlqaXN0QUx6ZjVvUndUS05oR0RoUkxkT0pSb1JxZUtKSExXUWhvTzBJ?oc=5",
+      "date": "2026-09-01T05:04:33+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://media-mcetv.ouest-france.fr/wp-content/uploads/2026/07/generique-jeux-video.jpg",
+      "description": "GTA 6 : la mécanique qui permet d’échapper à la police sans tirer pour tuer&nbsp;&nbsp;MCE TV"
+    },
     {
       "title": "Agenda - Wolverine, Silent Hill, Onimusha, Control... les sorties JV de septembre 2026",
       "link": "https://www.gamekult.com/actualite/wolverine-silent-hill-onimusha-control-les-sorties-jv-de-septembre-2026-3050871834.html",
@@ -1085,6 +1124,32 @@
       "lang": null,
       "image": "https://media.gtaboom.com/variants/1920/media/images/5b/5e/helldivers-2-updates-are-skipping-november-and-fans-think-its-because-of-gta-6.jpg",
       "description": "Arrowhead has not confirmed skipping November for GTA 6. Its Helldivers 2 roadmap simply has no content planned that month, fueling fan speculation."
+    },
+    {
+      "title": "GTA 6's 250GB Storage Demand Worries Gamers - 조선일보",
+      "link": "https://www.chosun.com/english/industry-en/2026/09/01/CLX7U2FIEVE4DMSPDJAWSAC5UM/",
+      "source_link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNWHNUTTE3c2dmRGp5aEpGeVFhLXNUdzhBWjQ5ekZ6clpnWGZqcThhM09XcDNYVGZTRXUzYTZlY0pXZnlqY0lGZ2N2MzBoaXVVVzkyWHg4T1pmaVVobW5yQ3JoNTJDX1pCUzRIQUxXRUV0cjA3bWNWNm4wNjZVWjJzN1BTakcyWmR3?oc=5",
+      "date": "2026-09-01T04:28:14+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.chosun.com/resizer/v2/G4YDSMRVMFRTAZJTGEYTANLGG4.jpg?auth=3f2df0e8b6f98294c1a672bc3b81869fa88e9c3852ae9420e9933f060ba646ad&width=1200&height=630&smart=true",
+      "description": "GTA 6's 250GB Storage Demand Worries Gamers&nbsp;&nbsp;조선일보"
+    },
+    {
+      "title": "GTA 6 : comment les éditeurs s'arrachent les droits des musiques du jeu du siècle - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2101009/gta-6-comment-les-editeurs-s-arrachent-les-droits-des-musiques-du-jeu-du-siecle.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQb3Zhb3pOenFCMGtzZW1IR3VrYnROWlNTTnN2b01vTEthb2FLQW5nY2U4WFBHTWxkRmhGbWtuTTNDdWYtaWFOcUxjNk1YdUtTdWkwN3lBbDFRRHdtc2ZwNzZ6ZHZKVnlTNzRDelIzano5R0M3eXdyTlRTMklfZUt6Nm9HY1N2X2ZqNEdHMmRKTnpMcDQteF9oUmdOV0F0Q2paQ0N6VjhYMGV0bUZ4NGFFem9wZTNnQ2R3ajZtTHFGNA?oc=5",
+      "date": "2026-09-01T04:05:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178819/1788186665-9458-card.jpg",
+      "description": "GTA 6 : comment les éditeurs s'arrachent les droits des musiques du jeu du siècle&nbsp;&nbsp;JeuxVideo.com"
     },
     {
       "title": "Take-Two Is Closing In on the GTA 6 Leaker, but It May Not Matter Anymore",
@@ -4974,71 +5039,6 @@
       "lang": null,
       "image": "https://www.gamespot.com/wp-content/uploads/2026/08/Screenshot-2026-08-28-at-12.03.38-PM.png",
       "description": "Poop is a weapon in GTA 6."
-    },
-    {
-      "title": "Wow: GTA 6's first gameplay has redefined what videogames are capable of - Top Gear",
-      "link": "https://www.topgear.com/car-news/gaming/wow-gta-6s-first-gameplay-has-redefined-what-videogames-are-capable",
-      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQcVI0b0dEN0t3Y2M5Vjc3S2g3bkFlRlAzVTVXU2ZOazFCdDdBUXczbDJXUzlMLXFmcGhUbmlXd2hmT0RSb2wteGl6b3hZZUxQLWFPSmw3NTFFckV2Vm43LU5IcEN2WU9TY2V0dmI2YlEzRUxmWWxaZWx5MUVwZmZ5WGtSZ2x0YWM4NVdHUVYzQVU3bWJIUEF6REtGbDAzLWNaTjcwMWR1cHRjMnM?oc=5",
-      "date": "2026-08-28T16:15:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.topgear.com/sites/default/files/images/news-article/2026/08/06b64e8238bcc12aa51b992af587abce/gta6.jpg?w=1280&h=720",
-      "description": "Wow: GTA 6's first gameplay has redefined what videogames are capable of&nbsp;&nbsp;Top Gear"
-    },
-    {
-      "title": "GTA 6 tourne actuellement à 30 FPS sur consoles",
-      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-tourne-actuellement-a-30-fps-sur-consoles-20260828",
-      "source_link": null,
-      "date": "2026-08-28T16:11:34+00:00",
-      "source": "GinjFo",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.ginjfo.com/wp-content/uploads/2026/06/Official_Cover_Art_GTA6-scaled.jpg",
-      "description": "GTA 6 fonctionne actuellement à 30 images par seconde sur consoles. L’existence d’un mode Performance à 60 FPS n'est pas confirmé. \nCet article GTA 6 tourne actuellement à 30 FPS sur consoles a été publié en premier par GinjFo."
-    },
-    {
-      "title": "GTA 6 sur PlayStation 5 : ce que révèle notre analyse technique du gameplay (vidéo) - Frandroid",
-      "link": "https://www.frandroid.com/video/3225697_gta-6-sur-playstation-5-ce-que-revele-notre-analyse-technique-du-gameplay-video",
-      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNTnBqWDRid3JPdzFCMHl2YnJjRFRUcm5pWVp1Ql9KalYtQUNMQzlsSVNlMzNWQUg5UnRrOGZIR1VYT09Db0ZWbmZrRmlIcE01Y3ktSmk5c2p4aHhORzhBNTUwREZVdFpiNjBYU2VfZHdYREx4VzJCQnVCU1V0SGwwdHI3dXd5Z1NtTEtiWlh1QjdHS1NUZWMtd0tvNkRFUHZkVkZBRFFTakk0UndGTEtMZU54Y1ZsSTgycjFz?oc=5",
-      "date": "2026-08-28T16:08:34+00:00",
-      "source": "Frandroid",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/youtube-cover-j8ggbjvoeh4.jpg?resize=1600,900&key=9d2b1204",
-      "description": "GTA 6 sur PlayStation 5 : ce que révèle notre analyse technique du gameplay (vidéo)&nbsp;&nbsp;Frandroid"
-    },
-    {
-      "title": "If You Are Already Planning To Spend $100 on the GTA 6 Ultimate Edition, Amazon Has an Easy Trick To Knock $5 Off Your Preorder Right Now",
-      "link": "https://www.ign.com/articles/gta-6-preorder-how-to-save",
-      "source_link": null,
-      "date": "2026-08-28T16:00:00+00:00",
-      "source": "IGN",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://assets-prd.ignimgs.com/2026/08/28/gta-ps5-save-5-on-ultimate-edition-1787929501697.png?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "If you are already planning to spend $100 on the GTA 6 Ultimate Edition, Amazon has a tidy trick to knock $5 off your preorder right now."
-    },
-    {
-      "title": "GTA 6's stunning 'Extended Look' was captured entirely on the base PS5, not the PS5 Pro - GAMINGbible",
-      "link": "https://www.gamingbible.com/news/platform/playstation/gta-6-ps5-pro-netflix-extended-look-162630-20260828",
-      "source_link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNVUd5M1V0bkU4bHFGa2hqUWV5STNyMG1NdmdzUkc1WEx4clc4dEpQNFhPRVRYWjA5dEV5a0F1T1dtc3ZyYUt1Q1hZd1o4b1JPSWlQcUVXeXQ1TF9MQWNpX2tsZ3ZRNzhBR3NFbTBBNHJLZFdSODVHaTZNS0xOMWt5S21ldlk3SXVXUkc3S3JFTk9rcXBESl81c01BQ2hwUV9wbGh1cGQzN3o?oc=5",
-      "date": "2026-08-28T16:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blt3d60c99a53cfe676/6a917cc887d26e3b85a6b410/gta-6-playstation-5-ps5-pro.jpg",
-      "description": "GTA 6's stunning 'Extended Look' was captured entirely on the base PS5, not the PS5 Pro&nbsp;&nbsp;GAMINGbible"
     }
   ],
   "partial": true,
