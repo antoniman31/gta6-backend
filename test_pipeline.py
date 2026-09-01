@@ -2722,6 +2722,67 @@ def test_ligne_etat_sans_double_compte():
           "la ligne d'état est placée après le bloc des boutons")
 
 
+def test_confirmation_des_actions_sans_retour():
+    print("\n[app] les actions sans retour demandent confirmation")
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # Aucune de ces actions n'avait de garde-fou, et « Oublier ce token »
+    # est collé à « Enregistrer » et « Tester ».
+    check('id="confirmOverlay"' in html, "le panneau de confirmation existe")
+    check('role="alertdialog"' in html and 'aria-modal="true"' in html,
+          "il s'annonce comme une alerte modale")
+
+    # Au-dessus du panneau Paramètres (z-index 100), sinon la confirmation
+    # se cacherait derrière son propre déclencheur.
+    bloc = html[html.index(".overlay.confirm-overlay"):]
+    bloc = bloc[:bloc.index("}")]
+    check("z-index:200" in bloc,
+          "il passe au-dessus du panneau Paramètres, d'où partent ces actions")
+
+    # Chaque action irréversible passe par la confirmation, et AUCUNE ne
+    # s'exécute avant la réponse.
+    for nom in ("markAllRead", "forgetGithubToken", "resetSettings",
+                "generateVapidKeys", "disablePush"):
+        debut = html.index(f"function {nom}(")
+        corps = html[debut:html.index("\n}", debut)]
+        check("demandeConfirmation(" in corps,
+              f"{nom} demande confirmation")
+        check("if(!ok) return;" in corps,
+              f"{nom} ne fait rien tant que ce n'est pas validé")
+        check(corps.index("demandeConfirmation(") < corps.index("if(!ok) return;"),
+              f"{nom} demande AVANT d'agir")
+
+    # Le bouton ✓ des cartes en est volontairement exempté : on le clique des
+    # dizaines de fois par jour, et un second clic l'annule déjà. Verrouillé
+    # ici pour que personne ne l'y ajoute « par cohérence ».
+    debut = html.index("function toggleRead(")
+    check("demandeConfirmation" not in html[debut:html.index("\n}", debut)],
+          "le ✓ d'une carte reste sans confirmation, c'est délibéré")
+
+    # Les deux issues sûres : le focus part sur Annuler, Échap et le clic
+    # à côté refusent. Une validation par mégarde doit être inoffensive.
+    bloc = html[html.index("function demandeConfirmation("):
+                html.index("function repondConfirmation(")]
+    check('getElementById("confirmAnnuler")' in bloc and ".focus()" in bloc,
+          "le focus arrive sur Annuler, pas sur l'action destructive")
+    bloc = html[html.index("function _toucheConfirmation("):
+                html.index("// Un clic à côté ferme")]
+    check("repondConfirmation(false)" in bloc, "Échap refuse")
+    bloc = html[html.index("function confirmationSurFond("):]
+    bloc = bloc[:bloc.index("\n}")]
+    check("repondConfirmation(false)" in bloc and "true" not in bloc,
+          "un clic à côté refuse, jamais ne valide")
+
+    # Le nombre réel dans la question : c'est lui qui fait voir qu'on est
+    # sur le mauvais onglet avant de valider.
+    debut = html.index("async function markAllRead(")
+    corps = html[debut:html.index("\n}", debut)]
+    check("items.length" in corps.split("demandeConfirmation(")[1][:200],
+          "le marquage en masse annonce COMBIEN d'articles il touche")
+    check(corps.index("items.length === 0") < corps.index("demandeConfirmation("),
+          "et ne demande rien quand il n'y a rien à marquer")
+
+
 def test_haut_de_page_une_seule_carte():
     print("\n[app] une seule carte en haut, et le compteur sous les onglets")
     html = open("docs/index.html", encoding="utf-8").read()
@@ -2881,6 +2942,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
+           test_confirmation_des_actions_sans_retour,
            test_haut_de_page_une_seule_carte,
            test_validation_avant_ecriture):
     fn()
