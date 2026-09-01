@@ -1413,80 +1413,28 @@ def test_description_video_youtube():
         fetch_feeds.requests.get = vrai
 
 
-def test_miniature_absente_nest_plus_redemandee():
-    print("\n[miniatures] une page sans og:image n'est plus redemandée sans fin")
-    import fetch_feeds
-    from datetime import datetime, timedelta, timezone
+def test_miniatures_seulement_sur_les_nouveaux():
+    print("\n[miniatures] la recherche ne porte que sur les articles du passage")
+    html = open("fetch_feeds.py", encoding="utf-8").read()
 
-    maintenant = datetime(2026, 9, 1, 12, 0, tzinfo=timezone.utc)
+    # LE fait que j'avais supposé au lieu de le lire. Voyant 76 articles sans
+    # miniature dans le fil, j'ai déduit qu'ils étaient redemandés à chaque
+    # passage — 3 648 requêtes par jour — et livré un garde-fou contre une
+    # répétition qui n'existait pas. Le journal disait « 1 article(s) ».
+    #
+    # La fonction ne reçoit que newly_added : un article n'y passe qu'une
+    # fois dans sa vie. Verrouillé ici pour que la même erreur ne se refasse
+    # pas, dans un sens ou dans l'autre.
+    check("fetch_missing_images(newly_added)" in html,
+          "la recherche de miniatures ne porte que sur les nouveaux articles")
+    check(html.count("fetch_missing_images(") == 2,
+          "et elle n'est appelée qu'à cet endroit — définition comprise")
 
-    def art(**kw):
-        base = {"title": "T", "link": "https://ex.tld/a",
-                "date": maintenant.isoformat(), "image": None}
-        base.update(kw)
-        return base
-
-    merite = fetch_feeds.merite_une_miniature
-
-    # L'échec écrivait `image = None`, soit exactement l'état de départ :
-    # rien ne distinguait « jamais essayé » de « essayé mille fois ». Mesuré
-    # le 01/09/2026, 76 articles concernés = 3 648 requêtes par jour.
-    check(merite(art(), maintenant), "un article jamais essayé est demandé")
-    check(not merite(art(image="https://x.tld/i.jpg"), maintenant),
-          "un article qui a déjà sa miniature n'est pas redemandé")
-    check(not merite(art(link=None), maintenant), "sans lien, rien à demander")
-
-    # Un échec ponctuel — timeout, 503 — mérite une seconde chance. Pas
-    # quarante-huit par jour.
-    recent = (maintenant - timedelta(hours=2)).isoformat()
-    check(not merite(art(og_absente=recent), maintenant),
-          "un échec d'il y a 2 h n'est pas retenté")
-    vieux = (maintenant - timedelta(hours=30)).isoformat()
-    check(merite(art(og_absente=vieux), maintenant),
-          "un échec d'il y a 30 h donne droit à un nouvel essai")
-
-    # Au-delà de 7 jours, une page sans image d'aperçu n'en aura pas.
-    ancien = art(date=(maintenant - timedelta(days=10)).isoformat(),
-                 og_absente=vieux)
-    check(not merite(ancien, maintenant),
-          "un article de 10 jours est définitivement abandonné")
-
-    # Une date illisible ne doit pas faire abandonner un article : DATE_FLOOR
-    # le ferait passer pour vieux de sept cent mille jours.
-    check(merite(art(date="pas une date"), maintenant),
-          "une date illisible n'abandonne pas l'article")
-    check(merite(art(og_absente="pas une date"), maintenant),
-          "une trace d'échec illisible n'empêche pas de réessayer")
-
-    # Et le champ doit vivre : posé à l'échec, retiré au succès.
-    vrai = fetch_feeds.fetch_og_image
-    try:
-        fetch_feeds.fetch_og_image = lambda url, timeout=8: None
-        items = [art()]
-        fetch_feeds.fetch_missing_images(items)
-        check(items[0].get("og_absente"), "l'échec laisse une trace datée")
-        # Deuxième passage immédiat : plus aucune requête.
-        appels = []
-        fetch_feeds.fetch_og_image = lambda url, timeout=8: appels.append(url)
-        fetch_feeds.fetch_missing_images(items)
-        check(appels == [], "le passage suivant ne redemande rien")
-
-        fetch_feeds.fetch_og_image = lambda url, timeout=8: "https://x.tld/i.jpg"
-        items = [art(og_absente=vieux)]
-        fetch_feeds.fetch_missing_images(items)
-        check(items[0]["image"] == "https://x.tld/i.jpg", "le succès pose l'image")
-        check("og_absente" not in items[0],
-              "et retire la trace : elle n'a plus à traîner dans le fichier publié")
-    finally:
-        fetch_feeds.fetch_og_image = vrai
-
-    # Le champ doit survivre à une fusion après conflit de push, sinon la
-    # trace se perdrait à chaque collision et la boucle reprendrait.
-    import merge_feed
-    marque = art(og_absente=vieux)
-    fusion, _, _ = merge_feed.merge_feeds({"items": [marque]}, {"items": []})
-    check(fusion["items"][0].get("og_absente") == vieux,
-          "la trace survit à une fusion après conflit de push")
+    # Le garde-fou retiré ne doit pas revenir sans preuve : son abandon après
+    # 7 jours privait de miniature les archives, qui arrivent justement avec
+    # une date ancienne.
+    for mort in ("og_absente", "OG_ABANDON_JOURS", "merite_une_miniature"):
+        check(mort not in html, f"le garde-fou inutile n'est pas revenu ({mort})")
 
 
 def test_recuperation_des_miniatures():
@@ -3026,7 +2974,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_titres_numerotes_pas_fusionnes, test_similarite_ignore_le_nom_du_jeu,
            test_suffixe_du_media_appris, test_fusion_retroactive_des_ressemblances,
            test_index_compte_les_sources_supplementaires,
-           test_miniature_absente_nest_plus_redemandee,
+           test_miniatures_seulement_sur_les_nouveaux,
            test_recuperation_des_miniatures, test_description_video_youtube,
            test_fenetre_en_heures, test_source_renommee,
            test_titre_trop_court_n_attire_personne,

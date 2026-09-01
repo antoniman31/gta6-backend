@@ -1543,51 +1543,25 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
     return feed_infos, new_counts, inchanges
 
 
-# Une page sans og:image était redemandée à chaque passage, indéfiniment :
-# l'échec écrivait `image = None`, c'est-à-dire exactement l'état de départ.
-# Rien ne distinguait « jamais essayé » de « essayé mille fois ». Mesuré le
-# 01/09/2026 : 76 articles concernés, soit 3 648 requêtes par jour vers des
-# pages qui n'en auront jamais.
-OG_NOUVEL_ESSAI_HEURES = 24   # un échec ponctuel (timeout, 503) mérite une
-                              # seconde chance, pas quarante-huit par jour
-OG_ABANDON_JOURS = 7          # au-delà, une page sans image d'aperçu n'en
-                              # aura pas : sur les données, un seul article
-                              # de plus de 30 jours était encore interrogé
-
-
-def merite_une_miniature(item, maintenant=None):
-    """Faut-il (re)demander l'og:image de cet article ?"""
-    if item.get("image") or not item.get("link"):
-        return False
-    maintenant = maintenant or datetime.now(timezone.utc)
-
-    derniere = item.get("og_absente")
-    if derniere:
-        quand = feed_store.parse_date_key(derniere)
-        if quand != feed_store.DATE_FLOOR:
-            if (maintenant - quand) < timedelta(hours=OG_NOUVEL_ESSAI_HEURES):
-                return False
-
-    age = feed_store.parse_date_key(item.get("date"))
-    if age != feed_store.DATE_FLOOR:
-        if (maintenant - age) > timedelta(days=OG_ABANDON_JOURS):
-            return False
-    return True
-
-
 def fetch_missing_images(items):
     """Récupère en parallèle (jusqu'à IMAGE_WORKERS à la fois) les miniatures manquantes.
 
-    Appelée une seule fois par exécution, sur les seuls articles retenus
-    après déduplication. En série avec un timeout de 8 s chacun, quelques
-    sites lents suffisaient à ajouter plusieurs minutes au temps total.
+    Appelée une seule fois par exécution, sur les seuls articles NOUVEAUX de
+    ce passage — jamais sur l'historique. Un article n'y passe donc qu'une
+    fois dans sa vie : les articles du fil restés sans miniature ne sont pas
+    redemandés, contrairement à ce que laisse croire leur nombre.
 
-    Un échec laisse une trace datée (`og_absente`) : voir
-    merite_une_miniature, c'est elle qui empêche de repartir en boucle sur
-    les mêmes pages sans image.
+    C'est ce que dit la ligne d'appel, et c'est ce que confirme le journal :
+    « Miniatures manquantes à récupérer : 1 article(s) » sur un fil qui en
+    comptait 76 sans image. Un garde-fou anti-répétition a été ajouté puis
+    retiré le 01/09/2026 pour cette raison — il ne pouvait rien économiser,
+    et son abandon après 7 jours privait de miniature les archives, qui
+    arrivent justement avec une date ancienne.
+
+    En série avec un timeout de 8 s chacun, quelques sites lents suffisaient
+    à ajouter plusieurs minutes au temps total, d'où le parallélisme.
     """
-    maintenant = datetime.now(timezone.utc)
-    needing = [item for item in items if merite_une_miniature(item, maintenant)]
+    needing = [item for item in items if not item.get("image") and item.get("link")]
     if not needing:
         return 0
 
@@ -1599,16 +1573,10 @@ def fetch_missing_images(items):
             item = future_to_item[future]
             try:
                 item["image"] = future.result()
+                if item["image"]:
+                    found += 1
             except Exception as e:
-                item["image"] = None
                 print(f"  [og:image] erreur inattendue pour {item['link'][:60]}... : {e}")
-            if item["image"]:
-                found += 1
-                # Le champ ne sert plus à rien et n'a pas à traîner dans le
-                # fichier publié.
-                item.pop("og_absente", None)
-            else:
-                item["og_absente"] = maintenant.isoformat()
     print(f"  {found}/{len(needing)} miniature(s) trouvée(s)")
     return found
 
