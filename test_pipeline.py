@@ -2792,10 +2792,19 @@ def test_ligne_etat_sans_double_compte():
     check("data.sources_silence" not in fn,
           "la ligne d'état ne lit plus sources_silence, qui a changé de sens")
 
-    # Le message « tout va bien » ne doit sortir que si les DEUX comptes sont
-    # nuls, sinon il cohabiterait avec une alerte.
-    check("if(!muettes && !cassees.length)" in fn,
-          "« toutes les sources répondent » exige zéro muette ET zéro cassée")
+    # Le bilan des sources tient maintenant dans un compteur « 46/50 », et il
+    # se calcule par SOUSTRACTION des deux mêmes ensembles disjoints. Une
+    # source ne peut donc être comptée en échec qu'une fois, quel que soit
+    # son statut.
+    check("sante.length - muettes - cassees.length" in fn,
+          "le compteur retire muettes et cassées, une source ne compte qu'une fois")
+
+    # Et une source « tarie » n'est pas un échec : elle répond parfaitement,
+    # elle n'a simplement rien publié depuis longtemps. Rockstar publie par
+    # à-coups ; la compter en panne afficherait « 46/50 » en permanence pour
+    # un état parfaitement sain. Le compteur ne doit donc jamais la voir.
+    check('"tarie"' not in fn,
+          "les sources taries ne sont pas comptées en échec")
 
     # La ligne se place sous les deux boutons : au-dessus, elle séparait le
     # nombre d'articles des actions qui le modifient.
@@ -2803,6 +2812,74 @@ def test_ligne_etat_sans_double_compte():
     carte = carte[:carte.index("</header>")]
     check(carte.index('id="runLine"') > carte.index('class="controls"'),
           "la ligne d'état est placée après le bloc des boutons")
+
+
+def test_ligne_run_tient_sur_une_ligne():
+    print("\n[app] le bilan du robot tient sur une ligne, sauf s'il y a des soucis")
+    html = open("docs/index.html", encoding="utf-8").read()
+    fn = html[html.index("function majLigneRun("):]
+    fn = fn[:fn.index("\n}")]
+
+    # Le partage est le cœur du changement : la ligne du haut a une forme
+    # FIXE (durée · nouveaux · compteur), la ligne du bas une forme variable.
+    # Tout ce qui peut s'allonger sans limite — le nom d'une source cassée
+    # fait trente caractères — doit atterrir en bas, sinon la ligne du haut
+    # repasse sur deux lignes et on revient au point de départ.
+    # On lit les arguments réellement passés à chaque push, pas le texte du
+    # fichier : « muette » apparaît aussi dans les commentaires qui expliquent
+    # justement pourquoi le compte est disjoint, et chercher le mot ferait
+    # passer le test sur sa propre documentation.
+    def arguments_de(appel):
+        rendus, depart = [], 0
+        while True:
+            i = fn.find(appel, depart)
+            if i < 0:
+                return rendus
+            j, profondeur = i + len(appel), 1
+            while profondeur:
+                profondeur += {"(": 1, ")": -1}.get(fn[j], 0)
+                j += 1
+            rendus.append(fn[i + len(appel):j - 1])
+            depart = j
+
+    haut = arguments_de("etat.push(")
+    bas = arguments_de("soucis.push(")
+    check(haut, "la ligne du haut se construit dans son propre groupe")
+    check(bas, "les soucis se construisent dans un groupe à part")
+
+    for morceau in ("muette", "cassée", "en forte baisse", "Google News en échec"):
+        check(any(morceau in a for a in bas) and not any(morceau in a for a in haut),
+              "« %s » va sur la deuxième ligne, pas la première" % morceau)
+
+    # Et la ligne du haut ne contient QUE les trois morceaux courts : durée,
+    # nouveaux, compteur de sources. Un quatrième, et la garantie tombe.
+    check(len(haut) == 3,
+          "la ligne du haut n'a que trois morceaux, tous de longueur bornée")
+
+    # Le plus long des trois est le compteur, et il est borné par construction :
+    # deux nombres et le mot « sources ». C'est ce qui remplace l'ancien
+    # « toutes les sources répondent », vingt-huit caractères à lui seul.
+    check(not any("répondent" in a for a in haut),
+          "l'ancienne phrase longue a bien laissé la place au compteur")
+
+    # La deuxième ligne n'existe que s'il y a quelque chose à dire. Une div
+    # vide mais affichée occuperait quand même sa hauteur de ligne, ce qui
+    # ferait exactement le décalage qu'on cherche à supprimer.
+    check('elSoucis.style.display = soucis.length ? "" : "none"' in fn,
+          "la deuxième ligne disparaît quand il n'y a aucun souci")
+
+    # Le nowrap est la ceinture : si un jour un morceau du haut s'allonge, il
+    # débordera visiblement au lieu de repasser sournoisement sur deux lignes.
+    css = html[html.index(".run-line{"):]
+    css = css[:css.index(".history-line")]
+    check("white-space:nowrap" in css, "la ligne du haut ne revient jamais à la ligne")
+    check(".run-soucis{" in css, "la deuxième ligne a son propre style")
+
+    # Le mode direct n'a pas de robot : les DEUX lignes doivent se taire.
+    # Oublier la seconde y laisserait un bilan périmé affiché.
+    check('getElementById("runSoucis")' in html[html.index('const ligneRun ='):
+                                                html.index('const ligneRun =') + 400],
+          "le mode direct masque aussi la deuxième ligne")
 
 
 def test_confirmation_des_actions_sans_retour():
@@ -3049,6 +3126,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
+           test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,
            test_haut_de_page_une_seule_carte,
            test_validation_avant_ecriture):

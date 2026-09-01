@@ -561,7 +561,21 @@
     font-family:'JetBrains Mono',monospace; font-size:10px;
     color:var(--text-dim); opacity:0.85; line-height:1.7;
   }
-  .run-line .alerte{color:var(--warn); font-weight:700;}
+  /* La ligne du haut tient sur une ligne, toujours : elle a une forme fixe
+     (durée · nouveaux · compteur de sources) dont le pire cas a été mesuré
+     au plus étroit des écrans visés. white-space:nowrap fige la garantie —
+     si un jour un morceau s'allonge, ça se verra tout de suite en débordant
+     plutôt que de repasser sournoisement sur deux lignes. */
+  .run-line{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  /* Les soucis, eux, ont une longueur imprévisible : le nom d'une source
+     cassée peut faire trente caractères. Ils vivent donc sur leur propre
+     ligne, qui n'existe que quand il y a quelque chose à dire, et qui a le
+     droit de revenir à la ligne. */
+  .run-soucis{
+    font-family:'JetBrains Mono',monospace; font-size:10px;
+    line-height:1.7; margin-top:2px;
+  }
+  .run-line .alerte, .run-soucis .alerte{color:var(--warn); font-weight:700;}
   .history-line button{padding:3px 8px; font-size:10px;}
   .token-status{
     font-family:'JetBrains Mono',monospace; font-size:11px;
@@ -717,6 +731,10 @@
          ensemble. C'est aussi un bilan, donc sa place est après l'action.
          Masqué en mode direct, où aucun robot ne tourne. -->
     <div id="runLine" class="run-line" style="display:none;"></div>
+    <!-- Deuxième ligne, l'exception : muettes, cassées, baisses, décodages
+         en échec. Vide et masquée en régime normal, ce qui est le cas le
+         plus fréquent — la console reste à une seule ligne de bilan. -->
+    <div id="runSoucis" class="run-soucis" style="display:none;"></div>
     <div id="triggerStatusLine" class="token-status dim" style="display:none;"></div>
     <div id="progressBar" class="progress-bar" style="display:none;">
       <div id="progressFill" class="progress-fill"></div>
@@ -2148,6 +2166,8 @@ async function checkNow(force){
   // backend reviendrait à annoncer un état qui n'a plus cours.
   const ligneRun = document.getElementById("runLine");
   if(ligneRun) ligneRun.style.display = "none";
+  const ligneSoucis = document.getElementById("runSoucis");
+  if(ligneSoucis) ligneSoucis.style.display = "none";
   const proxyEl = document.getElementById("proxyLine");
   proxyEl.textContent = okCount + " source(s) OK" + (failCount > 0 ? ", " + failCount + " en échec" : "");
   proxyEl.style.color = failCount > 0 ? "var(--warn)" : "var(--text-dim)";
@@ -3593,17 +3613,33 @@ window.addEventListener("scroll", () => {
 // pas les regarder. Rien de neuf n'est calculé ici.
 function majLigneRun(data){
   const el = document.getElementById("runLine");
+  const elSoucis = document.getElementById("runSoucis");
   if(!el) return;
-  const morceaux = [];
+
+  // Deux groupes, deux lignes, et pas le même contrat :
+  //
+  //   etat   — la ligne du haut. Trois morceaux de forme fixe, toujours les
+  //            mêmes, dimensionnés pour tenir sur une seule ligne même au
+  //            pire (longue durée, beaucoup de nouveaux, compteur dégradé)
+  //            et même au plus étroit des écrans.
+  //   soucis — la ligne du bas. N'existe que s'il y a quelque chose qui ne
+  //            va pas. Longueur imprévisible, elle a le droit de déborder.
+  const etat = [];
+  const soucis = [];
 
   if(typeof data.duration_seconds === "number"){
     const s = data.duration_seconds;
-    morceaux.push("passage en " + (s < 60
+    // Sans préfixe. « passage en » coûtait onze caractères, soit 66 px de
+    // police monospace 10 px — à lui seul, il faisait déborder la ligne sur
+    // un écran de 320 px et la collait pile à la limite sur 360 px. La durée
+    // se lit très bien sans : elle est juste sous le bouton qui la produit,
+    // et l'unité (« s », « min ») dit déjà que c'est un temps.
+    etat.push(s < 60
       ? s.toFixed(0) + " s"
-      : Math.floor(s / 60) + " min " + String(Math.round(s % 60)).padStart(2, "0")));
+      : Math.floor(s / 60) + " min " + String(Math.round(s % 60)).padStart(2, "0"));
   }
   if(typeof data.new_this_run === "number"){
-    morceaux.push(data.new_this_run + " nouveau" + (data.new_this_run > 1 ? "x" : ""));
+    etat.push(data.new_this_run + " nouveau" + (data.new_this_run > 1 ? "x" : ""));
   }
 
   // Une source « cassée » répond mais ne renvoie pas un flux : page de
@@ -3621,20 +3657,34 @@ function majLigneRun(data){
   // les sources muettes mais les CHRONOMÈTRES en cours. Une source qui vient
   // de répondre y reste tant que sa reprise n'est pas confirmée sur deux
   // passages — la compter ici l'afficherait muette alors qu'elle rapporte.
-  const cassees = (data.sources_health || []).filter(s => s.status === "cassee");
-  const muettes = (data.sources_health || []).filter(s => s.status === "muette").length;
+  const sante = data.sources_health || [];
+  const cassees = sante.filter(s => s.status === "cassee");
+  const muettes = sante.filter(s => s.status === "muette").length;
+
+  // « 50/50 sources » dit la même chose que « toutes les sources répondent »
+  // en trois fois moins de place, et continue de dire quelque chose quand ça
+  // devient « 46/50 ». C'est ce qui permet à la ligne du haut de tenir.
+  //
+  // Répondre, c'est ne pas être muette ni cassée. Une source « tarie » répond
+  // très bien : elle n'a simplement rien publié depuis longtemps, ce qui est
+  // souvent parfaitement normal (Rockstar publie par à-coups). La compter en
+  // échec afficherait 46/50 en permanence pour un état sain.
+  if(sante.length){
+    const repondent = sante.length - muettes - cassees.length;
+    const compteur = repondent + "/" + sante.length + " sources";
+    etat.push(repondent < sante.length
+      ? '<span class="alerte">' + compteur + "</span>"
+      : compteur);
+  }
 
   if(muettes){
-    morceaux.push('<span class="alerte">' + muettes + " source" +
+    soucis.push('<span class="alerte">' + muettes + " source" +
       (muettes > 1 ? "s" : "") + " muette" + (muettes > 1 ? "s" : "") + "</span>");
   }
   if(cassees.length){
-    morceaux.push('<span class="alerte">' + cassees.length + " cassée" +
+    soucis.push('<span class="alerte">' + cassees.length + " cassée" +
       (cassees.length > 1 ? "s" : "") + " : " +
       cassees.map(s => escapeHtml(s.name)).join(", ") + "</span>");
-  }
-  if(!muettes && !cassees.length){
-    morceaux.push("toutes les sources répondent");
   }
 
   // Le signal le plus discret des trois : la source répond, elle n'est ni
@@ -3642,18 +3692,22 @@ function majLigneRun(data){
   // Invisible autrement.
   const baisse = Object.keys(data.sources_declining || {}).length;
   if(baisse){
-    morceaux.push('<span class="alerte">' + baisse + " en forte baisse</span>");
+    soucis.push('<span class="alerte">' + baisse + " en forte baisse</span>");
   }
 
   // Zéro en régime normal : on ne l'affiche que si c'est arrivé, sinon la
   // ligne se remplirait d'une bonne nouvelle sans intérêt.
   if(data.decode_failures){
-    morceaux.push('<span class="alerte">' + data.decode_failures + " décodage" +
+    soucis.push('<span class="alerte">' + data.decode_failures + " décodage" +
       (data.decode_failures > 1 ? "s" : "") + " Google News en échec</span>");
   }
 
-  el.innerHTML = morceaux.join(" · ");
-  el.style.display = morceaux.length ? "" : "none";
+  el.innerHTML = etat.join(" · ");
+  el.style.display = etat.length ? "" : "none";
+  if(elSoucis){
+    elSoucis.innerHTML = soucis.join(" · ");
+    elSoucis.style.display = soucis.length ? "" : "none";
+  }
 }
 
 // ---------- Détection d'une nouvelle version de l'app ----------
