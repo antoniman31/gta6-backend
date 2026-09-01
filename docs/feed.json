@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T06:44:59.948788+00:00",
-  "duration_seconds": 83.0,
+  "generated_at": "2026-09-01T07:02:14.959584+00:00",
+  "duration_seconds": 81.6,
   "decode_failures": 0,
-  "total_articles": 1502,
-  "new_this_run": 0,
+  "total_articles": 1503,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 68,
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 4,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T16:00:29+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "rockstarintel",
@@ -583,7 +583,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2024-07-26T07:00:00+00:00",
-      "days_since_last_article": 766,
+      "days_since_last_article": 767,
       "status": "tarie"
     },
     {
@@ -649,13 +649,13 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -905,7 +905,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-22T01:42:08+00:00",
       "days_since_last_article": 10,
       "status": "ok"
@@ -914,12 +914,12 @@
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-01T03:02:14.126279+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "rockstarmag-youtube": {
       "depuis": "2026-09-01T03:02:14.126279+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -929,9 +929,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,0,0,0,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,0,0,0,0,0,0,0,0,0,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,100,104,100,100,100,100,100,100",
+    "gnews-en": "100,100,100,100,104,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,0,0,0,0,0,0,0,0,0,15",
     "rockstarintel": "10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,15 +963,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,7,7,7,8,7",
+    "xboxwire": "7,7,7,7,7,7,7,7,7,8,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,73,100,100,100,100,100",
+    "theverge": "100,100,100,100,100,73,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "29,29,29,29,29,29,28,29,29,29,29,29",
+    "arstechnica": "29,29,29,29,29,28,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -984,8 +984,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"1fd5ce2d7ee9a454b9b3aee2bbf3cc9c\"",
-      "modified": "Tue, 01 Sep 2026 06:32:41 GMT"
+      "etag": "W/\"05a04408ade979e0d6b0065d7138d16a\"",
+      "modified": "Tue, 01 Sep 2026 06:48:26 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1025,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 06:43:47 GMT"
+      "modified": "Tue, 01 Sep 2026 07:01:01 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9670f8-3046\"",
-      "modified": "Tue, 01 Sep 2026 06:30:16 GMT"
+      "etag": "W/\"6a967801-3046\"",
+      "modified": "Tue, 01 Sep 2026 07:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -18946,6 +18946,19 @@
       "lang": null,
       "image": "https://polymarket.com/api/og?eslug=how-long-will-the-gta-6-extended-look-be-20260807064756488&tid=1787512258558",
       "description": "How long will the GTA 6 \"Extended Look\" be? Predictions &... 2026&nbsp;&nbsp;polymarket.com"
+    },
+    {
+      "title": "Rockstar Doesn’t Plan To Discuss GTA 6 Online “Anytime Soon,” Says Jason Schreier - eXputer.com",
+      "link": "https://exputer.com/news/games/rockstar-gta-6-online-discussion-delay/",
+      "source_link": "https://news.google.com/rss/articles/CBMiekFVX3lxTFB2b1llTmcwZ0dZTlgwb05BZkpRTjBLV1NOU1hoZ2x3U1ltVER4NGxSWGdPWXA2alFIYlhiQ1BMYzFXNTNaZXRvZ2t3eWcyUkhVUEdhWTl1RzducElXVXFUWG8xdW5pbnFycEgyZDhaX3ZJQWNkX2RpX0xn?oc=5",
+      "date": "2026-08-07T07:00:00+00:00",
+      "source": "Jason Schreier",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://exputer.com/wp-content/uploads/2026/04/GTA-Online-Sure-Did-Some-Cool-Stuff.jpg",
+      "description": "Rockstar Doesn’t Plan To Discuss GTA 6 Online “Anytime Soon,” Says Jason Schreier&nbsp;&nbsp;eXputer.com"
     },
     {
       "title": "GTA 6 : un extended look sera diffusé sur Netflix fin août, Rockstar Games surprend la planète jeu vidéo",
