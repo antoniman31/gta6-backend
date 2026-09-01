@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T12:31:49.556199+00:00",
-  "duration_seconds": 55.0,
+  "generated_at": "2026-09-01T12:43:37.591547+00:00",
+  "duration_seconds": 55.8,
   "decode_failures": 0,
-  "total_articles": 1527,
-  "new_this_run": 2,
+  "total_articles": 1528,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 69,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-01T10:30:40+00:00",
+      "new_this_run": 0,
+      "last_article": "2026-09-01T12:02:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T18:52:47+00:00",
       "days_since_last_article": 2,
@@ -481,10 +481,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T11:15:59+00:00",
       "days_since_last_article": 1,
@@ -589,13 +589,13 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T17:31:19+00:00",
-      "days_since_last_article": 2,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-01T12:40:06+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T08:29:55+00:00",
       "days_since_last_article": 0,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 3,
@@ -751,7 +751,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -809,7 +809,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T12:02:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,104,100,102,100,100,100,100,100,100,100,100",
+    "gnews-fr": "92,92,100,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "104,100,102,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -936,7 +936,7 @@
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rps": "100,100,100,100,100,100",
+    "rps": "100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
     "vgtimes": "40,40,40,40,40,40,40,40,40,40,40,40",
@@ -952,15 +952,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,7,8,8,8,8,7,7,7,7,7,7",
-    "trueach": "100,100,100,100,100,81,100,100,100,100,100,100",
+    "xboxwire": "7,8,8,8,8,7,7,7,7,7,7,7",
+    "trueach": "100,100,100,100,81,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "30,30,30,30,28,30,30,30,30,30,30,30",
+    "arstechnica": "30,30,30,28,30,30,30,30,30,30,30,30",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -984,7 +984,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Mon, 31 Aug 2026 16:41:03 GMT"
+      "modified": "Tue, 01 Sep 2026 12:40:09 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -1004,7 +1004,7 @@
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 11:44:31 GMT"
+      "modified": "Tue, 01 Sep 2026 12:40:06 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,12 +1014,12 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 12:31:03 GMT"
+      "modified": "Tue, 01 Sep 2026 12:42:53 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"a3cdbec3ba0de5459fe46f35aa15f028\"",
-      "modified": "Tue, 01 Sep 2026 11:00:26 GMT"
+      "etag": "\"a11f10adaeb631c8e005d9569ad2d6fc\"",
+      "modified": "Tue, 01 Sep 2026 12:34:45 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
@@ -1028,8 +1028,8 @@
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"d442faf80d01ea66fbcbda8bb84619ce\"",
-      "modified": "Tue, 01 Sep 2026 11:09:24 GMT"
+      "etag": "W/\"0fdf74e9ffab7e9f69013e46a8b59699\"",
+      "modified": "Tue, 01 Sep 2026 12:33:12 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1050,6 +1050,19 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "All the RPS Supporter rewards for August 2026: fatty felines, GTA 6 pondering, and a heap of barely washed radishes",
+      "link": "https://www.rockpapershotgun.com/all-the-rps-supporter-rewards-for-august-2026-fatty-felines-gta-6-pondering-and-a-heap-of-barely-washed-radishes",
+      "source_link": null,
+      "date": "2026-09-01T12:40:06+00:00",
+      "source": "Rock Paper Shotgun",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/rps_welcomepost_2_JcYD937.jpg?width=690&quality=85&format=jpg&auto=webp",
+      "description": " You there. Have you completed the RPS Supporters survey? You don&rsquo;t even need to be a Supporter. In fact, it&rsquo;s better for certain questions if you aren&rsquo;t. Either way, this is your chance to play a part in making sure our subscription rewards are as rewarding as rewards can be, which some might say is a reward in itself. Read more"
+    },
+    {
       "title": "GTA 6 : 4 millions de viewers en simultanés et des records de fréquentation sur Netflix - Journal du Geek",
       "link": "https://www.journaldugeek.com/2026/09/01/gta-6-4-millions-de-viewers-en-simultanes-et-des-records-de-frequentation-sur-netflix/",
       "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPNTlPVDVfSnNkakx1dU8tQ2VZUG4tSS14elhyaG1ncXVjS2lRU2xGb3RGeGpEVVVSVEMzX1d0cDJneTZmUVBQOUFIYlk1WnRRT1h1X3lxMm5lRXVjVHNOSUM0SGQzSVRwT1JVQUVERGRlcEtYZS1lMFBXWktwMGJMX1pycXlsTXJiZDVVRVFQRmc4alpPUC1ydzVrOFBvQWN4TEZfSzFNMWZfOXdITGZyWDZ3M0JETTg5cGJvRmVsRVRSVGxaNlE?oc=5",
@@ -1060,7 +1073,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://www.journaldugeek.com/app/uploads/2026/09/gta-6-succes-netflix-1600x900.jpg",
-      "description": "GTA 6 : 4 millions de viewers en simultanés et des records de fréquentation sur Netflix&nbsp;&nbsp;Journal du Geek"
+      "description": "GTA 6 : 4 millions de viewers en simultanés et des records de fréquentation sur Netflix&nbsp;&nbsp;Journal du Geek",
+      "extraSources": [
+        {
+          "source": "Google News (FR)",
+          "link": "https://www.rockstarmag.fr/gta-6-pres-de-4-millions-de-viewers-en-simultanes-pour-la-presentation-netflix/"
+        }
+      ]
     },
     {
       "title": "New GTA 6 Details Reveal a Dynamic Romance and Criminal Profile System - VICE",
