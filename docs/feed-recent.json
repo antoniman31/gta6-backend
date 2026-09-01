@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T22:47:36.004865+00:00",
-  "duration_seconds": 48.6,
+  "generated_at": "2026-09-01T23:01:50.750069+00:00",
+  "duration_seconds": 57.0,
   "decode_failures": 0,
-  "total_articles": 1612,
-  "new_this_run": 3,
+  "total_articles": 1613,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -385,11 +385,11 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 92,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-01T18:30:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -413,18 +413,18 @@
       "http_status": 301,
       "redirect": "https://www.pcgamer.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T19:39:14+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-01T22:45:20+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T21:53:27+00:00",
       "days_since_last_article": 0,
@@ -521,7 +521,7 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-01T22:21:27+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 3,
@@ -829,7 +829,7 @@
     {
       "id": "gamergen",
       "name": "Gamergen",
-      "entries_fetched": 45,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,100,92,92,100",
+    "gnews-fr": "92,92,92,92,92,92,92,100,92,92,100,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,17 +952,17 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,9,7,9,7,9,9,7,7,9,8,9",
+    "xboxwire": "9,7,9,7,9,9,7,7,9,8,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,45",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,45,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,70,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,81,81,81,80,81,81",
-    "arstechnica": "29,29,29,28,29,29,29,29,29,29,29,29",
+    "theverge": "100,100,70,100,100,100,100,100,100,100,100,100",
+    "engadget": "81,81,81,81,81,81,81,81,80,81,81,81",
+    "arstechnica": "29,29,28,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,56,100,100,100,100,100,100,100,100,100,100"
+    "schreier": "56,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 22:46:59 GMT"
+      "modified": "Tue, 01 Sep 2026 23:01:06 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9751f7-2ee0\"",
-      "modified": "Tue, 01 Sep 2026 22:30:15 GMT"
+      "etag": "W/\"6a9758ff-2ee0\"",
+      "modified": "Tue, 01 Sep 2026 23:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "That Grand Theft Auto 6 exclusive reveal worked out pretty well for Netflix: It was the platform's biggest show last week",
+      "link": "https://www.pcgamer.com/games/grand-theft-auto/that-grand-theft-auto-6-exclusive-reveal-worked-out-pretty-well-for-netflix-it-was-the-platforms-biggest-show-last-week/",
+      "source_link": null,
+      "date": "2026-09-01T22:45:20+00:00",
+      "source": "PC Gamer",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/aPWeH3auDGetjVpE4BuTHa-1280-80.jpg",
+      "description": "The GTA 6 reveal showcase pulled in more than 31 million views over just four days."
+    },
     {
       "title": "GTA 6's Morality Meter Will Reportedly 'Shatter' and Make You Irredeemable If You Cause Too Much Mayhem",
       "link": "https://www.ign.com/articles/gta-6s-morality-meter-will-reportedly-shatter-and-make-you-irredeemable-if-you-cause-too-much-mayhem",
@@ -5015,19 +5028,6 @@
       "lang": "fr",
       "image": "https://pic.clubic.com/v1/images/2178880/raw",
       "description": "Star Citizen Squadron 42 reporté à 2027 à cause de GTA VI : Chris Roberts réinvente la mauvaise fois ?&nbsp;&nbsp;Clubic"
-    },
-    {
-      "title": "GTA 6 : L'ÉNORME PREVIEW DE TGG AVEC UNE VAGUE D'INFOS (HUD, MAP, POLICE, TÉLÉPHONE, CONDUITE ETC..)",
-      "link": "https://www.youtube.com/watch?v=baoyvBXLU5k",
-      "source_link": null,
-      "date": "2026-08-29T14:52:18+00:00",
-      "source": "RockstarMag (YouTube)",
-      "official": false,
-      "rockstarmag": true,
-      "specialist": true,
-      "lang": "fr",
-      "image": "https://i.ytimg.com/vi/baoyvBXLU5k/hqdefault.jpg",
-      "description": "Découvrez la première partie des informations de TGG avec une VAGUE d'informations folles ! \n\nLire le résumé des previews de TGG :\nhttps://www.rockstarmag.fr/gta-6-de-nombreux-details-sur-le-jeu-donnes-par-tgg/\n\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ F"
     }
   ],
   "partial": true,
