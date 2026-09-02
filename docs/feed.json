@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T10:31:37.291711+00:00",
-  "duration_seconds": 51.5,
+  "generated_at": "2026-09-02T11:01:50.177239+00:00",
+  "duration_seconds": 53.4,
   "decode_failures": 0,
-  "total_articles": 1664,
-  "new_this_run": 0,
+  "total_articles": 1667,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 70,
@@ -385,12 +385,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 92,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T08:16:08+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T10:30:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
@@ -505,10 +505,10 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T09:59:41+00:00",
       "days_since_last_article": 0,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T08:48:30+00:00",
       "days_since_last_article": 0,
@@ -617,8 +617,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T08:37:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T10:34:50+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -737,9 +737,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-27T19:35:04+00:00",
-      "days_since_last_article": 5,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T10:34:48+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -799,7 +799,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T10:37:36+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 81,
+      "entries_fetched": 82,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,100,92,92,92,100,92",
-    "gnews-en": "100,100,100,100,100,102,100,102,100,100,100,100",
+    "rockstar-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
+    "gnews-fr": "92,92,92,92,92,100,92,92,92,100,92,100",
+    "gnews-en": "100,100,100,100,102,100,102,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,14 +928,14 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,100,100,60,100",
+    "vg247": "100,100,100,100,100,100,100,100,100,60,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -959,7 +959,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "80,80,81,80,81,81,81,82,81,81,81,81",
+    "engadget": "80,81,80,81,81,81,82,81,81,81,81,82",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -968,18 +968,18 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"6fb7f161c73637a7b3ef9eee2ebf33e4\"",
-      "modified": "Wed, 02 Sep 2026 10:03:28 GMT"
+      "etag": "W/\"3ce28e1591eb17f9160ee17ffb7f0b18\"",
+      "modified": "Wed, 02 Sep 2026 11:01:02 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 09:08:02 GMT"
+      "modified": "Wed, 02 Sep 2026 10:43:55 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,23 +998,23 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"1158c4774f08cd277b7360e1684fa05d\"",
-      "modified": "Wed, 02 Sep 2026 10:15:19 GMT"
+      "etag": "W/\"d28074d917ff3699a8e2560b403ef520\"",
+      "modified": "Wed, 02 Sep 2026 10:45:39 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 10:02:28 GMT"
+      "modified": "Wed, 02 Sep 2026 10:34:47 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 09:19:01 GMT"
+      "modified": "Wed, 02 Sep 2026 10:55:56 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 10:27:31 GMT"
+      "modified": "Wed, 02 Sep 2026 11:01:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a97fab8-2ee2\"",
-      "modified": "Wed, 02 Sep 2026 10:30:16 GMT"
+      "etag": "W/\"6a9801c3-2e80\"",
+      "modified": "Wed, 02 Sep 2026 11:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"1a85b6c02e8d3613725f0c0cc7879c6e\"",
-      "modified": "Wed, 02 Sep 2026 10:30:14 GMT"
+      "etag": "W/\"6af98b2ea050f9c2da407aa394b7b803\"",
+      "modified": "Wed, 02 Sep 2026 11:00:18 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Sony Says You Never Owned Your Games, Which Is The Problem",
+      "link": "https://www.gtaboom.com/sony-says-you-never-owned-your-games-which-is-the-problem-d4dc",
+      "source_link": null,
+      "date": "2026-09-02T10:34:50+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/77/20/sony-says-you-never-owned-your-games-which-is-the-problem.jpg",
+      "description": "Digital GTA VI purchases are licenses, not ownership, so Sony's courtroom stance applies to the $100 Ultimate Edition too."
+    },
+    {
+      "title": "GTA RP's \"next evolution\" is coming, and you can grab millions of GTA$ with Twitch Drops",
+      "link": "https://www.pcgamesn.com/grand-theft-auto-v/gta-rp-nopixel-v",
+      "source_link": null,
+      "date": "2026-09-02T10:34:48+00:00",
+      "source": "PCGamesN",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.pcgamesn.com/wp-content/sites/pcgamesn/2026/09/gta-rp-grand-theft-auto-5-online-roleplay-nopixel-v-closed-beta-twitch-drops.jpg",
+      "description": "As GTA 6 looms, Rockstar Games is supporting Nopixel V, the latest incarnation of GTA Online roleplay servers, with Twitch Drops rewards."
+    },
+    {
+      "title": "GTA 6 pourrait finalement tourner à 60 FPS sur PS5, un patch serait déjà prévu autour de sa sortie - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6-pourrait-finalement-tourner-a-60-fps-sur-ps5-un-patch-serait-deja-prevu-autour-de-sa-sortie-224225.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQTmRXVG5veG5DTFd4djcwdVQwbzg1V2ZrdUJhQlpsV2oyc3dwQVc3dUhiSmhjcFFKeWxxZ0daOGtPZDRvWm9oQjVodGJwWXhjXzhrVjFIdmpBYjlLVHltRnlvYmFLa1hEWlpKeTRGYmZNQW9ZcWJWRTZuWmhRVVU0OWNzaGt4My1ZMjV3WTBBSDA2elA1SEpJOGgwZnZKTjcwM0dTMWtOclI4c2NySk5JWkFockQxaW9RNExueDg1dWNtNGh4dWt3OERjcFRwYldnUGUxenV6WmhVdVRXZ1hWQmZCMA?oc=5",
+      "date": "2026-09-02T10:30:16+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-pourrait-finalement-tourner-a-60-fps-sur-ps5-un-patch-serait-deja-prevu-autour-de-sa-sortie.jpg",
+      "description": "GTA 6 pourrait finalement tourner à 60 FPS sur PS5, un patch serait déjà prévu autour de sa sortie&nbsp;&nbsp;La Crème Du Gaming"
+    },
     {
       "title": "GTA 6 Extended Look Reportedly Led To Just 100,000+ Pre-Orders Worrying Wall Street",
       "link": "https://rockstarintel.com/gta-6-extended-look-reportedly-led-to-just-100000-pre-orders-worrying-wall-street/",
