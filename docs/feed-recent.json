@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T07:31:34.971929+00:00",
-  "duration_seconds": 52.4,
+  "generated_at": "2026-09-02T08:01:46.273934+00:00",
+  "duration_seconds": 47.5,
   "decode_failures": 0,
-  "total_articles": 1642,
-  "new_this_run": 5,
+  "total_articles": 1646,
+  "new_this_run": 4,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -385,19 +385,19 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 92,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
-      "last_article": "2026-09-02T07:22:40+00:00",
+      "new_this_run": 4,
+      "last_article": "2026-09-02T07:40:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -653,7 +653,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T07:15:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-31T13:48:34+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 4,
@@ -761,7 +761,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T07:26:56+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,0,0,0,0,0,0,0,0,0,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,92,99,99,99,100,100,100,100,100,102",
+    "rockstar-youtube": "0,0,0,0,0,0,0,0,0,15,15,15",
+    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,100",
+    "gnews-en": "100,92,99,99,99,100,100,100,100,100,102,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,0,0,0,0,0,0,0,0,0,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,0,0,0,0,15,15,15",
     "rockstarintel": "10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -959,7 +959,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,80,80,80,80,80,80,80,81,80,81,81",
+    "engadget": "80,80,80,80,80,80,80,81,80,81,81,81",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 07:05:03 GMT"
+      "modified": "Wed, 02 Sep 2026 07:34:28 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"22c92-JOTsxLGaSQJLLZ5N0S15SZgxZTI\"",
+      "etag": "W/\"2240b-6amohgmDPBlCSCG1gxz0piQQ8xk\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"adde161cb8f0ba1810188e4490c1335d\"",
-      "modified": "Wed, 02 Sep 2026 07:30:00 GMT"
+      "etag": "W/\"f7b8ea284c17c8bd46d21d7d03f1d30a\"",
+      "modified": "Wed, 02 Sep 2026 08:00:57 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,17 +1014,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 07:29:11 GMT"
+      "modified": "Wed, 02 Sep 2026 08:01:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"9ad0484385f7214b6f6b519820da77fc\"",
-      "modified": "Wed, 02 Sep 2026 07:11:19 GMT"
+      "etag": "\"01a2422c2937b9f7b0575128d4a3d634\"",
+      "modified": "Wed, 02 Sep 2026 07:53:22 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a97d088-2fd2\"",
-      "modified": "Wed, 02 Sep 2026 07:30:16 GMT"
+      "etag": "W/\"6a97d793-303d\"",
+      "modified": "Wed, 02 Sep 2026 08:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788322187\"",
-      "modified": "Wed, 02 Sep 2026 04:09:47 GMT"
+      "etag": "W/\"1788335905\"",
+      "modified": "Wed, 02 Sep 2026 07:58:25 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1043,12 +1043,38 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a97b952-b0c\"",
-      "modified": "Wed, 02 Sep 2026 05:51:14 GMT"
+      "etag": "\"6a97d570-b0c\"",
+      "modified": "Wed, 02 Sep 2026 07:51:12 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : la précommande du jeu le plus attendu est-elle encore disponible au meilleur prix sur Amazon ? - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/gta-6-la-precommande-du-jeu-le-plus-attendu-est-elle-encore-disponible-au-meilleur-prix-sur-amazon_AB-202609020314.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxQa3d5My1leE1pUEdQQTl4bEFMY09ZX0tVdHdFXzRYOG9FVzIyMjhvZ2dZXzgteXY3UV9wbE55ZDRuUUpTV3Z0T3lZMXQ3bUp1X01tOHZWNTRxYXBDdjBFM0xaZEJvaGFBLWp3SGtDQ2VwVTBSZ3EzZlM5SGxmRUF3ZWFpZFl3N3dYSk5wR0YybGVSRVFBX19qNnlDZnJYNy1TV3FnX2MzMm52NW1wSmF3SnF4SXhMM01NWWNwaEowVVdKSjhMaDJsZHRncFcxZDVSTzM3cnZFQU5ZalExeGtNc0RvMXUyWjZpWTdxeWR3?oc=5",
+      "date": "2026-09-02T07:40:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/0Y8du2Jkd4RV7--oKOvpdVl46JY=/0x0:1600x900/1600x0/images/Precommande-GTA-6-Amazon-devoile-soudainement-un-prix-que-personne-n-aurait-imagine-sur-le-jeu-de-la-decennie-2310481.jpg",
+      "description": "GTA 6 : la précommande du jeu le plus attendu est-elle encore disponible au meilleur prix sur Amazon ?&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "GTA 6 : la justice autorise la nouvelle assignation de Take-Two contre Discord - GinjFo",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-la-justice-autorise-la-nouvelle-assignation-de-take-two-contre-discord-20260902",
+      "source_link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxQQmpSX1EwQ1FYdFZTZXZ5b2dORFhUZFd2ZnZuNlhXNERQdHVWdGxTcktXYW9yaDl0MHpzR3ExSGlNX0tXT201SEV6ZTlJTVB2M3p1YjBUM0V4QUFoTjUxUEpDdUhjYzdzSm1Yc2lzcGgycFZiRE5FZDdrX0MzNzVyT2RzZVppVm55c3EtbFhxVXlzM1htMU1wUFowUjZXdkNtZF9IUl8xM3RkVVVXMGpFQThNdmdtUUxwVm54Wi1idVJCb1FfeXpyZFFqcWJrOFJONXlOQ1NqR0tEb1ZKMDl2bWxVS0w?oc=5",
+      "date": "2026-09-02T07:36:55+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2026/08/GTA6.jpg",
+      "description": "GTA 6 : la justice autorise la nouvelle assignation de Take-Two contre Discord&nbsp;&nbsp;GinjFo"
+    },
     {
       "title": "GTA 6 : le pari fou de Rockstar sur Netflix a été un énorme succès - Xboxygen",
       "link": "https://www.xboxygen.com/News/366120-gta-6-le-pari-fou-de-rockstar-sur-netflix-a-ete-un-enorme-succes",
@@ -1495,6 +1521,19 @@
       "lang": null,
       "image": "https://insider-gaming.com/wp-content/uploads/2026/09/Jason_and_Lucia_04-scaled.jpg",
       "description": "GTA 6 is getting a major control scheme change that alters how you'll play the game from the moment you start the story.\nThe post GTA 6 Features a Controller Change That Flips a 25-Year-Old Trend appeared first on Insider Gaming."
+    },
+    {
+      "title": "GTA 6 modifie la mécanique du sprint après 25 ans - Dexerto.fr",
+      "link": "https://www.dexerto.fr/gta/gta-6-modifie-mecanique-sprint-apres-25-ans-1657618/",
+      "source_link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQc1lUR25vd0ctNExJUFhhaERFb1NtLWw4ZHUyUlFDZmtzZVF6TnlhQnZYUVhGdTNUNVctdk1DV0ROcDdmSHFkZTdBbDVTSlJJRGlpZzlQd044SWJ4R0RkNTFNR0Q2MHVSeF9OOFJsUjFqaFhrbENXcTVGUXlSaDl6aWxaeXRkZw?oc=5",
+      "date": "2026-09-01T21:38:32+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.dexerto.fr/cdn-image/wp-content/uploads/sites/2/2026/09/01/GTA-6-Jason-Lucia-Infiltration.jpg",
+      "description": "GTA 6 modifie la mécanique du sprint après 25 ans&nbsp;&nbsp;Dexerto.fr"
     },
     {
       "title": "‘Grand Theft Auto VI’ Extended Preview Is Netflix’s Most-Watched Weekly Title - malaysia.news.yahoo.com",
@@ -2001,6 +2040,19 @@
       "lang": null,
       "image": "https://assets.games.gg/gta_6_removes_sprint_button_og_cfd84eb75e.webp",
       "description": "GTA 6 Removes Its Most Hated Sprint Mechanic&nbsp;&nbsp;games.gg"
+    },
+    {
+      "title": "“Grand Theft Auto VI” : ce que l’on sait du jeu vidéo le plus attendu de l’année - Courrier international",
+      "link": "https://www.courrierinternational.com/article/phenomene-grand-theft-auto-vi-ce-que-l-on-sait-du-jeu-video-le-plus-attendu-de-l-annee_265464",
+      "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxQQm1FUE11dTJSLV9DSXNObkh4M3oyU2NzR3NDbDBIQUVkZWh0RUdUQmNpTjdWcjZNbGVZaE1yNGlyQklCWGctQXNkcTA0QWJXNDE2cUt1eU5vYUlmbEV5YlFOS1dTQnJjZGhtYmdqQVRaSy1oR3M4cEloTTQzczBOT1lxcG5DYThTamVsYVV1Rjl4YV9pbURpdFlUZmxLLVZucGNFVzJ4NkJtZFJEcjduU2lvbzhtdS00WFp1cndUa1o1TmJEYWZNNmg4bWZSV2pvZlRYZk9R?oc=5",
+      "date": "2026-09-01T16:01:58+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://focus.courrierinternational.com/2026/09/01/0/300/3240/2160/1200/630/60/0/dac9481_upload-1-haerwvma3w4w-cal-hampton-02.jpg",
+      "description": "“Grand Theft Auto VI” : ce que l’on sait du jeu vidéo le plus attendu de l’année&nbsp;&nbsp;Courrier international"
     },
     {
       "title": "GTA 6's New Details Feel Additive, Not Just Flashy - games.gg",
@@ -4994,58 +5046,6 @@
       "lang": "fr",
       "image": "https://sm.ign.com/t/ign_fr/news/g/gta-6-will/gta-6-will-have-no-microtransactions-or-generative-ai-at-lau_a1wc.1200.jpg",
       "description": "GTA 6 n'aura aucune microtransaction ou IA générative au lancement d'après Rockstar&nbsp;&nbsp;IGN France"
-    },
-    {
-      "title": "L'argument le plus fort de GTA 6 vient de tomber à l'eau, et c'est une énorme déception - jeuxvideo.com",
-      "link": "https://www.jeuxvideo.com/news/2101122/l-argument-le-plus-fort-de-gta-6-vient-de-tomber-a-l-eau-et-c-est-une-enorme-deception.htm",
-      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNTjd4RlYxSjlLTXM5cjZ5a00xQllDSUV1T2pwNnRjdmlFSktnTlZ0SXpCME1RMVZhX3A5bXZ0R3RyVlNDcENDSU5zME5xVmpoLXZTdzJySjNPeVhWU1ZCSzBzLWR3QlAxNjY0VkF0OXBDWDdNbjdXQk1EbnhxNDJnNTBnRjVNUVBTTTF0aUlnOGxIN0dSX1ZVQnhTaUhDMk9BQmFjT21QQmFYOVFsS0gtdEw4NkpkeTBpUnBXSmJDVjlRNmxSS3dSOQ?oc=5",
-      "date": "2026-08-30T08:30:10+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178792/1787924267-8229-card.jpg",
-      "description": "L'argument le plus fort de GTA 6 vient de tomber à l'eau, et c'est une énorme déception&nbsp;&nbsp;jeuxvideo.com"
-    },
-    {
-      "title": "6 killer criminal romance movies to tie you over 'til GTA 6 - British GQ",
-      "link": "https://www.gq-magazine.co.uk/article/gta-6-criminal-romance-movies",
-      "source_link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE8wSnJVeWI4b0JTbTRZUmlwRV9GTlozU2RqYVNwazYtek5QWG9ER3ZKM2hUUGJndGFoYTE1Rm50VGlFdmdoY001SFZyS2d0WjFnd0sxMDRWUGI4MTVJUXVKUTNFOXNjWnZ1QURUR3p4bnF4QmpLbHc?oc=5",
-      "date": "2026-08-30T07:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://media.gq-magazine.co.uk/photos/6a91a702c2d4329aa18d3cba/16:9/w_1280,c_limit/MSDTRRO_EC027.jpg",
-      "description": "6 killer criminal romance movies to tie you over 'til GTA 6&nbsp;&nbsp;British GQ"
-    },
-    {
-      "title": "GTA 6 : pas d’IA générative ni de microtransactions, confirme Rockstar - KultureGeek",
-      "link": "https://kulturegeek.fr/news-357946/gta-6-dia-generative-microtransactions-confirme-rockstar",
-      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNQjFnNFdJSWp4RHI5YXZEdmJ2Y180TWNvMWh6NThkUHhiS19YYnJSU0dFOXBJd3h3aXdKWUZwN25aY3dyWnlFbFZicWtKV3ZkWFhGQTBkZDJSMFp4b3RQUG9SLU03QXdGSGtfWGVDWGd5bmNhZDl5TzBiX3N1LTNNMlJ3Q24tcHBEelZBMG9hTGpqMWhJeEE?oc=5",
-      "date": "2026-08-30T06:49:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://cdn.kulturegeek.fr/wp-content/uploads/2026/08/GTA-6-Lucia-Voiture.jpg",
-      "description": "GTA 6 : pas d’IA générative ni de microtransactions, confirme Rockstar&nbsp;&nbsp;KultureGeek"
-    },
-    {
-      "title": "Kinda Funny Says GTA 6 Includes a Furry-Related Random Event",
-      "link": "https://vgtimes.com/gaming-news/165878-kinda-funny-says-gta-6-includes-a-furry-related-random-event.html",
-      "source_link": null,
-      "date": "2026-08-30T06:43:31+00:00",
-      "source": "VGTimes",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://files.vgtimes.com/posts/2026-08/kinda-funny-says-gta-6-includes-a-furry-related-random-event-165878.webp",
-      "description": "Furries, a TV cartoon series, and racing-game-grade tuning — what was shown at a closed-door GTA 6 preview"
     }
   ],
   "partial": true,
