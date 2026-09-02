@@ -2,15 +2,29 @@ name: Mise à jour des flux GTA 6
 
 on:
   schedule:
-    # Un passage par heure, à une minute creuse. Le déclencheur
-    # `schedule` de GitHub Actions est best-effort : les runs sont retardés
-    # (10 à 35 min observées) et purement abandonnés en période de charge,
-    # et la minute 0 est la plus congestionnée de l'heure. Entre le 26 et le
-    # 28/08 2026, la cadence réelle était tombée à un run toutes les 3 à 9h
-    # avec "0 * * * *". Doubler les tentatives à des minutes décalées ne
-    # supprime pas les abandons — c'est un contournement, pas un correctif —
-    # mais ramène la cadence effective près de l'heure.
-    - cron: "37 * * * *"
+    # Un passage toutes les 3 heures, à une minute creuse. C'est un FILET,
+    # pas l'horloge : cron-job.org déclenche à l'heure juste (voir plus
+    # bas), et ce cron-ci ne sert qu'à ce que le fil continue d'avancer si
+    # le planificateur externe tombe.
+    #
+    # Il était horaire jusqu'au 02/09/2026. Le problème : le `schedule` de
+    # GitHub Actions est best-effort — les runs partent avec 10 à 35 min de
+    # retard et sont purement abandonnés en période de charge — donc ses
+    # passages tombaient à des moments quelconques, ENTRE deux passages de
+    # cron-job.org. Chaque intercalaire trouvait de nouveaux articles et
+    # envoyait donc sa propre notification : la cadence réelle des
+    # notifications dépassait celle demandée.
+    #
+    # Toutes les 3 heures, il ne s'intercale plus qu'exceptionnellement, et
+    # il remplit toujours son rôle : une panne du planificateur externe est
+    # rattrapée en moins de 3 h. Elle est de toute façon signalée en
+    # parallèle par healthchecks.io, qui n'attend pas un passage réussi
+    # pour alerter mais l'absence de signal.
+    #
+    # La minute 0 est évitée : c'est la plus congestionnée de l'heure, et
+    # entre le 26 et le 28/08/2026 la cadence effective de "0 * * * *"
+    # était tombée à un run toutes les 3 à 9 h.
+    - cron: "37 */3 * * *"
   workflow_dispatch:
   # Déclenchement par un planificateur EXTERNE (cron-job.org, Cloudflare
   # Workers, n'importe quel cron), via l'API GitHub :

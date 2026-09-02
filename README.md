@@ -1,7 +1,7 @@
 # GTA6_WATCH
 
 Veille automatisée de l'actualité GTA 6 : un robot interroge 50 sources en
-parallèle toutes les 30 minutes, décode les vrais liens Google News, récupère
+parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
 
@@ -14,10 +14,10 @@ Un passage complet dure **environ une minute**.
 Trois briques, aucun serveur à gérer :
 
 ```
-cron-job.org (toutes les 30 min)          ← horloge principale
+cron-job.org (toutes les heures)          ← horloge principale
         │  POST /dispatches
         ▼
-GitHub Actions  ◄── cron GitHub "37"      ← filet de secours, best-effort
+GitHub Actions  ◄── cron GitHub "37 */3"  ← filet de secours, best-effort
         │
         ▼
   fetch_feeds.py  ──►  docs/feed.json          ──►  GitHub Pages  ──►  docs/index.html (PWA)
@@ -37,11 +37,19 @@ maintenir, hébergement gratuit et illimité pour ce volume.
 
 ## Le robot — `fetch_feeds.py`
 
-Tourne toutes les 30 minutes, déclenché par un planificateur **externe**
+Tourne toutes les heures, déclenché par un planificateur **externe**
 (cron-job.org) — voir la section dédiée. Le `cron` de GitHub reste déclaré
 comme filet de secours, et le déclenchement manuel reste possible via
 l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow, ou depuis
 l'app.
+
+**La cadence est passée de 30 min à 1 h le 02/09/2026**, pour réduire le
+nombre de notifications. Une notification part par passage AYANT trouvé du
+neuf, jamais par article : espacer les passages ne fait donc pas rater
+d'articles, il les regroupe. Le filet GitHub est passé au même moment de
+toutes les heures à toutes les 3 heures — best-effort, il tombait à des
+moments quelconques ENTRE deux passages de cron-job.org, et chaque
+intercalaire envoyait sa propre notification.
 
 Pourquoi un planificateur externe : le déclencheur `schedule` de GitHub est
 *best-effort*. Les runs partent avec 10 à 35 minutes de retard et sont
@@ -110,8 +118,9 @@ d'où le planificateur externe.
    (`parsed.entries[:30]` dans `fetch_feeds.py`). Les flux ne sont pas de
    la même profondeur : RockstarMag en publie 10, Eurogamer et Rock Paper
    Shotgun 100. Au-delà de 30, ce sont des articles déjà vus aux passages
-   précédents — à un passage toutes les 30 minutes, aucun site suivi ne
-   publie 30 articles dans l'intervalle.
+   précédents — à un passage par heure, aucun site suivi ne publie 30
+   articles dans l'intervalle (le fil entier tourne autour de 105 articles
+   par jour, toutes sources confondues).
 
    **Ce plafond se lit dans les chiffres** et il faut y penser avant de
    comparer un flux à ce qu'il rapporte. Mesuré le 29/08/2026, entrées
@@ -791,7 +800,8 @@ envoie un message Discord **au moment où l'état bascule** :
 🟢 VG247 est revenue.
 ```
 
-- **`DEAD_SOURCE_RUNS = 6`** — à 30 minutes par passage, trois heures. Assez
+- **`DEAD_SOURCE_RUNS = 6`** — à une heure par passage, six heures (c'était
+  trois heures quand les passages étaient toutes les 30 min). Assez
   pour écarter un 503 passager ou une coupure réseau ; assez peu pour ne pas
   laisser un flux mort passer la journée inaperçu.
 - **Une alerte par bascule, jamais par passage.** Sans ça, une panne d'une
@@ -836,9 +846,11 @@ plutôt que d'attendre l'expiration du délai.
 ## Planificateur externe : réparer le cron plutôt que le contourner
 
 **En place et vérifié depuis le 28/08/2026.** cron-job.org appelle le dépôt
-toutes les 30 minutes ; sur la nuit du 28 au 29 août, les 22 créneaux sont
-partis sans exception, à la minute près. À comparer aux 12 créneaux
-consécutifs purement abandonnés par le `schedule` de GitHub la veille.
+**toutes les heures** (c'était toutes les 30 min jusqu'au 02/09/2026, voir
+plus haut). La fiabilité a été vérifiée à l'époque de la demi-heure : sur la
+nuit du 28 au 29 août, les 22 créneaux sont partis sans exception, à la
+minute près. À comparer aux 12 créneaux consécutifs purement abandonnés par
+le `schedule` de GitHub la veille.
 
 Le `schedule` de GitHub Actions est *best effort* par conception. GitHub
 documente que les exécutions planifiées peuvent être retardées, et purement
@@ -859,8 +871,11 @@ N'importe quel planificateur sait envoyer ça — [cron-job.org](https://cron-jo
 est gratuit et suffit largement. À l'inverse du `schedule` de GitHub,
 l'appel part à l'heure dite et l'exécution démarre immédiatement.
 
-Le `schedule` reste actif comme filet de sécurité : si le planificateur
-externe tombe, GitHub prend le relais tant bien que mal. Les deux
+Le `schedule` reste actif comme filet de sécurité, à **toutes les 3
+heures** : si le planificateur externe tombe, GitHub prend le relais tant
+bien que mal. Il était horaire jusqu'au 02/09/2026, mais comme il part à des
+moments quelconques, ses passages s'intercalaient entre ceux de cron-job.org
+et chacun envoyait sa propre notification. Les deux
 ensemble ne créent pas de doublon problématique — la file d'attente
 (`concurrency`) sérialise les exécutions, et la publication fusionnante
 absorbe les chevauchements.
@@ -1095,8 +1110,7 @@ l'endroit qui les empêche de diverger ou de disparaître.
 pourtant perdu 90 % de sa couverture, et rien ne le signalait. Le volume des
 **12 derniers passages** est donc conservé par source
 (`sources_entries_history`, en chaîne compacte `"20,20,18"` — une liste JSON
-mettrait une ligne par valeur dans un fichier committé toutes les 30
-minutes). Une source est dite en baisse quand ses **3 derniers passages**
+mettrait une ligne par valeur dans un fichier committé à chaque passage). Une source est dite en baisse quand ses **3 derniers passages**
 tombent sous **35 %** de sa médiane habituelle, et seulement si cette
 médiane atteint **8 entrées** : sans ce plancher, une petite source qui
 varie normalement déclencherait à tout bout de champ. Les réponses 304 ne
@@ -1180,7 +1194,7 @@ commentaire).
   `/rss.xml`…) et aurait été deviné. Une source dont le domaine serait
   erroné renvoie zéro entrée, bascule en « muette » et déclenche l'alerte
   de source morte sous trois heures : l'erreur se signale d'elle-même.
-  Contrepartie : Google News passe de 6 à 23 flux interrogés toutes les 30
+  Contrepartie : Google News passe de 6 à 23 flux interrogés toutes les 60
   minutes — 20 aujourd'hui, après le retrait de Millenium, XboxEra et
   Xbox-Mag, soit 40 % des 50 sources sur un seul fournisseur — la plus
   grosse dépendance qui reste, désormais loin devant toutes les autres.

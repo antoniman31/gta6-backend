@@ -1793,7 +1793,7 @@ def maj_historique_entrees(feed_infos, precedent):
     """Empile le nombre d'entrées de ce passage, par source.
 
     Stocké en chaîne « 20,20,18 » et non en liste : feed.json est écrit
-    indenté et committé toutes les 30 minutes, une liste JSON y mettrait une
+    indenté et committé à chaque passage, une liste JSON y mettrait une
     ligne par valeur — 600 lignes de bruit dans chaque diff. Une chaîne
     tient sur une ligne par source et se lit tout aussi bien.
 
