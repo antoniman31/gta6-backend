@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T15:01:49.056901+00:00",
-  "duration_seconds": 48.1,
+  "generated_at": "2026-09-02T15:31:34.822144+00:00",
+  "duration_seconds": 49.2,
   "decode_failures": 0,
-  "total_articles": 1695,
-  "new_this_run": 2,
+  "total_articles": 1698,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-02T13:14:31+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 70,
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T10:33:55+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T12:54:03+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -521,7 +521,7 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T13:47:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -533,7 +533,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T14:36:15+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T16:45:18+00:00",
       "days_since_last_article": 0,
@@ -589,13 +589,13 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T12:40:06+00:00",
-      "days_since_last_article": 1,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T15:30:00+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 81,
+      "entries_fetched": 79,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,92,100,92,92,92,92,92,92,92,92,92",
+    "gnews-fr": "92,100,92,92,92,92,92,92,92,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "60,100,100,100,100,100,100,100,100,100,100,100",
+    "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,82,82,82,82,82,81,82,82,82,81",
-    "arstechnica": "29,29,29,28,28,28,28,29,28,28,28,28",
+    "engadget": "81,82,82,82,82,82,81,82,82,82,81,79",
+    "arstechnica": "29,29,28,28,28,28,29,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -973,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"a27233c08e4845632b95de383b3542ea\"",
-      "modified": "Wed, 02 Sep 2026 14:56:56 GMT"
+      "etag": "W/\"1ef0984af61ba073c0d7fedbcd69a6c3\"",
+      "modified": "Wed, 02 Sep 2026 15:20:04 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 14:24:12 GMT"
+      "modified": "Wed, 02 Sep 2026 15:18:57 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1004,7 +1004,7 @@
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 14:24:55 GMT"
+      "modified": "Wed, 02 Sep 2026 15:30:00 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 15:01:14 GMT"
+      "modified": "Wed, 02 Sep 2026 15:26:04 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,23 +1023,23 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9839ff-2ff4\"",
-      "modified": "Wed, 02 Sep 2026 15:00:15 GMT"
+      "etag": "W/\"6a984108-2fd3\"",
+      "modified": "Wed, 02 Sep 2026 15:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"6370bddabe5b8f6557ef948961c0c69c\"",
-      "modified": "Wed, 02 Sep 2026 15:00:28 GMT"
+      "etag": "W/\"1928b886f56406f793a15e97080f0793\"",
+      "modified": "Wed, 02 Sep 2026 15:25:51 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788360361\"",
-      "modified": "Wed, 02 Sep 2026 14:46:01 GMT"
+      "etag": "W/\"1788363022\"",
+      "modified": "Wed, 02 Sep 2026 15:30:22 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"d5a56b9b2a64ffbc355fd2da5ff772cc\"",
-      "modified": "Wed, 02 Sep 2026 14:42:10 GMT"
+      "etag": "W/\"ea2ffa8a2f4fe390856f814675170b61\"",
+      "modified": "Wed, 02 Sep 2026 15:22:42 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar unveil the \"next evolution\" of modded GTA 5 roleplaying, while staying totally mum on when PC pretenders might be able to migrate to their next game",
+      "link": "https://www.rockpapershotgun.com/rockstar-unveil-the-next-evolution-of-modded-gta-5-roleplaying-while-staying-totally-mum-on-when-pc-pretenders-might-be-able-to-migrate-to-their-next-game",
+      "source_link": null,
+      "date": "2026-09-02T15:30:00+00:00",
+      "source": "Rock Paper Shotgun",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/gta-5-nopixel-v-roleplay-01.jpg?width=690&quality=85&format=jpg&auto=webp",
+      "description": " Yep. I know. GTA 6 is still on the list of storied crime games without a PC release date. GTA 5, though, is out on PC and has long been the place folks who love Rockstar's crime sandboxes so much they want to pretend they live in them go for a spot of GTA roleplaying. Rockstar appear to be sticking to Guh Tuh Ah Vuh for that sort of thing in the near future too, since they're currently trumpeting a new version of the modded roleplay servers run by Nopixel Studios.\n Read more"
+    },
     {
       "title": "Don’t Care About GTA 6’s Romance System? Don’t Use It, Dev Says",
       "link": "https://www.gamespot.com/articles/dont-care-about-gta-6s-romance-system-dont-use-it-dev-says/",
@@ -1152,6 +1165,19 @@
       "lang": null,
       "image": null,
       "description": "A Ton Of New ‘GTA 6’ Details Drop After The Netflix Showcase&nbsp;&nbsp;Forbes"
+    },
+    {
+      "title": "GTA 6 will be kinder on your thumbs – but your controller’s in trouble - The Shortcut | Matt Swider",
+      "link": "https://www.theshortcut.com/p/gta-6-will-be-kinder-on-your-thumbs-but-your-controller-is-in-trouble",
+      "source_link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPb3VvRlJFVEwzS0lzOW1HbHBhWkVudGFjeWt1bExFVWNMYUhmS3Z3dENoVThnMHozZzJCY2F1S0U2NVBiMjVxRkdaaHl5RjJlMXB3UVllTl9WN3dyaENCQXZuNUxqUm15dGZrUmt1WXltSEt3cEVRVm9FN1Y4VExZZmNPVUVNWk43d3R0cnpGc1N1WXV0UjJyWERySVZNVUls?oc=5",
+      "date": "2026-09-02T12:54:03+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://substackcdn.com/image/fetch/$s_!1uof!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1618cb91-3841-4044-8674-89eddb0423a1_1456x819.webp",
+      "description": "GTA 6 will be kinder on your thumbs – but your controller’s in trouble&nbsp;&nbsp;The Shortcut | Matt Swider"
     },
     {
       "title": "GTA 6 : courir ne se fera plus comme avant - Gamekyo.com",
@@ -1412,6 +1438,19 @@
       "lang": null,
       "image": "https://www.thebiglead.com/wp-content/uploads/2026/09/gta-6-screenshots-1.900x.jpg",
       "description": "Vice City’s roads tell you everything you need to know about GTA 6&nbsp;&nbsp;The Big Lead"
+    },
+    {
+      "title": "Grand Theft Auto VI's Extended Look brought in more than 31 million viewers to Netflix - Gamereactor UK",
+      "link": "https://www.gamereactor.eu/grand-theft-auto-vis-extended-look-brought-in-more-than-31-million-viewers-to-netflix-1765533/",
+      "source_link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxOd09XY09IX2xFaXBDb1otdFU1bGlMME5QQUM2eDJZZlJfRElWcEI5M2FlUGhObE9SN3VNMlUzWDlQMTRwN21zcUtlLXdSRHNMSEtfdC10ZFkwc2NPSGRyVXRqZkExNENfRF9XQ2ZXV0FaMnFqQmR1VU1XaDBmUUNFMWd1eTZiX0Y4TklkWDlzRlJiYnFFQ2dIU2Z0c1NDRUtTTXA4YmN0anR0ZWVoVTNTd3p3SFBkM0VRNlZtcjJ3?oc=5",
+      "date": "2026-09-02T09:10:17+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.gamereactor.eu/media/91/_4979113.jpg",
+      "description": "Grand Theft Auto VI's Extended Look brought in more than 31 million viewers to Netflix&nbsp;&nbsp;Gamereactor UK"
     },
     {
       "title": "NOPIXEL V : TOUTES LES INFOS ET TOUT COMPRENDRE SUR CETTE NOUVELLE EXPÉRIENCE (TEST GTA 6 ?)",
