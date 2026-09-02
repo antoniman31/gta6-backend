@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-02T14:31:40.191804+00:00",
-  "duration_seconds": 52.4,
+  "generated_at": "2026-09-02T15:01:49.056901+00:00",
+  "duration_seconds": 48.1,
   "decode_failures": 0,
-  "total_articles": 1693,
+  "total_articles": 1695,
   "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-02T13:14:31+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T21:53:27+00:00",
       "days_since_last_article": 0,
@@ -521,8 +521,8 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T22:21:27+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T13:47:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -533,8 +533,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T13:36:10+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T14:36:15+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T12:40:06+00:00",
       "days_since_last_article": 1,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T08:48:30+00:00",
       "days_since_last_article": 0,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:11:39+00:00",
       "days_since_last_article": 0,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 82,
+      "entries_fetched": 81,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,100,92,100,92,92,92,92,92,92,92,92",
+    "gnews-fr": "100,92,100,92,92,92,92,92,92,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,60,100,100,100,100,100,100,100,100,100,100",
+    "vg247": "60,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,82,82,82,82,82,81,82,82,82",
-    "arstechnica": "29,29,29,29,28,28,28,28,29,28,28,28",
+    "engadget": "81,81,82,82,82,82,82,81,82,82,82,81",
+    "arstechnica": "29,29,29,28,28,28,28,29,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,18 +968,18 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"d575cbb6904329c4bd1480057c60b45a\"",
-      "modified": "Wed, 02 Sep 2026 13:49:54 GMT"
+      "etag": "W/\"a27233c08e4845632b95de383b3542ea\"",
+      "modified": "Wed, 02 Sep 2026 14:56:56 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 13:49:57 GMT"
+      "modified": "Wed, 02 Sep 2026 14:24:12 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"20918-gYwBbhPdeZQX7SVvn0mBSxX1DIA\"",
+      "etag": "W/\"2b261-mjAEyck3tfnubovvep36khNy4BM\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"b62d3a86ff8b62ab6ce57262f25224c2\"",
-      "modified": "Wed, 02 Sep 2026 14:17:51 GMT"
+      "etag": "W/\"e916007e7e916d6434d0ec436742cd42\"",
+      "modified": "Wed, 02 Sep 2026 14:45:44 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 14:30:46 GMT"
+      "modified": "Wed, 02 Sep 2026 15:01:14 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,23 +1023,23 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9832f6-2f98\"",
-      "modified": "Wed, 02 Sep 2026 14:30:14 GMT"
+      "etag": "W/\"6a9839ff-2ff4\"",
+      "modified": "Wed, 02 Sep 2026 15:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"37b79adb7dfde44e6e0ec95fa0498ff8\"",
-      "modified": "Wed, 02 Sep 2026 13:42:10 GMT"
+      "etag": "W/\"6370bddabe5b8f6557ef948961c0c69c\"",
+      "modified": "Wed, 02 Sep 2026 15:00:28 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788358659\"",
-      "modified": "Wed, 02 Sep 2026 14:17:39 GMT"
+      "etag": "W/\"1788360361\"",
+      "modified": "Wed, 02 Sep 2026 14:46:01 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"ff1831e488ec509761cdca036a293cd4\"",
-      "modified": "Wed, 02 Sep 2026 14:14:54 GMT"
+      "etag": "W/\"d5a56b9b2a64ffbc355fd2da5ff772cc\"",
+      "modified": "Wed, 02 Sep 2026 14:42:10 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Don’t Care About GTA 6’s Romance System? Don’t Use It, Dev Says",
+      "link": "https://www.gamespot.com/articles/dont-care-about-gta-6s-romance-system-dont-use-it-dev-says/",
+      "source_link": null,
+      "date": "2026-09-02T14:36:15+00:00",
+      "source": "GameSpot",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/Screenshot-2026-09-02-at-10.09.57-AM.png?w=300",
+      "description": "GTA 6's Jason and Lucia can be romantically involved, or they can just be partners in crime. If you're not interested in the game's romance system, don't use it, Rockstar's Rob Nelson said in a new interview.\n\n\n\n\"I have to say it feels great--if you are into it as a concept. Don’t bother with it if you aren’t. Up to you,\" Nelson told IGN.\n\n\n\nPlayers who do wish to grow and nurture a romantic relationship between Jason and Lucia can hold hands, visit a zoo together, or enjoy a romantic stroll on "
+    },
     {
       "title": "GTA 6 : Cyberleek aurait finalement encaissé 350 000 $ grâce aux fuites - GinjFo",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-cyberleek-aurait-finalement-encaisse-350-000-grace-aux-fuites-20260902",
@@ -1061,6 +1074,19 @@
       "lang": "fr",
       "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA_VI_Capture_44.jpg",
       "description": "GTA 6 : Cyberleek aurait finalement encaissé 350 000 $ grâce aux fuites&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "The Big Godzilla: Destroy All Monsters Melee Remastered Interview: Launching Against GTA 6, Cutting Hedorah, and Staying (Mostly) Faithful to a GameCube Classic",
+      "link": "https://www.ign.com/articles/the-big-godzilla-destroy-all-monsters-melee-remastered-interview-launching-against-gta-6-cutting-hedorah-and-staying-mostly-faithful-to-a-gamecube-classic",
+      "source_link": null,
+      "date": "2026-09-02T13:47:12+00:00",
+      "source": "IGN",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/08/31/godzilla-destroy-all-monsters-melee-remastered-interview-1788146249461.png",
+      "description": "IGN spoke with Godzilla: Destroy All Monsters Melee Remastered senior designer Simon Strange to hear about the game fans have long pleaded for — but never thought would actually happen."
     },
     {
       "title": "GTA 6 Has A Point Of No Return For Players Who Take Crime Too Far",
