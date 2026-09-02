@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T12:01:52.914939+00:00",
-  "duration_seconds": 57.1,
+  "generated_at": "2026-09-02T12:31:38.312814+00:00",
+  "duration_seconds": 50.6,
   "decode_failures": 0,
-  "total_articles": 1673,
-  "new_this_run": 3,
+  "total_articles": 1675,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -329,7 +329,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 5,
       "status": "ok"
@@ -341,7 +341,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T09:53:07+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 70,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-02T10:30:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-02T08:46:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T08:48:30+00:00",
       "days_since_last_article": 0,
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 0,
@@ -745,11 +745,11 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,100,92,92,92,100,92,100,92,92,92",
-    "gnews-en": "100,102,100,102,100,100,100,100,100,100,100,100",
+    "gnews-fr": "92,100,92,92,92,100,92,100,92,92,92,92",
+    "gnews-en": "102,100,102,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,60,100,100,100,100,100",
+    "vg247": "100,100,100,100,100,60,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,82,81,81,81,81,82,82,82,82",
-    "arstechnica": "29,29,29,29,29,29,29,29,29,28,28,28",
+    "engadget": "81,81,82,81,81,81,81,82,82,82,82,82",
+    "arstechnica": "29,29,29,29,29,29,29,29,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -973,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"0ee43fea45464b6ff9ed3cff3c85d8b2\"",
-      "modified": "Wed, 02 Sep 2026 12:00:00 GMT"
+      "etag": "W/\"61a3c97c6391a81c28d10dafe56fe2e5\"",
+      "modified": "Wed, 02 Sep 2026 12:13:05 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 10:43:55 GMT"
+      "modified": "Wed, 02 Sep 2026 12:00:31 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"c7dd8eacb578085c6e3294762c0e3f16\"",
-      "modified": "Wed, 02 Sep 2026 11:45:29 GMT"
+      "etag": "W/\"385e38152a689572c9524967d1cd656a\"",
+      "modified": "Wed, 02 Sep 2026 12:11:33 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 11:18:58 GMT"
+      "modified": "Wed, 02 Sep 2026 12:21:28 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 12:01:08 GMT"
+      "modified": "Wed, 02 Sep 2026 12:27:33 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a980fd1-2e80\"",
-      "modified": "Wed, 02 Sep 2026 12:00:17 GMT"
+      "etag": "W/\"6a9816d7-2e70\"",
+      "modified": "Wed, 02 Sep 2026 12:30:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1256,6 +1256,19 @@
       "lang": "fr",
       "image": "https://static.actugaming.net/media/2026/09/gta-6-20.jpg",
       "description": "ActuGaming.net\nLa présentation de GTA 6 sur Netflix a évidemment réalisé un carton d&rsquo;audience pour le service de streaming\n\nPrésenter GTA 6 via une vidéo diffusée en avant-première sur Netflix était un choix pour [&#8230;]\nL'article La présentation de GTA 6 sur Netflix a évidemment réalisé un carton d&rsquo;audience pour le service de streaming est disponible sur ActuGaming.net"
+    },
+    {
+      "title": "Les dernières images de GTA 6 impressionnent : que révèle l’analyse technique des spécialistes - RTBF",
+      "link": "https://www.rtbf.be/article/les-dernieres-images-de-gta-6-impressionnent-que-revele-l-analyse-technique-des-specialistes-11778423",
+      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPS2lnTFk1S0dPZG8wbkJUNHZtcGZmYTA3TlVFLWY2Q3BScW1EaU5rcDBHQ3lxUWcwU2R1Z2pQVGhaR05vQmdESlVjSmc4Z2Z4dl9GRk9INVBnWTdLMmlVdDVPN2pyTXp5ejEzbTJUcHoyLUFWVEFkZldYWFJlb1RJdTB5UzZvZFNsYVZFMzFFejRtcVB6dHRGTlgyaDBuZ1NPVkFXcW9haVY4bFRBbk9kb2J6d1BfbGlvRHRfeE1rR0laTGNCeWlIXw?oc=5",
+      "date": "2026-09-02T08:23:53+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://static-content.rtbf.be/article/image/1920x1080/6/7/c/c320e376828e02658214f742d5e75e12.jpg",
+      "description": "Les dernières images de GTA 6 impressionnent : que révèle l’analyse technique des spécialistes&nbsp;&nbsp;RTBF"
     },
     {
       "title": "Après 25 ans, GTA 6 va enfin changer votre façon de jouer à la manette et il était temps que ça arrive - Gameblog",
@@ -2319,6 +2332,19 @@
       "lang": null,
       "image": "https://rockstarintel.com/wp-content/uploads/2026/08/GTARP_NoPixel_Keyart_16x9.webp",
       "description": "Rockstar Games and the nopixel team are launching the next iteration of the highly popular server this month and have revealed a ton of new details. There&#8217;s even in-game rewards for all GTA Online players. It is incredible to see Rockstar working alongside community members to bring mods to GTA Online in an official capacity [...]\nThe post Rockstar Reveals GTA RP Updates With nopixel V appeared first on RockstarINTEL."
+    },
+    {
+      "title": "Some Spouses Say Playing GTA 6 Is Cheating, It’s Already Causing Real-Life Relationship Fights - Yahoo Tech",
+      "link": "https://tech.yahoo.com/gaming/articles/spouses-playing-gta-6-cheating-163245211.html",
+      "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNeXFSSS1UbHAzLXJpd0hfbURnMDJPVlZjSVlWRDV3OG9mQl9nVXNOdThLQmdzc1ozNy15YzVuLThZY19VR1V6YjRPbi0wRTJicGxjMXNSRnJrYWVtUlhYYTBOZndWOU45d081THJFY3RFRHB3NHpTYTNNeWlaeFZJQ2xfU1I5RzJuaDZrVA?oc=5",
+      "date": "2026-09-01T16:32:45+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://s.yimg.com/lo/mysterio/api/824a4e789cd260e3177a7be43e9df5c6593f9c53013c41e1481bae1d7e689f44/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fgadget_review_articles_822%2F199dce534f78a8040c0a3f6017261b54.jpg",
+      "description": "Some Spouses Say Playing GTA 6 Is Cheating, It’s Already Causing Real-Life Relationship Fights&nbsp;&nbsp;Yahoo Tech"
     },
     {
       "title": "GTA 6 will lock you out of story missions if you're too broke, so it's good to know the robbery mechanics have been massively expanded",
