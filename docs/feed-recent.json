@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-02T02:31:49.659588+00:00",
-  "duration_seconds": 57.5,
+  "generated_at": "2026-09-02T03:01:45.846783+00:00",
+  "duration_seconds": 53.2,
   "decode_failures": 0,
   "total_articles": 1624,
   "new_this_run": 1,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T01:23:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 69,
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 500,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T13:55:17+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -701,8 +701,8 @@
       "http_status": 301,
       "redirect": "https://www.dualshockers.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T23:41:17+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T02:38:51+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 81,
+      "entries_fetched": 80,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,12 +914,12 @@
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-02T02:01:47.837021+00:00",
-      "succes": 1,
+      "succes": 0,
       "alertee": false
     },
     "rockstarmag-youtube": {
       "depuis": "2026-09-02T02:01:47.837021+00:00",
-      "succes": 1,
+      "succes": 0,
       "alertee": false
     }
   },
@@ -929,8 +929,8 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,15",
-    "gnews-fr": "92,92,100,92,92,92,92,92,92,92,92,92",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
+    "gnews-fr": "92,100,92,92,92,92,92,92,92,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
     "rockstarintel": "10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,14 +963,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,8,9,9,9,9,9,8,9,8,9,9",
+    "xboxwire": "8,9,9,9,9,9,8,9,8,9,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,45,100,100,44,100,100,100,100,100,100",
+    "gamergen": "100,45,100,100,44,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "80,81,81,81,81,81,81,81,80,81,81,81",
+    "engadget": "81,81,81,81,81,81,81,80,81,81,81,80",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -979,8 +979,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1025,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 02:27:31 GMT"
+      "modified": "Wed, 02 Sep 2026 02:59:08 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a978a39-2ee0\"",
-      "modified": "Wed, 02 Sep 2026 02:30:17 GMT"
+      "etag": "W/\"6a979140-2ee0\"",
+      "modified": "Wed, 02 Sep 2026 03:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1060,6 +1060,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA Online Adds Official Roleplay Support to Make GTA 6 Wait Easier",
+      "link": "https://www.dualshockers.com/gta-online-adds-official-roleplay-support-to-make-gta-6-wait-easier/",
+      "source_link": null,
+      "date": "2026-09-02T02:38:51+00:00",
+      "source": "DualShockers",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2023/02/gta-online-characters.jpg?w=1600&h=900&fit=crop",
+      "description": "Rockstar is adding official support for GTA Online roleplay and plans to reveal more details September 8."
+    },
     {
       "title": "How GTA 6 Has Changed Since Trailer 2 - svg.com",
       "link": "https://www.svg.com/2249218/gta-6-changes-trailer-2-explained/",
@@ -5026,19 +5039,6 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/08/gta-6-no-first-person-mode.jpg?w=1600&h=900&fit=crop",
       "description": "Grand Theft Auto 6's highly-anticipated release in November may not include the return of a fan-favorite feature from a past GTA game."
-    },
-    {
-      "title": "GTA 6 Developer Reaffirms The Game’s Release Date",
-      "link": "https://insider-gaming.com/gta-6-developer-reaffirms-the-games-release-date/",
-      "source_link": null,
-      "date": "2026-08-29T18:52:47+00:00",
-      "source": "Insider Gaming",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://insider-gaming.com/wp-content/uploads/2026/06/GTA-6-Title.jpg",
-      "description": "Rob Nelson of Rockstar North is again confirming that GTA 6 will not be delayed.\nThe post GTA 6 Developer Reaffirms The Game&#8217;s Release Date appeared first on Insider Gaming."
     }
   ],
   "partial": true,
