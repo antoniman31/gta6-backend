@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-02T07:03:41.065693+00:00",
-  "duration_seconds": 51.7,
+  "generated_at": "2026-09-02T07:31:34.971929+00:00",
+  "duration_seconds": 52.4,
   "decode_failures": 0,
-  "total_articles": 1637,
+  "total_articles": 1642,
   "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -389,15 +389,15 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-02T06:53:02+00:00",
+      "new_this_run": 3,
+      "last_article": "2026-09-02T07:22:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -473,7 +473,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:11:39+00:00",
       "days_since_last_article": 0,
@@ -653,9 +653,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T07:00:00+00:00",
-      "days_since_last_article": 4,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T07:15:29+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -761,8 +761,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T07:51:15+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T07:26:56+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -845,7 +845,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T06:39:22+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -869,7 +869,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T06:16:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -911,27 +911,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-02T02:01:47.837021+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-02T02:01:47.837021+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,15,0,0,0,0,0,0,0,0,0,15",
+    "rockstar-youtube": "15,0,0,0,0,0,0,0,0,0,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,92,99,99,99,100,100,100,100,100",
+    "gnews-en": "100,100,92,99,99,99,100,100,100,100,100,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,15,0,0,0,0,0,0,0,0,0,15",
+    "rockstarmag-youtube": "15,0,0,0,0,0,0,0,0,0,15,15",
     "rockstarintel": "10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -970,7 +959,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,80,80,80,80,80,80,80,81,80,81",
+    "engadget": "81,80,80,80,80,80,80,80,81,80,81,81",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -990,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 06:59:34 GMT"
+      "modified": "Wed, 02 Sep 2026 07:05:03 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1009,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"c1cbe5487ed75e05940a3571ca11975a\"",
-      "modified": "Wed, 02 Sep 2026 07:02:11 GMT"
+      "etag": "W/\"adde161cb8f0ba1810188e4490c1335d\"",
+      "modified": "Wed, 02 Sep 2026 07:30:00 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1025,17 +1014,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 07:00:03 GMT"
+      "modified": "Wed, 02 Sep 2026 07:29:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"2782764d0353b5aad58e15667a98f7f0\"",
-      "modified": "Wed, 02 Sep 2026 06:11:39 GMT"
+      "etag": "\"9ad0484385f7214b6f6b519820da77fc\"",
+      "modified": "Wed, 02 Sep 2026 07:11:19 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a97c982-2fbe\"",
-      "modified": "Wed, 02 Sep 2026 07:00:18 GMT"
+      "etag": "W/\"6a97d088-2fd2\"",
+      "modified": "Wed, 02 Sep 2026 07:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1060,6 +1049,71 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : le pari fou de Rockstar sur Netflix a été un énorme succès - Xboxygen",
+      "link": "https://www.xboxygen.com/News/366120-gta-6-le-pari-fou-de-rockstar-sur-netflix-a-ete-un-enorme-succes",
+      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPRG9rZkR2UlZLamVOazFlaW5sOWhoS0plaEk5cDEwWE0xcDdVLXJISEJ2cVoyWW44MU1sOWxMQ0lNN0pENFhRWERHVkFIeDhkLW82ZWtmMFJhazFLSDl4SUZ1TVpFOXlUTjVSelI1TVg3RWpOOTdFdjJfU1lmY0oxdlAyejZpT2wyOXZBOFhMT1BFRUVOUmFWMGJLcFFFVi05cnh3?oc=5",
+      "date": "2026-09-02T07:26:56+00:00",
+      "source": "Xboxygen",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/08/GTA-6-netflix-pirate.jpg",
+      "description": "GTA 6 : le pari fou de Rockstar sur Netflix a été un énorme succès&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "GTA 6 : le trailer a cartonné sur Netflix et pourrait changer la façon dont les jeux sont dévoilés - Xboxygen",
+      "link": "https://www.xboxygen.com/News/366120gta-6-le-trailer-cartonne-sur-netflix-et-pourrait-changer-la-facon-dont-les-jeux-sont-devoiles",
+      "source_link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQS21fR3Z4Vkw2OW9MYU0zZFRQVlNZUFJkU0g5Y3lsZjJxekR2RWV6QTh1cVNESEhHY3B4clowZWpQaHhKc090djJ6Q0lVN2xlSUs0UFNCbnFjc21HMnJGcDRzSS1JT1VUOS01b3YxOFk5MlV5NHZTdXNJUkR0QnljZDlWTmFlQ0Vqb3dtNk9nYkM5UUZoU3UxOF9KaEZNT1F0aDg1TE9pQkMtMnBXcE02X0dVVzhua1pTSmRZTkN5WTRSUmExODhLMGtR?oc=5",
+      "date": "2026-09-02T07:22:40+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/08/GTA-6-netflix-pirate.jpg",
+      "description": "GTA 6 : le trailer a cartonné sur Netflix et pourrait changer la façon dont les jeux sont dévoilés&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "« Ça marque vraiment la fin d'une ère » Une énorme nouveauté annoncée pour GTA 5 RP et elle mettra fin à 13 ans d'attente pour le jeu",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-5-rp-no-pixel-evenement-722070",
+      "source_link": null,
+      "date": "2026-09-02T07:15:29+00:00",
+      "source": "Gameblog.fr",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img/news/427151_647d8bd67b930.jpg",
+      "description": "Après 13 ans d'attente pour le mastodonte GTA 5, le jeu phare de Rockstar Games annonce un énorme changement pour marquer un grand événement exclusif."
+    },
+    {
+      "title": "GTA 6 : carton plein sur Netflix pour l'Extended Look - blog-nouvelles-technologies.fr",
+      "link": "https://www.blog-nouvelles-technologies.fr/379923/gta-6-extended-look-netflix/",
+      "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOYy1CMFBNNVE2Ukdnc19Vd3NGYUxPcTF1RHZSZjJTT1JUUzZtYWs1NDBNcDBOU2lMaXpmTHp6X3UxYWNvZmt0Y29NUlloUFdYeERlaEpNeUVPM2NweHpDT0hxZjhHVmcxdXBfUVREOG9aWXJoaE1KdVlIUmRvM3J1bVJCbUw?oc=5",
+      "date": "2026-09-02T07:10:19+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.blog-nouvelles-technologies.fr/wp-content/uploads/2026/09/images-36.webp",
+      "description": "GTA 6 : carton plein sur Netflix pour l'Extended Look&nbsp;&nbsp;blog-nouvelles-technologies.fr"
+    },
+    {
+      "title": "GTA 6 sur Netflix : 31,1 millions de vues, c’est un succès - kulturegeek.fr",
+      "link": "https://kulturegeek.fr/news-358204/gta-6-netflix-311-millions-vues-cest-succes",
+      "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNQnBWRFRNQTBXakV0LVJLWVFkbzZmMWcyazJTcjlWX0s3MTdla3VOU2EyU293cnpTNnVQNHhRNzR2QnlheExzRGE3R0J2TTBycUx3SWpkdmtLaHRQSmRTOVdSOEVRT09nVVJfOS1FUUx4a0RfbHRscmoyYldxRWhfU3JDalI?oc=5",
+      "date": "2026-09-02T07:08:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn.kulturegeek.fr/wp-content/uploads/2026/08/GTA-6-Lucia-Jason.jpg",
+      "description": "GTA 6 sur Netflix : 31,1 millions de vues, c’est un succès&nbsp;&nbsp;kulturegeek.fr"
+    },
     {
       "title": "GTA 6 : tout savoir (date, prix, carte, gameplay) 2026 - BlogNT",
       "link": "https://www.blog-nouvelles-technologies.fr/379949/tout-savoir-gta-6/",
@@ -1136,7 +1190,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA_VI_Capture_65.jpg",
-      "description": "Une nouvelle arnaque exploite les fuites de GTA 6. Un faux site propose une prétendue version jouable du jeu. Elle embarque un « wallet drainer ».\nCet article TA 6 : une fausse version leakée peut vider votre portefeuille crypto a été publié en premier par GinjFo."
+      "description": "Une nouvelle arnaque exploite les fuites de GTA 6. Un faux site propose une prétendue version jouable du jeu. Elle embarque un « wallet drainer ».\nCet article TA 6 : une fausse version leakée peut vider votre portefeuille crypto a été publié en premier par GinjFo.",
+      "extraSources": [
+        {
+          "source": "Google News (FR)",
+          "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-une-fausse-version-leakee-peut-vider-votre-portefeuille-crypto-20260902"
+        }
+      ]
     },
     {
       "title": "GTA 6 a dépassé les 30 millions de vues sur Netflix - Numerama",
@@ -4986,71 +5046,6 @@
       "lang": null,
       "image": "https://files.vgtimes.com/posts/2026-08/kinda-funny-says-gta-6-includes-a-furry-related-random-event-165878.webp",
       "description": "Furries, a TV cartoon series, and racing-game-grade tuning — what was shown at a closed-door GTA 6 preview"
-    },
-    {
-      "title": "GTA 6 makers subpoena X, Google in hunt for Cyberleek - Mashable",
-      "link": "https://mashable.com/tech/take-two-interactive-gta-6-leakers-subpoena-google-x-corp",
-      "source_link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPSnk2TDdpRWdoUUpZRTZwLTRyZnN4SVB5Sk9NQmpCdFJ5cUM1NmJoUTM4R0MwVDh3WkZ6emNLazU2S1htR0FZak82UU1sN3c3cmRXWGJ2NWZoLXJtM180RHBzSFRhLWJOVDZ4TjVLRzNQNzBKVEJfU3FSV1ZueHpORFpkclY2aEdrTHRv?oc=5",
-      "date": "2026-08-30T05:46:48+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://helios-i.mashable.com/imagery/articles/01YmSMh5u9bnbVXIG0sD0dE/hero-image.fill.size_1200x675.v1787605043.png",
-      "description": "GTA 6 makers subpoena X, Google in hunt for Cyberleek&nbsp;&nbsp;Mashable"
-    },
-    {
-      "title": "GTA Online's Valentina May Appear in GTA 6 Story, Rumor Says",
-      "link": "https://gta6times.com/news/gta-online-valentina-gta-6-story-rumor",
-      "source_link": null,
-      "date": "2026-08-30T05:37:38+00:00",
-      "source": "GTA6 Times",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://gta6times.com/news/gta-online-valentina-gta-6-story-rumor/opengraph-image",
-      "description": "An Aug 30 report claims GTA Online's Valentina shows up in a GTA 6 story mission, but Rockstar hasn't confirmed the crossover."
-    },
-    {
-      "title": "Après 29 ans, GTA 6 va révolutionner l’une des fonctionnalités les plus emblématiques de la saga - La Crème Du Gaming",
-      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/apres-29-ans-gta-6-va-revolutionner-lune-des-fonctionnalites-les-plus-emblematiques-de-la-saga-223865.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxNUGJ6TC1VNkRkVWowMDduZ3ZPNzE4VU8zQ3dXN19BMnlKUVBFdEJKNG50emhocjkwbzE3OFlLcl9KNFNkUWwxNWM2YXVlRDdkYzlqQ1BtdF9fclkzUmpaSk1IM2E3TW1TV0NtbjdGQURJekVVc1lOand6LVVub1I0VzFRRTd0NEpETGQ5ZzNzSHdlRkUtb3dXd2tfSmtaYThJeldXV1FyUkpaclVPYnptdnVidTUtQ1dIU2U1R2NPWkpWeGRFcTU1UEEzMGUwZkxORmx5X0J0UGZqRHNBVTgwTTlrRi10UjA?oc=5",
-      "date": "2026-08-30T05:00:31+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/08/apres-29-ans-gta-6-va-revolutionner-lune-des-fonctionnalites-les-plus-emblematiques-de-la-saga.webp",
-      "description": "Après 29 ans, GTA 6 va révolutionner l’une des fonctionnalités les plus emblématiques de la saga&nbsp;&nbsp;La Crème Du Gaming"
-    },
-    {
-      "title": "Gracie Bon Shares GTA 6 3D Body Scan Footage from Rockstar - x.com",
-      "link": "https://x.com/i/trending/2093816047979896981",
-      "source_link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5yeXlYdUhlUFRSVEJYZXh0MUlTNGVxTFl1YnlQWF9hTFhIT1RuMjdTeHppUnY0aXo5NEg0WDNvdTdaajU4SS02ZVVjQlNhQk5nNlY5WUlkMA?oc=5",
-      "date": "2026-08-30T04:11:44+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://pbs.twimg.com/media/HQ5_Az8XgAALUlB.jpg?name=orig",
-      "description": "Gracie Bon Shares GTA 6 3D Body Scan Footage from Rockstar&nbsp;&nbsp;x.com"
-    },
-    {
-      "title": "GTA 6 pourrait révolutionner le vol de voitures, une mécanique emblématique de la saga - Auto Moto",
-      "link": "https://www.auto-moto.com/insolite/gta-6-pourrait-revolutionner-le-vol-de-voitures-une-mecanique-emblematique-de-la-saga-80181",
-      "source_link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQczJib3BISGxLMkJHQnlUc1ZNcUx0MHNPVV9pWG5TTktYcnM0SEZvSHlYM2stcmlDaXlZaHJhbVduaXFpWFc3RVRTekFrUlk5TDVEeDFwaDRWOHNVeWtJM2x3N3E1eHBtakYyNHQ0RmRVQmI4MmFmR3hkY3ZQaU1ZTW5RNnJHaDJSdTZDRUNVN09Bbl9sWC1VOVNWdTJiSWR0Z1VDcFh3dDBuU2QzV3FXVjhYQVlTR2VPcWhZaU45aWowUGN1?oc=5",
-      "date": "2026-08-30T04:06:01+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://photos.auto-moto.com/32/2026/08/photo_article/80181/391569/1200-L-gta-6-pourrait-rvolutionner-le-vol-de-voitures-une-mcanique-emblmatique-de-la-saga.webp",
-      "description": "GTA 6 pourrait révolutionner le vol de voitures, une mécanique emblématique de la saga&nbsp;&nbsp;Auto Moto"
     }
   ],
   "partial": true,
