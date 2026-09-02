@@ -174,7 +174,7 @@ d'où le planificateur externe.
    50 h en régime normal, mais 16 h le 27/08 — jour à 293 articles. Le robot
    voyait donc le moins loin les jours où il se passait quelque chose. Un
    plancher de 200 articles garantit qu'on ne compare jamais à moins
-   qu'avant, un plafond de 1500 borne le coût.
+   qu'avant, un plafond de **5000** (`FENETRE_MAX`) borne le coût.
 
    Le second point — les articles du passage en cours — manquait jusqu'au
    29/08/2026 : ils étaient ajoutés à la *fin* de la liste, donc hors des
@@ -186,16 +186,59 @@ d'où le planificateur externe.
    à 3 — donc un badge 🔥 alors réglé sur 4 qui n'a jamais pu s'afficher une
    seule fois en 1 211 articles ; c'est ce constat qui a fait descendre le
    seuil à 3 (voir plus bas).
+
+   **Le plafond était à 1500 jusqu'au 02/09/2026.** Il tenait large en
+   régime courant — au plus gros jour observé (296 articles le 27/08), les
+   72 h ne contenaient que 709 articles, 47 % du plafond — mais il mord
+   précisément le jour où la fenêtre sert le plus : à 1500, une journée de
+   sortie à 1000 articles ramènerait les 72 h demandées à 36 h effectives.
+   5000 couvre 72 h jusqu'à 1600 articles par jour, cinq fois le pic connu.
+
+   **Ce que cette marge a coûté : rien.** `peut_atteindre_le_seuil()`
+   écarte une paire AVANT de construire le `SequenceMatcher` — c'est lui la
+   partie chère — en calculant deux bornes SUPÉRIEURES du score : les
+   longueurs (un titre de 20 caractères et un de 90 plafonnent à 0,36) et
+   les caractères en commun. Ce sont exactement les bornes que difflib
+   expose sous `real_quick_ratio()` et `quick_ratio()`, mais les appeler
+   supposerait d'avoir déjà construit l'objet, donc d'avoir déjà payé.
+
+   Une borne supérieure ne peut répondre que « le seuil est hors
+   d'atteinte », jamais « c'est un doublon » : aucun vrai doublon ne peut
+   lui échapper. Vérifié en force brute sur 175 980 paires de titres réels
+   (0 décision différente), puis par un rejeu de tout l'historique — 1 632
+   articles, 27 rapprochements de part et d'autre, 0 écart — qui donne au
+   passage la mesure de bout en bout : **270,1 s avant, 52,6 s après**.
+
+   Deux fausses pistes écartées en chemin, mesure à l'appui. Précalculer
+   `titre_comparable()` pour toute la fenêtre ne gagne que 10 % : ce n'est
+   pas le nettoyage des titres qui coûte, c'est l'alignement. Et réutiliser
+   l'index interne de difflib en inversant les deux séquences aurait changé
+   les résultats — `ratio()` n'est pas symétrique, 28 052 paires sur 33 670
+   donnent un score différent selon l'ordre.
 10. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
    les plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant très large.
 
-   **Échéance** (mesurée le 01/09/2026) : au rythme des deux dernières
-   semaines — **98 articles/jour**, et non ~50 comme annoncé ici jusque-là —
-   le plafond tombe dans **environ 6 mois**, et `feed.json` pèsera alors
-   ~13 Mo. `audit_donnees.py` recalcule cette projection à chaque passage de
-   CI, pour qu'on la voie venir au lieu de la découvrir. Voir les Limites
-   pour la conséquence sur le poids du fichier.
+   **Sauf les publications de Rockstar, qui ne se retirent jamais** (depuis
+   le 02/09/2026). Ce sont les plus anciennes du fil — l'annonce, le premier
+   trailer, toute la période d'attente : 32 articles dont le plus vieux date
+   du 04/02/2022 — donc exactement celles qu'une troncature par la fin
+   emporte en premier. Ce sont aussi les seules irremplaçables : la reprise
+   d'un site d'actu se retrouve ailleurs, le billet officiel non.
+
+   Le plafond reste un vrai plafond : ce qui est épargné à un officiel est
+   pris sur un article ordinaire plus ancien. Un seul cas le dépasse — pas
+   assez d'articles ordinaires à retirer — et la liste reste alors plus
+   longue que 20 000 plutôt que de jeter ce qu'on a promis de garder. Il
+   faudrait 20 000 publications de Rockstar pour y arriver ; le cas est
+   testé quand même.
+
+   **Échéance** (mesurée le 02/09/2026) : au rythme des deux dernières
+   semaines — **105 articles/jour**, et non ~50 comme annoncé ici jusqu'au
+   01/09 — le plafond tombe dans **environ 6 mois**, et `feed.json` pèsera
+   alors ~15 Mo. `audit_donnees.py` recalcule cette projection à chaque
+   passage de CI, pour qu'on la voie venir au lieu de la découvrir. Voir les
+   Limites pour la conséquence sur le poids du fichier.
 
    Le dépôt git, lui, n'est pas un souci : entre deux passages presque rien
    ne change dans le fichier, donc git compresse en conséquence — 186
@@ -208,8 +251,8 @@ d'où le planificateur externe.
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
 12. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
-   récents (`RECENT_FEED_SIZE`). Mesuré le 29/08/2026 sur 1 299 articles :
-   267 Ko bruts / 75 Ko compressés, contre 966 Ko / 233 Ko pour
+   récents (`RECENT_FEED_SIZE`). Mesuré le 02/09/2026 sur 1 637 articles :
+   301 Ko bruts / 90 Ko compressés, contre 1 285 Ko / 332 Ko pour
    l'historique complet.
    C'est ce fichier que l'app charge à l'ouverture ; elle télécharge le
    complet à la demande, et automatiquement dès qu'une recherche est
@@ -416,7 +459,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **332
+qui permet de tester tout le pipeline sans sortir de la machine. **647
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -505,12 +548,14 @@ articles masqués annoncerait des non-lus introuvables.
 
 **La détection de doublons passe d'abord par le titre exact.** Un
 dictionnaire titre normalisé -> article, sans limite d'ancienneté, avant la
-comparaison floue. La fenêtre floue se compte en **articles** (200), pas en
-heures : lors d'un pic à 288 articles par jour elle ne couvre plus que douze
-heures, et onze paires de doublons parfaits lui avaient échappé au 29/08 —
-le même article sous deux URL (`ign.com` et `fr.ign.com`, `bbc.com` et
-`bbc.co.uk`). Un dictionnaire n'a ni coût ni horizon, là où élargir la
-fenêtre ne ferait que déplacer la limite.
+comparaison floue. Le motif : la fenêtre floue a un horizon, un
+dictionnaire non. Quand elle se comptait en **articles** (200), un pic à
+288 articles par jour la réduisait à douze heures, et onze paires de
+doublons parfaits lui avaient échappé au 29/08 — le même article sous deux
+URL (`ign.com` et `fr.ign.com`, `bbc.com` et `bbc.co.uk`). Elle se compte
+en heures depuis le 30/08 (voir plus haut), mais l'argument tient toujours :
+élargir une fenêtre ne fait que déplacer sa limite, là où un dictionnaire
+n'en a aucune.
 
 `fusionne_doublons_de_titre()` reprend l'historique déjà stocké, comme les
 deux autres passes rétroactives. Elle s'en tient au **titre exact** : rejouer
@@ -571,7 +616,7 @@ d'affichage, et « Réinitialiser les filtres » ne le touche pas.
 **Ce que `localStorage` conserve.** La copie locale des articles est
 plafonnée à **300**, la taille du fichier allégé. Elle ne sert qu'à afficher
 quelque chose à l'ouverture avant que le réseau réponde ; sans plafond elle
-suivait l'historique — 0,97 Mo pour 1 299 articles, donc environ 15 Mo aux
+suivait l'historique — 1,25 Mo pour 1 637 articles, donc environ 15 Mo aux
 20 000 du backend, très au-delà du quota de 5 Mo. Un drapeau accompagne la
 troncature : sans lui, la liste restaurée au démarrage paraîtrait complète
 et une recherche renverrait « aucun résultat » pour un article qui existe.
@@ -914,22 +959,77 @@ l'API GitHub : 60 requêtes/h par adresse IP).
   ligne long n'est revenu.
 - **L'état du dernier passage, dans l'app.** `feed.json` publiait déjà
   `generated_at`, `new_this_run`, `hot_count` et `sources_health` — l'app ne
-  les regardait pas. Une ligne sous le compteur d'articles dit maintenant
-  « passage en 1 min 25 · 15 nouveaux · toutes les sources répondent », et
-  passe en alerte quand une source est muette, cassée, ou quand un décodage
-  Google News a échoué. Placée **sous les deux boutons** : au-dessus, elle
-  séparait le nombre d'articles des actions qui le modifient, alors que ce
-  bloc existe pour les tenir ensemble.
+  les regardait pas. Seule la durée manquait côté backend
+  (`duration_seconds`). Une ligne sous les deux boutons dit maintenant
+  `51 s · 5 nouveaux · 50/50 sources`. Placée **sous les boutons** :
+  au-dessus, elle séparait le nombre d'articles des actions qui le
+  modifient, alors que ce bloc existe pour les tenir ensemble. Masquée en
+  mode de secours, où aucun robot ne tourne : y laisser l'état du dernier
+  passage backend annoncerait un état qui n'a plus cours.
 
-  `sources_silence` compte **toutes** les sources qui ne rapportent rien —
-  muettes et cassées confondues, c'est voulu côté robot. Les recompter
-  séparément à l'affichage annonçait « 3 sources muettes · 3 cassées » pour
-  trois sources en tout : **six problèmes affichés, trois réels**. Les
-  muettes excluent donc celles déjà nommées comme cassées, et « toutes les
-  sources répondent » exige que les deux comptes soient nuls. Seule la durée manquait côté backend
-  (`duration_seconds`). Masquée en mode de secours, où aucun robot ne tourne :
-  y laisser l'état du dernier passage backend annoncerait un état qui n'a
-  plus cours.
+  **Une seule ligne, toujours ; une seconde seulement s'il y a un souci**
+  (02/09/2026). La ligne du haut a une forme FIXE — durée, nouveaux,
+  compteur de sources — dimensionnée pour tenir dans tous les cas. Tout ce
+  qui peut s'allonger sans limite descend sur une deuxième ligne, qui
+  n'existe pas du tout en régime normal : sources muettes, sources cassées
+  avec leurs noms, sources en forte baisse, décodages Google News en échec.
+
+  Deux morceaux ont dû maigrir pour que le haut tienne. « toutes les sources
+  répondent » (28 caractères) est devenu le compteur `50/50 sources` (13),
+  qui dit la même chose et continue de dire quelque chose quand il devient
+  `46/50` — en orange à ce moment-là. Une source **tarie** répond
+  parfaitement, elle n'a simplement rien publié depuis 30 jours : la compter
+  en échec afficherait `46/50` en permanence pour un état sain. Et le
+  préfixe « passage en » a disparu — 11 caractères, 66 px, c'est lui qui
+  faisait déborder la ligne sur un écran de 320 px.
+
+  Mesuré dans Chromium sur 320, 360, 375, 390, 412 et 430 px, avec le cas de
+  production, un pire cas plausible et un cas extrême
+  (`99 min 59 · 9999 nouveaux · 0/100 sources`) : hauteur de 17 px partout,
+  soit une ligne exactement, marge la plus serrée +11 px. La ligne du haut
+  est en `white-space:nowrap` — si un morceau s'allonge un jour, il débordera
+  visiblement au lieu de repasser sournoisement sur deux lignes.
+
+  **Les deux comptes viennent de `sources_health`, et de lui seul.** Une
+  source y porte exactement UN statut, donc « muettes » et « cassées » ne
+  peuvent pas se recouvrir. Les compter depuis `sources_silence` annonçait
+  « 3 sources muettes · 3 cassées » pour trois sources en tout : **six
+  problèmes affichés, trois réels**. Et `sources_silence` ne conviendrait
+  plus de toute façon — il ne liste plus les sources muettes mais les
+  CHRONOMÈTRES en cours, donc une source qui vient de répondre y reste tant
+  que sa reprise n'est pas confirmée sur deux passages.
+- **Confirmation avant les gestes sans retour.** Cinq actions n'avaient
+  aucun garde-fou : « Tout marquer comme lu », « Oublier ce token »,
+  « Réinitialiser les réglages », la régénération des clés VAPID et la
+  désactivation du push. Un doigt qui ripe suffisait à effacer un token ou
+  une paire de clés, sans annulation possible. Elles passent maintenant par
+  `demandeConfirmation()`, qui renvoie une promesse : le focus part sur
+  **Annuler**, Échap et un clic sur le fond répondent tous les deux non, et
+  le bouton de validation est **souligné en rouge, pas rempli** — une
+  confirmation ne doit pas se cliquer par réflexe.
+
+  **La coche ✓ des cartes en est exemptée, volontairement.** C'est le geste
+  le plus fréquent de l'app, il est réversible d'un second clic, et le faire
+  passer par une fenêtre le rendrait insupportable. Un test verrouille cette
+  exemption pour qu'on ne l'« harmonise » pas par distraction.
+
+- **Un seul endroit décide ce qui est affiché.** `articlesAffiches()`
+  applique dans l'ordre l'onglet, la langue, le filtre lu/nouveau, la
+  recherche, puis le plafond d'affichage — et tout ce qui compte des
+  articles part de là. La confirmation de « Tout marquer comme lu » annonçait
+  auparavant **tous** les articles affichés au lieu des seuls non lus : sur
+  l'onglet RockstarMag avec 29 non lus sur 247, elle proposait de marquer les
+  247. Elle ne cible plus que les articles dont l'état change réellement, et
+  annonce les deux nombres (« 29 non lus parmi les 247 affichés »).
+
+- **Images différées et repères de jour collants.** Les vignettes et favicons
+  portent `loading="lazy" decoding="async"` — le navigateur ne télécharge que
+  ce qui approche de l'écran. Les libellés de jour restent collés en haut
+  pendant le défilement (`position:sticky`), pour qu'on sache toujours de
+  quelle journée on lit les articles. Vérifié dans un vrai navigateur, pas
+  seulement dans le balisage : la première version du test passait sur une
+  étiquette qui avait déjà quitté l'écran par le haut.
+
 - **Recharger l'app sans la tuer.** Le service worker sert bien le squelette
   en réseau-d'abord, mais il n'intercepte que les requêtes de **navigation**
   — et une PWA installée n'en fait plus aucune après son lancement.
@@ -1038,13 +1138,13 @@ commentaire).
 - **Historique glissant, pas permanent** — plafonné à 20 000 articles
   (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique complet
   depuis toujours.
-- **Poids de `feed.json` à terme** — 966 Ko aujourd'hui pour 1 299 articles ;
-  au plafond de 20 000 il approcherait 15 Mo (~3,5 Mo compressés). L'ouverture
-  de l'app n'est pas concernée (elle charge `feed-recent.json`), mais toute
-  recherche déclenche le téléchargement de l'historique complet. Côté dépôt
-  en revanche il n'y a pas de problème : Git ne stocke que les lignes
-  changées (~30 à 90 lignes par passage), et l'ensemble du dépôt tient
-  aujourd'hui dans **700 Ko compactés pour 204 commits**.
+- **Poids de `feed.json` à terme** — 1 285 Ko aujourd'hui pour 1 637
+  articles ; au plafond de 20 000 il approcherait 15 Mo (~4 Mo compressés).
+  L'ouverture de l'app n'est pas concernée (elle charge `feed-recent.json`),
+  mais toute recherche déclenche le téléchargement de l'historique complet.
+  Côté dépôt en revanche il n'y a pas de problème : Git ne stocke que les
+  lignes changées (~30 à 90 lignes par passage), et l'ensemble du dépôt
+  tient dans **3,7 Mo compactés pour 466 commits** (mesuré le 02/09/2026).
 - **Deux définitions de sources** — la liste `FEEDS` (Python, source de
   vérité) et `DEFAULT_FEEDS` (JS, utilisé uniquement par le mode de
   secours) doivent être synchronisées manuellement si une source est
@@ -1141,7 +1241,7 @@ commentaire).
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.
 - **Fichier HTML monolithique** — `index.html` regroupe CSS, HTML et JS
-  dans un seul fichier de ~3600 lignes plutôt que d'être séparé en
+  dans un seul fichier de ~3900 lignes plutôt que d'être séparé en
   plusieurs fichiers. Choix assumé : ça simplifie l'upload manuel (un seul
   fichier à remplacer au lieu de plusieurs à garder synchronisés), au
   prix d'un fichier plus long à parcourir si besoin d'y retoucher.
@@ -1158,7 +1258,13 @@ commentaire).
   ci-dessus)
 - **Taille max de l'historique** : `MAX_HISTORY_SIZE` dans `feed_store.py`
   (partagé par le robot et l'outil de fusion, pour que les deux appliquent
-  exactement la même règle)
+  exactement la même règle). Les articles marqués `official` y échappent,
+  voir `cap_items`
+- **Déduplication** : `SIMILARITY_THRESHOLD` (le seuil de 0,75),
+  `FENETRE_HEURES`, `TITLE_SIMILARITY_WINDOW` (plancher) et `FENETRE_MAX`
+  (plafond), en tête de `fetch_feeds.py`. Toucher au seuil se vérifie en
+  rejouant l'historique, pas en raisonnant : c'est la mesure qui a montré
+  qu'un titre réduit au seul nom du jeu se comportait en aimant
 - **Webhook Discord** : secret GitHub `DISCORD_WEBHOOK_URL` (Settings →
   Secrets and variables → Actions) — ne jamais partager cette URL en
   clair ; si elle fuite, la régénérer immédiatement côté Discord
