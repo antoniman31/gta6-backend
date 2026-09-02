@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T05:01:45.870465+00:00",
-  "duration_seconds": 53.9,
+  "generated_at": "2026-09-02T05:31:38.831028+00:00",
+  "duration_seconds": 54.4,
   "decode_failures": 0,
-  "total_articles": 1625,
-  "new_this_run": 1,
+  "total_articles": 1627,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,18 +353,18 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T01:23:18+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T04:48:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 69,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T04:56:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -485,16 +485,16 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T11:15:59+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T05:05:44+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
       "entries_fetched": 0,
-      "http_status": 500,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T08:29:55+00:00",
       "days_since_last_article": 0,
@@ -929,9 +929,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,0,15,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,0,15,0,0,0,0,0,0",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,100,100,100,100,92,99,99,99",
+    "gnews-en": "100,100,100,100,100,100,100,92,99,99,99,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,15,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,0,15,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,14 +963,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,8,9,8,9,9,9,9,9,9,9",
+    "xboxwire": "9,8,9,8,9,9,9,9,9,9,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "44,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,80,81,81,81,80,80,80,80,80",
+    "engadget": "81,81,80,81,81,81,80,80,80,80,80,80",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -979,8 +979,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -995,7 +995,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 04:46:49 GMT"
+      "modified": "Wed, 02 Sep 2026 05:08:22 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -1025,17 +1025,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 05:01:04 GMT"
+      "modified": "Wed, 02 Sep 2026 05:30:53 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"3a7232e691d25a2762b6f9a511fb3731\"",
-      "modified": "Tue, 01 Sep 2026 19:48:16 GMT"
+      "etag": "\"5669f6b9507d2bd8160faaabadd0a874\"",
+      "modified": "Wed, 02 Sep 2026 05:28:12 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a97ad60-2ee0\"",
-      "modified": "Wed, 02 Sep 2026 05:00:16 GMT"
+      "etag": "W/\"6a97b467-2fcd\"",
+      "modified": "Wed, 02 Sep 2026 05:30:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1061,6 +1061,19 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "GTA 5 | Toutes les infos (et le trailer) sur le lancement de NoPixel V, l’expérience RP officielle de Rockstar Games",
+      "link": "https://www.rockstarmag.fr/gta-5-toutes-les-infos-et-le-trailer-sur-le-lancement-de-nopixel-v-lexperience-rp-officielle-de-rockstar-games/",
+      "source_link": null,
+      "date": "2026-09-02T05:05:44+00:00",
+      "source": "RockstarMag",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/09/info-lancement-nopixel-v-1024x576.jpg",
+      "description": "Découvrez dès maintenant toutes les infos sur NoPixel V, l'expérience RP officielle de GTA V par Rockstar Games et NoPixel Studios."
+    },
+    {
       "title": "GTA VI : Carte deux fois plus grande et 11 fois plus de villes, Rockstar dévoile de nouveaux détails ! - Tom’s Hardware",
       "link": "https://www.tomshardware.fr/gta-vi-carte-deux-fois-plus-grande-et-11-fois-plus-de-villes-rockstar-devoile-de-nouveaux-details/",
       "source_link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQbXBIU1dENmVMVUZVQ05Md3M3WHJ0dGxqYmtsWFU1eVJIX3V4bS1JeXV2VzQwc3dWdGs3VzQ0SlgxdVZESDhSV0ZOSFlPRnRQOWJBdm5IeDQzNENGckJqV09ENWFaV1E2akVZNVJ3RDhHaDYyQ2FROXBwU21OaTkwZklkUTlfVE9BanF2VFNxTnhkSEI3WWpTT1ltcGc2XzNxcTlheUk4aEZaUkg5c0FTaWs4a0dOZDFXYUl5STV2cjZTS3At?oc=5",
@@ -1072,6 +1085,19 @@
       "lang": "fr",
       "image": "https://www.tomshardware.fr/content/uploads/sites/3/2025/03/trailers-gta6-scaled.jpg",
       "description": "GTA VI : Carte deux fois plus grande et 11 fois plus de villes, Rockstar dévoile de nouveaux détails !&nbsp;&nbsp;Tom’s Hardware"
+    },
+    {
+      "title": "GTA VI gameplay tops Netflix with 31M views, speeds past Robert De Niro and Outer Banks - Gulf News",
+      "link": "https://gulfnews.com/entertainment/gta-vi-gameplay-tops-netflix-with-31m-views-speeds-past-robert-de-niro-and-outer-banks-1.500660233",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNZ1J2dkNvVVRHdkc0T0h6dkdoWE41VTFSMXJuMkVTUjVmNGVITUk2OGFIeGIwU1MyUUdGOTJBWFlSQlY5OGVJWTBwRHJfNEFXQ3gxLXB1eGRydzRqUDlKYnNUN0V6SklyRjRyN1Y5MXBkRy0zRjRfSTFtaERqZ3l6TEdNd05JVTBVdjE2Qjg3RmhZcm5rRmpJeFFYU2l6NjJRcmtRUmRxMmk2RVdLRUdSVHl5ZXZSVWc4c3NSSmtLR1pwTDdFcHp5V0ppZHJwd9IB3gFBVV95cUxONVVqMmd6RGdoYkdKRnBpT0lZMV9CR2MteTNOdC1EbjlpMVpUcGl6TlMyZzVOMEpWdTlIcUw2VVpONWVIdG5aQWQwalFpNng5MmVoY1pCRGd5S1ZIcnF3V3o1dVJmNUNRMXk1YVl5c3BuOTZrMFdVZnAtMGdMMV82RW1zbzlhdUFzWVNDRl9oajZFV2VwekVkakR6OXhMN3VPOTE3Qk9XLUlfVjNWbGZBTG9yN0hkYVQ5b2hzZTkyWEFnc29BWkR3LTFzaW50RTB6MzlhNHp2Yy1hMFBBdXc?oc=5",
+      "date": "2026-09-02T04:48:10+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://media.assettype.com/gulfnews%2F2026-08-19%2Fcwtt5aie%2FANI_20260713080101.jpg?w=1200&ar=40%3A21&auto=format%2Ccompress&ogImage=true&mode=crop&enlarge=true&overlay=false&overlay_position=bottom&overlay_width=100",
+      "description": "GTA VI gameplay tops Netflix with 31M views, speeds past Robert De Niro and Outer Banks&nbsp;&nbsp;Gulf News"
     },
     {
       "title": "GTA Online Adds Official Roleplay Support to Make GTA 6 Wait Easier",
