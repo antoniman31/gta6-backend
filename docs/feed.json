@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T01:18:57.874135+00:00",
-  "duration_seconds": 66.0,
+  "generated_at": "2026-09-02T01:31:35.321504+00:00",
+  "duration_seconds": 52.3,
   "decode_failures": 0,
-  "total_articles": 1619,
-  "new_this_run": 0,
+  "total_articles": 1620,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,8 +353,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T00:39:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T01:23:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
       "days_since_last_article": 3,
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-31T13:48:34+00:00",
       "days_since_last_article": 1,
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 9,
+      "entries_fetched": 8,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 80,
+      "entries_fetched": 81,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "92,92,100,92,92,100,92,92,92,92,92,92",
+    "gnews-fr": "92,100,92,92,100,92,92,92,92,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -952,14 +952,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,7,7,9,8,9,9,9,9,9,8,9",
+    "xboxwire": "7,7,9,8,9,9,9,9,9,8,9,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,45,100,100,44,100,100,100",
+    "gamergen": "100,100,100,100,45,100,100,44,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,80,81,81,81,81,81,81,81,80",
+    "engadget": "81,81,80,81,81,81,81,81,81,81,80,81",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 01:18:01 GMT"
+      "modified": "Wed, 02 Sep 2026 01:29:03 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a977520-2ee0\"",
-      "modified": "Wed, 02 Sep 2026 01:00:16 GMT"
+      "etag": "W/\"6a977c27-2ee0\"",
+      "modified": "Wed, 02 Sep 2026 01:30:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Netflix Debut Beats Every Movie and Show With 31.1M Views in 4 Days - GamesReviews.com",
+      "link": "https://gamesreviews.com/news/09/gta-6-netflix-debut-beats-every-movie-and-show-with-31-1m-views-in-4-days/",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPdnRRbWVnT1Ywcm1zVUxDbWZZb3F3LWd4S196a3FvczFWVEJ4X3oyUnMtYWd1azBBaldKdnhVSU1VQWw2V3l2SVVNbmw5QjhOektwYlFCRDVJTmVod2pRWVhXUk84MTVaYlltUjE2cktUOHVaTnd1UW54NFZoTW9CTERENnpXc0phRmt5OXpZM1ViM1pHaVhXMGpWY1JpdUxvdWF6aTBKNnU0RkE?oc=5",
+      "date": "2026-09-02T01:23:18+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 Netflix Debut Beats Every Movie and Show With 31.1M Views in 4 Days&nbsp;&nbsp;GamesReviews.com"
+    },
     {
       "title": "GTA 6 Soars to No. 1 on Netflix's Movie Chart - Polygon.com",
       "link": "https://www.polygon.com/gta-6-netflix-movie-charts/",
