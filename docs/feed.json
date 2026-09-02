@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T16:50:12.898551+00:00",
-  "duration_seconds": 48.3,
+  "generated_at": "2026-09-02T17:01:48.280377+00:00",
+  "duration_seconds": 51.0,
   "decode_failures": 0,
-  "total_articles": 1706,
-  "new_this_run": 2,
+  "total_articles": 1707,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,18 +390,18 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-02T16:03:39+00:00",
+      "last_article": "2026-09-02T16:45:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T16:30:55+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-01T16:45:18+00:00",
       "days_since_last_article": 1,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T15:30:00+00:00",
       "days_since_last_article": 0,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T08:48:30+00:00",
       "days_since_last_article": 0,
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 0,
@@ -920,7 +920,7 @@
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,102",
+    "gnews-en": "100,100,100,100,100,100,100,100,100,100,102,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,81,82,82,82,81,79,81,81,81",
-    "arstechnica": "28,28,28,29,28,28,28,28,28,28,28,28",
+    "engadget": "82,82,81,82,82,82,81,79,81,81,81,81",
+    "arstechnica": "28,28,29,28,28,28,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -973,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"8c0e95639ff18584cd61f578cdaea573\"",
-      "modified": "Wed, 02 Sep 2026 16:48:19 GMT"
+      "etag": "W/\"0bcdb263f1d3dddd1332fbaae0dffbb3\"",
+      "modified": "Wed, 02 Sep 2026 17:01:03 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 16:09:03 GMT"
+      "modified": "Wed, 02 Sep 2026 16:53:18 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 16:49:33 GMT"
+      "modified": "Wed, 02 Sep 2026 17:01:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a984f18-2fd3\"",
-      "modified": "Wed, 02 Sep 2026 16:30:16 GMT"
+      "etag": "W/\"6a98561f-2fd3\"",
+      "modified": "Wed, 02 Sep 2026 17:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "La présentation sur Netflix propulse les précommandes de GTA 6 - Génération NT",
+      "link": "https://www.generation-nt.com/actualites/presentation-netflix-ventes-gta-2080452",
+      "source_link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOdWFkaFhjMk5UX2hHTVV3UmY4YVQzUDhkeUNuVXJyeFpYMVBKOEMzMkxjRnJTZHUyZWFhLUZxR0MzXzdoa1hNNm8yNHZSa0VJSkVDTzdGdmRpNUdPSktDb05IdnRpT1FOMEdNSnctMUxfSmVVWU1IcDRnME5mUzVZeUR6Z25uMTTSAYwBQVVfeXFMTTd2M0pzQURFbjJkVTBjU1RtZ21WaWcxbTZJSWNFRFhwdktBakx1TGczLS1rT3N2aF9OYUZVT0FHZl9wNDg5UDJHQVJxdG5aRDVzMHlJdjA5UUQ1M0FQNEhmbDVieU1EV0Y3ZTJVRE8xRzd1aFFUeTFkSUZ3Z0dfcFRTMUUyS0U1TGZ0WEw?oc=5",
+      "date": "2026-09-02T16:45:01+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.generation-nt.com/gta-6-netflix-01_04B002A301728718.webp",
+      "description": "La présentation sur Netflix propulse les précommandes de GTA 6&nbsp;&nbsp;Génération NT"
+    },
     {
       "title": "One GTA 6 Preview Stunned Rockstar With Something It Had Never Seen Before - polygon.com",
       "link": "https://www.polygon.com/gta-6-release-preview-random-events-npc-rockstar-youtube/",
