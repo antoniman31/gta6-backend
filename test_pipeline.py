@@ -83,6 +83,60 @@ def test_sort_and_cap():
     check(none_dropped == 0 and len(unchanged) == 4, "sous le plafond, rien n'est retiré")
 
 
+def test_plafond_epargne_rockstar():
+    print("\n[tri] le plafond ne retire jamais une publication de Rockstar")
+
+    def art(lien, jour, officiel=False):
+        item = article(lien, "2026-%02d-%02dT00:00:00+00:00" % (1 + jour // 28, 1 + jour % 28))
+        item["official"] = officiel
+        return item
+
+    # Le plus ancien de la liste est officiel : c'est le cas qui comptait,
+    # puisque la troncature part par la fin. Ce sont justement les articles
+    # de Rockstar qui sont les plus vieux de l'historique — l'annonce, le
+    # premier trailer — donc les premiers qu'un plafond emporterait.
+    items = feed_store.sort_items([
+        art("officiel-vieux", 0, officiel=True),
+        art("banal-1", 1), art("banal-2", 2), art("banal-3", 3),
+        art("officiel-recent", 4, officiel=True),
+        art("banal-4", 5),
+    ])
+    gardes, retires = feed_store.cap_items(items, max_size=3)
+    liens = [i["link"] for i in gardes]
+    check(retires == 3 and len(gardes) == 3,
+          "le plafond est bien atteint : trois articles retirés sur six")
+    check("officiel-vieux" in liens and "officiel-recent" in liens,
+          "les deux publications de Rockstar sont là, y compris la plus ancienne")
+    check(liens == ["banal-4", "officiel-recent", "officiel-vieux"],
+          "ce sont les articles ordinaires les plus anciens qui partent")
+
+    # L'ordre du plus récent au plus ancien doit survivre au retrait : la
+    # suite du passage (fenêtre de dédup, publication) le tient pour acquis.
+    dates = [feed_store.parse_date_key(i["date"]) for i in gardes]
+    check(dates == sorted(dates, reverse=True),
+          "la liste reste triée du plus récent au plus ancien")
+
+    # Cas limite : pas assez d'articles ordinaires à retirer. Dépasser le
+    # plafond vaut mieux que jeter ce qu'on a promis de garder — et surtout
+    # la fonction ne doit pas boucler ni renvoyer un compte faux.
+    que_des_officiels = feed_store.sort_items(
+        [art("off-%d" % n, n, officiel=True) for n in range(5)])
+    gardes, retires = feed_store.cap_items(que_des_officiels, max_size=2)
+    check(len(gardes) == 5 and retires == 0,
+          "cinq officiels sous un plafond de deux : aucun n'est retiré")
+
+    # Et le mélange : on retire tout ce qu'on peut, sans descendre au
+    # plafond, et le compte annoncé est celui des retraits réels.
+    mixte = feed_store.sort_items(
+        [art("off-%d" % n, n, officiel=True) for n in range(4)]
+        + [art("banal-%d" % n, 10 + n) for n in range(2)])
+    gardes, retires = feed_store.cap_items(mixte, max_size=3)
+    check(retires == 2 and len(gardes) == 4,
+          "les deux ordinaires partent, les quatre officiels restent")
+    check(all(i.get("official") for i in gardes),
+          "il ne reste que du Rockstar")
+
+
 def test_normalize_stored_dates():
     print("\n[repasse rétroactive] conversion des dates héritées")
     items = [
@@ -1521,7 +1575,11 @@ def test_fenetre_en_heures():
 
     # Plafond : rien n'interdit à un événement futur de produire des
     # milliers d'articles en trois jours ; le coût doit rester borné.
-    deluge = [art(h * 0.001, n) for n, h in enumerate(range(3000))]
+    # Le déluge doit dépasser le plafond, sinon le test ne vérifie rien —
+    # il est donc dimensionné SUR le plafond plutôt que sur une constante
+    # recopiée, qui devenait fausse à la première remontée du plafond.
+    deluge = [art(h * 0.001, n)
+              for n, h in enumerate(range(fetch_feeds.FENETRE_MAX * 2))]
     check(len(fetch_feeds.fenetre_recente(deluge, heures=72))
           == fetch_feeds.FENETRE_MAX,
           f"et jamais plus de {fetch_feeds.FENETRE_MAX}, quel que soit le pic")
@@ -2814,6 +2872,110 @@ def test_ligne_etat_sans_double_compte():
           "la ligne d'état est placée après le bloc des boutons")
 
 
+def test_prefiltre_de_ressemblance():
+    print("\n[doublons] le préfiltre ne peut pas écarter un vrai doublon")
+    import fetch_feeds
+    from difflib import SequenceMatcher
+
+    S = fetch_feeds.SIMILARITY_THRESHOLD
+
+    # La propriété qu'on verrouille, et la seule qui compte : le préfiltre
+    # ne répond « non » que si le score est HORS D'ATTEINTE. Il ne peut donc
+    # jamais faire rater un doublon — il ne fait qu'éviter de calculer.
+    #
+    # Vérifié en force brute sur toutes les paires d'un jeu de titres
+    # réalistes, en comparant la décision AVEC et SANS préfiltre. Un seul
+    # écart et la déduplication aurait changé de comportement.
+    titres = [
+        "GTA 6 : Rockstar dévoile enfin la date de sortie",
+        "GTA 6 : Rockstar dévoile enfin la date de sortie officielle",
+        "Rockstar dévoile la date de sortie de GTA 6",
+        "GTA VI Trailer 2 est en ligne",
+        "GTA VI Trailer 3 est en ligne",
+        "Grand Theft Auto VI - Trailer 1",
+        "20+ New GTA 6 Screenshots Released",
+        "New Grand Theft Auto 6 Screenshots Revealed",
+        "Take-Two confirme le report de GTA 6 à novembre 2026",
+        "Take-Two confirms GTA 6 delay to November 2026",
+        "Un fan recrée Vice City dans Minecraft",
+        "Les actions de Take-Two grimpent après l'annonce",
+        "a",
+        "",
+        "Grand Theft Auto VI - Rockstar Games",
+        "GTA 6",
+    ]
+
+    ecarts = 0
+    prefiltres = 0
+    for a in titres:
+        ta = fetch_feeds.titre_comparable(a)
+        for b in titres:
+            tb = fetch_feeds.titre_comparable(b)
+            possible = fetch_feeds.peut_atteindre_le_seuil(ta, tb)
+            reel = fetch_feeds.ressemblance_comparables(ta, tb)
+            if not possible:
+                prefiltres += 1
+                if reel >= S:
+                    ecarts += 1
+    check(ecarts == 0,
+          "aucune paire écartée par le préfiltre n'atteignait le seuil")
+    check(prefiltres > 0,
+          "et le préfiltre écarte bien quelque chose, sinon il ne sert à rien")
+
+    # Le préfiltre est une BORNE SUPÉRIEURE, pas une décision : il doit
+    # laisser passer des paires que le vrai calcul refuse ensuite. Un
+    # préfiltre qui trancherait juste à tous les coups serait en train de
+    # décider à la place de SequenceMatcher, et le seuil ne voudrait plus
+    # rien dire.
+    #
+    # Le cas est construit plutôt que cherché dans un corpus : deux chaînes
+    # faites des MÊMES caractères dans l'ordre inverse. Les deux bornes
+    # valent 1,0 — mêmes longueurs, mêmes lettres — alors que l'alignement
+    # réel ne trouve presque rien. Sur des titres réels la situation est la
+    # règle, pas l'exception : 8 216 paires sur 89 700 passent le préfiltre,
+    # dont 2 seulement sont de vrais doublons.
+    endroit, envers = "abcdefghij", "jihgfedcba"
+    check(fetch_feeds.peut_atteindre_le_seuil(endroit, envers),
+          "deux chaînes aux mêmes lettres passent les deux bornes")
+    check(fetch_feeds.ressemblance_comparables(endroit, envers) < S,
+          "et le vrai calcul les refuse — le préfiltre ne décide pas à sa place")
+
+    # Un titre vide n'est un doublon de rien, pas même d'un autre titre vide.
+    check(not fetch_feeds.peut_atteindre_le_seuil("", ""),
+          "deux titres vides ne se ressemblent pas")
+    check(not fetch_feeds.peut_atteindre_le_seuil("", "gta 6 date de sortie"),
+          "un titre vide ne ressemble à rien")
+
+    # Les deux bornes prises séparément, sur des cas construits pour ça.
+    check(not fetch_feeds.peut_atteindre_le_seuil("court", "x" * 200),
+          "la borne des longueurs écarte deux titres de tailles incomparables")
+    check(not fetch_feeds.peut_atteindre_le_seuil("abcdefghij", "klmnopqrst"),
+          "la borne des caractères écarte deux titres sans lettre commune")
+    check(fetch_feeds.peut_atteindre_le_seuil("abcdefghij", "abcdefghij"),
+          "deux titres identiques passent le préfiltre")
+
+    # Et le résultat de bout en bout : find_duplicate doit toujours trouver
+    # le doublon évident, préfiltre ou pas.
+    fenetre = [{"title": "GTA 6 : Rockstar dévoile enfin la date de sortie",
+                "link": "https://a.tld/1"}]
+    trouve = fetch_feeds.find_duplicate(
+        {"title": "GTA 6 : Rockstar dévoile enfin la date de sortie officielle",
+         "link": "https://b.tld/2"},
+        fenetre, links_index={}, fenetre_titres=fenetre)
+    check(trouve is not None and trouve["link"] == "https://a.tld/1",
+          "find_duplicate reconnaît toujours une reprise du même titre")
+
+    # Le garde-fou des numéros passe APRÈS le préfiltre maintenant. Deux
+    # titres d'une même série se ressemblent beaucoup, donc le préfiltre les
+    # laisse passer : c'est bien le garde-fou qui doit les séparer, sinon
+    # « Trailer 2 » et « Trailer 3 » fusionneraient.
+    serie = [{"title": "GTA VI Trailer 2 est en ligne", "link": "https://a.tld/t2"}]
+    check(fetch_feeds.find_duplicate(
+              {"title": "GTA VI Trailer 3 est en ligne", "link": "https://b.tld/t3"},
+              serie, links_index={}, fenetre_titres=serie) is None,
+          "le garde-fou des numéros agit toujours après le préfiltre")
+
+
 def test_ligne_run_tient_sur_une_ligne():
     print("\n[app] le bilan du robot tient sur une ligne, sauf s'il y a des soucis")
     html = open("docs/index.html", encoding="utf-8").read()
@@ -3125,6 +3287,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_timeout_reseau, test_source_cassee_vs_muette,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
+           test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,

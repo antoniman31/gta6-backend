@@ -27,7 +27,7 @@ import sys
 import threading
 import time
 import os
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -642,10 +642,57 @@ def title_similarity(a, b):
     les compter brouille la mesure au lieu de l'affiner. Un titre qui n'en
     contient rien d'autre ne ressemble à rien — c'est le bon résultat.
     """
-    ta, tb = titre_comparable(a), titre_comparable(b)
+    return ressemblance_comparables(titre_comparable(a), titre_comparable(b))
+
+
+def ressemblance_comparables(ta, tb):
+    """Le même score, mais sur des titres DÉJÀ passés par titre_comparable.
+
+    Existe pour que la passe 3 de find_duplicate ne nettoie pas deux fois
+    les mêmes titres : elle a besoin des formes nettoyées pour le préfiltre
+    ci-dessous, autant les réutiliser ici.
+    """
     if not ta or not tb:
         return 0.0
     return SequenceMatcher(None, ta, tb).ratio()
+
+
+def peut_atteindre_le_seuil(ta, tb, seuil=SIMILARITY_THRESHOLD):
+    """Vrai si ressemblance_comparables(ta, tb) PEUT atteindre le seuil.
+
+    Deux bornes SUPÉRIEURES du score de difflib, calculées sans construire
+    de SequenceMatcher — c'est lui qui coûte cher, pas le nettoyage des
+    titres (mesuré : le précalculer ne gagne que 10 %).
+
+    Ce sont exactement les bornes que difflib expose sous real_quick_ratio()
+    et quick_ratio(), mais les appeler supposerait d'avoir déjà construit
+    l'objet, donc d'avoir déjà payé.
+
+      1. Les longueurs. Le score vaut 2M/T, où T est la somme des deux
+         longueurs et M le nombre de caractères appariés — au mieux la
+         longueur du plus court. Un titre de 20 caractères et un de 90 ne
+         peuvent donc pas dépasser 2×20/110 = 0,36.
+      2. Les caractères utilisés. Même généreusement, M ne dépasse pas le
+         nombre de caractères que les deux titres ont en commun, multiplicité
+         comprise. Deux titres qui ne partagent presque aucune lettre sont
+         écartés sans être alignés.
+
+    Ce sont des bornes SUPÉRIEURES : elles ne peuvent répondre que « le
+    seuil est hors d'atteinte », jamais « c'est un doublon ». Un vrai
+    doublon ne peut donc pas leur échapper. Vérifié sur 175 980 paires de
+    titres réels : aucune décision différente, pour 6 fois moins de temps.
+
+    Le garde-fou des numéros (titres_dune_meme_serie) reste appliqué APRÈS,
+    par l'appelant : l'ordre est sans effet sur le résultat, les deux ne
+    font que refuser.
+    """
+    total = len(ta) + len(tb)
+    if not total:
+        return False
+    if 2.0 * min(len(ta), len(tb)) / total < seuil:
+        return False
+    communs = sum((Counter(ta) & Counter(tb)).values())
+    return 2.0 * communs / total >= seuil
 
 
 # Un doublon de titre proche n'a de sens qu'entre articles publiés à peu
@@ -674,8 +721,19 @@ FENETRE_HEURES = 72
 # Le plafond borne le coût : une fenêtre de 72 h vaut 534 articles
 # aujourd'hui et 593 au pic, mais rien n'interdit à un événement futur de
 # produire trois mille articles en trois jours.
+#
+# Plafond porté de 1 500 à 5 000 le 02/09/2026, une fois la comparaison
+# rendue six fois moins chère par peut_atteindre_le_seuil. 1 500 tenait
+# large aujourd'hui — le plus gros jour observé (296 articles le 27/08)
+# ne remplissait la fenêtre de 72 h qu'à 709 articles, 47 % du plafond —
+# mais le plafond mord précisément le jour où la fenêtre sert le plus :
+# à 1 500, une journée de sortie à 1 000 articles ramènerait les 72 h
+# demandées à 36 h effectives, et le robot verrait le moins loin le jour
+# où il y a le plus de doublons. 5 000 couvre 72 h jusqu'à 1 600
+# articles par jour, cinq fois le pic connu, et reste moins cher que
+# 1 500 ne l'était avant le préfiltre.
 TITLE_SIMILARITY_WINDOW = 200          # plancher
-FENETRE_MAX = 1500                     # plafond
+FENETRE_MAX = 5000                     # plafond
 
 
 def fenetre_recente(items, heures=FENETRE_HEURES):
@@ -796,10 +854,19 @@ def find_duplicate(item, existing_items, links_index=None, fenetre_titres=None,
 
     a_comparer = (fenetre_titres if fenetre_titres is not None
                   else existing_items[:TITLE_SIMILARITY_WINDOW])
+    # Le titre du candidat n'est nettoyé qu'une fois pour toute la fenêtre.
+    ta = titre_comparable(item["title"])
+    if not ta:
+        return None
     for other in a_comparer:
+        tb = titre_comparable(other["title"])
+        # Le préfiltre en premier : c'est lui qui écarte la quasi-totalité
+        # des paires, et il ne coûte presque rien.
+        if not peut_atteindre_le_seuil(ta, tb):
+            continue
         if titres_dune_meme_serie(item["title"], other["title"]):
             continue
-        if title_similarity(item["title"], other["title"]) >= SIMILARITY_THRESHOLD:
+        if ressemblance_comparables(ta, tb) >= SIMILARITY_THRESHOLD:
             return other
     return None
 
@@ -2434,10 +2501,17 @@ def main():
 
     # Plafonne la taille de l'historique : au-delà de MAX_HISTORY_SIZE, on
     # retire les articles les plus anciens plutôt que de laisser le fichier
-    # (et le temps de dédup) grossir indéfiniment.
+    # (et le temps de dédup) grossir indéfiniment. Les publications de
+    # Rockstar sont épargnées, voir cap_items.
+    #
+    # La taille d'arrivée est lue sur la liste, pas recopiée depuis
+    # MAX_HISTORY_SIZE : dans le cas limite où les officiels empêchent de
+    # descendre jusqu'au plafond, annoncer le plafond serait un mensonge.
+    avant = len(all_items)
     all_items, dropped = feed_store.cap_items(all_items)
     if dropped:
-        print(f"Historique plafonné : {len(all_items) + dropped} -> {MAX_HISTORY_SIZE} (les {dropped} plus anciens sont retirés)")
+        print(f"Historique plafonné : {avant} -> {len(all_items)} "
+              f"({dropped} articles retirés, les plus anciens hors Rockstar)")
 
     # État des sources, puis cumul des passages muets. L'état seul ne dit
     # que « muette maintenant » ; c'est le cumul qui distingue une panne

@@ -134,14 +134,45 @@ def sort_items(items):
 
 
 def cap_items(items, max_size=MAX_HISTORY_SIZE):
-    """Plafonne l'historique en retirant les articles les plus anciens.
+    """Plafonne l'historique en retirant les articles NON OFFICIELS les plus anciens.
 
     À n'appeler que sur une liste DÉJÀ triée par sort_items : sur une liste
     mal triée, la troncature retirerait les mauvais articles.
+
+    Les publications de Rockstar ne se retirent jamais. Ce sont les plus
+    anciennes de l'historique — l'annonce, le premier trailer, toute la
+    période d'attente — donc exactement celles qu'une troncature par la fin
+    emporterait en premier. Ce sont aussi les seules irremplaçables : la
+    reprise d'un site d'actu se retrouve ailleurs, le billet officiel non.
+    Elles sont 30 sur 1 512 aujourd'hui, la protection ne coûte donc rien
+    en place.
+
+    Le plafond reste un vrai plafond : ce qui est épargné à un article
+    officiel est pris sur un article ordinaire plus ancien, la liste
+    retombe bien à max_size.
+
+    Un seul cas la dépasse : s'il n'y a pas assez d'articles ordinaires à
+    retirer, parce que les officiels seuls rempliraient l'historique. La
+    liste reste alors plus longue que le plafond — dépasser d'un peu vaut
+    mieux que jeter ce qu'on a promis de garder. Inatteignable en pratique
+    (il faudrait 20 000 publications de Rockstar), mais une fonction ne
+    doit pas dépendre d'un « ça n'arrivera pas ».
     """
-    if len(items) <= max_size:
+    a_retirer = len(items) - max_size
+    if a_retirer <= 0:
         return items, 0
-    return items[:max_size], len(items) - max_size
+
+    # Parcours du plus ancien au plus récent : les premiers retirés sont
+    # bien les plus vieux, l'ordre d'origine est rendu tel quel.
+    gardes = []
+    retires = 0
+    for item in reversed(items):
+        if retires < a_retirer and not item.get("official"):
+            retires += 1
+            continue
+        gardes.append(item)
+    gardes.reverse()
+    return gardes, retires
 
 
 # Paramètres de pistage ajoutés aux URL par les régies et les réseaux
