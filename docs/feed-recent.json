@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T17:01:48.280377+00:00",
-  "duration_seconds": 51.0,
+  "generated_at": "2026-09-02T17:31:39.409578+00:00",
+  "duration_seconds": 51.6,
   "decode_failures": 0,
-  "total_articles": 1707,
-  "new_this_run": 1,
+  "total_articles": 1710,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 70,
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T16:30:55+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T17:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
@@ -545,9 +545,9 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T01:12:07+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T17:11:06+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T08:48:30+00:00",
       "days_since_last_article": 0,
@@ -715,7 +715,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T17:28:48+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -920,7 +920,7 @@
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,100,102,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,100,102,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,81,82,82,82,81,79,81,81,81,81",
-    "arstechnica": "28,28,29,28,28,28,28,28,28,28,28,28",
+    "engadget": "82,81,82,82,82,81,79,81,81,81,81,81",
+    "arstechnica": "28,29,28,28,28,28,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,13 +968,13 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"0bcdb263f1d3dddd1332fbaae0dffbb3\"",
-      "modified": "Wed, 02 Sep 2026 17:01:03 GMT"
+      "etag": "W/\"bf932d689d8e3f2bd36c21a38c9dee7c\"",
+      "modified": "Wed, 02 Sep 2026 17:30:57 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 16:28:44 GMT"
+      "modified": "Wed, 02 Sep 2026 17:11:48 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 17:01:10 GMT"
+      "modified": "Wed, 02 Sep 2026 17:31:01 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a98561f-2fd3\"",
-      "modified": "Wed, 02 Sep 2026 17:00:15 GMT"
+      "etag": "W/\"6a985d27-2fd3\"",
+      "modified": "Wed, 02 Sep 2026 17:30:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Controversial GTA 6 Change Has Fans Flipping Out",
+      "link": "https://www.polygon.com/gta-6-preview-sprint-change-l3-hold-tap-how-does-it-work/",
+      "source_link": null,
+      "date": "2026-09-02T17:11:06+00:00",
+      "source": "Polygon",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/09/jason_and_lucia_04.jpg?w=1600&h=900&fit=crop",
+      "description": "Grand Theft Auto 6's standard control scheme is causing an uproar for Rockstar Games fans after one YouTuber's preview"
+    },
+    {
+      "title": "I modded GTA 6 leak-accurate car fuelling into GTA 5 - pcgamer.com",
+      "link": "https://www.pcgamer.com/games/grand-theft-auto/i-modded-gta-6-leak-accurate-car-fuelling-into-gta-5/",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQU3ZSdE11cVBYUzBfWVprOVdfMTZSdld1VDZQeVdPZEdkaHl5R0tSdlRLTXZ0MWR0NHJUTmhXWEE3R3BmajVfVFo3RDFDVXNOZFJvVDNQTjFwM0xnRm9idTI2ZFdmU0owVlc4ZF9vRVZlaXFaaHpjMnlwQTFQTTQyWkRUWU5rS2ZMVlRFU0w3UWJkaDNpZ2thM2s3YUU2b2otcXc?oc=5",
+      "date": "2026-09-02T17:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/9F7rvjBomMiNsPGn3G8jsE-1920-80.jpg",
+      "description": "I modded GTA 6 leak-accurate car fuelling into GTA 5&nbsp;&nbsp;pcgamer.com"
+    },
     {
       "title": "La présentation sur Netflix propulse les précommandes de GTA 6 - Génération NT",
       "link": "https://www.generation-nt.com/actualites/presentation-netflix-ventes-gta-2080452",
@@ -1126,6 +1152,19 @@
       "lang": null,
       "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1296943/f35309ef-e4af-497a-8300-ef362f005196.jpg",
       "description": "Grand Theft Auto VI Gameplay Garners Over 31 Million Views on Netflix&nbsp;&nbsp;ixbt.games"
+    },
+    {
+      "title": "GTA 6 : la course change de bouton après 25 ans - Pèse sur start",
+      "link": "https://www.pesesurstart.com/2026/09/02/gta-6--la-course-change-de-bouton-apres-25-ans",
+      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPeERMV2tYa1d3NW5yNkt3UjhTZl9oZUtaRjNpVG92MVgxdUlPeUc2S3NURjhycHZoQU9PYkRUbkxqbzVBdUo1OHo5b0xVaHNLZl9tS19HTkcwRnNmVzd0NU1VbHRUWWlQYk5mejJXQ1RQQ2tYMEtsdzJHSEpBbHV0dzdUUVNzN3JhX2ZHRGlNWQ?oc=5",
+      "date": "2026-09-02T15:32:15+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://m1.quebecormedia.com/emp/emp/ULTIMATE_EDITION_ELECTRIC_FANG_045776d98e-487f-467d-a999-7bacfe1644f2_ORIGINAL.jpg?impolicy=crop-resize&x=0&y=0&w=3840&h=2160&width=1200",
+      "description": "GTA 6 : la course change de bouton après 25 ans&nbsp;&nbsp;Pèse sur start"
     },
     {
       "title": "Rockstar unveil the \"next evolution\" of modded GTA 5 roleplaying, while staying totally mum on when PC pretenders might be able to migrate to their next game",
@@ -5005,45 +5044,6 @@
       "lang": "fr",
       "image": "https://www.tomsguide.fr/content/uploads/sites/2/2026/08/GTA6-voitures.jpg",
       "description": "GTA 6 bouleverse la conduite et le vol de voitures, voici tout ce qui change&nbsp;&nbsp;tomsguide.fr"
-    },
-    {
-      "title": "L'acteur de Michael dans GTA 5 défend GTA 6 face aux sceptiques qui trouvent que les jeux de Rockstar se ressemblent trop",
-      "link": "https://fr.ign.com/grand-theft-auto-v/91720/lacteur-de-michael-dans-gta-5-defend-gta-6-face-aux-sceptiques-qui-trouvent-que-les-jeux-de-rockstar",
-      "source_link": null,
-      "date": "2026-08-31T08:02:16+00:00",
-      "source": "IGN France",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-5s-mic/gta-5s-michael-actor-defends-gta-6-after-doubters-say-rockst_3w9e.1200.jpg",
-      "description": "\n\"Ça n&#x27;a jamais eu aussi fière allure.\""
-    },
-    {
-      "title": "GTA 6 Will Have No Microtransactions or Generative AI at Launch, Rockstar Says - IGN Africa",
-      "link": "https://za.ign.com/grand-theft-auto-vi/240213/gta-6-will-have-no-microtransactions-or-generative-ai-at-launch-rockstar-says",
-      "source_link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxQMUoxcVZ1a19tY25QUlg1N1JpQnpQcmlLZDZlSWhPRkJmcTYzbmZXTjdpRkMtMnJyQm1VZHU5V3BFQjZzWDFpN1R5T3BSWXJqWjVSdXpMY0FwTFBkRktkQ1VqaTlKZ1FNQUJobGhaS3d2Qjg0TWdXNVY0WlF1bWxCV3V2bTJQd2dhZEVfQzNFZldqdXJiRjJ1MVBQcDhOWmlHTXB5c19Pcnl6UU9Tcl9LM3MwRFNzNFVLYmxJT19QeWk?oc=5",
-      "date": "2026-08-31T07:47:58+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://sm.ign.com/t/ign_za/news/g/gta-6-will/gta-6-will-have-no-microtransactions-or-generative-ai-at-lau_hyr1.1200.jpg",
-      "description": "GTA 6 Will Have No Microtransactions or Generative AI at Launch, Rockstar Says&nbsp;&nbsp;IGN Africa"
-    },
-    {
-      "title": "GTA 6 pourrait finalement répondre à la plus grande attente des possesseurs de PS5 Pro - La Crème Du Gaming",
-      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-pourrait-finalement-repondre-a-la-plus-grande-attente-des-possesseurs-de-ps5-pro-223994.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxOenBBM1VxMENRVnA0S2R5ekhfSHNEZkk4YVN0M3EtbDlIYkdnWEVNOUprZm5ROGo2S1pRcEllMEVNWHVnWVB2OHhFR0VtRmp0aVBZbER5bGdpQmgtQU5pREZSQ3k3czdBX0NwLTdfT0JfU1dSLXNvSTcxUUZTSDJ5cXlVV3dmR01CRko5NjJNVmxSZVJuWjlnTndhd1ljX2tCZlRNdTVnTFF5U0hibExjQ21yMGt5TFZSQ2NacUhoSzl5Z1BFbnBOWkVRaWtuUVFVOGlZWTZVNnh2R1Bj?oc=5",
-      "date": "2026-08-31T07:30:48+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/08/gta-6-pourrait-finalement-repondre-a-la-plus-grande-attente-des-possesseurs-de-ps5-pro.webp",
-      "description": "GTA 6 pourrait finalement répondre à la plus grande attente des possesseurs de PS5 Pro&nbsp;&nbsp;La Crème Du Gaming"
     }
   ],
   "partial": true,
