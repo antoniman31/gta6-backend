@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T08:01:46.273934+00:00",
-  "duration_seconds": 47.5,
+  "generated_at": "2026-09-02T08:31:44.165199+00:00",
+  "duration_seconds": 44.9,
   "decode_failures": 0,
-  "total_articles": 1646,
-  "new_this_run": 4,
+  "total_articles": 1649,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -385,19 +385,19 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 92,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 4,
-      "last_article": "2026-09-02T07:40:00+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-02T08:16:08+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T12:40:06+00:00",
       "days_since_last_article": 0,
@@ -677,9 +677,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-31T11:24:04+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T08:25:12+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-31T13:48:34+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 4,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 81,
+      "entries_fetched": 82,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,0,0,0,0,15,15,15",
-    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,100",
-    "gnews-en": "100,92,99,99,99,100,100,100,100,100,102,100",
+    "rockstar-youtube": "0,0,0,0,0,0,0,0,15,15,15,15",
+    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,100,92",
+    "gnews-en": "92,99,99,99,100,100,100,100,100,102,100,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,0,0,0,0,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,0,0,0,15,15,15,15",
     "rockstarintel": "10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -959,7 +959,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "80,80,80,80,80,80,80,81,80,81,81,81",
+    "engadget": "80,80,80,80,80,80,81,80,81,81,81,82",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -998,13 +998,13 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"f7b8ea284c17c8bd46d21d7d03f1d30a\"",
-      "modified": "Wed, 02 Sep 2026 08:00:57 GMT"
+      "etag": "W/\"299d23860575978be31655cf13b04a8b\"",
+      "modified": "Wed, 02 Sep 2026 08:16:25 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 21:54:40 GMT"
+      "modified": "Wed, 02 Sep 2026 08:15:00 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,22 +1014,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 08:01:07 GMT"
+      "modified": "Wed, 02 Sep 2026 08:30:02 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"01a2422c2937b9f7b0575128d4a3d634\"",
-      "modified": "Wed, 02 Sep 2026 07:53:22 GMT"
+      "etag": "\"940506fab6f0d817571723115edc603f\"",
+      "modified": "Wed, 02 Sep 2026 08:29:34 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a97d793-303d\"",
-      "modified": "Wed, 02 Sep 2026 08:00:19 GMT"
+      "etag": "W/\"6a97de9a-2fa1\"",
+      "modified": "Wed, 02 Sep 2026 08:30:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"69df200cead978c9c2ad7acc7345d31a\"",
-      "modified": "Wed, 02 Sep 2026 06:30:44 GMT"
+      "etag": "W/\"2587ce153129ddd7bbb43fa5226444e8\"",
+      "modified": "Wed, 02 Sep 2026 08:25:12 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "La présentation de GTA 6 sur Netflix a évidemment réalisé un carton d’audience pour le service de streaming",
+      "link": "https://www.actugaming.net/la-presentation-de-gta-6-sur-netflix-a-evidemment-realise-un-carton-daudience-pour-le-service-de-streaming-822169/",
+      "source_link": null,
+      "date": "2026-09-02T08:25:12+00:00",
+      "source": "ActuGaming",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://static.actugaming.net/media/2026/09/gta-6-20.jpg",
+      "description": "ActuGaming.net\nLa présentation de GTA 6 sur Netflix a évidemment réalisé un carton d&rsquo;audience pour le service de streaming\n\nPrésenter GTA 6 via une vidéo diffusée en avant-première sur Netflix était un choix pour [&#8230;]\nL'article La présentation de GTA 6 sur Netflix a évidemment réalisé un carton d&rsquo;audience pour le service de streaming est disponible sur ActuGaming.net"
+    },
+    {
+      "title": "Après 25 ans, GTA 6 va enfin changer votre façon de jouer à la manette et il était temps que ça arrive - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-changement-sprint-manette-722077",
+      "source_link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxQUkpTc3BTUHNNNDBZUW50Nk5mUjV3N21LdUlkNno4OWljX3c3N0E0V2FrX1p0cWJ1bk1XNGl3a0l4MldRZHQtY2JLeUhYVmt3NmZJeFpBdk1IVi1VeldkU2FtaHZHS0xvczA3dUxXdU1xQ3EyU0ctQV9QRkxrQy02aFlWY2dLa1k?oc=5",
+      "date": "2026-09-02T08:16:08+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img//_6a954494440c0.jpg",
+      "description": "Après 25 ans, GTA 6 va enfin changer votre façon de jouer à la manette et il était temps que ça arrive&nbsp;&nbsp;Gameblog"
+    },
+    {
+      "title": "GTA 6 est le programme le plus vu du moment sur Netflix ! - premiere.fr",
+      "link": "https://www.premiere.fr/Series/News-Series/GTA-6-est-le-programme-le-plus-vu-du-moment-sur-Netflix",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNeDZ0c2lkbXN6TEdpbUx3dXJ1b0ttWHR1TGljb0VqWEc0RnJDUnpQdUxGeV9YdFJjaWlzSVNiYkowNXV4MU9LWWE0UGpSMnJ4MWk3OTJYT3BiMVdNTjRVSjRNSWZNSUFDTnVmYXJDQUhDY1NENkowQ1dGLUZ4TTh6MDVCN0tVNXJpckd0WHJiWmxWY1k0M3h5OG1wZGZuM0U?oc=5",
+      "date": "2026-09-02T08:03:46+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "GTA 6 est le programme le plus vu du moment sur Netflix !&nbsp;&nbsp;premiere.fr"
+    },
     {
       "title": "GTA 6 : la précommande du jeu le plus attendu est-elle encore disponible au meilleur prix sur Amazon ? - BFM",
       "link": "https://www.bfmtv.com/tech/bons-plans/gta-6-la-precommande-du-jeu-le-plus-attendu-est-elle-encore-disponible-au-meilleur-prix-sur-amazon_AB-202609020314.html",
