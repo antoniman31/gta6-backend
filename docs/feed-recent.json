@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T05:31:38.831028+00:00",
-  "duration_seconds": 54.4,
+  "generated_at": "2026-09-02T06:01:54.672161+00:00",
+  "duration_seconds": 55.5,
   "decode_failures": 0,
-  "total_articles": 1627,
-  "new_this_run": 2,
+  "total_articles": 1628,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -354,7 +354,7 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-02T04:48:10+00:00",
+      "last_article": "2026-09-02T05:09:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -481,11 +481,11 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-02T05:05:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T12:36:37+00:00",
       "days_since_last_article": 4,
@@ -929,9 +929,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,15,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,0,15,0,0,0,0,0,0,0",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,100,100,100,92,99,99,99,100",
+    "gnews-en": "100,100,100,100,100,100,92,99,99,99,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,15,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,0,15,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,14 +963,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,8,9,8,9,9,9,9,9,9,9,9",
+    "xboxwire": "8,9,8,9,9,9,9,9,9,9,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,80,81,81,81,80,80,80,80,80,80",
+    "engadget": "81,80,81,81,81,80,80,80,80,80,80,80",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -979,8 +979,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1025,22 +1025,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 05:30:53 GMT"
+      "modified": "Wed, 02 Sep 2026 06:01:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"5669f6b9507d2bd8160faaabadd0a874\"",
-      "modified": "Wed, 02 Sep 2026 05:28:12 GMT"
+      "etag": "\"7720df3ba31fdcb179927c6a547431e1\"",
+      "modified": "Wed, 02 Sep 2026 05:54:51 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a97b467-2fcd\"",
-      "modified": "Wed, 02 Sep 2026 05:30:15 GMT"
+      "etag": "W/\"6a97bb71-2f81\"",
+      "modified": "Wed, 02 Sep 2026 06:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"462195d99ea671c86654ca14a120a8fe\"",
-      "modified": "Wed, 02 Sep 2026 05:00:15 GMT"
+      "etag": "W/\"fd2a9bdd9efa1eca7b49e9b893febd0c\"",
+      "modified": "Wed, 02 Sep 2026 06:00:05 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1054,12 +1054,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a979d2d-b0d\"",
-      "modified": "Wed, 02 Sep 2026 03:51:09 GMT"
+      "etag": "\"6a97b952-b0c\"",
+      "modified": "Wed, 02 Sep 2026 05:51:14 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "‘GTA 6’ extended look becomes Netflix’s most-watched title of the week - The Statesman",
+      "link": "https://www.thestatesman.com/entertainment/gta-6-extended-look-becomes-netflixs-most-watched-title-of-the-week-1503633786.html",
+      "source_link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNTC1MZXgyaXhJUmlBaGZVRlFURDFqalZyQkNDTUxyUDNxVnhEbXUxek5US1ZVTTNGX0xGSlFCa0NQeXZ0eEtjamxxc2FIX2RneFY1UHpNRzF0VlZmNk56aWZ2N3lpZkpkX1haTk9HM2I4bUYwVzROcUlJOTRZUjBpdzNOVTdSb0t5TVBRdXJtMTM1cktlQlZZbHJHNjBQV1oxTTdsNjZ5a2M0TE9PQlZGdlp6SXhoVXJZQlJIdEhEN1FUOHc00gHKAUFVX3lxTFBnUHJkamhMVEV5V2hSeUdUN3hXdXlVTkJlNi1JcnhyWTRzclVmeDktTVRuY1QzcTZUdHMzeW40ZzdMbEFQckpUWVJhTFUwbVlnQjRmNzZNRUUxUzV3TEkzYV9mVlpVOFpMbV9UVnkxNDZpWkxLNnVsdVJ0V0hEUlVlSXc4U2lPUjhqUzU0dTBha3hteEJhX0o1VGVFVm1VWndMTk5BbzZrWmdmZmtmNEg0UzgtRjBjMjU4ZUx3SkRwUm4tUV9LUzBRSlE?oc=5",
+      "date": "2026-09-02T05:09:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.thestatesman.com/wp-content/uploads/2026/09/GTA-6-extended-look-becomes-Netflixs-most-watched-title-of-the-week.webp",
+      "description": "‘GTA 6’ extended look becomes Netflix’s most-watched title of the week&nbsp;&nbsp;The Statesman"
+    },
     {
       "title": "GTA 5 | Toutes les infos (et le trailer) sur le lancement de NoPixel V, l’expérience RP officielle de Rockstar Games",
       "link": "https://www.rockstarmag.fr/gta-5-toutes-les-infos-et-le-trailer-sur-le-lancement-de-nopixel-v-lexperience-rp-officielle-de-rockstar-games/",
@@ -5038,19 +5051,6 @@
       "lang": null,
       "image": "https://kotaku.com/app/uploads/2026/08/philcollins.jpg",
       "description": "On top of an extended glimpse at what the upcoming Grand Theft Auto VI will look like, Netflix gave a hint at what your crime spree playlist will sound like too"
-    },
-    {
-      "title": "GTA 6 Locked at 30 FPS on Consoles, PS5 Pro No Exception - tech-insider.org",
-      "link": "https://tech-insider.org/gta-6-30-fps-consoles-ps5-pro-2026/",
-      "source_link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBFZ0pnQnhNeWNpdWJwbVlSd29aV3hpS0RsakhlQmxqdjZBQ0RoMHByUzJEQnM1SHY5WGlEdndMWkdFa1VmR2RuakU1VWF0Z181aS1mZFNMOW1udEluZHg4Ylh0X2Qxd2FNSzdkQQ?oc=5",
-      "date": "2026-08-29T20:33:41+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": null,
-      "description": "GTA 6 Locked at 30 FPS on Consoles, PS5 Pro No Exception&nbsp;&nbsp;tech-insider.org"
     }
   ],
   "partial": true,
