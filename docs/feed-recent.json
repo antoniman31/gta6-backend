@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-02T23:01:39.918474+00:00",
-  "duration_seconds": 47.1,
+  "generated_at": "2026-09-02T23:32:12.522610+00:00",
+  "duration_seconds": 48.4,
   "decode_failures": 0,
-  "total_articles": 1747,
+  "total_articles": 1752,
   "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -329,7 +329,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 5,
       "status": "ok"
@@ -341,7 +341,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T09:53:07+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 92,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T21:53:27+00:00",
       "days_since_last_article": 1,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:15:06+00:00",
       "days_since_last_article": 0,
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-08-31T13:48:34+00:00",
       "days_since_last_article": 2,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 80,
+      "entries_fetched": 79,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -920,7 +920,7 @@
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,102,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "100,102,100,100,100,100,100,100,100,100,100,92",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,20 +946,20 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "31,31,31,31,31,31,31,31,31,31,32,32",
+    "gta6times": "31,31,31,31,31,31,31,31,31,32,32,32",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,9,9,8,8,8,8,8,8",
+    "xboxwire": "9,9,9,9,9,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,79,79,79,79,79,80",
+    "engadget": "81,81,81,81,81,79,79,79,79,79,80,79",
     "arstechnica": "28,28,28,28,28,28,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"b1ff06700e673596a5857d8b11200e41\"",
-      "modified": "Wed, 02 Sep 2026 22:00:00 GMT"
+      "etag": "W/\"3e9df758afaa02d83ae14aac67ee3d1c\"",
+      "modified": "Wed, 02 Sep 2026 23:30:25 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 22:59:07 GMT"
+      "modified": "Wed, 02 Sep 2026 23:29:55 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a98aa81-2fd5\"",
-      "modified": "Wed, 02 Sep 2026 23:00:17 GMT"
+      "etag": "W/\"6a98b188-2fd5\"",
+      "modified": "Wed, 02 Sep 2026 23:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1061,6 +1061,19 @@
       "lang": null,
       "image": "https://culturecues.co.uk/wp-content/uploads/2026/09/Jason_and_Lucia_GTA_6_Police.webp",
       "description": "GTA 6 Just Did Something Very Strange on Netflix&nbsp;&nbsp;culturecues.co.uk"
+    },
+    {
+      "title": "Creatorverse: GTA VI on Netflix Was a Big Success, But the Conversation Was Happening on YouTube - TheWrap",
+      "link": "https://www.thewrap.com/media-platforms/tv/creatorverse-gta-6-on-netflix-creator-reactions/",
+      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNZVRTVkdyNi1EVkt4WUJCaUpMenloanpmcVdrTGxYeXh4djR0RkVQZzhWRTBaOVdnR0VwVEd1dlE0MVpqakYwblBpTTZ1X2ZLeWZWbzhKV0lUMDdOVWJPel9JTVEwekRrTkhrNzlRNTBrTHl5M2xQWnkyZF91NnVZY1FSSHJJMVlIb09kN3R6UDRqX00tbkE?oc=5",
+      "date": "2026-09-02T22:00:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.thewrap.com/wp-content/uploads/2026/09/gta.jpg",
+      "description": "Creatorverse: GTA VI on Netflix Was a Big Success, But the Conversation Was Happening on YouTube&nbsp;&nbsp;TheWrap"
     },
     {
       "title": "Rockstar Is Now Advertising GTA 6 Inside GTA Online",
@@ -2327,6 +2340,19 @@
       "lang": "fr",
       "image": null,
       "description": "GTA VI pourrait coûter un milliard de dollars à l'économie américaine, les joueurs préparent déjà leurs congés&nbsp;&nbsp;Cowcotland.com"
+    },
+    {
+      "title": "GTA 6, notre plus gros événement ouvre sa billetterie, venez vivre le lancement du jeu avec nous - jvmag.ch",
+      "link": "https://jvmag.ch/2026/09/02/gta-6-on-vous-invite-au-lancement-du-jeu-au-travers-de-notre-plus-gros-evenement/",
+      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOYzNPTG9mYU1ZeWtldzdvbGtFZFBxLUdja2Vfb21kTUlvTzJxUlhvQnJfOWxheDZacDZGN2JDS3N3ZVRvQ1NJdEcyTTRsTG1nXzU1N212Sm03Tk9abHIyXzJSWVZWUXN5ejZ3U0stUktwY3RSa295clZzNnNsZnNLRlNaNHNQa25ZMEVfU2t1aGRFbklacjhNaHB4Ymp4WldtbVktV3lXS2p6M0Eyd2fSAbYBQVVfeXFMTXQ4SDhuSUNaWHhqZjcwQzNfUWhrSE5NbDViZE1lOHNIY2FrZFpnSngwNTNmLV9ybS1sTkZCcmVKM2R5Q05HaDdIdTBVUG5ibUY0TTdoYzV5OVRudWJPWU9HR0tNdzg4d21IdGtZZ25nUFdVcGVKMmRaaVgycmRsX1VIVWxaNHNwM1Zpby1uQTlTT1MyLXRoNXFUbmdYa0lBd1NMS2NkOS1tdGo5cmVtRjR0UkVGbkE?oc=5",
+      "date": "2026-09-02T06:36:18+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "GTA 6, notre plus gros événement ouvre sa billetterie, venez vivre le lancement du jeu avec nous&nbsp;&nbsp;jvmag.ch"
     },
     {
       "title": "GTA VI Extended Look Got 31 Million Views On Netflix Despite Six-Hour Exclusivity Window - Engadget",
@@ -5024,32 +5050,6 @@
           "link": "https://gamerant.com/gta-6-new-screenshots/"
         }
       ]
-    },
-    {
-      "title": "GTA 6 fait exploser la demande de PS5 Pro malgré les hausses de prix - 01net.com",
-      "link": "https://www.01net.com/actualites/gta-6-fait-exploser-la-demande-de-ps5-pro-malgre-les-hausses-de-prix.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNWmo3cTZSYlB6QzRTY3draHhZSHhXem5OVF9KaFd4ZHNLNjBOZ1REdUZESGtXMU5qSV9PLVFsYncyb09Xc3U3TWlHaWlsOEI1aXd5dGZUMWxLSWpnOWcxY1otaGxjSUtUb0dMbTBJS2RRUC1QMnpBUlo0Vko4bmxIWUVlTTdiUko2MmlWWUZ5QnA4NUJKZ3U1TVdyY1o5RThoakZBaTMzSDA3QQ?oc=5",
-      "date": "2026-08-31T13:00:09+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.01net.com/app/uploads/2026/08/Canva-1920x1440-77-1600x900.jpeg",
-      "description": "GTA 6 fait exploser la demande de PS5 Pro malgré les hausses de prix&nbsp;&nbsp;01net.com"
-    },
-    {
-      "title": "Nouveaux détails sur GTA 6 : conduite, carburant, vols de voitures… Rockstar prépare un véritable tournant automobile - autonews.fr",
-      "link": "https://www.autonews.fr/actualite/nouveaux-details-sur-gta-6-conduite-carburant-vols-de-voitures-rockstar-prepare-un-veritable-tournant-automobile-148127",
-      "source_link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPd3NpcW9YQmJReWhYa3BMc3VQazBJSFl4WFRVS1JQVTZ3d3BYVUNzcGZJUTdKbG85MloxLWFpeUlyV2RJMDY1RzFmZmNtaVRyQl9WS3Z1LXlhMmtDZUxtTUVSMlRoLTItRHpLWjE3QWVwQS1mal9KUFhGTzJDbW5mSmsyTU05SWZudmRoaEJTVFU2eDIxR0hhdjRxOHdtQm9rbXQ1X1ZTdTA4ZFVvTTlRT1BndlNxeTUxNE1ndTFvN1VGUFprYXVTNW1YaW5JdUxyNm45SmtndXNxWG55RG1MSk1fOWZpRmJx?oc=5",
-      "date": "2026-08-31T12:54:04+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img5.autodeclics.com/6/2026/08/photo_article/148127/391581/1200-L-nouveaux-dtails-sur-gta-6-conduite-carburant-vols-de-voitures-rockstar-prpare-un-vritable-tournant-automobile.jpg",
-      "description": "Nouveaux détails sur GTA 6 : conduite, carburant, vols de voitures… Rockstar prépare un véritable tournant automobile&nbsp;&nbsp;autonews.fr"
     }
   ],
   "partial": true,
