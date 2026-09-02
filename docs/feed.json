@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T06:31:39.809748+00:00",
-  "duration_seconds": 51.9,
+  "generated_at": "2026-09-02T07:03:41.065693+00:00",
+  "duration_seconds": 51.7,
   "decode_failures": 0,
-  "total_articles": 1632,
-  "new_this_run": 1,
+  "total_articles": 1637,
+  "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 5,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T06:03:40+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-02T06:53:02+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -469,12 +469,12 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T19:46:31+00:00",
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 500,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T13:55:17+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "rockstarintel",
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T16:45:18+00:00",
       "days_since_last_article": 0,
@@ -583,7 +583,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2024-07-26T07:00:00+00:00",
-      "days_since_last_article": 767,
+      "days_since_last_article": 768,
       "status": "tarie"
     },
     {
@@ -655,7 +655,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-29T07:00:00+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -845,8 +845,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-01T13:28:25+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-02T06:39:22+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -865,13 +865,13 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 80,
+      "entries_fetched": 81,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-08-29T22:30:00+00:00",
-      "days_since_last_article": 3,
+      "new_this_run": 1,
+      "last_article": "2026-09-02T06:16:37+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -905,7 +905,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
       "days_since_last_article": 11,
       "status": "ok"
@@ -914,12 +914,12 @@
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-02T02:01:47.837021+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "rockstarmag-youtube": {
       "depuis": "2026-09-02T02:01:47.837021+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -929,9 +929,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,0,15,0,0,0,0,0,0,0,0,0",
+    "rockstar-youtube": "0,15,0,0,0,0,0,0,0,0,0,15",
     "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
-    "gnews-en": "100,100,100,100,92,99,99,99,100,100,100,100",
+    "gnews-en": "100,100,100,92,99,99,99,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,0,15,0,0,0,0,0,0,0,0,0",
+    "rockstarmag-youtube": "0,15,0,0,0,0,0,0,0,0,0,15",
     "rockstarintel": "10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,14 +963,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,9,9,9,9,9,9,9,9,9,9,9",
+    "xboxwire": "9,9,9,9,9,9,9,9,9,9,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,80,80,80,80,80,80,80,81,80",
+    "engadget": "81,81,80,80,80,80,80,80,80,81,80,81",
     "arstechnica": "29,29,29,29,29,29,29,29,29,29,29,29",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -990,7 +990,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 01 Sep 2026 19:57:11 GMT"
+      "modified": "Wed, 02 Sep 2026 06:59:34 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1009,8 +1009,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"8481922e5f0cd6fa40de8acd49d8ebfb\"",
-      "modified": "Wed, 02 Sep 2026 00:23:07 GMT"
+      "etag": "W/\"c1cbe5487ed75e05940a3571ca11975a\"",
+      "modified": "Wed, 02 Sep 2026 07:02:11 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1025,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 06:30:59 GMT"
+      "modified": "Wed, 02 Sep 2026 07:00:03 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,13 +1034,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a97c278-2fd2\"",
-      "modified": "Wed, 02 Sep 2026 06:30:16 GMT"
+      "etag": "W/\"6a97c982-2fbe\"",
+      "modified": "Wed, 02 Sep 2026 07:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"fd2a9bdd9efa1eca7b49e9b893febd0c\"",
-      "modified": "Wed, 02 Sep 2026 06:00:05 GMT"
+      "etag": "W/\"69df200cead978c9c2ad7acc7345d31a\"",
+      "modified": "Wed, 02 Sep 2026 06:30:44 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1060,6 +1060,71 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : tout savoir (date, prix, carte, gameplay) 2026 - BlogNT",
+      "link": "https://www.blog-nouvelles-technologies.fr/379949/tout-savoir-gta-6/",
+      "source_link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE4wV1dwOWM1NUVwSHF5TzFtMDZvaVlSYmtHNFRfSl81NDBHSmZRRGZ5bm5kci1XSEwtWFJpTFdBaG1mVHh3VHBCMFhtenc1U1ZDd05oaTdpLUlRcDJYMW1yaEo0OFRacC1zSFNpcFdDWWNwR2NWVEt3?oc=5",
+      "date": "2026-09-02T06:53:02+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.blog-nouvelles-technologies.fr/wp-content/uploads/2026/09/Grand-Theft-Auto-VI-Images-officielles-Image-111-2560p-x-1440p-Qualite-75-Picture-by-Rockstar-Games-1024x576.webp",
+      "description": "GTA 6 : tout savoir (date, prix, carte, gameplay) 2026&nbsp;&nbsp;BlogNT"
+    },
+    {
+      "title": "Rockstar balance encore plus de nouvelles images de GTA 6",
+      "link": "https://fr.ign.com/grand-theft-auto-6/91794/even-more-gta-6-screenshots-from-rockstar-games",
+      "source_link": null,
+      "date": "2026-09-02T06:50:24+00:00",
+      "source": "IGN France",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/gallery/e/even-more-/even-more-gta-6-screenshots-from-rockstar-games_s9b1.1200.jpg",
+      "description": ""
+    },
+    {
+      "title": "Dans GTA 6, vous ne pourrez pas vous racheter si vous causez trop de chaos - IGN France",
+      "link": "https://fr.ign.com/grand-theft-auto-6/91793/dans-gta-6-vous-ne-pourrez-pas-vous-racheter-si-vous-causez-trop-de-chaos",
+      "source_link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQNWE3YVFyQWs5T1VveEw3MzVPZGlkWHRBWkhucjB5ckQwSjRQQm5mR2FkUGpONXJOTmdIWjRvSlJrSjZxenducVlzVlZZVlpocWFFRHE0bjNFYVUzWjkzQkphYnBzMlQ4d1N4WWxGeGNjN2RhUHo4OWg1dVBtRGFYcnhXYW1aeEZzdW9iN01CRnVCaWlRdlh2RV9pV2ZpTGYxVF9KbTlPVTNjdHprRUREaTFfdW43VnZF?oc=5",
+      "date": "2026-09-02T06:50:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-6s-mor/gta-6s-morality-meter-will-reportedly-shatter-and-make-you-i_2aq5.1200.jpg",
+      "description": "Dans GTA 6, vous ne pourrez pas vous racheter si vous causez trop de chaos&nbsp;&nbsp;IGN France"
+    },
+    {
+      "title": "Le trailer de GTA 6 devient le programme le plus regardé de la semaine sur Netflix - Frandroid",
+      "link": "https://www.frandroid.com/services/svod/3229747_n-1-dans-87-pays-gta-6-devance-shrek-et-k-pop-demon-hunters-dans-la-liste-des-programmes-les-plus-regardes-sur-netflix",
+      "source_link": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxPaXFkQndvd0NpV1BlNGQ4aXJGak5DSEgzczdQcFU1UUFuT3ZuUHBhYmZyT3NNNkVfaWV2bG5aMFRyX2JVMllYbmJPblhmcFNGeXl5czlIOXFzcndfWDg4SUM4SWxOMWMyZ25rY2l0eXRTbWFabnZreC02TkZuc2ZiYkQ4eldfV3NEUU9Nd0g1Y1Rrc1V0d19xVzg1MnZoQmFmZ2lweDNWdTViRk1uY1hIX2w2V3N0dnhFd2lMNnBiTmlPbFozUnhpX3IzeGQzUV9EOUZMMWVpQ3I2ZmxjcmV4bU9pTFMzVHdlNlg5anN0NzRpTDFBdU9DdjBB?oc=5",
+      "date": "2026-09-02T06:39:22+00:00",
+      "source": "Frandroid",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/capture-decran-du-2026-09-02-08-31-42.png?resize=1600,900&key=2b7657f1",
+      "description": "Le trailer de GTA 6 devient le programme le plus regardé de la semaine sur Netflix&nbsp;&nbsp;Frandroid"
+    },
+    {
+      "title": "GTA VI Extended Look Got 31 Million Views On Netflix Despite Six-Hour Exclusivity Window - Engadget",
+      "link": "https://www.engadget.com/2249261/gta-vi-extended-31-million-views-netflix-top-movie/",
+      "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQV2JidFNKOVAwUHh6QzZ0TjcxQlNlNHE1cWdiMmkwck94WFNzMGdiYS1weGJpN19ldDA4UUNDY29QZFlaS2xIcmZaRl9STmhKOXQ5WHhKOUV2NnZPLVc3VmpqQS1hdnI4LTZaZmo4QnZKb29DRV9Yc0pLQmVCWTN2b1FPR0NLMUpHREVxcQ?oc=5",
+      "date": "2026-09-02T06:16:37+00:00",
+      "source": "Engadget",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.engadget.com/img/gallery/gta-vi-extended-look-got-31-million-views-on-netflix-despite-six-hour-exclusivity-window/l-intro-1788329629.jpg",
+      "description": "GTA VI Extended Look Got 31 Million Views On Netflix Despite Six-Hour Exclusivity Window&nbsp;&nbsp;Engadget"
+    },
     {
       "title": "TA 6 : une fausse version leakée peut vider votre portefeuille crypto",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/ta-6-une-fausse-version-leakee-peut-vider-votre-portefeuille-crypto-20260902",
