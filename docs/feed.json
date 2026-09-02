@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-02T16:01:45.802300+00:00",
-  "duration_seconds": 49.0,
+  "generated_at": "2026-09-02T16:31:42.112524+00:00",
+  "duration_seconds": 52.6,
   "decode_failures": 0,
-  "total_articles": 1701,
+  "total_articles": 1704,
   "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T15:34:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 70,
@@ -390,7 +390,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-02T13:53:31+00:00",
+      "last_article": "2026-09-02T16:03:39+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 2,
       "last_article": "2026-09-02T15:58:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 0,
@@ -571,7 +571,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T16:29:22+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T08:48:30+00:00",
       "days_since_last_article": 0,
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 0,
@@ -919,7 +919,7 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,92,92,92,92,92,92,92,92,92,92,92",
+    "gnews-fr": "92,92,92,92,92,92,92,92,92,92,92,92",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,81,82,82,82,81,79,81",
-    "arstechnica": "29,28,28,28,28,29,28,28,28,28,28,28",
+    "engadget": "82,82,82,82,81,82,82,82,81,79,81,81",
+    "arstechnica": "28,28,28,28,29,28,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,18 +968,18 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"e0b03d0d0d71811a51f66f08992c8863\"",
-      "modified": "Wed, 02 Sep 2026 15:47:09 GMT"
+      "etag": "W/\"df79afbeabd23e9e42a76806fc74870f\"",
+      "modified": "Wed, 02 Sep 2026 16:24:33 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 15:18:57 GMT"
+      "modified": "Wed, 02 Sep 2026 16:09:03 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"fb6aa6d03c916d59a8e3bd7336b6ce0a\"",
-      "modified": "Wed, 02 Sep 2026 15:45:24 GMT"
+      "etag": "W/\"1bf58bf1a18cd4fdc4101d9c402d8348\"",
+      "modified": "Wed, 02 Sep 2026 16:29:53 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 02 Sep 2026 15:57:33 GMT"
+      "modified": "Wed, 02 Sep 2026 16:31:01 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a984810-2fd3\"",
-      "modified": "Wed, 02 Sep 2026 16:00:16 GMT"
+      "etag": "W/\"6a984f19-2fd3\"",
+      "modified": "Wed, 02 Sep 2026 16:30:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788364665\"",
-      "modified": "Wed, 02 Sep 2026 15:57:45 GMT"
+      "etag": "W/\"1788366189\"",
+      "modified": "Wed, 02 Sep 2026 16:23:09 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1050,6 +1050,19 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "GTA 6 : Ces changements de gameplay font déjà polémiques - Journal du Geek",
+      "link": "https://www.journaldugeek.com/2026/09/02/gta-6-ces-changements-de-gameplay-font-deja-polemiques/",
+      "source_link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNdlp4eTNEUV9BZF8zTkFvQlJsTXh5V1hiVlhQbGFULVdOYUw4cDQtRjl4UktyTTB2WTBsMkJCZEtSako3WHpBMXFJQmJvWVNnOS1DemIyajB1ZXhBekwzNDBZaWdqbUZjbGZtSF9WQjFISlBzMndsZUY3cFZiRXdoaUVMZll1NS01c1ZBbXUwb1d0Y0dMNFd6MGQzdFg?oc=5",
+      "date": "2026-09-02T16:03:39+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/08/nouvelles-images-gta-6-jdg-1600x900.jpg",
+      "description": "GTA 6 : Ces changements de gameplay font déjà polémiques&nbsp;&nbsp;Journal du Geek"
+    },
+    {
       "title": "'GTA 6' on PS5 vs Xbox: Key differences to consider - Mashable",
       "link": "https://mashable.com/entertainment/gta-grand-theft-auto-6-xbox-series-x-s-playstation-differences",
       "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNcVFkcU9hNmlFVEhpbGlGbFExUzlGMURZZTg0b2Jnb1RYYzdBeE5jZGxKS2YxQmxqUXFtczBXajJnWTdCdUtudmZzaTdFTloybVYwV2diY2V3cVJFTnZPMTloUS1SbHhHN2ZJaEduTHJJajBWRTVndmJMN3pMVDZJTE1lTG9lM0xIaEpLNG8zM1R1TDJrS29aMk0yRFlBUQ?oc=5",
@@ -1061,6 +1074,19 @@
       "lang": null,
       "image": "https://helios-i.mashable.com/imagery/articles/06tGFhLKvLFIPb9VrneTQiQ/hero-image.fill.size_1200x675.v1788289465.jpg",
       "description": "'GTA 6' on PS5 vs Xbox: Key differences to consider&nbsp;&nbsp;Mashable"
+    },
+    {
+      "title": "Ranking 11 big video games fall releases not named 'GTA 6' - USA Today",
+      "link": "https://ftw.usatoday.com/picture-gallery/tech/gaming/2026/09/02/ranking-video-games-fall-releases-not-gta6/91578653007/",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNd3B1MlEtVkFfd0prS0I5YjEyaVpTR01kRHRqb1RXNXdnb1FKZklFNnBGOFA5NHJrM2lDMXJIV3FfZzFPQmMtLTN2R2hZbmhoY3NoMGo4OS15Vm9oV084eWtySUFtcWcxN0FxcnZWbmpXcWc4d0g5TDVjZC1tSndYanlfRlRmM0g4cWZ2RURfMnd2dGN0b3BiLUxoU3ZqOTJjMzRUd25VYWV4eUJVd0R0U0I2QmdTeVdubXpv?oc=5",
+      "date": "2026-09-02T15:51:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://ftw.usatoday.com/gcdn/authoring/authoring-images/2026/09/02/SFTW/91578597007-the-blood-of-dawnwalker.jpg?crop=3836,2155,x0,y0&width=3200&height=1798&format=pjpg&auto=webp",
+      "description": "Ranking 11 big video games fall releases not named 'GTA 6'&nbsp;&nbsp;USA Today"
     },
     {
       "title": "Grand Theft Auto VI Gameplay Garners Over 31 Million Views on Netflix - ixbt.games",
@@ -1217,6 +1243,19 @@
       "lang": null,
       "image": "https://substackcdn.com/image/fetch/$s_!1uof!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1618cb91-3841-4044-8674-89eddb0423a1_1456x819.webp",
       "description": "GTA 6 will be kinder on your thumbs – but your controller’s in trouble&nbsp;&nbsp;The Shortcut | Matt Swider"
+    },
+    {
+      "title": "This ‘GTA 6’ Feature Has Some People Accusing Their Partners of Cheating - vice.com",
+      "link": "https://www.vice.com/en/article/this-gta-6-feature-has-some-people-accusing-their-partners-of-cheating/",
+      "source_link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPYzFKWEdVN203THdReUMtQTVHa3ZOWm9Sa2lwVGxHRVBGQWJGREJIaVZyeUliOURnX2FkNlJDdnZOZFhjN0pSUERNQndMcnRtVF9LeVplWVlOM09RZEJsemJVQmNlRW5PNlduTGdiQWRRQ1BqVDYzVU5uT2gxaGVsSkJpVTZ4UGxlQjMyb29UaloyYnJENThscC0xOXpyUlVqcDZjbGhB?oc=5",
+      "date": "2026-09-02T12:35:53+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/This-GTA-6-Feature-Has-Some-People-Accusing-Their-Partners-of-Cheating.jpg?w=2000",
+      "description": "This ‘GTA 6’ Feature Has Some People Accusing Their Partners of Cheating&nbsp;&nbsp;vice.com"
     },
     {
       "title": "GTA 6 : courir ne se fera plus comme avant - Gamekyo.com",
