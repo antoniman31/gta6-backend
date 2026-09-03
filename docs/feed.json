@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-03T23:01:42.577443+00:00",
-  "duration_seconds": 43.8,
+  "generated_at": "2026-09-03T23:29:44.165091+00:00",
+  "duration_seconds": 47.6,
   "decode_failures": 0,
-  "total_articles": 1889,
-  "new_this_run": 3,
+  "total_articles": 1890,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-03T22:52:49+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-03T19:27:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-03T16:08:41+00:00",
       "days_since_last_article": 0,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 1,
@@ -521,7 +521,7 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-03T21:52:05+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -617,7 +617,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-03T22:54:27+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
       "days_since_last_article": 1,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-03T14:06:13+00:00",
       "days_since_last_article": 0,
@@ -913,14 +913,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "0,0,100,100,0,100,100,100,100,100,100,100",
-    "gta6-netflix": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "0,100,100,0,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "0,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "0,100,100,100,101,102,100,100,100,100,102,102",
-    "gnews-en": "0,0,100,102,94,99,92,100,100,100,100,100",
+    "gnews-fr": "100,100,100,101,102,100,100,100,100,102,102,102",
+    "gnews-en": "0,100,102,94,99,92,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "vg247": "0,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,19 +950,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "0,0,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "0,0,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "0,8,8,8,0,9,9,9,9,9,8,8",
-    "trueach": "0,100,100,100,100,100,100,100,84,100,100,100",
-    "jdg": "0,0,100,100,100,100,100,100,100,100,100,100",
-    "numerama": "0,0,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "0,0,100,52,0,100,100,100,100,100,100,100",
-    "frandroid": "0,0,100,100,0,100,100,100,100,100,100,100",
-    "theverge": "0,100,100,100,0,100,100,100,0,100,100,100",
-    "engadget": "0,0,78,78,0,78,81,81,81,81,81,81",
-    "arstechnica": "0,27,27,27,27,27,27,27,27,27,27,27",
-    "pushsquare": "0,0,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "0,96,92,92,0,94,94,95,99,99,99,99"
+    "xboxygen": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "8,8,8,0,9,9,9,9,9,8,8,8",
+    "trueach": "100,100,100,100,100,100,100,84,100,100,100,100",
+    "jdg": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "0,100,52,0,100,100,100,100,100,100,100,100",
+    "frandroid": "0,100,100,0,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,0,100,100,100,0,100,100,100,100",
+    "engadget": "0,78,78,0,78,81,81,81,81,81,81,81",
+    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
+    "pushsquare": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "96,92,92,0,94,94,95,99,99,99,99,99"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"1fc0b9877275ead1e0fad8fdb54a78bc\"",
-      "modified": "Thu, 03 Sep 2026 22:00:46 GMT"
+      "etag": "W/\"5fb48746ae94420d2e9252c6895f2e5e\"",
+      "modified": "Thu, 03 Sep 2026 23:00:15 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 23:01:12 GMT"
+      "modified": "Thu, 03 Sep 2026 23:26:26 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788476069\"",
-      "modified": "Thu, 03 Sep 2026 22:54:29 GMT"
+      "etag": "W/\"1788478058\"",
+      "modified": "Thu, 03 Sep 2026 23:27:38 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1360,6 +1360,19 @@
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/09/03/gta-online-1788451314950.jpg",
       "description": "A former Rockstar Games developer has revealed that the team thought GTA Online was going to fail before it launched."
+    },
+    {
+      "title": "Former Rockstar dev talks GTA (6) Online, as games as service is crashing - Notebookcheck",
+      "link": "https://www.notebookcheck.net/Former-Rockstar-dev-talks-GTA-6-Online-as-games-as-service-is-crashing.1387649.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQWkFLVHBlUlRZNzFVdVlVa0U4d3RzbUVidkhMbm1ERTBhalBwa1plX0VRajdaVUI0dEZ3WXRvSlByUjNzZ0VRQW1lcFB0MFRvVDRJMFp4ZDNYZnR3ZFZ5T254SU1uX2JJb2RSTllqbU44XzdOTVg2Wk1vbVd0Y2lOQko5ZHc2Q0ZaOUdaZmR5bWFUaGU5bXV4MUQ4am02d3VKekx5blg3b3BJVmtQOFNpUUdVTWhodw?oc=5",
+      "date": "2026-09-03T16:12:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/gta-6-online-freedman.jpg",
+      "description": "Former Rockstar dev talks GTA (6) Online, as games as service is crashing&nbsp;&nbsp;Notebookcheck"
     },
     {
       "title": "Top 10 Things GTA 6 Should Bring Back (UPDATED)",
