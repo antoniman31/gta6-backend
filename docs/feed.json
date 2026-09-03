@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-03T20:01:37.098572+00:00",
-  "duration_seconds": 43.7,
+  "generated_at": "2026-09-03T21:01:46.448360+00:00",
+  "duration_seconds": 39.5,
   "decode_failures": 0,
-  "total_articles": 1880,
-  "new_this_run": 5,
+  "total_articles": 1883,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 3,
+      "new_this_run": 0,
       "last_article": "2026-09-03T18:40:38+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T18:30:10+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-03T20:20:08+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -505,12 +505,12 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T15:53:28+00:00",
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-03T20:17:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -521,7 +521,7 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-03T19:37:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 1,
@@ -793,7 +793,7 @@
     {
       "id": "trueach",
       "name": "TrueAchievements",
-      "entries_fetched": 100,
+      "entries_fetched": 84,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -853,14 +853,14 @@
     {
       "id": "theverge",
       "name": "The Verge",
-      "entries_fetched": 100,
+      "entries_fetched": 0,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T01:05:00+00:00",
       "days_since_last_article": 6,
-      "status": "ok"
+      "status": "muette"
     },
     {
       "id": "engadget",
@@ -901,7 +901,7 @@
     {
       "id": "schreier",
       "name": "Jason Schreier",
-      "entries_fetched": 95,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -911,16 +911,22 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "theverge": {
+      "depuis": "2026-09-03T21:01:46.447907+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
-    "rockstar-en": "100,0,0,0,0,100,100,100,100,100,100,100",
-    "rockstar-fr": "0,0,0,0,0,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,0,0,0,0,100,100,0,100,100,100",
-    "gta6-netflix": "0,0,100,100,0,0,100,100,100,100,100,100",
+    "rockstar-en": "0,0,0,0,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "0,0,0,0,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,0,0,0,0,100,100,0,100,100,100,100",
+    "gta6-netflix": "0,100,100,0,0,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "0,0,92,0,0,100,100,100,101,102,100,100",
-    "gnews-en": "102,0,100,100,0,0,100,102,94,99,92,100",
+    "gnews-fr": "0,92,0,0,100,100,100,101,102,100,100,100",
+    "gnews-en": "0,100,100,0,0,100,102,94,99,92,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -929,13 +935,13 @@
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "rockstarintel": "10,10,10,10,10,10,10,10,10,10",
+    "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "0,100,100,0,0,0,100,100,100,100,100,100",
+    "vg247": "100,100,0,0,0,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,19 +956,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "0,0,100,0,0,0,100,100,100,100,100,100",
-    "purexbox": "100,0,100,100,0,0,100,100,100,100,100,100",
-    "xboxwire": "0,0,8,8,0,8,8,8,0,9,9,9",
-    "trueach": "0,100,0,100,0,100,100,100,100,100,100,100",
-    "jdg": "100,100,100,0,0,0,100,100,100,100,100,100",
-    "numerama": "100,0,100,0,0,0,100,100,100,100,100,100",
-    "gamergen": "0,0,0,100,0,0,100,52,0,100,100,100",
-    "frandroid": "100,0,100,100,0,0,100,100,0,100,100,100",
-    "theverge": "100,0,0,0,0,100,100,100,0,100,100,100",
-    "engadget": "0,0,0,0,0,0,78,78,0,78,81,81",
-    "arstechnica": "27,0,27,0,0,27,27,27,27,27,27,27",
-    "pushsquare": "100,0,100,0,0,0,100,100,100,100,100,100",
-    "schreier": "100,0,0,93,0,96,92,92,0,94,94,95"
+    "xboxygen": "0,100,0,0,0,100,100,100,100,100,100,100",
+    "purexbox": "0,100,100,0,0,100,100,100,100,100,100,100",
+    "xboxwire": "0,8,8,0,8,8,8,0,9,9,9,9",
+    "trueach": "100,0,100,0,100,100,100,100,100,100,100,84",
+    "jdg": "100,100,0,0,0,100,100,100,100,100,100,100",
+    "numerama": "0,100,0,0,0,100,100,100,100,100,100,100",
+    "gamergen": "0,0,100,0,0,100,52,0,100,100,100,100",
+    "frandroid": "0,100,100,0,0,100,100,0,100,100,100,100",
+    "theverge": "0,0,0,0,100,100,100,0,100,100,100,0",
+    "engadget": "0,0,0,0,0,78,78,0,78,81,81,81",
+    "arstechnica": "0,27,0,0,27,27,27,27,27,27,27,27",
+    "pushsquare": "0,100,0,0,0,100,100,100,100,100,100,100",
+    "schreier": "0,0,93,0,96,92,92,0,94,94,95,99"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,8 +979,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"3f55eaa9826935c9d13c955c4062c52b\"",
-      "modified": "Thu, 03 Sep 2026 19:46:49 GMT"
+      "etag": "W/\"268ea2a162f2c7442cc100afcff8e78a\"",
+      "modified": "Thu, 03 Sep 2026 20:46:44 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -988,23 +994,23 @@
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
-      "etag": "\"1cc1b761c7fd7ed429adfdc6b91edac6\"",
-      "modified": "Thu, 03 Sep 2026 16:15:31 GMT"
+      "etag": "\"ecd3c212dbe7db75522d7e15a0c3b941\"",
+      "modified": "Thu, 03 Sep 2026 20:19:08 GMT"
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"22965-ytHqUJgVjT1ysm1vPMsF8tZFS9A\"",
+      "etag": "W/\"22ee9-C7lu1A0esQulnvOYXt7Q95DZPoU\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"1c8d55c4de79b4031f1a96ee435aa489\"",
-      "modified": "Thu, 03 Sep 2026 19:38:59 GMT"
+      "etag": "W/\"b7a2884c1d943e0d403598becf79556f\"",
+      "modified": "Thu, 03 Sep 2026 21:00:32 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 19:03:31 GMT"
+      "modified": "Thu, 03 Sep 2026 20:39:06 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,7 +1020,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 19:59:12 GMT"
+      "modified": "Thu, 03 Sep 2026 20:57:36 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1029,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a99d1d0-2edb\"",
-      "modified": "Thu, 03 Sep 2026 20:00:16 GMT"
+      "etag": "W/\"6a99dfe0-2edb\"",
+      "modified": "Thu, 03 Sep 2026 21:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1039,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788463001\"",
-      "modified": "Thu, 03 Sep 2026 19:16:41 GMT"
+      "etag": "W/\"1788466390\"",
+      "modified": "Thu, 03 Sep 2026 20:13:10 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1049,6 +1055,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Jouer à GTA 6 peut-il être dangereux pour votre couple ? À cause de cette fonctionnalité, certains pensent que oui - jeuxvideo.com",
+      "link": "https://www.jeuxvideo.com/news/2101744/jouer-a-gta-6-peut-il-etre-dangereux-pour-votre-couple-a-cause-de-cette-fonctionnalite-certains-pensent-que-oui.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxNUUh0NVdSQjBWeTBSZ2FRVnpoSjA5V2tGQ201cTlMY1hxV3lJQ25PdGZaMGI5cEpNUmFnbHhsSDBhTGRuazdWaV9WUXlyNkc1Y3BvVEgtN3pnRGtuVWlwREc1MF83MUpPRVJFbk1lRldIMU8zZlBUdk5PQkhPdDZuSFhTVGZtNFBqTFZCOWVvZjNRMXoyZE9HajAyWklDWnE1V3RaUzFqeW5PM1gza0tRZ1VUUTJUQkhBTWhKT2R1NnIxRjliWkRpOFJKVWFuSWZ6UFBDdDQ1VV9BVW4tczQxZGhPLXlOR1pOa1E?oc=5",
+      "date": "2026-09-03T20:20:08+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178827/1788273872-8995-card.jpg",
+      "description": "Jouer à GTA 6 peut-il être dangereux pour votre couple ? À cause de cette fonctionnalité, certains pensent que oui&nbsp;&nbsp;jeuxvideo.com26 minutes de GTA 6 : le résumé de la présentation historique sur Netflix et YouTube&nbsp;&nbsp;NumeramaGTA 6 va moins faire mal à la manette de votre PlayStation&nbsp;&nbsp;Konbini"
+    },
+    {
+      "title": "Miami Law Enforcement Rejects GTA 6 Marketing By Rockstar",
+      "link": "https://rockstarintel.com/miami-law-enforcement-rejects-gta-6-marketing-by-rockstar/",
+      "source_link": null,
+      "date": "2026-09-03T20:17:18+00:00",
+      "source": "RockstarINTEL",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://rockstarintel.com/wp-content/uploads/2026/09/Jason_Duval_07-copy.webp",
+      "description": "Proposals for a city-wide marketing takeover by Rockstar for GTA 6 has been slammed by the local Sheriff and Commissioner. Last month, a pitch sent to Rockstar by the Mayor of Miami-Dade County&#8217;s office was leaked. It contained a number of ideas on how Rockstar and Miami-Dade County could collaborate on a big marketing push [...]\nThe post Miami Law Enforcement Rejects GTA 6 Marketing By Rockstar appeared first on RockstarINTEL."
+    },
     {
       "title": "Miami-Dade Sheriff and Commissioner Slam City's Proposed GTA 6 Takeover for 'Promoting Fictional Version of Our Community Defined by Crime and Violence'",
       "link": "https://www.ign.com/articles/miami-dade-sheriff-and-commissioner-slam-citys-proposed-gta-6-takeover-for-promoting-fictional-version-of-our-community-defined-by-crime-and-violence",
@@ -3067,6 +3099,19 @@
       "lang": null,
       "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/gta_6_prot_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/gta_6_prot_gpu.webp?width=1920&height=1080",
       "description": "GTA 6 developers have removed the display of enemies from the minimap during combat.&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "GTA 6 Has A Perfect Catch For Players Who Are Too Evil - TheGamer",
+      "link": "https://www.thegamer.com/grand-theft-auto-6-criminal-record-honor-point-of-no-return/",
+      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNeTJJb0prUnZqZGN2STZNam9VQjFkOGdHeGdlNGdHY0RpNkxnYS11d29HZ01jeE5TU2FjdkRWZmtGZTNLQXVMOXZBTXhteTQ5Q2VtVnBRa0VqbXY0OGlYc0NiTkFNNHBHbHRMNFlJbUVOZnA0TWNFZGMwSWNFNFJndTNPR3JiTHlnZlhVYUZn?oc=5",
+      "date": "2026-09-02T14:39:49+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2026/07/jason_duval_05.jpg?w=1600&h=900&fit=crop",
+      "description": "GTA 6 Has A Perfect Catch For Players Who Are Too Evil&nbsp;&nbsp;TheGamer"
     },
     {
       "title": "Don’t Care About GTA 6’s Romance System? Don’t Use It, Dev Says",
