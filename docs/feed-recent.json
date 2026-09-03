@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-03T11:38:05.157818+00:00",
-  "duration_seconds": 46.1,
+  "generated_at": "2026-09-03T12:01:47.059258+00:00",
+  "duration_seconds": 43.3,
   "decode_failures": 0,
-  "total_articles": 1791,
-  "new_this_run": 2,
+  "total_articles": 1796,
+  "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 71,
@@ -389,19 +389,19 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T08:09:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-03T11:40:26+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 93,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 3,
       "last_article": "2026-09-03T11:29:21+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:15:06+00:00",
       "days_since_last_article": 0,
@@ -569,8 +569,8 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T21:37:47+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-03T11:54:49+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T15:30:00+00:00",
       "days_since_last_article": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 1,
@@ -853,7 +853,7 @@
     {
       "id": "theverge",
       "name": "The Verge",
-      "entries_fetched": 65,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
-    "gnews-fr": "100,100,92,100,100,92,100,100,100,100,92,92",
-    "gnews-en": "100,100,100,92,92,100,100,100,100,99,101,93",
+    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "gnews-fr": "100,92,100,100,92,100,100,100,100,92,92,92",
+    "gnews-en": "100,100,92,92,100,100,100,100,99,101,93,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -953,13 +953,13 @@
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "xboxwire": "8,8,8,8,8,8,8,8,8,8,8,8",
-    "trueach": "100,100,100,100,81,100,100,100,100,100,100,100",
+    "trueach": "100,100,100,81,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,100,100,65",
-    "engadget": "79,78,78,78,79,78,78,78,78,78,78,78",
+    "theverge": "100,100,100,100,100,100,100,100,100,100,65,100",
+    "engadget": "78,78,78,79,78,78,78,78,78,78,78,78",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -968,8 +968,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1f6e0-jZ444cvr0TKDk6BIG8nXBULALR0\"",
+      "etag": "W/\"1eb03-lVG4kVK5Cpq2ecCuFmAcfb9N6K8\"",
       "modified": null
     },
     "kotaku": {
@@ -1004,7 +1004,7 @@
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 10:54:07 GMT"
+      "modified": "Thu, 03 Sep 2026 12:00:11 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 11:36:29 GMT"
+      "modified": "Thu, 03 Sep 2026 11:59:06 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a995a46-304e\"",
-      "modified": "Thu, 03 Sep 2026 11:30:14 GMT"
+      "etag": "W/\"6a99614f-304e\"",
+      "modified": "Thu, 03 Sep 2026 12:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,17 +1038,43 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"d2c474510dc17b97b7a6cd1a3e3f75d4\"",
-      "modified": "Thu, 03 Sep 2026 11:34:48 GMT"
+      "etag": "W/\"99ff00bc0c3c988415cde9d3af66b56d\"",
+      "modified": "Thu, 03 Sep 2026 11:56:20 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a99430e-b73\"",
-      "modified": "Thu, 03 Sep 2026 09:51:10 GMT"
+      "etag": "\"6a995f32-b45\"",
+      "modified": "Thu, 03 Sep 2026 11:51:14 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar boss says \"we'll see what people say\" about GTA 6's controversial refueling system, but thinks it's so fast that \"you can't complain\"",
+      "link": "https://www.gamesradar.com/games/grand-theft-auto/rockstar-boss-says-well-see-what-people-say-about-gta-6s-controversial-refueling-system-but-thinks-its-so-fast-that-you-cant-complain/",
+      "source_link": null,
+      "date": "2026-09-03T11:54:49+00:00",
+      "source": "GamesRadar+",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/5SZMxgxPtfdQsuELcPj4hf-1280-80.jpg",
+      "description": "\"Do you think people are going to like it?\" Rob Nelson asks"
+    },
+    {
+      "title": "GTA 6 et PS5 Pro : enfin des infos claires sur le stock qui part et des prix jusqu’à 1300 - WorldOfGeek",
+      "link": "https://worldofgeek.fr/gta-6-ps5-pro-inintrouvable/",
+      "source_link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5TWVI3cHVjZWVnSHZGMkRGbjlnLV9TSWduVllwc0dOOFkwTFhNeG1vSm1TVWIxdnBSbVh3QVZEWTUzN1IyNXVxX3JEQnNPd3BZblNCV3R2LUlQdEYzMzhvVA?oc=5",
+      "date": "2026-09-03T11:40:26+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://worldofgeek.fr/wp-content/uploads/2026/09/ps5-1200x675.jpg",
+      "description": "GTA 6 et PS5 Pro : enfin des infos claires sur le stock qui part et des prix jusqu’à 1300&nbsp;&nbsp;WorldOfGeek"
+    },
     {
       "title": "PlayStation 5 Pro Could Trade GTA 6 Performance For 4K Resolution, As Leaked Enhanced Guidelines Point To 30 FPS Gameplay - Wccftech",
       "link": "https://wccftech.com/playstation-5-pro-trade-gta-6-performance-4k-resolution-leaked-guidelines/",
@@ -1061,6 +1087,19 @@
       "lang": null,
       "image": "https://cdn.wccftech.com/wp-content/uploads/2026/09/PlayStation-5-Pro-GTA-6-4K-30-FPS-1920x1080.jpg",
       "description": "PlayStation 5 Pro Could Trade GTA 6 Performance For 4K Resolution, As Leaked Enhanced Guidelines Point To 30 FPS Gameplay&nbsp;&nbsp;Wccftech"
+    },
+    {
+      "title": "You Won't Believe How GTA 6's Official Censored Trailer Looks - TheGamer",
+      "link": "https://www.thegamer.com/gta-6-extended-look-billibilli-censored-version-ridiculous/",
+      "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQbDhOZm5oek1zMFFOdXIySGdSWlRVN3Q3aW9zRnMwVVk0RUtCUmIxZW16WkNyZlc2NTl4d1M3R2NJVld0UzJ4R1l4VFZSYUZkSzhfLTNtVTVVNTJkaUsyeGVDaWRQU1FDTTc0cFd6bUtKTVhtaFp5bnhjSDExVFhLX2E3blp6SjBpVWVjWg?oc=5",
+      "date": "2026-09-03T11:20:19+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2026/09/gta6extendedlookjasonluciarobbing.jpg?w=1600&h=900&fit=crop",
+      "description": "You Won't Believe How GTA 6's Official Censored Trailer Looks&nbsp;&nbsp;TheGamer"
     },
     {
       "title": "GTA 6 Officially Details Fishing and Hunting",
@@ -1076,6 +1115,19 @@
       "description": "Grand Theft Auto 6 developer Rockstar Games details how fishing and hunting will work in the upcoming open-world crime game."
     },
     {
+      "title": "Make room for GTA 6 while WD_BLACK’s 1TB PS5 SN850P has hit the lowest price since hikes at 40% off - 9to5Toys",
+      "link": "https://9to5toys.com/2026/09/03/wdblack-1tb-ps5-sn850p-just-hit-its-lowest-price-since-the-hike-at-40-off/",
+      "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxOdkZFSG01ZWJaNFpobFNId2s3ZDdSV1M2UU5RYlo5U0xlNTMwNmZvRGxxblRMbGFORVV6X3VYM2JFbHdmVzNxc2U0M3Z5d3hRQ2stMTZfX3pSQ0pvSkhKclpxaW1WTW9BcHVZV1F5bHVpSFVNalZnMnkzcUhzLVNrV0hQaXdiUmtkeGZyZ2FYVUhyY0E5Z21EQnJiUUs5elNFOUFkQzFoa0xCQQ?oc=5",
+      "date": "2026-09-03T11:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://9to5toys.com/wp-content/uploads/sites/5/2026/09/WD-SN850P-SSD.jpg?quality=82&strip=all&resize=1200,628",
+      "description": "Make room for GTA 6 while WD_BLACK’s 1TB PS5 SN850P has hit the lowest price since hikes at 40% off&nbsp;&nbsp;9to5Toys"
+    },
+    {
       "title": "How does Epic Games CEO Tim Sweeney reckon we can fight the industry's \"Crash 2.0\"? By building more factories",
       "link": "https://www.eurogamer.net/tim-sweeney-crash-2-more-factories",
       "source_link": null,
@@ -1087,6 +1139,19 @@
       "lang": null,
       "image": "https://assetsio.gnwcdn.com/sweeney-factories.jpg?width=690&quality=85&format=jpg&auto=webp",
       "description": " It's pretty obvious to anyone that's been paying attention that the games industry is in a pretty rough place at the moment. No matter where you look, there are mass layoffs: Sony, Microsoft, EA, Ubisoft, Take-Two, Epic Games&hellip; the list goes on. The reasons are myriad, but generally companies place the reason for 'restructuring' at the door of the contraction of the market as a result of the pandemic boom in gaming, rising development costs, longer production cycles (and higher wages), sh"
+    },
+    {
+      "title": "GTA 6 gamers given 'I told you so' warning after CyberLeek reaches endgame - GAMINGbible",
+      "link": "https://www.gamingbible.com/news/gta-6-rockstar-games-cyberleek-445347-20260903",
+      "source_link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNVVB2ZHhCblZlM0Q1bWFXd0ZRSlFwUXZ0Zjh0VnQ5emhjMm9yMU1QMjNiNFlMeVpIdU16WWtKd192LUhwb0JTNFlPUjlaRkhteWVHa0p5RGFwbTdHYkpYZV9yUGp2bWVIWThCTFpyUVJKT0FWN0xGWDdpMHpjSnFYenZTRExjdw?oc=5",
+      "date": "2026-09-03T10:00:02+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blt13de969c9ab5ccf3/6a9936c960739bea47abac15/gta-6-cyberleek-03092026.jpg",
+      "description": "GTA 6 gamers given 'I told you so' warning after CyberLeek reaches endgame&nbsp;&nbsp;GAMINGbible"
     },
     {
       "title": "Vice City's visual evolution in GTA 6 demonstrates a technological breakthrough. - en.gamegpu.com",
@@ -4973,77 +5038,6 @@
       "lang": "fr",
       "image": "https://www.journaldugeek.com/app/uploads/2026/08/nouvelles-infos-jason-lucia-gta-6-1600x900.jpg",
       "description": "GTA 6 : Une pluie d’informations sur Jason, Lucia, leur relation et nos planques dans le jeu&nbsp;&nbsp;Journal du Geek"
-    },
-    {
-      "title": "7 Upcoming JRPGs to Play If You're Skipping GTA 6",
-      "link": "https://www.dualshockers.com/upcoming-jrpgs-to-play-if-youre-skipping-gta-6/",
-      "source_link": null,
-      "date": "2026-08-31T17:30:11+00:00",
-      "source": "DualShockers",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/08/7-upcoming-jrpgs-to-play-if-you-re-skipping-gta-6.jpg?w=1600&h=900&fit=crop",
-      "description": "If your only crime is an insatiable urge to grind, then I recommend these JRPGs for anyone skipping GTA 6."
-    },
-    {
-      "title": "Netflix’s GTA VI first look sparks massive pre-order surge and app download boom - JoBlo",
-      "link": "https://www.joblo.com/grand-theft-auto-6-netflix-first-look/",
-      "source_link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBEOWNGUjNQZzBwVlFwVjlGYzZNZHJaandtaVRJV1g5RWxXdjdvQm5mY0ZGY2RsWl9NUlRHQVhGa2dDS3NsaW1vMWMzLVUtUzB0TW5jRU5YSDY2dGtINERmbmtCQUNPNjNKM1ZnZdIBckFVX3lxTE1JRWZtcWFMcUhZbnpCakw2dENZX205MEN1RlZHR0YyRHVnb3czVE5qbW9KZ2lsQWFkZUJJVW92a0pSNVo0b3gyaTJLVTFKSjl5RHQzRjRfR1NlTEotV3VZeDFWVkt2ellaTVZQMEI5RlIzQQ?oc=5",
-      "date": "2026-08-31T17:29:52+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://www.joblo.com/wp-content/uploads/2026/08/grand_theft_auto_6_netflix_increase.jpg",
-      "description": "Netflix’s GTA VI first look sparks massive pre-order surge and app download boom&nbsp;&nbsp;JoBlo"
-    },
-    {
-      "title": "Sony lawyers argue that nobody is stupid enough to believe they actually own digital games, because then only one person could buy GTA 6",
-      "link": "https://www.gamesradar.com/games/sony-lawyers-argue-that-nobody-is-stupid-enough-to-believe-they-actually-own-digital-games-because-then-only-one-person-could-buy-gta-6/",
-      "source_link": null,
-      "date": "2026-08-31T17:18:02+00:00",
-      "source": "GamesRadar+",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/y5ptEuDQcPNJEokrGwvScg-1280-80.jpg",
-      "description": "PlayStation believes \"reasonable consumers would not be misled\" by its current disclosures",
-      "extraSources": [
-        {
-          "source": "Google News (EN)",
-          "link": "https://www.yahoo.com/news/us/articles/sony-lawyers-argue-nobody-stupid-171802704.html"
-        }
-      ]
-    },
-    {
-      "title": "GTA 6 : ce qui change radicalement dans la conduite et le vol de voitures - MCE TV",
-      "link": "https://mcetv.ouest-france.fr/2026/gta-6-conduite-vol-voitures-nouveautes/",
-      "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE4zWHQ4T2hZZWVPTnI4QUdxT2hfSTRqWVFnYVpTVXRtQkdEaU9qX1hHajZ2R0Frd3lXYUVrOF9yM3hFUnFSRGFzek92WTZuVXUxWkpxZjUzQWc0QUswV2RtMk95ZHBLQkZFcUpZOHdaODdObUZNcXRFeUpqR3o4Yzg?oc=5",
-      "date": "2026-08-31T17:03:28+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://media-mcetv.ouest-france.fr/wp-content/uploads/2026/07/generique-jeux-video.jpg",
-      "description": "GTA 6 : ce qui change radicalement dans la conduite et le vol de voitures&nbsp;&nbsp;MCE TV"
-    },
-    {
-      "title": "GTA 6 Confirms Violent Feature Never Seen in Grand Theft Auto Before - ComicBook.com",
-      "link": "https://comicbook.com/gaming/news/gta-6-grand-theft-auto-vi-rdr2-feature/",
-      "source_link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5tXzUwQ0xsTDkxUENTU1Mxcmhkb0xmWlZ2bnVyY01HNjhDMUdadjBzSW1yQ1k0OE9yXzg5VjBPTFRiY0w5aXJ3QmN4aTVoQ2pKbVVScHJUX2JMSUpRcTlUZ0h3eWdGTjkxeTVScklBRm1yVTQ3YU9JZDlqV19xUQ?oc=5",
-      "date": "2026-08-31T17:02:43+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://comicbook.com/wp-content/uploads/sites/4/2026/06/g-t-a-6_943582.png?resize=2000,1125",
-      "description": "GTA 6 Confirms Violent Feature Never Seen in Grand Theft Auto Before&nbsp;&nbsp;ComicBook.com"
     }
   ],
   "partial": true,
