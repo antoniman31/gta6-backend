@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-03T21:01:46.448360+00:00",
-  "duration_seconds": 39.5,
+  "generated_at": "2026-09-03T21:16:54.137590+00:00",
+  "duration_seconds": 45.7,
   "decode_failures": 0,
-  "total_articles": 1883,
+  "total_articles": 1886,
   "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 71,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-03T20:20:08+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-03T21:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-03T19:27:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -505,11 +505,11 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-03T20:17:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -533,8 +533,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T12:45:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-03T21:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-03T13:47:09+00:00",
       "days_since_last_article": 0,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T15:30:00+00:00",
       "days_since_last_article": 1,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-03T14:06:13+00:00",
       "days_since_last_article": 0,
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-03T15:38:00+00:00",
       "days_since_last_article": 0,
@@ -793,7 +793,7 @@
     {
       "id": "trueach",
       "name": "TrueAchievements",
-      "entries_fetched": 84,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -853,14 +853,14 @@
     {
       "id": "theverge",
       "name": "The Verge",
-      "entries_fetched": 0,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T01:05:00+00:00",
       "days_since_last_article": 6,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "engadget",
@@ -914,19 +914,19 @@
   "sources_silence": {
     "theverge": {
       "depuis": "2026-09-03T21:01:46.447907+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "0,0,0,0,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "0,0,0,0,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,0,0,0,0,100,100,0,100,100,100,100",
-    "gta6-netflix": "0,100,100,0,0,100,100,100,100,100,100,100",
+    "rockstar-en": "0,0,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "0,0,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "0,0,0,0,100,100,0,100,100,100,100,100",
+    "gta6-netflix": "100,100,0,0,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "0,92,0,0,100,100,100,101,102,100,100,100",
-    "gnews-en": "0,100,100,0,0,100,102,94,99,92,100,100",
+    "gnews-fr": "92,0,0,100,100,100,101,102,100,100,100,100",
+    "gnews-en": "100,100,0,0,100,102,94,99,92,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -941,7 +941,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,0,0,0,100,100,100,100,100,100,100",
+    "vg247": "100,0,0,0,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -956,31 +956,31 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "0,100,0,0,0,100,100,100,100,100,100,100",
-    "purexbox": "0,100,100,0,0,100,100,100,100,100,100,100",
-    "xboxwire": "0,8,8,0,8,8,8,0,9,9,9,9",
-    "trueach": "100,0,100,0,100,100,100,100,100,100,100,84",
-    "jdg": "100,100,0,0,0,100,100,100,100,100,100,100",
-    "numerama": "0,100,0,0,0,100,100,100,100,100,100,100",
-    "gamergen": "0,0,100,0,0,100,52,0,100,100,100,100",
-    "frandroid": "0,100,100,0,0,100,100,0,100,100,100,100",
-    "theverge": "0,0,0,0,100,100,100,0,100,100,100,0",
-    "engadget": "0,0,0,0,0,78,78,0,78,81,81,81",
-    "arstechnica": "0,27,0,0,27,27,27,27,27,27,27,27",
-    "pushsquare": "0,100,0,0,0,100,100,100,100,100,100,100",
-    "schreier": "0,0,93,0,96,92,92,0,94,94,95,99"
+    "xboxygen": "100,0,0,0,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "xboxwire": "8,8,0,8,8,8,0,9,9,9,9,9",
+    "trueach": "0,100,0,100,100,100,100,100,100,100,84,100",
+    "jdg": "100,0,0,0,100,100,100,100,100,100,100,100",
+    "numerama": "100,0,0,0,100,100,100,100,100,100,100,100",
+    "gamergen": "0,100,0,0,100,52,0,100,100,100,100,100",
+    "frandroid": "100,100,0,0,100,100,0,100,100,100,100,100",
+    "theverge": "0,0,0,100,100,100,0,100,100,100,0,100",
+    "engadget": "0,0,0,0,78,78,0,78,81,81,81,81",
+    "arstechnica": "27,0,0,27,27,27,27,27,27,27,27,27",
+    "pushsquare": "100,0,0,0,100,100,100,100,100,100,100,100",
+    "schreier": "0,93,0,96,92,92,0,94,94,95,99,99"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"268ea2a162f2c7442cc100afcff8e78a\"",
-      "modified": "Thu, 03 Sep 2026 20:46:44 GMT"
+      "etag": "W/\"aac055e075fc4f1a05f8719bd531f807\"",
+      "modified": "Thu, 03 Sep 2026 21:06:15 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1020,7 +1020,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 20:57:36 GMT"
+      "modified": "Thu, 03 Sep 2026 21:15:29 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1055,6 +1055,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 sur Netflix cartonne avec 31,1 millions de vues dans le monde - INFINITY AREA",
+      "link": "https://infinity-area.com/article/gta-6-sur-netflix-cartonne-avec-31-1-millions-de-vues-dans-le-monde",
+      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQa2RWQWFCTnhrYTB1clExcExmOUlVbjBBdm14a2stZEJJUnp3S3FLSjgxb3dCajM2V0lTd0ZUbnRVVXdzODdlRjg0Q2JwQVpwLXhROHFrLVkzVW9FYmhmNDZrUGJEM2kwNHN4eFU3ZjFBX2dGcjVuZkJTblh6bHkwNDNqUWNmOWhwWnhkMGxTeDl4NzBLQ0psQldDOUJTeE5mbGtB?oc=5",
+      "date": "2026-09-03T21:00:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "GTA 6 sur Netflix cartonne avec 31,1 millions de vues dans le monde&nbsp;&nbsp;INFINITY AREA"
+    },
+    {
+      "title": "GTA 6 Is Completely Changing How You Steal Cars",
+      "link": "https://www.gamespot.com/articles/gta-6-how-to-steal-cars/",
+      "source_link": null,
+      "date": "2026-09-03T21:00:00+00:00",
+      "source": "GameSpot",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/Jason_and_Lucia_03.jpg?w=300",
+      "description": "Carjacking in Grand Theft Auto games has been, as the title denotes, a staple of the series. Up until now, it's largely been the same. While there have been more details and animations added over the years, the premise has remained that you'll walk up to a car, press Y or Triangle, throw the driver out, get in and drive away. If the car was parked, you'd execute the same button press to smash the window and steal it. With GTA 6, carjacking is getting a complete overhaul. Here, we've got all of t"
+    },
     {
       "title": "Jouer à GTA 6 peut-il être dangereux pour votre couple ? À cause de cette fonctionnalité, certains pensent que oui - jeuxvideo.com",
       "link": "https://www.jeuxvideo.com/news/2101744/jouer-a-gta-6-peut-il-etre-dangereux-pour-votre-couple-a-cause-de-cette-fonctionnalite-certains-pensent-que-oui.htm",
@@ -1470,6 +1496,19 @@
       "lang": null,
       "image": "https://media.nbcmiami.com/2026/08/082826-GTA-6.jpg?quality=85&strip=all&resize=1200%2C675",
       "description": "Game over? Miami-Dade Sheriff urges county against proposed GTA 6 promotion&nbsp;&nbsp;NBC 6 South Florida"
+    },
+    {
+      "title": "State of Play : GTA 6, Final Fantasy VII, Until Dawn 2, Gran Turismo 7… les annonces à retenir - Univers-Simu.com",
+      "link": "https://www.univers-simu.com/news/state-of-play-septembre-2026-annonces-gta-6-final-fantasy-until-dawn-127626/",
+      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQSGtoc2NZSUV3NTh0NlhWVDBEdXNJd2ROMm9ROFgxbEJzSGNXc2JnYm5VQXlCNE9lWWpkb2NaamRXSEk3TGlRNEExbERrU2M2M3NrcHRLNmdhTEl3SFhFVVN5RlNQVnUwVVJtbnlEdmpWU21CLWFoU1NEdzUzLTE2ZWp4WExkZ0lnVFRXck1rV0NOWE9WSWViVGR4bDJiZGVKa3VYZ2F1dzhkcE1BV2tv?oc=5",
+      "date": "2026-09-03T15:08:02+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "State of Play : GTA 6, Final Fantasy VII, Until Dawn 2, Gran Turismo 7… les annonces à retenir&nbsp;&nbsp;Univers-Simu.com"
     },
     {
       "title": "GTA 6 | Infos, date, prix, lien de précommandes pour la manette édition limitée DualSense PS5",
@@ -5011,45 +5050,6 @@
       "lang": "fr",
       "image": "https://www.journaldugeek.com/app/uploads/2025/03/Journal-du-Geek.jpg",
       "description": "GTA 6 : toutes les actualités & tests en direct - | Page 16 sur 16&nbsp;&nbsp;journaldugeek.com"
-    },
-    {
-      "title": "GTA 6 Studio On Massive Pressure: \"We Are Nervous\" - GameSpot",
-      "link": "https://www.gamespot.com/articles/gta-6-studio-on-massive-pressure-we-are-nervous/",
-      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOMFZhOGx2a09FSm92dXI2c0RtRGx3ZVZmSHZmOENxRWkyTVhsWDlXZHlkcmc3dENRY2k3TWp6a0I5SjFaLUJ2V0dHeTF6ZHJqZ0JXWENSUEIxMXR3WHYwX1lVejNGajNPdjIwajBYa2IyOHNibEVtLVoyZHV3NVYyclY1MlBTTTlrRVE?oc=5",
-      "date": "2026-09-01T15:35:02+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": null,
-      "description": "GTA 6 Studio On Massive Pressure: \"We Are Nervous\"&nbsp;&nbsp;GameSpot"
-    },
-    {
-      "title": "GTA 6 Removes The Series’ Worst Feature - GameSpot",
-      "link": "https://www.gamespot.com/articles/gta-6-removes-the-series-worst-feature/",
-      "source_link": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBna2EzTWhGQm9weTF0d3ZiZjBLRmhocTEwb3BITVVTdEtlMkpCN1JUaEVXbTNpOElWYy1ReEFKcVpERGNIS2VyMDJhR2ZIWGVyU205VkNUNDk0VndoN2VaUmUyYmROVDN6TmY1RmctOGpET1B2aDNKazY5dVl1dw?oc=5",
-      "date": "2026-09-01T15:32:12+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": null,
-      "description": "GTA 6 Removes The Series’ Worst Feature&nbsp;&nbsp;GameSpot"
-    },
-    {
-      "title": "All GTA 6 radio songs confirmed so far - Daily Express",
-      "link": "https://www.express.co.uk/entertainment/gaming/2244532/all-gta-6-radio-songs",
-      "source_link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOLWZnbkVGc3k0TGlUV05iMUZXM0J3NjZRamQzbGJLbWI0ZnhreWZjaW1qWGR6c25KeTN5NzNQYVZEa0hMRUdGZjY0eFJpU0Jjdl81NVZ2ZDBhMmpEdTFkZldWRjhiU3NfY3dTQjNxWnI4OVpvamM3elNnbUgyRVJmQjZB0gGHAUFVX3lxTE9XSHBWYnlwOTRtWjcwTXJzYzVobnRIV2lieWU4Y0dLZ1V3ZktFZ3JuWnhZMWZlejYwaXIyNzJGSEw2dGtaMXZ3eVkyRXU3WlpLNVF2TTFvQUdQV1A5UlU5Mm1PdUU5eUtGaHFiSFhTLURJZzFDV3BGbmZiTlNZb19YcHUxLWFVZw?oc=5",
-      "date": "2026-09-01T15:25:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.images.express.co.uk/img/dynamic/143/1200x630/7121794.jpg",
-      "description": "All GTA 6 radio songs confirmed so far&nbsp;&nbsp;Daily Express"
     }
   ],
   "partial": true,
