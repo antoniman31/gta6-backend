@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-03T22:01:45.870106+00:00",
-  "duration_seconds": 42.3,
+  "generated_at": "2026-09-03T23:01:42.577443+00:00",
+  "duration_seconds": 43.8,
   "decode_failures": 0,
-  "total_articles": 1886,
-  "new_this_run": 0,
+  "total_articles": 1889,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,18 +353,18 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T18:40:38+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-03T22:52:49+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 71,
@@ -415,7 +415,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-01T22:45:20+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 1,
@@ -521,8 +521,8 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T19:37:18+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-03T21:52:05+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T15:30:00+00:00",
       "days_since_last_article": 1,
@@ -617,8 +617,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T17:27:53+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-03T22:54:27+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 1,
@@ -913,14 +913,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "0,0,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "0,0,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "0,0,0,100,100,0,100,100,100,100,100,100",
-    "gta6-netflix": "100,0,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "0,0,100,100,0,100,100,100,100,100,100,100",
+    "gta6-netflix": "0,0,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "0,0,100,100,100,101,102,100,100,100,100,102",
-    "gnews-en": "100,0,0,100,102,94,99,92,100,100,100,100",
+    "gnews-fr": "0,100,100,100,101,102,100,100,100,100,102,102",
+    "gnews-en": "0,0,100,102,94,99,92,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "0,0,0,100,100,100,100,100,100,100,100,100",
+    "vg247": "0,0,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,19 +950,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "0,0,0,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,0,0,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,0,8,8,8,0,9,9,9,9,9,8",
-    "trueach": "100,0,100,100,100,100,100,100,100,84,100,100",
-    "jdg": "0,0,0,100,100,100,100,100,100,100,100,100",
-    "numerama": "0,0,0,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,0,0,100,52,0,100,100,100,100,100,100",
-    "frandroid": "100,0,0,100,100,0,100,100,100,100,100,100",
-    "theverge": "0,0,100,100,100,0,100,100,100,0,100,100",
-    "engadget": "0,0,0,78,78,0,78,81,81,81,81,81",
-    "arstechnica": "0,0,27,27,27,27,27,27,27,27,27,27",
-    "pushsquare": "0,0,0,100,100,100,100,100,100,100,100,100",
-    "schreier": "93,0,96,92,92,0,94,94,95,99,99,99"
+    "xboxygen": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "0,8,8,8,0,9,9,9,9,9,8,8",
+    "trueach": "0,100,100,100,100,100,100,100,84,100,100,100",
+    "jdg": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "0,0,100,52,0,100,100,100,100,100,100,100",
+    "frandroid": "0,0,100,100,0,100,100,100,100,100,100,100",
+    "theverge": "0,100,100,100,0,100,100,100,0,100,100,100",
+    "engadget": "0,0,78,78,0,78,81,81,81,81,81,81",
+    "arstechnica": "0,27,27,27,27,27,27,27,27,27,27,27",
+    "pushsquare": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "0,96,92,92,0,94,94,95,99,99,99,99"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"4bbc9855bff23fb6c6c176dbbc3bd882\"",
-      "modified": "Thu, 03 Sep 2026 22:00:37 GMT"
+      "etag": "W/\"fa79675f1cf06a0d2cc89101e9b2ef1a\"",
+      "modified": "Thu, 03 Sep 2026 22:52:50 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 17:30:33 GMT"
+      "modified": "Thu, 03 Sep 2026 22:21:59 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1ff73-+c8UmWAOzRBeYGliC89dNwPbiS4\"",
+      "etag": "W/\"1d65b-YmFgNZfKrFNkFEiGztkkAWfJvyI\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"1c8e0aa602574c3b8135f1a1b2c56607\"",
-      "modified": "Thu, 03 Sep 2026 21:44:20 GMT"
+      "etag": "W/\"1fc0b9877275ead1e0fad8fdb54a78bc\"",
+      "modified": "Thu, 03 Sep 2026 22:00:46 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,17 +1014,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 22:01:16 GMT"
+      "modified": "Thu, 03 Sep 2026 23:01:12 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"b05fae4190f0e58e5b43d85cd73b0870\"",
-      "modified": "Thu, 03 Sep 2026 15:53:24 GMT"
+      "etag": "\"fae84a3d8eed7ad2fbad7dcf0029e3e4\"",
+      "modified": "Thu, 03 Sep 2026 22:01:24 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a99edef-2edb\"",
-      "modified": "Thu, 03 Sep 2026 22:00:15 GMT"
+      "etag": "W/\"6a99fc00-2edb\"",
+      "modified": "Thu, 03 Sep 2026 23:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788472818\"",
-      "modified": "Thu, 03 Sep 2026 22:00:18 GMT"
+      "etag": "W/\"1788476069\"",
+      "modified": "Thu, 03 Sep 2026 22:54:29 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "The Guy Vibe-Coding a GTA 6 Clone With AI Is Now Buying a PS5 to Play the Real One",
+      "link": "https://www.gtaboom.com/the-guy-vibe-coding-a-gta-6-clone-with-ai-is-now-buying-a-ps5-to-play-the-real-one-9c90",
+      "source_link": null,
+      "date": "2026-09-03T22:54:27+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/31/84/the-guy-vibe-coding-a-gta-6-clone-with-ai-is-now-buying-a-ps5-to-play-the-real-one.jpg",
+      "description": "Ziwen Xu, who tried vibe coding an AI clone of Grand Theft Auto VI, is now buying a PS5 to play Rockstar's actual game instead."
+    },
+    {
+      "title": "GTA 6 Netflix Reveal Sparks Major UK Console Sales Surge - Insider Gaming",
+      "link": "https://insider-gaming.com/gta-6-netflix-uk-console-sales-surge/",
+      "source_link": "https://news.google.com/rss/articles/CBMickFVX3lxTFAwZUFTZ1BuRnA2dUFQQ0lmblZyR2VNblhLYmVHZElVa3BSeGxpT3NpV0xwSjh5X3hUQWZ6VTBSdTROOEpLUlJCT05WajdIMWdzUFNNYnpKQ2pES1NNWnpLRFZCamNZbmFfRGhQczZDMmhSQQ?oc=5",
+      "date": "2026-09-03T22:52:49+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://insider-gaming.com/wp-content/uploads/2026/07/gta-developer-rockstar-games-crunch-scaled.jpg",
+      "description": "GTA 6 Netflix Reveal Sparks Major UK Console Sales Surge&nbsp;&nbsp;Insider Gaming"
+    },
+    {
+      "title": "Turkish GTA 6 Fans Want Language Support So Badly, They Professionally Dubbed the Gameplay Reveal",
+      "link": "https://www.ign.com/articles/turkish-gta-6-fans-want-language-support-so-badly-they-professionally-dubbed-the-gameplay-reveal",
+      "source_link": null,
+      "date": "2026-09-03T21:52:05+00:00",
+      "source": "IGN",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/09/03/jason-and-lucia-04-1788457455588.jpg",
+      "description": "Turkish GTA 6 fans want language support so badly that they went out of their way to professionally dub the game's gameplay reveal."
+    },
     {
       "title": "GTA 6 sur Netflix cartonne avec 31,1 millions de vues dans le monde - INFINITY AREA",
       "link": "https://infinity-area.com/article/gta-6-sur-netflix-cartonne-avec-31-1-millions-de-vues-dans-le-monde",
