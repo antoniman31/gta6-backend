@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-04T08:01:49.146080+00:00",
-  "duration_seconds": 45.9,
+  "generated_at": "2026-09-04T09:01:49.370071+00:00",
+  "duration_seconds": 50.2,
   "decode_failures": 0,
-  "total_articles": 1898,
-  "new_this_run": 0,
+  "total_articles": 1901,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 71,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T05:15:46+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-04T08:26:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -505,10 +505,10 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T20:17:18+00:00",
       "days_since_last_article": 0,
@@ -589,22 +589,22 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T15:30:00+00:00",
-      "days_since_last_article": 1,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-04T08:55:01+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T13:57:59+00:00",
       "days_since_last_article": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 1,
@@ -913,14 +913,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "rockstar-en": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,0,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,15,0,0,0,0,15,15",
-    "gnews-fr": "102,102,102,100,100,100,102,100,0,100,102,102",
-    "gnews-en": "100,100,100,100,98,98,100,100,0,100,100,100",
+    "rockstar-youtube": "15,15,15,0,15,0,0,0,0,15,15,15",
+    "gnews-fr": "102,102,100,100,100,102,100,0,100,102,102,102",
+    "gnews-en": "100,100,100,98,98,100,100,0,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,14 +928,14 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
-    "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10",
+    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
+    "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "vg247": "100,100,100,100,100,100,100,0,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,26 +950,26 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "purexbox": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "xboxwire": "8,8,8,8,8,8,8,8,0,8,8,8",
-    "trueach": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "jdg": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "frandroid": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "theverge": "100,100,100,100,68,100,100,100,0,100,100,100",
-    "engadget": "81,81,81,81,82,82,82,82,0,82,82,82",
-    "arstechnica": "27,27,27,27,27,27,27,27,0,27,27,27",
-    "pushsquare": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "schreier": "99,99,99,100,100,100,100,100,0,100,100,100"
+    "xboxygen": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "purexbox": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "xboxwire": "8,8,8,8,8,8,8,0,8,8,8,8",
+    "trueach": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "jdg": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "numerama": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "frandroid": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "theverge": "100,100,100,68,100,100,100,0,100,100,100,100",
+    "engadget": "81,81,81,82,82,82,82,0,82,82,82,82",
+    "arstechnica": "27,27,27,27,27,27,27,0,27,27,27,27",
+    "pushsquare": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "schreier": "99,99,100,100,100,100,100,0,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 07:52:48 GMT"
+      "modified": "Fri, 04 Sep 2026 07:57:07 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -988,8 +988,8 @@
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
-      "etag": "\"ecd3c212dbe7db75522d7e15a0c3b941\"",
-      "modified": "Thu, 03 Sep 2026 20:19:08 GMT"
+      "etag": "\"881857edcac4a1506af9dd85879345ac\"",
+      "modified": "Fri, 04 Sep 2026 08:13:39 GMT"
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
@@ -998,33 +998,33 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"64149df96384b72d81a7f18c5be170d8\"",
-      "modified": "Fri, 04 Sep 2026 08:00:56 GMT"
+      "etag": "W/\"c1475c37f1d5994f94809bc5fa858511\"",
+      "modified": "Fri, 04 Sep 2026 08:55:22 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 21:50:42 GMT"
+      "modified": "Fri, 04 Sep 2026 08:55:01 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Thu, 03 Sep 2026 15:35:54 GMT"
+      "modified": "Fri, 04 Sep 2026 08:58:46 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 07:58:05 GMT"
+      "modified": "Fri, 04 Sep 2026 09:01:13 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"18cad71d505c369b448c7cd930bc8b3b\"",
-      "modified": "Fri, 04 Sep 2026 08:00:44 GMT"
+      "etag": "\"7c82c8ccb6b4bd14aaa1de1cf02748cd\"",
+      "modified": "Fri, 04 Sep 2026 08:27:21 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9a7a91-30bc\"",
-      "modified": "Fri, 04 Sep 2026 08:00:17 GMT"
+      "etag": "W/\"6a9a889f-2f7a\"",
+      "modified": "Fri, 04 Sep 2026 09:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Miami-Dade police outraged by proposals to turn parts of Miami into GTA 6, saying that Rockstar's game embodies what they \"work every single day to prevent\"",
+      "link": "https://www.rockpapershotgun.com/miami-dade-police-outraged-by-proposals-to-turn-parts-of-miami-into-gta-6-saying-that-rockstars-game-embodies-what-they-work-every-single-day-to-prevent",
+      "source_link": null,
+      "date": "2026-09-04T08:55:01+00:00",
+      "source": "Rock Paper Shotgun",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/Jason_and_Lucia_09.jpg?width=690&quality=85&format=jpg&auto=webp",
+      "description": " The mayor of Miami-Dade, Florida has been pitching Rockstar Games about transforming parts of the county into recreations of areas from Grand Theft Auto 6, in the face of complaints from law enforcement and members of the judiciary. GTA 6 is itself inspired by Miami, so yes, this is one of those \"simulation colonising reality\" situations. The proposed publicity event would include \"an immersive arrival experience\" at Miami International Airport. with signs for Vice City and planes coated in GTA"
+    },
+    {
+      "title": "« Vous ne pourrez pas vous en plaindre » GTA 6 vous obligera à faire le plein et le patron de Rockstar répond cash à la polémique - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-fonctionnalite-essence-722241",
+      "source_link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNYmY3R2lWRHh0RlMtVWxHTFVmUWx4b1V2Tjg1elBfeVJkZjZYUV9CQ2sxWF96cFh5YmtHY1A4SWxlSlctY0FlZmh4Nk0ycTFFYlVMSmxlMHQxVDA0Rzl3LWlTcUlGb1g0SklqTnhDdC1BcTEtR195NmwteU9HOGFLSm5RSQ?oc=5",
+      "date": "2026-09-04T08:26:04+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img//_6a34e675edc32.webp",
+      "description": "« Vous ne pourrez pas vous en plaindre » GTA 6 vous obligera à faire le plein et le patron de Rockstar répond cash à la polémique&nbsp;&nbsp;Gameblog"
+    },
+    {
+      "title": "GTA 6 sur PS5 semble déjà plus impressionnant que GTA 5 Enhanced sur PC malgré un avantage inattendu - lacremedugaming.fr",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-sur-ps5-semble-deja-plus-impressionnant-que-gta-5-enhanced-sur-pc-malgre-un-avantage-inattendu-224336.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxQX2lxWjJCUnJlMFhpSEsweElDOGhBZ0RfTkt3U2JfLWY4MzFzY2dxR1FWQWxPOGhMUHBNWVJrVi1qMS1qYi10dFJWSVFYY3pxYTBUYW9JUlNTNEZwTS1Udy1GVzBJbkZOM3N3WkJNYjJkNHgzVE1WRl9td1pIdk5oWkhwR19aRS1oQ19PVUtMZGhuN0RMZVhtb3V1c3JEVkM4WUpiZzVOU0Y2VEMzZ21peGVEVG93WWM5bzd0TmZnX0pSV0ltNFZTdkhtWVJ0Zm1HeTAwczdHbnkwSlZxTjkzLUVxRlBRYlFjYmowNUpuSQ?oc=5",
+      "date": "2026-09-04T08:00:38+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-sur-ps5-semble-deja-plus-impressionnant-que-gta-5-enhanced-sur-pc-malgre-un-avantage-inattendua.png",
+      "description": "GTA 6 sur PS5 semble déjà plus impressionnant que GTA 5 Enhanced sur PC malgré un avantage inattendu&nbsp;&nbsp;lacremedugaming.fr"
+    },
     {
       "title": "GTA 6 va encore proposer une bande-son exceptionnelle, voici la liste des musiques confirmées",
       "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-liste-musiques-confirmees-722183",
@@ -1216,7 +1255,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/09/03/jason-and-lucia-04-1788457455588.jpg",
-      "description": "The Sheriff of Miami-Dade county is speaking out against Miami’s proposal to celebrate the launch of GTA 6 by decking out the city in advertisements for the highly-anticipated game, arguing that it glorifies crime and undermines the efforts of law enforcement."
+      "description": "The Sheriff of Miami-Dade county is speaking out against Miami’s proposal to celebrate the launch of GTA 6 by decking out the city in advertisements for the highly-anticipated game, arguing that it glorifies crime and undermines the efforts of law enforcement.",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://www.yahoo.com/news/us/articles/miami-dade-sheriff-commissioner-slam-193719387.html"
+        }
+      ]
     },
     {
       "title": "GTA 6 reveals limited-edition controller. See price and how to buy - elpasotimes.com",
@@ -5005,45 +5050,6 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-5-nopixel-rp-closed-beta.jpg?w=1600&h=900&fit=crop",
       "description": "Rockstar Games officially confirms a brand-new GTA release for September 8."
-    },
-    {
-      "title": "TikToks Arguing That Dating In GTA 6 Is Cheating IRL Are Going Viral",
-      "link": "https://kotaku.com/gta-6-grand-theft-auto-dating-jason-lucia-cheating-tiktok-2000730212",
-      "source_link": null,
-      "date": "2026-09-01T16:45:18+00:00",
-      "source": "Kotaku",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://kotaku.com/app/uploads/2026/08/gta-6a.jpg",
-      "description": "Grand Theft Auto 6's dating options are catching some flak on TikTok, but is it all just engagement bait?"
-    },
-    {
-      "title": "L’enquête sur les énormes fuites de GTA 6 se précise, Take-Two resserre l’étau autour du leaker",
-      "link": "https://www.jeuxvideo.com/news/2101619/l-enquete-sur-les-enormes-fuites-de-gta-6-se-precise-take-two-resserre-l-etau-autour-du-leaker.htm",
-      "source_link": null,
-      "date": "2026-09-01T16:45:09+00:00",
-      "source": "Jeuxvideo.com",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178825/1788252656-9770-card.jpg",
-      "description": "Plusieurs semaines après les fuites massives de Grand Theft Auto VI, Take-Two Interactive intensifie ses démarches légales. L'éditeur américain vient d'obtenir l'émission d'assignations sous scellés pour traquer le responsable sans lui laisser le temps de disparaître."
-    },
-    {
-      "title": "Rockstar Reveals GTA RP Updates With nopixel V",
-      "link": "https://rockstarintel.com/rockstar-reveals-gta-rp-updates-with-nopixel-v/",
-      "source_link": null,
-      "date": "2026-09-01T16:41:50+00:00",
-      "source": "RockstarINTEL",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://rockstarintel.com/wp-content/uploads/2026/08/GTARP_NoPixel_Keyart_16x9.webp",
-      "description": "Rockstar Games and the nopixel team are launching the next iteration of the highly popular server this month and have revealed a ton of new details. There&#8217;s even in-game rewards for all GTA Online players. It is incredible to see Rockstar working alongside community members to bring mods to GTA Online in an official capacity [...]\nThe post Rockstar Reveals GTA RP Updates With nopixel V appeared first on RockstarINTEL."
     }
   ],
   "partial": true,
