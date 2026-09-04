@@ -485,7 +485,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **713
+qui permet de tester tout le pipeline sans sortir de la machine. **725
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -538,6 +538,46 @@ Ce que ça corrigeait, mesuré le 04/09/2026 dans le navigateur, élément par
 
 Le thème sombre ne change qu'à un endroit visible : le bouton primaire passe
 du texte blanc au texte presque noir, sur le même bleu.
+
+### Ergonomie tactile
+
+Mesuré le 04/09/2026 contre les standards mobiles (Material 3 : 48×48 dp,
+Apple HIG : 44×44 pt, règle de séparation : 8 px entre deux cibles) :
+
+| | avant | après |
+|---|---|---|
+| zone de clic de la coche ✓ | 78×**30** | 78×**44** |
+| lien « + autre source » | 83×**17** | 83×**25** |
+| bouton « Tout charger » | 93×**19** | 97×**27** |
+| écart entre les boutons d'une carte | **4 px** | **8 px** |
+| champ de recherche | **13 px** | **16 px** |
+
+Deux principes tiennent tout ça :
+
+- **La zone de clic n'est pas la boîte visuelle.** La coche ✓ et le lien de
+  source étendent leur surface réactive par un `::after` en `position:
+  absolute` : le bouton garde sa taille à l'œil, la carte garde sa hauteur,
+  seul le doigt y gagne. Grossir les boutons aurait cassé la densité
+  assumée de l'app.
+- **16 px sur un champ de saisie, jamais moins.** En dessous, Safari sur iOS
+  ZOOME la page tout seul quand le doigt entre dans le champ, et il faut
+  dézoomer à la main après chaque recherche. Le rembourrage vertical
+  compense pour que la rangée garde sa hauteur.
+
+Rien ne descend plus sous **10 px** : le plus petit rôle typographique que
+Material 3 définisse est 11sp, en dessous il n'y a plus de barème. Cinq
+badges y étaient (`SPÉCIALISTE GTA 6`, `VIDÉO`, `FR`, `OFFICIEL`,
+`NOUVEAU`) plus les messages d'erreur de source — c'est-à-dire exactement
+le texte qu'il ne faut pas rendre difficile à lire.
+
+**Ce qui a été vérifié et trouvé conforme**, sans rien changer : le zoom
+pincé reste autorisé (pas de `user-scalable=no`), la pagination est un
+bouton explicite et non un défilement infini, les boutons désactivés le
+sont temporairement pendant une action et jamais en permanence, la largeur
+de colonne tient **43 caractères** en médiane (la plage visée sur mobile est
+35-45), et le seuil de Doherty est tenu largement — 129 ms pour changer
+d'onglet, 115 ms pour marquer lu, 48 ms pour une recherche, là où 400 ms
+est la limite.
 
 **Trois leçons de méthode**, chacune payée par un cas réel :
 
