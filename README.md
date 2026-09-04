@@ -566,9 +566,13 @@ Deux principes tiennent tout ça :
 
 Rien ne descend plus sous **10 px** : le plus petit rôle typographique que
 Material 3 définisse est 11sp, en dessous il n'y a plus de barème. Cinq
-badges y étaient (`SPÉCIALISTE GTA 6`, `VIDÉO`, `FR`, `OFFICIEL`,
-`NOUVEAU`) plus les messages d'erreur de source — c'est-à-dire exactement
+badges y étaient (« SPÉCIALISTE GTA 6 », « VIDÉO », « FR », « OFFICIEL »,
+« NOUVEAU ») plus les messages d'erreur de source — c'est-à-dire exactement
 le texte qu'il ne faut pas rendre difficile à lire.
+
+*(Les dos d'âne sont réservés aux identifiants du code : le test qui compare
+les constantes du README au code a pris « OFFICIEL » pour une constante
+inventée, et il avait raison de le faire.)*
 
 **Ce qui a été vérifié et trouvé conforme**, sans rien changer : le zoom
 pincé reste autorisé (pas de `user-scalable=no`), la pagination est un
