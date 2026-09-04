@@ -2872,6 +2872,127 @@ def test_ligne_etat_sans_double_compte():
           "la ligne d'état est placée après le bloc des boutons")
 
 
+def test_readme_ne_cite_que_des_constantes_reelles():
+    print("\n[doc] le README ne décrit que des constantes qui existent")
+    import re, glob
+
+    # Ce test existe à cause d'un cas réel : le README a documenté pendant
+    # dix jours un DEAD_SOURCE_RUNS valant 6 « passages » alors que le code
+    # compte DEAD_SOURCE_HOURS = 24 heures. Personne ne l'a vu, parce que
+    # rien ne reliait les deux fichiers. Maintenant si.
+    code = {}
+    for fichier in glob.glob("*.py"):
+        if fichier.startswith("test_"):
+            continue
+        for m in re.finditer(r"^([A-Z][A-Z0-9_]{2,})\s*=\s*(.+?)\s*(?:#.*)?$",
+                             open(fichier, encoding="utf-8").read(), re.M):
+            code.setdefault(m.group(1), m.group(2).strip())
+
+    # Variables d'environnement, secrets GitHub et constantes JS : elles se
+    # citent légitimement sans exister dans un .py.
+    hors_sujet = {
+        "HEALTHCHECK_URL", "DISCORD_WEBHOOK_URL", "VAPID_PRIVATE_KEY",
+        "VAPID_PUBLIC_KEY", "VAPID_SUBJECT", "PUSH_SUBSCRIPTIONS",
+        "NEW_ITEMS_FILE", "SOURCE_ALERTS_FILE", "PROMOTED_ITEMS_FILE",
+        "GITHUB_TOKEN", "DEFAULT_FEEDS", "DEFAULT_SETTINGS",
+        "CASSEES_NOMMEES", "RUNNER_TEMP",
+    }
+
+    readme = open("README.md", encoding="utf-8").read()
+    cites = set(re.findall(r"`([A-Z][A-Z0-9_]{2,})(?:\s*=\s*([^`]+))?`", readme))
+
+    inconnues = sorted(n for n, _ in cites if n not in code and n not in hors_sujet)
+    check(not inconnues,
+          "aucune constante citée entre `dos d'âne` n'est inventée"
+          + (" (fautives : %s)" % ", ".join(inconnues) if inconnues else ""))
+
+    # Et quand le README annonce une VALEUR, elle doit être la bonne : une
+    # constante qui existe mais dont le README ment sur le chiffre est
+    # exactement aussi trompeuse qu'une constante inventée.
+    faux = []
+    for nom, valeur in cites:
+        valeur = (valeur or "").strip()
+        if not valeur or nom not in code:
+            continue
+        if valeur.rstrip(".") != code[nom].rstrip("."):
+            faux.append("%s : README dit %s, code dit %s" % (nom, valeur, code[nom]))
+    check(not faux, "les valeurs annoncées sont les vraies"
+          + (" (fautives : %s)" % " ; ".join(faux) if faux else ""))
+
+    # Contrôle du contrôle : le test doit vraiment voir les constantes,
+    # sinon il passerait tout aussi bien sur un README vide.
+    check("DEAD_SOURCE_HOURS" in code and "SIMILARITY_THRESHOLD" in code,
+          "le test lit bien les constantes du code")
+    check(len([n for n, _ in cites if n in code]) >= 10,
+          "et il en trouve au moins dix citées dans le README")
+
+
+def test_panne_serveur_nest_pas_une_source_cassee():
+    print("\n[sources] une panne serveur n'accuse pas l'URL")
+    import fetch_feeds
+
+    # La distinction qui compte : « cassée » veut dire « va voir », « muette »
+    # veut dire « ça repassera ». Un 503 repasse tout seul — mesuré quatre
+    # fois sur 400 passages, résorbé au passage suivant à chaque fois.
+    for statut in (500, 502, 503, 504, 429):
+        check(fetch_feeds.panne_de_serveur(statut),
+              "HTTP %d est une panne passagère" % statut)
+    # Ceux-là désignent l'adresse, pas le serveur : ils ne se répareront
+    # jamais seuls, et doivent continuer d'appeler quelqu'un.
+    for statut in (200, 301, 401, 403, 404, 410):
+        check(not fetch_feeds.panne_de_serveur(statut),
+              "HTTP %d n'est PAS une panne passagère" % statut)
+    check(not fetch_feeds.panne_de_serveur(None),
+          "aucune réponse n'est pas une panne serveur — c'est injoignable")
+
+    # Et le bout par lequel ça se voit : le statut publié dans feed.json,
+    # que l'app lit pour sa ligne d'état.
+    def sante(infos):
+        feeds = [{"id": i, "name": "S%d" % n, "url": "https://ex.tld/%d" % n,
+                  "official": False}
+                 for n, i in enumerate(infos)]
+        vrais = fetch_feeds.FEEDS
+        fetch_feeds.FEEDS = feeds
+        try:
+            return {h["name"]: h["status"]
+                    for h in fetch_feeds.build_sources_health([], infos, {})}
+        finally:
+            fetch_feeds.FEEDS = vrais
+
+    etats = sante({
+        "a": {"raw_count": 0, "http_status": 503, "panne_serveur": True},
+        "b": {"raw_count": 0, "http_status": 404, "not_a_feed": True},
+        "c": {"raw_count": 0, "http_status": 200},
+    })
+    check(etats["S0"] == "muette", "un 503 est publié « muette », pas « cassee »")
+    check(etats["S1"] == "cassee", "un 404 reste « cassee » — il faut aller voir")
+    check(etats["S2"] == "muette", "un flux vide reste « muette »")
+
+
+def test_recap_hebdo_epingle_sa_dependance():
+    print("\n[workflows] le récapitulatif tourne sur la version épinglée")
+    wf = open(".github/workflows/weekly-digest.yml", encoding="utf-8").read()
+    req = open("requirements.txt", encoding="utf-8").read()
+
+    # `pip install requests` tout court prend la dernière version publiée :
+    # ce workflow tournait donc sur une version que rien n'a testée, pendant
+    # que les trois autres tenaient celle de requirements.txt.
+    check("pip install requests\n" not in wf and "pip install requests " not in wf,
+          "plus d'installation non épinglée")
+    check("requirements.txt" in wf,
+          "la version vient de requirements.txt, pas d'un second endroit à tenir à jour")
+    check("requests==" in req, "requirements.txt épingle bien requests")
+
+    # Tous les workflows Python doivent passer par requirements.txt, sinon
+    # la prochaine divergence se réinstallera sans bruit.
+    import glob
+    for chemin in glob.glob(".github/workflows/*.yml"):
+        contenu = open(chemin, encoding="utf-8").read()
+        if "pip install" in contenu:
+            check("requirements.txt" in contenu,
+                  "%s installe depuis requirements.txt" % chemin.split("/")[-1])
+
+
 def test_prefiltre_de_ressemblance():
     print("\n[doublons] le préfiltre ne peut pas écarter un vrai doublon")
     import fetch_feeds
@@ -3288,6 +3409,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
+           test_readme_ne_cite_que_des_constantes_reelles,
+           test_panne_serveur_nest_pas_une_source_cassee,
+           test_recap_hebdo_epingle_sa_dependance,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,

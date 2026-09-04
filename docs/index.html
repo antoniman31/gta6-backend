@@ -3611,6 +3611,11 @@ window.addEventListener("scroll", () => {
 // Rend lisible ce que le robot a fait à son dernier passage. Toutes ces
 // valeurs sont déjà publiées dans feed.json — l'app se contentait de ne
 // pas les regarder. Rien de neuf n'est calculé ici.
+// Au-delà, les sources cassées se comptent au lieu de se nommer. Cinq
+// tiennent sur deux lignes au plus étroit des écrans visés (320 px), même
+// avec des noms longs comme « Take-Two Investor Relations (officiel) ».
+const CASSEES_NOMMEES = 5;
+
 function majLigneRun(data){
   const el = document.getElementById("runLine");
   const elSoucis = document.getElementById("runSoucis");
@@ -3682,9 +3687,21 @@ function majLigneRun(data){
       (muettes > 1 ? "s" : "") + " muette" + (muettes > 1 ? "s" : "") + "</span>");
   }
   if(cassees.length){
+    // Les noms sont plafonnés. Le 04/09/2026, un incident a produit
+    // 22 sources cassées d'un coup : la ligne des soucis faisait alors
+    // 136 px de haut, soit huit lignes de texte orange qui écrasaient la
+    // console entière — mesuré dans le navigateur, pas supposé.
+    //
+    // Nommer les premières garde ce qui sert (savoir LAQUELLE est tombée
+    // quand il y en a une ou deux) ; le reste devient un nombre, qui suffit
+    // à dire l'ampleur. Le détail complet reste dans sources_health et dans
+    // le journal du passage.
+    const noms = cassees.slice(0, CASSEES_NOMMEES).map(s => escapeHtml(s.name));
+    const reste = cassees.length - noms.length;
     soucis.push('<span class="alerte">' + cassees.length + " cassée" +
-      (cassees.length > 1 ? "s" : "") + " : " +
-      cassees.map(s => escapeHtml(s.name)).join(", ") + "</span>");
+      (cassees.length > 1 ? "s" : "") + " : " + noms.join(", ") +
+      (reste > 0 ? " et " + reste + " autre" + (reste > 1 ? "s" : "") : "") +
+      "</span>");
   }
 
   // Le signal le plus discret des trois : la source répond, elle n'est ni
