@@ -2914,11 +2914,25 @@ def test_ergonomie_tactile():
 
     # Les zones de clic étendues par pseudo-élément. Le bouton reste petit à
     # l'œil — c'est la surface réactive qui grandit, sans déplacer le texte.
-    for selecteur in (".card-mark", ".card-extra a"):
+    #
+    # La cible visée est 44 px : le minimum d'Apple HIG et de WCAG 2.5.5,
+    # atteignable ici sans voler les clics du voisin. Material 3 demande 48,
+    # que l'app ne suit délibérément pas — sa densité est un choix, et
+    # aligner ses 132 éléments interactifs sur 48 px la détruirait.
+    for selecteur, hauteurVisuelle in ((".card-mark", 30), (".card-extra a", 17)):
         motif = re.escape(selecteur) + r"::after\s*\{[^}]*inset:\s*-(\d+)px"
         trouve = re.search(motif, html)
         check(trouve is not None,
               "%s étend sa zone de clic par un pseudo-élément" % selecteur)
+        if trouve:
+            atteinte = hauteurVisuelle + 2 * int(trouve.group(1))
+            check(atteinte >= 43,
+                  "%s : zone de %d px de haut (44 visé)" % (selecteur, atteinte))
+
+    bloc = re.search(r"\.history-line button\{([^}]*)\}", html).group(1)
+    mh = re.search(r"min-height:\s*(\d+)px", bloc)
+    check(mh is not None and int(mh.group(1)) >= 44,
+          "« Tout charger » fait au moins 44 px de haut")
 
     # Anti-patterns qui se lisent dans le balisage.
     viewport = re.search(r'<meta name="viewport"[^>]*>', html).group(0)

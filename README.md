@@ -485,7 +485,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **725
+qui permet de tester tout le pipeline sans sortir de la machine. **728
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -546,9 +546,9 @@ Apple HIG : 44×44 pt, règle de séparation : 8 px entre deux cibles) :
 
 | | avant | après |
 |---|---|---|
-| zone de clic de la coche ✓ | 78×**30** | 78×**44** |
-| lien « + autre source » | 83×**17** | 83×**25** |
-| bouton « Tout charger » | 93×**19** | 97×**27** |
+| zone de clic de la coche ✓ | 78×**30** | 75×**44** |
+| lien « + autre source » | 83×**17** | 83×**43** |
+| bouton « Tout charger » | 93×**19** | 97×**44** |
 | écart entre les boutons d'une carte | **4 px** | **8 px** |
 | champ de recherche | **13 px** | **16 px** |
 
@@ -559,6 +559,11 @@ Deux principes tiennent tout ça :
   absolute` : le bouton garde sa taille à l'œil, la carte garde sa hauteur,
   seul le doigt y gagne. Grossir les boutons aurait cassé la densité
   assumée de l'app.
+- **44 px et non 48.** C'est le minimum d'Apple HIG et de WCAG 2.5.5,
+  atteignable ici sans voler les clics du voisin — vérifié qu'aucun élément
+  interactif ne se trouve dans les bandes ainsi couvertes. Material 3 demande
+  48 ; l'app ne le suit délibérément pas, sa densité étant un choix assumé
+  jusqu'au mode dense en option.
 - **16 px sur un champ de saisie, jamais moins.** En dessous, Safari sur iOS
   ZOOME la page tout seul quand le doigt entre dans le champ, et il faut
   dézoomer à la main après chaque recherche. Le rembourrage vertical

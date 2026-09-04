@@ -371,7 +371,11 @@
     color:var(--accent); text-decoration:none; padding:3px 0;
     display:inline-block; position:relative;
   }
-  .card-extra a::after{content:""; position:absolute; inset:-4px 0;}
+  /* -13 px : porte la zone à 44 px, le minimum d'Apple HIG et de WCAG 2.5.5.
+     Vérifié qu'aucun élément interactif ne se trouve dans la bande ainsi
+     couverte, au-dessus comme en dessous — sinon on volerait ses clics au
+     voisin, ce qui est pire que la cible trop petite. */
+  .card-extra a::after{content:""; position:absolute; inset:-13px 0;}
   .card-extra a:hover{text-decoration:underline;}
   .card-mark{
     font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim);
@@ -641,7 +645,8 @@
   /* 7 px de rembourrage et non 3 : à 3, le bouton faisait 19 px de haut,
      sous le minimum de 24 px de WCAG 2.5.8. Ici le rembourrage suffit — la
      ligne n'en grandit que de 8 px, et ce bouton ne sert qu'une fois. */
-  .history-line button{padding:7px 10px; font-size:10px;}
+  /* 44 px de haut : rien ne le contraint ici, la ligne a la place. */
+  .history-line button{padding:7px 10px; font-size:10px; min-height:44px;}
   .token-status{
     font-family:'JetBrains Mono',monospace; font-size:11px;
   }
