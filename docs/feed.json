@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-04T04:01:37.164468+00:00",
-  "duration_seconds": 43.3,
+  "generated_at": "2026-09-04T05:00:40.490599+00:00",
+  "duration_seconds": 50.4,
   "decode_failures": 0,
-  "total_articles": 1892,
-  "new_this_run": 0,
+  "total_articles": 1895,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 71,
@@ -385,7 +385,7 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-03T23:27:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 1,
@@ -905,7 +905,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 2,
       "last_article": "2026-08-22T01:42:08+00:00",
       "days_since_last_article": 13,
       "status": "ok"
@@ -929,9 +929,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
-    "gnews-fr": "100,100,100,100,102,102,102,102,100,100,100,102",
-    "gnews-en": "92,100,100,100,100,100,100,100,100,98,98,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
+    "gnews-fr": "100,100,100,102,102,102,102,100,100,100,102,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,98,98,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,17 +963,17 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,9,9,8,8,8,8,8,8,8,8",
-    "trueach": "100,100,84,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "9,9,9,8,8,8,8,8,8,8,8,8",
+    "trueach": "100,84,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,0,100,100,100,100,100,100,68,100,100",
-    "engadget": "81,81,81,81,81,81,81,81,81,82,82,82",
+    "theverge": "100,0,100,100,100,100,100,100,68,100,100,100",
+    "engadget": "81,81,81,81,81,81,81,81,82,82,82,82",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "94,95,99,99,99,99,99,99,100,100,100,100"
+    "schreier": "95,99,99,99,99,99,99,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1025,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 03:57:30 GMT"
+      "modified": "Fri, 04 Sep 2026 05:00:05 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9a4250-2edb\"",
-      "modified": "Fri, 04 Sep 2026 04:00:16 GMT"
+      "etag": "W/\"6a9a4958-2edb\"",
+      "modified": "Fri, 04 Sep 2026 04:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -2116,6 +2116,19 @@
           "link": "https://insider-gaming.com/gta-6-limited-edition-ps5-controller-met-negativity/"
         }
       ]
+    },
+    {
+      "title": "10 Things You Can Do Now To Prepare For GTA 6’s November Release - TheGamer",
+      "link": "https://www.thegamer.com/gta-6-preparation-guide-before-november/",
+      "source_link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1kQlNXamNzc1dEekxIODBSd0s1RVo4OXJRbHZ0WWFvUlFUeGwxcmUwN2txZGF5c1UzM3BJYWxxS0N1WmFFSFJ5d01tQ0lQeXJuY2swUUFtUFE1SmNTN2VvR3ZrbU5HbjdpaXZGVjhRUnprUWM?oc=5",
+      "date": "2026-09-03T13:37:52+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.thegamerimages.com/wordpress/wp-content/uploads/wm/2026/09/gta-6-characters-in-front-of-a-purple-gradient-backdrop.jpg?w=1600&h=900&fit=crop",
+      "description": "10 Things You Can Do Now To Prepare For GTA 6’s November Release&nbsp;&nbsp;TheGamer"
     },
     {
       "title": "« GTA VI » n’est pas sorti que son personnage féminin est hypersexualisé - 20minutes.fr",
@@ -23962,6 +23975,19 @@
       "description": "Report: Rockstar Won’t Talk About GTA 6 Online Soon, Game Will Be Marketed as a Single-Player Experience&nbsp;&nbsp;MP1st"
     },
     {
+      "title": "GTA 6 Gets Concerning Update About GTA Online Release Date - VICE",
+      "link": "https://www.vice.com/en/article/gta-6-online-release-date-update/",
+      "source_link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBYVVI2ekhkOXpEdlFLWVBVSXlLc2JHYWxEQkRWaEpGTGJOWVlJdGJ5c3lxRFhIcldGMThmOEpwX0xlWnp5OTlfeWlTcmE4MFpsb2wtLTJNTTFjZHNhMjFSNGk3cWx0WXdrNlBZSklmbEp5azg?oc=5",
+      "date": "2026-08-08T07:00:00+00:00",
+      "source": "Jason Schreier",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/08/GTA-6-Gets-Concerning-Update-About-GTA-Online-Release-Date.jpg?w=1280",
+      "description": "GTA 6 Gets Concerning Update About GTA Online Release Date&nbsp;&nbsp;VICE"
+    },
+    {
       "title": "Red Dead Redemption 2 : 87 millions de ventes, le jeu de Rockstar n’en finit plus de cartonner",
       "link": "https://www.jeuxactu.com/red-dead-redemption-2-87-millions-de-ventes-le-jeu-de-rockstar-nen-fin-132073.htm",
       "date": "2026-08-07T17:14:01+00:01",
@@ -24095,6 +24121,19 @@
       "lang": null,
       "image": "https://images.purexbox.com/b8ed73cbd00a1/large.jpg",
       "description": "Take-Two CEO Hails 'Astonishing' GTA 6 Pre-Orders, Explains Lack Of Disc Version&nbsp;&nbsp;Pure Xbox"
+    },
+    {
+      "title": "Take-Two CEO Talks Netflix Partnership Ahead of GTA 6 Event - Insider Gaming",
+      "link": "https://insider-gaming.com/take-two-ceo-explains-netflix-partnership-gta-6-reveal/",
+      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxQdVZaSGhWWFhLUW5aVUxpQi1GcGRtMUVaNmZTUzNzRXZNdjhjNENpdzhQX0o4YkxITVMwZzFlRmR4T3hjbUczM2dqVDc4XzRacXdXaFp2dHo1N3p2VVZDZVdSRDB2UUdFWlhaaWwtWHllZmhGNjhzZ2FHOG5nLTl5Nnh4ZmxCLS1uY0E?oc=5",
+      "date": "2026-08-07T07:00:00+00:00",
+      "source": "Jason Schreier",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://insider-gaming.com/wp-content/uploads/2026/06/How-to-Pre-Order-GTA-6—Grand-Theft-Auto-6-Pre-Order-Date-More-guide.jpg",
+      "description": "Take-Two CEO Talks Netflix Partnership Ahead of GTA 6 Event&nbsp;&nbsp;Insider Gaming"
     },
     {
       "title": "GTA 6 : un extended look sera diffusé sur Netflix fin août, Rockstar Games surprend la planète jeu vidéo",
