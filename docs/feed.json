@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-04T18:01:44.233977+00:00",
-  "duration_seconds": 45.7,
+  "generated_at": "2026-09-04T19:01:50.565574+00:00",
+  "duration_seconds": 42.5,
   "decode_failures": 0,
-  "total_articles": 1945,
-  "new_this_run": 8,
+  "total_articles": 1948,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,20 +389,20 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-04T17:30:05+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-04T18:10:09+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 98,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-04T17:22:47+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-04T18:01:26+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -505,11 +505,11 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-04T17:35:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -521,8 +521,8 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T21:52:05+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-04T18:21:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -605,7 +605,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T17:14:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -617,7 +617,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T17:41:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 2,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 2,
@@ -833,7 +833,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T15:00:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 80,
+      "entries_fetched": 81,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,102,0,102,100,100,100,100,100,100",
-    "gnews-en": "100,99,98,101,99,99,98,100,99,100,102,98",
+    "gnews-fr": "102,102,102,0,102,100,100,100,100,100,100,100",
+    "gnews-en": "99,98,101,99,99,98,100,99,100,102,98,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -956,11 +956,11 @@
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,52,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "52,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,81,81,65,81,81,80,80,80,80,80",
-    "arstechnica": "27,27,28,27,28,27,27,27,27,27,28,28",
+    "engadget": "82,81,81,65,81,81,80,80,80,80,80,81",
+    "arstechnica": "27,28,27,28,27,27,27,27,27,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -973,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"ca2c1a291e4645f591eebd09012a552a\"",
-      "modified": "Fri, 04 Sep 2026 17:43:42 GMT"
+      "etag": "W/\"7107f5061cff0167be5d23c464424235\"",
+      "modified": "Fri, 04 Sep 2026 18:57:41 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 17:53:29 GMT"
+      "modified": "Fri, 04 Sep 2026 18:00:29 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"32a82-scB7d0AcsJyGYWuKrXU6ftNa0aU\"",
+      "etag": "W/\"32bcf-80nqgNk+B+eW1/PEGwCim2DVQ+w\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"07ddf7c9f94d9d4e7a347dcaf1708430\"",
-      "modified": "Fri, 04 Sep 2026 17:30:58 GMT"
+      "etag": "W/\"64db94110a6afaf7d41d1b9187c90e67\"",
+      "modified": "Fri, 04 Sep 2026 18:57:07 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 17:14:16 GMT"
+      "modified": "Fri, 04 Sep 2026 18:38:14 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 18:01:14 GMT"
+      "modified": "Fri, 04 Sep 2026 19:00:35 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9b0730-2e8d\"",
-      "modified": "Fri, 04 Sep 2026 18:00:16 GMT"
+      "etag": "W/\"6a9b1541-2e8d\"",
+      "modified": "Fri, 04 Sep 2026 19:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,13 +1033,13 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788544814\"",
-      "modified": "Fri, 04 Sep 2026 18:00:14 GMT"
+      "etag": "W/\"1788548159\"",
+      "modified": "Fri, 04 Sep 2026 18:55:59 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"a9b4c600878608541a72ed2bf044c580\"",
-      "modified": "Fri, 04 Sep 2026 16:23:46 GMT"
+      "etag": "W/\"991c73830a4d72fa203431af5bd40881\"",
+      "modified": "Fri, 04 Sep 2026 18:09:11 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 for Xbox: You Can Save $10, Today Only",
+      "link": "https://www.ign.com/articles/gta-6-for-xbox-you-can-save-10-today-only",
+      "source_link": null,
+      "date": "2026-09-04T18:21:04+00:00",
+      "source": "IGN",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/09/04/untitled-design-1788544409551.png",
+      "description": "Xbox owners can save $10 on Grand Theft Auto 6's ultimate edition using this simple workaround (but it's only available today)."
+    },
+    {
+      "title": "GTA 6 était devenu beaucoup trop réaliste : Rockstar a finalement supprimé cette fonctionnalité du jeu - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2101613/gta-6-etait-devenu-beaucoup-trop-realiste-rockstar-a-finalement-supprime-cette-fonctionnalite-du-jeu.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxNQ0h2dWpFaDFEMDdpMzRnNWZ0dm45TEF3WG5pUk1CY1Nyd0xVaEpZVTY5RWd6NlJya1dqblRZXzJrek1haENfdm55WEdKcUc4aDRsdlp6ZVMtVWxuU254enpSWnZRLUdHdF92RHNOWFBrQ2RTTGFuajVxWVZVTFM5YWZ1cUt2MGgyYzFqbUpWbjlEVVliZ3ZicDlnaU9qeW1Tay13YnNKa3JQQjhPang0bXBzN2VrNGFSSUNTeUhOaGNHRlNzeVk5VnNRNmdqR1JTS3Jfb3hkRl9YX0k?oc=5",
+      "date": "2026-09-04T18:10:09+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178825/1788250789-8570-card.jpg",
+      "description": "GTA 6 était devenu beaucoup trop réaliste : Rockstar a finalement supprimé cette fonctionnalité du jeu&nbsp;&nbsp;JeuxVideo.com"
+    },
+    {
+      "title": "Miami wants to turn the city into a real-life GTA 6 and cops aren’t happy about it - Polygon.com",
+      "link": "https://www.polygon.com/gta-6-miami-dade-rockstar-marketing-proposal-where-is-located/",
+      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOWGR4aW85eTVlcnBUY0N2cFFtbVo5d3BxLTlXRXFNaHVTRmt1ekFnejZ5ejhhTm5mbDBsdVhaMVo4ZEZXeVZKbUs1ZXIzRkpvVkZuRTd0S2hWdVFVS3hMQnBZaHVyU0Rxa1NOSXpPR1htYTFwcC1DYnZYTWVKQ3ZxOF80NTk4ZFdGSm40OVBOTQ?oc=5",
+      "date": "2026-09-04T18:01:26+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/09/jason_duval_07.jpg?w=1600&h=900&fit=crop",
+      "description": "Miami wants to turn the city into a real-life GTA 6 and cops aren’t happy about it&nbsp;&nbsp;Polygon.com"
+    },
     {
       "title": "Miami-Dade Officials Are Fighting the GTA 6 Vice City Marketing Deal",
       "link": "https://www.gtaboom.com/miami-dade-officials-are-fighting-the-gta-6-vice-city-marketing-deal-3e43",
