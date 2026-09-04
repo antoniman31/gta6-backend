@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-04T00:01:43.926890+00:00",
-  "duration_seconds": 39.8,
+  "generated_at": "2026-09-04T01:01:49.824233+00:00",
+  "duration_seconds": 49.3,
   "decode_failures": 0,
   "total_articles": 1891,
-  "new_this_run": 1,
+  "new_this_run": 0,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 71,
@@ -379,13 +379,13 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 6,
+      "days_since_last_article": 7,
       "status": "ok"
     },
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-03T23:27:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 1,
@@ -901,7 +901,7 @@
     {
       "id": "schreier",
       "name": "Jason Schreier",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -915,12 +915,12 @@
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,0,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,101,102,100,100,100,100,102,102,102,102",
-    "gnews-en": "100,102,94,99,92,100,100,100,100,100,100,100",
+    "gnews-fr": "100,101,102,100,100,100,100,102,102,102,102,100",
+    "gnews-en": "102,94,99,92,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -952,24 +952,24 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,0,9,9,9,9,9,8,8,8,8",
-    "trueach": "100,100,100,100,100,100,84,100,100,100,100,100",
+    "xboxwire": "8,0,9,9,9,9,9,8,8,8,8,8",
+    "trueach": "100,100,100,100,100,84,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,52,0,100,100,100,100,100,100,100,100,100",
-    "frandroid": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,0,100,100,100,0,100,100,100,100,100",
-    "engadget": "78,78,0,78,81,81,81,81,81,81,81,81",
+    "gamergen": "52,0,100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,0,100,100,100,0,100,100,100,100,100,100",
+    "engadget": "78,0,78,81,81,81,81,81,81,81,81,81",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "92,92,0,94,94,95,99,99,99,99,99,99"
+    "schreier": "92,0,94,94,95,99,99,99,99,99,99,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1785924798\"",
+      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 00:01:15 GMT"
+      "modified": "Fri, 04 Sep 2026 01:01:13 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9a0a12-2edb\"",
-      "modified": "Fri, 04 Sep 2026 00:00:18 GMT"
+      "etag": "W/\"6a9a1820-2edb\"",
+      "modified": "Fri, 04 Sep 2026 01:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788478449\"",
-      "modified": "Thu, 03 Sep 2026 23:34:09 GMT"
+      "etag": "W/\"1788482762\"",
+      "modified": "Fri, 04 Sep 2026 00:46:02 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
