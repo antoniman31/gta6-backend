@@ -2872,6 +2872,146 @@ def test_ligne_etat_sans_double_compte():
           "la ligne d'état est placée après le bloc des boutons")
 
 
+def _luminance(hexa):
+    """Luminance relative WCAG d'une couleur #rrggbb."""
+    c = hexa.lstrip("#")
+    if len(c) == 3:
+        c = "".join(x * 2 for x in c)
+    def canal(v):
+        v = int(v, 16) / 255
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    return 0.2126 * canal(c[0:2]) + 0.7152 * canal(c[2:4]) + 0.0722 * canal(c[4:6])
+
+
+def _contraste(a, b):
+    la, lb = _luminance(a), _luminance(b)
+    haut, bas = max(la, lb), min(la, lb)
+    return (haut + 0.05) / (bas + 0.05)
+
+
+def test_ergonomie_tactile():
+    print("\n[app] les cibles tactiles et la saisie tiennent les règles mobiles")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # 16 px minimum sur un champ de saisie. En dessous, Safari sur iOS zoome
+    # la page tout seul à l'entrée du doigt dans le champ, et l'utilisateur
+    # doit dézoomer à la main après chaque recherche.
+    bloc = re.search(r"\.search-row input\s*\{([^}]*)\}", html).group(1)
+    taille = int(re.search(r"font-size:\s*(\d+)px", bloc).group(1))
+    check(taille >= 16,
+          "le champ de recherche est à %d px (16 minimum, sinon zoom iOS)" % taille)
+
+    # La « separation rule » : 8 px entre deux cibles tactiles voisines. Sans
+    # elle, quatre boutons de 30 px de haut collés à 4 px se prennent à deux
+    # sous le pouce.
+    for regle, minimum in ((r"\.card-actions\{([^}]*)\}", 8),
+                           (r"\.feed\.dense \.card-actions\{([^}]*)\}", 6)):
+        bloc = re.search(regle, html).group(1)
+        ecart = int(re.search(r"gap:\s*(\d+)px", bloc).group(1))
+        check(ecart >= minimum,
+              "écart entre cibles : %d px (minimum %d)" % (ecart, minimum))
+
+    # Les zones de clic étendues par pseudo-élément. Le bouton reste petit à
+    # l'œil — c'est la surface réactive qui grandit, sans déplacer le texte.
+    #
+    # La cible visée est 44 px : le minimum d'Apple HIG et de WCAG 2.5.5,
+    # atteignable ici sans voler les clics du voisin. Material 3 demande 48,
+    # que l'app ne suit délibérément pas — sa densité est un choix, et
+    # aligner ses 132 éléments interactifs sur 48 px la détruirait.
+    for selecteur, hauteurVisuelle in ((".card-mark", 30), (".card-extra a", 17)):
+        motif = re.escape(selecteur) + r"::after\s*\{[^}]*inset:\s*-(\d+)px"
+        trouve = re.search(motif, html)
+        check(trouve is not None,
+              "%s étend sa zone de clic par un pseudo-élément" % selecteur)
+        if trouve:
+            atteinte = hauteurVisuelle + 2 * int(trouve.group(1))
+            check(atteinte >= 43,
+                  "%s : zone de %d px de haut (44 visé)" % (selecteur, atteinte))
+
+    bloc = re.search(r"\.history-line button\{([^}]*)\}", html).group(1)
+    mh = re.search(r"min-height:\s*(\d+)px", bloc)
+    check(mh is not None and int(mh.group(1)) >= 44,
+          "« Tout charger » fait au moins 44 px de haut")
+
+    # Anti-patterns qui se lisent dans le balisage.
+    viewport = re.search(r'<meta name="viewport"[^>]*>', html).group(0)
+    check("user-scalable=no" not in viewport and "maximum-scale" not in viewport,
+          "le zoom pincé reste autorisé (WCAG 1.4.4)")
+    check("loadMoreBtn" in html,
+          "la pagination est un bouton explicite, pas un défilement infini")
+
+    # Plus rien sous 10 px : le plus petit rôle typographique défini par
+    # Material 3 est 11sp, en dessous il n'y a plus de barème du tout.
+    petits = re.findall(r"font-size:\s*([0-9]+)px", html)
+    trop = sorted({int(x) for x in petits if int(x) < 10})
+    check(not trop, "aucun texte sous 10 px" + (" (trouvé : %s)" % trop if trop else ""))
+
+
+def test_contraste_des_deux_themes():
+    print("\n[app] les deux thèmes tiennent le contraste WCAG AA")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    def jetons(motif):
+        bloc = re.search(motif + r"\s*\{([^}]*)\}", html, re.S)
+        return dict(re.findall(r"--([\w-]+)\s*:\s*(#[0-9a-fA-F]{3,8})\s*;", bloc.group(1)))
+
+    sombre = jetons(r"\n  :root")
+    clair = jetons(r'html\[data-theme="light"\]')
+    check(len(sombre) >= 8 and len(clair) >= 8,
+          "les deux jeux de jetons sont lus (%d sombre, %d clair)" % (len(sombre), len(clair)))
+
+    # Le seuil de WCAG AA pour du texte courant. Ces couleurs ne décorent pas :
+    # --warn dit qu'une source est tombée, --ok que le backend répond, --accent
+    # porte le compte à rebours et les libellés de jour.
+    SEUIL = 4.5
+    for nom, jeu in (("sombre", sombre), ("clair", clair)):
+        for jeton in ("text", "text-dim", "accent", "ok", "warn", "danger"):
+            if jeton not in jeu:
+                continue
+            # Contre les trois fonds où ces jetons servent réellement. Ne
+            # mesurer que --bg laissait passer les pastilles d'onglet, à
+            # 4,47 sur --bg-elevated alors qu'elles tenaient 4,64 sur --bg.
+            for fond in ("bg", "bg-panel", "bg-elevated"):
+                if fond not in jeu:
+                    continue
+                r = _contraste(jeu[jeton], jeu[fond])
+                check(r >= SEUIL,
+                      "%s : --%s sur --%s = %.2f:1" % (nom, jeton, fond, r))
+
+    # Le piège qui a coûté le plus cher : un aplat --accent portant du texte
+    # écrit en dur. Le blanc tombait à 2,14:1 sur le bleu clair du thème
+    # sombre — sur le bouton le plus utilisé de l'app.
+    for nom, jeu in (("sombre", sombre), ("clair", clair)):
+        r = _contraste(jeu["accent-contrast"], jeu["accent"])
+        check(r >= SEUIL,
+              "%s : --accent-contrast sur --accent = %.2f:1" % (nom, r))
+
+    # Et la garde qui empêche le retour du problème : aucune couleur de texte
+    # écrite en dur SUR UN JETON. Un jeton se corrige par thème, pas un #fff.
+    #
+    # La première version de ce test cherchait la chaîne « color:#ffffff ».
+    # Elle serait passée à côté de .tag-leak et .tag-video, qui écrivent
+    # « color:#fff » — trois caractères de moins, même défaut. Une garde qui
+    # ne connaît qu'une orthographe du blanc n'en est pas une.
+    for forme in ("#ffffff", "#fff;", "#FFFFFF", "#FFF;", "white;"):
+        for regle in re.findall(r"\{[^}]*\}", html):
+            if "color:" + forme in regle.replace(" ", "") and "var(--accent)" in regle:
+                check(False, "couleur de texte en dur sur un aplat --accent : %s"
+                      % regle.replace("\n", " ")[:70])
+    check(True, "aucune couleur de texte en dur sur un aplat de jeton")
+
+    # Les couleurs volontairement fixes (un badge « LEAK » est rouge dans les
+    # deux thèmes) échappent aux jetons, donc au contrôle par jeton ci-dessus.
+    # On les mesure directement : fixe ne veut pas dire dispensé.
+    fixes = re.findall(r"background:\s*(#[0-9a-fA-F]{3,6})\s*;\s*color:\s*(#[0-9a-fA-F]{3,6})", html)
+    check(len(fixes) >= 2, "les paires de couleurs fixes sont trouvées (%d)" % len(fixes))
+    for fond, texte in fixes:
+        r = _contraste(texte, fond)
+        check(r >= SEUIL, "couleur fixe %s sur %s = %.2f:1" % (texte, fond, r))
+
+
 def test_readme_ne_cite_que_des_constantes_reelles():
     print("\n[doc] le README ne décrit que des constantes qui existent")
     import re, glob
@@ -3409,6 +3549,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
+           test_ergonomie_tactile,
+           test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_recap_hebdo_epingle_sa_dependance,

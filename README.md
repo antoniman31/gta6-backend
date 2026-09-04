@@ -485,7 +485,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **669
+qui permet de tester tout le pipeline sans sortir de la machine. **728
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -510,6 +510,96 @@ leur appliquait le filtre normal, et personne ne l'avait vu.
 
 Une PWA autonome (HTML/CSS/JS dans un seul fichier, volontairement — voir
 plus bas) qui lit `docs/feed.json` en priorité, avec un mode de secours.
+
+### Contraste : les deux thèmes tiennent WCAG AA
+
+Toutes les couleurs sont des **jetons CSS** basculés par `data-theme` sur
+`<html>`, et aucune couleur de texte n'est écrite en dur — un jeton se
+corrige par thème, un `#ffffff` non.
+
+Le piège, et il a coûté cher : **le texte posé SUR un aplat de couleur a une
+contrainte opposée à celle du texte posé DEVANT.** Plus le bleu est clair,
+mieux il se lit sur un fond noir, moins il peut porter du blanc. D'où
+`--accent-contrast`, qui bascule avec le thème — presque noir sur le bleu
+clair du sombre (8,74:1), blanc sur le bleu profond du clair (6,70:1).
+
+Ce que ça corrigeait, mesuré le 04/09/2026 dans le navigateur, élément par
+élément :
+
+| | avant | après |
+|---|---|---|
+| « Actualiser », thème sombre | **2,14:1** | 8,74:1 |
+| « Actualiser », thème clair | **3,00:1** | 6,70:1 |
+| `--accent` (logo, compte à rebours, libellés de jour), clair | **2,79:1** | 6,23:1 |
+| `--ok` (badge « backend »), clair | **3,07:1** | 5,76:1 |
+| `--danger`, clair | **4,49:1** | 6,02:1 |
+| pastille sur `--warn`, sombre | **1,17:1** | 15,4:1 |
+| **pire rapport de l'app** | **2,14:1** | **4,95:1** |
+
+Le thème sombre ne change qu'à un endroit visible : le bouton primaire passe
+du texte blanc au texte presque noir, sur le même bleu.
+
+### Ergonomie tactile
+
+Mesuré le 04/09/2026 contre les standards mobiles (Material 3 : 48×48 dp,
+Apple HIG : 44×44 pt, règle de séparation : 8 px entre deux cibles) :
+
+| | avant | après |
+|---|---|---|
+| zone de clic de la coche ✓ | 78×**30** | 75×**44** |
+| lien « + autre source » | 83×**17** | 83×**43** |
+| bouton « Tout charger » | 93×**19** | 97×**44** |
+| écart entre les boutons d'une carte | **4 px** | **8 px** |
+| champ de recherche | **13 px** | **16 px** |
+
+Deux principes tiennent tout ça :
+
+- **La zone de clic n'est pas la boîte visuelle.** La coche ✓ et le lien de
+  source étendent leur surface réactive par un `::after` en `position:
+  absolute` : le bouton garde sa taille à l'œil, la carte garde sa hauteur,
+  seul le doigt y gagne. Grossir les boutons aurait cassé la densité
+  assumée de l'app.
+- **44 px et non 48.** C'est le minimum d'Apple HIG et de WCAG 2.5.5,
+  atteignable ici sans voler les clics du voisin — vérifié qu'aucun élément
+  interactif ne se trouve dans les bandes ainsi couvertes. Material 3 demande
+  48 ; l'app ne le suit délibérément pas, sa densité étant un choix assumé
+  jusqu'au mode dense en option.
+- **16 px sur un champ de saisie, jamais moins.** En dessous, Safari sur iOS
+  ZOOME la page tout seul quand le doigt entre dans le champ, et il faut
+  dézoomer à la main après chaque recherche. Le rembourrage vertical
+  compense pour que la rangée garde sa hauteur.
+
+Rien ne descend plus sous **10 px** : le plus petit rôle typographique que
+Material 3 définisse est 11sp, en dessous il n'y a plus de barème. Cinq
+badges y étaient (« SPÉCIALISTE GTA 6 », « VIDÉO », « FR », « OFFICIEL »,
+« NOUVEAU ») plus les messages d'erreur de source — c'est-à-dire exactement
+le texte qu'il ne faut pas rendre difficile à lire.
+
+*(Les dos d'âne sont réservés aux identifiants du code : le test qui compare
+les constantes du README au code a pris « OFFICIEL » pour une constante
+inventée, et il avait raison de le faire.)*
+
+**Ce qui a été vérifié et trouvé conforme**, sans rien changer : le zoom
+pincé reste autorisé (pas de `user-scalable=no`), la pagination est un
+bouton explicite et non un défilement infini, les boutons désactivés le
+sont temporairement pendant une action et jamais en permanence, la largeur
+de colonne tient **43 caractères** en médiane (la plage visée sur mobile est
+35-45), et le seuil de Doherty est tenu largement — 129 ms pour changer
+d'onglet, 115 ms pour marquer lu, 48 ms pour une recherche, là où 400 ms
+est la limite.
+
+**Trois leçons de méthode**, chacune payée par un cas réel :
+
+- **Mesurer contre les trois fonds**, pas seulement `--bg`. Les pastilles
+  d'onglet tenaient 4,64:1 sur la page mais 4,47 sur `--bg-elevated` : seule
+  une mesure élément par élément dans le navigateur l'a montré.
+- **Le thème clair recopiait les couleurs du sombre.** Son `--accent` était
+  exactement le bleu du thème sombre, à 2,79:1. Un thème clair n'est pas un
+  thème sombre avec un fond blanc.
+- **Un test verrouille les ratios** (`test_contraste_des_deux_themes`) : il
+  lit les jetons des deux thèmes, calcule les contrastes contre les trois
+  fonds, et refuse tout texte de couleur écrit en dur. Vérifié capable
+  d'échouer avant d'être retenu.
 
 **Fonctionnalités :** recherche, filtres par source/lu-non lu/nouveauté,
 mode dense, pagination progressive (30 articles à la fois, pas 500 d'un
