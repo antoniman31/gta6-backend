@@ -40,8 +40,15 @@ jobs:
       # weekly_digest n'a besoin que de requests (via discord_notify) et de
       # feed_store, qui n'a aucune dépendance. Inutile d'installer feedparser
       # et le reste pour poster un message.
+      #
+      # La version est reprise de requirements.txt plutôt qu'écrite ici :
+      # `pip install requests` tout court prenait la dernière publiée, donc
+      # ce récapitulatif tournait sur une version que rien n'a testée,
+      # pendant que les trois autres workflows tenaient la version épinglée.
+      # Un test le vérifie, pour que les deux ne puissent plus diverger en
+      # silence.
       - name: Installer les dépendances
-        run: pip install requests
+        run: grep '^requests==' requirements.txt | xargs pip install
 
       - name: Envoyer le récapitulatif
         run: python weekly_digest.py

@@ -242,9 +242,9 @@ d'où le planificateur externe.
    faudrait 20 000 publications de Rockstar pour y arriver ; le cas est
    testé quand même.
 
-   **Échéance** (mesurée le 02/09/2026) : au rythme des deux dernières
-   semaines — **105 articles/jour**, et non ~50 comme annoncé ici jusqu'au
-   01/09 — le plafond tombe dans **environ 6 mois**, et `feed.json` pèsera
+   **Échéance** (mesurée le 04/09/2026) : au rythme des deux dernières
+   semaines — **116 articles/jour**, en hausse continue à l'approche de la
+   sortie — le plafond tombe dans **environ 5 mois**, et `feed.json` pèsera
    alors ~15 Mo. `audit_donnees.py` recalcule cette projection à chaque
    passage de CI, pour qu'on la voie venir au lieu de la découvrir. Voir les
    Limites pour la conséquence sur le poids du fichier.
@@ -260,8 +260,8 @@ d'où le planificateur externe.
    lancement (l'historique est vide, donc "tout" serait considéré comme
    nouveau).
 12. **Écrit aussi `docs/feed-recent.json`** — les 300 articles les plus
-   récents (`RECENT_FEED_SIZE`). Mesuré le 02/09/2026 sur 1 637 articles :
-   301 Ko bruts / 90 Ko compressés, contre 1 285 Ko / 332 Ko pour
+   récents (`RECENT_FEED_SIZE`). Mesuré le 04/09/2026 sur 1 895 articles :
+   304 Ko bruts / 92 Ko compressés, contre 1 526 Ko / 410 Ko pour
    l'historique complet.
    C'est ce fichier que l'app charge à l'ouverture ; elle télécharge le
    complet à la demande, et automatiquement dès qu'une recherche est
@@ -280,6 +280,23 @@ d'où le planificateur externe.
 
    D'où un statut `cassee`, distinct de `muette` : une source muette peut
    revenir seule, une URL qui ne renvoie plus de flux demande d'aller voir.
+
+   **Une panne serveur n'est donc PAS une source cassée** (depuis le
+   04/09/2026). Un 5xx ou un 429 revient tout seul : `panne_de_serveur()`
+   les range en `muette`, et le journal dit « serveur en panne (HTTP 503) —
+   repassera seul » au lieu d'accuser l'URL. Seuls les codes qui désignent
+   l'adresse — 404, 403, 410 — et les réponses qui ne sont pas un flux
+   restent `cassee`.
+
+   Ce que ça corrigeait : le 04/09/2026, Google News a répondu 503 sur ses
+   vingt flux d'un coup. Les vingt ont été publiées « cassées », l'app a
+   affiché huit lignes de noms en orange, et il n'y avait **rien à
+   réparer** — le passage suivant est reparti normalement. Quatre épisodes
+   de ce genre sur 400 passages du 25/08 au 04/09, tous résorbés seuls.
+
+   Le comptage, lui, n'a pas bougé : les deux statuts comptent toujours
+   comme « ne rapporte rien », et une panne serveur qui dure finit donc
+   quand même par déclencher l'alerte au bout de `DEAD_SOURCE_HOURS`.
    **Les deux comptent comme « ne rapporte rien »** (`ne_rapporte_rien()`) —
    les séparer ferait repartir à zéro le compteur de passages muets le jour
    où une muette devient cassée, et enverrait une fausse alerte de
@@ -468,7 +485,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **647
+qui permet de tester tout le pipeline sans sortir de la machine. **669
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -791,19 +808,31 @@ n'allait nulle part : il fallait ouvrir le site pour la voir. Or une source
 morte se manifeste précisément les jours où rien n'arrive — donc où aucun
 récapitulatif ne part.
 
-Le robot compte donc les passages consécutifs sans la moindre entrée brute
-(`sources_silence` dans `feed.json`, faute d'autre stockage persistant) et
-envoie un message Discord **au moment où l'état bascule** :
+Le robot chronomètre donc **depuis quand** chaque source ne renvoie plus la
+moindre entrée brute (`sources_silence` dans `feed.json`, faute d'autre
+stockage persistant) et envoie un message Discord **au moment où l'état
+bascule** :
 
 ```
-🔴 VG247 ne renvoie plus rien depuis 6 passages.
+🔴 VG247 ne renvoie plus rien depuis 24 h.
 🟢 VG247 est revenue.
 ```
 
-- **`DEAD_SOURCE_RUNS = 6`** — à une heure par passage, six heures (c'était
-  trois heures quand les passages étaient toutes les 30 min). Assez
-  pour écarter un 503 passager ou une coupure réseau ; assez peu pour ne pas
-  laisser un flux mort passer la journée inaperçu.
+- **`DEAD_SOURCE_HOURS = 24`** — en HEURES, pas en passages. Un passage n'est
+  pas une unité de temps : l'écart entre deux va d'une heure à près de cinq
+  selon que GitHub honore ou abandonne son exécution planifiée, donc
+  « depuis 6 passages » ne disait rien d'exploitable. Vingt-quatre heures,
+  c'est assez pour écarter une panne serveur passagère ou une coupure
+  réseau, assez peu pour ne pas laisser un flux mort passer la semaine.
+
+  *(Ce README a documenté une constante DEAD_SOURCE_RUNS valant 6 jusqu'au
+  04/09/2026 — elle n'a jamais existé dans le code. Repérée en comparant une
+  à une toutes les constantes citées ici aux valeurs réelles ; un test le
+  fait désormais à chaque commit.)*
+- **`REPRISE_CONFIRMEE = 2`** — le chronomètre ne repart à zéro qu'après deux
+  passages réussis d'affilée. Une source qui alterne réussite et échec garde
+  donc son chronomètre en marche, là où une seule réussite la rendrait
+  invisible pour toujours.
 - **Une alerte par bascule, jamais par passage.** Sans ça, une panne d'une
   journée produirait 48 messages identiques.
 - Un flux qui répond `304` est vivant et n'entre pas dans le comptage ; une
@@ -989,6 +1018,17 @@ l'API GitHub : 60 requêtes/h par adresse IP).
   n'existe pas du tout en régime normal : sources muettes, sources cassées
   avec leurs noms, sources en forte baisse, décodages Google News en échec.
 
+  **Les noms des cassées sont plafonnés à cinq** (`CASSEES_NOMMEES`, depuis
+  le 04/09/2026), au-delà elles se comptent : « … et 17 autres ». Le
+  04/09 un incident a produit 22 cassées d'un coup et la deuxième ligne
+  faisait alors **136 px**, soit huit lignes d'orange qui écrasaient la
+  console — mesuré dans le navigateur. Nommer les premières garde ce qui
+  sert (savoir LAQUELLE est tombée quand il y en a une ou deux) ; le détail
+  complet reste dans `sources_health` et dans le journal du passage.
+
+  Mesuré après correction, sur le cas réel du 04/09 : **136 px → 34 px**,
+  deux lignes au lieu de huit, sur un écran de 390 px comme de 320 px.
+
   Deux morceaux ont dû maigrir pour que le haut tienne. « toutes les sources
   répondent » (28 caractères) est devenu le compteur `50/50 sources` (13),
   qui dit la même chose et continue de dire quelque chose quand il devient
@@ -1152,13 +1192,13 @@ commentaire).
 - **Historique glissant, pas permanent** — plafonné à 20 000 articles
   (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique complet
   depuis toujours.
-- **Poids de `feed.json` à terme** — 1 285 Ko aujourd'hui pour 1 637
+- **Poids de `feed.json` à terme** — 1 526 Ko aujourd'hui pour 1 895
   articles ; au plafond de 20 000 il approcherait 15 Mo (~4 Mo compressés).
   L'ouverture de l'app n'est pas concernée (elle charge `feed-recent.json`),
   mais toute recherche déclenche le téléchargement de l'historique complet.
   Côté dépôt en revanche il n'y a pas de problème : Git ne stocke que les
   lignes changées (~30 à 90 lignes par passage), et l'ensemble du dépôt
-  tient dans **3,7 Mo compactés pour 466 commits** (mesuré le 02/09/2026).
+  tient dans **4,5 Mo compactés pour 540 commits** (mesuré le 04/09/2026).
 - **Deux définitions de sources** — la liste `FEEDS` (Python, source de
   vérité) et `DEFAULT_FEEDS` (JS, utilisé uniquement par le mode de
   secours) doivent être synchronisées manuellement si une source est
@@ -1270,6 +1310,12 @@ commentaire).
 - **Sources** : liste `FEEDS` dans `fetch_feeds.py` (penser à reporter
   tout changement dans `DEFAULT_FEEDS` côté `index.html`, voir limite
   ci-dessus)
+- **Dépendances** : `requirements.txt`, épinglées à la version exacte. Les
+  quatre workflows installent depuis ce fichier — `weekly-digest.yml` faisait
+  `pip install requests` tout court jusqu'au 04/09/2026, donc le
+  récapitulatif hebdomadaire tournait sur une version que rien n'avait
+  testée. Un test interdit désormais qu'un workflow réinstalle sans passer
+  par `requirements.txt`.
 - **Taille max de l'historique** : `MAX_HISTORY_SIZE` dans `feed_store.py`
   (partagé par le robot et l'outil de fusion, pour que les deux appliquent
   exactement la même règle). Les articles marqués `official` y échappent,

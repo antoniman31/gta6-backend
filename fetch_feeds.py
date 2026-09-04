@@ -1152,12 +1152,19 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # site injoignable était annoncé « ce n'est pas un flux » — un
         # diagnostic faux, et le pire genre : il accuse l'URL alors que
         # c'est le réseau qui n'a pas répondu.
-        pas_un_flux = (statut is not None
+        #
+        # Une panne serveur (5xx, 429) ne prouve rien sur l'URL : le serveur
+        # a renvoyé sa page d'erreur, que feedparser refuse évidemment de
+        # lire. L'accuser d'« être devenue une page web » est un diagnostic
+        # faux, et il coûte cher — voir panne_de_serveur.
+        panne = panne_de_serveur(statut)
+        pas_un_flux = (statut is not None and not panne
                        and not (getattr(parsed, "version", "") or ""))
         return [], {"raw_count": 0, "not_modified": False,
                     "conditionnelle": conditionnelle,
                     "http_status": statut, "redirect": redirige,
                     "not_a_feed": pas_un_flux,
+                    "panne_serveur": panne,
                     "injoignable": statut is None}, journal
 
     # Un flux vide ne dit pas POURQUOI il est vide, et feedparser ne aide
@@ -1175,6 +1182,14 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     if not parsed.entries:
         version = getattr(parsed, "version", "") or ""
         if not version:
+            if panne_de_serveur(statut):
+                journal.append(
+                    f"  SERVEUR EN PANNE — HTTP {statut}, réessai au passage "
+                    f"suivant (rien à corriger ici)")
+                return [], {"raw_count": 0, "not_modified": False,
+                            "conditionnelle": conditionnelle,
+                            "http_status": statut, "redirect": redirige,
+                            "panne_serveur": True}, journal
             cause = ("redirigé vers une page qui n'est pas un flux — "
                      "corriger l'URL dans FEEDS" if redirige
                      else "page de blocage ? URL devenue une page web ?")
@@ -1400,6 +1415,29 @@ def chaines_par_hote(feeds, par_hote=PER_HOST_LIMIT):
             files[rang % len(files)].append(feed)
         chaines.extend(files)
     return chaines
+
+
+def panne_de_serveur(statut):
+    """Le code HTTP annonce-t-il une panne PASSAGÈRE du serveur ?
+
+    La distinction qui compte n'est pas « ai-je reçu un flux » mais « faut-il
+    que quelqu'un aille voir ». Un 503 revient tout seul ; une URL qui ne
+    sert plus de RSS ne revient jamais sans qu'on la corrige.
+
+    Mesuré sur 400 passages du 25/08 au 04/09/2026 : quatre épisodes où
+    Google News a répondu 503 sur ses vingt flux d'un coup, chaque fois
+    résorbés au passage suivant sans que personne ne touche à rien. Ils
+    étaient pourtant annoncés « cassées », c'est-à-dire du même mot que la
+    chaîne YouTube de Rockstar passée en 404 — qui, elle, demande vraiment
+    d'aller voir.
+
+    Le 429 est rangé ici avec les 5xx : « trop de requêtes » est le cas le
+    plus passager de tous.
+
+    Un 404 ou un 403 restent en dehors : ils désignent l'adresse, pas le
+    serveur, et ne se répareront pas d'eux-mêmes.
+    """
+    return statut is not None and (statut >= 500 or statut == 429)
 
 
 def merite_reprise(info):
@@ -2346,6 +2384,11 @@ def build_sources_health(all_items, feed_infos, new_counts):
             # gestes ne sont pas les mêmes — une source muette peut revenir
             # seule, une URL qui ne renvoie plus de flux demande d'aller
             # voir.
+            #
+            # Une panne serveur (5xx, 429) reste donc "muette" et jamais
+            # "cassee" : elle revient seule, et l'annoncer comme un défaut
+            # d'URL envoie chercher un problème qui n'existe pas. Voir
+            # panne_de_serveur, qui porte la mesure.
             status = "cassee" if info.get("not_a_feed") else "muette"
         elif days is None or days > SILENT_SOURCE_DAYS:
             status = "tarie"
@@ -2374,10 +2417,15 @@ def build_sources_health(all_items, feed_infos, new_counts):
     if muettes:
         print(f"\n⚠ {len(muettes)} source(s) sans aucune entrée :")
         for h in muettes:
+            statut = h.get("http_status")
             if h["status"] == "cassee":
-                detail = f"réponse HTTP {h.get('http_status') or '?'} mais ce n'est pas un flux"
+                detail = f"réponse HTTP {statut or '?'} mais ce n'est pas un flux"
                 if h.get("redirect"):
                     detail += f"\n      redirigé vers : {h['redirect']}"
+            elif panne_de_serveur(statut):
+                # Dit dans le journal ce que le statut dit déjà dans les
+                # données : ce n'est pas la source qui est en cause.
+                detail = f"serveur en panne (HTTP {statut}) — repassera seul"
             else:
                 detail = "flux vide"
             print(f"    - {h['name']} — {detail}")
@@ -2676,6 +2724,9 @@ def sonde(url):
     elif info.get("injoignable"):
         print("  verdict          : INJOIGNABLE — aucune réponse HTTP "
               "(DNS, TLS, réseau, ou serveur muet)")
+    elif info.get("panne_serveur"):
+        print(f"  verdict          : SERVEUR EN PANNE — HTTP {statut}, "
+              "passager, rien à corriger dans FEEDS")
     elif info.get("not_a_feed"):
         print("  verdict          : PAS UN FLUX — page de blocage, ou URL qui "
               "ne sert plus de RSS")
