@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-04T01:01:49.824233+00:00",
-  "duration_seconds": 49.3,
+  "generated_at": "2026-09-04T02:01:46.012472+00:00",
+  "duration_seconds": 46.7,
   "decode_failures": 0,
-  "total_articles": 1891,
-  "new_this_run": 0,
+  "total_articles": 1892,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,8 +353,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-03T22:52:49+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-04T01:31:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 7,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 98,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 500,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T16:15:29+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-03T15:38:00+00:00",
       "days_since_last_article": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 1,
@@ -853,19 +853,19 @@
     {
       "id": "theverge",
       "name": "The Verge",
-      "entries_fetched": 100,
+      "entries_fetched": 68,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T01:05:00+00:00",
-      "days_since_last_article": 6,
+      "days_since_last_article": 7,
       "status": "ok"
     },
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 81,
+      "entries_fetched": 82,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -907,20 +907,31 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
-      "days_since_last_article": 12,
+      "days_since_last_article": 13,
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-04T02:01:46.011950+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-04T02:01:46.011950+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "0,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,101,102,100,100,100,100,102,102,102,102,100",
-    "gnews-en": "102,94,99,92,100,100,100,100,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "gnews-fr": "101,102,100,100,100,100,102,102,102,102,100,100",
+    "gnews-en": "94,99,92,100,100,100,100,100,100,100,100,98",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -952,24 +963,24 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,0,9,9,9,9,9,8,8,8,8,8",
-    "trueach": "100,100,100,100,100,84,100,100,100,100,100,100",
+    "xboxwire": "0,9,9,9,9,9,8,8,8,8,8,8",
+    "trueach": "100,100,100,100,84,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "52,0,100,100,100,100,100,100,100,100,100,100",
-    "frandroid": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,0,100,100,100,0,100,100,100,100,100,100",
-    "engadget": "78,0,78,81,81,81,81,81,81,81,81,81",
+    "gamergen": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "0,100,100,100,0,100,100,100,100,100,100,68",
+    "engadget": "0,78,81,81,81,81,81,81,81,81,81,82",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "92,0,94,94,95,99,99,99,99,99,99,100"
+    "schreier": "0,94,94,95,99,99,99,99,99,99,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1785924798\"",
-      "modified": "Wed, 05 Aug 2026 10:13:18 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1014,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 01:01:13 GMT"
+      "modified": "Fri, 04 Sep 2026 02:00:01 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9a1820-2edb\"",
-      "modified": "Fri, 04 Sep 2026 01:00:16 GMT"
+      "etag": "W/\"6a9a2631-2edb\"",
+      "modified": "Fri, 04 Sep 2026 02:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,12 +1054,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9a07f2-a40\"",
-      "modified": "Thu, 03 Sep 2026 23:51:14 GMT"
+      "etag": "\"6a9a240c-a41\"",
+      "modified": "Fri, 04 Sep 2026 01:51:08 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "UK Console Sales Surge 33% After 'GTA 6' Netflix Reveal - Inven Global",
+      "link": "https://www.invenglobal.com/articles/25564/uk-console-sales-surge-33-after-gta-6-netflix-reveal",
+      "source_link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOay1fX0pzRE9pSmg0TE5JTlM4QmplRjNvRWw1RHRseU9weV9CdTFvd1NnSWczdWJBY19fNVhzdC1fR2lSUGMyQVJpNE9qSklzRXVacE9vQWV4Yk1JS3UzTmE0dDZVN3o1NS1kaEdiSk1yMGs3NUREVmFraGV6M1VHRWEzNHRCMTFnWGt5RGM0M2x5SlVzSHN3Rk1EOA?oc=5",
+      "date": "2026-09-04T01:31:44+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://static.invenglobal.com/upload/image/2026/09/04/i1788485301064782.jpeg",
+      "description": "UK Console Sales Surge 33% After 'GTA 6' Netflix Reveal&nbsp;&nbsp;Inven Global"
+    },
     {
       "title": "Miami-Dade officials slam county leaders' collaboration with Grand Theft Auto 6 - CBS News",
       "link": "https://www.cbsnews.com/miami/video/miami-dade-officials-slam-county-leaders-collaboration-with-grand-theft-auto-6/",
@@ -5031,19 +5055,6 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/S9ZmAQWLf5vKjwSP59uJ5a-1280-80.jpg",
       "description": "\"I think the philosophy might be very similar in many ways\""
-    },
-    {
-      "title": "Une saison entière dédiée à GTA 6 arrive dans NBA 2K27 - gamewave",
-      "link": "https://gamewave.fr/nba-2k27/une-saison-entiere-dediee-a-gta-6-arrive-dans-nba-2k27/",
-      "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQa3BtOE1Ia0tjNEt3d210TW8weWVSY2NjaEdYNm4tSFZ2b0FEMDJPU0luUmRpZi1Xb2ZUdzdfM1BydUZkTllPLUxua2swYWhJOGtwbTFhbFpyX0pxdk5kcFRGMlZWMDI3Z3RWVEU5clRCSnBYZHprNEFiaE1WcWpoS21SeFEyTFpGREtNdg?oc=5",
-      "date": "2026-09-01T16:07:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://gamewave.fr/static/images/news/headers/ae35b-saison3-nba2k27-gta6.jpg",
-      "description": "Une saison entière dédiée à GTA 6 arrive dans NBA 2K27&nbsp;&nbsp;gamewave"
     }
   ],
   "partial": true,
