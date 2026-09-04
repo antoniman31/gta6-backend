@@ -20,8 +20,14 @@
     --bg-elevated: #161c22;
     --line: #1e2730;
     --text: #e4ece8;
-    --text-dim: #6b7d78;
+    /* 5,86:1 sur --bg. Était #6b7d78, soit 4,48 — sous les 4,5 de WCAG AA
+       d'un cheveu, et c'est la couleur de la ligne d'état, des libellés de
+       jour et de la moitié des mentions secondaires. */
+    --text-dim: #7e918b;
     --accent: #58b9ff;
+    /* Ce qui s'écrit SUR un aplat --accent. Bascule avec le thème : le bleu
+       clair du sombre demande du presque-noir (8,74:1), le bleu profond du
+       clair demande du blanc (6,70:1). Aucun ton unique ne tient les deux. */
     --accent-contrast: #06131f;
     --ok: #4ade80;
     --warn: #facc15;
@@ -34,13 +40,23 @@
     --bg-elevated: #eef3f8;
     --line: #d7e1ea;
     --text: #10222f;
-    --text-dim: #5c7286;
-    --accent: #5493ff;
-    --accent-contrast: #06131f;
-    --ok: #16a34a;
-    --warn: #b45309;
-    --danger: #dc2626;
-    --grid-tint: rgba(84,147,255,0.05);
+    /* Mesuré contre les TROIS fonds où il sert, pas seulement --bg : la page
+       (5,14), le surélevé des pastilles d'onglet (4,95) et la carte blanche
+       (5,53). Était #5c7286 — conforme sur la page à 4,64 mais à 4,47 sur le
+       surélevé, ce que seule une mesure élément par élément fait apparaître. */
+    --text-dim: #566b7e;
+    /* 6,23:1 sur --bg, 6,70 sur une carte blanche. Était #5493ff — le bleu
+       du thème SOMBRE, recopié tel quel, à 2,79:1. C'est la couleur du
+       « _WATCH » du logo, du compte à rebours, des libellés de jour et de
+       vingt-cinq autres endroits : tous délavés. */
+    --accent: #1d4ed8;
+    --accent-contrast: #ffffff;
+    --ok: #127034;              /* 5,76:1 — était #16a34a, 3,07 */
+    --warn: #9a4a08;            /* 5,60:1 sur le plus exigeant des trois fonds
+                                   — était #b45309, conforme sur la page à
+                                   4,67 mais à 4,50 sur le surélevé */
+    --danger: #b91c1c;          /* 6,02:1 — était #dc2626, 4,49 */
+    --grid-tint: rgba(29,78,216,0.05);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
@@ -119,7 +135,9 @@
     position:absolute; top:-6px; right:-6px; min-width:16px; height:16px; padding:0 3px;
     border-radius:8px; background:var(--warn); border:2px solid var(--bg);
     display:flex; align-items:center; justify-content:center;
-    font-size:9px; font-weight:700; color:#ffffff; line-height:1;
+    /* --bg, pas #ffffff : sur le jaune du thème sombre (#facc15) le blanc
+       tombe à 1,17:1, soit strictement illisible. */
+    font-size:9px; font-weight:700; color:var(--bg); line-height:1;
   }
   .logs-error-badge:empty{display:none;}
   .icon-btn:hover{border-color:var(--accent);}
@@ -170,7 +188,11 @@
   }
   button:hover{border-color:var(--accent);}
   button:active{transform:translateY(1px);}
-  button.primary{background:var(--accent); border-color:var(--accent); color:#ffffff;}
+  /* --accent-contrast, pas #ffffff : le blanc en dur donnait 2,14:1 sur le
+     bleu clair du thème sombre. C'est le bouton le plus utilisé de l'app, et
+     le jeton existait déjà — il servait au badge, à la surbrillance de
+     recherche et à la sélection, mais pas ici. */
+  button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);}
   button.primary:hover{filter:brightness(1.1);}
   button:disabled{opacity:0.4; cursor:default;}
   button.small{padding:6px 10px; font-size:11px;}
@@ -223,12 +245,17 @@
   .tab:active, .controls button:active{background:var(--bg-elevated);}
   /* L'onglet actif et le bouton principal sont le même état : celui vers
      lequel on veut être conduit. */
-  .tab.active, .controls button.primary{color:#ffffff; background:var(--accent); border-color:var(--accent);}
+  .tab.active, .controls button.primary{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
   .tab-badge{
     font-size:10px; font-weight:700; background:var(--bg-elevated); color:var(--text-dim);
     padding:1px 5px; border-radius:8px; margin-left:2px;
   }
-  .tab.active .tab-badge{background:rgba(255,255,255,0.25); color:#ffffff;}
+  /* Le voile et le texte suivent --accent-contrast : sur l'aplat clair du
+     thème sombre, un voile blanc et du texte blanc devenaient invisibles. */
+  .tab.active .tab-badge{
+    background:color-mix(in srgb, var(--accent-contrast) 20%, transparent);
+    color:var(--accent-contrast);
+  }
   .tab-badge:empty{display:none;}
   /* Un drapeau n'est pas un chiffre : il lui faut sa taille propre, et le
      fond de pastille disparaît — un emoji encadré d'une bulle grise se lit
@@ -394,7 +421,7 @@
   }
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
-    background:var(--accent); color:#ffffff; border:none; border-radius:20px;
+    background:var(--accent); color:var(--accent-contrast); border:none; border-radius:20px;
     padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:11px;
     font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;
   }
@@ -480,7 +507,11 @@
      rouge assez foncé pour porter du texte blanc devient illisible, et
      assez clair pour être lisible ne ressemble plus à un avertissement. */
   button.danger{border-color:var(--danger); color:var(--danger);}
-  button.danger:hover{background:var(--danger); color:#ffffff;}
+  /* --bg et non #ffffff : le blanc sur le rouge clair du thème sombre
+     tombait à 2,77:1. La couleur du fond de page marche dans les deux
+     thèmes par construction — tout jeton qui tient 4,5:1 CONTRE le fond
+     le tient aussi DANS l'autre sens. 7,05:1 en sombre, 6,02 en clair. */
+  button.danger:hover{background:var(--danger); color:var(--bg);}
 
   /* Bottom sheet : variante ancrée en bas d'écran, avec poignée de
      glissement — pattern standard 2026 pour les filtres/actions
@@ -504,7 +535,7 @@
   }
   .sheet-btn-group{display:flex; gap:8px; flex-wrap:wrap;}
   .sheet-btn-group button{flex:1; min-width:80px;}
-  .sheet-btn-group button.active{color:#ffffff; background:var(--accent); border-color:var(--accent);}
+  .sheet-btn-group button.active{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
 
   .settings-title{
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:15px;
@@ -600,7 +631,7 @@
      les onglets et le bouton principal le disent en aplat blanc sur accent —
      deux langages à vingt pixels d'écart. Il adopte celui du site. */
   .theme-toggle button.active{
-    color:#ffffff; background:var(--accent); border-color:var(--accent);
+    color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);
   }
 
   input[type="range"]{width:140px; accent-color:var(--accent);}

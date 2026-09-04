@@ -485,7 +485,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **669
+qui permet de tester tout le pipeline sans sortir de la machine. **713
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -510,6 +510,47 @@ leur appliquait le filtre normal, et personne ne l'avait vu.
 
 Une PWA autonome (HTML/CSS/JS dans un seul fichier, volontairement — voir
 plus bas) qui lit `docs/feed.json` en priorité, avec un mode de secours.
+
+### Contraste : les deux thèmes tiennent WCAG AA
+
+Toutes les couleurs sont des **jetons CSS** basculés par `data-theme` sur
+`<html>`, et aucune couleur de texte n'est écrite en dur — un jeton se
+corrige par thème, un `#ffffff` non.
+
+Le piège, et il a coûté cher : **le texte posé SUR un aplat de couleur a une
+contrainte opposée à celle du texte posé DEVANT.** Plus le bleu est clair,
+mieux il se lit sur un fond noir, moins il peut porter du blanc. D'où
+`--accent-contrast`, qui bascule avec le thème — presque noir sur le bleu
+clair du sombre (8,74:1), blanc sur le bleu profond du clair (6,70:1).
+
+Ce que ça corrigeait, mesuré le 04/09/2026 dans le navigateur, élément par
+élément :
+
+| | avant | après |
+|---|---|---|
+| « Actualiser », thème sombre | **2,14:1** | 8,74:1 |
+| « Actualiser », thème clair | **3,00:1** | 6,70:1 |
+| `--accent` (logo, compte à rebours, libellés de jour), clair | **2,79:1** | 6,23:1 |
+| `--ok` (badge « backend »), clair | **3,07:1** | 5,76:1 |
+| `--danger`, clair | **4,49:1** | 6,02:1 |
+| pastille sur `--warn`, sombre | **1,17:1** | 15,4:1 |
+| **pire rapport de l'app** | **2,14:1** | **4,95:1** |
+
+Le thème sombre ne change qu'à un endroit visible : le bouton primaire passe
+du texte blanc au texte presque noir, sur le même bleu.
+
+**Trois leçons de méthode**, chacune payée par un cas réel :
+
+- **Mesurer contre les trois fonds**, pas seulement `--bg`. Les pastilles
+  d'onglet tenaient 4,64:1 sur la page mais 4,47 sur `--bg-elevated` : seule
+  une mesure élément par élément dans le navigateur l'a montré.
+- **Le thème clair recopiait les couleurs du sombre.** Son `--accent` était
+  exactement le bleu du thème sombre, à 2,79:1. Un thème clair n'est pas un
+  thème sombre avec un fond blanc.
+- **Un test verrouille les ratios** (`test_contraste_des_deux_themes`) : il
+  lit les jetons des deux thèmes, calcule les contrastes contre les trois
+  fonds, et refuse tout texte de couleur écrit en dur. Vérifié capable
+  d'échouer avant d'être retenu.
 
 **Fonctionnalités :** recherche, filtres par source/lu-non lu/nouveauté,
 mode dense, pagination progressive (30 articles à la fois, pas 500 d'un

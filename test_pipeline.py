@@ -2872,6 +2872,69 @@ def test_ligne_etat_sans_double_compte():
           "la ligne d'état est placée après le bloc des boutons")
 
 
+def _luminance(hexa):
+    """Luminance relative WCAG d'une couleur #rrggbb."""
+    c = hexa.lstrip("#")
+    if len(c) == 3:
+        c = "".join(x * 2 for x in c)
+    def canal(v):
+        v = int(v, 16) / 255
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    return 0.2126 * canal(c[0:2]) + 0.7152 * canal(c[2:4]) + 0.0722 * canal(c[4:6])
+
+
+def _contraste(a, b):
+    la, lb = _luminance(a), _luminance(b)
+    haut, bas = max(la, lb), min(la, lb)
+    return (haut + 0.05) / (bas + 0.05)
+
+
+def test_contraste_des_deux_themes():
+    print("\n[app] les deux thèmes tiennent le contraste WCAG AA")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    def jetons(motif):
+        bloc = re.search(motif + r"\s*\{([^}]*)\}", html, re.S)
+        return dict(re.findall(r"--([\w-]+)\s*:\s*(#[0-9a-fA-F]{3,8})\s*;", bloc.group(1)))
+
+    sombre = jetons(r"\n  :root")
+    clair = jetons(r'html\[data-theme="light"\]')
+    check(len(sombre) >= 8 and len(clair) >= 8,
+          "les deux jeux de jetons sont lus (%d sombre, %d clair)" % (len(sombre), len(clair)))
+
+    # Le seuil de WCAG AA pour du texte courant. Ces couleurs ne décorent pas :
+    # --warn dit qu'une source est tombée, --ok que le backend répond, --accent
+    # porte le compte à rebours et les libellés de jour.
+    SEUIL = 4.5
+    for nom, jeu in (("sombre", sombre), ("clair", clair)):
+        for jeton in ("text", "text-dim", "accent", "ok", "warn", "danger"):
+            if jeton not in jeu:
+                continue
+            # Contre les trois fonds où ces jetons servent réellement. Ne
+            # mesurer que --bg laissait passer les pastilles d'onglet, à
+            # 4,47 sur --bg-elevated alors qu'elles tenaient 4,64 sur --bg.
+            for fond in ("bg", "bg-panel", "bg-elevated"):
+                if fond not in jeu:
+                    continue
+                r = _contraste(jeu[jeton], jeu[fond])
+                check(r >= SEUIL,
+                      "%s : --%s sur --%s = %.2f:1" % (nom, jeton, fond, r))
+
+    # Le piège qui a coûté le plus cher : un aplat --accent portant du texte
+    # écrit en dur. Le blanc tombait à 2,14:1 sur le bleu clair du thème
+    # sombre — sur le bouton le plus utilisé de l'app.
+    for nom, jeu in (("sombre", sombre), ("clair", clair)):
+        r = _contraste(jeu["accent-contrast"], jeu["accent"])
+        check(r >= SEUIL,
+              "%s : --accent-contrast sur --accent = %.2f:1" % (nom, r))
+
+    # Et la garde qui empêche le retour du problème : plus aucune couleur de
+    # texte écrite en dur. Un jeton peut être corrigé par thème, pas un #fff.
+    check("color:#ffffff" not in html and "color: #ffffff" not in html,
+          "aucune couleur de texte n'est écrite en dur")
+
+
 def test_readme_ne_cite_que_des_constantes_reelles():
     print("\n[doc] le README ne décrit que des constantes qui existent")
     import re, glob
@@ -3409,6 +3472,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_compteur_echecs_decodage,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
+           test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_recap_hebdo_epingle_sa_dependance,
