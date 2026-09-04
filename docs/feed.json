@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-04T16:01:44.528382+00:00",
-  "duration_seconds": 41.0,
+  "generated_at": "2026-09-04T16:34:18.572729+00:00",
+  "duration_seconds": 46.4,
   "decode_failures": 0,
-  "total_articles": 1931,
-  "new_this_run": 6,
+  "total_articles": 1934,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -341,7 +341,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T15:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T15:13:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 2,
@@ -481,10 +481,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-03T15:55:02+00:00",
       "days_since_last_article": 1,
@@ -499,7 +499,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T16:15:29+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -557,8 +557,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T14:33:57+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 0,
@@ -629,7 +629,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T15:17:26+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -689,7 +689,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T15:33:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 2,
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,102,102,102,102,102,102,0,102,100,100,100",
-    "gnews-en": "100,100,100,100,99,98,101,99,99,98,100,99",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "gnews-fr": "102,102,102,102,102,102,0,102,100,100,100,100",
+    "gnews-en": "100,100,100,99,98,101,99,99,98,100,99,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -956,11 +956,11 @@
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,52,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,52,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,81,81,65,81,81,80,80",
-    "arstechnica": "27,27,27,27,27,28,27,28,27,27,27,27",
+    "engadget": "82,82,82,82,81,81,65,81,81,80,80,80",
+    "arstechnica": "27,27,27,27,28,27,28,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,13 +968,13 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1788266154\"",
-      "modified": "Tue, 01 Sep 2026 12:35:54 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"866b53dc2abe688caeae5762edcfae26\"",
-      "modified": "Fri, 04 Sep 2026 15:54:10 GMT"
+      "etag": "W/\"9b83297c14508715d8b15125be2a58fc\"",
+      "modified": "Fri, 04 Sep 2026 16:21:38 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"6051cac91c5adf078a672b8745b434f2\"",
-      "modified": "Fri, 04 Sep 2026 15:32:03 GMT"
+      "etag": "W/\"43bb34b5a5167e4bf8eae7d65af19a4b\"",
+      "modified": "Fri, 04 Sep 2026 16:30:44 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 15:57:30 GMT"
+      "modified": "Fri, 04 Sep 2026 16:29:01 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,23 +1023,23 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9aeb11-2e8d\"",
-      "modified": "Fri, 04 Sep 2026 16:00:17 GMT"
+      "etag": "W/\"6a9af218-2e8d\"",
+      "modified": "Fri, 04 Sep 2026 16:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"ad079b7cc19e5e973f1ef30f9b1f4053\"",
-      "modified": "Fri, 04 Sep 2026 16:00:35 GMT"
+      "etag": "W/\"1a0a3abf5963260497d782b31c6db3c6\"",
+      "modified": "Fri, 04 Sep 2026 16:14:13 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788536613\"",
-      "modified": "Fri, 04 Sep 2026 15:43:33 GMT"
+      "etag": "W/\"1788539114\"",
+      "modified": "Fri, 04 Sep 2026 16:25:14 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"2e006ab552cbe72734a5614329970ec1\"",
-      "modified": "Fri, 04 Sep 2026 15:52:12 GMT"
+      "etag": "W/\"a9b4c600878608541a72ed2bf044c580\"",
+      "modified": "Fri, 04 Sep 2026 16:23:46 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar Censors Smoking, Dancing, And Boobs In GTA 6 Trailer For China",
+      "link": "https://kotaku.com/rockstar-censors-smoking-dancing-and-boobs-in-gta-6-trailer-for-china-2000731331",
+      "source_link": null,
+      "date": "2026-09-04T16:30:44+00:00",
+      "source": "Kotaku",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://kotaku.com/app/uploads/2026/09/GTa-6-censorhip.jpg",
+      "description": "Grand Theft Auto 6's extended trailer looks different if you watch it on China's version of YouTube"
+    },
     {
       "title": "GTA 6 PC Release Could Come “Sooner” Than Expected, According to Report - VICE",
       "link": "https://www.vice.com/en/article/gta-6-pc-release-sooner-than-expected/",
@@ -1167,6 +1180,19 @@
       "description": "GTA 6 au cœur d’une polémique à Miami : un possible partenariat divise les autorités de la ville&nbsp;&nbsp;La Crème Du Gaming"
     },
     {
+      "title": "French store leaks GTA 6 Switch 2 port and PS5 and Xbox Collector's Editions - Notebookcheck",
+      "link": "https://www.notebookcheck.net/French-store-leaks-GTA-6-Switch-2-port-and-PS5-and-Xbox-Collector-s-Editions.1388618.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQZ012OEVNUERPZ3VFUjMtTnVFSUVKb0o1XzJQNFhZX05kb2lWTDdpM0c0NW1Zb2pvRGlULTBUWnN6NmVGeUU4ekcyY21WR0FtVWpuNG1UczJ6aUl2WUJXaEVjQzJvSmtwXzYwVlhKclFXTTJKUDFrcmlXa2N2TlUxYWFNNjdxZnpFdnUzUVpIUkR6NmR3SjlsYnZYSElaQW42UWsybkFxbU1KQ1h4S3lLZmdqRUNMQ3dCOU15MjRR?oc=5",
+      "date": "2026-09-04T13:58:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6Switch2PortNew.jpg",
+      "description": "French store leaks GTA 6 Switch 2 port and PS5 and Xbox Collector's Editions&nbsp;&nbsp;Notebookcheck"
+    },
+    {
       "title": "GTA 6 : une importante fuite de 2025 était vraie, que savons-nous ? - GinjFo",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-une-importante-fuite-de-2025-etait-vraie-que-savons-nous-20260904",
       "source_link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNS195YzBTZ0ZIekpJNVNwZWNGMEJLbWhLWmljSVRwZHA5eDBHSEJjaHRUckplVk5HTV9NNHRwMDhKeWJFUENBZWlhX1RJQWIwU0hjN292Y3gtcjNGenJyakNhYUN2RnFsRFJkUzAxeXBZdXJMNF9FQmMtLXNqcVNkUDhYV25hRXdmbjN2bE5RbXowM0dSMjBxb2w1bm8taU8zbktCcDgzbVprbENOSWhqbTA3QUw5T0xWZTBRVEo0U3lVYVVQWEQtbnlmSzR2NmtEenc?oc=5",
@@ -1275,6 +1301,19 @@
       "lang": "fr",
       "image": "https://www.dexerto.fr/cdn-image/wp-content/uploads/sites/2/2025/05/14/gta-6-pnj-enfant.jpg",
       "description": "Rockstar pensait que GTA Online allait se planter, GTA 6 ne fera pas la même erreur&nbsp;&nbsp;Dexerto.fr"
+    },
+    {
+      "title": "GTA 6 PS5 DualSense controller: Release date, price and what to expect - Radio Times",
+      "link": "https://www.radiotimes.com/technology/gaming/gta-6-controller-release-date/",
+      "source_link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPbGxvT2kyUFZlWVhLd3lLLTVWbUdQZU5tc3BXTDN5YTd2QS1RVzU0cm1qQzE2MVpiVF9vU3MxSjhlTXhNTC03bGFtdWtaWDBmdDg1Yy1nMG1ZZ3BUajR2Z1RBemZZX01tQ3lnemh6bDNfM2x0YWVRZWh0QnduN09MVA?oc=5",
+      "date": "2026-09-04T12:15:25+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://images.immediate.co.uk/production/volatile/sites/3/2026/09/Untitled-design-1-6990dbb.png?resize=1200%2C630",
+      "description": "GTA 6 PS5 DualSense controller: Release date, price and what to expect&nbsp;&nbsp;Radio Times"
     },
     {
       "title": "Miami Sheriff Rejects GTA 6 Marketing Proposal",
