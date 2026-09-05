@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T15:29:36.379695+00:00",
-  "duration_seconds": 38.3,
+  "generated_at": "2026-09-05T16:01:45.058215+00:00",
+  "duration_seconds": 46.5,
   "decode_failures": 0,
-  "total_articles": 1998,
-  "new_this_run": 0,
+  "total_articles": 1999,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -385,7 +385,7 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-05T15:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 0,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T17:14:16+00:00",
       "days_since_last_article": 0,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T14:53:35+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 80,
+      "entries_fetched": 79,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,99,101,101,102,101,101,102,102,102,100",
-    "gnews-en": "103,101,103,103,102,101,101,102,103,102,102,104",
+    "gnews-fr": "100,99,101,101,102,101,101,102,102,102,100,102",
+    "gnews-en": "101,103,103,102,101,101,102,103,102,102,104,104",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,23 +946,23 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "33,33,33,33,33,33,33,33,33,34,34,34",
+    "gta6times": "33,33,33,33,33,33,33,33,34,34,34,34",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,8,8,8,8,8,8,8",
+    "xboxwire": "7,7,7,7,8,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,55,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,55,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,63,100,100,100",
-    "engadget": "81,81,81,81,81,81,81,81,81,81,79,80",
+    "theverge": "100,100,100,100,100,100,100,63,100,100,100,100",
+    "engadget": "81,81,81,81,81,81,81,81,81,79,80,79",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,100,53,100"
+    "schreier": "100,100,100,100,100,100,100,100,100,53,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"c5e363f5b5e0bd673afdb22099114bb4\"",
-      "modified": "Sat, 05 Sep 2026 14:50:38 GMT"
+      "etag": "W/\"a827ee5437dc3eaecd3b968365aec515\"",
+      "modified": "Sat, 05 Sep 2026 15:30:01 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 15:29:09 GMT"
+      "modified": "Sat, 05 Sep 2026 15:59:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9c2e7f-3012\"",
-      "modified": "Sat, 05 Sep 2026 15:00:15 GMT"
+      "etag": "W/\"6a9c3c91-3012\"",
+      "modified": "Sat, 05 Sep 2026 16:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,13 +1038,13 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"1dbf47bf5b32103da5d9906b7b683f8b\"",
-      "modified": "Sat, 05 Sep 2026 15:28:41 GMT"
+      "etag": "W/\"6292f4235ae70ec5fb007074e7ba2704\"",
+      "modified": "Sat, 05 Sep 2026 15:37:12 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9c1e50-aee\"",
-      "modified": "Sat, 05 Sep 2026 13:51:12 GMT"
+      "etag": "\"6a9c3a6e-aee\"",
+      "modified": "Sat, 05 Sep 2026 15:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1529,6 +1529,19 @@
       "lang": null,
       "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/09/real-life-mechanics-that-would-be-annoying-in-gta-6.jpg?w=1600&h=900&fit=crop",
       "description": "There are fun game mechanics, and then there are mechanics that go too far. Hopefully Grand Theft Auto 6 doesn't have these."
+    },
+    {
+      "title": "Sony Announces Limited Edition Grand Theft Auto 6 PlayStation 5 DualSense Controllers - Sole Retriever",
+      "link": "https://www.soleretriever.com/news/articles/sony-announces-limited-edition-grand-theft-auto-6-playstation-5-dualsense-controllers",
+      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNNnZRTXJlM1IzeFpIWmk0Y1hMb3FZVHlIRW1HNk1MNXFlcFhTUW5NQUg4bXdRTVlHdTRPbGNBajk2blVQTUFRcmg5eFp6dWNrN3h3dUVWSXU3VFpzR1BPTlU5TEdjWV9xVTRYVVVjd2MxNkNPbFJZNnpUTTNHRTAzUHNkRDB1Z0R0OUg5ZV9WMjE0MWV6R2FFMkRJeVVoWG40dmJ0Y1pxajA5cUNTYWc5QnZYMWZEdzNTSnNDU0JiOE1hNnROWnF3UQ?oc=5",
+      "date": "2026-09-04T20:15:40+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://images.soleretriever.com/blog/f7858f8825d4d83bd1b4a3a85099904ec138310d-1240x760.png?rect=0,55,1240,651&w=1200&h=630&fit=fill&auto=format",
+      "description": "Sony Announces Limited Edition Grand Theft Auto 6 PlayStation 5 DualSense Controllers&nbsp;&nbsp;Sole Retriever"
     },
     {
       "title": "GTA 6 Release Date: Kalshi Odds The Date Holds - oddsshopper.com",
