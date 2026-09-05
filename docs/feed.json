@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-05T08:01:40.614274+00:00",
-  "duration_seconds": 43.7,
+  "generated_at": "2026-09-05T09:01:36.699004+00:00",
+  "duration_seconds": 39.6,
   "decode_failures": 0,
-  "total_articles": 1975,
+  "total_articles": 1977,
   "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 72,
@@ -385,12 +385,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-05T07:21:32+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-05T08:23:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T12:07:22+00:00",
       "days_since_last_article": 0,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 3,
@@ -595,7 +595,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -629,7 +629,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-05T07:27:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 2,
@@ -829,7 +829,7 @@
     {
       "id": "gamergen",
       "name": "Gamergen",
-      "entries_fetched": 100,
+      "entries_fetched": 55,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
-    "gnews-fr": "100,100,100,100,99,99,100,100,100,100,100,99",
-    "gnews-en": "100,101,101,99,100,100,100,100,101,103,101,103",
+    "rockstar-youtube": "15,15,0,0,0,0,0,0,15,15,15,15",
+    "gnews-fr": "100,100,100,99,99,100,100,100,100,100,99,101",
+    "gnews-en": "101,101,99,100,100,100,100,101,103,101,103,103",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
+    "rockstarmag-youtube": "15,15,0,0,0,0,0,0,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -946,21 +946,21 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "32,32,32,32,32,32,32,32,33,33,33,33",
+    "gta6times": "32,32,32,32,32,32,32,33,33,33,33,33",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,0,100,100,100,100,100,100",
+    "xboxygen": "100,100,100,100,0,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,7,7,7,7,7,7,7,7,7",
+    "xboxwire": "8,8,7,7,7,7,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,55",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "80,80,80,80,80,80,80,80,80,81,81,81",
-    "arstechnica": "28,28,29,29,27,29,27,27,27,27,27,27",
+    "engadget": "80,80,80,80,80,80,80,80,81,81,81,81",
+    "arstechnica": "28,29,29,27,29,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -968,18 +968,18 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1788266154\"",
+      "modified": "Tue, 01 Sep 2026 12:35:54 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"e27cac82d60b025112e5196afc128c57\"",
-      "modified": "Sat, 05 Sep 2026 04:44:13 GMT"
+      "etag": "W/\"13550680f97a257b30fb3f7e8ecba4dc\"",
+      "modified": "Sat, 05 Sep 2026 08:41:33 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 04 Sep 2026 19:41:58 GMT"
+      "modified": "Sat, 05 Sep 2026 08:23:00 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"d87437f17cf0ac2df215a84734722a88\"",
-      "modified": "Sat, 05 Sep 2026 08:00:18 GMT"
+      "etag": "W/\"a5679b6878b79195a4357ae294595f63\"",
+      "modified": "Sat, 05 Sep 2026 08:41:03 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 08:01:11 GMT"
+      "modified": "Sat, 05 Sep 2026 08:59:29 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9bcc10-2f97\"",
-      "modified": "Sat, 05 Sep 2026 08:00:16 GMT"
+      "etag": "W/\"6a9bda21-2f8e\"",
+      "modified": "Sat, 05 Sep 2026 09:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"c490f16185f665f7757de37c77711e86\"",
-      "modified": "Sat, 05 Sep 2026 08:00:48 GMT"
+      "etag": "W/\"d709170d0a83e30beeb73da9f501dd58\"",
+      "modified": "Sat, 05 Sep 2026 08:30:30 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1049,6 +1049,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar censure l'Extended Look de GTA 6 destiné au marché chinois - IGN France",
+      "link": "https://fr.ign.com/grand-theft-auto-6/91944/rockstar-censure-lextended-look-de-gta-6-destine-au-marche-chinois",
+      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQdExRU2R2UjZuRkdrV283cVpnVXZ2R3hqWHBwQm4yTTl4cGwzRVcxSXpMWHlwSGF2bUhvUHZqa3hoWTd5N2ZTZ2FPbXFQMkRHMFlEQ3NBRDduWnZfWmItelNwUlZjTlZlVU0wQzQ1WjhhaXc4Rjdrc1ZMX3Juc25IRzhlYWIxbWNXTDlETU5TbGdQZWYxOXBZRXFlcS1YUVU1N0pfaGR1cnJXSERaaHBV?oc=5",
+      "date": "2026-09-05T08:23:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/news/r/rockstar-c/rockstar-censors-gta-6-extended-look-trailer-for-china_pz8z.1200.jpg",
+      "description": "Rockstar censure l'Extended Look de GTA 6 destiné au marché chinois&nbsp;&nbsp;IGN France"
+    },
+    {
+      "title": "GTA 6 arrive, et YouTube assouplit ses règles pour monétiser violence et drogue - Xboxygen",
+      "link": "https://www.xboxygen.com/News/366668-gta-6-arrive-et-youtube-assouplit-ses-regles-pour-monetiser-violence-et-drogue",
+      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNdEt3Zm1FUi1GM1NaYWs0SFBZcWowNWhEYml3WjNHV19tT0o4TkJkZTlvYnRWc3pnbTBNaEpHN0E5UzdRXzBYUHhYNVRNMENzc2F6U1FWQ2xrb2hyeVhIYTdXNlpNYkhpT1VtN2ZkVDYtWHo0eVFYM2xEWWZJNGtTY0kxV0J0RTc0WF85b0g4YW14QzNYU3BIM0JjdC14WXFENVBEWmxxV1R6dlZEMDcwLUJuelJEZw?oc=5",
+      "date": "2026-09-05T08:11:17+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/09/GTA-6-violence-monetisation.jpg",
+      "description": "GTA 6 arrive, et YouTube assouplit ses règles pour monétiser violence et drogue&nbsp;&nbsp;Xboxygen"
+    },
     {
       "title": "YouTube eases monetization rules for graphic in-game violence ahead of GTA 6",
       "link": "https://vgtimes.com/gaming-news/166552-youtube-eases-monetization-rules-for-graphic-in-game-violence-ahead-of-gta-6.html",
