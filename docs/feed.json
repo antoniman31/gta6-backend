@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T20:01:42.018702+00:00",
-  "duration_seconds": 45.1,
+  "generated_at": "2026-09-05T20:40:13.842372+00:00",
+  "duration_seconds": 42.3,
   "decode_failures": 0,
-  "total_articles": 2007,
-  "new_this_run": 2,
+  "total_articles": 2008,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-05T16:10:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -385,23 +385,23 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-05T18:10:06+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-05T18:30:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-05T19:10:14+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 1,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 1,
@@ -703,7 +703,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T20:30:11+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,101,102,102,102,100,102,101,101,102,102,102",
-    "gnews-en": "101,102,103,102,102,104,104,104,103,104,103,100",
+    "gnews-fr": "101,102,102,102,100,102,101,101,102,102,102,100",
+    "gnews-en": "102,103,102,102,104,104,104,103,104,103,100,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,7 +946,7 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "33,33,33,34,34,34,34,34,34,34,34,34",
+    "gta6times": "33,33,34,34,34,34,34,34,34,34,34,34",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -958,11 +958,11 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,63,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,79,80,79,78,79,79,77,79",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,28,27,27",
+    "theverge": "100,63,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "81,81,81,79,80,79,78,79,79,77,79,79",
+    "arstechnica": "27,27,27,27,27,27,27,27,28,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,53,100,100,100,100,100,100,100"
+    "schreier": "100,100,100,53,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 18:55:37 GMT"
+      "modified": "Sat, 05 Sep 2026 20:02:21 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,13 +998,13 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"442456ce7f51207bad9f41f0aaba3ea0\"",
-      "modified": "Sat, 05 Sep 2026 17:56:53 GMT"
+      "etag": "W/\"2ac429bee05e4002d3a624e67e3c961f\"",
+      "modified": "Sat, 05 Sep 2026 20:04:57 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 18:08:03 GMT"
+      "modified": "Sat, 05 Sep 2026 20:33:25 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 20:01:09 GMT"
+      "modified": "Sat, 05 Sep 2026 20:39:44 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9c74cf-3012\"",
-      "modified": "Sat, 05 Sep 2026 20:00:15 GMT"
+      "etag": "W/\"6a9c7bd8-3012\"",
+      "modified": "Sat, 05 Sep 2026 20:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1087,6 +1087,19 @@
       "lang": null,
       "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/09/10-reasons-gta-6-will-outdo-every-other-game-in-the-series.jpg?w=1600&h=900&fit=crop",
       "description": "10 Reasons GTA 6 Will Outdo Every Other Game in the Series&nbsp;&nbsp;DualShockers"
+    },
+    {
+      "title": "GTA 6 va changer sa conduite : Rockstar promet le meilleur de GTA 4 avec l’accessibilité de GTA 5 - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-va-changer-sa-conduite-rockstar-promet-le-meilleur-de-gta-4-avec-laccessibilite-de-gta-5-224560.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxNcFVVU1VNR2p1dnpzci1CMW8wQVIyNlpmUVlabmRnUDRDSDJNenM5RHRoOXU5alVjbFA0UW9YQ2l6MWdqTUZNbE9uUUFNeWU5M2JWUFdSZmRtSUFpNWM2NGdKQWMyZ2d6Z0o3Nm5PbzVFWTdxdExLOWhoYXYtSVlVM0l0M29NNUM4M3JTRFRHUWNBdHVVQ0I1MWxOZ3FJMlFEQThzZjh1WUllRGxwVmU2eFBibm9nR25fMzI4T0R4X2Y5U1h4dENocEV5T1RSaGdwWE9Qa2M1VGJTSjV3d0psVk5lVjdMYnc?oc=5",
+      "date": "2026-09-05T18:30:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-va-changer-sa-conduite-rockstar-promet-le-meilleur-de-gta-4-avec-laccessibilite-de-gta-5.png",
+      "description": "GTA 6 va changer sa conduite : Rockstar promet le meilleur de GTA 4 avec l’accessibilité de GTA 5&nbsp;&nbsp;La Crème Du Gaming"
     },
     {
       "title": "« 2 fois plus que dans Red Dead Redemption 2 » : voilà pourquoi GTA 6 fait toute la différence - JeuxVideo.com",
