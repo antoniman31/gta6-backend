@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T00:01:37.811457+00:00",
-  "duration_seconds": 40.6,
+  "generated_at": "2026-09-05T01:01:36.104674+00:00",
+  "duration_seconds": 42.7,
   "decode_failures": 0,
-  "total_articles": 1965,
-  "new_this_run": 1,
+  "total_articles": 1967,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,8 +353,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T20:42:44+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-05T00:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -379,7 +379,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 7,
+      "days_since_last_article": 8,
       "status": "ok"
     },
     {
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T18:10:09+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-04T20:40:38+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T23:00:17+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T23:00:00+00:00",
       "days_since_last_article": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 2,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 28,
+      "entries_fetched": 29,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -913,14 +913,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "rockstar-en": "100,100,100,100,100,100,0,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,0,0,100,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,0,0,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,0,0,100,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,0,0,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "99,100,102,98,101,99,97,97,0,100,100,101",
+    "gnews-en": "100,102,98,101,99,97,97,0,100,100,101,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -950,26 +950,26 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "xboxygen": "100,100,100,100,100,100,100,0,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,8,8,8,0,8,8,8",
-    "trueach": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "jdg": "100,100,100,100,100,100,100,0,0,100,100,100",
-    "numerama": "100,100,100,100,100,100,100,0,0,100,100,100",
+    "xboxwire": "8,8,8,8,8,8,8,0,8,8,8,8",
+    "trueach": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "jdg": "100,100,100,100,100,100,0,0,100,100,100,100",
+    "numerama": "100,100,100,100,100,100,0,0,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,0,0,100,100,100",
-    "engadget": "80,80,80,80,81,81,81,81,0,80,80,80",
-    "arstechnica": "27,27,28,28,28,28,28,0,0,28,28,28",
-    "pushsquare": "100,100,100,100,100,100,100,0,0,100,100,100",
-    "schreier": "100,100,100,100,100,100,100,0,0,100,100,100"
+    "theverge": "100,100,100,100,100,100,0,0,100,100,100,100",
+    "engadget": "80,80,80,81,81,81,81,0,80,80,80,80",
+    "arstechnica": "27,28,28,28,28,28,0,0,28,28,28,29",
+    "pushsquare": "100,100,100,100,100,100,0,0,100,100,100,100",
+    "schreier": "100,100,100,100,100,100,0,0,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1788266154\"",
+      "modified": "Tue, 01 Sep 2026 12:35:54 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"37f02-GJluXjMDrtSkF2dxye//oKjdjKE\"",
+      "etag": "W/\"35c30-itk9WpTQmhVhjzPJNhs5v+9zh+U\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 00:01:10 GMT"
+      "modified": "Sat, 05 Sep 2026 00:57:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9b5b92-2e8d\"",
-      "modified": "Sat, 05 Sep 2026 00:00:18 GMT"
+      "etag": "W/\"6a9b699f-2e8d\"",
+      "modified": "Sat, 05 Sep 2026 01:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1033,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788562804\"",
-      "modified": "Fri, 04 Sep 2026 23:00:04 GMT"
+      "etag": "W/\"1788568715\"",
+      "modified": "Sat, 05 Sep 2026 00:38:35 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "PS5, Xbox Sales Surge After GTA 6’s Netflix Extended Look - Analytics Insight",
+      "link": "https://www.analyticsinsight.net/news/ps5-xbox-sales-surge-after-gta-6s-netflix-extended-look",
+      "source_link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOb2h3bWV0UkpabElmWlpPZkZPSVpjdUlmd3kzR1RxUDBNSEIyZmJlUWpkT3dxb1c3V1ZSS3cwOUNqX1RzanZLUlN6cnJ4M0F3NHNjX3RxRGhjd3djOG11V0xmNWg2Y3l4RE5uano3R3Z3TFR3d3FmbzJUc0xRRVlodENuSDN4eTBlX2ozazV2NGloQUsyUEVETtIBpgFBVV95cUxQd29yVjdHTndxdE1MOUZmTEFQVXJCeC1ETkhnSEIzT1dzLWJCcGsyNkdhTHZyWS1NOC1fQ0JTRkd0WlZKRFdkWmdySjhfWkJzQWZncWpDZ0tvSzI4VmRReDdwdU9jWWV0NUIxVjd1QUR2TXlVRWdJUEVFUFZOY3l2MTJKUDRILXUweVNoSjk4TFg2eFk3RHZyNVZ6X1BaMlhEYVJDU3pn?oc=5",
+      "date": "2026-09-05T00:00:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://media.assettype.com/analyticsinsight%2F2026-09-04%2Fjzcc7k43%2FGTA-6-Netflix-Reveal-Boosts-PS5-Xbox-Sales-by-33-in-UK.jpg?w=1200&ar=40%3A21&auto=format%2Ccompress&ogImage=true&mode=crop&enlarge=true&overlay=false&overlay_position=bottom&overlay_width=100",
+      "description": "PS5, Xbox Sales Surge After GTA 6’s Netflix Extended Look&nbsp;&nbsp;Analytics Insight"
+    },
     {
       "title": "Embossed Palm Trees and a $84.99 Price: Inside the GTA 6 DualSense Controllers - eGamers.io",
       "link": "https://egamers.io/embossed-palm-trees-and-a-84-99-price-inside-the-gta-6-dualsense-controllers/",
@@ -1139,6 +1152,19 @@
       "lang": null,
       "image": null,
       "description": "Netflix's GTA 6 Release Is Officially the Streamer's Biggest Hit&nbsp;&nbsp;IMDb"
+    },
+    {
+      "title": "Un joueur a vendu sa carte graphique. Radeon RX 9070 XT pour 600 $ pour PlayStation 5 et GTA 6 - GameGPU",
+      "link": "https://fr.gamegpu.com/news/zhelezo/gejmer-prodal-videokartu-radeon-rx-9070-xt-za-600usd-radi-playstation-5-i-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPeFFFZV9WbE5qSGNYd3FhZUROVnl0VnFLZnExNHItRFJNVHJIUzNGVHBnb2VOeGwzMXdLRlY4ZVQwY05HdW1vS2ppd0xzUGQ0dDhPUDNIR3lTYnBXTFZVamx3aGdsc2pIWFVyS2RxVW1XbWJvNDFHRXdkS2VZM1JXLW5YUmRGc2UwQ0t3QXVpSzczY3JVaE9Pc0J4eU1tOUF4MGxObEVWZEtlQm94VUlCWFlJOGo5Zw?oc=5",
+      "date": "2026-09-04T20:40:38+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/xi3fo9xi3fo9xi3_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/xi3fo9xi3fo9xi3_gpu.webp?width=1920&height=1080",
+      "description": "Un joueur a vendu sa carte graphique. Radeon RX 9070 XT pour 600 $ pour PlayStation 5 et GTA 6&nbsp;&nbsp;GameGPU"
     },
     {
       "title": "8 Real Life Mechanics That Would Be Annoying In GTA 6",
