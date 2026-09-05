@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T05:01:39.886958+00:00",
-  "duration_seconds": 43.2,
+  "generated_at": "2026-09-05T06:01:40.768713+00:00",
+  "duration_seconds": 40.6,
   "decode_failures": 0,
-  "total_articles": 1968,
-  "new_this_run": 0,
+  "total_articles": 1971,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-05T00:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -361,10 +361,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
       "days_since_last_article": 72,
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -617,7 +617,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-04T22:51:05+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -709,13 +709,13 @@
     {
       "id": "gta6times",
       "name": "GTA6 Times",
-      "entries_fetched": 32,
+      "entries_fetched": 33,
       "http_status": 301,
       "redirect": "https://gta6times.com/feed.xml",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T21:25:19+00:00",
-      "days_since_last_article": 2,
+      "new_this_run": 1,
+      "last_article": "2026-09-05T05:26:11+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 2,
@@ -924,14 +924,14 @@
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "0,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,0,0,100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,0,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "0,0,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
-    "gnews-fr": "100,100,100,100,100,100,100,100,99,99,100,100",
-    "gnews-en": "97,97,0,100,100,101,101,99,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "gnews-fr": "100,100,100,100,100,100,100,99,99,100,100,100",
+    "gnews-en": "97,0,100,100,101,101,99,100,100,100,100,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -957,30 +957,30 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "32,32,32,32,32,32,32,32,32,32,32,32",
+    "gta6times": "32,32,32,32,32,32,32,32,32,32,32,33",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,0,100,100,100,100,100,100,0,100,100",
+    "xboxygen": "100,0,100,100,100,100,100,100,0,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,0,8,8,8,8,7,7,7,7,7",
-    "trueach": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "jdg": "100,0,0,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,0,0,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "8,0,8,8,8,8,7,7,7,7,7,7",
+    "trueach": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "jdg": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "0,0,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,0,0,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,0,80,80,80,80,80,80,80,80,80",
-    "arstechnica": "28,0,0,28,28,28,29,29,27,29,27,27",
-    "pushsquare": "100,0,0,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,0,0,100,100,100,100,100,100,100,100,100"
+    "theverge": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "81,0,80,80,80,80,80,80,80,80,80,80",
+    "arstechnica": "0,0,28,28,28,29,29,27,29,27,27,27",
+    "pushsquare": "0,0,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "0,0,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1786007541\"",
-      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
+      "etag": "\"1788266154\"",
+      "modified": "Tue, 01 Sep 2026 12:35:54 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1025,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 05:01:10 GMT"
+      "modified": "Sat, 05 Sep 2026 06:01:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,13 +1034,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9ba1e1-2f11\"",
-      "modified": "Sat, 05 Sep 2026 05:00:17 GMT"
+      "etag": "W/\"6a9baff0-3023\"",
+      "modified": "Sat, 05 Sep 2026 06:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"f5d84e1449b3ae66386590a968302107\"",
-      "modified": "Fri, 04 Sep 2026 21:30:45 GMT"
+      "etag": "W/\"b06bf3af8fbec9c10967ea6908f07b00\"",
+      "modified": "Sat, 05 Sep 2026 06:00:19 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1054,12 +1054,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9b91ad-aed\"",
-      "modified": "Sat, 05 Sep 2026 03:51:09 GMT"
+      "etag": "\"6a9badcf-aed\"",
+      "modified": "Sat, 05 Sep 2026 05:51:11 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Take-Two Stock Falls 7% After GTA 6 Reveal Bounce",
+      "link": "https://gta6times.com/news/take-two-stock-falls-after-gta-6-reveal-bounce",
+      "source_link": null,
+      "date": "2026-09-05T05:26:11+00:00",
+      "source": "GTA6 Times",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://gta6times.com/news/take-two-stock-falls-after-gta-6-reveal-bounce/opengraph-image",
+      "description": "Shares slid to $216.68 by Sept. 1, erasing the bump from the Aug. 27 GTA 6 gameplay showcase."
+    },
     {
       "title": "Zelda Ocarina of Time Remake Could Release the Same Week as GTA 6, Insider Reports - VICE",
       "link": "https://www.vice.com/en/article/zelda-ocarina-of-time-remake-release-date-gta-6-november/",
@@ -1163,6 +1176,19 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/vKtkPkRiVfUyKge2eApMeg-1280-80.jpg",
       "description": "The best of both worlds"
+    },
+    {
+      "title": "How Classic GTA Development Compares to the GTA 6 Era, According to Obbe Vermeij",
+      "link": "https://www.gtaboom.com/obbe-vermeij-describes-building-the-classic-gtas-as-far-more-ordinary-than-youd-think-2df8",
+      "source_link": null,
+      "date": "2026-09-04T21:01:00+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/42/25/obbe-vermeij-describes-building-the-classic-gtas-as-far-more-ordinary-than-youd-think.jpg",
+      "description": "Obbe Vermeij says making classic Grand Theft Auto games felt like a regular job, with small teams, few meetings, and heavy bug fixing before launch."
     },
     {
       "title": "Netflix's GTA 6 Release Is Officially the Streamer's Biggest Hit - IMDb",
@@ -5005,32 +5031,6 @@
       "lang": "fr",
       "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/capture-decran-du-2026-09-02-08-31-42.png?resize=1600,900&key=2b7657f1",
       "description": "Le trailer de GTA 6 devient le programme le plus regardé de la semaine sur Netflix&nbsp;&nbsp;Frandroid"
-    },
-    {
-      "title": "GTA VI pourrait coûter un milliard de dollars à l'économie américaine, les joueurs préparent déjà leurs congés - Cowcotland.com",
-      "link": "https://www.cowcotland.com/news/102258/gta-vi-pourrait-couter-un-milliard-de-dollars-a-l-economie-americaine-les-joueurs-preparent-deja-leurs-conges.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPcUFfajdhZ0Y3N1I4aGNJaE12LTU0dlQwbGtFQkxtVWlGUlhMNzhURVJVcmQyOFVCVC1xLTlPdXVHbzZvTzJsaGpJSHBtenNINGlwd0NTdkhNaEU4djduRHJtUmJPdHNTdl9Wc2p4ZFZBcUY2b3pJSklTZ3VfbTFrSHp2eWdpYUd0clgyeUlDZHVDMlNMZGZvV1NIWlpZRDlYaHZJWXZXaWhFYVlCbTlNWHR3NUMtWWI2b0lZTVhEZ052VE1rTUhMaHFveVFjR3c2RWN3djM4THpQUlNWSVItUFpEV3p5NUh2?oc=5",
-      "date": "2026-09-02T06:39:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "GTA VI pourrait coûter un milliard de dollars à l'économie américaine, les joueurs préparent déjà leurs congés&nbsp;&nbsp;Cowcotland.com"
-    },
-    {
-      "title": "GTA 6, notre plus gros événement ouvre sa billetterie, venez vivre le lancement du jeu avec nous - jvmag.ch",
-      "link": "https://jvmag.ch/2026/09/02/gta-6-on-vous-invite-au-lancement-du-jeu-au-travers-de-notre-plus-gros-evenement/",
-      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOYzNPTG9mYU1ZeWtldzdvbGtFZFBxLUdja2Vfb21kTUlvTzJxUlhvQnJfOWxheDZacDZGN2JDS3N3ZVRvQ1NJdEcyTTRsTG1nXzU1N212Sm03Tk9abHIyXzJSWVZWUXN5ejZ3U0stUktwY3RSa295clZzNnNsZnNLRlNaNHNQa25ZMEVfU2t1aGRFbklacjhNaHB4Ymp4WldtbVktV3lXS2p6M0Eyd2fSAbYBQVVfeXFMTXQ4SDhuSUNaWHhqZjcwQzNfUWhrSE5NbDViZE1lOHNIY2FrZFpnSngwNTNmLV9ybS1sTkZCcmVKM2R5Q05HaDdIdTBVUG5ibUY0TTdoYzV5OVRudWJPWU9HR0tNdzg4d21IdGtZZ25nUFdVcGVKMmRaaVgycmRsX1VIVWxaNHNwM1Zpby1uQTlTT1MyLXRoNXFUbmdYa0lBd1NMS2NkOS1tdGo5cmVtRjR0UkVGbkE?oc=5",
-      "date": "2026-09-02T06:36:18+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "GTA 6, notre plus gros événement ouvre sa billetterie, venez vivre le lancement du jeu avec nous&nbsp;&nbsp;jvmag.ch"
     }
   ],
   "partial": true,
