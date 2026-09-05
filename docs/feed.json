@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T21:01:37.828760+00:00",
-  "duration_seconds": 42.9,
+  "generated_at": "2026-09-05T22:01:41.526394+00:00",
+  "duration_seconds": 42.1,
   "decode_failures": 0,
   "total_articles": 2008,
   "new_this_run": 0,
@@ -385,7 +385,7 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T12:07:22+00:00",
       "days_since_last_article": 1,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 1,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 1,
@@ -667,7 +667,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T21:58:01+00:00",
-      "days_since_last_article": 8,
+      "days_since_last_article": 9,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 79,
+      "entries_fetched": 78,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,100,102,101,101,102,102,102,100,100",
-    "gnews-en": "103,102,102,104,104,104,103,104,103,100,102,101",
+    "gnews-fr": "102,102,100,102,101,101,102,102,102,100,100,99",
+    "gnews-en": "102,102,104,104,104,103,104,103,100,102,101,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,7 +946,7 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "33,34,34,34,34,34,34,34,34,34,34,34",
+    "gta6times": "34,34,34,34,34,34,34,34,34,34,34,34",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -958,11 +958,11 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "63,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,79,80,79,78,79,79,77,79,79,79",
-    "arstechnica": "27,27,27,27,27,27,27,28,27,27,27,27",
+    "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "81,79,80,79,78,79,79,77,79,79,79,78",
+    "arstechnica": "27,27,27,27,27,27,28,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,53,100,100,100,100,100,100,100,100,100"
+    "schreier": "100,53,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"b8840d547eae0b09eb5660708e965377\"",
-      "modified": "Sat, 05 Sep 2026 18:40:10 GMT"
+      "etag": "W/\"76f98a720d96759b11e1547b14115ab6\"",
+      "modified": "Sat, 05 Sep 2026 21:27:24 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"39f6e-FjovLSH/c/AyvIggYnUZ1lLTc9g\"",
+      "etag": "W/\"395bb-Jxcqv8+gjMcirqs9AHJuRW2XaDI\"",
       "modified": null
     },
     "kotaku": {
@@ -1004,7 +1004,7 @@
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 20:33:25 GMT"
+      "modified": "Sat, 05 Sep 2026 21:53:46 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 21:01:07 GMT"
+      "modified": "Sat, 05 Sep 2026 22:01:15 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9c82e0-3012\"",
-      "modified": "Sat, 05 Sep 2026 21:00:16 GMT"
+      "etag": "W/\"6a9c90f0-3012\"",
+      "modified": "Sat, 05 Sep 2026 22:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,8 +1043,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9c72b0-aef\"",
-      "modified": "Sat, 05 Sep 2026 19:51:12 GMT"
+      "etag": "\"6a9c8ece-aef\"",
+      "modified": "Sat, 05 Sep 2026 21:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
