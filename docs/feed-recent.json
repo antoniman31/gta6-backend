@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T19:01:41.254815+00:00",
-  "duration_seconds": 46.8,
+  "generated_at": "2026-09-05T20:01:42.018702+00:00",
+  "duration_seconds": 45.1,
   "decode_failures": 0,
-  "total_articles": 2005,
-  "new_this_run": 4,
+  "total_articles": 2007,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-05T16:10:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-05T18:10:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,12 +397,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 103,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-05T18:30:11+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-05T19:10:14+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T12:07:22+00:00",
       "days_since_last_article": 1,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:50:24+00:00",
       "days_since_last_article": 3,
@@ -523,7 +523,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T19:48:54+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 1,
@@ -643,7 +643,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -689,7 +689,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-05T18:30:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 77,
+      "entries_fetched": 79,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,101,101,102,102,102,100,102,101,101,102,102",
-    "gnews-en": "101,101,102,103,102,102,104,104,104,103,104,103",
+    "gnews-fr": "101,101,102,102,102,100,102,101,101,102,102,102",
+    "gnews-en": "101,102,103,102,102,104,104,104,103,104,103,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,7 +946,7 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "33,33,33,33,34,34,34,34,34,34,34,34",
+    "gta6times": "33,33,33,34,34,34,34,34,34,34,34,34",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -958,11 +958,11 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,63,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,79,80,79,78,79,79,77",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,27,28,27",
+    "theverge": "100,100,63,100,100,100,100,100,100,100,100,100",
+    "engadget": "81,81,81,81,79,80,79,78,79,79,77,79",
+    "arstechnica": "27,27,27,27,27,27,27,27,27,28,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,53,100,100,100,100,100,100"
+    "schreier": "100,100,100,100,53,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -979,7 +979,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 14:13:10 GMT"
+      "modified": "Sat, 05 Sep 2026 18:55:37 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 18:59:29 GMT"
+      "modified": "Sat, 05 Sep 2026 20:01:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9c66c0-3012\"",
-      "modified": "Sat, 05 Sep 2026 19:00:16 GMT"
+      "etag": "W/\"6a9c74cf-3012\"",
+      "modified": "Sat, 05 Sep 2026 20:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"4659c1ca673c2c2ed989d42d72400a9f\"",
-      "modified": "Sat, 05 Sep 2026 18:24:00 GMT"
+      "etag": "W/\"53e52e6accf02f7de1f9019a73f67289\"",
+      "modified": "Sat, 05 Sep 2026 19:36:02 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1043,12 +1043,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9c568f-aee\"",
-      "modified": "Sat, 05 Sep 2026 17:51:11 GMT"
+      "etag": "\"6a9c72b0-aef\"",
+      "modified": "Sat, 05 Sep 2026 19:51:12 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Report Hints GTA 6 Could Hit PC Earlier Than Anyone Predicted - eGamers.io",
+      "link": "https://egamers.io/report-hints-gta-6-could-hit-pc-earlier-than-anyone-predicted/",
+      "source_link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQLWlWOERhQ3hqeG9odzBoamwxRGt3TkRnRl9PbzhaM3BmWjJ6RFNJYnBGS2s4SXFDR1AwYTJEZnlMcm83bXFHNVYzNjI2c3pidG14MzVWVVZfdDhOSmZTSUpWRkFITlhqNE1rRjBaanFkM3l5RmtyY240cU91WW43MXJIaXM0S0NX?oc=5",
+      "date": "2026-09-05T19:10:14+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://egamers.io/wp-content/uploads/2026/09/report-hints-gta-6-could-hit-pc-earlier-than-anyone-predicted.jpg",
+      "description": "Report Hints GTA 6 Could Hit PC Earlier Than Anyone Predicted&nbsp;&nbsp;eGamers.io"
+    },
     {
       "title": "Rockstar Games Issues New Official Statement on GTA 6",
       "link": "https://gamerant.com/gta-6-release-date-ps5-xbox/",
@@ -4387,6 +4400,19 @@
       "description": "'Grand Theft Auto VI' video somehow was Netflix's top movie last week&nbsp;&nbsp;Detroit Free Press"
     },
     {
+      "title": "'Grand Theft Auto VI' video somehow was Netflix's top movie last week - USA Today",
+      "link": "https://www.usatoday.com/story/entertainment/tv/2026/09/02/grand-theft-auto-vi-netflix-gta-6-footage/91577161007/",
+      "source_link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPMmxXYVFUOUl1VWtySktCRU5IQ19uMnJnZkhELUFjWFI1QU03R0RqWk5VekFrOVUtOE85YmJaOUNPYmhLMVpHVUhaSDNMZGFoemdxU2hhZHhZYW91emJZUWF3Y1ZONldEbldsSmU3YnAxY0x2TE96cmxCRzZKZDVpWFhweW5RZzZlZ01iZDhiRE80Mmg2UGt1QW1aamx0eE9tb1VlSlF1VC1vZGxfYVI0NkJ2WQ?oc=5",
+      "date": "2026-09-02T16:58:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.usatoday.com/gcdn/authoring/authoring-images/2026/09/02/USAT/91577984007-jason-and-lucia-09.jpg?crop=3836,2157,x0,y0&width=3200&height=1800&format=pjpg&auto=webp",
+      "description": "'Grand Theft Auto VI' video somehow was Netflix's top movie last week&nbsp;&nbsp;USA Today"
+    },
+    {
       "title": "La présentation sur Netflix propulse les précommandes de GTA 6 - Génération NT",
       "link": "https://www.generation-nt.com/actualites/presentation-netflix-ventes-gta-2080452",
       "source_link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOdWFkaFhjMk5UX2hHTVV3UmY4YVQzUDhkeUNuVXJyeFpYMVBKOEMzMkxjRnJTZHUyZWFhLUZxR0MzXzdoa1hNNm8yNHZSa0VJSkVDTzdGdmRpNUdPSktDb05IdnRpT1FOMEdNSnctMUxfSmVVWU1IcDRnME5mUzVZeUR6Z25uMTTSAYwBQVVfeXFMTTd2M0pzQURFbjJkVTBjU1RtZ21WaWcxbTZJSWNFRFhwdktBakx1TGczLS1rT3N2aF9OYUZVT0FHZl9wNDg5UDJHQVJxdG5aRDVzMHlJdjA5UUQ1M0FQNEhmbDVieU1EV0Y3ZTJVRE8xRzd1aFFUeTFkSUZ3Z0dfcFRTMUUyS0U1TGZ0WEw?oc=5",
@@ -4988,32 +5014,6 @@
       "lang": null,
       "image": "https://media.gtaboom.com/variants/1920/media/images/77/20/sony-says-you-never-owned-your-games-which-is-the-problem.jpg",
       "description": "Digital GTA VI purchases are licenses, not ownership, so Sony's courtroom stance applies to the $100 Ultimate Edition too."
-    },
-    {
-      "title": "GTA RP's \"next evolution\" is coming, and you can grab millions of GTA$ with Twitch Drops",
-      "link": "https://www.pcgamesn.com/grand-theft-auto-v/gta-rp-nopixel-v",
-      "source_link": null,
-      "date": "2026-09-02T10:34:48+00:00",
-      "source": "PCGamesN",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.pcgamesn.com/wp-content/sites/pcgamesn/2026/09/gta-rp-grand-theft-auto-5-online-roleplay-nopixel-v-closed-beta-twitch-drops.jpg",
-      "description": "As GTA 6 looms, Rockstar Games is supporting Nopixel V, the latest incarnation of GTA Online roleplay servers, with Twitch Drops rewards."
-    },
-    {
-      "title": "How Grand Theft Auto 6's visuals evolve over GTA 5 Enhanced - Digital Foundry",
-      "link": "https://www.digitalfoundry.net/features/how-grand-theft-auto-6s-visuals-evolve-over-gta-5-enhanced",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQdFlUQXhPU2FpUllDYkxEdmx4Z2ZsVV9iVmNGV3Vjc3dxeTlQdVpxUW41VnN6b2Y5elpCMGppMDQ5RGxEUEpTT1JRUTVkbHpSNXhScF9wT3JTb19QM3piaGxCV2pLOGNsVXVCTWRMM3REdVlUSnJrb1B1NjJJdHpObDV3S1AzNS1qaUlId3hYQjhNTHlBSVpfZmZHWVhRcVk?oc=5",
-      "date": "2026-09-02T10:33:55+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://images.digitalfoundry.net/7b7266f34c9b5/large.jpg",
-      "description": "How Grand Theft Auto 6's visuals evolve over GTA 5 Enhanced&nbsp;&nbsp;Digital Foundry"
     }
   ],
   "partial": true,
