@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T01:01:36.104674+00:00",
-  "duration_seconds": 42.7,
+  "generated_at": "2026-09-05T02:01:37.779419+00:00",
+  "duration_seconds": 43.7,
   "decode_failures": 0,
-  "total_articles": 1967,
-  "new_this_run": 2,
+  "total_articles": 1968,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-05T00:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 8,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-04T20:40:38+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,12 +397,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T23:00:17+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-05T01:08:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T12:07:22+00:00",
       "days_since_last_article": 0,
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T16:15:29+00:00",
       "days_since_last_article": 1,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 2,
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 8,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -859,7 +859,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T01:05:00+00:00",
-      "days_since_last_article": 7,
+      "days_since_last_article": 8,
       "status": "ok"
     },
     {
@@ -907,20 +907,31 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
-      "days_since_last_article": 13,
+      "days_since_last_article": 14,
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-05T02:01:37.778891+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-05T02:01:37.778891+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,0,100,100,100,100,100",
+    "rockstar-en": "100,100,100,100,100,0,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,100,100,100,100,0,0,100,100,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,0,0,100,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,0,0,100,100,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,0,0,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,102,98,101,99,97,97,0,100,100,101,101",
+    "gnews-en": "102,98,101,99,97,97,0,100,100,101,101,99",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,31 +961,31 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "xboxygen": "100,100,100,100,100,100,0,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,8,8,0,8,8,8,8",
-    "trueach": "100,100,100,100,100,100,100,0,100,100,100,100",
-    "jdg": "100,100,100,100,100,100,0,0,100,100,100,100",
-    "numerama": "100,100,100,100,100,100,0,0,100,100,100,100",
+    "xboxwire": "8,8,8,8,8,8,0,8,8,8,8,7",
+    "trueach": "100,100,100,100,100,100,0,100,100,100,100,100",
+    "jdg": "100,100,100,100,100,0,0,100,100,100,100,100",
+    "numerama": "100,100,100,100,100,0,0,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,0,0,100,100,100,100",
-    "engadget": "80,80,80,81,81,81,81,0,80,80,80,80",
-    "arstechnica": "27,28,28,28,28,28,0,0,28,28,28,29",
-    "pushsquare": "100,100,100,100,100,100,0,0,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,0,0,100,100,100,100"
+    "theverge": "100,100,100,100,100,0,0,100,100,100,100,100",
+    "engadget": "80,80,81,81,81,81,0,80,80,80,80,80",
+    "arstechnica": "28,28,28,28,28,0,0,28,28,28,29,29",
+    "pushsquare": "100,100,100,100,100,0,0,100,100,100,100,100",
+    "schreier": "100,100,100,100,100,0,0,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1788266154\"",
-      "modified": "Tue, 01 Sep 2026 12:35:54 GMT"
+      "etag": "\"1786007541\"",
+      "modified": "Thu, 06 Aug 2026 09:12:21 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"f1d0d37c88aa750af7a2180dda3c462e\"",
-      "modified": "Fri, 04 Sep 2026 22:37:41 GMT"
+      "etag": "W/\"13a2a6fa8595f112f72c953f8859cf9c\"",
+      "modified": "Sat, 05 Sep 2026 01:09:22 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -993,7 +1004,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"35c30-itk9WpTQmhVhjzPJNhs5v+9zh+U\"",
+      "etag": "W/\"3682f-LRzLLFKumHpqWv1zhsOWisrUIR8\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 00:57:30 GMT"
+      "modified": "Sat, 05 Sep 2026 02:00:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9b699f-2e8d\"",
-      "modified": "Sat, 05 Sep 2026 01:00:15 GMT"
+      "etag": "W/\"6a9b77b3-2e8d\"",
+      "modified": "Sat, 05 Sep 2026 02:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,8 +1044,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788568715\"",
-      "modified": "Sat, 05 Sep 2026 00:38:35 GMT"
+      "etag": "W/\"1788572831\"",
+      "modified": "Sat, 05 Sep 2026 01:47:11 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1043,12 +1054,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9b5970-ae4\"",
-      "modified": "Fri, 04 Sep 2026 23:51:12 GMT"
+      "etag": "\"6a9b758d-ae5\"",
+      "modified": "Sat, 05 Sep 2026 01:51:09 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Zelda Ocarina of Time Remake Could Release the Same Week as GTA 6, Insider Reports - VICE",
+      "link": "https://www.vice.com/en/article/zelda-ocarina-of-time-remake-release-date-gta-6-november/",
+      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPVkJhVnVKdDZ3bnB3OTZpT2pnT2RsMnV4c3h6ak15Wl9ESVViVFVHV1JUZFZfZXJpSmNadWMxYThuVXo5Qk0tems2RUwxYUNXek9CdmdlQU05OEhvRkhPanJDWTlxcG1SOFJkbWNnYlJpMTg4bExLYngwTWUzZUJmOWNuZ21mN0w2NmdmTjhWU3Rudzg?oc=5",
+      "date": "2026-09-05T01:08:44+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/Zelda-Ocarina-of-Time-Remake-Could-Release-the-Same-Week-as-GTA-6-Insider-Reports.jpg?w=1280",
+      "description": "Zelda Ocarina of Time Remake Could Release the Same Week as GTA 6, Insider Reports&nbsp;&nbsp;VICE"
+    },
     {
       "title": "PS5, Xbox Sales Surge After GTA 6’s Netflix Extended Look - Analytics Insight",
       "link": "https://www.analyticsinsight.net/news/ps5-xbox-sales-surge-after-gta-6s-netflix-extended-look",
