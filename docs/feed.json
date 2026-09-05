@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T18:01:37.434031+00:00",
-  "duration_seconds": 40.3,
+  "generated_at": "2026-09-05T19:01:41.254815+00:00",
+  "duration_seconds": 46.8,
   "decode_failures": 0,
-  "total_articles": 2001,
-  "new_this_run": 0,
+  "total_articles": 2005,
+  "new_this_run": 4,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,20 +389,20 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-05T15:50:10+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-05T18:10:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 104,
+      "entries_fetched": 103,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-05T15:00:00+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-05T18:30:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 1,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 1,
@@ -689,9 +689,9 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T16:43:24+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-05T18:30:12+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 79,
+      "entries_fetched": 77,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 28,
+      "entries_fetched": 27,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,102,101,101,102,102,102,100,102,101,101,102",
-    "gnews-en": "102,101,101,102,103,102,102,104,104,104,103,104",
+    "gnews-fr": "102,101,101,102,102,102,100,102,101,101,102,102",
+    "gnews-en": "101,101,102,103,102,102,104,104,104,103,104,103",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,23 +946,23 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "33,33,33,33,33,34,34,34,34,34,34,34",
+    "gta6times": "33,33,33,33,34,34,34,34,34,34,34,34",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,8,8,8,8,8,8,8,8,8,8,8",
+    "xboxwire": "8,8,8,8,8,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,63,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,79,80,79,78,79,79",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,28",
+    "theverge": "100,100,100,63,100,100,100,100,100,100,100,100",
+    "engadget": "81,81,81,81,81,79,80,79,78,79,79,77",
+    "arstechnica": "27,27,27,27,27,27,27,27,27,27,28,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,53,100,100,100,100,100"
+    "schreier": "100,100,100,100,100,53,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"8930ca7a49ecf925ad3e667e0c7521d8\"",
-      "modified": "Sat, 05 Sep 2026 17:45:21 GMT"
+      "etag": "W/\"b8840d547eae0b09eb5660708e965377\"",
+      "modified": "Sat, 05 Sep 2026 18:40:10 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1004,7 +1004,7 @@
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 17:01:43 GMT"
+      "modified": "Sat, 05 Sep 2026 18:08:03 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 17:55:33 GMT"
+      "modified": "Sat, 05 Sep 2026 18:59:29 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9c58b0-3012\"",
-      "modified": "Sat, 05 Sep 2026 18:00:16 GMT"
+      "etag": "W/\"6a9c66c0-3012\"",
+      "modified": "Sat, 05 Sep 2026 19:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"bce429d2f36879a4e1b6378b0a11ceec\"",
-      "modified": "Sat, 05 Sep 2026 16:37:47 GMT"
+      "etag": "W/\"4659c1ca673c2c2ed989d42d72400a9f\"",
+      "modified": "Sat, 05 Sep 2026 18:24:00 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1049,6 +1049,58 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar Games Issues New Official Statement on GTA 6",
+      "link": "https://gamerant.com/gta-6-release-date-ps5-xbox/",
+      "source_link": null,
+      "date": "2026-09-05T18:30:12+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-new-statement.jpg?w=1600&h=900&fit=crop",
+      "description": "As we get closer to the long-awaited Grand Theft Auto 6 release date, Rockstar Games issues a new statement on the game."
+    },
+    {
+      "title": "10 Reasons GTA 6 Will Outdo Every Other Game in the Series - DualShockers",
+      "link": "https://www.dualshockers.com/reasons-gta-6-will-outdo-every-other-game-in-the-series/",
+      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPc1lmNU5wQlBWQ2hvalRZWDNweHN0eDhjMGVRbmgxS0hraDFXcmhhdEhWc0tNWlBQbmJnOWd1aUtjVGNMc3ozUEhhUTJFeHJ5NHpkY3ZaaDNoOHFVUGNTMFlGdmplbXoya0N0bERfd19Od0hJeGo5R19yZ3J5dk9ScTlwa0RtMGNqUE1qRk5B?oc=5",
+      "date": "2026-09-05T18:30:11+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/09/10-reasons-gta-6-will-outdo-every-other-game-in-the-series.jpg?w=1600&h=900&fit=crop",
+      "description": "10 Reasons GTA 6 Will Outdo Every Other Game in the Series&nbsp;&nbsp;DualShockers"
+    },
+    {
+      "title": "« 2 fois plus que dans Red Dead Redemption 2 » : voilà pourquoi GTA 6 fait toute la différence - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2102089/2-fois-plus-que-dans-red-dead-redemption-2-voila-pourquoi-gta-6-fait-toute-la-difference.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPdEVSNFVURE4xZ3RYdWF6VjhBQ2pmMHlSR3NJdEhIelVtNEJGcGpYVHNpcEFSYWZWNGJrSVhFRlBxNS14RHI0ZUxpajVfTE9acnlzS2U1NTVLejgtRHE2RGR0bE8waVpxSWFodnZFNG1iZ21RYWVVQ2l1b0JRNDU3Ylp3ZHkwYU9UMUoxQ0JSX3JqOFdmVHNLVlNKOUh0SjVpRGROWVJpZjhSVFBETzJ3WGl5RlBYQ1F1ZXkyVkhxdGstU21VdC1UUVVZcw?oc=5",
+      "date": "2026-09-05T18:10:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178844/1788442354-7992-card.jpg",
+      "description": "« 2 fois plus que dans Red Dead Redemption 2 » : voilà pourquoi GTA 6 fait toute la différence&nbsp;&nbsp;JeuxVideo.com"
+    },
+    {
+      "title": "GTA 6 will ramp up realism as players will be punished for being fat and not sleeping - TweakTown",
+      "link": "https://www.tweaktown.com/news/113422/gta-6-will-ramp-up-realism-as-players-will-be-punished-for-being-fat-and-not-sleeping/index.html",
+      "source_link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOTGx3NnRKcnM3UUN6ZXZreU9PMUdoM1B6OTd4eGExZG1jMk93TVYwS1pQSDVma3ljSm5iNG9HbmNKZ0RyS21GMmR6bVg0b0pTc2pUaVRacTA1NXJ3QVlfMzhzN1ZTZHZZa19OTVFkRjVqdUVJSmxocGgyYnE1czUxYldNZC1iUkRhMi14cGdmcVVKUVItdFNxUUo4ejdxRVJlTjJ4NkY0X2hoQkpZanhVUF9Wblg2bk1YUXRsanNOc0ZycnB3RG4wTi1zNnBQQWM?oc=5",
+      "date": "2026-09-05T18:05:14+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static.tweaktown.com/news/1/1/113422_1_gta-6-will-ramp-up-realism-as-players-be-punished-for-being-fat-and-not-sleeping_full.jpg",
+      "description": "GTA 6 will ramp up realism as players will be punished for being fat and not sleeping&nbsp;&nbsp;TweakTown"
+    },
     {
       "title": "Inside the GTA 6 Netflix Preview: Character Swapping, Heists and Fresh Gameplay Details - eGamers.io",
       "link": "https://egamers.io/inside-the-gta-6-netflix-preview-character-swapping-heists-and-fresh-gameplay-details/",
