@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T16:01:45.058215+00:00",
-  "duration_seconds": 46.5,
+  "generated_at": "2026-09-05T17:01:40.008749+00:00",
+  "duration_seconds": 42.9,
   "decode_failures": 0,
-  "total_articles": 1999,
-  "new_this_run": 1,
+  "total_articles": 2001,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,8 +353,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-05T00:00:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-05T16:10:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -385,12 +385,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-05T10:50:07+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-05T15:50:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-05T15:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -559,7 +559,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 1,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T17:14:16+00:00",
       "days_since_last_article": 0,
@@ -691,7 +691,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:43:24+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 79,
+      "entries_fetched": 78,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,99,101,101,102,101,101,102,102,102,100,102",
-    "gnews-en": "101,103,103,102,101,101,102,103,102,102,104,104",
+    "gnews-fr": "99,101,101,102,101,101,102,102,102,100,102,101",
+    "gnews-en": "103,103,102,101,101,102,103,102,102,104,104,104",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,23 +946,23 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "33,33,33,33,33,33,33,33,34,34,34,34",
+    "gta6times": "33,33,33,33,33,33,33,34,34,34,34,34",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,8,8,8,8,8,8,8,8",
+    "xboxwire": "7,7,7,8,8,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,55,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,55,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,63,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,81,81,81,79,80,79",
+    "theverge": "100,100,100,100,100,100,63,100,100,100,100,100",
+    "engadget": "81,81,81,81,81,81,81,81,79,80,79,78",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,53,100,100"
+    "schreier": "100,100,100,100,100,100,100,100,53,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -993,28 +993,28 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"38f28-E0MMFCRzEzGl4J9GWIMl1xpLYW4\"",
+      "etag": "W/\"398c3-+1XUoxQSPJuCuEXjhdUGgyyNtjA\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"a827ee5437dc3eaecd3b968365aec515\"",
-      "modified": "Sat, 05 Sep 2026 15:30:01 GMT"
+      "etag": "W/\"53acf0d4cb83aafc18b7b8cf5c8daef9\"",
+      "modified": "Sat, 05 Sep 2026 16:30:23 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 07:00:00 GMT"
+      "modified": "Sat, 05 Sep 2026 16:12:49 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 15:27:26 GMT"
+      "modified": "Sat, 05 Sep 2026 16:11:08 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 15:59:11 GMT"
+      "modified": "Sat, 05 Sep 2026 16:58:38 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9c3c91-3012\"",
-      "modified": "Sat, 05 Sep 2026 16:00:17 GMT"
+      "etag": "W/\"6a9c4aa0-3012\"",
+      "modified": "Sat, 05 Sep 2026 17:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"d709170d0a83e30beeb73da9f501dd58\"",
-      "modified": "Sat, 05 Sep 2026 08:30:30 GMT"
+      "etag": "W/\"bce429d2f36879a4e1b6378b0a11ceec\"",
+      "modified": "Sat, 05 Sep 2026 16:37:47 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"6292f4235ae70ec5fb007074e7ba2704\"",
-      "modified": "Sat, 05 Sep 2026 15:37:12 GMT"
+      "etag": "W/\"0d8ce227ef5f32b6625c34243ab8106e\"",
+      "modified": "Sat, 05 Sep 2026 16:29:02 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Inside the GTA 6 Netflix Preview: Character Swapping, Heists and Fresh Gameplay Details - eGamers.io",
+      "link": "https://egamers.io/inside-the-gta-6-netflix-preview-character-swapping-heists-and-fresh-gameplay-details/",
+      "source_link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPcVNaZlpFck1GdjV5TEVDNXRmM25oWmV5WWpYMTNaSEpETHlPVko4LWMyY1h5ODdORHBsVHlMZVZUV3lPQ3BxeWRvLTloVXRXY3VVTkJFb0lOVFF5MXFOdnVVaGhMNi03RzFOVzlTek9xMlNKTEJ1TC04cEZMVkthNG9sczZ0SEE5SkpTVFdJTFYwbkliRl8xMDJsVDJmcXNmVXBhak8zdGk?oc=5",
+      "date": "2026-09-05T16:10:13+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://egamers.io/wp-content/uploads/2026/09/inside-the-gta-6-netflix-preview-character-swapping-heists-and-fresh-gameplay-details-1024x683.webp",
+      "description": "Inside the GTA 6 Netflix Preview: Character Swapping, Heists and Fresh Gameplay Details&nbsp;&nbsp;eGamers.io"
+    },
+    {
+      "title": "PS5 Pro en stock : où trouver la console de Sony au meilleur prix avant la sortie de GTA 6 ? - jeuxvideo.com",
+      "link": "https://www.jeuxvideo.com/news/2102371/ps5-pro-en-stock-ou-trouver-la-console-de-sony-au-meilleur-prix-avant-la-sortie-de-gta-6.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPbEVDVWp4Z3pPYU5fcUZhMjhQS2p1Q2FNNXdjY0VyUG5kcTlHNWpCZTZvamlWcjVHc1liay1nTjRaX3pVbWxSQ1pfcUQxamdnN2dWcVhHY29EeWNIakZBaVlaUFJvcmN0QWNhRUxCTXJ3cmlIb3l1Um0tMmQyY2UyZlk0dG9xcmtvSkZHNk9lNkhiZmw0M2ozQzBsZl9kZ3dxWFZySTdBeVN5UDdRbmNLdk1tWWlPUUtVZVhhRV9peTY5b08xOG0zUVdfMA?oc=5",
+      "date": "2026-09-05T15:50:10+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178854/1788535921-1298-card.jpg",
+      "description": "PS5 Pro en stock : où trouver la console de Sony au meilleur prix avant la sortie de GTA 6 ?&nbsp;&nbsp;jeuxvideo.com"
+    },
     {
       "title": "GTA 6 looks drastically different depending on where you live - GAMINGbible",
       "link": "https://www.gamingbible.com/news/gta-6-china-blurred-censorship-152939-20260905",
