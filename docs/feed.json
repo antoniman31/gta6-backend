@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-06T04:01:47.134185+00:00",
-  "duration_seconds": 49.4,
+  "generated_at": "2026-09-06T05:00:21.261051+00:00",
+  "duration_seconds": 38.7,
   "decode_failures": 0,
-  "total_articles": 2019,
-  "new_this_run": 4,
+  "total_articles": 2020,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 9,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-06T03:53:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-05T12:19:22+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -805,11 +805,11 @@
     {
       "id": "jdg",
       "name": "Journal du Geek",
-      "entries_fetched": 91,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
+      "new_this_run": 0,
       "last_article": "2026-09-05T01:23:51+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -877,7 +877,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 27,
+      "entries_fetched": 28,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -905,22 +905,33 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-22T01:42:08+00:00",
       "days_since_last_article": 15,
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-06T05:00:21.260733+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-06T05:00:21.260733+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,100,100,99,100,99,99,100,99,99,99",
-    "gnews-en": "103,100,102,101,100,100,100,99,101,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "gnews-fr": "102,100,100,99,100,99,99,100,99,99,99,99",
+    "gnews-en": "100,102,101,100,100,100,99,101,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -951,16 +962,16 @@
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,100,100,100,100,100,100,100,100,100,99,100",
+    "purexbox": "100,100,100,100,100,100,100,100,100,99,100,100",
     "xboxwire": "8,8,8,8,8,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "jdg": "100,100,100,100,100,100,100,100,100,100,100,91",
+    "jdg": "100,100,100,100,100,100,100,100,100,100,91,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "77,79,79,79,78,78,78,79,78,78,78,78",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
+    "engadget": "79,79,79,78,78,78,79,78,78,78,78,78",
+    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1014,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 06 Sep 2026 04:01:13 GMT"
+      "modified": "Sun, 06 Sep 2026 04:59:51 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9ce550-3012\"",
-      "modified": "Sun, 06 Sep 2026 04:00:16 GMT"
+      "etag": "W/\"6a9cec57-3012\"",
+      "modified": "Sun, 06 Sep 2026 04:30:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -25533,6 +25544,19 @@
       "lang": "fr",
       "image": "https://www.journaldugeek.com/app/uploads/2026/08/GTA-6-take-two-prix-1600x900.jpg",
       "description": "GTA 6 : le patron de Take-Two continue de prendre les joueurs de haut&nbsp;&nbsp;Journal du Geek"
+    },
+    {
+      "title": "What About GTA Online for GTA VI? Reliable Source Shares Bittersweet News About Rockstar Games’ Highly Anticipated Online Mode - levelup.com",
+      "link": "https://www.levelup.com/en/news/what-about-gta-online-for-gta-vi-reliable-source-shares-bittersweet-news-about-rockstar-games-highly-anticipated-online-mode/",
+      "source_link": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxQY3dmZHpDQkZiM0VMTzVlb2ppSEtnT04wLTdjdmFoQmZIWjlZTUhGUWc2eU01Zm9LR0Y3aHVZb0t2ZDQxNmNTR1l2RldmQ2JPTjd6MGJPVjB5MVlOdVFaT3ZfOEZHNlB1UjBXTWlkbWlzRXdtZnpzc1VsZkc5SXo0RHkxZ1hXU3BXdHZ2US0yMVBLUzR0ZVl2c0Y0NkhLUWtSZmQyWXd0Q0h5bWRZdTRsaENnVmYzZTE1MlN5T3A1cEp4MGo1Zk43NHpzVS1Lel9VNmwzMndpdVlDcmNmNDdxRkZ1cGx1ckRWUjBycDl3?oc=5",
+      "date": "2026-08-10T07:00:00+00:00",
+      "source": "Jason Schreier",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.levelup.com/resizer/v2/2FV2SPBGAREN7HRBFK46W7I64U.jpg?auth=5b5320996b3aa5aca93d4599fe7aaf099a6024307c8b595ba55cbacc6aea4003&height=630&width=1200&quality=70&smart=true",
+      "description": "What About GTA Online for GTA VI? Reliable Source Shares Bittersweet News About Rockstar Games’ Highly Anticipated Online Mode&nbsp;&nbsp;levelup.com"
     },
     {
       "title": "No news on GTA VI Online yet, and Take-Two's boss has a \"top-secret\" plan for November 19 - ixbt.games",
