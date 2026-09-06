@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-06T00:01:42.586257+00:00",
-  "duration_seconds": 34.7,
+  "generated_at": "2026-09-06T01:01:48.727253+00:00",
+  "duration_seconds": 50.8,
   "decode_failures": 0,
-  "total_articles": 2010,
-  "new_this_run": 1,
+  "total_articles": 2013,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -379,17 +379,17 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 8,
+      "days_since_last_article": 9,
       "status": "ok"
     },
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 2,
       "last_article": "2026-09-05T18:30:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,7 +397,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 79,
+      "entries_fetched": 78,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,101,101,102,102,102,100,100,99,100,99,99",
-    "gnews-en": "104,104,103,104,103,100,102,101,100,100,100,99",
+    "gnews-fr": "101,101,102,102,102,100,100,99,100,99,99,100",
+    "gnews-en": "104,103,104,103,100,102,101,100,100,100,99,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "79,78,79,79,77,79,79,79,78,78,78,79",
-    "arstechnica": "27,27,27,28,27,27,27,27,27,27,27,27",
+    "engadget": "78,79,79,77,79,79,79,78,78,78,79,78",
+    "arstechnica": "27,27,28,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"37fa8-dJqp/WXBRublcED1VT3h6UA0/t8\"",
+      "etag": "W/\"2b17c-HvlC7yF7BrKDd2Ymk955CeVs2T4\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 23:56:21 GMT"
+      "modified": "Sun, 06 Sep 2026 00:59:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9cad12-3012\"",
-      "modified": "Sun, 06 Sep 2026 00:00:18 GMT"
+      "etag": "W/\"6a9cbb1e-3012\"",
+      "modified": "Sun, 06 Sep 2026 01:00:14 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1061,6 +1061,19 @@
       "lang": null,
       "image": "https://egamers.io/wp-content/uploads/2026/09/report-hints-gta-6-could-hit-pc-earlier-than-anyone-predicted.jpg",
       "description": "Report Hints GTA 6 Could Hit PC Earlier Than Anyone Predicted&nbsp;&nbsp;eGamers.io"
+    },
+    {
+      "title": "GTA 6 developers are preparing a deep system of interaction with characters through the interface - GameGPU",
+      "link": "https://en.gamegpu.com/news/igry/razrabotchiki-gta-6-gotovyat-glubokuyu-sistemu-vzaimodejstviya-s-personazhami-cherez-interfejs",
+      "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQUE5IclBQeEM4SWVwejk3c1VRNTB5WU9sMDRJNW1KZzBxOXlFRmZqOFZsU3U4cjZMd0RLOVROMVJDWGF3LUhtU3RXaVQwOWs2azJpYmVrcUIzVERrMEJwckR0b0loQ29iaEFCUkNBd2xSV2pqamlSMW1MeE1RUnlQby1XcXZoVE52Q3oxWTRfanhuMjhwMkRFT3JjdGtSMFRuU1YzWTI3M0F4Tm1ieS1qT1JlZHJNTjk0UnRTQ1dzOW8ta1ZFTlE?oc=5",
+      "date": "2026-09-05T19:05:35+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 developers are preparing a deep system of interaction with characters through the interface&nbsp;&nbsp;GameGPU"
     },
     {
       "title": "Rockstar Games Issues New Official Statement on GTA 6",
@@ -1418,6 +1431,19 @@
       "lang": "fr",
       "image": "https://www.xboxygen.com/wp-content/uploads/2026/09/GTA-6-violence-monetisation.jpg",
       "description": "GTA 6 arrive, et YouTube assouplit ses règles pour monétiser violence et drogue&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "GTA 6 : ces manettes PS5 en édition limitée risquent de partir très vite - Begeek",
+      "link": "https://www.begeek.fr/gta-6-ces-manettes-ps5-en-edition-limitee-risquent-de-partir-tres-vite-439540",
+      "source_link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOOTRpODh5dFJQY05QTkdzMU1FVEtFRnNOV1lRUlNvenJtZXdNSUtkMUsteXp5VWdWWjgzeVNvRU5pSGJwRkNUd1NYc0huYjVXZWxhenRLR0owX0RhOVVjUVV2RmY0OHh5QWJBd29VTkNZYmg1YkR5NGs1ZGRlQmxIWUhIbXVvamJBUURteTlVQXpvcHhIdjdVemQzZ2gwaWdE?oc=5",
+      "date": "2026-09-05T08:00:41+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.begeek.fr/wp-content/uploads/2026/09/gta-6-manettes-ps5.webp",
+      "description": "GTA 6 : ces manettes PS5 en édition limitée risquent de partir très vite&nbsp;&nbsp;Begeek"
     },
     {
       "title": "YouTube eases monetization rules for graphic in-game violence ahead of GTA 6",
@@ -2113,6 +2139,19 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/jason_and_lucia_09.jpg?w=1600&h=900&fit=crop",
       "description": "Miami-Dade County Sheriff Rosie Cordero-Stutz releases a new statement ahead of Miami's fictionalized appearance as Vice City in GTA 6."
+    },
+    {
+      "title": "Être fauché dans GTA 6 vous empêchera littéralement de jouer l'histoire principale - gamewave.fr",
+      "link": "https://gamewave.fr/gta-6/etre-fauche-dans-gta-6-vous-empechera-litteralement-de-jouer-l-histoire-principale/",
+      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOMHY3aGhHcHlsVUtpNEtuMXNabEpha0FsYklqVE9xNy1DUFp3cko3Qks1M1h5ZDBvN1JoTExGbS1KMk9Nb0F1eHR0Vm8wekdhZTY3dlhHaTQzeGNWaV9tVVpVUEx0Nk9SVnk0QWZaN2hDdWZFbW1WMXpUVUhldGo1VUlNNFVVQjJ2dXJIaUJQNk1HUWhsMWtjbHhVczVuVTF3QWRUOUF1LTdZQUZUdVE?oc=5",
+      "date": "2026-09-04T12:30:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://gamewave.fr/static/images/news/headers/12f7a-argent-blocage-histoire-gta6.jpg",
+      "description": "Être fauché dans GTA 6 vous empêchera littéralement de jouer l'histoire principale&nbsp;&nbsp;gamewave.fr"
     },
     {
       "title": "GTA 6 Extended Look Causes Song Plays Up 130,000% Spotify Reveals",
@@ -4981,45 +5020,6 @@
       "lang": null,
       "image": null,
       "description": "GTA 6 was Netflix's most popular content of the week: 31.1 million views for the preview&nbsp;&nbsp;mezha.ua"
-    },
-    {
-      "title": "\"Grand Theft Auto VI\" Extended Look A Hit - Dark Horizons",
-      "link": "https://www.darkhorizons.com/grand-theft-auto-vi-extended-look-a-hit/",
-      "source_link": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBLUlU2UVhwYTA5NGo2Wnc3MG1yTGpXRl96WndQSU5adEpySnhEaDN0UDFpclpvX3VGNE9id04zQWgxa1psSEFCYlJ1Y2xxZEdBcmYxaVhWNFdGaXRLWFlEUUx4S3ZTWUZPaktnTF8zRFV6YmV1OVRtZQ?oc=5",
-      "date": "2026-09-02T11:26:11+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://cdndark.darkhorizons.com/wp-content/uploads/2026/09/grand-theft-auto-vi-extended-look-a-hit.jpg",
-      "description": "\"Grand Theft Auto VI\" Extended Look A Hit&nbsp;&nbsp;Dark Horizons"
-    },
-    {
-      "title": "Rockstar's Netflix play pays off with GTA 6 becoming the platform's most viewed media of the week - gameshub.com",
-      "link": "https://www.gameshub.com/news/news/gta-6-an-extended-look-netflix-31-million-views/",
-      "source_link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQRkI0dnVWREdydVJTTzNFZzFCNmd6eTEtRjBuSGNjQVdsOTN2MWxVNzBHZGFHcGtJdlp1Z2JPdGw0NnVmcG94cmJaV2x4UzBQeEtTQUthalFYVG15blQtdF82RmtNSGhUWmpVN3ZoWWlmcGdvRzVnSEFZVGNaQnJBWk1yRWVpbXVKV1Vv?oc=5",
-      "date": "2026-09-02T11:09:29+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://www.gameshub.com/wp-content/uploads/2026/09/gta-6-an-extended-look-views.jpg",
-      "description": "Rockstar's Netflix play pays off with GTA 6 becoming the platform's most viewed media of the week&nbsp;&nbsp;gameshub.com"
-    },
-    {
-      "title": "Netflix says GTA 6: An Extended Look got 31.1 million views and topped its charts in nearly every country",
-      "link": "https://www.videogameschronicle.com/news/netflix-says-gta-6-an-extended-look-got-31-1-million-views-and-topped-its-charts-in-nearly-every-country/",
-      "source_link": null,
-      "date": "2026-09-02T11:04:54+00:00",
-      "source": "VGC",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.videogameschronicle.com/files/2026/09/gta-6-pic1.jpg",
-      "description": " It's also racked up millions more views on YouTube"
     }
   ],
   "partial": true,
