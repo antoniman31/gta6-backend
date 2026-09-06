@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-06T07:01:34.738938+00:00",
-  "duration_seconds": 36.1,
+  "generated_at": "2026-09-06T08:01:34.828980+00:00",
+  "duration_seconds": 37.8,
   "decode_failures": 0,
-  "total_articles": 2024,
-  "new_this_run": 3,
+  "total_articles": 2025,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -337,7 +337,7 @@
     {
       "id": "rockstar-announce",
       "name": "Rockstar Games (annonces)",
-      "entries_fetched": 68,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-06T05:12:50+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-06T06:44:53+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 1,
@@ -653,9 +653,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T14:53:35+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-06T08:00:00+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -763,7 +763,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T07:26:56+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -911,27 +911,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-06T05:00:21.260733+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-06T05:00:21.260733+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,68",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,68,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,15",
-    "gnews-fr": "99,100,99,99,100,99,99,99,99,99,101,99",
-    "gnews-en": "100,100,100,99,101,100,100,100,100,100,102,102",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,15,15",
+    "gnews-fr": "100,99,99,100,99,99,99,99,99,101,99,99",
+    "gnews-en": "100,100,99,101,100,100,100,100,100,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -957,21 +946,21 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "34,34,34,34,34,34,34,34,34,34,35,35",
+    "gta6times": "34,34,34,34,34,34,34,34,34,35,35,35",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,100,100,100,100,100,99,100,100,100,100,100",
+    "purexbox": "100,100,100,100,100,99,100,100,100,100,100,100",
     "xboxwire": "8,8,8,8,8,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "jdg": "100,100,100,100,100,100,100,91,100,100,100,100",
+    "jdg": "100,100,100,100,100,100,91,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "78,78,78,79,78,78,78,78,78,78,78,78",
-    "arstechnica": "27,27,27,27,27,27,27,27,28,28,28,28",
+    "engadget": "78,78,79,78,78,78,78,78,78,78,78,78",
+    "arstechnica": "27,27,27,27,27,27,27,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1009,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"66309875ce6ca0d065821c7e223571fc\"",
-      "modified": "Sat, 05 Sep 2026 20:52:21 GMT"
+      "etag": "W/\"265df8283be63d176bd2b5c46ce5958f\"",
+      "modified": "Sun, 06 Sep 2026 08:00:21 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1025,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 06 Sep 2026 06:58:34 GMT"
+      "modified": "Sun, 06 Sep 2026 07:58:28 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9d0f80-310b\"",
-      "modified": "Sun, 06 Sep 2026 07:00:16 GMT"
+      "etag": "W/\"6a9d1d90-30e5\"",
+      "modified": "Sun, 06 Sep 2026 08:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,12 +1043,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9cff4f-aef\"",
-      "modified": "Sun, 06 Sep 2026 05:51:11 GMT"
+      "etag": "\"6a9d1b6d-aee\"",
+      "modified": "Sun, 06 Sep 2026 07:51:09 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 a déjà été censuré avant même sa sortie, et ça ne ressemble plus à rien",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-censure-bilibili-chine-722288",
+      "source_link": null,
+      "date": "2026-09-06T08:00:00+00:00",
+      "source": "Gameblog.fr",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img//_6a96bdb806c72.jpg",
+      "description": "GTA 6 n'est pas encore sorti qu'il est déjà confronté à la censure. Sa grande présentation diffusée sur Netflix a malheureusement dû être floutée en partie pour le public chinois, ça ne présage rien de bon pour le jeu."
+    },
     {
       "title": "Sony’s GTA 6 DualSense Controllers: Pre-Orders Open September 10 - Tech My Money",
       "link": "https://techmymoney.com/2026/09/06/sonys-gta-6-dualsense-controllers-pre-orders-open-september-10/",
@@ -5018,19 +5020,6 @@
           "link": "https://opencritic.com/news/36207/gta-6-exec-officially-comments-on-surpassing-gta-5"
         }
       ]
-    },
-    {
-      "title": "A Ton Of New ‘GTA 6’ Details Drop After The Netflix Showcase - Forbes",
-      "link": "https://www.forbes.com/sites/paultassi/2026/09/02/a-ton-of-new-gta-6-details-drop-after-the-netflix-showcase/",
-      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQTXl6bmZpajdzY2lmWjg4cXZIOER2VEdWeDZPWEZGcEZuVm1hWWhLRkRvdkFLc3R2RFZIcUFlaHB2UTFkb3M5TjJUTi0wS1puel9KUGVRaUV0cmZrYWNQZ1FhZXhMVFlOVjI2MVM5aU5ma0NZbzVxdlktY0dwUTJFNjhwcDBQZzVkeUNxbkxfSjJfRkZRWXdVWXRBUFNrOUpnSjZRSXh5OXc1NEo1VHc?oc=5",
-      "date": "2026-09-02T13:14:31+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": null,
-      "description": "A Ton Of New ‘GTA 6’ Details Drop After The Netflix Showcase&nbsp;&nbsp;Forbes"
     }
   ],
   "partial": true,
