@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-05T23:12:20.658541+00:00",
-  "duration_seconds": 44.0,
+  "generated_at": "2026-09-06T00:01:42.586257+00:00",
+  "duration_seconds": 34.7,
   "decode_failures": 0,
-  "total_articles": 2009,
+  "total_articles": 2010,
   "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -397,11 +397,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-05T19:10:14+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T14:53:35+00:00",
       "days_since_last_article": 1,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -797,7 +797,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-02T15:29:09+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 78,
+      "entries_fetched": 79,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,102,101,101,102,102,102,100,100,99,100,99",
-    "gnews-en": "104,104,104,103,104,103,100,102,101,100,100,100",
+    "gnews-fr": "102,101,101,102,102,102,100,100,99,100,99,99",
+    "gnews-en": "104,104,103,104,103,100,102,101,100,100,100,99",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "80,79,78,79,79,77,79,79,79,78,78,78",
-    "arstechnica": "27,27,27,27,28,27,27,27,27,27,27,27",
+    "engadget": "79,78,79,79,77,79,79,79,78,78,78,79",
+    "arstechnica": "27,27,27,28,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"395bb-Jxcqv8+gjMcirqs9AHJuRW2XaDI\"",
+      "etag": "W/\"37fa8-dJqp/WXBRublcED1VT3h6UA0/t8\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 05 Sep 2026 23:11:52 GMT"
+      "modified": "Sat, 05 Sep 2026 23:56:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9c9f01-3012\"",
-      "modified": "Sat, 05 Sep 2026 23:00:17 GMT"
+      "etag": "W/\"6a9cad12-3012\"",
+      "modified": "Sun, 06 Sep 2026 00:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,8 +1043,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9c8ece-aef\"",
-      "modified": "Sat, 05 Sep 2026 21:51:10 GMT"
+      "etag": "\"6a9caaf4-aef\"",
+      "modified": "Sat, 05 Sep 2026 23:51:16 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1171,6 +1171,19 @@
       "lang": null,
       "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/bltf795cf52d99d4d1a/6a9c279b31914487ce1f45dd/GTA_6_looks_drastically_different_depending_on_where_you_live.jpg",
       "description": "GTA 6 looks drastically different depending on where you live&nbsp;&nbsp;GAMINGbible"
+    },
+    {
+      "title": "Shack Chat: How do you plan to play GTA 6? - Shacknews",
+      "link": "http://www.shacknews.com/article/150625/shack-chat-gta-6-how-you-want-to-play",
+      "source_link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOVW91RlFpYkR4V2Z6dEUwNlJRMG13UVRiQjFXNFduWW9nSXF2dkZjbUI4b3R5VnBxa1ItRDZwaXVCMkx1X1RDdWxpQ0VaYWo1aHVMOVU1aVY4bjdlOVdYMUtMM3dFX2lDVWVqVVNiTWRmMk92WTI3dldyRXpVM3VxQXBWVdIBkAFBVV95cUxNZ2ZQV2tTcGlZejIwczFMS2FIWWJZMVJXallGbVBsNUdtekUyN2drdksyd1NTMmwwbWp3RDhMUGVSeGpJdG1PekhOeWEwX3N6RmdUcEN6MGRtOHdaenpGN0JWN2NUU1hmNzQ2a2YyRTI2QWtjc0lYTmEzc3lSVUNtTUtWaXJKdmxxTUM1MWtlWTg?oc=5",
+      "date": "2026-09-05T15:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://d1lss44hh2trtw.cloudfront.net/assets/articles/2026/09/04/shack-chat-gta6-play-style-featured_feature.jpg",
+      "description": "Shack Chat: How do you plan to play GTA 6?&nbsp;&nbsp;Shacknews"
     },
     {
       "title": "Rockstar has historically made PC players wait up to 19 months — Grand Theft Auto VI might play out differently",
