@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-06T16:01:46.288565+00:00",
-  "duration_seconds": 45.3,
+  "generated_at": "2026-09-06T17:01:45.931819+00:00",
+  "duration_seconds": 40.7,
   "decode_failures": 0,
-  "total_articles": 2048,
-  "new_this_run": 1,
+  "total_articles": 2050,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-06T13:20:26+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-06T14:10:35+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T12:07:22+00:00",
       "days_since_last_article": 2,
@@ -553,13 +553,13 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -689,8 +689,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-06T01:45:13+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-06T16:04:25+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -721,10 +721,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T23:00:00+00:00",
       "days_since_last_article": 1,
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 4,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 4,
@@ -829,7 +829,7 @@
     {
       "id": "gamergen",
       "name": "Gamergen",
-      "entries_fetched": 100,
+      "entries_fetched": 55,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -915,12 +915,12 @@
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "68,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "99,99,99,99,99,99,102,100,102,100,102,100",
-    "gnews-en": "102,102,102,102,101,102,101,102,102,102,102,102",
+    "gnews-fr": "99,99,99,99,99,102,100,102,100,102,100,100",
+    "gnews-en": "102,102,102,101,102,101,102,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,20 +946,20 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "35,35,35,36,36,36,36,36,36,36,36,36",
+    "gta6times": "35,35,36,36,36,36,36,36,36,36,36,36",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,100,91,100,100,100,100,100,100,100,100,100",
+    "purexbox": "100,91,100,100,100,100,100,100,100,100,100,100",
     "xboxwire": "8,8,8,8,8,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,55",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "78,78,78,79,79,79,79,79,79,79,79,79",
+    "engadget": "78,78,79,79,79,79,79,79,79,79,79,79",
     "arstechnica": "28,28,28,28,28,28,28,28,28,28,28,28",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -998,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"ba667731afdc0d59bd3fe19a6f949d17\"",
-      "modified": "Sun, 06 Sep 2026 15:37:16 GMT"
+      "etag": "W/\"94c23e73b3c47661828eebb6467f9bd5\"",
+      "modified": "Sun, 06 Sep 2026 17:00:23 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 06 Sep 2026 15:59:06 GMT"
+      "modified": "Sun, 06 Sep 2026 16:57:31 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9d8e10-3079\"",
-      "modified": "Sun, 06 Sep 2026 16:00:16 GMT"
+      "etag": "W/\"6a9d9c1f-3079\"",
+      "modified": "Sun, 06 Sep 2026 17:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1033,13 +1033,13 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788581482\"",
-      "modified": "Sat, 05 Sep 2026 04:11:22 GMT"
+      "etag": "W/\"1788711456\"",
+      "modified": "Sun, 06 Sep 2026 16:17:36 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"91ca80d0c0520f2608daadf0a28ff2d0\"",
-      "modified": "Sun, 06 Sep 2026 14:59:00 GMT"
+      "etag": "W/\"3f4d598d8a72514b63ee4ee3d724fb15\"",
+      "modified": "Sun, 06 Sep 2026 16:39:09 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rumor: GTA 6 Online May Not Be Coming Soon",
+      "link": "https://gamerant.com/gta-6-online-release-date-rumor/",
+      "source_link": null,
+      "date": "2026-09-06T16:04:25+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-online-release-date-rumor.jpg?w=1600&h=900&fit=crop",
+      "description": "A new report suggests that GTA 6 Online may not be arriving any time soon."
+    },
     {
       "title": "Ex-Rockstar dev's chilling new psychological horror could be the next Silent Hill – even in a rough design build",
       "link": "https://www.gamesradar.com/games/horror/ex-rockstar-devs-chilling-new-psychological-horror-could-be-the-next-silent-hill-even-in-a-rough-design-build/",
@@ -1294,7 +1307,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://cdn-uploads.gameblog.fr/img//_6a96bdb806c72.jpg",
-      "description": "GTA 6 n'est pas encore sorti qu'il est déjà confronté à la censure. Sa grande présentation diffusée sur Netflix a malheureusement dû être floutée en partie pour le public chinois, ça ne présage rien de bon pour le jeu."
+      "description": "GTA 6 n'est pas encore sorti qu'il est déjà confronté à la censure. Sa grande présentation diffusée sur Netflix a malheureusement dû être floutée en partie pour le public chinois, ça ne présage rien de bon pour le jeu.",
+      "extraSources": [
+        {
+          "source": "Google News (FR)",
+          "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-deja-censure-avant-meme-sa-sortie-et-le-resultat-ne-ressemble-plus-vraiment-a-loriginal-224614.html"
+        }
+      ]
     },
     {
       "title": "PlayStation Plus free game is a GTA 6 rival 'way ahead of its time' - GAMINGbible",
@@ -1334,6 +1353,19 @@
       "lang": "fr",
       "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/IrdlDcE-HO1jdmp0hQIhNHkE5Xo=/0x0:1600x900/1600x0/images/Auchan-revele-discretement-un-nouveau-prix-secret-sur-la-PS5-digitale-difficile-de-dire-non-2193013.jpg",
       "description": "PS5 Numérique : Amazon affiche ce pack avec deux manettes à moins de 650 euros avant la sortie de GTA 6&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "GTA 6 : La romance en jeu va trop loin aux yeux de certains couples réels - MGG (Millenium)",
+      "link": "https://www.millenium.org/news/430769.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE4xZEFWUWtfT2FtbW9LLU9ybndWMG5YQUxNZmdBLVYta191T0d5UkFYVFpwNFdUWXJCN3dHVFZtQzE5cUFIdXZoaXU1ZWRCZF9ISTVTcg?oc=5",
+      "date": "2026-09-06T05:42:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://static1.millenium.org/articles/9/43/07/69/@/1890575-gta-6-nouveaux-artworks-article_cover_bd-1.jpg",
+      "description": "GTA 6 : La romance en jeu va trop loin aux yeux de certains couples réels&nbsp;&nbsp;MGG (Millenium)"
     },
     {
       "title": "Rockstar Censors GTA 6 Nightclub Scene for China Cut",
@@ -4982,32 +5014,6 @@
       "lang": null,
       "image": "https://nintendowire.com/wp-content/uploads/2026/09/Grand-Theft-Auto-VI-Netflix-Extended-Look.jpg",
       "description": "Grand Theft Auto VI’s ‘Extended Look’ Netflix trailer accrued a whopping 31.1 million views in four days&nbsp;&nbsp;Nintendo Wire"
-    },
-    {
-      "title": "GTA 6 : Ces changements de gameplay font déjà polémiques - Journal du Geek",
-      "link": "https://www.journaldugeek.com/2026/09/02/gta-6-ces-changements-de-gameplay-font-deja-polemiques/",
-      "source_link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNdlp4eTNEUV9BZF8zTkFvQlJsTXh5V1hiVlhQbGFULVdOYUw4cDQtRjl4UktyTTB2WTBsMkJCZEtSako3WHpBMXFJQmJvWVNnOS1DemIyajB1ZXhBekwzNDBZaWdqbUZjbGZtSF9WQjFISlBzMndsZUY3cFZiRXdoaUVMZll1NS01c1ZBbXUwb1d0Y0dMNFd6MGQzdFg?oc=5",
-      "date": "2026-09-02T16:03:39+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.journaldugeek.com/app/uploads/2026/08/nouvelles-images-gta-6-jdg-1600x900.jpg",
-      "description": "GTA 6 : Ces changements de gameplay font déjà polémiques&nbsp;&nbsp;Journal du Geek"
-    },
-    {
-      "title": "Rockstar Is Now Officially Promoting GTA Online Roleplay",
-      "link": "https://www.gtaboom.com/rockstar-is-now-officially-promoting-gta-roleplay-e0f9",
-      "source_link": null,
-      "date": "2026-09-02T16:02:00+00:00",
-      "source": "GTA BOOM",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://media.gtaboom.com/variants/1920/media/images/f6/63/rockstar-is-now-officially-promoting-gta-roleplay.jpg",
-      "description": "Rockstar Games now officially promotes NoPixel V, backing its September 8 closed beta with GTA$1.5 million in Twitch Drops."
     }
   ],
   "partial": true,
