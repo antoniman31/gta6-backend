@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-06T01:01:48.727253+00:00",
-  "duration_seconds": 50.8,
+  "generated_at": "2026-09-06T02:01:39.476942+00:00",
+  "duration_seconds": 44.5,
   "decode_failures": 0,
-  "total_articles": 2013,
-  "new_this_run": 3,
+  "total_articles": 2015,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -385,11 +385,11 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-05T18:30:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -397,12 +397,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-05T19:10:14+00:00",
+      "last_article": "2026-09-05T21:02:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -689,8 +689,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-05T18:30:12+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-06T01:45:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 3,
@@ -811,7 +811,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-05T01:23:51+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -859,7 +859,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T01:05:00+00:00",
-      "days_since_last_article": 8,
+      "days_since_last_article": 9,
       "status": "ok"
     },
     {
@@ -907,7 +907,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
-      "days_since_last_article": 14,
+      "days_since_last_article": 15,
       "status": "ok"
     }
   ],
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,101,102,102,102,100,100,99,100,99,99,100",
-    "gnews-en": "104,103,104,103,100,102,101,100,100,100,99,101",
+    "gnews-fr": "101,102,102,102,100,100,99,100,99,99,100,99",
+    "gnews-en": "103,104,103,100,102,101,100,100,100,99,101,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -959,8 +959,8 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "78,79,79,77,79,79,79,78,78,78,79,78",
-    "arstechnica": "27,27,28,27,27,27,27,27,27,27,27,27",
+    "engadget": "79,79,77,79,79,79,78,78,78,79,78,78",
+    "arstechnica": "27,28,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 06 Sep 2026 00:59:07 GMT"
+      "modified": "Sun, 06 Sep 2026 01:57:41 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9cbb1e-3012\"",
-      "modified": "Sun, 06 Sep 2026 01:00:14 GMT"
+      "etag": "W/\"6a9cc934-3012\"",
+      "modified": "Sun, 06 Sep 2026 02:00:20 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,12 +1043,38 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9caaf4-aef\"",
-      "modified": "Sat, 05 Sep 2026 23:51:16 GMT"
+      "etag": "\"6a9cc711-aef\"",
+      "modified": "Sun, 06 Sep 2026 01:51:13 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Every Grand Theft Auto Game, Officially Ranked",
+      "link": "https://gamerant.com/every-gta-grand-theft-auto-game-ranked-worst-best/",
+      "source_link": null,
+      "date": "2026-09-06T01:45:13+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/04/every-gta-game-ranked.jpg?w=1600&h=900&fit=crop",
+      "description": "With GTA 6 almost here, this is the best time to rank all of Rockstar's Grand Theft Auto games. Which one is the greatest of all time?"
+    },
+    {
+      "title": "Sony is preparing limited edition PlayStation 5 consoles in the style of GTA 6. - GameGPU",
+      "link": "https://en.gamegpu.com/news/zhelezo/kompaniya-sony-gotovit-limitirovannye-konsoli-playstation-5-v-stile-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNbXBxWXFUU3M2QjdNUm5RQ25RSUdWVHotdEQ4VWtEaWdhWnJOLVpqZHJGRUtpRWVVTWMtNUZwUzZzYURKT1hGb1I1Rk5fUFZVOE02MGJ3UXBvdHFTd2FSUUNOUGpydGp2UlZtQXhtRWQwM3RDdHVraTFVcERaZXNHdEVzMFoxcXFiOXdTTTFPalNUTkt6NWpvclpaeE15ZU9VTFNpSm1nOW11ZmUzb2c?oc=5",
+      "date": "2026-09-05T21:02:29+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/Image_ecc74recc74recc7_ggpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/Image_ecc74recc74recc7_ggpu.webp?width=1920&height=1080",
+      "description": "Sony is preparing limited edition PlayStation 5 consoles in the style of GTA 6.&nbsp;&nbsp;GameGPU"
+    },
     {
       "title": "Report Hints GTA 6 Could Hit PC Earlier Than Anyone Predicted - eGamers.io",
       "link": "https://egamers.io/report-hints-gta-6-could-hit-pc-earlier-than-anyone-predicted/",
