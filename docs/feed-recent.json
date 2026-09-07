@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-07T04:01:49.526409+00:00",
-  "duration_seconds": 47.2,
+  "generated_at": "2026-09-07T05:01:42.257332+00:00",
+  "duration_seconds": 43.1,
   "decode_failures": 0,
-  "total_articles": 2070,
-  "new_this_run": 2,
+  "total_articles": 2071,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-07T02:42:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-06T21:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-07T02:25:27+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 4,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,104,104,104,104,104,104,104,104,104",
-    "gnews-en": "102,102,102,102,102,102,102,100,100,100,100,102",
+    "gnews-fr": "102,102,104,104,104,104,104,104,104,104,104,104",
+    "gnews-en": "102,102,102,102,102,102,100,100,100,100,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,22 +946,22 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "36,36,36,36,37,37,37,37,37,37,37,37",
+    "gta6times": "36,36,36,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,7,8,8,8,8,8,8,7,8,7",
+    "xboxwire": "8,7,8,8,8,8,8,8,7,8,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "80,80,80,80,80,79,79,79,79,80,81,81",
+    "engadget": "80,80,80,80,79,79,79,79,80,81,81,81",
     "arstechnica": "28,28,28,28,28,28,28,28,28,28,28,28",
-    "pushsquare": "100,100,100,100,100,100,100,98,100,100,100,100",
+    "pushsquare": "100,100,100,100,100,100,98,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 04:01:20 GMT"
+      "modified": "Mon, 07 Sep 2026 05:01:16 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9e36d0-3079\"",
-      "modified": "Mon, 07 Sep 2026 04:00:16 GMT"
+      "etag": "W/\"6a9e44e0-3079\"",
+      "modified": "Mon, 07 Sep 2026 05:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1230,6 +1230,19 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-online-release-date-rumor.jpg?w=1600&h=900&fit=crop",
       "description": "A new report suggests that GTA 6 Online may not be arriving any time soon."
+    },
+    {
+      "title": "GTA 6 : ces romances sexy accusées de favoriser l'infidélité, certaines fiancées bannissent le jeu - fr.style.yahoo.com",
+      "link": "https://fr.style.yahoo.com/gta-6-romances-sexy-accus%C3%A9es-153010503.html",
+      "source_link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPbXpBOUx4TjJkMld4WHBWR24zMndGQ0ZXdzkyc05FeHppUmVTcGl6Y21qY3FOM3FKOTVKc193Y0I2VnNjSG1ycE5wcUdnS0hvRU9sY3AxclBVUXRWbWI3ZURVSG1PckxDSEpSbVNQOVVjZGtoYWlRN1ZRWlZoRFNkcA?oc=5",
+      "date": "2026-09-06T15:30:10+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://s.yimg.com/lo/mysterio/api/20f0c21b40a9ff08c7c3c71392452d8eec80ffd64249bb380422c2ae6a09c405/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Ffr%2Fentre_nous_831%2F3cb1e320a0d7d74374cc7921e7d4734d.jpg",
+      "description": "GTA 6 : ces romances sexy accusées de favoriser l'infidélité, certaines fiancées bannissent le jeu&nbsp;&nbsp;fr.style.yahoo.com"
     },
     {
       "title": "Ex-Rockstar dev's chilling new psychological horror could be the next Silent Hill – even in a rough design build",
@@ -5007,19 +5020,6 @@
       "lang": "fr",
       "image": "https://h3v2h5f6.delivery.rocketcdn.me/wp-content/uploads/2026/09/gta-vi-ps5-pro-sony-ameliorations-label-ps5-pro-enhanced.jpg",
       "description": "GTA VI sur PS5 Pro : Sony impose de véritables améliorations pour obtenir le label PS5 Pro Enhanced&nbsp;&nbsp;HardwareCooking"
-    },
-    {
-      "title": "GTA 6 a prévu un point de non-retour pour les joueurs les plus violents - Dexerto.fr",
-      "link": "https://www.dexerto.fr/gta/gta-6-prevu-point-non-retour-pour-joueurs-plus-violents-1657748/",
-      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQc0QxSGJTMkxZcWpfVHBoVXNTNjlaWWdHOXhXRFRJano3bDJyaVJHblVGT1NSMmZncnBZQjBHcUlZRnlQWjFkaWNyZk02VXU1TkZBd3FYUGVBWmxBMUhTZDdFMDljYzc0OGpmNDE0eXhiU052YmJrM1FzaWZJTXBnVXFCSWpHTVZad1k5VWlFc2Zmd3lTM0E?oc=5",
-      "date": "2026-09-02T19:26:53+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.dexerto.fr/cdn-image/wp-content/uploads/sites/2/2026/09/02/GTA-6-Braquage-Lucia-Jason.jpg",
-      "description": "GTA 6 a prévu un point de non-retour pour les joueurs les plus violents&nbsp;&nbsp;Dexerto.fr"
     }
   ],
   "partial": true,
