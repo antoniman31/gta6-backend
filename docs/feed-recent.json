@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-07T02:01:41.042304+00:00",
-  "duration_seconds": 39.1,
+  "generated_at": "2026-09-07T03:01:43.190150+00:00",
+  "duration_seconds": 44.0,
   "decode_failures": 0,
   "total_articles": 2068,
   "new_this_run": 0,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 4,
@@ -781,7 +781,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 7,
+      "entries_fetched": 8,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -865,7 +865,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 80,
+      "entries_fetched": 81,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,8 +919,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,102,102,102,104,104,104,104,104,104,104",
-    "gnews-en": "102,100,102,102,102,102,102,102,102,100,100,100",
+    "gnews-fr": "100,102,102,102,104,104,104,104,104,104,104,104",
+    "gnews-en": "100,102,102,102,102,102,102,102,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -946,22 +946,22 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "36,36,36,36,36,36,37,37,37,37,37,37",
+    "gta6times": "36,36,36,36,36,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,7,8,8,8,8,8,8,7",
+    "xboxwire": "8,8,8,7,8,8,8,8,8,8,7,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "55,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "79,79,80,80,80,80,80,79,79,79,79,80",
+    "engadget": "79,80,80,80,80,80,79,79,79,79,80,81",
     "arstechnica": "28,28,28,28,28,28,28,28,28,28,28,28",
-    "pushsquare": "100,100,100,100,100,100,100,100,100,98,100,100",
+    "pushsquare": "100,100,100,100,100,100,100,100,98,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 02:00:07 GMT"
+      "modified": "Mon, 07 Sep 2026 02:59:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1023,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9e1ab2-3079\"",
-      "modified": "Mon, 07 Sep 2026 02:00:18 GMT"
+      "etag": "W/\"6a9e28bf-3079\"",
+      "modified": "Mon, 07 Sep 2026 03:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
