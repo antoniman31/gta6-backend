@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-07T18:01:49.135475+00:00",
-  "duration_seconds": 45.4,
+  "generated_at": "2026-09-07T19:01:36.506093+00:00",
+  "duration_seconds": 38.7,
   "decode_failures": 0,
-  "total_articles": 2122,
-  "new_this_run": 1,
+  "total_articles": 2127,
+  "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -325,7 +325,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -385,24 +385,24 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-07T16:10:10+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-07T18:35:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-07T16:23:06+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-07T17:59:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -521,9 +521,9 @@
       "http_status": 302,
       "redirect": "https://www.ign.com/rss/articles/feed?tags=games",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-04T19:48:54+00:00",
-      "days_since_last_article": 2,
+      "new_this_run": 1,
+      "last_article": "2026-09-07T18:00:31+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 5,
@@ -913,14 +913,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,0,100,100,99,99,47,99,99,99,99",
-    "rockstar-announce": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,0,100,100,99,99,47,99,99,99,99,100",
+    "rockstar-announce": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,0,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,0,102,102,100,100,100,100,100,100,102",
-    "gnews-en": "100,100,0,102,102,102,102,102,102,102,102,101",
+    "gnews-fr": "102,0,102,102,100,100,100,100,100,100,102,100",
+    "gnews-en": "100,0,102,102,102,102,102,102,102,102,101,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,0,100,100,100,100,100,100,100,60,100",
+    "vg247": "100,0,100,100,100,100,100,100,100,60,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,19 +950,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,8,0,8,8,8,8,8,8,8,8,8",
-    "trueach": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "jdg": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "frandroid": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,0,81,81,81,81,81,81,81,81,81",
-    "arstechnica": "28,28,0,28,28,28,28,28,28,28,28,28",
-    "pushsquare": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,0,100,100,100,100,100,100,100,100,100"
+    "xboxygen": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "8,0,8,8,8,8,8,8,8,8,8,8",
+    "trueach": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "jdg": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "81,0,81,81,81,81,81,81,81,81,81,81",
+    "arstechnica": "28,0,28,28,28,28,28,28,28,28,28,28",
+    "pushsquare": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "100,0,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,8 +973,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"389d6248b0f74e29dc5b492dd4962d6d\"",
-      "modified": "Mon, 07 Sep 2026 17:43:19 GMT"
+      "etag": "W/\"092cda9266547049652e6259af5670e6\"",
+      "modified": "Mon, 07 Sep 2026 18:44:53 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -993,13 +993,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2744b-DXfU/6B+xh7dJkjIeJJeo9sbcJI\"",
+      "etag": "W/\"26813-LdjirYmIK3HmmTQOqhPZ44W1keI\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"ea16641b4cb07d85d16f2a8768e46639\"",
-      "modified": "Mon, 07 Sep 2026 17:19:01 GMT"
+      "etag": "W/\"e2d0590b72d65ffa2820f30d831cd23a\"",
+      "modified": "Mon, 07 Sep 2026 19:00:48 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 17:31:14 GMT"
+      "modified": "Mon, 07 Sep 2026 18:07:32 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 18:01:21 GMT"
+      "modified": "Mon, 07 Sep 2026 19:01:15 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,18 +1023,18 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9efbaf-308d\"",
-      "modified": "Mon, 07 Sep 2026 18:00:15 GMT"
+      "etag": "W/\"6a9f09c0-308d\"",
+      "modified": "Mon, 07 Sep 2026 19:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"2db7539a97c18f300bdd7f868ac8a630\"",
-      "modified": "Mon, 07 Sep 2026 16:19:35 GMT"
+      "etag": "W/\"a9e3e4278e3ec4e80b302e8ac7e13886\"",
+      "modified": "Mon, 07 Sep 2026 18:49:22 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788804007\"",
-      "modified": "Mon, 07 Sep 2026 18:00:07 GMT"
+      "etag": "W/\"1788804291\"",
+      "modified": "Mon, 07 Sep 2026 18:04:51 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1049,6 +1049,58 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : à quelle heure pourra-t-on jouer en France ? Certains auront 12 heures d’avance - Xboxygen",
+      "link": "https://www.xboxygen.com/News/366891-gta-6-a-quelle-heure-pourra-t-on-jouer-en-france-certains-auront-12-heures-davance",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPT0U3OWFpYTMyS09MWXprbC1QbGdyNXZMZGVFbXBka0tRUl8yR01YNFpkSXJrY3k3VWc2ZVB0UWxRd09ObjA5TC1CVlJYWTVMTVRna05iZmN5VnFuZFlrRUJBMFRHX2o2VkVoVnZaYy1LNDg4T2FyV1Ytcnh1aEVoT05VekxEc1I4WmRDVzhTUmU0TGhHcS04ZWpVMFpQWENxNnMzM2hSZzRfODlFZm1lSkV1dHRuZDdmVDBz?oc=5",
+      "date": "2026-09-07T18:35:01+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/09/GTA-6-sortie-heure-date.jpg",
+      "description": "GTA 6 : à quelle heure pourra-t-on jouer en France ? Certains auront 12 heures d’avance&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "GTA 6 Will Launch Digitally at Midnight Around the World, So Of Course Fans Are Already Planning to Set Their Console Locations to New Zealand",
+      "link": "https://www.ign.com/articles/gta-6-will-launch-digitally-at-midnight-around-the-world-so-of-course-fans-are-already-planning-to-set-their-console-locations-to-new-zealand",
+      "source_link": null,
+      "date": "2026-09-07T18:00:31+00:00",
+      "source": "IGN",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/08/06/gtaonothumb-1786018055324.png",
+      "description": "Rockstar will launch Grand Theft Auto 6 at midnight local time in most countries on November 19 — meaning some fans are already planning to adjust their console region and play early."
+    },
+    {
+      "title": "GTA 6 : cette astuce pourrait permettre de jouer 12 heures avant la date de sortie sur Xbox - BuzzArena",
+      "link": "https://www.buzzarena.com/gta-6-cette-astuce-pourrait-permettre-de-jouer-12-heures-avant-la-date-prevue-sur-xbox-4562735",
+      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPcTNBOXZENFR6dG9mZGpaakk0c2FyYnNaN0lxZjJnYURnTFQ2RkUwTzJPazFnNWRRMjhxWWRjNURpa0dyNEZLZUwxcGxsOENKTjVKdzg4Y3prTWYteEtjSWJFZXZpckwwb3kxRkZZeEJyT2pDWkpLWXBhMnEtOUV1RUlqRFJiYnR6ZXJZMTQtX0tDQTZOYUVRVU8yR1V5b2F3XzZQWlhfdkZ3ejNPQmItM3JySDlzcFhsUHBZaQ?oc=5",
+      "date": "2026-09-07T18:00:21+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.buzzarena.com/wp-content/uploads/2026/09/GTA-6-5.jpg",
+      "description": "GTA 6 : cette astuce pourrait permettre de jouer 12 heures avant la date de sortie sur Xbox&nbsp;&nbsp;BuzzArena"
+    },
+    {
+      "title": "GTA 6's Worldwide Release Times Revealed - with New Zealand Set to Receive Access 19 Hours Before Mexico and Central America - Digital Foundry",
+      "link": "https://www.digitalfoundry.net/news/2026/09/gta-6s-worldwide-release-times-revealed-with-new-zealand-set-to-receive-access-19-hours-before-mexico-and-central-america",
+      "source_link": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxPSTJXRUdES2IwaEtEaEVnUDFfbkNZSmVkNWdEYnhzTnVfU2xvc0VWb2dXZFAxMjRhcVR6dENtNDc4NHB0S0d1X0VpelJXVUlpb3Y3UjBkdDdCS0FYM0VTSGZNUXRaR1ExVU13N0hiOURoZEpKQkVaQzVNakVpR1BIOFRBZ3hWQl9LMDNRNU9jNi1CT0xyYlEtVEkyZkxLb01wVkd3Q29GeDZrVHAzQ2phZ2Z5eGlrOXFxQkVMWmo3Q01ieFJSNTktam44UWhZZnVFdDhBN1VxdDFhZjRZci10NVZoSXZQSTA3MGYtNHpwd1MxUUZmNkdpcA?oc=5",
+      "date": "2026-09-07T17:59:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://images.digitalfoundry.net/9397aeca1e9c7/large.jpg",
+      "description": "GTA 6's Worldwide Release Times Revealed - with New Zealand Set to Receive Access 19 Hours Before Mexico and Central America&nbsp;&nbsp;Digital Foundry"
+    },
     {
       "title": "Does GTA 6 have a dirt oval track? (Official Screenshot) - racingnews.co",
       "link": "https://racingnews.co/2026/09/07/does-gta-6-have-a-dirt-oval-track-official-screenshot/",
@@ -1210,6 +1262,19 @@
       "lang": "fr",
       "image": "https://www.ginjfo.com/wp-content/uploads/2026/08/GTA6.jpg",
       "description": "GTA 6 sur PC plus tôt que prévu ? Un rapport le laisse entendre&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "GTA 6 Online Release Date Update Suggests We're In For A Long Wait - ScreenRant",
+      "link": "https://screenrant.com/gta-6-online-release-date-update/",
+      "source_link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBqQWExMVJtcGdVdTY0eDFCU1VIcS1haWp5cFpGOWVDTUl4VVV2ZDFhb0RGWEJfQVBoaE1yaUk1RENpVXgzWGFzYWQxaDlCbWNibEZPMFBiNzRWWnpYRGdpSFl3d3Rlc0k?oc=5",
+      "date": "2026-09-07T13:35:23+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.srcdn.com/wordpress/wp-content/uploads/2026/05/gta-6-boobie-ike.png?w=1600&h=900&fit=crop",
+      "description": "GTA 6 Online Release Date Update Suggests We're In For A Long Wait&nbsp;&nbsp;ScreenRant"
     },
     {
       "title": "« C'est de la tromperie » : certains jeunes de la Gen Z interdisent à leurs conjoints de jouer à GTA 6. Un expert répond - JeuxVideo.com",
