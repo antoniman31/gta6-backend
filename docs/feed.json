@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-07T16:01:41.703070+00:00",
-  "duration_seconds": 42.0,
+  "generated_at": "2026-09-07T17:01:40.296683+00:00",
+  "duration_seconds": 41.5,
   "decode_failures": 0,
-  "total_articles": 2117,
-  "new_this_run": 3,
+  "total_articles": 2121,
+  "new_this_run": 4,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-07T16:00:16+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-07T16:10:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-07T15:00:02+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-07T16:23:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -425,7 +425,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-07T15:19:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -559,7 +559,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -577,7 +577,7 @@
     {
       "id": "vg247",
       "name": "VG247",
-      "entries_fetched": 100,
+      "entries_fetched": 60,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:vg247.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 3,
@@ -601,10 +601,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T09:00:00+00:00",
       "days_since_last_article": 0,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
       "days_since_last_article": 4,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 5,
@@ -913,14 +913,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "rockstar-fr": "0,100,100,100,0,100,100,99,99,47,99,99",
-    "rockstar-announce": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "gta6-netflix": "0,100,100,100,0,100,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,0,100,100,99,99,47,99,99,99",
+    "rockstar-announce": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,100,0,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "0,102,102,102,0,102,102,100,100,100,100,100",
-    "gnews-en": "0,100,100,100,0,102,102,102,102,102,102,102",
+    "gnews-fr": "102,102,102,0,102,102,100,100,100,100,100,100",
+    "gnews-en": "100,100,100,0,102,102,102,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "0,100,100,100,0,100,100,100,100,100,100,100",
+    "vg247": "100,100,100,0,100,100,100,100,100,100,100,60",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -950,19 +950,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "purexbox": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "xboxwire": "0,7,7,8,0,8,8,8,8,8,8,8",
-    "trueach": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "jdg": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "numerama": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "gamergen": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "frandroid": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "theverge": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "engadget": "0,80,81,81,0,81,81,81,81,81,81,81",
-    "arstechnica": "0,28,28,28,0,28,28,28,28,28,28,28",
-    "pushsquare": "0,100,100,100,0,100,100,100,100,100,100,100",
-    "schreier": "0,100,100,100,0,100,100,100,100,100,100,100"
+    "xboxygen": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "xboxwire": "7,7,8,0,8,8,8,8,8,8,8,8",
+    "trueach": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "jdg": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "numerama": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "frandroid": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "engadget": "80,81,81,0,81,81,81,81,81,81,81,81",
+    "arstechnica": "28,28,28,0,28,28,28,28,28,28,28,28",
+    "pushsquare": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "schreier": "100,100,100,0,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -973,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"725535b4c9e2f7f27c9158b13d9fd10d\"",
-      "modified": "Mon, 07 Sep 2026 15:59:39 GMT"
+      "etag": "W/\"331f85373e844a8c3ddfebd75958529b\"",
+      "modified": "Mon, 07 Sep 2026 16:54:33 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 14:59:10 GMT"
+      "modified": "Mon, 07 Sep 2026 16:47:35 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,23 +998,23 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"6cc9d3e79f497d0aad51ed9aa6006124\"",
-      "modified": "Mon, 07 Sep 2026 15:00:33 GMT"
+      "etag": "W/\"dfe20ad4041b100968ec0ca51fbc005d\"",
+      "modified": "Mon, 07 Sep 2026 16:20:58 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 13:30:00 GMT"
+      "modified": "Mon, 07 Sep 2026 16:25:43 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 13:17:55 GMT"
+      "modified": "Mon, 07 Sep 2026 16:12:13 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 16:01:17 GMT"
+      "modified": "Mon, 07 Sep 2026 16:57:31 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9edf8f-308d\"",
-      "modified": "Mon, 07 Sep 2026 16:00:15 GMT"
+      "etag": "W/\"6a9eeda0-308d\"",
+      "modified": "Mon, 07 Sep 2026 17:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"4ec167f77dfa9a6190cbcde74cea81eb\"",
-      "modified": "Mon, 07 Sep 2026 15:12:48 GMT"
+      "etag": "W/\"2db7539a97c18f300bdd7f868ac8a630\"",
+      "modified": "Mon, 07 Sep 2026 16:19:35 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1038,8 +1038,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"f5a461a005305bf3e870874915471d9d\"",
-      "modified": "Mon, 07 Sep 2026 15:45:49 GMT"
+      "etag": "W/\"c01b762467e778d38af890ce8d5fd1a1\"",
+      "modified": "Mon, 07 Sep 2026 16:21:52 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1049,6 +1049,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Does GTA 6 have a dirt oval track? (Official Screenshot) - racingnews.co",
+      "link": "https://racingnews.co/2026/09/07/does-gta-6-have-a-dirt-oval-track-official-screenshot/",
+      "source_link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOWW8wUTF5TkY2YUgwNXo0eVpEdGZkWmtCSEZGR1RCS0pQV0xtd1VVcWdfUWtrRFllRVVaUDVLNXRYMUhwY1hnSzkzOV9wTEFyVzFjbnMzQ09aNlZyVVU2NlN4SXUxdTBqSkpMaFNpWGlIcjZGLVZ0VVI4b2ItSFd3M1ljLUN1Sl82WExBSS12anQ?oc=5",
+      "date": "2026-09-07T16:23:06+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://racingnews.co/wp-content/uploads/2026/09/Vice-City-Sign-GTA-6.jpg",
+      "description": "Does GTA 6 have a dirt oval track? (Official Screenshot)&nbsp;&nbsp;racingnews.co"
+    },
+    {
+      "title": "GTA 6 sortira sans disque en pleine période de Noël, un gros manque à gagner pour tous les magasins d'occasion en France - L’Express Franchise",
+      "link": "https://lexpress-franchise.com/actualites/gta-6-sans-disque-manque-a-gagner-pour-magasins-dachat-revente-doccasion/",
+      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQQmhSck9nN0FzU1ZLMEM5TlFaOU9PY0FMNjRScUotTVJyY1haZWFLQVN5LVQzcFRrUHRGRUNUaHBwQWpiaVZJbTJ1TkJtaHVGTjFjS1dxNjZJQ0h2TkFESXMxSWU1OWZ0b3A3TmFPT0l6VlFoUkJUX2JQRzVnRkVEeERjeDVNbzRpaVo1V2JCZnhfUDFpUjBmZXRzbnpiZkNoVU5mSXBscGRTOEJfSWxsWVRtLS1OZw?oc=5",
+      "date": "2026-09-07T16:10:10+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://lexpress-franchise.com/wp-content/uploads/2026/09/grand-theft-auto-vi-affiche-collage.jpg",
+      "description": "GTA 6 sortira sans disque en pleine période de Noël, un gros manque à gagner pour tous les magasins d'occasion en France&nbsp;&nbsp;L’Express Franchise"
+    },
+    {
+      "title": "Officials want to turn Miami into Vice City for 'GTA 6.' Police disagree. - Mashable",
+      "link": "https://mashable.com/entertainment/miami-dade-gta-6-rockstar-partnership",
+      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5jNE5kMS1SSE5ueUlwZ2kwUTVUTEp6a2tTdW45MTR5a0EtNWxpbEYyRWhQV25wR29vTmM3YXJlNUowTEVHLUFDQ2FhZkR3RHNlT2FPUnQtcUptSndMX2N5dVdjd2lqWnNTLUNGZjM4R1VXZXhkaDBuc0o0Wlk?oc=5",
+      "date": "2026-09-07T16:08:37+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://helios-i.mashable.com/imagery/articles/02YyCmGeCxm61pa0shso5sV/hero-image.fill.size_1200x675.v1788795872.jpg",
+      "description": "Officials want to turn Miami into Vice City for 'GTA 6.' Police disagree.&nbsp;&nbsp;Mashable"
+    },
     {
       "title": "GTA 6 : le jeu n’est même pas encore sorti qu’une carte complète et interactive est disponible - PhonAndroid",
       "link": "https://www.phonandroid.com/gta-6-le-jeu-nest-meme-pas-encore-sorti-quune-carte-complete-et-interactive-est-disponible.html",
@@ -1061,6 +1100,19 @@
       "lang": "fr",
       "image": "https://wp-pa.phonandroid.com/uploads/2025/05/boobie-hike-GTA6.jpg",
       "description": "GTA 6 : le jeu n’est même pas encore sorti qu’une carte complète et interactive est disponible&nbsp;&nbsp;PhonAndroid"
+    },
+    {
+      "title": "GTA 6 : le jour de sortie va-t-il secouer l’économie ? (ça va poser fort un RTT) - Konbini",
+      "link": "https://www.konbini.com/internet/gta-6-le-jour-de-sortie-va-t-il-secouer-leconomie-ca-va-poser-fort-un-rtt/",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNb2tTcXprcU0yQWk1d3ZzTFNhYXVtb1hmS3hIN2ZUWTZUWWtEcW9sWkJGMHpGYm1xdEhvSHlJemxIS2lvYUVFRVV5c0JxSWZMNXVkNDkxVEhhaXVyMWpYZWpSdXZtZUl2Nkx0UFdDc0tnYmNPVjBCdlZhb1EybHJjRWtOWDlCOW5WVmFkQXhSWVBaSEV2NjY0a0RtOGd4MUppZE1CU09JNEd1VkE?oc=5",
+      "date": "2026-09-07T15:27:31+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-www.konbini.com/files/2026/08/gta-6-bande-annonce-e1786022106996.png?width=1200&height=675",
+      "description": "GTA 6 : le jour de sortie va-t-il secouer l’économie ? (ça va poser fort un RTT)&nbsp;&nbsp;KonbiniGTA 6 : on en sait plus sur les armes, et Rockstar pousse le réalisme trop loin au détriment du fun ?&nbsp;&nbsp;Journal du GeekGTA 6 continue de choquer avec de nouveaux détails impressionnants de gameplay&nbsp;&nbsp;La Crème Du Gaming"
     },
     {
       "title": "GTA 6 Will Track Lots of Things Including the Characters’ Sleep",
