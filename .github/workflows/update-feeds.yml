@@ -84,11 +84,19 @@ jobs:
       #   repository_dispatch  cron-job.org → automatique
       #   schedule             le filet de GitHub → automatique
       #
-      # Le run part quand même et va jusqu'à l'étape de signal de vie —
-      # il saute seulement la récupération, la publication et les
-      # notifications. Sans ça, cinq heures de silence auraient été lues
-      # par healthchecks.io comme « le robot est mort », et l'alerte
-      # aurait sonné à 2h du matin : exactement ce qu'on cherche à éviter.
+      # Le run tourne NORMALEMENT et publie : c'est la notification, et
+      # elle seule, qui se tait. Une annonce officielle de Rockstar y
+      # échappe — les trois plus grosses de l'histoire du jeu sont tombées
+      # entre 2h24 et 3h48 heure de Paris (la révélation de décembre 2023,
+      # le premier trailer, l'Extended Look), et une pause qui les
+      # retiendrait jusqu'à 5h raterait exactement ce pour quoi cette
+      # veille existe.
+      #
+      # Le passage nocturne publiant comme les autres, healthchecks.io
+      # continue de recevoir son signal et le fil est à jour au réveil.
+      # Contrepartie acceptée : plus de récapitulatif à 5h, puisque les
+      # articles de la nuit ne sont alors plus « nouveaux ». Ils sont
+      # simplement là quand on ouvre l'app.
       #
       # TZ=Europe/Paris et non un décalage fixe : la fenêtre doit rester
       # 00h-05h heure locale des deux côtés du changement d'heure. Un
@@ -114,7 +122,7 @@ jobs:
           # tout le reste pour que ce soit lisible d'un coup d'œil.
           if [ "$DECLENCHEUR" = "workflow_dispatch" ]; then
             echo "Déclenchement manuel — la pause nocturne ne s'applique pas."
-            echo "pause=false" >> "$GITHUB_OUTPUT"
+            echo "silence=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -123,7 +131,7 @@ jobs:
 
           if [ -z "$HEURE" ] || [ -z "$JOUR" ]; then
             echo "Heure de Paris indéterminable — on laisse passer."
-            echo "pause=false" >> "$GITHUB_OUTPUT"
+            echo "silence=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -132,21 +140,20 @@ jobs:
           if [ "$JOUR" \> "$EXCEPTION_DEBUT" ] || [ "$JOUR" = "$EXCEPTION_DEBUT" ]; then
             if [ "$JOUR" \< "$EXCEPTION_FIN" ] || [ "$JOUR" = "$EXCEPTION_FIN" ]; then
               echo "Sortie de GTA 6 : la pause nocturne est levée."
-              echo "pause=false" >> "$GITHUB_OUTPUT"
+              echo "silence=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
           fi
 
           if [ "$HEURE" -lt 5 ]; then
-            echo "Pause nocturne (00h-05h) — passage sauté, signal de vie quand même envoyé."
-            echo "pause=true" >> "$GITHUB_OUTPUT"
+            echo "Pause nocturne (00h-05h) — le passage tourne, seules les annonces Rockstar notifient."
+            echo "silence=true" >> "$GITHUB_OUTPUT"
           else
             echo "Hors de la pause — passage normal."
-            echo "pause=false" >> "$GITHUB_OUTPUT"
+            echo "silence=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Récupérer le dépôt
-        if: steps.veille.outputs.pause != 'true'
         uses: actions/checkout@v7
         with:
           # `ref: main` au lieu du SHA figé au déclenchement : un run
@@ -155,17 +162,14 @@ jobs:
           ref: main
 
       - name: Installer Python
-        if: steps.veille.outputs.pause != 'true'
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Installer les dépendances
-        if: steps.veille.outputs.pause != 'true'
         run: pip install -r requirements.txt
 
       - name: Récupérer et traiter les flux
-        if: steps.veille.outputs.pause != 'true'
         run: python fetch_feeds.py
         env:
           # Hors du dépôt : ces fichiers ne doivent jamais pouvoir être committés.
@@ -181,7 +185,6 @@ jobs:
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
 
       - name: Publier le résultat
-        if: steps.veille.outputs.pause != 'true'
         env:
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
         run: |
@@ -260,9 +263,11 @@ jobs:
       # un push en échec annonçait sur Discord des articles jamais publiés,
       # que l'exécution suivante redétectait et réannonçait.
       - name: Notifier Discord
-        if: success() && steps.veille.outputs.pause != 'true'
+        if: success()
         run: python discord_notify.py
         env:
+          # La nuit, seules les annonces officielles de Rockstar sortent.
+          SEULEMENT_OFFICIELS: ${{ steps.veille.outputs.silence == 'true' && '1' || '0' }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
           SOURCE_ALERTS_FILE: ${{ runner.temp }}/source_alerts.json
@@ -274,9 +279,10 @@ jobs:
       # Sans les secrets VAPID_PRIVATE_KEY et PUSH_SUBSCRIPTIONS, l'étape
       # ne fait rien.
       - name: Notifier par push
-        if: success() && steps.veille.outputs.pause != 'true'
+        if: success()
         run: python push_notify.py
         env:
+          SEULEMENT_OFFICIELS: ${{ steps.veille.outputs.silence == 'true' && '1' || '0' }}
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
           PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}

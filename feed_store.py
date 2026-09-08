@@ -13,6 +13,7 @@ partout, sous peine de corrompre l'historique :
   3. combien on en garde (MAX_HISTORY_SIZE / cap_items).
 """
 
+import hashlib
 import json
 import os
 import re
@@ -458,6 +459,48 @@ def libelle_recap(new_items, promus=()):
         # article » à côté de l'alerte serait absurde.
         return f"{alerte} · {compte}" if n else alerte
     return f"🎮 {compte}"
+
+
+def articles_officiels(new_items):
+    """Les articles publiés par Rockstar ou Take-Two eux-mêmes.
+
+    Le drapeau `official` est posé par la source dans FEEDS : le Newswire de
+    Rockstar, sa chaîne YouTube, les relations investisseurs de Take-Two.
+    Ce n'est pas une heuristique sur le contenu — c'est l'émetteur.
+    """
+    return [i for i in (new_items or ())
+            if isinstance(i, dict) and i.get("official")]
+
+
+def libelle_officiel(item):
+    """Le texte d'une alerte « officiel Rockstar », écrit UNE seule fois.
+
+    Même principe que libelle_recap : Discord et les notifications push
+    disent mot pour mot la même chose, et ne peuvent pas diverger au
+    premier ajustement.
+
+    Ici, CONTRAIREMENT au récapitulatif, le titre de l'article apparaît. Le
+    récapitulatif annonce un nombre parce qu'un lot de dix articles n'a pas
+    de titre représentatif ; une annonce de Rockstar, elle, est un
+    évènement unique et c'est justement son contenu qu'on veut lire sans
+    ouvrir quoi que ce soit.
+    """
+    titre = (item.get("title") or "").strip() or "Nouvelle publication"
+    return "🎮 Rockstar Games — officiel", titre
+
+
+def etiquette_officiel(item):
+    """Identifiant stable d'une alerte officielle, dérivé du lien.
+
+    Sert de `tag` à la notification push. Un tag PROPRE À CHAQUE ARTICLE est
+    indispensable ici : le tag commun du récapitulatif remplace la
+    notification précédente, ce qui effacerait en silence l'annonce d'un
+    trailer une demi-heure plus tard — précisément celle qu'on ne veut pas
+    rater. Deux annonces officielles du même passage ne doivent pas non
+    plus s'écraser l'une l'autre.
+    """
+    lien = (item.get("link") or "").strip()
+    return "gta6watch-officiel-" + hashlib.sha1(lien.encode("utf-8")).hexdigest()[:12]
 
 
 def nb_sources_max(new_items):

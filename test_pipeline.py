@@ -3233,6 +3233,121 @@ def test_panneaux_sont_de_vrais_dialogues():
           "et le fond n'est libéré qu'au dernier fermé")
 
 
+def test_alerte_officielle_rockstar():
+    print("\n[notif] une annonce de Rockstar a son alerte à elle")
+    import re, io, json as _json, contextlib, tempfile, os as _os
+    import discord_notify, push_notify
+
+    officiel = {"title": "Grand Theft Auto VI: An Extended Look",
+                "link": "https://www.rockstargames.com/newswire/extended-look",
+                "source": "Rockstar Games (officiel EN)", "official": True}
+    banal = {"title": "Une rumeur de plus", "link": "https://exemple.test/1",
+             "source": "Google News (EN)", "official": False}
+
+    # Le tri repose sur le drapeau posé par la SOURCE dans FEEDS, pas sur une
+    # heuristique de contenu : c'est l'émetteur qui fait l'officialité.
+    tries = feed_store.articles_officiels([banal, officiel, banal])
+    check(tries == [officiel], "seuls les articles des sources officielles sont retenus")
+    check(feed_store.articles_officiels([]) == [], "un lot vide ne retient rien")
+    check(feed_store.articles_officiels(None) == [], "et un lot absent non plus")
+
+    # Le texte est écrit UNE fois et partagé, comme le récapitulatif : les
+    # deux canaux ne peuvent pas diverger au premier ajustement.
+    entete, titre = feed_store.libelle_officiel(officiel)
+    check("Rockstar" in entete, "l'entête nomme Rockstar")
+    check(titre == officiel["title"],
+          "et le TITRE de l'article apparaît — contrairement au récapitulatif, "
+          "qui n'annonce qu'un nombre")
+    charge = push_notify.build_payload_officiel(officiel)
+    check(charge["title"] == entete and charge["body"] == titre,
+          "la notification push reprend exactement ce texte partagé")
+    check(charge["url"] == officiel["link"],
+          "et mène à l'ARTICLE, pas à l'accueil du site")
+
+    # LE point qui rend l'alerte utile. Le récapitulatif utilise un tag
+    # commun qui REMPLACE la notification précédente ; sans tag propre,
+    # l'annonce d'un trailer serait effacée en silence par le récapitulatif
+    # du passage suivant, une demi-heure plus tard.
+    banal_charge = push_notify.build_payload([officiel, banal])
+    check(charge["tag"] != banal_charge["tag"],
+          "son tag diffère de celui du récapitulatif — sinon le récapitulatif "
+          "suivant l'effacerait")
+    autre = dict(officiel, link="https://www.rockstargames.com/newswire/autre")
+    check(charge["tag"] != push_notify.build_payload_officiel(autre)["tag"],
+          "et deux annonces du même passage ne s'écrasent pas l'une l'autre")
+    check(charge["tag"] == push_notify.build_payload_officiel(dict(officiel))["tag"],
+          "le tag est stable pour un même article")
+
+    # Le récapitulatif continue de les COMPTER : il annonce un volume, les
+    # alertes annoncent un contenu. L'amputer le ferait mentir.
+    libelle = feed_store.libelle_recap([officiel, banal])
+    check("officiel" in libelle,
+          "le récapitulatif mentionne toujours les officiels (%s)" % libelle)
+
+    # Le mode nuit, bout en bout : on capture ce que chaque script DÉCIDE
+    # d'envoyer, sans réseau — les deux envoient via des fonctions qu'on
+    # remplace le temps du test.
+    envoyes = []
+    vrai_discord = discord_notify.send_discord_with_retry
+    vrai_push = push_notify.send_all
+    vrai_check = push_notify.check_subject
+    vraie_charge = push_notify.load_subscriptions
+    discord_notify.send_discord_with_retry = lambda e, t, **k: envoyes.append(("discord", e)) or True
+    push_notify.send_all = lambda subs, charge, cle: (envoyes.append(("push", charge)), ([], []))[1]
+    push_notify.check_subject = lambda s_: True
+    push_notify.load_subscriptions = lambda: [{"endpoint": "https://exemple.test/x"}]
+    discord_notify.DISCORD_WEBHOOK_URL = "https://exemple.test/webhook"
+
+    tmp = tempfile.mkdtemp()
+    chemin = _os.path.join(tmp, "new.json")
+    with open(chemin, "w", encoding="utf-8") as f:
+        _json.dump([officiel, banal], f)
+
+    def rejoue(nuit):
+        envoyes.clear()
+        env = dict(NEW_ITEMS_FILE=chemin, SEULEMENT_OFFICIELS="1" if nuit else "0",
+                   VAPID_PRIVATE_KEY="factice")
+        anciens = {k: _os.environ.get(k) for k in env}
+        _os.environ.update(env)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                discord_notify.main()
+                push_notify.main()
+        finally:
+            for k, v in anciens.items():
+                if v is None: _os.environ.pop(k, None)
+                else: _os.environ[k] = v
+        return list(envoyes)
+
+    try:
+        nuit = rejoue(True)
+        jour = rejoue(False)
+    finally:
+        discord_notify.send_discord_with_retry = vrai_discord
+        push_notify.send_all = vrai_push
+        push_notify.check_subject = vrai_check
+        push_notify.load_subscriptions = vraie_charge
+        import shutil; shutil.rmtree(tmp, ignore_errors=True)
+
+    def textes(lot, canal):
+        return [(e.get("title", "") + " " + str(e.get("description", "") or e.get("body", "")))
+                for c, e in lot if c == canal]
+
+    check(len(nuit) == 2,
+          "la nuit, exactement 2 envois — un Discord, un push — et rien d'autre "
+          "(obtenu : %d)" % len(nuit))
+    check(all("Extended Look" in t for t in textes(nuit, "discord") + textes(nuit, "push")),
+          "et les deux portent le titre de l'annonce Rockstar")
+    check(not any("rumeur" in t.lower() for t in textes(nuit, "discord") + textes(nuit, "push")),
+          "l'article ordinaire du même lot reste muet la nuit")
+
+    check(len(jour) == 4,
+          "le jour, 4 envois : l'alerte officielle ET le récapitulatif, sur les "
+          "deux canaux (obtenu : %d)" % len(jour))
+    check(any("nouv" in t for t in textes(jour, "discord")),
+          "le récapitulatif part bien en journée")
+
+
 def test_pause_nocturne():
     print("\n[workflow] le robot ne tourne pas la nuit, heure de Paris")
     import re, subprocess, tempfile, os, shutil
@@ -3253,21 +3368,26 @@ def test_pause_nocturne():
     check(etapes[0][0] == "Fenêtre de veille",
           "la décision est prise AVANT tout le reste (première étape)")
 
-    # Tout ce qui produit du bruit doit sauter ; le signal de vie, non.
+    # Le passage TOURNE la nuit : depuis que les annonces officielles de
+    # Rockstar doivent réveiller, on ne peut plus sauter la récupération —
+    # il faut bien récupérer pour savoir s'il y en a une. C'est la
+    # notification, et elle seule, qui se tait.
     for nom in ("Récupérer le dépôt", "Installer Python", "Installer les dépendances",
-                "Récupérer et traiter les flux", "Publier le résultat",
-                "Notifier Discord", "Notifier par push"):
-        check("steps.veille.outputs.pause != 'true'" in parNom.get(nom, ""),
-              "« %s » saute pendant la pause" % nom)
+                "Récupérer et traiter les flux", "Publier le résultat"):
+        check(parNom.get(nom, "") == "",
+              "« %s » tourne aussi la nuit" % nom)
 
     check(parNom.get("Signaler que le robot est vivant") == "always()",
-          "le signal de vie part QUAND MÊME : cinq heures de silence seraient "
-          "lues par healthchecks.io comme une panne, et l'alerte sonnerait à 2h")
+          "le signal de vie part quoi qu'il arrive")
 
-    # Les deux notifications gardent leur garde d'origine.
+    # Les deux notifications tournent toujours, et reçoivent le drapeau qui
+    # les fait taire — sauf pour Rockstar.
     for nom in ("Notifier Discord", "Notifier par push"):
-        check("success()" in parNom.get(nom, ""),
-              "« %s » notifie toujours seulement après une publication réussie" % nom)
+        check(parNom.get(nom, "") == "success()",
+              "« %s » ne notifie qu'après une publication réussie" % nom)
+    for nom, bloc in (("Notifier Discord", blocs[6]), ("Notifier par push", blocs[7])):
+        check("SEULEMENT_OFFICIELS" in bloc and "steps.veille.outputs.silence" in bloc,
+              "« %s » reçoit le drapeau de silence nocturne" % nom)
 
     bloc_veille = blocs[0]
     check("TZ=Europe/Paris" in bloc_veille,
@@ -3275,7 +3395,7 @@ def test_pause_nocturne():
           "(sinon la fenêtre glisserait au changement d'heure)")
     apres_panne = bloc_veille.split("indéterminable")[1].split("exit 0")[0] \
         if "indéterminable" in bloc_veille else ""
-    check("pause=false" in apres_panne,
+    check("silence=false" in apres_panne,
           "un garde en panne laisse PASSER — il doit rater une pause, "
           "jamais bloquer le robot pour toujours")
 
@@ -3290,10 +3410,14 @@ def test_pause_nocturne():
 
     # Le bandeau « robot en retard » doit tolérer la pause, sinon il
     # s'allumerait chaque nuit pour annoncer une panne qui n'existe pas.
+    # Le robot publiant désormais TOUTE la nuit, generated_at avance chaque
+    # heure sans interruption : il n'y a plus d'écart nocturne à tolérer, et
+    # laisser le seuil haut retarderait la détection d'une vraie panne pour
+    # rien. Il était monté à 7h le temps que la pause saute les passages.
     seuil = int(re.search(r"const STALE_THRESHOLD_MS = (\d+) \* 60 \* 60 \* 1000", app).group(1))
-    check(seuil >= 6,
-          "le bandeau « robot en retard » tolère la pause : %dh (6 minimum — "
-          "dernier passage vers 23h, reprise à 5h)" % seuil)
+    check(seuil <= 4,
+          "le bandeau « robot en retard » est revenu à un seuil serré : %dh "
+          "(la pause ne saute plus aucun passage)" % seuil)
 
     # Et on EXÉCUTE le garde, à des instants choisis, avec un faux `date`. Un
     # test qui lit le script sans le lancer ne prouve rien sur des
@@ -3338,9 +3462,9 @@ def test_pause_nocturne():
         for instant, attendu, libelle in cas:
             for declencheur in ("repository_dispatch", "schedule"):
                 obtenu = verdict(instant, declencheur)
-                check(obtenu == "pause=" + attendu,
-                      "%s (%s) → %s%s" % (libelle, declencheur, "pause=" + attendu,
-                                          "" if obtenu == "pause=" + attendu
+                check(obtenu == "silence=" + attendu,
+                      "%s (%s) → %s%s" % (libelle, declencheur, "silence=" + attendu,
+                                          "" if obtenu == "silence=" + attendu
                                           else "  OBTENU : " + (obtenu or "rien")))
 
         # UNE DEMANDE À LA MAIN PASSE TOUJOURS. Le bouton « Relancer le robot »
@@ -3355,7 +3479,7 @@ def test_pause_nocturne():
         for h in range(24):
             for jour, saison in (("2026-09-08", "été"), ("2026-12-08", "hiver")):
                 instant = "%s %02d:30" % (jour, h)
-                if verdict(instant, "workflow_dispatch") != "pause=false":
+                if verdict(instant, "workflow_dispatch") != "silence=false":
                     rates.append("%s %s" % (instant, saison))
         check(not rates,
               "un déclenchement manuel passe aux 24 heures, été comme hiver"
@@ -3365,7 +3489,7 @@ def test_pause_nocturne():
         # automatique DOIT être bloqué la nuit. Sans ça, le test ci-dessus
         # passerait tout aussi bien si la pause ne marchait plus du tout.
         bloques = sum(1 for h in range(5)
-                      if verdict("2026-09-08 %02d:30" % ((h - 2) % 24), "schedule") == "pause=true")
+                      if verdict("2026-09-08 %02d:30" % ((h - 2) % 24), "schedule") == "silence=true")
         check(bloques == 5,
               "aux mêmes heures, l'automatique est bien mis en pause "
               "(%d/5 — sinon le test du manuel ne prouverait rien)" % bloques)
@@ -4148,6 +4272,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_structure_et_annonces,
            test_derniers_reports_tactiles_et_courbes,
            test_panneaux_sont_de_vrais_dialogues,
+           test_alerte_officielle_rockstar,
            test_pause_nocturne,
            test_filtres_persistants,
            test_icones_en_emoji,

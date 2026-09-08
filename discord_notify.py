@@ -111,6 +111,48 @@ def send_discord_notification(new_items, promus=()):
     return send_discord_with_retry(embed, f"récapitulatif {detail}")
 
 
+# Orange Rockstar, celui de la pastille OFFICIEL dans l'app (#FF6B00) :
+# la même annonce se reconnaît à la même couleur d'un canal à l'autre.
+COULEUR_OFFICIEL = 0xFF6B00
+
+
+def send_official_alerts(officiels):
+    """Une alerte SÉPARÉE par article publié par Rockstar lui-même.
+
+    Deuxième exception assumée à la règle « un seul message par passage »,
+    après les alertes de source. Elle se justifie de la même façon : la
+    règle existe pour empêcher un message par ARTICLE ordinaire, et le
+    volume reste dérisoire. Mesuré sur l'historique complet du dépôt :
+    34 articles officiels sur 2 183, répartis sur 15 journées en presque
+    trois ans, au pire 4 dans la même journée.
+
+    Le récapitulatif continue de les COMPTER (« dont 1 officiel Rockstar »),
+    il n'est pas amputé : il annonce un volume, ces alertes annoncent un
+    contenu. Sur les rares passages où les deux partent, la redondance est
+    le prix d'un récapitulatif qui ne ment pas sur ses chiffres.
+    """
+    if not DISCORD_WEBHOOK_URL or not officiels:
+        return False
+
+    envoyees = 0
+    for item in officiels:
+        entete, titre = feed_store.libelle_officiel(item)
+        lien = (item.get("link") or "").strip()
+        source = (item.get("source") or "Rockstar Games").strip()
+        embed = {
+            "title": f"{entete} · {titre}"[:250],
+            # Le lien pointe sur l'ARTICLE et non sur le site : c'est une
+            # annonce précise, pas une invitation à venir voir.
+            "url": lien or SITE_URL,
+            "description": f"**{source}**\n[Ouvrir dans GTA6_WATCH]({SITE_URL})",
+            "color": COULEUR_OFFICIEL,
+        }
+        if send_discord_with_retry(embed, f"officiel Rockstar — {titre[:40]}"):
+            envoyees += 1
+    print(f"  [discord] {envoyees}/{len(officiels)} alerte(s) officielle(s) envoyée(s).")
+    return envoyees > 0
+
+
 def send_source_alerts(alertes):
     """Signale qu'une source est tombée, ou qu'elle est revenue.
 
@@ -174,16 +216,33 @@ def main():
         print("[discord] NEW_ITEMS_FILE non défini — rien à notifier.")
         return 0
 
+    new_items = lire_liste(path)
+    # Un sujet devenu majeur justifie un message même sans article nouveau :
+    # voir feed_store.libelle_recap.
+    promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
+
+    # Pendant la pause nocturne, le robot tourne et publie normalement mais
+    # ne dit rien — SAUF pour une annonce de Rockstar. Les trois plus
+    # grosses de l'histoire du jeu sont tombées entre 2h24 et 3h48, heure
+    # de Paris : la révélation de décembre 2023, le premier trailer, et
+    # l'Extended Look. Une pause qui les retiendrait jusqu'à 5h raterait
+    # exactement ce pour quoi cette veille existe.
+    seulement_officiels = os.environ.get("SEULEMENT_OFFICIELS") == "1"
+
+    officiels = feed_store.articles_officiels(new_items)
+    if officiels:
+        send_official_alerts(officiels)
+
+    if seulement_officiels:
+        print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
+              f"envoyée(s), le reste attend le matin.")
+        return 0
+
     # Les alertes de source sont indépendantes des articles : elles doivent
     # partir même — surtout — quand il n'y a rien de neuf à annoncer.
     alertes = lire_liste(os.environ.get("SOURCE_ALERTS_FILE", ""))
     if alertes:
         send_source_alerts(alertes)
-
-    new_items = lire_liste(path)
-    # Un sujet devenu majeur justifie un message même sans article nouveau :
-    # voir feed_store.libelle_recap.
-    promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
 
     if not new_items and not promus:
         print("[discord] aucun nouvel article à annoncer.")

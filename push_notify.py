@@ -120,6 +120,32 @@ def build_payload(new_items, promus=()):
     }
 
 
+def build_payload_officiel(item):
+    """La notification d'une annonce publiée par Rockstar lui-même.
+
+    Contrairement au récapitulatif, elle porte le TITRE de l'article. Le
+    récapitulatif annonce un nombre parce qu'un lot de dix articles n'a pas
+    de titre représentatif ; une annonce de Rockstar est un évènement
+    unique, et c'est son contenu qu'on veut lire sans rien ouvrir.
+
+    Le texte vient de feed_store.libelle_officiel, partagé avec Discord :
+    les deux canaux disent mot pour mot la même chose.
+    """
+    entete, titre = feed_store.libelle_officiel(item)
+    return {
+        "title": entete,
+        "body": titre,
+        # Le lien mène à l'ARTICLE, pas à l'accueil : c'est une annonce
+        # précise, pas une invitation à venir voir.
+        "url": (item.get("link") or "").strip() or SITE_URL,
+        # Un tag PROPRE À CHAQUE ARTICLE. Le tag commun du récapitulatif
+        # remplace la notification précédente : sans celui-ci, le
+        # récapitulatif du passage suivant effacerait l'annonce d'un trailer
+        # une demi-heure plus tard, en silence.
+        "tag": feed_store.etiquette_officiel(item),
+    }
+
+
 def check_subject(subject):
     """Valide le champ 'sub' avant l'envoi, avec un message compréhensible.
 
@@ -224,12 +250,37 @@ def main():
     # important.
     promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
 
+    # Pendant la pause nocturne, seule une annonce de Rockstar réveille.
+    # Les trois plus grosses de l'histoire du jeu sont tombées entre 2h24 et
+    # 3h48 heure de Paris — les retenir jusqu'à 5h raterait exactement ce
+    # pour quoi cette veille existe.
+    seulement_officiels = os.environ.get("SEULEMENT_OFFICIELS") == "1"
+    officiels = feed_store.articles_officiels(new_items)
+
     if not new_items and not promus:
         print("[push] aucun nouvel article à annoncer.")
+        return 0
+    if seulement_officiels and not officiels:
+        print("[push] pause nocturne et aucune annonce officielle — rien n'est envoyé.")
         return 0
 
     if not check_subject(VAPID_SUBJECT):
         print("[push] envoi abandonné — aucune notification ne partirait de toute façon.")
+        return 0
+
+    # Une notification par annonce officielle, AVANT le récapitulatif : sur
+    # un téléphone, la dernière arrivée est celle du dessus, et on veut que
+    # ce soit le récapitulatif qui se range sous l'annonce, pas l'inverse.
+    for item in officiels:
+        charge = build_payload_officiel(item)
+        print(f"[push] annonce officielle : {charge['body'][:60]}")
+        envoyes, expires = send_all(subscriptions, charge, private_key)
+        print(f"[push] {envoyes}/{len(subscriptions)} envoyée(s)"
+              + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
+
+    if seulement_officiels:
+        print(f"[push] pause nocturne — {len(officiels)} annonce(s) officielle(s), "
+              f"le récapitulatif attend le matin.")
         return 0
 
     payload = build_payload(new_items, promus)
