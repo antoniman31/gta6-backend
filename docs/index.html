@@ -488,11 +488,26 @@
     color:var(--accent); text-decoration:none; padding:3px 0;
     display:inline-block; position:relative;
   }
-  /* -13 px : porte la zone à 44 px, le minimum d'Apple HIG et de WCAG 2.5.5.
-     Vérifié qu'aucun élément interactif ne se trouve dans la bande ainsi
-     couverte, au-dessus comme en dessous — sinon on volerait ses clics au
-     voisin, ce qui est pire que la cible trop petite. */
-  .card-extra a::after{content:""; position:absolute; inset:-13px 0;}
+  /* Les deux affirmations qui étaient écrites ici étaient fausses, et la
+     mesure les a démenties toutes les deux.
+     « Porte la zone à 44 px » : 17 + 2×13 = 43. Il en manquait un.
+     « Aucun élément interactif dans la bande couverte » : il n'y a que 8 px
+     entre le bas de ce lien et le haut de la rangée de boutons, et la coche
+     remonte elle-même de 7 px. Les 13 px de descente traversaient donc les
+     deux : un appui juste sous « + 1 autre source » partait sur ✅.
+     Ça n'a jamais sauté aux yeux parce que la ligne « + autre source »
+     n'apparaît que sur les articles repris par plusieurs rédactions — il
+     n'y en avait aucun à l'écran les fois précédentes.
+     Ce qui tient dans la place réellement disponible : 21 px au-dessus
+     jusqu'au titre, et 8 px en dessous dont 7 sont déjà pris par la coche.
+     La zone ne descend donc plus du tout (1 px de marge sous elle) et monte
+     de 8 px : 17 + 8 = 25 px. C'est au-dessus des 24 px de WCAG 2.5.8, sous
+     les 44 px de WCAG 2.5.5, et c'est le maximum atteignable sans voler ses
+     clics à la coche. Entre une cible de 25 px et une cible de 43 px qui
+     déclenche le mauvais bouton, la première est la bonne. Agrandir
+     vraiment ce lien demanderait d'écarter la rangée de boutons, donc de
+     rallonger toutes les cartes pour un lien secondaire : disproportionné. */
+  .card-extra a::after{content:""; position:absolute; inset:-8px 0 0;}
   .card-extra a:hover{text-decoration:underline;}
   .card-mark{
     font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim);
@@ -533,13 +548,35 @@
      de titre. Les 5 px que j'avais en tête étaient ceux de la date, qui
      n'est pas une cible. Il reste donc 10 px de marge de chaque côté après
      l'élargissement. */
-  .feed.dense .card-mark::after{inset:-10px 0;}
+  /* 2 px latéralement, et pas 3 comme en mode normal : en compact les
+     boutons ne sont séparés que de 6 px, et la règle « écart > 2 ×
+     extension » plafonne donc l'extension à 2 px (6 > 4). Avec la vignette
+     à 80 px le bouton visible tombe à 40 px de large ; 40 + 4 = 44. */
+  .feed.dense .card-mark::after{inset:-10px -2px;}
   .card-mark:hover{border-color:var(--accent); color:var(--accent);}
   .card-mark.done{border-color:var(--ok); color:var(--ok);}
 
   /* ---------- Mode dense ---------- */
   .feed.dense .card{padding:8px 10px;}
-  .feed.dense .card-thumb{width:36px; height:36px; flex-shrink:0;}
+  /* La vignette prend TOUTE la hauteur de la carte plutôt qu'un carré de
+     36 px perdu dans un coin. La hauteur n'est pas écrite en dur : c'est
+     align-self:stretch qui la cale sur la colonne de texte (105 px
+     aujourd'hui), donc elle suivra si le contenu de la colonne change.
+     .card-top porte align-items:flex-start, d'où le align-self qui le
+     surcharge pour ce seul élément.
+     Pourquoi 80 px de large et pas plus : la largeur se prend sur la colonne
+     de texte, donc sur les boutons qui la partagent. À 320 px, chaque pixel
+     de vignette en plus retire un quart de pixel à chacun des quatre
+     boutons. Mesuré : 80 px les laisse à 40 px de large, 44 px de zone avec
+     l'extension latérale ci-dessous ; à 88 px on tombe à 38 px et 80 cibles
+     repassent sous le seuil. 80 est le maximum conforme, pas un choix
+     esthétique.
+     Ce que ça NE coûte pas : la hauteur de carte ne bouge pas d'un pixel
+     (120 px avant comme après), parce que la colonne de texte faisait déjà
+     105 px et que la vignette de 36 px laissait 69 px de vide à côté d'elle.
+     Ce que ça coûte : le titre est plus étroit, donc plus souvent tronqué —
+     19 titres sur 29 au lieu de 11 à 390 px. */
+  .feed.dense .card-thumb{width:80px; height:auto; align-self:stretch; flex-shrink:0;}
   .feed.dense .card-body{min-width:0; flex:1;}
   .feed.dense .card-title{font-size:13px; margin-bottom:2px; width:100%; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;}
   .feed.dense .card-src-row{margin-bottom:2px;}

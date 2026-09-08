@@ -2919,15 +2919,76 @@ def test_ergonomie_tactile():
     # atteignable ici sans voler les clics du voisin. Material 3 demande 48,
     # que l'app ne suit délibérément pas — sa densité est un choix, et
     # aligner ses 132 éléments interactifs sur 48 px la détruirait.
-    for selecteur, hauteurVisuelle in ((".card-mark", 30), (".card-extra a", 17)):
-        motif = re.escape(selecteur) + r"::after\s*\{[^}]*inset:\s*-(\d+)px"
-        trouve = re.search(motif, html)
-        check(trouve is not None,
+    # Le seuil était écrit « >= 43 » alors que le message annonçait « 44 visé » :
+    # .card-extra a valait exactement 43 et passait donc en se faisant passer
+    # pour conforme. Chaque élément porte maintenant son vrai minimum, et le
+    # calcul lit les QUATRE côtés de l'inset au lieu de supposer qu'il est
+    # symétrique — c'est cette supposition qui masquait le défaut.
+    def _inset(selecteur):
+        """Les quatre débordements d'un ::after, en pixels et comptés vers
+        l'extérieur : inset:-8px 0 0 donne haut=8, droite=0, bas=0, gauche=0.
+
+        Écrit à la main plutôt qu'avec une expression unique parce que la
+        première version cherchait « -?(\\d+)px » et perdait donc tous les
+        zéros sans unité : sur « -8px 0 0 » elle ne voyait qu'une valeur,
+        la recopiait sur les quatre côtés et annonçait 33 px de zone au lieu
+        de 25, et 8 px de descente au lieu de 0. Un analyseur faux est pire
+        qu'une valeur écrite en dur : il donne des chiffres crédibles.
+        """
+        m = re.search(re.escape(selecteur) + r"::after\{[^}]*inset:([^;}]*)", html)
+        if not m:
+            return None
+        n = []
+        for mot in m.group(1).split():
+            t = re.fullmatch(r"(-?\d+)(?:px)?", mot)
+            if t is None:
+                return None          # unité inattendue : on refuse de deviner
+            n.append(int(t.group(1)))
+        if len(n) == 1: n = n * 4
+        elif len(n) == 2: n = [n[0], n[1], n[0], n[1]]
+        elif len(n) == 3: n = [n[0], n[1], n[2], n[1]]
+        elif len(n) != 4: return None
+        return {"haut": -n[0], "droite": -n[1], "bas": -n[2], "gauche": -n[3]}
+
+    # L'analyseur lui-même est vérifié, sinon il peut mentir en silence.
+    for texte, attendu in (("-7px -3px", (7, 3, 7, 3)),
+                           ("-8px 0 0", (8, 0, 0, 0)),
+                           ("-10px -2px", (10, 2, 10, 2)),
+                           ("-13px 0", (13, 0, 13, 0))):
+        html_essai, vrai_html = html, html
+        html = ".essai::after{content:\"\"; inset:%s;}" % texte
+        r = _inset(".essai")
+        html = vrai_html
+        check(r is not None and (r["haut"], r["droite"], r["bas"], r["gauche"]) == attendu,
+              "inset:%s se lit haut=%d droite=%d bas=%d gauche=%d"
+              % ((texte,) + attendu))
+
+    for selecteur, hauteurVisuelle, minimum, norme in (
+            (".card-mark", 30, 44, "WCAG 2.5.5"),
+            (".card-extra a", 17, 24, "WCAG 2.5.8")):
+        ins = _inset(selecteur)
+        check(ins is not None,
               "%s étend sa zone de clic par un pseudo-élément" % selecteur)
-        if trouve:
-            atteinte = hauteurVisuelle + 2 * int(trouve.group(1))
-            check(atteinte >= 43,
-                  "%s : zone de %d px de haut (44 visé)" % (selecteur, atteinte))
+        if ins:
+            atteinte = hauteurVisuelle + ins["haut"] + ins["bas"]
+            check(atteinte >= minimum,
+                  "%s : zone de %d px de haut (%d minimum, %s)"
+                  % (selecteur, atteinte, minimum, norme))
+
+    # L'invariant qui manquait, et le seul qui aurait attrapé le défaut : deux
+    # éléments de types DIFFÉRENTS qui se font face verticalement. Le lien
+    # « + autre source » descendait de 13 px, la coche sous lui remonte de 7,
+    # et il n'y a que 8 px entre les deux : un appui dans la bande commune
+    # partait sur le mauvais élément. Les tests d'avant ne comparaient que
+    # des voisins de même type, d'où l'angle mort.
+    ecart = int(re.search(r"\.card-actions\{[^}]*margin-top:\s*(\d+)px", html,
+                          re.S).group(1))
+    bas_lien = _inset(".card-extra a")["bas"]
+    haut_coche = _inset(".card-mark")["haut"]
+    check(bas_lien + haut_coche < ecart,
+          "le lien « autre source » descend de %d px, la coche remonte de %d, "
+          "et il y a %d px entre eux — pas de recouvrement"
+          % (bas_lien, haut_coche, ecart))
 
     # L'invariant qui a coûté une correction en trois temps. À 320 px sur une
     # carte À VIGNETTE, quatre boutons tombent à 39 px de large : la hauteur
@@ -2958,6 +3019,41 @@ def test_ergonomie_tactile():
         check(ecart > 2 * marge,
               "écart de %d px entre deux coches pour %d px d'extension de "
               "chaque côté — les zones ne se recouvrent pas" % (ecart, marge))
+
+    # La vignette du mode compact occupe toute la hauteur de la carte. Elle
+    # ne doit PAS porter de hauteur en dur : c'est align-self:stretch qui la
+    # cale sur la colonne de texte, sinon la moindre variation de contenu
+    # laisse un carré flottant ou déborde la carte.
+    bloc = re.search(r"\.feed\.dense \.card-thumb\{([^}]*)\}", html).group(1)
+    check("align-self:stretch" in bloc,
+          "la vignette compacte prend la hauteur de la colonne de texte")
+    check(re.search(r"height:\s*auto", bloc) is not None,
+          "et sa hauteur n'est pas écrite en dur")
+    largeur = int(re.search(r"width:\s*(\d+)px", bloc).group(1))
+    # La largeur se prend sur la colonne de texte, donc sur les quatre
+    # boutons qui la partagent. Mesuré à 320 px : 80 px les laisse à 40 px de
+    # large (44 avec l'extension latérale), 88 px les fait tomber à 38.
+    check(largeur <= 80,
+          "vignette compacte de %d px de large (80 maximum, au-delà les "
+          "boutons repassent sous 44 px à 320 px)" % largeur)
+
+    # Même inégalité qu'en mode normal, mais avec les valeurs du compact :
+    # l'écart y est de 6 px, donc l'extension latérale ne peut pas dépasser
+    # 2 px sans que les zones de deux boutons voisins se recouvrent.
+    bloc = re.search(r"\.feed\.dense \.card-actions\{([^}]*)\}", html).group(1)
+    ecart = int(re.search(r"gap:\s*(\d+)px", bloc).group(1))
+    lat = re.search(r"\.feed\.dense \.card-mark::after\{[^}]*inset:-\d+px\s+-(\d+)px", html)
+    check(lat is not None,
+          "en compact aussi, la zone de clic de la coche déborde latéralement")
+    if lat:
+        marge = int(lat.group(1))
+        check(ecart > 2 * marge,
+              "compact : écart de %d px pour %d px d'extension de chaque côté "
+              "— les zones ne se recouvrent pas" % (ecart, marge))
+        # 40 px est la largeur mesurée à 320 px avec la vignette à 80 px.
+        check(40 + 2 * marge >= 44,
+              "compact, cas le plus serré : 40 + 2×%d = %d px de zone (44 visé)"
+              % (marge, 40 + 2 * marge))
 
     bloc = re.search(r"\.history-line button\{([^}]*)\}", html).group(1)
     mh = re.search(r"min-height:\s*(\d+)px", bloc)
