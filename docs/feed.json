@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-08T09:02:20.602224+00:00",
-  "duration_seconds": 44.3,
+  "generated_at": "2026-09-08T10:01:43.814451+00:00",
+  "duration_seconds": 42.2,
   "decode_failures": 0,
-  "total_articles": 2164,
-  "new_this_run": 7,
+  "total_articles": 2167,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -385,12 +385,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 101,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
-      "last_article": "2026-09-08T08:39:33+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-08T09:32:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-08T08:33:16+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-08T09:01:59+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -463,7 +463,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T09:45:00+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -629,7 +629,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T08:08:20+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
       "days_since_last_article": 5,
@@ -653,7 +653,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 5,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 5,
@@ -918,9 +918,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,0,0,0,0,0,0,0,15,15,15",
-    "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,101",
-    "gnews-en": "102,102,102,102,101,101,102,102,100,101,101,102",
+    "rockstar-youtube": "15,0,0,0,0,0,0,0,15,15,15,15",
+    "gnews-fr": "100,100,100,100,100,100,100,100,100,100,101,99",
+    "gnews-en": "102,102,102,101,101,102,102,100,101,101,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,0,0,0,0,0,0,0,15,15,15",
+    "rockstarmag-youtube": "15,0,0,0,0,0,0,0,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -952,7 +952,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,8,8,8,9,9,9,8",
+    "xboxwire": "8,8,8,8,8,8,8,9,9,9,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -973,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"3ee5578e27de849fffe2e570341816e2\"",
-      "modified": "Tue, 08 Sep 2026 08:31:32 GMT"
+      "etag": "W/\"b8ef9e203eace08b4cbe97f0296306f4\"",
+      "modified": "Tue, 08 Sep 2026 09:32:50 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 08:40:06 GMT"
+      "modified": "Tue, 08 Sep 2026 09:20:47 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,7 +993,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"21e25-ufhXFqsp5e3mRufxv0LNbKtvoLA\"",
+      "etag": "W/\"20df3-QVYf+G1iYuJ7RIGLr53k4fyJCHk\"",
       "modified": null
     },
     "kotaku": {
@@ -1009,12 +1009,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 08:49:16 GMT"
+      "modified": "Tue, 08 Sep 2026 09:24:43 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 08:57:23 GMT"
+      "modified": "Tue, 08 Sep 2026 10:01:19 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9fcea0-2fca\"",
-      "modified": "Tue, 08 Sep 2026 09:00:16 GMT"
+      "etag": "W/\"6a9fdcb1-2ff8\"",
+      "modified": "Tue, 08 Sep 2026 10:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"35f77ad571286cd22c8b21ac3679013b\"",
-      "modified": "Tue, 08 Sep 2026 08:42:08 GMT"
+      "etag": "W/\"c957b3cca1a8e60dd9cf792b35ade996\"",
+      "modified": "Tue, 08 Sep 2026 09:50:07 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1038,17 +1038,56 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"c01b762467e778d38af890ce8d5fd1a1\"",
-      "modified": "Mon, 07 Sep 2026 16:21:52 GMT"
+      "etag": "W/\"3fa91736f014d2e1319aa00d8b1db219\"",
+      "modified": "Tue, 08 Sep 2026 09:58:01 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9fbe6f-b29\"",
-      "modified": "Tue, 08 Sep 2026 07:51:11 GMT"
+      "etag": "\"6a9fda8f-b38\"",
+      "modified": "Tue, 08 Sep 2026 09:51:11 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : pourrez-vous vraiment jouer avant tout le monde avec la technique de la Nouvelle-Zélande ? - Journal du Geek",
+      "link": "https://www.journaldugeek.com/2026/09/08/gta-6-pourrez-vous-vraiment-jouer-avant-tout-le-monde-avec-la-technique-de-la-nouvelle-zelande/",
+      "source_link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOcmhqcERtN2Y0RVI2a1BuNUZyd2pwSmN4QlJ0Q2JEajctLXJKSTVFbG81eTd3ZWU5SmRQa29XSEdaZTdkQ3NoWHZ2YTRFaHlzdmxQRGg3dHVZYmZ0c1EzcExuajhVd3pJTzRRamM4bmdTNUxoMF9mOTRRcmFuX3d5YjdZWGJzbGdQdTE1SzdkcFJ2cVBUTGtVVzFGbzI0T0JNb2tnb1FSUnpPdlVqVVVzM19rdUNmM3A0cUJsN3F2Tng0SW5jQnZkU19qY0JXeW9KY0E?oc=5",
+      "date": "2026-09-08T09:32:40+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/08/nouvelles-images-gta-6-jdg-1600x900.jpg",
+      "description": "GTA 6 : pourrez-vous vraiment jouer avant tout le monde avec la technique de la Nouvelle-Zélande ?&nbsp;&nbsp;Journal du Geek"
+    },
+    {
+      "title": "GTA 6 : comment jouer avec un jour d’avance en France ? - Frandroid",
+      "link": "https://www.frandroid.com/comment-faire/tutoriaux/tutoriels-gaming/3238309_gta-6-comment-jouer-avec-un-jour-davance-en-france",
+      "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPWHY4OEh5eEkzLV90XzBoMHRjbm9zeGpCX3MyaGlaR1N2RkZHaUtuV1JlUzRDd0RmVGJIRkVvTnEtVnRnYlF1R0ZMWDNpRWRpaHV6SlJHSkgyNXpubzNoblNzZ215a2U2V0tTaDJvWXpSV1hWMVc0bWpmaDdUN3dOSnZVWmZKUV9jZ2QzMlU0eU1QYXBhT2hlaHgxXzNENW5rd2pjQU5LOXY4T0JwQVBCUUdnWVZIRGFvazlUaTNpOGE2QlU?oc=5",
+      "date": "2026-09-08T09:31:36+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/gta-6-bande-annonce.png?resize=1600,900&key=e0efaa79",
+      "description": "GTA 6 : comment jouer avec un jour d’avance en France ?&nbsp;&nbsp;Frandroid"
+    },
+    {
+      "title": "GTA 6 to be playable early on Xbox, but PlayStation users will miss out - GAMINGbible",
+      "link": "https://www.gamingbible.com/news/gta-6-playable-early-xbox-playstation-miss-out-978996-20260908",
+      "source_link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQSkpkNzdIT0pTckhMOFFhT0lkQVRUM0NsRnF6QlRmOHVGaEMxQXpZRWM4ZmhNZU9GRjYwUmd1SWo1TzZ1R21NcERDUUVMWTJXQXdYSnFkWWlPODVWNDhqaUpoZU5pcjNseDJuTXF5M2FnV205UVpsazVyRHlUY25BblpuTld4dnNpandaZTI0YUQzbndmUkZublpSMA?oc=5",
+      "date": "2026-09-08T09:01:59+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/bltefafd9bbb125b717/6a9fcbe57994db1051f5014a/gta6earlyxbox.jpg",
+      "description": "GTA 6 to be playable early on Xbox, but PlayStation users will miss out&nbsp;&nbsp;GAMINGbible"
+    },
     {
       "title": "GTA 6 : voici l’heure exacte de sortie du jeu et comment y jouer avant tout le monde - PhonAndroid",
       "link": "https://www.phonandroid.com/gta-6-voici-lheure-exacte-de-sortie-du-jeu-et-comment-y-jouer-avant-tout-le-monde.html",
