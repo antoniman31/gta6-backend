@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-08T19:02:07.595153+00:00",
+  "generated_at": "2026-09-08T20:01:46.430178+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 42.7,
+  "duration_seconds": 40.9,
   "decode_failures": 0,
-  "total_articles": 2224,
-  "new_this_run": 5,
+  "total_articles": 2228,
+  "new_this_run": 4,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -334,7 +334,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 11,
       "status": "ok"
@@ -390,24 +390,24 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T17:15:01+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-08T18:31:51+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 2,
-      "last_article": "2026-09-08T19:00:00+00:00",
+      "last_article": "2026-09-08T19:43:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -420,7 +420,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T19:19:23+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -430,7 +430,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-08T18:37:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 0,
@@ -528,7 +528,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T19:09:52+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -550,7 +550,7 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T18:26:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -648,7 +648,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
-      "days_since_last_article": 5,
+      "days_since_last_article": 6,
       "status": "ok"
     },
     {
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 6,
@@ -870,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 81,
+      "entries_fetched": 80,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 28,
+      "entries_fetched": 27,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,13 +919,13 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,99,99,99,99",
+    "rockstar-fr": "100,100,100,100,100,100,100,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "99,100,100,100,100,100,102,100,100,100,99,99",
-    "gnews-en": "102,102,102,102,99,100,99,101,102,101,101,99",
+    "gnews-fr": "100,100,100,100,100,102,100,100,100,99,99,100",
+    "gnews-en": "102,102,102,99,100,99,101,102,101,101,99,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -958,16 +958,16 @@
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "xboxwire": "8,8,8,8,8,8,8,8,8,8,8,8",
-    "trueach": "100,100,100,100,100,85,100,100,100,100,100,100",
+    "trueach": "100,100,100,100,85,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,82,82,82,82,82,81",
-    "arstechnica": "28,28,28,28,27,27,28,27,27,28,27,28",
-    "pushsquare": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,56,100,100,100,100,100,100,100,100"
+    "engadget": "81,81,81,81,81,82,82,82,82,82,81,80",
+    "arstechnica": "28,28,28,27,27,28,27,27,28,27,28,27",
+    "pushsquare": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "100,100,56,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"08d85faa363674d35c5afb7b40df0791\"",
-      "modified": "Tue, 08 Sep 2026 18:48:53 GMT"
+      "etag": "W/\"55863c13d111fbdd4dd2fc611574ac7e\"",
+      "modified": "Tue, 08 Sep 2026 19:05:28 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"24d80-M3DMNQNdvK1MePrYmjj64ZIvOIE\"",
+      "etag": "W/\"25c38-TkgooIIKSUIMWUincQFxvJgpvkY\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"43058d6ced15f896fcb1aab8b4291d98\"",
-      "modified": "Tue, 08 Sep 2026 19:00:38 GMT"
+      "etag": "W/\"9b96144b6cfbf632cc44d0cfd28d4ce2\"",
+      "modified": "Tue, 08 Sep 2026 20:00:52 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 19:00:53 GMT"
+      "modified": "Tue, 08 Sep 2026 20:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa05b42-2f61\"",
-      "modified": "Tue, 08 Sep 2026 19:00:18 GMT"
+      "etag": "W/\"6aa06951-2f61\"",
+      "modified": "Tue, 08 Sep 2026 20:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788891546\"",
-      "modified": "Tue, 08 Sep 2026 18:19:06 GMT"
+      "etag": "W/\"1788896235\"",
+      "modified": "Tue, 08 Sep 2026 19:37:15 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1048,12 +1048,38 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa04b10-ad9\"",
-      "modified": "Tue, 08 Sep 2026 17:51:12 GMT"
+      "etag": "\"6aa0672e-adc\"",
+      "modified": "Tue, 08 Sep 2026 19:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Boss Says the Game's Satire Has to Stand the Test of Time - 80 Level",
+      "link": "https://80.lv/articles/gta-6-boss-says-the-game-s-satire-has-to-stand-the-test-of-time",
+      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPNjVFQmRhSi1UQlRJdFhGOGtBSEJYYlllNzc5NEllaGRTWnFubWtYdXYzNXRMeHVPV3BYVjBKTFNaMl81Um5qNUgySktGZERoeEZzX2lOMUlZdjFFdk1yZ2pYSUZNQVZzS1dMcGZMVHY2Y2o3Y3BFeVRpSnVWUExhZ00xWE5HR1pBSDZGby1hdw?oc=5",
+      "date": "2026-09-08T19:43:16+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.80.lv/api/upload/meta/50102/images/6aa0652fda525/contain_1200x630.jpg",
+      "description": "GTA 6 Boss Says the Game's Satire Has to Stand the Test of Time&nbsp;&nbsp;80 Level"
+    },
+    {
+      "title": "Rockstar Teamed With Nopixel to Overhaul the GTA Roleplay Experience. Is This a Sneak Peek at GTA 6 Online? - CNET",
+      "link": "https://www.cnet.com/tech/gaming/rockstar-nopixel-v-gta-roleplay-gta-6-online/",
+      "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQbmYwVGhPSW5fRzNrY3NlLUtmeG1mZV95RlBqc0tOTjFpQllSU3pYWkluUmszTExBb0hkcjRzTnEwS3A5U2U3WmlzWXNUTzlZSTB2NkZUdG9hdzlOaFZhUW5FbkFEalEyY1UzMGxGTEs5RVc2LVJRdUs0UlA1ZzRHUzlvOEg?oc=5",
+      "date": "2026-09-08T19:34:26+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.cnet.com/wp-content/uploads/sites/2/nopixelv.jpg",
+      "description": "Rockstar Teamed With Nopixel to Overhaul the GTA Roleplay Experience. Is This a Sneak Peek at GTA 6 Online?&nbsp;&nbsp;CNET"
+    },
     {
       "title": "GTA 6 is completely changing how gunfights work - GAMINGbible",
       "link": "https://www.gamingbible.com/news/gta-6-weapon-combat-improvements-638345-20260907",
@@ -1079,6 +1105,19 @@
       "lang": null,
       "image": "https://insider-gaming.com/wp-content/uploads/2026/09/GTA-6-NPC.jpg",
       "description": "A whole bunch of new NPC details for GTA 6 have been revealed, including behaviors, clothing, and more. Here are more details. \nThe post New GTA 6 NPC Details Revealed appeared first on Insider Gaming."
+    },
+    {
+      "title": "GTA 6 sur Nintendo Switch 2 ? Cdiscount référence cinq éditions du jeu à la veille du Nintendo Direct - Univers-Simu.com",
+      "link": "https://www.univers-simu.com/news/gta-6-switch-2-cdiscount-nintendo-direct-128084/",
+      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNTDd6NG5GaC0yeDc1VGhPeS1HTkloQUYzTE5uTkViWDlHYkxJeE9OT0NIVkRtV3NjS29UNWRVdENWNFRqRGFhZGdSMm9wWWUwLWoyaVdKOFNhR1A1ZjBYUUc0OXJpcHBOUjBhTmdkUzZldjFVZGhuSFo2dEpCOVpoNEdWcm13Rm90LUE?oc=5",
+      "date": "2026-09-08T18:31:51+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "GTA 6 sur Nintendo Switch 2 ? Cdiscount référence cinq éditions du jeu à la veille du Nintendo Direct&nbsp;&nbsp;Univers-Simu.com"
     },
     {
       "title": "Official GTA 6 Release Time Could Mean Long Waits for Some Players",
@@ -4986,45 +5025,6 @@
       "lang": null,
       "image": "https://assetsio.gnwcdn.com/gta-lucia-jason.webp?width=570&quality=85&format=jpg&dpr=3&auto=webp",
       "description": "A preview of GTA 6 on Netflix has resulted in increased sales of PlayStation and Xbox hardware in the UK&nbsp;&nbsp;WN Hub"
-    },
-    {
-      "title": "SONY dévoile des manettes Grand Theft Auto VI, au design si minimaliste ? - Cowcotland.com",
-      "link": "https://www.cowcotland.com/news/102293/sony-devoile-des-manettes-grand-theft-auto-vi-au-design-si-minimaliste.html",
-      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQUlVEQnNSeTBSUDg2Wl9Ld2psbHhmRnpLNkRPUkhycTBGZnBMTEhzdldDR2ZOdTRDY1Vyd2dBNHJoTm1ORmpmNGtEeWRFYXoySk9NM05NRVEtLXFWQ2tqZVNyQVM4Mkdlbks2VVExTjRVVXFWY2pEMHBzYXE4eW5OMDNnc0kyZHpvT2dzT0ZfRUJLamJRRXNBNkNYZEhpMGNRMENhMW15TE8yZF9LdmJON2JocnU?oc=5",
-      "date": "2026-09-04T09:15:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.cowcotland.com/images/news/2026/09/manette-dualsense-gta6.jpg",
-      "description": "SONY dévoile des manettes Grand Theft Auto VI, au design si minimaliste ?&nbsp;&nbsp;Cowcotland.com"
-    },
-    {
-      "title": "GTA 6 Netflix preview causes PlayStation and Xbox hardware sales to jump in the UK - GamesIndustry.biz",
-      "link": "https://www.gamesindustry.biz/gta-6-netflix-preview-causes-playstation-and-xbox-hardware-sales-to-jump-in-the-uk",
-      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPY1lpWlM0X3RuRUVwUmg2R1pkbFo2SVhGaWRDQ1BYWlhYUXIxWE95S1lUMDFMMC14OWprb3FnbmNBSnMtbVd6UFRrWElLUHhGNGt3ZmV5QlZCeEhUbmNlaElvdTB5SDI3cFlqbTQwWEhTM2dlNUFRdGxiRmcyQVdtaThjT0hmaWlMamtXd1duT0U0c2JhYUlkUXJOZm5iQmQ2bm4yalFaSDZ6bS1CYXZTMUJ3?oc=5",
-      "date": "2026-09-04T09:09:47+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://assetsio.gnwcdn.com/gta-lucia-jason.webp?width=1200&height=630&fit=crop&enable=upscale&auto=webp",
-      "description": "GTA 6 Netflix preview causes PlayStation and Xbox hardware sales to jump in the UK&nbsp;&nbsp;GamesIndustry.biz"
-    },
-    {
-      "title": "Is playing 'GTA 6' cheating? We asked a relationship therapist. - Mashable",
-      "link": "https://mashable.com/life/is-gta-6-cheating-tiktok",
-      "source_link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9BSXU2NTZ3SHJMaXpWVURsa3gwS2puamhDSTdHdUF5STcwRDNmQmFyLXJYLXlscmVLdVN6VXFNajRqUmZHRU5lcjg1OUdfUDUySHFkWVlpTlo4NVRQZWpj?oc=5",
-      "date": "2026-09-04T09:03:45+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://helios-i.mashable.com/imagery/articles/05D2ZplWDZ13UIdfGtTz3Cu/hero-image.fill.size_1200x675.v1788474271.jpg",
-      "description": "Is playing 'GTA 6' cheating? We asked a relationship therapist.&nbsp;&nbsp;Mashable"
     }
   ],
   "partial": true,
