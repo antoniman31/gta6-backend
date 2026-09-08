@@ -3063,6 +3063,112 @@ def test_structure_et_annonces():
           "et la fonction qui la compose existe")
 
 
+def test_panneaux_sont_de_vrais_dialogues():
+    print("\n[app] les cinq panneaux sont de vrais dialogues")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    sans_com = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
+    # Lot A — rôle, modalité, nom. Avant, SEUL le panneau de confirmation les
+    # avait ; on ouvrait les paramètres et un lecteur d'écran n'annonçait rien.
+    panneaux = {
+        "confirm-panel":  "alertdialog",
+        "sheet-panel":    "dialog",
+        "settings-panel": "dialog",
+        "previewPanel":   "dialog",
+    }
+    for classe, role in panneaux.items():
+        motif = r'(?:class|id)="[^"]*' + re.escape(classe) + r'[^"]*"[^>]*'
+        balises = [m.group(0) for m in re.finditer(motif, sans_com)
+                   if "role=" in m.group(0)]
+        check(balises, "le panneau %s déclare un rôle" % classe)
+        for b in balises:
+            check('role="%s"' % role in b,
+                  "%s a le rôle %s" % (classe, role))
+            check('aria-modal="true"' in b, "%s est modal" % classe)
+            check("aria-labelledby=" in b, "%s porte un nom" % classe)
+
+    # Chaque aria-labelledby doit pointer sur un élément QUI EXISTE : un
+    # renvoi vers un id absent laisse le dialogue sans nom, en silence.
+    for m in re.finditer(r'aria-labelledby="([^"]+)"', sans_com):
+        cible = m.group(1)
+        check(('id="%s"' % cible) in sans_com,
+              "le nom du dialogue renvoie à un élément réel (%s)" % cible)
+
+    # Lot D — les titres de panneau sont des titres.
+    for tid, libelle in (("titreParametres", "Paramètres"), ("titreInfos", "Informations"),
+                         ("titreFiltres", "Filtres"), ("previewSource", "Aperçu")):
+        check(re.search(r'<h2 id="%s"' % tid, sans_com) is not None,
+              "le titre du panneau %s est un h2" % libelle)
+    check(".settings-title h2{font:inherit" in html,
+          "et il hérite de la typographie du panneau — rien ne bouge à l'œil")
+
+    # Lots A et B — la mécanique commune, écrite UNE fois pour les cinq.
+    for nom in ("debutDialogue", "finDialogue", "figeLeFond",
+                "libereLeFond", "_toucheDialogue", "focusablesDe"):
+        check("function %s(" % nom in html, "la mécanique commune fournit %s" % nom)
+
+    for ouvre, ferme, idFond in (("openSettings", "closeSettings", "settingsOverlay"),
+                                 ("openInfo", "closeInfo", "infoOverlay"),
+                                 ("openFiltersSheet", "closeFiltersSheet", "filtersOverlay"),
+                                 ("openPreview", "closePreview", "previewOverlay")):
+        corps = html[html.index("function %s(" % ouvre):]
+        corps = corps[:corps.index("\n}")]
+        check('debutDialogue("%s"' % idFond in corps,
+              "%s branche le dialogue" % ouvre)
+        corps = html[html.index("function %s(" % ferme):]
+        corps = corps[:corps.index("\n}")]
+        check('finDialogue("%s")' % idFond in corps,
+              "%s le débranche" % ferme)
+    check('debutDialogue("confirmOverlay"' in html and 'finDialogue("confirmOverlay")' in html,
+          "la confirmation utilise la MÊME mécanique que les quatre autres")
+
+    # Le piégeage du focus. Il manquait aux CINQ, celui de confirmation
+    # compris : passé le dernier élément, la tabulation repartait dans le fil
+    # d'articles caché sous le voile.
+    #
+    # LIMITE ASSUMÉE de ce qui suit : ces quatre vérifications lisent le code,
+    # elles ne l'exécutent pas. Un `return` glissé au début du piège les
+    # laisserait toutes passer — essayé, elles passent. Elles constatent donc
+    # que le piège est ÉCRIT, pas qu'il fonctionne. Son COMPORTEMENT est
+    # mesuré dans un vrai navigateur : un tour complet de tabulation sur
+    # chacun des cinq panneaux, zéro sortie. Ça, cette suite en Python sans
+    # navigateur ne sait pas le faire, et prétendre le contraire serait pire
+    # que de l'écrire ici.
+    piege = html[html.index("function _toucheDialogue("):html.index("function debutDialogue(")]
+    check('e.key !== "Tab"' in piege, "le piège intercepte la tabulation")
+    check("e.shiftKey" in piege, "et la tabulation arrière")
+    check("dernier.focus()" in piege and "premier.focus()" in piege,
+          "il boucle du dernier au premier et inversement")
+    check("!haut.panneau.contains(actif)" in piege,
+          "et rattrape un focus qui se serait échappé du panneau")
+
+    # Lot B — le fond ne défile plus, et la position est RENDUE.
+    fige = html[html.index("function figeLeFond("):html.index("function libereLeFond(")]
+    check("_defilementFige = window.scrollY" in fige,
+          "la position de défilement est mémorisée avant de figer")
+    check('position = "fixed"' in fige,
+          "le fond est figé en position:fixed (overflow:hidden ne tient pas sur Safari iOS)")
+    libere = html[html.index("function libereLeFond("):html.index("function _toucheDialogue(")]
+    check("window.scrollTo(0, y)" in libere, "et elle est restituée à la fermeture")
+
+    # LE piège qui a coûté une passe : rendre le focus à un bouton hors écran
+    # fait défiler la page jusqu'à lui, ce qui DÉFAIT la restitution qu'on
+    # vient de faire. Mesuré : 1500 px redevenaient 0.
+    fin = html[html.index("function finDialogue("):]
+    fin = fin[:fin.index("\nfunction ")]
+    check("preventScroll: true" in fin,
+          "le focus rendu ne fait pas défiler la page (preventScroll) — "
+          "sans quoi la position restituée est aussitôt perdue")
+
+    # Une pile et non une variable : une confirmation peut s'ouvrir par-dessus
+    # les paramètres, et la fermer doit rendre le focus au panneau du dessous.
+    check("_pileDialogues" in html and "_pileDialogues.push" in html,
+          "les dialogues s'empilent (confirmation par-dessus paramètres)")
+    check("_pileDialogues.length === 0" in html,
+          "et le fond n'est libéré qu'au dernier fermé")
+
+
 def test_pause_nocturne():
     print("\n[workflow] le robot ne tourne pas la nuit, heure de Paris")
     import re, subprocess, tempfile, os, shutil
@@ -3731,11 +3837,24 @@ def test_confirmation_des_actions_sans_retour():
     # à côté refusent. Une validation par mégarde doit être inoffensive.
     bloc = html[html.index("function demandeConfirmation("):
                 html.index("function repondConfirmation(")]
-    check('getElementById("confirmAnnuler")' in bloc and ".focus()" in bloc,
+    # La confirmation passe désormais par la mécanique commune des dialogues,
+    # à qui elle DÉCLARE son focus initial. On vérifie l'intention déclarée —
+    # « confirmAnnuler » — et non plus un appel .focus() écrit à la main, qui
+    # n'existe plus. Le comportement, lui, est vérifié dans le navigateur.
+    check('focusInitial: "confirmAnnuler"' in bloc,
           "le focus arrive sur Annuler, pas sur l'action destructive")
-    bloc = html[html.index("function _toucheConfirmation("):
-                html.index("// Un clic à côté ferme")]
-    check("repondConfirmation(false)" in bloc, "Échap refuse")
+    check('fermer: function(){ repondConfirmation(false); }' in bloc,
+          "et Échap passe par le REFUS, donc la promesse se résout")
+    # _toucheConfirmation n'existe plus : Échap est géré une seule fois, pour
+    # les cinq dialogues, par la mécanique commune. On vérifie donc là-bas
+    # qu'Échap appelle bien la fermeture DÉCLARÉE par le dialogue du dessus —
+    # laquelle, pour la confirmation, est le refus (vérifié juste au-dessus).
+    bloc = html[html.index("function _toucheDialogue("):
+                html.index("function debutDialogue(")]
+    check('e.key === "Escape"' in bloc and "haut.fermer()" in bloc,
+          "Échap appelle la fermeture déclarée par le dialogue du dessus")
+    check("_pileDialogues[_pileDialogues.length - 1]" in bloc,
+          "et c'est bien celui du DESSUS, pas un autre de la pile")
     bloc = html[html.index("function confirmationSurFond("):]
     bloc = bloc[:bloc.index("\n}")]
     check("repondConfirmation(false)" in bloc and "true" not in bloc,
@@ -3936,6 +4055,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
            test_structure_et_annonces,
+           test_panneaux_sont_de_vrais_dialogues,
            test_pause_nocturne,
            test_filtres_persistants,
            test_icones_en_emoji,

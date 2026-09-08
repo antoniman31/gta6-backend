@@ -873,6 +873,78 @@ Mesuré dans Chromium : les quatre emojis d'entête occupent tous 19×18 px dans
 un bouton de 34×34, ceux des cartes 16,5×15 — aucun débordement, aucune
 rangée déplacée, la rangée d'entête tient toujours ses 166 px.
 
+### Les panneaux sont de vrais dialogues
+
+Audité le 08/09/2026. Le contraste y était déjà bon — zéro élément sous le
+seuil, deux thèmes, tous les panneaux. L'accessibilité, elle, ne l'était pas.
+
+Le panneau de **confirmation** était le seul vrai dialogue. Les quatre autres
+n'avaient ni rôle, ni `aria-modal`, ni nom : on ouvrait les paramètres et le
+focus restait sur le bouton d'engrenage *derrière* le voile, la tabulation
+promenait dans la page cachée, et Échap ne faisait rien. Et **aucun des cinq**,
+celui de confirmation compris, ne piégeait le focus.
+
+| | avant | après |
+|---|---|---|
+| panneaux avec un rôle et un nom | 1 / 5 | **5 / 5** |
+| le focus entre dans le panneau | 1 / 5 | **5 / 5** |
+| Échap ferme | 1 / 5 | **5 / 5** |
+| focus piégé | **0 / 5** | **5 / 5** |
+| le fond reste immobile | 0 / 5 | **5 / 5** |
+| cibles sous 44 px | 8 | **0** |
+
+**44 px est devenu le défaut**, pas une liste. La passe précédente avait
+énuméré les commandes de la page et oublié tout l'intérieur des panneaux, où
+« Fermer » tenait encore dans **23 px** — le plus petit élément de l'app. Le
+bouton de base porte maintenant `min-height`, et les quatre boutons dont la
+petitesse est structurelle y dérogent explicitement : icônes d'entête carrées,
+coche des cartes et croix de recherche posées en absolu, bouton d'aide. Un
+défaut se périme moins vite qu'une liste.
+
+**Le titre de chaque panneau est un `h2`**, avec `font:inherit` pour que rien
+ne bouge à l'œil. Le bouton « Fermer » reste *hors* du titre : dedans, il
+serait lu comme faisant partie de son intitulé. La feuille de filtres n'avait
+aucun titre — elle reçoit un `h2` invisible, sans quoi un lecteur d'écran
+annonce « dialogue » et rien d'autre.
+
+**Le fond est figé en `position:fixed`** et non en `overflow:hidden` : Safari
+iOS ignore le second dès que le doigt arrive au bout du panneau et se met à
+faire glisser la page derrière.
+
+**Une pile, pas une variable.** Une confirmation peut s'ouvrir par-dessus les
+paramètres : fermer celle du dessus rend le focus au panneau du dessous, et le
+fond n'est libéré qu'au dernier fermé.
+
+#### Deux bugs trouvés par la mesure, corrigés dans le même lot
+
+**La position de défilement était perdue.** La libération la restituait
+correctement — puis le retour du focus la défaisait aussitôt, parce que
+focaliser un élément hors écran fait défiler la page jusqu'à lui, et
+l'élément d'origine est presque toujours un bouton d'entête. Ouvrir un panneau
+depuis le milieu du fil et le refermer renvoyait au sommet : 1500 px
+redevenaient 0. Corrigé par `preventScroll`.
+
+J'avais d'abord soupçonné un défaut de recalcul de mise en page et ajouté un
+reflow forcé. C'était faux : la mesure pas à pas a montré que la libération
+marchait déjà. Le reflow a été retiré. **Deux corrections plausibles, une
+seule vraie — c'est la mesure qui a tranché, pas le raisonnement.**
+
+**Un test existant est devenu faux sans devenir rouge.** Il vérifiait le focus
+initial de la confirmation en cherchant un appel `.focus()` écrit à la main.
+Ce code n'existe plus : le focus initial est désormais *déclaré* à la
+mécanique commune. Le test vise maintenant l'intention déclarée.
+
+#### Ce que les tests ne prouvent pas
+
+Les quatre vérifications du piège de focus **lisent le code sans l'exécuter**.
+Un `return` glissé au début du piège les laisse toutes passer — essayé, elles
+passent. Elles constatent que le piège est *écrit*, pas qu'il fonctionne.
+
+Son comportement est mesuré dans un vrai navigateur : un tour complet de
+tabulation sur chacun des cinq panneaux, **zéro sortie**. Cette suite en
+Python sans navigateur ne sait pas le faire, et la limite est écrite dans le
+test plutôt que passée sous silence.
+
 ### Structure de la page et retour non visuel
 
 Audité le 08/09/2026, à la demande, contre Material 3 et les lois d'UX. Deux
