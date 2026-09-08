@@ -791,6 +791,47 @@ filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
 
+### Les filtres survivent à la fermeture
+
+L'onglet, la langue et l'état (Tout / Non lus) sont retenus d'une ouverture à
+l'autre. Trois décisions valent d'être expliquées.
+
+**Une clé séparée, pas un champ de plus dans `settings`.** `saveSettings()`
+lit les champs du panneau de paramètres *dans le DOM* — l'appeler depuis un
+clic sur un onglet écraserait l'URL du backend et la liste de mots-clés avec
+des champs éventuellement jamais remplis, et casserait l'app. Deux besoins,
+deux clés : `settings-v1` d'un côté, `filtres-v1` de l'autre. Un test vérifie
+que les trois fonctions de filtre ne touchent jamais à `saveSettings`.
+
+**Deux états ne sont volontairement pas restaurés :**
+
+- **« Nouveaux »** s'appuie sur la liste des articles nouveaux du dernier
+  passage, reconstruite de zéro à chaque ouverture et **vide** tant qu'aucun
+  rafraîchissement n'a eu lieu. Le restaurer ferait rouvrir l'app sur un fil
+  vide sans que rien n'explique pourquoi.
+- **L'onglet du journal** : rouvrir directement sur les logs du robot plutôt
+  que sur les actualités n'est jamais ce qu'on veut.
+
+Dans les deux cas on retombe sur le dernier état mémorisable connu — et non
+sur le défaut. Sans cette nuance, un simple coup d'œil au journal effaçait un
+« Rockstar » installé depuis des jours, et un aller-retour par « Nouveaux »
+effaçait « Non lus ».
+
+**La recherche n'est pas mémorisée.** Un mot-clé oublié dans la barre filtre
+le fil sans qu'on s'en aperçoive — c'est bien moins visible qu'une pastille
+d'onglet allumée. La barre repart vide à chaque ouverture.
+
+Toute valeur lue est validée contre une liste blanche : une clé corrompue, ou
+écrite par une version antérieure, retombe sur le défaut plutôt que de coincer
+l'app dans un état qu'aucun bouton ne saurait défaire. Vérifié dans le
+navigateur en injectant `{"onglet":"n_importe_quoi","langue":42,"etat":null}` :
+ouverture propre, aucune erreur.
+
+La restauration ne dessine qu'une fois. Les trois fonctions acceptent un mode
+silencieux qui pose l'état et allume les boutons sans redessiner ; le rendu
+unique de `loadState` suit. Sans ça, ouvrir l'app enchaînait trois rendus
+successifs de trois cents articles.
+
 ### Icônes : des emojis, sauf là où la couleur porte du sens
 
 Les quatre boutons d'entête et les commandes de carte utilisaient des glyphes

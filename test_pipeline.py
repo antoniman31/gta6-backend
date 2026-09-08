@@ -3063,6 +3063,71 @@ def test_structure_et_annonces():
           "et la fonction qui la compose existe")
 
 
+def test_filtres_persistants():
+    print("\n[app] les filtres survivent à la fermeture de l'app")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    check('const CLE_FILTRES = "filtres-v1";' in html,
+          "les filtres ont leur propre clé de stockage")
+
+    # LE point de sécurité. saveSettings() lit les champs du panneau de
+    # paramètres dans le DOM ; l'appeler depuis un clic sur un onglet
+    # écraserait l'URL du backend et les mots-clés avec des champs
+    # éventuellement vides. Les trois setters ne doivent JAMAIS y toucher.
+    for nom in ("setTab", "setLang", "setFilter"):
+        corps = re.search(r"function %s\([^)]*\)\{(.*?)\n\}" % nom, html, re.S).group(1)
+        check("sauvegardeFiltres()" in corps,
+              "%s sauvegarde les filtres" % nom)
+        check("saveSettings" not in corps,
+              "%s ne touche PAS à saveSettings (il écraserait l'URL du backend)" % nom)
+        check("silencieux" in corps,
+              "%s sait poser l'état sans redessiner (restauration en un seul rendu)" % nom)
+
+    corps = re.search(r"async function loadState\(\)\{(.*?)\n\}", html, re.S).group(1)
+    check("restaureFiltres()" in corps, "loadState restaure les filtres")
+    check(corps.index("restaureFiltres()") < corps.index("applyFilters()"),
+          "et il les restaure AVANT de dessiner le fil")
+
+    # Les deux exclusions volontaires.
+    etats = re.search(r"const ETATS_MEMORISES = \[([^\]]*)\]", html).group(1)
+    check('"new"' not in etats,
+          "« Nouveaux » n'est pas restauré : il s'appuie sur lastNewLinks, "
+          "vidé à chaque ouverture, donc il rouvrirait sur un fil vide")
+    onglets = re.search(r"const ONGLETS_MEMORISES = \[([^\]]*)\]", html).group(1)
+    check('"logs"' not in onglets,
+          "l'onglet du journal n'est pas restauré")
+    check('"all"' in etats and '"unread"' in etats,
+          "mais « Tout » et « Non lus » le sont")
+    for t in ('"all"', '"non-rockstar"', '"rockstar"', '"rockstarmag"'):
+        check(t in onglets, "onglet mémorisé : %s" % t)
+
+    # Un détour par un état non mémorisable ne doit pas effacer le choix
+    # d'avant : ouvrir le journal puis fermer l'app faisait sinon rouvrir sur
+    # « Tous les articles » alors qu'on était sur « Rockstar ».
+    corps = re.search(r"function sauvegardeFiltres\(\)\{(.*?)\n\}", html, re.S).group(1)
+    check("ongletMemorise" in corps and "etatMemorise" in corps,
+          "un détour par le journal ou par « Nouveaux » n'efface pas le choix précédent")
+    check("restaurationFiltres" in corps,
+          "et la restauration elle-même ne réécrit pas un état à moitié posé")
+
+    # Rien ne doit être restauré qui ne soit pas dans les listes : une clé
+    # corrompue ou écrite par une version antérieure retombe sur le défaut.
+    corps = re.search(r"function restaureFiltres\(\)\{(.*?)\n\}", html, re.S).group(1)
+    for liste in ("ONGLETS_MEMORISES", "LANGUES_MEMORISEES", "ETATS_MEMORISES"):
+        check("%s.includes" % liste in corps,
+              "restaureFiltres valide la valeur lue contre %s" % liste)
+    check("try{" in corps and "catch" in corps,
+          "et une clé illisible ne fait pas planter l'ouverture")
+
+    # La recherche, elle, n'est PAS mémorisée : un mot-clé oublié dans la
+    # barre filtre le fil sans qu'on s'en rende compte, bien moins
+    # visiblement qu'une pastille d'onglet allumée.
+    corps = re.search(r"function sauvegardeFiltres\(\)\{(.*?)\n\}", html, re.S).group(1)
+    check("searchQuery" not in corps and "searchInput" not in corps,
+          "le texte de recherche n'est pas mémorisé")
+
+
 def test_icones_en_emoji():
     print("\n[app] les icônes sont des emojis, sauf là où la couleur porte du sens")
     import re
@@ -3715,6 +3780,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
            test_structure_et_annonces,
+           test_filtres_persistants,
            test_icones_en_emoji,
            test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
