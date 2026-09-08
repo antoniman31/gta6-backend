@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-08T11:40:19.527504+00:00",
-  "duration_seconds": 39.2,
+  "generated_at": "2026-09-08T12:01:43.188942+00:00",
+  "duration_seconds": 37.7,
   "decode_failures": 0,
-  "total_articles": 2180,
+  "total_articles": 2183,
   "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -389,7 +389,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T11:30:47+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T09:27:31+00:00",
+      "new_this_run": 3,
+      "last_article": "2026-09-08T11:24:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-07T19:47:27+00:00",
       "days_since_last_article": 0,
@@ -499,7 +499,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T12:00:01+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -589,10 +589,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-04T08:55:01+00:00",
       "days_since_last_article": 4,
@@ -605,7 +605,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T11:12:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -629,7 +629,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T10:39:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -733,10 +733,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 6,
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 6,
@@ -889,19 +889,19 @@
     {
       "id": "pushsquare",
       "name": "Push Square",
-      "entries_fetched": 0,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T12:30:00+00:00",
       "days_since_last_article": 5,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "schreier",
       "name": "Jason Schreier",
-      "entries_fetched": 100,
+      "entries_fetched": 56,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,7 +914,7 @@
   "sources_silence": {
     "pushsquare": {
       "depuis": "2026-09-08T11:40:19.527173+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -924,9 +924,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,100,100,100,100,101,99,100,100",
-    "gnews-en": "102,101,101,102,102,100,101,101,102,102,102,102",
+    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "gnews-fr": "100,100,100,100,100,100,100,101,99,100,100,100",
+    "gnews-en": "101,101,102,102,100,101,101,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -934,7 +934,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -958,7 +958,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,9,9,9,8,8,8,8",
+    "xboxwire": "8,8,8,8,9,9,9,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -967,8 +967,8 @@
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "81,81,81,81,81,81,81,81,81,81,81,81",
     "arstechnica": "28,28,28,28,28,28,28,28,28,28,28,28",
-    "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,0",
-    "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
+    "pushsquare": "100,100,100,100,100,100,100,100,100,100,0,100",
+    "schreier": "100,100,100,100,100,100,100,100,100,100,100,56"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -979,8 +979,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"a45e88d88e079a5ca4a2f7e0b38a74aa\"",
-      "modified": "Tue, 08 Sep 2026 11:19:04 GMT"
+      "etag": "W/\"728fdaaba82b6476ff57956aa4a26520\"",
+      "modified": "Tue, 08 Sep 2026 11:45:05 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -999,13 +999,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"20df3-QVYf+G1iYuJ7RIGLr53k4fyJCHk\"",
+      "etag": "W/\"21854-T+ZpIxsxgU2rAwt0PH6Q8kbKuQY\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"f7b07299eb891d98865537f0bcc990d4\"",
-      "modified": "Tue, 08 Sep 2026 11:15:01 GMT"
+      "etag": "W/\"9d8a71c5108b82203f1e767b5d4c0e84\"",
+      "modified": "Tue, 08 Sep 2026 11:45:46 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1015,12 +1015,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 11:12:12 GMT"
+      "modified": "Tue, 08 Sep 2026 11:53:28 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 11:37:31 GMT"
+      "modified": "Tue, 08 Sep 2026 12:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1029,13 +1029,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9ff1c9-2fca\"",
-      "modified": "Tue, 08 Sep 2026 11:30:17 GMT"
+      "etag": "W/\"6a9ff8d1-2fca\"",
+      "modified": "Tue, 08 Sep 2026 12:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"c957b3cca1a8e60dd9cf792b35ade996\"",
-      "modified": "Tue, 08 Sep 2026 09:50:07 GMT"
+      "etag": "W/\"911b08e378f07fe989854b7dcd4f865c\"",
+      "modified": "Tue, 08 Sep 2026 11:49:05 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1049,8 +1049,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9fda8f-b38\"",
-      "modified": "Tue, 08 Sep 2026 09:51:11 GMT"
+      "etag": "\"6a9ff6b1-bc6\"",
+      "modified": "Tue, 08 Sep 2026 11:51:13 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1067,6 +1067,45 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-lheure-exacte-de-lancement-est-connue-et-vous-pouvez-une-y-jouer-avant-les-autres.png",
       "description": "GTA 6 : l’heure exacte de lancement est connue et vous pouvez une y jouer avant les autres&nbsp;&nbsp;La Crème Du Gaming"
+    },
+    {
+      "title": "GTA 6 Code-in-Box Packaging Sparks Environmental Concerns - IndexBox",
+      "link": "https://www.indexbox.io/blog/gta-6-code-in-box-packaging-sparks-environmental-concerns/",
+      "source_link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOVGVXTHdrYVRmSEJqVmxUc213X1BZODh0WEJRUWdaSFlDMW93LVJ0MFFfLWV0TTBaaUwxLUlTN05hY3A3TmZPc1d4U0tvTmxKVVNmczg3MTFfSkRjZEIxTzI5ZXpWQ0ZjV1V5d0VsdmxZSVprTFhVXzM2aTdxdTJqbnJZLThrUFNHYUgwU1pfcWQ?oc=5",
+      "date": "2026-09-08T11:24:30+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.indexbox.io/landing/img/blog/telegram-fallback/203842e998901f4f1308bbcad65fb9f7.webp",
+      "description": "GTA 6 Code-in-Box Packaging Sparks Environmental Concerns&nbsp;&nbsp;IndexBox"
+    },
+    {
+      "title": "Red Dead Redemption 2 DLSS 5 made GTA 6 look like a last-gen game - GameGPU",
+      "link": "https://en.gamegpu.com/news/igry/red-dead-redemption-2-s-dlss-5-zastavila-gta-6-vyglyadet-kak-igra-proshlogo-pokoleniya",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNVGhBdTcyN3VRNzdGcGFKQnB6VGhOU2k2R2xGRWlHX2p0VklnRnAxaDJhSkJsVEU2c3Fma0RWbXNYTzUwb3c2NVVaQUpLTlRmeDAzd1lNdERQSTNBa3BocjRBX0NhVHhnaTNBXzN4TndfQXNlREJQTVF5R2ZLb19KaTZfbFBxS19URUVzVl9pNTB4Z2FqaDZTWHNjLTZMTjNDRjFtRUxVeHl2WGNyVC11WmpGU25ndTFJcXJn?oc=5",
+      "date": "2026-09-08T11:21:44+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/Image_hrgpqzhrgpqzhrgp_ggpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/Image_hrgpqzhrgpqzhrgp_ggpu.webp?width=1920&height=1080",
+      "description": "Red Dead Redemption 2 DLSS 5 made GTA 6 look like a last-gen game&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "GTA 6 Launch: What Rockstar Is Promising - GameLuster",
+      "link": "https://gameluster.com/gta-6-launch-ultimate-edition/",
+      "source_link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE1xenBYNnhLNG80VFJST3BzUTdGVGl6dzF5UHVfY0ZtM0tzVzdPaXBrTUJuVkJnQWdnZHZlTV9yRkdtWkt2Y1hlZHpTM2Etbk5hS2EwV09jUDV6MFk1cXF0blc0QQ?oc=5",
+      "date": "2026-09-08T11:20:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://gameluster.com/wp-content/uploads/2026/09/gta-6-launch-promise-ultimate-edition-catch.webp",
+      "description": "GTA 6 Launch: What Rockstar Is Promising&nbsp;&nbsp;GameLuster"
     },
     {
       "title": "Grand Theft Auto 6 worldwide unlock times revealed, and Xbox owners can seemingly still use the old New Zealand trick to play early",
