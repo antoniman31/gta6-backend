@@ -873,6 +873,78 @@ Mesuré dans Chromium : les quatre emojis d'entête occupent tous 19×18 px dans
 un bouton de 34×34, ceux des cartes 16,5×15 — aucun débordement, aucune
 rangée déplacée, la rangée d'entête tient toujours ses 166 px.
 
+### Les panneaux sont de vrais dialogues
+
+Audité le 08/09/2026. Le contraste y était déjà bon — zéro élément sous le
+seuil, deux thèmes, tous les panneaux. L'accessibilité, elle, ne l'était pas.
+
+Le panneau de **confirmation** était le seul vrai dialogue. Les quatre autres
+n'avaient ni rôle, ni `aria-modal`, ni nom : on ouvrait les paramètres et le
+focus restait sur le bouton d'engrenage *derrière* le voile, la tabulation
+promenait dans la page cachée, et Échap ne faisait rien. Et **aucun des cinq**,
+celui de confirmation compris, ne piégeait le focus.
+
+| | avant | après |
+|---|---|---|
+| panneaux avec un rôle et un nom | 1 / 5 | **5 / 5** |
+| le focus entre dans le panneau | 1 / 5 | **5 / 5** |
+| Échap ferme | 1 / 5 | **5 / 5** |
+| focus piégé | **0 / 5** | **5 / 5** |
+| le fond reste immobile | 0 / 5 | **5 / 5** |
+| cibles sous 44 px | 8 | **0** |
+
+**44 px est devenu le défaut**, pas une liste. La passe précédente avait
+énuméré les commandes de la page et oublié tout l'intérieur des panneaux, où
+« Fermer » tenait encore dans **23 px** — le plus petit élément de l'app. Le
+bouton de base porte maintenant `min-height`, et les quatre boutons dont la
+petitesse est structurelle y dérogent explicitement : icônes d'entête carrées,
+coche des cartes et croix de recherche posées en absolu, bouton d'aide. Un
+défaut se périme moins vite qu'une liste.
+
+**Le titre de chaque panneau est un `h2`**, avec `font:inherit` pour que rien
+ne bouge à l'œil. Le bouton « Fermer » reste *hors* du titre : dedans, il
+serait lu comme faisant partie de son intitulé. La feuille de filtres n'avait
+aucun titre — elle reçoit un `h2` invisible, sans quoi un lecteur d'écran
+annonce « dialogue » et rien d'autre.
+
+**Le fond est figé en `position:fixed`** et non en `overflow:hidden` : Safari
+iOS ignore le second dès que le doigt arrive au bout du panneau et se met à
+faire glisser la page derrière.
+
+**Une pile, pas une variable.** Une confirmation peut s'ouvrir par-dessus les
+paramètres : fermer celle du dessus rend le focus au panneau du dessous, et le
+fond n'est libéré qu'au dernier fermé.
+
+#### Deux bugs trouvés par la mesure, corrigés dans le même lot
+
+**La position de défilement était perdue.** La libération la restituait
+correctement — puis le retour du focus la défaisait aussitôt, parce que
+focaliser un élément hors écran fait défiler la page jusqu'à lui, et
+l'élément d'origine est presque toujours un bouton d'entête. Ouvrir un panneau
+depuis le milieu du fil et le refermer renvoyait au sommet : 1500 px
+redevenaient 0. Corrigé par `preventScroll`.
+
+J'avais d'abord soupçonné un défaut de recalcul de mise en page et ajouté un
+reflow forcé. C'était faux : la mesure pas à pas a montré que la libération
+marchait déjà. Le reflow a été retiré. **Deux corrections plausibles, une
+seule vraie — c'est la mesure qui a tranché, pas le raisonnement.**
+
+**Un test existant est devenu faux sans devenir rouge.** Il vérifiait le focus
+initial de la confirmation en cherchant un appel `.focus()` écrit à la main.
+Ce code n'existe plus : le focus initial est désormais *déclaré* à la
+mécanique commune. Le test vise maintenant l'intention déclarée.
+
+#### Ce que les tests ne prouvent pas
+
+Les quatre vérifications du piège de focus **lisent le code sans l'exécuter**.
+Un `return` glissé au début du piège les laisse toutes passer — essayé, elles
+passent. Elles constatent que le piège est *écrit*, pas qu'il fonctionne.
+
+Son comportement est mesuré dans un vrai navigateur : un tour complet de
+tabulation sur chacun des cinq panneaux, **zéro sortie**. Cette suite en
+Python sans navigateur ne sait pas le faire, et la limite est écrite dans le
+test plutôt que passée sous silence.
+
 ### Structure de la page et retour non visuel
 
 Audité le 08/09/2026, à la demande, contre Material 3 et les lois d'UX. Deux
@@ -1125,6 +1197,119 @@ bascule** :
 Cette règle existe pour empêcher un message par *article*. Une alerte de
 source est d'une autre nature, et surtout elle ne peut pas voyager dans le
 récapitulatif, qui n'est pas envoyé quand il n'y a rien de neuf.
+
+## Pause nocturne : rien entre 0h et 5h
+
+Demandé le 08/09/2026 : les notifications réveillaient. Le robot ne récupère
+rien, ne publie rien et ne notifie rien entre **00h00 et 05h00, heure de
+Paris**.
+
+**Le garde est dans le workflow, pas dans le planificateur.** L'horloge réelle
+est cron-job.org, qui n'est pas dans ce dépôt et qu'un changement
+d'hébergeur remplacerait un jour. En plaçant la décision dans
+`update-feeds.yml`, elle s'applique à tous les déclencheurs automatiques sans
+rien à configurer ailleurs.
+
+**Une demande à la main passe toujours, à n'importe quelle heure.** La pause
+existe pour que le robot ne réveille personne *de lui-même*, pas pour refuser
+un ordre explicite. Les deux se distinguent sans ambiguïté par
+`github.event_name` :
+
+| déclencheur | qui | pause ? |
+|---|---|---|
+| `workflow_dispatch` | le bouton « Relancer le robot » de l'app, et « Run workflow » sur GitHub | **jamais** |
+| `repository_dispatch` | cron-job.org | oui |
+| `schedule` | le filet de GitHub | oui |
+
+Le bouton de l'app poste sur `/actions/workflows/…/dispatches` — c'est bien un
+`workflow_dispatch`, pas le `repository_dispatch` qu'utilise cron-job.org. La
+distinction est donc gratuite, il n'y a rien à changer côté app.
+
+**Le passage part quand même.** Il va jusqu'à l'étape de signal de vie et ne
+saute que la récupération, la publication et les notifications. Sans ça, cinq
+heures de silence auraient été lues par healthchecks.io comme « le robot est
+mort », et l'alerte aurait sonné à 2h du matin — exactement ce qu'on cherchait
+à éviter. La détection de panne par healthchecks n'est donc **pas dégradée
+d'une minute** : il reçoit toujours un signal chaque heure.
+
+**Le fuseau est calculé, pas figé.** `TZ=Europe/Paris` et non un décalage UTC
+en dur : la fenêtre reste 00h-05h locales des deux côtés du changement
+d'heure. Un cron UTC figé l'aurait décalée d'une heure fin octobre. Un test
+exécute le garde à des instants choisis en été **et** en hiver.
+
+**Un garde en panne laisse passer.** Si l'heure de Paris est indéterminable
+(zoneinfo absent, `date` en échec), le passage a lieu normalement. Rater une
+pause est un désagrément ; bloquer le robot pour toujours est une panne.
+
+**Exception le jour de la sortie.** La pause est levée du 18 au 20/11/2026
+inclus — la veille, le jour même et le lendemain. GTA 6 sort à minuit, et
+c'est précisément la nuit où il ne faut rien manquer. Cette date est écrite à
+deux endroits (le workflow et `GTA6_RELEASE` dans l'app) : un test vérifie que
+la fenêtre encadre bien la date annoncée par l'app, pour qu'elles ne divergent
+pas si Rockstar décale encore.
+
+**Effet de bord agréable :** rien n'étant publié la nuit, le passage de 5h
+trouve tous les articles d'un coup et envoie **une** notification
+récapitulative au lieu de cinq. Un digest matinal, gratuitement.
+
+**Ce qu'il a fallu ajuster en face :** le bandeau « robot en retard » de l'app
+était calibré à 4h. Le dernier passage de la nuit pouvant tomber vers 23h,
+l'écart atteint légitimement 6h juste avant la reprise — le bandeau se serait
+allumé chaque nuit pour annoncer une panne inexistante. Seuil porté à **7h**.
+Ce que ça coûte : une vraie panne de jour est signalée *dans l'app* après 7h
+au lieu de 4. Ce n'est pas la vraie alarme, healthchecks.io l'est, et lui n'a
+rien perdu.
+
+`DEAD_SOURCE_HOURS` n'a pas bougé : il compte en **heures** et non en
+passages, précisément pour être insensible à ce genre de changement de
+cadence.
+
+### Ce que la simulation a prouvé, et ce qu'elle a d'abord raté
+
+Le garde a été rejoué **hors de GitHub**, en extrayant son script du workflow
+et en lui faisant croire, via un faux `date`, qu'on était à un instant choisi.
+Son verdict est comparé à la règle attendue, recalculée séparément :
+
+| simulation | instants | divergences |
+|---|---|---|
+| une année entière, heure par heure, trois déclencheurs | 8 760 | 0 |
+| un déclenchement **manuel** à chaque heure de l'année | 8 760 | 0 |
+| minute par minute aux frontières 23h→01h et 04h→06h, été et hiver | 1 440 | 0 |
+| les deux nuits de changement d'heure, minute par minute | 1 200 | 0 |
+
+Et le décompte qui répond directement à la question posée — *est-ce qu'une
+notification peut être bloquée en dehors de la plage ?* — sur les 5 840
+passages automatiques d'une année :
+
+```
+  heures 00h-04h : 1 086 bloqués,     9 passés (fenêtre de sortie)
+  heures 05h-23h :     0 bloqués, 4 754 passés
+                       ^^^^^^^^^^
+```
+
+**Zéro.** Le total 1 086 + 4 754 = 5 840 recoupe le nombre de passages
+automatiques, et la répartition inégale par heure s'explique : 210 jours en
+CEST et 155 en CET envoient une même heure de Paris sur deux heures UTC
+différentes.
+
+**La première version de cette simulation était fausse et annonçait déjà
+« 0 divergence ».** Le script de test lisait ses entrées ainsi :
+
+```bash
+while read -r instant declencheur; do   # découpe sur les ESPACES
+# ligne lue : "2026-03-01 00:00 schedule"
+#   instant     = "2026-03-01"      ← la date seule
+#   declencheur = "00:00 schedule"  ← n'existe pas
+```
+
+Elle testait donc minuit en boucle avec un déclencheur inexistant, et n'a
+jamais vu un seul déclenchement manuel. C'est l'histogramme par heure qui l'a
+révélé : il rangeait 8 760 instants dans deux heures seulement, ce qui est
+impossible.
+
+**Un chiffre rassurant n'est pas une preuve.** C'est le résultat incohérent
+posé à côté qui a montré que le rassurant ne valait rien. Les entrées sont
+maintenant séparées par une barre verticale.
 
 ## Surveillance : savoir quand le robot s'arrête
 

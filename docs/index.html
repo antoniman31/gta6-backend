@@ -251,7 +251,18 @@
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
     padding:10px 14px; border-radius:var(--r-sm); cursor:pointer; letter-spacing:0.02em;
     transition:border-color var(--t-court);
+    /* 44 px par DÉFAUT plutôt qu'énumérés un par un. La passe précédente
+       avait traité les commandes de la page une à une et oublié tout
+       l'intérieur des panneaux : « Fermer » tenait encore dans 23 px, le
+       plus petit élément de l'application. Un défaut se périme moins vite
+       qu'une liste. Les quatre boutons dont la petitesse est STRUCTURELLE y
+       dérogent explicitement juste en dessous. */
+    min-height:44px;
   }
+  /* Ces quatre-là gardent leur taille : soit ils sont carrés et calibrés au
+     pixel (icônes d'entête), soit ils étendent déjà leur zone de clic par un
+     pseudo-élément, soit ils sont posés en absolu dans un champ. */
+  .icon-btn, .card-mark, .search-clear-btn, .aide{min-height:0;}
   button:hover{border-color:var(--accent);}
   button:active{transform:translateY(1px);}
   /* --accent-contrast, pas #ffffff : le blanc en dur donnait 2,14:1 sur le
@@ -648,6 +659,12 @@
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:15px;
     display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
   }
+  /* Le titre du panneau est un h2 pour qu'un lecteur d'écran l'annonce comme
+     tel et puisse y sauter. font:inherit annule la taille et la graisse par
+     défaut du navigateur : à l'œil, rien ne change. Le bouton « Fermer »
+     reste HORS du titre — un bouton dans un titre serait lu comme faisant
+     partie de son intitulé. */
+  .settings-title h2{font:inherit; letter-spacing:inherit; color:inherit;}
   .settings-title button{padding:4px 8px; font-size:11px;}
   .setting-group{margin-bottom:20px;}
   .setting-label{
@@ -745,11 +762,20 @@
     color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);
   }
 
-  input[type="range"]{width:140px; accent-color:var(--accent);}
+  /* Le curseur mesurait 16 px de haut. Le rembourrage vertical porte sa
+     zone de saisie à 44 px sans grossir la barre elle-même, et la pastille
+     est agrandie pour être attrapable — un curseur qu'on rate est pire
+     qu'un curseur laid. */
+  input[type="range"]{
+    width:140px; accent-color:var(--accent);
+    height:44px; padding:0; margin:0; background:transparent;
+  }
+  input[type="range"]::-webkit-slider-thumb{width:20px; height:20px;}
+  input[type="range"]::-moz-range-thumb{width:20px; height:20px;}
   input[type="number"], input[type="text"].setting-input{
     background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
     font-family:'JetBrains Mono',monospace; font-size:12px; padding:6px 8px; border-radius:var(--r-sm);
-    width:90px;
+    width:90px; min-height:44px;
   }
   input[type="text"].setting-input.wide{width:100%;}
 
@@ -1013,8 +1039,12 @@
 
 <!-- ---------- Bottom sheet Filtres ---------- -->
 <div class="overlay bottom-sheet" id="filtersOverlay" onclick="closeFiltersSheetOnOverlay(event)">
-  <div class="sheet-panel">
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="titreFiltres">
     <div class="sheet-handle"></div>
+    <!-- La feuille n'affiche pas de titre : sa poignée et ses sections
+         suffisent à l'œil. Un dialogue doit pourtant avoir un nom, sans quoi
+         un lecteur d'écran annonce « dialogue » et rien d'autre. -->
+    <h2 id="titreFiltres" class="sr-only">Filtres</h2>
 
     <div class="sheet-section">
       <span class="sheet-label">Affichage</span>
@@ -1059,9 +1089,9 @@
 
 <!-- ---------- Modale Info ---------- -->
 <div class="overlay" id="infoOverlay" onclick="closeInfoOnOverlay(event)">
-  <div class="settings-panel">
+  <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="titreInfos">
     <div class="settings-title">
-      <span>Informations</span>
+      <h2 id="titreInfos">Informations</h2>
       <button onclick="closeInfo()">Fermer</button>
     </div>
     <div class="status-line" id="lastCheck" style="margin-bottom:4px;">jamais vérifié</div>
@@ -1076,9 +1106,9 @@
 
 <!-- ---------- Panneau Paramètres ---------- -->
 <div class="overlay" id="settingsOverlay" onclick="closeSettingsOnOverlay(event)">
-  <div class="settings-panel">
+  <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="titreParametres">
     <div class="settings-title">
-      <span>PARAMÈTRES</span>
+      <h2 id="titreParametres">PARAMÈTRES</h2>
       <button onclick="closeSettings()">Fermer</button>
     </div>
 
@@ -1250,9 +1280,9 @@
 
 <!-- ---------- Modale Aperçu article ---------- -->
 <div class="overlay" id="previewOverlay" onclick="closePreviewOnOverlay(event)">
-  <div class="settings-panel" id="previewPanel">
+  <div class="settings-panel" id="previewPanel" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
     <div class="settings-title">
-      <span id="previewSource">SOURCE</span>
+      <h2 id="previewSource">SOURCE</h2>
       <button onclick="closePreview()">Fermer</button>
     </div>
     <div id="previewImage"></div>
@@ -1652,6 +1682,7 @@ function openSettings(){
   majCompteurSources();
   brancheOutilsSources();
   document.getElementById("settingsOverlay").classList.add("open");
+  debutDialogue("settingsOverlay", { fermer: closeSettings });
 }
 
 // Écouteurs délégués : posés une seule fois sur des conteneurs qui, eux, ne
@@ -1668,6 +1699,7 @@ function brancheOutilsSources(){
 }
 function closeSettings(){
   document.getElementById("settingsOverlay").classList.remove("open");
+  finDialogue("settingsOverlay");
 }
 function closeSettingsOnOverlay(e){
   if(e.target.id === "settingsOverlay") closeSettings();
@@ -1736,12 +1768,14 @@ function updateFooterNote(){
 }
 function openInfo(){
   document.getElementById("infoOverlay").classList.add("open");
+  debutDialogue("infoOverlay", { fermer: closeInfo });
   // Rechargé à chaque ouverture plutôt qu'en continu : inutile d'interroger
   // GitHub tant que personne ne regarde.
   loadRecentRuns();
 }
 function closeInfo(){
   document.getElementById("infoOverlay").classList.remove("open");
+  finDialogue("infoOverlay");
 }
 function closeInfoOnOverlay(e){
   if(e.target.id === "infoOverlay") closeInfo();
@@ -2159,7 +2193,19 @@ async function applyBackendData(data, sourceUrl){
   // 3 à 9h, donc le bandeau était affiché la plupart du temps alors que
   // tout allait bien — ce qui le rendait inutile le jour d'une vraie
   // panne. Avec le cron doublé (7,37), 4h redevient une vraie anomalie.
-  const STALE_THRESHOLD_MS = 4 * 60 * 60 * 1000;
+  //
+  // Remonté à 7h le 08/09/2026, avec la pause nocturne : le robot ne tourne
+  // plus entre 00h et 05h (heure de Paris). Le dernier passage de la nuit
+  // pouvant tomber vers 23h, l'écart atteint légitimement 6h juste avant la
+  // reprise — à 4h le bandeau se serait allumé chaque nuit pour annoncer une
+  // panne qui n'existe pas.
+  //
+  // Ce que ça coûte : une vraie panne de jour est signalée ICI après 7h au
+  // lieu de 4. Ce n'est pas la vraie alarme — healthchecks.io l'est, et il
+  // continue de recevoir un signal de vie CHAQUE HEURE pendant la pause,
+  // puisque le passage nocturne part quand même et va jusqu'à cette étape.
+  // Sa détection à lui n'est donc pas dégradée d'une minute.
+  const STALE_THRESHOLD_MS = 7 * 60 * 60 * 1000;
 
   if(generatedDate){
     proxyEl.textContent = "généré le " + generatedDate.toLocaleString('fr-FR');
@@ -2508,9 +2554,11 @@ function setFilter(f, silencieux){
 
 function openFiltersSheet(){
   document.getElementById("filtersOverlay").classList.add("open");
+  debutDialogue("filtersOverlay", { fermer: closeFiltersSheet });
 }
 function closeFiltersSheet(){
   document.getElementById("filtersOverlay").classList.remove("open");
+  finDialogue("filtersOverlay");
 }
 function closeFiltersSheetOnOverlay(e){
   if(e.target.id === "filtersOverlay") closeFiltersSheet();
@@ -2982,9 +3030,11 @@ function openPreview(safeId){
   document.getElementById("previewTranslateBtn").style.display = item.lang !== "fr" ? "block" : "none";
 
   document.getElementById("previewOverlay").classList.add("open");
+  debutDialogue("previewOverlay", { fermer: closePreview });
 }
 function closePreview(){
   document.getElementById("previewOverlay").classList.remove("open");
+  finDialogue("previewOverlay");
 }
 function closePreviewOnOverlay(e){
   if(e.target.id === "previewOverlay") closePreview();
@@ -2995,7 +3045,163 @@ function closePreviewOnOverlay(e){
 // par jour, et un second clic l'annule déjà.
 
 let _confirmationEnCours = null;
-let _focusAvantConfirmation = null;
+// ---------- Mécanique commune des dialogues ----------
+//
+// Le panneau de confirmation était le seul vrai dialogue de l'app : rôle,
+// aria-modal, libellé, focus déplacé à l'ouverture et rendu à la fermeture,
+// Échap. Les quatre autres — paramètres, filtres, informations, aperçu —
+// n'avaient rien de tout ça : on ouvrait les paramètres et le focus restait
+// sur le bouton d'engrenage DERRIÈRE le voile, la tabulation promenait dans
+// la page cachée, et Échap ne faisait rien.
+//
+// Et aucun des cinq, celui de confirmation compris, ne PIÉGEAIT le focus :
+// passé le dernier élément du panneau, la tabulation repartait dans le fil
+// d'articles invisible sous le voile.
+//
+// Tout est ici, une fois, pour les cinq.
+
+const SELECTEUR_FOCUSABLE =
+  'button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),' +
+  'textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+// Une pile et non une seule variable : une confirmation peut s'ouvrir
+// PAR-DESSUS les paramètres (« Réinitialiser les filtres »). Fermer celle du
+// dessus doit rendre le focus au panneau du dessous, pas à la page.
+let _pileDialogues = [];
+let _defilementFige = null;
+
+function focusablesDe(panneau){
+  return Array.from(panneau.querySelectorAll(SELECTEUR_FOCUSABLE))
+    .filter(el => el.offsetWidth > 0 || el.offsetHeight > 0);
+}
+
+// Le fond ne doit pas défiler sous le panneau. position:fixed plutôt que
+// overflow:hidden sur body : Safari iOS ignore le second dès que le doigt
+// arrive au bout du panneau et se met à faire glisser la page derrière.
+// La position est mémorisée puis restituée, sinon on rouvre en haut du fil.
+function figeLeFond(){
+  if(_defilementFige !== null) return;   // déjà figé par un dialogue en dessous
+  _defilementFige = window.scrollY;
+  document.body.style.position = "fixed";
+  document.body.style.top = (-_defilementFige) + "px";
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+}
+
+function libereLeFond(){
+  if(_defilementFige === null) return;
+  const y = _defilementFige;
+  _defilementFige = null;
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
+  window.scrollTo(0, y);
+}
+
+function _toucheDialogue(e){
+  const haut = _pileDialogues[_pileDialogues.length - 1];
+  if(!haut) return;
+
+  if(e.key === "Escape"){
+    e.preventDefault();
+    e.stopPropagation();
+    haut.fermer();
+    return;
+  }
+  if(e.key !== "Tab") return;
+
+  // Le piège. Sans lui, la tabulation sort du panneau et va parcourir la
+  // page cachée sous le voile, où l'on ne voit plus où l'on est.
+  const cibles = focusablesDe(haut.panneau);
+  if(cibles.length === 0){
+    e.preventDefault();
+    return;
+  }
+  const premier = cibles[0];
+  const dernier = cibles[cibles.length - 1];
+  const actif = document.activeElement;
+
+  if(!haut.panneau.contains(actif)){
+    // Le focus s'était échappé (clic sur le voile, élément disparu) : on le
+    // ramène plutôt que de laisser la tabulation continuer dehors.
+    e.preventDefault();
+    premier.focus();
+  }else if(e.shiftKey && actif === premier){
+    e.preventDefault();
+    dernier.focus();
+  }else if(!e.shiftKey && actif === dernier){
+    e.preventDefault();
+    premier.focus();
+  }
+}
+
+// idFond      : l'overlay à ouvrir (il porte déjà la classe .open côté appelant)
+// options.fermer       : ce qu'Échap doit appeler. Défaut : retirer .open.
+// options.focusInitial : élément (ou son id) à focaliser. Défaut : le premier
+//                        élément focusable du panneau.
+function debutDialogue(idFond, options){
+  const fond = document.getElementById(idFond);
+  if(!fond) return;
+  const panneau = fond.querySelector('[role="dialog"],[role="alertdialog"]')
+                  || fond.firstElementChild;
+  if(!panneau) return;
+  const opts = options || {};
+
+  _pileDialogues.push({
+    idFond: idFond,
+    panneau: panneau,
+    focusAvant: document.activeElement,
+    fermer: opts.fermer || function(){ fond.classList.remove("open"); finDialogue(idFond); }
+  });
+
+  figeLeFond();
+  if(_pileDialogues.length === 1){
+    document.addEventListener("keydown", _toucheDialogue, true);
+  }
+
+  let cible = opts.focusInitial;
+  if(typeof cible === "string") cible = document.getElementById(cible);
+  if(!cible || !panneau.contains(cible)) cible = focusablesDe(panneau)[0];
+  if(!cible){
+    // Panneau sans rien de focusable (l'aperçu d'un article sans lien) : on
+    // focalise le panneau lui-même pour que le lecteur d'écran y entre.
+    panneau.setAttribute("tabindex", "-1");
+    cible = panneau;
+  }
+  try{ cible.focus(); }catch(e){ /* élément retiré entre-temps */ }
+}
+
+function finDialogue(idFond){
+  const i = _pileDialogues.map(d => d.idFond).lastIndexOf(idFond);
+  if(i === -1) return;
+  const entree = _pileDialogues.splice(i, 1)[0];
+
+  if(_pileDialogues.length === 0){
+    document.removeEventListener("keydown", _toucheDialogue, true);
+    libereLeFond();
+  }
+
+  // Le focus revient d'où il venait — sinon il retombe sur <body> et la
+  // tabulation suivante repart du tout début de la page.
+  //
+  // preventScroll est INDISPENSABLE ici, et pas un raffinement : le navigateur
+  // fait défiler la page jusqu'à l'élément qu'on focalise. L'élément d'origine
+  // est presque toujours un bouton d'entête, tout en haut ; sans cette option,
+  // refermer un panneau ouvert depuis le milieu du fil renvoyait au sommet.
+  // Mesuré : la position était bien restituée par libereLeFond() juste avant,
+  // puis immédiatement défaite par ce focus — 1500 px redevenaient 0.
+  const retour = entree.focusAvant;
+  if(retour && retour.focus && document.contains(retour)){
+    try{ retour.focus({ preventScroll: true }); }
+    catch(e){
+      // Navigateur trop ancien pour l'option, ou élément retiré du DOM.
+      try{ retour.focus(); }catch(_){ /* tant pis, on ne casse rien */ }
+    }
+  }
+}
 
 function demandeConfirmation(titre, detail, libelle){
   const fond = document.getElementById("confirmOverlay");
@@ -3009,31 +3215,25 @@ function demandeConfirmation(titre, detail, libelle){
   document.getElementById("confirmTitre").textContent = titre;
   document.getElementById("confirmDetail").textContent = detail;
   document.getElementById("confirmValider").textContent = libelle;
-  _focusAvantConfirmation = document.activeElement;
   fond.classList.add("open");
   // Le focus va sur ANNULER : une validation par mégarde (Entrée, double
-  // tap) doit tomber sur l'issue inoffensive.
-  const annuler = document.getElementById("confirmAnnuler");
-  if(annuler) annuler.focus();
-  document.addEventListener("keydown", _toucheConfirmation, true);
+  // tap) doit tomber sur l'issue inoffensive. Le reste — piégeage du focus,
+  // Échap, blocage du défilement, retour du focus — vient de la mécanique
+  // commune, qui apporte à ce panneau le piège qui lui manquait aussi.
+  debutDialogue("confirmOverlay", {
+    focusInitial: "confirmAnnuler",
+    fermer: function(){ repondConfirmation(false); }
+  });
   return new Promise(resoud => { _confirmationEnCours = resoud; });
 }
 
 function repondConfirmation(ok){
   const fond = document.getElementById("confirmOverlay");
   if(fond) fond.classList.remove("open");
-  document.removeEventListener("keydown", _toucheConfirmation, true);
-  if(_focusAvantConfirmation && _focusAvantConfirmation.focus){
-    try{ _focusAvantConfirmation.focus(); }catch(e){ /* élément disparu */ }
-  }
-  _focusAvantConfirmation = null;
+  finDialogue("confirmOverlay");
   const resoud = _confirmationEnCours;
   _confirmationEnCours = null;
   if(resoud) resoud(!!ok);
-}
-
-function _toucheConfirmation(e){
-  if(e.key === "Escape"){ e.preventDefault(); repondConfirmation(false); }
 }
 
 // Un clic à côté ferme sur le REFUS, jamais sur l'action destructive.

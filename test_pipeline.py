@@ -3063,6 +3063,252 @@ def test_structure_et_annonces():
           "et la fonction qui la compose existe")
 
 
+def test_panneaux_sont_de_vrais_dialogues():
+    print("\n[app] les cinq panneaux sont de vrais dialogues")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    sans_com = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
+    # Lot A — rôle, modalité, nom. Avant, SEUL le panneau de confirmation les
+    # avait ; on ouvrait les paramètres et un lecteur d'écran n'annonçait rien.
+    panneaux = {
+        "confirm-panel":  "alertdialog",
+        "sheet-panel":    "dialog",
+        "settings-panel": "dialog",
+        "previewPanel":   "dialog",
+    }
+    for classe, role in panneaux.items():
+        motif = r'(?:class|id)="[^"]*' + re.escape(classe) + r'[^"]*"[^>]*'
+        balises = [m.group(0) for m in re.finditer(motif, sans_com)
+                   if "role=" in m.group(0)]
+        check(balises, "le panneau %s déclare un rôle" % classe)
+        for b in balises:
+            check('role="%s"' % role in b,
+                  "%s a le rôle %s" % (classe, role))
+            check('aria-modal="true"' in b, "%s est modal" % classe)
+            check("aria-labelledby=" in b, "%s porte un nom" % classe)
+
+    # Chaque aria-labelledby doit pointer sur un élément QUI EXISTE : un
+    # renvoi vers un id absent laisse le dialogue sans nom, en silence.
+    for m in re.finditer(r'aria-labelledby="([^"]+)"', sans_com):
+        cible = m.group(1)
+        check(('id="%s"' % cible) in sans_com,
+              "le nom du dialogue renvoie à un élément réel (%s)" % cible)
+
+    # Lot D — les titres de panneau sont des titres.
+    for tid, libelle in (("titreParametres", "Paramètres"), ("titreInfos", "Informations"),
+                         ("titreFiltres", "Filtres"), ("previewSource", "Aperçu")):
+        check(re.search(r'<h2 id="%s"' % tid, sans_com) is not None,
+              "le titre du panneau %s est un h2" % libelle)
+    check(".settings-title h2{font:inherit" in html,
+          "et il hérite de la typographie du panneau — rien ne bouge à l'œil")
+
+    # Lots A et B — la mécanique commune, écrite UNE fois pour les cinq.
+    for nom in ("debutDialogue", "finDialogue", "figeLeFond",
+                "libereLeFond", "_toucheDialogue", "focusablesDe"):
+        check("function %s(" % nom in html, "la mécanique commune fournit %s" % nom)
+
+    for ouvre, ferme, idFond in (("openSettings", "closeSettings", "settingsOverlay"),
+                                 ("openInfo", "closeInfo", "infoOverlay"),
+                                 ("openFiltersSheet", "closeFiltersSheet", "filtersOverlay"),
+                                 ("openPreview", "closePreview", "previewOverlay")):
+        corps = html[html.index("function %s(" % ouvre):]
+        corps = corps[:corps.index("\n}")]
+        check('debutDialogue("%s"' % idFond in corps,
+              "%s branche le dialogue" % ouvre)
+        corps = html[html.index("function %s(" % ferme):]
+        corps = corps[:corps.index("\n}")]
+        check('finDialogue("%s")' % idFond in corps,
+              "%s le débranche" % ferme)
+    check('debutDialogue("confirmOverlay"' in html and 'finDialogue("confirmOverlay")' in html,
+          "la confirmation utilise la MÊME mécanique que les quatre autres")
+
+    # Le piégeage du focus. Il manquait aux CINQ, celui de confirmation
+    # compris : passé le dernier élément, la tabulation repartait dans le fil
+    # d'articles caché sous le voile.
+    #
+    # LIMITE ASSUMÉE de ce qui suit : ces quatre vérifications lisent le code,
+    # elles ne l'exécutent pas. Un `return` glissé au début du piège les
+    # laisserait toutes passer — essayé, elles passent. Elles constatent donc
+    # que le piège est ÉCRIT, pas qu'il fonctionne. Son COMPORTEMENT est
+    # mesuré dans un vrai navigateur : un tour complet de tabulation sur
+    # chacun des cinq panneaux, zéro sortie. Ça, cette suite en Python sans
+    # navigateur ne sait pas le faire, et prétendre le contraire serait pire
+    # que de l'écrire ici.
+    piege = html[html.index("function _toucheDialogue("):html.index("function debutDialogue(")]
+    check('e.key !== "Tab"' in piege, "le piège intercepte la tabulation")
+    check("e.shiftKey" in piege, "et la tabulation arrière")
+    check("dernier.focus()" in piege and "premier.focus()" in piege,
+          "il boucle du dernier au premier et inversement")
+    check("!haut.panneau.contains(actif)" in piege,
+          "et rattrape un focus qui se serait échappé du panneau")
+
+    # Lot B — le fond ne défile plus, et la position est RENDUE.
+    fige = html[html.index("function figeLeFond("):html.index("function libereLeFond(")]
+    check("_defilementFige = window.scrollY" in fige,
+          "la position de défilement est mémorisée avant de figer")
+    check('position = "fixed"' in fige,
+          "le fond est figé en position:fixed (overflow:hidden ne tient pas sur Safari iOS)")
+    libere = html[html.index("function libereLeFond("):html.index("function _toucheDialogue(")]
+    check("window.scrollTo(0, y)" in libere, "et elle est restituée à la fermeture")
+
+    # LE piège qui a coûté une passe : rendre le focus à un bouton hors écran
+    # fait défiler la page jusqu'à lui, ce qui DÉFAIT la restitution qu'on
+    # vient de faire. Mesuré : 1500 px redevenaient 0.
+    fin = html[html.index("function finDialogue("):]
+    fin = fin[:fin.index("\nfunction ")]
+    check("preventScroll: true" in fin,
+          "le focus rendu ne fait pas défiler la page (preventScroll) — "
+          "sans quoi la position restituée est aussitôt perdue")
+
+    # Une pile et non une variable : une confirmation peut s'ouvrir par-dessus
+    # les paramètres, et la fermer doit rendre le focus au panneau du dessous.
+    check("_pileDialogues" in html and "_pileDialogues.push" in html,
+          "les dialogues s'empilent (confirmation par-dessus paramètres)")
+    check("_pileDialogues.length === 0" in html,
+          "et le fond n'est libéré qu'au dernier fermé")
+
+
+def test_pause_nocturne():
+    print("\n[workflow] le robot ne tourne pas la nuit, heure de Paris")
+    import re, subprocess, tempfile, os, shutil
+    brut = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+
+    # Lecture en TEXTE et non avec PyYAML : la CI n'installe que
+    # requirements.txt, qui ne le contient pas. Un `import yaml` passerait
+    # ici et ferait rougir la CI — c'est exactement ce qui a failli arriver.
+    corps = brut[brut.index("    steps:"):]
+    blocs = re.split(r"\n      - name: ", corps)[1:]
+    etapes = []
+    for b in blocs:
+        nom = b.split("\n", 1)[0].strip()
+        cond = re.search(r"^        if: (.+)$", b, re.M)
+        etapes.append((nom, cond.group(1).strip() if cond else ""))
+    parNom = dict(etapes)
+
+    check(etapes[0][0] == "Fenêtre de veille",
+          "la décision est prise AVANT tout le reste (première étape)")
+
+    # Tout ce qui produit du bruit doit sauter ; le signal de vie, non.
+    for nom in ("Récupérer le dépôt", "Installer Python", "Installer les dépendances",
+                "Récupérer et traiter les flux", "Publier le résultat",
+                "Notifier Discord", "Notifier par push"):
+        check("steps.veille.outputs.pause != 'true'" in parNom.get(nom, ""),
+              "« %s » saute pendant la pause" % nom)
+
+    check(parNom.get("Signaler que le robot est vivant") == "always()",
+          "le signal de vie part QUAND MÊME : cinq heures de silence seraient "
+          "lues par healthchecks.io comme une panne, et l'alerte sonnerait à 2h")
+
+    # Les deux notifications gardent leur garde d'origine.
+    for nom in ("Notifier Discord", "Notifier par push"):
+        check("success()" in parNom.get(nom, ""),
+              "« %s » notifie toujours seulement après une publication réussie" % nom)
+
+    bloc_veille = blocs[0]
+    check("TZ=Europe/Paris" in bloc_veille,
+          "l'heure est calculée en Europe/Paris et non à un décalage fixe "
+          "(sinon la fenêtre glisserait au changement d'heure)")
+    apres_panne = bloc_veille.split("indéterminable")[1].split("exit 0")[0] \
+        if "indéterminable" in bloc_veille else ""
+    check("pause=false" in apres_panne,
+          "un garde en panne laisse PASSER — il doit rater une pause, "
+          "jamais bloquer le robot pour toujours")
+
+    # La date de sortie est écrite à deux endroits. Elle ne doit pas diverger.
+    debut_exc = re.search(r'EXCEPTION_DEBUT: "(\d{4}-\d{2}-\d{2})"', bloc_veille).group(1)
+    fin_exc = re.search(r'EXCEPTION_FIN: "(\d{4}-\d{2}-\d{2})"', bloc_veille).group(1)
+    app = open("docs/index.html", encoding="utf-8").read()
+    sortie = re.search(r'GTA6_RELEASE = new Date\("(\d{4}-\d{2}-\d{2})', app).group(1)
+    check(debut_exc <= sortie <= fin_exc,
+          "la fenêtre d'exception (%s → %s) encadre la sortie annoncée par "
+          "l'app (%s)" % (debut_exc, fin_exc, sortie))
+
+    # Le bandeau « robot en retard » doit tolérer la pause, sinon il
+    # s'allumerait chaque nuit pour annoncer une panne qui n'existe pas.
+    seuil = int(re.search(r"const STALE_THRESHOLD_MS = (\d+) \* 60 \* 60 \* 1000", app).group(1))
+    check(seuil >= 6,
+          "le bandeau « robot en retard » tolère la pause : %dh (6 minimum — "
+          "dernier passage vers 23h, reprise à 5h)" % seuil)
+
+    # Et on EXÉCUTE le garde, à des instants choisis, avec un faux `date`. Un
+    # test qui lit le script sans le lancer ne prouve rien sur des
+    # comparaisons de chaînes en shell.
+    script_src = bloc_veille.split("        run: |\n", 1)[1]
+    script = "\n".join(l[10:] if l.startswith(" " * 10) else l
+                       for l in script_src.split("\n"))
+    tmp = tempfile.mkdtemp()
+    try:
+        chemin = os.path.join(tmp, "garde.sh")
+        open(chemin, "w", encoding="utf-8").write(script)
+        faux = os.path.join(tmp, "bin")
+        os.makedirs(faux)
+        d = os.path.join(faux, "date")
+        open(d, "w").write('#!/bin/bash\nexec /bin/date -d "$FAUX_INSTANT UTC" "$@"\n')
+        os.chmod(d, 0o755)
+
+        def verdict(instant, declencheur):
+            sortieFic = os.path.join(tmp, "out")
+            open(sortieFic, "w").close()
+            env = dict(os.environ,
+                       PATH=faux + os.pathsep + os.environ["PATH"],
+                       FAUX_INSTANT=instant, GITHUB_OUTPUT=sortieFic,
+                       DECLENCHEUR=declencheur,
+                       EXCEPTION_DEBUT=debut_exc, EXCEPTION_FIN=fin_exc)
+            subprocess.run(["bash", chemin], env=env, capture_output=True)
+            return open(sortieFic, encoding="utf-8").read().strip()
+
+        # Déclencheurs AUTOMATIQUES : cron-job.org (repository_dispatch) et le
+        # filet de GitHub (schedule). Ce sont eux, et eux seuls, que la pause
+        # concerne.
+        cas = [
+            ("2026-09-07 21:30", "false", "23h30 en été"),
+            ("2026-09-07 22:00", "true",  "minuit pile en été"),
+            ("2026-09-08 02:59", "true",  "4h59 en été"),
+            ("2026-09-08 03:00", "false", "5h00 en été"),
+            ("2026-11-14 23:30", "true",  "00h30 en HIVER — le décalage a changé"),
+            ("2026-11-15 04:00", "false", "5h00 en hiver"),
+            ("2026-11-19 02:00", "false", "nuit de la sortie : pause levée"),
+            ("2026-11-21 01:00", "true",  "lendemain de la fenêtre : pause revenue"),
+        ]
+        for instant, attendu, libelle in cas:
+            for declencheur in ("repository_dispatch", "schedule"):
+                obtenu = verdict(instant, declencheur)
+                check(obtenu == "pause=" + attendu,
+                      "%s (%s) → %s%s" % (libelle, declencheur, "pause=" + attendu,
+                                          "" if obtenu == "pause=" + attendu
+                                          else "  OBTENU : " + (obtenu or "rien")))
+
+        # UNE DEMANDE À LA MAIN PASSE TOUJOURS. Le bouton « Relancer le robot »
+        # de l'app poste sur /actions/workflows/…/dispatches, donc
+        # workflow_dispatch, exactement comme le bouton « Run workflow » de
+        # GitHub. La pause existe pour que le robot ne réveille personne de
+        # lui-même, pas pour refuser un ordre explicite.
+        #
+        # On balaie les VINGT-QUATRE heures, pas seulement quelques-unes :
+        # c'est la garantie demandée, elle doit être vérifiée partout.
+        rates = []
+        for h in range(24):
+            for jour, saison in (("2026-09-08", "été"), ("2026-12-08", "hiver")):
+                instant = "%s %02d:30" % (jour, h)
+                if verdict(instant, "workflow_dispatch") != "pause=false":
+                    rates.append("%s %s" % (instant, saison))
+        check(not rates,
+              "un déclenchement manuel passe aux 24 heures, été comme hiver"
+              + (" (bloqué à : %s)" % ", ".join(rates[:4]) if rates else ""))
+
+        # Et le contrôle inverse : aux mêmes instants, un déclencheur
+        # automatique DOIT être bloqué la nuit. Sans ça, le test ci-dessus
+        # passerait tout aussi bien si la pause ne marchait plus du tout.
+        bloques = sum(1 for h in range(5)
+                      if verdict("2026-09-08 %02d:30" % ((h - 2) % 24), "schedule") == "pause=true")
+        check(bloques == 5,
+              "aux mêmes heures, l'automatique est bien mis en pause "
+              "(%d/5 — sinon le test du manuel ne prouverait rien)" % bloques)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def test_filtres_persistants():
     print("\n[app] les filtres survivent à la fermeture de l'app")
     import re
@@ -3257,14 +3503,28 @@ def test_readme_ne_cite_que_des_constantes_reelles():
                              open(fichier, encoding="utf-8").read(), re.M):
             code.setdefault(m.group(1), m.group(2).strip())
 
-    # Variables d'environnement, secrets GitHub et constantes JS : elles se
-    # citent légitimement sans exister dans un .py.
+    # L'app est un fichier unique en JavaScript ; ses constantes sont aussi
+    # citables que celles du Python. Elles étaient jusqu'ici EXEMPTÉES une par
+    # une, ce qui laissait passer une constante JS inventée aussi facilement
+    # qu'un nom au hasard. On les lit pour de vrai.
+    js = open("docs/index.html", encoding="utf-8").read()
+    for m in re.finditer(r"^\s*(?:const|let|var)\s+([A-Z][A-Z0-9_]{2,})\s*=\s*(.*)$",
+                         js, re.M):
+        # La valeur ne sert qu'aux constantes tenant sur une ligne ; celles
+        # qui ouvrent un tableau ou un objet (DEFAULT_FEEDS, DEFAULT_SETTINGS)
+        # sont enregistrées sans valeur — leur nom suffit à prouver qu'elles
+        # existent, et le README ne cite pas leur contenu.
+        valeur = m.group(2).strip()
+        code.setdefault(m.group(1),
+                        valeur[:-1].strip() if valeur.endswith(";") else None)
+
+    # Ne restent en dehors que ce qui n'est une constante de code NULLE PART :
+    # variables d'environnement et secrets GitHub.
     hors_sujet = {
         "HEALTHCHECK_URL", "DISCORD_WEBHOOK_URL", "VAPID_PRIVATE_KEY",
         "VAPID_PUBLIC_KEY", "VAPID_SUBJECT", "PUSH_SUBSCRIPTIONS",
         "NEW_ITEMS_FILE", "SOURCE_ALERTS_FILE", "PROMOTED_ITEMS_FILE",
-        "GITHUB_TOKEN", "DEFAULT_FEEDS", "DEFAULT_SETTINGS",
-        "CASSEES_NOMMEES", "RUNNER_TEMP",
+        "GITHUB_TOKEN", "RUNNER_TEMP",
     }
 
     readme = open("README.md", encoding="utf-8").read()
@@ -3281,7 +3541,7 @@ def test_readme_ne_cite_que_des_constantes_reelles():
     faux = []
     for nom, valeur in cites:
         valeur = (valeur or "").strip()
-        if not valeur or nom not in code:
+        if not valeur or nom not in code or code[nom] is None:
             continue
         if valeur.rstrip(".") != code[nom].rstrip("."):
             faux.append("%s : README dit %s, code dit %s" % (nom, valeur, code[nom]))
@@ -3291,7 +3551,9 @@ def test_readme_ne_cite_que_des_constantes_reelles():
     # Contrôle du contrôle : le test doit vraiment voir les constantes,
     # sinon il passerait tout aussi bien sur un README vide.
     check("DEAD_SOURCE_HOURS" in code and "SIMILARITY_THRESHOLD" in code,
-          "le test lit bien les constantes du code")
+          "le test lit bien les constantes du code Python")
+    check("GTA6_RELEASE" in code and "STORAGE_PREFIX" in code,
+          "et celles du JavaScript de l'app")
     check(len([n for n, _ in cites if n in code]) >= 10,
           "et il en trouve au moins dix citées dans le README")
 
@@ -3575,11 +3837,24 @@ def test_confirmation_des_actions_sans_retour():
     # à côté refusent. Une validation par mégarde doit être inoffensive.
     bloc = html[html.index("function demandeConfirmation("):
                 html.index("function repondConfirmation(")]
-    check('getElementById("confirmAnnuler")' in bloc and ".focus()" in bloc,
+    # La confirmation passe désormais par la mécanique commune des dialogues,
+    # à qui elle DÉCLARE son focus initial. On vérifie l'intention déclarée —
+    # « confirmAnnuler » — et non plus un appel .focus() écrit à la main, qui
+    # n'existe plus. Le comportement, lui, est vérifié dans le navigateur.
+    check('focusInitial: "confirmAnnuler"' in bloc,
           "le focus arrive sur Annuler, pas sur l'action destructive")
-    bloc = html[html.index("function _toucheConfirmation("):
-                html.index("// Un clic à côté ferme")]
-    check("repondConfirmation(false)" in bloc, "Échap refuse")
+    check('fermer: function(){ repondConfirmation(false); }' in bloc,
+          "et Échap passe par le REFUS, donc la promesse se résout")
+    # _toucheConfirmation n'existe plus : Échap est géré une seule fois, pour
+    # les cinq dialogues, par la mécanique commune. On vérifie donc là-bas
+    # qu'Échap appelle bien la fermeture DÉCLARÉE par le dialogue du dessus —
+    # laquelle, pour la confirmation, est le refus (vérifié juste au-dessus).
+    bloc = html[html.index("function _toucheDialogue("):
+                html.index("function debutDialogue(")]
+    check('e.key === "Escape"' in bloc and "haut.fermer()" in bloc,
+          "Échap appelle la fermeture déclarée par le dialogue du dessus")
+    check("_pileDialogues[_pileDialogues.length - 1]" in bloc,
+          "et c'est bien celui du DESSUS, pas un autre de la pile")
     bloc = html[html.index("function confirmationSurFond("):]
     bloc = bloc[:bloc.index("\n}")]
     check("repondConfirmation(false)" in bloc and "true" not in bloc,
@@ -3780,6 +4055,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
            test_structure_et_annonces,
+           test_panneaux_sont_de_vrais_dialogues,
+           test_pause_nocturne,
            test_filtres_persistants,
            test_icones_en_emoji,
            test_contraste_des_deux_themes,
