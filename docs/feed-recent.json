@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-08T01:01:41.858009+00:00",
-  "duration_seconds": 45.5,
+  "generated_at": "2026-09-08T02:01:46.638796+00:00",
+  "duration_seconds": 51.5,
   "decode_failures": 0,
-  "total_articles": 2144,
-  "new_this_run": 2,
+  "total_articles": 2147,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -353,7 +353,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-07T13:53:31+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -373,14 +373,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 11,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-07T19:14:47+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-08T01:12:08+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -402,7 +402,7 @@
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-08T00:31:35+00:00",
+      "last_article": "2026-09-08T01:03:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,14 +493,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T12:00:01+00:00",
       "days_since_last_article": 1,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 3,
@@ -617,7 +617,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T00:26:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 5,
@@ -859,7 +859,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T01:05:00+00:00",
-      "days_since_last_article": 10,
+      "days_since_last_article": 11,
       "status": "ok"
     },
     {
@@ -907,20 +907,31 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
-      "days_since_last_article": 16,
+      "days_since_last_article": 17,
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-08T02:01:46.638213+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-08T02:01:46.638213+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,100,100,99,100,100,100,100,100,100",
+    "rockstar-fr": "99,99,100,100,99,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,102,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,101,100,100,100,102,102,102,102,102,102",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "gnews-fr": "100,102,100,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "102,101,100,100,100,102,102,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -928,14 +939,14 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,60,100,100,100,100,100,100,100,100,100,100",
+    "vg247": "60,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -952,7 +963,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,8,9,8,8,8,8,8",
+    "xboxwire": "8,8,8,8,8,9,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -993,13 +1004,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2127b-sVYffa1AeP8/5tOH8f3GAOrYMMM\"",
+      "etag": "W/\"21e25-ufhXFqsp5e3mRufxv0LNbKtvoLA\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"126f53608fce7ea6b740ee45e33f1b2e\"",
-      "modified": "Mon, 07 Sep 2026 22:00:29 GMT"
+      "etag": "W/\"7b8dd95223590389538e4af2eb56a946\"",
+      "modified": "Tue, 08 Sep 2026 01:53:09 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 01:01:12 GMT"
+      "modified": "Tue, 08 Sep 2026 01:59:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9f5e20-308d\"",
-      "modified": "Tue, 08 Sep 2026 01:00:16 GMT"
+      "etag": "W/\"6a9f6c31-308d\"",
+      "modified": "Tue, 08 Sep 2026 02:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,12 +1054,38 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9f4df0-b29\"",
-      "modified": "Mon, 07 Sep 2026 23:51:12 GMT"
+      "etag": "\"6a9f6a0f-b2b\"",
+      "modified": "Tue, 08 Sep 2026 01:51:11 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Pourrait Sortir Plus Tôt Sur PC, Alors Que Les Stocks De Consoles Inquiètent Déjà - Pause Hardware",
+      "link": "https://pausehardware.com/gta-6-pc-sortie-plus-tot/",
+      "source_link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9KMEY1THpuVVNVN0tjelpkak9BMzRQbDh4dkpPLVpKdDNNRzRwZjBvV0ZnWmw0OGQtU1N5a0NzWVAxVHVEMTNfLUZ1TC1oSFQ3TEl2ZEc5TXJXaE9KRU5COA?oc=5",
+      "date": "2026-09-08T01:12:08+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://pausehardware.com/wp-content/uploads/2026/09/resized_gta-6-pc-pourrait-arriver-plus-tot-que-prevu.jpg",
+      "description": "GTA 6 Pourrait Sortir Plus Tôt Sur PC, Alors Que Les Stocks De Consoles Inquiètent Déjà&nbsp;&nbsp;Pause Hardware"
+    },
+    {
+      "title": "Before GTA 6 Drops: The 15 Fall Releases Set to Shape 2026 - eGamers.io",
+      "link": "https://egamers.io/before-gta-6-drops-the-15-fall-releases-set-to-shape-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNRDhXajc2eHMzTl9XTmozMnk2Y280a0hrbmVfSVcwelhuZU5hdEkyOWxuSzN4bnBsTW50TU1jc01FMHlGdWh3RXNiZWsxekdBbUlESG1rNUR6d2pJOHU5emdlc3hCYzF1T0xyTW91YXl1OU1HWmxvSXMwQy1ReDZ5MGkxTQ?oc=5",
+      "date": "2026-09-08T01:03:29+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://egamers.io/wp-content/uploads/2026/09/before-gta-6-drops-the-15-fall-releases-set-to-shape-2026.jpg",
+      "description": "Before GTA 6 Drops: The 15 Fall Releases Set to Shape 2026&nbsp;&nbsp;eGamers.io"
+    },
     {
       "title": "Rockstar May Move GTA 6 PC Launch in Response to Expected Console Shortages - TechPowerUp",
       "link": "https://www.techpowerup.com/352453/rockstar-may-move-gta-6-pc-launch-in-response-to-expected-console-shortages",
@@ -4113,6 +4150,19 @@
       "description": "GTA VI : une sortie sur PC avancée en raison de la hausse de prix sur les consoles ?&nbsp;&nbsp;Instant Gaming News"
     },
     {
+      "title": "GTA 6’s Netflix Show Changed 1 Trend for PlayStation and Xbox, Report Says - IMDb",
+      "link": "https://www.imdb.com/news/ni66005303/?ref_=ttnw_art_perm",
+      "source_link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBUUkdkdTVHU3p6Wmh6QU5rRmpOYjZxNjNUZHF5alRnZU5mUWoySTNJajRaOE0zbW1UUDRHUEgtSFZRSXpvaGk5bC1nVzN5S044V29ZWmVHRmc5VDFYMjdkSmpLLXIwaXc?oc=5",
+      "date": "2026-09-04T07:00:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6’s Netflix Show Changed 1 Trend for PlayStation and Xbox, Report Says&nbsp;&nbsp;IMDb"
+    },
+    {
       "title": "GTA 6 va encore proposer une bande-son exceptionnelle, voici la liste des musiques confirmées",
       "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-liste-musiques-confirmees-722183",
       "source_link": null,
@@ -4981,51 +5031,6 @@
       "lang": "fr",
       "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/06/ffr-1.jpg?resize=1600,900&key=932798fe",
       "description": "Date de sortie de Final Fantasy 7 Revelation, manettes GTA 6… Le récap des annonces PS5 du State of Play de rentrée&nbsp;&nbsp;Numerama"
-    },
-    {
-      "title": "GTA 6 confirms PlayStation exclusive release as Sony and Rockstar Games team-up - gamingbible.com",
-      "link": "https://www.gamingbible.com/news/platform/playstation/gta-6-exclusive-dualsense-controllers-498454-20260903",
-      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOU0dZeVotazlBWVNSY3A4OHI3bkYyTWd1SWlkc2I5ZU4zal9LWDAya3hIYUctM2xGMURYWWFCanpuVXBWZHBHTy1McHUtSjA2c1pQdjFXXzRPTmU3N1Uza2FHY3Yxc1NKRHAybmMybW9GZVVnbENNc09xSnE2eFRPVkJmR0lieEJ4b0pQekk2OV9adVJKMTlKdS1jMHo4Z3hKT2hZSFdick9EU3c?oc=5",
-      "date": "2026-09-03T14:07:50+00:00",
-      "source": "Rockstar Games (annonces)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blta821db4220dc3e0a/6a9979835717d115d990f05b/gta-6-07052026.jpg",
-      "description": "GTA 6 confirms PlayStation exclusive release as Sony and Rockstar Games team-up&nbsp;&nbsp;gamingbible.com"
-    },
-    {
-      "title": "PlayStation dévoile deux manettes DualSense aux couleurs de GTA 6 - Pèse sur start",
-      "link": "https://www.pesesurstart.com/2026/09/03/playstation-devoile-deux-manettes-dualsense-aux-couleurs-de-gta-6",
-      "source_link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOR3pUTTAtSzM0SURSem9DazNwTGZUaDZoUGdmM2FOSi1iOEtkUUpNSjFLdnk2MDJjTFJpX3pSelNnRlM0b2swend5MjBCQjVqMVlhSGRnY0hBOWgxNEhScnVTbldHV0dYVnZ0b2cyWGtWcVFzNGsyNlRsUGhpRDBXYXB4ZWVvU3dTUnBUa2dUd2M4YVVjWFpYYzgtbGhLaFJlV2RKTURzTkk?oc=5",
-      "date": "2026-09-03T14:07:29+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://m1.quebecormedia.com/emp/emp/Screenshot_2026_09_03_at_10.02.46_AM990c30d3-13e1-442e-9bc8-ebdd9dec138b_ORIGINAL.jpg?impolicy=crop-resize&x=157&y=0&w=2403&h=1352&width=1200",
-      "description": "PlayStation dévoile deux manettes DualSense aux couleurs de GTA 6&nbsp;&nbsp;Pèse sur start",
-      "extraSources": [
-        {
-          "source": "Numerama",
-          "link": "https://www.numerama.com/tech/2324579-playstation-va-lancer-des-manettes-ps5-aux-couleurs-de-gta-6.html"
-        }
-      ]
-    },
-    {
-      "title": "GTA 6 fait une belle surprise aux joueurs PlayStation et ils vont se l'arracher",
-      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-manette-ps5-annonce-sop-septembre-2026-722198",
-      "source_link": null,
-      "date": "2026-09-03T14:06:13+00:00",
-      "source": "Gameblog.fr",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://cdn-uploads.gameblog.fr/img/news/694332_681b5b453a19f.jpg",
-      "description": "GTA 6 s'est invité au State of Play de ce 3 septembre 2026 pour faire une belle surprise aux joueurs PlayStation, qui auront probablement envie de se l'arracher."
     }
   ],
   "partial": true,
