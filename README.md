@@ -493,7 +493,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **894
+qui permet de tester tout le pipeline sans sortir de la machine. **903
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -537,6 +537,9 @@ Six jetons, indépendants du thème, partagés par les deux palettes :
 
 --t-court .15s    changement d'état sur place (survol, focus, bascule)
 --t-moyen .25s    un élément entre, sort ou parcourt une distance
+
+--courbe        cubic-bezier(0.2, 0, 0, 1)   changement d'état sur place
+--courbe-entree cubic-bezier(0, 0, 0, 1)     un élément entre ou se déplace
 ```
 
 **Les valeurs viennent des fichiers de jetons que Google génère lui-même**
@@ -550,8 +553,19 @@ l'app est monospace et anguleuse ; des boutons entièrement arrondis la
 casseraient. On emprunte l'échelle, pas le style — et c'est écrit dans le code
 aussi, pour que personne n'y lise plus tard une conformité qui n'existe pas.
 
-Les pulsations décoratives infinies gardent leur rythme propre : ce n'est pas
-du retour d'interaction, les harmoniser n'apporterait rien.
+**Les courbes ont suivi le 08/09/2026.** Tout était en `ease`, la valeur par
+défaut du navigateur, alors que le reste de l'échelle venait des jetons
+Material 3 — une incohérence qui ne se voyait pas mais qui était bien là. Ce
+sont maintenant `easing-standard` et `easing-standard-decelerate`, des mêmes
+fichiers. La différence est subtile et réelle : un élément qui entre arrive
+vite puis se pose, au lieu de freiner à mi-course comme le fait le `ease-out`
+du navigateur.
+
+Les pulsations décoratives infinies gardent leur rythme **et leur
+`ease-in-out`** : ce n'est pas du retour d'interaction, et une respiration
+doit être symétrique — les deux courbes ci-dessus ne le sont pas. Un test
+vérifie qu'aucune *transition* ne reste sur une courbe par défaut, et que les
+cinq *animations* infinies gardent la leur.
 
 **Mouvement réduit.** Trois blocs `prefers-reduced-motion` coupaient déjà les
 animations d'*entrée* (carte qui apparaît, retour de glissement, refermeture
@@ -638,12 +652,53 @@ touchait le bord de la carte. L'entête passe en `flex-wrap` et son bloc de
 droite en `margin-left:auto` : sous ~370 px il descend sur sa propre ligne, à
 droite, au lieu d'être coupé.
 
-**Ce qui reste volontairement sous 44 px**, et pourquoi :
+**Troisième passe, le 08/09/2026 : les deux derniers reports sont levés.**
+Ils avaient été écartés avec des raisons — l'une bonne mais incomplète,
+l'autre carrément fausse.
 
-- **les liens de titre d'article** (36 px sur deux lignes, 16 sur une) : c'est
-  du texte en ligne, le cas explicitement excepté par WCAG 2.5.5 et 2.5.8 ;
-- **la coche des cartes en mode dense** (38 px) : l'élargir ferait empiéter sa
-  zone sur la carte voisine, ce qui est pire qu'une cible un peu courte.
+**Les liens de titre d'article** (36 px sur deux lignes, ~18 sur une) étaient
+laissés de côté au motif que c'est du texte en ligne, le cas explicitement
+excepté par WCAG 2.5.5 et 2.5.8. L'exception vaut pour un lien *au milieu
+d'une phrase*, dont on ne peut pas grossir la zone sans casser l'interligne
+du texte autour. Le titre d'article est seul sur ses lignes : elle ne
+s'applique pas vraiment. Le lien est devenu un bloc avec `min-height:44px`.
+
+**La coche des cartes en mode dense** (38 px) était écartée parce que
+l'élargir « ferait empiéter sa zone sur la carte voisine ». **C'était faux, et
+personne ne l'avait mesuré.** Sous la coche il y a 42 px de libre jusqu'au
+premier élément *cliquable* de la carte suivante, et 20 px au-dessus jusqu'au
+lien de titre. Les 5 px qu'on croyait bloquants sont ceux de la date, qui
+n'est pas une cible. Il reste 10 px de marge de chaque côté après
+l'élargissement, et un contrôle automatique compare désormais **toutes les
+paires** de zones cliquables du fil : 134 zones, aucun chevauchement, dans
+les deux densités.
+
+#### L'invariant qui a coûté une passe
+
+En mode dense le titre est coupé à deux lignes. Rendre le lien bloc a cassé
+cette coupure — le `-webkit-line-clamp` du titre ne s'applique plus à un
+enfant bloc — et la hauteur imposée de 44 px valait alors **2,42 lignes** de
+18,2 px : un bout de troisième ligne apparaissait tranché en son milieu, sur
+13 titres sur 30.
+
+La coupure a donc été déplacée sur le lien, et son interligne porté à 22 px
+pour que **deux lignes fassent exactement les 44 px** de la zone de clic. Une
+hauteur imposée et une coupure au nombre de lignes ne cohabitent que si l'une
+tombe juste sur l'autre ; un test vérifie cette égalité plutôt que les deux
+valeurs séparément.
+
+Ce défaut n'a pas été trouvé par la mesure automatique, qui se contentait de
+relire la propriété CSS `-webkit-line-clamp` — toujours à 2, donc toujours
+« correcte ». Il a été trouvé **en regardant la capture d'écran**. Le contrôle
+compare maintenant la hauteur du texte rendu à celle de sa boîte, ce qui est
+le seul symptôme réel.
+
+Coût mesuré à 390 px : la carte moyenne passe de 150 à 153 px en mode normal
+et de 111 à 118 px en mode dense, **sans changer le nombre de cartes visibles
+au premier écran**.
+
+**Il ne reste plus aucune cible sous 44 px dans le fil**, dans les deux
+densités.
 
 Deux principes tiennent tout ça :
 

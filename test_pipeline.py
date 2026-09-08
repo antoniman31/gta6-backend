@@ -3063,6 +3063,70 @@ def test_structure_et_annonces():
           "et la fonction qui la compose existe")
 
 
+def test_derniers_reports_tactiles_et_courbes():
+    print("\n[app] les trois points laissés de côté sont réglés")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # 1. Le lien de titre d'article. Il était en TEXTE EN LIGNE — 36 px sur
+    # deux lignes, ~18 sur une — et c'était le cas excepté par WCAG 2.5.5
+    # et 2.5.8. L'exception vaut pour un lien AU MILIEU d'une phrase, dont on
+    # ne peut pas grossir la zone sans casser l'interligne du texte autour.
+    # Le titre est seul sur ses lignes : elle ne s'applique pas vraiment.
+    bloc = re.search(r"\.card-title a\{([^}]*)\}", html, re.S).group(1)
+    check("display:block" in bloc,
+          "le lien de titre est un bloc, plus du texte en ligne")
+    mh = re.search(r"min-height:\s*(\d+)px", bloc)
+    check(mh is not None and int(mh.group(1)) >= 44,
+          "et sa zone de clic fait au moins 44 px")
+    hauteur = int(mh.group(1)) if mh else 0
+
+    # L'INVARIANT qui a coûté une passe. En mode dense le titre est coupé à
+    # deux lignes ; si la hauteur imposée ne tombe pas juste sur ces deux
+    # lignes, la boîte laisse apparaître un bout de troisième ligne tranché
+    # en son milieu. Constaté sur 13 titres sur 30 avec l'interligne
+    # d'origine : 44 px valaient 2,42 lignes de 18,2.
+    bloc = re.search(r"\.feed\.dense \.card-title a\{([^}]*)\}", html, re.S).group(1)
+    check("-webkit-line-clamp" in bloc,
+          "la coupure à deux lignes porte sur le LIEN (le bloc casse celle du parent)")
+    lignes = int(re.search(r"-webkit-line-clamp:\s*(\d+)", bloc).group(1))
+    inter = int(re.search(r"line-height:\s*(\d+)px", bloc).group(1))
+    check(lignes * inter == hauteur,
+          "%d lignes × %d px d'interligne = %d px, soit exactement la hauteur "
+          "imposée (%d) — sinon une ligne apparaît tranchée"
+          % (lignes, inter, lignes * inter, hauteur))
+
+    # 2. La coche des cartes en mode dense. Elle tombe à 24 px, il faut donc
+    # 10 px de chaque côté et non 7. Écarté d'abord par crainte d'empiéter
+    # sur la carte voisine — mesure faite, il reste 42 px sous la coche
+    # jusqu'au premier élément CLIQUABLE de la carte suivante, et 20 px
+    # au-dessus jusqu'au lien de titre. Les 5 px qu'on croyait bloquants
+    # étaient ceux de la date, qui n'est pas une cible.
+    cote = int(re.search(r"\.feed\.dense \.card-mark\{[^}]*height:\s*(\d+)px", html).group(1))
+    marge = int(re.search(r"\.feed\.dense \.card-mark::after\{inset:-(\d+)px", html).group(1))
+    check(cote + 2 * marge >= 44,
+          "coche en mode dense : %d px visibles + 2×%d = %d px cliquables"
+          % (cote, marge, cote + 2 * marge))
+
+    # 3. Les courbes. Elles étaient toutes en `ease`, la valeur par défaut du
+    # navigateur, là où le reste de l'échelle vient des jetons Material 3.
+    for jeton, valeur in (("--courbe", "cubic-bezier(0.2, 0, 0, 1)"),
+                          ("--courbe-entree", "cubic-bezier(0, 0, 0, 1)")):
+        check("%s: %s;" % (jeton, valeur) in html,
+              "%s vaut la courbe Material 3 %s" % (jeton, valeur))
+
+    # Plus aucune transition ne doit utiliser un mot-clé du navigateur. Les
+    # animations décoratives infinies gardent leur ease-in-out : une
+    # respiration doit être symétrique, ces courbes-ci ne le sont pas.
+    restes = re.findall(r"transition:[^;]*\b(?:ease-out|ease-in|ease)\b[^;]*", html)
+    check(not restes,
+          "aucune transition ne reste sur une courbe par défaut du navigateur"
+          + (" (trouvé : %s)" % restes[:2] if restes else ""))
+    pulsations = re.findall(r"animation:[^;]*infinite", html)
+    check(all("ease-in-out" in x for x in pulsations),
+          "les %d pulsations infinies gardent leur courbe symétrique" % len(pulsations))
+
+
 def test_panneaux_sont_de_vrais_dialogues():
     print("\n[app] les cinq panneaux sont de vrais dialogues")
     import re
@@ -4082,6 +4146,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
            test_structure_et_annonces,
+           test_derniers_reports_tactiles_et_courbes,
            test_panneaux_sont_de_vrais_dialogues,
            test_pause_nocturne,
            test_filtres_persistants,
