@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-08T00:01:40.643434+00:00",
-  "duration_seconds": 38.0,
+  "generated_at": "2026-09-08T01:01:41.858009+00:00",
+  "duration_seconds": 45.5,
   "decode_failures": 0,
-  "total_articles": 2142,
-  "new_this_run": 0,
+  "total_articles": 2144,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -379,7 +379,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 10,
+      "days_since_last_article": 11,
       "status": "ok"
     },
     {
@@ -401,8 +401,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-07T23:32:51+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-08T00:31:35+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -617,8 +617,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-07T23:38:18+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-08T00:26:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 5,
@@ -914,13 +914,13 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,99,100,100,99,100,100,100,100,100",
+    "rockstar-fr": "99,99,99,100,100,99,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,102,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,102,101,100,100,100,102,102,102,102,102",
+    "gnews-fr": "100,100,102,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "102,102,101,100,100,100,102,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -935,7 +935,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,60,100,100,100,100,100,100,100,100,100",
+    "vg247": "100,60,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -952,7 +952,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,8,8,9,8,8,8,8",
+    "xboxwire": "8,8,8,8,8,8,9,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1014,7 +1014,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 00:00:07 GMT"
+      "modified": "Tue, 08 Sep 2026 01:01:12 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1023,13 +1023,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9f5011-308d\"",
-      "modified": "Tue, 08 Sep 2026 00:00:17 GMT"
+      "etag": "W/\"6a9f5e20-308d\"",
+      "modified": "Tue, 08 Sep 2026 01:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"314576cbb3c00cd40a48c6cfb52b914d\"",
-      "modified": "Mon, 07 Sep 2026 23:46:20 GMT"
+      "etag": "W/\"d985a7d97834d3fde06d491df88509be\"",
+      "modified": "Tue, 08 Sep 2026 00:03:25 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1049,6 +1049,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar May Move GTA 6 PC Launch in Response to Expected Console Shortages - TechPowerUp",
+      "link": "https://www.techpowerup.com/352453/rockstar-may-move-gta-6-pc-launch-in-response-to-expected-console-shortages",
+      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNU3JjVlBBSDVESHJmZXNtbFRqc2FiWjJDSkxVUmpWT2U0bzdLQkFoazAxZmRRdm52XzQxYUM1S2ZnY0VFejNaUmM2akE0Wnc1YjNuRDhvM0hrSnhlWHZLVUtlOGduUk1qcmR5bkdoazFubG5jWmFyYW9YbUladUpKMHNmNEFOMm9mS3llbWpLVmktZFNWNWlvRGxvLUN3amtrVDJQVHJtYThYZERlMGZJ0gG0AUFVX3lxTE9mSzhkVjF2LW4zV3RwTklsb3JqcDB0TklxaFJTZXQ1U3ZubnNMNF9iTXZGcFB5b2JhNXJEWTRDT2p5OUhYVlE5dzUtWjZPV2RlZm9LY0U0dUViU1YxWWMzdEFtc2VSa2NJb0JsVlBDNFlyX19oSHNxU0poOXMxOFUtWHFZekRLN0tmazF2RmIwdFY2MTdQeEVJSjFIVk9VeVBtd2RDejBnVkMyVjFNWTlkUjdZeQ?oc=5",
+      "date": "2026-09-08T00:31:35+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.techpowerup.com/img/R1Tbd8vOTH7Kz7h8.jpg",
+      "description": "Rockstar May Move GTA 6 PC Launch in Response to Expected Console Shortages&nbsp;&nbsp;TechPowerUp"
+    },
+    {
+      "title": "Girlfriend Gifts Boyfriend a Hand-Painted Box and a Chore-Free GTA 6 Launch Week",
+      "link": "https://www.gtaboom.com/girlfriend-gifts-boyfriend-a-hand-painted-box-and-a-chore-free-gta-6-launch-week-785e",
+      "source_link": null,
+      "date": "2026-09-08T00:26:10+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/9a/36/girlfriend-gifts-boyfriend-a-hand-painted-box-and-a-chore-free-gta-6-launch-week.jpg",
+      "description": "A girlfriend surprised her boyfriend with a hand painted GTA 6 Ultimate Edition box and a chore free launch week."
+    },
     {
       "title": "Rockstar Faces a Tribunal Over the GTA 6 Worker Firings on September 10",
       "link": "https://www.gtaboom.com/rockstar-faces-a-tribunal-over-the-gta-6-worker-firings-on-september-10-fe75",
