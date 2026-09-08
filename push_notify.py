@@ -103,9 +103,16 @@ def build_payload(new_items, promus=()):
     importance), et un titre choisi au hasard parmi plusieurs donne une
     idée fausse de ce que contient le lot.
     """
-    majeure = feed_store.est_actu_majeure(new_items, promus)
+    totaux = lire_totaux_recap()
+    if totaux:
+        n, officiels, sommet = totaux
+        titre = feed_store.libelle_recap_depuis_comptes(n, officiels, sommet)
+        majeure = sommet >= feed_store.HOT_SOURCE_THRESHOLD
+    else:
+        titre = feed_store.libelle_recap(new_items, promus)
+        majeure = feed_store.est_actu_majeure(new_items, promus)
     return {
-        "title": feed_store.libelle_recap(new_items, promus),
+        "title": titre,
         "body": "Ouvrir GTA6_WATCH",
         "url": SITE_URL,
         # Un tag identique remplace la notification précédente au lieu
@@ -214,6 +221,33 @@ def send_all(subscriptions, payload, private_key):
     return envoyes, expires
 
 
+def lire_totaux_recap():
+    """Ce que le récapitulatif doit annoncer, déposé par fetch_feeds.py.
+
+    Contient les comptes du passage PLUS ceux mis de côté pendant la pause
+    nocturne : les articles de la nuit ont été publiés au fil de l'eau, donc
+    à 5h ils ne sont plus « nouveaux » et la liste ne les contient plus.
+    Sans ce fichier — lancement local, version antérieure — on retombe sur
+    le comptage direct de la liste, qui reste juste hors pause.
+    """
+    chemin = os.environ.get("RECAP_TOTALS_FILE", "")
+    if not chemin:
+        return None
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    try:
+        return (int(data.get("articles", 0)),
+                int(data.get("officiels", 0)),
+                int(data.get("sommet", 0)))
+    except (TypeError, ValueError):
+        return None
+
+
 def lire_liste(path):
     """Lit un fichier JSON contenant une liste, ou renvoie []."""
     if not path:
@@ -257,7 +291,8 @@ def main():
     seulement_officiels = os.environ.get("SEULEMENT_OFFICIELS") == "1"
     officiels = feed_store.articles_officiels(new_items)
 
-    if not new_items and not promus:
+    totaux = lire_totaux_recap()
+    if not new_items and not promus and not (totaux and totaux[0]):
         print("[push] aucun nouvel article à annoncer.")
         return 0
     if seulement_officiels and not officiels:

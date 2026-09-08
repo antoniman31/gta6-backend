@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **919
+qui permet de tester tout le pipeline sans sortir de la machine. **934
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1363,11 +1363,63 @@ deux endroits (le workflow et `GTA6_RELEASE` dans l'app) : un test vérifie que
 la fenêtre encadre bien la date annoncée par l'app, pour qu'elles ne divergent
 pas si Rockstar décale encore.
 
-**Contrepartie assumée :** il n'y a plus de récapitulatif à 5h. Les articles
-de la nuit ayant été publiés au fil de l'eau, ils ne sont plus « nouveaux » le
-matin — ils sont simplement là quand on ouvre l'app, marqués non lus. La
-première version de la pause offrait ce digest matinal ; il a été échangé
-contre le fait d'être prévenu d'un trailer à 3h du matin.
+**Le récapitulatif du matin est conservé**, et c'est le seul morceau de
+mécanique qu'il a fallu construire pour ça.
+
+Un article n'est « nouveau » que par comparaison avec le `feed.json` publié.
+Dès qu'un passage nocturne publie à 2h, l'article n'est plus nouveau à 5h :
+sans rien de plus, le récapitulatif du matin annoncerait « 0 nouveau » alors
+que la nuit en a apporté douze. Et les articles ne portent **aucune date de
+première vue** — seulement leur date de publication d'origine — donc rien ne
+permet de le recalculer après coup.
+
+`feed.json` porte donc un champ `attente_recap` : **trois entiers**, le nombre
+d'articles, le nombre d'officiels, et le pic de sources sur un même sujet.
+Chaque passage nocturne les cumule ; le premier passage de la journée les
+ressort, les ajoute aux siens, annonce le tout et remet l'ardoise à zéro.
+
+```
+  00h  +3 articles              → en attente {articles:3,  officiels:0, sommet:1}
+  01h  +2                       → en attente {articles:5,  officiels:0, sommet:2}
+  02h  +4 (dont 1 officiel)     → en attente {articles:9,  officiels:1, sommet:4}
+  03h  +0                       → inchangé
+  04h  +3                       → en attente {articles:12, officiels:1, sommet:4}
+  05h  +2  ON ANNONCE 14, l'ardoise est effacée
+
+  🚨 Actu majeure — 4 sources sur le même sujet
+     · 14 nouveaux articles GTA 6 (dont 1 officiel Rockstar)
+```
+
+**Trois entiers et non les articles eux-mêmes** : c'est tout ce dont le
+libellé a besoin, et `feed.json` est téléchargé par l'app à chaque ouverture —
+y stocker des articles en double se paierait à chaque visite.
+
+**Le sommet est un maximum, pas une somme.** Trois passages à quatre sources
+sur le même sujet, ça reste quatre sources. Une somme aurait fait passer une
+nuit ordinaire pour une actu majeure.
+
+**Le libellé est le même par les deux chemins.** `libelle_recap` compte les
+articles puis appelle `libelle_recap_depuis_comptes` ; le récapitulatif du
+matin appelle directement la seconde. Une formulation écrite deux fois aurait
+dérivé au premier ajustement.
+
+**À la fusion après conflit de push, l'arriéré prend le maximum des deux
+côtés, jamais la somme** : les deux partent du même arriéré, les additionner
+le compterait deux fois. Le maximum peut sous-estimer d'un passage — dans un
+message qui annonce un nombre, mieux vaut annoncer un peu moins que d'inventer.
+Le cas reste théorique : le workflow sérialise ses exécutions.
+
+#### Le bug que le test a trouvé
+
+`send_discord_notification` avait **sa propre** garde interne
+« rien de neuf, on ne dit rien », en plus de celle de `main()`. N'ayant
+corrigé que la seconde, Discord restait muet dans exactement le cas qui
+justifie tout ce mécanisme : à 5h, aucun article neuf, mais douze en attente.
+Push envoyait, Discord non.
+
+Le test simule une nuit entière passage par passage et compte les envois sur
+**les deux canaux** — c'est ce comptage qui a montré « 1 envoi » là où il en
+fallait 2.
 
 ### Une annonce de Rockstar réveille
 

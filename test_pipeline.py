@@ -3233,6 +3233,130 @@ def test_panneaux_sont_de_vrais_dialogues():
           "et le fond n'est libéré qu'au dernier fermé")
 
 
+def test_recap_du_matin_couvre_la_nuit():
+    print("\n[notif] le récapitulatif du matin annonce toute la nuit")
+    import io, json as _json, contextlib, tempfile, os as _os, shutil
+    import discord_notify, push_notify
+
+    # Le libellé doit être LE MÊME par les deux chemins, sinon le
+    # récapitulatif du matin ne ressemblerait pas à celui de la journée.
+    a = {"title": "A", "official": True, "extraSources": [1, 2, 3]}
+    b = {"title": "B"}
+    check(feed_store.libelle_recap([a, b])
+          == feed_store.libelle_recap_depuis_comptes(2, 1, 4),
+          "compter les articles ou lire trois entiers donne le même texte")
+    check("12 nouveaux" in feed_store.libelle_recap_depuis_comptes(12, 0, 1),
+          "et le texte sait annoncer un nombre venu de l'arriéré")
+
+    # L'arriéré lu depuis feed.json doit résister à n'importe quoi : une
+    # version antérieure n'a pas le champ, et une valeur aberrante ne doit
+    # pas faire annoncer n'importe quel nombre.
+    import fetch_feeds
+    vide = {"articles": 0, "officiels": 0, "sommet": 0}
+    check(fetch_feeds.attente_lue({}) == vide, "un feed sans le champ repart de zéro")
+    check(fetch_feeds.attente_lue({"attente_recap": "n_importe_quoi"}) == vide,
+          "un champ qui n'est pas un objet aussi")
+    check(fetch_feeds.attente_lue(
+              {"attente_recap": {"articles": -3, "officiels": "x", "sommet": True}}) == vide,
+          "et toute valeur aberrante retombe à zéro")
+    check(fetch_feeds.attente_lue(
+              {"attente_recap": {"articles": 7, "officiels": 1, "sommet": 4}})
+          == {"articles": 7, "officiels": 1, "sommet": 4},
+          "un arriéré sain est lu tel quel")
+
+    # La fusion après conflit de push : un MAXIMUM, jamais une somme — les
+    # deux côtés partent du même arriéré, les additionner le compterait deux
+    # fois.
+    import merge_feed
+    fusion, _, _ = merge_feed.merge_feeds(
+        {"items": [], "attente_recap": {"articles": 9, "officiels": 1, "sommet": 4}},
+        {"items": [], "attente_recap": {"articles": 5, "officiels": 0, "sommet": 2}})
+    check(fusion["attente_recap"] == {"articles": 9, "officiels": 1, "sommet": 4},
+          "à la fusion, l'arriéré le plus élevé l'emporte (jamais la somme)")
+
+    # ---- La nuit entière, bout en bout ----
+    envoyes = []
+    vrais = (discord_notify.send_discord_with_retry, push_notify.send_all,
+             push_notify.check_subject, push_notify.load_subscriptions,
+             discord_notify.DISCORD_WEBHOOK_URL)
+    discord_notify.send_discord_with_retry = lambda e, t, **k: envoyes.append(("discord", e)) or True
+    push_notify.send_all = lambda s_, c, k: (envoyes.append(("push", c)), ([], []))[1]
+    push_notify.check_subject = lambda s_: True
+    push_notify.load_subscriptions = lambda: [{"endpoint": "https://exemple.test/x"}]
+    discord_notify.DISCORD_WEBHOOK_URL = "https://exemple.test/webhook"
+
+    tmp = tempfile.mkdtemp()
+    try:
+        def passage(nouveaux, totaux, nuit):
+            """Rejoue un passage : le robot a déposé ses fichiers, on notifie."""
+            envoyes.clear()
+            chemin = _os.path.join(tmp, "new.json")
+            with open(chemin, "w", encoding="utf-8") as f:
+                _json.dump(nouveaux, f)
+            ctot = _os.path.join(tmp, "totaux.json")
+            if totaux is None:
+                if _os.path.exists(ctot):
+                    _os.remove(ctot)
+            else:
+                with open(ctot, "w", encoding="utf-8") as f:
+                    _json.dump(totaux, f)
+            env = dict(NEW_ITEMS_FILE=chemin, RECAP_TOTALS_FILE=ctot,
+                       SEULEMENT_OFFICIELS="1" if nuit else "0",
+                       VAPID_PRIVATE_KEY="factice")
+            anciens = {k: _os.environ.get(k) for k in env}
+            _os.environ.update(env)
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    discord_notify.main()
+                    push_notify.main()
+            finally:
+                for k, v in anciens.items():
+                    if v is None: _os.environ.pop(k, None)
+                    else: _os.environ[k] = v
+            return list(envoyes)
+
+        banal = {"title": "Une rumeur", "link": "https://ex.test/1", "official": False}
+
+        # 4 passages nocturnes, 3 articles chacun, aucun Rockstar : silence
+        # total, et le robot empile 12 dans attente_recap.
+        muets = sum(len(passage([banal] * 3, None, nuit=True)) for _ in range(4))
+        check(muets == 0, "quatre passages nocturnes sans Rockstar : aucun envoi (%d)" % muets)
+
+        # 5h : le passage ne trouve QUE 2 articles neufs, mais le robot lui a
+        # déposé le total 14 — les 12 de la nuit plus ces 2.
+        matin = passage([banal] * 2, {"articles": 14, "officiels": 1, "sommet": 2}, nuit=False)
+        textes = [str(e.get("title", "")) for _, e in matin]
+        check(len(matin) == 2, "le matin, un envoi par canal (%d)" % len(matin))
+        check(all("14 nouveaux" in t for t in textes),
+              "et il annonce les 14 de la nuit, pas les 2 de ce passage : %s" % textes)
+        check(all("officiel" in t for t in textes),
+              "l'officiel mis de côté est mentionné lui aussi")
+
+        # Le cas qui justifie tout : à 5h, le passage ne trouve RIEN de neuf,
+        # mais douze articles attendent d'être annoncés.
+        rien = passage([], {"articles": 12, "officiels": 0, "sommet": 1}, nuit=False)
+        check(len(rien) == 2,
+              "un passage sans rien de neuf annonce quand même l'arriéré (%d envoi(s))"
+              % len(rien))
+        check(all("12 nouveaux" in str(e.get("title", "")) for _, e in rien),
+              "et il annonce bien les 12")
+
+        # Sans arriéré ni nouveauté, on se tait — la garde d'origine tient.
+        check(len(passage([], {"articles": 0, "officiels": 0, "sommet": 0}, nuit=False)) == 0,
+              "rien de neuf et rien en attente : aucun envoi")
+
+        # Sans le fichier de totaux (lancement local), on retombe sur le
+        # comptage direct de la liste.
+        local = passage([banal] * 3, None, nuit=False)
+        check(all("3 nouveaux" in str(e.get("title", "")) for _, e in local),
+              "sans fichier de totaux, le comptage direct prend le relais")
+    finally:
+        (discord_notify.send_discord_with_retry, push_notify.send_all,
+         push_notify.check_subject, push_notify.load_subscriptions,
+         discord_notify.DISCORD_WEBHOOK_URL) = vrais
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def test_alerte_officielle_rockstar():
     print("\n[notif] une annonce de Rockstar a son alerte à elle")
     import re, io, json as _json, contextlib, tempfile, os as _os
@@ -4272,6 +4396,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_structure_et_annonces,
            test_derniers_reports_tactiles_et_courbes,
            test_panneaux_sont_de_vrais_dialogues,
+           test_recap_du_matin_couvre_la_nuit,
            test_alerte_officielle_rockstar,
            test_pause_nocturne,
            test_filtres_persistants,

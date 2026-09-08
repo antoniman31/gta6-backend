@@ -87,17 +87,32 @@ def send_discord_notification(new_items, promus=()):
     if not DISCORD_WEBHOOK_URL:
         print("[discord] DISCORD_WEBHOOK_URL absent — notification désactivée.")
         return False
-    if not new_items and not promus:
+    # Les totaux déposés par le robot incluent l'arriéré de la nuit ; sans
+    # eux (lancement local), on compte la liste, ce qui reste juste hors
+    # pause nocturne.
+    totaux = lire_totaux_recap()
+    # La garde vient APRÈS la lecture des totaux, et pas avant : à 5h le
+    # premier passage de la journée peut ne rien trouver de neuf alors que
+    # douze articles de la nuit attendent d'être annoncés. Placée avant,
+    # elle faisait taire Discord dans exactement le cas qui justifie tout
+    # ce mécanisme — et main() avait beau l'appeler, la fonction repartait
+    # sans rien envoyer.
+    if not new_items and not promus and not (totaux and totaux[0]):
         return False
-
-    n = len(new_items)
-    majeure = feed_store.est_actu_majeure(new_items, promus)
+    if totaux:
+        n, officiels, sommet = totaux
+        titre = feed_store.libelle_recap_depuis_comptes(n, officiels, sommet)
+        majeure = sommet >= feed_store.HOT_SOURCE_THRESHOLD
+    else:
+        n = len(new_items)
+        titre = feed_store.libelle_recap(new_items, promus)
+        majeure = feed_store.est_actu_majeure(new_items, promus)
 
     embed = {
         # Texte partagé avec les notifications push : voir
         # feed_store.libelle_recap. Les deux canaux disent mot pour mot la
         # même chose, et ne peuvent plus diverger.
-        "title": feed_store.libelle_recap(new_items, promus),
+        "title": titre,
         "url": SITE_URL,
         "description": f"[Ouvrir GTA6_WATCH]({SITE_URL})",
         # Rouge d'alerte pour une actu majeure, bleu habituel sinon : la
@@ -192,6 +207,33 @@ def send_source_alerts(alertes):
     return send_discord_with_retry(embed, f"alerte source ({len(alertes)})")
 
 
+def lire_totaux_recap():
+    """Ce que le récapitulatif doit annoncer, déposé par fetch_feeds.py.
+
+    Contient les comptes du passage PLUS ceux mis de côté pendant la pause
+    nocturne : les articles de la nuit ont été publiés au fil de l'eau, donc
+    à 5h ils ne sont plus « nouveaux » et la liste ne les contient plus.
+    Sans ce fichier — lancement local, version antérieure — on retombe sur
+    le comptage direct de la liste, qui reste juste hors pause.
+    """
+    chemin = os.environ.get("RECAP_TOTALS_FILE", "")
+    if not chemin:
+        return None
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    try:
+        return (int(data.get("articles", 0)),
+                int(data.get("officiels", 0)),
+                int(data.get("sommet", 0)))
+    except (TypeError, ValueError):
+        return None
+
+
 def lire_liste(path):
     """Lit un fichier JSON contenant une liste, ou renvoie []."""
     if not path:
@@ -244,7 +286,11 @@ def main():
     if alertes:
         send_source_alerts(alertes)
 
-    if not new_items and not promus:
+    # L'arriéré de la nuit justifie un récapitulatif même si CE passage
+    # n'apporte rien : à 5h le premier passage peut ne rien trouver de neuf
+    # alors que douze articles attendent d'être annoncés.
+    totaux = lire_totaux_recap()
+    if not new_items and not promus and not (totaux and totaux[0]):
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 
