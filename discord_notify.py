@@ -97,7 +97,16 @@ def send_discord_notification(new_items, promus=()):
     # elle faisait taire Discord dans exactement le cas qui justifie tout
     # ce mécanisme — et main() avait beau l'appeler, la fonction repartait
     # sans rien envoyer.
-    if not new_items and not promus and not (totaux and totaux[0]):
+    #
+    # On teste la PRÉSENCE du fichier, pas son contenu. Décider ici « 0
+    # article, donc rien à dire » écrasait le cas où la nuit n'a apporté
+    # aucun article NEUF mais où un sujet déjà connu est devenu majeur : le
+    # robot dépose alors {articles:0, sommet:4}, et l'alerte « actu majeure »
+    # partait à la poubelle — précisément la notification qu'on ne veut pas
+    # rater, et le cas pour lequel le mécanisme `promus` avait été écrit.
+    # C'est le robot qui tranche, une seule fois, en ne déposant le fichier
+    # que s'il y a quelque chose à annoncer.
+    if not new_items and not promus and totaux is None:
         return False
     if totaux:
         n, officiels, sommet = totaux
@@ -290,7 +299,7 @@ def main():
     # n'apporte rien : à 5h le premier passage peut ne rien trouver de neuf
     # alors que douze articles attendent d'être annoncés.
     totaux = lire_totaux_recap()
-    if not new_items and not promus and not (totaux and totaux[0]):
+    if not new_items and not promus and totaux is None:
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 

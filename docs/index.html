@@ -411,7 +411,24 @@
      taille de cible. Quatre boutons de 30 px de haut séparés de 4 px, le
      pouce en attrape deux. Ils sont en flex:1 1 0, donc l'écart se prend
      sur leur largeur — ils restent bien au-dessus du minimum. */
-  .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap; gap:8px; margin-top:8px;}
+  /* flex-wrap:wrap et non nowrap : sur une carte AVEC vignette à 320 px, la
+     rangée ne mesure que 180 px et quatre boutons y tombaient à 39 px de
+     large — la hauteur était bonne (44 grâce au ::after), pas la largeur.
+     Le quatrième passe maintenant à la ligne plutôt que de rétrécir tout le
+     monde. Trouvé en comparant TOUTES les paires largeur × thème × densité :
+     le défaut n'existait qu'à 320 px, et seulement sur les cartes à
+     vignette — celles sans vignette avaient déjà 58 px par bouton.
+     Coût mesuré : 4 px par carte à 320 px, RIEN à 390 px où l'enroulement ne
+     se déclenche jamais, et le même nombre de cartes au premier écran. */
+  /* L'écart HORIZONTAL reste 8 px, le VERTICAL passe à 16. Chaque coche
+     étend sa zone de clic de 7 px au-dessus et en dessous (::after) : avec
+     8 px entre deux rangées, les zones de la première et de la seconde se
+     recouvraient de 6 px, et un appui dans cette bande partait sur le
+     mauvais bouton. Mesuré : 27 chevauchements à 320 px. À 16 px il reste
+     2 px de marge. Un enroulement mal réglé est pire que le bouton étroit
+     qu'il corrige. */
+  .card-actions{display:flex; flex-direction:row; flex-wrap:wrap;
+                column-gap:8px; row-gap:16px; margin-top:8px;}
   .card-thumb{
     width:64px; height:64px; object-fit:cover; border-radius:var(--r-sm); flex-shrink:0;
     background:var(--bg-elevated); border:1px solid var(--line);
@@ -492,7 +509,7 @@
     /* Taille de cible tactile : 30px de côté, sous les 44px recommandés mais
        au-dessus du seuil où l'on rate le bouton. En icône, la largeur est
        aussi la hauteur — sauf quand la confirmation "copié" s'y écrit. */
-    min-width:30px; height:30px; line-height:1;
+    min-width:44px; height:30px; line-height:1;
     display:inline-flex; align-items:center; justify-content:center;
   }
   /* Zone tactile portée à 44 px de haut sans que le bouton grossisse.

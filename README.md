@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **934
+qui permet de tester tout le pipeline sans sortir de la machine. **941
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1420,6 +1420,67 @@ Push envoyait, Discord non.
 Le test simule une nuit entière passage par passage et compte les envois sur
 **les deux canaux** — c'est ce comptage qui a montré « 1 envoi » là où il en
 fallait 2.
+
+### Audit complet du 08/09/2026
+
+Mené après une journée de gros changements — échelle de formes, cibles
+tactiles, dialogues, filtres persistants, pause nocturne, alertes Rockstar.
+Trois outils du dépôt au vert d'emblée (suite de tests, synchronisation des
+sources, audit des données). Le navigateur et la relecture adverse ont trouvé
+**deux vrais défauts**, tous deux dans du code écrit le jour même.
+
+**1. L'alerte « actu majeure » de la nuit partait à la poubelle.** Si la nuit
+n'apportait aucun article *neuf* mais qu'un sujet déjà connu devenait majeur —
+repris par une quatrième rédaction — le robot déposait bien
+`{articles:0, sommet:4}`, mais la garde des notificateurs ne regardait que le
+nombre d'articles et se taisait. C'était précisément le cas pour lequel le
+mécanisme `promus` avait été écrit, reproduit à l'identique sur le chemin
+nocturne.
+
+La règle « y a-t-il quelque chose à annoncer » vit désormais à **un seul
+endroit** : le robot, qui ne dépose le fichier de totaux que dans ce cas. Les
+notificateurs testent sa *présence*, jamais son contenu. Un test vérifie
+qu'aucun des deux ne réinterprète les totaux.
+
+**2. Quatre boutons à 39 px de large.** À 320 px, sur une carte **avec
+vignette**, la rangée de commandes ne mesure que 180 px : les quatre boutons y
+tombaient à 39 px de large (la hauteur, elle, était bonne). Invisible jusque-là
+parce que les cartes *sans* vignette avaient 58 px par bouton — deux mesures
+contradictoires qui décrivaient en réalité deux cartes différentes.
+
+Corrigé en autorisant la rangée à passer à la ligne. **Et la première
+correction était pire que le défaut** : chaque coche étend sa zone de clic de
+7 px au-dessus et en dessous, or l'écart entre rangées était de 8 px — les
+zones se recouvraient de 6 px et un appui dans cette bande partait sur le
+mauvais bouton. **27 chevauchements mesurés.** L'écart vertical est passé à
+16 px, et un test verrouille l'inégalité `écart > 2 × extension` plutôt que
+les deux valeurs séparément.
+
+**Ce qui a été mesuré et trouvé sain**, sur huit configurations (320 et
+390 px × sombre et clair × normal et dense) :
+
+| | résultat |
+|---|---|
+| contraste | 234 éléments mesurés, **0 sous le seuil** |
+| cibles tactiles | 150 par configuration, **0 sous 44 px** |
+| chevauchement de zones cliquables | **0** |
+| débordement horizontal | **aucun** |
+| erreurs JavaScript | **aucune** |
+| dialogues | rôle, nom, focus piégé, Échap, fond figé : **5/5** |
+
+Côté sécurité : aucun secret en clair, permissions minimales et explicites
+dans les quatre workflows (`contents: read` partout sauf le robot), et le
+fichier de totaux est écrit dans `$RUNNER_TEMP`, hors du dépôt.
+
+**Une limite assumée, découverte au passage.** Le robot remet l'ardoise à zéro
+*avant* que la notification soit confirmée : si la publication réussit mais que
+Discord **et** le push échouent tous les deux, le récapitulatif est perdu. Les
+articles, eux, sont publiés et visibles dans l'app — seule l'annonce manque.
+Le cas existait déjà pour les articles d'un passage ordinaire ; la pause
+nocturne en augmente seulement l'enjeu, puisqu'une nuit entière peut y passer.
+Corriger demanderait une seconde écriture après notification réussie, donc un
+commit de plus par passage : disproportionné pour une panne simultanée des deux
+canaux.
 
 ### Une annonce de Rockstar réveille
 
