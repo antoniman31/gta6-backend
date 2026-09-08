@@ -2929,23 +2929,35 @@ def test_ergonomie_tactile():
             check(atteinte >= 43,
                   "%s : zone de %d px de haut (44 visé)" % (selecteur, atteinte))
 
-    # L'invariant qui a coûté une correction en deux temps. La rangée de
-    # commandes d'une carte peut passer à la ligne (sinon, à 320 px sur une
-    # carte À VIGNETTE, quatre boutons tombent à 39 px de large). Mais chaque
-    # coche étend sa zone de clic de N px au-dessus et en dessous : si
-    # l'écart VERTICAL entre deux rangées est plus petit que 2N, les zones se
+    # L'invariant qui a coûté une correction en trois temps. À 320 px sur une
+    # carte À VIGNETTE, quatre boutons tombent à 39 px de large : la hauteur
+    # est bonne, pas la largeur. J'ai d'abord autorisé l'enroulement — la
+    # première version fabriquait 27 zones de clic superposées, la seconde
+    # était simplement laide (le drapeau seul sur une deuxième rangée étirée,
+    # sur 8 cartes sur 30, et seulement à 320 px : dès 340 px l'enroulement
+    # ne se déclenche jamais). La rangée reste donc sur une ligne et c'est le
+    # ::after qui déborde latéralement, sans rien changer au dessin.
+    # Contrainte : deux boutons voisins sont séparés de l'écart de la rangée,
+    # et chacun déborde de N — il faut écart > 2N, sinon les zones se
     # recouvrent et un appui dans la bande commune part sur le mauvais
-    # bouton. Mesuré au premier essai : 27 chevauchements à 320 px.
+    # bouton. C'est la même inégalité que pour les boutons d'entête.
     bloc = re.search(r"\.card-actions\{([^}]*)\}", html, re.S).group(1)
-    check("flex-wrap:wrap" in bloc,
-          "la rangée de commandes d'une carte peut passer à la ligne")
-    marge = int(re.search(r"\.card-mark::after\{[^}]*inset:-(\d+)px", html).group(1))
-    vertical = re.search(r"row-gap:\s*(\d+)px", bloc)
-    check(vertical is not None, "et elle déclare un écart VERTICAL explicite")
-    if vertical:
-        check(int(vertical.group(1)) > 2 * marge,
-              "écart vertical %d px > 2×%d px d'extension — les zones de deux "
-              "rangées ne se recouvrent pas" % (int(vertical.group(1)), marge))
+    check("flex-wrap:nowrap" in bloc,
+          "la rangée de commandes d'une carte tient sur une seule ligne")
+    lateral = re.search(r"\.card-mark::after\{[^}]*inset:-\d+px\s+-(\d+)px", html)
+    check(lateral is not None,
+          "et la zone de clic de la coche déborde AUSSI latéralement")
+    if lateral:
+        marge = int(lateral.group(1))
+        # 39 px est la largeur mesurée dans le cas le plus serré : carte à
+        # vignette, quatre boutons, 320 px de large.
+        check(39 + 2 * marge >= 44,
+              "cas le plus serré : 39 + 2×%d = %d px de zone (44 visé)"
+              % (marge, 39 + 2 * marge))
+        ecart = int(re.search(r"gap:\s*(\d+)px", bloc).group(1))
+        check(ecart > 2 * marge,
+              "écart de %d px entre deux coches pour %d px d'extension de "
+              "chaque côté — les zones ne se recouvrent pas" % (ecart, marge))
 
     bloc = re.search(r"\.history-line button\{([^}]*)\}", html).group(1)
     mh = re.search(r"min-height:\s*(\d+)px", bloc)

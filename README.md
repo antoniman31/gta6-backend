@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **941
+qui permet de tester tout le pipeline sans sortir de la machine. **942
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1448,13 +1448,38 @@ tombaient à 39 px de large (la hauteur, elle, était bonne). Invisible jusque-l
 parce que les cartes *sans* vignette avaient 58 px par bouton — deux mesures
 contradictoires qui décrivaient en réalité deux cartes différentes.
 
-Corrigé en autorisant la rangée à passer à la ligne. **Et la première
-correction était pire que le défaut** : chaque coche étend sa zone de clic de
-7 px au-dessus et en dessous, or l'écart entre rangées était de 8 px — les
-zones se recouvraient de 6 px et un appui dans cette bande partait sur le
-mauvais bouton. **27 chevauchements mesurés.** L'écart vertical est passé à
-16 px, et un test verrouille l'inégalité `écart > 2 × extension` plutôt que
-les deux valeurs séparément.
+Il a fallu trois essais, et les deux premiers étaient pires que le défaut.
+
+*Essai 1 — autoriser la rangée à passer à la ligne.* Chaque coche étend sa zone
+de clic de 7 px au-dessus et en dessous, or l'écart entre rangées était de
+8 px : les zones se recouvraient de 6 px et un appui dans cette bande partait
+sur le mauvais bouton. **27 chevauchements mesurés.**
+
+*Essai 2 — le même enroulement avec 16 px d'écart vertical.* Plus aucun
+chevauchement, mais laid : le drapeau partait seul sur une deuxième rangée
+étirée sur toute la largeur de la carte. Et seulement sur **8 cartes sur 30**,
+**uniquement à 320 px** — dès 340 px l'enroulement ne se déclenche jamais.
+Autrement dit, un défaut bien visible pour réparer un défaut que personne ne
+voyait. C'est Antoni qui l'a arrêté, en demandant une capture d'écran avant de
+croire la mesure.
+
+*Essai 3, retenu — ne rien changer au dessin, élargir la zone.* La rangée
+reste sur une seule ligne, le bouton fait toujours 39 px à l'œil, et son
+`::after` déborde de **3 px à gauche et à droite** en plus des 7 px en haut et
+en bas : 39 + 6 = 45 px de zone dans le cas le plus serré, 30 + 14 = 44 px en
+hauteur. Pourquoi 3 et pas plus : deux boutons voisins sont séparés de 8 px,
+donc 6 px consommés et 2 px de marge ; à 4 px les zones se toucheraient, à 5 px
+elles se recouvriraient. Le test verrouille l'inégalité `écart > 2 × extension`
+plutôt que les deux valeurs séparément.
+
+Vérifié à 320, 360 et 390 px, en mode normal **et** dense : **0 cible sous
+44 px, 0 chevauchement**, et le bouton visible mesure toujours 39 px.
+
+La leçon : une mesure peut être juste et la correction quand même mauvaise.
+« 36 cibles sous 44 px » était vrai ; ce que ce chiffre ne disait pas, c'est
+que le défaut ne concernait qu'un huitième des cartes sur une largeur d'écran
+que presque personne n'utilise, et que le remède se verrait, lui, tout le
+temps.
 
 **Ce qui a été mesuré et trouvé sain**, sur huit configurations (320 et
 390 px × sombre et clair × normal et dense) :

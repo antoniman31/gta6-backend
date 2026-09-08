@@ -411,24 +411,20 @@
      taille de cible. Quatre boutons de 30 px de haut séparés de 4 px, le
      pouce en attrape deux. Ils sont en flex:1 1 0, donc l'écart se prend
      sur leur largeur — ils restent bien au-dessus du minimum. */
-  /* flex-wrap:wrap et non nowrap : sur une carte AVEC vignette à 320 px, la
-     rangée ne mesure que 180 px et quatre boutons y tombaient à 39 px de
-     large — la hauteur était bonne (44 grâce au ::after), pas la largeur.
-     Le quatrième passe maintenant à la ligne plutôt que de rétrécir tout le
-     monde. Trouvé en comparant TOUTES les paires largeur × thème × densité :
-     le défaut n'existait qu'à 320 px, et seulement sur les cartes à
-     vignette — celles sans vignette avaient déjà 58 px par bouton.
-     Coût mesuré : 4 px par carte à 320 px, RIEN à 390 px où l'enroulement ne
-     se déclenche jamais, et le même nombre de cartes au premier écran. */
-  /* L'écart HORIZONTAL reste 8 px, le VERTICAL passe à 16. Chaque coche
-     étend sa zone de clic de 7 px au-dessus et en dessous (::after) : avec
-     8 px entre deux rangées, les zones de la première et de la seconde se
-     recouvraient de 6 px, et un appui dans cette bande partait sur le
-     mauvais bouton. Mesuré : 27 chevauchements à 320 px. À 16 px il reste
-     2 px de marge. Un enroulement mal réglé est pire que le bouton étroit
-     qu'il corrige. */
-  .card-actions{display:flex; flex-direction:row; flex-wrap:wrap;
-                column-gap:8px; row-gap:16px; margin-top:8px;}
+  /* On reste en nowrap, et c'est délibéré. Sur une carte AVEC vignette à
+     320 px la rangée ne mesure que 180 px : quatre boutons y tombent à 39 px
+     de large, 5 px sous le critère AAA. J'ai d'abord réglé ça en autorisant
+     l'enroulement — mauvaise idée deux fois. La première version produisait
+     27 zones de clic qui se recouvraient (7 px de débordement vertical de
+     chaque côté contre 8 px entre les rangées) ; la seconde, corrigée à
+     16 px d'écart, était juste laide : le drapeau partait seul sur une
+     deuxième rangée étirée sur toute la largeur, sur 8 cartes sur 30, et
+     uniquement à 320 px — dès 340 px l'enroulement ne se déclenche jamais.
+     Autrement dit, un défaut visible partout où il y avait un défaut
+     invisible nulle part. La largeur se règle maintenant dans le ::after,
+     sans toucher au dessin (voir .card-mark). */
+  .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap;
+                gap:8px; margin-top:8px;}
   .card-thumb{
     width:64px; height:64px; object-fit:cover; border-radius:var(--r-sm); flex-shrink:0;
     background:var(--bg-elevated); border:1px solid var(--line);
@@ -506,20 +502,29 @@
        plus du contenu, donc la rangée ne bouge pas quand une confirmation
        s'écrit dans un bouton. */
     flex:1 1 0;
-    /* Taille de cible tactile : 30px de côté, sous les 44px recommandés mais
-       au-dessus du seuil où l'on rate le bouton. En icône, la largeur est
-       aussi la hauteur — sauf quand la confirmation "copié" s'y écrit. */
-    min-width:44px; height:30px; line-height:1;
+    /* Le dessin reste à 30 px de côté : ce sont de petits boutons secondaires
+       posés sur la carte, les grossir écrase le titre qui est l'information.
+       La taille de cible se règle dans le ::after juste en dessous. */
+    min-width:30px; height:30px; line-height:1;
     display:inline-flex; align-items:center; justify-content:center;
   }
-  /* Zone tactile portée à 44 px de haut sans que le bouton grossisse.
-     C'est le geste le PLUS fréquent de l'app (loi de Fitts : on optimise
-     d'abord ce qu'on répète), et 30 px de côté se ratent au pouce en
-     marchant. Le pseudo-élément déborde vers le haut et le bas seulement :
-     latéralement, les quatre boutons se touchent presque, et déborder les
-     ferait se recouvrir. */
+  /* Zone tactile portée à 44 px dans les DEUX sens sans que le bouton
+     grossisse. C'est le geste le PLUS fréquent de l'app (loi de Fitts : on
+     optimise d'abord ce qu'on répète), et 30 px de côté se ratent au pouce
+     en marchant.
+     7 px en haut et en bas : 30 + 14 = 44.
+     3 px à gauche et à droite : le cas le plus serré est la carte à vignette
+     à 320 px, 39 px de large, et 39 + 6 = 45. Partout ailleurs le bouton est
+     déjà plus large, le débordement ne fait qu'ajouter de la marge.
+     Pourquoi 3 et pas plus : deux boutons voisins sont séparés de 8 px, et
+     chacun déborde de 3, donc 6 px consommés — il reste 2 px entre les deux
+     zones. La règle est « écart > 2 × débordement » ; à 4 px on serait
+     exactement à égalité et les zones se toucheraient, à 5 px elles se
+     recouvriraient et un appui dans la bande partirait sur le mauvais
+     bouton. Mesuré à 320/360/390 px, en normal et en dense : 0 cible sous
+     44 px, 0 chevauchement, et le bouton visible fait toujours 39 px. */
   .card-mark{position:relative;}
-  .card-mark::after{content:""; position:absolute; inset:-7px 0;}
+  .card-mark::after{content:""; position:absolute; inset:-7px -3px;}
   /* En mode dense la coche ne fait plus que 24 px : il faut 10 px de chaque
      côté pour retrouver 44. J'avais d'abord écarté cet élargissement en
      croyant qu'il ferait empiéter la zone sur la carte voisine — mesure
