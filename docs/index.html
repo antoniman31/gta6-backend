@@ -98,6 +98,15 @@
     --r-full: 9999px;   /* la valeur exacte de corner-full chez M3 */
     --t-court: .15s;
     --t-moyen: .25s;
+    /* Les courbes de Material 3, mêmes fichiers de jetons que le reste
+       (md-sys-motion) : « standard » pour un changement d'état sur place,
+       « standard-decelerate » pour un élément qui entre ou parcourt une
+       distance — il arrive vite puis se pose, au lieu de freiner à
+       mi-course comme le fait le ease-out du navigateur.
+       Les pulsations infinies gardent leur ease-in-out : une respiration
+       doit être symétrique, ces courbes-ci ne le sont pas. */
+    --courbe: cubic-bezier(0.2, 0, 0, 1);
+    --courbe-entree: cubic-bezier(0, 0, 0, 1);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
@@ -108,7 +117,7 @@
     font-family:'Inter',sans-serif;
     min-height:100vh;
     padding:24px 16px 60px;
-    transition:background-color var(--t-moyen), color var(--t-moyen);
+    transition:background-color var(--t-moyen) var(--courbe), color var(--t-moyen) var(--courbe);
   }
   .wrap{max-width:640px; margin:0 auto;}
 
@@ -144,7 +153,7 @@
   .countdown{
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);
     margin-top:4px; font-weight:600; letter-spacing:0.02em;
-    transition:color var(--t-moyen) ease;
+    transition:color var(--t-moyen) var(--courbe);
   }
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
@@ -184,7 +193,7 @@
     background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
     width:34px; height:34px; border-radius:var(--r-sm); cursor:pointer;
     display:flex; align-items:center; justify-content:center; font-size:15px;
-    transition:border-color var(--t-court);
+    transition:border-color var(--t-court) var(--courbe);
     position:relative;
   }
   /* 34px visibles, 44px cliquables. Agrandir la boîte elle-même aurait poussé
@@ -250,7 +259,7 @@
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
     padding:10px 14px; border-radius:var(--r-sm); cursor:pointer; letter-spacing:0.02em;
-    transition:border-color var(--t-court);
+    transition:border-color var(--t-court) var(--courbe);
     /* 44 px par DÉFAUT plutôt qu'énumérés un par un. La passe précédente
        avait traité les commandes de la page une à une et oublié tout
        l'intérieur des panneaux : « Fermer » tenait encore dans 23 px, le
@@ -288,7 +297,7 @@
   .console .progress-bar{margin:0 -14px -14px; width:auto; border-radius:0;}
   .progress-fill{
     height:100%; width:0%; background:var(--accent);
-    transition:width var(--t-moyen) ease-out;
+    transition:width var(--t-moyen) var(--courbe-entree);
   }
 
   .search-row{margin-bottom:14px; display:flex; flex-direction:row; align-items:stretch; gap:8px;}
@@ -325,7 +334,7 @@
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-sm); color:var(--text-dim);
     padding:8px 14px; cursor:pointer; letter-spacing:0.02em;
-    transition:background var(--t-court) ease, border-color var(--t-court) ease, color var(--t-court) ease;
+    transition:background var(--t-court) var(--courbe), border-color var(--t-court) var(--courbe), color var(--t-court) var(--courbe);
     display:flex; align-items:center; justify-content:center; gap:6px;
     /* 44px : le seuil WCAG 2.5.5. « Actualiser » est l'action principale de
        l'application et mesurait 34px de haut ; les onglets, 36. */
@@ -374,8 +383,8 @@
   }
   .card{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
-    padding:14px 16px; position:relative; overflow:hidden; transition:opacity var(--t-court);
-    animation:card-enter var(--t-moyen) ease-out backwards;
+    padding:14px 16px; position:relative; overflow:hidden; transition:opacity var(--t-court) var(--courbe);
+    animation:card-enter var(--t-moyen) var(--courbe-entree) backwards;
   }
   @media (prefers-reduced-motion: reduce){
     .card{animation:none;}
@@ -440,7 +449,19 @@
   }
   .card-title{font-size:14px; font-weight:600; line-height:1.4; margin-bottom:6px;}
   .card-title mark{background:var(--accent); color:var(--accent-contrast); border-radius:var(--r-xs); padding:0 1px;}
-  .card-title a{color:var(--text); text-decoration:none;}
+  /* Le lien devient un BLOC et non plus du texte en ligne : sa zone de clic
+     couvre alors tout le titre, et min-height la porte à 44 px quand le titre
+     tient sur une ou deux lignes (mesuré : 36 px sur deux lignes, ~18 sur
+     une). Au-delà de deux lignes le titre dépasse déjà 44 px et rien ne
+     change — les trois lignes mesuraient 55 px.
+     C'était le cas explicitement excepté par WCAG 2.5.5 et 2.5.8, parce que
+     du texte en ligne ne peut pas être agrandi sans casser l'interligne.
+     Ici il peut : le titre est seul sur ses lignes, il n'est pas au milieu
+     d'une phrase. L'exception ne s'applique donc pas vraiment. */
+  .card-title a{
+    color:var(--text); text-decoration:none;
+    display:block; min-height:44px;
+  }
   .card-title a:hover{color:var(--accent);}
   .card-date{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);}
   .card-extra{font-size:10px; color:var(--text-dim); margin-top:4px; font-style:italic;}
@@ -482,6 +503,15 @@
      ferait se recouvrir. */
   .card-mark{position:relative;}
   .card-mark::after{content:""; position:absolute; inset:-7px 0;}
+  /* En mode dense la coche ne fait plus que 24 px : il faut 10 px de chaque
+     côté pour retrouver 44. J'avais d'abord écarté cet élargissement en
+     croyant qu'il ferait empiéter la zone sur la carte voisine — mesure
+     faite, c'est faux : sous la coche il y a 42 px de libre jusqu'au premier
+     élément CLIQUABLE de la carte suivante, et 20 px au-dessus jusqu'au lien
+     de titre. Les 5 px que j'avais en tête étaient ceux de la date, qui
+     n'est pas une cible. Il reste donc 10 px de marge de chaque côté après
+     l'élargissement. */
+  .feed.dense .card-mark::after{inset:-10px 0;}
   .card-mark:hover{border-color:var(--accent); color:var(--accent);}
   .card-mark.done{border-color:var(--ok); color:var(--ok);}
 
@@ -495,6 +525,24 @@
   .feed.dense .card-top{gap:8px;}
   .feed.dense .card-actions{gap:6px; margin-top:5px;}
   .feed.dense .card-mark{min-width:24px; height:24px; padding:0 4px; font-size:11px;}
+  /* La coupure à deux lignes doit porter sur le LIEN, pas sur le titre qui
+     l'enveloppe : depuis que le lien est un bloc (pour sa zone de clic), le
+     -webkit-box du titre ne le coupe plus et la troisième ligne apparaissait
+     tranchée en son milieu au lieu d'être proprement supprimée.
+     Le titre garde la sienne pour le cas — rare — d'un article sans lien,
+     où il n'y a pas de <a> à qui la confier. */
+  .feed.dense .card-title a{
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden;
+    /* 22 px d'interligne, pour que DEUX lignes fassent exactement les 44 px
+       de la zone de clic. C'est la seule façon d'avoir les deux à la fois :
+       avec l'interligne d'origine (18,2 px), la boîte de 44 px valait 2,42
+       lignes et laissait apparaître un bout de troisième ligne tranché en
+       son milieu — visible sur 13 titres sur 30. Une hauteur imposée et une
+       coupure au nombre de lignes ne cohabitent que si l'une tombe juste
+       sur l'autre. */
+    line-height:22px;
+  }
 
   /* ---------- Balayage pour marquer lu ---------- */
   /* L'indice coloré est peint SOUS la carte : c'est lui qu'on découvre à
@@ -509,7 +557,7 @@
   .swipe-wrap.vers-gauche .swipe-hint{justify-content:flex-end;}
   .swipe-wrap.glisse .card{transition:none;}
   .swipe-wrap .card{will-change:transform;}
-  .swipe-wrap.rend .card{transition:transform var(--t-court) ease-out;}
+  .swipe-wrap.rend .card{transition:transform var(--t-court) var(--courbe-entree);}
   @media (prefers-reduced-motion: reduce){
     .swipe-wrap.rend .card{transition:none;}
   }
@@ -523,7 +571,7 @@
     height:0; overflow:hidden; color:var(--text-dim);
     font-family:'JetBrains Mono',monospace; font-size:11px;
   }
-  .pull-zone.rend{transition:height var(--t-court) ease-out;}
+  .pull-zone.rend{transition:height var(--t-court) var(--courbe-entree);}
   @media (prefers-reduced-motion: reduce){
     .pull-zone.rend{transition:none;}
   }
@@ -785,11 +833,11 @@
   .switch input{opacity:0; width:0; height:0;}
   .switch .slider{
     position:absolute; inset:0; background:var(--line); border-radius:var(--r-full);
-    cursor:pointer; transition:var(--t-court);
+    cursor:pointer; transition:var(--t-court) var(--courbe);
   }
   .switch .slider::before{
     content:''; position:absolute; width:13px; height:13px; left:3px; top:3px;
-    background:var(--bg-panel); border-radius:50%; transition:var(--t-court);
+    background:var(--bg-panel); border-radius:50%; transition:var(--t-court) var(--courbe);
   }
   .switch input:checked + .slider{background:var(--accent);}
   .switch input:checked + .slider::before{transform:translateX(13px); background:var(--accent-contrast);}
