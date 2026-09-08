@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **953
+qui permet de tester tout le pipeline sans sortir de la machine. **958
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -901,36 +901,74 @@ filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
 
-### Vignettes pleine hauteur en mode compact
+### La vignette : quatre essais avant le bandeau
 
-Demandé le 08/09/2026 : les vignettes de 36 px du mode compact étaient trop
-petites pour qu'on distingue l'image.
+Point de départ, le 08/09/2026 : les vignettes de 36 px du mode compact
+étaient trop petites pour qu'on distingue l'image.
 
-La mesure a montré que **la place était déjà là** : la colonne de texte fait
-105 px de haut, la vignette 36 — il y avait **69 px de vide** à côté d'elle. La
-vignette occupe maintenant toute la hauteur, et la hauteur de carte ne bouge
-pas d'un pixel : **120 px avant comme après**. Aucun article perdu à l'écran.
+**Essai 1 — agrandir le carré du compact.** La place était déjà là : la
+colonne de texte fait 105 px de haut, la vignette 36, soit **69 px de vide** à
+côté d'elle. Passée à 80 px, la hauteur de carte ne bouge pas d'un pixel.
+80 est un maximum mesuré : le côté se prend sur la colonne de texte, donc sur
+les quatre boutons qui la partagent, et à 88 px ce sont 80 cibles qui
+repassent sous leur seuil à 320 px.
 
-La hauteur n'est pas écrite en dur, c'est `align-self:stretch` qui la cale sur
-la colonne de texte — elle suivra si le contenu de la colonne change. Mesuré :
-les 29 cartes à vignette sont calées, entre 102 et 105 px.
+**Essai 2 — la même chose en mode normal.** Refusé après capture : étirée sur
+la hauteur, la vignette donnait une bande verticale dont la taille changeait
+d'une carte à l'autre — 119 à 215 px à 320 px selon la longueur du titre — et
+rognait durement des images qui sont presque toutes en 16:9.
 
-**80 px de large, et c'est un maximum, pas un goût.** La largeur se prend sur
-la colonne de texte, donc sur les quatre boutons qui la partagent. À 320 px :
+**Essai 3 — un carré, plus grand en normal qu'en compact.** Remarque juste au
+passage : le mode aéré avait la **plus petite** vignette (64 contre 80), parce
+que chaque mode avait été réglé isolément sans jamais les comparer. Mais le
+carré plafonne à **68 px à 320 px** — trop petit pour qu'on distingue l'image,
+ce qui était toute la demande.
 
-| vignette | plus petit bouton | verdict |
+**Le carré à la hauteur de la carte ne converge pas.** La hauteur de la carte
+dépend de la largeur de la colonne de texte (titre plus étroit = plus de
+lignes = carte plus haute). Si le carré doit faire la hauteur de la carte, il
+doit être large ; large, il rétrécit la colonne, donc la carte grandit, donc
+le carré doit grandir. La seule sortie serait de **figer** la hauteur des
+cartes en coupant les titres à 3 lignes — mesuré comme faisable à partir de
+360 px, impossible à 320.
+
+**Essai 4, retenu — le bandeau.** La vignette passe au-dessus du texte, sur
+toute la largeur de la carte. Elle ne prend plus rien à la colonne de texte,
+donc plus rien aux boutons : le problème disparaît au lieu d'être arbitré.
+
+| | avant | bandeau |
 |---|---|---|
-| 64 px | 44 px | conforme |
-| 72 px | 42 px | conforme avec 2 px d'extension latérale |
-| **80 px** | **40 px** | **conforme, retenu** |
-| 88 px | 38 px | **80 cibles repassent sous le seuil** |
+| vignette à 390 px | 64×64 | **356×200** |
+| plus petit bouton | 57 px | **75 px** |
+| hauteur de carte | 167 px | 348 px |
+| **articles par écran** | **4,7** | **2,3** |
 
-L'extension latérale vaut 2 px et non 3 comme en mode normal : les boutons du
-compact ne sont séparés que de 6 px, et la règle `écart > 2 × extension`
-plafonne donc l'extension à 2 (6 > 4). 40 + 4 = 44.
+Le prix est là et il est assumé : **on voit deux fois moins d'articles d'un
+coup d'œil**. Les formats plus plats ont été mesurés — 2:1 donne 2,5 articles,
+21:9 en donne 2,7, 3:1 en donne 3,0 — et le 16:9 a été gardé parce que c'est
+le format natif des images des sources : il ne rogne rien.
 
-Ce que ça coûte : le titre est plus étroit, donc plus souvent tronqué — 19
-titres sur 29 au lieu de 11, à 390 px. C'est le seul prix réel.
+**Aucun HTML n'a été déplacé.** Le `<img>` reste le premier enfant de
+`.card-top` ; c'est la direction du flex qui passe en colonne. Vérifié
+qu'aucun JS ne cible `.card-thumb`, `.card-top` ni `.card-body`, mais ne pas
+toucher au balisage supprime la question.
+
+**Le compact garde la vignette à côté du texte**, en carré de 80 px, et c'est
+là tout l'intérêt d'avoir deux modes : le normal montre les images, le compact
+montre le plus d'articles possible. Un bandeau y doublerait la hauteur des
+cartes et supprimerait la raison d'être du mode. Il doit donc défaire *chacune*
+des propriétés du bandeau — direction du flex, format, marges négatives,
+bordures : un `aspect-ratio` resté en 16:9 sur un carré de 80 px, et la
+vignette redevient une bande. Un test verrouille les quatre séparément.
+
+Un autre test verrouille le lien invisible entre deux règles éloignées : le
+débordement du bandeau (`margin:-14px -16px 0`) doit valoir exactement le
+rembourrage de la carte (`padding:14px 16px`), sinon il s'arrête avant le bord
+ou dépasse. Rien d'autre ne relie ces deux valeurs.
+
+Vérifié sur 16 configurations (320/360/390/412 px × sombre/clair ×
+normal/compact) : 0 cible hors de son seuil, 0 chevauchement, 0 débordement
+horizontal, 0 erreur JavaScript.
 
 ### Le défaut que trois audits avaient manqué
 
