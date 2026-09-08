@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-08T16:49:25.083358+00:00",
+  "generated_at": "2026-09-08T17:01:47.756760+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 38.8,
+  "duration_seconds": 42.7,
   "decode_failures": 0,
-  "total_articles": 2211,
-  "new_this_run": 2,
+  "total_articles": 2212,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T15:46:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,7 +402,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -478,8 +478,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-07T19:47:27+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -538,7 +538,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T16:08:19+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T12:54:52+00:00",
       "days_since_last_article": 0,
@@ -642,10 +642,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
       "days_since_last_article": 5,
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 0,
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 6,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 27,
+      "entries_fetched": 28,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,13 +919,13 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,99",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,101,99,100,100,100,100,100,102,100,100",
-    "gnews-en": "101,101,102,102,102,102,102,99,100,99,101,102",
+    "gnews-fr": "100,101,99,100,100,100,100,100,102,100,100,100",
+    "gnews-en": "101,102,102,102,102,102,99,100,99,101,102,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,17 +957,17 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "9,9,8,8,8,8,8,8,8,8,8,8",
-    "trueach": "100,100,100,100,100,100,100,100,85,100,100,100",
+    "xboxwire": "9,8,8,8,8,8,8,8,8,8,8,8",
+    "trueach": "100,100,100,100,100,100,100,85,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,81,81,81,82,82,82",
-    "arstechnica": "28,28,28,28,28,28,28,27,27,28,27,27",
-    "pushsquare": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,56,100,100,100,100,100"
+    "engadget": "81,81,81,81,81,81,81,81,82,82,82,82",
+    "arstechnica": "28,28,28,28,28,28,27,27,28,27,27,28",
+    "pushsquare": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "schreier": "100,100,100,100,100,56,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -978,13 +978,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"8b33ca69df9da412a0dca3dfe570e199\"",
-      "modified": "Tue, 08 Sep 2026 16:40:30 GMT"
+      "etag": "W/\"5630f874f0a9b4c876dd9358cc2eddc4\"",
+      "modified": "Tue, 08 Sep 2026 17:00:44 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 16:18:52 GMT"
+      "modified": "Tue, 08 Sep 2026 16:49:53 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1009,7 +1009,7 @@
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 16:17:54 GMT"
+      "modified": "Tue, 08 Sep 2026 17:00:38 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 16:45:29 GMT"
+      "modified": "Tue, 08 Sep 2026 17:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa03819-2f61\"",
-      "modified": "Tue, 08 Sep 2026 16:30:17 GMT"
+      "etag": "W/\"6aa03f1f-2f61\"",
+      "modified": "Tue, 08 Sep 2026 17:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Combien de temps faut-il pour terminer Legend of Zelda Ocarina of Time remake et pourra-t-on le boucler avant la sortie de GTA 6 ?",
+      "link": "https://fr.ign.com/the-legend-of-zelda-ocarina-of-time/92040/combien-de-temps-faut-il-pour-terminer-legend-of-zelda-ocarina-of-time-remake-et-pourra-t-on-le-bouc",
+      "source_link": null,
+      "date": "2026-09-08T16:49:53+00:00",
+      "source": "IGN France",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/screenshot/default/sans-titre-50-20260908182512_fa5g.1200.png",
+      "description": "\nUn nouvel adversaire entre dans l&#x27;arène."
+    },
     {
       "title": "GameStop Sets A New Financial Record, And It’s No Thanks To Games",
       "link": "https://www.gamespot.com/articles/gamestop-sets-a-new-financial-record-and-its-no-thanks-to-games/",
@@ -5006,19 +5019,6 @@
       "lang": "fr",
       "image": "https://cdn-s-www.leprogres.fr/images/1B242940-A2EE-4236-B1A9-B1C5CFA98190/FB1200/photo-1788271367.jpg",
       "description": "Des jours de congés pour la sortie du jeu vidéo GTA VI : pourquoi ces soldats ont reçu cette drôle de proposition&nbsp;&nbsp;Le Progrès"
-    },
-    {
-      "title": "Call of Duty, Dark Souls, Clair Obscur : GTA 6 n'est pas encore sorti que la chasse aux Easter eggs a déjà commencé - jeuxvideo.com",
-      "link": "https://www.jeuxvideo.com/news/2101611/call-of-duty-dark-souls-clair-obscur-gta-6-n-est-pas-encore-sorti-que-la-chasse-aux-easter-eggs-a-deja-commence.htm",
-      "source_link": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxOY2JwS0lJd05NU3NmSktzRDMwakp4MTl2YTVDY1FSeFh3cENjOTBEWTVGQTM2S0ZTWWNCVkxRdmJMZ0lGcG5MekJfT19OQ2lzR0I4THFYZEZFMkRRNzRnSVpmQ0YtU0VrazRfM0IwbnU5RUt2X1Bhc3BPQko3c0JPaENyX3BmTjItdWFnRHhwaHpLWll5a2M5ejBuTlpKMm5mQ2RxYk1xVGQtajBuSl9xSkhOdjRFakNOUTV5eU5NekxmdFE0dEVyTDhfVlJydFlhSWZ2Y3F0TUpGbFUzbm8zd2ZrUll5eXB1cFE?oc=5",
-      "date": "2026-09-04T05:05:07+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178825/1788250166-966-card.jpg",
-      "description": "Call of Duty, Dark Souls, Clair Obscur : GTA 6 n'est pas encore sorti que la chasse aux Easter eggs a déjà commencé&nbsp;&nbsp;jeuxvideo.com"
     }
   ],
   "partial": true,
