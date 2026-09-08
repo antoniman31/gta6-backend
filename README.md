@@ -1,7 +1,8 @@
 # GTA6_WATCH
 
 Veille automatisée de l'actualité GTA 6 : un robot interroge 50 sources en
-parallèle toutes les heures, décode les vrais liens Google News, récupère
+parallèle toutes les heures de 5h à minuit, décode les vrais liens Google
+News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
 
@@ -18,6 +19,9 @@ cron-job.org (toutes les heures)          ← horloge principale
         │  POST /dispatches
         ▼
 GitHub Actions  ◄── cron GitHub "37 */3"  ← filet de secours, best-effort
+        │
+        ├─ 00h-05h (Paris) ? ─→ passage sauté, signal de vie quand même
+        │                       (sauf demande manuelle — voir Pause nocturne)
         │
         ▼
   fetch_feeds.py  ──►  docs/feed.json          ──►  GitHub Pages  ──►  docs/index.html (PWA)
@@ -37,11 +41,13 @@ maintenir, hébergement gratuit et illimité pour ce volume.
 
 ## Le robot — `fetch_feeds.py`
 
-Tourne toutes les heures, déclenché par un planificateur **externe**
-(cron-job.org) — voir la section dédiée. Le `cron` de GitHub reste déclaré
-comme filet de secours, et le déclenchement manuel reste possible via
-l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow, ou depuis
-l'app.
+Tourne toutes les heures **de 5h à minuit** (heure de Paris), déclenché par
+un planificateur **externe** (cron-job.org) — voir la section dédiée. Entre
+minuit et 5h il ne fait rien : voir *Pause nocturne*. Le `cron` de GitHub
+reste déclaré comme filet de secours, et le déclenchement manuel reste
+possible via l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow,
+ou depuis l'app — **une demande manuelle passe à toute heure**, pause
+comprise.
 
 **La cadence est passée de 30 min à 1 h le 02/09/2026**, pour réduire le
 nombre de notifications. Une notification part par passage AYANT trouvé du
@@ -71,7 +77,7 @@ d'où le planificateur externe.
    La requête est **conditionnelle** : le robot renvoie l'`ETag` et le
    `Last-Modified` reçus au passage précédent, et le serveur répond `304`
    (quelques octets, sans corps) si rien n'a changé. Sans ça il
-   retéléchargerait 50 flux entiers 48 fois par jour ; la documentation de
+   retéléchargerait 50 flux entiers 19 fois par jour ; la documentation de
    feedparser prévient qu'un client qui ignore ces en-têtes peut se faire
    bannir par l'éditeur. Les validateurs sont conservés dans
    `feed_http_state` de `feed.json`, faute d'autre stockage persistant.
@@ -118,9 +124,11 @@ d'où le planificateur externe.
    (`parsed.entries[:30]` dans `fetch_feeds.py`). Les flux ne sont pas de
    la même profondeur : RockstarMag en publie 10, Eurogamer et Rock Paper
    Shotgun 100. Au-delà de 30, ce sont des articles déjà vus aux passages
-   précédents — à un passage par heure, aucun site suivi ne publie 30
-   articles dans l'intervalle (le fil entier tourne autour de 105 articles
-   par jour, toutes sources confondues).
+   précédents — aucun site suivi ne publie 30 articles dans l'intervalle
+   entre deux passages. Le cas le plus large est la reprise de 5h, après la
+   pause nocturne : six heures de silence, soit une trentaine d'articles
+   **toutes sources confondues** (le fil entier tourne autour de 105 articles
+   par jour), donc très loin de 30 pour une seule source.
 
    **Ce plafond se lit dans les chiffres** et il faut y penser avant de
    comparer un flux à ce qu'il rapporte. Mesuré le 29/08/2026, entrées
@@ -485,7 +493,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **728
+qui permet de tester tout le pipeline sans sortir de la machine. **894
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -510,6 +518,54 @@ leur appliquait le filtre normal, et personne ne l'avait vu.
 
 Une PWA autonome (HTML/CSS/JS dans un seul fichier, volontairement — voir
 plus bas) qui lit `docs/feed.json` en priorité, avec un mode de secours.
+
+### Échelle de formes et de mouvement
+
+Neuf rayons d'angle cohabitaient dans la feuille de style — 2, 3, 4, 5, 6, 8,
+10, 19 et 20 px — et cinq durées d'animation : 150, 180, 200, 250 et 400 ms.
+Aucune règle ne disait lequel prendre, donc deux boutons voisins ne
+s'arrondissaient pas pareil et deux transitions équivalentes ne duraient pas
+pareil.
+
+Six jetons, indépendants du thème, partagés par les deux palettes :
+
+```
+--r-xs    4px     pastilles, favicon, surlignage, barres
+--r-sm    8px     boutons, champs, onglets, vignettes
+--r-md   12px     cartes, bandeaux, panneaux, feuille
+--r-full 9999px   interrupteur, compteurs — les formes réellement en gélule
+
+--t-court .15s    changement d'état sur place (survol, focus, bascule)
+--t-moyen .25s    un élément entre, sort ou parcourt une distance
+```
+
+**Les valeurs viennent des fichiers de jetons que Google génère lui-même**
+(`md-sys-shape` et `md-sys-motion` v0.192), pas d'une paraphrase du site :
+4/8/12/9999 sont exactement les crans *extra-small*, *small*, *medium* et
+*full* de Material 3, et 150/250 ms ses durées *short3* et *medium1*.
+
+**L'affectation, en revanche, diverge volontairement.** Google met ses boutons
+et ses pastilles en gélule et ses boîtes de dialogue à 28 px. L'identité de
+l'app est monospace et anguleuse ; des boutons entièrement arrondis la
+casseraient. On emprunte l'échelle, pas le style — et c'est écrit dans le code
+aussi, pour que personne n'y lise plus tard une conformité qui n'existe pas.
+
+Les pulsations décoratives infinies gardent leur rythme propre : ce n'est pas
+du retour d'interaction, les harmoniser n'apporterait rien.
+
+**Mouvement réduit.** Trois blocs `prefers-reduced-motion` coupaient déjà les
+animations d'*entrée* (carte qui apparaît, retour de glissement, refermeture
+du tiroir). Restaient les quatre pulsations **infinies** — compte à rebours
+urgent, compte à rebours final, squelettes de chargement, point du run en
+cours — c'est-à-dire précisément celles que le réglage vise : un clignotement
+qui ne s'arrête jamais, sur une page qu'on garde ouverte. Elles sont
+maintenant couvertes, et le mouvement s'arrête sans que le signal se perde :
+le rouge, la graisse et les majuscules du palier final restent, et son halo
+devient fixe au lieu de disparaître avec l'animation qui le portait.
+
+Mesuré dans Chromium à 390 px sur les deux thèmes : 5 valeurs de rayon
+distinctes à l'écran ramenées à 4, 3 durées ramenées à 2, rendu identique à
+l'œil.
 
 ### Contraste : les deux thèmes tiennent WCAG AA
 
@@ -1342,7 +1398,9 @@ plutôt que d'attendre l'expiration du délai.
 
 **En place et vérifié depuis le 28/08/2026.** cron-job.org appelle le dépôt
 **toutes les heures** (c'était toutes les 30 min jusqu'au 02/09/2026, voir
-plus haut). La fiabilité a été vérifiée à l'époque de la demi-heure : sur la
+plus haut). Il continue d'appeler 24 fois par jour ; ce sont les cinq appels
+de la nuit que le workflow écarte lui-même — **rien n'a été modifié chez
+cron-job.org**, et c'est voulu : voir *Pause nocturne*. La fiabilité a été vérifiée à l'époque de la demi-heure : sur la
 nuit du 28 au 29 août, les 22 créneaux sont partis sans exception, à la
 minute près. À comparer aux 12 créneaux consécutifs purement abandonnés par
 le `schedule` de GitHub la veille.
