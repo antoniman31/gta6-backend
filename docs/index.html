@@ -58,6 +58,47 @@
     --danger: #b91c1c;          /* 6,02:1 — était #dc2626, 4,49 */
     --grid-tint: rgba(29,78,216,0.05);
   }
+
+  /* ── Échelle de formes et de mouvement ───────────────────────────────
+     Indépendante du thème : les deux palettes ci-dessus la partagent.
+
+     Avant, neuf rayons d'angle cohabitaient (2, 3, 4, 5, 6, 8, 10, 19,
+     20 px) et cinq durées (150, 180, 200, 250, 400 ms), sans qu'aucune
+     règle ne dise lequel prendre. Deux boutons voisins ne s'arrondissaient
+     pas pareil.
+
+     Les VALEURS sont celles de l'échelle Material 3 (fichier de tokens
+     md-sys-shape v0.192 : extra-small 4, small 8, medium 12, full 9999).
+     L'AFFECTATION, elle, est la nôtre et diverge volontairement de M3 :
+     Google met ses boutons et ses pastilles en gélule (corner-full) et ses
+     boîtes de dialogue à 28 px. Ici l'identité est monospace et anguleuse ;
+     des boutons entièrement arrondis la casseraient. On garde donc l'échelle
+     sans copier le style :
+
+       --r-xs   micro-éléments : pastilles, favicon, surlignage, barres
+       --r-sm   commandes : boutons, champs, onglets, vignettes
+       --r-md   surfaces : cartes, bandeaux, panneaux, feuille
+       --r-full formes réellement en gélule : interrupteur, compteurs
+
+     Les durées suivent le même principe (Material 3 « short » / « medium »,
+     et le seuil de Doherty : tout retour visible sous 400 ms) :
+
+       --t-court  changement d'état sur place (survol, focus, bascule)
+       --t-moyen  un élément entre, sort ou parcourt une distance
+
+     Les deux valeurs sont des crans M3 réels (md-sys-motion : short3 = 150 ms,
+     medium1 = 250 ms), pas des chiffres ronds choisis au hasard.
+
+     Les pulsations décoratives infinies gardent leur rythme propre : ce
+     n'est pas du retour d'interaction, les harmoniser n'apporterait rien. */
+  :root{
+    --r-xs: 4px;
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-full: 9999px;   /* la valeur exacte de corner-full chez M3 */
+    --t-court: .15s;
+    --t-moyen: .25s;
+  }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
     background:
@@ -67,7 +108,7 @@
     font-family:'Inter',sans-serif;
     min-height:100vh;
     padding:24px 16px 60px;
-    transition:background-color .2s, color .2s;
+    transition:background-color var(--t-moyen), color var(--t-moyen);
   }
   .wrap{max-width:640px; margin:0 auto;}
 
@@ -77,12 +118,24 @@
   .header-haut{
     display:flex; justify-content:space-between; align-items:flex-start;
     gap:10px;
+    /* Sans ce retour à la ligne, l'entête débordait déjà de la carte sur un
+       écran de 320px : .header-actions porte flex-shrink:0 et refuse donc de
+       se comprimer, si bien que le badge « BACKEND GITHUB » se faisait
+       trancher et que le dernier bouton touchait le bord. Le défaut est
+       antérieur à l'agrandissement des cibles tactiles, qui l'a seulement
+       rendu voyant en portant la rangée de 154 à 166px.
+       Sous ~370px, le bloc de droite descend maintenant sur sa propre ligne
+       plutôt que de se faire couper. */
+    flex-wrap:wrap;
   }
-  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+  /* margin-left:auto : une fois passé sur sa propre ligne (voir le
+     flex-wrap de .header-haut), le bloc repartirait sinon coller à gauche —
+     justify-content:space-between ne s'applique qu'aux lignes à deux items. */
+  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px; margin-left:auto;}
   .brand{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; letter-spacing:-0.02em;}
   .mode-indicator{
     display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace;
-    font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px;
+    font-size:10px; font-weight:700; padding:2px 7px; border-radius:var(--r-xs);
     letter-spacing:0.03em; text-transform:uppercase; width:fit-content;
   }
   .mode-indicator.backend{background:color-mix(in srgb, var(--ok) 15%, transparent); color:var(--ok); border:1px solid var(--ok);}
@@ -91,7 +144,7 @@
   .countdown{
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);
     margin-top:4px; font-weight:600; letter-spacing:0.02em;
-    transition:color .4s ease;
+    transition:color var(--t-moyen) ease;
   }
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
@@ -106,7 +159,7 @@
   .countdown.final{
     color:#ff4d4d; font-weight:800; font-size:13px;
     text-transform:uppercase; display:inline-block;
-    padding:4px 8px; margin:-4px 0 0 -8px; border-radius:6px;
+    padding:4px 8px; margin:-4px 0 0 -8px; border-radius:var(--r-sm);
     animation:countdown-pulse 1s ease-in-out infinite, countdown-border-pulse 1s ease-in-out infinite;
   }
   @keyframes countdown-pulse{
@@ -120,20 +173,33 @@
   .brand span{color:var(--accent);}
   .status-line{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); margin-top:6px;}
 
-  .header-actions{display:flex; gap:6px; flex-shrink:0;}
+  /* Écart 10px et non 6 : chaque bouton étend sa zone de clic de 5px de
+     chaque côté (voir .icon-btn::after). À 10px d'écart les deux zones se
+     touchent exactement — à 6px elles se chevaucheraient de 4px et un appui
+     entre deux icônes partirait sur la mauvaise. La rangée passe de 154 à
+     166px, ce qui tient encore dans les 172px disponibles à côté du logo
+     sur un écran de 320px (mesuré). */
+  .header-actions{display:flex; gap:10px; flex-shrink:0;}
   .icon-btn{
     background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
-    width:34px; height:34px; border-radius:6px; cursor:pointer;
+    width:34px; height:34px; border-radius:var(--r-sm); cursor:pointer;
     display:flex; align-items:center; justify-content:center; font-size:15px;
-    transition:border-color .15s;
+    transition:border-color var(--t-court);
+    position:relative;
   }
+  /* 34px visibles, 44px cliquables. Agrandir la boîte elle-même aurait poussé
+     la rangée à 194px, soit 22px de trop à côté du logo sur un écran de
+     320px ; l'agrandir en ::after ne déplace rien du tout. Les deux boutons
+     qui portent une pastille avaient déjà position:relative en ligne, celui
+     du CSS ne les bouge donc pas. */
+  .icon-btn::after{content:""; position:absolute; inset:-5px;}
   .settings-error-badge{
     position:absolute; top:-4px; right:-4px; width:9px; height:9px; border-radius:50%;
     background:var(--warn); border:2px solid var(--bg);
   }
   .logs-error-badge{
     position:absolute; top:-6px; right:-6px; min-width:16px; height:16px; padding:0 3px;
-    border-radius:8px; background:var(--warn); border:2px solid var(--bg);
+    border-radius:var(--r-full); background:var(--warn); border:2px solid var(--bg);
     display:flex; align-items:center; justify-content:center;
     /* --bg, pas #ffffff : sur le jaune du thème sombre (#facc15) le blanc
        tombe à 1,17:1, soit strictement illisible. */
@@ -144,7 +210,7 @@
 
   .stale-banner{
     background:color-mix(in srgb, var(--warn) 15%, var(--bg-panel)); border:1px solid var(--warn);
-    color:var(--warn); border-radius:8px; padding:12px 14px; margin-bottom:14px;
+    color:var(--warn); border-radius:var(--r-md); padding:12px 14px; margin-bottom:14px;
     font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.5; font-weight:600;
   }
 
@@ -153,20 +219,20 @@
   .update-banner{
     background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
     border:1px solid var(--accent); color:var(--accent);
-    border-radius:8px; padding:10px 12px; margin-bottom:14px;
+    border-radius:var(--r-md); padding:10px 12px; margin-bottom:14px;
     font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.4;
     font-weight:600;
     display:flex; align-items:center; justify-content:space-between; gap:10px;
   }
   .update-banner button{
     flex-shrink:0; background:var(--accent); color:var(--accent-contrast); border:none;
-    border-radius:5px; padding:6px 12px; font-family:'JetBrains Mono',monospace;
+    border-radius:var(--r-sm); padding:6px 12px; font-family:'JetBrains Mono',monospace;
     font-size:11px; font-weight:700; cursor:pointer; height:30px;
   }
 
   /* ---------- Bloc de contrôle ---------- */
   .console{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
     padding:14px; margin-bottom:14px; overflow:hidden;
     display:flex; flex-direction:column; gap:10px;
   }
@@ -183,8 +249,8 @@
   button{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
-    padding:10px 14px; border-radius:6px; cursor:pointer; letter-spacing:0.02em;
-    transition:border-color .15s;
+    padding:10px 14px; border-radius:var(--r-sm); cursor:pointer; letter-spacing:0.02em;
+    transition:border-color var(--t-court);
   }
   button:hover{border-color:var(--accent);}
   button:active{transform:translateY(1px);}
@@ -195,10 +261,12 @@
   button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);}
   button.primary:hover{filter:brightness(1.1);}
   button:disabled{opacity:0.4; cursor:default;}
-  button.small{padding:6px 10px; font-size:11px;}
+  /* min-height et non un rembourrage plus épais : le bouton « Charger 30 de
+     plus » mesurait 27px de haut, le plus petit de toute l'interface. */
+  button.small{padding:6px 10px; font-size:11px; min-height:44px;}
 
   .progress-bar{
-    width:100%; height:4px; background:var(--bg-elevated); border-radius:2px;
+    width:100%; height:4px; background:var(--bg-elevated); border-radius:var(--r-xs);
     overflow:hidden; margin-bottom:14px;
   }
   /* Dans le bloc, la barre épouse le bord bas : les marges négatives la
@@ -209,7 +277,7 @@
   .console .progress-bar{margin:0 -14px -14px; width:auto; border-radius:0;}
   .progress-fill{
     height:100%; width:0%; background:var(--accent);
-    transition:width .25s ease-out;
+    transition:width var(--t-moyen) ease-out;
   }
 
   .search-row{margin-bottom:14px; display:flex; flex-direction:row; align-items:stretch; gap:8px;}
@@ -223,7 +291,8 @@
      hauteur : le champ ne grandit pas, c'est le texte qui grossit. */
   .search-row input{
     width:100%; background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
-    font-family:'Inter',sans-serif; font-size:16px; padding:7px 32px 7px 12px; border-radius:6px;
+    font-family:'Inter',sans-serif; font-size:16px; padding:7px 32px 7px 12px; border-radius:var(--r-sm);
+    min-height:44px;
   }
   .search-row input:focus{outline:none; border-color:var(--accent);}
   .search-clear-btn{
@@ -243,10 +312,13 @@
      text-align, qui reste sans effet sur un conteneur flex. */
   .tab, .controls button{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:6px; color:var(--text-dim);
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-sm); color:var(--text-dim);
     padding:8px 14px; cursor:pointer; letter-spacing:0.02em;
-    transition:background .15s ease, border-color .15s ease, color .15s ease;
+    transition:background var(--t-court) ease, border-color var(--t-court) ease, color var(--t-court) ease;
     display:flex; align-items:center; justify-content:center; gap:6px;
+    /* 44px : le seuil WCAG 2.5.5. « Actualiser » est l'action principale de
+       l'application et mesurait 34px de haut ; les onglets, 36. */
+    min-height:44px;
   }
   .tab{white-space:nowrap; flex-shrink:0;}
   .tab:active, .controls button:active{background:var(--bg-elevated);}
@@ -255,7 +327,7 @@
   .tab.active, .controls button.primary{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
   .tab-badge{
     font-size:10px; font-weight:700; background:var(--bg-elevated); color:var(--text-dim);
-    padding:1px 5px; border-radius:8px; margin-left:2px;
+    padding:1px 5px; border-radius:var(--r-full); margin-left:2px;
   }
   /* Le voile et le texte suivent --accent-contrast : sur l'aplat clair du
      thème sombre, un voile blanc et du texte blanc devenaient invisibles. */
@@ -290,9 +362,9 @@
     to{opacity:1; transform:translateY(0);}
   }
   .card{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
-    padding:14px 16px; position:relative; overflow:hidden; transition:opacity .2s;
-    animation:card-enter .25s ease-out backwards;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
+    padding:14px 16px; position:relative; overflow:hidden; transition:opacity var(--t-court);
+    animation:card-enter var(--t-moyen) ease-out backwards;
   }
   @media (prefers-reduced-motion: reduce){
     .card{animation:none;}
@@ -321,17 +393,17 @@
      sur leur largeur — ils restent bien au-dessus du minimum. */
   .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap; gap:8px; margin-top:8px;}
   .card-thumb{
-    width:64px; height:64px; object-fit:cover; border-radius:6px; flex-shrink:0;
+    width:64px; height:64px; object-fit:cover; border-radius:var(--r-sm); flex-shrink:0;
     background:var(--bg-elevated); border:1px solid var(--line);
   }
-  .card-favicon{width:14px; height:14px; border-radius:3px; vertical-align:middle; margin-right:5px;}
+  .card-favicon{width:14px; height:14px; border-radius:var(--r-xs); vertical-align:middle; margin-right:5px;}
   .card.official{
     border-color:#FF6B00; border-width:1.5px;
     background:linear-gradient(180deg, color-mix(in srgb, #FF6B00 8%, var(--bg-panel)), var(--bg-panel));
   }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800;
-    background:#FF6B00; color:#100800; padding:2px 6px; border-radius:3px;
+    background:#FF6B00; color:#100800; padding:2px 6px; border-radius:var(--r-xs);
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -340,14 +412,14 @@
      téléphone — or « SPÉCIALISTE GTA 6 » et « VIDÉO » portent du sens. */
   .tag-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
-    padding:2px 6px; border-radius:3px; letter-spacing:0.03em; white-space:nowrap;
+    padding:2px 6px; border-radius:var(--r-xs); letter-spacing:0.03em; white-space:nowrap;
   }
   .tag-leak{background:#e11d48; color:#fff;}
   .tag-video{background:#7c3aed; color:#fff;}
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
   .specialist-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
-    background:transparent; color:var(--accent); border:1px solid var(--accent); padding:1px 5px; border-radius:3px;
+    background:transparent; color:var(--accent); border:1px solid var(--accent); padding:1px 5px; border-radius:var(--r-xs);
     letter-spacing:0.03em; white-space:nowrap;
   }
   .card-src-row{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin-bottom:6px;}
@@ -356,7 +428,7 @@
     text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap;
   }
   .card-title{font-size:14px; font-weight:600; line-height:1.4; margin-bottom:6px;}
-  .card-title mark{background:var(--accent); color:var(--accent-contrast); border-radius:2px; padding:0 1px;}
+  .card-title mark{background:var(--accent); color:var(--accent-contrast); border-radius:var(--r-xs); padding:0 1px;}
   .card-title a{color:var(--text); text-decoration:none;}
   .card-title a:hover{color:var(--accent);}
   .card-date{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);}
@@ -379,7 +451,7 @@
   .card-extra a:hover{text-decoration:underline;}
   .card-mark{
     font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim);
-    background:none; border:1px solid var(--line); border-radius:4px; padding:0 6px;
+    background:none; border:1px solid var(--line); border-radius:var(--r-xs); padding:0 6px;
     cursor:pointer; white-space:nowrap;
     /* Part égale de la largeur disponible. Base 0 : la largeur ne dépend
        plus du contenu, donc la rangée ne bouge pas quand une confirmation
@@ -416,17 +488,17 @@
   /* ---------- Balayage pour marquer lu ---------- */
   /* L'indice coloré est peint SOUS la carte : c'est lui qu'on découvre à
      mesure qu'elle glisse, sans avoir à animer deux éléments. */
-  .swipe-wrap{position:relative; overflow:hidden; border-radius:8px;}
+  .swipe-wrap{position:relative; overflow:hidden; border-radius:var(--r-md);}
   .swipe-hint{
     position:absolute; inset:0; display:flex; align-items:center;
-    padding:0 22px; font-size:20px; border-radius:8px;
+    padding:0 22px; font-size:20px; border-radius:var(--r-md);
     background:color-mix(in srgb, var(--ok) 22%, var(--bg-panel));
     color:var(--ok); pointer-events:none; opacity:0;
   }
   .swipe-wrap.vers-gauche .swipe-hint{justify-content:flex-end;}
   .swipe-wrap.glisse .card{transition:none;}
   .swipe-wrap .card{will-change:transform;}
-  .swipe-wrap.rend .card{transition:transform .18s ease-out;}
+  .swipe-wrap.rend .card{transition:transform var(--t-court) ease-out;}
   @media (prefers-reduced-motion: reduce){
     .swipe-wrap.rend .card{transition:none;}
   }
@@ -440,7 +512,7 @@
     height:0; overflow:hidden; color:var(--text-dim);
     font-family:'JetBrains Mono',monospace; font-size:11px;
   }
-  .pull-zone.rend{transition:height .18s ease-out;}
+  .pull-zone.rend{transition:height var(--t-court) ease-out;}
   @media (prefers-reduced-motion: reduce){
     .pull-zone.rend{transition:none;}
   }
@@ -456,7 +528,7 @@
   }
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
-    background:var(--accent); color:var(--accent-contrast); border:none; border-radius:20px;
+    background:var(--accent); color:var(--accent-contrast); border:none; border-radius:var(--r-full);
     padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:11px;
     font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;
   }
@@ -471,16 +543,16 @@
     50%{opacity:0.9;}
   }
   .skeleton-card{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:8px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
     padding:14px 16px; display:flex; gap:10px; align-items:flex-start;
   }
   .skeleton-thumb{
-    width:64px; height:64px; border-radius:6px; flex-shrink:0;
+    width:64px; height:64px; border-radius:var(--r-sm); flex-shrink:0;
     background:var(--bg-elevated); animation:skeleton-pulse 1.4s ease-in-out infinite;
   }
   .skeleton-lines{flex:1; display:flex; flex-direction:column; gap:8px; padding-top:2px;}
   .skeleton-line{
-    height:10px; border-radius:4px; background:var(--bg-elevated);
+    height:10px; border-radius:var(--r-xs); background:var(--bg-elevated);
     animation:skeleton-pulse 1.4s ease-in-out infinite;
   }
   .skeleton-line.w-30{width:30%;}
@@ -490,18 +562,18 @@
 
   .filters-trigger{
     display:flex; align-items:center; justify-content:center; gap:6px; flex-shrink:0;
-    padding:8px 14px; white-space:nowrap;
+    padding:8px 14px; white-space:nowrap; min-height:44px;
   }
 
   .info-btn{
     display:block; margin:24px auto 8px; padding:8px 16px;
-    background:transparent; border:1px solid var(--line); border-radius:6px;
-    color:var(--text-dim); font-size:16px; cursor:pointer;
+    background:transparent; border:1px solid var(--line); border-radius:var(--r-sm);
+    color:var(--text-dim); font-size:16px; cursor:pointer; min-height:44px;
   }
   .info-btn:active{ background:var(--bg-panel); }
 
   .log-entry{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:6px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-sm);
     padding:8px 10px; display:flex; justify-content:space-between; gap:10px; align-items:baseline;
   }
   .log-entry.ok{border-left:3px solid var(--ok);}
@@ -519,7 +591,7 @@
   }
   .overlay.open{display:flex;}
   .settings-panel{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
     max-width:520px; width:100%; margin-top:24px; padding:20px;
     max-height:calc(100vh - 48px); overflow-y:auto;
   }
@@ -530,7 +602,7 @@
      confirmation cachée derrière son propre déclencheur ne sert à rien. */
   .overlay.confirm-overlay{z-index:200; align-items:center;}
   .confirm-panel{
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
     max-width:400px; width:100%; padding:20px;
   }
   .confirm-panel h3{font-size:15px; margin-bottom:8px;}
@@ -555,11 +627,11 @@
   .overlay.bottom-sheet{align-items:flex-end; padding:0;}
   .sheet-panel{
     background:var(--bg-panel); border:1px solid var(--line); border-bottom:none;
-    border-radius:10px 10px 0 0; width:100%; max-width:520px;
+    border-radius:var(--r-md) var(--r-md) 0 0; width:100%; max-width:520px;
     padding:8px 20px 24px; max-height:80vh; overflow-y:auto;
   }
   .sheet-handle{
-    width:36px; height:4px; border-radius:2px; background:var(--line);
+    width:36px; height:4px; border-radius:var(--r-xs); background:var(--line);
     margin:0 auto 16px;
   }
   .sheet-section{margin-bottom:18px;}
@@ -590,7 +662,7 @@
   .champ-mono{
     font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px;
     background:var(--bg-elevated); border:1px solid var(--line);
-    color:var(--text); border-radius:5px; width:100%;
+    color:var(--text); border-radius:var(--r-sm); width:100%;
   }
   textarea.champ-mono{resize:vertical;}
   textarea.champ-mono.petit{font-size:10px;}
@@ -676,7 +748,7 @@
   input[type="range"]{width:140px; accent-color:var(--accent);}
   input[type="number"], input[type="text"].setting-input{
     background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
-    font-family:'JetBrains Mono',monospace; font-size:12px; padding:6px 8px; border-radius:5px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; padding:6px 8px; border-radius:var(--r-sm);
     width:90px;
   }
   input[type="text"].setting-input.wide{width:100%;}
@@ -686,12 +758,12 @@
   }
   .switch input{opacity:0; width:0; height:0;}
   .switch .slider{
-    position:absolute; inset:0; background:var(--line); border-radius:19px;
-    cursor:pointer; transition:.2s;
+    position:absolute; inset:0; background:var(--line); border-radius:var(--r-full);
+    cursor:pointer; transition:var(--t-court);
   }
   .switch .slider::before{
     content:''; position:absolute; width:13px; height:13px; left:3px; top:3px;
-    background:var(--bg-panel); border-radius:50%; transition:.2s;
+    background:var(--bg-panel); border-radius:50%; transition:var(--t-court);
   }
   .switch input:checked + .slider{background:var(--accent);}
   .switch input:checked + .slider::before{transform:translateX(13px); background:var(--accent-contrast);}
@@ -701,7 +773,7 @@
   }
   .source-row{
     display:flex; align-items:center; justify-content:space-between; gap:6px;
-    background:var(--bg-elevated); border:1px solid var(--line); border-radius:6px;
+    background:var(--bg-elevated); border:1px solid var(--line); border-radius:var(--r-sm);
     padding:6px 8px;
   }
   .source-row span{font-size:11px; line-height:1.3; overflow-wrap:break-word;}
@@ -754,17 +826,54 @@
   .aide[aria-expanded="true"]{border-color:var(--accent); color:var(--accent);}
   .setting-label{display:flex; align-items:center;}
 
+  /* Présent dans l'arbre d'accessibilité, absent de l'écran. clip-path pour
+     les navigateurs modernes, clip pour les anciens ; surtout PAS
+     display:none ni visibility:hidden, qui retireraient l'élément de l'arbre
+     et rendraient la région live muette. */
+  .sr-only{
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%);
+    white-space:nowrap; border:0;
+  }
+
   ::selection{background:var(--accent); color:var(--accent-contrast);}
 
-  #previewImage img{width:100%; border-radius:8px; margin-bottom:14px; max-height:220px; object-fit:cover;}
+  #previewImage img{width:100%; border-radius:var(--r-sm); margin-bottom:14px; max-height:220px; object-fit:cover;}
   #previewLink{text-decoration:none; flex:1; display:flex;}
   #previewLink button{width:100%;}
   .preview-actions{display:flex; gap:8px; margin-top:4px;}
   .preview-actions #previewTranslateBtn{flex:1;}
+
+  /* ── Mouvement réduit : les pulsations infinies ───────────────────────
+     Trois blocs plus haut coupent déjà les animations d'ENTRÉE (carte qui
+     apparaît, retour de glissement, refermeture du tiroir). Restaient les
+     quatre pulsations INFINIES — compte à rebours urgent, compte à rebours
+     final, squelettes de chargement, point du run en cours. Ce sont
+     précisément celles que « mouvement réduit » vise : un clignotement qui
+     ne s'arrête jamais, sur une page qu'on garde ouverte.
+
+     On coupe le mouvement sans perdre le signal : le rouge, la graisse, les
+     majuscules et le halo du palier final restent, simplement immobiles. */
+  @media (prefers-reduced-motion: reduce){
+    .countdown.urgent,
+    .countdown.final,
+    .skeleton-thumb,
+    .skeleton-line,
+    .run-dot.running{animation:none;}
+    .countdown.final{box-shadow:0 0 0 2px rgba(255,77,77,0.5);}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <!-- Ce que l'actualisation a donné, dit au lecteur d'écran. Visuellement
+       la réponse arrive en 83 ms sous le bouton ; sans les yeux, rien
+       n'arrivait du tout. Une seule région, et pas une par ligne d'état :
+       les quatre se réécrivent au même instant, quatre régions auraient
+       produit quatre annonces qui se coupent la parole. -->
+  <div id="annonce" class="sr-only" role="status" aria-live="polite"></div>
+
 
   <!-- Une seule carte : l'identité du site, les actions qui modifient le
        fil, et le bilan du dernier passage. Deux cartes séparées coûtaient
@@ -775,16 +884,16 @@
   <header class="console">
     <div class="header-haut">
       <div>
-        <div class="brand">GTA6<span>_WATCH</span></div>
+        <h1 class="brand">GTA6<span>_WATCH</span></h1>
         <div id="countdown" class="countdown"></div>
       </div>
       <div class="header-right">
         <div id="modeIndicator" class="mode-indicator"></div>
         <div class="header-actions">
-          <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">◐</button>
-          <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
-          <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">▤<span id="badgeLogs" class="logs-error-badge"></span></button>
-          <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ⓘ</button>
+          <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">🌙</button>
+          <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙️<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
+          <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">📋<span id="badgeLogs" class="logs-error-badge"></span></button>
+          <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ℹ️</button>
         </div>
       </div>
     </div>
@@ -824,6 +933,14 @@
     <button onclick="rechargerApp()">Recharger</button>
   </div>
 
+  <!-- Le contenu principal, au sens des repères d'accessibilité : la
+       recherche, les onglets, le fil et le journal. L'entête (<header>) et
+       les bandeaux d'alerte restent en dehors — ce sont des annonces, pas le
+       contenu qu'on vient lire. Un lecteur d'écran peut maintenant sauter
+       directement ici, puis naviguer de jour en jour (<h2>) et d'article en
+       article (<h3>). .wrap est un bloc simple, pas un conteneur flex :
+       ajouter ce niveau ne change donc aucune mise en page. -->
+  <main>
   <div class="search-row">
     <div class="search-input-wrap">
       <input type="text" id="searchInput" placeholder="Filtrer par mot-clé…" oninput="debouncedSearch(); toggleClearButton();">
@@ -867,8 +984,9 @@
     </div>
     <div id="logsList" style="display:flex; flex-direction:column-reverse; gap:4px; font-family:'JetBrains Mono',monospace; font-size:11px;"></div>
   </div>
+  </main>
 
-  <button class="info-btn" onclick="openInfo()" title="Informations">ⓘ</button>
+  <button class="info-btn" onclick="openInfo()" title="Informations">ℹ️</button>
 
 </div>
 
@@ -1633,7 +1751,13 @@ function applyTheme(){
     effective = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   }
   document.documentElement.setAttribute("data-theme", effective);
-  document.getElementById("themeBtn").textContent = effective === "light" ? "◐" : "◑";
+  // En thème clair on propose de passer au sombre, et inversement : l'icône
+  // dit ce que le clic va faire. Les deux demi-cercles d'avant décrivaient un
+  // état, ce qui laissait deviner dans quel sens on allait.
+  // (Les glyphes remplacés ne sont volontairement pas recopiés ici : le test
+  //  qui vérifie leur disparition lit tout le fichier, commentaires compris,
+  //  et les citer les lui ferait reprendre pour du balisage encore en place.)
+  document.getElementById("themeBtn").textContent = effective === "light" ? "🌙" : "☀️";
 }
 function setTheme(t){
   settings.theme = t;
@@ -2062,6 +2186,8 @@ async function applyBackendData(data, sourceUrl){
   if(document.getElementById("settingsOverlay").classList.contains("open")){
     populateSettingsUI();
   }
+
+  annonceRafraichissement();
 }
 
 function updateHistoryLine(){
@@ -2254,6 +2380,8 @@ async function checkNow(force){
   if(document.getElementById("settingsOverlay").classList.contains("open")){
     populateSettingsUI();
   }
+
+  annonceRafraichissement();
 }
 
 // ---------- Filtres + recherche ----------
@@ -2553,7 +2681,7 @@ function renderFeed(items, newLinks, searchQuery){
     .filter(b => buckets[b] && buckets[b].length > 0)
     .map(bucket => `
       <div class="day-group">
-        <div class="day-label">${bucket}</div>
+        <h2 class="day-label">${bucket}</h2>
         ${buckets[bucket].map(item => enveloppeCarte(item, newLinks, searchQuery)).join("")}
       </div>
     `).join("");
@@ -2576,7 +2704,7 @@ function enveloppeCarte(item, newLinks, searchQuery){
   const repere = (repriseLien && item.link === repriseLien)
     ? `<div class="resume-marker">lu jusqu'ici</div>` : "";
   return repere
-    + `<div class="swipe-wrap"><div class="swipe-hint">${lu ? "↺" : "✓"}</div>`
+    + `<div class="swipe-wrap"><div class="swipe-hint">${lu ? "↩️" : "✅"}</div>`
     + renderCard(item, newLinks, searchQuery)
     + `</div>`;
 }
@@ -2660,15 +2788,15 @@ function renderCard(item, newLinks, searchQuery){
             <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
             ${hotBadge}${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
           </div>
-          <div class="card-title">${linkUrl
+          <h3 class="card-title">${linkUrl
             ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`
-            : highlightMatch(item.title, searchQuery)}</div>
+            : highlightMatch(item.title, searchQuery)}</h3>
           <div class="card-date">${d}</div>
           ${extraSourcesLine}
           <div class="card-actions">
-            <button class="card-mark" data-icon-only="1" title="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${isRead ? "↺" : "✓"}</button>
-            <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">⧉</button>
-            ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">👁</button>` : ""}
+            <button class="card-mark" data-icon-only="1" title="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${isRead ? "↩️" : "✅"}</button>
+            <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">🔗</button>
+            ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">👁️</button>` : ""}
             ${item.lang !== "fr" ? `<button class="card-mark" data-icon-only="1" title="Traduire en français" aria-label="Traduire en français" onclick="openTranslated('${escapeAttr(item.link)}')">🇫🇷</button>` : ""}
           </div>
         </div>
@@ -2726,6 +2854,12 @@ function copyLink(link, btn){
       // centaine et décalerait toute la rangée pendant une seconde et demie.
       // On échange l'icône contre une coche, à largeur constante ; le vert
       // distingue la confirmation du bouton "marquer lu" juste à côté.
+      //
+      // Et cette coche-ci reste un glyphe TEXTE, pas l'emoji ✅ des autres
+      // boutons : c'est la seule des trois qui soit teintée par CSS
+      // (.card-mark.done), et la couleur d'un emoji ne se pilote pas. En
+      // emoji, la confirmation serait devenue le sosie exact du bouton
+      // « marquer lu » d'à côté — précisément ce que ce vert évite.
       btn.textContent = btn.dataset.iconOnly ? "✓" : "copié";
       btn.classList.add("done");
       setTimeout(() => { btn.textContent = original; btn.classList.remove("done"); }, 1500);
@@ -2760,7 +2894,7 @@ function openPreview(safeId){
 
   const sourceLabel = item.official ? "OFFICIEL ROCKSTAR" : item.source.toUpperCase();
   const faviconUrl = safeUrl(item.favicon);
-  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" alt="" style="width:16px; height:16px; border-radius:3px; margin-right:6px; vertical-align:-3px;">` : "";
+  const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" alt="" style="width:16px; height:16px; border-radius:var(--r-xs); margin-right:6px; vertical-align:-3px;">` : "";
   document.getElementById("previewSource").innerHTML = favicon + escapeHtml(sourceLabel);
   document.getElementById("previewTitle").textContent = item.title;
   document.getElementById("previewBody").textContent = item.description || "Aucun extrait disponible pour cet article.";
@@ -3687,6 +3821,28 @@ window.addEventListener("scroll", () => {
 // tiennent sur deux lignes au plus étroit des écrans visés (320 px), même
 // avec des noms longs comme « Take-Two Investor Relations (officiel) ».
 const CASSEES_NOMMEES = 5;
+
+// Recompose l'état à partir de ce qui est écrit à l'écran plutôt que de
+// refabriquer la phrase depuis les données : une seule source de vérité, donc
+// aucun risque que l'annonce et l'affichage divergent un jour.
+function annonceRafraichissement(){
+  const region = document.getElementById("annonce");
+  if(!region) return;
+  const lire = id => {
+    const el = document.getElementById(id);
+    if(!el || el.style.display === "none") return "";
+    // Le point médian est un séparateur visuel ; à l'oreille il ne veut rien
+    // dire, et selon le lecteur il est lu « point médian » ou avalé.
+    return el.textContent.replace(/\s*·\s*/g, ", ").replace(/\s+/g, " ").trim();
+  };
+  const phrase = ["Actualisé", lire("countLine"), lire("runLine"), lire("runSoucis")]
+    .filter(Boolean).join(". ") + ".";
+  // Vider puis réécrire : une région live n'annonce que ce qui CHANGE, donc
+  // deux actualisations au résultat identique resteraient silencieuses alors
+  // que l'utilisateur attend une confirmation de son geste.
+  region.textContent = "";
+  setTimeout(() => { region.textContent = phrase; }, 100);
+}
 
 function majLigneRun(data){
   const el = document.getElementById("runLine");

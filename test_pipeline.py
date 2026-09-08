@@ -2934,6 +2934,51 @@ def test_ergonomie_tactile():
     check(mh is not None and int(mh.group(1)) >= 44,
           "« Tout charger » fait au moins 44 px de haut")
 
+    # Les commandes de l'application elle-même, pas seulement celles des
+    # cartes. La passe précédente n'avait traité que l'intérieur des cartes :
+    # « Actualiser », l'action principale, mesurait encore 34 px de haut, et
+    # « Charger N de plus » 27, le plus petit élément de toute l'interface.
+    for regle, nom in ((r"\.tab, \.controls button\{([^}]*)\}", "« Actualiser » et les onglets"),
+                       (r"\.filters-trigger\{([^}]*)\}", "le bouton « Filtres »"),
+                       (r"\.search-row input\{([^}]*)\}", "le champ de recherche"),
+                       (r"button\.small\{([^}]*)\}", "« Charger N de plus »"),
+                       (r"\.info-btn\{([^}]*)\}", "le bouton d'information")):
+        bloc = re.search(regle, html).group(1)
+        mh = re.search(r"min-height:\s*(\d+)px", bloc)
+        check(mh is not None and int(mh.group(1)) >= 44,
+              "%s fait au moins 44 px de haut" % nom)
+
+    # Les quatre boutons d'entête gardent 34 px à l'œil et gagnent leurs
+    # 44 px en ::after : les agrandir vraiment poussait la rangée à 194 px,
+    # soit plus que les 172 px disponibles à côté du logo sur un écran de
+    # 320 px. L'écart doit valoir au moins le double de l'extension, sinon
+    # les zones de deux icônes voisines se chevauchent et un appui entre les
+    # deux part sur la mauvaise.
+    inset = re.search(r"\.icon-btn::after\s*\{[^}]*inset:\s*-(\d+)px", html)
+    check(inset is not None, ".icon-btn étend sa zone de clic par un pseudo-élément")
+    bloc = re.search(r"\.icon-btn\{([^}]*)\}", html).group(1)
+    cote = int(re.search(r"width:\s*(\d+)px", bloc).group(1))
+    check("position:relative" in bloc,
+          ".icon-btn ancre son pseudo-élément (position:relative)")
+    if inset:
+        marge = int(inset.group(1))
+        check(cote + 2 * marge >= 44,
+              "boutons d'entête : zone de %d px de côté (44 visé)" % (cote + 2 * marge))
+        ecart = int(re.search(r"\.header-actions\{[^}]*gap:\s*(\d+)px", html).group(1))
+        check(ecart >= 2 * marge,
+              "écart de %d px entre les boutons d'entête pour %d px d'extension "
+              "de chaque côté — pas de chevauchement" % (ecart, marge))
+
+    # Le retour à la ligne de l'entête. Sans lui, .header-actions porte
+    # flex-shrink:0, refuse de se comprimer, et le badge de mode comme le
+    # dernier bouton se font trancher par le bord de la carte à 320 px.
+    bloc = re.search(r"\.header-haut\{([^}]*)\}", html).group(1)
+    check("flex-wrap:wrap" in bloc,
+          "l'entête passe à la ligne au lieu de déborder sur écran étroit")
+    bloc = re.search(r"\.header-right\{([^}]*)\}", html).group(1)
+    check("margin-left:auto" in bloc,
+          "et le bloc de droite reste à droite une fois passé à la ligne")
+
     # Anti-patterns qui se lisent dans le balisage.
     viewport = re.search(r'<meta name="viewport"[^>]*>', html).group(0)
     check("user-scalable=no" not in viewport and "maximum-scale" not in viewport,
@@ -2946,6 +2991,125 @@ def test_ergonomie_tactile():
     petits = re.findall(r"font-size:\s*([0-9]+)px", html)
     trop = sorted({int(x) for x in petits if int(x) < 10})
     check(not trop, "aucun texte sous 10 px" + (" (trouvé : %s)" % trop if trop else ""))
+
+
+def test_structure_et_annonces():
+    print("\n[app] la page a un plan de titres et annonce ce qu'elle fait")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    # Les commentaires sont retirés AVANT de compter : celui qui explique le
+    # repère <main> cite « <h2> » et « <h3> » en toutes lettres, et sans ce
+    # nettoyage le comptage des paires les prenait pour du balisage. Un test
+    # de structure doit lire la structure, pas la prose qui la commente.
+    html = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
+    # Un plan de titres, pour pouvoir naviguer autrement qu'en défilant. La
+    # page n'avait AUCUN h1 : la marque, les jours et les titres d'articles
+    # étaient tous des <div>, et les deux seuls <h3> du fichier étaient
+    # enfermés dans des boîtes de dialogue.
+    check('<h1 class="brand">' in html,
+          "la marque est le titre de niveau 1 de la page")
+    check('<h2 class="day-label">' in html,
+          "chaque jour est un titre de niveau 2")
+    check('<h3 class="card-title">' in html,
+          "chaque article est un titre de niveau 3")
+    check(html.count("<h1") == 1,
+          "un seul h1 dans toute la page (%d trouvé(s))" % html.count("<h1"))
+
+    # Les balises ouvrantes et fermantes vont par paires : une <h3 class=…>
+    # laissée fermée par </div> passerait inaperçue à l'œil et casserait le
+    # plan pour un lecteur d'écran.
+    for niveau in ("h1", "h2", "h3"):
+        ouvre = len(re.findall(r"<%s[ >]" % niveau, html))
+        ferme = html.count("</%s>" % niveau)
+        check(ouvre == ferme,
+              "%s : %d ouvertures pour %d fermetures" % (niveau, ouvre, ferme))
+
+    # Le repère de contenu principal, cible du « sauter au contenu ».
+    check(html.count("<main>") == 1 and html.count("</main>") == 1,
+          "un repère <main> encadre le contenu")
+    # Il doit contenir le fil, sinon il ne sert à rien.
+    corps = html[html.index("<main>"):html.index("</main>")]
+    check('<div class="feed" id="feed">' in corps,
+          "et le fil d'articles est bien dedans")
+    check('<div class="search-row">' in corps,
+          "avec la recherche et les filtres qui le pilotent")
+
+    # La région live. Sans elle, quatre lignes d'état se réécrivaient après
+    # chaque actualisation sans que rien ne soit annoncé : visuellement la
+    # réponse arrive en 83 ms, à l'oreille elle n'arrivait jamais.
+    region = re.search(r'<div id="annonce"[^>]*>', html)
+    check(region is not None, "une région live existe")
+    if region:
+        balise = region.group(0)
+        check('role="status"' in balise, "elle porte role=\"status\"")
+        check('aria-live="polite"' in balise, "et aria-live=\"polite\"")
+        check('class="sr-only"' in balise, "et la classe qui la sort de l'écran")
+
+    # sr-only doit masquer SANS retirer de l'arbre d'accessibilité :
+    # display:none et visibility:hidden rendraient la région muette.
+    bloc = re.search(r"\.sr-only\{([^}]*)\}", html, re.S).group(1)
+    check("display:none" not in bloc and "visibility:hidden" not in bloc,
+          "sr-only masque sans retirer de l'arbre d'accessibilité")
+    check("position:absolute" in bloc and "1px" in bloc,
+          "sr-only sort bien l'élément du flux")
+
+    # Et elle doit être alimentée aux DEUX fins de parcours : le mode backend
+    # et le mode direct. N'en brancher qu'une laisserait l'autre silencieuse.
+    check(html.count("annonceRafraichissement();") == 2,
+          "l'annonce est déclenchée par les deux modes, backend et direct "
+          "(%d point(s) d'appel)" % html.count("annonceRafraichissement();"))
+    check("function annonceRafraichissement()" in html,
+          "et la fonction qui la compose existe")
+
+
+def test_icones_en_emoji():
+    print("\n[app] les icônes sont des emojis, sauf là où la couleur porte du sens")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    sans_commentaires = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
+    # Les glyphes Unicode d'origine ne doivent plus rien étiqueter. ◐/◑ pour le
+    # thème, ⚙ nu (sans sélecteur de variante) pour les paramètres, ▤ pour le
+    # journal, ⓘ pour les informations, ⧉ pour la copie.
+    for glyphe, role in (("◐", "thème clair"), ("◑", "thème sombre"),
+                         ("▤", "journal"), ("ⓘ", "informations"),
+                         ("⧉", "copie du lien")):
+        check(glyphe not in sans_commentaires,
+              "plus de « %s » pour %s" % (glyphe, role))
+
+    # ⚙ et ℹ doivent porter le sélecteur de variante U+FE0F, sans lequel
+    # certains systèmes les rendent en glyphe texte noir et blanc au lieu de
+    # l'emoji — c'est justement ce qu'on cherchait à quitter.
+    for base, nom in (("\u2699", "l'engrenage des paramètres"),
+                      ("\u2139", "le i d'informations")):
+        nus = len(re.findall(base + r"(?!\uFE0F)", sans_commentaires))
+        check(nus == 0,
+              "%s force la présentation emoji (U+FE0F) — %d occurrence(s) nue(s)"
+              % (nom, nus))
+
+    for emoji, role in (("\U0001F319", "passer au thème sombre"),
+                        ("\u2600\uFE0F", "passer au thème clair"),
+                        ("\U0001F4CB", "le journal"),
+                        ("\U0001F517", "copier le lien"),
+                        ("\u2705", "marquer lu"),
+                        ("\u21A9\uFE0F", "marquer non lu")):
+        check(emoji in sans_commentaires, "« %s » : %s" % (emoji, role))
+
+    # LE point subtil. La confirmation de copie est la seule des trois icônes
+    # de carte qui soit TEINTÉE par CSS (.card-mark.done la passe en vert), et
+    # la couleur d'un emoji ne se pilote pas. En emoji, cette confirmation
+    # deviendrait le sosie exact du bouton « marquer lu » juste à côté —
+    # précisément ce que ce vert sert à éviter. Elle doit rester un glyphe
+    # texte, et ce test est là pour empêcher qu'on l'« harmonise » un jour.
+    bloc = re.search(r"function copyLink\([^)]*\)\{(.*?)\n\}", html, re.S).group(1)
+    check('btn.dataset.iconOnly ? "\u2713"' in bloc,
+          "la confirmation de copie reste la coche TEXTE ✓, pas l'emoji ✅")
+    check('classList.add("done")' in bloc,
+          "et elle est bien teintée en vert par la classe done")
+    regle = re.search(r"\.card-mark\.done\{([^}]*)\}", html).group(1)
+    check("color:" in regle,
+          "la règle .card-mark.done teinte bien le texte (ce qu'un emoji ignorerait)")
 
 
 def test_contraste_des_deux_themes():
@@ -3550,6 +3714,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
+           test_structure_et_annonces,
+           test_icones_en_emoji,
            test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
