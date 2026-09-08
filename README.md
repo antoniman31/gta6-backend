@@ -1,8 +1,7 @@
 # GTA6_WATCH
 
 Veille automatisée de l'actualité GTA 6 : un robot interroge 50 sources en
-parallèle toutes les heures de 5h à minuit, décode les vrais liens Google
-News, récupère
+parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
 
@@ -20,8 +19,9 @@ cron-job.org (toutes les heures)          ← horloge principale
         ▼
 GitHub Actions  ◄── cron GitHub "37 */3"  ← filet de secours, best-effort
         │
-        ├─ 00h-05h (Paris) ? ─→ passage sauté, signal de vie quand même
-        │                       (sauf demande manuelle — voir Pause nocturne)
+        ├─ 00h-05h (Paris) ? ─→ tourne et publie, mais ne notifie QUE
+        │                       pour une annonce officielle Rockstar
+        │                       (une demande manuelle notifie tout)
         │
         ▼
   fetch_feeds.py  ──►  docs/feed.json          ──►  GitHub Pages  ──►  docs/index.html (PWA)
@@ -41,9 +41,10 @@ maintenir, hébergement gratuit et illimité pour ce volume.
 
 ## Le robot — `fetch_feeds.py`
 
-Tourne toutes les heures **de 5h à minuit** (heure de Paris), déclenché par
-un planificateur **externe** (cron-job.org) — voir la section dédiée. Entre
-minuit et 5h il ne fait rien : voir *Pause nocturne*. Le `cron` de GitHub
+Tourne toutes les heures, déclenché par un planificateur **externe**
+(cron-job.org) — voir la section dédiée. Entre minuit et 5h il tourne et
+publie mais ne notifie que pour une annonce officielle de Rockstar : voir
+*Pause nocturne*. Le `cron` de GitHub
 reste déclaré comme filet de secours, et le déclenchement manuel reste
 possible via l'onglet Actions → "Mise à jour des flux GTA 6" → Run workflow,
 ou depuis l'app — **une demande manuelle passe à toute heure**, pause
@@ -77,7 +78,7 @@ d'où le planificateur externe.
    La requête est **conditionnelle** : le robot renvoie l'`ETag` et le
    `Last-Modified` reçus au passage précédent, et le serveur répond `304`
    (quelques octets, sans corps) si rien n'a changé. Sans ça il
-   retéléchargerait 50 flux entiers 19 fois par jour ; la documentation de
+   retéléchargerait 50 flux entiers 24 fois par jour ; la documentation de
    feedparser prévient qu'un client qui ignore ces en-têtes peut se faire
    bannir par l'éditeur. Les validateurs sont conservés dans
    `feed_http_state` de `feed.json`, faute d'autre stockage persistant.
@@ -124,11 +125,9 @@ d'où le planificateur externe.
    (`parsed.entries[:30]` dans `fetch_feeds.py`). Les flux ne sont pas de
    la même profondeur : RockstarMag en publie 10, Eurogamer et Rock Paper
    Shotgun 100. Au-delà de 30, ce sont des articles déjà vus aux passages
-   précédents — aucun site suivi ne publie 30 articles dans l'intervalle
-   entre deux passages. Le cas le plus large est la reprise de 5h, après la
-   pause nocturne : six heures de silence, soit une trentaine d'articles
-   **toutes sources confondues** (le fil entier tourne autour de 105 articles
-   par jour), donc très loin de 30 pour une seule source.
+   précédents — à un passage par heure, jour et nuit, aucun site suivi ne
+   publie 30 articles dans l'intervalle (le fil entier tourne autour de 105
+   articles par jour, toutes sources confondues).
 
    **Ce plafond se lit dans les chiffres** et il faut y penser avant de
    comparer un flux à ce qu'il rapporte. Mesuré le 29/08/2026, entrées
@@ -493,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **903
+qui permet de tester tout le pipeline sans sortir de la machine. **934
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1336,12 +1335,17 @@ Le bouton de l'app poste sur `/actions/workflows/…/dispatches` — c'est bien 
 `workflow_dispatch`, pas le `repository_dispatch` qu'utilise cron-job.org. La
 distinction est donc gratuite, il n'y a rien à changer côté app.
 
-**Le passage part quand même.** Il va jusqu'à l'étape de signal de vie et ne
-saute que la récupération, la publication et les notifications. Sans ça, cinq
-heures de silence auraient été lues par healthchecks.io comme « le robot est
-mort », et l'alerte aurait sonné à 2h du matin — exactement ce qu'on cherchait
-à éviter. La détection de panne par healthchecks n'est donc **pas dégradée
-d'une minute** : il reçoit toujours un signal chaque heure.
+**Le passage tourne quand même, et publie.** C'est la *notification*, et elle
+seule, qui se tait. Le robot récupère, déduplique et publie comme en pleine
+journée : le fil est donc à jour au réveil, et healthchecks.io reçoit son
+signal chaque heure — sa détection de panne n'est **pas dégradée d'une
+minute**.
+
+Ce n'était pas le dessein initial : la pause sautait tout le passage, ce qui
+donnait un récapitulatif unique à 5h. C'est l'exigence « les annonces de
+Rockstar sont prioritaires » qui l'a fait changer — on ne peut pas savoir
+qu'une annonce est tombée sans aller la chercher. Voir *Une annonce de
+Rockstar réveille* ci-dessous.
 
 **Le fuseau est calculé, pas figé.** `TZ=Europe/Paris` et non un décalage UTC
 en dur : la fenêtre reste 00h-05h locales des deux côtés du changement
@@ -1359,17 +1363,119 @@ deux endroits (le workflow et `GTA6_RELEASE` dans l'app) : un test vérifie que
 la fenêtre encadre bien la date annoncée par l'app, pour qu'elles ne divergent
 pas si Rockstar décale encore.
 
-**Effet de bord agréable :** rien n'étant publié la nuit, le passage de 5h
-trouve tous les articles d'un coup et envoie **une** notification
-récapitulative au lieu de cinq. Un digest matinal, gratuitement.
+**Le récapitulatif du matin est conservé**, et c'est le seul morceau de
+mécanique qu'il a fallu construire pour ça.
 
-**Ce qu'il a fallu ajuster en face :** le bandeau « robot en retard » de l'app
-était calibré à 4h. Le dernier passage de la nuit pouvant tomber vers 23h,
-l'écart atteint légitimement 6h juste avant la reprise — le bandeau se serait
-allumé chaque nuit pour annoncer une panne inexistante. Seuil porté à **7h**.
-Ce que ça coûte : une vraie panne de jour est signalée *dans l'app* après 7h
-au lieu de 4. Ce n'est pas la vraie alarme, healthchecks.io l'est, et lui n'a
-rien perdu.
+Un article n'est « nouveau » que par comparaison avec le `feed.json` publié.
+Dès qu'un passage nocturne publie à 2h, l'article n'est plus nouveau à 5h :
+sans rien de plus, le récapitulatif du matin annoncerait « 0 nouveau » alors
+que la nuit en a apporté douze. Et les articles ne portent **aucune date de
+première vue** — seulement leur date de publication d'origine — donc rien ne
+permet de le recalculer après coup.
+
+`feed.json` porte donc un champ `attente_recap` : **trois entiers**, le nombre
+d'articles, le nombre d'officiels, et le pic de sources sur un même sujet.
+Chaque passage nocturne les cumule ; le premier passage de la journée les
+ressort, les ajoute aux siens, annonce le tout et remet l'ardoise à zéro.
+
+```
+  00h  +3 articles              → en attente {articles:3,  officiels:0, sommet:1}
+  01h  +2                       → en attente {articles:5,  officiels:0, sommet:2}
+  02h  +4 (dont 1 officiel)     → en attente {articles:9,  officiels:1, sommet:4}
+  03h  +0                       → inchangé
+  04h  +3                       → en attente {articles:12, officiels:1, sommet:4}
+  05h  +2  ON ANNONCE 14, l'ardoise est effacée
+
+  🚨 Actu majeure — 4 sources sur le même sujet
+     · 14 nouveaux articles GTA 6 (dont 1 officiel Rockstar)
+```
+
+**Trois entiers et non les articles eux-mêmes** : c'est tout ce dont le
+libellé a besoin, et `feed.json` est téléchargé par l'app à chaque ouverture —
+y stocker des articles en double se paierait à chaque visite.
+
+**Le sommet est un maximum, pas une somme.** Trois passages à quatre sources
+sur le même sujet, ça reste quatre sources. Une somme aurait fait passer une
+nuit ordinaire pour une actu majeure.
+
+**Le libellé est le même par les deux chemins.** `libelle_recap` compte les
+articles puis appelle `libelle_recap_depuis_comptes` ; le récapitulatif du
+matin appelle directement la seconde. Une formulation écrite deux fois aurait
+dérivé au premier ajustement.
+
+**À la fusion après conflit de push, l'arriéré prend le maximum des deux
+côtés, jamais la somme** : les deux partent du même arriéré, les additionner
+le compterait deux fois. Le maximum peut sous-estimer d'un passage — dans un
+message qui annonce un nombre, mieux vaut annoncer un peu moins que d'inventer.
+Le cas reste théorique : le workflow sérialise ses exécutions.
+
+#### Le bug que le test a trouvé
+
+`send_discord_notification` avait **sa propre** garde interne
+« rien de neuf, on ne dit rien », en plus de celle de `main()`. N'ayant
+corrigé que la seconde, Discord restait muet dans exactement le cas qui
+justifie tout ce mécanisme : à 5h, aucun article neuf, mais douze en attente.
+Push envoyait, Discord non.
+
+Le test simule une nuit entière passage par passage et compte les envois sur
+**les deux canaux** — c'est ce comptage qui a montré « 1 envoi » là où il en
+fallait 2.
+
+### Une annonce de Rockstar réveille
+
+La pause et « les actus Rockstar sont prioritaires » se contredisaient
+précisément sur les cas qui comptent. Les dates le montrent sans appel — sur
+les 34 articles officiels de l'historique, ramenés à l'heure de Paris :
+
+```
+  02h  █ 1          2023-12-05 02h24  la révélation de GTA 6
+  03h  ██ 2         2026-02-16 03h48  Watch Trailer 1 Now
+  05h  ██ 2         2026-08-28 03h00  An Extended Look
+  09h  ████████████████ 16   ← le routinier du Newswire
+  12h-15h ███████████ 11
+  21h  ██ 2
+```
+
+**Les trois plus grosses annonces de l'histoire du jeu sont tombées entre 2h24
+et 3h48.** Une pause qui les retiendrait jusqu'à 5h raterait exactement ce
+pour quoi cette veille existe.
+
+Pendant la pause, le robot tourne donc et publie, mais ne notifie **que** pour
+un article marqué `official` — le Newswire de Rockstar, sa chaîne YouTube, les
+relations investisseurs de Take-Two. Ce n'est pas une heuristique sur le
+contenu : c'est l'émetteur, déclaré dans `FEEDS`.
+
+**Le volume autorise une alerte par article.** Mesuré sur l'historique
+complet : 34 articles officiels sur 2 183 (1,6 %), répartis sur **15 journées
+en presque trois ans**, au pire 4 dans la même journée. C'est la deuxième
+exception assumée à la règle « un seul message par passage », après les
+alertes de source, et elle se justifie de la même façon.
+
+Deux détails qui font la différence :
+
+- **Le titre de l'article apparaît**, contrairement au récapitulatif. Celui-ci
+  annonce un nombre parce qu'un lot de dix articles n'a pas de titre
+  représentatif ; une annonce de Rockstar est un évènement unique, et c'est
+  son contenu qu'on veut lire sans rien ouvrir.
+- **Chaque alerte push a son propre `tag`**, dérivé du lien. Le récapitulatif
+  utilise un tag commun qui *remplace* la notification précédente : sans tag
+  propre, l'annonce d'un trailer serait effacée en silence par le
+  récapitulatif du passage suivant, une demi-heure plus tard. Deux annonces du
+  même passage ne s'écrasent pas non plus l'une l'autre.
+
+Le récapitulatif continue de les **compter** (« dont 1 officiel Rockstar ») :
+il annonce un volume, les alertes annoncent un contenu. L'amputer le ferait
+mentir sur ses chiffres.
+
+Le tri du fil, lui, n'a **pas** bougé : Rockstar a déjà son propre onglet.
+
+**Le bandeau « robot en retard » a fait l'aller-retour.** Quand la pause
+sautait les passages, l'écart atteignait légitimement 6h et le seuil de 4h
+allumait le bandeau chaque nuit pour annoncer une panne inexistante : il avait
+été porté à 7h. Depuis que le robot publie toute la nuit, `generated_at`
+avance chaque heure sans interruption — il n'y a plus d'écart à tolérer, et le
+seuil est **revenu à 4h**, ce qui rend une vraie panne visible trois heures
+plus tôt.
 
 `DEAD_SOURCE_HOURS` n'a pas bougé : il compte en **heures** et non en
 passages, précisément pour être insensible à ce genre de changement de
@@ -1453,9 +1559,10 @@ plutôt que d'attendre l'expiration du délai.
 
 **En place et vérifié depuis le 28/08/2026.** cron-job.org appelle le dépôt
 **toutes les heures** (c'était toutes les 30 min jusqu'au 02/09/2026, voir
-plus haut). Il continue d'appeler 24 fois par jour ; ce sont les cinq appels
-de la nuit que le workflow écarte lui-même — **rien n'a été modifié chez
-cron-job.org**, et c'est voulu : voir *Pause nocturne*. La fiabilité a été vérifiée à l'époque de la demi-heure : sur la
+plus haut). Il appelle 24 fois par jour, nuit comprise ; ce sont seulement
+les *notifications* des cinq passages nocturnes que le workflow retient —
+**rien n'a été modifié chez cron-job.org**, et c'est voulu : voir *Pause
+nocturne*. La fiabilité a été vérifiée à l'époque de la demi-heure : sur la
 nuit du 28 au 29 août, les 22 créneaux sont partis sans exception, à la
 minute près. À comparer aux 12 créneaux consécutifs purement abandonnés par
 le `schedule` de GitHub la veille.

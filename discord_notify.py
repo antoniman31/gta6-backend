@@ -87,17 +87,32 @@ def send_discord_notification(new_items, promus=()):
     if not DISCORD_WEBHOOK_URL:
         print("[discord] DISCORD_WEBHOOK_URL absent — notification désactivée.")
         return False
-    if not new_items and not promus:
+    # Les totaux déposés par le robot incluent l'arriéré de la nuit ; sans
+    # eux (lancement local), on compte la liste, ce qui reste juste hors
+    # pause nocturne.
+    totaux = lire_totaux_recap()
+    # La garde vient APRÈS la lecture des totaux, et pas avant : à 5h le
+    # premier passage de la journée peut ne rien trouver de neuf alors que
+    # douze articles de la nuit attendent d'être annoncés. Placée avant,
+    # elle faisait taire Discord dans exactement le cas qui justifie tout
+    # ce mécanisme — et main() avait beau l'appeler, la fonction repartait
+    # sans rien envoyer.
+    if not new_items and not promus and not (totaux and totaux[0]):
         return False
-
-    n = len(new_items)
-    majeure = feed_store.est_actu_majeure(new_items, promus)
+    if totaux:
+        n, officiels, sommet = totaux
+        titre = feed_store.libelle_recap_depuis_comptes(n, officiels, sommet)
+        majeure = sommet >= feed_store.HOT_SOURCE_THRESHOLD
+    else:
+        n = len(new_items)
+        titre = feed_store.libelle_recap(new_items, promus)
+        majeure = feed_store.est_actu_majeure(new_items, promus)
 
     embed = {
         # Texte partagé avec les notifications push : voir
         # feed_store.libelle_recap. Les deux canaux disent mot pour mot la
         # même chose, et ne peuvent plus diverger.
-        "title": feed_store.libelle_recap(new_items, promus),
+        "title": titre,
         "url": SITE_URL,
         "description": f"[Ouvrir GTA6_WATCH]({SITE_URL})",
         # Rouge d'alerte pour une actu majeure, bleu habituel sinon : la
@@ -109,6 +124,48 @@ def send_discord_notification(new_items, promus=()):
         detail += f", {len(promus)} sujet(s) devenu(s) majeur(s)"
     print(f"  [discord] envoi du récapitulatif ({detail})...")
     return send_discord_with_retry(embed, f"récapitulatif {detail}")
+
+
+# Orange Rockstar, celui de la pastille OFFICIEL dans l'app (#FF6B00) :
+# la même annonce se reconnaît à la même couleur d'un canal à l'autre.
+COULEUR_OFFICIEL = 0xFF6B00
+
+
+def send_official_alerts(officiels):
+    """Une alerte SÉPARÉE par article publié par Rockstar lui-même.
+
+    Deuxième exception assumée à la règle « un seul message par passage »,
+    après les alertes de source. Elle se justifie de la même façon : la
+    règle existe pour empêcher un message par ARTICLE ordinaire, et le
+    volume reste dérisoire. Mesuré sur l'historique complet du dépôt :
+    34 articles officiels sur 2 183, répartis sur 15 journées en presque
+    trois ans, au pire 4 dans la même journée.
+
+    Le récapitulatif continue de les COMPTER (« dont 1 officiel Rockstar »),
+    il n'est pas amputé : il annonce un volume, ces alertes annoncent un
+    contenu. Sur les rares passages où les deux partent, la redondance est
+    le prix d'un récapitulatif qui ne ment pas sur ses chiffres.
+    """
+    if not DISCORD_WEBHOOK_URL or not officiels:
+        return False
+
+    envoyees = 0
+    for item in officiels:
+        entete, titre = feed_store.libelle_officiel(item)
+        lien = (item.get("link") or "").strip()
+        source = (item.get("source") or "Rockstar Games").strip()
+        embed = {
+            "title": f"{entete} · {titre}"[:250],
+            # Le lien pointe sur l'ARTICLE et non sur le site : c'est une
+            # annonce précise, pas une invitation à venir voir.
+            "url": lien or SITE_URL,
+            "description": f"**{source}**\n[Ouvrir dans GTA6_WATCH]({SITE_URL})",
+            "color": COULEUR_OFFICIEL,
+        }
+        if send_discord_with_retry(embed, f"officiel Rockstar — {titre[:40]}"):
+            envoyees += 1
+    print(f"  [discord] {envoyees}/{len(officiels)} alerte(s) officielle(s) envoyée(s).")
+    return envoyees > 0
 
 
 def send_source_alerts(alertes):
@@ -150,6 +207,33 @@ def send_source_alerts(alertes):
     return send_discord_with_retry(embed, f"alerte source ({len(alertes)})")
 
 
+def lire_totaux_recap():
+    """Ce que le récapitulatif doit annoncer, déposé par fetch_feeds.py.
+
+    Contient les comptes du passage PLUS ceux mis de côté pendant la pause
+    nocturne : les articles de la nuit ont été publiés au fil de l'eau, donc
+    à 5h ils ne sont plus « nouveaux » et la liste ne les contient plus.
+    Sans ce fichier — lancement local, version antérieure — on retombe sur
+    le comptage direct de la liste, qui reste juste hors pause.
+    """
+    chemin = os.environ.get("RECAP_TOTALS_FILE", "")
+    if not chemin:
+        return None
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    try:
+        return (int(data.get("articles", 0)),
+                int(data.get("officiels", 0)),
+                int(data.get("sommet", 0)))
+    except (TypeError, ValueError):
+        return None
+
+
 def lire_liste(path):
     """Lit un fichier JSON contenant une liste, ou renvoie []."""
     if not path:
@@ -174,18 +258,39 @@ def main():
         print("[discord] NEW_ITEMS_FILE non défini — rien à notifier.")
         return 0
 
+    new_items = lire_liste(path)
+    # Un sujet devenu majeur justifie un message même sans article nouveau :
+    # voir feed_store.libelle_recap.
+    promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
+
+    # Pendant la pause nocturne, le robot tourne et publie normalement mais
+    # ne dit rien — SAUF pour une annonce de Rockstar. Les trois plus
+    # grosses de l'histoire du jeu sont tombées entre 2h24 et 3h48, heure
+    # de Paris : la révélation de décembre 2023, le premier trailer, et
+    # l'Extended Look. Une pause qui les retiendrait jusqu'à 5h raterait
+    # exactement ce pour quoi cette veille existe.
+    seulement_officiels = os.environ.get("SEULEMENT_OFFICIELS") == "1"
+
+    officiels = feed_store.articles_officiels(new_items)
+    if officiels:
+        send_official_alerts(officiels)
+
+    if seulement_officiels:
+        print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
+              f"envoyée(s), le reste attend le matin.")
+        return 0
+
     # Les alertes de source sont indépendantes des articles : elles doivent
     # partir même — surtout — quand il n'y a rien de neuf à annoncer.
     alertes = lire_liste(os.environ.get("SOURCE_ALERTS_FILE", ""))
     if alertes:
         send_source_alerts(alertes)
 
-    new_items = lire_liste(path)
-    # Un sujet devenu majeur justifie un message même sans article nouveau :
-    # voir feed_store.libelle_recap.
-    promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
-
-    if not new_items and not promus:
+    # L'arriéré de la nuit justifie un récapitulatif même si CE passage
+    # n'apporte rien : à 5h le premier passage peut ne rien trouver de neuf
+    # alors que douze articles attendent d'être annoncés.
+    totaux = lire_totaux_recap()
+    if not new_items and not promus and not (totaux and totaux[0]):
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 

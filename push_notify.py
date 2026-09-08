@@ -103,9 +103,16 @@ def build_payload(new_items, promus=()):
     importance), et un titre choisi au hasard parmi plusieurs donne une
     idée fausse de ce que contient le lot.
     """
-    majeure = feed_store.est_actu_majeure(new_items, promus)
+    totaux = lire_totaux_recap()
+    if totaux:
+        n, officiels, sommet = totaux
+        titre = feed_store.libelle_recap_depuis_comptes(n, officiels, sommet)
+        majeure = sommet >= feed_store.HOT_SOURCE_THRESHOLD
+    else:
+        titre = feed_store.libelle_recap(new_items, promus)
+        majeure = feed_store.est_actu_majeure(new_items, promus)
     return {
-        "title": feed_store.libelle_recap(new_items, promus),
+        "title": titre,
         "body": "Ouvrir GTA6_WATCH",
         "url": SITE_URL,
         # Un tag identique remplace la notification précédente au lieu
@@ -117,6 +124,32 @@ def build_payload(new_items, promus=()):
         # silence une demi-heure plus tard, et c'est précisément celle
         # qu'on ne veut pas rater.
         "tag": "gta6watch-majeur" if majeure else "gta6watch-nouveaux",
+    }
+
+
+def build_payload_officiel(item):
+    """La notification d'une annonce publiée par Rockstar lui-même.
+
+    Contrairement au récapitulatif, elle porte le TITRE de l'article. Le
+    récapitulatif annonce un nombre parce qu'un lot de dix articles n'a pas
+    de titre représentatif ; une annonce de Rockstar est un évènement
+    unique, et c'est son contenu qu'on veut lire sans rien ouvrir.
+
+    Le texte vient de feed_store.libelle_officiel, partagé avec Discord :
+    les deux canaux disent mot pour mot la même chose.
+    """
+    entete, titre = feed_store.libelle_officiel(item)
+    return {
+        "title": entete,
+        "body": titre,
+        # Le lien mène à l'ARTICLE, pas à l'accueil : c'est une annonce
+        # précise, pas une invitation à venir voir.
+        "url": (item.get("link") or "").strip() or SITE_URL,
+        # Un tag PROPRE À CHAQUE ARTICLE. Le tag commun du récapitulatif
+        # remplace la notification précédente : sans celui-ci, le
+        # récapitulatif du passage suivant effacerait l'annonce d'un trailer
+        # une demi-heure plus tard, en silence.
+        "tag": feed_store.etiquette_officiel(item),
     }
 
 
@@ -188,6 +221,33 @@ def send_all(subscriptions, payload, private_key):
     return envoyes, expires
 
 
+def lire_totaux_recap():
+    """Ce que le récapitulatif doit annoncer, déposé par fetch_feeds.py.
+
+    Contient les comptes du passage PLUS ceux mis de côté pendant la pause
+    nocturne : les articles de la nuit ont été publiés au fil de l'eau, donc
+    à 5h ils ne sont plus « nouveaux » et la liste ne les contient plus.
+    Sans ce fichier — lancement local, version antérieure — on retombe sur
+    le comptage direct de la liste, qui reste juste hors pause.
+    """
+    chemin = os.environ.get("RECAP_TOTALS_FILE", "")
+    if not chemin:
+        return None
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    try:
+        return (int(data.get("articles", 0)),
+                int(data.get("officiels", 0)),
+                int(data.get("sommet", 0)))
+    except (TypeError, ValueError):
+        return None
+
+
 def lire_liste(path):
     """Lit un fichier JSON contenant une liste, ou renvoie []."""
     if not path:
@@ -224,12 +284,38 @@ def main():
     # important.
     promus = lire_liste(os.environ.get("PROMOTED_ITEMS_FILE", ""))
 
-    if not new_items and not promus:
+    # Pendant la pause nocturne, seule une annonce de Rockstar réveille.
+    # Les trois plus grosses de l'histoire du jeu sont tombées entre 2h24 et
+    # 3h48 heure de Paris — les retenir jusqu'à 5h raterait exactement ce
+    # pour quoi cette veille existe.
+    seulement_officiels = os.environ.get("SEULEMENT_OFFICIELS") == "1"
+    officiels = feed_store.articles_officiels(new_items)
+
+    totaux = lire_totaux_recap()
+    if not new_items and not promus and not (totaux and totaux[0]):
         print("[push] aucun nouvel article à annoncer.")
+        return 0
+    if seulement_officiels and not officiels:
+        print("[push] pause nocturne et aucune annonce officielle — rien n'est envoyé.")
         return 0
 
     if not check_subject(VAPID_SUBJECT):
         print("[push] envoi abandonné — aucune notification ne partirait de toute façon.")
+        return 0
+
+    # Une notification par annonce officielle, AVANT le récapitulatif : sur
+    # un téléphone, la dernière arrivée est celle du dessus, et on veut que
+    # ce soit le récapitulatif qui se range sous l'annonce, pas l'inverse.
+    for item in officiels:
+        charge = build_payload_officiel(item)
+        print(f"[push] annonce officielle : {charge['body'][:60]}")
+        envoyes, expires = send_all(subscriptions, charge, private_key)
+        print(f"[push] {envoyes}/{len(subscriptions)} envoyée(s)"
+              + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
+
+    if seulement_officiels:
+        print(f"[push] pause nocturne — {len(officiels)} annonce(s) officielle(s), "
+              f"le récapitulatif attend le matin.")
         return 0
 
     payload = build_payload(new_items, promus)

@@ -2242,18 +2242,16 @@ async function applyBackendData(data, sourceUrl){
   // tout allait bien — ce qui le rendait inutile le jour d'une vraie
   // panne. Avec le cron doublé (7,37), 4h redevient une vraie anomalie.
   //
-  // Remonté à 7h le 08/09/2026, avec la pause nocturne : le robot ne tourne
-  // plus entre 00h et 05h (heure de Paris). Le dernier passage de la nuit
-  // pouvant tomber vers 23h, l'écart atteint légitimement 6h juste avant la
-  // reprise — à 4h le bandeau se serait allumé chaque nuit pour annoncer une
-  // panne qui n'existe pas.
+  // Remonté à 7h le 08/09/2026 quand la pause nocturne SAUTAIT le passage :
+  // l'écart atteignait alors légitimement 6h et le bandeau se serait allumé
+  // chaque nuit pour annoncer une panne inexistante.
   //
-  // Ce que ça coûte : une vraie panne de jour est signalée ICI après 7h au
-  // lieu de 4. Ce n'est pas la vraie alarme — healthchecks.io l'est, et il
-  // continue de recevoir un signal de vie CHAQUE HEURE pendant la pause,
-  // puisque le passage nocturne part quand même et va jusqu'à cette étape.
-  // Sa détection à lui n'est donc pas dégradée d'une minute.
-  const STALE_THRESHOLD_MS = 7 * 60 * 60 * 1000;
+  // Ramené à 4h le même jour : la pause ne saute plus rien. Depuis que les
+  // annonces officielles de Rockstar doivent réveiller, le robot tourne et
+  // PUBLIE toute la nuit — seule la notification se tait. generated_at
+  // avance donc chaque heure sans interruption, il n'y a plus d'écart à
+  // tolérer, et une vraie panne redevient visible en 4h au lieu de 7.
+  const STALE_THRESHOLD_MS = 4 * 60 * 60 * 1000;
 
   if(generatedDate){
     proxyEl.textContent = "généré le " + generatedDate.toLocaleString('fr-FR');

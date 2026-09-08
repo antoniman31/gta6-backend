@@ -1782,6 +1782,53 @@ PROMOTED_ITEMS_FILE = os.environ.get("PROMOTED_ITEMS_FILE", "")
 # ce qui désactive simplement la notification.
 NEW_ITEMS_FILE = os.environ.get("NEW_ITEMS_FILE", "")
 
+# Pendant la pause nocturne, le robot publie mais ne notifie que pour une
+# annonce officielle de Rockstar. Les articles ordinaires de la nuit sont
+# donc publiés SANS être annoncés — et à 5h ils ne sont plus « nouveaux »,
+# donc plus annonçables. Leurs COMPTES sont mis de côté dans feed.json et
+# ressortis au premier passage de la journée.
+SILENCE_NOCTURNE = os.environ.get("SEULEMENT_OFFICIELS") == "1"
+
+# Ce que le récapitulatif doit annoncer, déposé pour discord_notify.py et
+# push_notify.py. Même mécanique que NEW_ITEMS_FILE : hors du dépôt, et lu
+# seulement une fois la publication confirmée.
+RECAP_TOTALS_FILE = os.environ.get("RECAP_TOTALS_FILE", "")
+
+# Trois entiers, pas les articles eux-mêmes : c'est tout ce dont
+# feed_store.libelle_recap_depuis_comptes a besoin, et feed.json est
+# téléchargé par l'app à chaque ouverture — y stocker des articles en double
+# se paierait à chaque visite.
+ATTENTE_VIDE = {"articles": 0, "officiels": 0, "sommet": 0}
+
+
+def attente_lue(stored):
+    """Les comptes mis de côté par les passages précédents, assainis.
+
+    Tolérante par construction : un fichier d'une version antérieure n'a pas
+    le champ, et une valeur aberrante ne doit pas faire annoncer n'importe
+    quoi. Tout ce qui n'est pas un entier positif retombe à zéro.
+    """
+    brut = (stored or {}).get("attente_recap") or {}
+    if not isinstance(brut, dict):
+        return dict(ATTENTE_VIDE)
+    propre = {}
+    for cle in ATTENTE_VIDE:
+        v = brut.get(cle, 0)
+        propre[cle] = v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else 0
+    return propre
+
+
+def depose_totaux_recap(totaux):
+    """Dépose ce que le récapitulatif doit annoncer, s'il doit annoncer."""
+    if not RECAP_TOTALS_FILE:
+        return
+    try:
+        with open(RECAP_TOTALS_FILE, "w", encoding="utf-8") as f:
+            json.dump(totaux, f, ensure_ascii=False)
+        print(f"  totaux du récapitulatif déposés -> {RECAP_TOTALS_FILE} : {totaux}")
+    except OSError as e:
+        print(f"  [notif] impossible d'écrire {RECAP_TOTALS_FILE} : {e}")
+
 # Clé publique VAPID, publiée dans feed.json pour que l'app puisse créer un
 # abonnement aux notifications push. Elle est publique par nature — c'est
 # la clé PRIVÉE, gardée en secret GitHub, qui autorise l'envoi. Absente,
@@ -2594,8 +2641,50 @@ def main():
             print(f"    - {noms.get(fid, fid)} : {recents} entrées "
                   f"contre {d['habituel']} habituellement")
 
+    # ---- Report des comptes d'un passage à l'autre ----
+    #
+    # Un article n'est « nouveau » que par comparaison avec le feed.json
+    # publié. Dès qu'un passage nocturne publie à 2h, l'article n'est plus
+    # nouveau à 5h : sans ce report, le récapitulatif du matin annoncerait
+    # « 0 nouveau » alors que la nuit en a apporté douze. Et les articles ne
+    # portent aucune date de première vue, donc rien ne permet de le
+    # recalculer après coup.
+    attente = attente_lue(stored)
+    sommet_du_run = max(feed_store.nb_sources_max(newly_added),
+                        feed_store.nb_sources_max(promus))
+    officiels_du_run = len(feed_store.articles_officiels(newly_added))
+
+    if SILENCE_NOCTURNE:
+        # On se tait : les comptes s'ajoutent à ceux déjà en attente.
+        attente = {
+            "articles": attente["articles"] + len(newly_added),
+            "officiels": attente["officiels"] + officiels_du_run,
+            # Un sommet est un maximum, pas une somme : trois passages à
+            # quatre sources sur le même sujet, ça reste quatre sources.
+            "sommet": max(attente["sommet"], sommet_du_run),
+        }
+        print(f"  Pause nocturne — {len(newly_added)} article(s) mis de côté, "
+              f"{attente['articles']} en attente du récapitulatif du matin.")
+    else:
+        # On parle : le récapitulatif annonce ce passage ET tout l'arriéré,
+        # puis l'ardoise est effacée.
+        totaux = {
+            "articles": attente["articles"] + len(newly_added),
+            "officiels": attente["officiels"] + officiels_du_run,
+            "sommet": max(attente["sommet"], sommet_du_run),
+        }
+        if totaux["articles"] or totaux["sommet"] >= HOT_SOURCE_THRESHOLD:
+            depose_totaux_recap(totaux)
+        if attente["articles"]:
+            print(f"  Récapitulatif du matin : {len(newly_added)} de ce passage "
+                  f"+ {attente['articles']} mis de côté cette nuit.")
+        attente = dict(ATTENTE_VIDE)
+
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        # Comptes en attente d'être annoncés. Non nuls uniquement entre
+        # minuit et 5h, heure de Paris — voir le report ci-dessus.
+        "attente_recap": attente,
         # Durée réelle du passage. Publiée pour que l'app puisse dire l'état
         # du robot sans qu'on aille ouvrir GitHub Actions : une durée qui
         # dérive est le premier signe qu'une source traîne.

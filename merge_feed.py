@@ -40,7 +40,9 @@ def merge_feeds(remote, ours):
         NOTRE côté : c'est notre exécution qui est en train de publier, et
         c'est son horodatage qui doit faire foi pour l'indicateur de
         fraîcheur du tracker ;
-      - total_articles est recalculé sur le résultat fusionné.
+      - total_articles est recalculé sur le résultat fusionné ;
+      - attente_recap prend le MAXIMUM des deux côtés, jamais la somme
+        (voir plus bas).
     """
     merged = dict(ours)
 
@@ -66,7 +68,32 @@ def merge_feeds(remote, ours):
     merged["items"] = items
     merged["total_articles"] = len(items)
 
+    # Les comptes mis de côté pendant la pause nocturne sont la seule
+    # métadonnée qu'on ne peut pas simplement prendre de notre côté : c'est
+    # un CUMUL, et le nôtre a été calculé à partir d'un feed.json que le
+    # distant a entre-temps dépassé. On garderait sinon un total inférieur
+    # au sien, en perdant sa contribution.
+    #
+    # Maximum et non somme : les deux côtés partent du même arriéré, les
+    # additionner le compterait deux fois. Le maximum peut sous-estimer d'un
+    # passage — dans un message qui annonce un nombre, mieux vaut annoncer un
+    # peu moins que d'inventer. Le cas reste théorique : le workflow sérialise
+    # ses exécutions (concurrency: update-feeds) et le checkout force `ref:
+    # main`, donc deux passages ne lisent presque jamais le même état.
+    a_nous = ours.get("attente_recap") or {}
+    au_loin = remote.get("attente_recap") or {}
+    if isinstance(a_nous, dict) and isinstance(au_loin, dict) and (a_nous or au_loin):
+        merged["attente_recap"] = {
+            cle: max(_entier(a_nous.get(cle)), _entier(au_loin.get(cle)))
+            for cle in ("articles", "officiels", "sommet")
+        }
+
     return merged, recovered, removed
+
+
+def _entier(v):
+    """Un entier positif, ou zéro pour tout le reste."""
+    return v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else 0
 
 
 def main():
