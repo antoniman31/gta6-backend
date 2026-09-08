@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-08T04:12:51.524480+00:00",
-  "duration_seconds": 41.9,
+  "generated_at": "2026-09-08T05:01:44.971888+00:00",
+  "duration_seconds": 45.6,
   "decode_failures": 0,
-  "total_articles": 2147,
-  "new_this_run": 0,
+  "total_articles": 2149,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -374,13 +374,13 @@
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
       "entries_fetched": 0,
-      "http_status": 500,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 11,
-      "status": "muette"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -389,15 +389,15 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T01:12:08+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-08T04:20:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -649,10 +649,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T08:00:00+00:00",
       "days_since_last_article": 1,
@@ -797,7 +797,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-02T15:29:09+00:00",
       "days_since_last_article": 5,
       "status": "ok"
@@ -925,13 +925,13 @@
   },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,99,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "99,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,100,102,102,102,102,102,102,102,102,101,101",
+    "gnews-en": "100,102,102,102,102,102,102,102,102,101,101,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,7 +963,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,9,8,8,8,8,8,8,8,8,8",
+    "xboxwire": "8,9,8,8,8,8,8,8,8,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1025,7 +1025,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 04:12:26 GMT"
+      "modified": "Tue, 08 Sep 2026 05:01:17 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9f8851-308d\"",
-      "modified": "Tue, 08 Sep 2026 04:00:17 GMT"
+      "etag": "W/\"6a9f9662-308d\"",
+      "modified": "Tue, 08 Sep 2026 05:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1060,6 +1060,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Dernière chance pour profiter d’une PS5 au meilleur prix avant la sortie de GTA 6 - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/derniere-chance-pour-profiter-d-une-ps5-au-meilleur-prix-avant-la-sortie-de-gta-6_AB-202609080018.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOS3ptVkR0Vnk5Z3IxdHBMbFJ6cXowNTJKT2R2dlNEY0VpbGJIOUhSb0JMUzZ3SE5TYVpmQ3VMTjZDdFBnT0NDU0JPaWd1R0EwbkFrNUlFRlNPQzVHakp4ODhxY1VHdzNacF85Y0phczY0MHNqaEkzMlh3ZF80NUdlN25HYUpWNjUwTUtfZlZzMDNwb0dya3AzZmJOazVMTlFmcVhSTEp5eTlNbk1BQnZRcVlhYjNTaEVYemdobXZxcHFVWEVzdUpPVG9zMV9GelFxbFBtc2ViOA?oc=5",
+      "date": "2026-09-08T04:20:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/SlFqF8uKH5WNnBo4vrPBLZ1-ECA=/0x0:1600x900/1600x0/images/Derniere-chance-pour-profiter-d-une-PS5-au-meilleur-prix-avant-la-sortie-de-GTA-6-2342519.jpg",
+      "description": "Dernière chance pour profiter d’une PS5 au meilleur prix avant la sortie de GTA 6&nbsp;&nbsp;BFM"
+    },
     {
       "title": "GTA 6 Pourrait Sortir Plus Tôt Sur PC, Alors Que Les Stocks De Consoles Inquiètent Déjà - Pause Hardware",
       "link": "https://pausehardware.com/gta-6-pc-sortie-plus-tot/",
@@ -27255,6 +27268,19 @@
       "lang": null,
       "image": "https://static.tweaktown.com/news/1/1/113064_1_gta-6-is-marketing-on-netflix-to-reach-gamers-who-arent-locked-in-buy-day-1-says-insider_full.jpg",
       "description": "GTA 6 is marketing on Netflix to reach gamers who aren't locked in to buy on day 1, says insider&nbsp;&nbsp;TweakTown"
+    },
+    {
+      "title": "Grand Theft Auto VI - Will the game be on cloud streaming? - TrueAchievements",
+      "link": "https://www.trueachievements.com/forum/viewthread.aspx?tid=1714833",
+      "source_link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBNNXlNeDh5ajUtekpZZjVYQ1BpWGVoUXFZUlQ2MU9zVWIxUlZuelFCMWczNTdhNEdqdktmSFlZbjBudEkxTWJWa1p0SHBVQVltVW1mZjVVQkFVaXFpUnVnVkNPaEdvRzYyZEdyMmFERVV6cWJQ?oc=5",
+      "date": "2026-08-10T07:00:00+00:00",
+      "source": "TrueAchievements",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Grand Theft Auto VI - Will the game be on cloud streaming?&nbsp;&nbsp;TrueAchievements"
     },
     {
       "title": "No news on GTA VI Online yet, and Take-Two's boss has a \"top-secret\" plan for November 19 - ixbt.games",
