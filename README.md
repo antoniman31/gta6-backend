@@ -552,6 +552,43 @@ Apple HIG : 44×44 pt, règle de séparation : 8 px entre deux cibles) :
 | écart entre les boutons d'une carte | **4 px** | **8 px** |
 | champ de recherche | **13 px** | **16 px** |
 
+**Deuxième passe, le 08/09/2026.** La première n'avait traité que l'intérieur
+des cartes : toute la barre de commandes de l'application était restée sous le
+seuil, y compris son action principale.
+
+| | avant | après |
+|---|---|---|
+| « Charger N de plus » | **27 px** | **44 px** |
+| les 4 boutons d'entête | **34×34** | **44×44** (en `::after`) |
+| **« Actualiser »** | **34 px** | **44 px** |
+| champ de recherche (hauteur) | **34 px** | **44 px** |
+| bouton « Filtres » | **34 px** | **44 px** |
+| onglets | **36 px** | **44 px** |
+| bouton d'information | **39 px** | **44 px** |
+
+Les boutons d'entête gardent 34 px à l'œil : les agrandir vraiment portait la
+rangée à 194 px, soit 22 px de plus que la place disponible à côté du logo sur
+un écran de 320 px. Ils gagnent leurs 44 px en `::after`, et leur écart passe
+de 6 à 10 px — à 6 px les deux zones élargies se seraient chevauchées de 4 px
+et un appui entre deux icônes serait parti sur la mauvaise.
+
+Coût vertical à 390 px : la première carte descend de 523 à 551 px, soit
+28 px, **sans changer le nombre de cartes visibles** au premier écran.
+
+Cette passe a aussi mis au jour un débordement qui lui était antérieur : à
+320 px, `.header-actions` porte `flex-shrink:0` et refusait de se comprimer,
+si bien que le badge de mode se faisait trancher et que le dernier bouton
+touchait le bord de la carte. L'entête passe en `flex-wrap` et son bloc de
+droite en `margin-left:auto` : sous ~370 px il descend sur sa propre ligne, à
+droite, au lieu d'être coupé.
+
+**Ce qui reste volontairement sous 44 px**, et pourquoi :
+
+- **les liens de titre d'article** (36 px sur deux lignes, 16 sur une) : c'est
+  du texte en ligne, le cas explicitement excepté par WCAG 2.5.5 et 2.5.8 ;
+- **la coche des cartes en mode dense** (38 px) : l'élargir ferait empiéter sa
+  zone sur la carte voisine, ce qui est pire qu'une cible un peu courte.
+
 Deux principes tiennent tout ça :
 
 - **La zone de clic n'est pas la boîte visuelle.** La coche ✓ et le lien de
@@ -753,6 +790,78 @@ rss2json). C'est redondant avec le backend, mais volontaire : sans ce
 filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
+
+### Structure de la page et retour non visuel
+
+Audité le 08/09/2026, à la demande, contre Material 3 et les lois d'UX. Deux
+défauts qu'aucune mesure de couleur ou de taille ne pouvait révéler :
+
+**La page n'avait aucun plan de titres.** Pas un seul `h1` : la marque, les
+séparateurs de jour et les titres d'articles étaient tous des `div`, et les
+deux seuls `h3` du fichier étaient enfermés dans des boîtes de dialogue. Au
+lecteur d'écran, la page était un mur plat — impossible de sauter d'article
+en article ou de jour en jour. Elle a maintenant un plan complet :
+
+```
+h1  GTA6_WATCH
+  h2  AUJOURD'HUI
+    h3  GTA 6 change totalement la gestion des armes
+    h3  GTA 6 sortira à minuit dans chaque pays…
+```
+
+…plus un repère `main` autour de la recherche, des onglets, du fil et du
+journal. L'entête et les bandeaux d'alerte restent en dehors : ce sont des
+annonces, pas le contenu qu'on vient lire.
+
+Le changement est purement sémantique. `.wrap` est un bloc simple et non un
+conteneur flex, les classes portent déjà toute la typographie, et la remise à
+zéro globale des marges neutralise les styles par défaut des titres : mesuré
+avant/après, la première carte reste exactement à `y=551`.
+
+**Rien n'était annoncé après une actualisation.** Quatre lignes se
+réécrivaient — état du run, soucis, compteur, historique — sans un seul
+`aria-live` dans le fichier. Visuellement la réponse arrive en 83 ms sous le
+bouton ; sans les yeux, elle n'arrivait jamais.
+
+Une seule région live y remédie, et pas une par ligne : les quatre se
+réécrivent au même instant, quatre régions auraient produit quatre annonces
+qui se coupent la parole. Elle compose une phrase à partir du texte
+**réellement affiché**, ce qui garantit qu'annonce et écran ne divergeront
+jamais :
+
+> Actualisé. 300 affichés, 300 non lus. 54 s, 3 nouveaux, 48/50 sources.
+> 2 cassées : Rockstar Games (YouTube), RockstarMag (YouTube).
+
+Trois détails qui font la différence entre une région live qui marche et une
+qui ne dit rien :
+
+- **`sr-only` masque sans retirer de l'arbre.** `display:none` ou
+  `visibility:hidden` rendraient la région définitivement muette ; il faut la
+  sortir du flux en `position:absolute` sur 1×1 px.
+- **On vide avant de réécrire.** Une région n'annonce que ce qui *change* :
+  deux actualisations au résultat identique resteraient silencieuses alors que
+  l'utilisateur attend confirmation de son geste.
+- **Les deux parcours sont branchés.** Le mode backend et le mode direct
+  finissent par des chemins différents ; n'en instrumenter qu'un laisserait
+  l'autre muet. Un test compte les deux points d'appel.
+
+**Ce qui a été mesuré et trouvé conforme**, sans rien changer : le seuil de
+Doherty (83 ms entre le clic et le premier changement visible, pour une limite
+à 400), les trois commandes de carte qui portent toutes `aria-label` et
+`title`, `lang="fr"` sur le document, aucune image sans `alt`, et le
+tirer-pour-rafraîchir qui rattrape la position haute du bouton principal —
+la loi de Fitts pénalise le haut de l'écran, le geste rend l'action
+accessible au pouce.
+
+**Sur Material 3, une précision qui compte.** Les valeurs de l'échelle de
+formes et de mouvement viennent des fichiers de jetons que Google génère
+lui-même, pas du site : 4, 8, 12 et 9999 px sont exactement ses crans
+extra-small, small, medium et full, et 150 et 250 ms ses durées short3 et
+medium1. **L'affectation, elle, diverge volontairement** — Google met ses
+boutons et ses pastilles en gélule et ses dialogues à 28 px, ce qu'une
+identité monospace et anguleuse ne supporte pas. On emprunte l'échelle, pas
+le style. C'est écrit dans le code aussi, pour que personne n'y lise plus
+tard une conformité qui n'existe pas.
 
 ## Notifications push natives
 

@@ -2993,6 +2993,76 @@ def test_ergonomie_tactile():
     check(not trop, "aucun texte sous 10 px" + (" (trouvé : %s)" % trop if trop else ""))
 
 
+def test_structure_et_annonces():
+    print("\n[app] la page a un plan de titres et annonce ce qu'elle fait")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    # Les commentaires sont retirés AVANT de compter : celui qui explique le
+    # repère <main> cite « <h2> » et « <h3> » en toutes lettres, et sans ce
+    # nettoyage le comptage des paires les prenait pour du balisage. Un test
+    # de structure doit lire la structure, pas la prose qui la commente.
+    html = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
+    # Un plan de titres, pour pouvoir naviguer autrement qu'en défilant. La
+    # page n'avait AUCUN h1 : la marque, les jours et les titres d'articles
+    # étaient tous des <div>, et les deux seuls <h3> du fichier étaient
+    # enfermés dans des boîtes de dialogue.
+    check('<h1 class="brand">' in html,
+          "la marque est le titre de niveau 1 de la page")
+    check('<h2 class="day-label">' in html,
+          "chaque jour est un titre de niveau 2")
+    check('<h3 class="card-title">' in html,
+          "chaque article est un titre de niveau 3")
+    check(html.count("<h1") == 1,
+          "un seul h1 dans toute la page (%d trouvé(s))" % html.count("<h1"))
+
+    # Les balises ouvrantes et fermantes vont par paires : une <h3 class=…>
+    # laissée fermée par </div> passerait inaperçue à l'œil et casserait le
+    # plan pour un lecteur d'écran.
+    for niveau in ("h1", "h2", "h3"):
+        ouvre = len(re.findall(r"<%s[ >]" % niveau, html))
+        ferme = html.count("</%s>" % niveau)
+        check(ouvre == ferme,
+              "%s : %d ouvertures pour %d fermetures" % (niveau, ouvre, ferme))
+
+    # Le repère de contenu principal, cible du « sauter au contenu ».
+    check(html.count("<main>") == 1 and html.count("</main>") == 1,
+          "un repère <main> encadre le contenu")
+    # Il doit contenir le fil, sinon il ne sert à rien.
+    corps = html[html.index("<main>"):html.index("</main>")]
+    check('<div class="feed" id="feed">' in corps,
+          "et le fil d'articles est bien dedans")
+    check('<div class="search-row">' in corps,
+          "avec la recherche et les filtres qui le pilotent")
+
+    # La région live. Sans elle, quatre lignes d'état se réécrivaient après
+    # chaque actualisation sans que rien ne soit annoncé : visuellement la
+    # réponse arrive en 83 ms, à l'oreille elle n'arrivait jamais.
+    region = re.search(r'<div id="annonce"[^>]*>', html)
+    check(region is not None, "une région live existe")
+    if region:
+        balise = region.group(0)
+        check('role="status"' in balise, "elle porte role=\"status\"")
+        check('aria-live="polite"' in balise, "et aria-live=\"polite\"")
+        check('class="sr-only"' in balise, "et la classe qui la sort de l'écran")
+
+    # sr-only doit masquer SANS retirer de l'arbre d'accessibilité :
+    # display:none et visibility:hidden rendraient la région muette.
+    bloc = re.search(r"\.sr-only\{([^}]*)\}", html, re.S).group(1)
+    check("display:none" not in bloc and "visibility:hidden" not in bloc,
+          "sr-only masque sans retirer de l'arbre d'accessibilité")
+    check("position:absolute" in bloc and "1px" in bloc,
+          "sr-only sort bien l'élément du flux")
+
+    # Et elle doit être alimentée aux DEUX fins de parcours : le mode backend
+    # et le mode direct. N'en brancher qu'une laisserait l'autre silencieuse.
+    check(html.count("annonceRafraichissement();") == 2,
+          "l'annonce est déclenchée par les deux modes, backend et direct "
+          "(%d point(s) d'appel)" % html.count("annonceRafraichissement();"))
+    check("function annonceRafraichissement()" in html,
+          "et la fonction qui la compose existe")
+
+
 def test_contraste_des_deux_themes():
     print("\n[app] les deux thèmes tiennent le contraste WCAG AA")
     import re
@@ -3595,6 +3665,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
+           test_structure_et_annonces,
            test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
