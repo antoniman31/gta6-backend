@@ -4012,6 +4012,33 @@ def test_panneau_parametres_intact():
     check(not longs, f"plus aucun style en ligne long dans le panneau (reste {len(longs)})")
 
 
+def test_readme_annonce_le_bon_nombre():
+    print("\n[doc] le README annonce le vrai nombre de vérifications")
+    import re
+    # DOIT rester la dernière fonction de la liste : elle lit le compteur
+    # global, donc tout le reste doit avoir déjà tourné.
+    #
+    # Ce nombre est resté bloqué à 728 pendant que la suite en atteignait 892,
+    # sans que rien ne le signale : le test des constantes ne surveille que ce
+    # qui est écrit entre dos d'âne, pas les chiffres en toute lettre. Un
+    # nombre faux dans un README est pire que pas de nombre du tout — il a
+    # l'air vérifié.
+    readme = open("README.md", encoding="utf-8").read()
+    m = re.search(r"\*\*(\d+)\s+vérifications\*\*", readme)
+    check(m is not None, "le README annonce un nombre de vérifications")
+    if not m:
+        return
+    annonce = int(m.group(1))
+    # +1 : la vérification ci-dessous. Celle de l'existence du nombre, juste
+    # au-dessus, a DÉJÀ incrémenté le compteur — la compter une seconde fois
+    # donnait un total de trop.
+    reel = CHECKS + 1
+    check(annonce == reel,
+          "le README annonce %d vérifications, la suite en compte %d%s"
+          % (annonce, reel,
+             "" if annonce == reel else "  →  corrige le README avec %d" % reel))
+
+
 for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
@@ -4067,7 +4094,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,
            test_haut_de_page_une_seule_carte,
-           test_validation_avant_ecriture):
+           test_validation_avant_ecriture,
+           test_readme_annonce_le_bon_nombre):
     fn()
 
 print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} vérifications passées")
