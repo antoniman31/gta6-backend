@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-08T22:01:38.398469+00:00",
+  "generated_at": "2026-09-08T23:01:44.701184+00:00",
   "attente_recap": {
-    "articles": 2,
+    "articles": 4,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 36.4,
+  "duration_seconds": 44.3,
   "decode_failures": 0,
-  "total_articles": 2235,
+  "total_articles": 2237,
   "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -407,7 +407,7 @@
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-08T21:51:24+00:00",
+      "last_article": "2026-09-08T22:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -550,7 +550,7 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-08T22:00:23+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 6,
@@ -870,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 80,
+      "entries_fetched": 82,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -910,7 +910,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-22T01:42:08+00:00",
       "days_since_last_article": 17,
       "status": "ok"
@@ -919,13 +919,13 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,99,99,99,99,99,100,100,100",
+    "rockstar-fr": "100,100,100,99,99,99,99,99,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,102,100,100,100,99,99,100,100,100,100",
-    "gnews-en": "99,100,99,101,102,101,101,99,102,102,102,102",
+    "gnews-fr": "100,102,100,100,100,99,99,100,100,100,100,100",
+    "gnews-en": "100,99,101,102,101,101,99,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -958,14 +958,14 @@
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "xboxwire": "8,8,8,8,8,8,8,8,8,8,8,8",
-    "trueach": "100,85,100,100,100,100,100,100,100,100,100,100",
+    "trueach": "85,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,82,82,82,82,82,81,80,80,80,80",
-    "arstechnica": "27,27,28,27,27,28,27,28,27,27,27,27",
+    "engadget": "81,82,82,82,82,82,81,80,80,80,80,82",
+    "arstechnica": "27,28,27,27,28,27,28,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"ad9f2f4cad87ed05aba5d6bb85f780fa\"",
-      "modified": "Tue, 08 Sep 2026 21:57:46 GMT"
+      "etag": "W/\"e08fdad9d5aa7dff6befbe4ef5e5ec19\"",
+      "modified": "Tue, 08 Sep 2026 22:38:17 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"28b39-fCZI7Trs/3/QbghgAXGYlrfQ9Ao\"",
+      "etag": "W/\"2a0fa-xnIpA1u3NXRCmhaJ+VjhCHSGeGE\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"6658f7be5807a60af66b3fe12812bded\"",
-      "modified": "Tue, 08 Sep 2026 22:00:06 GMT"
+      "etag": "W/\"e2769080881bfde278b578c6b2979f41\"",
+      "modified": "Tue, 08 Sep 2026 22:30:37 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 21:57:48 GMT"
+      "modified": "Tue, 08 Sep 2026 23:01:20 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa08570-2f61\"",
-      "modified": "Tue, 08 Sep 2026 22:00:16 GMT"
+      "etag": "W/\"6aa09381-2f61\"",
+      "modified": "Tue, 08 Sep 2026 23:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788903444\"",
-      "modified": "Tue, 08 Sep 2026 21:37:24 GMT"
+      "etag": "W/\"1788906948\"",
+      "modified": "Tue, 08 Sep 2026 22:35:48 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1066,6 +1066,19 @@
       "lang": null,
       "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/09/escape-academy-2-back-2-school-hallway.jpg?w=1600&h=900&fit=crop",
       "description": "Escape Academy 2: Back 2 School is the rare game launching in November, a decision Coin Crew Games sees as an opportunity."
+    },
+    {
+      "title": "GTA 6 Preorder Bonuses Explained: What You Get And What You Can Safely Skip - svg.com",
+      "link": "https://www.svg.com/2251060/gta-6-preorder-bonuses-explained/",
+      "source_link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9jbnpGQnE0ZWR1a2liRjJ0Q2xUSmF4X250Z1p6dHMzelhobFNCc19XSjJvYXB1WjBGcGp1N3RIQ1ZDbEtTUEtkTUJwV0lIRXpnNjJkSmFES2I5d3BqLUNueXRSQ2xHMUgwOGdHMnVn?oc=5",
+      "date": "2026-09-08T22:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.svg.com/img/gallery/gta-6-preorder-bonuses-explained-what-you-get-and-what-you-can-safely-skip/l-intro-1788532185.jpg",
+      "description": "GTA 6 Preorder Bonuses Explained: What You Get And What You Can Safely Skip&nbsp;&nbsp;svg.com"
     },
     {
       "title": "GTA 6 Unlock Times Revealed; New Zealand Players Get a 19-Hour Head Start - MP1st",
@@ -5006,19 +5019,6 @@
       "lang": null,
       "image": null,
       "description": "GTA 6 Online Could Struggle To Pull Players Away From GTA Online, Says Valve Veteran&nbsp;&nbsp;GameSpot"
-    },
-    {
-      "title": "GTA 6 Extended Preview Causes Xbox Series X|S Sales To Spike In The UK - Pure Xbox",
-      "link": "https://www.purexbox.com/news/2026/09/gta-6-extended-preview-causes-xbox-series-xs-sales-to-spike-in-the-uk",
-      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPdEg2cVJmbmU1WTlZSU82QThIdG5XSDJZNHp5a1lLSW92a1NkYndZRU1DbkkxZVItVk03d241b1hFMVZLMnVVY29PWC1GUnc0MUVpY3Y1elM3SVFub24ydG41eUhoeEwzeXRudDV4Yl9CNkd6bDRTc0dpTmZCY1lIZlV5ZlN2MHBpdmFHSThWUnJQNWhIZWhVOElER09hTUpiTXI3eklDVHIyWHc?oc=5",
-      "date": "2026-09-04T11:00:00+00:00",
-      "source": "Pure Xbox",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://images.purexbox.com/c1fc7fb4e47b4/large.jpg",
-      "description": "GTA 6 Extended Preview Causes Xbox Series X|S Sales To Spike In The UK&nbsp;&nbsp;Pure Xbox"
     }
   ],
   "partial": true,
