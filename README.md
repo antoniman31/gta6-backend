@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **942
+qui permet de tester tout le pipeline sans sortir de la machine. **953
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -616,7 +616,7 @@ Apple HIG : 44×44 pt, règle de séparation : 8 px entre deux cibles) :
 | | avant | après |
 |---|---|---|
 | zone de clic de la coche ✓ | 78×**30** | 75×**44** |
-| lien « + autre source » | 83×**17** | 83×**43** |
+| lien « + autre source » | 83×**17** | 83×~~43~~ **25** (voir plus bas : les 43 px étaient faux **et** nuisibles) |
 | bouton « Tout charger » | 93×**19** | 97×**44** |
 | écart entre les boutons d'une carte | **4 px** | **8 px** |
 | champ de recherche | **13 px** | **16 px** |
@@ -900,6 +900,93 @@ rss2json). C'est redondant avec le backend, mais volontaire : sans ce
 filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
+
+### Vignettes pleine hauteur en mode compact
+
+Demandé le 08/09/2026 : les vignettes de 36 px du mode compact étaient trop
+petites pour qu'on distingue l'image.
+
+La mesure a montré que **la place était déjà là** : la colonne de texte fait
+105 px de haut, la vignette 36 — il y avait **69 px de vide** à côté d'elle. La
+vignette occupe maintenant toute la hauteur, et la hauteur de carte ne bouge
+pas d'un pixel : **120 px avant comme après**. Aucun article perdu à l'écran.
+
+La hauteur n'est pas écrite en dur, c'est `align-self:stretch` qui la cale sur
+la colonne de texte — elle suivra si le contenu de la colonne change. Mesuré :
+les 29 cartes à vignette sont calées, entre 102 et 105 px.
+
+**80 px de large, et c'est un maximum, pas un goût.** La largeur se prend sur
+la colonne de texte, donc sur les quatre boutons qui la partagent. À 320 px :
+
+| vignette | plus petit bouton | verdict |
+|---|---|---|
+| 64 px | 44 px | conforme |
+| 72 px | 42 px | conforme avec 2 px d'extension latérale |
+| **80 px** | **40 px** | **conforme, retenu** |
+| 88 px | 38 px | **80 cibles repassent sous le seuil** |
+
+L'extension latérale vaut 2 px et non 3 comme en mode normal : les boutons du
+compact ne sont séparés que de 6 px, et la règle `écart > 2 × extension`
+plafonne donc l'extension à 2 (6 > 4). 40 + 4 = 44.
+
+Ce que ça coûte : le titre est plus étroit, donc plus souvent tronqué — 19
+titres sur 29 au lieu de 11, à 390 px. C'est le seul prix réel.
+
+### Le défaut que trois audits avaient manqué
+
+En vérifiant les vignettes, le navigateur a signalé une cible sous le seuil et
+deux zones qui se recouvraient, en mode **normal**, à toutes les largeurs.
+Rien à voir avec le changement en cours : un défaut présent depuis la première
+passe tactile du 04/09.
+
+Le commentaire écrit au-dessus du code affirmait deux choses, toutes les deux
+fausses :
+
+> `-13 px` : porte la zone à 44 px […] Vérifié qu'aucun élément interactif ne
+> se trouve dans la bande ainsi couverte, au-dessus comme en dessous.
+
+1. **17 + 2×13 = 43**, pas 44. Il en manquait un.
+2. Il y a **8 px** entre le bas de ce lien et la rangée de boutons, et la coche
+   **remonte elle-même de 7 px**. Les 13 px de descente traversaient les deux :
+   un appui juste sous « + 1 autre source » partait sur ✅.
+
+**Pourquoi personne ne l'avait vu.** La ligne « + autre source » n'apparaît que
+sur les articles repris par plusieurs rédactions. Il n'y en avait aucun à
+l'écran lors des audits précédents — le robot venait d'en publier un.
+
+**Pourquoi les tests ne l'avaient pas vu non plus**, et c'est plus grave :
+
+- le seuil était écrit `atteinte >= 43` alors que le message annonçait
+  « 44 visé ». 43 passait donc en se faisant passer pour conforme ;
+- le calcul lisait `inset:-13px 0` en supposant le débordement **symétrique**,
+  et ne vérifiait les recouvrements qu'entre voisins **de même type**. Deux
+  éléments différents qui se font face verticalement étaient l'angle mort.
+
+**Corrigé.** La zone ne descend plus du tout (1 px de marge sous elle) et monte
+de 8 px : 17 + 8 = **25 px**. Au-dessus des 24 px de WCAG 2.5.8, sous les 44 px
+de WCAG 2.5.5, et c'est le maximum atteignable : il n'y a que 21 px au-dessus
+jusqu'au titre et 8 en dessous dont 7 sont déjà pris. Entre une cible de 25 px
+et une cible de 43 px qui déclenche le mauvais bouton, la première est la
+bonne. Agrandir vraiment ce lien demanderait d'écarter la rangée de boutons,
+donc de rallonger toutes les cartes pour un lien secondaire.
+
+Trois tests nouveaux ferment l'angle mort : un lecteur d'`inset` qui lit les
+quatre côtés, l'inégalité entre le bas du lien et le haut de la coche, et le
+vrai minimum par élément au lieu d'un seuil unique rabaissé à 43.
+
+**Et le lecteur d'`inset` était faux à sa première écriture** : il cherchait
+`-?(\d+)px` et perdait donc tous les zéros sans unité, si bien que sur
+`-8px 0 0` il ne voyait qu'une valeur, la recopiait sur les quatre côtés, et
+annonçait 33 px de zone au lieu de 25. Le script d'audit navigateur avait
+exactement le même défaut et fabriquait un chevauchement inexistant. Les deux
+sont corrigés, et quatre cas de lecture d'`inset` sont maintenant vérifiés par
+la suite elle-même — un analyseur faux est pire qu'une valeur écrite en dur,
+parce qu'il donne des chiffres crédibles.
+
+**Vérification finale**, 16 configurations (320/360/390/412 px × sombre/clair ×
+normal/compact) : 0 cible hors de son seuil, 0 chevauchement, 0 débordement
+horizontal, 0 erreur JavaScript. Aucune couleur n'a été touchée, le contraste
+est donc inchangé.
 
 ### Les filtres survivent à la fermeture
 
