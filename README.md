@@ -1135,9 +1135,23 @@ Paris**.
 **Le garde est dans le workflow, pas dans le planificateur.** L'horloge réelle
 est cron-job.org, qui n'est pas dans ce dépôt et qu'un changement
 d'hébergeur remplacerait un jour. En plaçant la décision dans
-`update-feeds.yml`, elle s'applique à *tout* ce qui déclenche : cron-job.org,
-le `schedule` de secours, et même un déclenchement manuel distrait à 3h du
-matin. Rien à configurer ailleurs.
+`update-feeds.yml`, elle s'applique à tous les déclencheurs automatiques sans
+rien à configurer ailleurs.
+
+**Une demande à la main passe toujours, à n'importe quelle heure.** La pause
+existe pour que le robot ne réveille personne *de lui-même*, pas pour refuser
+un ordre explicite. Les deux se distinguent sans ambiguïté par
+`github.event_name` :
+
+| déclencheur | qui | pause ? |
+|---|---|---|
+| `workflow_dispatch` | le bouton « Relancer le robot » de l'app, et « Run workflow » sur GitHub | **jamais** |
+| `repository_dispatch` | cron-job.org | oui |
+| `schedule` | le filet de GitHub | oui |
+
+Le bouton de l'app poste sur `/actions/workflows/…/dispatches` — c'est bien un
+`workflow_dispatch`, pas le `repository_dispatch` qu'utilise cron-job.org. La
+distinction est donc gratuite, il n'y a rien à changer côté app.
 
 **Le passage part quand même.** Il va jusqu'à l'étape de signal de vie et ne
 saute que la récupération, la publication et les notifications. Sans ça, cinq
@@ -1177,6 +1191,53 @@ rien perdu.
 `DEAD_SOURCE_HOURS` n'a pas bougé : il compte en **heures** et non en
 passages, précisément pour être insensible à ce genre de changement de
 cadence.
+
+### Ce que la simulation a prouvé, et ce qu'elle a d'abord raté
+
+Le garde a été rejoué **hors de GitHub**, en extrayant son script du workflow
+et en lui faisant croire, via un faux `date`, qu'on était à un instant choisi.
+Son verdict est comparé à la règle attendue, recalculée séparément :
+
+| simulation | instants | divergences |
+|---|---|---|
+| une année entière, heure par heure, trois déclencheurs | 8 760 | 0 |
+| un déclenchement **manuel** à chaque heure de l'année | 8 760 | 0 |
+| minute par minute aux frontières 23h→01h et 04h→06h, été et hiver | 1 440 | 0 |
+| les deux nuits de changement d'heure, minute par minute | 1 200 | 0 |
+
+Et le décompte qui répond directement à la question posée — *est-ce qu'une
+notification peut être bloquée en dehors de la plage ?* — sur les 5 840
+passages automatiques d'une année :
+
+```
+  heures 00h-04h : 1 086 bloqués,     9 passés (fenêtre de sortie)
+  heures 05h-23h :     0 bloqués, 4 754 passés
+                       ^^^^^^^^^^
+```
+
+**Zéro.** Le total 1 086 + 4 754 = 5 840 recoupe le nombre de passages
+automatiques, et la répartition inégale par heure s'explique : 210 jours en
+CEST et 155 en CET envoient une même heure de Paris sur deux heures UTC
+différentes.
+
+**La première version de cette simulation était fausse et annonçait déjà
+« 0 divergence ».** Le script de test lisait ses entrées ainsi :
+
+```bash
+while read -r instant declencheur; do   # découpe sur les ESPACES
+# ligne lue : "2026-03-01 00:00 schedule"
+#   instant     = "2026-03-01"      ← la date seule
+#   declencheur = "00:00 schedule"  ← n'existe pas
+```
+
+Elle testait donc minuit en boucle avec un déclencheur inexistant, et n'a
+jamais vu un seul déclenchement manuel. C'est l'histogramme par heure qui l'a
+révélé : il rangeait 8 760 instants dans deux heures seulement, ce qui est
+impossible.
+
+**Un chiffre rassurant n'est pas une preuve.** C'est le résultat incohérent
+posé à côté qui a montré que le rassurant ne valait rien. Les entrées sont
+maintenant séparées par une barre verticale.
 
 ## Surveillance : savoir quand le robot s'arrête
 

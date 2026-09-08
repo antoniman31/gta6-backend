@@ -3141,6 +3141,20 @@ def test_pause_nocturne():
         open(d, "w").write('#!/bin/bash\nexec /bin/date -d "$FAUX_INSTANT UTC" "$@"\n')
         os.chmod(d, 0o755)
 
+        def verdict(instant, declencheur):
+            sortieFic = os.path.join(tmp, "out")
+            open(sortieFic, "w").close()
+            env = dict(os.environ,
+                       PATH=faux + os.pathsep + os.environ["PATH"],
+                       FAUX_INSTANT=instant, GITHUB_OUTPUT=sortieFic,
+                       DECLENCHEUR=declencheur,
+                       EXCEPTION_DEBUT=debut_exc, EXCEPTION_FIN=fin_exc)
+            subprocess.run(["bash", chemin], env=env, capture_output=True)
+            return open(sortieFic, encoding="utf-8").read().strip()
+
+        # Déclencheurs AUTOMATIQUES : cron-job.org (repository_dispatch) et le
+        # filet de GitHub (schedule). Ce sont eux, et eux seuls, que la pause
+        # concerne.
         cas = [
             ("2026-09-07 21:30", "false", "23h30 en été"),
             ("2026-09-07 22:00", "true",  "minuit pile en été"),
@@ -3152,16 +3166,39 @@ def test_pause_nocturne():
             ("2026-11-21 01:00", "true",  "lendemain de la fenêtre : pause revenue"),
         ]
         for instant, attendu, libelle in cas:
-            sortieFic = os.path.join(tmp, "out")
-            open(sortieFic, "w").close()
-            env = dict(os.environ,
-                       PATH=faux + os.pathsep + os.environ["PATH"],
-                       FAUX_INSTANT=instant, GITHUB_OUTPUT=sortieFic,
-                       EXCEPTION_DEBUT=debut_exc, EXCEPTION_FIN=fin_exc)
-            subprocess.run(["bash", chemin], env=env, capture_output=True)
-            obtenu = open(sortieFic, encoding="utf-8").read().strip()
-            check(obtenu == "pause=" + attendu,
-                  "%s → %s (obtenu : %s)" % (libelle, "pause=" + attendu, obtenu or "rien"))
+            for declencheur in ("repository_dispatch", "schedule"):
+                obtenu = verdict(instant, declencheur)
+                check(obtenu == "pause=" + attendu,
+                      "%s (%s) → %s%s" % (libelle, declencheur, "pause=" + attendu,
+                                          "" if obtenu == "pause=" + attendu
+                                          else "  OBTENU : " + (obtenu or "rien")))
+
+        # UNE DEMANDE À LA MAIN PASSE TOUJOURS. Le bouton « Relancer le robot »
+        # de l'app poste sur /actions/workflows/…/dispatches, donc
+        # workflow_dispatch, exactement comme le bouton « Run workflow » de
+        # GitHub. La pause existe pour que le robot ne réveille personne de
+        # lui-même, pas pour refuser un ordre explicite.
+        #
+        # On balaie les VINGT-QUATRE heures, pas seulement quelques-unes :
+        # c'est la garantie demandée, elle doit être vérifiée partout.
+        rates = []
+        for h in range(24):
+            for jour, saison in (("2026-09-08", "été"), ("2026-12-08", "hiver")):
+                instant = "%s %02d:30" % (jour, h)
+                if verdict(instant, "workflow_dispatch") != "pause=false":
+                    rates.append("%s %s" % (instant, saison))
+        check(not rates,
+              "un déclenchement manuel passe aux 24 heures, été comme hiver"
+              + (" (bloqué à : %s)" % ", ".join(rates[:4]) if rates else ""))
+
+        # Et le contrôle inverse : aux mêmes instants, un déclencheur
+        # automatique DOIT être bloqué la nuit. Sans ça, le test ci-dessus
+        # passerait tout aussi bien si la pause ne marchait plus du tout.
+        bloques = sum(1 for h in range(5)
+                      if verdict("2026-09-08 %02d:30" % ((h - 2) % 24), "schedule") == "pause=true")
+        check(bloques == 5,
+              "aux mêmes heures, l'automatique est bien mis en pause "
+              "(%d/5 — sinon le test du manuel ne prouverait rien)" % bloques)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

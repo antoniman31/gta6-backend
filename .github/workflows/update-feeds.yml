@@ -68,9 +68,21 @@ jobs:
       # Le garde est ICI et non dans le planificateur externe, et c'est
       # délibéré : l'horloge réelle est cron-job.org, qui n'est pas dans
       # ce dépôt et qu'un futur changement d'hébergeur remplacerait. En
-      # plaçant la décision dans le workflow, elle s'applique à TOUT ce
-      # qui déclenche : cron-job.org, le `schedule` de secours ci-dessus,
-      # et même un déclenchement manuel distrait à 3h du matin.
+      # plaçant la décision dans le workflow, elle s'applique à tous les
+      # déclencheurs AUTOMATIQUES sans rien à configurer ailleurs :
+      # cron-job.org et le `schedule` de secours ci-dessus.
+      #
+      # UN DEMANDE À LA MAIN PASSE TOUJOURS, à n'importe quelle heure. La
+      # pause existe pour que le robot ne réveille personne de lui-même,
+      # pas pour refuser un ordre explicite. Les deux se distinguent sans
+      # ambiguïté par github.event_name :
+      #
+      #   workflow_dispatch    le bouton « Relancer le robot » de l'app
+      #                        (POST /actions/workflows/…/dispatches) et
+      #                        le bouton « Run workflow » de GitHub
+      #                        → MANUEL, jamais mis en pause
+      #   repository_dispatch  cron-job.org → automatique
+      #   schedule             le filet de GitHub → automatique
       #
       # Le run part quand même et va jusqu'à l'étape de signal de vie —
       # il saute seulement la récupération, la publication et les
@@ -89,6 +101,7 @@ jobs:
       - name: Fenêtre de veille
         id: veille
         env:
+          DECLENCHEUR: ${{ github.event_name }}
           # Nuits où la pause est levée, incluses, en dates de Paris.
           # Encadre la sortie de GTA 6 (19/11/2026, minuit heure de New
           # York) : la veille, le jour même et le lendemain. Cette date
@@ -97,6 +110,14 @@ jobs:
           EXCEPTION_DEBUT: "2026-11-18"
           EXCEPTION_FIN: "2026-11-20"
         run: |
+          # Demandé à la main : on ne discute pas, on passe. Testé avant
+          # tout le reste pour que ce soit lisible d'un coup d'œil.
+          if [ "$DECLENCHEUR" = "workflow_dispatch" ]; then
+            echo "Déclenchement manuel — la pause nocturne ne s'applique pas."
+            echo "pause=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           HEURE=$(TZ=Europe/Paris date '+%-H' 2>/dev/null || echo "")
           JOUR=$(TZ=Europe/Paris date '+%Y-%m-%d' 2>/dev/null || echo "")
 
