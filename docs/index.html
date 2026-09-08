@@ -397,7 +397,12 @@
     background:var(--accent); color:var(--accent-contrast); padding:3px 8px; letter-spacing:0.05em;
     border-bottom-left-radius:6px;
   }
-  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  /* Colonne, et non plus rangée : c'est ce qui fait passer la vignette
+     au-dessus du texte, sans toucher au balisage — le <img> reste le premier
+     enfant de .card-top. Aucun JS ne cible .card-thumb, .card-top ni
+     .card-body (vérifié), mais ne pas déplacer le HTML supprime la question.
+     Le mode compact rebascule en rangée plus bas. */
+  .card-top{display:flex; flex-direction:column; align-items:stretch; gap:10px;}
   .card-body{flex:1; min-width:0;}
   /* Rangée sous le titre plutôt que colonne à droite : en colonne, quatre
      boutons libellés mangeaient un tiers de la largeur et écrasaient le
@@ -425,9 +430,30 @@
      sans toucher au dessin (voir .card-mark). */
   .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap;
                 gap:8px; margin-top:8px;}
+  /* Bandeau pleine largeur, la vignette passe AU-DESSUS du texte.
+     Les carrés posés à côté du titre ont été essayés d'abord, en 88 px : le
+     côté se prend sur la colonne de texte, donc sur les quatre boutons qui
+     la partagent, et à 320 px ceux-ci sont déjà à 39 px. Le plafond y était
+     de 68 px — trop petit pour qu'on distingue l'image, ce qui était toute
+     la demande. Un carré à la hauteur de la carte, lui, ne converge pas :
+     la hauteur dépend de la largeur de la colonne, qui dépend de la
+     vignette. Le bandeau supprime le problème en ne prenant rien à la
+     colonne de texte.
+     16:9 parce que c'est le format des images chez presque toutes les
+     sources : rien n'est rogné, alors que le carré coupait les bords.
+     aspect-ratio réserve la place avant que l'image arrive, donc la mise en
+     page ne saute pas au chargement.
+     Les marges négatives valent exactement le rembourrage de la carte
+     (14px 16px) : le bandeau va d'un bord à l'autre. C'est .card qui porte
+     overflow:hidden et le rayon, donc les deux coins hauts se découpent tout
+     seuls — inutile de répéter un rayon ici, on verrait la carte dépasser
+     derrière l'image. */
   .card-thumb{
-    width:64px; height:64px; object-fit:cover; border-radius:var(--r-sm); flex-shrink:0;
-    background:var(--bg-elevated); border:1px solid var(--line);
+    width:auto; aspect-ratio:16/9; align-self:stretch;
+    object-fit:cover;
+    margin:-14px -16px 0;
+    border:0; border-bottom:1px solid var(--line); border-radius:0;
+    background:var(--bg-elevated);
   }
   .card-favicon{width:14px; height:14px; border-radius:var(--r-xs); vertical-align:middle; margin-right:5px;}
   .card.official{
@@ -558,30 +584,29 @@
 
   /* ---------- Mode dense ---------- */
   .feed.dense .card{padding:8px 10px;}
-  /* La vignette prend TOUTE la hauteur de la carte plutôt qu'un carré de
-     36 px perdu dans un coin. La hauteur n'est pas écrite en dur : c'est
-     align-self:stretch qui la cale sur la colonne de texte (105 px
-     aujourd'hui), donc elle suivra si le contenu de la colonne change.
-     .card-top porte align-items:flex-start, d'où le align-self qui le
-     surcharge pour ce seul élément.
-     Pourquoi 80 px de large et pas plus : la largeur se prend sur la colonne
-     de texte, donc sur les boutons qui la partagent. À 320 px, chaque pixel
-     de vignette en plus retire un quart de pixel à chacun des quatre
-     boutons. Mesuré : 80 px les laisse à 40 px de large, 44 px de zone avec
-     l'extension latérale ci-dessous ; à 88 px on tombe à 38 px et 80 cibles
-     repassent sous le seuil. 80 est le maximum conforme, pas un choix
-     esthétique.
-     Ce que ça NE coûte pas : la hauteur de carte ne bouge pas d'un pixel
-     (120 px avant comme après), parce que la colonne de texte faisait déjà
-     105 px et que la vignette de 36 px laissait 69 px de vide à côté d'elle.
-     Ce que ça coûte : le titre est plus étroit, donc plus souvent tronqué —
-     19 titres sur 29 au lieu de 11 à 390 px. */
-  .feed.dense .card-thumb{width:80px; height:auto; align-self:stretch; flex-shrink:0;}
+  /* Le compact garde la vignette à CÔTÉ du texte, et c'est là tout l'intérêt
+     d'avoir deux modes : le normal montre les images, le compact montre le
+     plus d'articles possible. Un bandeau ici doublerait la hauteur des
+     cartes et supprimerait la raison d'être du mode.
+     Il faut donc défaire, pour ce seul mode, CHACUNE des propriétés du
+     bandeau — direction du flex, format, marges négatives, bordures. Les
+     oublier une à une est le piège : un aspect-ratio resté en 16:9 sur un
+     carré de 80 px, et la vignette redevient une bande.
+     80 px de côté contre 36 avant : 4,9 fois la surface, sans rallonger la
+     carte — la colonne de texte du compact fait 105 px de haut, la vignette
+     de 36 px y laissait 69 px de vide. Et 80 est un maximum mesuré : à
+     320 px il laisse les boutons à 40 px de large (44 avec les 2 px
+     d'extension latérale) ; à 88 px ils tombent à 38 et 80 cibles repassent
+     sous le seuil. */
+  .feed.dense .card-top{flex-direction:row; align-items:flex-start; gap:8px;}
+  .feed.dense .card-thumb{
+    width:80px; height:80px; aspect-ratio:auto; align-self:auto;
+    margin:0; border:1px solid var(--line); border-radius:var(--r-sm);
+  }
   .feed.dense .card-body{min-width:0; flex:1;}
   .feed.dense .card-title{font-size:13px; margin-bottom:2px; width:100%; -webkit-line-clamp:2; display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;}
   .feed.dense .card-src-row{margin-bottom:2px;}
   .feed.dense .card-extra{display:none;}
-  .feed.dense .card-top{gap:8px;}
   .feed.dense .card-actions{gap:6px; margin-top:5px;}
   .feed.dense .card-mark{min-width:24px; height:24px; padding:0 4px; font-size:11px;}
   /* La coupure à deux lignes doit porter sur le LIEN, pas sur le titre qui

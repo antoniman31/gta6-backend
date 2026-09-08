@@ -3020,40 +3020,59 @@ def test_ergonomie_tactile():
               "écart de %d px entre deux coches pour %d px d'extension de "
               "chaque côté — les zones ne se recouvrent pas" % (ecart, marge))
 
-    # La vignette du mode compact occupe toute la hauteur de la carte. Elle
-    # ne doit PAS porter de hauteur en dur : c'est align-self:stretch qui la
-    # cale sur la colonne de texte, sinon la moindre variation de contenu
-    # laisse un carré flottant ou déborde la carte.
-    bloc = re.search(r"\.feed\.dense \.card-thumb\{([^}]*)\}", html).group(1)
-    check("align-self:stretch" in bloc,
-          "la vignette compacte prend la hauteur de la colonne de texte")
-    check(re.search(r"height:\s*auto", bloc) is not None,
-          "et sa hauteur n'est pas écrite en dur")
-    largeur = int(re.search(r"width:\s*(\d+)px", bloc).group(1))
-    # La largeur se prend sur la colonne de texte, donc sur les quatre
-    # boutons qui la partagent. Mesuré à 320 px : 80 px les laisse à 40 px de
-    # large (44 avec l'extension latérale), 88 px les fait tomber à 38.
-    check(largeur <= 80,
-          "vignette compacte de %d px de large (80 maximum, au-delà les "
-          "boutons repassent sous 44 px à 320 px)" % largeur)
+    # La vignette est un BANDEAU pleine largeur au-dessus du texte, en mode
+    # normal. Les carrés posés à côté du titre ont été essayés d'abord et
+    # plafonnaient à 68 px à 320 px, trop petit pour qu'on distingue l'image ;
+    # un carré à la hauteur de la carte, lui, ne converge pas — la hauteur
+    # dépend de la largeur de la colonne, qui dépend de la vignette.
+    haut = re.search(r"\n  \.card-top\{([^}]*)\}", html).group(1)
+    check("flex-direction:column" in haut,
+          "en mode normal la carte s'empile : la vignette passe au-dessus du texte")
+    base = re.search(r"\n  \.card-thumb\{([^}]*)\}", html, re.S).group(1)
+    check("aspect-ratio:16/9" in base.replace(" ", ""),
+          "le bandeau est en 16:9, le format des images des sources — rien n'est rogné")
 
-    # Même inégalité qu'en mode normal, mais avec les valeurs du compact :
-    # l'écart y est de 6 px, donc l'extension latérale ne peut pas dépasser
-    # 2 px sans que les zones de deux boutons voisins se recouvrent.
-    bloc = re.search(r"\.feed\.dense \.card-actions\{([^}]*)\}", html).group(1)
-    ecart = int(re.search(r"gap:\s*(\d+)px", bloc).group(1))
-    lat = re.search(r"\.feed\.dense \.card-mark::after\{[^}]*inset:-\d+px\s+-(\d+)px", html)
-    check(lat is not None,
-          "en compact aussi, la zone de clic de la coche déborde latéralement")
-    if lat:
-        marge = int(lat.group(1))
-        check(ecart > 2 * marge,
-              "compact : écart de %d px pour %d px d'extension de chaque côté "
-              "— les zones ne se recouvrent pas" % (ecart, marge))
-        # 40 px est la largeur mesurée à 320 px avec la vignette à 80 px.
-        check(40 + 2 * marge >= 44,
-              "compact, cas le plus serré : 40 + 2×%d = %d px de zone (44 visé)"
-              % (marge, 40 + 2 * marge))
+    # Le débordement du bandeau doit valoir EXACTEMENT le rembourrage de la
+    # carte, sinon il s'arrête avant le bord ou dépasse. Les deux valeurs
+    # vivent dans deux règles différentes : rien ne les relie, sauf ce test.
+    rembourrage = re.search(r"\n  \.card\{[^}]*padding:\s*(\d+)px\s+(\d+)px", html, re.S)
+    marge = re.search(r"margin:\s*-(\d+)px\s+-(\d+)px\s+0", base)
+    check(rembourrage is not None and marge is not None,
+          "le bandeau déborde le rembourrage de la carte par des marges négatives")
+    if rembourrage and marge:
+        check((marge.group(1), marge.group(2)) == (rembourrage.group(1), rembourrage.group(2)),
+              "le débordement (-%s/-%s) vaut le rembourrage de la carte (%s/%s) — "
+              "le bandeau va bien d'un bord à l'autre"
+              % (marge.group(1), marge.group(2),
+                 rembourrage.group(1), rembourrage.group(2)))
+
+    # Le compact garde la vignette à côté du texte : c'est la raison d'être du
+    # mode. Il doit défaire CHACUNE des propriétés du bandeau — en oublier une
+    # suffit, et un aspect-ratio resté en 16:9 sur un carré de 80 px redonne
+    # une bande.
+    hautD = re.search(r"\.feed\.dense \.card-top\{([^}]*)\}", html).group(1)
+    check("flex-direction:row" in hautD,
+          "le mode compact remet la vignette à CÔTÉ du texte")
+    dense = re.search(r"\.feed\.dense \.card-thumb\{([^}]*)\}", html, re.S).group(1)
+    for propriete, attendu, pourquoi in (
+            ("aspect-ratio", "auto", "sinon le carré de 80 px redevient une bande 16:9"),
+            ("margin", "0", "sinon la vignette déborde encore la carte"),
+            ("align-self", "auto", "sinon elle s'étire sur la hauteur"),
+            ("border-radius", "var(--r-sm)", "sinon elle garde les angles vifs du bandeau")):
+        trouve = re.search(propriete + r":\s*([^;}]+)", dense)
+        check(trouve is not None and trouve.group(1).strip() == attendu,
+              "le compact remet %s à %s — %s" % (propriete, attendu, pourquoi))
+
+    cote = re.search(r"width:\s*(\d+)px", dense)
+    hauteur = re.search(r"height:\s*(\d+)px", dense)
+    check(cote is not None and hauteur is not None and cote.group(1) == hauteur.group(1),
+          "vignette compacte carrée : %s×%s"
+          % (cote.group(1) if cote else "?", hauteur.group(1) if hauteur else "?"))
+    if cote:
+        # Mesuré à 320 px : 80 px laisse les boutons à 40 (44 avec les 2 px
+        # d'extension latérale), 88 en fait tomber 80 sous le seuil.
+        check(int(cote.group(1)) <= 80,
+              "vignette compacte de %s px (80 maximum à 320 px)" % cote.group(1))
 
     bloc = re.search(r"\.history-line button\{([^}]*)\}", html).group(1)
     mh = re.search(r"min-height:\s*(\d+)px", bloc)
