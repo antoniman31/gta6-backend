@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-08T07:01:49.628281+00:00",
-  "duration_seconds": 44.8,
+  "generated_at": "2026-09-08T08:01:42.257339+00:00",
+  "duration_seconds": 44.7,
   "decode_failures": 0,
-  "total_articles": 2154,
-  "new_this_run": 2,
+  "total_articles": 2157,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -389,8 +389,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-08T06:23:37+00:00",
+      "new_this_run": 3,
+      "last_article": "2026-09-08T07:38:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -421,10 +421,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T15:19:30+00:00",
       "days_since_last_article": 0,
@@ -469,10 +469,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T19:47:27+00:00",
       "days_since_last_article": 0,
@@ -553,10 +553,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T16:30:44+00:00",
       "days_since_last_article": 3,
@@ -637,10 +637,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T19:38:46+00:00",
       "days_since_last_article": 5,
@@ -655,7 +655,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T08:00:00+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -745,10 +745,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 5,
@@ -763,7 +763,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T07:23:22+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -911,27 +911,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-08T02:01:46.638213+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-08T02:01:46.638213+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,0,0,15",
+    "rockstar-youtube": "15,15,15,0,0,0,0,0,0,0,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,102,102,102,102,101,101,102,102,100,101",
+    "gnews-en": "102,102,102,102,102,101,101,102,102,100,101,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -939,7 +928,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,0,15",
+    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,0,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -963,7 +952,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,8,8,8,8,8,9,9",
+    "xboxwire": "8,8,8,8,8,8,8,8,8,9,9,9",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -984,13 +973,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"092cda9266547049652e6259af5670e6\"",
-      "modified": "Mon, 07 Sep 2026 18:44:53 GMT"
+      "etag": "W/\"763115b2d121b22b8bf14420deaed17b\"",
+      "modified": "Tue, 08 Sep 2026 07:22:29 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 07 Sep 2026 19:47:27 GMT"
+      "modified": "Tue, 08 Sep 2026 07:28:05 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1009,8 +998,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5d98691c8b6d641abdc58387b6f86e6e\"",
-      "modified": "Tue, 08 Sep 2026 05:37:34 GMT"
+      "etag": "W/\"df453c0bb95dcee541f427a3b922f9ae\"",
+      "modified": "Tue, 08 Sep 2026 07:55:39 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1025,17 +1014,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 07:01:22 GMT"
+      "modified": "Tue, 08 Sep 2026 08:01:15 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"30616993b2280257b13a5fa18d59a8d1\"",
-      "modified": "Tue, 08 Sep 2026 05:58:19 GMT"
+      "etag": "\"9e23f08d4bdb8a247adc5b354121b4a1\"",
+      "modified": "Tue, 08 Sep 2026 07:37:40 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6a9fb281-30e3\"",
-      "modified": "Tue, 08 Sep 2026 07:00:17 GMT"
+      "etag": "W/\"6a9fc08f-3068\"",
+      "modified": "Tue, 08 Sep 2026 08:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,12 +1043,51 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6a9fa254-b2b\"",
-      "modified": "Tue, 08 Sep 2026 05:51:16 GMT"
+      "etag": "\"6a9fbe6f-b29\"",
+      "modified": "Tue, 08 Sep 2026 07:51:11 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6, l’heure de sortie française apparaît sur le PlayStation Store - GinjFo",
+      "link": "https://www.ginjfo.com/actualites/gta-6-lheure-de-sortie-francaise-apparait-sur-le-playstation-store-20260908",
+      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNdXFYY2prN2Y2U0ZqSkhIcDVYcXEyUmc2XzV1U3k5N1E4eHVVUThfOTBWdXB4UUhyQ01iTzV1UjRwdEFOOXo1a1U3TzFNdV9qakk2MXZKdzNMLUZsaS1tMjBTOFlsQ3dLQ045RjFkQlJlZUFkbUpOOE5EejNMUHBGU1JCRjllY1RxTm90dF9XSHctNWNDYkJuQk9XSkVyUDhsaWRGOHZhdDNXNDlqT2c?oc=5",
+      "date": "2026-09-08T07:38:13+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2025/04/GTA6_VI_A1.jpg",
+      "description": "GTA 6, l’heure de sortie française apparaît sur le PlayStation Store&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "Il existe une astuce pour jouer à GTA VI avant tout le monde à sa sortie - IGN France",
+      "link": "https://fr.ign.com/grand-theft-auto-6/92004/il-existe-une-astuce-pour-jouer-a-gta-vi-avant-tout-le-monde-a-sa-sortie",
+      "source_link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPOHFYVk51anhrbERoRWZCdUdEY0h3aDNuaGtxVzQ0a3AwZ3QzNW1LUlM1emJKanllNXRvZXZGQnY1X0djQmtrWTN1QWlUNDIyTVFQaV8taENKa3REcXN2UTB1a3NZWEJCN2hldGxlT0p5Z2pqTTF4ZUs0UXZGLVB1Q0c5MkRaRm5mSUJBclAtMXJtdFhxOURwUHI2U1FGM0hOT1czQWRMYWJjYk5fZlBDQ0oxSHp1a2M?oc=5",
+      "date": "2026-09-08T07:17:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-6-will/gta-6-will-launch-digitally-at-midnight-around-the-world-so_gr5c.1200.png",
+      "description": "Il existe une astuce pour jouer à GTA VI avant tout le monde à sa sortie&nbsp;&nbsp;IGN France"
+    },
+    {
+      "title": "GTA 6 : voici à quelle heure exactement vous pourrez y jouer et l'astuce pour y jouer avant les autres - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-heures-sortie-comment-jouer-avant-722435",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOUG1rcUlTSkVPZzZybDVlMGprX1dhNG9uaXpSaFd6VEs2SGpDWjZ1WmpHSnlIVW5aamF5SEhXemFpaVFzenR6WXZNQ3F4NjdUNTVLbkF3MDM1eFRzSlI0cUY5MDUyOHRsUHZERFA4cVRuNWVNSjRaOXlKQ3RwRjg3Z0hDZnVfMHg0dzJIa3ROd2lmZw?oc=5",
+      "date": "2026-09-08T07:07:41+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img/news/720531_6a747c878ace8.jpg",
+      "description": "GTA 6 : voici à quelle heure exactement vous pourrez y jouer et l'astuce pour y jouer avant les autres&nbsp;&nbsp;Gameblog"
+    },
     {
       "title": "Comment jouer à GTA 6 avant sa sortie ? - Numerama",
       "link": "https://www.numerama.com/pop-culture/2327313-comment-jouer-a-gta-6-avant-sa-sortie.html",
