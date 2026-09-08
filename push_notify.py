@@ -292,7 +292,7 @@ def main():
     officiels = feed_store.articles_officiels(new_items)
 
     totaux = lire_totaux_recap()
-    if not new_items and not promus and not (totaux and totaux[0]):
+    if not new_items and not promus and totaux is None:
         print("[push] aucun nouvel article à annoncer.")
         return 0
     if seulement_officiels and not officiels:

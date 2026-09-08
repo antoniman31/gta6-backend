@@ -2929,6 +2929,36 @@ def test_ergonomie_tactile():
             check(atteinte >= 43,
                   "%s : zone de %d px de haut (44 visé)" % (selecteur, atteinte))
 
+    # L'invariant qui a coûté une correction en trois temps. À 320 px sur une
+    # carte À VIGNETTE, quatre boutons tombent à 39 px de large : la hauteur
+    # est bonne, pas la largeur. J'ai d'abord autorisé l'enroulement — la
+    # première version fabriquait 27 zones de clic superposées, la seconde
+    # était simplement laide (le drapeau seul sur une deuxième rangée étirée,
+    # sur 8 cartes sur 30, et seulement à 320 px : dès 340 px l'enroulement
+    # ne se déclenche jamais). La rangée reste donc sur une ligne et c'est le
+    # ::after qui déborde latéralement, sans rien changer au dessin.
+    # Contrainte : deux boutons voisins sont séparés de l'écart de la rangée,
+    # et chacun déborde de N — il faut écart > 2N, sinon les zones se
+    # recouvrent et un appui dans la bande commune part sur le mauvais
+    # bouton. C'est la même inégalité que pour les boutons d'entête.
+    bloc = re.search(r"\.card-actions\{([^}]*)\}", html, re.S).group(1)
+    check("flex-wrap:nowrap" in bloc,
+          "la rangée de commandes d'une carte tient sur une seule ligne")
+    lateral = re.search(r"\.card-mark::after\{[^}]*inset:-\d+px\s+-(\d+)px", html)
+    check(lateral is not None,
+          "et la zone de clic de la coche déborde AUSSI latéralement")
+    if lateral:
+        marge = int(lateral.group(1))
+        # 39 px est la largeur mesurée dans le cas le plus serré : carte à
+        # vignette, quatre boutons, 320 px de large.
+        check(39 + 2 * marge >= 44,
+              "cas le plus serré : 39 + 2×%d = %d px de zone (44 visé)"
+              % (marge, 39 + 2 * marge))
+        ecart = int(re.search(r"gap:\s*(\d+)px", bloc).group(1))
+        check(ecart > 2 * marge,
+              "écart de %d px entre deux coches pour %d px d'extension de "
+              "chaque côté — les zones ne se recouvrent pas" % (ecart, marge))
+
     bloc = re.search(r"\.history-line button\{([^}]*)\}", html).group(1)
     mh = re.search(r"min-height:\s*(\d+)px", bloc)
     check(mh is not None and int(mh.group(1)) >= 44,
@@ -3341,9 +3371,30 @@ def test_recap_du_matin_couvre_la_nuit():
         check(all("12 nouveaux" in str(e.get("title", "")) for _, e in rien),
               "et il annonce bien les 12")
 
-        # Sans arriéré ni nouveauté, on se tait — la garde d'origine tient.
-        check(len(passage([], {"articles": 0, "officiels": 0, "sommet": 0}, nuit=False)) == 0,
-              "rien de neuf et rien en attente : aucun envoi")
+        # LE cas que la première version jetait à la poubelle. La nuit
+        # n'apporte AUCUN article neuf, mais un sujet déjà connu est repris
+        # par une quatrième rédaction : il devient majeur. Le robot dépose
+        # {articles:0, sommet:4} et l'alerte doit partir — c'est exactement
+        # ce pour quoi le mécanisme `promus` avait été écrit.
+        majeure = passage([], {"articles": 0, "officiels": 0, "sommet": 4}, nuit=False)
+        check(len(majeure) == 2,
+              "une actu devenue majeure la nuit SANS article neuf est quand même "
+              "annoncée le matin (%d envoi(s))" % len(majeure))
+        check(all("majeure" in str(e.get("title", "")) for _, e in majeure),
+              "et elle est annoncée COMME majeure")
+
+        # La règle « y a-t-il quelque chose à annoncer » vit à UN SEUL
+        # endroit : le robot, qui ne dépose le fichier que dans ce cas. Les
+        # notificateurs ne la rejouent pas — la rejouer à moitié est
+        # exactement ce qui avait fait disparaître l'alerte ci-dessus.
+        for fichier in ("discord_notify.py", "push_notify.py"):
+            src = open(fichier, encoding="utf-8").read()
+            check("totaux[0]" not in src,
+                  "%s ne réinterprète pas le contenu des totaux" % fichier)
+
+        # Sans fichier de totaux du tout, et sans rien de neuf : on se tait.
+        check(len(passage([], None, nuit=False)) == 0,
+              "rien de neuf et aucun total déposé : aucun envoi")
 
         # Sans le fichier de totaux (lancement local), on retombe sur le
         # comptage direct de la liste.
