@@ -791,6 +791,47 @@ filet de sécurité, l'app serait totalement inutilisable si le backend
 tombait, ce qui serait une vraie régression de fiabilité pour un gain de
 simplicité qui n'en vaut pas la peine.
 
+### Icônes : des emojis, sauf là où la couleur porte du sens
+
+Les quatre boutons d'entête et les commandes de carte utilisaient des glyphes
+Unicode choisis à la main — des demi-cercles pour le thème, un carré hachuré
+pour le journal, un i cerclé pour les informations. Remplacés par des emojis,
+plus immédiatement reconnaissables :
+
+| | avant | après |
+|---|---|---|
+| bascule de thème | demi-cercles | 🌙 en clair, ☀️ en sombre |
+| paramètres | engrenage texte | ⚙️ |
+| journal des passages | carré hachuré | 📋 |
+| informations | i cerclé | ℹ️ |
+| marquer lu / non lu | coche / flèche | ✅ / ↩️ |
+| copier le lien | carrés superposés | 🔗 |
+| aperçu | œil | 👁️ |
+
+Deux détails qui ne se voient pas dans un tableau :
+
+- **L'icône de thème annonce désormais l'action, pas l'état.** En thème clair
+  elle montre 🌙 — « clique pour passer au sombre ». Les deux demi-cercles
+  d'avant décrivaient l'état courant, ce qui laissait deviner dans quel sens
+  le clic allait. L'étiquette d'accessibilité, « Changer de thème », était
+  déjà une action ; l'icône la rejoint.
+- **La confirmation de copie reste un glyphe texte.** C'est la seule des trois
+  icônes de carte qui soit teintée par CSS : quand un lien est copié, le
+  bouton passe en vert une seconde et demie, et c'est ce vert qui la
+  distingue du bouton « marquer lu » juste à côté. La couleur d'un emoji ne
+  se pilote pas — en emoji, la confirmation serait devenue le sosie exact de
+  son voisin. Un test verrouille ce point précis, parce que c'est exactement
+  le genre de détail qu'une passe d'harmonisation ultérieure « corrigerait »
+  de bonne foi.
+
+Le sélecteur de variante `U+FE0F` est obligatoire sur ⚙️ et ℹ️ : sans lui,
+certains systèmes les rendent en noir et blanc façon glyphe texte, soit
+exactement ce qu'on cherchait à quitter. Un test compte les occurrences nues.
+
+Mesuré dans Chromium : les quatre emojis d'entête occupent tous 19×18 px dans
+un bouton de 34×34, ceux des cartes 16,5×15 — aucun débordement, aucune
+rangée déplacée, la rangée d'entête tient toujours ses 166 px.
+
 ### Structure de la page et retour non visuel
 
 Audité le 08/09/2026, à la demande, contre Material 3 et les lois d'UX. Deux
@@ -919,7 +960,7 @@ navigateur. L'envoi tient en quelques secondes dans une étape de workflow
 
 **Mise en place** (une fois pour le dépôt) :
 
-1. Ouvrir l'app → ⚙ Paramètres. Tant que le dépôt n'a pas de clés, un bloc
+1. Ouvrir l'app → ⚙️ Paramètres. Tant que le dépôt n'a pas de clés, un bloc
    *Configuration initiale* propose de les générer.
 2. Cliquer **Générer une paire de clés**. Elles sont créées dans le
    navigateur par Web Crypto et ne partent nulle part — inutile
@@ -935,7 +976,7 @@ navigateur. L'envoi tient en quelques secondes dans une étape de workflow
 
 **Puis, par appareil :**
 
-6. ⚙ Paramètres → *Notifications sur cet appareil* → **Activer les
+6. ⚙️ Paramètres → *Notifications sur cet appareil* → **Activer les
    notifications**, et accepter la demande du navigateur.
 7. Copier le bloc d'abonnement affiché et le coller dans le secret
    **`PUSH_SUBSCRIPTIONS`**. Pour plusieurs appareils, mettre un tableau
@@ -1127,7 +1168,7 @@ ouvrir l'onglet Actions.
 3. **Permissions** → Repository permissions → **Actions : Read and write**.
    Rien d'autre.
 4. Choisir une **date d'expiration**, générer, copier le jeton
-5. Dans l'app : ⚙ Paramètres → *Déclenchement à distance* → coller →
+5. Dans l'app : ⚙️ Paramètres → *Déclenchement à distance* → coller →
    Enregistrer. Le bouton « Relancer le robot » apparaît alors à côté
    d'« Actualiser ».
 
@@ -1151,7 +1192,7 @@ terminé — puis recharge les articles dès que l'exécution réussit. Un déla
 de garde de 2 minutes empêche d'empiler les demandes : le workflow a de
 toute façon une file d'attente côté GitHub.
 
-L'état des cinq derniers passages est visible dans la modale ⓘ. Le dépôt
+L'état des cinq derniers passages est visible dans la modale ℹ️. Le dépôt
 étant public, cette liste s'affiche même sans jeton (quota anonyme de
 l'API GitHub : 60 requêtes/h par adresse IP).
 

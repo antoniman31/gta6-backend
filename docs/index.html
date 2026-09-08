@@ -890,10 +890,10 @@
       <div class="header-right">
         <div id="modeIndicator" class="mode-indicator"></div>
         <div class="header-actions">
-          <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">◐</button>
-          <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
-          <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">▤<span id="badgeLogs" class="logs-error-badge"></span></button>
-          <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ⓘ</button>
+          <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">🌙</button>
+          <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙️<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
+          <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">📋<span id="badgeLogs" class="logs-error-badge"></span></button>
+          <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ℹ️</button>
         </div>
       </div>
     </div>
@@ -986,7 +986,7 @@
   </div>
   </main>
 
-  <button class="info-btn" onclick="openInfo()" title="Informations">ⓘ</button>
+  <button class="info-btn" onclick="openInfo()" title="Informations">ℹ️</button>
 
 </div>
 
@@ -1751,7 +1751,13 @@ function applyTheme(){
     effective = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   }
   document.documentElement.setAttribute("data-theme", effective);
-  document.getElementById("themeBtn").textContent = effective === "light" ? "◐" : "◑";
+  // En thème clair on propose de passer au sombre, et inversement : l'icône
+  // dit ce que le clic va faire. Les deux demi-cercles d'avant décrivaient un
+  // état, ce qui laissait deviner dans quel sens on allait.
+  // (Les glyphes remplacés ne sont volontairement pas recopiés ici : le test
+  //  qui vérifie leur disparition lit tout le fichier, commentaires compris,
+  //  et les citer les lui ferait reprendre pour du balisage encore en place.)
+  document.getElementById("themeBtn").textContent = effective === "light" ? "🌙" : "☀️";
 }
 function setTheme(t){
   settings.theme = t;
@@ -2698,7 +2704,7 @@ function enveloppeCarte(item, newLinks, searchQuery){
   const repere = (repriseLien && item.link === repriseLien)
     ? `<div class="resume-marker">lu jusqu'ici</div>` : "";
   return repere
-    + `<div class="swipe-wrap"><div class="swipe-hint">${lu ? "↺" : "✓"}</div>`
+    + `<div class="swipe-wrap"><div class="swipe-hint">${lu ? "↩️" : "✅"}</div>`
     + renderCard(item, newLinks, searchQuery)
     + `</div>`;
 }
@@ -2788,9 +2794,9 @@ function renderCard(item, newLinks, searchQuery){
           <div class="card-date">${d}</div>
           ${extraSourcesLine}
           <div class="card-actions">
-            <button class="card-mark" data-icon-only="1" title="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${isRead ? "↺" : "✓"}</button>
-            <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">⧉</button>
-            ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">👁</button>` : ""}
+            <button class="card-mark" data-icon-only="1" title="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${isRead ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${isRead ? "↩️" : "✅"}</button>
+            <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">🔗</button>
+            ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">👁️</button>` : ""}
             ${item.lang !== "fr" ? `<button class="card-mark" data-icon-only="1" title="Traduire en français" aria-label="Traduire en français" onclick="openTranslated('${escapeAttr(item.link)}')">🇫🇷</button>` : ""}
           </div>
         </div>
@@ -2848,6 +2854,12 @@ function copyLink(link, btn){
       // centaine et décalerait toute la rangée pendant une seconde et demie.
       // On échange l'icône contre une coche, à largeur constante ; le vert
       // distingue la confirmation du bouton "marquer lu" juste à côté.
+      //
+      // Et cette coche-ci reste un glyphe TEXTE, pas l'emoji ✅ des autres
+      // boutons : c'est la seule des trois qui soit teintée par CSS
+      // (.card-mark.done), et la couleur d'un emoji ne se pilote pas. En
+      // emoji, la confirmation serait devenue le sosie exact du bouton
+      // « marquer lu » d'à côté — précisément ce que ce vert évite.
       btn.textContent = btn.dataset.iconOnly ? "✓" : "copié";
       btn.classList.add("done");
       setTimeout(() => { btn.textContent = original; btn.classList.remove("done"); }, 1500);

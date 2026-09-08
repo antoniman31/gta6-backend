@@ -3063,6 +3063,55 @@ def test_structure_et_annonces():
           "et la fonction qui la compose existe")
 
 
+def test_icones_en_emoji():
+    print("\n[app] les icônes sont des emojis, sauf là où la couleur porte du sens")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    sans_commentaires = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
+    # Les glyphes Unicode d'origine ne doivent plus rien étiqueter. ◐/◑ pour le
+    # thème, ⚙ nu (sans sélecteur de variante) pour les paramètres, ▤ pour le
+    # journal, ⓘ pour les informations, ⧉ pour la copie.
+    for glyphe, role in (("◐", "thème clair"), ("◑", "thème sombre"),
+                         ("▤", "journal"), ("ⓘ", "informations"),
+                         ("⧉", "copie du lien")):
+        check(glyphe not in sans_commentaires,
+              "plus de « %s » pour %s" % (glyphe, role))
+
+    # ⚙ et ℹ doivent porter le sélecteur de variante U+FE0F, sans lequel
+    # certains systèmes les rendent en glyphe texte noir et blanc au lieu de
+    # l'emoji — c'est justement ce qu'on cherchait à quitter.
+    for base, nom in (("\u2699", "l'engrenage des paramètres"),
+                      ("\u2139", "le i d'informations")):
+        nus = len(re.findall(base + r"(?!\uFE0F)", sans_commentaires))
+        check(nus == 0,
+              "%s force la présentation emoji (U+FE0F) — %d occurrence(s) nue(s)"
+              % (nom, nus))
+
+    for emoji, role in (("\U0001F319", "passer au thème sombre"),
+                        ("\u2600\uFE0F", "passer au thème clair"),
+                        ("\U0001F4CB", "le journal"),
+                        ("\U0001F517", "copier le lien"),
+                        ("\u2705", "marquer lu"),
+                        ("\u21A9\uFE0F", "marquer non lu")):
+        check(emoji in sans_commentaires, "« %s » : %s" % (emoji, role))
+
+    # LE point subtil. La confirmation de copie est la seule des trois icônes
+    # de carte qui soit TEINTÉE par CSS (.card-mark.done la passe en vert), et
+    # la couleur d'un emoji ne se pilote pas. En emoji, cette confirmation
+    # deviendrait le sosie exact du bouton « marquer lu » juste à côté —
+    # précisément ce que ce vert sert à éviter. Elle doit rester un glyphe
+    # texte, et ce test est là pour empêcher qu'on l'« harmonise » un jour.
+    bloc = re.search(r"function copyLink\([^)]*\)\{(.*?)\n\}", html, re.S).group(1)
+    check('btn.dataset.iconOnly ? "\u2713"' in bloc,
+          "la confirmation de copie reste la coche TEXTE ✓, pas l'emoji ✅")
+    check('classList.add("done")' in bloc,
+          "et elle est bien teintée en vert par la classe done")
+    regle = re.search(r"\.card-mark\.done\{([^}]*)\}", html).group(1)
+    check("color:" in regle,
+          "la règle .card-mark.done teinte bien le texte (ce qu'un emoji ignorerait)")
+
+
 def test_contraste_des_deux_themes():
     print("\n[app] les deux thèmes tiennent le contraste WCAG AA")
     import re
@@ -3666,6 +3715,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
            test_structure_et_annonces,
+           test_icones_en_emoji,
            test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
