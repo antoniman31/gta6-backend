@@ -2934,6 +2934,51 @@ def test_ergonomie_tactile():
     check(mh is not None and int(mh.group(1)) >= 44,
           "« Tout charger » fait au moins 44 px de haut")
 
+    # Les commandes de l'application elle-même, pas seulement celles des
+    # cartes. La passe précédente n'avait traité que l'intérieur des cartes :
+    # « Actualiser », l'action principale, mesurait encore 34 px de haut, et
+    # « Charger N de plus » 27, le plus petit élément de toute l'interface.
+    for regle, nom in ((r"\.tab, \.controls button\{([^}]*)\}", "« Actualiser » et les onglets"),
+                       (r"\.filters-trigger\{([^}]*)\}", "le bouton « Filtres »"),
+                       (r"\.search-row input\{([^}]*)\}", "le champ de recherche"),
+                       (r"button\.small\{([^}]*)\}", "« Charger N de plus »"),
+                       (r"\.info-btn\{([^}]*)\}", "le bouton d'information")):
+        bloc = re.search(regle, html).group(1)
+        mh = re.search(r"min-height:\s*(\d+)px", bloc)
+        check(mh is not None and int(mh.group(1)) >= 44,
+              "%s fait au moins 44 px de haut" % nom)
+
+    # Les quatre boutons d'entête gardent 34 px à l'œil et gagnent leurs
+    # 44 px en ::after : les agrandir vraiment poussait la rangée à 194 px,
+    # soit plus que les 172 px disponibles à côté du logo sur un écran de
+    # 320 px. L'écart doit valoir au moins le double de l'extension, sinon
+    # les zones de deux icônes voisines se chevauchent et un appui entre les
+    # deux part sur la mauvaise.
+    inset = re.search(r"\.icon-btn::after\s*\{[^}]*inset:\s*-(\d+)px", html)
+    check(inset is not None, ".icon-btn étend sa zone de clic par un pseudo-élément")
+    bloc = re.search(r"\.icon-btn\{([^}]*)\}", html).group(1)
+    cote = int(re.search(r"width:\s*(\d+)px", bloc).group(1))
+    check("position:relative" in bloc,
+          ".icon-btn ancre son pseudo-élément (position:relative)")
+    if inset:
+        marge = int(inset.group(1))
+        check(cote + 2 * marge >= 44,
+              "boutons d'entête : zone de %d px de côté (44 visé)" % (cote + 2 * marge))
+        ecart = int(re.search(r"\.header-actions\{[^}]*gap:\s*(\d+)px", html).group(1))
+        check(ecart >= 2 * marge,
+              "écart de %d px entre les boutons d'entête pour %d px d'extension "
+              "de chaque côté — pas de chevauchement" % (ecart, marge))
+
+    # Le retour à la ligne de l'entête. Sans lui, .header-actions porte
+    # flex-shrink:0, refuse de se comprimer, et le badge de mode comme le
+    # dernier bouton se font trancher par le bord de la carte à 320 px.
+    bloc = re.search(r"\.header-haut\{([^}]*)\}", html).group(1)
+    check("flex-wrap:wrap" in bloc,
+          "l'entête passe à la ligne au lieu de déborder sur écran étroit")
+    bloc = re.search(r"\.header-right\{([^}]*)\}", html).group(1)
+    check("margin-left:auto" in bloc,
+          "et le bloc de droite reste à droite une fois passé à la ligne")
+
     # Anti-patterns qui se lisent dans le balisage.
     viewport = re.search(r'<meta name="viewport"[^>]*>', html).group(0)
     check("user-scalable=no" not in viewport and "maximum-scale" not in viewport,

@@ -118,8 +118,20 @@
   .header-haut{
     display:flex; justify-content:space-between; align-items:flex-start;
     gap:10px;
+    /* Sans ce retour à la ligne, l'entête débordait déjà de la carte sur un
+       écran de 320px : .header-actions porte flex-shrink:0 et refuse donc de
+       se comprimer, si bien que le badge « BACKEND GITHUB » se faisait
+       trancher et que le dernier bouton touchait le bord. Le défaut est
+       antérieur à l'agrandissement des cibles tactiles, qui l'a seulement
+       rendu voyant en portant la rangée de 154 à 166px.
+       Sous ~370px, le bloc de droite descend maintenant sur sa propre ligne
+       plutôt que de se faire couper. */
+    flex-wrap:wrap;
   }
-  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+  /* margin-left:auto : une fois passé sur sa propre ligne (voir le
+     flex-wrap de .header-haut), le bloc repartirait sinon coller à gauche —
+     justify-content:space-between ne s'applique qu'aux lignes à deux items. */
+  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px; margin-left:auto;}
   .brand{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; letter-spacing:-0.02em;}
   .mode-indicator{
     display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace;
@@ -161,13 +173,26 @@
   .brand span{color:var(--accent);}
   .status-line{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); margin-top:6px;}
 
-  .header-actions{display:flex; gap:6px; flex-shrink:0;}
+  /* Écart 10px et non 6 : chaque bouton étend sa zone de clic de 5px de
+     chaque côté (voir .icon-btn::after). À 10px d'écart les deux zones se
+     touchent exactement — à 6px elles se chevaucheraient de 4px et un appui
+     entre deux icônes partirait sur la mauvaise. La rangée passe de 154 à
+     166px, ce qui tient encore dans les 172px disponibles à côté du logo
+     sur un écran de 320px (mesuré). */
+  .header-actions{display:flex; gap:10px; flex-shrink:0;}
   .icon-btn{
     background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
     width:34px; height:34px; border-radius:var(--r-sm); cursor:pointer;
     display:flex; align-items:center; justify-content:center; font-size:15px;
     transition:border-color var(--t-court);
+    position:relative;
   }
+  /* 34px visibles, 44px cliquables. Agrandir la boîte elle-même aurait poussé
+     la rangée à 194px, soit 22px de trop à côté du logo sur un écran de
+     320px ; l'agrandir en ::after ne déplace rien du tout. Les deux boutons
+     qui portent une pastille avaient déjà position:relative en ligne, celui
+     du CSS ne les bouge donc pas. */
+  .icon-btn::after{content:""; position:absolute; inset:-5px;}
   .settings-error-badge{
     position:absolute; top:-4px; right:-4px; width:9px; height:9px; border-radius:50%;
     background:var(--warn); border:2px solid var(--bg);
@@ -236,7 +261,9 @@
   button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);}
   button.primary:hover{filter:brightness(1.1);}
   button:disabled{opacity:0.4; cursor:default;}
-  button.small{padding:6px 10px; font-size:11px;}
+  /* min-height et non un rembourrage plus épais : le bouton « Charger 30 de
+     plus » mesurait 27px de haut, le plus petit de toute l'interface. */
+  button.small{padding:6px 10px; font-size:11px; min-height:44px;}
 
   .progress-bar{
     width:100%; height:4px; background:var(--bg-elevated); border-radius:var(--r-xs);
@@ -265,6 +292,7 @@
   .search-row input{
     width:100%; background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
     font-family:'Inter',sans-serif; font-size:16px; padding:7px 32px 7px 12px; border-radius:var(--r-sm);
+    min-height:44px;
   }
   .search-row input:focus{outline:none; border-color:var(--accent);}
   .search-clear-btn{
@@ -288,6 +316,9 @@
     padding:8px 14px; cursor:pointer; letter-spacing:0.02em;
     transition:background var(--t-court) ease, border-color var(--t-court) ease, color var(--t-court) ease;
     display:flex; align-items:center; justify-content:center; gap:6px;
+    /* 44px : le seuil WCAG 2.5.5. « Actualiser » est l'action principale de
+       l'application et mesurait 34px de haut ; les onglets, 36. */
+    min-height:44px;
   }
   .tab{white-space:nowrap; flex-shrink:0;}
   .tab:active, .controls button:active{background:var(--bg-elevated);}
@@ -531,13 +562,13 @@
 
   .filters-trigger{
     display:flex; align-items:center; justify-content:center; gap:6px; flex-shrink:0;
-    padding:8px 14px; white-space:nowrap;
+    padding:8px 14px; white-space:nowrap; min-height:44px;
   }
 
   .info-btn{
     display:block; margin:24px auto 8px; padding:8px 16px;
     background:transparent; border:1px solid var(--line); border-radius:var(--r-sm);
-    color:var(--text-dim); font-size:16px; cursor:pointer;
+    color:var(--text-dim); font-size:16px; cursor:pointer; min-height:44px;
   }
   .info-btn:active{ background:var(--bg-panel); }
 
