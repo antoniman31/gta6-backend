@@ -3063,6 +3063,109 @@ def test_structure_et_annonces():
           "et la fonction qui la compose existe")
 
 
+def test_pause_nocturne():
+    print("\n[workflow] le robot ne tourne pas la nuit, heure de Paris")
+    import re, subprocess, tempfile, os, shutil
+    brut = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+
+    # Lecture en TEXTE et non avec PyYAML : la CI n'installe que
+    # requirements.txt, qui ne le contient pas. Un `import yaml` passerait
+    # ici et ferait rougir la CI — c'est exactement ce qui a failli arriver.
+    corps = brut[brut.index("    steps:"):]
+    blocs = re.split(r"\n      - name: ", corps)[1:]
+    etapes = []
+    for b in blocs:
+        nom = b.split("\n", 1)[0].strip()
+        cond = re.search(r"^        if: (.+)$", b, re.M)
+        etapes.append((nom, cond.group(1).strip() if cond else ""))
+    parNom = dict(etapes)
+
+    check(etapes[0][0] == "Fenêtre de veille",
+          "la décision est prise AVANT tout le reste (première étape)")
+
+    # Tout ce qui produit du bruit doit sauter ; le signal de vie, non.
+    for nom in ("Récupérer le dépôt", "Installer Python", "Installer les dépendances",
+                "Récupérer et traiter les flux", "Publier le résultat",
+                "Notifier Discord", "Notifier par push"):
+        check("steps.veille.outputs.pause != 'true'" in parNom.get(nom, ""),
+              "« %s » saute pendant la pause" % nom)
+
+    check(parNom.get("Signaler que le robot est vivant") == "always()",
+          "le signal de vie part QUAND MÊME : cinq heures de silence seraient "
+          "lues par healthchecks.io comme une panne, et l'alerte sonnerait à 2h")
+
+    # Les deux notifications gardent leur garde d'origine.
+    for nom in ("Notifier Discord", "Notifier par push"):
+        check("success()" in parNom.get(nom, ""),
+              "« %s » notifie toujours seulement après une publication réussie" % nom)
+
+    bloc_veille = blocs[0]
+    check("TZ=Europe/Paris" in bloc_veille,
+          "l'heure est calculée en Europe/Paris et non à un décalage fixe "
+          "(sinon la fenêtre glisserait au changement d'heure)")
+    apres_panne = bloc_veille.split("indéterminable")[1].split("exit 0")[0] \
+        if "indéterminable" in bloc_veille else ""
+    check("pause=false" in apres_panne,
+          "un garde en panne laisse PASSER — il doit rater une pause, "
+          "jamais bloquer le robot pour toujours")
+
+    # La date de sortie est écrite à deux endroits. Elle ne doit pas diverger.
+    debut_exc = re.search(r'EXCEPTION_DEBUT: "(\d{4}-\d{2}-\d{2})"', bloc_veille).group(1)
+    fin_exc = re.search(r'EXCEPTION_FIN: "(\d{4}-\d{2}-\d{2})"', bloc_veille).group(1)
+    app = open("docs/index.html", encoding="utf-8").read()
+    sortie = re.search(r'GTA6_RELEASE = new Date\("(\d{4}-\d{2}-\d{2})', app).group(1)
+    check(debut_exc <= sortie <= fin_exc,
+          "la fenêtre d'exception (%s → %s) encadre la sortie annoncée par "
+          "l'app (%s)" % (debut_exc, fin_exc, sortie))
+
+    # Le bandeau « robot en retard » doit tolérer la pause, sinon il
+    # s'allumerait chaque nuit pour annoncer une panne qui n'existe pas.
+    seuil = int(re.search(r"const STALE_THRESHOLD_MS = (\d+) \* 60 \* 60 \* 1000", app).group(1))
+    check(seuil >= 6,
+          "le bandeau « robot en retard » tolère la pause : %dh (6 minimum — "
+          "dernier passage vers 23h, reprise à 5h)" % seuil)
+
+    # Et on EXÉCUTE le garde, à des instants choisis, avec un faux `date`. Un
+    # test qui lit le script sans le lancer ne prouve rien sur des
+    # comparaisons de chaînes en shell.
+    script_src = bloc_veille.split("        run: |\n", 1)[1]
+    script = "\n".join(l[10:] if l.startswith(" " * 10) else l
+                       for l in script_src.split("\n"))
+    tmp = tempfile.mkdtemp()
+    try:
+        chemin = os.path.join(tmp, "garde.sh")
+        open(chemin, "w", encoding="utf-8").write(script)
+        faux = os.path.join(tmp, "bin")
+        os.makedirs(faux)
+        d = os.path.join(faux, "date")
+        open(d, "w").write('#!/bin/bash\nexec /bin/date -d "$FAUX_INSTANT UTC" "$@"\n')
+        os.chmod(d, 0o755)
+
+        cas = [
+            ("2026-09-07 21:30", "false", "23h30 en été"),
+            ("2026-09-07 22:00", "true",  "minuit pile en été"),
+            ("2026-09-08 02:59", "true",  "4h59 en été"),
+            ("2026-09-08 03:00", "false", "5h00 en été"),
+            ("2026-11-14 23:30", "true",  "00h30 en HIVER — le décalage a changé"),
+            ("2026-11-15 04:00", "false", "5h00 en hiver"),
+            ("2026-11-19 02:00", "false", "nuit de la sortie : pause levée"),
+            ("2026-11-21 01:00", "true",  "lendemain de la fenêtre : pause revenue"),
+        ]
+        for instant, attendu, libelle in cas:
+            sortieFic = os.path.join(tmp, "out")
+            open(sortieFic, "w").close()
+            env = dict(os.environ,
+                       PATH=faux + os.pathsep + os.environ["PATH"],
+                       FAUX_INSTANT=instant, GITHUB_OUTPUT=sortieFic,
+                       EXCEPTION_DEBUT=debut_exc, EXCEPTION_FIN=fin_exc)
+            subprocess.run(["bash", chemin], env=env, capture_output=True)
+            obtenu = open(sortieFic, encoding="utf-8").read().strip()
+            check(obtenu == "pause=" + attendu,
+                  "%s → %s (obtenu : %s)" % (libelle, "pause=" + attendu, obtenu or "rien"))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def test_filtres_persistants():
     print("\n[app] les filtres survivent à la fermeture de l'app")
     import re
@@ -3257,14 +3360,28 @@ def test_readme_ne_cite_que_des_constantes_reelles():
                              open(fichier, encoding="utf-8").read(), re.M):
             code.setdefault(m.group(1), m.group(2).strip())
 
-    # Variables d'environnement, secrets GitHub et constantes JS : elles se
-    # citent légitimement sans exister dans un .py.
+    # L'app est un fichier unique en JavaScript ; ses constantes sont aussi
+    # citables que celles du Python. Elles étaient jusqu'ici EXEMPTÉES une par
+    # une, ce qui laissait passer une constante JS inventée aussi facilement
+    # qu'un nom au hasard. On les lit pour de vrai.
+    js = open("docs/index.html", encoding="utf-8").read()
+    for m in re.finditer(r"^\s*(?:const|let|var)\s+([A-Z][A-Z0-9_]{2,})\s*=\s*(.*)$",
+                         js, re.M):
+        # La valeur ne sert qu'aux constantes tenant sur une ligne ; celles
+        # qui ouvrent un tableau ou un objet (DEFAULT_FEEDS, DEFAULT_SETTINGS)
+        # sont enregistrées sans valeur — leur nom suffit à prouver qu'elles
+        # existent, et le README ne cite pas leur contenu.
+        valeur = m.group(2).strip()
+        code.setdefault(m.group(1),
+                        valeur[:-1].strip() if valeur.endswith(";") else None)
+
+    # Ne restent en dehors que ce qui n'est une constante de code NULLE PART :
+    # variables d'environnement et secrets GitHub.
     hors_sujet = {
         "HEALTHCHECK_URL", "DISCORD_WEBHOOK_URL", "VAPID_PRIVATE_KEY",
         "VAPID_PUBLIC_KEY", "VAPID_SUBJECT", "PUSH_SUBSCRIPTIONS",
         "NEW_ITEMS_FILE", "SOURCE_ALERTS_FILE", "PROMOTED_ITEMS_FILE",
-        "GITHUB_TOKEN", "DEFAULT_FEEDS", "DEFAULT_SETTINGS",
-        "CASSEES_NOMMEES", "RUNNER_TEMP",
+        "GITHUB_TOKEN", "RUNNER_TEMP",
     }
 
     readme = open("README.md", encoding="utf-8").read()
@@ -3281,7 +3398,7 @@ def test_readme_ne_cite_que_des_constantes_reelles():
     faux = []
     for nom, valeur in cites:
         valeur = (valeur or "").strip()
-        if not valeur or nom not in code:
+        if not valeur or nom not in code or code[nom] is None:
             continue
         if valeur.rstrip(".") != code[nom].rstrip("."):
             faux.append("%s : README dit %s, code dit %s" % (nom, valeur, code[nom]))
@@ -3291,7 +3408,9 @@ def test_readme_ne_cite_que_des_constantes_reelles():
     # Contrôle du contrôle : le test doit vraiment voir les constantes,
     # sinon il passerait tout aussi bien sur un README vide.
     check("DEAD_SOURCE_HOURS" in code and "SIMILARITY_THRESHOLD" in code,
-          "le test lit bien les constantes du code")
+          "le test lit bien les constantes du code Python")
+    check("GTA6_RELEASE" in code and "STORAGE_PREFIX" in code,
+          "et celles du JavaScript de l'app")
     check(len([n for n, _ in cites if n in code]) >= 10,
           "et il en trouve au moins dix citées dans le README")
 
@@ -3780,6 +3899,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
            test_structure_et_annonces,
+           test_pause_nocturne,
            test_filtres_persistants,
            test_icones_en_emoji,
            test_contraste_des_deux_themes,

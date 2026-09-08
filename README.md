@@ -1126,6 +1126,58 @@ Cette règle existe pour empêcher un message par *article*. Une alerte de
 source est d'une autre nature, et surtout elle ne peut pas voyager dans le
 récapitulatif, qui n'est pas envoyé quand il n'y a rien de neuf.
 
+## Pause nocturne : rien entre 0h et 5h
+
+Demandé le 08/09/2026 : les notifications réveillaient. Le robot ne récupère
+rien, ne publie rien et ne notifie rien entre **00h00 et 05h00, heure de
+Paris**.
+
+**Le garde est dans le workflow, pas dans le planificateur.** L'horloge réelle
+est cron-job.org, qui n'est pas dans ce dépôt et qu'un changement
+d'hébergeur remplacerait un jour. En plaçant la décision dans
+`update-feeds.yml`, elle s'applique à *tout* ce qui déclenche : cron-job.org,
+le `schedule` de secours, et même un déclenchement manuel distrait à 3h du
+matin. Rien à configurer ailleurs.
+
+**Le passage part quand même.** Il va jusqu'à l'étape de signal de vie et ne
+saute que la récupération, la publication et les notifications. Sans ça, cinq
+heures de silence auraient été lues par healthchecks.io comme « le robot est
+mort », et l'alerte aurait sonné à 2h du matin — exactement ce qu'on cherchait
+à éviter. La détection de panne par healthchecks n'est donc **pas dégradée
+d'une minute** : il reçoit toujours un signal chaque heure.
+
+**Le fuseau est calculé, pas figé.** `TZ=Europe/Paris` et non un décalage UTC
+en dur : la fenêtre reste 00h-05h locales des deux côtés du changement
+d'heure. Un cron UTC figé l'aurait décalée d'une heure fin octobre. Un test
+exécute le garde à des instants choisis en été **et** en hiver.
+
+**Un garde en panne laisse passer.** Si l'heure de Paris est indéterminable
+(zoneinfo absent, `date` en échec), le passage a lieu normalement. Rater une
+pause est un désagrément ; bloquer le robot pour toujours est une panne.
+
+**Exception le jour de la sortie.** La pause est levée du 18 au 20/11/2026
+inclus — la veille, le jour même et le lendemain. GTA 6 sort à minuit, et
+c'est précisément la nuit où il ne faut rien manquer. Cette date est écrite à
+deux endroits (le workflow et `GTA6_RELEASE` dans l'app) : un test vérifie que
+la fenêtre encadre bien la date annoncée par l'app, pour qu'elles ne divergent
+pas si Rockstar décale encore.
+
+**Effet de bord agréable :** rien n'étant publié la nuit, le passage de 5h
+trouve tous les articles d'un coup et envoie **une** notification
+récapitulative au lieu de cinq. Un digest matinal, gratuitement.
+
+**Ce qu'il a fallu ajuster en face :** le bandeau « robot en retard » de l'app
+était calibré à 4h. Le dernier passage de la nuit pouvant tomber vers 23h,
+l'écart atteint légitimement 6h juste avant la reprise — le bandeau se serait
+allumé chaque nuit pour annoncer une panne inexistante. Seuil porté à **7h**.
+Ce que ça coûte : une vraie panne de jour est signalée *dans l'app* après 7h
+au lieu de 4. Ce n'est pas la vraie alarme, healthchecks.io l'est, et lui n'a
+rien perdu.
+
+`DEAD_SOURCE_HOURS` n'a pas bougé : il compte en **heures** et non en
+passages, précisément pour être insensible à ce genre de changement de
+cadence.
+
 ## Surveillance : savoir quand le robot s'arrête
 
 GitHub envoie un mail quand une exécution **échoue**. Il n'envoie rien
