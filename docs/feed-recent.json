@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-09T21:07:34.660884+00:00",
+  "generated_at": "2026-09-09T22:02:01.268567+00:00",
   "attente_recap": {
-    "articles": 0,
+    "articles": 1,
     "officiels": 0,
-    "sommet": 0
+    "sommet": 1
   },
-  "duration_seconds": 48.2,
+  "duration_seconds": 45.2,
   "decode_failures": 0,
-  "total_articles": 2277,
-  "new_this_run": 0,
+  "total_articles": 2278,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -406,8 +406,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-09T16:53:03+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-09T21:16:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T18:37:44+00:00",
       "days_since_last_article": 1,
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T12:54:52+00:00",
       "days_since_last_article": 1,
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 1,
@@ -672,7 +672,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T21:58:01+00:00",
-      "days_since_last_article": 12,
+      "days_since_last_article": 13,
       "status": "ok"
     },
     {
@@ -720,16 +720,16 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T21:28:07+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 1,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 7,
@@ -925,7 +925,7 @@
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "101,99,102,101,99,100,99,100,100,100,100,100",
+    "gnews-en": "99,102,101,99,100,99,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -937,7 +937,7 @@
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,0,10,10,10,10,10,10,10,10",
+    "polygon": "10,10,0,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -949,23 +949,23 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,0,10,10,10,10,10,10,10,10",
-    "dualshockers": "10,10,10,0,10,10,10,10,10,10,10,10",
+    "gamerant": "10,10,0,10,10,10,10,10,10,10,10,10",
+    "dualshockers": "10,10,0,10,10,10,10,10,10,10,10,10",
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,10,10,10,10,0,10,10,10,10",
+    "vgc": "10,10,10,10,10,10,0,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,7,8,7,7,7",
+    "xboxwire": "7,7,7,7,7,7,7,8,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,83,83,83,83,83,82,82,82,82",
-    "arstechnica": "27,27,27,26,26,27,26,27,26,26,28,27",
+    "engadget": "82,82,83,83,83,83,83,82,82,82,82,82",
+    "arstechnica": "27,27,26,26,27,26,27,26,26,28,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"323670adead81f88e1326f3da50989a4\"",
-      "modified": "Wed, 09 Sep 2026 20:12:05 GMT"
+      "etag": "W/\"9530eaff15f8d2839a28044ddab3bfa3\"",
+      "modified": "Wed, 09 Sep 2026 21:51:42 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1ed72-5eH/MZdfkRgvB3nFVHfkm4Z2Gbs\"",
+      "etag": "W/\"1ed67-HCdaw0BDxdW0KJiirWLpxvX3OgI\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5f711ff91ec42fcc54ba064fdf677f3a\"",
-      "modified": "Wed, 09 Sep 2026 20:15:07 GMT"
+      "etag": "W/\"5b06786f274f1c2acea01f147509a812\"",
+      "modified": "Wed, 09 Sep 2026 21:51:06 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 21:07:06 GMT"
+      "modified": "Wed, 09 Sep 2026 21:58:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa1c8df-2e47\"",
-      "modified": "Wed, 09 Sep 2026 21:00:15 GMT"
+      "etag": "W/\"6aa1d6f0-2e47\"",
+      "modified": "Wed, 09 Sep 2026 22:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788980809\"",
-      "modified": "Wed, 09 Sep 2026 19:06:49 GMT"
+      "etag": "W/\"1788991283\"",
+      "modified": "Wed, 09 Sep 2026 22:01:23 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1048,12 +1048,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa1b8ad-a18\"",
-      "modified": "Wed, 09 Sep 2026 19:51:09 GMT"
+      "etag": "\"6aa1d4d2-a12\"",
+      "modified": "Wed, 09 Sep 2026 21:51:14 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Alleged GTA 6 Collector's Edition pics leak despite lack of physical disc pre-orders - notebookcheck.net",
+      "link": "https://www.notebookcheck.net/Alleged-GTA-6-Collector-s-Edition-pics-leak-despite-lack-of-physical-disc-pre-orders.1395041.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQUmZfTVk4LVMzVHJldkJ6ak1ndTl4a0E1SzBnM194b0lTNU5GSnAwRjRCd1dvcUg2aEJiaTZUWWpZWjVvb3VUczdteGlVT0VMYlpLYXlsSERxaW1hYzAyWEFKVTc1djBUczF4UlY5U3QtLVFaVzYtbWVmbHlOMVRIelBHTmkzZ2F6cXJLSmEyd1hjczFPd2M4RXNXOXczenpmZUl0U2JxNzFWZWtsMWxHX0plTDQzOXR4aUhYa2hZMmhtMlFaWldqNQ?oc=5",
+      "date": "2026-09-09T21:16:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6CollectorsBox.png",
+      "description": "Alleged GTA 6 Collector's Edition pics leak despite lack of physical disc pre-orders&nbsp;&nbsp;notebookcheck.net"
+    },
     {
       "title": "GTA 6 : tout ce que l’on sait avant la sortie de novembre 2026 - Info-lux.com",
       "link": "https://www.info-lux.com/gta-6-tout-ce-que-lon-sait-sortie-novembre-2026/rubriques/gaming/",
@@ -5000,19 +5013,6 @@
       "lang": null,
       "image": "https://www.comicbasics.com/wp-content/uploads/2026/09/lucia-GTA-netflix.webp",
       "description": "GTA 6’s Netflix Debut Just Broke the Streamer’s Weekly Viewership Record&nbsp;&nbsp;Comic Basics"
-    },
-    {
-      "title": "Rockstar Censors GTA 6 Extended Look Trailer for China",
-      "link": "https://www.ign.com/articles/rockstar-censors-gta-6-extended-look-trailer-for-china",
-      "source_link": null,
-      "date": "2026-09-04T19:48:54+00:00",
-      "source": "IGN",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://assets-prd.ignimgs.com/2026/08/27/gta-6-gameplay-blog-1787861652027.jpg",
-      "description": "Rockstar Games has published a heavily censored version of the Grand Theft Auto 6 extended look reveal for China."
     }
   ],
   "partial": true,
