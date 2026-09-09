@@ -1026,6 +1026,68 @@ normal/compact) : 0 cible hors de son seuil, 0 chevauchement, 0 débordement
 horizontal, 0 erreur JavaScript. Aucune couleur n'a été touchée, le contraste
 est donc inchangé.
 
+### Audit de conformité du 10/09/2026 — et deux fausses alertes
+
+Vérification complète de l'app contre ses références, sans toucher une ligne
+de code. **Rien à corriger.**
+
+**L'échelle Material 3, valeur par valeur.** `m3.material.io` est inaccessible
+depuis l'environnement de travail, mais les fichiers de jetons de Google sont
+publics : `md-sys-shape` et `md-sys-motion`. Les 4 rayons, les 2 durées et les
+2 courbes correspondent exactement, `cubic-bezier(0.2, 0, 0, 1)` compris.
+
+Et surtout, l'échelle est **réellement utilisée** : les 12 transitions du
+fichier passent toutes par `var(--t-*)` et `var(--courbe*)`, aucune valeur en
+dur. Les seules exceptions sont justifiées — `50%` pour des cercles, `0` pour
+deux éléments qui débordent volontairement, `ease-in-out` pour les pulsations
+infinies.
+
+**Une faiblesse relevée au passage, et non corrigée.** Les deux *courbes* sont
+verrouillées par un test (`--courbe` et `--courbe-entree` sont comparées aux
+valeurs Material 3, et un autre test interdit qu'une transition retombe sur
+une courbe par défaut du navigateur). Les quatre *rayons* et les deux *durées*
+ne le sont pas : leur conformité a été vérifiée à la main le 10/09, rien
+n'empêche une dérive ensuite. Le test manquant serait de comparer
+`--r-xs/--r-sm/--r-md/--r-full` à 4/8/12/9999 px et `--t-court/--t-moyen` à
+150/250 ms, comme cela se fait déjà pour les courbes.
+
+**Vingt configurations** (320/360/390/412/768 px × clair/sombre ×
+normal/compact) : 0 cible sous son seuil, 0 chevauchement, 0 débordement
+horizontal, 0 erreur JavaScript, 0 saut de niveau de titre, zoom non bloqué,
+focus visible partout. Dialogues **5/5**. En mouvement réduit : 0 animation et
+**0 transition produisant un déplacement** — les 9 restantes sont des fondus
+de couleur, sans effet vestibulaire.
+
+#### Les deux défauts trouvés étaient dans les instruments, pas dans l'app
+
+C'est la partie qui mérite d'être retenue.
+
+**« 31 échecs de contraste en thème clair ».** Faux. Le détecteur remontait le
+DOM jusqu'à un ancêtre opaque et ignorait le fond semi-transparent de
+l'élément lui-même. Il a produit **3,39 puis 4,38** — deux chiffres crédibles
+et faux, obtenus par deux versions du même script. Tranché en lisant les
+**pixels réellement affichés** : **4,98:1** en clair, **7,89:1** en sombre, les
+deux au-dessus du seuil de 4,5. Le fond composé mesuré (`rgb(220,234,225)`)
+correspond au calcul à la main, ce qui confirme la mesure.
+
+**« Défilement perdu à l'ouverture des Paramètres ».** Faux aussi. Playwright
+fait défiler la page pour amener sa cible à l'écran avant de cliquer : le
+bouton étant dans l'entête, la page remontait en haut *avant* que le gel de
+fond ne s'active. Prouvé en lisant `body.style.top` pendant l'ouverture —
+`0px` avec un clic Playwright, `-700px` avec un clic déclenché en JavaScript,
+et dans ce second cas le défilement est bien restauré à 700.
+
+Le seul vrai défaut trouvé était dans l'inventaire : 📋 avait été compté comme
+un dialogue alors que c'est un onglet (`setTab('logs')`).
+
+**La leçon, la troisième de cette série :** après l'analyseur d'`inset` qui
+perdait les zéros et le script d'audit qui supposait l'inset symétrique, c'est
+la troisième fois qu'un outil de mesure produit un chiffre faux et plausible.
+Un instrument qui se trompe coûte plus cher qu'une absence de mesure, parce
+qu'on lui fait confiance. La parade est toujours la même : quand deux méthodes
+divergent, descendre d'un cran vers ce qui est le plus proche du réel — ici,
+les pixels.
+
 ### Les filtres survivent à la fermeture
 
 L'onglet, la langue et l'état (Tout / Non lus) sont retenus d'une ouverture à
@@ -1427,6 +1489,38 @@ bascule** :
   source « tarie » (elle répond, mais l'actualité est calme) non plus.
 - Seules les sources en difficulté sont conservées dans `sources_silence` :
   inutile d'écrire 35 zéros dans `feed.json` à chaque passage.
+
+### Éprouvé en conditions réelles, soirée du 09/09/2026
+
+Quatre sources sont tombées le même soir, à une heure d'intervalle. Aucune
+alerte n'est partie, et c'était le bon comportement.
+
+| heure (Paris) | événement |
+|---|---|
+| 16h01 | **VGC** répond `403`. Chronomètre lancé. |
+| 17h02 | VGC revient (`200`, 10 entrées). Au **même passage**, `Polygon`, `Game Rant` et `DualShockers` échouent. |
+| 18h01 | les trois reviennent. |
+| 18h51 | chronomètres effacés après 2 passages réussis d'affilée. |
+
+L'erreur des trois, lue dans le journal, n'était pas un refus mais une
+**connexion refermée sans réponse** — signature d'un filtre anti-robot, pas
+d'une panne. Le robot avait déjà réessayé chacune sans requête conditionnelle,
+et les deux tentatives ont échoué ; les 65 s du passage (contre 40 à 48
+d'habitude) venaient de ces secondes tentatives, pas d'un réseau lent.
+
+Trois domaines sans rapport — `polygon.com`, `gamerant.com`,
+`dualshockers.com` — tombés à la même seconde, sur onze passages parfaits
+suivis d'un seul à zéro : `10,10,10,10,10,10,10,10,10,10,10,0`.
+
+**La tentation était de changer les URL.** C'est exactement ce qu'il ne fallait
+pas faire : quatre sources qui fonctionnaient auraient été remplacées par des
+inconnues, et le vrai problème aurait disparu tout seul entre-temps. La règle
+« ne jamais deviner une URL de remplacement, elle doit venir d'une sonde ou
+d'une ligne *redirigé vers* » a tenu.
+
+Le seuil de 24 h a fait son travail : il a absorbé deux incidents d'un
+passage chacun sans réveiller personne. C'est précisément ce pour quoi il vaut
+24 h et non 6 passages.
 
 **Exception assumée à la règle « un seul message Discord par passage ».**
 Cette règle existe pour empêcher un message par *article*. Une alerte de
