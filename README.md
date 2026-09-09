@@ -1435,9 +1435,60 @@ récapitulatif, qui n'est pas envoyé quand il n'y a rien de neuf.
 
 ## Pause nocturne : rien entre 0h et 5h
 
-Demandé le 08/09/2026 : les notifications réveillaient. Le robot ne récupère
-rien, ne publie rien et ne notifie rien entre **00h00 et 05h00, heure de
-Paris**.
+Demandé le 08/09/2026 : les notifications réveillaient. Entre **00h00 et
+05h00, heure de Paris**, le robot ne **notifie** plus — mais il continue de
+récupérer et de publier, si bien que le fil est à jour au réveil.
+
+> Cette phrase disait au départ « ne récupère rien, ne publie rien et ne
+> notifie rien », ce qui décrivait le dessein initial et contredisait la suite
+> de cette même section. L'exigence « les annonces de Rockstar sont
+> prioritaires » l'a fait changer avant même la première mise en service : on
+> ne peut pas savoir qu'une annonce est tombée sans aller la chercher.
+
+### Éprouvé en conditions réelles, nuit du 08 au 09/09/2026
+
+La première nuit sous le nouveau régime, vérifiée le lendemain matin par deux
+chemins indépendants.
+
+**Ce que disent les journaux.** Passage de 01h01, silence actif :
+
+```
+SEULEMENT_OFFICIELS: 1
+Pause nocturne — 2 article(s) mis de côté, 4 en attente du récapitulatif du matin.
+[discord] pause nocturne — 0 annonce(s) officielle(s) envoyée(s), le reste attend le matin.
+[push]    pause nocturne et aucune annonce officielle — rien n'est envoyé.
+```
+
+Passage de 05h01, silence levé :
+
+```
+SEULEMENT_OFFICIELS: 0
+[discord] envoi du récapitulatif (7 nouvel(le)(s) article(s))...
+[push]    envoi à 1 appareil(s) : 🎮 7 nouveaux articles GTA 6
+[push]    1/1 notification(s) envoyée(s)
+```
+
+**Ce que dit le dépôt, sans passer par les journaux.** En comparant les liens
+présents dans `docs/feed.json` entre le dernier commit d'avant minuit et celui
+de 05h01 : **7 articles ajoutés**. Le récapitulatif en a annoncé **7**.
+
+Cette égalité est la vraie preuve, et elle est plus forte que la lecture d'un
+journal : elle couvre les **cinq** passages nocturnes, pas seulement celui
+qu'on a ouvert. Si l'un d'eux avait notifié, il aurait remis l'ardoise à zéro
+et 05h01 aurait annoncé moins de 7.
+
+| | résultat |
+|---|---|
+| passages pendant la pause | **6** (00h01, 01h01, 01h36, 02h01, 03h01, 04h01) |
+| échecs | **aucun** |
+| notifications envoyées entre 00h et 04h | **0** |
+| articles publiés dans l'app pendant la nuit | **7**, lisibles dès le réveil |
+| récapitulatif à 05h01 | **7 annoncés**, sur les deux canaux |
+| signal de vie à healthchecks.io | envoyé à **chaque** passage |
+
+**Ce que cette nuit n'a PAS testé.** Aucun article officiel de Rockstar n'est
+tombé. L'alerte qui doit percer le silence n'a donc pas eu l'occasion de se
+déclencher en vrai : elle reste couverte par les tests, pas par l'usage.
 
 **Le garde est dans le workflow, pas dans le planificateur.** L'horloge réelle
 est cron-job.org, qui n'est pas dans ce dépôt et qu'un changement
@@ -1598,7 +1649,16 @@ elles se recouvriraient. Le test verrouille l'inégalité `écart > 2 × extensi
 plutôt que les deux valeurs séparément.
 
 Vérifié à 320, 360 et 390 px, en mode normal **et** dense : **0 cible sous
-44 px, 0 chevauchement**, et le bouton visible mesure toujours 39 px.
+44 px, 0 chevauchement**, et le bouton visible mesurait toujours 39 px.
+
+> **Périmé depuis le passage au bandeau** (voir *La vignette : quatre essais
+> avant le bandeau*). La vignette ne partage plus la largeur avec la rangée de
+> boutons en mode normal, donc le cas des 39 px n'existe plus : le plus petit
+> bouton y mesure **58 px à 320 px** et 75 px à 390 px. L'extension latérale de
+> 3 px reste en place mais n'y est plus déterminante. Elle l'est toujours en
+> mode **compact**, où la vignette est restée à côté du texte : le bouton y
+> tombe à 40 px, et 40 + 2×2 = 44. Le récit ci-dessus est conservé pour la
+> leçon qu'il porte, pas pour ses chiffres.
 
 La leçon : une mesure peut être juste et la correction quand même mauvaise.
 « 36 cibles sous 44 px » était vrai ; ce que ce chiffre ne disait pas, c'est
