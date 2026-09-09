@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-09T13:01:53.889330+00:00",
+  "generated_at": "2026-09-09T14:01:56.231505+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 43.1,
+  "duration_seconds": 47.7,
   "decode_failures": 0,
-  "total_articles": 2257,
-  "new_this_run": 4,
+  "total_articles": 2260,
+  "new_this_run": 3,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,19 +394,19 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-09T12:30:32+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-09T13:34:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-09T12:00:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 0,
@@ -574,8 +574,8 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T14:35:22+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-09T13:53:34+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -642,11 +642,11 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-09T12:53:53+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -751,13 +751,13 @@
       "id": "vgc",
       "name": "VGC",
       "entries_fetched": 0,
-      "http_status": null,
+      "http_status": 403,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 7,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "xboxygen",
@@ -826,7 +826,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-09T12:15:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -916,16 +916,22 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "vgc": {
+      "depuis": "2026-09-09T14:01:56.230711+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,102,102,100,100,100,100,100,100,101,99",
+    "gnews-en": "102,102,102,100,100,100,100,100,100,101,99,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +939,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -954,18 +960,18 @@
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
+    "vgc": "10,10,10,10,10,10,10,10,10,10,10,0",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,7,7,8,8,8,8,8,7,8,7,7",
+    "xboxwire": "7,7,8,8,8,8,8,7,8,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,81,81,82,82,82,82",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,26,27,27",
+    "engadget": "81,81,81,81,81,81,81,82,82,82,82,82",
+    "arstechnica": "27,27,27,27,27,27,27,27,26,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,13 +984,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"d9b73353d35caccedef596dcae821a3e\"",
-      "modified": "Wed, 09 Sep 2026 12:45:39 GMT"
+      "etag": "W/\"26ad64f299206e1ead1ea195616647e1\"",
+      "modified": "Wed, 09 Sep 2026 14:00:00 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 11:40:44 GMT"
+      "modified": "Wed, 09 Sep 2026 13:47:25 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,28 +1004,28 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2ba89-Q4tZjUonzBzecwjMy1WzH2HKRBY\"",
+      "etag": "W/\"28358-4lHs0o1c8cIP9JSbj3q/DBewQ9Q\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"fc90adaa4c8082513e8c604d43430b4f\"",
-      "modified": "Wed, 09 Sep 2026 12:48:13 GMT"
+      "etag": "W/\"6fc08ba2de5e04a5e43a9138ece092a3\"",
+      "modified": "Wed, 09 Sep 2026 14:00:06 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 12:30:00 GMT"
+      "modified": "Wed, 09 Sep 2026 13:10:37 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 13:00:00 GMT"
+      "modified": "Wed, 09 Sep 2026 13:29:31 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 12:58:49 GMT"
+      "modified": "Wed, 09 Sep 2026 14:01:29 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,32 +1034,53 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa15860-30d8\"",
-      "modified": "Wed, 09 Sep 2026 13:00:16 GMT"
+      "etag": "W/\"6aa16672-30d8\"",
+      "modified": "Wed, 09 Sep 2026 14:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"b09a6272b15c47da2aa3581ae247791c\"",
-      "modified": "Wed, 09 Sep 2026 11:00:39 GMT"
+      "etag": "W/\"87b334ae5b256e1a0676478c4f441f02\"",
+      "modified": "Wed, 09 Sep 2026 13:59:46 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788957708\"",
-      "modified": "Wed, 09 Sep 2026 12:41:48 GMT"
+      "etag": "W/\"1788961842\"",
+      "modified": "Wed, 09 Sep 2026 13:50:42 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"3cf6ce62d79bb2694f38bc5fadbccf8f\"",
-      "modified": "Wed, 09 Sep 2026 13:00:55 GMT"
-    },
-    "vgc": {
-      "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa14832-ae8\"",
-      "modified": "Wed, 09 Sep 2026 11:51:14 GMT"
+      "etag": "W/\"ed8dad056f9652573852cfb9e4db492e\"",
+      "modified": "Wed, 09 Sep 2026 13:46:01 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 DualSense pre-orders drop soon, here's how to secure your Vice City controller",
+      "link": "https://www.gamesradar.com/news/live/gta-6-dualsense-pre-orders-where-to-buy-live/",
+      "source_link": null,
+      "date": "2026-09-09T13:53:34+00:00",
+      "source": "GamesRadar+",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/FdjHaMacQDnQZknE3MXRea-1280-80.jpg",
+      "description": "GTA 6 DualSense pre-orders will drop at 10am local time on September 10, here's how to secure your controller."
+    },
+    {
+      "title": "Nintendo frappe fort avec le remake de \"Zelda : Ocarina of Time\", attendu juste avant \"GTA VI\" - Fun Radio",
+      "link": "https://www.funradio.fr/actu/gaming-et-tech/nintendo-frappe-fort-avec-le-remake-de-zelda-ocarina-of-time-attendu-juste-avant-gta-vi-7900670664",
+      "source_link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNLWIyYncxay1KbFBlRi1Ob2JwX09uWU1CaFZzV2kyb1J0bVowVmZfTDFNbUhPd2VfVU45TElJNEdCZ2c2am5Sb0V0REJQR29wbzlvaUJYNWk2a3ZFc2Z5QzJoUkt5STVicUlWMHU4SERzd3djei13dk5aVW9ieU1HdFN0SVFsRXVkNGFTMWN0aDRFa3l0RlN6MGZIdE1JZjduaE5LTVFUT3piVVhlNUdmWFFNTW9sS1pRc2xnTWFTamdqTkcxNEo3QkhNSGVqQXptbFlqUFVBUGJTdw?oc=5",
+      "date": "2026-09-09T13:34:18+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://images.rtl.fr/~c/2000v2000/funradio/www/1865967-the-legend-of-zelda-ocarina-of-time-sort-le-5-novembre-sur-nintendo-switch-2.jpg",
+      "description": "Nintendo frappe fort avec le remake de \"Zelda : Ocarina of Time\", attendu juste avant \"GTA VI\"&nbsp;&nbsp;Fun Radio"
+    },
     {
       "title": "GTA 6 va juger votre façon d’être criminel, avec un état extrême irréversible",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-va-juger-votre-facon-detre-criminel-avec-un-etat-extreme-irreversible-20260909",
@@ -1137,6 +1164,19 @@
       "lang": "fr",
       "image": "https://static1.millenium.org/articles/4/43/07/74/@/1890600-ambrosia-05-article_cover_bd-1.jpg",
       "description": "GTA 6 : Une date de sortie sur PC plus rapide que prévue ?&nbsp;&nbsp;MGG (Millenium)"
+    },
+    {
+      "title": "Grand Theft Auto VI: can playing a video game count as cheating on your partner? - The Guardian",
+      "link": "https://www.theguardian.com/games/2026/sep/09/grand-theft-auto-vi-can-playing-a-video-game-count-as-cheating-on-your-partner",
+      "source_link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQcGYzaHZackVWTHBob2Zya0oxWlhnNEh1TEZPMThRNVNZWWMzSlpjXzZUNXp4Z2dMY0hrNzFzUnZ2TVZDQ2pHV29yS0xZMFdfSnU3MHA0eFp6Zl9FRERQY2VFTVRUelFCS0U0U3BRd2VTWGlBWXRPT0xmRXpZeG9Ua0Jfc2hnTjMtcmtOX3Mta0NoN2V6UXBCQnlTRm9HSnJUdVQxRHhJRU1KcklyZnU1cV96Y05PSEViY3lpTU91bDRqQQ?oc=5",
+      "date": "2026-09-09T09:33:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://i.guim.co.uk/img/media/906af8e9791a544c887b9f593619412e48ebd054/484_0_2700_2160/master/2700.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&precrop=40:21,offset-x50,offset-y0&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctb3BpbmlvbnMucG5n&enable=upscale&s=b2b23b2011cc829a62810b9ca14d81ef",
+      "description": "Grand Theft Auto VI: can playing a video game count as cheating on your partner?&nbsp;&nbsp;The Guardian"
     },
     {
       "title": "GTA 6 intègre des policiers hors de forme qui n’arriveront pas à vous attraper - Goclecd.fr",
