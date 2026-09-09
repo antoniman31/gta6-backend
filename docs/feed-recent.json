@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-09T07:01:44.353990+00:00",
+  "generated_at": "2026-09-09T08:01:40.686195+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 45.9,
+  "duration_seconds": 41.9,
   "decode_failures": 0,
-  "total_articles": 2243,
-  "new_this_run": 0,
+  "total_articles": 2245,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,8 +394,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-09T05:42:34+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-09T07:31:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 0,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 6,
@@ -768,7 +768,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T07:23:22+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -802,9 +802,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-02T15:29:09+00:00",
-      "days_since_last_article": 6,
+      "new_this_run": 1,
+      "last_article": "2026-09-08T12:02:32+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -916,27 +916,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-09T03:01:44.560428+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-09T02:01:50.501911+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,15",
+    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,102,102,102,102,102,102,102,102,102,100",
+    "gnews-en": "102,102,102,102,102,102,102,102,102,102,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,15",
+    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -968,14 +957,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "8,8,8,8,8,7,7,8,7,7,8,8",
+    "xboxwire": "8,8,8,8,7,7,8,7,7,8,8,8",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "80,82,82,82,82,82,81,81,81,81,81,81",
+    "engadget": "82,82,82,82,82,81,81,81,81,81,81,81",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -989,13 +978,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"8e61b280187d631e8d5632c81f5360fa\"",
-      "modified": "Wed, 09 Sep 2026 07:00:34 GMT"
+      "etag": "W/\"c7e7b1d15536fa29d7c8a5a7cf2bcbe7\"",
+      "modified": "Wed, 09 Sep 2026 07:35:18 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 08 Sep 2026 18:19:37 GMT"
+      "modified": "Wed, 09 Sep 2026 07:55:28 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1009,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2c98e-dnggYcV6ZtPP3XbWeuIuch4jeqw\"",
+      "etag": "W/\"2c9ee-4D5aDPJ5Hay3BxKRPvkZiPrGApE\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"754f765a95762913c7ecf8d212d8dba6\"",
-      "modified": "Wed, 09 Sep 2026 06:05:34 GMT"
+      "etag": "W/\"566aa059e09bb246da477e3ef3437269\"",
+      "modified": "Wed, 09 Sep 2026 07:48:38 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1030,17 +1019,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 06:59:29 GMT"
+      "modified": "Wed, 09 Sep 2026 07:57:28 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"76b4e4df286d5cb217c9d8233a8e6898\"",
-      "modified": "Wed, 09 Sep 2026 06:01:06 GMT"
+      "etag": "\"6610e65ba5c4f2166a52c24af3f155d2\"",
+      "modified": "Wed, 09 Sep 2026 07:52:05 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa10400-31e8\"",
-      "modified": "Wed, 09 Sep 2026 07:00:16 GMT"
+      "etag": "W/\"6aa11210-3289\"",
+      "modified": "Wed, 09 Sep 2026 08:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1059,12 +1048,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa0f3cd-add\"",
-      "modified": "Wed, 09 Sep 2026 05:51:09 GMT"
+      "etag": "\"6aa10ff1-adb\"",
+      "modified": "Wed, 09 Sep 2026 07:51:13 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "French Days - Un pack GTA VI PS5 + casque JBL Quantum 100P à 79.99 € - Les Numériques",
+      "link": "https://www.lesnumeriques.com/jeux-video/french-days-un-pack-gta-vi-ps5-casque-jbl-quantum-100p-a-79-99-n261572.html",
+      "source_link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOZngySzdKbXM2RjlaVEIwV3ZMcFFOY3ZPcEotdHB0VTdWWkRWRmtMVEo0SkRUeXlwdGtNLVJ5MHc5TXlFc3pRaWtVM0dMZEZvZ3B4aTZRSXJrVURMdW5KUEs4YzVaeVNqb1p0TnpiU2pBTXdJcWtTMFlVb2ZXbGZ5TkM4VjF1WWRmNmZ6aFZRNF9wWXRQUFIxY1ZZZTB1bmxMdXV4TGtOOVVCWmFXT1BrQ2ZEYWhTV0k?oc=5",
+      "date": "2026-09-09T07:31:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn.lesnumeriques.com/optim/news/26/261572/2dbc631a-french-days-un-pack-gta-vi-ps5-casque-jbl-quantum-100p-a-79-99__1200_678__451-274-2100-1139.jpg",
+      "description": "French Days - Un pack GTA VI PS5 + casque JBL Quantum 100P à 79.99 €&nbsp;&nbsp;Les Numériques"
+    },
     {
       "title": "« Résistera à l’épreuve du temps » Malgré ses 10 ans de développement, GTA 6 restera un jeu d'actualité, promet Rockstar - Gameblog",
       "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-satire-ere-du-temps-declaration-rob-nelson-rockstar-722471",
@@ -1765,6 +1767,19 @@
       "lang": null,
       "image": "https://files.vgtimes.com/posts/2026-09/rockstar-feared-red-dead-redemption-2-might-feel-slow-after-gta-v-166854.webp",
       "description": "Rob Nelson, co-lead of Rockstar North, said Rockstar Games was uneasy that Red Dead Redemption 2 could feel slow next to GTA V, since the studio was moving from three playable leads to a single protagonist. In a recent interview, he said the team expected some players to question that shift"
+    },
+    {
+      "title": "GTA VI launch times revealed, here's how to play it early - TrueAchievements",
+      "link": "https://www.trueachievements.com/news/gta-vi-launch-times",
+      "source_link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE13NDJqaHU3QnFTZlpjU1dlWGV5bVpuenpGOFg1MzByeC1TbHE0ODYwTm9qM1VEc1kxZjFpTVlMcjk3bFlCVE1kOEZ0bTlDa0pobW1ENGlkeWdnNnhCWEFVX1duSjFwVXVD?oc=5",
+      "date": "2026-09-08T12:02:32+00:00",
+      "source": "TrueAchievements",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA VI launch times revealed, here's how to play it early&nbsp;&nbsp;TrueAchievements"
     },
     {
       "title": "GTA 6 sur PC : la pénurie de PS5 et Xbox pourrait avancer sa sortie - BuzzArena",
@@ -5004,32 +5019,6 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/jason_and_lucia_09.jpg?w=1600&h=900&fit=crop",
       "description": "Miami-Dade County Sheriff Rosie Cordero-Stutz releases a new statement ahead of Miami's fictionalized appearance as Vice City in GTA 6."
-    },
-    {
-      "title": "Être fauché dans GTA 6 vous empêchera littéralement de jouer l'histoire principale - gamewave.fr",
-      "link": "https://gamewave.fr/gta-6/etre-fauche-dans-gta-6-vous-empechera-litteralement-de-jouer-l-histoire-principale/",
-      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOMHY3aGhHcHlsVUtpNEtuMXNabEpha0FsYklqVE9xNy1DUFp3cko3Qks1M1h5ZDBvN1JoTExGbS1KMk9Nb0F1eHR0Vm8wekdhZTY3dlhHaTQzeGNWaV9tVVpVUEx0Nk9SVnk0QWZaN2hDdWZFbW1WMXpUVUhldGo1VUlNNFVVQjJ2dXJIaUJQNk1HUWhsMWtjbHhVczVuVTF3QWRUOUF1LTdZQUZUdVE?oc=5",
-      "date": "2026-09-04T12:30:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://gamewave.fr/static/images/news/headers/12f7a-argent-blocage-histoire-gta6.jpg",
-      "description": "Être fauché dans GTA 6 vous empêchera littéralement de jouer l'histoire principale&nbsp;&nbsp;gamewave.fr"
-    },
-    {
-      "title": "GTA 6 Extended Look Causes Song Plays Up 130,000% Spotify Reveals",
-      "link": "https://rockstarintel.com/gta-6-extended-look-causes-song-plays-up-130000-spotify-reveals/",
-      "source_link": null,
-      "date": "2026-09-04T12:24:59+00:00",
-      "source": "RockstarINTEL",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://rockstarintel.com/wp-content/uploads/2026/09/Lucia_Caminos_09-copy.webp",
-      "description": "Songs heard in the GTA 6 Extended Look have seen massive growth across streaming platforms. As expected, Rockstar has opened the door for many songs found in the game to millions of new fans. Spotify, Billboard and Shazam have each revealed some extraordinary stats involving many pieces of music heard in last week&#8217;s gameplay reveal. [...]\nThe post GTA 6 Extended Look Causes Song Plays Up 130,000% Spotify Reveals appeared first on RockstarINTEL."
     }
   ],
   "partial": true,
