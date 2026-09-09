@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-09T15:02:20.634820+00:00",
+  "generated_at": "2026-09-09T16:01:46.451297+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 65.4,
+  "duration_seconds": 40.8,
   "decode_failures": 0,
-  "total_articles": 2264,
-  "new_this_run": 4,
+  "total_articles": 2266,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-09T13:34:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,12 +402,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-09T14:58:46+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-09T15:01:42+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -486,10 +486,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-06T13:00:05+00:00",
       "days_since_last_article": 3,
@@ -538,22 +538,22 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T16:08:19+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-09T15:45:34+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "polygon",
       "name": "Polygon",
-      "entries_fetched": 0,
-      "http_status": null,
-      "redirect": null,
+      "entries_fetched": 10,
+      "http_status": 301,
+      "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T04:22:14+00:00",
       "days_since_last_article": 0,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "kotaku",
@@ -574,7 +574,7 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-09T13:58:38+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -600,7 +600,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T15:06:12+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -642,10 +642,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T12:53:53+00:00",
       "days_since_last_article": 0,
@@ -690,26 +690,26 @@
     {
       "id": "gamerant",
       "name": "Game Rant",
-      "entries_fetched": 0,
-      "http_status": null,
-      "redirect": null,
+      "entries_fetched": 10,
+      "http_status": 301,
+      "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T12:00:12+00:00",
       "days_since_last_article": 0,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "dualshockers",
       "name": "DualShockers",
-      "entries_fetched": 0,
-      "http_status": null,
-      "redirect": null,
+      "entries_fetched": 10,
+      "http_status": 301,
+      "redirect": "https://www.dualshockers.com/feed/",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:31:02+00:00",
       "days_since_last_article": 1,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "gta6times",
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 7,
@@ -919,21 +919,16 @@
   "sources_silence": {
     "polygon": {
       "depuis": "2026-09-09T15:02:20.634015+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "gamerant": {
       "depuis": "2026-09-09T15:02:20.634015+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "dualshockers": {
       "depuis": "2026-09-09T15:02:20.634015+00:00",
-      "succes": 0,
-      "alertee": false
-    },
-    "vgc": {
-      "depuis": "2026-09-09T14:01:56.230711+00:00",
       "succes": 1,
       "alertee": false
     }
@@ -944,9 +939,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,100,100,100,100,100,100,101,99,102,101",
+    "gnews-en": "102,100,100,100,100,100,100,101,99,102,101,99",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -954,11 +949,11 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,10,10,10,0",
+    "polygon": "10,10,10,10,10,10,10,10,10,10,0,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -970,23 +965,23 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,10,10,10,0",
-    "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,0",
+    "gamerant": "10,10,10,10,10,10,10,10,10,10,0,10",
+    "dualshockers": "10,10,10,10,10,10,10,10,10,10,0,10",
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,10,10,10,10,10,10,10,0,10",
+    "vgc": "10,10,10,10,10,10,10,10,10,0,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,8,8,8,8,8,7,8,7,7,7,7",
+    "xboxwire": "8,8,8,8,8,7,8,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,81,82,82,82,82,82,83",
-    "arstechnica": "27,27,27,27,27,27,27,26,27,27,27,26",
+    "engadget": "81,81,81,81,81,82,82,82,82,82,83,83",
+    "arstechnica": "27,27,27,27,27,27,26,27,27,27,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -999,13 +994,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"20282ecab27192e36dd68cca150212d1\"",
-      "modified": "Wed, 09 Sep 2026 15:01:07 GMT"
+      "etag": "W/\"57022a7dc8df5b19db749dc00a316ef8\"",
+      "modified": "Wed, 09 Sep 2026 15:48:31 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 14:49:26 GMT"
+      "modified": "Wed, 09 Sep 2026 15:50:41 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1019,62 +1014,88 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1d58b-AV3PVozgAOXiTF9QOfwIPtfeSx0\"",
+      "etag": "W/\"21286-o+PqnH2/iNOCZsr8ccXtPAeOxvA\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"36b6388e20f3729ac37a924629760a3f\"",
-      "modified": "Wed, 09 Sep 2026 15:00:30 GMT"
+      "etag": "W/\"4302c6eb3e1dbff0f3429a40c90689bb\"",
+      "modified": "Wed, 09 Sep 2026 16:00:11 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 14:55:32 GMT"
+      "modified": "Wed, 09 Sep 2026 15:55:16 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 15:00:00 GMT"
+      "modified": "Wed, 09 Sep 2026 15:52:22 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 15:01:35 GMT"
+      "modified": "Wed, 09 Sep 2026 16:01:22 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"818093456493f5b1ac57e023abd6700d\"",
-      "modified": "Wed, 09 Sep 2026 12:53:53 GMT"
+      "etag": "\"c057096e16d3b97267b08c2bfa87d247\"",
+      "modified": "Wed, 09 Sep 2026 15:50:16 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa1747f-2ecb\"",
-      "modified": "Wed, 09 Sep 2026 15:00:15 GMT"
+      "etag": "W/\"6aa18290-2e3d\"",
+      "modified": "Wed, 09 Sep 2026 16:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"87b334ae5b256e1a0676478c4f441f02\"",
-      "modified": "Wed, 09 Sep 2026 13:59:46 GMT"
+      "etag": "W/\"8075b781704a1b9fb7564097712a47ce\"",
+      "modified": "Wed, 09 Sep 2026 15:18:40 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788966089\"",
-      "modified": "Wed, 09 Sep 2026 15:01:29 GMT"
+      "etag": "W/\"1788967851\"",
+      "modified": "Wed, 09 Sep 2026 15:30:51 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"ed8dad056f9652573852cfb9e4db492e\"",
-      "modified": "Wed, 09 Sep 2026 13:46:01 GMT"
+      "etag": "W/\"e19e7bc4303b1bd04d25e1891e329105\"",
+      "modified": "Wed, 09 Sep 2026 15:43:46 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa1644e-b31\"",
-      "modified": "Wed, 09 Sep 2026 13:51:10 GMT"
+      "etag": "\"6aa18073-a86\"",
+      "modified": "Wed, 09 Sep 2026 15:51:15 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "The Duskbloods Was A No-Show At The September Nintendo Direct And Now I’m Worried",
+      "link": "https://www.gamespot.com/articles/the-duskbloods-was-a-no-show-at-the-september-nintendo-direct-and-now-im-worried/",
+      "source_link": null,
+      "date": "2026-09-09T15:45:34+00:00",
+      "source": "GameSpot",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/The-Duskbloods-MIA-At-Nintendo-Direct.jpg?w=300",
+      "description": "The Duskbloods, From Software's new game and one of the Switch 2's biggest exclusives, was missing-in-action during the September Nintendo Direct.\n\n\n\nThat normally wouldn't be too shocking, except for the fact The Duskbloods is still slated to release this year. With less than four months to go until the end of the year, the window for The Duskbloods is closing.\n\n\n\nOne might have assumed the next game from the creators of Elden Ring would receive a release date as part of the presentation, as we"
+    },
+    {
+      "title": "GTA 6 Release Date, Platforms, Price And New Features: Everything You Need To Know - Brut",
+      "link": "https://www.brut.media/in/articles/culture-lifestyle/gaming/gta-6-release-date-platforms-price-and-new-features-everything-you-need-to-know",
+      "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxOUWY2WnREdnVsVi1tQndMRWpsMHY2eDVDTkMxVWlveENpbHpURlRFZWNhaEtBUVJmRGpQR3o3Z3hycDlOWmtBUzVHYlNzUVhCVTV0b3h1YzA4ZU5ZdFdic1Z6bFFGMEhoQXVkT1dYNzJzNzZ0NEZnTVJxa09sa2RkZkR4YmF3YWV1d1o0Z290cV80dW40S1A1Z19SNFpwUVhZNDdNRXBLaGwwTWxQcUg3aDRUUGVEYlNPcG5SbG8wUkJPTy16a3RPMWVXMVE5cGRHN19Ta3RB?oc=5",
+      "date": "2026-09-09T15:01:42+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.prod.website-files.com/6638f8a6eb6d568220f98b00/6aa17382805ca461f472d245_6aa173347e6b9738499b055b_WEB_THUMBNAIL-GTA%25206%2520Release%2520All%2520You%2520Need%2520To%2520Know.jpeg",
+      "description": "GTA 6 Release Date, Platforms, Price And New Features: Everything You Need To Know&nbsp;&nbsp;Brut"
+    },
     {
       "title": "GTA 6 Was Not \"Fully Formed\" When Trailer 1 Came Out In 2023 - GameSpot",
       "link": "https://www.gamespot.com/articles/gta-6-was-not-fully-formed-when-trailer-1-came-out-in-2023/",
@@ -5008,32 +5029,6 @@
       "lang": null,
       "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/GTA-6-PC-Release-Could-Come-Sooner-Than-Expected-According-to-Report.jpg?w=1280",
       "description": "GTA 6 PC Release Could Come “Sooner” Than Expected, According to Report&nbsp;&nbsp;VICE"
-    },
-    {
-      "title": "GTA 6: Why The Official Look Has Fans Worried",
-      "link": "https://gamerant.com/gta-6-reasons-worry-after-netflix-extended-look/",
-      "source_link": null,
-      "date": "2026-09-04T15:33:12+00:00",
-      "source": "Game Rant",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-things-that-have-fans-worried0after-the-official-look.jpg?w=1600&h=900&fit=crop",
-      "description": "Rockstar's Netflix extended look provided an exciting deep dive into Grand Theft Auto 6 that rose a few concerns with fans."
-    },
-    {
-      "title": "GTA 6 reveal lifts PS5 and Xbox sales by more than 30% in the UK",
-      "link": "https://vgtimes.com/gaming-news/166488-gta-6-reveal-lifts-ps5-and-xbox-sales-by-more-than-30-in-the-uk.html",
-      "source_link": null,
-      "date": "2026-09-04T15:17:26+00:00",
-      "source": "VGTimes",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://files.vgtimes.com/posts/2026-09/gta-6-reveal-lifts-ps5-and-xbox-sales-by-more-than-30-in-the-uk-166488.webp",
-      "description": "A surge in interest around Grand Theft Auto VI is already spilling over into the UK console market, with PS5 sales up 33% and Xbox Series X/S sales up 34% in the week after the game's Extended Look. The effect comes more than a year before GTA 6 is due out on November 19, 2026"
     }
   ],
   "partial": true,
