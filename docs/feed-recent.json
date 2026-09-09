@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-09T11:46:22.840502+00:00",
+  "generated_at": "2026-09-09T12:01:44.409413+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 43.2,
+  "duration_seconds": 40.2,
   "decode_failures": 0,
-  "total_articles": 2252,
+  "total_articles": 2253,
   "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-09T09:49:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,7 +402,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -504,7 +504,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T12:00:01+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -694,9 +694,9 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T11:00:13+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-09T12:00:12+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T10:34:48+00:00",
       "days_since_last_article": 7,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 7,
@@ -786,7 +786,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 8,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 26,
+      "entries_fetched": 27,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,0,0,0,0,0,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,102,102,102,102,100,100,100,100,100,100",
+    "gnews-en": "102,102,102,102,102,100,100,100,100,100,100,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -957,15 +957,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,8,7,7,8,8,8,8,8,7,8",
+    "xboxwire": "7,8,7,7,8,8,8,8,8,7,8,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,81,81,81,81,81,81,81,81,81,82,82",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,26",
+    "engadget": "81,81,81,81,81,81,81,81,81,82,82,82",
+    "arstechnica": "27,27,27,27,27,27,27,27,27,27,26,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -984,7 +984,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 11:33:36 GMT"
+      "modified": "Wed, 09 Sep 2026 11:40:44 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,28 +998,28 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2b407-HhF3v55dnqbWXpY+mH5338+bkyg\"",
+      "etag": "W/\"2c25c-GiUZKLnylUwTDZFu6k+xR8ohnVc\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"84c67eb03adbb1e5e63caff857e168dc\"",
-      "modified": "Wed, 09 Sep 2026 11:15:34 GMT"
+      "etag": "W/\"4d08b239a298119835ec408f2a94abaf\"",
+      "modified": "Wed, 09 Sep 2026 11:59:27 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 11:30:00 GMT"
+      "modified": "Wed, 09 Sep 2026 12:00:00 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 11:27:21 GMT"
+      "modified": "Wed, 09 Sep 2026 11:56:00 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 11:44:31 GMT"
+      "modified": "Wed, 09 Sep 2026 12:01:23 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa14347-310c\"",
-      "modified": "Wed, 09 Sep 2026 11:30:15 GMT"
+      "etag": "W/\"6aa14a52-310c\"",
+      "modified": "Wed, 09 Sep 2026 12:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1048,12 +1048,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa12c0f-b1d\"",
-      "modified": "Wed, 09 Sep 2026 09:51:11 GMT"
+      "etag": "\"6aa14832-ae8\"",
+      "modified": "Wed, 09 Sep 2026 11:51:14 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar Officially Details GTA 6's Criminal Profile System",
+      "link": "https://gamerant.com/gta-6-criminal-profile-jason-lucia/",
+      "source_link": null,
+      "date": "2026-09-09T12:00:12+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/lucia_caminos_08.jpg?w=1600&h=900&fit=crop",
+      "description": "Grand Theft Auto 6 features a Criminal Profile system for protagonists Jason and Lucia, with Rockstar detailing the feature in recent previews."
+    },
     {
       "title": "GTA 6 : Une date de sortie sur PC plus rapide que prévue ? - MGG (Millenium)",
       "link": "https://www.millenium.org/news/430774.html",
@@ -5000,19 +5013,6 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-au-coeur-dune-polemique-a-miami-un-possible-partenariat-divise-les-autorites-de-la-ville.png",
       "description": "GTA 6 au cœur d’une polémique à Miami : un possible partenariat divise les autorités de la ville&nbsp;&nbsp;La Crème Du Gaming"
-    },
-    {
-      "title": "French store leaks GTA 6 Switch 2 port and PS5 and Xbox Collector's Editions - Notebookcheck",
-      "link": "https://www.notebookcheck.net/French-store-leaks-GTA-6-Switch-2-port-and-PS5-and-Xbox-Collector-s-Editions.1388618.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQZ012OEVNUERPZ3VFUjMtTnVFSUVKb0o1XzJQNFhZX05kb2lWTDdpM0c0NW1Zb2pvRGlULTBUWnN6NmVGeUU4ekcyY21WR0FtVWpuNG1UczJ6aUl2WUJXaEVjQzJvSmtwXzYwVlhKclFXTTJKUDFrcmlXa2N2TlUxYWFNNjdxZnpFdnUzUVpIUkR6NmR3SjlsYnZYSElaQW42UWsybkFxbU1KQ1h4S3lLZmdqRUNMQ3dCOU15MjRR?oc=5",
-      "date": "2026-09-04T13:58:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6Switch2PortNew.jpg",
-      "description": "French store leaks GTA 6 Switch 2 port and PS5 and Xbox Collector's Editions&nbsp;&nbsp;Notebookcheck"
     }
   ],
   "partial": true,
