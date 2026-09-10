@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T21:07:55.405889+00:00",
+  "generated_at": "2026-09-10T22:01:45.677861+00:00",
   "attente_recap": {
-    "articles": 0,
+    "articles": 2,
     "officiels": 0,
-    "sommet": 0
+    "sommet": 1
   },
-  "duration_seconds": 47.4,
+  "duration_seconds": 44.5,
   "decode_failures": 0,
-  "total_articles": 2369,
-  "new_this_run": 0,
+  "total_articles": 2371,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 103,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-10T19:00:02+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T14:27:54+00:00",
       "days_since_last_article": 0,
@@ -594,10 +594,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T10:34:53+00:00",
       "days_since_last_article": 0,
@@ -622,8 +622,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T17:13:39+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-10T21:26:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 2,
@@ -672,7 +672,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T21:58:01+00:00",
-      "days_since_last_article": 13,
+      "days_since_last_article": 14,
       "status": "ok"
     },
     {
@@ -720,7 +720,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T21:28:07+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,99,100,100,100,100,102,100,102,102",
-    "gnews-en": "100,100,98,100,100,102,100,102,102,100,102,100",
+    "gnews-fr": "100,100,99,100,100,100,100,102,100,102,102,102",
+    "gnews-en": "100,98,100,100,102,100,102,102,100,102,100,103",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,15 +957,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,6,7,6,6,6,6,6",
+    "xboxwire": "7,7,7,7,6,7,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,0,100,100,100,100,100",
-    "engadget": "82,82,82,83,83,83,83,83,82,82,82,82",
-    "arstechnica": "26,27,27,27,27,27,27,27,27,26,27,27",
+    "theverge": "100,100,100,100,100,0,100,100,100,100,100,100",
+    "engadget": "82,82,83,83,83,83,83,82,82,82,82,82",
+    "arstechnica": "27,27,27,27,27,27,27,27,26,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"48ce744ee30befdcc93db903b054cb5a\"",
-      "modified": "Thu, 10 Sep 2026 21:06:13 GMT"
+      "etag": "W/\"6f9fedadeabdecf6f2a88808727abdb6\"",
+      "modified": "Thu, 10 Sep 2026 21:52:18 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,18 +998,18 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2402c-jWL7YYCRkvSAYFEVB/uc0ApnpNM\"",
+      "etag": "W/\"29bb2-BqSZtsBuYOZbaDLBzFq679MChJ4\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"6744f7c0a5eb1bda7ec3466e8ae5bd2c\"",
-      "modified": "Thu, 10 Sep 2026 20:55:22 GMT"
+      "etag": "W/\"092555fe5e609dadb391b1ce91a714c8\"",
+      "modified": "Thu, 10 Sep 2026 21:29:30 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 20:26:31 GMT"
+      "modified": "Thu, 10 Sep 2026 21:54:53 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 21:07:29 GMT"
+      "modified": "Thu, 10 Sep 2026 21:59:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa31a60-308d\"",
-      "modified": "Thu, 10 Sep 2026 21:00:16 GMT"
+      "etag": "W/\"6aa32870-308d\"",
+      "modified": "Thu, 10 Sep 2026 22:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1048,12 +1048,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa30a2e-b46\"",
-      "modified": "Thu, 10 Sep 2026 19:51:10 GMT"
+      "etag": "\"6aa3264e-b47\"",
+      "modified": "Thu, 10 Sep 2026 21:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar Games Just Called the GTA 6 Online Player Format a \"Closely Guarded Secret\"",
+      "link": "https://www.gtaboom.com/rockstar-games-just-called-the-gta-6-online-player-format-a-closely-guarded-secret-8dc7",
+      "source_link": null,
+      "date": "2026-09-10T21:26:58+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/82/e9/rockstar-games-just-called-the-gta-6-online-player-format-a-closely-guarded-secret.jpg",
+      "description": "Rockstar just explicitly described discussion of an “online 32 player format” as “one of the most closely guarded secrets of the company.”"
+    },
     {
       "title": "GTA 6 Extended Look Drove Over 100,000 Netflix Sign Ups in Six Hours - GTA BOOM",
       "link": "https://www.gtaboom.com/the-gta-6-extended-look-got-netflix-100000-sign-ups-in-just-six-hours-61af",
@@ -2014,6 +2027,19 @@
       "lang": "fr",
       "image": null,
       "description": "Manette GTA 6 en précommande : où acheter la DualSense PS5 ?&nbsp;&nbsp;Univers-Simu.com"
+    },
+    {
+      "title": "GTA 6 controller pre-orders - Times, links and prices as UK customers urged to act fast - Daily Express",
+      "link": "https://www.express.co.uk/entertainment/gaming/2247192/gta-6-controller-pre-orders-date-time-price-PS5-playstation-direct",
+      "source_link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNbDY0d3JvUU04M3hzN1lxUEVqaEdDWTl1WE1SV1RXWnJQUF9RTDlaNGRxbHEzb1A0ZXNxQ1o5bkx2NzNyUHlIbGc5S0pNMG1CZ0gtcXU1MXNZZTBpcHY4alJqLXJQc1Y4WGFocnFFWVpxb2FLS2FscnlwMkdvc2RTdV9Zb04zSWN6bDR5NE1sRjh2V0VqX3hjLVlSSXJ0U1JHQ1FZaWt5QldnV1h5MUlVV3RGMDhKZlhwc2R5SzJR0gHDAUFVX3lxTFBVOWpyc2tkR0UxRjNzUWJtaTg2OE9BT2VpVkxoWUQ4NTBvNkN4NDhwUXRhX1VLUXNNc0Q3cXRiT2ktY2FDUkEtbVI3TnZJcTdsbTlOQVZlWjhlZ3JwdFEwTlVTS1NaT29keHg2TVh2akNoSUp4ZklQQVo3bnJ5Z0JKVjI5ZU1QNDl6MlVoTnhfdmFOY2RsZW53b0s2ZWtUX0NTSC13dVZmT0RtMklwS042SG1BbUxLY2xkR0JJRFdSSHhzUQ?oc=5",
+      "date": "2026-09-10T07:25:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.images.express.co.uk/img/dynamic/143/1200x630/7135604.jpg",
+      "description": "GTA 6 controller pre-orders - Times, links and prices as UK customers urged to act fast&nbsp;&nbsp;Daily Express"
     },
     {
       "title": "Robert De Niro's New Crime Thriller Officially Steals 'GTA 6's Netflix Crown - IMDb",
