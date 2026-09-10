@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T20:01:52.130637+00:00",
+  "generated_at": "2026-09-10T21:01:51.829883+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 48.9,
+  "duration_seconds": 48.3,
   "decode_failures": 0,
-  "total_articles": 2368,
-  "new_this_run": 5,
+  "total_articles": 2369,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -358,7 +358,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-10T19:32:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -390,11 +390,11 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-10T19:30:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 1,
       "last_article": "2026-09-10T19:00:02+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 2,
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 0,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 26,
+      "entries_fetched": 27,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,100,99,100,100,100,100,102,100",
-    "gnews-en": "102,100,100,100,98,100,100,102,100,102,102,100",
+    "gnews-fr": "100,100,100,100,99,100,100,100,100,102,100,102",
+    "gnews-en": "100,100,100,98,100,100,102,100,102,102,100,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,15 +957,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,6,7,6,6,6",
+    "xboxwire": "7,7,7,7,7,7,6,7,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,0,100,100,100",
-    "engadget": "82,82,82,82,82,83,83,83,83,83,82,82",
-    "arstechnica": "27,27,26,27,27,27,27,27,27,27,27,26",
+    "theverge": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "engadget": "82,82,82,82,83,83,83,83,83,82,82,82",
+    "arstechnica": "27,26,27,27,27,27,27,27,27,27,26,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"1de2298f484a00b56e267a9d05cdc0a0\"",
-      "modified": "Thu, 10 Sep 2026 19:46:54 GMT"
+      "etag": "W/\"6b80d00a0c850bd66875ed1a88ac86ec\"",
+      "modified": "Thu, 10 Sep 2026 20:49:07 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1003,13 +1003,13 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"955b76c95e6c8f62b033f1672ad8df8a\"",
-      "modified": "Thu, 10 Sep 2026 20:00:50 GMT"
+      "etag": "W/\"6744f7c0a5eb1bda7ec3466e8ae5bd2c\"",
+      "modified": "Thu, 10 Sep 2026 20:55:22 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 18:59:19 GMT"
+      "modified": "Thu, 10 Sep 2026 20:26:31 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 19:57:11 GMT"
+      "modified": "Thu, 10 Sep 2026 21:00:33 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa30c4e-308d\"",
-      "modified": "Thu, 10 Sep 2026 20:00:14 GMT"
+      "etag": "W/\"6aa31a60-308d\"",
+      "modified": "Thu, 10 Sep 2026 21:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789067951\"",
-      "modified": "Thu, 10 Sep 2026 19:19:11 GMT"
+      "etag": "W/\"1789074053\"",
+      "modified": "Thu, 10 Sep 2026 21:00:53 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1352,6 +1352,19 @@
       "lang": null,
       "image": "https://media.northeasttimes.com/uploads/2026/09/gta-6-players-in-the-us-will-wait-up-to-18-hours-after-new-z.webp",
       "description": "GTA 6 Players in the US Will Wait Up to 18 Hours After New Zealand Gets Access First&nbsp;&nbsp;Northeast Times"
+    },
+    {
+      "title": "PS5 and Xbox Series Sales Increased 14% in the US Following GTA 6 Reveal - VGChartz",
+      "link": "https://www.vgchartz.com/article/469027/ps5-and-xbox-series-sales-increased-14-in-the-us-following-gta-6-reveal/",
+      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNNm9Fc0JmQ015U09WQkRoLVZVbXN4X19MdTlfOHR6NmpnZmxPQVJwLUt0ZjByLU8ydXh5SzZSbkc5U1lfUjdpeEd1eHhfUXQ3Rkg4d3JuTEdvQ1pyYm9oTENldHFvd3JldTBZN2dFS2xfdVRSa1o1bTIwM1VTNGs0OGdJbzNveWpUb2ZLa3k5dnNMVUhSZlkyZ3JaNjd5QTZldzd2aVQyN3lYNXhkR2J6Q2Vn?oc=5",
+      "date": "2026-09-10T14:59:13+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.vgchartz.com/articles_media/images/ps5-and-xbox-series-sales-increased-14-in-the-uk-following-gta-6-reveal-928082_condensed.jpg",
+      "description": "PS5 and Xbox Series Sales Increased 14% in the US Following GTA 6 Reveal&nbsp;&nbsp;VGChartz"
     },
     {
       "title": "Pourquoi Rockstar les a-t-il licenciés, parce qu’ils ont partagé des informations confidentielles ou parce qu’ils étaient syndiqués? D’anciens salariés du studio derrière \"GTA 6\" ont saisi un tribunal de Glasgow - BFM",
