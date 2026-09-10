@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T01:01:46.093257+00:00",
+  "generated_at": "2026-09-10T02:01:50.506651+00:00",
   "attente_recap": {
-    "articles": 8,
+    "articles": 9,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 47.8,
+  "duration_seconds": 52.3,
   "decode_failures": 0,
-  "total_articles": 2285,
-  "new_this_run": 2,
+  "total_articles": 2286,
+  "new_this_run": 1,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -348,7 +348,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T02:00:00+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -358,7 +358,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-10T00:38:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -378,14 +378,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 13,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-09T23:29:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -426,13 +426,13 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T18:37:44+00:00",
-      "days_since_last_article": 1,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-10T01:35:16+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -498,14 +498,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T18:00:35+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 7,
@@ -912,20 +912,31 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-22T01:42:08+00:00",
-      "days_since_last_article": 18,
+      "days_since_last_article": 19,
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-10T02:01:50.506083+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-10T02:01:50.506083+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,99,100,100,100,100,100,100,100,104,104,100",
+    "gnews-en": "99,100,100,100,100,100,100,100,104,104,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +944,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -954,18 +965,18 @@
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,10,10,0,10,10,10,10,10,10",
+    "vgc": "10,10,10,10,0,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,8,7,7,7,7,7,7,7,7",
+    "xboxwire": "7,7,8,7,7,7,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,26,27,26,26,28,27,27,27,26,27,27",
+    "engadget": "83,83,82,82,82,82,82,82,82,82,82,82",
+    "arstechnica": "26,27,26,26,28,27,27,27,26,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +989,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"019bc2885e4aaf5d04cdbbe04ae85a47\"",
-      "modified": "Wed, 09 Sep 2026 22:53:33 GMT"
+      "etag": "W/\"b435a7f3c96333663e6669e377b1ba4e\"",
+      "modified": "Thu, 10 Sep 2026 01:35:18 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1019,7 +1030,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 01:01:18 GMT"
+      "modified": "Thu, 10 Sep 2026 02:01:18 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1039,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa20121-2e47\"",
-      "modified": "Thu, 10 Sep 2026 01:00:17 GMT"
+      "etag": "W/\"6aa20f33-2e47\"",
+      "modified": "Thu, 10 Sep 2026 02:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1048,12 +1059,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa1f0f1-a14\"",
-      "modified": "Wed, 09 Sep 2026 23:51:13 GMT"
+      "etag": "\"6aa20d0d-a15\"",
+      "modified": "Thu, 10 Sep 2026 01:51:09 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar Explains GTA 6’s Approach to Real-World Events",
+      "link": "https://insider-gaming.com/gta-6-development-since-2015/",
+      "source_link": null,
+      "date": "2026-09-10T01:35:16+00:00",
+      "source": "Insider Gaming",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://insider-gaming.com/wp-content/uploads/2026/06/GTA-6-Jason-Lucia-Vice-City.jpg",
+      "description": "GTA 6 has been in development since 2015, and Rockstar explains why its long production cycle makes topical real-world stories risky to include.\nThe post Rockstar Explains GTA 6&#8217;s Approach to Real-World Events appeared first on Insider Gaming."
+    },
     {
       "title": "Grand Theft Auto VI peek tops Netflix charts - The Malaysian Reserve",
       "link": "https://themalaysianreserve.com/2026/09/10/grand-theft-auto-vi-peek-tops-netflix-charts/",
