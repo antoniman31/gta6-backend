@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T19:01:51.849100+00:00",
+  "generated_at": "2026-09-10T20:01:52.130637+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 46.6,
+  "duration_seconds": 48.9,
   "decode_failures": 0,
-  "total_articles": 2363,
-  "new_this_run": 3,
+  "total_articles": 2368,
+  "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -358,8 +358,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T15:40:16+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-10T19:32:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -390,24 +390,24 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-10T18:12:27+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-10T19:30:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T17:16:33+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-10T19:00:02+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 2,
@@ -486,11 +486,11 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-10T18:01:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -594,10 +594,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T10:34:53+00:00",
       "days_since_last_article": 0,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 27,
+      "entries_fetched": 26,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,100,100,99,100,100,100,100,102",
-    "gnews-en": "100,102,100,100,100,98,100,100,102,100,102,102",
+    "gnews-fr": "100,100,100,100,100,99,100,100,100,100,102,100",
+    "gnews-en": "102,100,100,100,98,100,100,102,100,102,102,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,15 +957,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,7,7,7,6,7,6,6",
+    "xboxwire": "7,7,7,7,7,7,7,6,7,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "engadget": "82,82,82,82,82,82,83,83,83,83,83,82",
-    "arstechnica": "27,27,27,26,27,27,27,27,27,27,27,27",
+    "theverge": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "engadget": "82,82,82,82,82,83,83,83,83,83,82,82",
+    "arstechnica": "27,27,26,27,27,27,27,27,27,27,27,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,13 +978,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"c4934e9656535450356dbf9be6efaff1\"",
-      "modified": "Thu, 10 Sep 2026 18:46:11 GMT"
+      "etag": "W/\"1de2298f484a00b56e267a9d05cdc0a0\"",
+      "modified": "Thu, 10 Sep 2026 19:46:54 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 17:43:09 GMT"
+      "modified": "Thu, 10 Sep 2026 19:30:22 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,18 +998,18 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"26454-O0R/qDbOz+LBFmwWMFho767LDZE\"",
+      "etag": "W/\"2402c-jWL7YYCRkvSAYFEVB/uc0ApnpNM\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5181fb2dcf8aafd66227d40d143ad594\"",
-      "modified": "Thu, 10 Sep 2026 18:36:29 GMT"
+      "etag": "W/\"955b76c95e6c8f62b033f1672ad8df8a\"",
+      "modified": "Thu, 10 Sep 2026 20:00:50 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 17:30:00 GMT"
+      "modified": "Thu, 10 Sep 2026 18:59:19 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 19:01:26 GMT"
+      "modified": "Thu, 10 Sep 2026 19:57:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa2fe42-308d\"",
-      "modified": "Thu, 10 Sep 2026 19:00:18 GMT"
+      "etag": "W/\"6aa30c4e-308d\"",
+      "modified": "Thu, 10 Sep 2026 20:00:14 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,22 +1038,61 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789065819\"",
-      "modified": "Thu, 10 Sep 2026 18:43:39 GMT"
+      "etag": "W/\"1789067951\"",
+      "modified": "Thu, 10 Sep 2026 19:19:11 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"9fab34d713e4218f4b62b2b07eabe6e5\"",
-      "modified": "Thu, 10 Sep 2026 18:59:53 GMT"
+      "etag": "W/\"1212c1ea5132c5899b9a1978a323b544\"",
+      "modified": "Thu, 10 Sep 2026 19:38:43 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa2ee0e-af8\"",
-      "modified": "Thu, 10 Sep 2026 17:51:10 GMT"
+      "etag": "\"6aa30a2e-b46\"",
+      "modified": "Thu, 10 Sep 2026 19:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Extended Look Drove Over 100,000 Netflix Sign Ups in Six Hours - GTA BOOM",
+      "link": "https://www.gtaboom.com/the-gta-6-extended-look-got-netflix-100000-sign-ups-in-just-six-hours-61af",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPc19RYURGaVFYOVFGc3R4LUE2R21KWF9CSEVDbUhXNE1mNEI2WFZXakpoSWdsdlJLYzlfMUI0VHhVSHRRQXV3N0FyT3gzSmIyODJZRC1jN1pTVjIzQW5pcEdZVl9TOElzSkV6WElPc3QtNHh0ekpNMkRlbUVaSXhRa0x5bGlIVmVnaTdkMFVEeFU3TnNDeWlKUTQ0djFSLTA?oc=5",
+      "date": "2026-09-10T19:32:48+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/6c/3f/the-gta-6-extended-look-got-netflix-100000-sign-ups-in-just-six-hours.jpg",
+      "description": "GTA 6 Extended Look Drove Over 100,000 Netflix Sign Ups in Six Hours&nbsp;&nbsp;GTA BOOM"
+    },
+    {
+      "title": "Les précommandes de la manette PS5 en édition limitée GTA 6 font buger le PlayStation Store - IGN France",
+      "link": "https://fr.ign.com/grand-theft-auto-6/92149/les-precommandes-de-la-manette-ps5-en-edition-limitee-gta-6-font-buger-le-playstation-store",
+      "source_link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNQU9GSzRiUHV5WWw5ZHNCNjlvSGdEWG1PUzZLT0lGSktfVTZwczk1dk94OW9Zb3RBbVR0YVQtWnhjSDBUb0FDV09mdjlJaENUYW8yS1g0TDRDUmNVVS1rbThZbGZRaUNFNzhpeWZ6c1R4bTRGSkRaV3NidTFfMVB1dTdta0FQNlRKRzlVUThOV0FfQ3FOcklNWm9sSE5XcVFPVTRMVlNldlAwZS1YdnkzSHlUOVZMSlgwb0NIbjBVUFRJbjZTNWJ4MHZjRDhCNmJo?oc=5",
+      "date": "2026-09-10T19:30:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-6s-lim/gta-6s-limited-edition-ps5-controller-pre-orders-overload-pl_dvq1.1200.jpg",
+      "description": "Les précommandes de la manette PS5 en édition limitée GTA 6 font buger le PlayStation Store&nbsp;&nbsp;IGN France"
+    },
+    {
+      "title": "GTA 6 Collector's Edition may have leaked, and Rockstar fans might not like what's in the box - GAMINGbible",
+      "link": "https://www.gamingbible.com/news/gta-6-collectors-edition-leak-723984-20260910",
+      "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNNWFkZlpCTXhxMDFQOW90QjFlQ2txNkFBMUJSN25QMzBjSnNBNVZnUk9UeXUySGptTHdyM1FBYXRPM2piYzRSVERxODZmNXE5Yy14cEpJNVNrUFlhNlBBWkJaNG5ETkd1YnlnWWtHMFVvMFNYeV9heC0xOGV6c0UyS3B6aDM?oc=5",
+      "date": "2026-09-10T19:00:02+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blt72d2fb80925b1898/6aa29c98b80d0f628991efe6/gta-6-collectors-edition-10092026.jpg",
+      "description": "GTA 6 Collector's Edition may have leaked, and Rockstar fans might not like what's in the box&nbsp;&nbsp;GAMINGbible"
+    },
     {
       "title": "Secrets de GTA VI: Rockstar face à ses salariés licenciés devant un tribunal de Glasgow - Yahoo Finance France",
       "link": "https://fr.finance.yahoo.com/actualites/secrets-gta-vi-rockstar-face-181227430.html",
@@ -1066,6 +1105,19 @@
       "lang": "fr",
       "image": "https://s.yimg.com/lo/mysterio/api/021996b1bd5d53345ce95ae64e9796f288ee55f70d7d9f58ee80ba10afdc7816/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_webp/https%3A%2F%2Fmedia.zenfs.com%2Ffr%2Fafp.fr%2F831fbc7475bf19fa6dd84a66cba88423.jpg",
       "description": "Secrets de GTA VI: Rockstar face à ses salariés licenciés devant un tribunal de Glasgow&nbsp;&nbsp;Yahoo Finance France"
+    },
+    {
+      "title": "Fake GTA 6 malware is on the rise as release date nears — here are some of the worst scams to look out for - TechRadar",
+      "link": "https://www.techradar.com/pro/security/fake-gta-6-malware-is-on-the-rise-as-release-date-nears-here-are-some-of-the-worst-scams-to-look-out-for",
+      "source_link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxOU0dRd1dwZ25GWG1hRjRhVl94aFFLLVBLUnVjbGtpY29qTGVsLXhDT1o5Y1R6dm9JWEVqYnY4ZWJrd3g1S1VyQ3d0SGlqNEFzd0Z5cXBkeDZDVjA1Vm90OW5Udk42ZUxENF9STGZxRTVwVWRhUWZHVEdYNWdMYnJmdXdUdnJvdURSY1ZWS1ZCcnlxUlEtYmhEU2RwdnZDLVpKeXhVcGh6dHF3bDJPQXVhNVVDWFljZWtBQUtYR2hTZVNxM0lNZmZzRnN4amRWUk5SY2hSWVp0VHZJVXM?oc=5",
+      "date": "2026-09-10T18:10:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/knPikneiqQ4a4p7AEdGPra-2560-80.jpg",
+      "description": "Fake GTA 6 malware is on the rise as release date nears — here are some of the worst scams to look out for&nbsp;&nbsp;TechRadar"
     },
     {
       "title": "Xbox | Quels sont les jeux Rockstar Games qui pourront bientôt être numérisés ?",
@@ -1949,6 +2001,19 @@
       "lang": "fr",
       "image": null,
       "description": "Manette GTA 6 en précommande : où acheter la DualSense PS5 ?&nbsp;&nbsp;Univers-Simu.com"
+    },
+    {
+      "title": "Robert De Niro's New Crime Thriller Officially Steals 'GTA 6's Netflix Crown - IMDb",
+      "link": "https://www.imdb.com/news/ni66009247/?ref_=ttnw_art_perm",
+      "source_link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5ScjJPd1E4V1J6UENBczJHYThHTkNDb2ZteTZ0TFJSNm5EZlVMYkg3aVBIdzdCZWVOOFFXeEpObUlWQUpsRlFhQVd6R0pDaWJGTjktRkJTdlhjMUtrVkppci1rM3lEMlU?oc=5",
+      "date": "2026-09-10T06:33:48+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": null,
+      "description": "Robert De Niro's New Crime Thriller Officially Steals 'GTA 6's Netflix Crown&nbsp;&nbsp;IMDb"
     },
     {
       "title": "GTA VI est déjà disponible à la précommande, ne ratez pas cette offre Cultura - BFM",
