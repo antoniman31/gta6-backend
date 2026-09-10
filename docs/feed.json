@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T11:44:22.260881+00:00",
+  "generated_at": "2026-09-10T12:01:47.454103+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 45.7,
+  "duration_seconds": 45.6,
   "decode_failures": 0,
-  "total_articles": 2312,
-  "new_this_run": 0,
+  "total_articles": 2314,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -406,8 +406,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T09:51:44+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-10T11:40:50+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -594,10 +594,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T10:34:53+00:00",
       "days_since_last_article": 0,
@@ -622,8 +622,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T09:17:07+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-10T11:53:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 1,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 27,
+      "entries_fetched": 26,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,100,102,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,100,102,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -954,7 +954,7 @@
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "0,10,10,10,10,10,10,10,10,10,10,10",
+    "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "xboxwire": "7,7,7,7,7,7,7,7,7,7,7,7",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
+    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"3147e3eb77b5510555361b7fb6d65cd4\"",
-      "modified": "Thu, 10 Sep 2026 11:37:13 GMT"
+      "etag": "W/\"7bd866e4811e521af47e8755a9b89373\"",
+      "modified": "Thu, 10 Sep 2026 12:00:00 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"272fb-AdnK/UlcaMsvl2aZi43+5i7j2Nw\"",
+      "etag": "W/\"26ebe-1UfRUNsgdVg8qC5OJ7CIT2J36po\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"ce1f5893ca49baab16396b5e550389dd\"",
-      "modified": "Thu, 10 Sep 2026 11:15:53 GMT"
+      "etag": "W/\"1a6f9ad4945134d7a3bf5a1b95e341a8\"",
+      "modified": "Thu, 10 Sep 2026 12:00:47 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 11:40:03 GMT"
+      "modified": "Thu, 10 Sep 2026 11:59:28 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,32 +1028,58 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa294c8-2ffa\"",
-      "modified": "Thu, 10 Sep 2026 11:30:16 GMT"
+      "etag": "W/\"6aa29bd0-307f\"",
+      "modified": "Thu, 10 Sep 2026 12:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"51113dfbae491332d5eb2c9d9a0ff4eb\"",
-      "modified": "Thu, 10 Sep 2026 08:50:54 GMT"
+      "etag": "W/\"a2a01c0db09352bf980a2a708d6b5e67\"",
+      "modified": "Thu, 10 Sep 2026 12:00:03 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1788998140\"",
-      "modified": "Wed, 09 Sep 2026 23:55:40 GMT"
+      "etag": "W/\"1789041629\"",
+      "modified": "Thu, 10 Sep 2026 12:00:29 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"4f31c478ff9b3e824ec457c9d7b9c142\"",
-      "modified": "Thu, 10 Sep 2026 11:38:06 GMT"
+      "etag": "W/\"58e42b6b3d566251f07b79353fcc0725\"",
+      "modified": "Thu, 10 Sep 2026 11:49:41 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa27d8d-a81\"",
-      "modified": "Thu, 10 Sep 2026 09:51:09 GMT"
+      "etag": "\"6aa299b6-aa2\"",
+      "modified": "Thu, 10 Sep 2026 11:51:18 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Why the Industry’s Panic Over GTA 6 Is Overblown (And Nintendo Knows It)",
+      "link": "https://www.gtaboom.com/why-the-industrys-panic-over-gta-6-is-overblown-and-nintendo-knows-it-22d5",
+      "source_link": null,
+      "date": "2026-09-10T11:53:36+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/d2/2e/why-the-industrys-panic-over-gta-6-is-overblown-and-nintendo-knows-it.jpg",
+      "description": "History shows AAA games can launch near a Rockstar hit and thrive, disproving the industry wide panic to avoid Grand Theft Auto VI's month."
+    },
+    {
+      "title": "GTA 6 Collector’s Edition reportedly spotted ahead of the game’s release - The Shortcut | Matt Swider",
+      "link": "https://www.theshortcut.com/p/gta-6-collectors-edition-reportedly-spotted-ahead-of-the-games-release",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOUENaZFhyT29sZEpRT1BBZW5FckpLNEc2aHhRM095OHdadlM3X2xvXy1ob0JKSnpuM01MaEV1b3ZRUWx6bUJEaEdhY0p5SHlGREFWZ2J6U3lyTURSaldkMlRoZjlMWEQybm9aOGllLWhNdDdMVnlyaV9uam1UOVhYelMwRlRwZzc3SERRNkdGSk91RFNXbXlvbEp5cEU0SDF0alE?oc=5",
+      "date": "2026-09-10T11:40:50+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://substackcdn.com/image/fetch/$s_!_X07!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F07875f78-7dc2-49af-bbd4-9b9fbb117567_1456x819.webp",
+      "description": "GTA 6 Collector’s Edition reportedly spotted ahead of the game’s release&nbsp;&nbsp;The Shortcut | Matt Swider"
+    },
     {
       "title": "As final hearing over GTA firings begins, Rockstar reiterate they \"reject the claims\" made by union and will defend themselves \"vigorously\"",
       "link": "https://www.rockpapershotgun.com/as-final-hearing-over-gta-firings-begins-rockstar-reiterate-they-reject-the-claims-made-by-union-and-will-defend-themselves-vigorously",
