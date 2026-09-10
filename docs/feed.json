@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T00:01:51.787083+00:00",
+  "generated_at": "2026-09-10T01:01:46.093257+00:00",
   "attente_recap": {
-    "articles": 6,
+    "articles": 8,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 42.4,
+  "duration_seconds": 47.8,
   "decode_failures": 0,
-  "total_articles": 2283,
-  "new_this_run": 0,
+  "total_articles": 2285,
+  "new_this_run": 2,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -358,9 +358,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-08T14:27:39+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-10T00:38:57+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -384,7 +384,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 12,
+      "days_since_last_article": 13,
       "status": "ok"
     },
     {
@@ -394,15 +394,15 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-09T19:28:59+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-09T23:29:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 104,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 1,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 7,
@@ -925,7 +925,7 @@
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "99,100,99,100,100,100,100,100,100,100,104,104",
+    "gnews-en": "100,99,100,100,100,100,100,100,100,104,104,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,15 +957,15 @@
     "vgc": "10,10,10,10,10,0,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,8,7,7,7,7,7,7,7",
+    "xboxwire": "7,7,7,8,7,7,7,7,7,7,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,83,82,82,82,82,82,82,82,82",
-    "arstechnica": "26,27,26,27,26,26,28,27,27,27,26,27",
+    "engadget": "83,83,83,82,82,82,82,82,82,82,82,82",
+    "arstechnica": "27,26,27,26,26,28,27,27,27,26,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -998,7 +998,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"223f5-1pgij+G6aD2h+kpIO1BA/vSFGUg\"",
+      "etag": "W/\"22450-FKJ0uhjf6M3Kg1NMPAvzPfhe9xw\"",
       "modified": null
     },
     "kotaku": {
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 09 Sep 2026 23:59:28 GMT"
+      "modified": "Thu, 10 Sep 2026 01:01:18 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa1f312-2e47\"",
-      "modified": "Thu, 10 Sep 2026 00:00:18 GMT"
+      "etag": "W/\"6aa20121-2e47\"",
+      "modified": "Thu, 10 Sep 2026 01:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,6 +1054,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Grand Theft Auto VI peek tops Netflix charts - The Malaysian Reserve",
+      "link": "https://themalaysianreserve.com/2026/09/10/grand-theft-auto-vi-peek-tops-netflix-charts/",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPUzRGSTVYNG9NZ3BWWW9EYzBKX3Z4S29QVG90dmU5a1dRY09lcjhtaGZEWVJ1anBlRk04d0JEU2VXUl9WR3NIZW1zeVN2aFBzUS1EbTBzZmdLOFpBTkl2Sjk5WUVUNmJ3NUpUZ0tfNnlBamNQTWQ5ZG9BLUUzeDQxWjBid0tQSVlHcUVDUEhLbU9Qdw?oc=5",
+      "date": "2026-09-10T00:38:57+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": null,
+      "description": "Grand Theft Auto VI peek tops Netflix charts&nbsp;&nbsp;The Malaysian Reserve"
+    },
+    {
+      "title": "Des photos divulguées laissent entrevoir une édition collector de GTA 6 et des précommandes de disques physiques - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Des-photos-presumees-de-l-x27-edition-collector-de-GTA-6-ont-fuite-malgre-l-x27-absence-de-precommandes-de-disques-physiques.1395221.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxNdUQ2SU00cmxxako1UzZHR0JjTjVlbW9TczlLQVU3ZmVvYWQtdWZNV0NZdGtUenFJM0RFdGlEOV96dnhrWnYwemIzR1gtY1ROaUZTcGNkd0lfSzFnT1p1UEtCRDI5UWZzUEVUOEs5TkhTT2NhTERVY2dBdmZuMUwxYnlFOExZLTlKR0pOVGw2Zm5IRlFIeXBiWHJLNS12ODdvM2NQZFNRb3JYOVJDSGJCblJQTEt0NDRDMWFSeG9rd1F3bThTNkRrbGFOVDVCX204UlhxdzdseUVYeTNnaDA2dWluanVOYkpvczJPWmNRMEh4ajJJcWZ4Szd0YVpwQQ?oc=5",
+      "date": "2026-09-09T23:29:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6CollectorsBox.png",
+      "description": "Des photos divulguées laissent entrevoir une édition collector de GTA 6 et des précommandes de disques physiques&nbsp;&nbsp;Notebookcheck.fr"
+    },
     {
       "title": "GTA Online Event Week: New Car In Business Rivalries Event (September 10th-16th)",
       "link": "https://rockstarintel.com/gta-online-event-week-new-car-in-business-rivalries-event-september-10th-16th/",
@@ -3740,7 +3766,13 @@
       "specialist": true,
       "lang": null,
       "image": "https://static0.colliderimages.com/wordpress/wp-content/uploads/2026/07/whisperman.jpg?w=1600&h=900&fit=crop",
-      "description": "Robert De Niro's New Crime Thriller Officially Steals 'GTA 6's Netflix Crown&nbsp;&nbsp;Collider"
+      "description": "Robert De Niro's New Crime Thriller Officially Steals 'GTA 6's Netflix Crown&nbsp;&nbsp;Collider",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://www.imdb.com/news/ni66009247/?ref_=nmnw_art_perm"
+        }
+      ]
     },
     {
       "title": "Rockstar Confirms GTA 6 Release Date And Game Innovations - Evrim Ağacı",
