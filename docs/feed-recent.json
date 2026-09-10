@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T08:01:40.853351+00:00",
+  "generated_at": "2026-09-10T09:01:54.580669+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 43.5,
+  "duration_seconds": 50.3,
   "decode_failures": 0,
-  "total_articles": 2292,
-  "new_this_run": 1,
+  "total_articles": 2297,
+  "new_this_run": 5,
   "hot_count": 4,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,8 +394,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T04:27:00+00:00",
+      "new_this_run": 4,
+      "last_article": "2026-09-10T08:54:07+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -406,7 +406,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-10T03:21:19+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -606,10 +606,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T11:12:12+00:00",
       "days_since_last_article": 1,
@@ -642,10 +642,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T12:53:53+00:00",
       "days_since_last_article": 0,
@@ -660,7 +660,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -694,8 +694,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-09T19:15:12+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-10T09:00:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 7,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
+    "rockstar-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,104,104,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "104,104,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
+    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,26,27,27,27,27,27,27,27,27,27,27",
+    "arstechnica": "26,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,13 +978,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"fffa3764838322586a9b297b7380e54e\"",
-      "modified": "Thu, 10 Sep 2026 07:59:24 GMT"
+      "etag": "W/\"1f8ef4f3bba2dfb13bf363aa30f8d3bf\"",
+      "modified": "Thu, 10 Sep 2026 08:59:27 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 07:50:48 GMT"
+      "modified": "Thu, 10 Sep 2026 08:41:25 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1003,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"8bb4bb80730126ede1deca7bb275bad2\"",
-      "modified": "Thu, 10 Sep 2026 08:00:40 GMT"
+      "etag": "W/\"45f6068b8bc56aea4519676c7ae72f10\"",
+      "modified": "Thu, 10 Sep 2026 08:24:51 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,27 +1014,27 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 06:56:19 GMT"
+      "modified": "Thu, 10 Sep 2026 09:00:20 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 07:57:18 GMT"
+      "modified": "Thu, 10 Sep 2026 09:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"cda5e591c7858c1ed8e1d5a55798db24\"",
-      "modified": "Thu, 10 Sep 2026 06:00:04 GMT"
+      "etag": "\"754af39443230b6eeef3dfe8534ea3e2\"",
+      "modified": "Thu, 10 Sep 2026 08:57:44 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa26391-3162\"",
-      "modified": "Thu, 10 Sep 2026 08:00:17 GMT"
+      "etag": "W/\"6aa2719f-32cb\"",
+      "modified": "Thu, 10 Sep 2026 09:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"423e4a03a6d8ecd9ff6e8df0eeb50014\"",
-      "modified": "Thu, 10 Sep 2026 07:31:43 GMT"
+      "etag": "W/\"51113dfbae491332d5eb2c9d9a0ff4eb\"",
+      "modified": "Thu, 10 Sep 2026 08:50:54 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1043,8 +1043,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"55deae8f5ac99920770443a9b5827c37\"",
-      "modified": "Thu, 10 Sep 2026 07:54:07 GMT"
+      "etag": "W/\"d057cc18436c5f6ea91733fe81ce3ca6\"",
+      "modified": "Thu, 10 Sep 2026 09:00:42 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1054,6 +1054,71 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6: How Store Robberies Work",
+      "link": "https://gamerant.com/gta-6-store-robberies/",
+      "source_link": null,
+      "date": "2026-09-10T09:00:12+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/jason_and_lucia_02.jpg?w=1600&h=900&fit=crop",
+      "description": "Rockstar Games details the gameplay loop surrounding store robberies and bigger jobs in Grand Theft Auto 6."
+    },
+    {
+      "title": "Manettes PS5 édition GTA 6 : les précommandes sont ouvertes, voici les meilleures offres - Frandroid",
+      "link": "https://www.frandroid.com/produits-android/console/manette-de-jeu/3242911_manettes-ps5-edition-gta-6-les-precommandes-sont-ouvertes-voici-les-meilleures-offres",
+      "source_link": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxQVEtOWERhMWhUVWZOZW9zbkJTSWdVUGRkUDhOZlI4Z3ZhTVdVdUxmS1BJY0VwbXA0c0JSSXRXTndCelFWRjRmdVgtTDhfTExPOW0yby1Hd1Q1bFc3RHRuMWpFTVNkLXVrem9fWVctR2VjZGFPNXJHX09MaVVZcTB4YkRYcEZQTjBhSWJfRFF5SF9vZF9najB6dlQ1dFB4UU1iMDREQ0ctUnBRQ1Nhc2QxbUpJemxycUYyTVVmeDN0ZE5kT0hzVzRRczVncEpjSzFkajlvOFRaRkhYOEx2T1g1ZGw1c2FaczRVQndVREIyd1U?oc=5",
+      "date": "2026-09-10T08:54:07+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/gta-6.jpg?resize=1600,900&key=10920e34",
+      "description": "Manettes PS5 édition GTA 6 : les précommandes sont ouvertes, voici les meilleures offres&nbsp;&nbsp;Frandroid"
+    },
+    {
+      "title": "GTA 6 : les manettes collectors PS5 sont dispo en préco, voici où les acheter, mais faites très vite - gameblog.fr",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-manettes-dualsense-edition-limitees-precommandes-722625",
+      "source_link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQQ2Q1RmhhdFFtaXFCVkdpa25HeHlHWVZlNUVYbzJJWFBsQ2p4OF9XdEFlRHZRbzFyOE1MRThvNXZmc21pX2Z0cHAybmhUMXRuZDBOY3ViT1k3LV9sT3dYbEJYWE5iVzhpd2pBSU5pZTJFYmI2T3VNRk0yLUdXQ19qWGpoOHRwQk5qXzRMcUxFYzZXWHpscjNjWWpWd3h3ZV9zcmZkZU5n?oc=5",
+      "date": "2026-09-10T08:52:16+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img/news/720531_6a747c878ace8.jpg",
+      "description": "GTA 6 : les manettes collectors PS5 sont dispo en préco, voici où les acheter, mais faites très vite&nbsp;&nbsp;gameblog.fr"
+    },
+    {
+      "title": "Les manettes PS5 GTA 6 arrivent en précommande : voici où les trouver - Numerama",
+      "link": "https://www.numerama.com/tech/2330097-les-manettes-ps5-gta-6-arrivent-en-precommande-voici-ou-les-trouver.html",
+      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQUXZlTW12cWZNRTE0Z1J4T0hSOF9leVFCZE5iSGFKdWtUR2swMHFNQnlieWJLVTEwLVpUUzU4YUJvZ3FnNE9Kdlg4VVphT0VZSlUyUjhrLVhfS0stS2NhMEJNMUNhaUVaNXBCYUVucjF5TnhpSlhmMzdDT19OSV83SmhEVUgxc1FFMmdZOTVRTzVVMzV1bFhMMHVfTlg3Vk5xUUQtaWt5VGdLWlZrZkI4?oc=5",
+      "date": "2026-09-10T08:33:23+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/09/gta-6-manette-ps5-dualsense.png?resize=1600,900&key=3d2cf92a",
+      "description": "Les manettes PS5 GTA 6 arrivent en précommande : voici où les trouver&nbsp;&nbsp;Numerama"
+    },
+    {
+      "title": "Manette GTA 6 en précommande : où acheter la DualSense PS5 ? - Univers-Simu.com",
+      "link": "https://www.univers-simu.com/news/precommande-manette-gta-6-dualsense-ps5-128247/",
+      "source_link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNNjVod2NTZEo1VnVGYlY0VjRrY3VZMjNxUU5keUF2NFlTWVBZbHBTSXg1MXh2UlBHb1BPMC0yakJWdTU2VFVKS2xsUWRoWUFTVHlTV1VhXzZVUm9VQ1prLTlsaGNQV2owRHNaRGt2djhRUGwyQUhnODV0QU9Xb1BFVEJjMmFiOF9O?oc=5",
+      "date": "2026-09-10T08:09:46+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Manette GTA 6 en précommande : où acheter la DualSense PS5 ?&nbsp;&nbsp;Univers-Simu.com"
+    },
     {
       "title": "GTA VI est déjà disponible à la précommande, ne ratez pas cette offre Cultura - BFM",
       "link": "https://www.bfmtv.com/tech/bons-plans/gta-vi-est-deja-disponible-a-la-precommande-ne-ratez-pas-cette-offre-cultura_AB-202609100038.html",
@@ -4954,71 +5019,6 @@
       "lang": "fr",
       "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/06/gta-6-2.jpg?resize=1600,900&key=b134f19a",
       "description": "La conduite de GTA 6 sera un mélange entre GTA 4 et GTA 5&nbsp;&nbsp;Numerama"
-    },
-    {
-      "title": "The GTA 6 'romance' controversy is everything that's wrong with the internet - creativebloq.com",
-      "link": "https://www.creativebloq.com/design/the-gta-6-romance-controversy-is-everything-thats-wrong-with-the-internet",
-      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxONE0yQVNrTzB2SVhVemwyenRVNEtsRTI3czF1LTRRWUdpWTYwbTRDbkEtSkZicF83NDNjaXFtVWZkRER1Nno2emRocmphRHVtam1kbTlDR1BXenhGLWNqR3NhSGx3amMzMloyRDNNS05oRjhHRDFaRXg5RnlhZU9aek1lMmZjRTVoLWxCRjczUmZrbndPYmVxczJvOThHY0t4NUtlUU11X0VOaWV6SWc?oc=5",
-      "date": "2026-09-05T07:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/qCsWksMhLQXcxyCU5ETdSo-2048-80.jpg",
-      "description": "The GTA 6 'romance' controversy is everything that's wrong with the internet&nbsp;&nbsp;creativebloq.com"
-    },
-    {
-      "title": "« GTA 6 » : une vague de demandes de congés attendue le 19 novembre - linfo.re",
-      "link": "https://www.linfo.re/la-reunion/societe/gta-6-une-vague-de-demandes-de-conges-attendue-le-19-novembre",
-      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNUmZUMDF1SXR3TEhQTG5fdy1GVml0bFh5NGlDZDEyenh6bHNnMDY3cmVYVDZTQ092S2NHeFR3eU1wZzVBdnJxTmFtbzdsdXk5a0dhVV9mRnRhUlU4LU9kNG9wV2pXdFRQd1RUX21SV2ZIV1Q4NEdlRnNPSTkzcUpPMV9QVTlBanVuYXB1OEJEbGEyU2ZTaDRMUDlDbDd0UFNaQjdv?oc=5",
-      "date": "2026-09-05T06:01:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "« GTA 6 » : une vague de demandes de congés attendue le 19 novembre&nbsp;&nbsp;linfo.re"
-    },
-    {
-      "title": "Take-Two Stock Falls 7% After GTA 6 Reveal Bounce",
-      "link": "https://gta6times.com/news/take-two-stock-falls-after-gta-6-reveal-bounce",
-      "source_link": null,
-      "date": "2026-09-05T05:26:11+00:00",
-      "source": "GTA6 Times",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://gta6times.com/news/take-two-stock-falls-after-gta-6-reveal-bounce/opengraph-image",
-      "description": "Shares slid to $216.68 by Sept. 1, erasing the bump from the Aug. 27 GTA 6 gameplay showcase."
-    },
-    {
-      "title": "GTA 6 : toutes les actualités & tests en direct - | Page 17 sur 17 - Journal du Geek",
-      "link": "https://www.journaldugeek.com/tag/gta-6/page/17/",
-      "source_link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1QcjUtOEdjQzB6Sm1rRVlLYkV0NWpzMkRUdFgtV3JlekFmdXV2M1ByVHJESGNmS0xHWTZyemVNa0EwSjlGNGo1SG9CNnk4UzhKV24yVzFFbGU4TXNH?oc=5",
-      "date": "2026-09-05T01:23:51+00:00",
-      "source": "Journal du Geek",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.journaldugeek.com/app/uploads/2025/03/Journal-du-Geek.jpg",
-      "description": "GTA 6 : toutes les actualités & tests en direct - | Page 17 sur 17&nbsp;&nbsp;Journal du Geek"
-    },
-    {
-      "title": "Zelda Ocarina of Time Remake Could Release the Same Week as GTA 6, Insider Reports - VICE",
-      "link": "https://www.vice.com/en/article/zelda-ocarina-of-time-remake-release-date-gta-6-november/",
-      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPVkJhVnVKdDZ3bnB3OTZpT2pnT2RsMnV4c3h6ak15Wl9ESVViVFVHV1JUZFZfZXJpSmNadWMxYThuVXo5Qk0tems2RUwxYUNXek9CdmdlQU05OEhvRkhPanJDWTlxcG1SOFJkbWNnYlJpMTg4bExLYngwTWUzZUJmOWNuZ21mN0w2NmdmTjhWU3Rudzg?oc=5",
-      "date": "2026-09-05T01:08:44+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/Zelda-Ocarina-of-Time-Remake-Could-Release-the-Same-Week-as-GTA-6-Insider-Reports.jpg?w=1280",
-      "description": "Zelda Ocarina of Time Remake Could Release the Same Week as GTA 6, Insider Reports&nbsp;&nbsp;VICE"
     }
   ],
   "partial": true,
