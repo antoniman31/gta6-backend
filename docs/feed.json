@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T21:12:45.523896+00:00",
+  "generated_at": "2026-09-11T22:01:55.426011+00:00",
   "attente_recap": {
-    "articles": 0,
+    "articles": 3,
     "officiels": 0,
-    "sommet": 0
+    "sommet": 1
   },
-  "duration_seconds": 43.3,
+  "duration_seconds": 50.6,
   "decode_failures": 0,
-  "total_articles": 2451,
-  "new_this_run": 1,
+  "total_articles": 2454,
+  "new_this_run": 3,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -402,12 +402,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 98,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-11T20:50:07+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-11T21:18:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 0,
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 0,
@@ -622,8 +622,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T18:13:17+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T21:58:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 3,
@@ -672,7 +672,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T21:58:01+00:00",
-      "days_since_last_article": 14,
+      "days_since_last_article": 15,
       "status": "ok"
     },
     {
@@ -720,7 +720,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T21:28:07+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -786,7 +786,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 6,
+      "entries_fetched": 5,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,101,101,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,101,102,102,103,102,102,100,99,101,100,101",
+    "gnews-fr": "101,101,100,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "101,102,102,103,102,102,100,99,101,100,101,98",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -938,9 +938,9 @@
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "kotaku": "20,20,20,20,20,0,0,20,20,20,20,20",
+    "kotaku": "20,20,20,20,0,0,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "vg247": "100,100,100,100,100,100,0,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -957,14 +957,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,6,6,6,6,6,6,6,6,6",
+    "xboxwire": "6,6,6,6,6,6,6,6,6,6,6,5",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,83,83,83,83,83,82,83,83,83",
+    "engadget": "83,83,83,83,83,83,83,82,83,83,83,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"9dc9a121bf4039b43ad630a7bd67b3df\"",
-      "modified": "Fri, 11 Sep 2026 20:33:09 GMT"
+      "etag": "W/\"76e4d0fa00080d260f18c4fd677eea35\"",
+      "modified": "Fri, 11 Sep 2026 21:37:26 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"34904-27qO9U+GMM8kxmU099G6RbuEmLw\"",
+      "etag": "W/\"3517a-4b5Jn1qdPqHjD7QJhb2O6qK2fd0\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"95f0f359217e5fac3ee14f4daff16f8a\"",
-      "modified": "Fri, 11 Sep 2026 21:00:45 GMT"
+      "etag": "W/\"262d9b79b8a90fc87d458d5d5f453c58\"",
+      "modified": "Fri, 11 Sep 2026 21:54:49 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 21:12:16 GMT"
+      "modified": "Fri, 11 Sep 2026 21:58:51 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa46be1-2ff3\"",
-      "modified": "Fri, 11 Sep 2026 21:00:17 GMT"
+      "etag": "W/\"6aa479ef-2ff3\"",
+      "modified": "Fri, 11 Sep 2026 22:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789160794\"",
-      "modified": "Fri, 11 Sep 2026 21:06:34 GMT"
+      "etag": "W/\"1789164070\"",
+      "modified": "Fri, 11 Sep 2026 22:01:10 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1054,6 +1054,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "A Giant GTA 6 Sign Is Going Up on the Miami Heat Arena",
+      "link": "https://www.gtaboom.com/a-giant-gta-6-sign-is-going-up-on-the-miami-heat-arena-716d",
+      "source_link": null,
+      "date": "2026-09-11T21:58:37+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/bc/99/a-giant-gta-6-sign-is-going-up-on-the-miami-heat-arena.jpg",
+      "description": "A private deal between Basketball Properties and Take Two, not a government vote, is putting a giant GTA 6 Vice City sign atop the Kaseya Center."
+    },
+    {
+      "title": "Miami Will Receive $3 Million From Rockstar to Promote GTA 6 Despite Protests Over Giving the City a Violent Image - MP1st",
+      "link": "https://mp1st.com/news/miami-receive-3-million-to-promote-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE84ckt3eTNvZ2toejVFVXMxQkR3MURfek55X0hVQjVGOWRRR0NoTWtIMXZYTGN5SVE0NU9vdktVcWd0U1M2TzRaV25JMmNxd2d2cjBoVXJQU1BBUnNkd1oydlY3ekR4T2RvU2ZRXzFULWE?oc=5",
+      "date": "2026-09-11T21:18:06+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://mp1st.com/wp-content/uploads/2026/08/gta-6-new-image-aug-19.jpg",
+      "description": "Miami Will Receive $3 Million From Rockstar to Promote GTA 6 Despite Protests Over Giving the City a Violent Image&nbsp;&nbsp;MP1st"
+    },
+    {
+      "title": "Is playing GTA 6 actual micro-cheating? | Do it Live! - ktla.com",
+      "link": "https://ktla.com/video/is-playing-gta-6-actual-micro-cheating-do-it-live/12161362/",
+      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNOERiNk9hS1c3dXBrdVo4T25uTVpCYzZJYXFYb09fdXZtb0RzdVlGcmdTYkE4MFlrVDlJM3dmb1ZOWjFRcFNFbGxoeUJHcUhvUmJ3dFZoVlpGN2tJUUYtSF9kRV94SEpCdjBIUzUzWVNFNzUzODIzaXFmVFVkNXZKWUtWN1VzV3lPbEE?oc=5",
+      "date": "2026-09-11T20:57:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Is playing GTA 6 actual micro-cheating? | Do it Live!&nbsp;&nbsp;ktla.com"
+    },
     {
       "title": "GTA 6 Could Be Coming Soon to Miami Beach - OpenCritic",
       "link": "https://opencritic.com/news/36761/gta-6-could-be-coming-soon-to-miami-beach",
