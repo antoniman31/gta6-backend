@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T06:01:53.283573+00:00",
+  "generated_at": "2026-09-11T07:01:40.176800+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 53.0,
+  "duration_seconds": 41.5,
   "decode_failures": 0,
-  "total_articles": 2380,
-  "new_this_run": 0,
+  "total_articles": 2381,
+  "new_this_run": 1,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -378,14 +378,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 14,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T15:46:13+00:00",
       "days_since_last_article": 0,
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 2,
@@ -498,14 +498,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T18:00:35+00:00",
       "days_since_last_article": 1,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "rockstarintel",
@@ -588,7 +588,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2024-07-26T07:00:00+00:00",
-      "days_since_last_article": 776,
+      "days_since_last_article": 777,
       "status": "tarie"
     },
     {
@@ -646,8 +646,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T14:45:22+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T06:05:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -870,13 +870,13 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 82,
+      "entries_fetched": 83,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:16:37+00:00",
-      "days_since_last_article": 8,
+      "days_since_last_article": 9,
       "status": "ok"
     },
     {
@@ -919,12 +919,12 @@
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-11T02:01:46.278685+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "rockstarmag-youtube": {
       "depuis": "2026-09-11T03:02:01.371660+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -934,9 +934,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,15",
     "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,102",
-    "gnews-en": "100,103,101,102,102,103,101,102,100,100,100,100",
+    "gnews-en": "103,101,102,102,103,101,102,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,7 +944,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -968,14 +968,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,6,6,7,6,6,6,6,6,6",
+    "xboxwire": "6,6,6,6,7,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
+    "engadget": "82,82,82,82,82,82,82,82,82,82,82,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -989,13 +989,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"7879b405511e11106701ff4b29596012\"",
-      "modified": "Thu, 10 Sep 2026 23:11:08 GMT"
+      "etag": "W/\"b36632641f108b9fbad8c7ad9ec7c524\"",
+      "modified": "Fri, 11 Sep 2026 07:00:00 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 22:48:41 GMT"
+      "modified": "Fri, 11 Sep 2026 06:39:18 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1030,17 +1030,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 06:01:22 GMT"
+      "modified": "Fri, 11 Sep 2026 07:01:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"60535bbda3720f03e2761df640a06811\"",
-      "modified": "Fri, 11 Sep 2026 05:49:04 GMT"
+      "etag": "\"271a9e751b3e66259aee218fcfc4d0d0\"",
+      "modified": "Fri, 11 Sep 2026 06:05:13 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa398ee-31e3\"",
-      "modified": "Fri, 11 Sep 2026 06:00:14 GMT"
+      "etag": "W/\"6aa3a700-31aa\"",
+      "modified": "Fri, 11 Sep 2026 07:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1065,6 +1065,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 s’offre une expérience géante et haptique au Tokyo Game Show 2026",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-soffre-une-experience-geante-et-haptique-au-tokyo-game-show-2026-20260911",
+      "source_link": null,
+      "date": "2026-09-11T06:05:13+00:00",
+      "source": "GinjFo",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2024/02/GTA_VI_9.jpg",
+      "description": "Sony va mettre en valeur GTA 6 au Tokyo Game Show 2026. L’Extended Look sera projeté sur un écran de 300 pouces accompagné d’un plancher haptique \nCet article GTA 6 s’offre une expérience géante et haptique au Tokyo Game Show 2026 a été publié en premier par GinjFo."
+    },
     {
       "title": "Miami Beach Debates Taking Millions From Rockstar To Advertise GTA 6: ‘We’re Not Giving Away Pistols And Cocaine To People’",
       "link": "https://kotaku.com/miami-beach-debates-taking-millions-from-rockstar-to-advertise-gta-6-were-not-giving-away-pistols-and-cocaine-to-people-2000733378",
