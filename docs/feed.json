@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T09:01:47.107807+00:00",
+  "generated_at": "2026-09-11T10:01:57.631790+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 42.6,
+  "duration_seconds": 53.8,
   "decode_failures": 0,
-  "total_articles": 2389,
-  "new_this_run": 5,
+  "total_articles": 2393,
+  "new_this_run": 4,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,12 +390,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 101,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-11T08:55:05+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-11T09:44:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -406,8 +406,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "last_article": "2026-09-11T08:30:03+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T09:39:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T15:46:13+00:00",
       "days_since_last_article": 0,
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 2,
@@ -594,10 +594,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T10:34:53+00:00",
       "days_since_last_article": 0,
@@ -606,11 +606,11 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-11T08:56:27+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -634,8 +634,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T13:03:09+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T09:49:18+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -694,7 +694,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T09:00:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 0,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
-    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,101,101",
-    "gnews-en": "102,102,103,101,102,100,100,100,100,100,100,100",
+    "rockstar-youtube": "15,15,0,0,0,0,0,0,15,15,15,15",
+    "gnews-fr": "102,102,102,102,102,102,102,102,102,101,101,99",
+    "gnews-en": "102,103,101,102,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,15,15,15",
+    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -957,14 +957,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,7,6,6,6,6,6,6,6,6,6",
+    "xboxwire": "6,7,6,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,82,82,82,83,83,83",
+    "engadget": "82,82,82,82,82,82,82,82,83,83,83,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -978,13 +978,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"b36632641f108b9fbad8c7ad9ec7c524\"",
-      "modified": "Fri, 11 Sep 2026 07:00:00 GMT"
+      "etag": "W/\"976212b9cf1c1296df6a2c1ed72642c5\"",
+      "modified": "Fri, 11 Sep 2026 09:48:18 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 07:08:28 GMT"
+      "modified": "Fri, 11 Sep 2026 09:31:14 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1003,13 +1003,13 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"64b83f74475ce8b6f346729710076629\"",
-      "modified": "Fri, 11 Sep 2026 09:01:04 GMT"
+      "etag": "W/\"906678787d694c9cb16e1a8baa0d1d88\"",
+      "modified": "Fri, 11 Sep 2026 10:00:45 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 21:54:53 GMT"
+      "modified": "Fri, 11 Sep 2026 09:46:56 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,22 +1019,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 09:01:20 GMT"
+      "modified": "Fri, 11 Sep 2026 10:01:25 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"b0c2d03acbe17e8e0d185d7537197200\"",
-      "modified": "Fri, 11 Sep 2026 08:50:00 GMT"
+      "etag": "\"a3dd0379d119a74b42a445868be17067\"",
+      "modified": "Fri, 11 Sep 2026 09:37:54 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa3c322-3072\"",
-      "modified": "Fri, 11 Sep 2026 09:00:18 GMT"
+      "etag": "W/\"6aa3d132-2fca\"",
+      "modified": "Fri, 11 Sep 2026 10:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"e982684fd2e3a9ec660e513cf4fb91d5\"",
-      "modified": "Fri, 11 Sep 2026 08:48:44 GMT"
+      "etag": "W/\"542e781dba4cccfc5475c3ec0c1a2eb7\"",
+      "modified": "Fri, 11 Sep 2026 09:37:10 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1043,17 +1043,56 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"1212c1ea5132c5899b9a1978a323b544\"",
-      "modified": "Thu, 10 Sep 2026 19:38:43 GMT"
+      "etag": "W/\"ceb9cb2724200abab5322bb443a29e07\"",
+      "modified": "Fri, 11 Sep 2026 09:56:56 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa3b2f4-b46\"",
-      "modified": "Fri, 11 Sep 2026 07:51:16 GMT"
+      "etag": "\"6aa3cf12-b99\"",
+      "modified": "Fri, 11 Sep 2026 09:51:14 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Miami Beach Commission approves multi-million-dollar GTA 6 advertising deal after controversial vote",
+      "link": "https://vgtimes.com/gaming-news/167266-rockstar-says-grand-theft-auto-vi-wasnt-fully-formed-when-its-first-trailer-dropped.html",
+      "source_link": null,
+      "date": "2026-09-11T09:49:18+00:00",
+      "source": "VGTimes",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://files.vgtimes.com/posts/2026-09/rockstar-says-grand-theft-auto-vi-wasnt-fully-formed-when-its-first-trailer-dropped-167266.webp",
+      "description": "On September 10, the Miami Beach Commission voted 4–3 to allow Rockstar Games to promote Grand Theft Auto 6 in the city and across the county. The decision sparked heated debate, with some officials viewing the deal as a way to bring additional money into the budget, while others warned that it could damage the city's image"
+    },
+    {
+      "title": "TV OLED à -700 €, vidéoprojecteur triple laser à moitié prix : les bons plans French Days sur les écrans 4K pour accueillir GTA 6 - Frandroid",
+      "link": "https://www.frandroid.com/bons-plans/3235817_tv-oled-a-700-videoprojecteur-triple-laser-a-moitie-prix-les-bons-plans-french-days-sur-les-ecrans-4k-pour-accueillir-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxNNWRhSWROWU5GanJlYl9SMFYyU1JmU3g1MTFJSVYwSTlvVllleVViZU9CRlZnYjNNT3JIenJOY2loTG5qazBDRE9vZEZGcVRtYjN5Q2dCMFFQMDR2VVBGbEJFN2lVd241Y20yWnBVR3Y4MS0yTW5kSVNXbHpLRFFsajZsZnhucDhQMUxtYWstYVNXdmZiYTY4djNpQllCUE5HTHRCNGZYNVgtd3ZJcjFabUVZRHZtQUhFUUNvQ3hyMlYyVHRSTkZkdHlEX1VjRWk0SW1GWVVYNE5TYVU1WmlwRkdZXzk4b1BkWWhiazVoNDlBcDJlM3VRSjlGN24?oc=5",
+      "date": "2026-09-11T09:44:57+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/fd-2026-guide-tv.jpg?resize=1600,900&key=d49e554c",
+      "description": "TV OLED à -700 €, vidéoprojecteur triple laser à moitié prix : les bons plans French Days sur les écrans 4K pour accueillir GTA 6&nbsp;&nbsp;Frandroid"
+    },
+    {
+      "title": "GTA 6 limited edition PS5 controller: pre-orders still available at these retailers - theshortcut.com",
+      "link": "https://www.theshortcut.com/p/gta-6-limited-edition-ps5-controller-pre-orders-still-available-at-these-retailers",
+      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxORnBERXl3X0xIdU5PTW1WVENYa0NpR3ZtLVdzWmxsNnBpRjRfc0FlcUpjdW1XUW1WV1pZdHN0cWRVdUU5ZHQ1RHhrbjY5MUN2M1VlM1lfOVY0bHZRYUFUVkhWb3JDeHhsa0NpNEhNSmI3bUpSWTBpd3hvOUE0RmEydUQ4S01LMUZHMlhHaTJTczluUW1ELU5QcWNhcjF1RWxmdEFTbkNBRFJ3SzdqT29vWmxR?oc=5",
+      "date": "2026-09-11T09:39:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://substackcdn.com/image/fetch/$s_!nsTO!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Feb198d95-81f5-452a-b187-92af53d4b02e_1456x819.webp",
+      "description": "GTA 6 limited edition PS5 controller: pre-orders still available at these retailers&nbsp;&nbsp;theshortcut.com"
+    },
     {
       "title": "GTA 6 Officially Confirms How Jason and Lucia's Relationship Works",
       "link": "https://gamerant.com/gta-6-characters-jason-lucia-relationship-romance/",
@@ -1066,6 +1105,19 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-pc-release-date-update.jpg?w=1600&h=900&fit=crop",
       "description": "Grand Theft Auto 6 features an extensive, although not mechanical, relationship between protagonists Jason and Lucia."
+    },
+    {
+      "title": "GTA 6 Online : une première info officielle tombe enfin - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-online-une-premiere-info-officielle-tombe-enfin-225073.html",
+      "source_link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQYi1XQ1hrZjhIaXpxLWZVd1dCTmFoSjl4cVlFV0o3eFh1WXAxZlVOdExKdGdySkFGN2RtWnRmVWYxa1hGekl1aHl1QVJpakRTRTNOTU5DR0QtWEMtblppNFVidDF0T016b3hxRmNZMkZnMDROZ1lnS25maUo1ZDNYcTFncFFzT19nOWlfVDVFTG90NTcyMlFrcng2aDdJd1NXQnMyam1NaW5sX3hRcUVxaA?oc=5",
+      "date": "2026-09-11T09:00:13+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-online-une-premiere-info-officielle-tombe-enfin.jpg",
+      "description": "GTA 6 Online : une première info officielle tombe enfin&nbsp;&nbsp;La Crème Du GamingGTA 6 Online : Rockstar vient de confirmer malgré lui l’un de ses “secrets les mieux gardés”&nbsp;&nbsp;XboxygenSecrets de GTA VI: Rockstar face à ses salariés licenciés devant un tribunal de Glasgow&nbsp;&nbsp;Yahoo Finance France"
     },
     {
       "title": "\"I don't think it's worth any amount of money\" - Controversial real-life GTA 6 advertising campaign passed by City of Miami, but brand can only appear \"discreetly\"",
