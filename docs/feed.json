@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T03:02:01.372192+00:00",
+  "generated_at": "2026-09-11T04:01:54.628440+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 43.6,
+  "duration_seconds": 55.2,
   "decode_failures": 0,
-  "total_articles": 2376,
-  "new_this_run": 1,
+  "total_articles": 2378,
+  "new_this_run": 2,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -324,7 +324,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
-      "days_since_last_article": 13,
+      "days_since_last_article": 14,
       "status": "ok"
     },
     {
@@ -336,7 +336,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
-      "days_since_last_article": 13,
+      "days_since_last_article": 14,
       "status": "ok"
     },
     {
@@ -402,12 +402,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T23:35:11+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T03:45:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -499,13 +499,13 @@
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
       "entries_fetched": 0,
-      "http_status": 404,
+      "http_status": 500,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T18:00:35+00:00",
       "days_since_last_article": 1,
-      "status": "cassee"
+      "status": "muette"
     },
     {
       "id": "rockstarintel",
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -934,9 +934,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
-    "gnews-fr": "100,102,100,102,102,102,102,102,102,102,102,102",
-    "gnews-en": "102,102,100,102,100,103,101,102,102,103,101,102",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "gnews-fr": "102,100,102,102,102,102,102,102,102,102,102,102",
+    "gnews-en": "102,100,102,100,103,101,102,102,103,101,102,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,7 +944,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -968,15 +968,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,6,6,6,6,6,6,7,6,6",
+    "xboxwire": "6,6,6,6,6,6,6,6,7,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,26,27,27,27,27,27,27,27,27,27",
+    "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
+    "arstechnica": "27,26,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1014,8 +1014,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"6084d44bc186a47f659dab59a6818197\"",
-      "modified": "Fri, 11 Sep 2026 02:11:08 GMT"
+      "etag": "W/\"2e2ae94802a540c07cf5cc06b46e42ce\"",
+      "modified": "Fri, 11 Sep 2026 03:56:55 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1030,7 +1030,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 03:00:07 GMT"
+      "modified": "Fri, 11 Sep 2026 04:01:20 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1039,8 +1039,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa36ec0-308d\"",
-      "modified": "Fri, 11 Sep 2026 03:00:16 GMT"
+      "etag": "W/\"6aa37cd2-308d\"",
+      "modified": "Fri, 11 Sep 2026 04:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1059,12 +1059,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa35e8d-b47\"",
-      "modified": "Fri, 11 Sep 2026 01:51:09 GMT"
+      "etag": "\"6aa37aae-b47\"",
+      "modified": "Fri, 11 Sep 2026 03:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 DualSense Controllers Hit UK Preorder — and the Black One Already Has a Queue - eGamers.io",
+      "link": "https://egamers.io/gta-6-dualsense-controllers-hit-uk-preorder-and-the-black-one-already-has-a-queue/",
+      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOZXNLRVR2bFVqZnR0Z3JNWUl5Z3pGSnhUMHhldVJPT0tGT2hwV01ZdFAwbURKUjJZMURpckdvcjFYY0ZMdlJpclpEanlVYl9YTUhUNjVQWWxLOFB5VWJWTzc2Mm9YbkN0LUpLVTF2TnNnMEJqLTVoVEJEa0x1aDFtWTVaVnRLNVQxUjJXT2lfa1k3TTRya1JRWkJFUWRkY3UtbUxB?oc=5",
+      "date": "2026-09-11T03:45:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://egamers.io/wp-content/uploads/2026/09/gta-6-dualsense-controllers-hit-uk-preorder-and-the-black-one-already-has-a-queue.jpg",
+      "description": "GTA 6 DualSense Controllers Hit UK Preorder — and the Black One Already Has a Queue&nbsp;&nbsp;eGamers.io"
+    },
     {
       "title": "GTA 6 Proves It Can Print Money For Netflix In Just 6 Hours - DualShockers",
       "link": "https://www.dualshockers.com/gta-6-proves-it-can-print-money-for-netflix-in-just-6-hours/",
@@ -1077,6 +1090,19 @@
       "lang": null,
       "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/09/gta-online-money-1920x1080.jpg?w=1600&h=900&fit=crop",
       "description": "GTA 6 Proves It Can Print Money For Netflix In Just 6 Hours&nbsp;&nbsp;DualShockers"
+    },
+    {
+      "title": "Grand Theft Auto VI: Extended Look Garnered 31.1 Million Views on Netflix Since Premiere - iPhone in Canada",
+      "link": "https://www.iphoneincanada.ca/2026/09/02/grand-theft-auto-vi-extended-look-garnered-31-1-million-views-on-netflix-since-premiere/",
+      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOMFpabkE2TE9Qa0ppYi1NcTNfVGtUX01LWE16blhQSm1adUZ1WUp4a0hpYmpOeW9jWmRaTldJQzR4NEl2c205Sy0zZXBEcFo3Z016NjRBemRfYjFoWDAzblhVaVRVb1ktYkluVEpxbXZmSWRXandBTWhOUENsYzBXM1phUmRhSDV4a3o4U214M2R6RXFHXzYwQnZIQ1NzMkMtUmJ1RDdtdjkzbmJ2WlRKcWlsYnhDbTFIM18xMFA2OHBST3k0a2xQeA?oc=5",
+      "date": "2026-09-11T01:21:32+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://cdn.iphoneincanada.ca/wp-content/uploads/2026/09/GTA6-screenshot.jpg",
+      "description": "Grand Theft Auto VI: Extended Look Garnered 31.1 Million Views on Netflix Since Premiere&nbsp;&nbsp;iPhone in Canada"
     },
     {
       "title": "GTA 6 DualSense Controllers Resell For Up to $150 - resellcalendar.com",
