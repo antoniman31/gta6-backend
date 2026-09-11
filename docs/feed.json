@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T19:01:35.783738+00:00",
+  "generated_at": "2026-09-11T20:01:55.261264+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 34.0,
+  "duration_seconds": 49.2,
   "decode_failures": 0,
-  "total_articles": 2441,
-  "new_this_run": 3,
+  "total_articles": 2443,
+  "new_this_run": 2,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T17:40:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-11T17:19:41+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -418,7 +418,7 @@
       "http_status": 301,
       "redirect": "https://www.pcgamer.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T18:35:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -622,7 +622,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T18:13:17+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 1,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 9,
@@ -814,7 +814,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-07T10:07:52+00:00",
       "days_since_last_article": 4,
       "status": "ok"
@@ -870,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 82,
+      "entries_fetched": 83,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -916,13 +916,7 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "vg247": {
-      "depuis": "2026-09-11T18:01:56.804320+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -930,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "99,99,100,101,101,101,100,100,100,100,100,100",
-    "gnews-en": "100,100,102,100,101,102,102,103,102,102,100,99",
+    "gnews-fr": "99,100,101,101,101,100,100,100,100,100,100,100",
+    "gnews-en": "100,102,100,101,102,102,103,102,102,100,99,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,9 +938,9 @@
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "kotaku": "20,20,20,20,20,20,20,0,0,20,20,20",
+    "kotaku": "20,20,20,20,20,20,0,0,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,100,100,0,100",
+    "vg247": "100,100,100,100,100,100,100,100,100,0,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -970,7 +964,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,83,83,83,83,83,83,83,83,82",
+    "engadget": "83,83,83,83,83,83,83,83,83,83,82,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -984,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"0a22e1d25e92cc706ac8a32c03a76785\"",
-      "modified": "Fri, 11 Sep 2026 18:35:49 GMT"
+      "etag": "W/\"dcad7748e560f35ed7010316ac8c72b9\"",
+      "modified": "Fri, 11 Sep 2026 19:47:04 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1004,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"348ba-K9IOk4IbKZMQIo21fQZmHIiiaN0\"",
+      "etag": "W/\"34904-27qO9U+GMM8kxmU099G6RbuEmLw\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"d404be591acebd0efbbf9799e60a3985\"",
-      "modified": "Fri, 11 Sep 2026 18:39:40 GMT"
+      "etag": "W/\"38a1d2607dd3acea13a9c4bb4ee1192d\"",
+      "modified": "Fri, 11 Sep 2026 20:00:14 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1020,12 +1014,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 18:08:06 GMT"
+      "modified": "Fri, 11 Sep 2026 19:07:38 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 18:56:37 GMT"
+      "modified": "Fri, 11 Sep 2026 20:01:29 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,18 +1028,18 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa44fbf-2ff3\"",
-      "modified": "Fri, 11 Sep 2026 19:00:15 GMT"
+      "etag": "W/\"6aa45dd1-2ff3\"",
+      "modified": "Fri, 11 Sep 2026 20:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"ac8ac346233981640f4dd5eb788021c4\"",
-      "modified": "Fri, 11 Sep 2026 15:27:35 GMT"
+      "etag": "W/\"072583fc619ea893f5d2c03a6fa3cf21\"",
+      "modified": "Fri, 11 Sep 2026 19:23:05 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789153254\"",
-      "modified": "Fri, 11 Sep 2026 19:00:54 GMT"
+      "etag": "W/\"1789156803\"",
+      "modified": "Fri, 11 Sep 2026 20:00:03 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1384,6 +1378,19 @@
       "lang": "fr",
       "image": "https://www.dexerto.fr/cdn-image/wp-content/uploads/sites/2/2026/09/02/GTA-6-Profil-criminel.jpg",
       "description": "Rockstar garde GTA 6 Online secret, mais un mode à 32 joueurs fait surface&nbsp;&nbsp;Dexerto.fr"
+    },
+    {
+      "title": "Real-life nudist resort forced to speak out after appearing in GTA VI leak - GAMINGbible",
+      "link": "https://www.gamingbible.com/news/gta-6-cypress-creek-nudist-resort-respond-fake-reviews-301101-20260911",
+      "source_link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPc0xwWGF3Y2VFcGtMZ2Q2NUJTNmdOY2Zxc3JZbV8yOWZtR0JrT1pHWFFBYnNjOWNiYmc5Y2Z5TlV0d012N2RzTUVDR1VZd2F5UTFsTmhaRmVCZmlPYnIwUlBTVGxNbHgxYi1KMFVFX2UzbEJuaGRVdjdWbTdndHVlMTU3ak1NMkg4QW1VZk9XQ2RMSXRxOURQTi11T21uaTB5LXEzVnlB?oc=5",
+      "date": "2026-09-11T15:00:03+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blt847a65a594bd97f3/6aa3e6b933d092ef9325a76a/GTA_6_woman_sunbathing_in_bikini.jpg",
+      "description": "Real-life nudist resort forced to speak out after appearing in GTA VI leak&nbsp;&nbsp;GAMINGbible"
     },
     {
       "title": "Xbox Disc to Digital adds more games, with almost all Rockstar releases now supported",
@@ -31699,6 +31706,19 @@
       "lang": null,
       "image": "https://rockstarintel.com/wp-content/uploads/2024/03/ddb95f8a2afe0ae8672b2f3718f985d44979b499.jpg",
       "description": "In GTA Online this week, a rare license plate is up for grabs. We’ll be showing you how to get it. GTA Online’s current Event Week (running from July 30th through August 5th) features …"
+    },
+    {
+      "title": "PS5 : faut-il s’attendre à des ruptures de stock à l’arrivée de GTA 6 ? - Journal du Geek",
+      "link": "https://www.journaldugeek.com/2026/07/31/ps5-faut-il-sattendre-a-des-rupture-de-stock-a-larrivee-de-gta-6/",
+      "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNem5sRFFLS0tESFowZ3RzaElvYnFGLXlpTnhJSzFUa0xCQl9ZcF9NUzRROXN1TS05YmxYOTUtY0w5RjgxOHNUblY4ZDNWZXFES2RIOExRZ3JkYUhDYjktOElvMzB4aVZxVE9GMDRBM2hRRXQ1a0JMOTJOSW12SjRQZE9KVU0tOVZFZ0RxTDYzTjBmdVduVzNZdlhITk94RlRpbWJ3NjR6V2VLdw?oc=5",
+      "date": "2026-07-31T07:00:00+00:00",
+      "source": "Journal du Geek",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/02/mise-a-jour-pssr-ps5-pro-1600x900.jpg",
+      "description": "PS5 : faut-il s’attendre à des ruptures de stock à l’arrivée de GTA 6 ?&nbsp;&nbsp;Journal du Geek"
     },
     {
       "title": "GTA Online Event Week: Cayo Summer Special (July 30th-August 5th)",
