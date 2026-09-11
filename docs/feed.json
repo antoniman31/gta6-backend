@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T21:02:06.107455+00:00",
+  "generated_at": "2026-09-11T21:12:45.523896+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 58.4,
+  "duration_seconds": 43.3,
   "decode_failures": 0,
   "total_articles": 2451,
-  "new_this_run": 8,
+  "new_this_run": 1,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -334,7 +334,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 14,
       "status": "ok"
@@ -358,7 +358,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T20:53:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T20:20:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 4,
+      "new_this_run": 1,
       "last_article": "2026-09-11T20:50:07+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 0,
@@ -550,7 +550,7 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T20:53:50+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 0,
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 3,
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 3,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 9,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,101,101,101,100,100,100,100,100,100,100,100",
-    "gnews-en": "102,100,101,102,102,103,102,102,100,99,101,100",
+    "gnews-fr": "101,101,101,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "100,101,102,102,103,102,102,100,99,101,100,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -940,7 +940,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,0,0,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "vg247": "100,100,100,100,100,100,100,0,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -964,7 +964,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,83,83,83,83,83,83,82,83,83",
+    "engadget": "83,83,83,83,83,83,83,83,82,83,83,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 20:57:31 GMT"
+      "modified": "Fri, 11 Sep 2026 21:12:16 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1038,8 +1038,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789156803\"",
-      "modified": "Fri, 11 Sep 2026 20:00:03 GMT"
+      "etag": "W/\"1789160794\"",
+      "modified": "Fri, 11 Sep 2026 21:06:34 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1100,6 +1100,19 @@
       "description": "Rockstar Games Deployed Drones, Five-Person Leak Team to Protect GTA 6 Details&nbsp;&nbsp;Northeast Times"
     },
     {
+      "title": "West Virginia ranks No. 4 for GTA 6 PTO interest, social media data shows - WV News",
+      "link": "https://www.wvnews.com/news/wvnews/west-virginia-ranks-no-4-for-gta-6-pto-interest-social-media-data-shows/article_b9c16086-3f47-423b-b391-5c2fc87cce31.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxPakdTYThYTzFSNk5pTjNoRWV3ZU1YRVZ4el90THFsbHd5M0xrQ2l4NTJ4SjlJdlVvMmtITjhKS2trUXRyOGJwazljRHJfVGFTMWpybkRTb3plT3lYUV9OWENybU5LNTRWYVhaQ2hHZ0ZyWkF4M0tKZ2UzY1dsZHUyakp5dnMwbkpqMC1BRVl3aWNzb1BKRUNPV0NCWG1qZTcwaUdwM0ZZU0l1SnJpQXpXRTZyTmFTcW9Gb3pJb0ZLV1ZRTE9iSFBvU2lIRVRYNU14RkR1WnZLeHg1QXNSNVd6ZHlpWXlmX3VNWW80Xw?oc=5",
+      "date": "2026-09-11T20:34:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://bloximages.chicago2.vip.townnews.com/wvnews.com/content/tncms/assets/v3/editorial/5/44/544f4210-7706-4a45-ad20-4cff42933e3e/6aa4675c89afe.image.png?crop=1245%2C653%2C0%2C0&resize=1200%2C629&order=crop%2Cresize",
+      "description": "West Virginia ranks No. 4 for GTA 6 PTO interest, social media data shows&nbsp;&nbsp;WV News"
+    },
+    {
       "title": "Les 5 trucs complètement ratés dans le trailer de GTA 6 - JeuxVideo.com",
       "link": "https://www.jeuxvideo.com/news/2103145/les-5-trucs-completement-rates-dans-le-trailer-de-gta-6.htm",
       "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNUkE4OE03YUhuT2xuZllEX0kzenFpN1ZESG9XZ2F5YVZDOXQ0eFZXaF9MaGRXNndoMVBjVHRVY3pBSkVxd2htd1BxSV9MY21mMUh5THVRZnN5cWFFekkyZnl1NTFoYzEzQi16ODdRd0VMcWpuSVZWTzFUY3hMNUlRZHJBZDZBaGJXdVhNX3o3ZHFzWXlHWU5DcU45VFZ1SWs?oc=5",
@@ -1124,19 +1137,6 @@
       "lang": null,
       "image": null,
       "description": "‘Buyer, beware’: Ron DeSantis says don’t go looking for ‘GTA 6’ in the real Miami&nbsp;&nbsp;Florida Politics"
-    },
-    {
-      "title": "City of Miami Beach Approves Rockstar’s GTA 6 Real-Life Marketing Campaign - Men's Journal",
-      "link": "https://www.mensjournal.com/entertainment/city-of-miami-beach-approves-rockstars-gta-6-real-life-marketing-campaign",
-      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPR0w1VDBKc2ZHcFd5QXQzbU1yWjJUcmFhSWN1dUotcWdjZ0Juajc3a0RqZzBQTVZmWWduLTNVVW9ReFE3N0Z2U2lvZW5TTkFUcm5EcGdpLVhQRGdWZ3V5a3BlclRON3VCdW16VE9ZaXFRNUFhVE40QlFweC1VZFNSNHpkWE1IeWlFbnBQYXNoOUFkaWN5TnVkbFp1dmxaSk5Mek8weFdydW5jM2xoT0NpaGNucVBTUQ?oc=5",
-      "date": "2026-09-11T19:51:02+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": null,
-      "description": "City of Miami Beach Approves Rockstar’s GTA 6 Real-Life Marketing Campaign&nbsp;&nbsp;Men's Journal"
     },
     {
       "title": "Go Ahead And Take Vacation Time To Play GTA 6 - GameSpot",
@@ -1760,7 +1760,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://insider-gaming.com/wp-content/uploads/2026/09/Jason_and_Lucia_13-scaled.jpg",
-      "description": "The City of Miami Beach has approved negotiations with Rockstar Games for a marketing campaign promoting Grand Theft Auto 6.\nThe post Miami Beach Approves Negotiations For GTA 6 Marketing Campaign appeared first on Insider Gaming."
+      "description": "The City of Miami Beach has approved negotiations with Rockstar Games for a marketing campaign promoting Grand Theft Auto 6.\nThe post Miami Beach Approves Negotiations For GTA 6 Marketing Campaign appeared first on Insider Gaming.",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://www.mensjournal.com/entertainment/city-of-miami-beach-approves-rockstars-gta-6-real-life-marketing-campaign"
+        }
+      ]
     },
     {
       "title": "Lucia in GTA 6: Her story, personality and role explained - Red Bull",
