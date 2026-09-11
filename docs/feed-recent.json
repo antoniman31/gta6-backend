@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-10T23:22:18.646680+00:00",
+  "generated_at": "2026-09-11T00:01:49.684552+00:00",
   "attente_recap": {
-    "articles": 4,
+    "articles": 6,
     "officiels": 0,
     "sommet": 3
   },
-  "duration_seconds": 49.5,
+  "duration_seconds": 47.6,
   "decode_failures": 0,
-  "total_articles": 2372,
-  "new_this_run": 0,
+  "total_articles": 2374,
+  "new_this_run": 2,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -406,8 +406,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T22:00:59+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-10T23:35:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T15:46:13+00:00",
       "days_since_last_article": 0,
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 2,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "99,100,100,100,100,102,100,102,102,102,102,102",
-    "gnews-en": "100,100,102,100,102,102,100,102,100,103,101,102",
+    "gnews-fr": "100,100,100,100,102,100,102,102,102,102,102,102",
+    "gnews-en": "100,102,100,102,102,100,102,100,103,101,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,15 +957,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,6,7,6,6,6,6,6,6,6,6",
+    "xboxwire": "7,6,7,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,83,83,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,27,27,27,27,26,27,27,27,27,27",
+    "theverge": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "engadget": "83,83,83,83,82,82,82,82,82,82,82,82",
+    "arstechnica": "27,27,27,27,27,26,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -998,7 +998,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"27e58-q5qW8+Yr7SCbqfgPLIgxFl7S/8E\"",
+      "etag": "W/\"277d3-grL/QmcHMEGFt+YZ0vlOxvETvoE\"",
       "modified": null
     },
     "kotaku": {
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 23:21:49 GMT"
+      "modified": "Fri, 11 Sep 2026 00:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa3367c-308d\"",
-      "modified": "Thu, 10 Sep 2026 23:00:12 GMT"
+      "etag": "W/\"6aa34491-308d\"",
+      "modified": "Fri, 11 Sep 2026 00:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1048,12 +1048,25 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa3264e-b47\"",
-      "modified": "Thu, 10 Sep 2026 21:51:10 GMT"
+      "etag": "\"6aa3426f-b47\"",
+      "modified": "Thu, 10 Sep 2026 23:51:11 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 DualSense Controllers Resell For Up to $150 - resellcalendar.com",
+      "link": "https://resellcalendar.com/news/news/gta-6-controller-playstation-dualsense-reseller-sold-out/",
+      "source_link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNeENDQ1BVZzNQN2pkUEFtQkVwYTBnRjZJWFJHRkVyYUNzTW9XYm5yN2g1OUtCcjZadHB1SGd2UmMxNy16VFRFa3NRRkZZb2sybGVwT2dkVnBjZU90Y2UyWHM5ZHMzcjZ1VkxYaDhWRXpRZXQxVkpBNUNyTFNIVUhLb3NmdnNWSy1FbFRnRktwZFM0Y0RvUjE2SzJ3?oc=5",
+      "date": "2026-09-10T23:35:11+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://resellcalendar.com/wp-content/uploads/2026/09/gta6ps5dualsensecontroller.jpg",
+      "description": "GTA 6 DualSense Controllers Resell For Up to $150&nbsp;&nbsp;resellcalendar.com"
+    },
     {
       "title": "That Weird GTA 6 Backflip Has Been Pulled Off In Real Life - kotaku.com",
       "link": "https://kotaku.com/someone-recreated-the-weirdest-looking-moment-from-the-big-gta-6-trailer-in-real-life-2000733323",
@@ -1579,6 +1592,19 @@
       "lang": null,
       "image": "https://substackcdn.com/image/fetch/$s_!MpD3!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9153891a-0034-4266-a6af-b237ec3a5626_1080x608.webp",
       "description": "GTA 6 limited edition PS5 controller: where to buy&nbsp;&nbsp;The Shortcut | Matt Swider"
+    },
+    {
+      "title": "Possible GTA 6 collectors edition appears online - 'It's bigger than a PS5' - Daily Express",
+      "link": "https://www.express.co.uk/entertainment/gaming/2247422/possible-gta-6-collectors-edition",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNY1B0VlF4dTU5YUZsOXhFWG1lS0FrQWVnamx4MHV6OV9ENVJjZEJxQTdheXdveU5sQ0J4bko2Y3FvdDNUckZ3am00cEloZFNOLXZYR3NEREx6ZVRPaHdaNUx0OWRma2R3akxnRjdsVjJjYTZTb3VZaGNSTkJMbUc3TlNvTHpXM29fMXB3RXZ1ZC1EZ9IBlwFBVV95cUxOZENkN2NyYTg5OWh5M3FvZmtoQUhZOGlLZkI0REhUT3QtaUZ4cGh1YnFja2VjTWhiM0MtY216cXpCV0E2NlJ3ejY4SWcwRVN5OWpEOE1Ec2RVdi1xUWRELUJQTkdLc18tT29weWFMdHBNeUhtUGdrOUJDT3JlTlY5VVdiSFhlRVN0SHFoWkhMZGdSZkFZQ05R?oc=5",
+      "date": "2026-09-10T13:14:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.images.express.co.uk/img/dynamic/143/1200x630/7136813.jpg",
+      "description": "Possible GTA 6 collectors edition appears online - 'It's bigger than a PS5'&nbsp;&nbsp;Daily Express"
     },
     {
       "title": "GTA 6 Limited Edition PS5 controller gets scalped hours after preorder goes live - Sportskeeda Tech",
@@ -4987,32 +5013,6 @@
       "lang": "fr",
       "image": "https://cdn.kulturegeek.fr/wp-content/uploads/2026/07/recap-tech-KultureGeek.jpg",
       "description": "Le récap tech de la semaine : GPT-6 Astra débarque, GTA 6 cartonne sur Netflix&nbsp;&nbsp;KultureGeek"
-    },
-    {
-      "title": "GTA 6 PS5 Limited Edition Controller: How Much Will It Cost & When Can You Buy One? - SlashGear",
-      "link": "https://www.slashgear.com/2251266/playstation-5-gta-6-limited-edition-dualshock-controller-price/",
-      "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxPcUlQTE9lUUFhQ3ZITk5oNFlWaDZFcUlETkx6RXZacl93NmNudXVCYzdrd29PT2tCTUFWaFJQdVBucU02UWtGQzg2bWRrQXVDU0huZkFHeHVoa2l4WDhUY040cUVmTFJtTXFDNGJoMFpmV3FEV1NlbUhJYXNGMlBSYUpVekh4eHBjbEVYcUdDNkNYRWUyczdHaTMyTVU0dw?oc=5",
-      "date": "2026-09-06T20:45:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.slashgear.com/img/gallery/gta-6-ps5-limited-edition-controller-how-much-will-it-cost-when-can-you-buy-one/l-intro-1788540940.jpg",
-      "description": "GTA 6 PS5 Limited Edition Controller: How Much Will It Cost & When Can You Buy One?&nbsp;&nbsp;SlashGear"
-    },
-    {
-      "title": "GTA 3 fête ses 25 ans : le chef-d’œuvre noté 97% mérite-t-il encore son statut en 2026 ?",
-      "link": "https://www.jeuxvideo.com/news/2102308/gta-3-fete-ses-25-ans-le-chef-d-oeuvre-note-97-merite-t-il-encore-son-statut-en-2026.htm",
-      "source_link": null,
-      "date": "2026-09-06T20:20:07+00:00",
-      "source": "Jeuxvideo.com",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178853/1788530287-3778-card.jpg",
-      "description": "Noté 97 % à sa sortie et pionnier incontesté du monde ouvert en 3D, Grand Theft Auto III célèbre ses 25 ans cette année. Un quart de siècle plus tard, alors que GTA 6 s'apprête à sortir, le titre de Rockstar conserve-t-il son statut de monument ou accuse-t-il le poids des années ?"
     }
   ],
   "partial": true,
