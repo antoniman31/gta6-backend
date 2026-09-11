@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T07:01:40.176800+00:00",
+  "generated_at": "2026-09-11T08:01:50.548010+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 41.5,
+  "duration_seconds": 49.9,
   "decode_failures": 0,
-  "total_articles": 2381,
-  "new_this_run": 1,
+  "total_articles": 2384,
+  "new_this_run": 3,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,12 +390,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T04:05:11+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-11T07:14:08+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T15:46:13+00:00",
       "days_since_last_article": 0,
@@ -486,12 +486,12 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T18:01:58+00:00",
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-11T07:51:23+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 0,
@@ -642,11 +642,11 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-11T06:05:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -768,7 +768,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T07:23:22+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -916,27 +916,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-11T02:01:46.278685+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-11T03:02:01.371660+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,15",
-    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,102",
-    "gnews-en": "103,101,102,102,103,101,102,100,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
+    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,101",
+    "gnews-en": "101,102,102,103,101,102,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,15",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -968,14 +957,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,6,7,6,6,6,6,6,6,6",
+    "xboxwire": "6,6,6,7,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,82,82,82,82,82,83",
+    "engadget": "82,82,82,82,82,82,82,82,82,82,83,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -995,12 +984,12 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 06:39:18 GMT"
+      "modified": "Fri, 11 Sep 2026 07:08:28 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Thu, 10 Sep 2026 18:03:36 GMT"
+      "modified": "Fri, 11 Sep 2026 07:52:07 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -1014,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"23311472cb4e747929f56cc765a53a53\"",
-      "modified": "Fri, 11 Sep 2026 04:55:07 GMT"
+      "etag": "W/\"2bb3f1a020b3841b6b44bdee4162e99b\"",
+      "modified": "Fri, 11 Sep 2026 08:00:33 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1030,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 07:01:10 GMT"
+      "modified": "Fri, 11 Sep 2026 08:00:49 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1039,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa3a700-31aa\"",
-      "modified": "Fri, 11 Sep 2026 07:00:16 GMT"
+      "etag": "W/\"6aa3b512-3287\"",
+      "modified": "Fri, 11 Sep 2026 08:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1059,12 +1048,51 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa396d1-b46\"",
-      "modified": "Fri, 11 Sep 2026 05:51:13 GMT"
+      "etag": "\"6aa3b2f4-b46\"",
+      "modified": "Fri, 11 Sep 2026 07:51:16 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 | Les équipes de Rockstar Games sont nerveuses, la société est consciente de la grande pression",
+      "link": "https://www.rockstarmag.fr/gta-6-les-equipes-de-rockstar-games-sont-nerveuses-la-societe-est-consciente-de-la-grande-pression/",
+      "source_link": null,
+      "date": "2026-09-11T07:51:23+00:00",
+      "source": "RockstarMag",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/09/rockstar-games-pression-gta-6-1024x576.jpg",
+      "description": "Malgré le budget « no limit », Rockstar Games et ses équipes sont nerveux et sont conscients des enjeux autour du développement de GTA 6."
+    },
+    {
+      "title": "GTA 6 : Miami Beach donne son feu vert, Vice City va pouvoir envahir la vraie ville - Xboxygen",
+      "link": "https://www.xboxygen.com/News/gta-6-miami-beach-publicite-ville",
+      "source_link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1ERHNUN1ZmZ3U5aVliTWlXUlRnb2diTWRQS182NUN3T1htbmZrZGZycDlvSWZ1ZFU3RHNORUo3QWtYeG1TaVZlZ1VnOVVpWkZWWmxPUnhrZ3dmdjNmNExtVk41aG9zU1M2ajFUN3hHT3M?oc=5",
+      "date": "2026-09-11T07:14:08+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/09/GTA6-pub-miami-vice-city.jpg",
+      "description": "GTA 6 : Miami Beach donne son feu vert, Vice City va pouvoir envahir la vraie ville&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "« L’un des secrets les mieux gardés » GTA 6 Online n'est toujours pas annoncé, mais on a enfin une première info officielle - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-online-premiere-info-officielle-32-joueurs-722684",
+      "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOTWVqSW84dzgwS1NNeC0tS3dMTUpOUXBoa0hYRkROa2JHM0E2ZXV2UklDWGhvMWttUTA2cnU0dmZFcEhlNk5fR1hLQjRpWm1tckx1MUhtTUhhUXNLeW4tc1NPcVNLWk55TmdFZGpKQmtjb2p2dmpuanpwb3hJRXRGX2lDdTFPa2d0UnNnc0NNeloySzNhSTFpcHZlZm8zQQ?oc=5",
+      "date": "2026-09-11T07:08:18+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img//_6a96bdd1b6675.jpg",
+      "description": "« L’un des secrets les mieux gardés » GTA 6 Online n'est toujours pas annoncé, mais on a enfin une première info officielle&nbsp;&nbsp;Gameblog"
+    },
     {
       "title": "GTA 6 s’offre une expérience géante et haptique au Tokyo Game Show 2026",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-soffre-une-experience-geante-et-haptique-au-tokyo-game-show-2026-20260911",
@@ -4979,45 +5007,6 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/ocarina-of-time-remake-pourrait-sortir-en-novembre-et-affronter-gta-6.png",
       "description": "Ocarina of Time Remake pourrait sortir en novembre et affronter GTA 6&nbsp;&nbsp;lacremedugaming.fr"
-    },
-    {
-      "title": "'GTA 6: An Extended Look' Tops Netflix Global Charts With 31 Million Views - Yahoo",
-      "link": "https://www.yahoo.com/entertainment/movies/articles/gta-6-extended-look-tops-024246153.html",
-      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPZDR0UjBRT2FxakZ5X0J5M3N4X25aUmliYzVhQ09YT29WNXEyMklkd1N3dkh6ZDRFZzV4Ym05YzBDSGFycm5GVzhqOHN5S2NhOWY0Vk81bGVsRUNBc3VaWWQyUENPVE5ZTXU2MnBuWkpGcXVXV2dPQVhGOHd2RmtIRkhPQWVXTFBtS3J2c1ZHdWs3amtPZFE?oc=5",
-      "date": "2026-09-07T02:42:00+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://s.yimg.com/lo/mysterio/api/08448c7db2bf158b7eeff1ad8137785b502809a25b56c2110c3a3c8c116586c9/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fcomplex_131%2F0070146840b5238e5904362e309ac046.jpg",
-      "description": "'GTA 6: An Extended Look' Tops Netflix Global Charts With 31 Million Views&nbsp;&nbsp;Yahoo"
-    },
-    {
-      "title": "Will ‘GTA 6’ have a first-person mode? - NME",
-      "link": "https://www.nme.com/guides/gaming-guides/gta-6-first-person-mode-3967276",
-      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1EX2pMc2dxbXJIMW9LYUh0aWRNUE91MnJEY2ZTQ3R6RFBBYnVjUXY1blN1TlY1LTYzU2lkQThMU0g1bkR1YVpsek9nVjFXdTNodTFMclJWRGVUTFR1QzNKVlFhSVk4UjU0c19IRE5IVHJwcVNSY3NTV0F6dGk?oc=5",
-      "date": "2026-09-07T02:25:27+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.nme.com/wp-content/uploads/2026/09/gta-6-first-person.jpg",
-      "description": "Will ‘GTA 6’ have a first-person mode?&nbsp;&nbsp;NME"
-    },
-    {
-      "title": "Community GTA 6 map uses Netflix trailer and leaks to accurately chart Leonida - Notebookcheck",
-      "link": "https://www.notebookcheck.net/Community-GTA-6-map-uses-Netflix-trailer-and-leaks-to-accurately-chart-Leonida.1390940.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNaEFIWWxYWFRuMlJaR1hCQU9XeS1HMEJfNDdTOXoyejd0Y1RxWl9nX2hfN0ZObXdpREFJZ3R4b2k0bzlTWmluVDR0MldKWFNHeWpMcHBoaFZlZmc3SkFfVDhrdTJQQWg0VFJYMUZEb1p4YmdaRFFkRkJIdEdMOG8zYmpqOUJVdFpqbDRNQXFxOU50d0ZVTGhpWHVYQ2xHVUptVHB3U3BHakhrc01idUtVS2t1SDhkUk9HWlpsQWZHd0M?oc=5",
-      "date": "2026-09-07T00:24:00+00:00",
-      "source": "GTA 6 x Netflix",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6MtKalagaNew.jpg",
-      "description": "Community GTA 6 map uses Netflix trailer and leaks to accurately chart Leonida&nbsp;&nbsp;Notebookcheck"
     }
   ],
   "partial": true,
