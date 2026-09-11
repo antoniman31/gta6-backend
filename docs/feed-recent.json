@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T11:44:26.404053+00:00",
+  "generated_at": "2026-09-11T12:01:48.249023+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 48.5,
+  "duration_seconds": 45.4,
   "decode_failures": 0,
-  "total_articles": 2398,
-  "new_this_run": 3,
+  "total_articles": 2399,
+  "new_this_run": 1,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,7 +390,7 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-11T11:15:52+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T10:02:30+00:00",
       "days_since_last_article": 0,
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T16:49:53+00:00",
       "days_since_last_article": 2,
@@ -574,7 +574,7 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T11:00:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -634,8 +634,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T09:49:18+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T11:50:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 9,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,0,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,102,102,102,102,101,101,99,99,100",
-    "gnews-en": "101,102,100,100,100,100,100,100,100,100,100,102",
+    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "gnews-fr": "102,102,102,102,102,102,101,101,99,99,100,101",
+    "gnews-en": "102,100,100,100,100,100,100,100,100,100,102,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,0,0,0,0,0,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -964,7 +964,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,83,83,83,83,83,83",
+    "engadget": "82,82,82,82,82,83,83,83,83,83,83,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2713a-e6tfzbyiAXEhR7cki0WnYLDFYiY\"",
+      "etag": "W/\"25f0c-j6ZFSyeeTYsQPsTm1elCUfYiXAE\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"f19d19bcefea3b66b029abe38c87ea9a\"",
-      "modified": "Fri, 11 Sep 2026 11:43:05 GMT"
+      "etag": "W/\"298ee6bea9f18c8777b71ca0daca423b\"",
+      "modified": "Fri, 11 Sep 2026 12:00:36 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 11:43:07 GMT"
+      "modified": "Fri, 11 Sep 2026 11:57:59 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,13 +1028,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa3e648-2ff0\"",
-      "modified": "Fri, 11 Sep 2026 11:30:16 GMT"
+      "etag": "W/\"6aa3ed50-2ff0\"",
+      "modified": "Fri, 11 Sep 2026 12:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"0a32626454d4bb402eeece49e964b586\"",
-      "modified": "Fri, 11 Sep 2026 10:37:22 GMT"
+      "etag": "W/\"857790d5e0de5c70422408682eebfb5a\"",
+      "modified": "Fri, 11 Sep 2026 11:44:56 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1043,8 +1043,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"9ea6920d134fb39214f6494c4d284cd2\"",
-      "modified": "Fri, 11 Sep 2026 11:08:32 GMT"
+      "etag": "W/\"4a6f60df2caf661cc1b13d875b89876f\"",
+      "modified": "Fri, 11 Sep 2026 11:54:59 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Could Sell 48 Million Copies at Launch, Analysts Predict",
+      "link": "https://vgtimes.com/gaming-news/167279-newzoo-says-gta-6-could-lift-console-sales-revenue-across-the-market.html",
+      "source_link": null,
+      "date": "2026-09-11T11:50:01+00:00",
+      "source": "VGTimes",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://files.vgtimes.com/posts/2026-09/newzoo-says-gta-6-could-lift-console-sales-revenue-across-the-market-167279.webp",
+      "description": "Analyst firm Piper Sandler has raised its projection for GTA 6's launch sales to roughly 48 million copies. At the same time, analysts are seeing a sharp increase in interest surrounding the game, with activity on its Reddit community nearly quadrupling in just a few weeks. An exclusive early showing of the Extended Look on Netflix also attracted a significant number of new subscribers to the streaming service"
+    },
     {
       "title": "GTA 6 DualSense Controller Scalpers Are Already Cashing In - GameSpot",
       "link": "https://www.gamespot.com/articles/gta-6-dualsense-controller-scalpers-are-already-cashing-in/",
@@ -4994,19 +5007,6 @@
       "lang": null,
       "image": "https://upcomer.com/wp-content/uploads/2026/05/gta6cars-1.webp",
       "description": "Refuelling in GTA 6 takes about 10 seconds – and Rockstar thinks nobody can complain about that&nbsp;&nbsp;upcomer.com"
-    },
-    {
-      "title": "Miami veut devenir Vice City pour la sortie de GTA VI, mais la shérif locale s’y oppose - 7sur7.be",
-      "link": "https://www.7sur7.be/tech/miami-veut-devenir-vice-city-pour-la-sortie-de-gta-vi-mais-la-sherif-locale-sy-oppose~afbc9110c/",
-      "source_link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPM0t0Vm1rWFNUaUMzamRwbmpZQno0SmhzakJuTjhYcFdieTU5Z05pU3lBbmtFQWN1c0ZvOHUyWEF5ZGhXeERjSEFUbjZ2ZjNwMTk5Mk5ZQUZsQjhEMkRUX1hYd3J3Y3NQM0FrYWFBWTV6YVBuY2lQSWFScWxQb1lTbmxZMGNCRWRyQ3JIQTVSM2U5NWxUQ1NwMUlPLTJrTG04UDhIQUZuSmpuOW56Mmo5RWhRVEROUXB0NWZIbUlEYw?oc=5",
-      "date": "2026-09-07T09:07:07+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "Miami veut devenir Vice City pour la sortie de GTA VI, mais la shérif locale s’y oppose&nbsp;&nbsp;7sur7.be"
     }
   ],
   "partial": true,
