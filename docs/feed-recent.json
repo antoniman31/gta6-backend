@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T00:01:49.684552+00:00",
+  "generated_at": "2026-09-11T01:01:57.395327+00:00",
   "attente_recap": {
     "articles": 6,
     "officiels": 0,
     "sommet": 3
   },
-  "duration_seconds": 47.6,
+  "duration_seconds": 55.1,
   "decode_failures": 0,
   "total_articles": 2374,
-  "new_this_run": 2,
+  "new_this_run": 0,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -384,7 +384,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 13,
+      "days_since_last_article": 14,
       "status": "ok"
     },
     {
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 103,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "last_article": "2026-09-10T23:35:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 8,
@@ -786,7 +786,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 6,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,102,100,102,102,102,102,102,102",
-    "gnews-en": "100,102,100,102,102,100,102,100,103,101,102,102",
+    "gnews-fr": "100,100,100,102,100,102,102,102,102,102,102,102",
+    "gnews-en": "102,100,102,102,100,102,100,103,101,102,102,103",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,15 +957,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,6,7,6,6,6,6,6,6,6,6,6",
+    "xboxwire": "6,7,6,6,6,6,6,6,6,6,6,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,0,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,83,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,27,27,27,26,27,27,27,27,27,27",
+    "theverge": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "83,83,83,82,82,82,82,82,82,82,82,82",
+    "arstechnica": "27,27,27,27,26,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 00:00:07 GMT"
+      "modified": "Fri, 11 Sep 2026 01:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa34491-308d\"",
-      "modified": "Fri, 11 Sep 2026 00:00:17 GMT"
+      "etag": "W/\"6aa352a2-308d\"",
+      "modified": "Fri, 11 Sep 2026 01:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
