@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T18:01:56.805075+00:00",
+  "generated_at": "2026-09-11T19:01:35.783738+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 53.5,
+  "duration_seconds": 34.0,
   "decode_failures": 0,
-  "total_articles": 2438,
-  "new_this_run": 10,
+  "total_articles": 2441,
+  "new_this_run": 3,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
+      "new_this_run": 1,
       "last_article": "2026-09-11T17:40:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 4,
+      "new_this_run": 0,
       "last_article": "2026-09-11T17:19:41+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -418,9 +418,9 @@
       "http_status": 301,
       "redirect": "https://www.pcgamer.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T15:59:30+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-11T18:35:30+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 0,
@@ -550,7 +550,7 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-11T17:55:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -582,14 +582,14 @@
     {
       "id": "vg247",
       "name": "VG247",
-      "entries_fetched": 0,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:vg247.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2024-07-26T07:00:00+00:00",
       "days_since_last_article": 777,
-      "status": "muette"
+      "status": "tarie"
     },
     {
       "id": "rps",
@@ -623,7 +623,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-11T17:20:51+00:00",
+      "last_article": "2026-09-11T18:13:17+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 1,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 9,
@@ -814,7 +814,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-07T10:07:52+00:00",
       "days_since_last_article": 4,
       "status": "ok"
@@ -870,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 83,
+      "entries_fetched": 82,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,7 +919,7 @@
   "sources_silence": {
     "vg247": {
       "depuis": "2026-09-11T18:01:56.804320+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -930,8 +930,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,99,99,100,101,101,101,100,100,100,100,100",
-    "gnews-en": "100,100,100,102,100,101,102,102,103,102,102,100",
+    "gnews-fr": "99,99,100,101,101,101,100,100,100,100,100,100",
+    "gnews-en": "100,100,102,100,101,102,102,103,102,102,100,99",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,9 +944,9 @@
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "kotaku": "20,20,20,20,20,20,20,20,0,0,20,20",
+    "kotaku": "20,20,20,20,20,20,20,0,0,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,100,100,100,0",
+    "vg247": "100,100,100,100,100,100,100,100,100,100,0,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -970,7 +970,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "83,83,83,83,83,83,83,83,83,83,83,83",
+    "engadget": "83,83,83,83,83,83,83,83,83,83,83,82",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -984,8 +984,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"02f9c174dca15c2aad5f81149997306a\"",
-      "modified": "Fri, 11 Sep 2026 17:41:08 GMT"
+      "etag": "W/\"0a22e1d25e92cc706ac8a32c03a76785\"",
+      "modified": "Fri, 11 Sep 2026 18:35:49 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1004,13 +1004,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"3a5a0-e/GQ26wx2Ah9AbC6sxYfCcwlhDQ\"",
+      "etag": "W/\"348ba-K9IOk4IbKZMQIo21fQZmHIiiaN0\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"2598ca596691fe23272343854b8e75b8\"",
-      "modified": "Fri, 11 Sep 2026 18:00:25 GMT"
+      "etag": "W/\"d404be591acebd0efbbf9799e60a3985\"",
+      "modified": "Fri, 11 Sep 2026 18:39:40 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1020,12 +1020,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 17:08:12 GMT"
+      "modified": "Fri, 11 Sep 2026 18:08:06 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 18:00:07 GMT"
+      "modified": "Fri, 11 Sep 2026 18:56:37 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1034,8 +1034,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa441b1-2ff3\"",
-      "modified": "Fri, 11 Sep 2026 18:00:17 GMT"
+      "etag": "W/\"6aa44fbf-2ff3\"",
+      "modified": "Fri, 11 Sep 2026 19:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1044,22 +1044,48 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789149412\"",
-      "modified": "Fri, 11 Sep 2026 17:56:52 GMT"
+      "etag": "W/\"1789153254\"",
+      "modified": "Fri, 11 Sep 2026 19:00:54 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"3ddaeedd59995d0b334821ba9346a075\"",
-      "modified": "Fri, 11 Sep 2026 16:21:27 GMT"
+      "etag": "W/\"0b9230cc1362e2f6bcb1d18aa58196e0\"",
+      "modified": "Fri, 11 Sep 2026 19:00:00 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa4317e-b72\"",
-      "modified": "Fri, 11 Sep 2026 16:51:10 GMT"
+      "etag": "\"6aa44d9f-b72\"",
+      "modified": "Fri, 11 Sep 2026 18:51:11 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "'We're not giving away pistols and cocaine to people': Miami Beach votes in favor of Grand Theft Auto 6 collab despite concerns",
+      "link": "https://www.pcgamer.com/games/grand-theft-auto/were-not-giving-away-pistols-and-cocaine-to-people-miami-beach-votes-in-favor-of-grand-theft-auto-6-collab-despite-concerns/",
+      "source_link": null,
+      "date": "2026-09-11T18:35:30+00:00",
+      "source": "PC Gamer",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/wzPGbueijAZZECY3Gfpg3A-1280-80.jpg",
+      "description": "One city commissioner said he asked the police about it, and they \"actually kind of laughed at me.\""
+    },
+    {
+      "title": "Sony Is Giving GTA 6 Its Own Theater at Tokyo Game Show 2026",
+      "link": "https://www.gtaboom.com/sony-is-giving-gta-6-its-own-theater-at-tokyo-game-show-2026",
+      "source_link": null,
+      "date": "2026-09-11T18:13:17+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/9d/90/sony-is-giving-gta-6-its-own-theater-at-tokyo-game-show-2026.jpg",
+      "description": "Live audiences can watch Grand Theft Auto VI: An Extended Look on a 300-inch screen with floor haptics at Tokyo Game Show 2026."
+    },
     {
       "title": "GTA 6's PS5 Controller Pre-Orders Are Already Getting Ruined by Scalpers",
       "link": "https://www.polygon.com/gta-6-ps5-controller-preorder-ebay-dualsense-scalpers/",
@@ -1462,6 +1488,19 @@
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/09/09/gta-vice-city-legacy-review-thumb-1788943824601.jpg",
       "description": "The original, legendary GTA: Vice City remains an irresistible experience in 2026 thanks to its unrivalled personality and style, and its sonically unmistakable soundtrack."
+    },
+    {
+      "title": "Voitures GTA 6 : courses, conduite et circuits expliqués - Red Bull",
+      "link": "https://www.redbull.com/fr-fr/gta-6-voitures-courses",
+      "source_link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE10RmoxY0tYVXNkY3dFNWpoSTNkWnh3bVgwQ0N3Zy1Hd1FReHNhQmo2aTkxbUkzVmZELUdyTV9Yd3RIZWNNbFlpNi1yQ0NLV045cjFoNllsTDZES0YtYlptaEJn?oc=5",
+      "date": "2026-09-11T13:45:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Voitures GTA 6 : courses, conduite et circuits expliqués&nbsp;&nbsp;Red Bull"
     },
     {
       "title": "Rockstar First Mentions a 32-Player Online Format for GTA 6 in Court Documents",
