@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-11T13:01:54.935265+00:00",
+  "generated_at": "2026-09-11T14:04:05.305688+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 51.6,
+  "duration_seconds": 47.9,
   "decode_failures": 0,
-  "total_articles": 2401,
-  "new_this_run": 2,
+  "total_articles": 2406,
+  "new_this_run": 5,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -358,8 +358,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T02:05:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T12:40:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -395,19 +395,19 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-11T12:48:38+00:00",
+      "last_article": "2026-09-11T13:23:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-11T12:34:17+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-11T13:16:45+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T10:02:30+00:00",
       "days_since_last_article": 0,
@@ -634,18 +634,18 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T11:50:01+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-11T13:43:07+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T06:05:13+00:00",
       "days_since_last_article": 0,
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 0,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 9,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,102,102,101,101,99,99,100,101,101",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,102,100,101",
+    "rockstar-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
+    "gnews-fr": "102,102,102,102,101,101,99,99,100,101,101,101",
+    "gnews-en": "100,100,100,100,100,100,100,100,102,100,101,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -964,7 +964,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,83,83,83,83,83,83,83,83",
+    "engadget": "82,82,82,83,83,83,83,83,83,83,83,83",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -978,13 +978,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"ab88e0e1c5a96960b8c0f5c7d657672d\"",
-      "modified": "Fri, 11 Sep 2026 11:19:10 GMT"
+      "etag": "W/\"a96ad6933ebe59f7042a7a6b15b4041f\"",
+      "modified": "Fri, 11 Sep 2026 14:03:14 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 12:31:01 GMT"
+      "modified": "Fri, 11 Sep 2026 13:54:14 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,18 +998,18 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"27287-paQGomIs6DSCJQK9718nGbDo/tc\"",
+      "etag": "W/\"287f6-/aQaHQZZUe9Lk461D4LGIZBC+ug\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"4cba6f1116d05743995c72aeb3e138b9\"",
-      "modified": "Fri, 11 Sep 2026 12:57:41 GMT"
+      "etag": "W/\"4543f8856df14a1d6d99a4a55bad0404\"",
+      "modified": "Fri, 11 Sep 2026 13:56:09 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 12:34:17 GMT"
+      "modified": "Fri, 11 Sep 2026 13:57:31 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,32 +1019,32 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 13:01:20 GMT"
+      "modified": "Fri, 11 Sep 2026 13:59:39 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"a3dd0379d119a74b42a445868be17067\"",
-      "modified": "Fri, 11 Sep 2026 09:37:54 GMT"
+      "etag": "\"0673d530721bf750485ef2fa1431d09c\"",
+      "modified": "Fri, 11 Sep 2026 13:35:59 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa3fb61-2ff0\"",
-      "modified": "Fri, 11 Sep 2026 13:00:17 GMT"
+      "etag": "W/\"6aa40970-2ff0\"",
+      "modified": "Fri, 11 Sep 2026 14:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"857790d5e0de5c70422408682eebfb5a\"",
-      "modified": "Fri, 11 Sep 2026 11:44:56 GMT"
+      "etag": "W/\"e7bc55ba00de012081c24a1cb649adeb\"",
+      "modified": "Fri, 11 Sep 2026 13:52:42 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789131614\"",
-      "modified": "Fri, 11 Sep 2026 13:00:14 GMT"
+      "etag": "W/\"1789134447\"",
+      "modified": "Fri, 11 Sep 2026 13:47:27 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"4a6f60df2caf661cc1b13d875b89876f\"",
-      "modified": "Fri, 11 Sep 2026 11:54:59 GMT"
+      "etag": "W/\"776978631d062561241c10b179670a34\"",
+      "modified": "Fri, 11 Sep 2026 14:00:55 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1054,6 +1054,58 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar First Mentions a 32-Player Online Format for GTA 6 in Court Documents",
+      "link": "https://vgtimes.com/gaming-news/167292-rockstar-faces-final-hearing-over-fired-grand-theft-auto-vi-developers.html",
+      "source_link": null,
+      "date": "2026-09-11T13:43:07+00:00",
+      "source": "VGTimes",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://files.vgtimes.com/posts/2026-09/rockstar-faces-final-hearing-over-fired-grand-theft-auto-vi-developers-167292.webp",
+      "description": "Rockstar Games has publicly mentioned an online component for Grand Theft Auto 6 for the first time. In documents submitted as part of an employment tribunal case involving the dismissal of Rockstar employees, the company referred to discussions about a confidential “32-player online format"
+    },
+    {
+      "title": "GTA 6 Online : Rockstar évoque un format à 32 joueurs - GinjFo",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-online-rockstar-evoque-un-format-a-32-joueurs-20260911",
+      "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOSE9ac21lSUlKNHVrbVRCYk4zUHZCUXZpMGpVc0hqeVRfQ2N3ckRwUFhhamhiZGdDT2JTLWdGWVNjcVFuZy1kRVFQQVpabXVqS3dBakRTdkxDUjNxaEFrWlJSSDJqOTJMRTM1MmtQand3dFlGYU43Z090bmoyYWlVTkZwY2gzbHhDQ2JhamtHUUZEN3dvdEoyRGlwcTMwTlAzTU40elRIV1N6SjNjUTA5bXlfWmRNTk1BaEw5VkZ1ZVdPLTA?oc=5",
+      "date": "2026-09-11T13:23:37+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2025/04/GTA6_VI_A1.jpg",
+      "description": "GTA 6 Online : Rockstar évoque un format à 32 joueurs&nbsp;&nbsp;GinjFo"
+    },
+    {
+      "title": "GTA 6 Fans Track Down Real-World Version Of The Nudist Resort, Then Try To Extort It - Kotaku",
+      "link": "https://kotaku.com/gta6-nudist-resort-cypress-cove-rockstar-grand-theft-auto-vi-leaks-2000733492",
+      "source_link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPUENoMlZMRlpnUXJ4QTV0UGcwYzBkTE5qN05LWXpTQXh4alE1VURUWWR0Uk9uMVIwNmlHZHo0S2xUcHh4WVNQOHpRb19aTlBIUERHclN5aE1mVHlDdlF5UFZ5VzRwY2xUSFhQbkpRS0Fuc2FEUC04dDFiSU9wQzEwUHpZSUlzZ1FPUC01WDVCRmRxLTJSQk5HQ1o2R0s?oc=5",
+      "date": "2026-09-11T13:16:45+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://kotaku.com/app/uploads/2026/09/nudists-1200x675.jpg",
+      "description": "GTA 6 Fans Track Down Real-World Version Of The Nudist Resort, Then Try To Extort It&nbsp;&nbsp;Kotaku"
+    },
+    {
+      "title": "GTA 6: What Rockstar Still Needs to Show Us | GTFM - IGN",
+      "link": "https://www.ign.com/videos/gta-6-what-rockstar-still-needs-to-show-us-gtfm",
+      "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE0tOVBDdU1vS2kwX2hJdWJxR1VZTEo2MW5FcHpTLWl1cmZUNldsY1RIblU5MTBIem9feUFXWnVGNXg5WTE1ZkFTS0VJVkRNSmVabTVwaFFfMmE0ZS1PT3VvZ2JlbTNhcEtRd1l0TzFDNTZsMEN5MDNTU3gwNjJMTm8?oc=5",
+      "date": "2026-09-11T13:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/09/10/jason-and-lucia-09-1789080468436.jpg?width=1280&format=jpg&auto=webp&quality=80",
+      "description": "GTA 6: What Rockstar Still Needs to Show Us | GTFM&nbsp;&nbsp;IGN"
+    },
     {
       "title": "GTA 6 : les scalpers n'attendent même plus la rupture de stock pour revendre les manettes custom à prix d'or - phonandroid.com",
       "link": "https://www.phonandroid.com/gta-6-les-scalpers-nattendent-meme-plus-la-rupture-de-stock-pour-revendre-les-manettes-custom-a-prix-dor.html",
@@ -1066,6 +1118,19 @@
       "lang": "fr",
       "image": "https://wp-pa.phonandroid.com/uploads/2025/05/brian-GTA6.jpg",
       "description": "GTA 6 : les scalpers n'attendent même plus la rupture de stock pour revendre les manettes custom à prix d'or&nbsp;&nbsp;phonandroid.com"
+    },
+    {
+      "title": "Miami agrees to advertise GTA 6 in exchange for fixing their football field - metro.co.uk",
+      "link": "https://metro.co.uk/2026/09/11/miami-agrees-advertise-gta-6-exchange-fixing-football-field-29585930/",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQMXk2RG9KMVdfVS1WSXBaSW05eGRzVWVnRDRGeG81ejVTYXFhSkF3Z3RBLU1LWHdZT2RYeFlla3lsdEJtR2VnNi0wS1VwRzE0bk9PT01KV2NfTjNFR3JUbGdLX2lzc2JGZkpTNzhEanBSM1czU0RFOFU5czhMbUdxWFlzczZUbUlZZmdCUWpsSm9ld0o2LTJuZmMzdHNkbDA2S0HSAacBQVVfeXFMUEI5MkpMa1NYcGh2Z09vU3VyaEJHYTNuWmlENnlaRWo2ZzNneUNvcjBpVnNiV0NPZ3ppOGlFeGhqUjF1OUFBbjVjSjgyckhrZWIyblg0YTl0YXpBWTJobGlWRy12UTBUaUl2dHhrUEsyS1hpU2h5aFhmc0ZBbnliaHFQbjZoRTdZT0M3cGNrMmF6ZExpdFNwTTdHbUVfV09ZUHNxTkxOY2s?oc=5",
+      "date": "2026-09-11T12:40:00+00:00",
+      "source": "GTA 6 x Netflix",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://metro.co.uk/wp-content/uploads/2026/09/SEI_310228783-3b25_1789130441.jpg?quality=90&strip=all&w=1200&h=630&crop=1",
+      "description": "Miami agrees to advertise GTA 6 in exchange for fixing their football field&nbsp;&nbsp;metro.co.uk"
     },
     {
       "title": "GTA 6 online mode appears to receive Rockstar's first public acknowledgment, via mention of in-development \"32 player format\" in legal docs - rockpapershotgun.com",
@@ -4948,71 +5013,6 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-online-la-mauvaise-nouvelle-est-tombee.jpg",
       "description": "GTA 6 Online : la mauvaise nouvelle est tombée&nbsp;&nbsp;La Crème Du Gaming"
-    },
-    {
-      "title": "GTA Vice City and GTA III return to web browsers after a DMCA takedown — Open-source reverse engineering brings the classics to the web with over 100 FPS performance",
-      "link": "https://www.tomshardware.com/video-games/gta-vice-city-and-gta-iii-return-to-web-browsers-after-a-dmca-takedown-open-source-reverse-engineering-brings-the-classics-to-the-web-with-over-100-fps-performance",
-      "source_link": null,
-      "date": "2026-09-07T11:30:00+00:00",
-      "source": "Tom's Hardware",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/ep3dEnRHFa2JkfGRm9bSSQ-1280-80.png",
-      "description": "You can play GTA: Vice City and GTA III in your browser right now across pretty much any modern device. The projects are compiled from source codes of the original games and are available on either DOS Zone, where you're required to upload or torrent a few assets, or Quenq."
-    },
-    {
-      "title": "La pêche dans GTA 6 sera aussi variée que dans RDR2 – mais il y a un hic - Notebookcheck.fr",
-      "link": "https://www.notebookcheck.biz/La-peche-dans-GTA-6-sera-aussi-variee-que-dans-RDR2-mais-il-y-a-un-hic.1392158.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOOXViR0QzY09WVzNrbmZ3Z25aVnVCYnBSaVVFSXZjbUN1NWJDOGlwNEdRZGpnRnRUNzU0Qk51U21NR2lNc2JqZE9UOXdCR2U3U0ZKNnFfYjZDWlNpMFN0TUE1S3dpUG5vbTdmR3c1SmUtNms5NEdFa3habndGeDl2VXBZdWxHV3d0cks2UmJOYjhrTTk2YW5BMDdxeDBoMTJyd2VPMlUtQ3VuNkxXd0syVlE2REhKUQ?oc=5",
-      "date": "2026-09-07T11:20:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA-6-Angeln.jpg",
-      "description": "La pêche dans GTA 6 sera aussi variée que dans RDR2 – mais il y a un hic&nbsp;&nbsp;Notebookcheck.fr"
-    },
-    {
-      "title": "'Our goal is to create the biggest open-world game in the free-to-play space' — developers of Chinese GTA 6 competitor open up after revealing second massive map - TechRadar",
-      "link": "https://www.techradar.com/gaming/ananta-developer-says-free-gta-6-competitors-two-massive-maps-will-offer-anything-youd-want-to-do-in-a-modern-city-with-countless-districts-to-explore",
-      "source_link": "https://news.google.com/rss/articles/CBMikAJBVV95cUxPenk1bXJTekxLSzVIMzRTTnloMk44RHNFZ2Q5bFBzOXpJZ3pOUmJYOEdZQTNxelRia1dqbGNVeWE4YjBCY1NpWUxhbWhiWlFTaXJvZVFYdFhEdGJPaS1QRGpzV2YzdjA2S0dBcVhrODgzb3N5U2xoWWZmZHQyaVl3TDUzclVnRTVaZWFhOG9DUFRWcmMwRUJ2bGxBV1EtbXhOMVZhV3czME5jSmlabjh0OWJmWVJtSThMMWZwbTRyZk5fakdMMzY3OGRtZzRwcjZTaVFMMks0bi1sT2JDNkI4MGtJSkdNU1YyM1M3RU1YWEpLX093dW1vLXZTM1d3Q2FCN2E5OUdkTWVmdXdOOGw5YQ?oc=5",
-      "date": "2026-09-07T10:52:21+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/9dDnUZjfGztjwL94r9Y4Ng-1920-80.jpg",
-      "description": "'Our goal is to create the biggest open-world game in the free-to-play space' — developers of Chinese GTA 6 competitor open up after revealing second massive map&nbsp;&nbsp;TechRadar"
-    },
-    {
-      "title": "Rockstar défend le système d’essence controversé de GTA 6 : “Vous ne pouvez pas vous plaindre” - Dexerto.fr",
-      "link": "https://www.dexerto.fr/gta/rockstar-defend-systeme-essence-controverse-gta-6-1658245/",
-      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPQjFrWjVPbkw1Z3dCZkhWSlBiY2tOaGtuaFdPRDM3VXlkSDRHLThGMzRlWGhlalRWRjh1LWE3ZjRCRzljaFVGenZjMWRlSFhaQmdtX1MwNmlzUG1XcTIybTVFdW82b2YyMS1UR2N5aWp5NjFqWThlTG5tUWJnYXNtcUxrbklTRTJ1SGVta1p3?oc=5",
-      "date": "2026-09-07T10:18:54+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.dexerto.fr/cdn-image/wp-content/uploads/sites/2/2026/09/07/gta-5-station-essence.jpg",
-      "description": "Rockstar défend le système d’essence controversé de GTA 6 : “Vous ne pouvez pas vous plaindre”&nbsp;&nbsp;Dexerto.fr"
-    },
-    {
-      "title": "Envie d'un nouveau TV 4K avant la sortie de GTA 6 ? Voici les meilleures offres des French Days - Frandroid",
-      "link": "https://www.frandroid.com/bons-plans/3235817_envie-dun-nouveau-tv-4k-avant-la-sortie-de-gta-6-voici-les-meilleures-offres-des-french-days",
-      "source_link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQQ0hteHZTNmoweXVsTmtIN2FHWHM5RklUMEJ6QW01UjJGemlROTV4bFMwSktqWER5TzhSemM0Uy1IUzBIOUFEb2xUTkxNWXRudkhad2lYRlpOZmNtU1QyTkJkVE1PX2docGVOX3B4Rm9ERzhZNVJBTUpUWlJFY2wyRTdGWVZWbW00bW5SSDBEMF9uV2lrVlg4VUF1am82UXUwLUdMMzJMcmFkT1BESFpWa0JMdF9QaTQxR0JCUnBiYmlSOFpabUozVjBWYkwtd1FpcFdr?oc=5",
-      "date": "2026-09-07T10:08:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/fd-2026-guide-tv.jpg?resize=1600,900&key=d49e554c",
-      "description": "Envie d'un nouveau TV 4K avant la sortie de GTA 6 ? Voici les meilleures offres des French Days&nbsp;&nbsp;Frandroid"
     }
   ],
   "partial": true,
