@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-12T04:01:51.662111+00:00",
+  "generated_at": "2026-09-12T04:55:38.487304+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 50.5,
+  "duration_seconds": 42.7,
   "decode_failures": 0,
-  "total_articles": 2456,
-  "new_this_run": 0,
+  "total_articles": 2458,
+  "new_this_run": 2,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -379,13 +379,13 @@
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
       "entries_fetched": 0,
-      "http_status": 500,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 15,
-      "status": "muette"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -402,11 +402,11 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 100,
+      "entries_fetched": 101,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 2,
       "last_article": "2026-09-11T23:04:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -498,14 +498,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T18:00:35+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -564,7 +564,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 3,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 9,
@@ -924,7 +924,7 @@
     },
     "rockstarmag-youtube": {
       "depuis": "2026-09-12T03:01:54.775200+00:00",
-      "succes": 1,
+      "succes": 0,
       "alertee": false
     }
   },
@@ -934,9 +934,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "99,101,100,101,98,99,99,97,99,101,102,100",
+    "gnews-en": "101,100,101,98,99,99,97,99,101,102,100,101",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,7 +944,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -968,14 +968,14 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,6,5,5,6,5,5,6,6,6",
+    "xboxwire": "6,6,6,5,5,6,5,5,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,83,83,83,83,82,82,82,82,82,82,82",
+    "engadget": "83,83,83,83,82,82,82,82,82,82,82,82",
     "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -1030,7 +1030,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 04:01:11 GMT"
+      "modified": "Sat, 12 Sep 2026 04:52:20 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1039,8 +1039,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa4ce51-2ff3\"",
-      "modified": "Sat, 12 Sep 2026 04:00:17 GMT"
+      "etag": "W/\"6aa4d558-2ff3\"",
+      "modified": "Sat, 12 Sep 2026 04:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1059,8 +1059,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa4be1f-b71\"",
-      "modified": "Sat, 12 Sep 2026 02:51:11 GMT"
+      "etag": "\"6aa4da3c-b71\"",
+      "modified": "Sat, 12 Sep 2026 04:51:08 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1228,6 +1228,19 @@
       "description": "One city commissioner said he asked the police about it, and they \"actually kind of laughed at me.\""
     },
     {
+      "title": "GTA 6 Online Secrecy Is Officially As Secretive As Coca-Cola And Apple - thegamer.com",
+      "link": "https://www.thegamer.com/gta-6-online-secrecy-compared-coca-cola-recipe-apple-iphone/",
+      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOXzN6bVlyYlBVS25BVjIwOC15YWx3N0ZpNms1Nld6NVNVTTVoc2xtYS1NTEQyZkxKNTBGM0JuTzloSnZWdlJIN0ExdktFN3pxNC1LcVBTZ19Qa2NVUHVfelY3SFZINlNNODQzY2taNkcxYUtfd0tjT1Y3dVBMWnZWX2YzZTBBUVlHdGFOc2Nn?oc=5",
+      "date": "2026-09-11T18:22:55+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2026/06/lucia-and-jason-dressed-in-80-s-themed-outfits-in-gta-6.jpg?w=1600&h=900&fit=crop",
+      "description": "GTA 6 Online Secrecy Is Officially As Secretive As Coca-Cola And Apple&nbsp;&nbsp;thegamer.com"
+    },
+    {
       "title": "Sony Is Giving GTA 6 Its Own Theater at Tokyo Game Show 2026",
       "link": "https://www.gtaboom.com/sony-is-giving-gta-6-its-own-theater-at-tokyo-game-show-2026",
       "source_link": null,
@@ -1265,6 +1278,19 @@
       "lang": "fr",
       "image": "https://sm.ign.com/t/ign_fr/news/m/miami-appr/miami-approves-discreet-gta-6-marketing-campaign-so-the-city_g1m5.1200.jpg",
       "description": "On en sait plus sur la campagne marketing de GTA VI prévue dans la vraie ville de Miami juste avant la sortie du jeu&nbsp;&nbsp;IGN France"
+    },
+    {
+      "title": "GTA 6’s Real-Life Vice City Promote the Game in a Unique Way - Yahoo",
+      "link": "https://www.yahoo.com/news/us/articles/gta-6-real-life-vice-173724265.html",
+      "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBSNFdoSDZFa1ZaNGUybldvcG5BdG4zRnNiUmQzSXN2NnlRZHBvSFR1TGpTUVE3Q3hJbzBzQi1Rd3gtTy1nY3Q2WGNEcUJhczhwRWszVmRsWTZEX0NCcVQzR0FYTFgwc25HYllBMGU3M2oyb2d3YUZhR1pQRkw4emc?oc=5",
+      "date": "2026-09-11T17:37:24+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://s.yimg.com/lo/mysterio/api/55bede57df8f68dbd90a28a30fbb755de74825765dcc9ecdca6915d2bd4648ec/lightyear_networkapi/resizefill_w640_h360%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fplaystation_lifestyle_666%2F87bf7c0fdcf08e40214bd392c290e394.jpg",
+      "description": "GTA 6’s Real-Life Vice City Promote the Game in a Unique Way&nbsp;&nbsp;Yahoo'What Kind of Message Are We Sending to the World?' — GTA 6 Is Coming to Miami After City Meeting Results in Controversial Approval — and Enough Money to Fix Its Football Field&nbsp;&nbsp;IGN‘Buyer, beware’: Ron DeSantis says don’t go looking for ‘GTA 6’ in the real Miami&nbsp;&nbsp;Florida Politics"
     },
     {
       "title": "Miami City Downtown GTA 6 Banner Plan Now Has Exact Terms",
@@ -1433,7 +1459,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-dualsense-white-controller-box.jpg?w=1600&h=900&fit=crop",
-      "description": "The official GTA 6 limited-edition PS5 controllers are already selling out at some retailers as preorder stock continues to fluctuate rapidly."
+      "description": "The official GTA 6 limited-edition PS5 controllers are already selling out at some retailers as preorder stock continues to fluctuate rapidly.",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://opencritic.com/news/36765/gta-6-ps5-controllers-have-already-sold-out"
+        }
+      ]
     },
     {
       "title": "Rockstar had a mole in the union worker Discord server \"for over two and a half years\", GTA 6 company reveals during legal battle",
@@ -4992,32 +5024,6 @@
       "lang": "fr",
       "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/SlFqF8uKH5WNnBo4vrPBLZ1-ECA=/0x0:1600x900/1600x0/images/Derniere-chance-pour-profiter-d-une-PS5-au-meilleur-prix-avant-la-sortie-de-GTA-6-2342519.jpg",
       "description": "Dernière chance pour profiter d’une PS5 au meilleur prix avant la sortie de GTA 6&nbsp;&nbsp;BFM"
-    },
-    {
-      "title": "GTA 6 Pourrait Sortir Plus Tôt Sur PC, Alors Que Les Stocks De Consoles Inquiètent Déjà - Pause Hardware",
-      "link": "https://pausehardware.com/gta-6-pc-sortie-plus-tot/",
-      "source_link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9KMEY1THpuVVNVN0tjelpkak9BMzRQbDh4dkpPLVpKdDNNRzRwZjBvV0ZnWmw0OGQtU1N5a0NzWVAxVHVEMTNfLUZ1TC1oSFQ3TEl2ZEc5TXJXaE9KRU5COA?oc=5",
-      "date": "2026-09-08T01:12:08+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://pausehardware.com/wp-content/uploads/2026/09/resized_gta-6-pc-pourrait-arriver-plus-tot-que-prevu.jpg",
-      "description": "GTA 6 Pourrait Sortir Plus Tôt Sur PC, Alors Que Les Stocks De Consoles Inquiètent Déjà&nbsp;&nbsp;Pause Hardware"
-    },
-    {
-      "title": "Before GTA 6 Drops: The 15 Fall Releases Set to Shape 2026 - eGamers.io",
-      "link": "https://egamers.io/before-gta-6-drops-the-15-fall-releases-set-to-shape-2026/",
-      "source_link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNRDhXajc2eHMzTl9XTmozMnk2Y280a0hrbmVfSVcwelhuZU5hdEkyOWxuSzN4bnBsTW50TU1jc01FMHlGdWh3RXNiZWsxekdBbUlESG1rNUR6d2pJOHU5emdlc3hCYzF1T0xyTW91YXl1OU1HWmxvSXMwQy1ReDZ5MGkxTQ?oc=5",
-      "date": "2026-09-08T01:03:29+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://egamers.io/wp-content/uploads/2026/09/before-gta-6-drops-the-15-fall-releases-set-to-shape-2026.jpg",
-      "description": "Before GTA 6 Drops: The 15 Fall Releases Set to Shape 2026&nbsp;&nbsp;eGamers.io"
     }
   ],
   "partial": true,
