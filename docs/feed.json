@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-12T15:01:58.688415+00:00",
+  "generated_at": "2026-09-12T15:46:57.602563+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 53.7,
+  "duration_seconds": 51.5,
   "decode_failures": 0,
-  "total_articles": 2478,
-  "new_this_run": 1,
+  "total_articles": 2480,
+  "new_this_run": 2,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -322,7 +322,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 15,
       "status": "ok"
@@ -348,7 +348,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:28:53+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -394,20 +394,20 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-12T13:30:44+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-12T15:37:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-12T11:00:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-12T14:00:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -432,7 +432,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -486,10 +486,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T07:51:23+00:00",
       "days_since_last_article": 1,
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 1,
@@ -576,7 +576,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:06:56+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -600,16 +600,16 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:31:24+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T14:16:10+00:00",
       "days_since_last_article": 1,
@@ -636,7 +636,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:31:04+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,100,100,102,101,102,100,100,100,100,100,100",
-    "gnews-en": "103,103,104,104,102,102,101,100,100,100,104,101",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "gnews-fr": "100,100,102,101,102,100,100,100,100,100,100,100",
+    "gnews-en": "103,104,104,102,102,101,100,100,100,104,101,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,11 +933,11 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,0,10,10,10,10,10,10,10,10,10,10",
+    "polygon": "0,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -949,8 +949,8 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,0,10,10,10,10,10,10,10,10,10,10",
-    "dualshockers": "10,0,10,10,10,10,10,10,10,10,10,10",
+    "gamerant": "0,10,10,10,10,10,10,10,10,10,10,10",
+    "dualshockers": "0,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,27,27,26,26,26,26,26,26,26,26",
+    "arstechnica": "27,27,27,26,26,26,26,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -989,7 +989,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Fri, 11 Sep 2026 15:29:35 GMT"
+      "modified": "Sat, 12 Sep 2026 15:38:29 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -1014,12 +1014,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 11:41:58 GMT"
+      "modified": "Sat, 12 Sep 2026 15:43:49 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 14:58:04 GMT"
+      "modified": "Sat, 12 Sep 2026 15:46:15 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa56900-31f3\"",
-      "modified": "Sat, 12 Sep 2026 15:00:16 GMT"
+      "etag": "W/\"6aa57008-31f3\"",
+      "modified": "Sat, 12 Sep 2026 15:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,8 +1043,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"3dd620fe4c428dd36aa22e7df648f16c\"",
-      "modified": "Sat, 12 Sep 2026 14:57:18 GMT"
+      "etag": "W/\"7e3b0cbf4f9ff157b6fa0888aca18fd3\"",
+      "modified": "Sat, 12 Sep 2026 15:45:46 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1054,6 +1054,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 | La présentation Netflix a permis de générer 100 000 nouveaux abonnements aux USA - Rockstar Mag",
+      "link": "https://www.rockstarmag.fr/gta-6-la-presentation-netflix-a-permis-de-generer-100-000-nouveaux-abonnements-aux-usa/",
+      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPQm9vZGtXck82ZWQ0RVZMY29jelU1c3BoWWlvVVpROWFoRTdCcTFFamNoVXJHMlAzeTlwYm1GWVZzOTF1Z0VjUFBKWXUtbnMtWEdQNnA3SFFFbDQ3N1pSMzdBNER0eXBieVNHUTdfMWNNWVEzTjZYcS1YRk5neGY3UG94WUVRUlZ5M0JnVXd2NDFVQmxfc2Uxem1ZRnFOUm54ZkJzbTA1aWd3X29nVXByYXVsTWI?oc=5",
+      "date": "2026-09-12T15:37:57+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/08/gta-6-netflix-details-1024x576.jpg",
+      "description": "GTA 6 | La présentation Netflix a permis de générer 100 000 nouveaux abonnements aux USA&nbsp;&nbsp;Rockstar Mag"
+    },
+    {
+      "title": "GTA 6 DualSense Controllers: Price, Availability and Where to Buy - forbes.com",
+      "link": "https://www.forbes.com/sites/brianmazique/2026/09/12/gta-6s-limited-edition-ps5-controllers-are-available---but-one-is-much-harder-to-find/",
+      "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPWXpTT0E4MTlucW9TMU1KZTdyd3FtNWttd2szejBhZENXVnFscHpsTWVOYVplVHlBQXNpaktGVU1DZlE3MXRycVk4MHZiRFdCUXVXOFZVVEY4aldkV0V0Q1g2bEFrYTNTR3E3a0R5dTRJRm82TUxGaDd3eVI2Yk9XaWxaOXVxLXktS1pUeE0xcFd2T1dobzlXanAtSWFCYjBrcUdRSk05TW9CZmJnbkFvZE1aVVJhaUJuSG42YU9YWnMzaHpreVFUc1BZQWk0V2l1eXViZHB3?oc=5",
+      "date": "2026-09-12T14:00:40+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 DualSense Controllers: Price, Availability and Where to Buy&nbsp;&nbsp;forbes.com"
+    },
     {
       "title": "GTA 6 Online est si secret que Rockstar le protège comme la recette de Coca-Cola et un premier détail a fuité - La Crème Du Gaming",
       "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-online-est-si-secret-que-rockstar-le-protege-comme-la-recette-de-coca-cola-et-un-premier-detail-a-fuite-225188.html",
