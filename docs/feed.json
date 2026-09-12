@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-12T11:01:51.818975+00:00",
+  "generated_at": "2026-09-12T11:11:39.581685+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 44.7,
+  "duration_seconds": 50.8,
   "decode_failures": 0,
-  "total_articles": 2469,
+  "total_articles": 2470,
   "new_this_run": 1,
   "hot_count": 5,
   "hot_threshold": 3,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-12T10:25:22+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -402,12 +402,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-12T07:55:39+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-12T11:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 0,
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 4,
@@ -750,13 +750,13 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
-      "days_since_last_article": 9,
+      "days_since_last_article": 10,
       "status": "ok"
     },
     {
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,0,0,0,0,0,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,100,102,100,100,102,101,102,100",
-    "gnews-en": "101,102,100,101,101,103,103,104,104,102,102,101",
+    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "gnews-fr": "100,100,100,100,102,100,100,102,101,102,100,100",
+    "gnews-en": "102,100,101,101,103,103,104,104,102,102,101,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,11 +933,11 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,0,15,0,0,0,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,15,0,0,0,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,0,10,10,10,10,10",
+    "polygon": "10,10,10,10,10,0,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -949,15 +949,15 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,0,10,10,10,10,10",
-    "dualshockers": "10,10,10,10,10,10,0,10,10,10,10,10",
+    "gamerant": "10,10,10,10,10,0,10,10,10,10,10,10",
+    "dualshockers": "10,10,10,10,10,0,10,10,10,10,10,10",
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,6,6,5,5,5,5,5,5,5",
+    "xboxwire": "6,6,6,6,5,5,5,5,5,5,5,5",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,26,26,26",
+    "arstechnica": "27,27,27,27,27,27,27,27,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1003,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"7547632037d8c60212aeb3a320ec39bf\"",
-      "modified": "Sat, 12 Sep 2026 11:01:17 GMT"
+      "etag": "W/\"b067d67e7110b7159ff45a3516cf5220\"",
+      "modified": "Sat, 12 Sep 2026 11:10:34 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,12 +1014,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 10:34:52 GMT"
+      "modified": "Sat, 12 Sep 2026 11:02:48 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 11:00:08 GMT"
+      "modified": "Sat, 12 Sep 2026 11:11:11 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1043,8 +1043,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"844e1af9418da74c7e4efb73fbbc0036\"",
-      "modified": "Sat, 12 Sep 2026 10:56:38 GMT"
+      "etag": "W/\"f9cb71021ac28bb1eecac7ac5162455b\"",
+      "modified": "Sat, 12 Sep 2026 11:08:56 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 causes relationship friction among couples, labelling it 'basically cheating' - Daily Express",
+      "link": "https://www.express.co.uk/entertainment/gaming/2247728/gta-6-causes-relationship-friction",
+      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNRkFyQXdnekRKdndBNjhQajR5ZEtYX0tMbTFFR0ZxcGdSMzFVLVJrR1A5akJrZGd6WkVFVjFIQThIM3J5WDlISy1uSUpQc2VsY1ZGNTB2SVdLZGZYTG1ibm5FeWd1SGdiMURpcTVnUDlzWExFbWphaXpTS18tYms5OVFmWG1URnU2MHNXVC1TWmNuQlXSAZgBQVVfeXFMTnpEbm9rSjdtRG9CZHpueFlfRm55Vm9GUlFzc3paSzRIRVB0aGxoNUhpREdFdlpQRmVWTnpid09mM3BsMlh4UFNka3d1Zk1mUTN2X2RKWjJ6M3dRU0MyVWV2M1pfZkd4bTRESzY3YktfQ3B2emtpMExIN2V2cjViVlNyZVBDRkprUjNGU3drWVJwM1plcHlZSHE?oc=5",
+      "date": "2026-09-12T11:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.images.express.co.uk/img/dynamic/143/1200x630/7138314.jpg",
+      "description": "GTA 6 causes relationship friction among couples, labelling it 'basically cheating'&nbsp;&nbsp;Daily Express"
+    },
     {
       "title": "GTA 6 : Miami Beach autorise une campagne Vice City dans la vraie ville - Univers-Simu.com",
       "link": "https://www.univers-simu.com/news/gta-6-miami-beach-vice-city-campagne-rockstar-128521/",
