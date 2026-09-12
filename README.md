@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **965
+qui permet de tester tout le pipeline sans sortir de la machine. **979
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1324,6 +1324,39 @@ se désactive par leur absence.
 **Les deux annoncent mot pour mot la même chose**, et ne peuvent pas
 diverger : le texte est écrit une seule fois dans
 `feed_store.libelle_recap()`, appelé par les deux canaux.
+
+### L'icône : « VI WATCH », dans la continuité du badge
+
+Une fois le badge corrigé, l'icône de l'app disait encore « GTA 6 » là où la
+notification affichait « VI ». Refaite le 12/09/2026 pour reprendre le même
+glyphe, avec « WATCH » en bandeau bleu plein sous un VI dominant.
+
+**Quatre fichiers, pas un**, et ils ne sont pas identiques : `icon-192`,
+`icon-512` et leurs deux variantes `-maskable`. La distinction n'est pas
+cosmétique — Android recadre les maskable en cercle, en squircle ou en carré
+arrondi selon le lanceur, et ne garantit que le **disque central de 80 % du
+côté**. Tout ce qui dépasse peut être rogné.
+
+**Le bandeau à bord perdu était justement le point faible de cette piste.**
+Sur la variante « any » il va d'un bord à l'autre, ce qui fait son allure. Sur
+la maskable, un découpage circulaire l'aurait réduit à un croissant. Il y
+devient donc un bandeau arrondi, rentré dans la zone sûre — l'effet bord à
+bord est perdu là, et conservé partout ailleurs.
+
+**Mesuré, et corrigé après mesure.** La première génération plaçait le
+contenu jusqu'à **87,7 px** du centre pour **76,8 px** de zone sûre. Ça
+survivait aux trois masques courants — le masque circulaire réel a un rayon
+de 96 px, vérifié à l'écran — mais violait la garantie d'Android. Le contenu
+a été réduit jusqu'à **77,1 px**, soit la zone sûre à 0,3 px près, un bord
+d'anticrénelage.
+
+**Quatorze vérifications** : chaque icône déclarée dans le manifeste existe et
+a la taille annoncée ; les deux maskable tiennent dans leur zone sûre (le test
+décode le PNG et mesure le rayon du contenu réel, en tolérant l'anticrénelage) ;
+et les quatre sont **opaques**. Cette dernière est l'exacte réciproque du test
+du badge, qui lui exige de la transparence : une icône d'app transparente
+laisserait voir le fond du lanceur, un badge opaque redonne un carré blanc.
+Les confondre est facile, d'où deux tests qui se contredisent volontairement.
 
 ### Le carré blanc dans la barre d'état
 

@@ -4566,6 +4566,113 @@ def test_badge_de_notification_a_un_canal_alpha():
           "worker" % (version.group(1) if version else "?"))
 
 
+def _pixels_png(chemin):
+    """Décode un PNG en lignes de pixels. Écrit à la main : le dépôt n'a pas
+    Pillow, et l'ajouter pour vérifier quatre icônes serait disproportionné."""
+    import struct, zlib
+    d = open(chemin, "rb").read()
+    largeur, hauteur, profondeur, couleur = struct.unpack(">IIBB", d[16:26])
+    canaux = {0: 1, 2: 3, 4: 2, 6: 4}[couleur]
+    bpp = canaux * profondeur // 8
+    pas = largeur * bpp
+    idat = b""
+    i = 8
+    while i < len(d):
+        taille = struct.unpack(">I", d[i:i + 4])[0]
+        if d[i + 4:i + 8] == b"IDAT":
+            idat += d[i + 8:i + 8 + taille]
+        i += 12 + taille
+    brut = zlib.decompress(idat)
+    lignes = []
+    precedente = bytearray(pas)
+    position = 0
+    for _ in range(hauteur):
+        filtre = brut[position]; position += 1
+        ligne = bytearray(brut[position:position + pas]); position += pas
+        if filtre:
+            for x in range(pas):
+                a = ligne[x - bpp] if x >= bpp else 0
+                b = precedente[x]
+                c = precedente[x - bpp] if x >= bpp else 0
+                if filtre == 1: ligne[x] = (ligne[x] + a) & 255
+                elif filtre == 2: ligne[x] = (ligne[x] + b) & 255
+                elif filtre == 3: ligne[x] = (ligne[x] + (a + b) // 2) & 255
+                else:
+                    pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                    pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                    ligne[x] = (ligne[x] + pr) & 255
+        lignes.append(bytes(ligne))
+        precedente = ligne
+    return largeur, hauteur, bpp, lignes
+
+
+def test_icones_de_lapp():
+    print("\n[pwa] les icônes déclarées existent et tiennent dans la zone sûre")
+    import json, math, struct
+    manifeste = json.load(open("docs/manifest.json", encoding="utf-8"))
+
+    for entree in manifeste["icons"]:
+        chemin = "docs/" + entree["src"]
+        check(os.path.exists(chemin), "%s existe" % entree["src"])
+        if not os.path.exists(chemin):
+            continue
+        d = open(chemin, "rb").read()
+        largeur, hauteur = struct.unpack(">II", d[16:24])
+        attendu = int(entree["sizes"].split("x")[0])
+        check((largeur, hauteur) == (attendu, attendu),
+              "%s fait bien %dx%d" % (entree["src"], attendu, attendu))
+
+    # Le vrai piège des icônes maskable. Android les recadre en cercle, en
+    # squircle ou en carré arrondi selon le lanceur, et ne garantit que le
+    # disque central de 80 % du côté — soit un rayon de 40 %. Tout ce qui
+    # dépasse peut être rogné.
+    #
+    # La première version de cette icône plaçait son contenu jusqu'à 87,7 px
+    # du centre pour 76,8 px de zone sûre : ça survivait aux masques courants
+    # (vérifié à l'écran sur les trois formes) mais violait la garantie. Le
+    # contenu a été réduit jusqu'à rentrer.
+    for entree in manifeste["icons"]:
+        if entree.get("purpose") != "maskable":
+            continue
+        chemin = "docs/" + entree["src"]
+        if not os.path.exists(chemin):
+            continue
+        largeur, hauteur, bpp, lignes = _pixels_png(chemin)
+        fond = lignes[0][0:3]
+        # Tolérance : l'anticrénelage et la compression décalent le fond
+        # d'une unité ou deux, ce n'est pas du contenu.
+        def est_du_contenu(p):
+            return max(abs(p[0] - fond[0]), abs(p[1] - fond[1]),
+                       abs(p[2] - fond[2])) > 12
+        centre = largeur / 2
+        rayon_max = 0.0
+        for y in range(hauteur):
+            ligne = lignes[y]
+            for x in range(largeur):
+                if not est_du_contenu(ligne[x * bpp:x * bpp + 3]):
+                    continue
+                r = math.hypot(x - centre, y - centre)
+                if r > rayon_max:
+                    rayon_max = r
+        sure = largeur * 0.40
+        check(rayon_max <= sure + 1.5,
+              "%s : contenu jusqu'à %.1f px du centre, zone sûre %.1f px"
+              % (entree["src"], rayon_max, sure))
+
+    # Les icônes d'app doivent rester OPAQUES : une maskable transparente
+    # laisserait voir le fond du lanceur à travers. C'est l'inverse exact de
+    # la contrainte du badge de notification, qui lui exige de la
+    # transparence — les confondre est facile.
+    for entree in manifeste["icons"]:
+        chemin = "docs/" + entree["src"]
+        if not os.path.exists(chemin):
+            continue
+        couleur = struct.unpack(">B", open(chemin, "rb").read()[25:26])[0]
+        check(couleur in (0, 2),
+              "%s est opaque (type PNG %d) — une icône d'app n'est pas un badge"
+              % (entree["src"], couleur))
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -4653,6 +4760,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_haut_de_page_une_seule_carte,
            test_validation_avant_ecriture,
            test_badge_de_notification_a_un_canal_alpha,
+           test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
     fn()
 
