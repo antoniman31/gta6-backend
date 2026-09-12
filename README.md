@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **981
+qui permet de tester tout le pipeline sans sortir de la machine. **983
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1329,47 +1329,51 @@ diverger : le texte est écrit une seule fois dans
 
 Une fois le badge corrigé, l'icône de l'app disait encore « GTA 6 » là où la
 notification affichait « VI ». Refaite le 12/09/2026 pour reprendre le même
-glyphe, avec « WATCH » en bandeau bleu plein sous un VI dominant.
+glyphe : un **VI dominant, « WATCH » en capitales grasses dessous**.
 
 **Quatre fichiers, pas un**, et ils ne sont pas identiques : `icon-192`,
 `icon-512` et leurs deux variantes `-maskable`. La distinction n'est pas
 cosmétique — Android recadre les maskable en cercle, en squircle ou en carré
 arrondi selon le lanceur, et ne garantit que le **disque central de 80 % du
-côté**. Tout ce qui dépasse peut être rogné.
+côté**. Tout ce qui dépasse peut être rogné. Les deux maskable sont donc les
+mêmes que les autres, réduites à **95 %** : le contenu tombe à 75,8 px du
+centre pour 76,8 de zone sûre en 192, et 201,8 pour 204,8 en 512.
 
-**Le bandeau à bord perdu, et le compromis qu'il impose.** Il y a eu deux
-tentatives avant celle-ci, et la mesure a démenti l'intuition les deux fois.
+**L'erreur qui a coûté une version : juger une icône à la mauvaise taille.**
+La version précédente mettait « WATCH » dans un bandeau bleu plein allant d'un
+bord à l'autre. Sur les planches de comparaison, affichées à 192 px, c'était
+franchement la plus belle. Sur l'écran d'accueil d'un vrai téléphone, où la
+tuile fait environ **56 px**, le bandeau n'était plus qu'une barre bleue
+illisible, tronquée en biais par l'arrondi. Antoni l'a vue avant moi, en
+photo : « Ça va pas ». Toutes les propositions suivantes ont été rendues à
+56 px d'abord, et à 192 seulement ensuite.
 
-*Premier essai* : bandeau arrondi et rentré dans la zone sûre sur les seules
-maskable, pour ne rien risquer. Le contenu tombait alors à 77,1 px du centre
-pour 76,8 de zone sûre — strictement conforme, mais plus timide.
+**Ce que le bandeau imposait, et qui a disparu avec lui.** Un élément à bord
+perdu est par construction incompatible avec une zone sûre : le bandeau étant
+en bas, celle-ci n'y mesurait plus qu'une vingtaine de pixels de large. Le
+test devait alors se rabattre sur le masque circulaire réellement appliqué
+(rayon 50 %), plus large que la garantie d'Android — un compromis assumé, mais
+un compromis. Le dessin actuel n'a plus rien à bord perdu, donc plus rien à
+concéder : **tout** le contenu tient dans la zone sûre conservatrice, et le
+test l'exige littéralement.
 
-*Retenu, après avoir vu les trois découpes à l'écran* : le bandeau va d'un
-bord à l'autre sur **les quatre fichiers**, qui sont donc identiques deux à
-deux. Le découpage circulaire l'effile aux extrémités au lieu de le trancher,
-et « WATCH » y reste entièrement lisible.
-
-**Ce que ça coûte, chiffré.** Android garantit le disque central de 80 % du
-côté (rayon 40 %), mais le masque circulaire réellement appliqué a un rayon
-de 50 % — bien plus large que la garantie. Le texte du bandeau va jusqu'à
-**91,3 px** du centre : il tient dans le masque réel (96 px, 4,7 px de marge)
-mais dépasse la garantie (76,8 px).
-
-Et ce n'est **pas rattrapable** : le bandeau étant en bas, la zone sûre n'y
-mesure plus qu'une vingtaine de pixels de large. Un bandeau à bord perdu et un
-texte tenant dans la zone sûre sont géométriquement incompatibles. Il fallait
-choisir ; le bandeau a été choisi en connaissance de cause.
-
-**Seize vérifications**, et elles encodent ce compromis plutôt que de le
-masquer : chaque icône déclarée existe et a la taille annoncée ; **le VI tient
-dans la zone sûre conservatrice** ; **le texte du bandeau tient dans le masque
-circulaire réel**, avec une marge — c'est plus faible que la garantie
-d'Android, et le message du test le dit mot pour mot.
+**Dix-huit vérifications.** Chaque icône déclarée existe et a la taille
+annoncée. Sur les maskable, tout le contenu tient dans la zone sûre — et
+comme une icône vide passerait ce test-là sans effort, un second contrôle
+compte les pixels des deux encres pour s'assurer que le VI et le WATCH sont
+bien dessinés. Sur les deux autres, qui ne sont jamais recadrées, c'est la
+contrainte inverse : le dessin doit **occuper** la tuile (rayon ≥ 35 % du
+côté), sinon l'app a l'air perdue au milieu de son fond.
 
 Les quatre sont enfin vérifiées **opaques**. C'est l'exacte réciproque du test
 du badge, qui lui exige de la transparence : une icône d'app transparente
 laisserait voir le fond du lanceur, un badge opaque redonne un carré blanc.
 Les confondre est facile, d'où deux tests qui se contredisent volontairement.
+
+**Android fige l'icône d'une PWA à l'installation.** Remplacer les fichiers ne
+change rien à la tuile déjà posée sur l'écran d'accueil : il faut désinstaller
+l'app et la réinstaller. Le badge de notification, lui, se met à jour tout
+seul au prochain envoi.
 
 
 ### Le carré blanc dans la barre d'état

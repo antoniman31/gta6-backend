@@ -4622,25 +4622,22 @@ def test_icones_de_lapp():
         check((largeur, hauteur) == (attendu, attendu),
               "%s fait bien %dx%d" % (entree["src"], attendu, attendu))
 
-    # Les icônes maskable et le compromis assumé du bandeau.
+    # Les icônes maskable et la zone sûre d'Android.
     #
     # Android recadre ces icônes en cercle, squircle ou carré arrondi selon
-    # le lanceur. Il garantit le disque central de 80 % du côté (rayon 40 %),
-    # mais le masque circulaire réellement appliqué a un rayon de 50 % —
-    # bien plus large que la garantie.
+    # le lanceur. Il ne garantit que le disque central de 80 % du côté
+    # (rayon 40 %) ; tout ce qui déborde peut être rogné.
     #
-    # Le bandeau « WATCH » va d'un bord à l'autre : c'est ce qui fait l'allure
-    # de cette icône, et c'est un choix. Conséquence géométrique inévitable :
-    # le bandeau étant en bas, la zone sûre n'y mesure plus qu'une vingtaine
-    # de pixels de large. Un bandeau à bord perdu et un texte tenant dans la
-    # zone sûre sont donc INCOMPATIBLES — il faut choisir, et le bandeau a
-    # été choisi après avoir vu les trois découpes à l'écran.
+    # La version précédente de l'icône avait un bandeau à bord perdu, donc
+    # incompatible par construction avec cette garantie — le test devait
+    # alors se rabattre sur le masque circulaire réel (rayon 50 %), plus
+    # large que la garantie. Vu sur un vrai écran d'accueil à 56 px, le
+    # bandeau n'était qu'une barre bleue illisible tronquée par l'arrondi.
     #
-    # Ce que le test verrouille, du coup :
-    #   - le VI, lui, tient dans la zone sûre conservatrice ;
-    #   - le texte du bandeau tient dans le masque circulaire réel, avec
-    #     une marge. C'est plus faible que la garantie d'Android, et c'est
-    #     documenté comme tel — pas subi.
+    # Le dessin actuel — « VI » dominant, « WATCH » dessous — n'a plus
+    # aucun élément à bord perdu. Le compromis n'a donc plus lieu d'être :
+    # on exige que TOUT le contenu tienne dans la zone sûre conservatrice.
+    # Si un futur dessin recommence à déborder, ce test le dira.
     for entree in manifeste["icons"]:
         if entree.get("purpose") != "maskable":
             continue
@@ -4649,45 +4646,64 @@ def test_icones_de_lapp():
             continue
         largeur, hauteur, bpp, lignes = _pixels_png(chemin)
         fond = lignes[0][0:3]
-        BLEU = (88, 185, 255)   # --accent, la couleur du bandeau
+        BLEU = (88, 185, 255)    # --accent, la couleur du « VI »
+        CLAIR = (228, 236, 232)  # --text, la couleur de « WATCH »
 
         def proche(p, q, tolerance=20):
             return max(abs(p[0] - q[0]), abs(p[1] - q[1]),
                        abs(p[2] - q[2])) <= tolerance
 
-        # Les lignes du bandeau : celles majoritairement bleues.
-        premiere = hauteur
-        for y in range(hauteur):
-            bleus = sum(1 for x in range(largeur)
-                        if proche(lignes[y][x * bpp:x * bpp + 3], BLEU))
-            if bleus > largeur * 0.5:
-                premiere = y
-                break
-
         centre = largeur / 2
-        rayon_vi = 0.0
-        rayon_texte = 0.0
+        rayon = 0.0
+        bleus = clairs = 0
         for y in range(hauteur):
             ligne = lignes[y]
             for x in range(largeur):
                 p = ligne[x * bpp:x * bpp + 3]
                 if proche(p, fond, 12):
                     continue
-                d = math.hypot(x - centre, y - centre)
-                if y < premiere:
-                    rayon_vi = max(rayon_vi, d)          # le VI
-                elif not proche(p, BLEU, 40):
-                    rayon_texte = max(rayon_texte, d)    # l'encre de WATCH
+                rayon = max(rayon, math.hypot(x - centre, y - centre))
+                if proche(p, BLEU, 30):
+                    bleus += 1
+                elif proche(p, CLAIR, 30):
+                    clairs += 1
 
-        sure = largeur * 0.40          # la garantie d'Android
-        masque = largeur * 0.50        # le masque circulaire réellement appliqué
-        check(rayon_vi <= sure + 1.5,
-              "%s : le VI tient dans la zone sûre (%.1f px pour %.1f)"
-              % (entree["src"], rayon_vi, sure))
-        check(rayon_texte <= masque - largeur * 0.01,
-              "%s : le texte du bandeau tient dans le masque circulaire "
-              "(%.1f px pour %.1f) — hors zone sûre, compromis assumé"
-              % (entree["src"], rayon_texte, masque))
+        sure = largeur * 0.40    # la garantie d'Android, rien de moins
+        check(rayon <= sure + 1.5,
+              "%s : tout le contenu tient dans la zone sûre (%.1f px pour %.1f)"
+              % (entree["src"], rayon, sure))
+        # Une icône qui tiendrait dans la zone sûre parce qu'elle est vide
+        # passerait le test ci-dessus. On vérifie donc que les deux encres
+        # sont bien là, en quantité crédible.
+        check(bleus > largeur * hauteur * 0.02 and clairs > largeur * hauteur * 0.004,
+              "%s : le VI et le WATCH sont tous les deux dessinés "
+              "(%d px d'accent, %d px de texte)"
+              % (entree["src"], bleus, clairs))
+
+    # Les icônes « any », elles, ne sont pas recadrées : elles doivent au
+    # contraire occuper la tuile, sinon l'app a l'air perdue au milieu de
+    # son fond dans le sélecteur d'applis.
+    for entree in manifeste["icons"]:
+        if entree.get("purpose") == "maskable":
+            continue
+        chemin = "docs/" + entree["src"]
+        if not os.path.exists(chemin):
+            continue
+        largeur, hauteur, bpp, lignes = _pixels_png(chemin)
+        fond = lignes[0][0:3]
+        centre = largeur / 2
+        rayon = 0.0
+        for y in range(hauteur):
+            ligne = lignes[y]
+            for x in range(largeur):
+                p = ligne[x * bpp:x * bpp + 3]
+                if max(abs(p[0] - fond[0]), abs(p[1] - fond[1]),
+                       abs(p[2] - fond[2])) <= 12:
+                    continue
+                rayon = max(rayon, math.hypot(x - centre, y - centre))
+        check(rayon >= largeur * 0.35,
+              "%s : le dessin occupe la tuile (%.1f px, minimum %.1f)"
+              % (entree["src"], rayon, largeur * 0.35))
 
     # Les icônes d'app doivent rester OPAQUES : une maskable transparente
     # laisserait voir le fond du lanceur à travers. C'est l'inverse exact de
