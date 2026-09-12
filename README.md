@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **979
+qui permet de tester tout le pipeline sans sortir de la machine. **981
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1337,26 +1337,40 @@ cosmétique — Android recadre les maskable en cercle, en squircle ou en carré
 arrondi selon le lanceur, et ne garantit que le **disque central de 80 % du
 côté**. Tout ce qui dépasse peut être rogné.
 
-**Le bandeau à bord perdu était justement le point faible de cette piste.**
-Sur la variante « any » il va d'un bord à l'autre, ce qui fait son allure. Sur
-la maskable, un découpage circulaire l'aurait réduit à un croissant. Il y
-devient donc un bandeau arrondi, rentré dans la zone sûre — l'effet bord à
-bord est perdu là, et conservé partout ailleurs.
+**Le bandeau à bord perdu, et le compromis qu'il impose.** Il y a eu deux
+tentatives avant celle-ci, et la mesure a démenti l'intuition les deux fois.
 
-**Mesuré, et corrigé après mesure.** La première génération plaçait le
-contenu jusqu'à **87,7 px** du centre pour **76,8 px** de zone sûre. Ça
-survivait aux trois masques courants — le masque circulaire réel a un rayon
-de 96 px, vérifié à l'écran — mais violait la garantie d'Android. Le contenu
-a été réduit jusqu'à **77,1 px**, soit la zone sûre à 0,3 px près, un bord
-d'anticrénelage.
+*Premier essai* : bandeau arrondi et rentré dans la zone sûre sur les seules
+maskable, pour ne rien risquer. Le contenu tombait alors à 77,1 px du centre
+pour 76,8 de zone sûre — strictement conforme, mais plus timide.
 
-**Quatorze vérifications** : chaque icône déclarée dans le manifeste existe et
-a la taille annoncée ; les deux maskable tiennent dans leur zone sûre (le test
-décode le PNG et mesure le rayon du contenu réel, en tolérant l'anticrénelage) ;
-et les quatre sont **opaques**. Cette dernière est l'exacte réciproque du test
+*Retenu, après avoir vu les trois découpes à l'écran* : le bandeau va d'un
+bord à l'autre sur **les quatre fichiers**, qui sont donc identiques deux à
+deux. Le découpage circulaire l'effile aux extrémités au lieu de le trancher,
+et « WATCH » y reste entièrement lisible.
+
+**Ce que ça coûte, chiffré.** Android garantit le disque central de 80 % du
+côté (rayon 40 %), mais le masque circulaire réellement appliqué a un rayon
+de 50 % — bien plus large que la garantie. Le texte du bandeau va jusqu'à
+**91,3 px** du centre : il tient dans le masque réel (96 px, 4,7 px de marge)
+mais dépasse la garantie (76,8 px).
+
+Et ce n'est **pas rattrapable** : le bandeau étant en bas, la zone sûre n'y
+mesure plus qu'une vingtaine de pixels de large. Un bandeau à bord perdu et un
+texte tenant dans la zone sûre sont géométriquement incompatibles. Il fallait
+choisir ; le bandeau a été choisi en connaissance de cause.
+
+**Seize vérifications**, et elles encodent ce compromis plutôt que de le
+masquer : chaque icône déclarée existe et a la taille annoncée ; **le VI tient
+dans la zone sûre conservatrice** ; **le texte du bandeau tient dans le masque
+circulaire réel**, avec une marge — c'est plus faible que la garantie
+d'Android, et le message du test le dit mot pour mot.
+
+Les quatre sont enfin vérifiées **opaques**. C'est l'exacte réciproque du test
 du badge, qui lui exige de la transparence : une icône d'app transparente
 laisserait voir le fond du lanceur, un badge opaque redonne un carré blanc.
 Les confondre est facile, d'où deux tests qui se contredisent volontairement.
+
 
 ### Le carré blanc dans la barre d'état
 

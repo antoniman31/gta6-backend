@@ -4622,15 +4622,25 @@ def test_icones_de_lapp():
         check((largeur, hauteur) == (attendu, attendu),
               "%s fait bien %dx%d" % (entree["src"], attendu, attendu))
 
-    # Le vrai piège des icônes maskable. Android les recadre en cercle, en
-    # squircle ou en carré arrondi selon le lanceur, et ne garantit que le
-    # disque central de 80 % du côté — soit un rayon de 40 %. Tout ce qui
-    # dépasse peut être rogné.
+    # Les icônes maskable et le compromis assumé du bandeau.
     #
-    # La première version de cette icône plaçait son contenu jusqu'à 87,7 px
-    # du centre pour 76,8 px de zone sûre : ça survivait aux masques courants
-    # (vérifié à l'écran sur les trois formes) mais violait la garantie. Le
-    # contenu a été réduit jusqu'à rentrer.
+    # Android recadre ces icônes en cercle, squircle ou carré arrondi selon
+    # le lanceur. Il garantit le disque central de 80 % du côté (rayon 40 %),
+    # mais le masque circulaire réellement appliqué a un rayon de 50 % —
+    # bien plus large que la garantie.
+    #
+    # Le bandeau « WATCH » va d'un bord à l'autre : c'est ce qui fait l'allure
+    # de cette icône, et c'est un choix. Conséquence géométrique inévitable :
+    # le bandeau étant en bas, la zone sûre n'y mesure plus qu'une vingtaine
+    # de pixels de large. Un bandeau à bord perdu et un texte tenant dans la
+    # zone sûre sont donc INCOMPATIBLES — il faut choisir, et le bandeau a
+    # été choisi après avoir vu les trois découpes à l'écran.
+    #
+    # Ce que le test verrouille, du coup :
+    #   - le VI, lui, tient dans la zone sûre conservatrice ;
+    #   - le texte du bandeau tient dans le masque circulaire réel, avec
+    #     une marge. C'est plus faible que la garantie d'Android, et c'est
+    #     documenté comme tel — pas subi.
     for entree in manifeste["icons"]:
         if entree.get("purpose") != "maskable":
             continue
@@ -4639,25 +4649,45 @@ def test_icones_de_lapp():
             continue
         largeur, hauteur, bpp, lignes = _pixels_png(chemin)
         fond = lignes[0][0:3]
-        # Tolérance : l'anticrénelage et la compression décalent le fond
-        # d'une unité ou deux, ce n'est pas du contenu.
-        def est_du_contenu(p):
-            return max(abs(p[0] - fond[0]), abs(p[1] - fond[1]),
-                       abs(p[2] - fond[2])) > 12
+        BLEU = (88, 185, 255)   # --accent, la couleur du bandeau
+
+        def proche(p, q, tolerance=20):
+            return max(abs(p[0] - q[0]), abs(p[1] - q[1]),
+                       abs(p[2] - q[2])) <= tolerance
+
+        # Les lignes du bandeau : celles majoritairement bleues.
+        premiere = hauteur
+        for y in range(hauteur):
+            bleus = sum(1 for x in range(largeur)
+                        if proche(lignes[y][x * bpp:x * bpp + 3], BLEU))
+            if bleus > largeur * 0.5:
+                premiere = y
+                break
+
         centre = largeur / 2
-        rayon_max = 0.0
+        rayon_vi = 0.0
+        rayon_texte = 0.0
         for y in range(hauteur):
             ligne = lignes[y]
             for x in range(largeur):
-                if not est_du_contenu(ligne[x * bpp:x * bpp + 3]):
+                p = ligne[x * bpp:x * bpp + 3]
+                if proche(p, fond, 12):
                     continue
-                r = math.hypot(x - centre, y - centre)
-                if r > rayon_max:
-                    rayon_max = r
-        sure = largeur * 0.40
-        check(rayon_max <= sure + 1.5,
-              "%s : contenu jusqu'à %.1f px du centre, zone sûre %.1f px"
-              % (entree["src"], rayon_max, sure))
+                d = math.hypot(x - centre, y - centre)
+                if y < premiere:
+                    rayon_vi = max(rayon_vi, d)          # le VI
+                elif not proche(p, BLEU, 40):
+                    rayon_texte = max(rayon_texte, d)    # l'encre de WATCH
+
+        sure = largeur * 0.40          # la garantie d'Android
+        masque = largeur * 0.50        # le masque circulaire réellement appliqué
+        check(rayon_vi <= sure + 1.5,
+              "%s : le VI tient dans la zone sûre (%.1f px pour %.1f)"
+              % (entree["src"], rayon_vi, sure))
+        check(rayon_texte <= masque - largeur * 0.01,
+              "%s : le texte du bandeau tient dans le masque circulaire "
+              "(%.1f px pour %.1f) — hors zone sûre, compromis assumé"
+              % (entree["src"], rayon_texte, masque))
 
     # Les icônes d'app doivent rester OPAQUES : une maskable transparente
     # laisserait voir le fond du lanceur à travers. C'est l'inverse exact de
