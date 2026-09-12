@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-12T07:28:22.622622+00:00",
+  "generated_at": "2026-09-12T08:01:50.840736+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 49.9,
+  "duration_seconds": 47.3,
   "decode_failures": 0,
-  "total_articles": 2461,
-  "new_this_run": 1,
+  "total_articles": 2463,
+  "new_this_run": 2,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,12 +390,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-12T01:39:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-12T07:30:05+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -407,7 +407,7 @@
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-11T23:04:29+00:00",
+      "last_article": "2026-09-12T07:55:39+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,7 +492,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T07:51:23+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 3,
@@ -916,32 +916,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "polygon": {
-      "depuis": "2026-09-12T07:01:56.325230+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gamerant": {
-      "depuis": "2026-09-12T07:01:56.325230+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "dualshockers": {
-      "depuis": "2026-09-12T07:01:56.325230+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,15,15",
-    "gnews-fr": "100,100,100,100,100,100,100,100,100,102,100,100",
-    "gnews-en": "99,99,97,99,101,102,100,101,101,103,103,104",
+    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,15,15,15",
+    "gnews-fr": "100,100,100,100,100,100,100,100,102,100,100,102",
+    "gnews-en": "99,97,99,101,102,100,101,101,103,103,104,104",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -949,12 +933,12 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,15,0,0,0,15,15",
+    "rockstarmag-youtube": "15,15,15,15,0,15,0,0,0,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,10,10,0,10",
-    "kotaku": "20,0,0,20,20,20,20,20,20,20,20,20",
+    "polygon": "10,10,10,10,10,10,10,10,10,0,10,10",
+    "kotaku": "0,0,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,15 +949,15 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,10,10,0,10",
-    "dualshockers": "10,10,10,10,10,10,10,10,10,10,0,10",
+    "gamerant": "10,10,10,10,10,10,10,10,10,0,10,10",
+    "dualshockers": "10,10,10,10,10,10,10,10,10,0,10,10",
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "5,6,5,5,6,6,6,6,6,5,5,5",
+    "xboxwire": "6,5,5,6,6,6,6,6,5,5,5,5",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1014,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"32c34-OFH6/mFv5owPwRXC99TFEoFicVc\"",
+      "etag": "W/\"33444-WkormdoCnolrhldrng/E7+WYYjc\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"4ad4fb0ba435ccf49ec7f8f61af8288a\"",
-      "modified": "Sat, 12 Sep 2026 07:27:42 GMT"
+      "etag": "W/\"21558a13eda78ac4d5424cb8b24c04ad\"",
+      "modified": "Sat, 12 Sep 2026 08:00:45 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1035,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 07:27:48 GMT"
+      "modified": "Sat, 12 Sep 2026 08:01:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1044,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa4f882-3220\"",
-      "modified": "Sat, 12 Sep 2026 07:00:18 GMT"
+      "etag": "W/\"6aa50691-3230\"",
+      "modified": "Sat, 12 Sep 2026 08:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1070,6 +1054,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Dazed Magazines Are Back in Stock - resellcalendar.com",
+      "link": "https://resellcalendar.com/news/feed/gta-6-dazed-magazine-restock-reseller/",
+      "source_link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQTE9XSElVTldRb3lIUUVzRUJLX1lqd28zcFYxOUhTVlR0dWYybUV5SFNYLWJ3cHhXX19kZDRuS2JpcVRfeU1USUVwa1N0TEJVSG9yNHNtYkpIdGxIS25DRUxuQ0JJRlVJWkRXb193SW5PY29ZZ0FTOHdhVDBxaXZXVA?oc=5",
+      "date": "2026-09-12T07:55:39+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://resellcalendar.com/wp-content/uploads/2026/09/dazedgtareseller.jpg",
+      "description": "GTA 6 Dazed Magazines Are Back in Stock&nbsp;&nbsp;resellcalendar.com"
+    },
+    {
+      "title": "GTA 6 pousse le réalisme à un niveau inédit : ces mécaniques vont bouleverser vos habitudes - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-pousse-le-realisme-a-un-niveau-inedit-ces-mecaniques-vont-bouleverser-vos-habitudes-225082.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQVkFHYkJFWTc3dzN1RG53RFREWUZCY2lfSElxNTNybHZ4cEZJV0dqUm9PUVdVQmo3NGE3U0pITVRBOVhGZXBTMlIxSDdaamY5UFh3UEUxdXVOQnp5b1FzUGtISUlGVXo1TjdBUF8xcDc1M1NiVDF6bTRDTVFiZGtMd21lOXZCaksyZEYzRlY4eGVPREZPSUNDZWNsOTRZdGNsa2dxaExrV2lTcGFlUmZtaGJlWi00SXc1cldFX1VvaW13aEdIRjhWMW9GQWJxeEdPRXpqZ2R0V1JjenhiT1BYMA?oc=5",
+      "date": "2026-09-12T07:30:05+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-pousse-le-realisme-a-un-niveau-inedit-ces-mecaniques-vont-bouleverser-vos-habitudes.webp",
+      "description": "GTA 6 pousse le réalisme à un niveau inédit : ces mécaniques vont bouleverser vos habitudes&nbsp;&nbsp;La Crème Du Gaming"
+    },
     {
       "title": "GTA V + DLSS V : Plus beau que GTA VI sur PS5 ? - gamekyo.com",
       "link": "https://www.gamekyo.com/blog_article487893.html",
@@ -5003,32 +5013,6 @@
       "lang": "fr",
       "image": "https://cdn-uploads.gameblog.fr/img/news/720531_6a747c878ace8.jpg",
       "description": "GTA 6 : voici à quelle heure exactement vous pourrez y jouer et l'astuce pour y jouer avant les autres&nbsp;&nbsp;Gameblog"
-    },
-    {
-      "title": "Comment jouer à GTA 6 avant sa sortie ? - Numerama",
-      "link": "https://www.numerama.com/pop-culture/2327313-comment-jouer-a-gta-6-avant-sa-sortie.html",
-      "source_link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNOXgwalRmM2c5UWJNbTk2VkVFQjFJbXJRZzBacjlMU1YtYjBxb2Q5QVVfNEtPcHRTbkQtTnNlX2Z6bHF0bnFMYWkyeVVRRVZKOTVfQjJmODZrLVliQ1NTc0FZVVA4cEdsaWhwMjBHelNGekRRNTJMWmhJWlQ5WUtvbGNydmhxYXg4a0xYb0x2TkY?oc=5",
-      "date": "2026-09-08T06:23:37+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/08/capture-decran-2026-08-06-a-153231.png?resize=1600,900&key=0d62e7de",
-      "description": "Comment jouer à GTA 6 avant sa sortie ?&nbsp;&nbsp;Numerama"
-    },
-    {
-      "title": "GTA 6 change totalement la gestion des armes - GinjFo",
-      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-change-totalement-la-gestion-des-armes-20260908",
-      "source_link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQSXpObXdtWHZlRTdEbkVXZ3BoR0xnS2NkbjhsN3VoVEdxY2Uzd2ZZQ0wxblBfRlRqQ2JNMVRGd21ENVQ0UmdmdDdHNXZwNEpaWXJHTjFsNHVEX1dRaTdJdDE0U2xNZUJRSF9YdnMwUjY3RkVyR2dWU0FvZURpdmdUaDJTYXY0d25HVXZKcEdvemZNWXllMWY0LWp2dkNNazdaTV9CNVlYaHBwaXo0ZWRLa2p5QXV1c2drdEE?oc=5",
-      "date": "2026-09-08T05:32:33+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA6_BAO2.jpg",
-      "description": "GTA 6 change totalement la gestion des armes&nbsp;&nbsp;GinjFo"
     }
   ],
   "partial": true,
