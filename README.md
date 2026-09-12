@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **958
+qui permet de tester tout le pipeline sans sortir de la machine. **965
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1324,6 +1324,42 @@ se désactive par leur absence.
 **Les deux annoncent mot pour mot la même chose**, et ne peuvent pas
 diverger : le texte est écrit une seule fois dans
 `feed_store.libelle_recap()`, appelé par les deux canaux.
+
+### Le carré blanc dans la barre d'état
+
+Signalé le 12/09/2026 : l'icône de la notification push était un carré blanc
+sur le téléphone. Défaut présent depuis l'ajout des push, jamais remarqué.
+
+**`icon` et `badge` ne se comportent pas pareil, et c'est tout le piège.**
+`icon` est la grande image affichée dans la notification dépliée : elle sort
+en couleur, telle quelle. `badge` est la petite icône de la **barre d'état**,
+et Android n'en garde que le **canal alpha** — il jette la couleur et repeint
+la silhouette en blanc.
+
+`sw.js` déclarait `badge: "icon-192.png"`. Or les quatre icônes de l'app sont
+des PNG de **type 2 — RVB, sans aucun canal alpha** : tous les pixels sont
+opaques. La silhouette obtenue est donc le carré entier. D'où le carré blanc,
+et il ne pouvait pas en être autrement.
+
+**Corrigé** par un fichier dédié, `docs/icon-badge.png` : 96×96 en RGBA, un
+« VI » blanc sur fond entièrement transparent — **16 % de pixels opaques,
+83 % transparents**. Le chiffre romain plutôt qu'un simple « 6 » parce qu'il
+reste identifiable à 24 px, taille réelle d'affichage dans la barre.
+
+**Le nom du cache est passé en `v4`, et ce n'est pas cosmétique.** Sans
+remplacement du service worker, l'ancien resterait actif sur les téléphones
+déjà installés et continuerait d'envoyer l'ancien badge : la correction ne
+serait jamais parvenue à l'appareil. C'est la même raison qui avait fait
+passer en `v3` à l'ajout des push.
+
+**Sept vérifications verrouillent l'ensemble** : le badge existe, c'est un
+PNG, il a un canal alpha, il est carré, son fond est *réellement* transparent
+(un RGBA entièrement opaque redonnerait le carré blanc, avoir le canal ne
+suffit pas), et le nom du cache est bien au-delà de v4.
+
+C'est typiquement le défaut qu'aucun audit du site ne pouvait trouver : il ne
+se voit ni dans le navigateur, ni dans le HTML, seulement sur un vrai
+téléphone Android qui reçoit une vraie notification.
 
 ```
 🎮 3 nouveaux articles GTA 6 (dont 1 officiel Rockstar)

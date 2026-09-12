@@ -4490,6 +4490,82 @@ def test_panneau_parametres_intact():
     check(not longs, f"plus aucun style en ligne long dans le panneau (reste {len(longs)})")
 
 
+def test_badge_de_notification_a_un_canal_alpha():
+    print("\n[push] le badge de la barre d'état n'est pas un carré blanc")
+    import re, struct
+    sw = open("docs/sw.js", encoding="utf-8").read()
+
+    fichier = re.search(r'badge:\s*"([^"]+)"', sw)
+    check(fichier is not None, "le service worker déclare un badge")
+    if not fichier:
+        return
+    nom = fichier.group(1)
+    chemin = "docs/" + nom.lstrip("./")
+    check(os.path.exists(chemin), f"le fichier du badge existe ({nom})")
+    if not os.path.exists(chemin):
+        return
+
+    # Le cœur du défaut. Android ne garde QUE le canal alpha du badge et
+    # repeint la forme en blanc. Un PNG sans alpha (type 2 = RVB) a tous ses
+    # pixels opaques : la silhouette est le carré entier, et l'utilisateur
+    # voit un carré blanc dans sa barre d'état. C'est exactement ce qui se
+    # passait avec badge:"icon-192.png" depuis l'ajout des push.
+    donnees = open(chemin, "rb").read()
+    check(donnees[:8] == b"\x89PNG\r\n\x1a\n", "le badge est bien un PNG")
+    largeur, hauteur, _, type_couleur = struct.unpack(">IIBB", donnees[16:26])
+    AVEC_ALPHA = (4, 6)   # 4 = gris+alpha, 6 = RVB+alpha
+    check(type_couleur in AVEC_ALPHA,
+          "le badge a un canal alpha (type PNG %d) — sans lui Android affiche "
+          "un carré blanc" % type_couleur)
+    check(largeur == hauteur,
+          "le badge est carré (%dx%d)" % (largeur, hauteur))
+
+    # Avoir un canal alpha ne suffit pas : encore faut-il qu'il serve. Un PNG
+    # RGBA entièrement opaque redonnerait le même carré blanc.
+    if type_couleur == 6:
+        import zlib
+        morceaux = b""
+        i = 8
+        while i < len(donnees):
+            taille = struct.unpack(">I", donnees[i:i + 4])[0]
+            if donnees[i + 4:i + 8] == b"IDAT":
+                morceaux += donnees[i + 8:i + 8 + taille]
+            i += 12 + taille
+        brut = zlib.decompress(morceaux)
+        bpp, pas = 4, largeur * 4
+        transparents = 0
+        precedente = bytearray(pas)
+        position = 0
+        for _ in range(hauteur):
+            filtre = brut[position]; position += 1
+            ligne = bytearray(brut[position:position + pas]); position += pas
+            for x in range(pas):
+                a = ligne[x - bpp] if x >= bpp else 0
+                b = precedente[x]
+                c = precedente[x - bpp] if x >= bpp else 0
+                if filtre == 1: ligne[x] = (ligne[x] + a) & 255
+                elif filtre == 2: ligne[x] = (ligne[x] + b) & 255
+                elif filtre == 3: ligne[x] = (ligne[x] + (a + b) // 2) & 255
+                elif filtre == 4:
+                    pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                    pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                    ligne[x] = (ligne[x] + pr) & 255
+            transparents += sum(1 for x in range(3, pas, bpp) if ligne[x] < 50)
+            precedente = ligne
+        part = 100 * transparents / (largeur * hauteur)
+        check(part > 50,
+              "le fond du badge est réellement transparent (%.0f %% des pixels) "
+              "— un RGBA tout opaque redonnerait le carré blanc" % part)
+
+    # Le service worker doit être remplacé, sinon la correction ne parvient
+    # jamais aux téléphones déjà installés : c'est le nom du cache qui force
+    # ce remplacement, et le fichier le documente lui-même.
+    version = re.search(r'CACHE_NAME\s*=\s*"gta6watch-shell-v(\d+)"', sw)
+    check(version is not None and int(version.group(1)) >= 4,
+          "le nom du cache a été bumpé (v%s) pour remplacer l'ancien service "
+          "worker" % (version.group(1) if version else "?"))
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -4576,6 +4652,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_confirmation_des_actions_sans_retour,
            test_haut_de_page_une_seule_carte,
            test_validation_avant_ecriture,
+           test_badge_de_notification_a_un_canal_alpha,
            test_readme_annonce_le_bon_nombre):
     fn()
 
