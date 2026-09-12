@@ -9,13 +9,19 @@
 // afficherait silencieusement une actu périmée en la faisant passer pour
 // à jour.
 
+// v4 : bumpé à la correction du badge de notification (carré blanc dans
+// la barre d'état Android). Indispensable ici pour la même raison qu'en v3 :
+// sans remplacement, l'ancien service worker resterait actif sur les
+// téléphones déjà installés et continuerait d'envoyer l'ancien badge — la
+// correction ne se verrait jamais.
+//
 // v3 : bumpé à l'ajout des notifications push (lot H). Le service worker
 // sert le squelette en réseau-d'abord, donc l'app se met déjà à jour dès
 // qu'il y a du réseau — mais changer le nom du cache force le remplacement
 // de l'ancien service worker, ce qui évite de revivre l'incident de cache
 // tenace jamais élucidé. Ici c'est indispensable : sans remplacement,
 // l'ancien service worker resterait actif et ignorerait les push.
-const CACHE_NAME = "gta6watch-shell-v3";
+const CACHE_NAME = "gta6watch-shell-v4";
 const SHELL_URL = "./index.html";
 
 self.addEventListener("install", (event) => {
@@ -89,7 +95,17 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(contenu.title, {
       body: contenu.body,
       icon: "icon-192.png",
-      badge: "icon-192.png",
+      // Le badge est la petite icône de la barre d'état Android, et il ne
+      // se comporte PAS comme icon : Android n'en garde que le canal alpha
+      // et repeint la forme en blanc, la couleur d'origine est jetée.
+      // icon-192.png était utilisé ici, or les quatre icônes de l'app sont
+      // des PNG de type 2 — RVB, sans aucun canal alpha. Tous les pixels
+      // étant opaques, la silhouette obtenue était le carré entier : d'où
+      // le carré blanc dans la barre d'état, depuis l'ajout des push.
+      // icon-badge.png est fait pour ça : 96x96 en RGBA, un « VI » blanc
+      // sur fond entièrement transparent (16 % de pixels opaques). Un test
+      // vérifie que ce fichier garde son canal alpha.
+      badge: "icon-badge.png",
       // Un tag identique remplace la notification précédente au lieu
       // d'empiler douze bannières après une nuit sans regarder le téléphone.
       tag: contenu.tag,
