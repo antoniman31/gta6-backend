@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-12T21:01:56.711643+00:00",
+  "generated_at": "2026-09-12T22:01:51.409151+00:00",
   "attente_recap": {
-    "articles": 0,
+    "articles": 3,
     "officiels": 0,
-    "sommet": 0
+    "sommet": 1
   },
-  "duration_seconds": 49.1,
+  "duration_seconds": 47.3,
   "decode_failures": 0,
-  "total_articles": 2486,
-  "new_this_run": 1,
+  "total_articles": 2489,
+  "new_this_run": 3,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,7 +390,7 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 1,
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 1,
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 1,
@@ -622,8 +622,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T21:58:37+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-12T21:09:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -672,7 +672,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T21:58:01+00:00",
-      "days_since_last_article": 15,
+      "days_since_last_article": 16,
       "status": "ok"
     },
     {
@@ -694,8 +694,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-12T17:00:12+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-12T21:30:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -720,7 +720,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-06T21:28:07+00:00",
-      "days_since_last_article": 5,
+      "days_since_last_article": 6,
       "status": "ok"
     },
     {
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 2,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 10,
@@ -786,7 +786,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 5,
+      "entries_fetched": 6,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -918,14 +918,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,100,100,100,0,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,100,100,0,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,100,0,99,101,101,102,100,100",
-    "gnews-en": "100,100,104,101,102,0,99,104,98,102,103,102",
+    "gnews-fr": "100,100,100,100,0,99,101,101,102,100,100,101",
+    "gnews-en": "100,104,101,102,0,99,104,98,102,103,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -940,7 +940,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,0,100,100,100,100,100,100",
+    "vg247": "100,100,100,100,0,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -955,19 +955,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "purexbox": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "xboxwire": "5,5,5,5,5,0,5,5,5,5,5,5",
-    "trueach": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "jdg": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "numerama": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "frandroid": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,0,82,82,82,82,82,82",
-    "arstechnica": "26,26,26,26,26,0,26,26,26,26,26,26",
-    "pushsquare": "100,100,100,100,100,0,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,0,100,100,100,100,100,100"
+    "xboxygen": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "purexbox": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "xboxwire": "5,5,5,5,0,5,5,5,5,5,5,6",
+    "trueach": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "jdg": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "numerama": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "frandroid": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "engadget": "82,82,82,82,0,82,82,82,82,82,82,82",
+    "arstechnica": "26,26,26,26,0,26,26,26,26,26,26,26",
+    "pushsquare": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "schreier": "100,100,100,100,0,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"d8aeef6f790df647c95fae9aadab6d0d\"",
-      "modified": "Sat, 12 Sep 2026 20:49:29 GMT"
+      "etag": "W/\"c72fdcb5faeba807bcc0b6f57dfb9d95\"",
+      "modified": "Sat, 12 Sep 2026 21:47:13 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"22689-Z5OaSRX4pxzU5DT2TIPXvtkruKc\"",
+      "etag": "W/\"24990-+z9r2dvW8J8HNt4toamfIlpErbE\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"82287bc81a277a574754e13cd4e0170a\"",
-      "modified": "Sat, 12 Sep 2026 19:28:03 GMT"
+      "etag": "W/\"d8ec2f33a4d5ccf2d7468bcd911157ad\"",
+      "modified": "Sat, 12 Sep 2026 21:22:11 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 21:00:07 GMT"
+      "modified": "Sat, 12 Sep 2026 22:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa5bd60-2fe8\"",
-      "modified": "Sat, 12 Sep 2026 21:00:16 GMT"
+      "etag": "W/\"6aa5cb6f-2fe8\"",
+      "modified": "Sat, 12 Sep 2026 22:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,17 +1043,43 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"a6bff9c591210ce3e8d2c3deda74b599\"",
-      "modified": "Sat, 12 Sep 2026 20:41:56 GMT"
+      "etag": "W/\"cdb2215bdaa794b16fe0030ed9635a39\"",
+      "modified": "Sat, 12 Sep 2026 21:38:07 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa5ad35-b25\"",
-      "modified": "Sat, 12 Sep 2026 19:51:17 GMT"
+      "etag": "\"6aa5c94e-ae8\"",
+      "modified": "Sat, 12 Sep 2026 21:51:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Is Treating Money the Way More Open-World Games Should",
+      "link": "https://gamerant.com/gta-6-money-economy-open-world-games/",
+      "source_link": null,
+      "date": "2026-09-12T21:30:12+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-money-open-world.jpg?w=1600&h=900&fit=crop",
+      "description": "GTA 6 is giving money more weight than most open-world games, and that could make its world feel far more meaningful."
+    },
+    {
+      "title": "New Photos of the Alleged GTA 6 Box Look More Like a Press Kit",
+      "link": "https://www.gtaboom.com/new-photos-of-the-alleged-gta-6-box-look-more-like-a-press-kit-d4a3",
+      "source_link": null,
+      "date": "2026-09-12T21:09:48+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/c8/58/new-photos-of-the-alleged-gta-6-box-look-more-like-a-press-kit.jpg",
+      "description": "Rockstar has not confirmed the alleged Grand Theft Auto VI box, whose T shirt, cap and keyring look like press swag. It is not a collector's edition."
+    },
     {
       "title": "GTA 6 provoque déjà des dégâts dans le monde réel : un complexe naturiste croule sous les faux avis des fans - lacremedugaming.fr",
       "link": "https://www.lacremedugaming.fr/actus/gta-6-provoque-deja-des-degats-dans-le-monde-reel-un-complexe-naturiste-croule-sous-les-faux-avis-des-fans-225193.html",
@@ -3896,6 +3922,19 @@
       "lang": null,
       "image": null,
       "description": "GTA 6 gameplay: Key details that you might have missed&nbsp;&nbsp;redbull.com"
+    },
+    {
+      "title": "GTA 6 gameplay: Key details that you might have missed - Red Bull",
+      "link": "https://www.redbull.com/int-en/gta-6-gameplay-details",
+      "source_link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE1fdHZGcmVvZXAtM0JyMWh6aUtNcjNIUFFMbmg2enRkUHpvVjJLbGFoVF8tM0FMaENtVE53RTdGdFo5T19aenlRSDd6eTRBbGswYkxzNW9jcDRpV1hnOFZKM3VZYw?oc=5",
+      "date": "2026-09-09T14:21:03+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 gameplay: Key details that you might have missed&nbsp;&nbsp;Red Bull"
     },
     {
       "title": "GTA 6 wasn't \"fully formed\" when Trailer 1 released, Rockstar boss says, but the Tom Petty song it used was a \"mission statement\" of where it was going",
