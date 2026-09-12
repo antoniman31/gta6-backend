@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-12T08:01:50.840736+00:00",
+  "generated_at": "2026-09-12T09:01:48.734575+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 47.3,
+  "duration_seconds": 44.6,
   "decode_failures": 0,
-  "total_articles": 2463,
-  "new_this_run": 2,
+  "total_articles": 2467,
+  "new_this_run": 4,
   "hot_count": 5,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,19 +390,19 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-12T07:30:05+00:00",
+      "last_article": "2026-09-12T08:37:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 104,
+      "entries_fetched": 102,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 0,
@@ -454,9 +454,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-10T20:20:11+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-12T06:40:08+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -606,10 +606,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T14:16:10+00:00",
       "days_since_last_article": 0,
@@ -642,10 +642,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T06:05:13+00:00",
       "days_since_last_article": 1,
@@ -660,7 +660,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -694,8 +694,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T20:53:58+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-12T09:00:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 9,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 27,
+      "entries_fetched": 26,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,15,15,15",
-    "gnews-fr": "100,100,100,100,100,100,100,100,102,100,100,102",
-    "gnews-en": "99,97,99,101,102,100,101,101,103,103,104,104",
+    "rockstar-youtube": "15,15,15,0,0,0,0,0,15,15,15,15",
+    "gnews-fr": "100,100,100,100,100,100,100,102,100,100,102,101",
+    "gnews-en": "97,99,101,102,100,101,101,103,103,104,104,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,12 +933,12 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,15,0,0,0,15,15,15",
+    "rockstarmag-youtube": "15,15,15,0,15,0,0,0,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,10,0,10,10",
-    "kotaku": "0,0,20,20,20,20,20,20,20,20,20,20",
+    "polygon": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "kotaku": "0,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -949,15 +949,15 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,10,0,10,10",
-    "dualshockers": "10,10,10,10,10,10,10,10,10,0,10,10",
+    "gamerant": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "dualshockers": "10,10,10,10,10,10,10,10,0,10,10,10",
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,5,5,6,6,6,6,6,5,5,5,5",
+    "xboxwire": "5,5,6,6,6,6,6,5,5,5,5,5",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,27",
+    "arstechnica": "27,27,27,27,27,27,27,27,27,27,27,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"df438e548ee2de21efa17049d1fb382b\"",
-      "modified": "Fri, 11 Sep 2026 23:06:50 GMT"
+      "etag": "W/\"fb59607d33004946a72d7f68a75cdca3\"",
+      "modified": "Sat, 12 Sep 2026 09:00:00 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1003,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"21558a13eda78ac4d5424cb8b24c04ad\"",
-      "modified": "Sat, 12 Sep 2026 08:00:45 GMT"
+      "etag": "W/\"ddf51fbe263412bbc03a17fd0578a6be\"",
+      "modified": "Sat, 12 Sep 2026 09:00:32 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,22 +1014,22 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 07:00:00 GMT"
+      "modified": "Sat, 12 Sep 2026 09:00:09 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 08:01:21 GMT"
+      "modified": "Sat, 12 Sep 2026 09:01:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"0673d530721bf750485ef2fa1431d09c\"",
-      "modified": "Fri, 11 Sep 2026 13:35:59 GMT"
+      "etag": "\"d459693f7ebbadcfc0ab1d90d1a1383b\"",
+      "modified": "Sat, 12 Sep 2026 08:46:51 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa50691-3230\"",
-      "modified": "Sat, 12 Sep 2026 08:00:17 GMT"
+      "etag": "W/\"6aa514a0-31e2\"",
+      "modified": "Sat, 12 Sep 2026 09:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1048,12 +1048,38 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa4f65f-b70\"",
-      "modified": "Sat, 12 Sep 2026 06:51:11 GMT"
+      "etag": "\"6aa51286-b74\"",
+      "modified": "Sat, 12 Sep 2026 08:51:18 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Officially Details Open-World Features",
+      "link": "https://gamerant.com/gta-6-open-world-features/",
+      "source_link": null,
+      "date": "2026-09-12T09:00:13+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/official_cover_art_landscape-1.jpg?w=1600&h=900&fit=crop",
+      "description": "Rockstar Games details some of the open-world features players will enjoy in the upcoming release of GTA 6."
+    },
+    {
+      "title": "GTA 6 fait monter la pression sur les prix des consoles, attention aux bundles - GinjFo",
+      "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-fait-monter-la-pression-sur-les-prix-des-consoles-attention-aux-bundles-20260912",
+      "source_link": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQNDhJMFFYa1JiS2w4V3FkSFE2bUMyTEo5RmdwRFNPTEgtNHYtdS1Ea3ZOOXpaYkJNZVRfcWkzVnNpYXFJQ0NOQ1Y0R3g0YUFvclZ5NWlldGo2M1psT2ktWVNTU3dlSjFQd081RUJPSE1KTEw4dUlCVjFoQl8tUExYcGVrZEUtc04xNm9hQ0RGWm41WEhqaFFxOEl4c0xFY1dSczVUZHp4VkthUDBqVGp6dmZQN3AyWXBTVEx4VExGaVRzWlBtWm5oQ3Q4T0FqendqMDBXUTNVZ0JvbGJqc0dnc2JPUVB2UQ?oc=5",
+      "date": "2026-09-12T08:37:29+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.ginjfo.com/wp-content/uploads/2026/06/Official_Cover_Art_GTA6-scaled.jpg",
+      "description": "GTA 6 fait monter la pression sur les prix des consoles, attention aux bundles&nbsp;&nbsp;GinjFo"
+    },
     {
       "title": "GTA 6 Dazed Magazines Are Back in Stock - resellcalendar.com",
       "link": "https://resellcalendar.com/news/feed/gta-6-dazed-magazine-restock-reseller/",
@@ -1079,6 +1105,32 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-pousse-le-realisme-a-un-niveau-inedit-ces-mecaniques-vont-bouleverser-vos-habitudes.webp",
       "description": "GTA 6 pousse le réalisme à un niveau inédit : ces mécaniques vont bouleverser vos habitudes&nbsp;&nbsp;La Crème Du Gaming"
+    },
+    {
+      "title": "GTA 6 Gameplay Breakdown: What the Red and Yellow Target Markers Mean - Forbes",
+      "link": "https://www.forbes.com/sites/brianmazique/2026/09/12/gta-6-shootout-lasts-one-second---look-how-much-happens-before-jason-fires/",
+      "source_link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQcFBqS3JTcjFjd3dINjNiSTRrZmdzNm00UHRJSDhQM09pZ2dmUDd6MGRwWm9OTVhYRFU2WnRQaXRXUFRXNG40M2dZaS15bTlzT0RVMmhaakN4bzNLZHBpS01VNS10eE5GaC0zQTZEeEZyV0lTNGlJMG83YUJpMVk2NnZwXzI3aGtfaHFuLWtPMkVLMkpMWnVSNTI0UGlCeVdWYjlqMFRmZkoyZGZRMlQzd0prcnktSTZMTjV5cklwbnpVZlFaamNN?oc=5",
+      "date": "2026-09-12T07:26:08+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 Gameplay Breakdown: What the Red and Yellow Target Markers Mean&nbsp;&nbsp;Forbes"
+    },
+    {
+      "title": "Vous avez déjà croisé l'héroïne de GTA 6 dans GTA 5 sans le savoir, et voici où !",
+      "link": "https://www.jeuxvideo.com/news/2102977/vous-avez-deja-croise-l-heroine-de-gta-6-dans-gta-5-sans-le-savoir-et-voici-ou.htm",
+      "source_link": null,
+      "date": "2026-09-12T06:40:08+00:00",
+      "source": "Jeuxvideo.com",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178897/1788966484-7547-card.jpg",
+      "description": "Alors que l'attente autour de GTA 6 atteint son paroxysme, la communauté a récemment fait une découverte captivante. Manni L. Perez, l'actrice prête présupposément ses traits au personnage de Lucia, offrait déjà sa voix à un personnage secondaire de GTA Online introduit en… 2019 !"
     },
     {
       "title": "GTA V + DLSS V : Plus beau que GTA VI sur PS5 ? - gamekyo.com",
