@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-12T17:01:45.596285+00:00",
+  "generated_at": "2026-09-12T18:01:51.727059+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 43.8,
+  "duration_seconds": 38.4,
   "decode_failures": 0,
-  "total_articles": 2483,
-  "new_this_run": 3,
-  "hot_count": 5,
+  "total_articles": 2484,
+  "new_this_run": 1,
+  "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
   "sources": [
@@ -390,7 +390,7 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -402,7 +402,7 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 99,
+      "entries_fetched": 104,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 1,
@@ -486,11 +486,11 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "last_article": "2026-09-12T16:12:54+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -504,7 +504,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T18:00:35+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -694,7 +694,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-12T17:00:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 4,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 10,
@@ -864,7 +864,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T18:00:14+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -916,117 +916,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-en": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstar-fr": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstar-announce": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gta6-netflix": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-fr": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-en": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "vg247": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "xboxygen": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "purexbox": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "xboxwire": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "trueach": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "jdg": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "numerama": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gamergen": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "frandroid": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "theverge": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "engadget": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "arstechnica": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "pushsquare": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "schreier": {
-      "depuis": "2026-09-12T16:03:27.676236+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,0,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,100,100,0,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,101,102,100,100,100,100,100,100,100,0,99",
-    "gnews-en": "104,102,102,101,100,100,100,104,101,102,0,99",
+    "gnews-fr": "101,102,100,100,100,100,100,100,100,0,99,101",
+    "gnews-en": "102,102,101,100,100,100,104,101,102,0,99,104",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1041,7 +940,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,100,100,100,100,100,100,100,100,100,0,100",
+    "vg247": "100,100,100,100,100,100,100,100,100,0,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1056,19 +955,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "purexbox": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "xboxwire": "5,5,5,5,5,5,5,5,5,5,0,5",
-    "trueach": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "jdg": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "frandroid": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "engadget": "82,82,82,82,82,82,82,82,82,82,0,82",
-    "arstechnica": "27,26,26,26,26,26,26,26,26,26,0,26",
-    "pushsquare": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,100,0,100"
+    "xboxygen": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "xboxwire": "5,5,5,5,5,5,5,5,5,0,5,5",
+    "trueach": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "jdg": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "frandroid": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "engadget": "82,82,82,82,82,82,82,82,82,0,82,82",
+    "arstechnica": "26,26,26,26,26,26,26,26,26,0,26,26",
+    "pushsquare": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,100,0,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1099,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"31612-tDqs0wu/+NrlxO5JEa6QoVh+TmU\"",
+      "etag": "W/\"2d139-iCqZbNqjj+p/yJGmQG+LTwmrfT4\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"ada2a5caeba33cd83575de18602b3d62\"",
-      "modified": "Sat, 12 Sep 2026 16:41:30 GMT"
+      "etag": "W/\"1d4ecc6d58ceb749707e59a93d44b6c1\"",
+      "modified": "Sat, 12 Sep 2026 17:56:43 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1120,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 16:59:19 GMT"
+      "modified": "Sat, 12 Sep 2026 18:01:26 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1129,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa58520-31bb\"",
-      "modified": "Sat, 12 Sep 2026 17:00:16 GMT"
+      "etag": "W/\"6aa59332-30b5\"",
+      "modified": "Sat, 12 Sep 2026 18:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1149,8 +1048,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa574ef-bbe\"",
-      "modified": "Sat, 12 Sep 2026 15:51:11 GMT"
+      "etag": "\"6aa5910f-bbd\"",
+      "modified": "Sat, 12 Sep 2026 17:51:11 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1284,6 +1183,19 @@
       "lang": null,
       "image": "https://cdn.images.express.co.uk/img/dynamic/143/1200x630/7138314.jpg",
       "description": "GTA 6 causes relationship friction among couples, labelling it 'basically cheating'&nbsp;&nbsp;Daily Express"
+    },
+    {
+      "title": "The Anti-Woke Right Can’t Figure Out How to Stop ‘Grand Theft Auto VI’ - WIRED",
+      "link": "https://www.wired.com/story/the-anti-woke-right-cant-figure-out-how-to-stop-grand-theft-auto-vi/",
+      "source_link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNRTJfVlBKMXlvX28welVYVmt4dDRXS0FQaW4zWUE1SG92VGFUVnR2Sm1XQW9LVzlYZkthTmpYOXdGVGl5emFmNGJMbHJVbURESmhEVkJWc0hreHBFaVB5UWJmeDEyNjZuU0VlLWlrVjQ1dkZrTXd3NU9ZbjJiZ1Bybi1OQjh2TUpIMjFHSHlTbTJPSnJpaUxidTZjZ1o?oc=5",
+      "date": "2026-09-12T11:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.wired.com/photos/6aa2e470eb334db5ae141f8b/191:100/w_1280,c_limit/Right-Wingers-Melting-Down-Over-GTA-Culture-Jason_Duval_06.jpg",
+      "description": "The Anti-Woke Right Can’t Figure Out How to Stop ‘Grand Theft Auto VI’&nbsp;&nbsp;WIRED"
     },
     {
       "title": "GTA 6 : Miami Beach autorise une campagne Vice City dans la vraie ville - Univers-Simu.com",
@@ -5107,19 +5019,6 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/3389mzUBT3d6BLYsdfWpWh-1280-80.jpg",
       "description": "Rockstar's going for a staggered launch"
-    },
-    {
-      "title": "GTA 6 sur Nintendo Switch 2 : le jeu listé sur Cdiscount, que faut-il en penser ? - JeuxVideo.com",
-      "link": "https://www.jeuxvideo.com/news/2102666/gta-6-sur-nintendo-switch-2-le-jeu-liste-sur-cdiscount-que-faut-il-en-penser.htm",
-      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQODluZkN3QzMtUlZqcnlMNk9yNGRhbGRNVE1wcGhsZ0luM0NFbm9qcFFlOHVHY2RoeFV6V19MTVVxdFNVOEtLakM5MGJHYWVlZXBkU0Y5VWxxTlVVVDRJSDBZOVRUa1JKRG9FOE1zZUhscm5lejZjZzdiZnVwN1VDdTRaX1BMVHZNQWc5ZTB2ZWVTanVUclZxOWdkVGVsLWdoYUxhakk5YVpBc0p4UEtYNF95WDJmMHYzTUg4?oc=5",
-      "date": "2026-09-08T10:50:07+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178886/1788861235-2871-card.png",
-      "description": "GTA 6 sur Nintendo Switch 2 : le jeu listé sur Cdiscount, que faut-il en penser ?&nbsp;&nbsp;JeuxVideo.com"
     }
   ],
   "partial": true,
