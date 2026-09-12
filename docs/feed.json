@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-12T12:01:55.300008+00:00",
+  "generated_at": "2026-09-12T13:01:45.022113+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 50.8,
+  "duration_seconds": 41.5,
   "decode_failures": 0,
-  "total_articles": 2472,
+  "total_articles": 2474,
   "new_this_run": 2,
   "hot_count": 5,
   "hot_threshold": 3,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 1,
       "last_article": "2026-09-12T11:40:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -406,7 +406,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-12T11:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -606,10 +606,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T14:16:10+00:00",
       "days_since_last_article": 0,
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 1,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 10,
@@ -804,7 +804,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T12:02:32+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -828,7 +828,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T12:15:00+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,102,100,100,102,101,102,100,100,100",
-    "gnews-en": "100,101,101,103,103,104,104,102,102,101,100,100",
+    "rockstar-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
+    "gnews-fr": "100,100,102,100,100,102,101,102,100,100,100,100",
+    "gnews-en": "101,101,103,103,104,104,102,102,101,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,11 +933,11 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,0,0,0,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,0,10,10,10,10,10,10,10",
+    "polygon": "10,10,10,0,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -949,15 +949,15 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,0,10,10,10,10,10,10,10",
-    "dualshockers": "10,10,10,10,0,10,10,10,10,10,10,10",
+    "gamerant": "10,10,10,0,10,10,10,10,10,10,10,10",
+    "dualshockers": "10,10,10,0,10,10,10,10,10,10,10,10",
     "gta6times": "37,37,37,37,37,37,37,37,37,37,37,37",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,5,5,5,5,5,5,5,5,5",
+    "xboxwire": "6,6,5,5,5,5,5,5,5,5,5,5",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "27,27,27,27,27,27,27,26,26,26,26,26",
+    "arstechnica": "27,27,27,27,27,27,26,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"1cf1399ccc3ea925b734e81a30e1b9ab\"",
-      "modified": "Sat, 12 Sep 2026 11:50:12 GMT"
+      "etag": "W/\"63e8c6ef09ddc0fa1ef9e2b872ead774\"",
+      "modified": "Sat, 12 Sep 2026 12:54:32 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"3483a-TOn9FsUkzqLzmPIl1grrBZD+Rws\"",
+      "etag": "W/\"34980-gShmgBd6U9MEaQ/wERPqweIKCSw\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"549480d37ad5a977f9ef514620b21dc0\"",
-      "modified": "Sat, 12 Sep 2026 12:01:06 GMT"
+      "etag": "W/\"60b25d58370f86b8b771153e202ebcbd\"",
+      "modified": "Sat, 12 Sep 2026 13:01:04 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 12 Sep 2026 12:01:27 GMT"
+      "modified": "Sat, 12 Sep 2026 13:01:18 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa53ecf-31f3\"",
-      "modified": "Sat, 12 Sep 2026 12:00:15 GMT"
+      "etag": "W/\"6aa54ce2-31f3\"",
+      "modified": "Sat, 12 Sep 2026 13:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1130,7 +1130,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/official_cover_art_landscape-1.jpg?w=1600&h=900&fit=crop",
-      "description": "Rockstar Games details some of the open-world features players will enjoy in the upcoming release of GTA 6."
+      "description": "Rockstar Games details some of the open-world features players will enjoy in the upcoming release of GTA 6.",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://opencritic.com/news/36785/gta-6-officially-details-open-world-features"
+        }
+      ]
     },
     {
       "title": "GTA 6 fait monter la pression sur les prix des consoles, attention aux bundles - GinjFo",
@@ -1769,6 +1775,19 @@
       "description": "$2 billion later, I'm not convinced GTA 6 will do more for me than a PS2 and San Andreas&nbsp;&nbsp;GamesRadar+"
     },
     {
+      "title": "GTA VI, Pokémon et Ocarina of Time parmi les jeux les plus recherchés au Québec - Pèse sur start",
+      "link": "https://www.pesesurstart.com/2026/09/11/gta-vi-pokemon-et-ocarina-of-time-parmi-les-jeux-les-plus-recherches-au-quebec-1",
+      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPbzdBODM4dVFpNFlXX1c0RHlQUzR5bGtmVWhOSmFLeWZtYVNCZFNJQjFyT0VNdVBtdGFsQlVZVk03WHYybklrbFdUa3BPM2kyMHNCYU9ibl9PU2d6QTBTU1c5aUNtRFZJWmhwbFdBYWVHYnFjbFRyV0pLbjY4TDFGTUlBeUJUV0JaLXlIUkEyYW9zUDBBakJoUzM4aFpKMkxWa3VyLVd2YVVVaVJhbVNOWExZRHdLMzdtN0FSYw?oc=5",
+      "date": "2026-09-11T14:47:12+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://m1.quebecormedia.com/emp/emp/zelda111a376403a-ab50-4d2d-8209-6491e256fc54_ORIGINAL.jpg?impolicy=crop-resize&x=0&y=0&w=1280&h=720&width=1200",
+      "description": "GTA VI, Pokémon et Ocarina of Time parmi les jeux les plus recherchés au Québec&nbsp;&nbsp;Pèse sur start"
+    },
+    {
       "title": "Rockstar Games devant les tribunaux pour le renvoi de développeurs de GTA 6 - Génération NT",
       "link": "https://www.generation-nt.com/actualites/rockstar-tribunal-renvoi-developpeurs-2080980",
       "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOcklBQ19rVDd4Z1V3WDNEUS1VaGVSYm8tNXZlS2VobUJhaGVMRHFHMXFnT0FSQzRyR2cya0JGU3lRTElvclNlLWRiX1FxaFY4MExNSHpGdTE3SXN1d1hnUWduWW9pdWZyM04wTVdjOFBacmRPX1VHdmZqVDVhT29PX3NtbTgyT2tJTWxPdjhkVdIBlAFBVV95cUxPXzhFYVV0OEh5djZ2Z0ZXbmNiRFBLWEMtenJpYVh6ODdTZUZaWFBaUTBwZVoyS3NBemxuanpnMzNkM003VFZBZHBxMUI1UElFcHhzbnRaMWJBZ001UnNVdGlwanY3cWdmRDZzMm5Id0QxeTdyeEw1Vktub2NtNDRGbUcwbUp3b29lMG13TWFrMEw0MnVB?oc=5",
@@ -1936,6 +1955,19 @@
       "lang": "fr",
       "image": "https://wp-pa.phonandroid.com/uploads/2025/05/brian-GTA6.jpg",
       "description": "GTA 6 : les scalpers n'attendent même plus la rupture de stock pour revendre les manettes custom à prix d'or&nbsp;&nbsp;phonandroid.com"
+    },
+    {
+      "title": "Miami Beach: Advertising deal for GTA 6 approved despite protests - PlayFront",
+      "link": "https://playfront.de/en/miami-beach-werbe-deal-fuer-gta-6-trotz-protesten-abgesegnet/",
+      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOSzEwa1JzY0wzREJqU0hTQnQzekhEXzlyNHVHYW14eHFZbXNVNDl4Z1gybjF3ZWlMb1gtVmo3dFA4T1dLcnNLUDRlSXVMWWc2NmVCcDBueUlnRERJMWhtbHZkbFNRb2N2Ukl6VzFhT2ZpTGdoQnlfUnVVRnNzVndNY0R1QTd2V2R1TXZiTEVn?oc=5",
+      "date": "2026-09-11T12:48:13+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Miami Beach: Advertising deal for GTA 6 approved despite protests&nbsp;&nbsp;PlayFront'What Kind of Message Are We Sending to the World?' — GTA 6 Is Coming to Miami After City Meeting Results in Controversial Approval — and Enough Money to Fix Its Football Field&nbsp;&nbsp;IGNVideo Game Industry Revenue Expected to Reach $214 Billion in 2026 With ‘GTA 6’ Release, New Report Finds&nbsp;&nbsp;variety.com"
     },
     {
       "title": "Miami agrees to advertise GTA 6 in exchange for fixing their football field - metro.co.uk",
