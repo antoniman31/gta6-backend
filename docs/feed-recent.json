@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-13T00:01:51.133828+00:00",
+  "generated_at": "2026-09-13T01:01:53.951381+00:00",
   "attente_recap": {
-    "articles": 4,
+    "articles": 5,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 43.0,
+  "duration_seconds": 53.4,
   "decode_failures": 0,
-  "total_articles": 2490,
+  "total_articles": 2491,
   "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
@@ -384,13 +384,13 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 15,
+      "days_since_last_article": 16,
       "status": "ok"
     },
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 98,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -402,12 +402,12 @@
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 101,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-12T17:23:59+00:00",
+      "last_article": "2026-09-13T00:29:51+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 1,
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 2,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 10,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 26,
+      "entries_fetched": 25,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -918,14 +918,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "0,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,0,99,101,101,102,100,100,101,98,98,98",
-    "gnews-en": "102,0,99,104,98,102,103,102,102,103,103,101",
+    "gnews-fr": "0,99,101,101,102,100,100,101,98,98,98,100",
+    "gnews-en": "0,99,104,98,102,103,102,102,103,103,101,99",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -940,7 +940,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "vg247": "0,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -955,19 +955,19 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "5,0,5,5,5,5,5,5,6,6,6,6",
-    "trueach": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "jdg": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "frandroid": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,0,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "26,0,26,26,26,26,26,26,26,25,26,26",
-    "pushsquare": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,0,100,100,100,100,100,100,100,100,100,100"
+    "xboxygen": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "0,5,5,5,5,5,5,6,6,6,6,6",
+    "trueach": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "jdg": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "0,82,82,82,82,82,82,82,82,82,82,82",
+    "arstechnica": "0,26,26,26,26,26,26,26,25,26,26,25",
+    "pushsquare": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "0,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"7726402077cf02ef4737206e5142c1bb\"",
-      "modified": "Sat, 12 Sep 2026 22:51:57 GMT"
+      "etag": "W/\"9b50e0380f13a15f55edc55dd1a46e64\"",
+      "modified": "Sun, 13 Sep 2026 00:03:46 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1003,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"33f9cab0d8d7b2aea2416c6ec4aa4214\"",
-      "modified": "Sat, 12 Sep 2026 23:46:21 GMT"
+      "etag": "W/\"d8ec2f33a4d5ccf2d7468bcd911157ad\"",
+      "modified": "Sat, 12 Sep 2026 21:22:11 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 13 Sep 2026 00:00:07 GMT"
+      "modified": "Sun, 13 Sep 2026 01:01:23 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa5e792-2fe8\"",
-      "modified": "Sun, 13 Sep 2026 00:00:18 GMT"
+      "etag": "W/\"6aa5f5a0-2fe8\"",
+      "modified": "Sun, 13 Sep 2026 01:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Is GTA 6 Worth The 13 Year Wait? - The Rampage Online",
+      "link": "https://www.therampageonline.com/opinion/2026/09/12/is-gta-6-worth-the-13-year-wait/",
+      "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOYTV5UkFEYjdWSXAtVjRxZVREeFlxUU9pbkFfWlNJVWRjRHQ4RUI1ektWVUhPV2tQU0daS3dJM3JFRTk3YnRNR0Y0R2JvdDk4c0N1bnppNXZxYzVCVjZNVDAySVRCVTY5eElSMjNvNG81aU9iWXRxWnlmanBkZ3FWLXZtRkFHZlhlM0FocQ?oc=5",
+      "date": "2026-09-13T00:29:51+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.therampageonline.com/wp-content/uploads/2026/09/gta.png",
+      "description": "Is GTA 6 Worth The 13 Year Wait?&nbsp;&nbsp;The Rampage Online"
+    },
     {
       "title": "GTA 6 Is Treating Money the Way More Open-World Games Should",
       "link": "https://gamerant.com/gta-6-money-economy-open-world-games/",
@@ -5006,19 +5019,6 @@
       "lang": null,
       "image": "https://www.indexbox.io/landing/img/blog/telegram-fallback/203842e998901f4f1308bbcad65fb9f7.webp",
       "description": "GTA 6 Code-in-Box Packaging Sparks Environmental Concerns&nbsp;&nbsp;IndexBox"
-    },
-    {
-      "title": "Red Dead Redemption 2 DLSS 5 made GTA 6 look like a last-gen game - GameGPU",
-      "link": "https://en.gamegpu.com/news/igry/red-dead-redemption-2-s-dlss-5-zastavila-gta-6-vyglyadet-kak-igra-proshlogo-pokoleniya",
-      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNVGhBdTcyN3VRNzdGcGFKQnB6VGhOU2k2R2xGRWlHX2p0VklnRnAxaDJhSkJsVEU2c3Fma0RWbXNYTzUwb3c2NVVaQUpLTlRmeDAzd1lNdERQSTNBa3BocjRBX0NhVHhnaTNBXzN4TndfQXNlREJQTVF5R2ZLb19KaTZfbFBxS19URUVzVl9pNTB4Z2FqaDZTWHNjLTZMTjNDRjFtRUxVeHl2WGNyVC11WmpGU25ndTFJcXJn?oc=5",
-      "date": "2026-09-08T11:21:44+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/Image_hrgpqzhrgpqzhrgp_ggpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/Image_hrgpqzhrgpqzhrgp_ggpu.webp?width=1920&height=1080",
-      "description": "Red Dead Redemption 2 DLSS 5 made GTA 6 look like a last-gen game&nbsp;&nbsp;GameGPU"
     }
   ],
   "partial": true,
