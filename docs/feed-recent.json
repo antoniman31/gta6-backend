@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-13T20:01:55.032482+00:00",
+  "generated_at": "2026-09-13T21:01:45.724719+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 51.0,
+  "duration_seconds": 45.5,
   "decode_failures": 0,
-  "total_articles": 2509,
-  "new_this_run": 2,
+  "total_articles": 2510,
+  "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -395,7 +395,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-13T18:56:00+00:00",
+      "last_article": "2026-09-13T20:00:56+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -406,7 +406,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-13T19:23:04+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 2,
@@ -642,10 +642,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T06:05:13+00:00",
       "days_since_last_article": 2,
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 3,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 11,
@@ -786,7 +786,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 6,
+      "entries_fetched": 7,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -882,7 +882,7 @@
     {
       "id": "arstechnica",
       "name": "Ars Technica",
-      "entries_fetched": 25,
+      "entries_fetched": 26,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:arstechnica.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,101,101,101,101,102,102,101,101,102,101,101",
-    "gnews-en": "102,102,100,102,103,104,100,101,101,102,100,100",
+    "gnews-fr": "101,101,101,101,102,102,101,101,102,101,101,101",
+    "gnews-en": "102,100,102,103,104,100,101,101,102,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,7 +957,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,6,7,6,7,7,7,7,7,6",
+    "xboxwire": "7,7,6,7,6,7,7,7,7,7,6,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "25,25,25,25,25,25,25,25,25,25,25,25",
+    "arstechnica": "25,25,25,25,25,25,25,25,25,25,25,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -978,8 +978,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"0f95fe851b0f2b7460f734a0eae433fe\"",
-      "modified": "Sun, 13 Sep 2026 20:00:58 GMT"
+      "etag": "W/\"c9c36aae307af2862f3895476ff7ee47\"",
+      "modified": "Sun, 13 Sep 2026 20:54:31 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"25053-xMqP4iPjnt8sU8O8pT8Wi5y0Y1c\"",
+      "etag": "W/\"23340-62ZfY+GfFAXgi4MttuFajE4TLlc\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"47d88180e399dbe3166da929597fa0c2\"",
-      "modified": "Sun, 13 Sep 2026 17:48:01 GMT"
+      "etag": "W/\"9a41100ee4a11441b906354d95bdf3dd\"",
+      "modified": "Sun, 13 Sep 2026 20:57:12 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,17 +1019,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 13 Sep 2026 20:00:07 GMT"
+      "modified": "Sun, 13 Sep 2026 21:01:18 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"d459693f7ebbadcfc0ab1d90d1a1383b\"",
-      "modified": "Sat, 12 Sep 2026 08:46:51 GMT"
+      "etag": "\"2b9f698e17495c894ba8bdc12611a0a0\"",
+      "modified": "Sun, 13 Sep 2026 20:44:39 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa700cf-33da\"",
-      "modified": "Sun, 13 Sep 2026 20:00:15 GMT"
+      "etag": "W/\"6aa70ee1-33da\"",
+      "modified": "Sun, 13 Sep 2026 21:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 reprend officiellement une fonction majeure de RDR2 pour raconter l’histoire de Jason et Lucia - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-reprend-officiellement-une-fonction-majeure-de-rdr2-pour-raconter-lhistoire-de-jason-et-lucia-225248.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxPUE1lV0hrQTVTT2ZNWjIxUjNZM2Z5VDNvNVpia1NBOWFCZm55Ti10WnJqMDc4RHdQeVlJaS1WeURuYXRNTmhZUzJySjl1Qy10YnBqSUdqUURMaW1HeEptYnV1UWxiSEJfakpMV29UTW1kanQ4QndhS09fQUsySGZLNjVTY1J1QXg4OUFfLUN0UXZJNVJ6eUh0MEEzNnhDQmVZV0ZXT2ViaVZfU28xejR0cGR1TnZ6aUZxa1d1dEJNZWNHX3M0cW9kVUJJdjJ4SklyWFpYUnItZ1lrdGQtQ1RiaThFVGwxTWh2NEstSm5n?oc=5",
+      "date": "2026-09-13T20:00:56+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-reprend-officiellement-une-fonction-majeure-de-rdr2-pour-raconter-lhistoire-de-jason-et-lucia.png",
+      "description": "GTA 6 reprend officiellement une fonction majeure de RDR2 pour raconter l’histoire de Jason et Lucia&nbsp;&nbsp;La Crème Du Gaming"
+    },
     {
       "title": "GTA 6 Didn't Get A Gameplay Trailer Because It's \"Extremely Tough\" To Show Off - OpenCritic",
       "link": "https://opencritic.com/news/36878/gta-6-didnt-get-a-gameplay-trailer-because-its-extremely-tough-to-show-off",
@@ -5006,19 +5019,6 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/LCe9M5N325rhxv2UAq5D29-1280-80.jpg",
       "description": "Nintendo and Rockstar fill out the fall"
-    },
-    {
-      "title": "Ocarina of Time Remake Releases A Week Before GTA 6",
-      "link": "https://www.dualshockers.com/ocarina-of-time-remake-release-date/",
-      "source_link": null,
-      "date": "2026-09-08T14:31:02+00:00",
-      "source": "DualShockers",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/09/ocarina-of-time-remake-release.jpg?w=1600&h=900&fit=crop",
-      "description": "One of the most acclaimed games of all time is back this holiday season."
     }
   ],
   "partial": true,
