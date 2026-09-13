@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-13T14:01:52.804364+00:00",
+  "generated_at": "2026-09-13T15:01:56.808809+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 44.9,
+  "duration_seconds": 52.6,
   "decode_failures": 0,
-  "total_articles": 2502,
-  "new_this_run": 1,
+  "total_articles": 2505,
+  "new_this_run": 3,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -390,24 +390,24 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 101,
+      "entries_fetched": 102,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-13T13:18:05+00:00",
+      "last_article": "2026-09-13T14:32:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 103,
+      "entries_fetched": 104,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-13T09:00:13+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-13T11:50:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -468,7 +468,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:55:00+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -540,7 +540,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T14:34:11+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -550,8 +550,8 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-13T05:00:14+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-13T14:14:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -606,13 +606,13 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T14:16:10+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -684,7 +684,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T14:25:15+00:00",
-      "days_since_last_article": 9,
+      "days_since_last_article": 10,
       "status": "ok"
     },
     {
@@ -708,7 +708,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:31:02+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -732,7 +732,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 11,
@@ -786,7 +786,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 7,
+      "entries_fetched": 6,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -923,9 +923,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,15,0,0,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,99,102,102,100,101,101,101,101,101",
-    "gnews-en": "102,103,103,102,103,103,104,102,102,100,102,103",
+    "rockstar-youtube": "15,0,0,15,15,15,15,15,15,15,15,15",
+    "gnews-fr": "100,100,99,102,102,100,101,101,101,101,101,102",
+    "gnews-en": "103,103,102,103,103,104,102,102,100,102,103,104",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -951,13 +951,13 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "37,37,37,38,38,38,38,38,38,38,38,38",
+    "gta6times": "37,37,38,38,38,38,38,38,38,38,38,38",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,6,6,7,6,7,7,7,7,7,6,7",
+    "xboxwire": "6,6,7,6,7,7,7,7,7,6,7,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "25,26,26,26,26,26,25,25,25,25,25,25",
+    "arstechnica": "26,26,26,26,26,25,25,25,25,25,25,25",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1003,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"ddfce01283bb7561b5b1c1501301694b\"",
-      "modified": "Sun, 13 Sep 2026 13:51:24 GMT"
+      "etag": "W/\"700ef581656283e92da304d12c27b699\"",
+      "modified": "Sun, 13 Sep 2026 14:15:41 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 13 Sep 2026 13:57:31 GMT"
+      "modified": "Sun, 13 Sep 2026 14:58:01 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa6ac71-33da\"",
-      "modified": "Sun, 13 Sep 2026 14:00:17 GMT"
+      "etag": "W/\"6aa6ba7f-33da\"",
+      "modified": "Sun, 13 Sep 2026 15:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1043,8 +1043,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"64662d7d1dce94c67f1ef87a8161b510\"",
-      "modified": "Sun, 13 Sep 2026 14:00:54 GMT"
+      "etag": "W/\"d38dbdf9ea86e4c49e9b8bda5a69ca74\"",
+      "modified": "Sun, 13 Sep 2026 14:54:29 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1054,6 +1054,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA VI sort dans deux mois et vous ne l’avez toujours pas précommandé ? Cultura a l’offre qui va vous convaincre - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/gta-vi-sort-dans-deux-mois-et-vous-ne-l-avez-toujours-pas-precommande-cultura-a-l-offre-qui-va-vous-convaincre_AB-202609130037.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOOEgwVmtieTVaMkliMWpZdGdvdEVhdGtJSm1uam9pVDJvT2pJR1poSW9UcnNoQ1ltRThYLWhhSkMtSW1NckhQaHBoczJIQTBKajBrajB0N2V2LWkwLVlFU2FfdDhMSk5FR3R1bkh1TElxWU5PSnRPN0NPUFpiU0UzT3dzU3N1UUFZSmpLZF9jRHVlN0VvckZ5RXRKbnhjTncxeHlMcFNZVnIydWF1OVZ5RVFNcVFXUHFGT1JxdkJhRGtvNEVadzFaN2VuOXEtWkVxUVh3c2RiRl9fLWNVRzIzS29kMW54YVBIM0RsZXZQclVyVkZyYWE0VExzUjJlZw?oc=5",
+      "date": "2026-09-13T14:32:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/Ri5GgeT6B-UiCBxaVk5LVGBYSN4=/0x0:1600x900/1600x0/images/GTA-VI-il-est-encore-temps-de-precommander-le-jeu-le-plus-attendu-de-l-annee-10-euros-offerts-2336735.jpg",
+      "description": "GTA VI sort dans deux mois et vous ne l’avez toujours pas précommandé ? Cultura a l’offre qui va vous convaincre&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "Sony is the Bad Guy of 2026, but it’s Going to Win Anyway",
+      "link": "https://www.polygon.com/patch-notes-fall-preview-nintendo-sony-bad-guy/",
+      "source_link": null,
+      "date": "2026-09-13T14:14:58+00:00",
+      "source": "Polygon",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/06/marvel-s-wolverine-angry-logan.jpg?w=1600&h=900&fit=crop",
+      "description": "Polygon previews an exciting but lopsided fall, dominated by GTA 6 and Zelda, with PlayStation playing the role of villain"
+    },
     {
       "title": "GTA 6 : comment Rockstar a fait attendre le monde entier pendant 13 ans - Le Parisien",
       "link": "https://www.leparisien.fr/video/programme/combo/gta-6-comment-rockstar-a-fait-attendre-le-monde-entier-pendant-13-ans-13-09-2026-A5GIMBBUOBD6VDNSGFW2HNW3ZQ.php",
@@ -1079,6 +1105,19 @@
       "lang": null,
       "image": "https://www.thenews.com.pk/assets/uploads/2026-09-13/1416059_055402_updates.jpg",
       "description": "GTA 6 follows Red Dead Redemption 2's chapter model, Rockstar confirms&nbsp;&nbsp;The News International"
+    },
+    {
+      "title": "GTA 6 gets the PS5 spotlight: Xbox performance is still unconfirmed - en.softonic.com",
+      "link": "https://en.softonic.com/articles/gta-6-gets-the-ps5-spotlight-xbox-performance-is-still-unconfirmed",
+      "source_link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQZVl2cnM3TV9QbmFMMll6WHpOSk8weHllc19kZDlTZnhYaXU3UjhEY0RKTmZlbHFLd3ptX0h0MnVpSVFxRjZFWmlFeHczdjhZVERnZVl4SXBMcE54UG1xc0YwVGJyMGswN09Tcmw0eVVZeTZUMEtSbFJOYXY2a29zLTlVMkZCSGNSMHp5clRTTmdMNzZHMkk0dzdTRFNkU29B?oc=5",
+      "date": "2026-09-13T11:50:16+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 gets the PS5 spotlight: Xbox performance is still unconfirmed&nbsp;&nbsp;en.softonic.com"
     },
     {
       "title": "Rockstar Officially Confirms Important GTA 6 Story Detail",
@@ -4986,45 +5025,6 @@
       "lang": "fr",
       "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2026/09/ps5.jpg?resize=1600,900&key=8e22de87",
       "description": "Avant GTA 6, Bouygues annonce une PS5 à 1 € : on a calculé ce qu’elle coûte vraiment&nbsp;&nbsp;Numerama"
-    },
-    {
-      "title": "The Legend of Zelda 40th Anniversary Direct: All The Biggest Announcements",
-      "link": "https://www.gamespot.com/articles/the-legend-of-zelda-40th-anniversary-direct-all-the-biggest-announcements/",
-      "source_link": null,
-      "date": "2026-09-08T13:45:08+00:00",
-      "source": "GameSpot",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/Loz-feature.jpg?w=300",
-      "description": "This year marks a major milestone for The Legend of Zelda IP, but one that has seemingly had very little fanfare from its parent company, Nintendo. That all changed today, as Nintendo dedicated a whole Direct broadcast to its long-running tale of heroes in green, mythical items of power, and the titular princess Zelda. \n\n\n\nThis was mostly focused on the remake of The Legend of Zelda: Ocarina of Time, and the presentation also revealed new celebrations being held around the world. We're also goin"
-    },
-    {
-      "title": "Rockstar Reveals How Long GTA 6 Players Will Spend Refueling Their Cars - MotorBiscuit",
-      "link": "https://www.motorbiscuit.com/rockstar-reveals-how-long-gta-6-players-will-spend-refueling-their-cars/",
-      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPWmZFaS1hTkN3WnNiY3huV0VyNGNsOW5QRktEeTRLSXp5MElOTGN3N1JIYkxWanZLT1Q5ODBZQTBDN0NYaVVIRGJnb2FJeWlVN0RIZE9FbUFmblIxWjZFNWpDeHhlaFg1M0NBdzVYQ1BRd2VhMHpwWXMyRXNxWTNrWE0wNjBvQmlFNEFiZ05uNGI0c3B1NEEyOERxSUg4S1hEQmJz?oc=5",
-      "date": "2026-09-08T13:30:00+00:00",
-      "source": "Rockstar Games (annonces)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.motorbiscuit.com/wp-content/uploads/2026/09/Screenshot-2026-09-01-143522-1024x584.png",
-      "description": "Rockstar Reveals How Long GTA 6 Players Will Spend Refueling Their Cars&nbsp;&nbsp;MotorBiscuit"
-    },
-    {
-      "title": "GTA 6 sur PC pourrait arriver plus tôt que prévu face à l’explosion des prix des consoles - hardwarecooking.fr",
-      "link": "https://www.hardwarecooking.fr/gta-6-sur-pc-pourrait-arriver-plus-tot-que-prevu-face-a-explosion-prix-consoles/",
-      "source_link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNLVBkanhBSWlKaUFwQS00U2lHQmlnRXJHcnN0andUdkNQM2RqY2dzUGtZTm5NODB3VWhqbWVMZ1hKeGVOSmlYSlN0cFVyMVluQU9ZbjIwSC1Kd0FmaC1yLXlVWUZidWlVTlRLOGZQZGVPLURGSVJqTUx6RXFBb05LdUE2aHJOcVkwMDBVR2xYeFVrR2xYZzMxYmhuajRNbDVkZ3d5T29xUk12S2Rjb0Fsbw?oc=5",
-      "date": "2026-09-08T13:03:34+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://h3v2h5f6.delivery.rocketcdn.me/wp-content/uploads/2026/09/gta-6-sur-pc-pourrait-arriver-plus-tot-que-prevu-face-a-explosion-prix-consoles.jpg",
-      "description": "GTA 6 sur PC pourrait arriver plus tôt que prévu face à l’explosion des prix des consoles&nbsp;&nbsp;hardwarecooking.fr"
     }
   ],
   "partial": true,
