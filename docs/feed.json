@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-13T22:01:47.819052+00:00",
+  "generated_at": "2026-09-13T23:01:53.284090+00:00",
   "attente_recap": {
-    "articles": 0,
+    "articles": 1,
     "officiels": 0,
-    "sommet": 0
+    "sommet": 1
   },
-  "duration_seconds": 46.6,
+  "duration_seconds": 50.2,
   "decode_failures": 0,
-  "total_articles": 2510,
-  "new_this_run": 0,
+  "total_articles": 2511,
+  "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 2,
@@ -510,10 +510,10 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:16:36+00:00",
       "days_since_last_article": 2,
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 2,
@@ -694,8 +694,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-13T09:00:13+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-13T23:00:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 11,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,101,102,102,101,101,102,101,101,101,101,101",
-    "gnews-en": "102,103,104,100,101,101,102,100,100,100,102,102",
+    "gnews-fr": "101,102,102,101,101,102,101,101,101,101,101,101",
+    "gnews-en": "103,104,100,101,101,102,100,100,100,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,7 +957,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,7,6,7,7,7,7,7,6,7,6,7",
+    "xboxwire": "7,6,7,7,7,7,7,6,7,6,7,7",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "25,25,25,25,25,25,25,25,25,26,26,26",
+    "arstechnica": "25,25,25,25,25,25,25,25,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -993,8 +993,8 @@
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
-      "etag": "\"2f64db2403c37c5c329eb00ac009baac\"",
-      "modified": "Fri, 11 Sep 2026 16:16:44 GMT"
+      "etag": "\"fc4efc1202ea8b3666272d924685398a\"",
+      "modified": "Sun, 13 Sep 2026 22:40:10 GMT"
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
@@ -1003,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"9a41100ee4a11441b906354d95bdf3dd\"",
-      "modified": "Sun, 13 Sep 2026 20:57:12 GMT"
+      "etag": "W/\"fe72823b4dd00dfa49625e71d233b360\"",
+      "modified": "Sun, 13 Sep 2026 22:14:23 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 13 Sep 2026 21:57:29 GMT"
+      "modified": "Sun, 13 Sep 2026 23:01:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa71cf1-33da\"",
-      "modified": "Sun, 13 Sep 2026 22:00:17 GMT"
+      "etag": "W/\"6aa72b00-33da\"",
+      "modified": "Sun, 13 Sep 2026 23:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "New Steam Game Is Like John Wick Meets 007 First Light with GTA 6 Flavor",
+      "link": "https://gamerant.com/steam-games-like-gta-6-blackwood/",
+      "source_link": null,
+      "date": "2026-09-13T23:00:13+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/new-steam-game-john-wick-first-light-gta-6-vibes-blackwood-gamerant.jpg?w=1600&h=900&fit=crop",
+      "description": "There's a new game coming to Steam that looks like a love child of John Wick and 007: First Light, while also featuring some GTA 6-esque mechanics."
+    },
     {
       "title": "GTA 6 reprend officiellement une fonction majeure de RDR2 pour raconter l’histoire de Jason et Lucia - La Crème Du Gaming",
       "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-reprend-officiellement-une-fonction-majeure-de-rdr2-pour-raconter-lhistoire-de-jason-et-lucia-225248.html",
