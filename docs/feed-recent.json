@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-13T05:01:50.358114+00:00",
+  "generated_at": "2026-09-13T05:17:40.934492+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 49.2,
+  "duration_seconds": 51.1,
   "decode_failures": 0,
-  "total_articles": 2494,
+  "total_articles": 2496,
   "new_this_run": 2,
   "hot_count": 6,
   "hot_threshold": 3,
@@ -346,9 +346,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22Grand+Theft+Auto+VI%22+OR+%22GTA+6%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T15:28:53+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-13T02:00:00+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -378,14 +378,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 16,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -395,7 +395,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-13T04:04:00+00:00",
+      "last_article": "2026-09-13T05:00:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -550,7 +550,7 @@
       "http_status": 301,
       "redirect": "https://www.polygon.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-13T05:00:14+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -654,10 +654,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T08:06:47+00:00",
       "days_since_last_article": 4,
@@ -919,7 +919,7 @@
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-13T02:01:54.177479+00:00",
-      "succes": 1,
+      "succes": 0,
       "alertee": false
     },
     "rockstarmag-youtube": {
@@ -934,9 +934,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,15",
-    "gnews-fr": "102,100,100,101,98,98,98,100,100,100,100,100",
-    "gnews-en": "102,103,102,102,103,103,101,99,102,99,102,103",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,15,0",
+    "gnews-fr": "100,100,101,98,98,98,100,100,100,100,100,100",
+    "gnews-en": "103,102,102,103,103,101,99,102,99,102,103,103",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,7 +944,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -968,7 +968,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "5,5,5,6,6,6,6,6,6,6,6,6",
+    "xboxwire": "5,5,6,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -976,7 +976,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "26,26,26,26,25,26,26,25,25,25,25,26",
+    "arstechnica": "26,26,26,25,26,26,25,25,25,25,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1030,7 +1030,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 13 Sep 2026 05:01:15 GMT"
+      "modified": "Sun, 13 Sep 2026 05:13:42 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1079,6 +1079,19 @@
       "description": "Rockstar's GTA 6 aims to make the act of stealing cars more immersive and surprising than any Grand Theft Auto game before it"
     },
     {
+      "title": "GTA 6 confirme une grosse liberté pour Jason et Lucia, leur romance dépendra de votre façon de jouer - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-confirme-une-grosse-liberte-pour-jason-et-lucia-leur-romance-dependra-de-votre-facon-de-jouer-225121.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxQMzVqYzJzQ0JuVHFJQm1FZ1duQ3djS2VsbU01b09tUUhaQnJBN05RRU1kVlRGUHc1RFVmTnhIb0pkN1NoTzRBeVVEVmRybldzUVQxY2ppZ29CT1pOblI3UWs0MTJTbGptSnFSRl9YT1M5ZGhHZWJDRXRteHVQclRKNnMxYUNZekdtUFhZVU9xWHBKNWNJTWF2ZFZIN25Wa0tIcl9CR1BDandhNXBtYnZzaHVGcUV0eTNQY1FDM19MNk5xeEpZOTJ2S1ExZmJqYlpwSWhYLW5vYmZxcmJoUHVWdGtqNmU3b1RDa3lNT3ZR?oc=5",
+      "date": "2026-09-13T05:00:12+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-confirme-une-grosse-liberte-pour-jason-et-lucia-leur-romance-dependra-de-votre-facon-de-jouer.jpg",
+      "description": "GTA 6 confirme une grosse liberté pour Jason et Lucia, leur romance dépendra de votre façon de jouer&nbsp;&nbsp;La Crème Du Gaming"
+    },
+    {
       "title": "Moins chère avant la sortie de GTA 6, la PS5 est à saisir avant que les stocks s'écoulent (et que le prix grimpe) - BFM",
       "link": "https://www.bfmtv.com/tech/bons-plans/moins-chere-avant-la-sortie-de-gta-6-la-ps5-est-a-saisir-avant-que-les-stocks-s-ecoulent-et-que-le-prix-grimpe_AB-202609130015.html",
       "source_link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPMXJ0X2dfWjQ0dXlZOGdLZDFPeEpXRXM5S29HVXhuYko5Y1FxNE5RVW9ZZjdRYlJTYVpxS0xpTXlUeGFIMEI0OER5LWdZOVV3dVdfclR1RXFfNXoySWpycFhXY0c1Z3RKRVo3OGVzR1JPWkQxM2VQMS1za09XRndCQVltbFR2blYzd09adzFQUVBPYUhLVURlS1hTSE5aX2RDaVB1em5rYXloQzJHbl8zZndTLThFZnYtZThEc3o4NFdPbFdHVC1qMUpZWGpPeTIxS1BKdWVXZGxpRnRnNUVBLXdhbm5CR1JNdk16aWZzMjBOcHNuMVJfWEpIQkt2QQ?oc=5",
@@ -1103,6 +1116,19 @@
       "lang": "fr",
       "image": null,
       "description": "On ne l’a pas trouvé moins chère qu’ici : la PS5 Digitale est la reine des ventes avant GTA 6 avec ce code promo&nbsp;&nbsp;Ouest-France"
+    },
+    {
+      "title": "Rockstar Officially Confirms GTA 6 Will Be Better On PS5 - ScreenRant",
+      "link": "https://screenrant.com/gta-6-dual-sense-controllers-ps5-better-rockstar/",
+      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5nSUlyaU9QaGpya2pmZV82SUFBZV9YcGwwc1AzeUJSajJnLW52ZUZEM1RTR2x5Zmo1OWhzVEFURnpwazA2VURCZFFqcjEzTkVPNldfS1JsTXRpdThQbVhtSjZvbWx5TnVmWlNtemlDcVVQamFtZm5iTm4zRlU?oc=5",
+      "date": "2026-09-13T02:00:00+00:00",
+      "source": "Rockstar Games (annonces)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.srcdn.com/wordpress/wp-content/uploads/2026/09/jason-and-lucia-with-gun-and-helicopter-in-background.jpg?w=1600&h=900&fit=crop",
+      "description": "Rockstar Officially Confirms GTA 6 Will Be Better On PS5&nbsp;&nbsp;ScreenRant"
     },
     {
       "title": "Is GTA 6 Worth The 13 Year Wait? - The Rampage Online",
@@ -5004,32 +5030,6 @@
       "lang": null,
       "image": "https://files.vgtimes.com/posts/2026-09/rockstar-feared-red-dead-redemption-2-might-feel-slow-after-gta-v-166854.webp",
       "description": "Rob Nelson, co-lead of Rockstar North, said Rockstar Games was uneasy that Red Dead Redemption 2 could feel slow next to GTA V, since the studio was moving from three playable leads to a single protagonist. In a recent interview, he said the team expected some players to question that shift"
-    },
-    {
-      "title": "GTA VI launch times revealed, here's how to play it early - TrueAchievements",
-      "link": "https://www.trueachievements.com/news/gta-vi-launch-times",
-      "source_link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE13NDJqaHU3QnFTZlpjU1dlWGV5bVpuenpGOFg1MzByeC1TbHE0ODYwTm9qM1VEc1kxZjFpTVlMcjk3bFlCVE1kOEZ0bTlDa0pobW1ENGlkeWdnNnhCWEFVX1duSjFwVXVD?oc=5",
-      "date": "2026-09-08T12:02:32+00:00",
-      "source": "TrueAchievements",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": null,
-      "description": "GTA VI launch times revealed, here's how to play it early&nbsp;&nbsp;TrueAchievements"
-    },
-    {
-      "title": "GTA 6 sur PC : la pénurie de PS5 et Xbox pourrait avancer sa sortie - BuzzArena",
-      "link": "https://www.buzzarena.com/gta-6-sur-pc-la-penurie-de-ps5-et-xbox-pourrait-avancer-sa-sortie-4563129",
-      "source_link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxORFlqeERjSEJDR0FheHkyWkV3S3AwTEZOQXNZSkdMLUNkQ19MWVdXWkN2Q2kxMHI0ejZQR2ZaY0tZNllTMTM5THhnLWZaeEdRZ3VqaUx6VEtlT0p5b1BaSlQ5ZnpFUjM2d3RNam0zWXA0STJCSEdCeEJVSUZkM19mam55WHl5MXprYUQ4SzA1RVJUdEFRczkzbmFxRTNGOXdk?oc=5",
-      "date": "2026-09-08T12:00:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.buzzarena.com/wp-content/uploads/2026/09/GTA-6-6.jpg",
-      "description": "GTA 6 sur PC : la pénurie de PS5 et Xbox pourrait avancer sa sortie&nbsp;&nbsp;BuzzArena"
     }
   ],
   "partial": true,
