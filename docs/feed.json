@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-14T06:01:56.908978+00:00",
+  "generated_at": "2026-09-14T07:02:03.688526+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 52.3,
+  "duration_seconds": 55.3,
   "decode_failures": 0,
-  "total_articles": 2516,
-  "new_this_run": 1,
+  "total_articles": 2520,
+  "new_this_run": 4,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -378,14 +378,14 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 17,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -394,8 +394,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "last_article": "2026-09-14T05:52:06+00:00",
+      "new_this_run": 3,
+      "last_article": "2026-09-14T06:49:22+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -406,7 +406,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-14T00:12:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 2,
@@ -456,7 +456,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-12T06:40:08+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -498,14 +498,14 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-09T18:00:35+00:00",
       "days_since_last_article": 4,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "rockstarintel",
@@ -588,7 +588,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2024-07-26T07:00:00+00:00",
-      "days_since_last_article": 779,
+      "days_since_last_article": 780,
       "status": "tarie"
     },
     {
@@ -648,7 +648,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T06:05:13+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 3,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 11,
@@ -870,13 +870,13 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 81,
+      "entries_fetched": 82,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T06:16:37+00:00",
-      "days_since_last_article": 11,
+      "days_since_last_article": 12,
       "status": "ok"
     },
     {
@@ -919,12 +919,12 @@
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-14T04:01:50.329675+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "rockstarmag-youtube": {
       "depuis": "2026-09-14T05:01:51.630501+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -934,8 +934,8 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
-    "gnews-fr": "101,101,101,101,101,101,100,100,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,15",
+    "gnews-fr": "101,101,101,101,101,100,100,100,100,100,100,100",
     "gnews-en": "102,102,102,102,102,102,102,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -944,7 +944,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -968,15 +968,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,0,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,7,7,7,7,6,6,6,6,6,6,6",
+    "xboxwire": "7,7,7,7,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,82,82,81,81,81,81",
-    "arstechnica": "26,26,26,26,26,26,25,26,25,26,26,26",
+    "engadget": "82,82,82,82,82,82,82,81,81,81,81,82",
+    "arstechnica": "26,26,26,26,26,25,26,25,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -989,8 +989,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"a694dbc3d5009d00ac83061f36ea10d0\"",
-      "modified": "Sun, 13 Sep 2026 23:37:31 GMT"
+      "etag": "W/\"74b72c4004ce6791aacb88c9a4cd484e\"",
+      "modified": "Mon, 14 Sep 2026 06:21:52 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1030,22 +1030,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 06:01:20 GMT"
+      "modified": "Mon, 14 Sep 2026 07:01:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"fc17b292a566118bc2584eee2f1036d2\"",
-      "modified": "Mon, 14 Sep 2026 05:44:28 GMT"
+      "etag": "\"f16893c018b8b58a91e89d243e5a8563\"",
+      "modified": "Mon, 14 Sep 2026 06:04:54 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa78d70-31db\"",
-      "modified": "Mon, 14 Sep 2026 06:00:16 GMT"
+      "etag": "W/\"6aa79b80-31d5\"",
+      "modified": "Mon, 14 Sep 2026 07:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"b3fbc4df35e456550aa942f02f9b6967\"",
-      "modified": "Sun, 13 Sep 2026 10:45:09 GMT"
+      "etag": "W/\"ea2ae5080997e3692ad26a4c273ab0cd\"",
+      "modified": "Mon, 14 Sep 2026 06:49:25 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1054,8 +1054,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"bb89c5cb527942741d53cff2bccb1c22\"",
-      "modified": "Mon, 14 Sep 2026 05:02:26 GMT"
+      "etag": "W/\"a16fa3c36f7dfd7901436cb58b51ed95\"",
+      "modified": "Mon, 14 Sep 2026 06:55:52 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1065,6 +1065,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : Netflix aurait gagné plus de 100 000 abonnés grâce à son trailer - Xboxygen",
+      "link": "https://www.xboxygen.com/News/367340-gta-6-netflix-aurait-gagne-plus-de-100-000-abonnes-grace-a-son-trailer",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPRHpmeWFWdjVNdk9QR2tFZk9LOVVDVjlXb2dlN1J4X3hkRV9lTEJDZ1p5U1B3Z21SNTY5SjNYU1l3Yks2dTVadWl3Q3E3WHdvMmxtcV9rM0R3RWVLWGxYbDU2VFg5YnNyM1VQeU95cENNeEJoQ19UUmo3WUU3Zjl3Z3Q2bEZJQkQ3NTBoT0kzMUpSN3RtTzFITE1GVHFLNE1rSzIxSE9Va2hHTGs?oc=5",
+      "date": "2026-09-14T06:49:22+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/08/GTA-6-netflix-pirate.jpg",
+      "description": "GTA 6 : Netflix aurait gagné plus de 100 000 abonnés grâce à son trailer&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "« C'est de la tromperie » : certains Gen Z interdisent à leurs conjoints de jouer à GTA 6. Un expert répond - jeuxvideo.com",
+      "link": "https://www.jeuxvideo.com/news/2102734/c-est-de-la-tromperie-certains-gen-z-interdisent-a-leurs-conjoints-de-jouer-a-gta-6-un-expert-repond.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxQUFpDMGkzMUY2c2FHMzJ6UXVwYkx6S1B6S1JnN01jeXo4SkFNQUlWY3l5NnBDd0hmNUtmTVE3TmdldjQ4ZjVvZmRUZEdCbmxhR0lPX1dzWXFGdFB4ejBfLWRMT1ZFeVZhckFMWXVTS0tzTWhYb0JfRU1zQ1BSQzVvM3gwMjBDX3lRTTZ5RUFDcXhXWUVLdlVfbjBXUG5UUHQwUmtHem5YSm9hdDk1OUJoa245cGZJaGRidV93UERNcm9xVS1oR1lkOTAwVWtaYl9qVU0xbkRjU0Q0ekE?oc=5",
+      "date": "2026-09-14T06:40:08+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178887/1788874196-4831-card.jpg",
+      "description": "« C'est de la tromperie » : certains Gen Z interdisent à leurs conjoints de jouer à GTA 6. Un expert répond&nbsp;&nbsp;jeuxvideo.com"
+    },
+    {
+      "title": "GTA 6 reprendra une recette bien connue de Red Dead Redemption 2 - tomsguide.fr",
+      "link": "https://www.tomsguide.fr/gta-6-reprendra-une-recette-bien-connue-de-red-dead-redemption-2/",
+      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPVU85ZnhIWnV1UW84ZzVKaWVkcWVxVnVzME11V3dqVXl4a2tnbkJWMzBZVG5SZzhmNU5WblFqSGhKM1Z6aXdYRDc1Sll1dUVjV2RoVjM2MkQxMGZNY19PX0tsUFlMX00xbkVuRy1wNEhGZ25kMWY0a2RXT1pGemxJX193c010aXhMeDZmRmFJUVhFX1JV?oc=5",
+      "date": "2026-09-14T05:58:51+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.tomsguide.fr/content/uploads/sites/2/2026/09/GTA-histoire.jpg",
+      "description": "GTA 6 reprendra une recette bien connue de Red Dead Redemption 2&nbsp;&nbsp;tomsguide.fr"
+    },
     {
       "title": "GTA 6 : le bundle PS5 Pro à 999 € disparaît, mais le pack PS5 Digital reste en vente - GinjFo",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-le-bundle-ps5-pro-a-999-e-disparait-mais-le-pack-ps5-digital-reste-en-vente-20260914",
@@ -2135,6 +2174,19 @@
       "lang": null,
       "image": "https://rockstarintel.com/wp-content/uploads/2025/05/Vice_City_01-scaled.jpg",
       "description": "GTA 6 marketing is about to ramp up in the real real world. Miami Beach has agreed to let Rockstar place huge advertisements ahead of the game&#8217;s launch. This comes after Miami-Dade officials pushed back against working with Rockstar and &#8220;glorifying&#8221; violence against police. In terms of scale, they could be larger than 5000 square [...]\nThe post GTA 6 Marketing Is Coming To Miami Beach After Vote appeared first on RockstarINTEL."
+    },
+    {
+      "title": "GTA 6 Fans Harass And Extort Real Nudist Resort Referenced In Leaks - TheGamer",
+      "link": "https://www.thegamer.com/gta-6-fans-harass-extort-real-nudist-resort/",
+      "source_link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9Tbzlpb3dmbUc4ZXVRZnpobk9FckhvLThKbFlRbkRxbWM5eWdhbWl0VWxCM2R2a1pRQUNDd2EtMk1fck1KSV9GVGdpaDdQMWlpWUtDT3pFZjJkVmYxZUJyVHd1a1l3cDhORHFwZy00WXc0X3o0QmNqbw?oc=5",
+      "date": "2026-09-11T16:14:46+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.thegamerimages.com/wordpress/wp-content/uploads/2026/07/mixcollage-14-jul-2026-10-29-am-6828.jpg?w=1600&h=900&fit=crop",
+      "description": "GTA 6 Fans Harass And Extort Real Nudist Resort Referenced In Leaks&nbsp;&nbsp;TheGamer"
     },
     {
       "title": "GTA 6 PS5 Controllers Have Already Sold Out",
