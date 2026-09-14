@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-14T20:01:51.850174+00:00",
+  "generated_at": "2026-09-14T21:01:54.005041+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 50.7,
+  "duration_seconds": 51.2,
   "decode_failures": 0,
-  "total_articles": 2569,
-  "new_this_run": 0,
+  "total_articles": 2570,
+  "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 3,
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 3,
@@ -510,12 +510,12 @@
     {
       "id": "rockstarintel",
       "name": "RockstarINTEL",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-14T10:59:06+00:00",
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-14T20:31:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -594,10 +594,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:31:24+00:00",
       "days_since_last_article": 3,
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 6,
@@ -870,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 86,
+      "entries_fetched": 85,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "101,102,102,102,102,102,101,102,102,102,102,102",
-    "gnews-en": "100,100,102,102,102,100,100,100,100,100,100,100",
+    "gnews-fr": "102,102,102,102,102,101,102,102,102,102,102,102",
+    "gnews-en": "100,102,102,102,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -964,7 +964,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "81,81,81,81,81,83,86,86,85,86,86,86",
+    "engadget": "81,81,81,81,83,86,86,85,86,86,86,85",
     "arstechnica": "26,26,26,26,26,26,26,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -978,13 +978,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"a41a3c29a6ed293d7f6e14e41c2c98e8\"",
-      "modified": "Mon, 14 Sep 2026 19:01:18 GMT"
+      "etag": "W/\"f93c79ead1da1c16ec254b59c29cdfd8\"",
+      "modified": "Mon, 14 Sep 2026 20:09:03 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 16:53:25 GMT"
+      "modified": "Mon, 14 Sep 2026 20:25:45 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -993,18 +993,18 @@
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
-      "etag": "\"ab13c8f592d62a897914f60847d04f1b\"",
-      "modified": "Mon, 14 Sep 2026 10:59:14 GMT"
+      "etag": "\"a3325473c019e704ca124bf7b5d4cc4b\"",
+      "modified": "Mon, 14 Sep 2026 20:31:52 GMT"
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1ddeb-vWgyf6d6X3DTqlpEwgwp9nkt9UI\"",
+      "etag": "W/\"1de29-3sWNGxBUtZkoNwSgWBI4FG509YA\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"a6ba7461f730cb8d642869fff71aadce\"",
-      "modified": "Mon, 14 Sep 2026 20:00:04 GMT"
+      "etag": "W/\"ac762544833827cd4e86df51203bfd9d\"",
+      "modified": "Mon, 14 Sep 2026 21:00:02 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 20:00:10 GMT"
+      "modified": "Mon, 14 Sep 2026 21:01:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa85252-2f1a\"",
-      "modified": "Mon, 14 Sep 2026 20:00:18 GMT"
+      "etag": "W/\"6aa8605d-2f1a\"",
+      "modified": "Mon, 14 Sep 2026 21:00:13 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1038,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789410646\"",
-      "modified": "Mon, 14 Sep 2026 18:30:46 GMT"
+      "etag": "W/\"1789416794\"",
+      "modified": "Mon, 14 Sep 2026 20:13:14 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "How To Get $1.5M In GTA Online For Free This GTA RP Week",
+      "link": "https://rockstarintel.com/how-to-get-1-5m-in-gta-online-for-free-this-gta-rp-week/",
+      "source_link": null,
+      "date": "2026-09-14T20:31:44+00:00",
+      "source": "RockstarINTEL",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://rockstarintel.com/wp-content/uploads/2026/09/new-gta-rp-week.webp",
+      "description": "Rockstar Games and Twitch have partnered up to give you over $1m of GTA Online cash and an exclusive item of clothing. The two companies have brought back their GTA RP Week concept for the launch of nopixel V. It is set to be a spectacular event across livestreams, the in-game world and social media. [...]\nThe post How To Get $1.5M In GTA Online For Free This GTA RP Week appeared first on RockstarINTEL."
+    },
     {
       "title": "GTA 6 Officially Confirms Its First Voice Actor With A Beloved Hollywood Star - svg.com",
       "link": "https://www.svg.com/2258199/gta-6-first-voice-actor-confirmation-stephen-root/",
@@ -5006,19 +5019,6 @@
       "lang": null,
       "image": "https://cdn.mos.cms.futurecdn.net/BaZVBJYGymFMbx4HnaNUZh-1280-80.jpg",
       "description": "Rockstar North's co-studio head Rob Nelson says \"often it is a song we rally around\" in the early stages of making a game"
-    },
-    {
-      "title": "GTA 6 DualSense pre-orders drop soon, here's how to secure your Vice City controller",
-      "link": "https://www.gamesradar.com/news/live/gta-6-dualsense-pre-orders-where-to-buy-live/",
-      "source_link": null,
-      "date": "2026-09-09T13:53:34+00:00",
-      "source": "GamesRadar+",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/FdjHaMacQDnQZknE3MXRea-1280-80.jpg",
-      "description": "GTA 6 DualSense pre-orders will drop at 10am local time on September 10, here's how to secure your controller."
     }
   ],
   "partial": true,
