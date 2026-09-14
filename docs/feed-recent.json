@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-14T00:01:57.046189+00:00",
+  "generated_at": "2026-09-14T01:01:52.659394+00:00",
   "attente_recap": {
-    "articles": 2,
+    "articles": 3,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 53.3,
+  "duration_seconds": 50.7,
   "decode_failures": 0,
-  "total_articles": 2512,
+  "total_articles": 2513,
   "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
@@ -384,7 +384,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 16,
+      "days_since_last_article": 17,
       "status": "ok"
     },
     {
@@ -406,8 +406,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-13T19:23:04+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-14T00:12:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 2,
@@ -694,7 +694,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-14T00:00:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 11,
@@ -786,7 +786,7 @@
     {
       "id": "xboxwire",
       "name": "Xbox Wire",
-      "entries_fetched": 7,
+      "entries_fetched": 6,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -924,8 +924,8 @@
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,101,101,102,101,101,101,101,101,101,101,101",
-    "gnews-en": "100,101,101,102,100,100,100,102,102,102,102,102",
+    "gnews-fr": "101,101,102,101,101,101,101,101,101,101,101,101",
+    "gnews-en": "101,101,102,100,100,100,102,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -957,7 +957,7 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,7,6,7,6,7,7,7,7",
+    "xboxwire": "7,7,7,7,6,7,6,7,7,7,7,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -965,7 +965,7 @@
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "82,82,82,82,82,82,82,82,82,82,82,82",
-    "arstechnica": "25,25,25,25,25,25,26,26,26,26,26,26",
+    "arstechnica": "25,25,25,25,25,26,26,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1019,7 +1019,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 00:00:07 GMT"
+      "modified": "Mon, 14 Sep 2026 01:01:23 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa73911-33da\"",
-      "modified": "Mon, 14 Sep 2026 00:00:17 GMT"
+      "etag": "W/\"6aa74722-33da\"",
+      "modified": "Mon, 14 Sep 2026 01:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1054,6 +1054,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Release Date, Preload Time, Price, Editions, And Platforms: The Complete Launch Guide - svg.com",
+      "link": "https://www.svg.com/2254292/gta-6-launch-guide-release-date-preload-time-price-editions-platforms/",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQWm9sVThqR3VpZDhRcmd3bHN5UU5qbzFNYndvUFJtbjVsU0t3OXhwX0tyaXZKb1VlczNoTjQxXzJoMjFCMVNiTC1QU1NuSGtJUmpOZWtZeUg2Rjd0MDZxWllxcXV3VkZsaS15QnVWdGRndGUwV2FwNlAxN0g1ZGQwMi00TXdFemRTeHd0NmhRcHlzSko2S0Jxdldqa0NYOXc?oc=5",
+      "date": "2026-09-14T00:12:01+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.svg.com/img/gallery/gta-6-release-date-preload-time-price-editions-and-platforms-the-complete-launch-guide/l-intro-1788984168.jpg",
+      "description": "GTA 6 Release Date, Preload Time, Price, Editions, And Platforms: The Complete Launch Guide&nbsp;&nbsp;svg.com"
+    },
     {
       "title": "New Open World PS5 Game is Basically Bully 2",
       "link": "https://gamerant.com/ps5-games-like-bully-agefield-high/",
@@ -5006,19 +5019,6 @@
       "lang": null,
       "image": "https://www.gamespot.com/wp-content/uploads/2026/09/The-Legend-of-Zelda-40th-Anniversary-Direct-9.8.2026-0-47-431.jpeg?w=300",
       "description": "The Legend of Zelda: Ocarina of Time on Switch 2 looks like a very faithful remake of the Nintendo 64 classic, but as seen in the Zelda 40th anniversary Direct, this updated version of the game takes at least one element from the modern open-world Zelda games.\n\n\n\nWhen demonstrating the returning Fairy Slingshot item, Zelda producer Eiji Aonuma showed off the weapon-switching and aiming mechanics, which look nearly identical to the same systems in Breath of the Wild.\n\n\n\n\nhttps://www.youtube.com/w"
-    },
-    {
-      "title": "GTA 6 Has No Major Xbox Competitors This November, But Nintendo Is Going Against It - Pure Xbox",
-      "link": "https://www.purexbox.com/news/2026/09/gta-6-has-no-major-xbox-competitors-this-november-but-nintendo-is-going-against-it",
-      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOQzF5Tl85cnozem1CLVRXcTZOb0pSM2lDU3NVVm56QUFLRUd0RXJPQmY3ckV3Z1Z5QW84TEgwZWRiQkxabnJSNFByNlRENzk5UWZ1V0lVUURsMDY5S2JBVWNyS0NNVXpfVjNkYzlreWozcWMtUV9aVEV5WEFDZ01KbEtLZWFOeHBpVkQyejVSeXYxVHBzY045MFZKRHpZX1NGYnVqWXhfMnlPeHVxb19VeXVTRDJCN1JLS09TZw?oc=5",
-      "date": "2026-09-08T14:42:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://images.purexbox.com/93e18f4112604/large.jpg",
-      "description": "GTA 6 Has No Major Xbox Competitors This November, But Nintendo Is Going Against It&nbsp;&nbsp;Pure Xbox"
     }
   ],
   "partial": true,
