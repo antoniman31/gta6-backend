@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-14T05:01:51.631101+00:00",
+  "generated_at": "2026-09-14T05:22:10.645053+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 47.3,
+  "duration_seconds": 53.1,
   "decode_failures": 0,
-  "total_articles": 2514,
+  "total_articles": 2515,
   "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-14T04:00:47+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 3,
@@ -622,9 +622,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-12T21:09:48+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "last_article": "2026-09-14T05:08:18+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 3,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 11,
@@ -926,11 +926,6 @@
       "depuis": "2026-09-14T05:01:51.630501+00:00",
       "succes": 0,
       "alertee": false
-    },
-    "vgc": {
-      "depuis": "2026-09-14T04:01:50.329675+00:00",
-      "succes": 1,
-      "alertee": false
     }
   },
   "sources_entries_history": {
@@ -939,9 +934,9 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
-    "gnews-fr": "101,101,101,101,101,101,101,101,100,100,100,100",
-    "gnews-en": "100,100,102,102,102,102,102,102,102,102,102,102",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "gnews-fr": "101,101,101,101,101,101,101,100,100,100,100,100",
+    "gnews-en": "100,102,102,102,102,102,102,102,102,102,102,102",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -949,7 +944,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -973,15 +968,15 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,0,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "6,7,6,7,7,7,7,6,6,6,6,6",
+    "xboxwire": "7,6,7,7,7,7,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,82,82,82,82,81,81",
-    "arstechnica": "25,26,26,26,26,26,26,26,25,26,25,26",
+    "engadget": "82,82,82,82,82,82,82,82,82,81,81,81",
+    "arstechnica": "26,26,26,26,26,26,26,25,26,25,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -1035,7 +1030,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 05:01:23 GMT"
+      "modified": "Mon, 14 Sep 2026 05:20:28 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1044,8 +1039,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa77f5f-33da\"",
-      "modified": "Mon, 14 Sep 2026 05:00:15 GMT"
+      "etag": "W/\"6aa77f60-33da\"",
+      "modified": "Mon, 14 Sep 2026 05:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1059,8 +1054,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"662fc4514e504c0767473fff7fc8a481\"",
-      "modified": "Sun, 13 Sep 2026 19:13:09 GMT"
+      "etag": "W/\"bb89c5cb527942741d53cff2bccb1c22\"",
+      "modified": "Mon, 14 Sep 2026 05:02:26 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1070,6 +1065,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Stephen Root Just Became the First Actor to Confirm His GTA 6 Role",
+      "link": "https://www.gtaboom.com/stephen-root-just-became-the-first-actor-to-confirm-his-gta-6-role-ba6e",
+      "source_link": null,
+      "date": "2026-09-14T05:08:18+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/e9/a5/stephen-root-just-became-the-first-actor-to-confirm-his-gta-6-role.jpg",
+      "description": "Stephen Root has confirmed he voices Brian Heder, a drugrunner and mentor tied to Jason, in Grand Theft Auto VI."
+    },
     {
       "title": "GTA 6 dévoile de nouvelles fonctions de son monde ouvert, Vice City sera bien plus interactive que GTA 5 - La Crème Du Gaming",
       "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-devoile-de-nouvelles-fonctions-de-son-monde-ouvert-vice-city-sera-bien-plus-interactive-que-gta-5-225196.html",
@@ -5022,19 +5030,6 @@
       "lang": "fr",
       "image": "https://cdn.gamekult.com/optim/images/news/30/3050871967/the-legend-of-zelda-ocarina-of-time-se-devoile-et-sortira-debut-novembre-276c7b9a__800_800__144-198-622-676.jpg",
       "description": "Voilà, vous savez désormais de combien de jours vous disposerez pour savourer la grosse madeleine The Legend of Zelda : Ocarina of Time sur Switch 2 avant la sortie de Grand Theft Auto VI. Nintendo sortira le très attendu remake du jeu Nintendo 64 le 5 novembre 2026 dans le monde entier."
-    },
-    {
-      "title": "The Legend Of Zelda: Ocarina Of Time Remake Looks Fantastic In First Gameplay Look",
-      "link": "https://www.gamespot.com/articles/the-legend-of-zelda-ocarina-of-time-remake-looks-fantastic-in-first-gameplay-look/",
-      "source_link": null,
-      "date": "2026-09-08T14:46:04+00:00",
-      "source": "GameSpot",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/ZeldaOoTremake.jpg?w=300",
-      "description": "After months of rumors, Nintendo finally revealed that The Legend of Zelda: Ocarina of Time remake was real back in June. While that reveal was purely cinematic, today's Nintendo Direct for The Legend of Zelda showed off gameplay for the remake and offered a closer look at its updated art direction.\n\n\n\nThe Switch 2 exclusive stays true to the 1998 original's aesthetics, while showcasing a huge upgrade visually. Link's hat and tunic, for example, showcase detailed threading and embroidering, alon"
     }
   ],
   "partial": true,
