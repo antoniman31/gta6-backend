@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-14T07:02:03.688526+00:00",
+  "generated_at": "2026-09-14T08:01:58.163575+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 55.3,
+  "duration_seconds": 54.8,
   "decode_failures": 0,
-  "total_articles": 2520,
-  "new_this_run": 4,
+  "total_articles": 2522,
+  "new_this_run": 2,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -360,7 +360,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-13T07:05:13+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -390,23 +390,23 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 102,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
-      "last_article": "2026-09-14T06:49:22+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-14T07:15:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
     {
       "id": "gnews-en",
       "name": "Google News (EN)",
-      "entries_fetched": 102,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-14T00:12:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 2,
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 2,
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 3,
@@ -694,8 +694,8 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-14T00:00:12+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-14T07:15:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 11,
@@ -768,7 +768,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T07:23:22+00:00",
-      "days_since_last_article": 6,
+      "days_since_last_article": 7,
       "status": "ok"
     },
     {
@@ -916,27 +916,16 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-14T04:01:50.329675+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-14T05:01:51.630501+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,15",
-    "gnews-fr": "101,101,101,101,101,100,100,100,100,100,100,100",
-    "gnews-en": "102,102,102,102,102,102,102,102,102,102,102,102",
+    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,15,15",
+    "gnews-fr": "101,101,101,101,100,100,100,100,100,100,100,102",
+    "gnews-en": "102,102,102,102,102,102,102,102,102,102,102,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -944,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -965,18 +954,18 @@
     "gta6times": "38,38,38,38,38,38,38,38,38,38,38,38",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,10,10,10,10,10,10,0,10,10",
+    "vgc": "10,10,10,10,10,10,10,10,0,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "7,7,7,7,6,6,6,6,6,6,6,6",
+    "xboxwire": "7,7,7,6,6,6,6,6,6,6,6,6",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "82,82,82,82,82,82,82,81,81,81,81,82",
-    "arstechnica": "26,26,26,26,26,25,26,25,26,26,26,26",
+    "engadget": "82,82,82,82,82,82,81,81,81,81,82,82",
+    "arstechnica": "26,26,26,26,25,26,25,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
@@ -995,7 +984,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 13 Sep 2026 16:10:01 GMT"
+      "modified": "Mon, 14 Sep 2026 07:23:44 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1014,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"41f310f8e3bf15d3ec09b0f6de3d1292\"",
-      "modified": "Mon, 14 Sep 2026 04:34:56 GMT"
+      "etag": "W/\"554afc9dad5a0ea96d83716a674959df\"",
+      "modified": "Mon, 14 Sep 2026 08:01:08 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1030,22 +1019,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 07:01:21 GMT"
+      "modified": "Mon, 14 Sep 2026 08:01:08 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"f16893c018b8b58a91e89d243e5a8563\"",
-      "modified": "Mon, 14 Sep 2026 06:04:54 GMT"
+      "etag": "\"24329e1053c14673fcc09fc137db5b3f\"",
+      "modified": "Mon, 14 Sep 2026 07:37:45 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa79b80-31d5\"",
-      "modified": "Mon, 14 Sep 2026 07:00:16 GMT"
+      "etag": "W/\"6aa7a994-31fc\"",
+      "modified": "Mon, 14 Sep 2026 08:00:20 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"ea2ae5080997e3692ad26a4c273ab0cd\"",
-      "modified": "Mon, 14 Sep 2026 06:49:25 GMT"
+      "etag": "W/\"a8287031b4b43f244e0022e01a9a183c\"",
+      "modified": "Mon, 14 Sep 2026 07:54:40 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1054,17 +1043,43 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"a16fa3c36f7dfd7901436cb58b51ed95\"",
-      "modified": "Mon, 14 Sep 2026 06:55:52 GMT"
+      "etag": "W/\"cb235107ca1528779fd3647ba0fd4475\"",
+      "modified": "Mon, 14 Sep 2026 07:59:58 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa78b6a-a4d\"",
-      "modified": "Mon, 14 Sep 2026 05:51:38 GMT"
+      "etag": "\"6aa7a76d-a4d\"",
+      "modified": "Mon, 14 Sep 2026 07:51:09 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : un premier acteur confirme enfin son rôle, et les joueurs avaient vu juste depuis longtemps - Xboxygen",
+      "link": "https://www.xboxygen.com/News/367516-gta-6-un-premier-acteur-confirme-enfin-son-role-et-les-joueurs-avaient-vu-juste-depuis-longtemps",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNVDlzTTgyTGpld0VfODctRXcxMFhYOFhKMjJSRmZvcmtwTmQ4RjVYRDN0MFdLLWpJTXFHc3ItcXgxSDVPaXZkcmo4RVRpSEU0eWxteHFBd1dMdm03TDBZTEYyVWR2VXVKdkdRQ2h0bk16ZzREaGsxT2VCVnFMeXZZV1hYUW1oTldFcTd2dG1mRmxoSnExamEwS2VyYTNUa2RuOFZRdWpFUUtzT3FaYzdST3JwUXpWYTFrSTFqVk1rWktRdVBTT2QzV3Zma0w2dw?oc=5",
+      "date": "2026-09-14T07:15:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/09/GTA-6-acteur-stephen-root.jpg",
+      "description": "GTA 6 : un premier acteur confirme enfin son rôle, et les joueurs avaient vu juste depuis longtemps&nbsp;&nbsp;Xboxygen"
+    },
+    {
+      "title": "GTA 6 Officially Confirms First Voice Actor",
+      "link": "https://gamerant.com/gta-6-brian-heder-actor-stephen-root/",
+      "source_link": null,
+      "date": "2026-09-14T07:15:06+00:00",
+      "source": "Game Rant",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/wm/2026/09/gta-6-first-voice-actor-stephen-root-official-confirmation-gamerant.jpg?w=1600&h=900&fit=crop",
+      "description": "Despite the secrecy surrounding GTA 6's cast, one of its characters now has an officially confirmed voice actor, though fans aren't surprised."
+    },
     {
       "title": "GTA 6 : Netflix aurait gagné plus de 100 000 abonnés grâce à son trailer - Xboxygen",
       "link": "https://www.xboxygen.com/News/367340-gta-6-netflix-aurait-gagne-plus-de-100-000-abonnes-grace-a-son-trailer",
