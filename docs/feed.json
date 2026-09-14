@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-14T19:02:01.530557+00:00",
+  "generated_at": "2026-09-14T19:56:14.891528+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 57.2,
+  "duration_seconds": 53.1,
   "decode_failures": 0,
-  "total_articles": 2566,
-  "new_this_run": 0,
+  "total_articles": 2569,
+  "new_this_run": 3,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -406,8 +406,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-14T17:37:10+00:00",
+      "new_this_run": 2,
+      "last_article": "2026-09-14T19:43:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +426,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 3,
@@ -594,10 +594,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:31:24+00:00",
       "days_since_last_article": 3,
@@ -606,13 +606,13 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "last_article": "2026-09-11T14:16:10+00:00",
-      "days_since_last_article": 3,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-14T19:04:43+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 6,
@@ -738,10 +738,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 75,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-10T16:28:43+00:00",
       "days_since_last_article": 4,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 12,
@@ -918,14 +918,14 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "0,101,101,102,102,102,102,102,101,102,102,102",
-    "gnews-en": "0,100,100,100,102,102,102,100,100,100,100,100",
+    "gnews-fr": "101,101,102,102,102,102,102,101,102,102,102,102",
+    "gnews-en": "100,100,100,102,102,102,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -940,7 +940,7 @@
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "vg247": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "vg247": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -954,20 +954,20 @@
     "gta6times": "38,38,38,38,38,38,38,38,38,38,38,38",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
-    "vgc": "10,10,10,0,10,10,10,10,10,10,10,10",
-    "xboxygen": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "xboxwire": "0,6,6,6,6,6,6,6,6,6,6,6",
-    "trueach": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "jdg": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "numerama": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "frandroid": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "0,82,81,81,81,81,81,83,86,86,85,86",
-    "arstechnica": "0,26,26,26,26,26,26,26,26,26,26,26",
-    "pushsquare": "0,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "0,100,100,100,100,100,100,100,100,100,100,100"
+    "vgc": "10,10,0,10,10,10,10,10,10,10,10,10",
+    "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "xboxwire": "6,6,6,6,6,6,6,6,6,6,6,6",
+    "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "82,81,81,81,81,81,83,86,86,85,86,86",
+    "arstechnica": "26,26,26,26,26,26,26,26,26,26,26,26",
+    "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -998,13 +998,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1fb9c-CrUkPCR0sSFzhIDanttDY4qrprc\"",
+      "etag": "W/\"1ddeb-vWgyf6d6X3DTqlpEwgwp9nkt9UI\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"12492bb50e60f53ff33c232515f73004\"",
-      "modified": "Mon, 14 Sep 2026 18:58:56 GMT"
+      "etag": "W/\"2a74a0564b4911a066da999841284672\"",
+      "modified": "Mon, 14 Sep 2026 19:30:16 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1014,12 +1014,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 17:54:07 GMT"
+      "modified": "Mon, 14 Sep 2026 19:04:43 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 14 Sep 2026 18:57:17 GMT"
+      "modified": "Mon, 14 Sep 2026 19:55:45 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa84441-2f1a\"",
-      "modified": "Mon, 14 Sep 2026 19:00:17 GMT"
+      "etag": "W/\"6aa84b48-2f1a\"",
+      "modified": "Mon, 14 Sep 2026 19:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1048,12 +1048,51 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa83412-ad7\"",
-      "modified": "Mon, 14 Sep 2026 17:51:14 GMT"
+      "etag": "\"6aa8502d-ad8\"",
+      "modified": "Mon, 14 Sep 2026 19:51:09 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Officially Confirms Its First Voice Actor With A Beloved Hollywood Star - svg.com",
+      "link": "https://www.svg.com/2258199/gta-6-first-voice-actor-confirmation-stephen-root/",
+      "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPSWxUSEU0QVZqWTYwTHlQUmFLYXUtVEMxWnhRYjUyZnBnMEE2UThXaS1aWktad2FKbUFkN3BaeXkzcVdUbDZOS2Vja2J4bUY0TVVlSWFFTXJYZWRxRG0wQWNqa2diZkQtQ3N3R3RKWFpqbkdMVWRlOTVaSGVURXM2MDlTdWE?oc=5",
+      "date": "2026-09-14T19:43:57+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.svg.com/img/gallery/gta-6-officially-confirms-its-first-voice-actor-with-a-beloved-hollywood-star/l-intro-1789414829.jpg",
+      "description": "GTA 6 Officially Confirms Its First Voice Actor With A Beloved Hollywood Star&nbsp;&nbsp;svg.com"
+    },
+    {
+      "title": "GTA Fever: Vacation Requests for Grand Theft Auto 6’s Release Date Are Out Of Control - Yahoo",
+      "link": "https://www.yahoo.com/entertainment/music/articles/gta-fever-vacation-requests-grand-194106521.html",
+      "source_link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQX3F2QldKMHJ4T0tueHpwYVo1UUN1RTJQRk9UZEJqZ2NsRnVtc3U2OHNIWElHaUg4c3ZINnpVb19MbDhfcWw4d3hmcldKbWtBekRsYlBUN3dDaC0tUnFuVVVITjRUc1Zla3QzSmhTLW5LX0JzendPMzVxcGI1Sjl3QVJ3bkVtYXFqV1RuVjhEX2NBb0VYekxteEIwalNPWXdQ?oc=5",
+      "date": "2026-09-14T19:41:06+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://s.yimg.com/lo/mysterio/api/a9b327e0dbde3964e8267406826c2db723303da769138265740613556444d92c/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fgadget_review_articles_822%2Ff42af647b79a42d4dcd1a23cf7eba016.jpg",
+      "description": "GTA Fever: Vacation Requests for Grand Theft Auto 6’s Release Date Are Out Of Control&nbsp;&nbsp;Yahoo"
+    },
+    {
+      "title": "GTA 6's first confirmed actor is King of the Hill's Stephen Root: \"It's an amazing thing to look at\"",
+      "link": "https://www.eurogamer.net/gta-6-confirmed-actor-king-of-the-hill-stephen-root",
+      "source_link": null,
+      "date": "2026-09-14T19:04:43+00:00",
+      "source": "Eurogamer",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/GTA-6-Brian-Heder.jpg?width=690&quality=85&format=jpg&auto=webp",
+      "description": " Rockstar Games hasn't said much about who's voicing the GTA 6 cast, but we now know at least one big-name actor attached to the upcoming crime epic: Stephen Root. Read more"
+    },
     {
       "title": "Forget GTA 6, I have brought GTA 5 closer to being the true greatest game of all time: Hulk – Ultimate Destruction - PC Gamer",
       "link": "https://www.pcgamer.com/games/grand-theft-auto/forget-gta-6-i-have-brought-gta-5-closer-to-being-the-true-greatest-game-of-all-time-hulk-ultimate-destruction/",
