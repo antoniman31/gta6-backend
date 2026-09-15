@@ -1345,6 +1345,12 @@
       <div class="setting-buttons">
         <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer les notifications</button>
         <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Tester l'affichage</button>
+        <!-- Le bouton ci-dessus n'affiche qu'une notification LOCALE : il
+             montre à quoi ça ressemble, il ne prouve RIEN sur la chaîne
+             d'envoi. Celui-ci déclenche un vrai envoi signé depuis GitHub,
+             qui traverse le service de push comme une vraie notification.
+             Masqué sans jeton : sans lui, l'API GitHub refuserait. -->
+        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Tester un envoi réel</button>
         <button class="small" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
       </div>
       <div class="token-status dim" id="pushStatusLine"></div>
@@ -3602,6 +3608,51 @@ async function disablePush(){
 // Affiche une notification locale, sans passer par le serveur : vérifie que
 // l'appareil sait bien les afficher (mode silencieux, ne pas déranger,
 // autorisation système…) avant de chercher pourquoi le robot n'envoie rien.
+// Envoi RÉEL, de bout en bout : app -> GitHub -> push_notify.py -> service
+// de push -> téléphone.
+//
+// Pourquoi passer par GitHub plutôt que d'envoyer d'ici : une vraie push
+// doit être signée avec la clé privée VAPID. Cette clé est dans un secret
+// GitHub et doit y rester — dans cette page, n'importe qui pourrait envoyer
+// des notifications sur l'appareil. Le navigateur ne peut donc structurellement
+// pas faire ce test lui-même, et c'est pour ça que testPushDisplay se contente
+// d'un affichage local.
+//
+// Le workflow échoue quand rien ne part : un abonnement expiré rend le run
+// ROUGE au lieu de laisser croire que tout va bien.
+async function testPushReel(){
+  const token = getGithubToken();
+  if(!token){
+    setPushStatus("Aucun jeton GitHub enregistré — ajoute-le plus haut pour lancer un envoi réel.", "warn");
+    return;
+  }
+  const btn = document.getElementById("pushTestRealBtn");
+  if(btn) btn.disabled = true;
+  setPushStatus("Envoi demandé à GitHub…", "dim");
+  try{
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${GITHUB_WORKFLOW_TEST_PUSH}/dispatches`, {
+      method: "POST",
+      headers: Object.assign({ "Content-Type": "application/json" }, githubHeaders()),
+      body: JSON.stringify({ ref: GITHUB_BRANCH })
+    });
+    if(res.status !== 204){
+      const message = githubErrorMessage(res.status);
+      setPushStatus("Échec : " + message, "warn");
+      addLog("fail", `Test push réel — ${escapeHtml(message)}`);
+      return;
+    }
+    // On ne peut pas savoir ici si la notification est ARRIVÉE — c'est le
+    // téléphone qui le dira. Le message le dit franchement plutôt que
+    // d'annoncer un succès qu'on n'a pas constaté.
+    setPushStatus("Envoi lancé. Si rien n'arrive d'ici une minute, l'abonnement est expiré : réactive les notifications et remplace le secret PUSH_SUBSCRIPTIONS.", "ok");
+    addLog("ok", "Test d'envoi push réel déclenché.");
+  }catch(e){
+    setPushStatus("Échec réseau : " + (e && e.message ? e.message : e), "warn");
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+
 async function testPushDisplay(){
   if(!pushSupported()){
     setPushStatus("Ce navigateur ne gère pas les notifications.", "warn");
@@ -3709,6 +3760,7 @@ function copyPushSubscription(btn){
 // dans un navigateur.
 const GITHUB_REPO = "antoniman31/gta6-backend";
 const GITHUB_WORKFLOW = "update-feeds.yml";
+const GITHUB_WORKFLOW_TEST_PUSH = "test-push.yml";
 const GITHUB_BRANCH = "main";
 const TOKEN_STORAGE_KEY = "github-token-v1";
 
@@ -3771,6 +3823,11 @@ function refreshTokenUI(){
   // text-align:center. En rendant la main à la CSS, le bouton retrouve le
   // centrage en flex qu'il partage avec les onglets.
   if(btn) btn.style.display = token ? "" : "none";
+  // Même règle pour l'envoi push réel : il passe par la même API GitHub,
+  // donc il a besoin du même jeton. Proposer un bouton qui ne peut pas
+  // marcher, c'est promettre un test et rendre une erreur.
+  const btnPush = document.getElementById("pushTestRealBtn");
+  if(btnPush) btnPush.style.display = token ? "" : "none";
   const input = document.getElementById("githubTokenInput");
   if(input && token && !input.value) input.placeholder = "•••••••••••••• (jeton enregistré)";
   if(!token){

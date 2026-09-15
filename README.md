@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1081
+qui permet de tester tout le pipeline sans sortir de la machine. **1097
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -2443,6 +2443,73 @@ vérifie, pas l'endroit où il se trouvait ce jour-là. Et l'ordre de la
 nouvelle étape est lui-même verrouillé : après la publication, avant les deux
 notifications — sinon elle attend une version qu'on n'a pas encore poussée,
 ou elle ne sert à rien.
+
+### Le push est mort en silence, et rien ne l'a dit
+
+Le 15/09/2026 au soir : *« pourquoi je reçois plus la notif push sur mon
+tel »*. Le journal du passage répondait en trois lignes :
+
+```
+[push] envoi à 1 appareil(s) : 🎮 3 nouveaux articles GTA 6
+[push] abonnement #1 expiré (HTTP 410)
+[push] 0/1 notification(s) envoyée(s), 1 abonnement(s) expiré(s)
+```
+
+L'abonnement Web Push avait expiré — très probablement lors de la
+réinstallation de l'app le soir même, pour la nouvelle icône. Le robot
+envoyait correctement ; c'est le destinataire qui n'existait plus.
+
+**Et le job est resté vert.** Le signal de vie ne couvre pas ce cas : il dit
+« le robot tourne », pas « les notifications arrivent ». Le défaut est resté
+invisible trois heures, jusqu'à ce qu'on le demande.
+
+#### Une alerte sur un canal qui, lui, fonctionne encore
+
+Quand **tous** les abonnements sont expirés, le robot le dit maintenant sur
+Discord. Seulement quand tous : avec plusieurs appareils, en perdre un est
+banal. Discord marche quand le push est mort — c'est donc le bon endroit
+pour annoncer que le push est mort.
+
+#### Tester un VRAI envoi, depuis l'app
+
+Le bouton « Tester l'affichage » n'affiche qu'une notification **locale** :
+il montre à quoi ça ressemble, il ne prouve rien sur la chaîne d'envoi. Et
+il ne peut pas faire mieux — une vraie push doit être signée avec la **clé
+privée VAPID**, qui vit dans un secret et doit y rester. Dans la page,
+n'importe qui pourrait notifier l'appareil.
+
+Le seul chemin honnête est donc :
+
+```
+app  →  GitHub (test-push.yml)  →  push_notify.py --test
+     →  signature VAPID  →  service de push  →  téléphone
+```
+
+Un second bouton, **« Tester un envoi réel »**, déclenche ce workflow par la
+même API que « Relancer le robot ». Il n'apparaît que si un jeton GitHub est
+enregistré : proposer un bouton qui ne peut pas marcher, c'est promettre un
+test et rendre une erreur.
+
+**Trois choix qui font la différence :**
+
+- **Un workflow séparé, pas une option du robot.** Il tourne en quelques
+  secondes au lieu de trois minutes, et il est en `contents: read` — tester
+  ne doit rien publier.
+- **Le run ÉCHOUE quand aucune notification ne part.** C'est tout l'intérêt :
+  un test qui reste vert alors que rien n'arrive ne teste rien. C'est
+  exactement le défaut qu'on venait de vivre, et le voilà transformé en
+  signal rouge.
+- **L'app ne prétend pas savoir si c'est arrivé.** Seul le téléphone le
+  sait. Le message dit donc : *« si rien n'arrive d'ici une minute,
+  l'abonnement est expiré »* — plutôt que d'annoncer un succès non constaté.
+
+#### Ce que ça ne règle pas
+
+Le secret `PUSH_SUBSCRIPTIONS` doit toujours être **mis à jour à la main**
+après chaque réabonnement : l'app ne peut pas écrire un secret GitHub, ça
+demande des droits d'administration et un chiffrement côté client. Le bouton
+ne supprime pas cette friction — il dit seulement tout de suite quand il faut
+s'y coller, au lieu de le laisser découvrir trois jours plus tard.
 
 ## Pause nocturne : rien entre 0h et 5h
 

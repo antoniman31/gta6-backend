@@ -260,7 +260,100 @@ def lire_liste(path):
         return []
 
 
+def alerte_discord_push_mort(total):
+    """Prévient sur Discord quand plus AUCUN appareil n'est joignable.
+
+    Le 15/09/2026, un passage a affiché « 0/1 notification(s) envoyée(s) »
+    et le job est resté vert : l'abonnement avait expiré (HTTP 410) après
+    une réinstallation de l'app, et rien ne l'a signalé. Antoni l'a
+    découvert en le demandant, trois heures plus tard.
+
+    Le signal de vie ne couvre pas ce cas : il dit « le robot tourne », pas
+    « les notifications arrivent ». Discord, lui, fonctionne quand le push
+    est mort — c'est donc le bon canal pour annoncer que le push est mort.
+
+    Seulement quand TOUS sont expirés : avec plusieurs appareils, en perdre
+    un est banal et ne mérite pas d'alerte.
+    """
+    webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+    if not webhook:
+        return
+    try:
+        import requests
+        requests.post(webhook, json={"embeds": [{
+            "title": "🔕 Notifications push hors service",
+            "description": (
+                "Les %d abonnement(s) enregistré(s) sont expirés — aucune "
+                "notification push ne peut plus arriver.\n\n"
+                "**Réparer :** réactiver les notifications dans l'app pour "
+                "créer un nouvel abonnement, puis remplacer le secret "
+                "`PUSH_SUBSCRIPTIONS` dans les réglages GitHub." % total),
+            "color": 0xE67E22,
+        }]}, timeout=10)
+        print("[push] alerte Discord envoyée : plus aucun appareil joignable.")
+    except Exception as e:
+        # L'URL du webhook est un secret : jamais dans un journal public.
+        propre = feed_store.masquer_urls(str(e), [webhook])
+        print(f"[push] alerte Discord non envoyée ({type(e).__name__}) : {propre}")
+
+
+def mode_test():
+    """Envoie une VRAIE notification, de bout en bout, à la demande.
+
+    Le bouton « tester » de l'app ne pouvait afficher qu'une notification
+    LOCALE : une vraie push doit être signée avec la clé privée VAPID, qui
+    est dans un secret et doit y rester — dans la page, n'importe qui
+    pourrait notifier l'appareil. Le seul chemin honnête est donc
+    app -> GitHub -> ici -> service de push -> téléphone.
+
+    Contrairement au reste du fichier, cette fonction REND UN CODE D'ERREUR
+    quand rien n'est parti. C'est tout l'intérêt : un test qui reste vert
+    alors qu'aucune notification n'arrive ne teste rien. Le run devient
+    rouge, et l'app le voit.
+    """
+    subscriptions = load_subscriptions()
+    if not subscriptions:
+        print("[test] aucun abonnement dans PUSH_SUBSCRIPTIONS — rien à tester.")
+        return 1
+
+    private_key = os.environ.get("VAPID_PRIVATE_KEY", "").strip()
+    if not private_key:
+        print("[test] VAPID_PRIVATE_KEY absent — envoi impossible.")
+        return 1
+    if not check_subject(VAPID_SUBJECT):
+        print("[test] sujet VAPID invalide — envoi impossible.")
+        return 1
+
+    charge = {
+        "title": "✅ Test GTA6_WATCH",
+        "body": "Si tu lis ceci, les notifications push fonctionnent.",
+        "url": SITE_URL,
+        # Un tag qui lui est propre : un test ne doit jamais remplacer le
+        # récapitulatif ni une annonce de Rockstar sur l'écran.
+        "tag": "gta6watch-test-reel",
+    }
+    print(f"[test] envoi à {len(subscriptions)} appareil(s)…")
+    envoyes, expires = send_all(subscriptions, charge, private_key)
+    print(f"[test] {envoyes}/{len(subscriptions)} notification(s) envoyée(s)"
+          + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
+
+    if envoyes == 0:
+        print("[test] ÉCHEC — aucune notification n'est partie.")
+        if len(expires) == len(subscriptions):
+            print("[test] tous les abonnements sont expirés : réactive les "
+                  "notifications dans l'app, puis remplace le secret "
+                  "PUSH_SUBSCRIPTIONS.")
+            alerte_discord_push_mort(len(subscriptions))
+        return 1
+
+    print("[test] OK — la notification devrait arriver dans quelques secondes.")
+    return 0
+
+
 def main():
+    if "--test" in sys.argv:
+        return mode_test()
+
     subscriptions = load_subscriptions()
     if not subscriptions:
         print("[push] aucun abonnement configuré — notifications push désactivées.")
@@ -324,6 +417,10 @@ def main():
     envoyes, expires = send_all(subscriptions, payload, private_key)
     print(f"[push] {envoyes}/{len(subscriptions)} notification(s) envoyée(s)"
           + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
+
+    # Plus personne n'est joignable : le dire là où ça s'entend encore.
+    if envoyes == 0 and len(expires) == len(subscriptions):
+        alerte_discord_push_mort(len(subscriptions))
 
     # Comme pour Discord : les articles sont déjà publiés, une panne d'envoi
     # ne doit jamais faire échouer le workflow.
