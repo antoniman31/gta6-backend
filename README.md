@@ -1775,6 +1775,38 @@ d'accueil suffit, elle lit les `<link rel="alternate">` de la page et
 annonce les flux déclarés. C'est ainsi que les adresses de Clubic et de
 TweakTown sont sorties — aucune n'a été devinée.
 
+**Ce qu'elles ont réellement produit, trois passages plus tard.** La sonde
+annonce ce qu'un flux contient ; elle ne dit pas ce qu'il APPORTE, parce que
+la déduplication passe après elle. Mesuré le 15/09/2026 à 15h01 :
+
+| source | entrées reçues | articles en propre | en renfort | liens vers son domaine |
+|---|---|---|---|---|
+| Rockstar Actu | 20 | **7** | 0 | 8 |
+| TweakTown | 15 | 0 | **2** | 21 |
+| Dexerto FR | 50 | 0 | 0 | 9 |
+
+Trois résultats, trois lectures différentes, et c'est la troisième colonne
+qui les sépare :
+
+- **Rockstar Actu apporte du neuf.** Sept articles sous son propre nom, et
+  chacun ne compte qu'UNE source — donc aucun des 49 autres flux ne les
+  avait. C'est exactement le trou visé : de la couverture GTA francophone
+  que personne d'autre ne portait.
+- **TweakTown confirme.** Ses deux articles existaient déjà, apportés par un
+  autre média ; ils ont été fusionnés et comptent désormais **deux
+  rédactions** au lieu d'une. Ce n'est pas rien — c'est ce compte qui pilote
+  le badge « N SOURCES » et le marqueur « actu majeure ».
+- **Dexerto FR n'a rien apporté**, et le verdict `tarie` est exact. Mais neuf
+  articles du fil pointent déjà vers dexerto.fr : son contenu arrive, sous le
+  nom de Google News qui la double systématiquement. À surveiller — si elle
+  reste à zéro, elle ne sert qu'à payer une requête par passage.
+
+La dernière colonne est l'indicateur à retenir quand on juge une source : un
+grand nombre de liens vers son domaine, apportés par d'AUTRES flux, signifie
+que le sujet est déjà couvert et que la source ajoutée fera doublon. TweakTown
+à 21 et Dexerto FR à 9 étaient prévisibles ; Rockstar Actu à 8, dont 7 qu'elle
+a apportés elle-même, ne l'était pas.
+
 **Et le premier ajout a cassé le test écrit le matin même.** `sources_count`
 y était comparé à `len(FEEDS)` par égalité stricte. À l'ajout, les fichiers
 annonçaient 47 pendant que `FEEDS` en déclarait 50 : parfaitement normal, le
