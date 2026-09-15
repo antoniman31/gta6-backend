@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-09-15T14:01:48.511410+00:00",
+  "generated_at": "2026-09-15T14:40:04.118941+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 41.2,
+  "duration_seconds": 53.1,
   "decode_failures": 0,
-  "total_articles": 2555,
-  "new_this_run": 1,
+  "total_articles": 2573,
+  "new_this_run": 18,
   "hot_count": 7,
   "hot_threshold": 3,
-  "sources_count": 50,
+  "sources_count": 54,
   "sources": [
     {
       "id": "rockstar-en",
@@ -312,6 +312,30 @@
       "name": "TweakTown",
       "official": false,
       "specialist": false
+    },
+    {
+      "id": "gamesindustry",
+      "name": "GamesIndustry.biz",
+      "official": false,
+      "specialist": false
+    },
+    {
+      "id": "jdg-natif",
+      "name": "Journal du Geek (tag)",
+      "official": false,
+      "specialist": false
+    },
+    {
+      "id": "frandroid-natif",
+      "name": "Frandroid (tag)",
+      "official": false,
+      "specialist": false
+    },
+    {
+      "id": "reddit-leaks",
+      "name": "Reddit — fuites et rumeurs",
+      "official": false,
+      "specialist": false
     }
   ],
   "sources_health": [
@@ -330,7 +354,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -395,7 +419,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-15T13:46:47+00:00",
+      "last_article": "2026-09-15T13:59:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -406,8 +430,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-15T12:00:56+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-15T14:08:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +450,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 3,
@@ -552,7 +576,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-13T14:14:58+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -594,10 +618,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-14T19:04:43+00:00",
       "days_since_last_article": 0,
@@ -672,7 +696,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T14:25:15+00:00",
-      "days_since_last_article": 11,
+      "days_since_last_article": 12,
       "status": "ok"
     },
     {
@@ -720,7 +744,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
-      "days_since_last_article": 6,
+      "days_since_last_article": 7,
       "status": "ok"
     },
     {
@@ -738,10 +762,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 13,
@@ -846,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 87,
+      "entries_fetched": 86,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,17 +938,65 @@
       "last_article": "2026-09-14T21:45:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
+    },
+    {
+      "id": "gamesindustry",
+      "name": "GamesIndustry.biz",
+      "entries_fetched": 100,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-14T16:22:08+00:00",
+      "days_since_last_article": 0,
+      "status": "ok"
+    },
+    {
+      "id": "jdg-natif",
+      "name": "Journal du Geek (tag)",
+      "entries_fetched": 30,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 3,
+      "last_article": "2026-08-12T12:32:59+00:00",
+      "days_since_last_article": 34,
+      "status": "tarie"
+    },
+    {
+      "id": "frandroid-natif",
+      "name": "Frandroid (tag)",
+      "entries_fetched": 15,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 0,
+      "last_article": null,
+      "days_since_last_article": null,
+      "status": "tarie"
+    },
+    {
+      "id": "reddit-leaks",
+      "name": "Reddit — fuites et rumeurs",
+      "entries_fetched": 25,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 12,
+      "last_article": "2026-09-04T14:22:04+00:00",
+      "days_since_last_article": 11,
+      "status": "ok"
     }
   ],
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,99,99,99,99,99,99,99,99,99,99",
+    "rockstar-fr": "100,99,99,99,99,99,99,99,99,99,99,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,101",
+    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,101,101",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -950,7 +1022,7 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "38,38,38,38,38,38,38,38,38,38,38,39",
+    "gta6times": "38,38,38,38,38,38,38,38,38,38,39,39",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -962,12 +1034,16 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "85,87,87,86,87,86,86,86,87,87,87,87",
+    "engadget": "87,87,86,87,86,86,86,87,87,87,87,86",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20,20,20",
-    "dexerto-fr": "50,50,50,50",
-    "tweaktown": "15,15,15,15"
+    "rockstaractu": "20,20,20,20,20",
+    "dexerto-fr": "50,50,50,50,50",
+    "tweaktown": "15,15,15,15,15",
+    "gamesindustry": "100",
+    "jdg-natif": "30",
+    "frandroid-natif": "15",
+    "reddit-leaks": "25"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -978,13 +1054,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"3bf370e30f223cce51af521ca8cb1e1b\"",
-      "modified": "Tue, 15 Sep 2026 12:16:06 GMT"
+      "etag": "W/\"c04dc73db96e9081e64585ca1bd1eb63\"",
+      "modified": "Tue, 15 Sep 2026 14:03:10 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 13:44:55 GMT"
+      "modified": "Tue, 15 Sep 2026 14:02:20 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1003,13 +1079,13 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"a16d63599ccf2e840a3c28277a2b6d1c\"",
-      "modified": "Tue, 15 Sep 2026 13:46:27 GMT"
+      "etag": "W/\"97355c06cf25728d375f7833845446e6\"",
+      "modified": "Tue, 15 Sep 2026 14:30:20 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 13:57:24 GMT"
+      "modified": "Tue, 15 Sep 2026 14:30:00 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,17 +1095,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 14:01:23 GMT"
+      "modified": "Tue, 15 Sep 2026 14:38:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"81ff987c829eaab8dcb65e46aa073bf3\"",
-      "modified": "Tue, 15 Sep 2026 13:53:16 GMT"
+      "etag": "\"7c0c2e35a7fc84c59b5ec3841ca06992\"",
+      "modified": "Tue, 15 Sep 2026 14:31:58 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa94f70-2fa0\"",
-      "modified": "Tue, 15 Sep 2026 14:00:16 GMT"
+      "etag": "W/\"6aa95679-2fa0\"",
+      "modified": "Tue, 15 Sep 2026 14:30:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1114,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789480385\"",
-      "modified": "Tue, 15 Sep 2026 13:53:05 GMT"
+      "etag": "W/\"1789482847\"",
+      "modified": "Tue, 15 Sep 2026 14:34:07 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1055,10 +1131,51 @@
       "url": "https://rockstaractu.com/feed/",
       "etag": "\"c2071127c88888665f4226e2ba91fceb-gzip\"",
       "modified": null
+    },
+    "gamesindustry": {
+      "url": "https://www.gamesindustry.biz/feed",
+      "etag": null,
+      "modified": "Tue, 15 Sep 2026 12:30:00 GMT"
+    },
+    "jdg-natif": {
+      "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
+      "etag": "W/\"082395a23540f6c7743481761169ed9d\"",
+      "modified": "Tue, 15 Sep 2026 14:27:36 GMT"
+    },
+    "frandroid-natif": {
+      "url": "https://www.frandroid.com/tag/gta-6/feed",
+      "etag": "W/\"25d903cd925577d18b6826371e4e8ed5\"",
+      "modified": "Tue, 15 Sep 2026 14:35:36 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Grand Theft Auto 6 Ultimate Edition Is $11 Off on PS5 if You Use This Trick (Today Only) - IGN",
+      "link": "https://www.ign.com/articles/gta-6-for-ps5-save-11-today-only",
+      "source_link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1hVjh5VWhzcmJpc3Nib3BVZG5pclN1VGNReGh4d0IwN3Q2NUs1T3NSZ1g5ZFE4YTVhN0VLc0VNU2dqRlRKSlFKODUtdldNenh5LUtiQ1p3UEp2VlFHTndhci1pdHFNdnFmSU5CU1pB?oc=5",
+      "date": "2026-09-15T14:08:29+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/09/15/untitled-design-1789479855761.png?width=1280&format=jpg&auto=webp&quality=80",
+      "description": "Grand Theft Auto 6 Ultimate Edition Is $11 Off on PS5 if You Use This Trick (Today Only)&nbsp;&nbsp;IGN"
+    },
+    {
+      "title": "On avait raison : c’est cet acteur qui incarne Brian Heder dans GTA 6 - Pèse sur start",
+      "link": "https://www.pesesurstart.com/2026/09/15/on-avait-raison--cest-cet-acteur-qui-incarne-brian-heder-dans-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQaHlZZXJESHhtSzZ5X2dRUXJIUWtEUTdGTWpDZEROZFp2WXJfNUZpQUljbGM5SnB2RGlxWlNmc3hFM3Aydk9rRktXek1uRnRhZDBFNDJ5V252UUpBYVIta2J3Y1RpR2lCRVJPYUY0dXhuVUFiVTZRa2RMUEZwUVpsQTlBZU90Z0dITHBFaHl3OHRxV1RBRDhyM1JBdzVmRkF5RTB0cUpSdkI4X2M?oc=5",
+      "date": "2026-09-15T13:59:57+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://m1.quebecormedia.com/emp/emp/THUMBNAIL_WEBSITE_12_74533974-e195-4c68-b1a6-b92d53474635_ORIGINAL.jpg?impolicy=crop-resize&x=0&y=0&w=1280&h=720&width=1200",
+      "description": "On avait raison : c’est cet acteur qui incarne Brian Heder dans GTA 6&nbsp;&nbsp;Pèse sur start"
+    },
     {
       "title": "\"GTA 6 est un rituel d'humiliation pour tous les gamers masculins\": en ligne, un microcosme masculiniste s’insurge, le nouvel épisode de la série serait \"trop woke\" - BFM",
       "link": "https://www.bfmtv.com/tech/gaming/gta-6-est-un-rituel-d-humiliation-pour-tous-les-gamers-masculins-en-ligne-un-microcosme-masculiniste-s-insurge-le-nouvel-episode-de-la-serie-serait-trop-woke_AV-202609150543.html",
@@ -1369,6 +1486,19 @@
       "lang": "fr",
       "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178938/1789375532-2663-card.jpg",
       "description": "Les politiciens débattent encore de la violence de GTA 6, mais votent quand même pour autoriser la publicité sur la plage de Miami&nbsp;&nbsp;jeuxvideo.com"
+    },
+    {
+      "title": "Rockstar and IWGB outline arguments at start of tribunal",
+      "link": "https://www.gamesindustry.biz/rockstar-and-iwgb-outline-arguments-at-start-of-tribunal",
+      "source_link": null,
+      "date": "2026-09-14T16:22:08+00:00",
+      "source": "GamesIndustry.biz",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/gta-6-key-art_edited.jpg?width=690&quality=85&format=jpg&auto=webp",
+      "description": " Rockstar and the Independent Workers' Union of Great Britain have set out their arguments at an ongoing employment tribunal expected to run until October 16. Read more"
     },
     {
       "title": "GTA 6 : cet acteur est dans l'une des meilleures séries de 2026, il incarne aussi un personnage important du jeu de Rockstar - PhonAndroid",
@@ -9421,6 +9551,19 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-au-coeur-dune-polemique-a-miami-un-possible-partenariat-divise-les-autorites-de-la-ville.png",
       "description": "GTA 6 au cœur d’une polémique à Miami : un possible partenariat divise les autorités de la ville&nbsp;&nbsp;La Crème Du Gaming"
+    },
+    {
+      "title": "GTA 6 PC - VGC: \"There's a bit of noise that it might be happening sooner\"",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1w75t0d/gta_6_pc_vgc_theres_a_bit_of_noise_that_it_might/",
+      "source_link": null,
+      "date": "2026-09-04T14:22:04+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "https://youtu.be/-c651iumoFc?t=10m30s &quot;... because of the current hardware availability situation&quot; Personally, I’m not so sure. It’s not like game development has gotten any quicker, especially for something this seemingly technically impressive. Then again, it is the same x86 baseline code, and day and date PC and console development and releases are more the norm than ever. So six months after the console release, like they used to do in the 6th/7th gen era, could be possible.  &#32;"
     },
     {
       "title": "French store leaks GTA 6 Switch 2 port and PS5 and Xbox Collector's Editions - Notebookcheck",
@@ -21710,6 +21853,19 @@
       "description": "GTA 6 On PS5: What The Extended Look Reveals About Graphics, Loading, And DualSense&nbsp;&nbsp;svg.com"
     },
     {
+      "title": "GTA 6 Will Be 30FPS at Launch According to Content Creator Who Visited Rockstar",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1w08jp4/gta_6_will_be_30fps_at_launch_according_to/",
+      "source_link": null,
+      "date": "2026-08-27T22:24:26+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "https://kotaku.com/gta-6-will-be-30fps-at-launch-rockstar-reportedly-not-sure-about-60fps-performance-mode-2000729032  &#32; submitted by &#32;  /u/SilentNova300   [link] &#32; [comments]"
+    },
+    {
       "title": "GTA 6 Takes Around 80 Hours to Complete, Rockstar Reveals - vice.com",
       "link": "https://www.vice.com/en/article/gta-6-how-long-to-complete-80-hours/",
       "date": "2026-08-27T22:24:18+00:00",
@@ -23416,6 +23572,19 @@
       "description": "GTA 6’s ‘Extended Look’ was so popular it briefly broke Netflix&nbsp;&nbsp;The Big Lead"
     },
     {
+      "title": "Rockstar confirms they briefly considered having four protagonists in GTA 6",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1w03p6g/rockstar_confirms_they_briefly_considered_having/",
+      "source_link": null,
+      "date": "2026-08-27T19:24:15+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Previous rumour from 2022 (Jason's piece in Bloomberg): https://www.reddit.com/r/GamingLeaksAndRumours/comments/wc447h/scrapped_gta_6_plans_included_3_cities_and_4/ Source: https://www.ign.com/articles/gta-6-four-protagonists-considered-by-rockstar  &#32; submitted by &#32;  /u/Motor-Juggernaut9776   [link] &#32; [comments]"
+    },
+    {
       "title": "GTA 6’s Vice City Is Full of Guns, Nearly-Nude Men, and Glorious Time Sinks",
       "link": "https://www.polygon.com/gta-6-vice-city-activities-npcs-body-modification/",
       "date": "2026-08-27T19:24:03+00:00",
@@ -23861,6 +24030,19 @@
       "lang": "fr",
       "image": "https://cdn.sortiraparis.com/images/80/66131/1292826-gta-vi-date-de-sortie-precommandes-et-editions-du-jeu-rockstar.jpg",
       "description": "GTA 6 : où et quand voir la vidéo de présentation du jeu très attendu ?&nbsp;&nbsp;Sortir à Paris"
+    },
+    {
+      "title": "GTA 6 Leaks Could Be Over As Cyberleek Withdraws $250,000 And Leaves Memecoin To Crash",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1w01g81/gta_6_leaks_could_be_over_as_cyberleek_withdraws/",
+      "source_link": null,
+      "date": "2026-08-27T18:03:09+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Article here: https://kotaku.com/gta6-grand-theft-auto-6-leaks-cyberleek-memecoin-rockstar-cash-out-2000728825  &#32; submitted by &#32;  /u/catman1900   [link] &#32; [comments]"
     },
     {
       "title": "Rockstar Games et les autorités de Floride sont en pourparlers pour transformer Miami en une version réelle de Vice City dans le cadre de la campagne marketing de GTA 6",
@@ -29742,6 +29924,19 @@
       "description": "Just moments ago, Cyberleek dropped the 10th Gameplay video of Grand Theft Auto VI. This time showing Off the Airport and giving us a great view of the Vice City skyline. The leak also showed off …"
     },
     {
+      "title": "Cyberleek has released a new poll for GTA 6 gameplay leaks.",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vwdqj0/cyberleek_has_released_a_new_poll_for_gta_6/",
+      "source_link": null,
+      "date": "2026-08-23T17:45:23+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "CYBERLEEK has updated a poll on his website asking people to vote for his next leaked GTA 6 video:  Choices: - Beach - Nudist Town - Strip Club 2  &#32; submitted by &#32;  /u/ProudBoiiiiLol   [link] &#32; [comments]"
+    },
+    {
       "title": "New GTA 6 Leak Showcases Vice City at Night",
       "link": "https://vgtimes.com/gaming-news/165171-new-gta-6-leak-showcases-vice-city-at-night.html",
       "date": "2026-08-23T17:38:31+00:00",
@@ -30648,6 +30843,19 @@
       "description": "Another alleged gameplay clip from GTA 6 has surfaced online. Cyberleek is once again behind the leak. The authenticity of the material still has not been officially confirmed"
     },
     {
+      "title": "GTA 6 Day and Night Cycle lenght has leaked",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vvb3qq/gta_6_day_and_night_cycle_lenght_has_leaked/",
+      "source_link": null,
+      "date": "2026-08-22T12:25:50+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Based on the seventh leak: at the 55‑second mark, the in‑game time shows 7:29 AM (minimap). At the 1:01 mark, it changes to 7:30 AM. That means 1 in‑game minute passes in 6 seconds of real time, which would make the full day–night cycle 144 minutes, three times longer than GTA V’s 48‑minute cycle.   &#32; submitted by &#32;  /u/tallicahet81   [link] &#32; [comments]"
+    },
+    {
       "title": "GTA 6 : un « Early Access » à 39,90 $ prétend vendre un build de développement, surtout n’y touchez pas - Univers-Simu.com",
       "link": "https://www.univers-simu.com/news/gta-6-cyberleek-early-access-build-39-90-wallet-danger-126579/",
       "date": "2026-08-22T12:16:53+00:00",
@@ -31098,6 +31306,19 @@
       "lang": null,
       "image": null,
       "description": "The \"Grand Theft Auto VI\" leak is speeding ahead without an exit in sight&nbsp;&nbsp;Axios"
+    },
+    {
+      "title": "Jason Schreier: Rockstar Introduced Strict Security Measures in 2024 Following GTA 6 Leak",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vur2q1/jason_schreier_rockstar_introduced_strict/",
+      "source_link": null,
+      "date": "2026-08-21T20:04:32+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Jason Schreier discussed the situation surrounding the recent GTA 6 leaks and provided some insight into how they are affecting Rockstar internally:  Following the 2022 Rockstar hack, the company implemented a policy in early 2024 requiring employees to work from the office five days a week, which caused frustration among some staff. Rockstar also restricted access to internal work tools from remote locations, meaning employees could only access them from the office as part of the company’s tigh"
     },
     {
       "title": "Rockstar Are “Angry” And Can’t Find The GTA 6 Leaker Sources Say",
@@ -32279,6 +32500,19 @@
       "description": "GTA 6 cars need gas? OK, I'm finally on board&nbsp;&nbsp;PC Gamer"
     },
     {
+      "title": "MP1st: GTA 6 Preview Event Was Hands-Off and Embargo Lifting in Time for Netflix Premiere",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vsw2mh/mp1st_gta_6_preview_event_was_handsoff_and/",
+      "source_link": null,
+      "date": "2026-08-19T19:13:15+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "source I wonder if there will be anything new to preview after Cyberleeks is done 😬  &#32; submitted by &#32;  /u/KekanKok   [link] &#32; [comments]"
+    },
+    {
       "title": "Report: GTA 6 Preview Event Was Hands-Off and Embargo Lifting in Time for Netflix Premiere - MP1st",
       "link": "https://mp1st.com/news/report-gta-6-previe-hands-off-embargo-lifting-in-time-netflix-premiere",
       "date": "2026-08-19T19:01:40+00:00",
@@ -32325,6 +32559,19 @@
       "lang": null,
       "image": "https://media.gtaboom.com/variants/1920/media/images/ce/11/even-stop-killing-games-is-disowning-the-gta-6-leaker.jpg",
       "description": "Stop Killing Games has publicly disowned the GTA 6 leaker, calling the leak destructive and telling its community not to support it."
+    },
+    {
+      "title": "A fourth GTA 6 gameplay clip has leaked",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vss6l4/a_fourth_gta_6_gameplay_clip_has_leaked/",
+      "source_link": null,
+      "date": "2026-08-19T16:57:05+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Source: https://www.reddit.com/r/GTA6unmoderated/comments/1vss4rl/new_leak/  &#32; submitted by &#32;  /u/Motor-Juggernaut9776   [link] &#32; [comments]"
     },
     {
       "title": "GTA 6 : Cyberleek met ses menaces à exécution, une nouvelle vidéo de gameplay débarque",
@@ -32667,6 +32914,19 @@
       "description": "'GTA 6' Leak Shows New Unofficial Gameplay Ahead of Netflix Reveal&nbsp;&nbsp;Polygon.com"
     },
     {
+      "title": "Rockstar is starting to take down the GTA 6 leaked clip",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vrw5iq/rockstar_is_starting_to_take_down_the_gta_6/",
+      "source_link": null,
+      "date": "2026-08-18T17:36:19+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "One small example: https://xcancel.com/calhampton\\_/status/2089762976152588762 Seems it's real my friends  &#32; submitted by &#32;  /u/KekanKok   [link] &#32; [comments]"
+    },
+    {
       "title": "GTA 4 Almost Gave Every NPC a Home and a Job Before Rockstar Scrapped It",
       "link": "https://www.gtaboom.com/gta-4-almost-gave-every-npc-a-home-and-a-job-78a8",
       "date": "2026-08-18T15:07:00+00:00",
@@ -32935,6 +33195,32 @@
       "description": "About 89% of Grand Theft Auto VI preorders chose the $99.99 Ultimate Edition, far above the usual 10 to 20% premium share most games see."
     },
     {
+      "title": "GTA 6’s preview on Netflix could be divided into a mini-series of 3 episodes",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vnn64p/gta_6s_preview_on_netflix_could_be_divided_into_a/",
+      "source_link": null,
+      "date": "2026-08-13T20:59:17+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Source : https://insider-gaming.com/gta-6-netflix-extended-look-could-be-three-episodes/  &#32; submitted by &#32;  /u/hanayashishipper   [link] &#32; [comments]"
+    },
+    {
+      "title": "New data shows 89% of pre-orders for GTA 6 are for the $100 ultimate edition",
+      "link": "https://www.reddit.com/r/GamingLeaksAndRumours/comments/1vni98h/new_data_shows_89_of_preorders_for_gta_6_are_for/",
+      "source_link": null,
+      "date": "2026-08-13T18:01:24+00:00",
+      "source": "Reddit — fuites et rumeurs",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Sensor Tower estimates that a vast majority of people are pre-ordering the ultimate edition. I think Rockstar really wanted this to be a $100 game and offered an $80 option to save face. Link: https://www.gamesindustry.biz/sensor-tower-89-of-gta6-preorders-are-for-the-100-ultimate-edition  &#32; submitted by &#32;  /u/RealGiancarlosR   [link] &#32; [comments]"
+    },
+    {
       "title": "GTA 6 aurait pu coûter bien plus cher, mais Take Two et Rockstar ont privilégier le rapport qualité/prix",
       "link": "https://www.rockstarmag.fr/gta-6-aurait-pu-couter-bien-plus-cher-mais-take-two-et-rockstar-ont-privilegier-le-rapport-qualite-prix/",
       "date": "2026-08-13T12:36:03+00:00",
@@ -32970,6 +33256,19 @@
       "lang": null,
       "image": "https://insider-gaming.com/wp-content/uploads/2026/04/When-Is-GTA-6-Coming-Out-On-PC-GTA-6-PC-Release-Explained-guide-lucia-jason.jpg",
       "description": "GTA 6 Netflix Extended Look Could be Three Episodes (DEBUNKED)&nbsp;&nbsp;Insider Gaming"
+    },
+    {
+      "title": "GTA 6 : la présentation sur Netflix ne sera que « l’entrée » avant le plat principal et le dessert",
+      "link": "https://www.journaldugeek.com/2026/08/12/gta-6-la-presentation-sur-netflix-ne-sera-que-lentree-avant-le-plat-principal-et-le-dessert/",
+      "source_link": null,
+      "date": "2026-08-12T12:32:59+00:00",
+      "source": "Journal du Geek (tag)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/08/premier-apercu-gta-6-27-aout-1280x853.jpg",
+      "description": "La présentation Netflix de GTA 6 le 27 août ne sera que la première partie de la phase marketing avec beaucoup de choses à venir !"
     },
     {
       "title": "GTA 6 | Netflix n'est pas un hasard, une pluie de détails sur la présentation à venir",
@@ -33273,6 +33572,19 @@
       "description": "Red Dead Redemption 2 continues to be the 3rd best selling game of all time and it is making more ground past the games it has outsold. Rockstar Games’ parent company Take-Two Interactive he…"
     },
     {
+      "title": "GTA 6 : Rockstar franchit la ligne rouge avec sa dernière annonce",
+      "link": "https://www.journaldugeek.com/2026/08/07/lexclu-gta-6-sur-netflix-franchit-la-ligne-rouge/",
+      "source_link": null,
+      "date": "2026-08-07T08:52:17+00:00",
+      "source": "Journal du Geek (tag)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/07/gta-6-pas-de-gameplay-1280x853.jpg",
+      "description": "La dernière décision de Rockstar Games concernant GTA 6 dépasse toutes les limites qu'on pensait fixées. Édito."
+    },
+    {
       "title": "Rockstar Owner Take-Two Confirms GTA 6 Release Date Still on Track, Says 'GTA 6: An Extended Look' Will Help Grow 'Consumers' Passion and Anticipation' - IGN Southeast Asia",
       "link": "https://sea.ign.com/grand-theft-auto-vi-rumored-title/246528/rockstar-owner-take-two-confirms-gta-6-release-date-still-on-track-says-gta-6-an-extended-look-will",
       "date": "2026-08-07T07:00:00+00:00",
@@ -33423,6 +33735,19 @@
       "lang": "fr",
       "image": "https://rockstaractu.com/wp-content/uploads/2026/08/GTA-6-Banniere-darticle-Image-17-1280p-x-720p-Qualite-50-Picture-by-Rockstar-Games.webp",
       "description": "L’article GTA VI : Vidéo de gameplay le 27 août en avant première sur Netflix est apparu en premier sur Rockstar Actu.\nGTA VI : Un « large aperçu », probablement une vidéo de gameplay, sera diffusé en avant première sur Netflix le 27 août, puis quelques heures plus tard sur YouTube. Découvrez également le nouvel artwork de GTA 6 et les horaires de diffusion selon votre fuseau horaire.  \nL’article GTA VI : Vidéo de gameplay le 27 août en avant première sur Netflix est apparu en premier sur Rockst"
+    },
+    {
+      "title": "Le premier aperçu de GTA 6 sera diffusé ce mois-ci sur Netflix",
+      "link": "https://www.journaldugeek.com/2026/08/06/le-premier-apercu-de-gta-6-sera-diffuse-ce-mois-ci-sur-netflix/",
+      "source_link": null,
+      "date": "2026-08-06T12:38:51+00:00",
+      "source": "Journal du Geek (tag)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/08/Capture-decran-2026-08-06-144654-1280x707.jpg",
+      "description": "C'est officiel, la première présentation de GTA 6, avec, normalement, du gameplay sera diffusé en direct sur Netflix !"
     },
     {
       "title": "New GTA 6 Gameplay Trailer Announced By Rockstar And Netflix Gets It First",

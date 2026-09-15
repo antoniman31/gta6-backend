@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-09-15T14:01:48.511410+00:00",
+  "generated_at": "2026-09-15T14:40:04.118941+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 41.2,
+  "duration_seconds": 53.1,
   "decode_failures": 0,
-  "total_articles": 2555,
-  "new_this_run": 1,
+  "total_articles": 2573,
+  "new_this_run": 18,
   "hot_count": 7,
   "hot_threshold": 3,
-  "sources_count": 50,
+  "sources_count": 54,
   "sources": [
     {
       "id": "rockstar-en",
@@ -312,6 +312,30 @@
       "name": "TweakTown",
       "official": false,
       "specialist": false
+    },
+    {
+      "id": "gamesindustry",
+      "name": "GamesIndustry.biz",
+      "official": false,
+      "specialist": false
+    },
+    {
+      "id": "jdg-natif",
+      "name": "Journal du Geek (tag)",
+      "official": false,
+      "specialist": false
+    },
+    {
+      "id": "frandroid-natif",
+      "name": "Frandroid (tag)",
+      "official": false,
+      "specialist": false
+    },
+    {
+      "id": "reddit-leaks",
+      "name": "Reddit — fuites et rumeurs",
+      "official": false,
+      "specialist": false
     }
   ],
   "sources_health": [
@@ -330,7 +354,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -395,7 +419,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "last_article": "2026-09-15T13:46:47+00:00",
+      "last_article": "2026-09-15T13:59:57+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -406,8 +430,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-15T12:00:56+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-15T14:08:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -426,10 +450,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:09:05+00:00",
       "days_since_last_article": 3,
@@ -552,7 +576,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-13T14:14:58+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -594,10 +618,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-14T19:04:43+00:00",
       "days_since_last_article": 0,
@@ -672,7 +696,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-03T14:25:15+00:00",
-      "days_since_last_article": 11,
+      "days_since_last_article": 12,
       "status": "ok"
     },
     {
@@ -720,7 +744,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
-      "days_since_last_article": 6,
+      "days_since_last_article": 7,
       "status": "ok"
     },
     {
@@ -738,10 +762,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 13,
@@ -846,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 87,
+      "entries_fetched": 86,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -914,17 +938,65 @@
       "last_article": "2026-09-14T21:45:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
+    },
+    {
+      "id": "gamesindustry",
+      "name": "GamesIndustry.biz",
+      "entries_fetched": 100,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 1,
+      "last_article": "2026-09-14T16:22:08+00:00",
+      "days_since_last_article": 0,
+      "status": "ok"
+    },
+    {
+      "id": "jdg-natif",
+      "name": "Journal du Geek (tag)",
+      "entries_fetched": 30,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 3,
+      "last_article": "2026-08-12T12:32:59+00:00",
+      "days_since_last_article": 34,
+      "status": "tarie"
+    },
+    {
+      "id": "frandroid-natif",
+      "name": "Frandroid (tag)",
+      "entries_fetched": 15,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 0,
+      "last_article": null,
+      "days_since_last_article": null,
+      "status": "tarie"
+    },
+    {
+      "id": "reddit-leaks",
+      "name": "Reddit — fuites et rumeurs",
+      "entries_fetched": 25,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 12,
+      "last_article": "2026-09-04T14:22:04+00:00",
+      "days_since_last_article": 11,
+      "status": "ok"
     }
   ],
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,99,99,99,99,99,99,99,99,99,99",
+    "rockstar-fr": "100,99,99,99,99,99,99,99,99,99,99,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,101",
+    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,101,101",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -950,7 +1022,7 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "38,38,38,38,38,38,38,38,38,38,38,39",
+    "gta6times": "38,38,38,38,38,38,38,38,38,38,39,39",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -962,12 +1034,16 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "85,87,87,86,87,86,86,86,87,87,87,87",
+    "engadget": "87,87,86,87,86,86,86,87,87,87,87,86",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20,20,20",
-    "dexerto-fr": "50,50,50,50",
-    "tweaktown": "15,15,15,15"
+    "rockstaractu": "20,20,20,20,20",
+    "dexerto-fr": "50,50,50,50,50",
+    "tweaktown": "15,15,15,15,15",
+    "gamesindustry": "100",
+    "jdg-natif": "30",
+    "frandroid-natif": "15",
+    "reddit-leaks": "25"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -978,13 +1054,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"3bf370e30f223cce51af521ca8cb1e1b\"",
-      "modified": "Tue, 15 Sep 2026 12:16:06 GMT"
+      "etag": "W/\"c04dc73db96e9081e64585ca1bd1eb63\"",
+      "modified": "Tue, 15 Sep 2026 14:03:10 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 13:44:55 GMT"
+      "modified": "Tue, 15 Sep 2026 14:02:20 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1003,13 +1079,13 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"a16d63599ccf2e840a3c28277a2b6d1c\"",
-      "modified": "Tue, 15 Sep 2026 13:46:27 GMT"
+      "etag": "W/\"97355c06cf25728d375f7833845446e6\"",
+      "modified": "Tue, 15 Sep 2026 14:30:20 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 13:57:24 GMT"
+      "modified": "Tue, 15 Sep 2026 14:30:00 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1019,17 +1095,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 14:01:23 GMT"
+      "modified": "Tue, 15 Sep 2026 14:38:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"81ff987c829eaab8dcb65e46aa073bf3\"",
-      "modified": "Tue, 15 Sep 2026 13:53:16 GMT"
+      "etag": "\"7c0c2e35a7fc84c59b5ec3841ca06992\"",
+      "modified": "Tue, 15 Sep 2026 14:31:58 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa94f70-2fa0\"",
-      "modified": "Tue, 15 Sep 2026 14:00:16 GMT"
+      "etag": "W/\"6aa95679-2fa0\"",
+      "modified": "Tue, 15 Sep 2026 14:30:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1038,8 +1114,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789480385\"",
-      "modified": "Tue, 15 Sep 2026 13:53:05 GMT"
+      "etag": "W/\"1789482847\"",
+      "modified": "Tue, 15 Sep 2026 14:34:07 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1055,10 +1131,51 @@
       "url": "https://rockstaractu.com/feed/",
       "etag": "\"c2071127c88888665f4226e2ba91fceb-gzip\"",
       "modified": null
+    },
+    "gamesindustry": {
+      "url": "https://www.gamesindustry.biz/feed",
+      "etag": null,
+      "modified": "Tue, 15 Sep 2026 12:30:00 GMT"
+    },
+    "jdg-natif": {
+      "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
+      "etag": "W/\"082395a23540f6c7743481761169ed9d\"",
+      "modified": "Tue, 15 Sep 2026 14:27:36 GMT"
+    },
+    "frandroid-natif": {
+      "url": "https://www.frandroid.com/tag/gta-6/feed",
+      "etag": "W/\"25d903cd925577d18b6826371e4e8ed5\"",
+      "modified": "Tue, 15 Sep 2026 14:35:36 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Grand Theft Auto 6 Ultimate Edition Is $11 Off on PS5 if You Use This Trick (Today Only) - IGN",
+      "link": "https://www.ign.com/articles/gta-6-for-ps5-save-11-today-only",
+      "source_link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1hVjh5VWhzcmJpc3Nib3BVZG5pclN1VGNReGh4d0IwN3Q2NUs1T3NSZ1g5ZFE4YTVhN0VLc0VNU2dqRlRKSlFKODUtdldNenh5LUtiQ1p3UEp2VlFHTndhci1pdHFNdnFmSU5CU1pB?oc=5",
+      "date": "2026-09-15T14:08:29+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/09/15/untitled-design-1789479855761.png?width=1280&format=jpg&auto=webp&quality=80",
+      "description": "Grand Theft Auto 6 Ultimate Edition Is $11 Off on PS5 if You Use This Trick (Today Only)&nbsp;&nbsp;IGN"
+    },
+    {
+      "title": "On avait raison : c’est cet acteur qui incarne Brian Heder dans GTA 6 - Pèse sur start",
+      "link": "https://www.pesesurstart.com/2026/09/15/on-avait-raison--cest-cet-acteur-qui-incarne-brian-heder-dans-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQaHlZZXJESHhtSzZ5X2dRUXJIUWtEUTdGTWpDZEROZFp2WXJfNUZpQUljbGM5SnB2RGlxWlNmc3hFM3Aydk9rRktXek1uRnRhZDBFNDJ5V252UUpBYVIta2J3Y1RpR2lCRVJPYUY0dXhuVUFiVTZRa2RMUEZwUVpsQTlBZU90Z0dITHBFaHl3OHRxV1RBRDhyM1JBdzVmRkF5RTB0cUpSdkI4X2M?oc=5",
+      "date": "2026-09-15T13:59:57+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://m1.quebecormedia.com/emp/emp/THUMBNAIL_WEBSITE_12_74533974-e195-4c68-b1a6-b92d53474635_ORIGINAL.jpg?impolicy=crop-resize&x=0&y=0&w=1280&h=720&width=1200",
+      "description": "On avait raison : c’est cet acteur qui incarne Brian Heder dans GTA 6&nbsp;&nbsp;Pèse sur start"
+    },
     {
       "title": "\"GTA 6 est un rituel d'humiliation pour tous les gamers masculins\": en ligne, un microcosme masculiniste s’insurge, le nouvel épisode de la série serait \"trop woke\" - BFM",
       "link": "https://www.bfmtv.com/tech/gaming/gta-6-est-un-rituel-d-humiliation-pour-tous-les-gamers-masculins-en-ligne-un-microcosme-masculiniste-s-insurge-le-nouvel-episode-de-la-serie-serait-trop-woke_AV-202609150543.html",
@@ -1369,6 +1486,19 @@
       "lang": "fr",
       "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178938/1789375532-2663-card.jpg",
       "description": "Les politiciens débattent encore de la violence de GTA 6, mais votent quand même pour autoriser la publicité sur la plage de Miami&nbsp;&nbsp;jeuxvideo.com"
+    },
+    {
+      "title": "Rockstar and IWGB outline arguments at start of tribunal",
+      "link": "https://www.gamesindustry.biz/rockstar-and-iwgb-outline-arguments-at-start-of-tribunal",
+      "source_link": null,
+      "date": "2026-09-14T16:22:08+00:00",
+      "source": "GamesIndustry.biz",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assetsio.gnwcdn.com/gta-6-key-art_edited.jpg?width=690&quality=85&format=jpg&auto=webp",
+      "description": " Rockstar and the Independent Workers' Union of Great Britain have set out their arguments at an ongoing employment tribunal expected to run until October 16. Read more"
     },
     {
       "title": "GTA 6 : cet acteur est dans l'une des meilleures séries de 2026, il incarne aussi un personnage important du jeu de Rockstar - PhonAndroid",
@@ -5007,45 +5137,6 @@
       "lang": null,
       "image": "https://rockstarintel.com/wp-content/uploads/2019/03/bikers2.jpg",
       "description": "A new GTA Online Weekly Update has begun and the month long event called the Business Rivalries event continues. Rockstar have released a new vehicle, rotated various content around and have big, big bonuses. Check out everything happening in this GTA Online during this Event Week which will run from September 10th through 16th. New [...]\nThe post GTA Online Event Week: New Car In Business Rivalries Event (September 10th-16th) appeared first on RockstarINTEL."
-    },
-    {
-      "title": "A GTA 6 Collector's Edition Might Exist After All",
-      "link": "https://www.gtaboom.com/a-gta-6-collectors-edition-might-exist-after-all-d77b",
-      "source_link": null,
-      "date": "2026-09-09T22:13:16+00:00",
-      "source": "GTA BOOM",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://media.gtaboom.com/variants/1920/media/images/e9/c3/a-gta-6-collectors-edition-might-exist-after-all.jpg",
-      "description": "Unverified photos of a boxed \"Vice City: Leonida\" package are unconfirmed, and Rockstar has announced only Standard and Ultimate editions of GTA 6."
-    },
-    {
-      "title": "From Metroid to Kirby, Nintendo Switch 2 Makes Its Case to Win You Over, Even Without GTA 6 - PCMag Australia",
-      "link": "https://au.pcmag.com/games/119804/from-metroid-to-kirby-nintendo-switch-2-makes-its-case-to-win-you-over-even-without-gta-6",
-      "source_link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNWTA4U2ZMdF9ZdkhwYUtIQzBxc0JRMXY1b1VheXFmWjQ4TnJmRWxMQkZOWFZ5TnBOUlN3YzdWWk1iV2VMSnRnNl9rZ29yU2hRRnotS0RLYkpOMlYtaVhMUlZhOEZLdXlTTDRpZWlIZllBS3drT2ZneEZGeVh2ZGQzN2pBdW93YlRia2t6M0dwVmNnZmdJSmlWcFo1V2tNV2M1ZlZHREZiUDRmYnpUdm13Qng5dUFSaW14U1FyejhHbHc?oc=5",
-      "date": "2026-09-09T22:10:31+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://sm.pcmag.com/t/pcmag_au/news/f/from-metro/from-metroid-to-kirby-nintendo-switch-2-makes-its-case-to-wi_p5pc.1200.jpg",
-      "description": "From Metroid to Kirby, Nintendo Switch 2 Makes Its Case to Win You Over, Even Without GTA 6&nbsp;&nbsp;PCMag Australia"
-    },
-    {
-      "title": "Alleged GTA 6 Collector's Edition pics leak despite lack of physical disc pre-orders - notebookcheck.net",
-      "link": "https://www.notebookcheck.net/Alleged-GTA-6-Collector-s-Edition-pics-leak-despite-lack-of-physical-disc-pre-orders.1395041.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQUmZfTVk4LVMzVHJldkJ6ak1ndTl4a0E1SzBnM194b0lTNU5GSnAwRjRCd1dvcUg2aEJiaTZUWWpZWjVvb3VUczdteGlVT0VMYlpLYXlsSERxaW1hYzAyWEFKVTc1djBUczF4UlY5U3QtLVFaVzYtbWVmbHlOMVRIelBHTmkzZ2F6cXJLSmEyd1hjczFPd2M4RXNXOXczenpmZUl0U2JxNzFWZWtsMWxHX0plTDQzOXR4aUhYa2hZMmhtMlFaWldqNQ?oc=5",
-      "date": "2026-09-09T21:16:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6CollectorsBox.png",
-      "description": "Alleged GTA 6 Collector's Edition pics leak despite lack of physical disc pre-orders&nbsp;&nbsp;notebookcheck.net"
     }
   ],
   "partial": true,
