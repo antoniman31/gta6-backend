@@ -4803,6 +4803,302 @@ def test_panneau_parametres_intact():
     check(not longs, f"plus aucun style en ligne long dans le panneau (reste {len(longs)})")
 
 
+def test_panneau_parametres_applique_vraiment():
+    print("\n[app] le panneau applique ce qu'il enregistre")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # LE défaut : saveSettings() écrivait dans localStorage et s'arrêtait là.
+    # Le plafond d'affichage, les mots-clés d'exclusion et les sources actives
+    # décident pourtant de ce que montre applyFilters(), qui n'était jamais
+    # rappelé. Couper une source puis presser « Appliquer » ne changeait rien
+    # à l'écran — le bouton portait un nom qu'il ne tenait pas.
+    corps = html[html.index("function appliqueReglages("):]
+    corps = corps[:corps.index("\n}")]
+    check("saveSettings()" in corps and "applyFilters()" in corps,
+          "appliqueReglages enregistre PUIS redessine")
+    check(corps.index("saveSettings()") < corps.index("applyFilters()"),
+          "et dans cet ordre : on redessine à partir de ce qui vient d'être écrit")
+
+    # Chaque commande qui change ce qui s'affiche doit passer par là. Une qui
+    # appellerait encore saveSettings() seule rejouerait le défaut.
+    for quoi in ('id="maxDisplay"', 'id="simRange"',
+                 'id="keywordsInput"', 'id="excludeKeywordsInput"'):
+        deb = html.index(quoi)
+        balise = html[html.rindex("<", 0, deb):html.index(">", deb) + 1]
+        check("appliqueReglages()" in balise,
+              "%s redessine le fil quand il change" % quoi)
+    deb = html.index('id="src-${f.id}"')
+    check("appliqueReglages()" in html[deb:deb + 200],
+          "basculer une source redessine le fil")
+    corps = html[html.index("async function resetSettings("):]
+    corps = corps[:corps.index("\n}")]
+    check("applyFilters()" in corps,
+          "« Réinitialiser » aussi : sinon l'écran garde les anciens filtres")
+
+    # Le curseur anti-doublon n'était commité par RIEN : oninput ne mettait à
+    # jour que son étiquette. « Fermer » le perdait, basculer une source
+    # l'enregistrait sans qu'on l'ait demandé. Un seul modèle pour tous.
+    balise = html[html.rindex("<", 0, html.index('id="simRange"')):]
+    balise = balise[:balise.index(">") + 1]
+    check("oninput=" in balise and "onchange=" in balise,
+          "le curseur met à jour son étiquette EN GLISSANT et s'enregistre au relâché")
+
+    # Plus de bouton « Appliquer », donc plus de fonction pour le servir.
+    deb = html.index("<!-- ---------- Panneau Paramètres")
+    panneau = html[deb:html.index("<!-- ---------- Modale Aperçu article")]
+    check(">Appliquer<" not in panneau,
+          "le bouton « Appliquer » a disparu — tout s'applique à la frappe")
+    check("saveSettingsAndClose" not in html,
+          "et sa fonction avec lui, plutôt que de rester en code mort")
+    check("s'appliquent immédiatement" in panneau,
+          "le panneau DIT que les changements sont immédiats")
+
+
+def test_plafond_daffichage_a_de_vraies_bornes():
+    print("\n[app] le plafond d'affichage respecte les bornes qu'il annonce")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # max="1000" sur un <input type=number> hors formulaire ne bloque rien :
+    # 20000 y tenait sans un mot. Et parseInt(...) || 500 corrigeait « 0 » et
+    # « abc » en silence, puisque zéro et NaN sont tous deux faux.
+    check("|| 500" not in html,
+          "plus de repli muet sur 500 par la fausseté de zéro")
+    for nom in ("MIN_DISPLAY", "MAX_DISPLAY"):
+        m = re.search(r"const %s = (\d+);" % nom, html)
+        check(m is not None, "%s est déclarée" % nom)
+    mini = int(re.search(r"const MIN_DISPLAY = (\d+);", html).group(1))
+    maxi = int(re.search(r"const MAX_DISPLAY = (\d+);", html).group(1))
+
+    corps = html[html.index("function litMaxDisplay("):]
+    corps = corps[:corps.index("\nfunction ")]
+    check("MIN_DISPLAY" in corps and "MAX_DISPLAY" in corps,
+          "la lecture du champ s'appuie sur ces deux constantes")
+    check("Number.isFinite" in corps,
+          "une saisie illisible est reconnue comme telle, pas confondue avec zéro")
+    check(corps.count("message =") >= 3,
+          "les trois corrections possibles ont chacune leur message")
+    check('note.textContent' in corps,
+          "et ce message est affiché, pas seulement calculé")
+    check("settings.maxDisplay = litMaxDisplay();" in html,
+          "saveSettings passe par cette lecture bornée")
+
+    # Le balisage doit annoncer EXACTEMENT les bornes que le code applique :
+    # c'est la divergence entre les deux qui a produit le défaut.
+    balise = html[html.rindex("<", 0, html.index('id="maxDisplay"')):]
+    balise = balise[:balise.index(">") + 1]
+    check('min="%d"' % mini in balise and 'max="%d"' % maxi in balise,
+          "le champ annonce les bornes réellement appliquées (%d–%d)" % (mini, maxi))
+    check('id="maxDisplayNote"' in html,
+          "il a un endroit où dire qu'il a corrigé quelque chose")
+
+
+def test_cibles_tactiles_du_panneau():
+    print("\n[app] tout ce qui se touche dans le panneau fait 44 px")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # L'interrupteur de source mesurait 32x19 px — sous le minimum de 24 px
+    # de WCAG 2.5.8 — et seul l'interrupteur répondait, pas le nom à côté.
+    # Cinquante-neuf exemplaires, tous oubliés par la passe qui avait porté
+    # le reste de l'app à 44 px.
+    bloc = re.search(r"\n  \.switch\{([^}]*)\}", html).group(1)
+    for axe in ("width", "height"):
+        v = int(re.search(r"%s:(\d+)px" % axe, bloc).group(1))
+        check(v >= 24, "l'interrupteur fait au moins 24 px de %s (%d)" % (axe, v))
+
+    bloc = re.search(r"\n  \.source-row\{([^}]*)\}", html).group(1)
+    h = re.search(r"min-height:(\d+)px", bloc)
+    check(h is not None and int(h.group(1)) >= 44,
+          "la ligne de source fait au moins 44 px de haut")
+    check("cursor:pointer" in bloc, "et se donne pour cliquable")
+
+    # C'est la LIGNE qui est le <label>, donc tout le rectangle bascule. Un
+    # <label> dans un <label> étant invalide, l'interrupteur doit être un
+    # <span> : c'est l'inverse exact de l'ancien balisage.
+    gabarit = html[html.index('list.innerHTML = settings.feeds.map'):]
+    gabarit = gabarit[:gabarit.index('`).join("")')]
+    check('<label class="source-row">' in gabarit,
+          "la ligne entière est le label de la case")
+    check('<span class="switch">' in gabarit and '<label class="switch">' not in gabarit,
+          "et l'interrupteur n'est plus un label imbriqué")
+
+    # Le « ? » faisait 18 px, exempté du minimum par un commentaire qui lui
+    # attribuait un pseudo-élément qu'il n'avait pas. On vérifie désormais le
+    # mécanisme, pas la phrase.
+    bloc = re.search(r"\n  \.aide\{([^}]*)\}", html).group(1)
+    cote = int(re.search(r"width:(\d+)px", bloc).group(1))
+    check(cote >= 24, "le « ? » fait au moins 24 px de côté (%d)" % cote)
+    check("position:relative" in bloc, "et ancre son pseudo-élément")
+    apres = re.search(r"\.aide::after\{([^}]*)\}", html)
+    check(apres is not None, ".aide étend sa zone de clic par un pseudo-élément")
+    debord = re.search(r"inset:-(\d+)px", apres.group(1))
+    check(debord is not None and cote + 2 * int(debord.group(1)) >= 44,
+          "sa zone de clic atteint 44 px (%d + 2x%s)"
+          % (cote, debord.group(1) if debord else "?"))
+
+    # La dérogation elle-même : chaque sélecteur qui y figure doit tenir son
+    # engagement, sinon c'est une porte ouverte à la prochaine régression.
+    ligne = re.search(r"([^\n]*)\{min-height:0;\}", html).group(1)
+    for sel in [s.strip() for s in ligne.split(",")]:
+        nom = sel.lstrip(".")
+        etendu = re.search(r"\%s::(?:after|before)\{[^}]*inset:" % sel, html) is not None
+        absolu = re.search(r"\%s\{[^}]*position:absolute" % sel, html) is not None
+        check(etendu or absolu,
+              "%s déroge aux 44 px en tenant sa promesse (pseudo-élément ou position absolue)"
+              % sel)
+
+
+def test_panneau_parametres_accessible():
+    print("\n[app] le panneau ne dit plus ses états par la seule couleur")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    deb = html.index("<!-- ---------- Panneau Paramètres")
+    panneau = html[deb:html.index("<!-- ---------- Modale Aperçu article")]
+
+    # La sélection ne vivait que dans une classe CSS : un lecteur d'écran
+    # annonçait trois boutons identiques, pour les onglets comme pour le thème.
+    for barre, combien in (("panneau-tabs", 3), ("theme-toggle", 3)):
+        bloc = panneau[panneau.index(barre):]
+        bloc = bloc[:bloc.index("</div>")]
+        check(bloc.count('aria-pressed=') == combien,
+              "les %d boutons de .%s annoncent leur état" % (combien, barre))
+        check(bloc.count('aria-pressed="true"') <= 1,
+              ".%s n'en déclare jamais deux enfoncés à la fois" % barre)
+
+    # Et le JS doit les tenir à jour, sinon l'attribut ment dès le premier clic.
+    for fn in ("updateThemeButtons", "ongletParam"):
+        corps = html[html.index("function %s(" % fn):]
+        corps = corps[:corps.index("\n}")]
+        check('setAttribute("aria-pressed"' in corps,
+              "%s met l'attribut à jour, il ne fait pas que poser une classe" % fn)
+
+    # Aucun champ du panneau ne doit tenir son nom d'un seul placeholder :
+    # il disparaît à la première frappe, et n'en est pas un pour les outils
+    # d'assistance. Il n'y avait aucun label for= dans tout le fichier.
+    for champ in re.finditer(r"<(input|textarea)\b[^>]*>", panneau):
+        balise = champ.group(0)
+        m = re.search(r'id="([^"]+)"', balise)
+        if not m or balise.startswith("<input type=\"checkbox"):
+            continue
+        ident = m.group(1)
+        nomme = ('aria-label=' in balise
+                 or 'aria-labelledby=' in balise
+                 or ('<label for="%s"' % ident) in panneau)
+        check(nomme, "le champ %s porte un nom lisible par un lecteur d'écran" % ident)
+
+    # Le « ? » se greffe sur la PREMIÈRE explication repliée du groupe. Si
+    # celle-ci vit dans un bloc lui-même masqué, le bouton ne révèle rien :
+    # c'était le cas du groupe des notifications, dont le « ? » ouvrait un
+    # texte enfermé dans .bloc-replie.
+    def dans_un_bloc_replie(fragment, pos):
+        """Vrai si pos tombe À L'INTÉRIEUR d'un <div class="bloc-replie">.
+        L'ordre d'apparition ne suffit pas : une explication peut très bien
+        suivre le bloc replié sans être dedans."""
+        profondeur, replie = 0, None
+        for m in re.finditer(r"<div\b[^>]*>|</div>", fragment):
+            if m.start() >= pos:
+                break
+            if m.group(0).startswith("</"):
+                profondeur -= 1
+                if replie is not None and profondeur <= replie:
+                    replie = None
+            else:
+                if replie is None and "bloc-replie" in m.group(0):
+                    replie = profondeur
+                profondeur += 1
+        return replie is not None
+
+    for gid in ("pushGroup", "vapidSetupGroup"):
+        groupe = panneau[panneau.index('id="%s"' % gid):]
+        suivant = groupe.find('<div class="setting-group"', 10)
+        if suivant != -1:
+            groupe = groupe[:suivant]
+        premiere = groupe.find('class="setting-desc" hidden')
+        check(premiere != -1,
+              "%s a bien une explication repliée à révéler" % gid)
+        check(premiere != -1 and not dans_un_bloc_replie(groupe, premiere),
+              "%s : le « ? » ouvre une explication visible, pas un texte "
+              "enfermé dans un bloc lui-même masqué" % gid)
+
+
+def test_panneau_parametres_structure():
+    print("\n[app] la structure du panneau ne piège plus le doigt")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    deb = html.index("<!-- ---------- Panneau Paramètres")
+    panneau = html[deb:html.index("<!-- ---------- Modale Aperçu article")]
+
+    # Le titre et les onglets défilaient avec le reste : sur l'onglet Contenu,
+    # « Fermer » se retrouvait deux mille pixels plus haut.
+    check('class="panneau-entete"' in panneau,
+          "le titre et les onglets sont réunis dans une entête")
+    bloc = re.search(r"#settingsOverlay \.panneau-entete\{([^}]*)\}", html).group(1)
+    check("position:sticky" in bloc and "top:0" in bloc,
+          "et cette entête reste collée en haut")
+    # Un élément collant ne peut pas remonter au-dessus du bloc qui le
+    # contient : avec un margin-top négatif pour manger le rembourrage du
+    # panneau, il était repoussé plus bas que sa place et recouvrait les
+    # premiers pixels de chaque onglet.
+    check("margin:0 -20px" in bloc,
+          "sans marge négative en haut, qui la ferait recouvrir le contenu")
+    check(re.search(r"#settingsOverlay \.settings-panel\{[^}]*padding-top:0", html) is not None,
+          "le rembourrage du haut est confié à l'entête, pas repris deux fois")
+
+    # Deux zones de défilement imbriquées : on ne sait jamais laquelle on
+    # pousse. La liste défilait chez elle pour garder les boutons du bas
+    # atteignables — l'entête collante a rendu ce prétexte caduc.
+    bloc = re.search(r"\.panneau-onglet #sourceList\{([^}]*)\}", html).group(1)
+    check("overflow-y" not in bloc and "max-height" not in bloc,
+          "la liste des sources ne défile plus dans son coin")
+
+    # Et comme elle est longue, elle passe en DERNIER dans son onglet :
+    # sinon les deux zones de mots-clés seraient enterrées derrière.
+    onglet = panneau[panneau.index('data-onglet="src"'):]
+    onglet = onglet[:onglet.index('data-onglet="adv"')]
+    check(onglet.index('id="keywordsInput"') < onglet.index('id="sourceList"'),
+          "les mots-clés viennent avant les cinquante-neuf bascules")
+
+    # « Avancé » empilait six sujets sans rapport sans rien pour les séparer.
+    onglet = panneau[panneau.index('data-onglet="adv"'):]
+    check(onglet.count('class="panneau-section"') == 3,
+          "« Avancé » est découpé en trois sujets nommés")
+
+    # Un onglet « Affichage » qui contenait un groupe « Affichage » : le même
+    # mot à deux niveaux de hiérarchie ne dit plus rien.
+    onglet = panneau[panneau.index('data-onglet="aff"'):]
+    onglet = onglet[:onglet.index('data-onglet="src"')]
+    check('<span class="setting-label">Affichage</span>' not in onglet,
+          "aucun groupe ne reprend le nom de l'onglet qui le contient")
+
+    # Les actions destructives ne ressemblent plus à leurs voisines.
+    for libelle in ("Réinitialiser", "Tout désactiver", "Oublier ce jeton"):
+        motif = r'<button[^>]*class="[^"]*danger[^"]*"[^>]*>%s<' % re.escape(libelle)
+        check(re.search(motif, panneau) is not None,
+              "« %s » est cerné de rouge, pas déguisé en bouton ordinaire" % libelle)
+    check("Oublier ce token" not in panneau,
+          "« token » et « jeton » ne cohabitent plus dans le même groupe")
+
+    # Éteindre cinquante-neuf sources d'un geste efface une sélection que
+    # « Tout activer » ne rend pas.
+    corps = html[html.index("async function toutesSources("):]
+    corps = corps[:corps.index("\n}")]
+    check("demandeConfirmation(" in corps and "if(!ok) return;" in corps,
+          "« Tout désactiver » demande confirmation")
+    check(corps.index("if(!actif)") < corps.index("demandeConfirmation("),
+          "mais « Tout activer » n'en demande pas : il se défait tout seul")
+
+    # Un pluriel français ne se fabrique pas en collant un « s » : le premier
+    # compteur affichait « 42 mot-clés » et « aucun exclusion ».
+    corps = html[html.index("function majCompteurMots("):]
+    corps = corps[:corps.index("\n}")]
+    check('(uniques.size > 1 ? plusieurs : un)' in corps,
+          "le compteur reçoit ses formes en toutes lettres")
+    check('"aucun mot-clé"' in html and '"aucune exclusion"' in html,
+          "singulier, pluriel et négation sont donnés par l'appelant")
+
+
 def test_badge_de_notification_a_un_canal_alpha():
     print("\n[push] le badge de la barre d'état n'est pas un carré blanc")
     import json, re, struct
@@ -5153,7 +5449,13 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_envoi_push_reel_testable,
            test_aucun_mot_cle_nen_contient_un_autre,
            test_variantes_du_nom_dans_les_requetes_google_news,
-           test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
+           test_panneau_parametres_intact,
+           test_panneau_parametres_applique_vraiment,
+           test_plafond_daffichage_a_de_vraies_bornes,
+           test_cibles_tactiles_du_panneau,
+           test_panneau_parametres_accessible,
+           test_panneau_parametres_structure,
+           test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,
            test_haut_de_page_une_seule_carte,
