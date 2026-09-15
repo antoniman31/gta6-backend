@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 51 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 54 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -70,7 +70,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 51 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 54 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -764,7 +764,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 51 sources
+(instantané), l'autre fait travailler le robot sur les 54 sources
 (~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
@@ -1702,6 +1702,61 @@ RockstarINTEL de mars 2026, GTA6 Times de juin, des annonces de précommande.
 Contrairement aux 8 de VG247, ceux-là étaient du contenu réel et récent au
 moment de leur import : les jeter était une décision de fond, pas un
 nettoyage. Elle a été prise le soir même — voir ci-dessous.
+
+### Doubler une source au lieu de la remplacer
+
+Troisième liste de candidates soumise le 15/09/2026, 50 adresses, cette fois
+avec les URL de flux. Douze sondées, **trois retenues** — et la décision
+intéressante n'est pas laquelle, c'est **comment**.
+
+| candidate | entrées | dont GTA 6 | plus récente |
+|---|---|---|---|
+| Journal du Geek (tag natif) | 30 | **27** | le jour même |
+| Frandroid (tag natif) | 15 | **14** | 5 j |
+| Reddit — recherche r/GamingLeaksAndRumours | 25 | **12** | 11 j |
+
+**Les deux premières existaient déjà**, mais par une recherche Google News.
+Ces flux-ci sont les flux natifs des mêmes médias, restreints au tag
+`gta-6`. Bien plus denses. La tentation était de remplacer.
+
+**Elles ont été AJOUTÉES, pas substituées, et c'est le point.** Un flux par
+tag dépend du balisage du média : si un journaliste oublie le tag, l'article
+n'existe pas pour le robot — et **rien ne le signale**. La source a
+simplement l'air calme. C'est le pire type de panne : silencieuse et
+indétectable après coup. Le tri via Google News, lui, ne dépend pas de leur
+rigueur.
+
+Deux requêtes de plus sur un passage de 50 secondes contre le risque de
+perdre un article sans le savoir : pour une veille dont le but est de ne rien
+rater, l'asymétrie tranche seule. La déduplication par lien fait le ménage,
+et dans une semaine on saura, en comparant, si l'un des deux attrape ce que
+l'autre manque.
+
+**La recherche Reddit, et la nuance qui change tout.** Reddit avait été
+écarté deux fois dans la journée, à raison : `/r/GTA6/new/.rss` déverse les
+mèmes du subreddit à la journée. Mais `search.rss` sur
+r/GamingLeaksAndRumours est une **recherche** filtrée sur « GTA 6 », et ce
+qu'elle remonte est du suivi de fuites — *« GTA 6 Leaks Could Be Over As
+Cyberleek Withdraws $250,000 »*, *« GTA 6 Will Be 30FPS at Launch »*. C'est
+le seul angle leak-tracking de toute la liste, et le seul moyen propre
+d'atteindre Reddit. Écarter une plateforme entière sur la foi d'une seule de
+ses adresses était une erreur de raccourci.
+
+**Le Rockstar Newswire natif, lui, a été écarté — et le README avait prévenu.**
+Les deux adresses (`rockstargames.com/newswire.rss` et sa version FR)
+répondent **HTTP 500**, pas 404. Or c'est exactement le piège consigné au
+30/08 : six adresses candidates sur ce domaine avaient toutes renvoyé 500,
+**y compris une inventée de toutes pièces**. Ce serveur répond 500 là où un
+autre répondrait 404, donc **un 500 n'y prouve rien**. Les deux sources
+officielles restent sur Google News : moins élégant, mais éprouvé depuis
+trois semaines.
+
+Écartées aussi, mesures à l'appui : Take-Two press-releases (pas un flux),
+Gamergen tag (pas un flux), Neowin (403), Attack of the Fanboy et
+GamesIndustry tag `take-two` (404 — tags inventés, les sites ne déclarent que
+des flux génériques), Rockstar Universe (10 entrées, 0 retenue, 7 archives),
+et PlayStation Blog FR — flux **valide mais totalement vide**, le tag existe
+et personne n'a jamais rien publié dessous.
 
 ### Cinquante noms proposés, une seule source retenue
 
