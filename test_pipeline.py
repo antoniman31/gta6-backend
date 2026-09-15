@@ -3272,6 +3272,80 @@ def test_derniers_reports_tactiles_et_courbes():
           "les %d pulsations infinies gardent leur courbe symétrique" % len(pulsations))
 
 
+def test_echelle_m3_verrouillee():
+    print("\n[app] l'échelle Material 3 ne peut pas déraper en silence")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # Les deux courbes étaient verrouillées depuis le report tactile, mais
+    # PAS les rayons ni les durées : on pouvait passer --r-md de 12 à 10 px,
+    # ou --t-moyen de 250 à 300 ms, et la suite restait verte. Un audit l'a
+    # relevé le 10/09/2026 sans que ce soit corrigé sur le moment. Ces six
+    # valeurs sont des crans M3 réels, relevés dans les fichiers de jetons de
+    # Google (md-sys-shape et md-sys-motion, v0.192) — pas des chiffres ronds
+    # choisis au jugé. Les changer doit être un acte délibéré, pas un
+    # glissement.
+    JETONS = (("--r-xs", "4px", "corner-extra-small"),
+              ("--r-sm", "8px", "corner-small"),
+              ("--r-md", "12px", "corner-medium"),
+              ("--r-full", "9999px", "corner-full"),
+              ("--t-court", ".15s", "duration-short3, 150 ms"),
+              ("--t-moyen", ".25s", "duration-medium1, 250 ms"))
+    for jeton, valeur, cran in JETONS:
+        declare = re.search(r"%s:\s*([^;]+);" % re.escape(jeton), html)
+        trouve = declare.group(1).strip() if declare else "absent"
+        check(trouve == valeur,
+              "%s vaut %s — le cran M3 %s (trouvé : %s)"
+              % (jeton, valeur, cran, trouve))
+
+    # Verrouiller les six valeurs ne sert à rien si une nouvelle règle écrit
+    # son rayon en dur à côté de l'échelle : on aurait six jetons corrects et
+    # un cinquième rayon sauvage dans la feuille. C'est CE contrôle qui a du
+    # mordant, les six ci-dessus ne font que nommer la référence.
+    #
+    # Deux exceptions, et seulement deux : 50 % pour ce qui est réellement un
+    # disque (une pastille ronde n'est pas un cran de l'échelle), et 0 pour
+    # une remise à plat explicite — la vignette en bandeau annule le sien.
+    rayons = [v.strip() for v in re.findall(r"border-radius:\s*([^;}]+)", html)]
+    hors = [v for v in rayons
+            if "var(--r-" not in v and v not in ("50%", "0")]
+    check(not hors,
+          "les %d rayons de la feuille passent tous par l'échelle "
+          "(exceptions admises : 50%% pour un disque, 0 pour une remise à "
+          "plat)%s" % (len(rayons),
+                       " — en dur : %s" % hors[:3] if hors else ""))
+
+    # Même raisonnement pour les durées. Les animations décoratives infinies
+    # ne sont pas concernées : ce n'est pas du retour d'interaction, elles
+    # gardent leur rythme propre, c'est écrit dans la feuille elle-même.
+    durees = re.findall(r"transition:\s*([^;}]+)", html)
+    en_dur = [d.strip() for d in durees if re.search(r"[\d.]+m?s", d)]
+    check(not en_dur,
+          "les %d transitions prennent leur durée dans l'échelle%s"
+          % (len(durees),
+             " — en dur : %s" % en_dur[:3] if en_dur else ""))
+
+    # Un jeton déclaré et jamais employé est un jeton mort : il donne
+    # l'illusion d'une échelle tenue alors que la feuille s'en passe.
+    for jeton, _, _ in JETONS:
+        emplois = len(re.findall(r"var\(%s\)" % re.escape(jeton), html))
+        check(emplois > 0, "%s sert quelque part (%d emploi(s))"
+              % (jeton, emplois))
+
+    # Enfin le commentaire qui surplombe l'échelle, et qui cite les valeurs
+    # en toutes lettres. Un commentaire qui dérive de son code est pire que
+    # pas de commentaire : celui-ci sert de référence quand on se demande
+    # d'où sort un 12. On vérifie donc qu'il dit bien ce que le code fait.
+    cite = re.search(r"extra-small (\d+), small (\d+), medium (\d+), "
+                     r"full (\d+)", html)
+    check(cite is not None and [int(x) for x in cite.groups()] == [4, 8, 12, 9999],
+          "le commentaire cite la même échelle de rayons que les jetons")
+    # Le commentaire passe à la ligne entre les deux : \s+ et pas un espace.
+    cite = re.search(r"short3 = (\d+) ms,\s+medium1 = (\d+) ms", html)
+    check(cite is not None and [int(x) for x in cite.groups()] == [150, 250],
+          "le commentaire cite les mêmes durées que les jetons")
+
+
 def test_panneaux_sont_de_vrais_dialogues():
     print("\n[app] les cinq panneaux sont de vrais dialogues")
     import re
@@ -4825,6 +4899,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_ergonomie_tactile,
            test_structure_et_annonces,
            test_derniers_reports_tactiles_et_courbes,
+           test_echelle_m3_verrouillee,
            test_panneaux_sont_de_vrais_dialogues,
            test_recap_du_matin_couvre_la_nuit,
            test_alerte_officielle_rockstar,

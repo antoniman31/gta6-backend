@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **988
+qui permet de tester tout le pipeline sans sortir de la machine. **1004
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1042,14 +1042,35 @@ dur. Les seules exceptions sont justifiées — `50%` pour des cercles, `0` pour
 deux éléments qui débordent volontairement, `ease-in-out` pour les pulsations
 infinies.
 
-**Une faiblesse relevée au passage, et non corrigée.** Les deux *courbes* sont
-verrouillées par un test (`--courbe` et `--courbe-entree` sont comparées aux
-valeurs Material 3, et un autre test interdit qu'une transition retombe sur
-une courbe par défaut du navigateur). Les quatre *rayons* et les deux *durées*
-ne le sont pas : leur conformité a été vérifiée à la main le 10/09, rien
-n'empêche une dérive ensuite. Le test manquant serait de comparer
-`--r-xs/--r-sm/--r-md/--r-full` à 4/8/12/9999 px et `--t-court/--t-moyen` à
-150/250 ms, comme cela se fait déjà pour les courbes.
+**Une faiblesse relevée au passage le 10/09, comblée le 15.** Les deux
+*courbes* étaient verrouillées par un test, les quatre *rayons* et les deux
+*durées* ne l'étaient pas : leur conformité avait été vérifiée à la main, rien
+n'empêchait une dérive ensuite. On pouvait passer `--r-md` de 12 à 10 px, ou
+`--t-moyen` de 250 à 300 ms, suite verte.
+
+`test_echelle_m3_verrouillee` comble le trou en **seize vérifications**, et
+l'essentiel n'est pas là où on l'attend :
+
+- les six jetons valent exactement leur cran M3 (4/8/12/9999 px,
+  150/250 ms). Six vérifications qui ne font que **nommer la référence** —
+  elles ne coûtent rien et n'attrapent qu'une modification directe ;
+- **aucun rayon de la feuille n'échappe à l'échelle** : les 47 `border-radius`
+  passent tous par `var(--r-*)`, à deux exceptions près et deux seulement,
+  `50%` pour ce qui est réellement un disque et `0` pour une remise à plat
+  explicite. C'est **ce** contrôle qui a du mordant : sans lui on aurait six
+  jetons parfaitement conformes et un cinquième rayon sauvage écrit en dur
+  dans une règle ajoutée trois mois plus tard ;
+- même chose pour les 14 transitions, dont aucune ne porte de durée en dur ;
+- chaque jeton doit **servir** quelque part. Un jeton déclaré et jamais employé
+  donne l'illusion d'une échelle tenue alors que la feuille s'en passe ;
+- le long commentaire qui surplombe l'échelle cite les valeurs en toutes
+  lettres ; le test vérifie qu'il dit bien ce que le code fait. Un commentaire
+  qui dérive de son code est pire que pas de commentaire — celui-là sert de
+  référence quand on se demande d'où sort un 12.
+
+Les trois contrôles qui comptent ont été éprouvés en les cassant : rayon dévié
+à 10 px, `border-radius:6px` ajouté, `transition:opacity 300ms linear` ajoutée
+— chacun fait tomber sa vérification, et elle nomme la valeur fautive.
 
 **Vingt configurations** (320/360/390/412/768 px × clair/sombre ×
 normal/compact) : 0 cible sous son seuil, 0 chevauchement, 0 débordement
