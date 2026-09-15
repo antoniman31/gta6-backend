@@ -358,6 +358,42 @@ FEEDS = [
     {"id": "jdg-natif", "name": "Journal du Geek (tag)", "url": "https://www.journaldugeek.com/tag/gta-6/feed/", "official": False, "lang": "fr"},
     {"id": "frandroid-natif", "name": "Frandroid (tag)", "url": "https://www.frandroid.com/tag/gta-6/feed", "official": False, "lang": "fr"},
     {"id": "reddit-leaks", "name": "Reddit — fuites et rumeurs", "url": "https://www.reddit.com/r/GamingLeaksAndRumours/search.rss?q=GTA+6&restrict_sr=on", "official": False},
+
+    # ------------------------------------------------------------------
+    # Sondées le 15/09/2026. Trois ajouts sur quatre candidates, et les
+    # deux premières se contredisent — c'est tout l'intérêt de sonder.
+    #
+    # Destructoid passe par son FLUX NATIF, et seulement lui. Sa page
+    # d'accueil répond 403 à un runner GitHub, ce qui donnait l'air d'un
+    # site hors de portée ; son flux, lui, répond 200 avec 30 entrées dont
+    # une sur GTA 6 datée du jour. À l'inverse, une recherche Google News
+    # `site:destructoid.com` ne retient RIEN sur 100 entrées. Sans le flux
+    # natif, ce site nous resterait invisible.
+    #
+    # Dexerto passe par GOOGLE NEWS, et surtout pas par son flux natif.
+    # Ce dernier répond bien (50 entrées) mais n'en retient qu'UNE : c'est
+    # un flux généraliste esport où GTA 6 se noie. C'est exactement ce qui
+    # fait afficher « tarie » à Dexerto FR, ajoutée quelques heures plus
+    # tôt. La recherche `site:` en sort 6, dont une du jour.
+    #
+    # MGG (Millenium) n'a pas de flux natif du tout : /rss et /feed
+    # répondent 404, et la page d'accueil ne déclare aucun
+    # <link rel="alternate">. Google News en sort 3, la plus fraîche à
+    # 4 jours. Modeste, mais on en recevait zéro : sur les 2594 articles
+    # du feed, millenium.org n'apparaissait que 3 fois.
+    #
+    # GTA Base a été SONDÉE ET ÉCARTÉE, alors que c'était la candidate que
+    # je plaçais en tête sur sa réputation de fansite Rockstar historique.
+    # Pas de flux natif (404 sur /feed/ comme sur /gta-6/news/feed/), et
+    # ses 3 résultats Google News sont des pages de guide permanentes —
+    # « GTA 6 Map: Full Leonida Map », « Characters Guide », « Cars &
+    # Vehicles Database » — re-datées à chaque mise à jour. Elles
+    # remonteraient comme des nouveautés sans qu'il se soit rien passé.
+    # Une réputation n'est pas une mesure.
+    # ------------------------------------------------------------------
+    {"id": "destructoid", "name": "Destructoid", "url": "https://www.destructoid.com/feed/", "official": False},
+    {"id": "dexerto", "name": "Dexerto", "url": "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "mgg", "name": "MGG (Millenium)", "url": "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.

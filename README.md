@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 54 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 57 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -70,7 +70,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 54 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 57 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -764,7 +764,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 54 sources
+(instantané), l'autre fait travailler le robot sur les 57 sources
 (~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
@@ -1961,6 +1961,77 @@ passage chacun sans réveiller personne. C'est précisément ce pour quoi il vau
 Cette règle existe pour empêcher un message par *article*. Une alerte de
 source est d'une autre nature, et surtout elle ne peut pas voyager dans le
 récapitulatif, qui n'est pas envoyé quand il n'y a rien de neuf.
+
+### Deux sites voisins, deux chemins opposés
+
+Le 15/09/2026, quatre candidates sont sondées : GTA Base, MGG (Millenium),
+Destructoid, Dexerto.com. **Trois entrent, et aucune par le même chemin.**
+La liste passe de 54 à 57.
+
+Premier tour, les pages d'accueil : les quatre rendent `PAS UN FLUX`, et la
+découverte automatique ne trouve **aucun** `<link rel="alternate">`. Ce n'est
+pas une panne, c'est l'époque : ces sites sont en React ou Next.js et ont
+laissé tomber la balise d'auto-découverte que les navigateurs lisent depuis
+vingt ans. Une page d'accueil muette ne prouve donc plus rien.
+
+Second tour, chemins standards et repli Google News `site:` :
+
+| candidate | flux natif | Google News `site:` | retenu |
+|---|---|---|---|
+| **Destructoid** | 200 — 30 entrées, **1** (0 j) | 100 entrées, **0** | le flux natif |
+| **Dexerto.com** | 200 — 50 entrées, **1** (0 j) | 100 entrées, **6** (0 j) | Google News |
+| **MGG (Millenium)** | 404 sur `/rss` et `/feed` | 100 entrées, **3** (4 j) | Google News |
+| GTA Base | 404 sur `/feed/` et `/gta-6/news/feed/` | 100 entrées, 3 (2 j) | **écartée** |
+
+**Destructoid et Dexerto se contredisent, et c'est le point.** Les deux sont
+des sites de jeu vidéo anglophones de taille comparable, et pourtant le
+chemin qui marche pour l'un est précisément celui qui échoue pour l'autre.
+Destructoid n'existe que par son flux natif — Google News n'en ressort rien,
+zéro sur cent entrées, alors que le flux sort un article GTA 6 du jour.
+Dexerto, lui, n'existe que par Google News : son flux natif répond
+parfaitement mais ne retient qu'un article sur cinquante, parce que c'est un
+flux généraliste esport où GTA 6 se noie. Choisir un chemin par principe —
+« le natif est toujours meilleur » — aurait perdu l'un des deux. Il n'y a pas
+de règle, il n'y a que la mesure.
+
+**Un 403 sur la page d'accueil ne condamne pas le site.** Destructoid répond
+403 à un runner GitHub sur `destructoid.com`, et 200 sur
+`destructoid.com/feed/`. Le pare-feu protège les pages, pas le flux. Conclure
+« site bloqué » après le premier tour aurait fait perdre la seule source des
+trois qu'aucun autre chemin ne peut atteindre.
+
+**GTA Base a été écartée, et c'était la favorite.** Fansite Rockstar
+historique, rubrique GTA 6 dédiée, exactement le profil de RockstarINTEL ou
+GTA6 Times qui fonctionnent bien ici. Elle sort pourtant 3 résultats retenus,
+et ce sont :
+
+> *GTA 6 Cars & Vehicles Database: Full Confirmed List & Stats*
+> *GTA 6 Map: Full Leonida Map, Vice City & All Locations*
+> *GTA 6 Characters Guide: Main Protagonists & Full List*
+
+Des pages de guide **permanentes**, re-datées à chaque mise à jour. Elles
+remonteraient dans le fil comme des nouveautés alors qu'il ne s'est rien
+passé. C'est le même piège que GTA6France plus haut, sous un meilleur
+déguisement : là-bas des guides pour un jeu non sorti, ici des bases de
+données qui vieillissent en restant au présent. Une réputation n'est pas une
+mesure.
+
+**L'indicateur de redondance a servi en amont.** Avant de sonder quoi que ce
+soit, on compte combien de liens vers le domaine candidat arrivent **déjà**
+dans `feed.json`, `extraSources` compris. Sur 2 594 articles : GTA Base 0,
+Destructoid 0, Dexerto.com 0, millenium.org 3. Les quatre étaient de vrais
+trous. C'est ce même comptage qui a fait écarter une douzaine d'autres noms
+sans sonde — Notebookcheck (42 liens, dont 41 sur 30 jours), GamingBible (32),
+Forbes (16), TechRadar (15) : ils arrivent déjà en abondance par les Google
+News généralistes, les ajouter aurait coûté des requêtes pour rien.
+
+**Et une nuée de faux candidats.** La recherche a fait remonter
+`gta6.news`, `gtavice.net`, `gta6og.com`, `leonidaverse.com`, `gta6base.net`,
+`wikigta6.com`, `gta6hub.fr`, `igrandtheftauto.com` — toutes annoncées « #1
+source, mise à jour quotidienne », aucune avec de rédaction identifiable, et
+l'une poussée par un **communiqué de presse payant** sur un site de bourse.
+Elles n'ont pas été sondées : le tri s'arrête avant, sur ce que le site dit
+de lui-même.
 
 ## Pause nocturne : rien entre 0h et 5h
 
