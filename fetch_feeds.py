@@ -237,14 +237,6 @@ FEEDS = [
     # l'adresse que le serveur réclame.
     {"id": "kotaku", "name": "Kotaku", "url": "https://kotaku.com/feed", "official": False},
     {"id": "gamesradar", "name": "GamesRadar+", "url": "https://www.gamesradar.com/rss/", "official": False},
-    # Flux Google News restreint au domaine plutôt que le flux maison :
-    # celui de rss.app était un flux VG247 GÉNÉRALISTE. Il renvoyait
-    # fidèlement 25 articles par passage — Nintendo, PlayStation, tout le
-    # catalogue — dont zéro sur GTA 6, tous écartés par le filtre. Vérifié
-    # le 29/08/2026 : 0 article VG247 dans l'historique, et aucun n'y était
-    # non plus arrivé via les autres flux, donc la couverture manquait
-    # réellement.
-    {"id": "vg247", "name": "VG247", "url": "https://news.google.com/rss/search?q=site:vg247.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "rps", "name": "Rock Paper Shotgun", "url": "https://www.rockpapershotgun.com/feed", "official": False},
     {"id": "eurogamer", "name": "Eurogamer", "url": "https://www.eurogamer.net/feed", "official": False},
     {"id": "gtaboom", "name": "GTA BOOM", "url": "https://www.gtaboom.com/feed.xml", "official": False},
@@ -278,7 +270,6 @@ FEEDS = [
     # ------------------------------------------------------------------
     {"id": "xboxygen", "name": "Xboxygen", "url": "https://news.google.com/rss/search?q=site:xboxygen.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
     {"id": "purexbox", "name": "Pure Xbox", "url": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "xboxwire", "name": "Xbox Wire", "url": "https://news.google.com/rss/search?q=site:news.xbox.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "trueach", "name": "TrueAchievements", "url": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "jdg", "name": "Journal du Geek", "url": "https://news.google.com/rss/search?q=site:journaldugeek.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
     {"id": "numerama", "name": "Numerama", "url": "https://news.google.com/rss/search?q=site:numerama.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},

@@ -945,6 +945,54 @@ def test_dedup_meme_passage():
           "le seuil d'actu majeure reste atteignable par le comptage réel")
 
 
+def test_retirer_une_source_ne_laisse_pas_ses_articles():
+    print("\n[données réelles] une source retirée ne laisse rien derrière elle")
+    import json, collections, fetch_feeds
+    if not os.path.exists("docs/feed.json"):
+        print("  (ignoré : docs/feed.json introuvable)")
+        return
+    d = json.load(open("docs/feed.json", encoding="utf-8"))
+
+    # Retirer une source de FEEDS arrête les NOUVEAUX articles, mais ne
+    # touche pas à ceux déjà stockés : la fusion les conserve, c'est même
+    # tout son travail. Conséquence : une source supprimée continue
+    # d'apparaître dans le flux, sous un nom qui n'existe plus nulle part
+    # dans le code. Constaté le 15/09/2026 en retirant VG247 — 8 articles
+    # de 2022 à 2024 seraient restés à traîner en bas du fil.
+    #
+    # Ces articles-là sont les pires à débusquer : ils sont vieux, donc en
+    # bas du tri par date, donc invisibles à l'usage. Rien ne les signale.
+    connus = {f["name"] for f in fetch_feeds.FEEDS}
+    orphelins = collections.Counter(i["source"] for i in d["items"]
+                                    if i["source"] not in connus)
+    check(not orphelins,
+          "aucun article ne vient d'une source absente de FEEDS%s"
+          % ("" if not orphelins
+             else " — %s" % dict(orphelins.most_common(3))))
+
+    # Même chose pour les journaux de santé : une source retirée qui reste
+    # dans sources_health se compterait dans le « 48/48 » du bandeau, et
+    # afficherait éternellement une ligne tarie pour une source qui n'est
+    # plus interrogée.
+    ids = {f["id"] for f in fetch_feeds.FEEDS}
+    for cle in ("sources_health", "sources_silence", "sources_entries_history",
+                "sources_declining", "feed_http_state"):
+        valeurs = d.get(cle) or []
+        restants = ([s["id"] for s in valeurs if s["id"] not in ids]
+                    if isinstance(valeurs, list)
+                    else [k for k in valeurs if k not in ids])
+        check(not restants,
+              "%s ne parle que de sources existantes%s"
+              % (cle, "" if not restants else " — reste %s" % restants[:3]))
+
+    check(d.get("sources_count") == len(fetch_feeds.FEEDS),
+          "le compteur du bandeau annonce %s sources, FEEDS en déclare %d"
+          % (d.get("sources_count"), len(fetch_feeds.FEEDS)))
+    check(d.get("total_articles") == len(d["items"]),
+          "le total annoncé (%s) vaut le nombre d'articles réellement "
+          "présents (%d)" % (d.get("total_articles"), len(d["items"])))
+
+
 def test_identifiants_de_sources_uniques():
     print("\n== Identifiants des vraies sources ==")
     import fetch_feeds
@@ -4870,6 +4918,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,
            test_recap_hebdomadaire, test_suivi_sources_muettes,
+           test_retirer_une_source_ne_laisse_pas_ses_articles,
            test_identifiants_de_sources_uniques,
            test_chaines_par_hote,
            test_plafond_par_domaine, test_source_qui_plante,
