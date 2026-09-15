@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-15T12:50:22.498360+00:00",
+  "generated_at": "2026-09-15T13:01:55.231565+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 51.7,
+  "duration_seconds": 47.8,
   "decode_failures": 0,
-  "total_articles": 2553,
+  "total_articles": 2554,
   "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
@@ -322,7 +322,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 18,
       "status": "ok"
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-09-15T12:36:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -474,10 +474,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 3,
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 4,
@@ -594,10 +594,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-14T19:04:43+00:00",
       "days_since_last_article": 0,
@@ -642,10 +642,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-14T08:25:00+00:00",
       "days_since_last_article": 1,
@@ -816,7 +816,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-14T12:50:53+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -919,7 +919,7 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,100,100,100,99,99,99,99,99,99,99,99",
+    "rockstar-fr": "100,100,100,99,99,99,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -962,12 +962,12 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "87,86,85,87,87,86,87,86,86,86,87,87",
+    "engadget": "86,85,87,87,86,87,86,86,86,87,87,87",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20",
-    "dexerto-fr": "50,50",
-    "tweaktown": "15,15"
+    "rockstaractu": "20,20,20",
+    "dexerto-fr": "50,50,50",
+    "tweaktown": "15,15,15"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -984,7 +984,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 12:14:09 GMT"
+      "modified": "Tue, 15 Sep 2026 12:36:20 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,7 +998,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1a24f-9wVr/UnVzMxCkI2ayZPy0q1ad9E\"",
+      "etag": "W/\"1af0b-JjCUp55Xm329SVTcBrQ03NB51gU\"",
       "modified": null
     },
     "kotaku": {
@@ -1014,12 +1014,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 11:22:10 GMT"
+      "modified": "Tue, 15 Sep 2026 13:00:46 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 12:49:49 GMT"
+      "modified": "Tue, 15 Sep 2026 13:01:18 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1028,8 +1028,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa93a58-2f83\"",
-      "modified": "Tue, 15 Sep 2026 12:30:16 GMT"
+      "etag": "W/\"6aa94162-2f83\"",
+      "modified": "Tue, 15 Sep 2026 13:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -33839,6 +33839,20 @@
       "lang": null,
       "image": "https://www.rockstargames.com/VI/-/opengraph-image.jpg?opengraph-image.0t8ty~nlmxq2s.jpg",
       "description": "Grand Theft Auto VI&nbsp;&nbsp;Rockstar Games"
+    },
+    {
+      "title": "Grand Theft Auto VI Pre-Orders Begin on June 25 - Rockstar Games",
+      "link": "https://www.rockstargames.com/newswire/article/517oa135328155/grand-theft-auto-vi-pre-orders-begin-on-june-25",
+      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOZWh5Vmk4WnJBOU1hR0RZcnZmZm1vZEdVYjZaSjgzYWk4YzNtaXRzTzlBWkJlcFpEU0NxWlZNU3RZWHJ2Zk9WaVduRE1JanEyVzEtZEIwTEFHbDZ2MkdnSXZ0NDZoZ2JZNnI0TDRoTnlxWDluZDlMZ24xS1hxUjR1bVF3d0ZqbHBBOG5MN3c1SHdoUm9FdmxGTzk4dG9UZTUwc1J2RWphckJFSl9GMWc?oc=5",
+      "date": "2026-06-18T13:16:16+00:00",
+      "source": "Rockstar Games (officiel EN)",
+      "archive": true,
+      "official": true,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media-rockstargames-com.akamaized.net/tina-uploads/posts/517oa135328155/e11178dabf62ad8ef865e773b66250b9a26262e6.jpg",
+      "description": "Grand Theft Auto VI Pre-Orders Begin on June 25&nbsp;&nbsp;Rockstar Games"
     },
     {
       "title": "Grand Theft Auto VI: Official Cover Art Reveal",
