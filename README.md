@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1076
+qui permet de tester tout le pipeline sans sortir de la machine. **1081
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -2372,6 +2372,77 @@ confondus**, en perdrait avant qu'on les voie.
 domaines, et sa fenêtre est la plus étroite. On ne peut pas élargir un flux
 que l'éditeur sert à dix entrées ; le remède serait un jumeau Google News
 `site:gamerant.com`, qui rend 100 entrées. Mesuré, pas encore appliqué.
+
+### Publier n'est pas servir
+
+Antoni, le 15/09/2026 : *« quand je reçois une notif il faut toujours que
+j'attende que ça soit publié par GitHub pour pouvoir les voir »*.
+
+La notification partait pourtant déjà **après** le `git push` — cet ordre-là
+était bon, et corrigé depuis longtemps. Le trou était ailleurs : entre le
+push et le moment où GitHub Pages sert réellement le fichier.
+
+```
+21:02:14  le robot pousse feed.json
+21:02:17  ⚡ notification envoyée
+21:02:15  GitHub Pages commence à construire
+21:03:25  le fichier est enfin servi
+```
+
+**Jusqu'à 70 secondes d'avance sur le contenu.** Cinq déploiements mesurés
+le même soir : 36, 36, 40, 42 et 70 secondes. Variable, donc un délai fixe
+serait soit trop court, soit du temps perdu.
+
+#### Deux fausses pistes, écartées par la mesure
+
+Ce n'était **pas un cache CDN** : l'app ajoute déjà `?_t=Date.now()` à chaque
+requête. Ce n'était **pas le service worker** : il n'intercepte que les
+navigations, jamais les JSON. Le fichier n'était réellement pas encore servi.
+
+#### Qui était concerné, et qui ne l'était pas
+
+Les notifications ont deux formes, et une seule souffrait du problème :
+
+| forme | lien | concernée |
+|---|---|---|
+| annonce officielle (Rockstar) | vers **l'article** | non — on lit sans passer par le site |
+| récapitulatif (« 12 nouveaux articles ») | vers **l'app** | **oui** |
+
+C'est donc la forme la plus fréquente qui envoyait sur un site périmé.
+
+#### Ce qui a été fait
+
+Une étape s'intercale entre la publication et les notifications : elle
+interroge l'**URL publique** jusqu'à ce que `generated_at` corresponde à ce
+qui vient d'être poussé.
+
+**L'URL publique et non l'API Pages** : l'API dit « le build est fini »,
+l'URL dit « le contenu est servi », et c'est la seconde qui décide de ce que
+verra le téléphone. Cela n'exige d'ailleurs aucune permission
+supplémentaire — le workflow reste à `contents: write`, là où l'API aurait
+demandé `pages: read`.
+
+**`feed-recent.json` et non `feed.json`** : c'est l'extrait que l'app charge
+en premier. Les deux sont poussés ensemble, mais c'est celui-là que le
+téléphone demande.
+
+**Jamais bloquant.** Au bout de 180 secondes, on notifie quand même. Une
+notification en retard vaut infiniment mieux qu'une notification perdue, et
+c'est exactement le comportement d'avant : l'étape ne peut qu'améliorer,
+jamais régresser.
+
+#### Un test qui désignait une position plutôt qu'une chose
+
+L'insertion a fait échouer une assertion sans rapport — « Notifier Discord
+reçoit le drapeau de silence nocturne » — parce qu'elle lisait `blocs[6]` et
+`blocs[7]`, des index en dur. Déplacer une étape annonçait donc un défaut
+inexistant sur une autre.
+
+Les blocs sont désormais indexés **par nom**. Un test doit désigner ce qu'il
+vérifie, pas l'endroit où il se trouvait ce jour-là. Et l'ordre de la
+nouvelle étape est lui-même verrouillé : après la publication, avant les deux
+notifications — sinon elle attend une version qu'on n'a pas encore poussée,
+ou elle ne sert à rien.
 
 ## Pause nocturne : rien entre 0h et 5h
 

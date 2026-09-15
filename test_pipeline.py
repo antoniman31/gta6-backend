@@ -3761,6 +3761,12 @@ def test_pause_nocturne():
         cond = re.search(r"^        if: (.+)$", b, re.M)
         etapes.append((nom, cond.group(1).strip() if cond else ""))
     parNom = dict(etapes)
+    # Bloc complet indexé par NOM. Par POSITION jusqu'au 15/09/2026, et
+    # c'était un piège : insérer une étape au milieu faisait échouer une
+    # assertion qui n'avait rien à voir avec elle, en annonçant un défaut
+    # inexistant sur « Notifier Discord ». Un test doit désigner ce qu'il
+    # vérifie, pas l'endroit où il se trouvait ce jour-là.
+    blocParNom = {b.split("\n", 1)[0].strip(): b for b in blocs}
 
     check(etapes[0][0] == "Fenêtre de veille",
           "la décision est prise AVANT tout le reste (première étape)")
@@ -3782,9 +3788,31 @@ def test_pause_nocturne():
     for nom in ("Notifier Discord", "Notifier par push"):
         check(parNom.get(nom, "") == "success()",
               "« %s » ne notifie qu'après une publication réussie" % nom)
-    for nom, bloc in (("Notifier Discord", blocs[6]), ("Notifier par push", blocs[7])):
+    for nom in ("Notifier Discord", "Notifier par push"):
+        bloc = blocParNom.get(nom, "")
         check("SEULEMENT_OFFICIELS" in bloc and "steps.veille.outputs.silence" in bloc,
               "« %s » reçoit le drapeau de silence nocturne" % nom)
+
+    # L'attente de mise en ligne s'intercale entre la publication et les
+    # notifications. L'ordre est tout : après le push, sinon on attend une
+    # version qu'on n'a pas encore poussée ; avant les notifications, sinon
+    # elle ne sert à rien.
+    noms = [n for n, _ in etapes]
+    attente = "Attendre que la page soit réellement en ligne"
+    check(attente in noms, "l'attente de mise en ligne existe")
+    if attente in noms:
+        check(noms.index("Publier le résultat") < noms.index(attente) < noms.index("Notifier Discord")
+              and noms.index(attente) < noms.index("Notifier par push"),
+              "elle s'intercale entre la publication et les deux notifications")
+        bloc = blocParNom[attente]
+        check("feed-recent.json" in bloc,
+              "elle interroge l'extrait que l'app charge en premier")
+        check("generated_at" in bloc,
+              "elle compare la VERSION servie, pas seulement que le fichier réponde")
+        # Le plafond existe et l'étape sort en 0 : une mise en ligne lente
+        # ne doit jamais faire perdre la notification.
+        check("ATTENTE_MAX" in bloc and "exit 0" in bloc,
+              "un plafond existe, et l'étape n'échoue jamais le passage")
 
     bloc_veille = blocs[0]
     check("TZ=Europe/Paris" in bloc_veille,

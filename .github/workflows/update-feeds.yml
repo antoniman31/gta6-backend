@@ -267,6 +267,60 @@ jobs:
           echo "Échec de publication après 5 tentatives."
           exit 1
 
+      # Publier n'est pas servir.
+      #
+      # Le push réussi déclenche un build GitHub Pages, qui met 36 à 70 s à
+      # mettre le fichier en ligne (cinq déploiements mesurés le 15/09/2026 :
+      # 36, 36, 40, 42, 70 s). La notification partait juste après le push :
+      # on était donc prévenu jusqu'à 70 secondes AVANT que le contenu
+      # existe, et taper la notification ouvrait un site encore périmé.
+      #
+      # Ce n'était ni un cache CDN — l'app ajoute déjà `?_t=` à chaque
+      # requête — ni le service worker, qui n'intercepte que les
+      # navigations. Le fichier n'était réellement pas encore servi.
+      #
+      # On interroge l'URL PUBLIQUE plutôt que l'API Pages : l'API dit « le
+      # build est fini », l'URL dit « le contenu est servi », et c'est la
+      # seconde qui décide de ce que verra le téléphone. Accessoirement,
+      # cela n'exige aucune permission supplémentaire — le workflow reste à
+      # `contents: write`.
+      #
+      # `feed-recent.json` et pas `feed.json` : c'est l'extrait que l'app
+      # charge en premier (voir urlAllegee dans index.html). Les deux sont
+      # poussés ensemble, mais c'est celui-là que le téléphone demande.
+      #
+      # JAMAIS bloquant. Au bout de ATTENTE_MAX on notifie quand même : une
+      # notification en retard vaut infiniment mieux qu'une notification
+      # perdue, et c'est exactement le comportement d'avant. Cette étape ne
+      # peut donc qu'améliorer, jamais régresser.
+      - name: Attendre que la page soit réellement en ligne
+        if: success()
+        env:
+          URL_PUBLIQUE: https://antoniman31.github.io/gta6-backend/feed-recent.json
+          ATTENTE_MAX: "180"
+        run: |
+          set -u
+          attendu=$(python3 -c "import json;print(json.load(open('docs/feed-recent.json'))['generated_at'])")
+          echo "Version publiée : $attendu"
+          debut=$(date +%s)
+          while :; do
+            # Comparaison sur generated_at, pas sur « le fichier répond » :
+            # l'ancienne version répond très bien, et validerait l'attente
+            # pour rien.
+            servi=$(curl -fsS --max-time 15 "$URL_PUBLIQUE?_t=$(date +%s)" 2>/dev/null \
+                    | python3 -c "import json,sys;print(json.load(sys.stdin).get('generated_at',''))" 2>/dev/null || echo "")
+            if [ -n "$servi" ] && [ ! "$servi" \< "$attendu" ]; then
+              echo "En ligne après $(( $(date +%s) - debut )) s (servi : $servi)"
+              exit 0
+            fi
+            if [ $(( $(date +%s) - debut )) -ge "$ATTENTE_MAX" ]; then
+              echo "⚠ toujours pas en ligne après ${ATTENTE_MAX}s (dernier servi : ${servi:-aucune réponse})."
+              echo "  On notifie quand même : une notification en retard vaut mieux qu'une notification perdue."
+              exit 0
+            fi
+            sleep 5
+          done
+
       # Notification envoyée UNIQUEMENT après une publication réussie.
       # Auparavant elle partait depuis fetch_feeds.py, donc avant le push :
       # un push en échec annonçait sur Discord des articles jamais publiés,
