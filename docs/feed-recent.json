@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-15T07:44:15.518921+00:00",
+  "generated_at": "2026-09-15T08:01:51.539882+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 57.8,
+  "duration_seconds": 52.1,
   "decode_failures": 0,
-  "total_articles": 2579,
-  "new_this_run": 0,
+  "total_articles": 2580,
+  "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 50,
@@ -394,7 +394,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "last_article": "2026-09-14T17:02:02+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -726,10 +726,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 6,
@@ -750,10 +750,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 12,
@@ -870,7 +870,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 86,
+      "entries_fetched": 85,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -919,11 +919,11 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,99,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,100,99,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
+    "rockstar-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
     "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,102",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -933,7 +933,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
+    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -964,7 +964,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "86,86,86,86,86,87,87,87,87,87,87,86",
+    "engadget": "86,86,86,86,87,87,87,87,87,87,86,85",
     "arstechnica": "26,26,26,26,26,26,26,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -984,7 +984,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 07:27:41 GMT"
+      "modified": "Tue, 15 Sep 2026 07:36:22 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1003,8 +1003,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5f5b8cdd6b13e86334f63a4678ec700f\"",
-      "modified": "Tue, 15 Sep 2026 07:43:11 GMT"
+      "etag": "W/\"b0039904e5ad122536a4e62c39439f8a\"",
+      "modified": "Tue, 15 Sep 2026 08:00:42 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1019,22 +1019,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 07:43:43 GMT"
+      "modified": "Tue, 15 Sep 2026 08:01:23 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"629430d5c2ab6a288e5ef621f126614d\"",
-      "modified": "Tue, 15 Sep 2026 07:37:25 GMT"
+      "etag": "\"08f0ff95bb563d426582e921b8c65ccb\"",
+      "modified": "Tue, 15 Sep 2026 07:46:58 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa8f406-30ba\"",
-      "modified": "Tue, 15 Sep 2026 07:30:14 GMT"
+      "etag": "W/\"6aa8fb0f-3104\"",
+      "modified": "Tue, 15 Sep 2026 08:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"af92e94e3b6dda97ba2d629b4807baa5\"",
-      "modified": "Tue, 15 Sep 2026 06:00:30 GMT"
+      "etag": "W/\"296070d737dec9a33e5593a82ea4d32f\"",
+      "modified": "Tue, 15 Sep 2026 07:51:26 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1048,8 +1048,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa8dcce-b7d\"",
-      "modified": "Tue, 15 Sep 2026 05:51:10 GMT"
+      "etag": "\"6aa8f8f2-b98\"",
+      "modified": "Tue, 15 Sep 2026 07:51:14 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1339,6 +1339,19 @@
       "lang": "fr",
       "image": "https://www.tomshardware.fr/content/uploads/sites/3/2025/02/gta-6-date-sortie-pc-scaled.jpg",
       "description": "GTA 6 : l’édition Ultimate vaudra-t-elle le coup ? Voici tout ce qu’elle apporte en plus&nbsp;&nbsp;Tom’s Hardware"
+    },
+    {
+      "title": "Gameplay de GTA 6 : les détails que vous avez peut-être loupés - Red Bull",
+      "link": "https://www.redbull.com/fr-fr/gta-6-gameplay-details",
+      "source_link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBXdGNTaDBqLVd3TXZMRzQ1dmktU3JETXBHeVVjYXlxTF94bFdIM05fa1RhS3VwVm1XbW9FbXpnV2p4UlRKTEhpdjFxaTNXRUF3dW54MGdsOUxYRU9PQTY2THJB?oc=5",
+      "date": "2026-09-14T15:00:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Gameplay de GTA 6 : les détails que vous avez peut-être loupés&nbsp;&nbsp;Red Bull"
     },
     {
       "title": "GTA 6 confirms one of its biggest cast additions: Fans recognized him almost instantly just by hearing his voi - en.as.com",
@@ -5006,19 +5019,6 @@
       "lang": null,
       "image": "https://i.pcmag.com/imagery/articles/03Z5sRHg9QfMyUCnri9PrMh-1.fit_lim.size_1200x630.v1788961966.jpg",
       "description": "Can You Really Play GTA 6 Early? This Classic Xbox and PS5 Time Zone Trick May Work, But Has a Big Catch&nbsp;&nbsp;PCMag"
-    },
-    {
-      "title": "GTA 6 : qui jouera en premier selon son pays ? - Goclecd.fr",
-      "link": "https://www.goclecd.fr/nouvelle-zelande-gta-6-premiere-heure-lancement-pays-news-lb",
-      "source_link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPWEFLZFRZbTZ0MGdGZ1BfUXkybFBSMldRYU43Q19veGVuVGNtVWNsY1pIelBBbjBHNnlVaW0tZ0ExSlJkWTdNc0sxdVptX2xpYy1iLUF3bjBpQ1RSX2ItMEU4RkN4Tmx1eE8zdVluN190clMyZVpyNUkxU0lrNU5fQlgyWEpfZkZWazFn?oc=5",
-      "date": "2026-09-09T16:43:35+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.goclecd.fr/wp-content/uploads/2026/09/Discover-Cover-1200x675-new-zealand-plays-gta-6-first-real-launch-time-every-country-news-A-flux2.webp",
-      "description": "GTA 6 : qui jouera en premier selon son pays ?&nbsp;&nbsp;Goclecd.fr"
     }
   ],
   "partial": true,
