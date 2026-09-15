@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1003
+qui permet de tester tout le pipeline sans sortir de la machine. **1024
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -2132,6 +2132,88 @@ chiffres** : Take-Two IR (1 exclusif, flux trimestriel), Rockstar officiel
 EN et FR (18 et 9), Jason Schreier (13, un seul sur 30 jours). Elles
 rapportent peu, mais ce qu'elles rapportent est officiel ou de première
 main. Le volume n'est pas la valeur.
+
+### Six écritures du nom, dont deux acceptées les yeux ouverts
+
+Le 15/09/2026 au soir, question posée : les requêtes Google News couvrent-elles
+toutes les façons d'écrire le nom du jeu ? Non. Et l'écart était au pire
+endroit.
+
+**Les deux flux larges cherchaient `"GTA 6"` et rien d'autre**, alors que les
+treize flux `site:` cherchaient déjà `("GTA 6" OR "Grand Theft Auto VI")`.
+Or ce sont ces deux flux larges qui portent **46 % du fil**. Un article
+intitulé *« Grand Theft Auto VI … »* ou *« GTA VI … »* — les formes que la
+presse sérieuse et Rockstar emploient — ne leur parvenait pas. L'incohérence
+datait du 29/08 et personne ne l'avait vue.
+
+Distinction qui rend le problème invisible : **les 35 sources en flux natif
+n'étaient pas concernées**. Leur flux arrive entier et c'est la liste des 139
+mots-clés qui trie — or elle contient déjà `gta 6`, `gta6`, `gta vi`, `gtavi`,
+`grand theft auto 6`, `grand theft auto vi`, `gta-6`, `gta_vi`… Chez Google
+News au contraire, le tri se fait **avant nous** : ce que la requête ne demande
+pas n'existe pas.
+
+#### Ce que chaque écriture rapporte réellement
+
+Chaque variante a été sondée **à l'exclusion des autres**, seule façon de
+savoir ce qu'elle ajoute plutôt que ce qu'elle recoupe :
+
+| écriture | EN | FR | total |
+|---|---|---|---|
+| `"GTA VI"` | 28 | 30 | **58** |
+| `"Grand Theft Auto VI"` | 26 | 26 | **52** |
+| `"Grand Theft Auto 6"` | 19 | 7 | **26** |
+| `"GTA6"` attaché | 10 | 1 | 11 |
+| `"GTAVI"` attaché | 0 | 0 | 0 |
+
+#### Les deux dernières ont d'abord été écartées, puis remises
+
+Sur ces chiffres, `"GTA6"` et `"GTAVI"` attachés avaient été retirés de la
+formule. **Décision d'Antoni : les six y sont.** La mesure reste consignée
+ici, parce qu'elle ne dit plus ce qu'il faut faire mais ce qu'on a accepté.
+
+`"GTAVI"` attaché ne coûte rien d'autre qu'une requête un peu plus longue :
+il n'avait rien rapporté, il ne rapportera probablement rien.
+
+`"GTA6"` attaché, lui, porte un vrai risque, et il est identifié :
+
+> *GTA6 $0.0002399 | Live GTA6 Price Chart Today, Swap on USDT — MEXC*
+> *#gta6 — Xboxlive.fr*
+
+**Une cryptomonnaie porte le nom du jeu.** Le fil en a d'ailleurs déjà parlé
+(*« GTA 6 Leaker Is Making Millions on a Memecoin »*). Et le filtre par
+mots-clés ne la rattrapera pas : la liste des 139 contient `gta6`, donc ces
+articles passent. Si du cours de crypto apparaît dans le fil, c'est de là
+qu'il vient, et c'est la formule qu'il faudra réduire — pas la liste de
+mots-clés.
+
+#### La formule retenue
+
+```
+("GTA 6" OR "GTA6" OR "GTA VI" OR "GTAVI" OR "Grand Theft Auto 6" OR "Grand Theft Auto VI")
+```
+
+Appliquée à **17 requêtes** : les deux flux larges, les douze `site:`,
+`gta6-netflix`, `schreier`, et `rockstar-announce` — cette dernière portant
+l'ancienne formule **dans l'ordre inverse**, qu'un remplacement global aurait
+manquée.
+
+**Deux sources restent volontairement sans filtre de jeu.** `rockstar-en` et
+`rockstar-fr` interrogent `site:rockstargames.com` : tout ce qu'elles rendent
+vient déjà de Rockstar. Y ajouter les écritures ne les élargirait pas, ça les
+**rétrécirait** — on perdrait les articles du Newswire qui ne nomment pas le
+jeu dans leur titre. C'est le seul endroit où ajouter une variante retire
+quelque chose.
+
+Gain attendu : **environ 147 articles** hors de portée jusque-là. Le nombre de
+sources ne bouge pas (57), ni le nombre de requêtes, ni la cadence — seule la
+question posée à Google change.
+
+**Effet de bord assumé.** Ces flux rendent 100 entrées classées par
+pertinence : élargir fait entrer d'un coup plusieurs dizaines d'articles de
+l'arrière-catalogue. `MAX_ARTICLE_AGE_DAYS` écarte les archives, le reste
+arrive en une salve. Le premier passage est donc à lancer **pendant la pause
+nocturne**, où le robot publie sans notifier.
 
 ## Pause nocturne : rien entre 0h et 5h
 

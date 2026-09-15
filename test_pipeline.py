@@ -4214,6 +4214,67 @@ def test_les_workflows_epinglent_leurs_dependances():
                   "%s installe depuis requirements.txt" % chemin.split("/")[-1])
 
 
+def test_variantes_du_nom_dans_les_requetes_google_news():
+    print("\n[requêtes] chaque recherche Google News couvre les six écritures")
+    import fetch_feeds
+    from urllib.parse import unquote
+
+    # Les six écritures du nom, décision d'Antoni du 15/09/2026.
+    #
+    # Chacune a d'abord été sondée À L'EXCLUSION des autres, pour mesurer ce
+    # qu'elle ajoute et non ce qu'elle recoupe :
+    #
+    #   "GTA VI"               EN 28 · FR 30  =  58 articles
+    #   "Grand Theft Auto VI"  EN 26 · FR 26  =  52
+    #   "Grand Theft Auto 6"   EN 19 · FR  7  =  26
+    #   "GTA6"  attaché        EN 10 · FR  1  =  11
+    #   "GTAVI" attaché        EN  0 · FR  0  =   0
+    #
+    # Les deux dernières avaient été écartées sur ces chiffres, puis remises
+    # sur décision explicite. La mesure reste ici parce qu'elle dit ce qu'on
+    # a accepté en les remettant, et ce qu'il faudra regarder si le fil se
+    # salit : « GTA6 » attaché fait entrer le cours d'une CRYPTOMONNAIE qui
+    # porte le nom du jeu (« GTA6 $0.0002399 | Live GTA6 Price Chart Today,
+    # Swap on USDT — MEXC ») et des pages de tag vides ; « GTAVI » attaché
+    # n'avait rien rapporté du tout.
+    #
+    # Le filtre par mots-clés ne rattrapera pas la crypto : la liste des 139
+    # contient déjà « gta6 », donc ces articles passent. Si le bruit devient
+    # visible, c'est ici qu'il faudra revenir.
+    SIX = ["GTA 6", "GTA6", "GTA VI", "GTAVI",
+           "Grand Theft Auto 6", "Grand Theft Auto VI"]
+
+    # Les deux sources sans filtre de jeu, et pourquoi elles n'en prennent
+    # pas : elles interrogent `site:rockstargames.com`, donc tout ce qu'elles
+    # rendent vient déjà de Rockstar. Y ajouter les écritures ne les
+    # élargirait pas, ça les rétrécirait — on perdrait les articles du
+    # Newswire qui ne nomment pas le jeu dans leur titre.
+    SANS_FILTRE = {"rockstar-en", "rockstar-fr"}
+
+    gnews = [f for f in fetch_feeds.FEEDS if "news.google.com" in f["url"]]
+    check(len(gnews) >= 19,
+          "%d sources passent par Google News" % len(gnews))
+
+    couvertes = 0
+    for feed in gnews:
+        if feed["id"] in SANS_FILTRE:
+            check("site:rockstargames.com" in feed["url"],
+                  "%s reste sans filtre de jeu, sur le domaine de Rockstar"
+                  % feed["id"])
+            continue
+        requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
+        manquantes = [v for v in SIX if '"%s"' % v not in requete]
+        check(not manquantes,
+              "%s : la requête couvre les six écritures%s"
+              % (feed["id"],
+                 "" if not manquantes else " — il manque %s" % ", ".join(manquantes)))
+        couvertes += 1
+
+    check(couvertes >= 17,
+          "%d requêtes portent les six écritures (17 attendues au minimum)"
+          % couvertes)
+
+
 def test_prefiltre_de_ressemblance():
     print("\n[doublons] le préfiltre ne peut pas écarter un vrai doublon")
     import fetch_feeds
@@ -4949,6 +5010,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_les_workflows_epinglent_leurs_dependances,
+           test_variantes_du_nom_dans_les_requetes_google_news,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,
