@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-15T13:01:55.231565+00:00",
+  "generated_at": "2026-09-15T14:01:48.511410+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 47.8,
+  "duration_seconds": 41.2,
   "decode_failures": 0,
-  "total_articles": 2554,
+  "total_articles": 2555,
   "new_this_run": 1,
-  "hot_count": 6,
+  "hot_count": 7,
   "hot_threshold": 3,
   "sources_count": 50,
   "sources": [
@@ -322,7 +322,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 18,
       "status": "ok"
@@ -390,12 +390,12 @@
     {
       "id": "gnews-fr",
       "name": "Google News (FR)",
-      "entries_fetched": 102,
+      "entries_fetched": 101,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-15T12:36:00+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-15T13:46:47+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -528,7 +528,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T14:00:00+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -558,10 +558,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 4,
@@ -582,10 +582,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:31:24+00:00",
       "days_since_last_article": 3,
@@ -630,10 +630,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T06:05:13+00:00",
       "days_since_last_article": 4,
@@ -702,22 +702,22 @@
     {
       "id": "gta6times",
       "name": "GTA6 Times",
-      "entries_fetched": 38,
+      "entries_fetched": 39,
       "http_status": 301,
       "redirect": "https://gta6times.com/feed.xml",
       "not_modified": false,
       "new_this_run": 0,
-      "last_article": "2026-09-13T05:27:23+00:00",
-      "days_since_last_article": 2,
+      "last_article": "2026-09-14T08:38:58+00:00",
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 6,
@@ -738,10 +738,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-02T11:04:54+00:00",
       "days_since_last_article": 13,
@@ -919,12 +919,12 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,99,99,99,99,99,99,99,99,99",
+    "rockstar-fr": "100,100,99,99,99,99,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,102",
+    "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,101",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -950,7 +950,7 @@
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "38,38,38,38,38,38,38,38,38,38,38,38",
+    "gta6times": "38,38,38,38,38,38,38,38,38,38,38,39",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -962,12 +962,12 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "86,85,87,87,86,87,86,86,86,87,87,87",
+    "engadget": "85,87,87,86,87,86,86,86,87,87,87,87",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20,20",
-    "dexerto-fr": "50,50,50",
-    "tweaktown": "15,15,15"
+    "rockstaractu": "20,20,20,20",
+    "dexerto-fr": "50,50,50,50",
+    "tweaktown": "15,15,15,15"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -984,7 +984,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 12:36:20 GMT"
+      "modified": "Tue, 15 Sep 2026 13:44:55 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -998,48 +998,48 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1af0b-JjCUp55Xm329SVTcBrQ03NB51gU\"",
+      "etag": "W/\"1cd3d-6UZRssZl/kDoFNepW7SY+gUz/BM\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"959d28f109c394407b4a5f72963cd9f2\"",
-      "modified": "Tue, 15 Sep 2026 12:45:19 GMT"
+      "etag": "W/\"a16d63599ccf2e840a3c28277a2b6d1c\"",
+      "modified": "Tue, 15 Sep 2026 13:46:27 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 12:29:05 GMT"
+      "modified": "Tue, 15 Sep 2026 13:57:24 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 13:00:46 GMT"
+      "modified": "Tue, 15 Sep 2026 13:21:04 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 13:01:18 GMT"
+      "modified": "Tue, 15 Sep 2026 14:01:23 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"94fea7ec1febabebe06d7a2b9ae50a80\"",
-      "modified": "Tue, 15 Sep 2026 09:47:14 GMT"
+      "etag": "\"81ff987c829eaab8dcb65e46aa073bf3\"",
+      "modified": "Tue, 15 Sep 2026 13:53:16 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa94162-2f83\"",
-      "modified": "Tue, 15 Sep 2026 13:00:18 GMT"
+      "etag": "W/\"6aa94f70-2fa0\"",
+      "modified": "Tue, 15 Sep 2026 14:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"fa9884d9b22353a4fc4585b0a7b89240\"",
-      "modified": "Tue, 15 Sep 2026 11:31:00 GMT"
+      "etag": "W/\"af3f2528f8a62b86aabc36daaef51bf6\"",
+      "modified": "Tue, 15 Sep 2026 13:36:09 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789473920\"",
-      "modified": "Tue, 15 Sep 2026 12:05:20 GMT"
+      "etag": "W/\"1789480385\"",
+      "modified": "Tue, 15 Sep 2026 13:53:05 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1048,8 +1048,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aa93139-b77\"",
-      "modified": "Tue, 15 Sep 2026 11:51:21 GMT"
+      "etag": "\"6aa94d50-b6b\"",
+      "modified": "Tue, 15 Sep 2026 13:51:12 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1059,6 +1059,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "\"GTA 6 est un rituel d'humiliation pour tous les gamers masculins\": en ligne, un microcosme masculiniste s’insurge, le nouvel épisode de la série serait \"trop woke\" - BFM",
+      "link": "https://www.bfmtv.com/tech/gaming/gta-6-est-un-rituel-d-humiliation-pour-tous-les-gamers-masculins-en-ligne-un-microcosme-masculiniste-s-insurge-le-nouvel-episode-de-la-serie-serait-trop-woke_AV-202609150543.html",
+      "source_link": "https://news.google.com/rss/articles/CBMitwJBVV95cUxNWnk5ZGRiaGF1N2tVbUg5RTFSREdkUFM2cXRGNjBxVlRtclJjWWUxdmVSZ3hTazdNV0Y4Qjh0TUxaNlp4UGFkOTF5MlNDeVFjbHdCMnhmWFA4dW1pcjFLVGZpbDkzU0wzckVkdXdZd2REc1lCRmFvalpvc1FYVTZpNmpJaHAwZ0pEOEtzX1VZYWdzMzVGc3FtUDB1c2RfZW9wa2h2d3YzSnp1Y19LRXBTeDQ2cFZnc0ZLTGJtaFRmcUhzeHM2NkhIMnZSSnZwN0o2cnAwakxGWVpQNWRSMjQ5VXhENXZ3TF9rN254VjhZVUt6Q1JoYTNuWHZua3JjLWtKVVRET0ZmN2dESUkyamN2UVN2WXpyWFdCeDNudVhHME1seG5ZLUhsMDI1Qm1UbmlYWUZySWgwTQ?oc=5",
+      "date": "2026-09-15T13:46:47+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/L1C_ctHsEIOtKU2q1FaUu5rd3Ts=/0x0:2048x1152/2048x0/images/GTA-VI-Jason-gun-2347737.jpg",
+      "description": "\"GTA 6 est un rituel d'humiliation pour tous les gamers masculins\": en ligne, un microcosme masculiniste s’insurge, le nouvel épisode de la série serait \"trop woke\"&nbsp;&nbsp;BFM"
+    },
     {
       "title": "Pourquoi Rockstar ne donne aucune nouvelle de GTA 6 Online - IGN France",
       "link": "https://fr.ign.com/grand-theft-auto-6/92280/pourquoi-rockstar-ne-donne-aucune-nouvelle-de-gta-6-online",
@@ -1808,6 +1821,10 @@
         {
           "source": "Google News (EN)",
           "link": "https://www.shacknews.com/article/150721/stephen-root-gta-6"
+        },
+        {
+          "source": "GTA6 Times",
+          "link": "https://gta6times.com/news/stephen-root-confirms-gta-6-brian-role"
         }
       ]
     },
