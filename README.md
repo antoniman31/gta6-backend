@@ -432,7 +432,6 @@ en deçà du parallélisme gagné.
   niveau des données. Appelé par le workflow uniquement en cas de rejet
   de push.
 - **`discord_notify.py`** — l'envoi Discord, appelé après publication.
-- **`weekly_digest.py`** — le récapitulatif du dimanche (voir plus bas).
 - **`audit_donnees.py`** — audit des **données publiées**, pas du code.
   Cherche les incohérences que `test_pipeline.py` ne peut pas voir parce
   qu'elles ne violent aucun invariant : une source supplémentaire dont le
@@ -492,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1022
+qui permet de tester tout le pipeline sans sortir de la machine. **1003
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -501,7 +500,7 @@ messages d'erreur, l'équivalence entre récupération séquentielle et
 parallèle, le plafond de requêtes par domaine, la déduplication à
 l'intérieur d'un même passage, la promotion d'un sujet entre deux passages,
 le suivi des sources muettes, le garde-fou contre les archives, l'unicité
-des identifiants de source, le récapitulatif hebdomadaire — et surtout la
+des identifiants de source — et surtout la
 fusion, c'est elle qui décide si des articles sont perdus quand deux
 exécutions se chevauchent. Le dernier bloc rejoue ces règles sur le vrai
 `docs/feed.json` du dépôt.
@@ -1552,33 +1551,35 @@ refaire l'abonnement depuis l'app.
 **Support.** Complet sur Android. Sur iPhone, l'app doit être installée sur
 l'écran d'accueil et le support y est plus restreint.
 
-## Récapitulatif hebdomadaire
+## Récapitulatif hebdomadaire — supprimé le 15/09/2026
 
-Un message Discord le dimanche soir (`weekly-digest.yml`, un workflow à
-part), avec les sujets les plus repris des sept derniers jours.
+Un message Discord partait le dimanche soir avec les sujets les plus repris
+des sept derniers jours, classés par nombre de rédactions les ayant couverts.
 
-Il répond à une autre question que le récapitulatif de passage. Celui-ci
-dit « quoi de neuf dans la dernière demi-heure » et annonce un nombre, sans
-titre : sur un téléphone, une notification se lit d'un coup d'œil. Le
-récapitulatif hebdomadaire dit « qu'est-ce que j'ai raté cette semaine »,
-on l'ouvre au lieu de le survoler — il porte donc bien des titres et des
-liens, et c'est tout son intérêt.
+**Il a été retiré parce qu'il ne servait plus.** Les notifications push
+natives annoncent chaque article au moment où il paraît : le dimanche soir,
+la semaine avait déjà été lue article par article. Restait un message, sur
+Discord — le canal que ce projet considère lui-même comme le plus faible,
+puisque c'est précisément pour ça que les push ont été construites (« taper
+une notification Discord ouvre Discord, jamais l'article »).
 
-- **Classé par nombre de rédactions**, pas par date : c'est le seul
-  indicateur d'importance disponible sans lire les articles.
-- **8 sujets maximum.** Au-delà, c'est un mur de texte que personne ne lit,
-  soit l'inverse du but.
-- **Discord seulement, pas de push** : la valeur est dans la liste
-  cliquable, ce qu'une bannière de notification ne sait pas montrer.
-- Aucun message s'il n'y a rien eu cette semaine.
-- Les crochets d'un titre et les parenthèses d'une URL sont neutralisés :
-  la syntaxe de lien Markdown casse aux deux bouts, et une URL parenthésée
-  afficherait un lien tronqué suivi d'un bout d'adresse en texte brut.
+Le seul apport propre du récapitulatif était son classement par nombre de
+rédactions. L'app le fait déjà en direct, avec le badge « N SOURCES » et le
+marqueur « actu majeure ».
 
-⚠️ Le `schedule` de GitHub est best-effort : sur une tâche **hebdomadaire**,
-un créneau abandonné = une semaine sautée. Le workflow accepte donc aussi
-`repository_dispatch` avec `{"event_type": "weekly-digest"}` — un appel
-hebdomadaire depuis cron-job.org le fiabilise, comme pour le robot.
+**À ne pas confondre avec le récapitulatif du matin**, qui reste en place et
+qui, lui, est indispensable : c'est celui qui rattrape la pause nocturne
+(`attente_recap` dans `feed.json`, `libelle_recap()` dans `feed_store.py`).
+Les deux portaient le même mot et n'ont jamais partagé une ligne de code —
+`weekly_digest.py` n'était importé par rien d'autre que ses propres tests,
+ce qui a été vérifié avant de le supprimer.
+
+Sont partis avec lui : `weekly_digest.py`, `.github/workflows/weekly-digest.yml`
+et ses 16 vérifications. Le test qui vérifiait qu'il épinglait ses
+dépendances, lui, **est resté** — mais renommé
+`test_les_workflows_epinglent_leurs_dependances` : la règle qu'il portait
+vaut pour les trois workflows restants et ne dépend plus du cas qui l'avait
+révélée.
 
 ## Alerte quand une source tombe
 
@@ -2624,11 +2625,12 @@ commentaire).
   tout changement dans `DEFAULT_FEEDS` côté `index.html`, voir limite
   ci-dessus)
 - **Dépendances** : `requirements.txt`, épinglées à la version exacte. Les
-  quatre workflows installent depuis ce fichier — `weekly-digest.yml` faisait
-  `pip install requests` tout court jusqu'au 04/09/2026, donc le
-  récapitulatif hebdomadaire tournait sur une version que rien n'avait
-  testée. Un test interdit désormais qu'un workflow réinstalle sans passer
-  par `requirements.txt`.
+  trois workflows installent depuis ce fichier. La règle vient d'un défaut
+  du récapitulatif hebdomadaire, qui faisait `pip install requests` tout
+  court jusqu'au 04/09/2026 et tournait donc sur une version que rien
+  n'avait testée ; le récapitulatif a été supprimé depuis, la règle est
+  restée et un test interdit qu'un workflow réinstalle sans passer par
+  `requirements.txt`.
 - **Taille max de l'historique** : `MAX_HISTORY_SIZE` dans `feed_store.py`
   (partagé par le robot et l'outil de fusion, pour que les deux appliquent
   exactement la même règle). Les articles marqués `official` y échappent,

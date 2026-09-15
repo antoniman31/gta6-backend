@@ -641,66 +641,6 @@ def test_promotion_entre_passages():
     check(promus2 == [], "un sujet déjà majeur ne réalerte pas à chaque reprise")
 
 
-def test_recap_hebdomadaire():
-    print("\n[hebdo] récapitulatif du dimanche")
-    import weekly_digest
-    from datetime import datetime, timedelta, timezone
-
-    maintenant = datetime(2026, 8, 30, 18, 0, tzinfo=timezone.utc)
-
-    def art(titre, jours, sources=1, officiel=False):
-        return {"title": titre, "link": f"https://x/{titre}",
-                "date": (maintenant - timedelta(days=jours)).isoformat(),
-                "official": officiel,
-                "extraSources": [{"source": str(i)} for i in range(sources - 1)]}
-
-    items = [
-        art("Sujet très repris", 2, sources=5),
-        art("Sujet moyennement repris", 1, sources=2),
-        art("Sujet isolé mais frais", 0),
-        art("Sujet de la semaine dernière", 9, sources=9),
-    ]
-    recents = weekly_digest.articles_de_la_semaine(items, maintenant)
-    check(len(recents) == 3, "les articles de plus de 7 jours sont écartés")
-    check(all("semaine dernière" not in i["title"] for i in recents),
-          "même très repris, un vieux sujet n'entre pas dans la semaine")
-
-    classe = weekly_digest.classer(recents)
-    check(classe[0]["title"] == "Sujet très repris",
-          "le classement est piloté par le nombre de rédactions, pas par la date")
-    check(classe[-1]["title"] == "Sujet isolé mais frais",
-          "l'article le moins repris ferme la marche malgré sa fraîcheur")
-
-    embed = weekly_digest.construire_embed(items, maintenant)
-    check(embed is not None, "un embed est produit")
-    check("3 articles" in embed["description"], "le décompte porte sur la semaine seule")
-    check("🔥" in embed["description"], "le sujet au-delà du seuil porte la flamme")
-    check("https://x/Sujet très repris" in embed["description"],
-          "les liens sont présents — c'est un récapitulatif qu'on lit, pas une bannière")
-
-    check(weekly_digest.construire_embed([], maintenant) is None,
-          "aucun article : aucun message (pas d'embed vide)")
-    check(weekly_digest.construire_embed([art("Vieux", 30)], maintenant) is None,
-          "rien cette semaine : aucun message non plus")
-
-    # Le Markdown de Discord est fragile aux deux bouts : un crochet dans le
-    # titre ferme le libellé trop tôt, une parenthèse dans l'URL ferme la
-    # cible trop tôt. Les deux produiraient un message cassé.
-    lien = weekly_digest.lien_markdown("Titre [avec] crochets", "https://x/page")
-    check("[avec]" not in lien, "les crochets d'un titre sont neutralisés")
-    check(lien.startswith("[Titre (avec) crochets]"), "le titre reste lisible")
-
-    lien2 = weekly_digest.lien_markdown("Normal", "https://x/GTA_(serie)")
-    check("(serie)" not in lien2.split("](")[1],
-          "les parenthèses d'une URL sont encodées (sinon le lien Discord casse)")
-    check("%28serie%29" in lien2, "elles sont encodées, pas supprimées")
-
-    long_titre = weekly_digest.lien_markdown("x" * 300, "https://x/y")
-    check(len(long_titre.split("](")[0]) <= 92, "un titre à rallonge est tronqué")
-    check(weekly_digest.lien_markdown(None, None).startswith("[sans titre]"),
-          "un article sans titre ni lien ne fait pas planter le récapitulatif")
-
-
 def test_suivi_sources_muettes():
     print("\n[sources] alerte après une panne de 24 h, pas après 6 passages")
     import fetch_feeds
@@ -4245,24 +4185,29 @@ def test_panne_serveur_nest_pas_une_source_cassee():
     check(etats["S2"] == "muette", "un flux vide reste « muette »")
 
 
-def test_recap_hebdo_epingle_sa_dependance():
-    print("\n[workflows] le récapitulatif tourne sur la version épinglée")
-    wf = open(".github/workflows/weekly-digest.yml", encoding="utf-8").read()
-    req = open("requirements.txt", encoding="utf-8").read()
+def test_les_workflows_epinglent_leurs_dependances():
+    print("\n[workflows] chaque workflow installe depuis requirements.txt")
+    import glob
 
-    # `pip install requests` tout court prend la dernière version publiée :
-    # ce workflow tournait donc sur une version que rien n'a testée, pendant
-    # que les trois autres tenaient celle de requirements.txt.
-    check("pip install requests\n" not in wf and "pip install requests " not in wf,
-          "plus d'installation non épinglée")
-    check("requirements.txt" in wf,
-          "la version vient de requirements.txt, pas d'un second endroit à tenir à jour")
+    # Ce test s'appelait test_recap_hebdo_epingle_sa_dependance : il était né
+    # d'un défaut du récapitulatif hebdomadaire, qui faisait `pip install
+    # requests` tout court et tournait donc sur une version que rien n'avait
+    # testée, pendant que les trois autres workflows tenaient celle de
+    # requirements.txt.
+    #
+    # Le récapitulatif a été supprimé le 15/09/2026. La règle qu'il avait fait
+    # naître, elle, vaut pour tous les workflows — d'où le renommage : elle ne
+    # dépend plus du cas qui l'a révélée. C'est la seule partie du test qui
+    # comptait vraiment, les trois vérifications propres au hebdo ne faisaient
+    # que décrire son fichier.
+    req = open("requirements.txt", encoding="utf-8").read()
     check("requests==" in req, "requirements.txt épingle bien requests")
 
-    # Tous les workflows Python doivent passer par requirements.txt, sinon
-    # la prochaine divergence se réinstallera sans bruit.
-    import glob
-    for chemin in glob.glob(".github/workflows/*.yml"):
+    # Tout workflow qui installe quelque chose doit passer par
+    # requirements.txt, sinon la prochaine divergence se réinstallera sans
+    # bruit. Trié : sans ça l'ordre des messages dépend du système de
+    # fichiers, et un échec ne se relit pas deux fois pareil.
+    for chemin in sorted(glob.glob(".github/workflows/*.yml")):
         contenu = open(chemin, encoding="utf-8").read()
         if "pip install" in contenu:
             check("requirements.txt" in contenu,
@@ -4962,7 +4907,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_garde_fou_archives,
            test_dedup_meme_passage,
            test_libelle_actu_majeure, test_promotion_entre_passages,
-           test_recap_hebdomadaire, test_suivi_sources_muettes,
+           test_suivi_sources_muettes,
            test_retirer_une_source_ne_laisse_pas_ses_articles,
            test_identifiants_de_sources_uniques,
            test_chaines_par_hote,
@@ -5003,7 +4948,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
-           test_recap_hebdo_epingle_sa_dependance,
+           test_les_workflows_epinglent_leurs_dependances,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,
