@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 50 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 51 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -70,7 +70,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 50 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 51 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -764,7 +764,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 50 sources
+(instantané), l'autre fait travailler le robot sur les 51 sources
 (~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
@@ -1702,6 +1702,59 @@ RockstarINTEL de mars 2026, GTA6 Times de juin, des annonces de précommande.
 Contrairement aux 8 de VG247, ceux-là étaient du contenu réel et récent au
 moment de leur import : les jeter était une décision de fond, pas un
 nettoyage. Elle a été prise le soir même — voir ci-dessous.
+
+### Cinquante noms proposés, une seule source retenue
+
+Le 15/09/2026 au soir, une liste de « 50 sources spécialisées pour ne rien
+rater sur GTA 6 » a été soumise au projet. Elle avait tout d'une liste
+exhaustive. Passée au crible, il en est sorti **une** source.
+
+**Vingt-quatre y étaient déjà**, dont les quatre officielles au complet. Et
+l'inverse valait aussi : la liste ignorait **26 sources de `FEEDS`** —
+GTA BOOM, GTA6 Times, RockstarINTEL, RockstarMag, VGTimes, PCGamesN, les deux
+Google News… Ce n'était pas une liste plus complète, c'était une liste
+différente et plus courte.
+
+**Onze étaient hors de portée par construction.** Le robot lit du RSS ; X
+(Twitter) n'en sert plus depuis 2023, Discord n'en a jamais eu, GTAForums
+bloque les robots — c'est déjà documenté ici. Aucune insistance ne changera
+ça. Reddit fait exception (`/r/GTA6/.rss` existe), mais c'est un fil de mèmes
+et de théories : du bruit à la journée.
+
+**Les dix restantes ont été sondées.** Une seule a tenu.
+
+| candidate | entrées | dont GTA 6 | verdict |
+|---|---|---|---|
+| **GamesIndustry.biz** | 100 | **2** | retenue, la plus récente du jour |
+| MP1st | 20 | 0 | flux vivant, rien sur GTA 6 |
+| Digital Foundry | 100 | 0 | c'est la rubrique *tech* d'Eurogamer, déjà présente |
+| Tez2 (Google News) | 50 | 0 | voir ci-dessous |
+| GTA6Guide, GrandTheftAuto5.fr, Les Numériques, PhonAndroid | — | — | **aucun flux RSS** |
+| GTANF | — | — | flux déclaré mais mal formé (`undefined entity`) |
+| GTA6France | 10 | 10 | voir ci-dessous |
+
+**Le piège du pseudonyme.** L'idée semblait excellente : ce dépôt suit déjà
+**Jason Schreier** par une recherche Google News sur son nom, donc pourquoi
+pas **Tez2**, l'insider Rockstar le plus respecté ? Deux requêtes testées,
+stricte puis large : 50 entrées chacune, **zéro retenue**, dont 15 à 22
+archives de plus de 45 jours. La raison tient à une différence qui ne saute
+pas aux yeux — « Jason Schreier » est un nom de journaliste qui figure **dans
+les titres**, « Tez2 » est un pseudonyme cité **dans le corps du texte**.
+Google News n'en fait pas un sujet. Le pattern ne se transpose pas d'un nom
+à l'autre.
+
+**Et le piège inverse : 100 % de pertinence comme signal d'alarme.**
+GTA6France affiche le meilleur score de la journée — 10 entrées, 10 retenues,
+la plus récente de la veille. Sauf que ses titres sont :
+
+> *Guide : comment semer la police et réduire la heat dans GTA 6*
+> *Guide : comment changer entre Jason et Lucia dans GTA 6 ?*
+
+Des guides de jeu pour un jeu qui **n'est pas sorti**. Personne n'y a joué.
+Ce ne peut être que du remplissage écrit pour le référencement. Le filtre par
+mots-clés ne pouvait pas le voir : il compte les mots, pas la valeur. Un taux
+de rétention parfait sur un site inconnu mérite d'être regardé de plus près,
+pas célébré.
 
 ### Les 33 vieux articles, et pourquoi aucun test ne les remplace
 

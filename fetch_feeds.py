@@ -314,6 +314,16 @@ FEEDS = [
     {"id": "rockstaractu", "name": "Rockstar Actu", "url": "https://rockstaractu.com/feed/", "official": False, "lang": "fr"},
     {"id": "dexerto-fr", "name": "Dexerto FR", "url": "https://www.dexerto.fr/feed/", "official": False, "lang": "fr"},
     {"id": "tweaktown", "name": "TweakTown", "url": "https://www.tweaktown.com/feeds/news-mf.xml", "official": False},
+
+    # Ajoutée le 15/09/2026 après une sonde de dix candidates dont elle est
+    # la SEULE rescapée. 100 entrées, 2 retenues, la plus récente du jour :
+    # « Rockstar and IWGB outline arguments at start of tribunal » et
+    # « GTA 6 Netflix preview drove more than 100,000 sign-ups ». Procès,
+    # syndicats, chiffres d'audience — un angle INDUSTRIE que les 50 autres
+    # sources ne couvraient pas, et qui complète le fil investisseurs de
+    # Take-Two sans le doubler : celui-ci ne parle que de Take-Two, celle-là
+    # parle du secteur qui l'entoure.
+    {"id": "gamesindustry", "name": "GamesIndustry.biz", "url": "https://www.gamesindustry.biz/feed", "official": False},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.
