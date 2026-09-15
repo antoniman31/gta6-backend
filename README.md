@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1188
+qui permet de tester tout le pipeline sans sortir de la machine. **1194
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1188 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Les 1194 vérifications de la suite étaient vertes dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
@@ -1489,6 +1489,42 @@ surcroît parallèle à son voisin « Tester l'affichage », ce que l'ancien
 n'était pas. Les deux groupes d'actions du panneau ont maintenant la même
 forme : les actions inoffensives sur la première rangée, la destructive seule
 en dessous.
+
+**Trois demandes, trois mesures.** « Chaque groupe de boutons doit être sur
+la même ligne », « les textes doivent être centrés parfaitement », « il n'y a
+pas d'espace entre les boutons et les textes » — avec, en appui, une capture
+entourant au feutre bleu les deux endroits fautifs.
+
+Le troisième point était le plus net : `.token-status` n'avait **aucune
+marge**. La ligne de bilan se posait au ras du bouton au-dessus, et comme ce
+bouton est rouge dans les deux cas — « Désactiver », « Oublier » — elle
+paraissait lui appartenir. 10 px désormais, mesurés à 10 px dans les deux
+groupes.
+
+Le premier a demandé un arbitrage. Des boutons dimensionnés par leur texte ne
+tiennent pas à trois sur 316 px : la rangée débordait, et pas au même endroit
+selon le groupe — « Désactiver » seul en dessous ici, « Oublier ce jeton »
+seul là. Deux mises en page pour deux groupes de trois boutons.
+`flex:1 1 0` les met à largeur égale et remplit la rangée ; l'air autour du
+libellé vient alors de l'étirement et non du rembourrage, qui n'est plus
+qu'un plancher. Restait que les libellés longs ne rentraient pas dans un
+tiers de rangée : « Tester l'affichage » et « Tester un envoi réel »
+deviennent **« Aperçu »** et **« Envoi réel »**. Le raccourci dit d'ailleurs
+mieux la différence que les anciens, qui commençaient tous deux par
+« Tester » — l'un ne fait que MONTRER une notification fabriquée sur place,
+l'autre en fait PARTIR une vraie.
+
+**Une limite, assumée et chiffrée.** Sous 380 px, trois boutons ne tiennent
+plus côte à côte sans qu'un libellé sorte de sa boîte : « Enregistrer »
+mesure 75 px et il lui faut 97 px de boîte, soit 377 px de fenêtre pour
+trois. Le retour à la ligne reprend donc ses droits sous ce seuil. Il est
+calculé, pas choisi, et un test vérifie qu'il existe — mieux vaut une rangée
+de plus qu'un texte qui déborde.
+
+Le deuxième point, enfin, était déjà acquis sans qu'on puisse le voir :
+l'écart entre le centre du texte et le centre de la boîte mesure **0,01 px**
+horizontalement et **0,00 px** verticalement. Le contrôle navigateur, qui
+tolérait 1,5 px, est descendu à 0,1 px.
 
 **Une fausse alerte, dite comme telle.** La même capture laissait croire que
 « Tester l'affichage » et « Tester un envoi réel » n'étaient pas alignés.

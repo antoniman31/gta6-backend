@@ -4966,6 +4966,34 @@ def test_cibles_tactiles_du_panneau():
               "%s laisse au moins autant d'air que le bouton ordinaire "
               "(%d px contre %d)" % (sel.replace("\\", ""), lat, ordinaire))
 
+    # Un groupe d'actions tient sur UNE rangée, à largeurs égales. Avec des
+    # boutons dimensionnés par leur texte, le dernier partait à la ligne, et
+    # pas le même selon le groupe : « Désactiver » seul ici, « Oublier » seul
+    # là. Deux mises en page pour deux groupes de trois boutons.
+    bloc = re.search(r"\n  \.setting-buttons\{([^}]*)\}", html).group(1)
+    check("flex-wrap:nowrap" in bloc, "un groupe d'actions ne se scinde pas")
+    bloc = re.search(r"\.setting-buttons button\{([^}]*)\}", html).group(1)
+    check("flex:1 1 0" in bloc, "ses boutons ont tous la même largeur")
+    check("white-space:nowrap" in bloc, "et aucun libellé ne se coupe en deux")
+
+    # Sous 380 px, trois boutons ne tiennent plus sans qu'un libellé déborde
+    # de sa boîte. Le repli est explicite, et son seuil est calculé.
+    media = re.search(r"@media \(max-width:(\d+)px\)\{\s*\.setting-buttons\{flex-wrap:wrap;\}", html)
+    check(media is not None,
+          "sous une largeur donnée, le retour à la ligne reprend ses droits")
+    check(media is not None and 340 <= int(media.group(1)) <= 400,
+          "et ce seuil est celui d'un téléphone étroit (%s px)"
+          % (media.group(1) if media else "?"))
+
+    # « Il n'y a pas d'espace entre les boutons et les textes » : la ligne de
+    # bilan était collée au bas des boutons, et comme elle suit souvent un
+    # bouton rouge, elle semblait en faire partie.
+    bloc = re.search(r"\n  \.token-status\{([^}]*)\}", html).group(1)
+    marge = re.search(r"margin-top:(\d+)px", bloc)
+    check(marge is not None and int(marge.group(1)) >= 8,
+          "le bilan respire sous les boutons (%s)"
+          % (marge.group(1) + " px" if marge else "aucune marge"))
+
     # La dérogation elle-même : chaque sélecteur qui y figure doit tenir son
     # engagement, sinon c'est une porte ouverte à la prochaine régression.
     ligne = re.search(r"([^\n]*)\{min-height:0;\}", html).group(1)
@@ -5131,7 +5159,11 @@ def test_panneau_parametres_structure():
           "aucun groupe ne reprend le nom de l'onglet qui le contient")
 
     # Les actions destructives ne ressemblent plus à leurs voisines.
-    for libelle in ("Réinitialiser", "Tout désactiver", "Oublier ce jeton"):
+    # « Oublier » et non « Oublier ce jeton » : à trois boutons par rangée,
+    # le libellé long ne tenait pas dans son tiers. Le groupe s'intitule
+    # « Déclenchement à distance » et la ligne d'état juste en dessous parle
+    # du jeton — le mot n'avait pas besoin d'être redit sur le bouton.
+    for libelle in ("Réinitialiser", "Tout désactiver", "Oublier"):
         motif = r'<button[^>]*class="[^"]*danger[^"]*"[^>]*>%s<' % re.escape(libelle)
         check(re.search(motif, panneau) is not None,
               "« %s » est cerné de rouge, pas déguisé en bouton ordinaire" % libelle)

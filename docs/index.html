@@ -836,7 +836,26 @@
   /* Les compteurs et la note du plafond sont vides tant qu'ils n'ont rien à
      dire : sans ceci, ils réserveraient une ligne pour rien. */
   .setting-desc:empty{display:none;}
-  .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
+  /* Un groupe d'actions tient sur UNE rangée, à largeurs égales. Avec des
+     boutons dimensionnés par leur texte, la rangée débordait et le dernier
+     partait à la ligne : le groupe push se lisait « deux tests » puis
+     « Désactiver » tout seul, celui du jeton « Enregistrer, Tester » puis
+     « Oublier » — deux mises en page différentes pour deux groupes de trois
+     boutons. flex:1 1 0 les met tous à la même largeur, et l'air autour du
+     libellé vient alors de l'étirement, pas du rembourrage.
+     Le rembourrage latéral n'est plus qu'un plancher : à 14 px il empêchait
+     « Enregistrer » d'entrer dans son tiers de rangée. */
+  .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:nowrap;}
+  .setting-buttons button{flex:1 1 0; min-width:0; white-space:nowrap; padding-left:10px; padding-right:10px;}
+  /* Sous 380 px, trois boutons ne tiennent plus côte à côte sans que le
+     libellé le plus long déborde de sa boîte. Mieux vaut une rangée de plus
+     qu'un texte qui sort du cadre : le retour à la ligne reprend ses droits.
+     Le seuil est calculé, pas choisi — « Enregistrer » mesure 75 px et il
+     lui faut 97 px de boîte, soit 377 px de fenêtre pour trois. */
+  @media (max-width:379px){
+    .setting-buttons{flex-wrap:wrap;}
+    .setting-buttons button{flex:1 1 auto;}
+  }
   .tag-badge.tag-hot{
     background:color-mix(in srgb, #ff6b35 18%, transparent);
     color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
@@ -884,8 +903,13 @@
      ligne n'en grandit que de 8 px, et ce bouton ne sert qu'une fois. */
   /* 44 px de haut : rien ne le contraint ici, la ligne a la place. */
   .history-line button{padding:7px 10px; font-size:10px; min-height:44px;}
+  /* 10 px : cette ligne se lisait collée au bas des boutons, et comme elle
+     suit souvent un bouton rouge, elle semblait en faire partie. Le groupe
+     de boutons a 6 px au-dessus de lui ; son bilan en a maintenant 10 en
+     dessous, pour que l'ensemble se lise comme un bloc et non comme un
+     seul pâté. */
   .token-status{
-    font-family:'JetBrains Mono',monospace; font-size:11px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:10px;
   }
   .token-status.ok{color:var(--ok);}
   .token-status.warn{color:var(--warn);}
@@ -1485,21 +1509,21 @@
     <div class="setting-group" id="pushGroup" style="display:none;">
       <span class="setting-label">Notifications sur cet appareil</span>
       <div class="setting-buttons">
-        <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer les notifications</button>
-        <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Tester l'affichage</button>
+        <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer</button>
+        <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Aperçu</button>
         <!-- Le bouton ci-dessus n'affiche qu'une notification LOCALE : il
              montre à quoi ça ressemble, il ne prouve RIEN sur la chaîne
              d'envoi. Celui-ci déclenche un vrai envoi signé depuis GitHub,
              qui traverse le service de push comme une vraie notification.
              Masqué sans jeton : sans lui, l'API GitHub refuserait. -->
-        <!-- « Tester l'envoi » et non « Tester un envoi réel » : à 14 px de
-             rembourrage le libellé long faisait 167 px, la rangée débordait
-             et le bouton partait à la ligne avec « Désactiver ». Raccourci,
-             les deux tests tiennent ensemble et l'action destructive se
-             retrouve seule en dessous — dans ce groupe comme dans celui du
-             jeton. Il est aussi parallèle à « Tester l'affichage », son
-             voisin, ce que l'ancien libellé n'était pas. -->
-        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Tester l'envoi</button>
+        <!-- « Aperçu » et « Envoi réel » plutôt que « Tester l'affichage »
+             et « Tester un envoi réel » : à trois boutons par rangée de
+             390 px, chacun dispose de 101 px, et les libellés longs n'y
+             entraient pas. Le raccourci dit d'ailleurs mieux la différence
+             que les anciens, qui commençaient tous deux par « Tester » —
+             l'un ne fait que MONTRER une notification fabriquée sur place,
+             l'autre en fait PARTIR une vraie, signée depuis GitHub. -->
+        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Envoi réel</button>
         <!-- En dernier et cerné de rouge : il était le troisième bouton d'une
              rangée de trois identiques, indiscernable de deux boutons de test
              inoffensifs. -->
@@ -1553,7 +1577,7 @@
       <div class="setting-buttons">
         <button class="small" onclick="saveGithubToken()">Enregistrer</button>
         <button class="small" onclick="testGithubToken()">Tester</button>
-        <button class="small danger" onclick="forgetGithubToken()">Oublier ce jeton</button>
+        <button class="small danger" onclick="forgetGithubToken()">Oublier</button>
       </div>
       <div class="token-status dim" id="tokenStatusLine"></div>
       <div class="setting-desc" hidden>
