@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 57 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 59 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -70,7 +70,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 57 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 59 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1074
+qui permet de tester tout le pipeline sans sortir de la machine. **1076
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -764,7 +764,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 57 sources
+(instantané), l'autre fait travailler le robot sur les 59 sources
 (~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
@@ -2297,6 +2297,81 @@ Ajouter « gta 6 quelque-chose » alors que « gta 6 » est déjà là donne
 l'illusion d'élargir la veille sans rien changer du tout. Le test vérifie
 qu'aucun mot-clé n'en contient un autre, sur `KEYWORDS` comme sur
 `OFFICIAL_KEYWORDS`.
+
+### On jetait soixante-dix pour cent de ce que Google donnait
+
+`MAX_ENTREES = 30` est le plafond par défaut : le robot ne regarde que
+`parsed.entries[:30]`. Seules `rockstar-en` et `rockstar-fr` avaient été
+relevées à 100, le jour où quelqu'un s'est aperçu que des pages de Rockstar
+n'apparaissaient nulle part.
+
+Or une recherche Google News rend **100 entrées**, classées par
+**pertinence** et non par date. On gardait donc les 30 « plus pertinentes de
+tous les temps » et on jetait les 70 autres — dont les articles récents mal
+classés — **avant même de les filtrer**.
+
+#### Ce qui l'a rendu visible
+
+Une sonde sur la même requête bornée à sept jours par l'opérateur `when:7d` :
+
+```
+when:7d FR : 100 entrées →  30 retenues sur les 30 examinées
+when:7d EN : 100 entrées →  29 retenues sur les 30 examinées
+```
+
+**Trente sur trente.** Ce n'était pas le filtre qui limitait, c'était le
+plafond. Les 17 recherches Google News sont passées à `max_entrees: 100`.
+Aucune requête supplémentaire : c'est la même réponse HTTP, on cesse
+simplement de la tronquer.
+
+#### Deux jumeaux `when:7d`, ajoutés à côté et non à la place
+
+Même avec 100 entrées, le classement reste celui de la pertinence. `when:7d`
+force les 100 créneaux à être récents. Les deux flux larges ont donc chacun
+un jumeau borné à sept jours — **ajouté à côté**, selon la règle établie avec
+Journal du Geek. La déduplication par lien fera le ménage ; ce qu'on saura
+dans une semaine, en comparant leurs articles exclusifs, c'est lequel attrape
+ce que l'autre manque. **57 → 59 sources.**
+
+### Compter ce qu'une source apporte, à chaque passage
+
+`articles_exclusifs` entre dans le journal de santé : le nombre d'articles
+dont une source est la **seule porteuse**, ceux qui disparaîtraient si on la
+retirait. C'est la seule mesure qui dise si une source mérite sa place, et
+elle manquait — d'où l'erreur de méthode documentée plus haut, où
+`days_since_last_article` avait été lu comme « on rate les articles de ce
+site » alors qu'il ne répond pas à cette question.
+
+### Un compteur faux se dénonce désormais lui-même
+
+Le 15/09/2026, un passage a ajouté **10 articles en n'en annonçant que 3** :
+Dexerto (6) et MGG (1) revenaient d'un HTTP 503 et leurs articles sont entrés
+sans être comptés par `new_this_run`. Le mécanisme **n'a pas été élucidé** —
+la piste est la reprise, qui remplace `resultats[fid]` après coup.
+
+Plutôt que de deviner, l'écart est rendu bruyant : le robot compare ce qui
+est réellement entré à ce qu'il annonce, et **nomme les sources en cause**
+quand les deux divergent. Un compteur silencieusement faux finit par tromper
+un diagnostic — c'est déjà arrivé avec `hot_count`, remis à zéro deux fois
+sans que rien ne le signale.
+
+### Quatre sources à fenêtre courte, dont une à surveiller
+
+Certains flux natifs ne servent que dix entrées. Le robot passant toutes les
+heures, un site qui publie plus de dix articles par heure, **tous sujets
+confondus**, en perdrait avant qu'on les voie.
+
+| source | fenêtre | articles GTA 6 / 30 j |
+|---|---|---|
+| **Game Rant** | 10 | **77** |
+| Polygon | 10 | 41 |
+| DualShockers | 10 | 15 |
+| ActuGaming | 10 | 15 |
+
+**Game Rant est le cas qui inquiète** : c'est la 5ᵉ source du classement des
+domaines, et sa fenêtre est la plus étroite. On ne peut pas élargir un flux
+que l'éditeur sert à dix entrées ; le remède serait un jumeau Google News
+`site:gamerant.com`, qui rend 100 entrées. Mesuré, pas encore appliqué.
 
 ## Pause nocturne : rien entre 0h et 5h
 
