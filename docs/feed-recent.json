@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-15T10:01:45.607465+00:00",
+  "generated_at": "2026-09-15T11:01:49.231237+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 46.9,
+  "duration_seconds": 49.3,
   "decode_failures": 0,
-  "total_articles": 2573,
-  "new_this_run": 0,
+  "total_articles": 2575,
+  "new_this_run": 2,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 48,
@@ -360,7 +360,7 @@
       "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-06-24T06:15:00-04:00",
-      "days_since_last_article": 82,
+      "days_since_last_article": 83,
       "status": "tarie"
     },
     {
@@ -382,8 +382,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-15T09:03:37+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-15T10:10:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -394,8 +394,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22GTA+6%22&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-15T02:45:47+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-15T10:26:49+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -462,10 +462,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 3,
@@ -546,10 +546,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T04:55:07+00:00",
       "days_since_last_article": 4,
@@ -570,10 +570,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:31:24+00:00",
       "days_since_last_article": 3,
@@ -582,10 +582,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-14T19:04:43+00:00",
       "days_since_last_article": 0,
@@ -702,10 +702,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-08T14:27:39+00:00",
       "days_since_last_article": 6,
@@ -756,7 +756,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-04T11:00:00+00:00",
-      "days_since_last_article": 10,
+      "days_since_last_article": 11,
       "status": "ok"
     },
     {
@@ -780,7 +780,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-07T10:07:52+00:00",
-      "days_since_last_article": 7,
+      "days_since_last_article": 8,
       "status": "ok"
     },
     {
@@ -816,7 +816,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "last_article": "2026-09-10T10:23:15+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -834,7 +834,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 87,
+      "entries_fetched": 86,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -883,11 +883,11 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,99,100,100,100,99,99,99",
+    "rockstar-fr": "100,100,100,100,99,100,100,100,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
     "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,102",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -897,7 +897,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -926,7 +926,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "87,87,87,87,87,87,86,85,87,87,86,87",
+    "engadget": "87,87,87,87,87,86,85,87,87,86,87,86",
     "arstechnica": "26,26,26,26,26,26,26,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -940,13 +940,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"29f74584e28068443e033766509af81d\"",
-      "modified": "Tue, 15 Sep 2026 09:53:18 GMT"
+      "etag": "W/\"c45ed8ef3f3d4f4e5eb8e7606f2a4b0d\"",
+      "modified": "Tue, 15 Sep 2026 10:48:24 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 08:39:05 GMT"
+      "modified": "Tue, 15 Sep 2026 10:48:14 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -960,28 +960,28 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1b8f4-kNWjTdvZJfPHBOFMsZCL9bWsX2Y\"",
+      "etag": "W/\"1ad73-ghG+Rx7k7EDwA7pKoRxdkR0LBK0\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"65ace428589173832da68e53f10dc015\"",
-      "modified": "Tue, 15 Sep 2026 09:48:44 GMT"
+      "etag": "W/\"b21a02cb95dda7bb894559ca2fefa79f\"",
+      "modified": "Tue, 15 Sep 2026 10:45:02 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 08:25:49 GMT"
+      "modified": "Tue, 15 Sep 2026 10:18:54 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 09:40:50 GMT"
+      "modified": "Tue, 15 Sep 2026 10:01:31 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 09:57:57 GMT"
+      "modified": "Tue, 15 Sep 2026 11:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -990,23 +990,23 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa91730-307b\"",
-      "modified": "Tue, 15 Sep 2026 10:00:16 GMT"
+      "etag": "W/\"6aa92541-2f83\"",
+      "modified": "Tue, 15 Sep 2026 11:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"f8550bf94f9adeceff6433ab16ac4072\"",
-      "modified": "Tue, 15 Sep 2026 09:04:12 GMT"
+      "etag": "W/\"a1bd3a9fe998356518b962b662059169\"",
+      "modified": "Tue, 15 Sep 2026 11:00:38 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789455906\"",
-      "modified": "Tue, 15 Sep 2026 07:05:06 GMT"
+      "etag": "W/\"1789466716\"",
+      "modified": "Tue, 15 Sep 2026 10:05:16 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"2f7d9304a0cb4fe038470dcb45c19be6\"",
-      "modified": "Tue, 15 Sep 2026 09:59:57 GMT"
+      "etag": "W/\"d3f9959bdc8d70e48025ca7ec0e72fe3\"",
+      "modified": "Tue, 15 Sep 2026 10:29:55 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1016,6 +1016,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar boss says GTA 6's police \"can be harder\" to shake off than before, \"but it's fun\" because it forces you \"to think more\" - GamesRadar+",
+      "link": "https://www.gamesradar.com/games/grand-theft-auto/rockstar-boss-says-gta-6s-police-can-be-harder-to-shake-off-than-before-but-its-fun-because-it-forces-you-to-think-more/",
+      "source_link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxOQ1NFTGlvc05HZUwwWWhzTURDZXMxRGhSMEJUWkxrc2N0VlJrelQxNWFmRlFmaEhIaG1DNjFZUnVCZVd3RzdNcmg3aVpETTVHcExkNzVIRXJXM1ZjdDN1UnJPSzc4S3pDNlpkcmxQdEdONERfVDRhaEs5czR0cXhaeGdobnNDQUpyanRSdi1rSEY1bTd3aTdLVXpHTkpuYWdBVGRMVHdrUzMyMFhtOXZPYWRfNEZDYTVQQjRhSXp0UUVsbE9ZeFU2VXdOYkVMc3U1bXhxcjVIeVlRTW9JdXJ1NTFWQ19TTjNCUWZWLVJsZjdjRnY1Sll3dE0zdjZ4Nm8?oc=5",
+      "date": "2026-09-15T10:26:49+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/3N4MyTKS7pQQDuVc3tDDoh-1920-80.jpg",
+      "description": "Rockstar boss says GTA 6's police \"can be harder\" to shake off than before, \"but it's fun\" because it forces you \"to think more\"&nbsp;&nbsp;GamesRadar+"
+    },
+    {
+      "title": "PS5 Slim, FAT ou PS5 Pro : laquelle acheter en 2026 avant GTA 6 ? - Numerama",
+      "link": "https://www.numerama.com/tech/1822552-ps5-pro-vs-ps5-slim-quelle-console-acheter.html",
+      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQZnRYSGRKTUh6OTNKY1RkTU16OS1FZVlrY0FyM2RtVlgxZHNsZ3pRdHNVVW0wUjZzUFFBUm5XdklwMW9vaEtqU2gzVFhJTU5YWFBLRnJFSFk1TldZdWREeUdXdm4yVG9NTVBIRnhGcGMxUkdKSDNldDg1OENLX1diRDgyRTNsb1NtaHJsZkV3?oc=5",
+      "date": "2026-09-15T10:10:30+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.numerama.com/www.numerama.com/wp-content/uploads/2024/11/ps5-recadre.jpg?resize=1600,900&key=24458163",
+      "description": "PS5 Slim, FAT ou PS5 Pro : laquelle acheter en 2026 avant GTA 6 ?&nbsp;&nbsp;Numerama"
+    },
     {
       "title": "Les Français installés à Auckland pourront jouer à GTA 6 avec douze heures d’avance sur Paris - Lepetitjournal.com",
       "link": "https://lepetitjournal.com/expat-mag/culture/francais-installes-auckland-pourront-jouer-gta-6-douze-heures-avance-paris-453500",
@@ -4955,32 +4981,6 @@
       "lang": "fr",
       "image": "https://i2.ytimg.com/vi/Y9iWGxY2cUg/hqdefault.jpg",
       "description": "Découvrez dès maintenant le replay du Zevent 2026 avec le réact de la vidéo de Sheshounet : GTA 6, et si c'était nul ? \n\nVoir la vidéo de Sheshounet : \nhttps://www.youtube.com/watch?v=avfsRihjcuw\n\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https"
-    },
-    {
-      "title": "Blizzard Workers Win Historic Union Contract That Could Set A New Standard For Game Developers",
-      "link": "https://www.gamespot.com/articles/blizzard-workers-win-historic-union-contract-that-could-set-a-new-standard-for-game-developers/",
-      "source_link": null,
-      "date": "2026-09-09T17:46:02+00:00",
-      "source": "GameSpot",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.gamespot.com/wp-content/uploads/original/1601/16018044/3930508-blizzard2.jpg?w=300",
-      "description": "A group of 1,900 employees at Blizzard Entertainment has successfully signed a union contract with Microsoft, securing several guarantees for members. Represented by the Communications Workers of America (CWA), the contract has given the Blizzard workers more workplace flexibility and guaranteed wage increases, but several other industry-first agreements could make this a blueprint for other video game unions to follow.\n\n\n\nOne of the big wins for the Blizzard union is artificial intelligence gua"
-    },
-    {
-      "title": "GTA 6 pourrait faire très mal à votre SSD, la taille du fichier a fuité - La Crème Du Gaming",
-      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-pourrait-faire-tres-mal-a-votre-ssd-la-taille-du-fichier-a-fuite-224922.html",
-      "source_link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNZGhycW4yTDBBRDdLa1VDSnpRVjJyV3hCTV8yZU5nMGdnMFlkVUxKcjhBWHdFRjduWU1ub010VWpacS1EQnotdl9rZ3FqWm5xdHliMHhRSjN6UnUzY3RKamEwS01RWDYtbTVFX2d4and6N2JRaGlGTzBtU0ZNcS0yMWFNUU54QnJSV3VlTTRoVV8zeHpaNnZ3c0pLTXlPWHpHcnpYMmpfbTF4MFlNZTJxdUZNOUIwMzdBZzRVNEZXMHJZMmZBbEx3?oc=5",
-      "date": "2026-09-09T17:00:11+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-pourrait-faire-tres-mal-a-votre-ssd-la-taille-du-fichier-a-fuite.webp",
-      "description": "GTA 6 pourrait faire très mal à votre SSD, la taille du fichier a fuité&nbsp;&nbsp;La Crème Du Gaming"
     }
   ],
   "partial": true,
