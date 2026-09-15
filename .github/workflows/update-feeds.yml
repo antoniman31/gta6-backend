@@ -353,6 +353,10 @@ jobs:
           PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
           PROMOTED_ITEMS_FILE: ${{ runner.temp }}/promoted_items.json
+          # Pour alerter sur Discord si TOUS les abonnements sont expirés :
+          # le push meurt en silence, Discord non. Voir
+          # alerte_discord_push_mort dans push_notify.py.
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       # Signal de vie ("dead man's switch"). C'est l'ABSENCE de ce signal
       # qui déclenche l'alerte, pas sa présence : un robot qui ne tourne

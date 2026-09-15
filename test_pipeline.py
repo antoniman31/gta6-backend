@@ -4242,6 +4242,57 @@ def test_les_workflows_epinglent_leurs_dependances():
                   "%s installe depuis requirements.txt" % chemin.split("/")[-1])
 
 
+def test_envoi_push_reel_testable():
+    print("\n[push] un vrai envoi est testable de bout en bout")
+    import push_notify
+
+    wf = open(".github/workflows/test-push.yml", encoding="utf-8").read()
+
+    # Séparé du robot, et déclenché à la main seulement : tester ne doit
+    # jamais publier, ni partir tout seul.
+    check("workflow_dispatch" in wf, "le test s'appelle à la demande")
+    check("schedule" not in wf and "repository_dispatch" not in wf,
+          "il ne part jamais tout seul")
+    check("contents: read" in wf,
+          "il est en lecture seule — un test n'écrit rien dans docs/")
+    check("push_notify.py --test" in wf,
+          "il passe par le vrai chemin d'envoi, pas par un double")
+
+    # Les trois secrets sans lesquels rien ne peut être signé ni adressé.
+    for secret in ("VAPID_PRIVATE_KEY", "VAPID_SUBJECT", "PUSH_SUBSCRIPTIONS"):
+        check(secret in wf, "le test reçoit %s" % secret)
+
+    # LE point du test. Un run qui reste vert alors qu'aucune notification
+    # n'arrive ne teste rien — c'est exactement ce qui s'est produit le
+    # 15/09/2026 : « 0/1 notification(s) envoyée(s) », job vert, défaut
+    # invisible pendant trois heures. mode_test rend donc un code d'erreur.
+    check(hasattr(push_notify, "mode_test"), "le mode test existe")
+    src = open("push_notify.py", encoding="utf-8").read()
+    debut = src.index("def mode_test():")
+    corps = src[debut:src.index("\ndef ", debut + 10)]
+    check("return 1" in corps,
+          "le mode test ÉCHOUE quand rien ne part (sinon il ne teste rien)")
+    check("envoyes == 0" in corps,
+          "l'échec est décidé sur le nombre réellement envoyé")
+
+    # L'alerte de dernier recours : quand plus personne n'est joignable, le
+    # dire sur un canal qui, lui, fonctionne encore.
+    check(hasattr(push_notify, "alerte_discord_push_mort"),
+          "une alerte existe quand tous les abonnements sont expirés")
+    prod = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    bloc_push = prod[prod.index("- name: Notifier par push"):]
+    check("DISCORD_WEBHOOK_URL" in bloc_push.split("- name:")[1],
+          "le robot peut alerter sur Discord quand le push est mort")
+
+    # Côté app : un bouton qui déclenche CE workflow, et pas le robot.
+    html = open("docs/index.html", encoding="utf-8").read()
+    check("testPushReel" in html, "l'app propose un envoi réel")
+    check('GITHUB_WORKFLOW_TEST_PUSH = "test-push.yml"' in html,
+          "elle vise le workflow de test, pas celui du robot")
+    check("pushTestRealBtn" in html and 'btnPush.style.display = token ? "" : "none"' in html,
+          "le bouton n'apparaît que si un jeton peut le faire marcher")
+
+
 def test_aucun_mot_cle_nen_contient_un_autre():
     print("\n[mots-clés] aucun mot-clé n'est rendu inatteignable par un autre")
     import fetch_feeds
@@ -5099,6 +5150,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_les_workflows_epinglent_leurs_dependances,
+           test_envoi_push_reel_testable,
            test_aucun_mot_cle_nen_contient_un_autre,
            test_variantes_du_nom_dans_les_requetes_google_news,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,

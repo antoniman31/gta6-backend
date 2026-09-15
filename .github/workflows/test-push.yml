@@ -1,0 +1,45 @@
+# Tester une VRAIE notification push, de bout en bout, à la demande.
+#
+# Le bouton « tester » de l'app ne pouvait afficher qu'une notification
+# LOCALE : une vraie push doit être signée avec la clé privée VAPID, qui vit
+# dans un secret et doit y rester — dans la page, n'importe qui pourrait
+# notifier l'appareil. Le seul chemin honnête est donc
+# app -> GitHub -> push_notify.py -> service de push -> téléphone.
+#
+# Workflow SÉPARÉ du robot, et pas une option de celui-ci : il tourne en
+# quelques secondes au lieu de trois minutes, et surtout il ne publie rien.
+# Tester ne doit rien écrire dans docs/.
+#
+# Il ÉCHOUE quand aucune notification ne part. C'est le point : un test qui
+# reste vert alors que rien n'arrive ne teste rien. Le 15/09/2026 un passage
+# a affiché « 0/1 envoyée(s) » en restant vert, et le défaut est passé
+# inaperçu trois heures.
+name: Tester la notification push
+
+on:
+  workflow_dispatch:
+
+# Lecture seule : ce workflow n'écrit rien, nulle part.
+permissions:
+  contents: read
+
+jobs:
+  test-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+
+      - name: Envoyer la notification de test
+        env:
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
+          # Pour prévenir sur Discord si plus aucun appareil n'est joignable :
+          # Discord marche encore quand le push est mort.
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python push_notify.py --test
