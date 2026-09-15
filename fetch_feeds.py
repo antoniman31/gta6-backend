@@ -314,6 +314,50 @@ FEEDS = [
     {"id": "rockstaractu", "name": "Rockstar Actu", "url": "https://rockstaractu.com/feed/", "official": False, "lang": "fr"},
     {"id": "dexerto-fr", "name": "Dexerto FR", "url": "https://www.dexerto.fr/feed/", "official": False, "lang": "fr"},
     {"id": "tweaktown", "name": "TweakTown", "url": "https://www.tweaktown.com/feeds/news-mf.xml", "official": False},
+
+    # Ajoutée le 15/09/2026 après une sonde de dix candidates dont elle est
+    # la SEULE rescapée. 100 entrées, 2 retenues, la plus récente du jour :
+    # « Rockstar and IWGB outline arguments at start of tribunal » et
+    # « GTA 6 Netflix preview drove more than 100,000 sign-ups ». Procès,
+    # syndicats, chiffres d'audience — un angle INDUSTRIE que les 50 autres
+    # sources ne couvraient pas, et qui complète le fil investisseurs de
+    # Take-Two sans le doubler : celui-ci ne parle que de Take-Two, celle-là
+    # parle du secteur qui l'entoure.
+    {"id": "gamesindustry", "name": "GamesIndustry.biz", "url": "https://www.gamesindustry.biz/feed", "official": False},
+
+    # ------------------------------------------------------------------
+    # Ajoutées le 15/09/2026, troisième vague. Sondées, comme les autres.
+    #
+    # Les deux premières DOUBLENT volontairement une source existante :
+    # Journal du Geek et Frandroid sont déjà là, mais par une recherche
+    # Google News. Ces flux-ci sont leurs flux NATIFS, restreints au tag
+    # « gta-6 », et la sonde les donne bien plus denses :
+    #
+    #   journaldugeek  30 entrées, 27 retenues, la plus récente du jour
+    #   frandroid      15 entrées, 14 retenues, la plus récente à 5 jours
+    #
+    # Pourquoi doubler au lieu de remplacer. Un flux par tag dépend du
+    # balisage du média : si un journaliste oublie le tag, l'article
+    # n'existe pas pour le robot, et RIEN ne le signale — la source a
+    # simplement l'air calme. Le tri par Google News, lui, ne dépend pas
+    # d'eux. Entre perdre un article sans le savoir et payer deux requêtes
+    # de plus sur un passage de 50 secondes, le choix est vite fait pour
+    # une veille dont le but est de ne rien rater.
+    #
+    # La déduplication par lien fera le ménage : un article remonté des
+    # deux côtés ne comptera qu'une fois. Ce qu'on saura dans une semaine,
+    # en comparant, c'est si l'un des deux attrape ce que l'autre manque.
+    #
+    # La troisième est une RECHERCHE Reddit, pas un fil brut. La nuance
+    # est tout : /r/GTA6/new/.rss déverserait les mèmes du subreddit à la
+    # journée, alors que search.rss sur r/GamingLeaksAndRumours filtre sur
+    # « GTA 6 » et remonte du suivi de fuites — 25 entrées, 12 retenues.
+    # C'est le seul moyen propre d'atteindre Reddit, et le seul angle
+    # « leak-tracking » de toute la liste.
+    # ------------------------------------------------------------------
+    {"id": "jdg-natif", "name": "Journal du Geek (tag)", "url": "https://www.journaldugeek.com/tag/gta-6/feed/", "official": False, "lang": "fr"},
+    {"id": "frandroid-natif", "name": "Frandroid (tag)", "url": "https://www.frandroid.com/tag/gta-6/feed", "official": False, "lang": "fr"},
+    {"id": "reddit-leaks", "name": "Reddit — fuites et rumeurs", "url": "https://www.reddit.com/r/GamingLeaksAndRumours/search.rss?q=GTA+6&restrict_sr=on", "official": False},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.
