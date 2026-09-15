@@ -260,6 +260,10 @@
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
     padding:10px 14px; border-radius:var(--r-sm); cursor:pointer; letter-spacing:0.02em;
     transition:border-color var(--t-court) var(--courbe);
+    /* Sans effet sur un bouton ordinaire, qui centre déjà son contenu tout
+       seul. C'est le filet : le jour où un display de type flex est reposé
+       en style inline, le libellé reste centré au lieu de remonter. */
+    align-items:center; justify-content:center;
     /* 44 px par DÉFAUT plutôt qu'énumérés un par un. La passe précédente
        avait traité les commandes de la page une à une et oublié tout
        l'intérieur des panneaux : « Fermer » tenait encore dans 23 px, le
@@ -286,7 +290,11 @@
   button:disabled{opacity:0.4; cursor:default;}
   /* min-height et non un rembourrage plus épais : le bouton « Charger 30 de
      plus » mesurait 27px de haut, le plus petit de toute l'interface. */
-  button.small{padding:6px 10px; font-size:11px; min-height:44px;}
+  /* 14 px et non 10 : le texte n'avait que 11 px de marge de chaque côté,
+     la plus étroite du panneau — un bouton ordinaire en a 15, un onglet de
+     18 à 29. Le rembourrage vertical passe de 6 à 8 px : min-height:44px
+     fixe déjà la hauteur, donc seule la largeur bouge. */
+  button.small{padding:8px 14px; font-size:11px; min-height:44px;}
 
   .progress-bar{
     width:100%; height:4px; background:var(--bg-elevated); border-radius:var(--r-xs);
@@ -800,7 +808,9 @@
      reste HORS du titre — un bouton dans un titre serait lu comme faisant
      partie de son intitulé. */
   .settings-title h2{font:inherit; letter-spacing:inherit; color:inherit;}
-  .settings-title button{padding:4px 8px; font-size:11px;}
+  /* 8 px de marge latérale, c'était le dernier bouton du panneau à laisser
+     son texte coller aux bords. Aligné sur les 15 px des autres. */
+  .settings-title button{padding:8px 14px; font-size:11px;}
   .setting-group{margin-bottom:20px;}
   .setting-label{
     font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
@@ -826,7 +836,26 @@
   /* Les compteurs et la note du plafond sont vides tant qu'ils n'ont rien à
      dire : sans ceci, ils réserveraient une ligne pour rien. */
   .setting-desc:empty{display:none;}
-  .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
+  /* Un groupe d'actions tient sur UNE rangée, à largeurs égales. Avec des
+     boutons dimensionnés par leur texte, la rangée débordait et le dernier
+     partait à la ligne : le groupe push se lisait « deux tests » puis
+     « Désactiver » tout seul, celui du jeton « Enregistrer, Tester » puis
+     « Oublier » — deux mises en page différentes pour deux groupes de trois
+     boutons. flex:1 1 0 les met tous à la même largeur, et l'air autour du
+     libellé vient alors de l'étirement, pas du rembourrage.
+     Le rembourrage latéral n'est plus qu'un plancher : à 14 px il empêchait
+     « Enregistrer » d'entrer dans son tiers de rangée. */
+  .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:nowrap;}
+  .setting-buttons button{flex:1 1 0; min-width:0; white-space:nowrap; padding-left:10px; padding-right:10px;}
+  /* Sous 380 px, trois boutons ne tiennent plus côte à côte sans que le
+     libellé le plus long déborde de sa boîte. Mieux vaut une rangée de plus
+     qu'un texte qui sort du cadre : le retour à la ligne reprend ses droits.
+     Le seuil est calculé, pas choisi — « Enregistrer » mesure 75 px et il
+     lui faut 97 px de boîte, soit 377 px de fenêtre pour trois. */
+  @media (max-width:379px){
+    .setting-buttons{flex-wrap:wrap;}
+    .setting-buttons button{flex:1 1 auto;}
+  }
   .tag-badge.tag-hot{
     background:color-mix(in srgb, #ff6b35 18%, transparent);
     color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
@@ -874,8 +903,13 @@
      ligne n'en grandit que de 8 px, et ce bouton ne sert qu'une fois. */
   /* 44 px de haut : rien ne le contraint ici, la ligne a la place. */
   .history-line button{padding:7px 10px; font-size:10px; min-height:44px;}
+  /* 10 px : cette ligne se lisait collée au bas des boutons, et comme elle
+     suit souvent un bouton rouge, elle semblait en faire partie. Le groupe
+     de boutons a 6 px au-dessus de lui ; son bilan en a maintenant 10 en
+     dessous, pour que l'ensemble se lise comme un bloc et non comme un
+     seul pâté. */
   .token-status{
-    font-family:'JetBrains Mono',monospace; font-size:11px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:10px;
   }
   .token-status.ok{color:var(--ok);}
   .token-status.warn{color:var(--warn);}
@@ -1475,27 +1509,33 @@
     <div class="setting-group" id="pushGroup" style="display:none;">
       <span class="setting-label">Notifications sur cet appareil</span>
       <div class="setting-buttons">
-        <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer les notifications</button>
-        <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Tester l'affichage</button>
+        <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer</button>
+        <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Aperçu</button>
         <!-- Le bouton ci-dessus n'affiche qu'une notification LOCALE : il
              montre à quoi ça ressemble, il ne prouve RIEN sur la chaîne
              d'envoi. Celui-ci déclenche un vrai envoi signé depuis GitHub,
              qui traverse le service de push comme une vraie notification.
              Masqué sans jeton : sans lui, l'API GitHub refuserait. -->
-        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Tester un envoi réel</button>
+        <!-- « Aperçu » et « Envoi réel » plutôt que « Tester l'affichage »
+             et « Tester un envoi réel » : à trois boutons par rangée de
+             390 px, chacun dispose de 101 px, et les libellés longs n'y
+             entraient pas. Le raccourci dit d'ailleurs mieux la différence
+             que les anciens, qui commençaient tous deux par « Tester » —
+             l'un ne fait que MONTRER une notification fabriquée sur place,
+             l'autre en fait PARTIR une vraie, signée depuis GitHub. -->
+        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Envoi réel</button>
         <!-- En dernier et cerné de rouge : il était le troisième bouton d'une
              rangée de trois identiques, indiscernable de deux boutons de test
              inoffensifs. -->
         <button class="small danger" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
       </div>
       <div class="token-status dim" id="pushStatusLine"></div>
+      <!-- Une ligne, pas quatre. Ce bloc s'affiche en PERMANENCE dès que
+           l'appareil est abonné : y laisser le mode d'emploi complet, c'est
+           garder à l'écran pour toujours les instructions d'une étape faite
+           une fois. Le détail vit derrière le « ? » du groupe. -->
       <div id="pushSubscriptionBlock" class="bloc-replie">
-        <div class="setting-desc">
-          Dernière étape, à faire une seule fois : copie ce bloc et colle-le dans le
-          secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong> (Settings → Secrets and
-          variables → Actions). Tant que ce n'est pas fait, le robot ne sait pas où
-          envoyer les notifications.
-        </div>
+        <div class="setting-desc">À coller dans le secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong>.</div>
         <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide champ-mono petit"
                   aria-label="Abonnement push de cet appareil"></textarea>
         <div class="setting-buttons">
@@ -1503,8 +1543,15 @@
         </div>
       </div>
       <div class="setting-desc" hidden>
-        Une vraie notification système, qui ouvre l'article au lieu d'ouvrir Discord.
-        Un seul message récapitulatif par passage du robot, comme sur Discord.
+        Une vraie notification système, qui ouvre l'article au lieu d'ouvrir
+        Discord. Un seul message récapitulatif par passage du robot.
+        <br><br>
+        <strong>Après chaque abonnement</strong>, il faut copier le bloc
+        ci-dessus dans le secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong>
+        (Settings → Secrets and variables → Actions) : l'app n'a pas le droit
+        d'écrire un secret elle-même. Tant que ce n'est pas fait, le robot ne
+        sait pas où envoyer les notifications. C'est à refaire si l'app est
+        réinstallée — l'abonnement change avec elle.
       </div>
     </div>
 
@@ -1530,7 +1577,7 @@
       <div class="setting-buttons">
         <button class="small" onclick="saveGithubToken()">Enregistrer</button>
         <button class="small" onclick="testGithubToken()">Tester</button>
-        <button class="small danger" onclick="forgetGithubToken()">Oublier ce jeton</button>
+        <button class="small danger" onclick="forgetGithubToken()">Oublier</button>
       </div>
       <div class="token-status dim" id="tokenStatusLine"></div>
       <div class="setting-desc" hidden>
@@ -3761,12 +3808,18 @@ async function refreshPushUI(){
 
   if(subscription){
     enableBtn.style.display = "none";
-    disableBtn.style.display = "inline-flex";
+    // Chaîne vide et non "inline-flex", pour la raison déjà rencontrée sur
+    // triggerRunBtn : un display posé en style inline l'emporte sur la
+    // feuille de style et fait du bouton un conteneur flex, dont le libellé
+    // remonte en haut de la boîte au lieu d'y être centré. Le correctif
+    // avait été appliqué là-bas et jamais reporté ici — ces deux boutons
+    // sont les seuls du panneau dont le texte était décentré de 8,5 px.
+    disableBtn.style.display = "";
     block.style.display = "block";
     document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
     setPushStatus("Cet appareil est abonné.", "ok");
   }else{
-    enableBtn.style.display = "inline-flex";
+    enableBtn.style.display = "";
     disableBtn.style.display = "none";
     block.style.display = "none";
     if(Notification.permission === "denied"){
@@ -4799,7 +4852,12 @@ function greffeAides(){
     // étiquette de champ, elle aussi en .setting-desc mais toujours visible.
     // Sans ce filtre, le « ? » masquait l'étiquette et laissait la vraie
     // explication inatteignable.
-    const desc = g.querySelector(".setting-desc[hidden]");
+    //
+    // :scope > et non un descendant quelconque : le groupe des notifications
+    // contient un bloc replié qui a ses propres explications. Le « ? » s'y
+    // greffait, si bien qu'il ouvrait le mode d'emploi de l'abonnement au
+    // lieu de l'explication du réglage — et que celle-ci était inatteignable.
+    const desc = g.querySelector(":scope > .setting-desc[hidden]");
     const lab = g.querySelector(".setting-label");
     if(!desc || !lab || lab.querySelector(".aide")) return;
     const b = document.createElement("button");

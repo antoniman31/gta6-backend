@@ -4938,6 +4938,62 @@ def test_cibles_tactiles_du_panneau():
           "sa zone de clic atteint 44 px (%d + 2x%s)"
           % (cote, debord.group(1) if debord else "?"))
 
+    # Un display posé en style inline l'emporte sur la feuille de style et
+    # fait du bouton un CONTENEUR FLEX : son libellé cesse d'être centré et
+    # remonte en haut de la boîte, de 8,5 px sur un bouton .small. Le défaut
+    # avait déjà été rencontré et corrigé sur triggerRunBtn — et jamais
+    # reporté sur les deux boutons du groupe push, qui l'ont gardé.
+    check('style.display = "inline-flex"' not in html,
+          "aucun JS ne pose un display de type flex pour montrer un bouton")
+    check(html.count('style.display = token ? "" : "none"') >= 1
+          or '.style.display = "";' in html,
+          "montrer un bouton rend la main à la feuille de style (chaîne vide)")
+
+    # Le filet, pour que le piège ne puisse plus se refermer : même devenu
+    # conteneur flex, le bouton centre son contenu.
+    bloc = re.search(r"\n  button\{([^}]*)\}", html).group(1)
+    check("align-items:center" in bloc and "justify-content:center" in bloc,
+          "le bouton centre son libellé même s'il devient un conteneur flex")
+
+    # « Les textes sont trop collés au bouton » : .small n'avait que 10 px de
+    # rembourrage latéral, le plus étroit du panneau, là où le bouton
+    # ordinaire en a 14. Le bouton « Fermer » en avait 8.
+    ordinaire = int(re.search(r"padding:\d+px (\d+)px", bloc).group(1))
+    for sel in ("button.small", r"\.settings-title button"):
+        regle = re.search(r"%s\{([^}]*)\}" % sel, html).group(1)
+        lat = int(re.search(r"padding:\d+px (\d+)px", regle).group(1))
+        check(lat >= ordinaire,
+              "%s laisse au moins autant d'air que le bouton ordinaire "
+              "(%d px contre %d)" % (sel.replace("\\", ""), lat, ordinaire))
+
+    # Un groupe d'actions tient sur UNE rangée, à largeurs égales. Avec des
+    # boutons dimensionnés par leur texte, le dernier partait à la ligne, et
+    # pas le même selon le groupe : « Désactiver » seul ici, « Oublier » seul
+    # là. Deux mises en page pour deux groupes de trois boutons.
+    bloc = re.search(r"\n  \.setting-buttons\{([^}]*)\}", html).group(1)
+    check("flex-wrap:nowrap" in bloc, "un groupe d'actions ne se scinde pas")
+    bloc = re.search(r"\.setting-buttons button\{([^}]*)\}", html).group(1)
+    check("flex:1 1 0" in bloc, "ses boutons ont tous la même largeur")
+    check("white-space:nowrap" in bloc, "et aucun libellé ne se coupe en deux")
+
+    # Sous 380 px, trois boutons ne tiennent plus sans qu'un libellé déborde
+    # de sa boîte. Le repli est explicite, et son seuil est calculé.
+    media = re.search(r"@media \(max-width:(\d+)px\)\{\s*\.setting-buttons\{flex-wrap:wrap;\}", html)
+    check(media is not None,
+          "sous une largeur donnée, le retour à la ligne reprend ses droits")
+    check(media is not None and 340 <= int(media.group(1)) <= 400,
+          "et ce seuil est celui d'un téléphone étroit (%s px)"
+          % (media.group(1) if media else "?"))
+
+    # « Il n'y a pas d'espace entre les boutons et les textes » : la ligne de
+    # bilan était collée au bas des boutons, et comme elle suit souvent un
+    # bouton rouge, elle semblait en faire partie.
+    bloc = re.search(r"\n  \.token-status\{([^}]*)\}", html).group(1)
+    marge = re.search(r"margin-top:(\d+)px", bloc)
+    check(marge is not None and int(marge.group(1)) >= 8,
+          "le bilan respire sous les boutons (%s)"
+          % (marge.group(1) + " px" if marge else "aucune marge"))
+
     # La dérogation elle-même : chaque sélecteur qui y figure doit tenir son
     # engagement, sinon c'est une porte ouverte à la prochaine régression.
     ligne = re.search(r"([^\n]*)\{min-height:0;\}", html).group(1)
@@ -5022,6 +5078,36 @@ def test_panneau_parametres_accessible():
               "%s : le « ? » ouvre une explication visible, pas un texte "
               "enfermé dans un bloc lui-même masqué" % gid)
 
+    # La cause de fond, prise à la racine plutôt qu'au cas par cas : le « ? »
+    # ne vise qu'un enfant DIRECT du groupe. Sans cela il se greffait sur
+    # n'importe quelle explication repliée, bloc annexe compris.
+    corps = html[html.index("function greffeAides("):]
+    corps = corps[:corps.index("\n}")]
+    check(':scope > .setting-desc[hidden]' in corps,
+          "le « ? » ne vise qu'une explication enfant direct du groupe")
+
+    # Et réciproquement : une explication repliée à l'intérieur d'un bloc
+    # annexe n'aurait plus aucun bouton pour l'ouvrir. Elle serait morte.
+    for m in re.finditer(r'class="setting-desc" hidden', panneau):
+        check(not dans_un_bloc_replie(panneau, m.start()),
+              "aucune explication repliée n'est enfermée dans un bloc annexe, "
+              "où plus rien ne pourrait l'ouvrir")
+
+    # Le bloc de l'abonnement s'affiche EN PERMANENCE dès que l'appareil est
+    # abonné. Le mode d'emploi complet y tenait quatre lignes : les
+    # instructions d'une étape faite une fois restaient à l'écran pour
+    # toujours. Une ligne, et le détail derrière le « ? ».
+    bloc = panneau[panneau.index('id="pushSubscriptionBlock"'):]
+    bloc = bloc[:bloc.index("<textarea")]
+    visibles = re.findall(r'<div class="setting-desc">(.*?)</div>', bloc, re.S)
+    for texte in visibles:
+        nu = re.sub(r"<[^>]+>|\s+", " ", texte).strip()
+        check(len(nu) <= 120,
+              "le texte permanent du bloc d'abonnement tient en une ligne "
+              "(%d caractères)" % len(nu))
+    check("Dernière étape" not in panneau,
+          "le pavé d'instructions ne campe plus dans le panneau")
+
 
 def test_panneau_parametres_structure():
     print("\n[app] la structure du panneau ne piège plus le doigt")
@@ -5073,7 +5159,11 @@ def test_panneau_parametres_structure():
           "aucun groupe ne reprend le nom de l'onglet qui le contient")
 
     # Les actions destructives ne ressemblent plus à leurs voisines.
-    for libelle in ("Réinitialiser", "Tout désactiver", "Oublier ce jeton"):
+    # « Oublier » et non « Oublier ce jeton » : à trois boutons par rangée,
+    # le libellé long ne tenait pas dans son tiers. Le groupe s'intitule
+    # « Déclenchement à distance » et la ligne d'état juste en dessous parle
+    # du jeton — le mot n'avait pas besoin d'être redit sur le bouton.
+    for libelle in ("Réinitialiser", "Tout désactiver", "Oublier"):
         motif = r'<button[^>]*class="[^"]*danger[^"]*"[^>]*>%s<' % re.escape(libelle)
         check(re.search(motif, panneau) is not None,
               "« %s » est cerné de rouge, pas déguisé en bouton ordinaire" % libelle)
