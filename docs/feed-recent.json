@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-15T09:01:54.237761+00:00",
+  "generated_at": "2026-09-15T09:33:42.987014+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 51.6,
+  "duration_seconds": 52.4,
   "decode_failures": 0,
-  "total_articles": 2572,
-  "new_this_run": 0,
+  "total_articles": 2573,
+  "new_this_run": 1,
   "hot_count": 6,
   "hot_threshold": 3,
   "sources_count": 48,
@@ -318,7 +318,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -382,8 +382,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "last_article": "2026-09-14T17:02:02+00:00",
+      "new_this_run": 1,
+      "last_article": "2026-09-15T09:03:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -462,10 +462,10 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 40,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T16:28:40+00:00",
       "days_since_last_article": 3,
@@ -570,10 +570,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-11T15:31:24+00:00",
       "days_since_last_article": 3,
@@ -582,10 +582,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "last_article": "2026-09-14T19:04:43+00:00",
       "days_since_last_article": 0,
@@ -883,11 +883,11 @@
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,99,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,99,100,100,100,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,0,0,0,0,0,0,15,15,15,15",
+    "rockstar-youtube": "15,0,0,0,0,0,0,15,15,15,15,15",
     "gnews-fr": "102,102,102,102,102,102,102,102,102,102,102,102",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -897,7 +897,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,0,0,0,0,0,0,15,15,15,15",
+    "rockstarmag-youtube": "15,0,0,0,0,0,0,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -926,7 +926,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "86,86,86,87,87,87,87,87,87,86,85,87",
+    "engadget": "86,86,87,87,87,87,87,87,86,85,87,87",
     "arstechnica": "26,26,26,26,26,26,26,26,26,26,26,26",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -940,8 +940,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"cbc1371818ed5bc14eef34ed1975c9ba\"",
-      "modified": "Tue, 15 Sep 2026 08:36:07 GMT"
+      "etag": "W/\"2d4269466900fa8585a6a58338f54d11\"",
+      "modified": "Tue, 15 Sep 2026 09:22:45 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -965,8 +965,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"88d11b22e946938902afa4727eac5762\"",
-      "modified": "Tue, 15 Sep 2026 09:00:41 GMT"
+      "etag": "W/\"f42e8bdcf1ddffb406f222969dda048a\"",
+      "modified": "Tue, 15 Sep 2026 09:32:44 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -981,22 +981,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 09:01:26 GMT"
+      "modified": "Tue, 15 Sep 2026 09:27:50 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"f1615b3b90d4f780fe62bba2fa139087\"",
-      "modified": "Tue, 15 Sep 2026 08:39:19 GMT"
+      "etag": "\"ddc64a31997915a5201af6506143228c\"",
+      "modified": "Tue, 15 Sep 2026 09:18:39 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa90922-3098\"",
-      "modified": "Tue, 15 Sep 2026 09:00:18 GMT"
+      "etag": "W/\"6aa91026-3098\"",
+      "modified": "Tue, 15 Sep 2026 09:30:14 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"2c5d68ef07f06f497c264167ce2140c2\"",
-      "modified": "Tue, 15 Sep 2026 09:00:21 GMT"
+      "etag": "W/\"f8550bf94f9adeceff6433ab16ac4072\"",
+      "modified": "Tue, 15 Sep 2026 09:04:12 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1005,8 +1005,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"5675af625b66f7e22e26f528611c1e32\"",
-      "modified": "Tue, 15 Sep 2026 08:58:16 GMT"
+      "etag": "W/\"f248c81173f4386b5626dd2ddd8d67b7\"",
+      "modified": "Tue, 15 Sep 2026 09:30:59 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1016,6 +1016,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Les Français installés à Auckland pourront jouer à GTA 6 avec douze heures d’avance sur Paris - Lepetitjournal.com",
+      "link": "https://lepetitjournal.com/expat-mag/culture/francais-installes-auckland-pourront-jouer-gta-6-douze-heures-avance-paris-453500",
+      "source_link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOMk9lMnRNVmhoSFZJbHF4bWxWWF9sck13bFpSZmlvdkpOTVNRRVpPQjFaRV80T2c1UFdXVV9MNkhOdThEd3ZXbkVPRW5uZUFCelN3b3hXTHJHY1EtMUdSVGRTemVTdDdiOVJyUVpHaDRZcmtGdGtKQnBTbjhHbHhrbFRENWdFbnhFTVU0VEpZY1lQZWNzVkVMSkdwbmZOdTVTM1R3em5ZY2NYYmlRYVJzUWlVWTlaTDhMSXVuX0UwaVVRRkZD?oc=5",
+      "date": "2026-09-15T09:03:37+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://backoffice.lepetitjournal.com/sites/default/files/2026-09/GTA%206%20fuseau%20horaire%20jeu-2.jpg",
+      "description": "Les Français installés à Auckland pourront jouer à GTA 6 avec douze heures d’avance sur Paris&nbsp;&nbsp;Lepetitjournal.com"
+    },
     {
       "title": "'GTA 6' Car Stealing Mechanics Revealed: Rockstar Games Is Making It a Tad Bit Realistic - player.one",
       "link": "https://www.player.one/gta-6-car-stealing-mechanics-revealed-rockstar-games-making-it-tad-bit-realistic-164119",
@@ -4968,19 +4981,6 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-pourrait-faire-tres-mal-a-votre-ssd-la-taille-du-fichier-a-fuite.webp",
       "description": "GTA 6 pourrait faire très mal à votre SSD, la taille du fichier a fuité&nbsp;&nbsp;La Crème Du Gaming"
-    },
-    {
-      "title": "Can You Really Play GTA 6 Early? This Classic Xbox and PS5 Time Zone Trick May Work, But Has a Big Catch - PCMag",
-      "link": "https://www.pcmag.com/news/can-you-play-gta-6-early-release-times-xbox-ps5-time-zone-trick-catch",
-      "source_link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxORXZHc1JBWnZBcS0wYmVydWcxN290TW1pSm5oUnJBOUkzZ0MyRWV6N2pHYjJWZ3N1b2ZKOXAyRjFQbjd3VXdmeTdVTzVwcFNXZzBySFM0Vkh1eWVNV3lDNVZNRjZBVWlXaGVhdU5vVEJ4a00tTkFTQlMwYmN4R3J5SV9fdk4zdGh1UmRQcDJPVUVwcFg1X1FuUDRVVXI?oc=5",
-      "date": "2026-09-09T16:53:03+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://i.pcmag.com/imagery/articles/03Z5sRHg9QfMyUCnri9PrMh-1.fit_lim.size_1200x630.v1788961966.jpg",
-      "description": "Can You Really Play GTA 6 Early? This Classic Xbox and PS5 Time Zone Trick May Work, But Has a Big Catch&nbsp;&nbsp;PCMag"
     }
   ],
   "partial": true,
