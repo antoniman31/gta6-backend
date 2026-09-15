@@ -4215,60 +4215,64 @@ def test_les_workflows_epinglent_leurs_dependances():
 
 
 def test_variantes_du_nom_dans_les_requetes_google_news():
-    print("\n[requêtes] chaque recherche Google News couvre les quatre écritures")
+    print("\n[requêtes] chaque recherche Google News couvre les six écritures")
     import fetch_feeds
     from urllib.parse import unquote
 
-    # Mesuré le 15/09/2026, en sondant chaque variante À L'EXCLUSION des
-    # autres, pour savoir ce que chacune apporte VRAIMENT :
+    # Les six écritures du nom, décision d'Antoni du 15/09/2026.
+    #
+    # Chacune a d'abord été sondée À L'EXCLUSION des autres, pour mesurer ce
+    # qu'elle ajoute et non ce qu'elle recoupe :
     #
     #   "GTA VI"               EN 28 · FR 30  =  58 articles
     #   "Grand Theft Auto VI"  EN 26 · FR 26  =  52
     #   "Grand Theft Auto 6"   EN 19 · FR  7  =  26
-    #   "GTA6"                 EN 10 · FR  1  =  11  -> ÉCARTÉE
-    #   "GTAVI"                EN  0 · FR  0  =   0  -> ÉCARTÉE
+    #   "GTA6"  attaché        EN 10 · FR  1  =  11
+    #   "GTAVI" attaché        EN  0 · FR  0  =   0
     #
-    # Avant ce jour, les deux flux larges — qui portent 46 % du fil —
-    # cherchaient « GTA 6 » et rien d'autre, pendant que les flux `site:`
-    # cherchaient déjà deux écritures. Personne n'avait vu l'incohérence.
-    QUATRE = ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Grand Theft Auto VI"]
+    # Les deux dernières avaient été écartées sur ces chiffres, puis remises
+    # sur décision explicite. La mesure reste ici parce qu'elle dit ce qu'on
+    # a accepté en les remettant, et ce qu'il faudra regarder si le fil se
+    # salit : « GTA6 » attaché fait entrer le cours d'une CRYPTOMONNAIE qui
+    # porte le nom du jeu (« GTA6 $0.0002399 | Live GTA6 Price Chart Today,
+    # Swap on USDT — MEXC ») et des pages de tag vides ; « GTAVI » attaché
+    # n'avait rien rapporté du tout.
+    #
+    # Le filtre par mots-clés ne rattrapera pas la crypto : la liste des 139
+    # contient déjà « gta6 », donc ces articles passent. Si le bruit devient
+    # visible, c'est ici qu'il faudra revenir.
+    SIX = ["GTA 6", "GTA6", "GTA VI", "GTAVI",
+           "Grand Theft Auto 6", "Grand Theft Auto VI"]
 
-    # Les trois sources sans filtre de jeu, et pourquoi elles n'en ont pas
-    # besoin : les deux premières interrogent le domaine de Rockstar, donc
-    # tout ce qu'elles rendent est de Rockstar ; la troisième cherche un nom
-    # de journaliste, où « GTA 6 » n'est qu'une alternative à « Rockstar »
-    # et « Take-Two », déjà bien plus larges.
-    SANS_FILTRE = {"rockstar-en", "rockstar-fr", "schreier"}
+    # Les deux sources sans filtre de jeu, et pourquoi elles n'en prennent
+    # pas : elles interrogent `site:rockstargames.com`, donc tout ce qu'elles
+    # rendent vient déjà de Rockstar. Y ajouter les écritures ne les
+    # élargirait pas, ça les rétrécirait — on perdrait les articles du
+    # Newswire qui ne nomment pas le jeu dans leur titre.
+    SANS_FILTRE = {"rockstar-en", "rockstar-fr"}
 
     gnews = [f for f in fetch_feeds.FEEDS if "news.google.com" in f["url"]]
     check(len(gnews) >= 19,
           "%d sources passent par Google News" % len(gnews))
 
+    couvertes = 0
     for feed in gnews:
         if feed["id"] in SANS_FILTRE:
+            check("site:rockstargames.com" in feed["url"],
+                  "%s reste sans filtre de jeu, sur le domaine de Rockstar"
+                  % feed["id"])
             continue
         requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
-        manquantes = [v for v in QUATRE if '"%s"' % v not in requete]
+        manquantes = [v for v in SIX if '"%s"' % v not in requete]
         check(not manquantes,
-              "%s : la requête couvre les quatre écritures%s"
+              "%s : la requête couvre les six écritures%s"
               % (feed["id"],
                  "" if not manquantes else " — il manque %s" % ", ".join(manquantes)))
+        couvertes += 1
 
-    # « GTA6 » attaché est banni de TOUTES les requêtes, y compris celles
-    # sans filtre de jeu : il ramène le cours d'une cryptomonnaie qui porte
-    # le nom du jeu (« GTA6 $0.0002399 | Live GTA6 Price Chart Today, Swap
-    # on USDT — MEXC ») et des pages de tag vides. Onze articles de gain,
-    # dont l'essentiel est du spam : le solde est négatif.
-    #
-    # « GTAVI » attaché est banni parce qu'il ne sert à rien — zéro article
-    # retenu sur les deux langues. Une requête plus longue pour rien, c'est
-    # une requête plus fragile.
-    for feed in gnews:
-        requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
-        check('"GTA6"' not in requete,
-              "%s : n'utilise pas \"GTA6\" attaché (cryptomonnaie homonyme)" % feed["id"])
-        check('"GTAVI"' not in requete,
-              "%s : n'utilise pas \"GTAVI\" attaché (zéro article mesuré)" % feed["id"])
+    check(couvertes >= 17,
+          "%d requêtes portent les six écritures (17 attendues au minimum)"
+          % couvertes)
 
 
 def test_prefiltre_de_ressemblance():

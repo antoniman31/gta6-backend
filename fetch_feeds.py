@@ -142,8 +142,8 @@ FEEDS = [
     {"id": "rockstar-fr", "name": "Rockstar Games (officiel FR)",
      "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr",
      "official": True, "lang": "fr", "max_entrees": 100, "garder_les_archives": True},
-    {"id": "rockstar-announce", "name": "Rockstar Games (annonces)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True},
-    {"id": "gta6-netflix", "name": "GTA 6 x Netflix", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True},
+    {"id": "rockstar-announce", "name": "Rockstar Games (annonces)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True},
+    {"id": "gta6-netflix", "name": "GTA 6 x Netflix", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True},
     {"id": "take2-ir", "name": "Take-Two Investor Relations (officiel)", "url": "https://ir.take2games.com/rss/news-releases.xml?items=15", "official": True, "garder_les_archives": True},
     # Chaîne YouTube officielle de Rockstar.
     #
@@ -181,8 +181,8 @@ FEEDS = [
      # chose — mais sans elle, la seule vidéo GTA 6 un peu ancienne des 15
      # était écartée à chaque passage.
      "garder_les_archives": True},
-    {"id": "gnews-fr", "name": "Google News (FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
-    {"id": "gnews-en", "name": "Google News (EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "gnews-fr", "name": "Google News (FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "gnews-en", "name": "Google News (EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "pcgamer", "name": "PC Gamer", "url": "https://www.pcgamer.com/rss.xml", "official": False},
     {"id": "insider", "name": "Insider Gaming", "url": "https://insider-gaming.com/feed/", "official": False},
     {"id": "tomshw", "name": "Tom's Hardware", "url": "https://www.tomshardware.com/feeds/all", "official": False},
@@ -268,17 +268,17 @@ FEEDS = [
     # recherches classent par pertinence et remontent volontiers des
     # archives de plusieurs années.
     # ------------------------------------------------------------------
-    {"id": "xboxygen", "name": "Xboxygen", "url": "https://news.google.com/rss/search?q=site:xboxygen.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
-    {"id": "purexbox", "name": "Pure Xbox", "url": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "trueach", "name": "TrueAchievements", "url": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "jdg", "name": "Journal du Geek", "url": "https://news.google.com/rss/search?q=site:journaldugeek.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
-    {"id": "numerama", "name": "Numerama", "url": "https://news.google.com/rss/search?q=site:numerama.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
-    {"id": "gamergen", "name": "Gamergen", "url": "https://news.google.com/rss/search?q=site:gamergen.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
-    {"id": "frandroid", "name": "Frandroid", "url": "https://news.google.com/rss/search?q=site:frandroid.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
-    {"id": "theverge", "name": "The Verge", "url": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "engadget", "name": "Engadget", "url": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "pushsquare", "name": "Push Square", "url": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "schreier", "name": "Jason Schreier", "url": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "xboxygen", "name": "Xboxygen", "url": "https://news.google.com/rss/search?q=site:xboxygen.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "purexbox", "name": "Pure Xbox", "url": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "trueach", "name": "TrueAchievements", "url": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "jdg", "name": "Journal du Geek", "url": "https://news.google.com/rss/search?q=site:journaldugeek.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "numerama", "name": "Numerama", "url": "https://news.google.com/rss/search?q=site:numerama.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "gamergen", "name": "Gamergen", "url": "https://news.google.com/rss/search?q=site:gamergen.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "frandroid", "name": "Frandroid", "url": "https://news.google.com/rss/search?q=site:frandroid.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "theverge", "name": "The Verge", "url": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "engadget", "name": "Engadget", "url": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "pushsquare", "name": "Push Square", "url": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "schreier", "name": "Jason Schreier", "url": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22Take-Two%22+OR+%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
 
     # ------------------------------------------------------------------
     # Sources ajoutées le 15/09/2026, en remplacement des trois retirées
@@ -392,8 +392,8 @@ FEEDS = [
     # Une réputation n'est pas une mesure.
     # ------------------------------------------------------------------
     {"id": "destructoid", "name": "Destructoid", "url": "https://www.destructoid.com/feed/", "official": False},
-    {"id": "dexerto", "name": "Dexerto", "url": "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
-    {"id": "mgg", "name": "MGG (Millenium)", "url": "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22GTA+VI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
+    {"id": "dexerto", "name": "Dexerto", "url": "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
+    {"id": "mgg", "name": "MGG (Millenium)", "url": "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr"},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.
