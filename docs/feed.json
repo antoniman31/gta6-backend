@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-15T22:02:22.997657+00:00",
+  "generated_at": "2026-09-15T23:02:20.363359+00:00",
   "attente_recap": {
-    "articles": 1,
+    "articles": 6,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 83.7,
+  "duration_seconds": 80.8,
   "decode_failures": 0,
-  "total_articles": 2748,
-  "new_this_run": 1,
+  "total_articles": 2753,
+  "new_this_run": 5,
   "hot_count": 8,
   "hot_threshold": 3,
   "sources_count": 59,
@@ -467,9 +467,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 530,
-      "last_article": "2026-09-15T21:49:36+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 532,
+      "last_article": "2026-09-15T22:48:56+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -495,7 +495,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 11,
-      "last_article": "2026-09-15T17:57:05+00:00",
+      "last_article": "2026-09-15T21:49:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -827,10 +827,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -853,10 +853,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -883,8 +883,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 7,
+      "new_this_run": 1,
+      "articles_exclusifs": 8,
       "last_article": "2026-09-04T11:00:00+00:00",
       "days_since_last_article": 11,
       "status": "ok"
@@ -961,8 +961,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 12,
+      "new_this_run": 1,
+      "articles_exclusifs": 13,
       "last_article": "2026-09-08T18:00:14+00:00",
       "days_since_last_article": 7,
       "status": "ok"
@@ -1139,16 +1139,16 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "0,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "gnews-fr-7j": "100,100,100,100,100",
-    "gnews-en-7j": "100,100,100,100,100",
+    "gnews-fr": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "gnews-fr-7j": "100,100,100,100,100,100",
+    "gnews-en-7j": "100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1177,17 +1177,17 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "trueach": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "jdg": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "frandroid": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "86,0,84,85,85,99,99,99,99,99,100,100",
-    "pushsquare": "100,0,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,0,100,100,100,100,100,100,100,100,100,100",
+    "xboxygen": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "trueach": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "jdg": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "gamergen": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "frandroid": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "theverge": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "0,84,85,85,99,99,99,99,99,100,100,100",
+    "pushsquare": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "schreier": "0,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
@@ -1196,8 +1196,8 @@
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30",
-    "dexerto": "0,100,100,100,100,100,100,100,100,100,100",
-    "mgg": "0,100,100,100,100,100,100,100,100,100,100"
+    "dexerto": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "mgg": "0,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1228,7 +1228,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2680e-7NClAEVsH5NAQ5uK3y9SXWruTyY\"",
+      "etag": "W/\"26232-nk79msaluqAX6ywY+cvODRVUrYw\"",
       "modified": null
     },
     "kotaku": {
@@ -1249,7 +1249,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 21:57:29 GMT"
+      "modified": "Tue, 15 Sep 2026 23:01:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1258,8 +1258,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aa9bff0-2f5b\"",
-      "modified": "Tue, 15 Sep 2026 22:00:16 GMT"
+      "etag": "W/\"6aa9ce01-2f5b\"",
+      "modified": "Tue, 15 Sep 2026 23:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1268,8 +1268,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789498936\"",
-      "modified": "Tue, 15 Sep 2026 19:02:16 GMT"
+      "etag": "W/\"1789512788\"",
+      "modified": "Tue, 15 Sep 2026 22:53:08 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1310,6 +1310,45 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "‘GTA 6’ Is Quietly Building One of the Most Insane Video Game Soundtracks Ever - VICE",
+      "link": "https://www.vice.com/en/article/gta-6-is-quietly-building-one-of-the-most-insane-video-game-soundtracks-ever/",
+      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNTlY1a1d1OEFMaHo2WlFhZHpLTkxhc29hNXVPSm4tQ1hZWGQ1V1ZqLVM0VVgzSERoU0hQUC1Ick1sakJGMGpmc0NQdzA4bzlHQkRRSGh6X3RwMzFZcG9EM2xmcmtxV1BjUXpOSjFwYTFpNUZJWDNET3QyV2NIWENiYVhXZEFXbFY4amdEMFlEVkwzbkNISGN0bTNsbElkblJZS3JZVmdseUlLWHp4OVE?oc=5",
+      "date": "2026-09-15T22:48:56+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/ViceNoisey-Featured-Image-2.jpg?w=1200",
+      "description": "‘GTA 6’ Is Quietly Building One of the Most Insane Video Game Soundtracks Ever&nbsp;&nbsp;VICE"
+    },
+    {
+      "title": "Travis Scott Sparks GTA 6 Crossover Rumors With Cryptic 'Return to Game' Post - Yardbarker",
+      "link": "https://www.yardbarker.com/entertainment/articles/travis_scott_sparks_gta_6_crossover_rumors_with_cryptic_return_to_game_post/s1_17785_44308541",
+      "source_link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPNmdjX1lnM1J2ZjU1bnZjOG52YnVUWWNYcDk2d0d1N0NQMEo5Z2RvWFVXMWxFZlppdnJrSnhVY0dkT1JRdjVSbkt5cS0zRjl4ellxX0RuNzkwb2dYTHBpR1doTGo3Mkw2cmFhbGFWNGEzS05oUFFZaFM1QmVEazhORldvR2ZZVjN6MUs5MFltdnNSUVVWem5WdUtiTTlITTdYZlNmckN6dXBvY1p5OGdGMnNVZ1lNblFvMjNjOGhxdmUwT0ZTZUpNcW02RWk0V3Y3RFFyWU1qZVZpMGs?oc=5",
+      "date": "2026-09-15T22:16:11+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.yardbarker.com/media/c/9/c9f6698eca8586e9a17910f1321d053d30c8497f/thumb_16x9/image_1769399876404.jpg",
+      "description": "Travis Scott Sparks GTA 6 Crossover Rumors With Cryptic 'Return to Game' Post&nbsp;&nbsp;Yardbarker"
+    },
+    {
+      "title": "Travis Scott Teases His Involvement on 'GTA 6' Soundtrack - Complex",
+      "link": "https://www.complex.com/music/a/treyalston/travis-scott-gta-6-rockstar-tease",
+      "source_link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPcF9hcEZpOTMxZDIteTlwMjlZYzNvNWdnaGF4elN0TmppQndpZWlSdXR1M25KOHVZNExIakhZOTlvQkJfZVh3QVYxNGE1YWJ5dmt3ZG1vVHh2Mks1cUVGbmxaTU80Y3ZuYUN2VVVKNzJCSkZfaVlvWW9Ud0lkcTFVS1dB?oc=5",
+      "date": "2026-09-15T22:09:45+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://images.complex.com/complex/image/upload/c_crop,h_3002,w_5004,x_0,y_335/g_auto:aoi_2002_1201_1001_600,ar_1.91,c_fill,q_auto,w_1200/sanity-new/egeiukuwsbjmitnrfjop",
+      "description": "Travis Scott Teases His Involvement on 'GTA 6' Soundtrack&nbsp;&nbsp;Complex"
+    },
+    {
       "title": "GTA 6 Soundtrack Takes Shape as Rockstar Teases Artists - IGN Daily Fix - IGN",
       "link": "https://www.ign.com/videos/gta-6-soundtrack-takes-shape-as-rockstar-teases-artists-ign-daily-fix",
       "source_link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPMkU1blQ2V2RjXy1jd2dYYjh3NjY5clcwYlhfUl9EV0FZZGtoNEhvZVBLT1FiaUFNR0lwNDVmLXZXbjJtb0x6QUFmLXBSeXlRd2dObXdfQzY3anlrNmxpeVQzNHh0VzZHS3NWWE10WlZSOE1wYmhINkh1NWJ2T25PT0FWVV9iYXV0UHhhRS11ZU1HNjJHUF9yREVERGc?oc=5",
@@ -1320,7 +1359,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/09/15/gfix-091526-blogroll-1789494059318.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "GTA 6 Soundtrack Takes Shape as Rockstar Teases Artists - IGN Daily Fix&nbsp;&nbsp;IGN"
+      "description": "GTA 6 Soundtrack Takes Shape as Rockstar Teases Artists - IGN Daily Fix&nbsp;&nbsp;IGN",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://sea.ign.com/grand-theft-auto-vi-rumored-title/248902/gta-6-soundtrack-takes-shape-as-rockstar-teases-artists-ign-daily-fix"
+        }
+      ]
     },
     {
       "title": "GTA VI : L’annonce qui embrase le monde des gamers - Lepetitjournal.com",
@@ -27399,6 +27444,19 @@
       "description": "Netflix’s viewership spiked by 35% for the GTA VI preview | Sensor Tower&nbsp;&nbsp;GamesBeat"
     },
     {
+      "title": "Streamers can host Netflix’s GTA VI event as long as they talk over it. - The Verge",
+      "link": "https://www.theverge.com/games/985640/streamers-can-host-netflixs-gta-vi-event-as-long-as-they-talk-over-it",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNOWNEX0Y2MFdFS0RmeEhzOHExVXV6WE9lOXdHNjg4Wkl6bTBvelQwVkltelVnd3lBRlRhek9hLUxRc3dmNjZHV3JkNDBoNUVsS1hSN1VMUkxQcG9IZzFmLUdmVGZKZ1EzWFFxV2RHOW5qSHJpLXhWMk9IbTAwMEJBcnFnVmZDYmNaZE5IME55eWk0ZHpQczNWaUJ5ekxlYkFZbTRrc2tXZlNNTms?oc=5",
+      "date": "2026-08-27T07:00:00+00:00",
+      "source": "The Verge",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/01/verge-placeholder_f212b3.png?quality=90&strip=all&crop=0,0.13712291199202,100,99.725754176016",
+      "description": "Streamers can host Netflix’s GTA VI event as long as they talk over it.&nbsp;&nbsp;The Verge"
+    },
+    {
       "title": "GTA 6 : l'un des derniers leaks prouve que le jeu sera démentiel, Rockstar n'a pas menti - Gameblog",
       "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-leak-plage-comparaison-trailer-721691",
       "date": "2026-08-27T06:27:34+00:00",
@@ -36995,6 +37053,19 @@
       "lang": null,
       "image": "https://www.rockstargames.com/VI/-/opengraph-image.jpg?opengraph-image.0t8ty~nlmxq2s.jpg",
       "description": "Grand Theft Auto VI - Rockstar Games&nbsp;&nbsp;Rockstar Games"
+    },
+    {
+      "title": "GTA 6 (Xbox Series X|S) - Pure Xbox",
+      "link": "https://www.purexbox.com/games/xbox-series-x/gta_6",
+      "source_link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBQRTNKVVlqSWhJUDRaSWk5NFhDdkFTV0N5c2ZZOXpCU3V6eVk5Uy14VzhyTnBkZVdHeUU1VjUyV09nUHVvZmZjTjRCaVFMd0VBVTFrT1pieXlTemNscllB?oc=5",
+      "date": "1970-01-01T00:00:00+00:00",
+      "source": "Pure Xbox",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://images.purexbox.com/6cb3d55aaebb5/1280x720.jpg",
+      "description": "GTA 6 (Xbox Series X|S)&nbsp;&nbsp;Pure Xbox"
     }
   ]
 }
