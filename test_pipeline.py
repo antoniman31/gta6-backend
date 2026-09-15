@@ -4274,6 +4274,29 @@ def test_variantes_du_nom_dans_les_requetes_google_news():
           "%d requêtes portent les six écritures (17 attendues au minimum)"
           % couvertes)
 
+    # Google News n'est pas la seule source qui porte une requête, et c'est
+    # exactement ce qui a été oublié le 15/09/2026 : les dix-sept requêtes
+    # Google News avaient été élargies, Reddit était resté à `q=GTA+6` tout
+    # court. Personne ne l'a vu parce que le test ne regardait que Google
+    # News — il décrivait le geste accompli, pas la règle.
+    #
+    # Mesuré avant correction : 25 entrées, 12 retenues. Après : 25 entrées,
+    # 23 retenues. Le subreddit de fuites écrit « GTA VI », pas « GTA 6 »
+    # (« 5th GTA VI clip has been leaked », « 11th GTA VI leak is out »).
+    # Près de la moitié de cette source nous échappait.
+    #
+    # La règle est donc : TOUTE source dont l'URL porte un paramètre de
+    # recherche couvre les six écritures, quel que soit le service.
+    for feed in fetch_feeds.FEEDS:
+        if "news.google.com" in feed["url"] or "q=" not in feed["url"]:
+            continue
+        requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
+        manquantes = [v for v in SIX if '"%s"' % v not in requete]
+        check(not manquantes,
+              "%s (hors Google News) : la requête couvre les six écritures%s"
+              % (feed["id"],
+                 "" if not manquantes else " — il manque %s" % ", ".join(manquantes)))
+
 
 def test_prefiltre_de_ressemblance():
     print("\n[doublons] le préfiltre ne peut pas écarter un vrai doublon")

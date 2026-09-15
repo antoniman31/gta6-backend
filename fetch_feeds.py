@@ -357,7 +357,7 @@ FEEDS = [
     # ------------------------------------------------------------------
     {"id": "jdg-natif", "name": "Journal du Geek (tag)", "url": "https://www.journaldugeek.com/tag/gta-6/feed/", "official": False, "lang": "fr"},
     {"id": "frandroid-natif", "name": "Frandroid (tag)", "url": "https://www.frandroid.com/tag/gta-6/feed", "official": False, "lang": "fr"},
-    {"id": "reddit-leaks", "name": "Reddit — fuites et rumeurs", "url": "https://www.reddit.com/r/GamingLeaksAndRumours/search.rss?q=GTA+6&restrict_sr=on", "official": False},
+    {"id": "reddit-leaks", "name": "Reddit — fuites et rumeurs", "url": "https://www.reddit.com/r/GamingLeaksAndRumours/search.rss?q=%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22&restrict_sr=on", "official": False},
 
     # ------------------------------------------------------------------
     # Sondées le 15/09/2026. Trois ajouts sur quatre candidates, et les
