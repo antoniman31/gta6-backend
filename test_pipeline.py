@@ -4214,6 +4214,44 @@ def test_les_workflows_epinglent_leurs_dependances():
                   "%s installe depuis requirements.txt" % chemin.split("/")[-1])
 
 
+def test_aucun_mot_cle_nen_contient_un_autre():
+    print("\n[mots-clés] aucun mot-clé n'est rendu inatteignable par un autre")
+    import fetch_feeds
+
+    # matches_keywords fait `k in texte` : une SOUS-CHAÎNE, pas un mot. Donc
+    # dès que « gta 6 » correspond, « gta 6 news », « gta 6 trailer »,
+    # « rockstar gta 6 »… ne peuvent rien attraper de plus. Ils sont
+    # inatteignables par construction, quel que soit l'article.
+    #
+    # La liste fournie en comptait 139, dont 97 dans ce cas. Retirés le
+    # 15/09/2026 après avoir REJOUÉ les deux listes sur les 2 657 articles
+    # du fil : zéro verdict différent. Ce n'était pas un pari sur l'avenir,
+    # c'était une propriété démontrable.
+    #
+    # Ce test existe pour que la liste ne regonfle pas : ajouter « gta 6
+    # quelque-chose » alors que « gta 6 » est déjà là donne l'illusion
+    # d'élargir la veille sans rien changer du tout.
+    K = fetch_feeds.KEYWORDS
+    check(len(K) == len(set(K)), "les %d mots-clés sont tous distincts" % len(K))
+
+    for k in sorted(K):
+        couvreurs = sorted(j for j in K if j != k and j in k)
+        check(not couvreurs,
+              "« %s » est atteignable%s" % (k,
+                  "" if not couvreurs
+                  else " — inatteignable, déjà couvert par « %s »" % couvreurs[0]))
+
+    # Même règle pour les mots-clés officiels, qui forment une liste à part
+    # appliquée au seul titre des sources officielles.
+    for k in sorted(fetch_feeds.OFFICIAL_KEYWORDS):
+        couvreurs = sorted(j for j in fetch_feeds.OFFICIAL_KEYWORDS
+                           if j != k and j in k)
+        check(not couvreurs,
+              "officiel « %s » est atteignable%s" % (k,
+                  "" if not couvreurs
+                  else " — déjà couvert par « %s »" % couvreurs[0]))
+
+
 def test_variantes_du_nom_dans_les_requetes_google_news():
     print("\n[requêtes] chaque recherche Google News couvre les six écritures")
     import fetch_feeds
@@ -5033,6 +5071,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_les_workflows_epinglent_leurs_dependances,
+           test_aucun_mot_cle_nen_contient_un_autre,
            test_variantes_du_nom_dans_les_requetes_google_news,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
