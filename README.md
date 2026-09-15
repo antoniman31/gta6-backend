@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1025
+qui permet de tester tout le pipeline sans sortir de la machine. **1074
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -505,7 +505,7 @@ fusion, c'est elle qui décide si des articles sont perdus quand deux
 exécutions se chevauchent. Le dernier bloc rejoue ces règles sur le vrai
 `docs/feed.json` du dépôt.
 
-`check_sources_sync.py` compare `FEEDS` et les 139 mots-clés de
+`check_sources_sync.py` compare `FEEDS` et les 42 mots-clés de
 `fetch_feeds.py` à leurs copies `DEFAULT_FEEDS` / `keywords` de
 `docs/index.html`, et échoue en nommant chaque écart. La duplication reste
 (voir Limites), mais elle ne peut plus dériver en silence : fin août 2026,
@@ -2147,8 +2147,8 @@ presse sérieuse et Rockstar emploient — ne leur parvenait pas. L'incohérence
 datait du 29/08 et personne ne l'avait vue.
 
 Distinction qui rend le problème invisible : **les 35 sources en flux natif
-n'étaient pas concernées**. Leur flux arrive entier et c'est la liste des 139
-mots-clés qui trie — or elle contient déjà `gta 6`, `gta6`, `gta vi`, `gtavi`,
+n'étaient pas concernées**. Leur flux arrive entier et c'est la liste des mots-clés
+qui trie — or elle contient déjà `gta 6`, `gta6`, `gta vi`, `gtavi`,
 `grand theft auto 6`, `grand theft auto vi`, `gta-6`, `gta_vi`… Chez Google
 News au contraire, le tri se fait **avant nous** : ce que la requête ne demande
 pas n'existe pas.
@@ -2224,6 +2224,79 @@ pertinence : élargir fait entrer d'un coup plusieurs dizaines d'articles de
 l'arrière-catalogue. `MAX_ARTICLE_AGE_DAYS` écarte les archives, le reste
 arrive en une salve. Le premier passage est donc à lancer **pendant la pause
 nocturne**, où le robot publie sans notifier.
+
+### Cent trente-neuf mots-clés, dont quatre-vingt-dix-sept inatteignables
+
+`matches_keywords` fait `k in texte` : une **sous-chaîne**, pas un mot. Cette
+ligne décide du sort de toute la liste.
+
+Dès que `gta 6` correspond, `gta 6 news`, `gta 6 trailer`, `gta 6 leaked map`,
+`rockstar gta 6`, `gta 6 discord` ne peuvent **rien** attraper que `gta 6`
+n'ait déjà pris. Ils sont inatteignables par construction, quel que soit
+l'article. La liste fournie en comptait **139 ; 97 étaient dans ce cas**.
+
+#### Mesuré, pas supposé
+
+Les deux listes ont été rejouées sur les **2 657 articles** du fil, en
+comparant le verdict de chacune article par article :
+
+```
+articles testés                          2 657
+verdict différent entre les deux listes      0
+```
+
+Zéro. Ce n'était pas un pari sur l'avenir mais une propriété démontrable :
+retirer un mot-clé dont un autre est déjà une sous-chaîne ne peut pas changer
+ce qui entre. **139 → 42.**
+
+#### Ce qui travaille vraiment
+
+Parmi les 42 restants, cinq portent l'essentiel — la colonne « seul » compte
+les articles retenus par ce mot et aucun autre :
+
+| mot-clé | présent dans | seul à retenir |
+|---|---|---|
+| `gta 6` | 2 210 | **1 566** |
+| `gta vi` | 196 | 121 |
+| `grand theft auto vi` | 221 | 80 |
+| `grand theft auto 6` | 207 | 57 |
+| `rockstar games` | 216 | 18 |
+
+Le reste du travail se répartit sur huit mots qui retiennent entre 1 et 6
+articles chacun.
+
+#### Dix-huit mots n'ont jamais rien attrapé, et restent
+
+`gta_vi`, `gtaonline6`, `rockstar next game`, `gta sequel`, `vicecity`,
+`taketwo`, `rockstar san diego`… : zéro correspondance sur 2 657 articles.
+Ils sont **conservés** — le filtre s'arrête au premier succès, donc ils ne
+coûtent rien, et ils couvrent un vocabulaire qui pourrait apparaître (un
+report, un spin-off, un nom de studio qui entre dans l'actualité).
+
+Une faute de frappe a été corrigée au passage : `cyber leek` (le légume) est
+devenu `cyber leak`. Ce qui a mécaniquement tué `cyber leak gta`, qui le
+contient désormais — d'où **97 retirés et non 96**.
+
+#### Trois mots élargissent au-delà de GTA 6, et c'est voulu
+
+`rockstar games`, `new gta` et `take-two` font entrer des articles sur
+GTA Online, GTA V et l'industrie — 26 au total. La colonne « seul à retenir »
+le montre sans ambiguïté :
+
+> `rockstar games` → *« How To Get $1.5M In GTA Online For Free This GTA RP Week »*
+> `new gta` → *« A GTA 5 modder has just transformed Los Santos… »*
+> `take-two` → *« How does Epic Games CEO Tim Sweeney reckon we can fight… »*
+
+**Décision d'Antoni : on les garde.** L'écosystème Rockstar fait partie de la
+veille. C'est consigné ici pour que le prochain qui trouvera un article
+GTA Online dans le fil sache que ce n'est pas un défaut.
+
+#### Un test empêche la liste de regonfler
+
+Ajouter « gta 6 quelque-chose » alors que « gta 6 » est déjà là donne
+l'illusion d'élargir la veille sans rien changer du tout. Le test vérifie
+qu'aucun mot-clé n'en contient un autre, sur `KEYWORDS` comme sur
+`OFFICIAL_KEYWORDS`.
 
 ## Pause nocturne : rien entre 0h et 5h
 
