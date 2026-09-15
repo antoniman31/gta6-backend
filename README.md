@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 50 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 48 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -70,7 +70,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 50 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 48 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1004
+qui permet de tester tout le pipeline sans sortir de la machine. **1022
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -765,7 +765,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 50 sources
+(instantané), l'autre fait travailler le robot sur les 48 sources
 (~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
@@ -1619,6 +1619,77 @@ bascule** :
 - Seules les sources en difficulté sont conservées dans `sources_silence` :
   inutile d'écrire 35 zéros dans `feed.json` à chaque passage.
 
+### Retirer une source, et ce qu'elle laisse derrière elle
+
+**VG247 et Xbox Wire sont parties le 15/09/2026**, après trois mesures
+concordantes et non pas sur une impression.
+
+| | entrées par passage | articles retenus, depuis l'ajout | dernier |
+|---|---|---|---|
+| VG247 | 100 | 8 | 26/07/2024 (781 j) |
+| Xbox Wire | 6 | **0** | jamais |
+
+Les deux flux **répondaient**. Ce n'était pas une panne, et c'est ce qui rend
+le cas intéressant : ce sont des recherches Google News restreintes à un
+domaine, et une recherche `site:` classe par **pertinence, pas par date**.
+Elle ressert donc indéfiniment la couverture *historique* du média. Le
+garde-fou `MAX_ARTICLE_AGE_DAYS` les écartait à chaque passage, correctement.
+Le verdict `tarie` était juste : le flux marche, le site ne publie pas sur le
+sujet.
+
+Ars Technica, dans le même état, a été **gardée**. La différence n'est pas
+dans les chiffres, elle est dans le pari : un site d'actualité technologique
+généraliste écrira sur GTA 6 le jour d'un sujet sécurité ou industrie. Xbox
+Wire est le fil d'annonces de Microsoft — s'il parle de GTA 6 un jour, Pure
+Xbox, TrueAchievements et les deux Google News l'auront relayé dans l'heure.
+La redondance était déjà là.
+
+**Le piège : retirer la source n'enlève pas ses articles.** La fusion
+conserve tout ce qui est déjà stocké — c'est même son unique travail, et le
+garde-fou qui refuse une fusion vide existe pour ça. Les 8 articles VG247,
+datés de 2022 à 2024, seraient donc restés dans le flux sous un nom qui
+n'existe plus nulle part dans le code.
+
+Ce sont les pires à débusquer : vieux, donc tout en bas du tri par date, donc
+invisibles à l'usage. Rien ne les signale. Ils ont d'ailleurs une origine
+précise — ce sont exactement les 8 archives remontées le 29/08/2026 par la
+recherche `site:` avant que le garde-fou d'âge n'existe. La fuite avait été
+bouchée le jour même ; ce qui était déjà entré n'avait jamais été retiré.
+
+**Dix-huit vérifications** verrouillent maintenant l'ensemble, et elles ne
+regardent pas la liste des sources mais le flux produit : aucun article ne
+peut venir d'une source absente de `FEEDS` ; aucun des cinq journaux de santé
+(`sources_health`, `sources_silence`, `sources_entries_history`,
+`sources_declining`, `feed_http_state`) ne peut parler d'une source qui
+n'existe plus — sinon le bandeau compterait éternellement une ligne tarie
+pour une source qu'il n'interroge plus ; et les compteurs annoncés doivent
+valoir ce qu'il y a réellement.
+
+**Dix-huit et non neuf, parce qu'il y a deux fichiers.** `feed-recent.json`
+est l'extrait de 300 articles que l'app télécharge **en premier** — ne
+verrouiller que `feed.json` laissait hors de portée le seul fichier
+réellement lu au démarrage. Le trou s'est vu le jour même, en résolvant le
+conflit du retrait : l'extrait annonçait encore 50 sources et 2 580 articles
+pendant que le fichier complet en annonçait 48 et 2 572.
+
+Un piège dans le piège : dans l'extrait, `total_articles` et `hot_count`
+décrivent le **flux entier**, pas les 300 lignes présentes — c'est bien
+« 2 572 articles » que doit afficher le bandeau. Les recalculer depuis
+l'extrait donne 300 et 0, deux valeurs fausses. Le test les compare donc au
+fichier complet, jamais à `len(items)`. J'ai fait l'erreur avant de l'écrire.
+
+Éprouvé sur l'état d'avant la purge, fichier par fichier : quatre
+vérifications tombent sur `feed.json` en nommant `{'VG247': 8}` et
+`['vg247', 'xboxwire']`, quatre autres sur `feed-recent.json`.
+
+**Reste un sujet ouvert, non traité ici.** Le même comptage révèle **32
+autres articles** antérieurs au garde-fou et venant de sources qui n'ont pas
+le droit de garder leurs archives — RockstarINTEL de mars 2026, GTA6 Times de
+juin, des annonces de précommande. Contrairement aux 8 de VG247, ceux-là sont
+du contenu réel et récent au moment de leur import ; les jeter serait une
+décision de fond, pas un nettoyage. Ils sont laissés en place, et comptés ici
+pour que personne n'ait à les recompter.
+
 ### Éprouvé en conditions réelles, soirée du 09/09/2026
 
 Quatre sources sont tombées le même soir, à une heure d'intervalle. Aucune
@@ -2468,9 +2539,16 @@ commentaire).
   passage n°207 du 29/08/2026 : 100 entrées récupérées, **zéro retenue**,
   et toujours aucun article vg247.com dans l'historique — 764 jours depuis
   le dernier. Le diagnostic « le flux marche, le site ne publie pas sur
-  GTA 6 » se confirme donc sur deux formats de flux différents. La source
-  reste en place : elle ne coûte qu'une requête, et le jour où VG247
-  publiera, elle remontera.
+  GTA 6 » se confirme donc sur deux formats de flux différents.
+
+  **La source a d'abord été gardée, puis retirée le 15/09/2026.** L'argument
+  « elle ne coûte qu'une requête » tenait tant que le doute portait sur le
+  flux. Il ne tenait plus après une troisième mesure, 781 jours après le
+  dernier article vg247.com : ce n'est plus une source qui dort, c'est une
+  source qui ne couvre pas le sujet. Xbox Wire est partie avec elle, pour
+  la raison inverse et aussi nette — **zéro article depuis son ajout**,
+  jamais un seul. Voir *Retirer une source, et ce qu'elle laisse derrière
+  elle*.
 - **Miniatures Google News** — un léger pourcentage d'articles n'a pas de
   miniature si le site source bloque les robots ou n'a pas de balise
   exploitable. Comportement normal, pas un bug.
