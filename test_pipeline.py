@@ -1001,9 +1001,28 @@ def _verifie_flux_sans_source_fantome(chemin, fetch_feeds):
               "%s : %s ne parle que de sources existantes%s"
               % (nom, cle, "" if not restants else " — reste %s" % restants[:3]))
 
-    check(d.get("sources_count") == len(fetch_feeds.FEEDS),
-          "%s : le compteur du bandeau annonce %s sources, FEEDS en déclare %d"
-          % (nom, d.get("sources_count"), len(fetch_feeds.FEEDS)))
+    # Le compteur peut être EN RETARD sur FEEDS, jamais en avance, et
+    # l'asymétrie est le fond du sujet.
+    #
+    # Écrit d'abord en égalité stricte, cette vérification a échoué au
+    # premier AJOUT de sources (15/09/2026) : les fichiers annonçaient 47,
+    # FEEDS en déclarait 50, et c'était parfaitement normal — le robot
+    # n'avait pas encore tourné. Un fichier qui ignore une source neuve se
+    # corrige tout seul au passage suivant ; rien n'est faux, rien n'est
+    # perdu, il n'y a rien à faire.
+    #
+    # Le retard est donc toléré. L'avance, non : un compteur SUPÉRIEUR à
+    # FEEDS veut dire que le fichier compte une source qui n'existe plus,
+    # et celui-là ne se corrige pas tout seul. C'est exactement le défaut
+    # que ce test entier a été écrit pour attraper, et les contrôles de
+    # fantômes ci-dessus le nomment déjà source par source — cette ligne
+    # n'est que le filet.
+    compteur = d.get("sources_count")
+    check(isinstance(compteur, int) and compteur <= len(fetch_feeds.FEEDS),
+          "%s : le compteur du bandeau annonce %s sources, FEEDS en déclare "
+          "%d — un retard est normal (le robot n'a pas encore tourné), une "
+          "avance signalerait une source fantôme"
+          % (nom, compteur, len(fetch_feeds.FEEDS)))
     # `total_articles` compte le flux ENTIER dans les deux fichiers : dans
     # l'extrait il dépasse donc volontairement le nombre de lignes présentes,
     # c'est lui qu'affiche le bandeau « 2 572 articles ». On le compare au
