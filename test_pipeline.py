@@ -4214,6 +4214,63 @@ def test_les_workflows_epinglent_leurs_dependances():
                   "%s installe depuis requirements.txt" % chemin.split("/")[-1])
 
 
+def test_variantes_du_nom_dans_les_requetes_google_news():
+    print("\n[requêtes] chaque recherche Google News couvre les quatre écritures")
+    import fetch_feeds
+    from urllib.parse import unquote
+
+    # Mesuré le 15/09/2026, en sondant chaque variante À L'EXCLUSION des
+    # autres, pour savoir ce que chacune apporte VRAIMENT :
+    #
+    #   "GTA VI"               EN 28 · FR 30  =  58 articles
+    #   "Grand Theft Auto VI"  EN 26 · FR 26  =  52
+    #   "Grand Theft Auto 6"   EN 19 · FR  7  =  26
+    #   "GTA6"                 EN 10 · FR  1  =  11  -> ÉCARTÉE
+    #   "GTAVI"                EN  0 · FR  0  =   0  -> ÉCARTÉE
+    #
+    # Avant ce jour, les deux flux larges — qui portent 46 % du fil —
+    # cherchaient « GTA 6 » et rien d'autre, pendant que les flux `site:`
+    # cherchaient déjà deux écritures. Personne n'avait vu l'incohérence.
+    QUATRE = ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Grand Theft Auto VI"]
+
+    # Les trois sources sans filtre de jeu, et pourquoi elles n'en ont pas
+    # besoin : les deux premières interrogent le domaine de Rockstar, donc
+    # tout ce qu'elles rendent est de Rockstar ; la troisième cherche un nom
+    # de journaliste, où « GTA 6 » n'est qu'une alternative à « Rockstar »
+    # et « Take-Two », déjà bien plus larges.
+    SANS_FILTRE = {"rockstar-en", "rockstar-fr", "schreier"}
+
+    gnews = [f for f in fetch_feeds.FEEDS if "news.google.com" in f["url"]]
+    check(len(gnews) >= 19,
+          "%d sources passent par Google News" % len(gnews))
+
+    for feed in gnews:
+        if feed["id"] in SANS_FILTRE:
+            continue
+        requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
+        manquantes = [v for v in QUATRE if '"%s"' % v not in requete]
+        check(not manquantes,
+              "%s : la requête couvre les quatre écritures%s"
+              % (feed["id"],
+                 "" if not manquantes else " — il manque %s" % ", ".join(manquantes)))
+
+    # « GTA6 » attaché est banni de TOUTES les requêtes, y compris celles
+    # sans filtre de jeu : il ramène le cours d'une cryptomonnaie qui porte
+    # le nom du jeu (« GTA6 $0.0002399 | Live GTA6 Price Chart Today, Swap
+    # on USDT — MEXC ») et des pages de tag vides. Onze articles de gain,
+    # dont l'essentiel est du spam : le solde est négatif.
+    #
+    # « GTAVI » attaché est banni parce qu'il ne sert à rien — zéro article
+    # retenu sur les deux langues. Une requête plus longue pour rien, c'est
+    # une requête plus fragile.
+    for feed in gnews:
+        requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
+        check('"GTA6"' not in requete,
+              "%s : n'utilise pas \"GTA6\" attaché (cryptomonnaie homonyme)" % feed["id"])
+        check('"GTAVI"' not in requete,
+              "%s : n'utilise pas \"GTAVI\" attaché (zéro article mesuré)" % feed["id"])
+
+
 def test_prefiltre_de_ressemblance():
     print("\n[doublons] le préfiltre ne peut pas écarter un vrai doublon")
     import fetch_feeds
@@ -4949,6 +5006,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_les_workflows_epinglent_leurs_dependances,
+           test_variantes_du_nom_dans_les_requetes_google_news,
            test_panneau_parametres_intact, test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,
