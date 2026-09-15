@@ -1581,6 +1581,14 @@ dépendances, lui, **est resté** — mais renommé
 vaut pour les trois workflows restants et ne dépend plus du cas qui l'avait
 révélée.
 
+**Un défaut ouvert s'est refermé avec lui.** Le récapitulatif était déclenché
+par le `schedule` de GitHub, best-effort : programmé à 20h00, il partait en
+réalité à **22h30, 22h10 et 22h46** les trois derniers dimanches. Le remède
+était prêt — le workflow acceptait déjà un `repository_dispatch`, il ne
+manquait qu'une tâche dans cron-job.org. Supprimer le récapitulatif a réglé
+la question autrement, et sans rien à configurer : pas de tâche à ajouter,
+pas de tâche à retirer, cron-job.org n'en a jamais eu pour lui.
+
 ## Alerte quand une source tombe
 
 `sources_health` savait déjà repérer un flux mort, mais cette information
@@ -2029,8 +2037,10 @@ temps.
 | dialogues | rôle, nom, focus piégé, Échap, fond figé : **5/5** |
 
 Côté sécurité : aucun secret en clair, permissions minimales et explicites
-dans les quatre workflows (`contents: read` partout sauf le robot), et le
-fichier de totaux est écrit dans `$RUNNER_TEMP`, hors du dépôt.
+dans les quatre workflows d'alors — trois depuis la suppression du
+récapitulatif hebdomadaire, la propriété tient toujours (`contents: read`
+partout sauf le robot) — et le fichier de totaux est écrit dans
+`$RUNNER_TEMP`, hors du dépôt.
 
 **Une limite assumée, découverte au passage.** Le robot remet l'ardoise à zéro
 *avant* que la notification soit confirmée : si la publication réussit mais que
@@ -2437,6 +2447,24 @@ l'endroit qui les empêche de diverger ou de disparaître.
   Cinq verdicts, là où « 0 entrée » ne disait rien : **OK**, **VIDE** (flux
   valide sans article), **PAS UN FLUX** (page de blocage, ou URL qui ne sert
   plus de RSS), **INJOIGNABLE** (aucune réponse HTTP), **INCHANGÉ** (304).
+
+  Quand la réponse est **PAS UN FLUX**, la sonde va plus loin : elle relit la
+  page et en extrait les `<link rel="alternate">`, c'est-à-dire les flux que
+  le site **déclare lui-même**. Lui passer une page d'accueil suffit donc à
+  obtenir la bonne adresse, au lieu d'essayer des chemins au hasard. C'est
+  ainsi qu'ont été trouvées celles de Clubic et de TweakTown le 15/09/2026.
+
+- **Le workflow `sonde.yml`** — la même sonde, mais lancée depuis un runner
+  GitHub : onglet Actions → *Sonder des flux candidats* → *Run workflow*, on
+  colle les adresses séparées par des espaces.
+
+  **C'est souvent le seul chemin praticable, et l'oublier coûte cher.** Le
+  15/09/2026, trois sources devaient être diagnostiquées depuis une machine
+  dont le réseau bloquait `news.google.com` : la sonde en ligne de commande y
+  répondait INJOIGNABLE pour une raison qui n'avait rien à voir avec les
+  sources. Le diagnostic a donc été **déduit** du code et des données
+  enregistrées, alors qu'il pouvait être **mesuré** — ce workflow existait
+  déjà. La conclusion s'est trouvée juste ; la méthode ne l'était pas.
 
   **Et elle dit vers où le flux a déménagé.** feedparser suit les
   redirections et expose l'adresse finale : quand elle diffère de l'URL
