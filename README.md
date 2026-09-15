@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 48 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 47 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -70,7 +70,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 48 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 47 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -765,7 +765,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 48 sources
+(instantané), l'autre fait travailler le robot sur les 47 sources
 (~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
@@ -1637,12 +1637,17 @@ garde-fou `MAX_ARTICLE_AGE_DAYS` les écartait à chaque passage, correctement.
 Le verdict `tarie` était juste : le flux marche, le site ne publie pas sur le
 sujet.
 
-Ars Technica, dans le même état, a été **gardée**. La différence n'est pas
-dans les chiffres, elle est dans le pari : un site d'actualité technologique
-généraliste écrira sur GTA 6 le jour d'un sujet sécurité ou industrie. Xbox
-Wire est le fil d'annonces de Microsoft — s'il parle de GTA 6 un jour, Pure
-Xbox, TrueAchievements et les deux Google News l'auront relayé dans l'heure.
-La redondance était déjà là.
+Xbox Wire est le fil d'annonces de Microsoft — s'il parle de GTA 6 un jour,
+Pure Xbox, TrueAchievements et les deux Google News l'auront relayé dans
+l'heure. La redondance était déjà là.
+
+**Ars Technica a d'abord été gardée, puis retirée le jour même.** Le pari
+défendu ici était qu'un site tech généraliste écrirait sur GTA 6 le jour d'un
+sujet sécurité ou industrie. Il tenait, mais il restait un pari — contre un
+fait mesuré : **zéro article depuis l'ajout**. Entre les deux, Antoni a
+tranché pour le fait. Et la couverture « industrie » est de toute façon
+tenue : The Verge, Engadget, Tom's Hardware, Take-Two IR et le fil de Jason
+Schreier sont là pour ça, avec un historique, eux.
 
 **Le piège : retirer la source n'enlève pas ses articles.** La fusion
 conserve tout ce qui est déjà stocké — c'est même son unique travail, et le
