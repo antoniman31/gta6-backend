@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1024
+qui permet de tester tout le pipeline sans sortir de la machine. **1025
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -2197,6 +2197,16 @@ Appliquée à **17 requêtes** : les deux flux larges, les douze `site:`,
 `gta6-netflix`, `schreier`, et `rockstar-announce` — cette dernière portant
 l'ancienne formule **dans l'ordre inverse**, qu'un remplacement global aurait
 manquée.
+
+**Et Reddit, oublié au premier passage.** Les dix-sept requêtes Google News
+avaient été élargies, `reddit-leaks` était resté à `q=GTA 6` tout court. Le
+test ne l'a pas vu parce qu'il ne regardait que Google News : il décrivait le
+geste accompli, pas la règle. Mesuré avant correction, **12 articles retenus
+sur 25** ; après, **23 sur 25**. Le subreddit de fuites écrit « GTA VI », pas
+« GTA 6 » — *« 5th GTA VI clip has been leaked »*, *« 11th GTA VI leak is out
+(nudist town) »*. Près de la moitié de cette source nous échappait. Le test
+couvre désormais **toute source dont l'URL porte un paramètre de recherche**,
+quel que soit le service. Soit **18 requêtes** au total.
 
 **Deux sources restent volontairement sans filtre de jeu.** `rockstar-en` et
 `rockstar-fr` interrogent `site:rockstargames.com` : tout ce qu'elles rendent
