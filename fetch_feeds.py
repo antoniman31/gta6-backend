@@ -279,6 +279,41 @@ FEEDS = [
     {"id": "engadget", "name": "Engadget", "url": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "pushsquare", "name": "Push Square", "url": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False},
     {"id": "schreier", "name": "Jason Schreier", "url": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22GTA+6%22+OR+%22Take-Two%22)&hl=en&gl=US&ceid=US:en", "official": False},
+
+    # ------------------------------------------------------------------
+    # Sources ajoutées le 15/09/2026, en remplacement des trois retirées
+    # le même jour (VG247, Xbox Wire, Ars Technica).
+    #
+    # Toutes les trois sont des flux RSS NATIFS, et c'est le point : les
+    # trois sources retirées étaient des recherches Google News
+    # `site:domaine`, qui classent par PERTINENCE et resservent donc
+    # indéfiniment la couverture historique d'un média. Un flux natif est
+    # chronologique — quand le site publie, l'article arrive en tête, point.
+    # C'est la leçon de VG247 appliquée à l'endroit.
+    #
+    # Chacune a été sondée depuis un runner GitHub (workflow sonde.yml),
+    # avec le même agent utilisateur et le même filtre que le robot. Ce que
+    # la sonde a répondu, le 15/09/2026 :
+    #
+    #   rockstaractu  20 entrées, 9 retenues, plus récente 11 j
+    #   tweaktown     15 entrées, 2 retenues, plus récente le jour même
+    #   dexerto-fr    50 entrées, 2 retenues, plus récente 4 j
+    #
+    # Neuf sur vingt pour Rockstar Actu : le meilleur ratio de toute la
+    # liste. C'est un média 100 % Rockstar, comme RockstarMag — il n'y en
+    # avait qu'un seul en français, pour un sujet qui est le cœur de cette
+    # veille.
+    #
+    # Les trois écartées au même moment, faute de flux : Millenium (404),
+    # GTABase (404), Leonidaverse (aucun flux déclaré, même en suivant sa
+    # redirection). Aucune n'est exploitable par le robot, quelle que soit
+    # sa qualité éditoriale. Clubic a bien un flux mais zéro entrée GTA 6
+    # sur ses 50 dernières : écartée pour l'instant, à revoir — son flux
+    # étant chronologique, un article sur GTA 6 y arriverait normalement.
+    # ------------------------------------------------------------------
+    {"id": "rockstaractu", "name": "Rockstar Actu", "url": "https://rockstaractu.com/feed/", "official": False, "lang": "fr"},
+    {"id": "dexerto-fr", "name": "Dexerto FR", "url": "https://www.dexerto.fr/feed/", "official": False, "lang": "fr"},
+    {"id": "tweaktown", "name": "TweakTown", "url": "https://www.tweaktown.com/feeds/news-mf.xml", "official": False},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.
