@@ -2033,6 +2033,106 @@ l'une poussée par un **communiqué de presse payant** sur un site de bourse.
 Elles n'ont pas été sondées : le tri s'arrête avant, sur ce que le site dit
 de lui-même.
 
+### Compter les articles exclusifs, pas les jours de silence
+
+Le 15/09/2026 au soir, question posée au projet : chaque source a-t-elle un
+meilleur chemin que celui qu'elle emprunte ? Les 57 ont été passées au
+crible — l'équivalent Google News `site:` sondé pour les 32 sources en flux
+natif, le flux natif sondé pour les 13 sources en Google News.
+
+**La réponse est non, partout.** Et le chemin pour y arriver a d'abord été
+faux.
+
+#### La mesure trompeuse
+
+Premier verdict, tiré en comparant le compteur `days_since_last_article` du
+journal de santé à la fraîcheur rendue par la sonde : cinq sources
+(Xboxygen, Numerama, Push Square, Pure Xbox, Gamergen) semblaient avoir un
+flux natif **nettement plus frais** que leur Google News — 0 jour contre 8,
+0 contre 6, 0 contre 7, 1 contre 11. De quoi conclure que Google News,
+classant par pertinence et non par date, enterrait les articles récents
+au-delà du centième résultat.
+
+C'était faux, et la vérification tient en une ligne : l'article que la sonde
+présentait comme un manque pour Numerama — *« PS5 Slim, FAT ou PS5 Pro :
+laquelle acheter en 2026 avant GTA 6 ? »* — **était déjà dans le fil**,
+apporté le jour même par Google News (FR).
+
+`days_since_last_article` est indexé **par nom de source**. Quand l'article
+d'IGN arrive par le flux large *Google News (EN)*, il est classé sous
+« Google News (EN) ». Le compteur d'IGN reste donc vieux de 4 jours alors
+qu'un article d'IGN du jour est dans le fichier. Ce compteur ne répond pas à
+la question « rate-t-on les articles de ce site ? » ; il répond à « quand ce
+flux précis a-t-il été le premier à rapporter quelque chose ? ». Les deux
+sont sans rapport dès qu'une source généraliste couvre le même domaine.
+
+Vérifié sur les cinq : le plus récent article déjà présent était à 0 j pour
+numerama.com, 1 j pour xboxygen.com et gamergen.com, 5 j pour pushsquare.com
+et 7 j pour purexbox.com — presque toujours via un Google News large. Doubler
+ces cinq sources n'aurait ajouté que deux choses : la page-guide permanente
+*« Carte GTA 6 : map interactive »* d'Xboxygen, et un article Rayman de
+Pure Xbox retenu sur une mention de GTA 6 dans son corps de texte. La
+proposition a été retirée avant d'écrire la moindre ligne de code.
+
+#### La bonne mesure
+
+Ce qu'il faut compter, c'est **combien d'articles disparaîtraient du fil si
+on retirait la source** : les articles dont elle est la seule porteuse.
+Sur 2 594 articles :
+
+| source | exclusifs | dont 30 j |
+|---|---|---|
+| Google News (FR) | 628 | 628 |
+| Google News (EN) | 514 | 512 |
+| GTA 6 x Netflix | 234 | 231 |
+| Rockstar Games (annonces) | 111 | 102 |
+| GTA BOOM | 93 | 90 |
+| VGTimes | 67 | 67 |
+| Game Rant | 57 | 57 |
+| IGN | 56 | 56 |
+| RockstarINTEL | 54 | 46 |
+| … | | |
+| Journal du Geek (tag) | 3 | **0** |
+| TweakTown · Dexerto FR · Frandroid (tag) | **0** | **0** |
+
+Les deux Google News larges portent **46 % du fil à eux seuls** (1 142
+articles sur 2 469 exclusifs). C'est la colonne vertébrale, et c'est
+précisément pour ça qu'un `site:` posé par-dessus fait doublon : le
+généraliste a déjà pris l'article.
+
+#### Deux exceptions, qui confirment l'existant
+
+- **RockstarINTEL** : sa recherche Google News `site:` ne rend **qu'un**
+  article, vieux de 40 jours, là où son flux natif a apporté **54 articles
+  exclusifs**. Google News n'indexe quasiment pas ce site.
+- **PCGamesN** et **Rockstar Actu** : leur recherche `site:` rend **zéro**
+  article retenu sur 100 entrées. Le flux natif est le seul chemin.
+
+Dans les deux cas le transport en place est déjà le bon.
+
+#### Le recouvrement est plus faible qu'il n'y paraît
+
+**Seuls 135 articles sur 2 594 sont arrivés par plus d'une source.** La
+déduplication par lien ne se déclenche presque jamais : chaque source
+apporte ses propres URLs, et deux sites qui couvrent la même histoire
+produisent deux liens différents, donc deux articles. L'argument « doubler
+une source pour ne rien rater » en sort affaibli : ce qu'on gagne, ce n'est
+pas un article manquant, c'est une deuxième version du même événement.
+
+#### Ce qu'il reste à surveiller
+
+Quatre sources sont à zéro article exclusif. Trois ont été ajoutées la
+veille ou l'avant-veille (Dexerto FR, Frandroid (tag), Journal du Geek
+(tag)) et TweakTown quelques heures plus tôt : trop tôt pour conclure. Le
+calcul est à refaire dans quelques jours — celles toujours à zéro ne servent
+à rien.
+
+À l'inverse, quatre sources à faible volume sont **à garder malgré leurs
+chiffres** : Take-Two IR (1 exclusif, flux trimestriel), Rockstar officiel
+EN et FR (18 et 9), Jason Schreier (13, un seul sur 30 jours). Elles
+rapportent peu, mais ce qu'elles rapportent est officiel ou de première
+main. Le volume n'est pas la valeur.
+
 ## Pause nocturne : rien entre 0h et 5h
 
 Demandé le 08/09/2026 : les notifications réveillaient. Entre **00h00 et
