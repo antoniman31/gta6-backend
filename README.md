@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **983
+qui permet de tester tout le pipeline sans sortir de la machine. **988
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1403,14 +1403,35 @@ déjà installés et continuerait d'envoyer l'ancien badge : la correction ne
 serait jamais parvenue à l'appareil. C'est la même raison qui avait fait
 passer en `v3` à l'ajout des push.
 
-**Sept vérifications verrouillent l'ensemble** : le badge existe, c'est un
-PNG, il a un canal alpha, il est carré, son fond est *réellement* transparent
-(un RGBA entièrement opaque redonnerait le carré blanc, avoir le canal ne
-suffit pas), et le nom du cache est bien au-delà de v4.
-
 C'est typiquement le défaut qu'aucun audit du site ne pouvait trouver : il ne
 se voit ni dans le navigateur, ni dans le HTML, seulement sur un vrai
 téléphone Android qui reçoit une vraie notification.
+
+**Et il a survécu trois jours à son propre correctif.** Signalé de nouveau le
+15/09 : toujours un carré blanc. Le service worker était pourtant juste, le
+fichier aussi, et les sept vérifications étaient vertes.
+
+Parce qu'il y a **deux** endroits qui affichent une notification, pas un :
+`sw.js` pour les vraies, et `testPushDisplay()` dans `index.html` pour le
+bouton « tester l'affichage » des réglages. Seul le premier avait été corrigé.
+Le second est resté sur `badge: "icon-192.png"` — et c'est exactement celui
+qu'on presse pour vérifier que le carré blanc a disparu. Le bouton fait pour
+constater la correction était le seul à ne pas l'avoir reçue.
+
+Le test ne lisait que `sw.js`. Une vérification écrite autour du fichier qu'on
+venait de corriger, pas autour du défaut : elle ne pouvait pas voir un second
+appel ailleurs, et sa ligne verte disait quand même « le badge n'est pas un
+carré blanc ».
+
+**Douze vérifications maintenant**, et elles ne regardent plus un fichier mais
+tous les appels : chaque `showNotification` de `sw.js` **et** d'`index.html`
+doit déclarer un badge, tous doivent déclarer **le même** (sinon le bouton de
+test montre autre chose que ce que le robot enverra), et aucun ne peut être
+une icône du manifeste — celles-ci sont opaques par obligation, donc carrées
+et blanches une fois réduites à leur alpha. C'est l'erreur commise deux fois,
+nommée dans le message du test. Le badge lui-même est ensuite contrôlé comme
+avant : PNG, canal alpha, carré, fond réellement transparent, cache au-delà
+de v4.
 
 ```
 🎮 3 nouveaux articles GTA 6 (dont 1 officiel Rockstar)

@@ -4492,14 +4492,49 @@ def test_panneau_parametres_intact():
 
 def test_badge_de_notification_a_un_canal_alpha():
     print("\n[push] le badge de la barre d'état n'est pas un carré blanc")
-    import re, struct
+    import json, re, struct
     sw = open("docs/sw.js", encoding="utf-8").read()
+    page = open("docs/index.html", encoding="utf-8").read()
 
-    fichier = re.search(r'badge:\s*"([^"]+)"', sw)
-    check(fichier is not None, "le service worker déclare un badge")
-    if not fichier:
-        return
-    nom = fichier.group(1)
+    # Il y a DEUX endroits qui affichent une notification, pas un : le
+    # service worker pour les vraies, et le bouton « tester » des réglages.
+    # La première version de ce test ne lisait que sw.js. Résultat : le badge
+    # y a été corrigé, le bouton de test est resté sur icon-192.png, et c'est
+    # précisément ce bouton qu'on presse pour vérifier la correction — le
+    # carré blanc a donc survécu trois jours à son propre correctif, suite
+    # verte. Le test balaie maintenant tout appel, où qu'il soit.
+    declares = []
+    for nom_source, texte in (("docs/sw.js", sw), ("docs/index.html", page)):
+        appels = len(re.findall(r"\.showNotification\(", texte))
+        badges = re.findall(r'badge:\s*"([^"]+)"', texte)
+        check(appels > 0 and len(badges) == appels,
+              "%s : les %d appel(s) à showNotification déclarent tous un badge "
+              "(%d déclaré(s))" % (nom_source, appels, len(badges)))
+        declares += [(nom_source, n) for n in badges]
+
+    check(len(declares) >= 2,
+          "les deux chemins d'affichage déclarent un badge (%d trouvé(s))"
+          % len(declares))
+
+    # Et ils doivent déclarer LE MÊME : sinon le bouton de test montre autre
+    # chose que ce que le robot enverra, ce qui est pire qu'inutile.
+    noms = {n for _, n in declares}
+    check(len(noms) == 1,
+          "tous les appels utilisent le même badge (%s)"
+          % ", ".join(sorted(noms)))
+
+    # Le piège, nommé. Les icônes du manifeste sont opaques par obligation
+    # (test_icones_de_lapp le verrouille) ; en utiliser une comme badge donne
+    # donc toujours un carré blanc. C'est l'erreur commise deux fois.
+    icones = {e["src"] for e in json.load(
+        open("docs/manifest.json", encoding="utf-8"))["icons"]}
+    for nom_source, n in declares:
+        check(n.lstrip("./") not in icones,
+              "%s : le badge (%s) n'est pas une icône du manifeste — celles-ci "
+              "sont opaques, donc carrées et blanches une fois réduites à leur "
+              "alpha" % (nom_source, n))
+
+    nom = sorted(noms)[0]
     chemin = "docs/" + nom.lstrip("./")
     check(os.path.exists(chemin), f"le fichier du badge existe ({nom})")
     if not os.path.exists(chemin):
