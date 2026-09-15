@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1169
+qui permet de tester tout le pipeline sans sortir de la machine. **1183
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1169 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Les 1183 vérifications de la suite étaient vertes dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste

@@ -1489,13 +1489,12 @@
         <button class="small danger" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
       </div>
       <div class="token-status dim" id="pushStatusLine"></div>
+      <!-- Une ligne, pas quatre. Ce bloc s'affiche en PERMANENCE dès que
+           l'appareil est abonné : y laisser le mode d'emploi complet, c'est
+           garder à l'écran pour toujours les instructions d'une étape faite
+           une fois. Le détail vit derrière le « ? » du groupe. -->
       <div id="pushSubscriptionBlock" class="bloc-replie">
-        <div class="setting-desc">
-          Dernière étape, à faire une seule fois : copie ce bloc et colle-le dans le
-          secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong> (Settings → Secrets and
-          variables → Actions). Tant que ce n'est pas fait, le robot ne sait pas où
-          envoyer les notifications.
-        </div>
+        <div class="setting-desc">À coller dans le secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong>.</div>
         <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide champ-mono petit"
                   aria-label="Abonnement push de cet appareil"></textarea>
         <div class="setting-buttons">
@@ -1503,8 +1502,15 @@
         </div>
       </div>
       <div class="setting-desc" hidden>
-        Une vraie notification système, qui ouvre l'article au lieu d'ouvrir Discord.
-        Un seul message récapitulatif par passage du robot, comme sur Discord.
+        Une vraie notification système, qui ouvre l'article au lieu d'ouvrir
+        Discord. Un seul message récapitulatif par passage du robot.
+        <br><br>
+        <strong>Après chaque abonnement</strong>, il faut copier le bloc
+        ci-dessus dans le secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong>
+        (Settings → Secrets and variables → Actions) : l'app n'a pas le droit
+        d'écrire un secret elle-même. Tant que ce n'est pas fait, le robot ne
+        sait pas où envoyer les notifications. C'est à refaire si l'app est
+        réinstallée — l'abonnement change avec elle.
       </div>
     </div>
 
@@ -4799,7 +4805,12 @@ function greffeAides(){
     // étiquette de champ, elle aussi en .setting-desc mais toujours visible.
     // Sans ce filtre, le « ? » masquait l'étiquette et laissait la vraie
     // explication inatteignable.
-    const desc = g.querySelector(".setting-desc[hidden]");
+    //
+    // :scope > et non un descendant quelconque : le groupe des notifications
+    // contient un bloc replié qui a ses propres explications. Le « ? » s'y
+    // greffait, si bien qu'il ouvrait le mode d'emploi de l'abonnement au
+    // lieu de l'explication du réglage — et que celle-ci était inatteignable.
+    const desc = g.querySelector(":scope > .setting-desc[hidden]");
     const lab = g.querySelector(".setting-label");
     if(!desc || !lab || lab.querySelector(".aide")) return;
     const b = document.createElement("button");

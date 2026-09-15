@@ -5022,6 +5022,36 @@ def test_panneau_parametres_accessible():
               "%s : le « ? » ouvre une explication visible, pas un texte "
               "enfermé dans un bloc lui-même masqué" % gid)
 
+    # La cause de fond, prise à la racine plutôt qu'au cas par cas : le « ? »
+    # ne vise qu'un enfant DIRECT du groupe. Sans cela il se greffait sur
+    # n'importe quelle explication repliée, bloc annexe compris.
+    corps = html[html.index("function greffeAides("):]
+    corps = corps[:corps.index("\n}")]
+    check(':scope > .setting-desc[hidden]' in corps,
+          "le « ? » ne vise qu'une explication enfant direct du groupe")
+
+    # Et réciproquement : une explication repliée à l'intérieur d'un bloc
+    # annexe n'aurait plus aucun bouton pour l'ouvrir. Elle serait morte.
+    for m in re.finditer(r'class="setting-desc" hidden', panneau):
+        check(not dans_un_bloc_replie(panneau, m.start()),
+              "aucune explication repliée n'est enfermée dans un bloc annexe, "
+              "où plus rien ne pourrait l'ouvrir")
+
+    # Le bloc de l'abonnement s'affiche EN PERMANENCE dès que l'appareil est
+    # abonné. Le mode d'emploi complet y tenait quatre lignes : les
+    # instructions d'une étape faite une fois restaient à l'écran pour
+    # toujours. Une ligne, et le détail derrière le « ? ».
+    bloc = panneau[panneau.index('id="pushSubscriptionBlock"'):]
+    bloc = bloc[:bloc.index("<textarea")]
+    visibles = re.findall(r'<div class="setting-desc">(.*?)</div>', bloc, re.S)
+    for texte in visibles:
+        nu = re.sub(r"<[^>]+>|\s+", " ", texte).strip()
+        check(len(nu) <= 120,
+              "le texte permanent du bloc d'abonnement tient en une ligne "
+              "(%d caractères)" % len(nu))
+    check("Dernière étape" not in panneau,
+          "le pavé d'instructions ne campe plus dans le panneau")
+
 
 def test_panneau_parametres_structure():
     print("\n[app] la structure du panneau ne piège plus le doigt")
