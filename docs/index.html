@@ -260,6 +260,10 @@
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
     padding:10px 14px; border-radius:var(--r-sm); cursor:pointer; letter-spacing:0.02em;
     transition:border-color var(--t-court) var(--courbe);
+    /* Sans effet sur un bouton ordinaire, qui centre déjà son contenu tout
+       seul. C'est le filet : le jour où un display de type flex est reposé
+       en style inline, le libellé reste centré au lieu de remonter. */
+    align-items:center; justify-content:center;
     /* 44 px par DÉFAUT plutôt qu'énumérés un par un. La passe précédente
        avait traité les commandes de la page une à une et oublié tout
        l'intérieur des panneaux : « Fermer » tenait encore dans 23 px, le
@@ -286,7 +290,11 @@
   button:disabled{opacity:0.4; cursor:default;}
   /* min-height et non un rembourrage plus épais : le bouton « Charger 30 de
      plus » mesurait 27px de haut, le plus petit de toute l'interface. */
-  button.small{padding:6px 10px; font-size:11px; min-height:44px;}
+  /* 14 px et non 10 : le texte n'avait que 11 px de marge de chaque côté,
+     la plus étroite du panneau — un bouton ordinaire en a 15, un onglet de
+     18 à 29. Le rembourrage vertical passe de 6 à 8 px : min-height:44px
+     fixe déjà la hauteur, donc seule la largeur bouge. */
+  button.small{padding:8px 14px; font-size:11px; min-height:44px;}
 
   .progress-bar{
     width:100%; height:4px; background:var(--bg-elevated); border-radius:var(--r-xs);
@@ -800,7 +808,9 @@
      reste HORS du titre — un bouton dans un titre serait lu comme faisant
      partie de son intitulé. */
   .settings-title h2{font:inherit; letter-spacing:inherit; color:inherit;}
-  .settings-title button{padding:4px 8px; font-size:11px;}
+  /* 8 px de marge latérale, c'était le dernier bouton du panneau à laisser
+     son texte coller aux bords. Aligné sur les 15 px des autres. */
+  .settings-title button{padding:8px 14px; font-size:11px;}
   .setting-group{margin-bottom:20px;}
   .setting-label{
     font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);
@@ -1482,7 +1492,14 @@
              d'envoi. Celui-ci déclenche un vrai envoi signé depuis GitHub,
              qui traverse le service de push comme une vraie notification.
              Masqué sans jeton : sans lui, l'API GitHub refuserait. -->
-        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Tester un envoi réel</button>
+        <!-- « Tester l'envoi » et non « Tester un envoi réel » : à 14 px de
+             rembourrage le libellé long faisait 167 px, la rangée débordait
+             et le bouton partait à la ligne avec « Désactiver ». Raccourci,
+             les deux tests tiennent ensemble et l'action destructive se
+             retrouve seule en dessous — dans ce groupe comme dans celui du
+             jeton. Il est aussi parallèle à « Tester l'affichage », son
+             voisin, ce que l'ancien libellé n'était pas. -->
+        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Tester l'envoi</button>
         <!-- En dernier et cerné de rouge : il était le troisième bouton d'une
              rangée de trois identiques, indiscernable de deux boutons de test
              inoffensifs. -->
@@ -3767,12 +3784,18 @@ async function refreshPushUI(){
 
   if(subscription){
     enableBtn.style.display = "none";
-    disableBtn.style.display = "inline-flex";
+    // Chaîne vide et non "inline-flex", pour la raison déjà rencontrée sur
+    // triggerRunBtn : un display posé en style inline l'emporte sur la
+    // feuille de style et fait du bouton un conteneur flex, dont le libellé
+    // remonte en haut de la boîte au lieu d'y être centré. Le correctif
+    // avait été appliqué là-bas et jamais reporté ici — ces deux boutons
+    // sont les seuls du panneau dont le texte était décentré de 8,5 px.
+    disableBtn.style.display = "";
     block.style.display = "block";
     document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
     setPushStatus("Cet appareil est abonné.", "ok");
   }else{
-    enableBtn.style.display = "inline-flex";
+    enableBtn.style.display = "";
     disableBtn.style.display = "none";
     block.style.display = "none";
     if(Notification.permission === "denied"){

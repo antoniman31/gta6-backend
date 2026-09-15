@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1183
+qui permet de tester tout le pipeline sans sortir de la machine. **1188
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1183 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Les 1188 vérifications de la suite étaient vertes dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
@@ -1458,6 +1458,43 @@ en place après 1200 px de défilement, cliquer le nom d'une source la bascule,
 un mot-clé d'exclusion retire vraiment des articles du fil, une valeur hors
 bornes est ramenée **et annoncée**, la zone de clic du « ? » atteint 44 px,
 exactement un onglet est annoncé enfoncé.
+
+**Le libellé remontait en haut du bouton — sur deux boutons seulement.**
+Signalé sur capture : « les boutons aussi ça va pas, les textes sont trop
+collés au bouton ». Mesure faite sur chaque bouton du panneau, deux défauts
+distincts se cachaient derrière la remarque.
+
+Le premier est un vrai bug, et c'est **le même que celui déjà corrigé une
+fois dans ce fichier**. `refreshPushUI()` montrait ses boutons par
+`style.display = "inline-flex"`. Un `display` posé en style inline l'emporte
+sur la feuille de style et fait du bouton un **conteneur flex** : son unique
+enfant, le texte, cesse d'être centré et remonte en haut de la boîte. Avec
+`min-height:44px`, cela fait 8,5 px de décalage. Le commentaire de
+`refreshTokenUI()` décrit exactement ce piège et explique pourquoi il utilise
+la chaîne vide — le correctif n'avait simplement jamais été reporté sur les
+deux boutons du groupe push. Ils s'affichent désormais par `""`, et la règle
+`button` déclare `align-items:center` en filet, sans effet sur un bouton
+ordinaire mais salvateur le jour où quelqu'un repose un `display` de ce type.
+
+Le second est de l'esthétique mesurable. `button.small` n'avait que **11 px
+de marge latérale** autour de son texte, la plus étroite du panneau, quand un
+bouton ordinaire en a 15 et un onglet de 18 à 29. Le bouton « Fermer », lui,
+en avait 9. Tous à 15 px désormais.
+
+Élargir les boutons a cassé le retour à la ligne : « Tester un envoi réel »
+passait de 159 à 167 px, la rangée débordait de 10 px et le bouton partait à
+la ligne avec « Désactiver ». Réglé par le libellé plutôt que par de la
+gymnastique CSS — **« Tester l'envoi »**, qui tient en 126 px et qui est de
+surcroît parallèle à son voisin « Tester l'affichage », ce que l'ancien
+n'était pas. Les deux groupes d'actions du panneau ont maintenant la même
+forme : les actions inoffensives sur la première rangée, la destructive seule
+en dessous.
+
+**Une fausse alerte, dite comme telle.** La même capture laissait croire que
+« Tester l'affichage » et « Tester un envoi réel » n'étaient pas alignés.
+Mesure : `h=44` pour les trois boutons, même `y` pour les deux premiers.
+Artefact de rendu du ×2, pas un défaut — et il valait mieux le mesurer que le
+corriger.
 
 **Une réserve de méthode.** `m3.material.io` et `lawsofux.com` sont tous deux
 bloqués par le proxy de sortie de l'environnement où cette relecture a été
@@ -2618,7 +2655,7 @@ app  →  GitHub (test-push.yml)  →  push_notify.py --test
      →  signature VAPID  →  service de push  →  téléphone
 ```
 
-Un second bouton, **« Tester un envoi réel »**, déclenche ce workflow par la
+Un second bouton, **« Tester l'envoi »**, déclenche ce workflow par la
 même API que « Relancer le robot ». Il n'apparaît que si un jeton GitHub est
 enregistré : proposer un bouton qui ne peut pas marcher, c'est promettre un
 test et rendre une erreur.

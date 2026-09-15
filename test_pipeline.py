@@ -4938,6 +4938,34 @@ def test_cibles_tactiles_du_panneau():
           "sa zone de clic atteint 44 px (%d + 2x%s)"
           % (cote, debord.group(1) if debord else "?"))
 
+    # Un display posé en style inline l'emporte sur la feuille de style et
+    # fait du bouton un CONTENEUR FLEX : son libellé cesse d'être centré et
+    # remonte en haut de la boîte, de 8,5 px sur un bouton .small. Le défaut
+    # avait déjà été rencontré et corrigé sur triggerRunBtn — et jamais
+    # reporté sur les deux boutons du groupe push, qui l'ont gardé.
+    check('style.display = "inline-flex"' not in html,
+          "aucun JS ne pose un display de type flex pour montrer un bouton")
+    check(html.count('style.display = token ? "" : "none"') >= 1
+          or '.style.display = "";' in html,
+          "montrer un bouton rend la main à la feuille de style (chaîne vide)")
+
+    # Le filet, pour que le piège ne puisse plus se refermer : même devenu
+    # conteneur flex, le bouton centre son contenu.
+    bloc = re.search(r"\n  button\{([^}]*)\}", html).group(1)
+    check("align-items:center" in bloc and "justify-content:center" in bloc,
+          "le bouton centre son libellé même s'il devient un conteneur flex")
+
+    # « Les textes sont trop collés au bouton » : .small n'avait que 10 px de
+    # rembourrage latéral, le plus étroit du panneau, là où le bouton
+    # ordinaire en a 14. Le bouton « Fermer » en avait 8.
+    ordinaire = int(re.search(r"padding:\d+px (\d+)px", bloc).group(1))
+    for sel in ("button.small", r"\.settings-title button"):
+        regle = re.search(r"%s\{([^}]*)\}" % sel, html).group(1)
+        lat = int(re.search(r"padding:\d+px (\d+)px", regle).group(1))
+        check(lat >= ordinaire,
+              "%s laisse au moins autant d'air que le bouton ordinaire "
+              "(%d px contre %d)" % (sel.replace("\\", ""), lat, ordinaire))
+
     # La dérogation elle-même : chaque sélecteur qui y figure doit tenir son
     # engagement, sinon c'est une porte ouverte à la prochaine régression.
     ligne = re.search(r"([^\n]*)\{min-height:0;\}", html).group(1)
