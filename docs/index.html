@@ -3610,7 +3610,14 @@ async function testPushDisplay(){
     await reg.showNotification("GTA6_WATCH — test", {
       body: "Si tu vois ceci, l'affichage des notifications fonctionne sur cet appareil.",
       icon: "icon-192.png",
-      badge: "icon-192.png",
+      // Le MÊME badge que les vraies notifications (voir sw.js) — sinon ce
+      // bouton, dont le seul rôle est de montrer à quoi ressemble une
+      // notification, en montre une DIFFÉRENTE de celles du robot. Il a
+      // gardé icon-192.png trois jours après la correction du carré blanc :
+      // la correction était faite dans sw.js, et c'est ce bouton-ci qu'on
+      // presse pour la vérifier. Android ne garde que le canal alpha, et
+      // icon-192.png est opaque — carré blanc.
+      badge: "icon-badge.png",
       tag: "gta6watch-test"
     });
     setPushStatus("Notification de test envoyée. Ceci ne teste que l'affichage, pas l'envoi par le robot.", "ok");
