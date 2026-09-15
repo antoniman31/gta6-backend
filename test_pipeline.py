@@ -951,7 +951,23 @@ def test_retirer_une_source_ne_laisse_pas_ses_articles():
     if not os.path.exists("docs/feed.json"):
         print("  (ignoré : docs/feed.json introuvable)")
         return
-    d = json.load(open("docs/feed.json", encoding="utf-8"))
+
+    # Les DEUX fichiers, pas seulement le gros. `feed-recent.json` est
+    # l'extrait de 300 articles que l'app télécharge EN PREMIER (voir
+    # `urlAllegee()` dans index.html) : ne verrouiller que `feed.json`
+    # laisserait le seul fichier réellement lu au démarrage hors de portée.
+    # Le trou a été constaté le 15/09/2026, en résolvant le conflit du
+    # retrait de VG247 — l'extrait annonçait encore 50 sources.
+    fichiers = [f for f in ("docs/feed.json", "docs/feed-recent.json")
+                if os.path.exists(f)]
+    for chemin in fichiers:
+        _verifie_flux_sans_source_fantome(chemin, fetch_feeds)
+
+
+def _verifie_flux_sans_source_fantome(chemin, fetch_feeds):
+    import json, collections
+    d = json.load(open(chemin, encoding="utf-8"))
+    nom = os.path.basename(chemin)
 
     # Retirer une source de FEEDS arrête les NOUVEAUX articles, mais ne
     # touche pas à ceux déjà stockés : la fusion les conserve, c'est même
@@ -966,8 +982,8 @@ def test_retirer_une_source_ne_laisse_pas_ses_articles():
     orphelins = collections.Counter(i["source"] for i in d["items"]
                                     if i["source"] not in connus)
     check(not orphelins,
-          "aucun article ne vient d'une source absente de FEEDS%s"
-          % ("" if not orphelins
+          "%s : aucun article ne vient d'une source absente de FEEDS%s"
+          % (nom, "" if not orphelins
              else " — %s" % dict(orphelins.most_common(3))))
 
     # Même chose pour les journaux de santé : une source retirée qui reste
@@ -982,15 +998,25 @@ def test_retirer_une_source_ne_laisse_pas_ses_articles():
                     if isinstance(valeurs, list)
                     else [k for k in valeurs if k not in ids])
         check(not restants,
-              "%s ne parle que de sources existantes%s"
-              % (cle, "" if not restants else " — reste %s" % restants[:3]))
+              "%s : %s ne parle que de sources existantes%s"
+              % (nom, cle, "" if not restants else " — reste %s" % restants[:3]))
 
     check(d.get("sources_count") == len(fetch_feeds.FEEDS),
-          "le compteur du bandeau annonce %s sources, FEEDS en déclare %d"
-          % (d.get("sources_count"), len(fetch_feeds.FEEDS)))
-    check(d.get("total_articles") == len(d["items"]),
-          "le total annoncé (%s) vaut le nombre d'articles réellement "
-          "présents (%d)" % (d.get("total_articles"), len(d["items"])))
+          "%s : le compteur du bandeau annonce %s sources, FEEDS en déclare %d"
+          % (nom, d.get("sources_count"), len(fetch_feeds.FEEDS)))
+    # `total_articles` compte le flux ENTIER dans les deux fichiers : dans
+    # l'extrait il dépasse donc volontairement le nombre de lignes présentes,
+    # c'est lui qu'affiche le bandeau « 2 572 articles ». On le compare au
+    # fichier complet, jamais à len(items) de l'extrait.
+    complet = json.load(open("docs/feed.json", encoding="utf-8"))
+    attendu = len(complet["items"])
+    check(d.get("total_articles") == attendu,
+          "%s : le total annoncé (%s) vaut le nombre d'articles réellement "
+          "présents dans le flux complet (%d)"
+          % (nom, d.get("total_articles"), attendu))
+    check(len(d["items"]) <= attendu,
+          "%s : l'extrait (%d) ne dépasse pas le flux complet (%d)"
+          % (nom, len(d["items"]), attendu))
 
 
 def test_identifiants_de_sources_uniques():

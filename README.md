@@ -492,7 +492,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1012
+qui permet de tester tout le pipeline sans sortir de la machine. **1022
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1656,16 +1656,31 @@ précise — ce sont exactement les 8 archives remontées le 29/08/2026 par la
 recherche `site:` avant que le garde-fou d'âge n'existe. La fuite avait été
 bouchée le jour même ; ce qui était déjà entré n'avait jamais été retiré.
 
-**Huit vérifications** verrouillent maintenant l'ensemble, et elles ne
+**Dix-huit vérifications** verrouillent maintenant l'ensemble, et elles ne
 regardent pas la liste des sources mais le flux produit : aucun article ne
 peut venir d'une source absente de `FEEDS` ; aucun des cinq journaux de santé
 (`sources_health`, `sources_silence`, `sources_entries_history`,
 `sources_declining`, `feed_http_state`) ne peut parler d'une source qui
 n'existe plus — sinon le bandeau compterait éternellement une ligne tarie
-pour une source qu'il n'interroge plus ; et les deux compteurs annoncés
-(`sources_count`, `total_articles`) doivent valoir ce qu'il y a réellement.
-Éprouvé sur l'état d'avant la purge : les quatre premières tombent, en
-nommant `{'VG247': 8}` et `['vg247', 'xboxwire']`.
+pour une source qu'il n'interroge plus ; et les compteurs annoncés doivent
+valoir ce qu'il y a réellement.
+
+**Dix-huit et non neuf, parce qu'il y a deux fichiers.** `feed-recent.json`
+est l'extrait de 300 articles que l'app télécharge **en premier** — ne
+verrouiller que `feed.json` laissait hors de portée le seul fichier
+réellement lu au démarrage. Le trou s'est vu le jour même, en résolvant le
+conflit du retrait : l'extrait annonçait encore 50 sources et 2 580 articles
+pendant que le fichier complet en annonçait 48 et 2 572.
+
+Un piège dans le piège : dans l'extrait, `total_articles` et `hot_count`
+décrivent le **flux entier**, pas les 300 lignes présentes — c'est bien
+« 2 572 articles » que doit afficher le bandeau. Les recalculer depuis
+l'extrait donne 300 et 0, deux valeurs fausses. Le test les compare donc au
+fichier complet, jamais à `len(items)`. J'ai fait l'erreur avant de l'écrire.
+
+Éprouvé sur l'état d'avant la purge, fichier par fichier : quatre
+vérifications tombent sur `feed.json` en nommant `{'VG247': 8}` et
+`['vg247', 'xboxwire']`, quatre autres sur `feed-recent.json`.
 
 **Reste un sujet ouvert, non traité ici.** Le même comptage révèle **32
 autres articles** antérieurs au garde-fou et venant de sources qui n'ont pas
