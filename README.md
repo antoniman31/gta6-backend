@@ -1696,13 +1696,44 @@ fichier complet, jamais à `len(items)`. J'ai fait l'erreur avant de l'écrire.
 vérifications tombent sur `feed.json` en nommant `{'VG247': 8}` et
 `['vg247', 'xboxwire']`, quatre autres sur `feed-recent.json`.
 
-**Reste un sujet ouvert, non traité ici.** Le même comptage révèle **32
-autres articles** antérieurs au garde-fou et venant de sources qui n'ont pas
-le droit de garder leurs archives — RockstarINTEL de mars 2026, GTA6 Times de
-juin, des annonces de précommande. Contrairement aux 8 de VG247, ceux-là sont
-du contenu réel et récent au moment de leur import ; les jeter serait une
-décision de fond, pas un nettoyage. Ils sont laissés en place, et comptés ici
-pour que personne n'ait à les recompter.
+**Le même comptage révélait 32 autres articles** antérieurs au garde-fou et
+venant de sources qui n'ont pas le droit de garder leurs archives —
+RockstarINTEL de mars 2026, GTA6 Times de juin, des annonces de précommande.
+Contrairement aux 8 de VG247, ceux-là étaient du contenu réel et récent au
+moment de leur import : les jeter était une décision de fond, pas un
+nettoyage. Elle a été prise le soir même — voir ci-dessous.
+
+### Les 33 vieux articles, et pourquoi aucun test ne les remplace
+
+Décision d'Antoni, 15/09/2026 : purger tout article de plus de
+`MAX_ARTICLE_AGE_DAYS` (45 j) venant d'une source sans `garder_les_archives`.
+**33 partis** (32 le matin, un de plus ayant franchi la ligne dans la
+journée), de 46 à 313 jours. 2 586 → 2 553 articles.
+
+**Un seul était marqué `official`** et il a été vérifié avant d'être jeté :
+« Grand Theft Auto VI Pre-Orders Begin on June 25 », arrivé par Google News.
+C'est un **relais** d'une annonce que Rockstar porte elle-même sur ses fils
+archivés — en anglais (*Pre-Order Grand Theft Auto VI on June 25*), en
+français (*Précommandez Grand Theft Auto VI le 25 juin*) et chez Take-Two
+(*Rockstar Games Announces Pre-Orders*). Les trois sont conservées, elles
+appartiennent à des sources à archives. Rien ne s'est perdu. Aucun article
+« actu majeure » n'était concerné.
+
+**Et aucun test ne verrouille ce nettoyage, délibérément.** La règle évidente
+— « aucun article de plus de 45 jours » — serait un piège : les articles
+vieillissent tout seuls. Celui qui entre aujourd'hui à 0 jour en aura 46 dans
+un mois et demi, et ferait échouer la suite sans qu'aucun défaut n'existe. Un
+test qui tombe au rouge par le seul passage du temps est pire qu'absent : on
+finit par le débrancher, et on débranche ce qu'il protégeait avec lui.
+
+La variante « rien d'antérieur au premier passage du robot » a été examinée et
+écartée pour la même raison : un article vieux de 45 jours à son import est
+légitime, et sa date peut déjà tomber avant cette borne.
+
+**Conséquence assumée : le fil dérivera de nouveau.** C'est un nettoyage
+ponctuel, pas un mécanisme. Le seul remède durable serait que le robot élague
+à l'écriture, ce qui est un changement de conception — et pas ce qui a été
+demandé.
 
 ### Trois sources retirées, trois ajoutées — et la sonde entre les deux
 
