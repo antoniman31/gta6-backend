@@ -268,9 +268,12 @@
        dérogent explicitement juste en dessous. */
     min-height:44px;
   }
-  /* Ces quatre-là gardent leur taille : soit ils sont carrés et calibrés au
-     pixel (icônes d'entête), soit ils étendent déjà leur zone de clic par un
-     pseudo-élément, soit ils sont posés en absolu dans un champ. */
+  /* Ces quatre-là gardent leur taille APPARENTE, jamais leur zone de clic :
+     pseudo-élément pour .icon-btn, .card-mark et .aide, position absolue
+     dans un champ pour .search-clear-btn. Le commentaire précédent créditait
+     .aide d'un pseudo-élément qu'elle n'avait pas — dix-huit pixels de côté,
+     dérogation accordée sur un motif inexistant. Un test lit maintenant le
+     CSS et exige le mécanisme que la phrase revendique. */
   .icon-btn, .card-mark, .search-clear-btn, .aide{min-height:0;}
   button:hover{border-color:var(--accent);}
   button:active{transform:translateY(1px);}
@@ -820,6 +823,9 @@
   .pleine-largeur{width:100%;}
   .setting-row label{font-size:13px;}
   .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
+  /* Les compteurs et la note du plafond sont vides tant qu'ils n'ont rien à
+     dire : sans ceci, ils réserveraient une ligne pour rien. */
+  .setting-desc:empty{display:none;}
   .setting-buttons{display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;}
   .tag-badge.tag-hot{
     background:color-mix(in srgb, #ff6b35 18%, transparent);
@@ -898,8 +904,10 @@
      zone de saisie à 44 px sans grossir la barre elle-même, et la pastille
      est agrandie pour être attrapable — un curseur qu'on rate est pire
      qu'un curseur laid. */
+  /* Largeur souple et non 140 px figés : à 390 px, le libellé passait sur
+     deux lignes pendant que le curseur gardait sa laisse. */
   input[type="range"]{
-    width:140px; accent-color:var(--accent);
+    width:auto; flex:1 1 0; min-width:110px; accent-color:var(--accent);
     height:44px; padding:0; margin:0; background:transparent;
   }
   input[type="range"]::-webkit-slider-thumb{width:20px; height:20px;}
@@ -911,8 +919,14 @@
   }
   input[type="text"].setting-input.wide{width:100%;}
 
+  /* 40x24 et non 32x19. Mais l'essentiel n'est pas là : c'est la LIGNE
+     entière qui bascule désormais (.source-row est un <label>), donc la
+     cible fait toute la largeur sur 44 px de haut. L'interrupteur seul
+     mesurait 32x19 — sous le minimum de 24 px de WCAG 2.5.8 — et c'était le
+     contrôle le plus nombreux du panneau : cinquante-neuf exemplaires, tous
+     oubliés par la passe qui avait porté le reste à 44 px. */
   .switch{
-    position:relative; width:32px; height:19px; flex-shrink:0;
+    position:relative; width:40px; height:24px; flex-shrink:0; display:block;
   }
   .switch input{opacity:0; width:0; height:0;}
   .switch .slider{
@@ -920,26 +934,76 @@
     cursor:pointer; transition:var(--t-court) var(--courbe);
   }
   .switch .slider::before{
-    content:''; position:absolute; width:13px; height:13px; left:3px; top:3px;
+    content:''; position:absolute; width:18px; height:18px; left:3px; top:3px;
     background:var(--bg-panel); border-radius:50%; transition:var(--t-court) var(--courbe);
   }
   .switch input:checked + .slider{background:var(--accent);}
-  .switch input:checked + .slider::before{transform:translateX(13px); background:var(--accent-contrast);}
+  .switch input:checked + .slider::before{transform:translateX(16px); background:var(--accent-contrast);}
 
   .source-list{
     display:grid; grid-template-columns:1fr 1fr; gap:6px;
   }
+  /* <label> et non <div> : tout le rectangle bascule la source, nom compris.
+     C'est la loi de Fitts appliquée au seul endroit du panneau où on vise
+     cinquante-neuf fois de suite. */
   .source-row{
     display:flex; align-items:center; justify-content:space-between; gap:6px;
     background:var(--bg-elevated); border:1px solid var(--line); border-radius:var(--r-sm);
-    padding:6px 8px;
+    padding:6px 8px; min-height:44px; cursor:pointer;
   }
+  .source-row:active{background:var(--bg-panel);}
+  /* Le focus clavier se pose sur la case, invisible : c'est la ligne qui
+     doit le montrer. */
+  .source-row:has(input:focus-visible){border-color:var(--accent);}
   .source-row span{font-size:11px; line-height:1.3; overflow-wrap:break-word;}
   /* 10 px : un message d'erreur est exactement le texte qu'il ne faut pas
      rendre difficile à lire. */
   .source-error{font-size:10px; color:var(--warn); margin-top:2px; font-family:'JetBrains Mono',monospace;}
 
-  .settings-actions{display:flex; gap:8px; margin-top:8px;}
+  /* Le titre, les onglets et la barre d'action restaient dans le flux d'un
+     panneau haut de plusieurs écrans : sur l'onglet Contenu, « Fermer » était
+     deux mille pixels plus haut et « Réinitialiser » autant plus bas. Les
+     deux extrémités sont maintenant collées. */
+  /* Le rembourrage du haut est retiré du panneau et confié à l'entête. Un
+     élément collant ne peut pas remonter au-dessus du bloc qui le contient :
+     avec un margin-top négatif pour manger ce rembourrage, il se faisait
+     repousser vingt pixels plus bas que sa place tandis que le contenu, lui,
+     restait disposé comme si l'entête était remontée. Les quatre premiers
+     pixels de chaque onglet passaient sous la barre — le haut des lettres de
+     « Notifications » et de « Mots-clés » était coupé. */
+  #settingsOverlay .settings-panel{padding-top:0;}
+  #settingsOverlay .panneau-entete{
+    position:sticky; top:0; z-index:2;
+    margin:0 -20px 16px; padding:20px 20px 0;
+    background:var(--bg-panel); border-bottom:1px solid var(--line);
+  }
+  #settingsOverlay .panneau-entete .settings-title{margin-bottom:14px;}
+  #settingsOverlay .panneau-entete .panneau-tabs{
+    margin-bottom:0; border-bottom:none; padding-bottom:12px;
+  }
+  /* Volontairement PAS collée, contrairement à l'entête : elle ne contient
+     plus qu'une action destructive, et la coller reviendrait à en faire
+     l'élément le plus visible du panneau. C'est l'entête qui porte la sortie
+     et les onglets, donc ce qu'on cherche vraiment en permanence. */
+  .settings-actions{
+    display:flex; gap:12px; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; margin-top:28px; padding-top:16px;
+    border-top:1px solid var(--line);
+  }
+  .settings-actions .setting-desc{margin-top:0; flex:1 1 140px;}
+
+  /* Trois sujets sans rapport vivaient dans « Avancé » sans rien pour les
+     séparer : les notifications, la connexion à GitHub, l'entretien de
+     l'app. Un intertitre par sujet, au lieu d'un quatrième onglet que la
+     largeur d'un téléphone ne permet pas. */
+  .panneau-section{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
+    letter-spacing:0.04em; color:var(--text);
+    margin:26px 0 14px; padding-top:18px; border-top:1px solid var(--line);
+  }
+  .panneau-onglet > .panneau-section:first-child{
+    margin-top:0; padding-top:0; border-top:none;
+  }
 
   /* ---------- Onglets du panneau Paramètres ---------- */
   /* La barre réutilise .tab et .tab.active : la classe du site, pas une
@@ -952,9 +1016,13 @@
   }
   .panneau-tabs .tab{flex:1 1 0; padding:8px 6px; min-width:0;}
 
-  /* Le mur de cinquante bascules défile chez lui au lieu d'allonger tout le
-     panneau : les boutons Appliquer et Réinitialiser restent atteignables. */
-  .panneau-onglet #sourceList{max-height:34vh; overflow-y:auto; padding-right:4px;}
+  /* Le mur de bascules défilait chez lui pour garder les boutons du bas
+     atteignables. La barre d'action étant collée en bas du panneau, ce
+     prétexte est tombé — et il coûtait un piège au doigt : deux zones de
+     défilement imbriquées, dont on ne sait jamais laquelle on pousse. Une
+     seule désormais, et la liste est passée EN DERNIER dans son onglet pour
+     que rien ne soit enterré derrière elle. */
+  .panneau-onglet #sourceList{padding-right:2px;}
   .src-outils{margin-bottom:10px;}
   .src-count-ligne{margin-top:8px;}
   .src-actions{display:flex; gap:6px; margin-top:8px;}
@@ -978,9 +1046,15 @@
      consultable, mais ne mange plus la moitié de l'écran en permanence. */
   .aide{
     background:none; border:1px solid var(--line); color:var(--text-dim);
-    border-radius:50%; width:18px; height:18px; padding:0; margin-left:6px;
-    font-size:10px; line-height:1; cursor:pointer; vertical-align:middle;
+    border-radius:50%; width:24px; height:24px; padding:0; margin-left:6px;
+    font-size:11px; line-height:1; cursor:pointer; vertical-align:middle;
+    position:relative; flex-shrink:0;
   }
+  /* Le cercle seul atteignait tout juste le minimum de WCAG 2.5.8 (24 px) ;
+     le pseudo-élément lui donne les 44 px que le reste de l'app s'impose.
+     Débordement latéral plus large que vertical : au-dessus il n'y a que la
+     marge du groupe, en dessous le champ commence huit pixels plus bas. */
+  .aide::after{content:""; position:absolute; inset:-10px -6px;}
   .aide[aria-expanded="true"]{border-color:var(--accent); color:var(--accent);}
   .setting-label{display:flex; align-items:center;}
 
@@ -1237,84 +1311,140 @@
 </div>
 
 <!-- ---------- Panneau Paramètres ---------- -->
+<!-- Le panneau applique TOUT immédiatement. Il n'y a plus de bouton
+     « Appliquer » : il existait, et ne réappliquait rien — saveSettings()
+     écrivait dans localStorage sans jamais redessiner le fil. Trois réglages
+     sur quatre s'enregistraient déjà à la volée ; le quatrième, le curseur
+     anti-doublon, n'était commité que par l'action SUIVANTE, si bien que
+     « Fermer » le perdait et basculer une source l'enregistrait sans qu'on
+     l'ait demandé. Un seul modèle, désormais, pour les quatre. -->
 <div class="overlay" id="settingsOverlay" onclick="closeSettingsOnOverlay(event)">
   <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="titreParametres">
-    <div class="settings-title">
-      <h2 id="titreParametres">PARAMÈTRES</h2>
-      <button onclick="closeSettings()">Fermer</button>
-    </div>
+    <div class="panneau-entete">
+      <div class="settings-title">
+        <h2 id="titreParametres">PARAMÈTRES</h2>
+        <button onclick="closeSettings()">Fermer</button>
+      </div>
 
-    <div class="panneau-tabs">
-      <button class="tab active" data-cible="aff" onclick="ongletParam('aff')">Affichage</button>
-      <button class="tab" data-cible="src" onclick="ongletParam('src')">Contenu</button>
-      <button class="tab" data-cible="adv" onclick="ongletParam('adv')">Avancé</button>
+      <!-- aria-pressed et non role="tab" : de vrais onglets ARIA exigent la
+           navigation aux flèches et le retrait des boutons du parcours de
+           tabulation. Trois boutons bascules dont un seul est enfoncé disent
+           la même chose, se comportent comme ce qu'ils sont, et n'ont plus
+           besoin de la couleur pour annoncer le choix — ce qui était le cas
+           avant : la sélection ne vivait QUE dans la classe .active. -->
+      <div class="panneau-tabs">
+        <button class="tab active" data-cible="aff" aria-pressed="true" onclick="ongletParam('aff')">Affichage</button>
+        <button class="tab" data-cible="src" aria-pressed="false" onclick="ongletParam('src')">Contenu</button>
+        <button class="tab" data-cible="adv" aria-pressed="false" onclick="ongletParam('adv')">Avancé</button>
+      </div>
     </div>
 
     <div class="panneau-onglet" data-onglet="aff">
     <div class="setting-group">
       <span class="setting-label">Apparence</span>
-      <div class="theme-toggle">
-        <button id="themeSystemBtn" onclick="setTheme('system')">Système</button>
-        <button id="themeLightBtn" onclick="setTheme('light')">Clair</button>
-        <button id="themeDarkBtn" onclick="setTheme('dark')">Sombre</button>
+      <div class="theme-toggle" role="group" aria-label="Thème de l'application">
+        <button id="themeSystemBtn" aria-pressed="false" onclick="setTheme('system')">Système</button>
+        <button id="themeLightBtn" aria-pressed="false" onclick="setTheme('light')">Clair</button>
+        <button id="themeDarkBtn" aria-pressed="false" onclick="setTheme('dark')">Sombre</button>
+      </div>
+      <div class="setting-desc" hidden>
+        « Système » suit le réglage clair/sombre du téléphone, bascule
+        automatique du soir comprise. Les deux autres forcent un thème quelle
+        que soit l'heure.
+      </div>
+    </div>
+
+    <!-- « Liste des articles » et non « Affichage » : l'onglet qui contient
+         ce groupe s'appelle déjà Affichage, et le même mot à deux niveaux de
+         hiérarchie ne dit plus rien. -->
+    <div class="setting-group">
+      <span class="setting-label">Liste des articles</span>
+      <div class="setting-row">
+        <label for="maxDisplay">Articles affichés max</label>
+        <input type="number" id="maxDisplay" min="5" max="20000" value="500"
+               inputmode="numeric" onchange="appliqueReglages()">
+      </div>
+      <div class="setting-desc" id="maxDisplayNote"></div>
+      <div class="setting-row">
+        <label for="simRange">Seuil anti-doublon</label>
+        <input type="range" id="simRange" min="50" max="95" value="75"
+               oninput="onSimChange(this.value)" onchange="appliqueReglages()">
+        <span id="simValue" class="valeur-mono">75%</span>
+      </div>
+      <div class="setting-desc" hidden>
+        <strong>Articles affichés max</strong> plafonne la liste, entre 5 et
+        20000. Au-delà du nombre d'articles réellement disponibles, il ne fait
+        plus rien — le nombre disponible est rappelé sous le champ.
+        <br><br>
+        <strong>Seuil anti-doublon</strong> : deux articles dont les titres se
+        ressemblent au moins autant que ce pourcentage sont fondus en un seul.
+        Plus bas, on regroupe large et on risque de masquer deux articles
+        vraiment différents ; plus haut, on laisse passer des reprises du même
+        sujet.
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Les mots-clés passent AVANT les sources : cinquante-neuf lignes de
+         bascules les enterraient, et la liste ne défile plus chez elle. -->
+    <div class="panneau-onglet" data-onglet="src" hidden>
+    <div class="setting-group">
+      <span class="setting-label">Mots-clés</span>
+      <textarea id="keywordsInput" class="setting-input wide champ-mono" rows="6"
+                aria-label="Mots-clés, un par ligne" placeholder="un mot-clé par ligne"
+                onchange="appliqueReglages()"></textarea>
+      <div class="setting-desc" id="keywordsCount"></div>
+      <div class="setting-desc" hidden>
+        Un article n'entre que si son titre ou son résumé contient l'un de ces
+        mots. La casse est ignorée, et le mot est cherché n'importe où dans le
+        texte : « gta 6 » attrape donc aussi « gta 6 : la date ». C'est
+        pourquoi un mot qui en contient déjà un autre ne sert à rien —
+        « gta 6 trailer » n'ajoute rien à « gta 6 ».
       </div>
     </div>
 
     <div class="setting-group">
-      <span class="setting-label">Affichage</span>
-      <div class="setting-row">
-        <label>Articles affichés max</label>
-        <input type="number" id="maxDisplay" min="5" max="1000" value="500" onchange="saveSettings()">
-      </div>
-      <div class="setting-row">
-        <label>Seuil de similarité anti-doublon</label>
-        <input type="range" id="simRange" min="50" max="95" value="75" oninput="onSimChange(this.value)">
-        <span id="simValue" class="valeur-mono">75%</span>
+      <span class="setting-label">Mots-clés à exclure</span>
+      <textarea id="excludeKeywordsInput" class="setting-input wide champ-mono" rows="4"
+                aria-label="Mots-clés à exclure, un par ligne" placeholder="un mot-clé par ligne"
+                onchange="appliqueReglages()"></textarea>
+      <div class="setting-desc" id="excludeKeywordsCount"></div>
+      <div class="setting-desc" hidden>
+        Un article dont le titre ou le résumé contient l'un de ces mots est
+        masqué. Le masquage est réversible et immédiat : retire le mot,
+        l'article revient sans qu'il faille relancer le robot.
       </div>
     </div>
 
-    </div>
-
-    <div class="panneau-onglet" data-onglet="src" hidden>
     <div class="setting-group">
       <span class="setting-label">Sources actives</span>
       <div class="src-outils">
-        <input type="text" id="sourceFilter" class="setting-input wide champ-mono" placeholder="Filtrer les sources…">
+        <input type="text" id="sourceFilter" class="setting-input wide champ-mono"
+               aria-label="Filtrer les sources par nom" placeholder="Filtrer les sources…">
         <div class="src-count-ligne"><span id="sourceCount" class="valeur-mono"></span></div>
         <div class="src-actions">
           <button class="small" onclick="toutesSources(true)">Tout activer</button>
-          <button class="small" onclick="toutesSources(false)">Tout désactiver</button>
+          <button class="small danger" onclick="toutesSources(false)">Tout désactiver</button>
         </div>
       </div>
-      <div class="source-list" id="sourceList"></div>
-    </div>
-
-    <div class="setting-group">
-      <span class="setting-label">Mots-clés (un par ligne)</span>
-      <textarea id="keywordsInput" class="setting-input wide champ-mono" rows="6"></textarea>
-    </div>
-
-    <div class="setting-group">
-      <span class="setting-label">Mots-clés à exclure (un par ligne)</span>
-      <textarea id="excludeKeywordsInput" class="setting-input wide champ-mono" rows="4"></textarea>
       <div class="setting-desc" hidden>
-        Un article dont le titre ou le résumé contient l'un de ces mots est masqué.
-        Le masquage est réversible et immédiat : retire le mot, l'article revient
-        sans qu'il faille relancer le robot.
+        Une source éteinte n'est plus interrogée, et ses articles déjà reçus
+        sortent de la liste. Rien n'est supprimé : la rallumer les ramène.
+        « Tout désactiver » demande confirmation — la sélection en cours, elle,
+        ne se récupère pas.
       </div>
+      <div class="source-list" id="sourceList"></div>
     </div>
 
     </div>
 
     <div class="panneau-onglet" data-onglet="adv" hidden>
-    <div class="setting-group">
-      <span class="setting-label">Backend GitHub (optionnel)</span>
-      <input type="text" id="backendUrlInput" class="setting-input wide champ-mono" placeholder="https://tonpseudo.github.io/gta6-backend/feed.json">
-      <div class="setting-desc" hidden>Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
-    </div>
+
+    <h3 class="panneau-section">Notifications</h3>
 
     <div class="setting-group" id="vapidSetupGroup" style="display:none;">
-      <span class="setting-label">Notifications push — configuration initiale</span>
+      <span class="setting-label">Configuration initiale</span>
       <div class="setting-desc" hidden>
         Le dépôt n'a pas encore de clés de notification. Génère-les ici (elles sont
         créées dans ce navigateur et ne partent nulle part), puis crée les deux
@@ -1325,14 +1455,16 @@
       </div>
       <div id="vapidKeysBlock" class="bloc-replie">
         <div class="setting-desc"><strong>VAPID_PUBLIC_KEY</strong> — secret GitHub</div>
-        <textarea id="vapidPublicOut" readonly rows="2" class="setting-input wide champ-mono petit"></textarea>
-        <div class="setting-desc" style="margin-top:6px;"><strong>VAPID_PRIVATE_KEY</strong> — secret GitHub, à ne jamais partager</div>
-        <textarea id="vapidPrivateOut" readonly rows="2" class="setting-input wide champ-mono petit"></textarea>
+        <textarea id="vapidPublicOut" readonly rows="2" class="setting-input wide champ-mono petit"
+                  aria-label="Clé publique VAPID"></textarea>
+        <div class="setting-desc"><strong>VAPID_PRIVATE_KEY</strong> — secret GitHub, à ne jamais partager</div>
+        <textarea id="vapidPrivateOut" readonly rows="2" class="setting-input wide champ-mono petit"
+                  aria-label="Clé privée VAPID"></textarea>
         <div class="setting-buttons">
           <button class="small" onclick="copyFieldValue('vapidPublicOut', this)">Copier la publique</button>
           <button class="small" onclick="copyFieldValue('vapidPrivateOut', this)">Copier la privée</button>
         </div>
-        <div class="setting-desc" style="margin-top:6px;">
+        <div class="setting-desc">
           Crée les deux secrets dans Settings → Secrets and variables → Actions, puis
           relance le robot. Cette section disparaîtra et l'abonnement deviendra possible.
           Ne garde pas de capture d'écran de la clé privée.
@@ -1351,17 +1483,21 @@
              qui traverse le service de push comme une vraie notification.
              Masqué sans jeton : sans lui, l'API GitHub refuserait. -->
         <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Tester un envoi réel</button>
-        <button class="small" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
+        <!-- En dernier et cerné de rouge : il était le troisième bouton d'une
+             rangée de trois identiques, indiscernable de deux boutons de test
+             inoffensifs. -->
+        <button class="small danger" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
       </div>
       <div class="token-status dim" id="pushStatusLine"></div>
       <div id="pushSubscriptionBlock" class="bloc-replie">
-        <div class="setting-desc" hidden>
+        <div class="setting-desc">
           Dernière étape, à faire une seule fois : copie ce bloc et colle-le dans le
           secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong> (Settings → Secrets and
           variables → Actions). Tant que ce n'est pas fait, le robot ne sait pas où
           envoyer les notifications.
         </div>
-        <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide champ-mono petit"></textarea>
+        <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide champ-mono petit"
+                  aria-label="Abonnement push de cet appareil"></textarea>
         <div class="setting-buttons">
           <button class="small" onclick="copyPushSubscription(this)">Copier l'abonnement</button>
         </div>
@@ -1372,13 +1508,29 @@
       </div>
     </div>
 
+    <h3 class="panneau-section">Connexion GitHub</h3>
+
+    <div class="setting-group">
+      <span class="setting-label">Backend GitHub (optionnel)</span>
+      <input type="text" id="backendUrlInput" class="setting-input wide champ-mono"
+             aria-label="Adresse du fichier de flux publié par le robot"
+             placeholder="https://tonpseudo.github.io/gta6-backend/feed.json"
+             onchange="saveSettings()">
+      <div class="setting-desc" hidden>Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
+    </div>
+
+    <!-- « jeton » partout. Le bouton employait le mot anglais tandis que la
+         ligne d'état juste en dessous disait « Jeton enregistré » : deux mots
+         pour une même chose, à vingt pixels d'écart. -->
     <div class="setting-group">
       <span class="setting-label">Déclenchement à distance (optionnel)</span>
-      <input type="password" id="githubTokenInput" class="setting-input wide champ-mono" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+      <input type="password" id="githubTokenInput" class="setting-input wide champ-mono"
+             aria-label="Jeton d'accès GitHub" placeholder="github_pat_…"
+             autocomplete="off" spellcheck="false">
       <div class="setting-buttons">
         <button class="small" onclick="saveGithubToken()">Enregistrer</button>
-        <button class="small" onclick="forgetGithubToken()">Oublier ce token</button>
         <button class="small" onclick="testGithubToken()">Tester</button>
+        <button class="small danger" onclick="forgetGithubToken()">Oublier ce jeton</button>
       </div>
       <div class="token-status dim" id="tokenStatusLine"></div>
       <div class="setting-desc" hidden>
@@ -1390,6 +1542,8 @@
         « Réinitialiser ». Il ne peut pas modifier le code du dépôt.
       </div>
     </div>
+
+    <h3 class="panneau-section">Entretien</h3>
 
     <div class="setting-group">
       <span class="setting-label">Version de l'app</span>
@@ -1409,9 +1563,12 @@
 
     </div>
 
+    <!-- Une action rare et destructive, à sa place : en bas, cernée de rouge,
+         seule. Elle partageait la barre avec « Appliquer », même taille et
+         même poids, à huit pixels l'une de l'autre. -->
     <div class="settings-actions">
-      <button onclick="resetSettings()">Réinitialiser</button>
-      <button class="primary" onclick="saveSettingsAndClose()">Appliquer</button>
+      <span class="setting-desc">Les changements s'appliquent immédiatement.</span>
+      <button class="danger" onclick="resetSettings()">Réinitialiser</button>
     </div>
   </div>
 </div>
@@ -1585,6 +1742,13 @@ const MAX_SEEN_ENTRIES = 2000;
 // au-delà du quota de 5 Mo. Le dépassement n'aurait rien affiché : il
 // n'aurait fait qu'échouer une écriture sur deux.
 const MAX_PERSISTED_ITEMS = 300;
+// Le champ annonçait min 5 / max 1000 et n'en vérifiait aucun : « max » sur
+// un <input type=number> ne mord qu'à la validation d'un <form>, et il n'y en
+// a pas. 20000 y tenait sans un mot. Ces deux bornes-ci sont LUES par
+// saveSettings, donc vraies ; le plafond est monté à 20000 parce que couper
+// à 1000 aurait retiré des articles réellement présents.
+const MIN_DISPLAY = 5;
+const MAX_DISPLAY = 20000;
 
 // Date exploitable pour un tri : une date absente ou illisible renvoie 0 au
 // lieu de NaN, qui rendrait l'ordre de tri imprévisible.
@@ -1740,11 +1904,65 @@ async function loadState(){
   }
 }
 
+// Lit le plafond en DISANT ce qu'il a fait. « 0 » tombait sur 500 parce que
+// zéro est falsy, « abc » sur 500 parce que NaN l'est aussi, et 20000 passait
+// sans broncher malgré le max=1000 affiché : trois corrections muettes pour
+// un champ qui prétendait avoir des bornes.
+function litMaxDisplay(){
+  const champ = document.getElementById("maxDisplay");
+  const brut = champ.value.trim();
+  const note = document.getElementById("maxDisplayNote");
+  const dispo = lastItems.length;
+  const rappel = dispo ? " (" + dispo + " article" + (dispo > 1 ? "s" : "") + " disponible" + (dispo > 1 ? "s" : "") + ")" : "";
+  let valeur = parseInt(brut, 10);
+  let message = "";
+  if(!Number.isFinite(valeur)){
+    valeur = DEFAULT_SETTINGS.maxDisplay;
+    message = "Valeur illisible — remise à " + valeur + ".";
+  }else if(valeur < MIN_DISPLAY){
+    valeur = MIN_DISPLAY;
+    message = "Minimum " + MIN_DISPLAY + " — remonté.";
+  }else if(valeur > MAX_DISPLAY){
+    valeur = MAX_DISPLAY;
+    message = "Maximum " + MAX_DISPLAY + " — abaissé.";
+  }
+  champ.value = valeur;
+  if(note) note.textContent = message ? message + rappel : rappel.trim();
+  return valeur;
+}
+
+// Compte ce que le champ contient VRAIMENT, lignes vides et doublons retirés
+// comme le fait saveSettings : une zone de six lignes pour quarante-deux
+// mots-clés ne montre rien de ce qu'elle contient.
+// Les trois formes sont passées en toutes lettres : « mot-clé » + « s »
+// donnait « mot-clés », et « aucun » + « exclusion » donnait « aucun
+// exclusion ». Un pluriel français ne se fabrique pas en concaténant.
+function majCompteurMots(idChamp, idCompteur, un, plusieurs, aucun){
+  const champ = document.getElementById(idChamp);
+  const el = document.getElementById(idCompteur);
+  if(!champ || !el) return;
+  const lignes = champ.value.split("\n").map(k => k.trim()).filter(Boolean);
+  const uniques = new Set(lignes.map(k => k.toLowerCase()));
+  const doublons = lignes.length - uniques.size;
+  el.textContent = uniques.size === 0 ? aucun
+    : uniques.size + " " + (uniques.size > 1 ? plusieurs : un)
+      + (doublons > 0 ? " · " + doublons + " doublon" + (doublons > 1 ? "s" : "") + " ignoré" + (doublons > 1 ? "s" : "") : "");
+}
+
+// Enregistre ET redessine. saveSettings() ne faisait que le premier : le
+// plafond, les mots-clés d'exclusion et les sources actives décident pourtant
+// de ce qu'affiche applyFilters(), qui n'était jamais rappelé. Couper une
+// source puis presser « Appliquer » ne changeait donc rien à l'écran.
+function appliqueReglages(){
+  saveSettings();
+  if(lastItems.length > 0) applyFilters();
+}
+
 async function saveSettings(){
   settings.backendUrl = document.getElementById("backendUrlInput").value.trim();
   settings.keywords = document.getElementById("keywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
   settings.excludeKeywords = document.getElementById("excludeKeywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
-  settings.maxDisplay = parseInt(document.getElementById("maxDisplay").value, 10) || 500;
+  settings.maxDisplay = litMaxDisplay();
   settings.similarityThreshold = parseInt(document.getElementById("simRange").value, 10);
 
   settings.feeds = settings.feeds.map(f => {
@@ -1757,6 +1975,8 @@ async function saveSettings(){
 
   updateSourcesLine();
   updateFooterNote();
+  majCompteurMots("keywordsInput", "keywordsCount", "mot-clé", "mots-clés", "aucun mot-clé");
+  majCompteurMots("excludeKeywordsInput", "excludeKeywordsCount", "exclusion", "exclusions", "aucune exclusion");
 }
 
 // Retire les entrées les plus anciennes au-delà du plafond. Sans ça le
@@ -1798,20 +2018,27 @@ function populateSettingsUI(){
   document.getElementById("simRange").value = settings.similarityThreshold;
   document.getElementById("simValue").textContent = settings.similarityThreshold + "%";
 
+  // <label> sur la LIGNE, <span> sur l'interrupteur : l'inverse de l'ancien
+  // balisage, où le <label> n'enveloppait que la case. La cible utile faisait
+  // 32x19 px, le nom de la source à côté n'y répondait pas. Un <label> dans
+  // un <label> étant invalide, c'est bien l'un ou l'autre.
   const list = document.getElementById("sourceList");
   list.innerHTML = settings.feeds.map(f => `
-    <div class="source-row">
+    <label class="source-row">
       <div>
         <span>${escapeHtml(f.name)}</span>
         ${feedErrors[f.id] ? `<div class="source-error">Erreur : ${escapeHtml(feedErrors[f.id])}</div>` : ""}
       </div>
-      <label class="switch">
-        <input type="checkbox" id="src-${f.id}" ${f.enabled ? "checked" : ""} onchange="saveSettings()">
+      <span class="switch">
+        <input type="checkbox" id="src-${f.id}" ${f.enabled ? "checked" : ""} onchange="appliqueReglages()">
         <span class="slider"></span>
-      </label>
-    </div>
+      </span>
+    </label>
   `).join("");
 
+  litMaxDisplay();
+  majCompteurMots("keywordsInput", "keywordsCount", "mot-clé", "mots-clés", "aucun mot-clé");
+  majCompteurMots("excludeKeywordsInput", "excludeKeywordsCount", "exclusion", "exclusions", "aucune exclusion");
   updateThemeButtons();
 }
 
@@ -1851,10 +2078,6 @@ function closeSettings(){
 function closeSettingsOnOverlay(e){
   if(e.target.id === "settingsOverlay") closeSettings();
 }
-function saveSettingsAndClose(){
-  saveSettings();
-  closeSettings();
-}
 async function resetSettings(){
   const ok = await demandeConfirmation(
     "Remettre tous les paramètres par défaut ?",
@@ -1867,6 +2090,9 @@ async function resetSettings(){
   applyTheme();
   updateSourcesLine();
   updateFooterNote();
+  // Sans ceci, remettre les réglages par défaut laissait à l'écran la liste
+  // filtrée par les anciens — exactement le défaut d'« Appliquer ».
+  if(lastItems.length > 0) applyFilters();
 }
 
 function exportOpml(){
@@ -1953,10 +2179,16 @@ function toggleTheme(){
   const current = document.documentElement.getAttribute("data-theme");
   setTheme(current === "light" ? "dark" : "light");
 }
+// aria-pressed en plus de la classe : la sélection ne vivait que dans une
+// couleur de fond. Un lecteur d'écran annonçait trois boutons identiques.
 function updateThemeButtons(){
-  document.getElementById("themeSystemBtn").classList.toggle("active", settings.theme === "system");
-  document.getElementById("themeLightBtn").classList.toggle("active", settings.theme === "light");
-  document.getElementById("themeDarkBtn").classList.toggle("active", settings.theme === "dark");
+  for(const [id, cle] of [["themeSystemBtn", "system"], ["themeLightBtn", "light"], ["themeDarkBtn", "dark"]]){
+    const b = document.getElementById(id);
+    if(!b) continue;
+    const actif = settings.theme === cle;
+    b.classList.toggle("active", actif);
+    b.setAttribute("aria-pressed", String(actif));
+  }
 }
 if(window.matchMedia){
   window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
@@ -4512,7 +4744,9 @@ function ongletParam(cle){
     o.hidden = o.dataset.onglet !== cle;
   });
   document.querySelectorAll(".panneau-tabs .tab").forEach(b => {
-    b.classList.toggle("active", b.dataset.cible === cle);
+    const actif = b.dataset.cible === cle;
+    b.classList.toggle("active", actif);
+    b.setAttribute("aria-pressed", String(actif));
   });
   // Changer d'onglet sans remonter laisserait le nouvel onglet ouvert à
   // mi-hauteur, sur une section coupée.
@@ -4524,9 +4758,18 @@ function bascules(){
   return [...document.querySelectorAll("#sourceList input[type=checkbox]")];
 }
 
-function toutesSources(actif){
+async function toutesSources(actif){
+  // Seule l'extinction demande confirmation : « Tout activer » se défait en
+  // rallumant, « Tout désactiver » efface une sélection que rien ne rend.
+  if(!actif){
+    const ok = await demandeConfirmation(
+      "Éteindre toutes les sources ?",
+      "La sélection en cours est perdue : « Tout activer » rallume tout, il ne la rend pas. Le fil se videra jusqu'à ce qu'une source soit rallumée.",
+      "Tout désactiver");
+    if(!ok) return;
+  }
   bascules().forEach(c => { c.checked = actif; });
-  saveSettings();
+  appliqueReglages();
   majCompteurSources();
 }
 

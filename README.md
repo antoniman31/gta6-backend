@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1097
+qui permet de tester tout le pipeline sans sortir de la machine. **1169
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1333,6 +1333,139 @@ boutons et ses pastilles en gélule et ses dialogues à 28 px, ce qu'une
 identité monospace et anguleuse ne supporte pas. On emprunte l'échelle, pas
 le style. C'est écrit dans le code aussi, pour que personne n'y lise plus
 tard une conformité qui n'existe pas.
+
+### Le panneau Paramètres, relu contre Material 3 et les lois de l'UX — 15/09/2026
+
+Relecture du panneau, ligne à ligne, avec les deux références en main.
+Dix-sept remarques, dont **six défauts réels** — le premier étant que le
+bouton principal du panneau ne faisait pas ce que son nom promettait.
+
+**« Appliquer » n'appliquait rien.** `saveSettings()` écrivait dans
+`localStorage` puis appelait `updateSourcesLine()` et `updateFooterNote()`.
+Jamais `applyFilters()`. Or c'est `applyFilters()` qui redessine le fil, et
+qui lit le plafond d'affichage, les mots-clés d'exclusion et la liste des
+sources actives. Couper une source, presser Appliquer : rien ne bougeait à
+l'écran. Le réglage était pourtant bien enregistré — il ne se voyait qu'au
+rafraîchissement suivant. Un bouton qui enregistre sans appliquer, sous un
+libellé qui dit l'inverse, est plus trompeur qu'un bouton absent.
+
+**Quatre réglages, trois comportements.** Le thème, le plafond et chaque
+bascule de source s'enregistraient à la volée. Le curseur anti-doublon, lui,
+n'était commité par rien : `oninput` ne mettait à jour que son étiquette. Il
+partait donc dans la sauvegarde de l'action *suivante*, quelle qu'elle soit.
+Concrètement : bouger le curseur puis « Fermer » le perdait ; bouger le
+curseur puis basculer une source l'enregistrait sans qu'on l'ait demandé.
+Deux sorties du panneau, deux résultats, aucun indice pour les distinguer.
+
+Le panneau applique désormais **tout, immédiatement**, par une seule
+fonction, `appliqueReglages()`, qui enregistre puis redessine. « Appliquer »
+a disparu avec sa fonction, et le panneau écrit noir sur blanc que les
+changements sont immédiats — il ne reste en bas qu'une action rare et
+destructive, « Réinitialiser », cernée de rouge et seule.
+
+**Le champ annonçait `max="1000"` et acceptait 20000.** Sur un
+`<input type="number"` hors formulaire, `max` ne bloque rien : il n'est
+consulté qu'à la validation d'un `<form>`, et il n'y en a pas. Pire, la
+lecture était `parseInt(...) || 500` : « 0 » retombait à 500 parce que zéro
+est faux, « abc » aussi parce que `NaN` l'est également. Trois corrections
+muettes pour un champ qui prétendait avoir des bornes.
+
+Les bornes sont maintenant deux constantes, `MIN_DISPLAY` et `MAX_DISPLAY`,
+**lues par le code et annoncées par le balisage** — un test vérifie que les
+deux disent la même chose, puisque c'est leur divergence qui avait produit le
+défaut. Le plafond est monté à 20000 plutôt qu'appliqué à 1000 : couper à
+1000 aurait retiré des articles réellement présents. Et chaque correction est
+dite, avec le nombre d'articles disponibles en regard, pour que « 20000 » ait
+un sens.
+
+**Les bascules de source faisaient 19 px de haut.** `.switch` mesurait
+32 × 19 px, et le `<label>` n'enveloppait que l'interrupteur : le nom de la
+source, juste à côté, ne répondait pas. WCAG 2.5.8 demande 24 px, Material 3
+en demande 48. C'était le contrôle **le plus nombreux du panneau** —
+cinquante-neuf exemplaires — et le seul que la passe « 44 px par défaut »
+avait oublié, alors que son propre commentaire revendiquait d'avoir rattrapé
+tout l'intérieur des panneaux.
+
+La ligne entière est devenue le `<label>`, et l'interrupteur un `<span>` —
+un `<label>` dans un `<label>` étant invalide, c'est bien l'un ou l'autre.
+La cible fait maintenant toute la largeur sur 44 px de haut.
+
+**Le « ? » dérogeait aux 44 px sur un motif inexistant.** La règle
+d'exemption expliquait que ces boutons « étendent déjà leur zone de clic par
+un pseudo-élément ». Vérification faite, `.aide` n'en avait aucun : dix-huit
+pixels de côté, dérogation accordée sur une phrase. Le commentaire s'était
+périmé sans que personne le relise. Le bouton fait désormais 24 px visibles
+et 44 px cliquables, et **un test lit le CSS pour exiger, de chaque
+sélecteur de la liste d'exemption, le mécanisme que la phrase revendique** —
+pseudo-élément avec débordement, ou position absolue. Une phrase ne se
+vérifie pas ; un sélecteur, si.
+
+**Aucun champ n'avait de nom.** `grep -c 'label for='` sur tout le fichier
+renvoyait zéro. `<label>Articles affichés max</label>` n'était lié à rien :
+le toucher ne donnait pas le focus au champ, et un lecteur d'écran annonçait
+« champ numérique » sans plus. Trois autres champs n'avaient qu'un
+`placeholder`, qui n'est pas une étiquette — il disparaît à la première
+frappe. Et `aria-selected`, `aria-pressed`, `role="tab"` : zéro occurrence
+dans le fichier. Les onglets du panneau et les trois boutons de thème
+disaient leur sélection **uniquement par la couleur de fond**.
+
+Les champs portent maintenant un nom, les boutons bascules un `aria-pressed`
+tenu à jour par le JS. `aria-pressed` et non `role="tab"` : de vrais onglets
+ARIA exigent la navigation aux flèches et le retrait des boutons du parcours
+de tabulation. Trois boutons dont un seul est enfoncé disent la même chose et
+se comportent comme ce qu'ils sont.
+
+**Deux défilements imbriqués.** La liste des sources défilait chez elle
+(`max-height:34vh`) à l'intérieur d'un panneau qui défilait déjà — le piège
+classique au doigt. Son motif était de garder les boutons du bas
+atteignables. L'entête est devenue collante (titre + onglets), ce qui rend le
+prétexte caduc : la liste ne défile plus dans son coin, et elle est passée
+**en dernier dans son onglet** pour que les deux zones de mots-clés ne soient
+plus enterrées derrière cinquante-neuf lignes.
+
+**L'entête collante a d'abord recouvert le contenu.** Premier jet : un
+`margin-top` négatif pour manger le rembourrage du panneau. Un élément
+`sticky` ne peut pas remonter au-dessus du bloc qui le contient — il se
+faisait repousser vingt pixels plus bas que sa place tandis que le contenu,
+lui, restait disposé comme si l'entête était remontée. Résultat : quatre
+pixels de chaque onglet passaient sous la barre, et le haut des lettres de
+« Notifications » et de « Mots-clés » était coupé. Visible seulement sur
+capture d'écran, invisible à la lecture du CSS. Le rembourrage du haut est
+maintenant confié à l'entête plutôt que repris deux fois.
+
+**Le reste, plus petit mais réel.** Un onglet « Affichage » qui contenait un
+groupe « Affichage » — le même mot à deux niveaux de hiérarchie. « Avancé »
+empilait six sujets sans rapport, désormais découpés en trois intertitres
+(Notifications, Connexion GitHub, Entretien) plutôt qu'en un quatrième
+onglet que la largeur d'un téléphone ne permet pas. « Tout désactiver »
+effaçait cinquante-neuf bascules sans confirmation ni retour possible, alors
+que « Réinitialiser », juste à côté, en demandait une. « Oublier ce token »
+côtoyait « Jeton enregistré » à vingt pixels d'écart. Les actions
+destructives se déguisaient en boutons ordinaires. Et le « ? » du groupe des
+notifications ouvrait une explication **enfermée dans un bloc lui-même
+masqué** : il ne révélait rien.
+
+**Deux défauts trouvés par les captures, pas par les tests.** Le compteur de
+mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
+français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
+a un genre. Les trois formes sont passées en toutes lettres, données par
+l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
+contenu. Les 1169 vérifications de la suite étaient vertes dans les deux cas.
+
+**Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
+un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
+en place après 1200 px de défilement, cliquer le nom d'une source la bascule,
+un mot-clé d'exclusion retire vraiment des articles du fil, une valeur hors
+bornes est ramenée **et annoncée**, la zone de clic du « ? » atteint 44 px,
+exactement un onglet est annoncé enfoncé.
+
+**Une réserve de méthode.** `m3.material.io` et `lawsofux.com` sont tous deux
+bloqués par le proxy de sortie de l'environnement où cette relecture a été
+faite. Les principes ont été appliqués de mémoire et recoupés sur des sources
+secondaires, pas relus à la source. Les chiffres cités — 24 px pour WCAG
+2.5.8, 48 dp pour Material 3 — méritent d'être revérifiés sur les pages
+elles-mêmes. Les défauts, eux, ont tous été constatés dans le code et dans le
+navigateur.
 
 ## Notifications push natives
 
