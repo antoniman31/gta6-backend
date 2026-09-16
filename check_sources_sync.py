@@ -6,7 +6,7 @@ Contrôle de synchronisation entre le backend Python et le mode de secours JS.
 Pourquoi ce script plutôt qu'un fichier de configuration unique
 ---------------------------------------------------------------
 La liste des sources est dupliquée entre FEEDS (fetch_feeds.py) et
-DEFAULT_FEEDS (docs/index.html), tout comme les 139 mots-clés. Cette
+DEFAULT_FEEDS (docs/index.html), tout comme les mots-clés. Cette
 duplication est assumée : le mode de secours a besoin des vraies URLs de
 flux précisément quand le backend est injoignable — c'est-à-dire quand
 feed.json, qui pourrait autrement centraliser cette liste, ne l'est pas non

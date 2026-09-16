@@ -1803,7 +1803,7 @@ def test_filtre_par_mots_cles():
     check(fetch_feeds.passe_le_filtre(avec_extra, "Grand Theft Auto 6", ""),
           "sans faire perdre les mots-clés de base")
 
-    # Les 139 mots-clés doivent rester exploitables : aucun vide, aucune
+    # Les mots-clés doivent rester exploitables : aucun vide, aucune
     # majuscule (la comparaison se fait en minuscules), aucun doublon.
     mots = fetch_feeds.KEYWORDS
     check(all(m and m == m.lower().strip() for m in mots),

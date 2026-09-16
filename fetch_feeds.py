@@ -469,10 +469,26 @@ VIDEOS_ARCHIVEES = [
      "date": "2026-08-27T18:00:48-07:00"},
 ]
 
-# Liste enrichie fournie par l'utilisateur (139 mots-clés) — remplace
-# l'ancienne liste courte de 19 termes, jamais synchronisée avec celle-ci
-# jusqu'à présent malgré la duplication FEEDS/DEFAULT_FEEDS déjà documentée
-# plus haut dans ce fichier.
+# Les 35 mots-clés du filtre : un article entre si son TITRE ou sa
+# DESCRIPTION en contient au moins un. Le lien n'est pas lu.
+#
+# matches_keywords fait `k in texte` — une SOUS-CHAÎNE, pas un mot. D'où les
+# deux coupes qui ont mené la liste fournie au départ (139 termes) jusqu'ici,
+# chacune rejouée sur le fil entier avant d'être appliquée, à verdict
+# identique article par article :
+#   139 → 42  97 termes inatteignables : dès que « gta 6 » correspond,
+#             « gta 6 news » ou « gta 6 trailer » ne peuvent rien prendre
+#             de plus. test_filtre_par_mots_cles() empêche la liste de
+#             regonfler de cette façon.
+#    42 → 35  7 formes d'URL (« gta-6 », « gta_vi », « taketwo »…) : 2110
+#             liens, zéro titre. On écrit « GTA 6 » dans une phrase.
+#
+# Quinze mots n'attrapent rien aujourd'hui (« gta sequel », « cyber leak »,
+# « rockstar san diego ») et sont gardés volontairement : plausibles dans un
+# titre à venir, sans risque de faux positif.
+#
+# Cette liste est dupliquée dans DEFAULT_FEEDS (docs/index.html) pour le mode
+# de secours ; check_sources_sync.py fait échouer la CI si les deux divergent.
 KEYWORDS = [
     "gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gtaonline6", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "leonida", "cyberleek", "cyber leak", "cyberleak", "take-two", "take two", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "lucia caminos", "jason duval", "gta online 2"
 ]
