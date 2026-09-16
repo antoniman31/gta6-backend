@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-16T07:02:37.985201+00:00",
+  "generated_at": "2026-09-16T08:02:21.578589+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 85.5,
+  "duration_seconds": 84.9,
   "decode_failures": 0,
-  "total_articles": 2787,
-  "new_this_run": 1,
+  "total_articles": 2793,
+  "new_this_run": 6,
   "hot_count": 8,
   "hot_threshold": 3,
   "sources_count": 59,
@@ -415,8 +415,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 261,
+      "new_this_run": 1,
+      "articles_exclusifs": 262,
       "last_article": "2026-09-15T14:38:19+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -454,9 +454,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 647,
-      "last_article": "2026-09-16T06:40:06+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 649,
+      "last_article": "2026-09-16T07:16:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -467,9 +467,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 544,
-      "last_article": "2026-09-16T05:40:49+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 545,
+      "last_article": "2026-09-16T07:17:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -736,10 +736,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 28,
       "last_article": "2026-09-16T05:48:16+00:00",
@@ -853,10 +853,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -873,7 +873,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 14,
       "last_article": "2026-09-07T07:23:22+00:00",
-      "days_since_last_article": 8,
+      "days_since_last_article": 9,
       "status": "ok"
     },
     {
@@ -1052,8 +1052,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1,
+      "new_this_run": 2,
+      "articles_exclusifs": 3,
       "last_article": "2026-09-14T16:22:08+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -1100,10 +1100,10 @@
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-15T17:23:36+00:00",
@@ -1137,29 +1137,18 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-16T02:02:27.531575+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
-      "depuis": "2026-09-16T02:02:27.531575+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,99,99,0,99,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,99,99,0,99,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,100,0,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,15,0,15",
-    "gnews-fr": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-en-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-youtube": "15,15,15,0,0,0,0,0,15,0,15,15",
+    "gnews-fr": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-fr-7j": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-en-7j": "100,100,100,100,100,100,100,100,0,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1167,7 +1156,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,0,15",
+    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,0,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1188,27 +1177,27 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "purexbox": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "trueach": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "jdg": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "frandroid": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "engadget": "100,100,100,100,100,100,100,100,100,0,99,99",
-    "pushsquare": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "rockstaractu": "20,20,20,0,20,20,0,20,20,20,20,20",
+    "xboxygen": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "trueach": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "jdg": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "frandroid": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "engadget": "100,100,100,100,100,100,100,100,0,99,99,99",
+    "pushsquare": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "rockstaractu": "20,20,0,20,20,0,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gamesindustry": "100,100",
-    "jdg-natif": "30,30,30,30,30,30,30,30,30,30",
+    "gamesindustry": "100,100,100",
+    "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
-    "destructoid": "30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "mgg": "100,100,100,100,100,100,100,100,100,0,100,100"
+    "destructoid": "30,30,30,30,30,30,30",
+    "dexerto": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "mgg": "100,100,100,100,100,100,100,100,0,100,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1225,7 +1214,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 06:44:08 GMT"
+      "modified": "Wed, 16 Sep 2026 06:49:02 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1239,13 +1228,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"23c0d-eC/hgfr5dhs1bdjQSbc6VB/dmQw\"",
+      "etag": "W/\"25ff8-MZcEfrYSITOFnxONmLzE0cccGN4\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5d43c3b3a4b23c70c2d1a4b528cbd65b\"",
-      "modified": "Wed, 16 Sep 2026 07:00:17 GMT"
+      "etag": "W/\"0cd6d6013e3ff1f93e73e3f92214cbd6\"",
+      "modified": "Wed, 16 Sep 2026 08:00:29 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1260,17 +1249,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 07:01:31 GMT"
+      "modified": "Wed, 16 Sep 2026 08:00:47 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"c6e52fc33116306dbeef749662c6e2ff\"",
-      "modified": "Wed, 16 Sep 2026 05:49:04 GMT"
+      "etag": "\"b5d3ca500f798f1f3da4a4ef2b1753c9\"",
+      "modified": "Wed, 16 Sep 2026 07:53:40 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aaa3e7f-32c8\"",
-      "modified": "Wed, 16 Sep 2026 07:00:15 GMT"
+      "etag": "W/\"6aaa4c90-3355\"",
+      "modified": "Wed, 16 Sep 2026 08:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1279,8 +1268,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789542004\"",
-      "modified": "Wed, 16 Sep 2026 07:00:04 GMT"
+      "etag": "W/\"1789545609\"",
+      "modified": "Wed, 16 Sep 2026 08:00:09 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1289,8 +1278,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aaa2e4e-b20\"",
-      "modified": "Wed, 16 Sep 2026 05:51:10 GMT"
+      "etag": "\"6aaa4a70-b21\"",
+      "modified": "Wed, 16 Sep 2026 07:51:12 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1300,31 +1289,57 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 07:00:36 GMT"
+      "modified": "Wed, 16 Sep 2026 08:01:21 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 06:30:00 GMT"
+      "modified": "Wed, 16 Sep 2026 07:57:45 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"e522a53625c343966f391126b8a41974\"",
-      "modified": "Wed, 16 Sep 2026 07:00:21 GMT"
+      "etag": "W/\"7a05142630c889a5d6af9874a93c48ff\"",
+      "modified": "Wed, 16 Sep 2026 08:00:55 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"33167824ced67250e8df7466b0591765\"",
-      "modified": "Wed, 16 Sep 2026 06:33:00 GMT"
+      "etag": "W/\"171218bdae1792797c453dd81cc0dfbb\"",
+      "modified": "Wed, 16 Sep 2026 08:00:15 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"cbb2b8b8c0470704da4274440bbf99be\"",
-      "modified": "Wed, 16 Sep 2026 05:32:50 GMT"
+      "etag": "W/\"6743cfb1f9edf84d13e09f3fefc230b3\"",
+      "modified": "Wed, 16 Sep 2026 07:45:39 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Several artists are teasing their presence on GTA VI, including Travis Scott - Instant Gaming News",
+      "link": "https://news.instant-gaming.com/en/articles/21925-several-artists-are-teasing-their-presence-on-gta-vi-including-travis-scott",
+      "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNVmw5MHdzMkhUWVpOZFRKTm5QQlZiNWQ3cTRQaHE5cVd4Skc4RFJaVDljOWFWOVhUQWZPVkJ5eVJfM19ZeGgwNXBOQzBPRjVfdndsZ20tbnBYYU9TdXplVEx5MkVfb3dPTTFldVBvYy1Tb0hUY0x2RVY0MnFaUnJqU3M4SmhQTlNsS182SldkQ1JkZmJsM2VtbjRzYzZUT016bU5SUDd1NHNfTm03MTNVLTd5M29PTXAwUmpaXzBlV3ppSlE?oc=5",
+      "date": "2026-09-16T07:17:37+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://gaming-cdn.com/images/news/articles/21925/cover/several-artists-are-teasing-their-presence-on-gta-vi-including-travis-scott-cover6aa96d8751133.jpg",
+      "description": "Several artists are teasing their presence on GTA VI, including Travis Scott&nbsp;&nbsp;Instant Gaming News"
+    },
+    {
+      "title": "« Rien ne pourra jamais surpasser Vice City » GTA 6 devrait bientôt faire une autre annonce importante et particulièrement attendue des fans de la licence - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-teasing-presence-artistes-musicaux-radios-jeu-723047",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOQnV2S2NnM0E1YVN3NzJYYXVWQVhQeFFQQ05tQzFiYWI0NVUzcms1ejh2ZGFrT18zOTZMVWZaNWZ6V3p4SWpBTXdLc2t2WnhqMDk1dV9mZ1FVQW5PelVRdnRYUkUxTXRHMkx4M0V0Qmh6ZUJ1YTlGTjg4bjZmRFlXcUoxbHpXVW9UNnVIWUxmWHFwVGZuMTRVWjd5Y1lRYTl1QWc?oc=5",
+      "date": "2026-09-16T07:16:40+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img//_6a9544930ca54.webp",
+      "description": "« Rien ne pourra jamais surpasser Vice City » GTA 6 devrait bientôt faire une autre annonce importante et particulièrement attendue des fans de la licence&nbsp;&nbsp;Gameblog"
+    },
     {
       "title": "Netflix : 100 millions de dollars pour 100.000 abonnés en plus, le trailer de GTA 6 a-t-il été rentable - JeuxVideo.com",
       "link": "https://www.jeuxvideo.com/news/2103835/netflix-100-millions-de-dollars-pour-100-000-abonnes-en-plus-le-trailer-de-gta-6-a-t-il-ete-rentable.htm",
@@ -1467,6 +1482,19 @@
       "lang": null,
       "image": "https://media.gtaboom.com/variants/1920/media/images/f2/f2/the-kaseya-center-gta-6-sign-will-say-welcome-to-vice-city-and-may-stay-up-until-2028.jpg",
       "description": "Kaseya Center Rooftop Sign Will Say Welcome to Vice City for GTA 6&nbsp;&nbsp;GTA BOOM"
+    },
+    {
+      "title": "GTA 6 abandonne une mécanique vieille de plusieurs générations : voler certaines voitures devient bien plus compliqué - lacremedugaming.fr",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-abandonne-une-mecanique-vieille-de-plusieurs-generations-voler-certaines-voitures-devient-bien-plus-complique-225417.html",
+      "source_link": "https://news.google.com/rss/articles/CBMigwJBVV95cUxPZ0pQQURQWWoyMUZ0a0gyU1FIdFlpbzVfNkI2NEpCUVZlMWlYWmpfMkdpMGh3X2FJOTQ5ZVlEbVB6cnY5QXlSZWdRMk54Y25jdGJLSEg3RnpNeV9pRFFnQW5rZXZhNXRhOXhqdTAzV2x6aEtuLVpydnprU2NseXZ5Z2c5YlBQZ1J4cUFIb2JnLXpfei1oTlVEYVN6Y2NwVjUxa213aXVaWFNRZUtFdGxFSU5aQWlNZ3pSc3gwTUJUMWVuNkEtNFZoc1RsVFh2d245blNDYnZoU2Y2dnd2MzFqMTNDWkNEUFkzNnhFTnJIbEthXzlIaXl0R2hCd1N1UVMwVGdZ?oc=5",
+      "date": "2026-09-16T04:00:17+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-abandonne-une-mecanique-vieille-de-plusieurs-generations-voler-certaines-voitures-devient-bien-plus-complique.png",
+      "description": "GTA 6 abandonne une mécanique vieille de plusieurs générations : voler certaines voitures devient bien plus compliqué&nbsp;&nbsp;lacremedugaming.fr"
     },
     {
       "title": "Rockstar Games Teases 'GTA 6' Soundtrack with Online Posts From Famous Artists Tied to the Game - player.one",
@@ -5343,45 +5371,6 @@
       "lang": null,
       "image": "https://gamingbolt.com/wp-content/uploads/2026/09/grand-theft-auto-6-dualsense.jpg",
       "description": "Grand Theft Auto 6 Limited Edition DualSense Controllers Already Sold Out After Pre-Orders Open&nbsp;&nbsp;GamingBolt"
-    },
-    {
-      "title": "GTA 6 : les scalpers n'attendent même plus la rupture de stock pour revendre les manettes custom à prix d'or - phonandroid.com",
-      "link": "https://www.phonandroid.com/gta-6-les-scalpers-nattendent-meme-plus-la-rupture-de-stock-pour-revendre-les-manettes-custom-a-prix-dor.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNODd6eDhEaDAzQlpZVFFvZkZJRmo0eDYtOWRFUi1RbWFJREVjanJGU0sxa3FaQk56cDk4dFRhR2dpT0tBdlM2VFJNamxZVDV5cXNtMGFJek9Qa3h2UGVaa20zck1UUlU1d0p4UWNIVG1PUFhwMUlNdEJVS0dsZkZnbFFNcXF3dWZ4dTFDOGJtaVFaSzd0ekMtUDZvaWMtcEN4MUZKekxWRWp0cE5yX1R4Vlg3bDNrSnJKLWV0YWJyc1pOQWwtczN6ZVFERDZ4R3RsRlpv?oc=5",
-      "date": "2026-09-11T12:48:38+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://wp-pa.phonandroid.com/uploads/2025/05/brian-GTA6.jpg",
-      "description": "GTA 6 : les scalpers n'attendent même plus la rupture de stock pour revendre les manettes custom à prix d'or&nbsp;&nbsp;phonandroid.com"
-    },
-    {
-      "title": "Miami Beach: Advertising deal for GTA 6 approved despite protests - PlayFront",
-      "link": "https://playfront.de/en/miami-beach-werbe-deal-fuer-gta-6-trotz-protesten-abgesegnet/",
-      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOSzEwa1JzY0wzREJqU0hTQnQzekhEXzlyNHVHYW14eHFZbXNVNDl4Z1gybjF3ZWlMb1gtVmo3dFA4T1dLcnNLUDRlSXVMWWc2NmVCcDBueUlnRERJMWhtbHZkbFNRb2N2Ukl6VzFhT2ZpTGdoQnlfUnVVRnNzVndNY0R1QTd2V2R1TXZiTEVn?oc=5",
-      "date": "2026-09-11T12:48:13+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": null,
-      "description": "Miami Beach: Advertising deal for GTA 6 approved despite protests&nbsp;&nbsp;PlayFront'What Kind of Message Are We Sending to the World?' — GTA 6 Is Coming to Miami After City Meeting Results in Controversial Approval — and Enough Money to Fix Its Football Field&nbsp;&nbsp;IGNVideo Game Industry Revenue Expected to Reach $214 Billion in 2026 With ‘GTA 6’ Release, New Report Finds&nbsp;&nbsp;variety.com"
-    },
-    {
-      "title": "Miami agrees to advertise GTA 6 in exchange for fixing their football field - metro.co.uk",
-      "link": "https://metro.co.uk/2026/09/11/miami-agrees-advertise-gta-6-exchange-fixing-football-field-29585930/",
-      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQMXk2RG9KMVdfVS1WSXBaSW05eGRzVWVnRDRGeG81ejVTYXFhSkF3Z3RBLU1LWHdZT2RYeFlla3lsdEJtR2VnNi0wS1VwRzE0bk9PT01KV2NfTjNFR3JUbGdLX2lzc2JGZkpTNzhEanBSM1czU0RFOFU5czhMbUdxWFlzczZUbUlZZmdCUWpsSm9ld0o2LTJuZmMzdHNkbDA2S0HSAacBQVVfeXFMUEI5MkpMa1NYcGh2Z09vU3VyaEJHYTNuWmlENnlaRWo2ZzNneUNvcjBpVnNiV0NPZ3ppOGlFeGhqUjF1OUFBbjVjSjgyckhrZWIyblg0YTl0YXpBWTJobGlWRy12UTBUaUl2dHhrUEsyS1hpU2h5aFhmc0ZBbnliaHFQbjZoRTdZT0M3cGNrMmF6ZExpdFNwTTdHbUVfV09ZUHNxTkxOY2s?oc=5",
-      "date": "2026-09-11T12:40:00+00:00",
-      "source": "Google News (Netflix)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": null,
-      "image": "https://metro.co.uk/wp-content/uploads/2026/09/SEI_310228783-3b25_1789130441.jpg?quality=90&strip=all&w=1200&h=630&crop=1",
-      "description": "Miami agrees to advertise GTA 6 in exchange for fixing their football field&nbsp;&nbsp;metro.co.uk"
     }
   ],
   "partial": true,
