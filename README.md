@@ -1,6 +1,6 @@
 # GTA6_WATCH
 
-Veille automatisée de l'actualité GTA 6 : un robot interroge 59 sources en
+Veille automatisée de l'actualité GTA 6 : un robot interroge 60 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
 de vraies miniatures, notifie sur Discord et par notification push, et publie
 tout dans une app installable sur Android.
@@ -70,7 +70,7 @@ d'où le planificateur externe.
 
 1. **Charge l'historique existant** depuis `docs/feed.json` — le robot ne
    repart jamais de zéro, il ajoute au fil du temps.
-2. **Récupère les 59 sources** (liste `FEEDS`) **en parallèle**, avec
+2. **Récupère les 60 sources** (liste `FEEDS`) **en parallèle**, avec
    gestion d'erreur par source : si une source échoue, les 49 autres
    continuent normalement. Le détail du parallélisme est décrit plus bas
    (« Récupération en parallèle ») ; en séquentiel cette étape prenait
@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1211
+qui permet de tester tout le pipeline sans sortir de la machine. **1225
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -505,7 +505,7 @@ fusion, c'est elle qui décide si des articles sont perdus quand deux
 exécutions se chevauchent. Le dernier bloc rejoue ces règles sur le vrai
 `docs/feed.json` du dépôt.
 
-`check_sources_sync.py` compare `FEEDS` et les 42 mots-clés de
+`check_sources_sync.py` compare `FEEDS` et les 35 mots-clés de
 `fetch_feeds.py` à leurs copies `DEFAULT_FEEDS` / `keywords` de
 `docs/index.html`, et échoue en nommant chaque écart. La duplication reste
 (voir Limites), mais elle ne peut plus dériver en silence : fin août 2026,
@@ -764,7 +764,7 @@ Les deux boutons sont en **flex et non en grille** : « Relancer le robot »
 est masqué tant qu'aucun jeton n'est enregistré, et une grille à deux
 colonnes aurait laissé une demi-colonne vide à côté d'« Actualiser ». Leurs
 noms disent ce qui les sépare — l'un retélécharge le fichier déjà publié
-(instantané), l'autre fait travailler le robot sur les 59 sources
+(instantané), l'autre fait travailler le robot sur les 60 sources
 (~1 min 25).
 
 Onglets et boutons d'action partagent **une seule déclaration CSS** plutôt
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1211 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Les 1225 vérifications de la suite étaient vertes dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
@@ -2537,7 +2537,7 @@ force les 100 créneaux à être récents. Les deux flux larges ont donc chacun
 un jumeau borné à sept jours — **ajouté à côté**, selon la règle établie avec
 Journal du Geek. La déduplication par lien fera le ménage ; ce qu'on saura
 dans une semaine, en comparant leurs articles exclusifs, c'est lequel attrape
-ce que l'autre manque. **57 → 59 sources.**
+ce que l'autre manque. **57 → 60 sources.**
 
 ### Compter ce qu'une source apporte, à chaque passage
 
@@ -2891,7 +2891,7 @@ désormais 100, comme les flux Google News.
 ### L'accordéon des soucis, et le piège qu'il a révélé
 
 Deux sources cassées pour de bon — les flux RSS de YouTube — affichaient
-**deux lignes orange permanentes** sous la console : `57/59 sources` puis
+**deux lignes orange permanentes** sous la console : `57/60 sources` puis
 `2 cassées : Rockstar Games (YouTube), RockstarMag (YouTube)`. Un signal qui
 ne s'éteint jamais cesse d'être un signal : on finit par ne plus le voir, et
 la vraie panne du jour s'y noie.
@@ -2992,6 +2992,65 @@ de la liste `sources`, qui décrit la source et ne porte aucun `status`. Les
 deux fois, c'est la contradiction avec un relevé déjà fait qui a alerté —
 pas la relecture du code. **Extraire d'un JSON à la regex demande de viser la
 zone, ici `sources_health`, jamais le fichier entier.**
+
+### Cinq chantiers d'un coup — 16/09/2026
+
+**Le sous-comptage de `new_this_run` : ce n'était pas un bug.** Soupçon
+ouvert depuis des jours, instrumenté sans jamais crier. Plutôt que de lire
+des journaux, on a mesuré le SYMPTÔME sur les 770 passages de l'historique :
+un passage où le total d'articles grimpe de plus que le nombre annoncé de
+nouveaux est nécessairement un sous-comptage. **Cinq cas sur 769.** Et les
+cinq ont un écart de **0,0 minute** avec le passage précédent : deux commits
+portent le même `generated_at`. C'est la signature du chemin de fusion — le
+push est rejeté, `merge_feed.py` unit les deux résultats, et le second commit
+porte l'union des articles mais le `new_this_run` de son seul passage. Aucun
+article perdu, aucun défaut de comptage.
+
+Corollaire à retenir : **l'instrumentation posée pour ça cherche au mauvais
+endroit.** Elle vérifie la cohérence à l'intérieur d'un passage, alors que
+l'écart n'apparaît qu'entre deux commits, à la fusion. Elle ne criera jamais
+pour ce motif.
+
+**Sept mots-clés sur quarante-deux étaient des formes d'URL.** Le filtre lit
+le titre et le résumé. Or `gta-6` apparaît dans **2110 liens** et **zéro**
+titre ; idem pour `gta-vi`, `grand-theft-auto-6`, `gta_6`, `gta_vi`,
+`taketwo`, `take2`. On écrit « GTA 6 » et « Take-Two » dans une phrase,
+jamais `gta_6`. Même défaut que les 97 mots retirés plus tôt, en plus
+discret : **42 → 35**.
+
+Les quinze autres qui n'attrapent rien — `gta sequel`, `cyber leak`,
+`rockstar san diego` — sont **gardés**. Ils sont spéculatifs mais plausibles
+dans un titre ; les retirer risquerait un article pour aucun gain.
+
+**Game Rant est doublé.** 4ᵉ source native du fil en articles exclusifs (59),
+mais son flux n'expose que **dix entrées** pour environ 77 articles publiés
+sur trente jours — relever `MAX_ENTREES` n'y change rien, c'est le flux
+lui-même qui est court. Sondé avant d'être ajouté : 100 entrées,
+16 pertinentes, la plus récente d'un jour. Doublé et non remplacé, le flux
+natif restant plus rapide. **59 → 60 sources.**
+
+**Les onglets d'articles disaient leur sélection par la seule couleur.** Même
+défaut que ceux du panneau Paramètres, corrigés la veille — et pas repris
+avec eux. Un helper `marqueActif()` pose maintenant la classe ET
+`aria-pressed`, pour les onglets, les langues et les filtres. `aria-pressed`
+et non `role="tab"`, pour la même raison qu'au panneau : de vrais onglets
+ARIA exigent la navigation aux flèches.
+
+**Les soixante bascules sont rangées en cinq familles repliées.** Officielles,
+Spécialisées GTA, Recherches Google News, Presse francophone, Presse
+anglophone — par ordre de PRIORITÉ, puisqu'une source peut cocher plusieurs
+cases (RockstarMag est spécialisée et francophone). Le filtre commande les
+familles : il **ouvre** celles où il trouve, masque les autres, et referme
+tout quand on le vide. Chercher dans des sections repliées sans les ouvrir
+ne montrerait rien, et le filtre aurait l'air cassé.
+
+**Le piège, invisible dans le HTML.** L'attribut `hidden` ne vaut qu'un
+`display:none` de la feuille du **navigateur**, que n'importe quelle règle
+d'auteur bat. Avec `display:grid` sur le corps de famille, les sections se
+rendaient **dépliées** malgré leur `hidden` : la liste faisait **3244 px**,
+soit pire qu'avant le regroupement. Une ligne — `.src-famille-corps[hidden]
+{display:none;}` — et elle retombe à **244 px**. Le HTML se lisait
+parfaitement ; seul le contrôle navigateur l'a vu.
 
 ## Pause nocturne : rien entre 0h et 5h
 
