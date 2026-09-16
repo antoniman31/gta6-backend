@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-16T21:38:24.727356+00:00",
+  "generated_at": "2026-09-16T22:02:37.988276+00:00",
   "attente_recap": {
-    "articles": 0,
+    "articles": 2,
     "officiels": 0,
-    "sommet": 0
+    "sommet": 1
   },
-  "duration_seconds": 89.6,
+  "duration_seconds": 98.4,
   "decode_failures": 0,
-  "total_articles": 2870,
+  "total_articles": 2872,
   "new_this_run": 2,
   "hot_count": 9,
   "hot_threshold": 3,
@@ -408,7 +408,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 129,
       "last_article": "2026-09-16T21:28:30+00:00",
       "days_since_last_article": 0,
@@ -473,9 +473,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 568,
-      "last_article": "2026-09-16T18:20:32+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 569,
+      "last_article": "2026-09-16T21:59:33+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -775,7 +775,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T21:58:01+00:00",
-      "days_since_last_article": 19,
+      "days_since_last_article": 20,
       "status": "ok"
     },
     {
@@ -837,7 +837,7 @@
       "http_status": 301,
       "redirect": "https://gta6times.com/feed.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 22,
       "last_article": "2026-09-16T21:23:56+00:00",
       "days_since_last_article": 0,
@@ -846,10 +846,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -1093,10 +1093,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1158,7 +1158,7 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,99,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "100,99,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1193,7 +1193,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "39,39,39,39,39,39,39,39,39,39,39,40",
+    "gta6times": "39,39,39,39,39,39,39,39,39,39,40,40",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1208,13 +1208,13 @@
     "engadget": "99,99,99,99,99,99,99,99,99,99,99,99",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20,20,20,20,20,20,0,20,20,20,20",
+    "rockstaractu": "20,20,20,20,20,20,0,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "reddit-leaks": "25,25,25,25,0,25,25,0,25,25,25,25",
+    "reddit-leaks": "25,25,25,0,25,25,0,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -1248,13 +1248,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"23bae-eIt+dIpvOty9YHu2VCIogMZ1wi0\"",
+      "etag": "W/\"21785-Jc5ubej3+VOGKrkwSk//wbfHar0\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"697d82e1ab22842690b3f7c11e518f03\"",
-      "modified": "Wed, 16 Sep 2026 21:03:21 GMT"
+      "etag": "W/\"72e34551111c5618f8335f69a2200f14\"",
+      "modified": "Wed, 16 Sep 2026 21:40:30 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1269,7 +1269,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 21:37:23 GMT"
+      "modified": "Wed, 16 Sep 2026 22:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1278,8 +1278,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aab0a68-31a2\"",
-      "modified": "Wed, 16 Sep 2026 21:30:16 GMT"
+      "etag": "W/\"6aab1171-31a2\"",
+      "modified": "Wed, 16 Sep 2026 22:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1288,8 +1288,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789587811\"",
-      "modified": "Wed, 16 Sep 2026 19:43:31 GMT"
+      "etag": "W/\"1789595017\"",
+      "modified": "Wed, 16 Sep 2026 21:43:37 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1298,8 +1298,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aaaf32d-bc6\"",
-      "modified": "Wed, 16 Sep 2026 19:51:09 GMT"
+      "etag": "\"6aab0f4c-c0b\"",
+      "modified": "Wed, 16 Sep 2026 21:51:08 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1309,7 +1309,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 21:37:25 GMT"
+      "modified": "Wed, 16 Sep 2026 22:01:29 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1328,12 +1328,25 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"b681d0de595df5a896473bd26df890ef\"",
-      "modified": "Wed, 16 Sep 2026 21:08:00 GMT"
+      "etag": "W/\"a197a3166de4afa9c41cad49e92b3ea8\"",
+      "modified": "Wed, 16 Sep 2026 21:59:44 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Spotify Puts GTA 6 Artwork on Billboards in LA, New York and Miami - GTA BOOM",
+      "link": "https://www.gtaboom.com/spotify-is-putting-gta-6-artwork-on-billboards-in-three-us-cities-47a8",
+      "source_link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOcWRiSjVrR2xyckNBaUJ5N3ZCaGM3UTlSNURXZU45eFZSTW5lWjdfc0VWQUlYc2Z6YTlNaW03cTNKVmQ3MEF1c3BTY0lfTzI3a2hXbnV5ZzlHMmsxV2hCMjRObmJBeVdqNVlDM1VEd0x3NjN2d0xEdHR6dGxzUnV2SWRtLXBKSG1pOXVkUjBhRGZQb01mSXRPRzF3?oc=5",
+      "date": "2026-09-16T21:59:33+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/58/23/spotify-is-putting-gta-6-artwork-on-billboards-in-three-us-cities.jpg",
+      "description": "Spotify Puts GTA 6 Artwork on Billboards in LA, New York and Miami&nbsp;&nbsp;GTA BOOM"
+    },
     {
       "title": "Spotify Seems to Be Teasing a GTA 6 Collaboration with Rockstar Games - pk.ign.com",
       "link": "https://pk.ign.com/grand-theft-auto-vi-rumored-title/261257/spotify-seems-to-be-teasing-a-gta-6-collaboration-with-rockstar-games",
@@ -1359,6 +1372,19 @@
       "lang": null,
       "image": "https://gta6times.com/news/rockstar-accuses-ex-employee-leaking-emails-tribunal/opengraph-image",
       "description": "Rockstar told a Glasgow tribunal this week that a former employee leaked internal emails on Discord, dragging the 2022 GTA 6 leak into the fight over 2023 layoffs."
+    },
+    {
+      "title": "Spotify Begins Putting Up Billboards Featuring GTA 6 Artwork, Teasing Rockstar Games Collaboration - IGN",
+      "link": "https://www.ign.com/articles/spotify-seems-to-be-teasing-a-gta-6-collaboration-with-rockstar-games",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOZ0E0WFQ1SElVU2F1Xy1FNjAyaDBsaEliY3haSlExajZQRjd1WHpWUjlHNE9vTGFmSDRVLUc3cHFlUGNiYjgyMUc3by1YejRaeEJucHVSTU5pd1Q0UVhJWXFoVWREZ25MbWhKa0poZ090VWFpelZJOUZSYm5CNEFMbUp1WmY1M09LbmlpVlZ4NTlReFlZZU5ldk1XeE5Xbk0?oc=5",
+      "date": "2026-09-16T21:13:43+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://assets-prd.ignimgs.com/2026/08/06/gtaonothumb-1786018055324.png?width=1280&format=jpg&auto=webp&quality=80",
+      "description": "Spotify Begins Putting Up Billboards Featuring GTA 6 Artwork, Teasing Rockstar Games Collaboration&nbsp;&nbsp;IGN"
     },
     {
       "title": "GTA 6 : Les premiers artistes révélés ! Pourquoi la radio sera encore le point fort du jeu ? - JeuxVideo.com",
@@ -2508,7 +2534,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://res.cloudinary.com/tikr/images/w_600,h_400,c_scale/f_webp,q_auto/v1789508050/images/TTWO-stock_1311717418a/TTWO-stock_1311717418a.png?_i=AA",
-      "description": "Take-Two Stock Has Rallied Toward GTA VI’s Launch. Here’s the Path to $291&nbsp;&nbsp;TIKR.com"
+      "description": "Take-Two Stock Has Rallied Toward GTA VI’s Launch. Here’s the Path to $291&nbsp;&nbsp;TIKR.com",
+      "extraSources": [
+        {
+          "source": "Google News (FR)",
+          "link": "https://www.tikr.com/fr/blog/take-two-stock-has-rallied-toward-gta-vis-launch-heres-the-path-to-291"
+        }
+      ]
     },
     {
       "title": "‘GTA 6’ Is Quietly Building One of the Most Insane Video Game Soundtracks Ever - VICE",
