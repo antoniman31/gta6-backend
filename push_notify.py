@@ -37,6 +37,36 @@ import feed_store
 
 SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 
+# Durée de vie d'un message, en secondes, et son urgence.
+# ------------------------------------------------------
+# Sans ces deux réglages, pywebpush envoie TTL: 0. Sa propre documentation
+# dit ce que ça veut dire : « discards the message immediately if the
+# recipient is unavailable ». Le service de push tente la livraison à
+# l'instant même et, si l'appareil ne répond pas, JETTE le message. Aucune
+# file d'attente, aucune seconde tentative.
+#
+# C'est le cas d'un téléphone verrouillé depuis un moment : Android suspend
+# la connexion (Doze), le message arrive, ne trouve personne et disparaît.
+# Au déverrouillage il n'y a rien à rattraper, il n'existe plus. D'où le
+# symptôme : les notifications passent écran allumé et jamais autrement.
+#
+# Les durées ne sont pas choisies au hasard. Un récapitulatif est périmé au
+# passage suivant, environ une heure plus tard : au-delà, il annoncerait un
+# compte que le passage d'après a déjà corrigé. Une annonce de Rockstar,
+# elle, mérite d'arriver en retard plutôt que jamais.
+TTL_RECAP = 3600         # 1 h — la cadence du robot
+TTL_OFFICIEL = 86400     # 24 h — une annonce garde sa valeur
+
+# Urgency (RFC 8030 §5.3) dit au service de push si le message vaut la peine
+# de réveiller un appareil endormi. Il vaut « normal » par défaut, et
+# pywebpush n'en envoie aucun.
+#
+# « high » est réservé aux annonces de Rockstar. Tout marquer urgent est
+# exactement l'abus que les services de push finissent par sanctionner, et
+# ferait de ce réglage un bruit de fond au lieu d'un signal.
+URGENCE_NORMALE = "normal"
+URGENCE_HAUTE = "high"
+
 # Identifiant de contact exigé par la spécification VAPID : les services de
 # push (Google, Mozilla, Apple) s'en servent pour joindre l'expéditeur en
 # cas d'abus. Jamais montré à l'utilisateur.
@@ -186,7 +216,15 @@ def masquer_endpoints(texte, subscriptions):
     return feed_store.masquer_urls(texte, endpoints)
 
 
-def send_all(subscriptions, payload, private_key):
+def send_all(subscriptions, payload, private_key,
+             ttl=TTL_RECAP, urgence=URGENCE_NORMALE):
+    """Envoie une notification à tous les appareils abonnés.
+
+    ttl et urgence ne sont PAS optionnels par confort : ce sont eux qui
+    décident si un téléphone verrouillé reçoit quelque chose. Voir le bloc
+    TTL_RECAP en tête de fichier. Les valeurs par défaut sont celles du
+    récapitulatif, le cas courant.
+    """
     from pywebpush import webpush, WebPushException
 
     envoyes = 0
@@ -198,6 +236,8 @@ def send_all(subscriptions, payload, private_key):
                 data=json.dumps(payload),
                 vapid_private_key=private_key,
                 vapid_claims={"sub": VAPID_SUBJECT},
+                ttl=ttl,
+                headers={"Urgency": urgence},
                 timeout=10,
             )
             envoyes += 1
@@ -333,7 +373,14 @@ def mode_test():
         "tag": "gta6watch-test-reel",
     }
     print(f"[test] envoi à {len(subscriptions)} appareil(s)…")
-    envoyes, expires = send_all(subscriptions, charge, private_key)
+    # Volontairement les MÊMES durée de vie et urgence que le récapitulatif,
+    # donc les valeurs par défaut de send_all. Un test qui emprunterait un
+    # chemin plus favorable que la vraie notification ne testerait rien : le
+    # bouton resterait vert pendant que les vraies notifications se perdent.
+    # C'est précisément ce qui masquait le TTL: 0 — le test se fait toujours
+    # écran allumé, le seul cas où un TTL nul passe.
+    envoyes, expires = send_all(subscriptions, charge, private_key,
+                                ttl=TTL_RECAP, urgence=URGENCE_NORMALE)
     print(f"[test] {envoyes}/{len(subscriptions)} notification(s) envoyée(s)"
           + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
 
@@ -402,7 +449,8 @@ def main():
     for item in officiels:
         charge = build_payload_officiel(item)
         print(f"[push] annonce officielle : {charge['body'][:60]}")
-        envoyes, expires = send_all(subscriptions, charge, private_key)
+        envoyes, expires = send_all(subscriptions, charge, private_key,
+                                    ttl=TTL_OFFICIEL, urgence=URGENCE_HAUTE)
         print(f"[push] {envoyes}/{len(subscriptions)} envoyée(s)"
               + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
 
@@ -414,7 +462,8 @@ def main():
     payload = build_payload(new_items, promus)
     print(f"[push] envoi à {len(subscriptions)} appareil(s) : {payload['title']}")
 
-    envoyes, expires = send_all(subscriptions, payload, private_key)
+    envoyes, expires = send_all(subscriptions, payload, private_key,
+                                ttl=TTL_RECAP, urgence=URGENCE_NORMALE)
     print(f"[push] {envoyes}/{len(subscriptions)} notification(s) envoyée(s)"
           + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
 
