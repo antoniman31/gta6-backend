@@ -2929,6 +2929,70 @@ premier affichage, la ligne du haut qui ne déborde pas, la zone de clic à
 47 px, le repli qui tient au rechargement, et la réouverture automatique
 quand une source de plus tombe.
 
+### Les flux YouTube tombent toutes les nuits — 16/09/2026
+
+Remarque du propriétaire du fil : *« j'ai l'impression que YouTube ça plante
+tt les nuits en ce moment et sa revient dans la matinée »*. C'est exact, et
+c'est plus régulier que « en ce moment » : **seize nuits d'affilée** depuis
+le 1ᵉʳ septembre.
+
+Chaque passage du robot étant un commit de `feed.json`, l'historique donne
+l'état heure par heure. Relevé sur les 770 passages remontant au 25/08 :
+
+| | |
+|---|---|
+| Première panne | entre **04h01 et 08h01**, jamais avant 04h |
+| Retour | au passage de **09h**, tous les jours |
+| Amplitude typique | **3 à 4,5 h** |
+| Journées touchées | **17 sur 19** observées |
+
+Répartition par heure de Paris : `04h→10 · 05h→14 · 06h→20 · 07h→26 ·
+08h→22`, et **zéro panne entre 09h et 03h**.
+
+**Ce sont bien les flux YouTube, pas le runner** — c'est la vérification qui
+comptait, puisqu'une panne réseau du runner ferait tomber tout le monde
+ensemble. Dans cette fenêtre, sur 197 pannes de sources relevées, **172 sont
+les deux flux YouTube**. Les 25 restantes se concentrent sur trois dates —
+30/08, 03/09, 04/09 — où une vingtaine de sources Google News tombent d'un
+coup sur un seul passage : le profil d'un throttling ponctuel, pas d'une
+panne nocturne récurrente.
+
+**Ce que ça coûte : rien, ou presque.** Les flux YouTube renvoient les quinze
+dernières vidéos. Une vidéo publiée à 5h du matin est donc toujours dans le
+flux au passage de 9h : elle arrive en retard de quelques heures, jamais
+perdue. Il faudrait que Rockstar publie seize vidéos entre 4h et 9h pour
+qu'une seule tombe hors fenêtre.
+
+**Et aucune alerte ne part, ce qui est correct.** `DEAD_SOURCE_HOURS` vaut
+24, les pannes durent 3 à 4 h : le seuil n'est jamais atteint. Seize nuits
+sans une seule alerte Discord. C'est précisément ce que ce seuil sert à
+éviter — être réveillé pour un incident passager qui se répare seul. Le seul
+indice reste la console, entre 4h et 9h, d'où le fait que ça se remarque le
+matin.
+
+**Rien n'a été codé pour ça, délibérément.** Le problème est cosmétique, se
+répare seul et ne perd aucun article. Toute machinerie qui apprendrait à
+« connaître » cette fenêtre nocturne risquerait de masquer une vraie panne le
+jour où elle arriverait au même moment. Cette section existe pour qu'on ne
+réenquête pas dans trois semaines en croyant découvrir quelque chose.
+
+**Une limite de l'accordéon, notée au passage.** Il se replie et ne se rouvre
+que si la LISTE des soucis change. Or certaines nuits une seule des deux
+sources tombe, et certaines passent par un HTTP 500 qui les classe « muette »
+avant de repasser « cassée ». La signature varie donc d'une nuit à l'autre :
+l'accordéon se rouvrira certains matins, pas tous. Il n'épargne pas
+complètement ce bruit-là.
+
+**Deux erreurs de méthode, parce qu'elles se reproduiront.** Le premier
+calcul de fenêtre annonçait 23 h de panne par jour — il cherchait
+`"status": "ok"` avec une espace que le JSON n'écrit pas, si bien que tout
+paraissait cassé. Le second ne trouvait plus rien du tout : il cherchait le
+bloc `rockstar-youtube` dans TOUT le fichier et tombait sur le premier, celui
+de la liste `sources`, qui décrit la source et ne porte aucun `status`. Les
+deux fois, c'est la contradiction avec un relevé déjà fait qui a alerté —
+pas la relecture du code. **Extraire d'un JSON à la regex demande de viser la
+zone, ici `sources_health`, jamais le fichier entier.**
+
 ## Pause nocturne : rien entre 0h et 5h
 
 Demandé le 08/09/2026 : les notifications réveillaient. Entre **00h00 et
