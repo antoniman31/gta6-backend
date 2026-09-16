@@ -59,7 +59,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 20 # le job dure ~1 min depuis que les sources sont interrogées en parallèle ; large marge de sécurité si un site traîne, sans risquer de tourner indéfiniment
+    timeout-minutes: 20 # le job dure ~1 min 35 depuis que les sources sont interrogées en parallèle (mesuré le 16/09/2026) ; large marge de sécurité si un site traîne, sans risquer de tourner indéfiniment
     steps:
       # ---------------------------------------------------------------
       # Pause nocturne : rien ne tourne entre 00h00 et 05h00, heure de

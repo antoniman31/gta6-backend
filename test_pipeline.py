@@ -4590,6 +4590,47 @@ def test_ligne_run_tient_sur_une_ligne():
     check(len(haut) == 3,
           "la ligne du haut n'a que trois morceaux, tous de longueur bornée")
 
+    # L'accordéon. Deux sources cassées pour de bon — les flux RSS de YouTube,
+    # que YouTube ne sert plus — donnaient deux lignes orange PERMANENTES sous
+    # la console. Un signal qui ne s'éteint jamais cesse d'être un signal.
+    check("bascule-soucis" in fn,
+          "le compteur de sources porte l'accordéon quand il y a des soucis")
+    check('aria-controls="runSoucis"' in fn and 'aria-expanded="' in fn,
+          "il s'annonce comme un accordéon, pas comme du texte décoratif")
+    # Bouton SEULEMENT s'il y a quelque chose à déplier : un chevron qui
+    # n'ouvre rien est une promesse vide.
+    compteur = fn[fn.index("const compteur ="):]
+    compteur = compteur[:compteur.index("etat.push(") + 400]
+    check("soucis.length" in compteur.split("etat.push(")[1][:60],
+          "quand tout répond, le compteur reste du texte")
+
+    # Replié par défaut MAIS rouvert dès que la liste change : c'est ce qui
+    # évite de devenir aveugle à une nouvelle panne en se débarrassant du
+    # bruit permanent. Une seule valeur stockée — la signature acquittée —
+    # plutôt qu'un booléen à tenir en cohérence avec elle.
+    corps = html[html.index("function signatureSoucis("):]
+    corps = corps[:corps.index("\n}")]
+    for ingredient in ("cassees.map", "muettes", "baisse", "decode_failures"):
+        check(ingredient in corps,
+              "la signature des soucis tient compte de %s" % ingredient)
+
+    corps = html[html.index("function soucisOuverts("):]
+    corps = corps[:corps.index("\n}")]
+    # storageGet renvoie { value } ou null, jamais la chaîne nue. Un
+    # `storageGet(...) || ""` rendait un OBJET, jamais égal à une signature :
+    # l'accordéon se rouvrait à chaque rechargement. Invisible à la lecture,
+    # attrapé par le contrôle navigateur.
+    #
+    # Les commentaires sont retirés AVANT de chercher : celui de la fonction
+    # cite justement le piège qu'on interdit, et le test échouait sur sa
+    # propre documentation. Même travers que « muette » sur la ligne du haut.
+    code = "\n".join(l for l in corps.split("\n")
+                     if not l.strip().startswith("//"))
+    check(".value" in code,
+          "soucisOuverts déballe storageGet au lieu de comparer un objet")
+    check("storageGet(" in code and '|| ""' not in code,
+          "et ne retombe pas dans le piège du repli sur un objet")
+
     # Le plus long des trois est le compteur, et il est borné par construction :
     # deux nombres et le mot « sources ». C'est ce qui remplace l'ancien
     # « toutes les sources répondent », vingt-huit caractères à lui seul.
@@ -4599,8 +4640,18 @@ def test_ligne_run_tient_sur_une_ligne():
     # La deuxième ligne n'existe que s'il y a quelque chose à dire. Une div
     # vide mais affichée occuperait quand même sa hauteur de ligne, ce qui
     # ferait exactement le décalage qu'on cherche à supprimer.
-    check('elSoucis.style.display = soucis.length ? "" : "none"' in fn,
+    # La condition s'est renforcée : la ligne se cache AUSSI quand l'accordéon
+    # est replié. On vérifie les deux, pas une chaîne figée — sinon le test
+    # interdit l'amélioration au lieu d'interdire la régression.
+    import re
+    cond = re.search(r"const ouvert = (soucis\.length[\s\S]{0,120}?);", fn)
+    check(cond is not None, "l'affichage de la deuxième ligne a une condition lisible")
+    check(cond is not None and "soucis.length" in cond.group(1),
           "la deuxième ligne disparaît quand il n'y a aucun souci")
+    check(cond is not None and "soucisOuverts" in cond.group(1),
+          "et quand l'accordéon est replié")
+    check('elSoucis.style.display = ouvert ? "" : "none"' in fn,
+          "c'est bien cette condition qui pilote son affichage")
 
     # Le nowrap est la ceinture : si un jour un morceau du haut s'allonge, il
     # débordera visiblement au lieu de repasser sournoisement sur deux lignes.

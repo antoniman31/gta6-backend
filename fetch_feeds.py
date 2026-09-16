@@ -1369,17 +1369,12 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     # Premier passage : on ne garde que les entrées qui passent le filtre par
     # mots-clés, sans encore toucher au réseau.
     #
-    # Le plafond existe pour le coût, pas pour la pertinence : chaque entrée
-    # retenue d'un flux Google News demande un décodage de lien, et ces
-    # décodages pesaient 51 s sur un passage de 74 s. Trente convient à un
-    # flux d'actualité générale, où les entrées 30 à 100 sont du bruit.
+    # Le plafond reste réglable source par source, mais son défaut vaut
+    # désormais 100 comme les flux Google News : voir MAX_ENTREES pour
+    # pourquoi 30 ne protégeait plus rien sur les sources natives.
     #
-    # Mais les recherches sur site:rockstargames.com renvoient 100 entrées
-    # classées par PERTINENCE, pas par date : les 70 qu'on ignorait ne sont
-    # pas « les plus vieilles », ce sont celles d'après — et parmi elles, des
-    # pages de Rockstar qui n'apparaissaient nulle part dans l'app. D'où un
-    # plafond réglable source par source, relevé là où il fait perdre du
-    # contenu voulu, laissé à 30 partout ailleurs.
+    # Il garde son utilité de garde-fou : un flux malformé qui annoncerait
+    # cent mille entrées ne fera pas exploser le passage.
     retenues = [entry for entry in parsed.entries[:feed.get("max_entrees", MAX_ENTREES)]
                 if passe_le_filtre(feed, entry.get("title", ""), entry.get("summary", ""))]
 
@@ -1856,7 +1851,28 @@ SILENT_SOURCE_DAYS = 30
 
 # Nombre d'entrées lues par flux et par passage. Une source peut le relever
 # via `max_entrees` quand son flux en offre davantage et qu'on les veut.
-MAX_ENTREES = 30
+# 100 et non 30. Le plafond de 30 se justifiait par le COÛT du décodage des
+# liens Google News — 51 s sur un passage de 74 s. Or decode_google_news_link()
+# rend la main immédiatement quand l'URL ne contient pas « news.google.com » :
+# ce coût ne concerne donc QUE les flux Google News, lesquels déclarent tous
+# max_entrees explicitement et ne dépendaient déjà plus de ce défaut.
+#
+# Sur les 38 sources natives, le plafond ne faisait économiser rien du tout :
+# les entrées sont déjà téléchargées et analysées dans la même réponse HTTP,
+# et leurs liens n'ont aucun décodage à subir. On jetait du contenu déjà payé.
+# Relevé du 16/09/2026, sur 12 passages sur 12 : 18 sources étaient tronquées,
+# dont eurogamer et rps qui offrent 100 entrées et dont on n'en regardait 30.
+#
+# Le gain n'est pas quotidien — à un passage par heure, aucune de ces sources
+# ne publie 30 articles entre deux passages. Il est en cas de PANNE : si le
+# planificateur externe tombe et que le filet de 3 h prend le relais, une
+# source active peut avoir dépassé 30, et ces articles-là sont perdus pour de
+# bon puisqu'un flux n'expose qu'une fenêtre récente.
+#
+# L'autre justification — « les entrées 30 à 100 sont du bruit » — vaut pour
+# un flux d'actualité générale et tombe pour gta6times et gtaboom, qui ne
+# parlent que de GTA 6 : chez eux l'entrée 35 vaut l'entrée 3.
+MAX_ENTREES = 100
 
 # Âge maximal d'un article JAMAIS VU pour être importé.
 #
