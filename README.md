@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1225
+qui permet de tester tout le pipeline sans sortir de la machine. **1237
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1225 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Les 1237 vérifications de la suite étaient vertes dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
@@ -3122,6 +3122,70 @@ des sources natives « les plus lentes » avait été produit : effectifs de un 
 deux articles, et deux sources renommées mal classées parce que les anciens
 articles portent l'ancien nom. Une médiane sur un article n'est pas une
 médiane. Elle n'a pas été présentée comme un résultat.
+
+### Les contrôles rendus entrent dans le dépôt — 16/09/2026
+
+Jusqu'ici, deux façons de vérifier coexistaient sans être logées à la même
+enseigne. `test_pipeline.py` **lit les fichiers** et vérifie que ce qui est
+écrit est cohérent : 1237 vérifications, versionnées, exécutées à chaque
+pull request. Les contrôles qui **ouvrent l'app dans un vrai navigateur**,
+eux, n'existaient que le temps d'une session de travail, lancés à la main,
+puis perdus.
+
+Or ils ont trouvé, en une seule journée, **quatre défauts que la lecture du
+code ne pouvait pas voir** :
+
+| Défaut | Ce que le code disait | Ce que l'écran montrait |
+|---|---|---|
+| `storageGet(...) \|\| ""` | comparaison de chaînes | comparaison d'un **objet** — l'accordéon se rouvrait à chaque rechargement |
+| `display:grid` contre `hidden` | « cache cette section » | section **dépliée**, liste à 3244 px au lieu de 244 |
+| entête `sticky` à marge négative | entête en haut | entête **recouvrant** 4 px de chaque onglet |
+| `display` inline sur un bouton | libellé centré | libellé **8,5 px trop haut** |
+
+**Deux de ces défauts rendaient l'app pire qu'avant** le changement censé
+l'améliorer. Aucun n'était visible autrement qu'en ouvrant un navigateur.
+
+`test_navigateur.py` entre donc dans le dépôt, et `checks.yml` l'exécute.
+**37 contrôles**, à 320 et 390 px.
+
+**Ce qui y entre, et ce qui n'y entre pas.** Un contrôle qui échoue au hasard
+est pire que pas de contrôle : on apprend à ignorer le rouge, et le vrai
+défaut passe avec le reste. N'y entrent donc que des mesures
+**déterministes** — géométries, présences, attributs :
+
+- tailles de cible au doigt, **zone** comprise et non boîte visible ;
+- rien ne déborde, ni de la page ni d'un bouton ;
+- ce qui est annoncé replié l'est vraiment ;
+- libellés centrés au pixel, avec de l'air autour ;
+- exactement une bascule enfoncée par groupe, chaque champ nommé ;
+- trois gestes choisis **parce qu'ils ont déjà cassé**.
+
+Pas de comparaison d'images, pas d'animations, pas de délais, pas de parcours
+à plusieurs étapes, rien qui dépende du réseau — le fil est servi par un
+serveur local jetable.
+
+**Playwright vit dans `requirements-dev.txt`, pas dans `requirements.txt`.**
+Ce dernier est installé par les quatre workflows, dont celui du robot qui
+tourne vingt-quatre à quarante-huit fois par jour : lui faire télécharger un
+navigateur à chaque passage aurait été un coût quotidien pour un usage
+limité aux pull requests. La règle « tout workflow installe depuis un fichier
+de dépendances » est du coup étendue : elle vérifie maintenant qu'**aucun**
+`pip install` ne cite un paquet en clair, et que les trois autres workflows
+n'installent pas les dépendances de test.
+
+**Deux critères recadrés en écrivant ces contrôles, et la nuance compte.**
+Le premier jet refusait le bouton « ? » parce que son texte « sortait de sa
+boîte » : c'est un rond de 24 px contenant un caractère, la notion ne s'y
+applique pas. Le second exigeait 13 px d'air autour de chaque libellé, et
+butait sur les onglets du panneau, qui n'en ont que **6 à 320 px**. Ce n'est
+pas un défaut : un onglet est un tiers de rangée, son air dépend de la
+largeur de l'écran et non d'un choix de rembourrage — rien ne déborde ni ne
+se décentre. Le seuil d'air ne vaut donc que pour les boutons dimensionnés
+par leur contenu ; le contrôle de débordement, lui, continue de surveiller
+les onglets.
+
+Recadrer un critère n'est pas l'affaiblir quand on peut dire **pourquoi** il
+ne s'appliquait pas. Le dire est la condition.
 
 ## Pause nocturne : rien entre 0h et 5h
 

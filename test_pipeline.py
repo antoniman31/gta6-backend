@@ -4269,6 +4269,40 @@ def test_les_workflows_epinglent_leurs_dependances():
         if "pip install" in contenu:
             check("requirements.txt" in contenu,
                   "%s installe depuis requirements.txt" % chemin.split("/")[-1])
+            # La règle vaut pour TOUT ce qu'un workflow installe, pas
+            # seulement pour le premier fichier cité. Un `pip install truc`
+            # glissé à côté réinstallerait la divergence que cette règle a
+            # justement été écrite pour empêcher.
+            import re as _re
+            libres = [c for c in _re.findall(r"pip install ([^\n]+)", contenu)
+                      if not c.strip().startswith("-r ")]
+            check(not libres,
+                  "%s n'installe rien hors d'un fichier de dépendances%s"
+                  % (chemin.split("/")[-1],
+                     "" if not libres else " — " + ", ".join(libres)))
+
+    # Les dépendances des contrôles vivent à part : requirements.txt est
+    # installé par le robot à chaque passage, vingt-quatre à quarante-huit
+    # fois par jour, et un navigateur de test n'y a rien à faire.
+    dev = open("requirements-dev.txt", encoding="utf-8").read()
+    check("playwright==" in dev, "requirements-dev.txt épingle playwright")
+    check("playwright" not in req,
+          "et le robot ne se traîne pas un navigateur à chaque passage")
+    controles = open(".github/workflows/checks.yml", encoding="utf-8").read()
+    check("requirements-dev.txt" in controles,
+          "les contrôles installent bien leurs propres dépendances")
+    for autre in ("update-feeds.yml", "sonde.yml", "test-push.yml"):
+        contenu = open(".github/workflows/" + autre, encoding="utf-8").read()
+        check("requirements-dev.txt" not in contenu,
+              "%s ne les installe pas, lui" % autre)
+
+    # Le contrôle rendu doit être LANCÉ, pas seulement présent dans le dépôt.
+    # Un fichier de tests que rien n'exécute est un fichier mort, et c'est
+    # exactement le sort qui l'attendait avant d'être versé ici.
+    check("python test_navigateur.py" in controles,
+          "les contrôles rendus sont réellement exécutés par la CI")
+    check("playwright install" in controles,
+          "et le navigateur qu'ils pilotent est installé avant")
 
 
 def test_envoi_push_reel_testable():
