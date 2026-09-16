@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1194
+qui permet de tester tout le pipeline sans sortir de la machine. **1198
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1194 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Les 1198 vérifications de la suite étaient vertes dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
@@ -2716,6 +2716,129 @@ après chaque réabonnement : l'app ne peut pas écrire un secret GitHub, ça
 demande des droits d'administration et un chiffrement côté client. Le bouton
 ne supprime pas cette friction — il dit seulement tout de suite quand il faut
 s'y coller, au lieu de le laisser découvrir trois jours plus tard.
+
+### Les flux RSS de YouTube ne répondent plus — six sondes pour l'établir — 16/09/2026
+
+Le journal de santé a montré deux sources `cassee` le même matin :
+`rockstar-youtube` et `rockstarmag-youtube`, toutes deux en **HTTP 404**,
+tombées **à la même seconde** (`02:02:27`) d'après le journal de silence.
+Deux flux qui meurent au même passage, ce n'est pas deux identifiants de
+chaîne devenus invalides.
+
+**Le diagnostic est différentiel, pas une intuition.** Première sonde : les
+deux URL en panne, plus la chaîne YouTube **officielle de YouTube**
+(`UCBR8-60-B28hp2BmDPdntcQ`), pour distinguer « ces deux chaînes sont
+mortes » de « l'endpoint ne répond plus ». Les trois : 404. Deuxième sonde,
+sur la variante documentée `playlist_id=UU…` — l'identifiant de chaîne dont
+le préfixe `UC` devient `UU`, qui désigne la playlist des mises en ligne.
+Les trois : 404 aussi.
+
+Six sondes, trois chaînes, deux formes d'URL, zéro réponse.
+`youtube.com/feeds/videos.xml` est injoignable depuis le runner. Ce n'est
+pas notre configuration : les rapports publics de 404 et 500 sur ces flux
+s'accumulent depuis des mois. **Aucune URL de remplacement ne sera donc
+proposée** — la règle vaut ici plus que jamais : on ne devine pas une
+adresse, et il n'y en a aucune à valider.
+
+**Ce que ça coûte réellement, et ce que ça ne coûte pas.** Un trailer GTA 6
+ne sera pas manqué : il paraît toujours sur le Newswire de Rockstar, couvert
+par `rockstar-en` et `rockstar-fr` dont les liens sont sur un domaine
+officiel, et toute la presse le reprend dans la minute. Ce qui est perdu,
+c'est le lien YouTube *lui-même* — cinq des trente-huit articles officiels
+du fil. Les deux sources restent en place, marquées `cassee` : elles ont
+alerté une fois sur Discord et ne le répéteront pas, `alertee` empêchant la
+répétition.
+
+### Le rendement réel des sources, mesuré plutôt que supposé
+
+Relevé du 16/09/2026, 2786 articles :
+
+```
+2638 articles exclusifs
+├─ 1771 (67 %) via Google News   ← 21 sources sur 59
+│   └─ 1191 (45 %) par gnews-fr + gnews-en SEULES
+└─  867 (33 %) via les 38 sources natives
+```
+
+Les trente-huit flux natifs ressemblent à l'ossature du projet ; ils en
+portent un tiers. Deux URL Google News en portent presque la moitié. Ce
+n'est pas un défaut à corriger — c'est le rapport de force à connaître, et
+il justifie de garder les natives même peu productives : elles sont
+l'assurance contre le jour où Google News étrangle le robot, ce qui est
+déjà arrivé.
+
+**Le doublage a rendu son verdict.** Deux sites sont interrogés deux fois,
+en natif et par une recherche Google News : `jdg` apporte 14 articles
+exclusifs contre 3 pour `jdg-natif`, `frandroid` 16 contre **0** pour
+`frandroid-natif`. Le jumeau Google News gagne les deux fois. Trois sources
+n'apportent aucun article exclusif — `dexerto-fr`, `frandroid-natif`,
+`tweaktown` — et une quatrième, `take2-ir`, se tait depuis 83 jours, ce qui
+est normal : ce sont des communiqués d'investisseurs, un par trimestre.
+Rien n'est retiré : les chiffres sont posés, la décision appartient au
+propriétaire du fil.
+
+### Deux requêtes qui s'annonçaient ciblées et ne l'étaient pas
+
+`Rockstar Games (annonces)` et `GTA 6 x Netflix` portaient des noms
+promettant un flux précis. Ce n'en étaient pas : Google News ne traite ni
+`Netflix` ni `(announce OR reveals OR confirms)` comme un filtre, seulement
+comme un poids de pertinence. Au relevé, elles apportaient **261 et 127**
+articles exclusifs — la 3ᵉ et la 5ᵉ source du fil, ce qu'aucune requête
+réellement ciblée ne pourrait faire. Elles s'appellent désormais
+`Google News (Netflix)` et `Google News (annonces Rockstar)`, comme les
+quatre autres recherches.
+
+**Une crainte vérifiée, et écartée.** `rockstar-announce` porte
+`official: True`, et l'on pouvait redouter que 127 articles quelconques
+entrent marqués « officiels » — de quoi lever la pause nocturne pour rien.
+C'est faux : `statut_officiel()` exige que **le lien** soit sur un domaine
+Rockstar ou Take-Two, la déclaration de source ne suffit jamais. Au
+comptage : 38 articles officiels dans le fil, tous sur `rockstargames.com`,
+`support.`, `store.`, `youtube.com` ou `ir.take2games.com`, et **aucun**
+venu de cette source. Le drapeau ne fait là que durcir son filtre de titres.
+
+**Renommer une source casse ses archives — le test l'a dit avant le
+lecteur.** Les 421 articles déjà stockés portaient l'ancien nom et
+devenaient orphelins : plus reliés à leur source, ni pour l'onglet, ni pour
+le journal de santé. La mécanique existait (`SOURCES_RENOMMEES`) mais
+exigeait un **domaine de preuve**, ce qui identifie une source-éditeur comme
+RockstarMag et ne peut rien identifier pour une recherche d'agrégateur, qui
+renvoie vers cinquante domaines. Le domaine accepte maintenant `None`, avec
+sa justification : ce qui fait preuve alors, c'est que l'ancien nom
+n'appartenait qu'à cette source et n'existe plus nulle part.
+
+Et la fonction avait un angle mort : elle corrigeait `source` mais pas les
+`extraSources`, qui portent le même nom. Vingt-cinq reprises seraient
+restées étiquetées à l'ancien, sous un article dont le nom, lui, aurait été
+corrigé. Deux tests verrouillent désormais les deux sens, plus un troisième
+qui exige que chaque renommage déclaré vise une source existante — une table
+pointant vers un nom absent de `FEEDS` ne rebrancherait rien, en silence,
+tout en faisant passer le contrôle d'orphelins.
+
+### Deux trous dans les workflows
+
+`sonde.yml` était le seul des quatre sans `timeout-minutes`. Sans, GitHub
+applique son défaut de **360 minutes** : une sonde qui pend sur un site qui
+accepte la connexion et ne répond jamais brûle six heures de quota pour
+rien. `FETCH_TIMEOUT` valant 20 s par adresse, dix minutes tiennent très
+large.
+
+`checks.yml` n'avait pas de `concurrency`. Deux pushes rapprochés lançaient
+deux suites complètes en parallèle, la première portant déjà sur du code
+remplacé. Elle est maintenant annulée — l'inverse exact du choix fait pour
+`update-feeds`, et pour la raison inverse : là-bas une exécution abandonnée
+perdrait des articles, ici elle ne perd qu'un verdict périmé.
+
+**Ce qui a été vérifié et tient.** Les quatre workflows installent depuis
+`requirements.txt`, qui épingle les versions à l'exact. Les permissions sont
+déclarées explicitement et au minimum — `contents: read` sur trois, `write`
+seulement sur `update-feeds`. `sonde.yml` passe la saisie utilisateur par
+l'environnement et jamais interpolée dans le `run:`, donc pas d'injection
+shell. Le signal de vie est en `if: always()` et ne peut pas faire échouer
+le job. La fenêtre nocturne est calculée en heure de Paris et **laisse
+passer** si elle échoue. Les actions restent épinglées au tag majeur et non
+au SHA : ce sont des actions GitHub first-party, le compromis est assumé et
+noté ici pour qu'il soit un choix et non un oubli.
 
 ## Pause nocturne : rien entre 0h et 5h
 

@@ -142,8 +142,21 @@ FEEDS = [
     {"id": "rockstar-fr", "name": "Rockstar Games (officiel FR)",
      "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr",
      "official": True, "lang": "fr", "max_entrees": 100, "garder_les_archives": True},
-    {"id": "rockstar-announce", "name": "Rockstar Games (annonces)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True, "max_entrees": 100},
-    {"id": "gta6-netflix", "name": "GTA 6 x Netflix", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True, "max_entrees": 100},
+    # Ces deux-là s'appelaient « Rockstar Games (annonces) » et « GTA 6 x
+    # Netflix », des noms qui promettaient un flux ciblé. Ce n'en sont pas :
+    # Google News ne traite ni « Netflix » ni « (announce OR reveals OR
+    # confirms) » comme un filtre dur, seulement comme un poids de
+    # pertinence. Au relevé du 16/09/2026 elles apportaient 261 et 127
+    # articles exclusifs — la 3e et la 5e source du fil, ce qu'aucune
+    # requête réellement ciblée ne pourrait faire. Ce sont deux recherches
+    # larges de plus, et elles portent maintenant le nom des quatre autres.
+    #
+    # Le drapeau `official` de la première ne dit PAS que ses articles sont
+    # officiels — statut_officiel() exige que le LIEN soit sur un domaine
+    # Rockstar. Il ne fait que durcir son filtre de titres. Vérifié le
+    # 16/09/2026 : 38 articles officiels dans le fil, aucun venu d'ici.
+    {"id": "rockstar-announce", "name": "Google News (annonces Rockstar)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True, "max_entrees": 100},
+    {"id": "gta6-netflix", "name": "Google News (Netflix)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True, "max_entrees": 100},
     {"id": "take2-ir", "name": "Take-Two Investor Relations (officiel)", "url": "https://ir.take2games.com/rss/news-releases.xml?items=15", "official": True, "garder_les_archives": True},
     # Chaîne YouTube officielle de Rockstar.
     #
@@ -1386,7 +1399,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
     # neufs le 29/08/2026. Mais sur le fil de Rockstar, une vieille
     # publication n'est pas du bruit : c'est précisément ce qu'on cherche.
     # Le drapeau est posé source par source, jamais déduit de `official` :
-    # « Rockstar Games (annonces) » est officiel ET une recherche web
+    # « Google News (annonces Rockstar) » est officiel ET une recherche web
     # généraliste, l'exempter rouvrirait le défaut.
     garder_archives = feed.get("garder_les_archives")
     vieux = 0
@@ -2218,32 +2231,73 @@ def repare_vignettes_stockees(items):
 # Une correspondance EXPLICITE, jamais une devinette : un nom proche ne
 # prouve rien. Et le domaine du lien doit confirmer, parce que ce qui compte
 # est qui publie — même règle que pour le statut officiel.
+# Le domaine peut valoir None : voir juste en dessous pourquoi, et quand.
 SOURCES_RENOMMEES = {
     "RockstarMag.fr": ("RockstarMag", "rockstarmag.fr"),
+    # Rebaptisées le 16/09/2026. Elles s'annonçaient comme des flux ciblés
+    # — un fil d'annonces Rockstar, un fil Netflix — alors que Google News
+    # ne traite ni « Netflix » ni « (announce OR reveals OR confirms) »
+    # comme un filtre : seulement comme un poids de pertinence. Elles
+    # apportaient ce jour-là 261 et 127 articles exclusifs, soit la 3e et
+    # la 5e source du fil, ce qu'aucune requête réellement ciblée ne peut
+    # faire. Ce sont deux recherches larges, elles portent désormais le nom
+    # des quatre autres.
+    #
+    # Domaine None, et c'est le point délicat : le garde-fou de domaine
+    # vérifie QUI PUBLIE, ce qui prouve l'identité d'une source-éditeur
+    # comme RockstarMag. Une recherche d'agrégateur, elle, renvoie vers
+    # cinquante domaines différents — exiger un domaine n'écarterait pas un
+    # faux rapprochement, il empêcherait purement et simplement la
+    # correction. Ce qui fait preuve ici, c'est que l'ancien nom
+    # n'appartenait qu'à cette source et n'existe plus nulle part.
+    "Rockstar Games (annonces)": ("Google News (annonces Rockstar)", None),
+    "GTA 6 x Netflix": ("Google News (Netflix)", None),
 }
 
 
+def _nom_actuel(nom, lien, connus):
+    """Nom de remplacement d'une source débaptisée, ou None si rien à faire."""
+    cible = SOURCES_RENOMMEES.get(nom)
+    if not cible:
+        return None
+    remplacant, domaine = cible
+    if remplacant not in connus:
+        return None
+    if domaine is None:
+        return remplacant
+    try:
+        if domaine not in urlparse(lien or "").netloc.lower():
+            return None
+    except Exception:
+        return None
+    return remplacant
+
+
 def repare_noms_de_sources(items):
-    """Rebranche les articles d'une source débaptisée sur son nom actuel."""
+    """Rebranche les articles d'une source débaptisée sur son nom actuel.
+
+    Les « autres sources » sont traitées aussi. Elles portent le même nom de
+    source que l'article principal, et la version précédente les oubliait :
+    un article pouvait donc afficher, sous son nom de source corrigé, une
+    liste de reprises encore étiquetées à l'ancien. Vingt-cinq étaient dans
+    ce cas au moment des renommages du 16/09/2026.
+    """
     connus = {feed["name"] for feed in FEEDS}
     corriges = 0
+    reprises = 0
     for item in items:
-        cible = SOURCES_RENOMMEES.get(item.get("source"))
-        if not cible:
-            continue
-        nom, domaine = cible
-        if nom not in connus:
-            continue
-        try:
-            if domaine not in urlparse(item.get("link") or "").netloc.lower():
-                continue
-        except Exception:
-            continue
-        item["source"] = nom
-        corriges += 1
-    if corriges:
-        print(f"Correction rétroactive : {corriges} article(s) rebranché(s) "
-              f"sur le nom actuel de leur source")
+        nom = _nom_actuel(item.get("source"), item.get("link"), connus)
+        if nom:
+            item["source"] = nom
+            corriges += 1
+        for autre in (item.get("extraSources") or []):
+            nom = _nom_actuel(autre.get("source"), autre.get("link"), connus)
+            if nom:
+                autre["source"] = nom
+                reprises += 1
+    if corriges or reprises:
+        print(f"Correction rétroactive : {corriges} article(s) et {reprises} "
+              f"reprise(s) rebranché(s) sur le nom actuel de leur source")
     return items
 
 
