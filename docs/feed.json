@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-16T22:02:37.988276+00:00",
+  "generated_at": "2026-09-16T23:02:44.602526+00:00",
   "attente_recap": {
-    "articles": 2,
+    "articles": 5,
     "officiels": 0,
-    "sommet": 1
+    "sommet": 2
   },
-  "duration_seconds": 98.4,
+  "duration_seconds": 101.9,
   "decode_failures": 0,
-  "total_articles": 2872,
-  "new_this_run": 2,
+  "total_articles": 2875,
+  "new_this_run": 3,
   "hot_count": 9,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -408,9 +408,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "articles_exclusifs": 129,
-      "last_article": "2026-09-16T21:28:30+00:00",
+      "last_article": "2026-09-16T22:02:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -474,8 +474,8 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 2,
-      "articles_exclusifs": 569,
-      "last_article": "2026-09-16T21:59:33+00:00",
+      "articles_exclusifs": 571,
+      "last_article": "2026-09-16T22:52:52+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -521,10 +521,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 26,
       "last_article": "2026-09-15T15:57:33+00:00",
@@ -742,10 +742,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 28,
       "last_article": "2026-09-16T05:48:16+00:00",
@@ -846,10 +846,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -1093,10 +1093,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1119,10 +1119,10 @@
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-15T17:23:36+00:00",
@@ -1158,7 +1158,7 @@
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,99,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-en": "99,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1193,7 +1193,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "39,39,39,39,39,39,39,39,39,39,40,40",
+    "gta6times": "39,39,39,39,39,39,39,39,39,40,40,40",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1208,13 +1208,13 @@
     "engadget": "99,99,99,99,99,99,99,99,99,99,99,99",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20,20,20,20,20,0,20,20,20,20,20",
+    "rockstaractu": "20,20,20,20,20,0,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "reddit-leaks": "25,25,25,0,25,25,0,25,25,25,25,25",
+    "reddit-leaks": "25,25,0,25,25,0,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -1228,8 +1228,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"20593b7887b19db28e6d2f6b1cda8438\"",
-      "modified": "Wed, 16 Sep 2026 20:57:38 GMT"
+      "etag": "W/\"1ccfaa98b6ea545f41b9d0b549b09ffa\"",
+      "modified": "Wed, 16 Sep 2026 22:59:38 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1248,13 +1248,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"21785-Jc5ubej3+VOGKrkwSk//wbfHar0\"",
+      "etag": "W/\"1aadb-KxymTVKMNkDcV0izSiVW/XbdII8\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"72e34551111c5618f8335f69a2200f14\"",
-      "modified": "Wed, 16 Sep 2026 21:40:30 GMT"
+      "etag": "W/\"050860fe1e122202042d233d0226bdef\"",
+      "modified": "Wed, 16 Sep 2026 22:15:27 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1269,17 +1269,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 22:01:24 GMT"
+      "modified": "Wed, 16 Sep 2026 23:01:32 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"3e9f93aaa34f989b878aa9e9516055a3\"",
-      "modified": "Wed, 16 Sep 2026 13:54:39 GMT"
+      "etag": "\"5802a346fe27d349275eba197a888538\"",
+      "modified": "Wed, 16 Sep 2026 22:01:22 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aab1171-31a2\"",
-      "modified": "Wed, 16 Sep 2026 22:00:17 GMT"
+      "etag": "W/\"6aab1f80-31a2\"",
+      "modified": "Wed, 16 Sep 2026 23:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1309,7 +1309,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 22:01:29 GMT"
+      "modified": "Wed, 16 Sep 2026 23:01:35 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1323,8 +1323,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"d0914777911a5e8e1fef8d1707558a52\"",
-      "modified": "Wed, 16 Sep 2026 21:05:13 GMT"
+      "etag": "W/\"d2a188ec648ec9fb2c21a6ba4afa08d5\"",
+      "modified": "Wed, 16 Sep 2026 22:01:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1334,6 +1334,51 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Take-Two CEO Strauss Zelnick - Even with GTA VI's global awareness, you still have to market it aggressively | exclusive - GamesBeat",
+      "link": "https://gamesbeat.com/take-two-ceo-strauss-zelnick-even-with-gta-vis-global-awareness-you-still-have-to-market-it-aggressively-exclusive/",
+      "source_link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxOaWJmdTB5aHZxVjJlWkI1UlVqVDNjX2FxTm9JYk9iYWlwR2RvdEw1WEEyNnllaENDQkYwTjNvYURRdUVvUGhyd1p4X3FMdnVKbTdhd2FFYnlZZmZUVFhEUEtOYnQ1UGVLTXNUMENfeGg5dnR6dDNRNzBiTmtkWTRsWFM4SVdRc1gyVjM1dm5oQ2FGWUw2Z2VuM1FIS2dKNHo3QkNtbkxSNEhvNTdpbjNITWdHSHZaWmZuOURCS0tuNTNwdjl0cDN0SWpHMDJXNnBtNjBN?oc=5",
+      "date": "2026-09-16T22:52:52+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://gamesbeat.com/wp-content/uploads/2026/09/alex-strauss-3-1.jpg",
+      "description": "Take-Two CEO Strauss Zelnick - Even with GTA VI's global awareness, you still have to market it aggressively | exclusive&nbsp;&nbsp;GamesBeat"
+    },
+    {
+      "title": "GTA 6 billboards featuring the Spotify logo have appeared in major US cities. - GameGPU",
+      "link": "https://en.gamegpu.com/news/igry/v-krupnejshikh-gorodakh-ssha-poyavilis-reklamnye-shchity-gta-6-s-logotipom-spotify",
+      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQQXpqYjBlMG5HMG1RR1VCLUtaUkdGVmFybk1TU0dmMFBNcy1xT3J2UEVjNHZmT0FpNzE4TE9ZLXl4WFZwUmVsajFLd3JJMWJXN0pKMUJuR3Z1NG1jWlJRNkNIRzJrT3FLYVhDRTZsRHdLVVZ4VElNYmd3Z1BzdnQtamVHRUxkaFEzUnViNldnVU5scXFqVXZVQ0p2TDd1eUFYeDc5VTl4XzlEVVlvMmZwbVc0eVBDUQ?oc=5",
+      "date": "2026-09-16T22:18:40+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/billboard_lizard_ggpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/billboard_lizard_ggpu.webp?width=1280&height=720",
+      "description": "GTA 6 billboards featuring the Spotify logo have appeared in major US cities.&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "Emmy Winner Stephen Root Confirms He Is In ‘GTA 6’ - Hip-Hop Wired",
+      "link": "https://hiphopwired.com/3065728/stephen-root-confirms-gta-6-involvement-details/",
+      "source_link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPRmhnQnBIdF9WYkZnYUJPd0NsWld5NUdOb1lzb0hSOTlmVk9aNjFKcHAzSGg0VzdlejhJSUltZzlTWERnM2MwTzUwQlNDd3B0TWZIM195cGZhekJ3YW1zTlJObkd4d1VDRWVyTU1Eb3V5ZGlDQ0JGekZkX3VxQi1uRWtSTVJPeTg?oc=5",
+      "date": "2026-09-16T22:02:16+00:00",
+      "source": "Google News (annonces Rockstar)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://hiphopwired.com/wp-content/uploads/sites/43/2026/09/image-collage-15.jpg?quality=85&strip=all&w=1680&crop=0,0,100,960px",
+      "description": "Emmy Winner Stephen Root Confirms He Is In ‘GTA 6’&nbsp;&nbsp;Hip-Hop Wired",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://103weup.com/2026/09/16/emmy-winner-stephen-root-confirms-he-is-in-gta-6/"
+        }
+      ]
+    },
     {
       "title": "Spotify Puts GTA 6 Artwork on Billboards in LA, New York and Miami - GTA BOOM",
       "link": "https://www.gtaboom.com/spotify-is-putting-gta-6-artwork-on-billboards-in-three-us-cities-47a8",
