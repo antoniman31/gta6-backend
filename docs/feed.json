@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-16T18:02:54.731819+00:00",
+  "generated_at": "2026-09-16T19:02:20.705198+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 112.7,
+  "duration_seconds": 80.3,
   "decode_failures": 0,
-  "total_articles": 2855,
-  "new_this_run": 2,
+  "total_articles": 2861,
+  "new_this_run": 6,
   "hot_count": 9,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -421,8 +421,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 262,
+      "new_this_run": 2,
+      "articles_exclusifs": 264,
       "last_article": "2026-09-16T08:53:45+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -460,8 +460,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 669,
+      "new_this_run": 1,
+      "articles_exclusifs": 670,
       "last_article": "2026-09-16T16:29:39+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -473,9 +473,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 566,
-      "last_article": "2026-09-16T16:36:46+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 568,
+      "last_article": "2026-09-16T18:20:32+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -515,7 +515,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 37,
       "last_article": "2026-09-11T18:35:30+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -642,9 +642,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 54,
-      "last_article": "2026-09-16T15:43:43+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 55,
+      "last_article": "2026-09-16T18:44:16+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -681,7 +681,7 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 35,
       "last_article": "2026-09-16T17:14:07+00:00",
       "days_since_last_article": 0,
@@ -798,7 +798,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 60,
       "last_article": "2026-09-16T18:00:13+00:00",
       "days_since_last_article": 0,
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -1028,15 +1028,15 @@
     {
       "id": "rockstaractu",
       "name": "Rockstar Actu",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-15T18:04:15+00:00",
-      "days_since_last_article": 0,
-      "status": "muette"
+      "days_since_last_article": 1,
+      "status": "ok"
     },
     {
       "id": "dexerto-fr",
@@ -1061,16 +1061,16 @@
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-15T18:05:13+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
       "id": "gamesindustry",
       "name": "GamesIndustry.biz",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-14T16:22:08+00:00",
@@ -1080,10 +1080,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-08-12T12:32:59+00:00",
@@ -1093,10 +1093,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1106,7 +1106,7 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
+      "entries_fetched": 25,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -1114,7 +1114,7 @@
       "articles_exclusifs": 25,
       "last_article": "2026-09-04T14:22:04+00:00",
       "days_since_last_article": 12,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1159,17 +1159,17 @@
   "sources_silence": {
     "rockstaractu": {
       "depuis": "2026-09-16T18:02:54.730981+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "reddit-leaks": {
       "depuis": "2026-09-16T18:02:54.730981+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,99,100,100,100,100,100",
+    "rockstar-en": "100,100,100,100,100,99,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1216,16 +1216,16 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "99,100,99,100,99,99,99,99,99,99,99,99",
+    "engadget": "100,99,100,99,99,99,99,99,99,99,99,99",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,0",
+    "rockstaractu": "20,20,20,20,20,20,20,20,20,20,0,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "reddit-leaks": "25,25,25,25,25,25,25,25,0,25,25,0",
+    "reddit-leaks": "25,25,25,25,25,25,25,0,25,25,0,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -1239,13 +1239,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"e5b9709f8475be6ca686fd62e9a3032e\"",
-      "modified": "Wed, 16 Sep 2026 17:17:46 GMT"
+      "etag": "W/\"61746a14b0f8afe59f4395d9760b8667\"",
+      "modified": "Wed, 16 Sep 2026 18:51:03 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 17:38:40 GMT"
+      "modified": "Wed, 16 Sep 2026 17:52:27 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1259,13 +1259,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"248c9-C+AfOtmDZJyTvsWiNtvmMI7lYZM\"",
+      "etag": "W/\"23f4e-fmUSU2sA2JLOyfyff+x6DNYehv8\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"17997829a71f0baea97c4300bf5d6234\"",
-      "modified": "Wed, 16 Sep 2026 18:00:14 GMT"
+      "etag": "W/\"0f541ce87add36310dca533ffe152641\"",
+      "modified": "Wed, 16 Sep 2026 18:45:27 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1275,12 +1275,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 17:47:52 GMT"
+      "modified": "Wed, 16 Sep 2026 18:49:00 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 18:01:31 GMT"
+      "modified": "Wed, 16 Sep 2026 19:01:17 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1289,8 +1289,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aaad92f-31a2\"",
-      "modified": "Wed, 16 Sep 2026 18:00:15 GMT"
+      "etag": "W/\"6aaae73f-31a2\"",
+      "modified": "Wed, 16 Sep 2026 19:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1312,10 +1312,15 @@
       "etag": "\"6aaad70f-bc6\"",
       "modified": "Wed, 16 Sep 2026 17:51:11 GMT"
     },
+    "rockstaractu": {
+      "url": "https://rockstaractu.com/feed/",
+      "etag": "\"5aa58960c88eb7754128a2a20f4ff41e-gzip\"",
+      "modified": null
+    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 18:01:08 GMT"
+      "modified": "Wed, 16 Sep 2026 19:01:24 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1329,17 +1334,56 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"ff7f99b5c2913007badc669c52293142\"",
-      "modified": "Wed, 16 Sep 2026 17:01:11 GMT"
+      "etag": "W/\"2e4193b7125e102e935a3d10ca376566\"",
+      "modified": "Wed, 16 Sep 2026 19:01:21 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"a68864ffce91065446842f0edf07c9dc\"",
-      "modified": "Wed, 16 Sep 2026 18:01:05 GMT"
+      "etag": "W/\"a2e0492f815542dd44f6b959e99c8a03\"",
+      "modified": "Wed, 16 Sep 2026 18:15:42 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Resident Evil Is Now The Highest-Rated Gaming Movie Ever",
+      "link": "https://www.gamespot.com/articles/resident-evil-is-now-the-highest-rated-gaming-movie-ever/",
+      "source_link": null,
+      "date": "2026-09-16T18:44:16+00:00",
+      "source": "GameSpot",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/REMovie-Large.jpeg?w=300",
+      "description": "The Resident Evil movie from Weapons and Barbarian director Zach Cregger releases in theaters on September 18. Reviews from critics went live today, and the movie is earning high scores. GameSpot's Resident Evil review scored it an 8 and said it successfully captures the breathless terror of the games.\n\n\n\nIn fact, it's now the highest-rated video game movie ever. It boasts a mightily impressive 96% on Rotten Tomatoes from 71 reviews and an equally impressive 80 on GameSpot sister site Metacritic"
+    },
+    {
+      "title": "GTA 6 Soundtrack Heats Up: Travis Scott, Future, and More Tease Involvement as GTA 5 Reportedly Loses Tracks to Licensing Expiration - 玩具人 TOY PEOPLE",
+      "link": "https://www.toy-people.com/en/?p=114485",
+      "source_link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBfOWFVZXJuZm8xdmFaczJPQzlpbmFwZDVtY0dpY3hEOTFKY3p3SWtTM1NQUlVwR05QZGtmcktHZkFpWVlXbGxxY1EyUEJxQnVq?oc=5",
+      "date": "2026-09-16T18:20:32+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://img.toy-people.com/member/178958277442.jpg",
+      "description": "GTA 6 Soundtrack Heats Up: Travis Scott, Future, and More Tease Involvement as GTA 5 Reportedly Loses Tracks to Licensing Expiration&nbsp;&nbsp;玩具人 TOY PEOPLE"
+    },
+    {
+      "title": "Travis Scott’s Latest Move Has ‘GTA VI’ Fans Very Curious - Yahoo",
+      "link": "https://www.yahoo.com/news/videos/travis-scott-latest-move-gta-181203673.html",
+      "source_link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOWkVqd2EtaF9kUnFRQ1pEWkQzcnhVSFBQX2VFTmRBMzNkejRXcUpFUGZtWlNXMk9MTVlUbDlBN1VodjVpeXlxdWxXM0VMWXE5Rl9aMGloMEdHMUFfUTJLY3dkcEV5MzROanJ1MVB1TkRNaUo1Rm5QZExwcmY5blBDUXJhRQ?oc=5",
+      "date": "2026-09-16T18:12:03+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://s.yimg.com/lo/mysterio/api/b5476c005c2c709c23754ed64fd95c2ffc1e4914d18a06f1d7da6c9b477c27e1/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Frealitytea_videos_283%2F9651fb07dbbea3885916398fc4c42329.png",
+      "description": "Travis Scott’s Latest Move Has ‘GTA VI’ Fans Very Curious&nbsp;&nbsp;Yahoo"
+    },
     {
       "title": "GTA 6 Extended Look Causes Surge in Console Prices",
       "link": "https://gamerant.com/gta-6-extended-look-console-price-increases-low-stock/",
@@ -1729,6 +1773,19 @@
       "lang": "fr",
       "image": "https://medias.lesindesradios.fr/t:app(web)/t:r(unknown)/filters:format(jpeg)/medias/Vsj0LZpM34/image/Capture_d_e_cran_2026_09_16_a__14_08_381789560937124-format16by9.png",
       "description": "GTA VI : Fred Again dans la bande son du jeu ?&nbsp;&nbsp;Voltage.fr"
+    },
+    {
+      "title": "D’après les rumeurs, la bande-son de GTA 6 pourrait sortir en vinyle - EGW.News",
+      "link": "https://fr.egw.news/gaming/news/37271/gta-6-might-receive-a-soundtrack-on-vinyl-records-GzVnxmmFD",
+      "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxQbGI1cVhHSlR3SlhTaTFaQ3NqOVB6am9TVlRCQm1ZYWdTQ2hZNFFtQnd3VldWR2p0WVE4Nm1qWko1TGV2TXRES0pWU3QxZFRaaUxKaV85R1FxQlVyS3lkRG5QT1QxcTdDNnByZDdmNlMyVGxNZ2FTcFV1MnVNbUMxX09wWEs2Y1l5b1M3bzIxZjVMaGJzT3lycldOdW1mdw?oc=5",
+      "date": "2026-09-16T12:08:10+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "D’après les rumeurs, la bande-son de GTA 6 pourrait sortir en vinyle&nbsp;&nbsp;EGW.News"
     },
     {
       "title": "CA7RIEL & Paco Amoroso and Rauw Alejandro Hint at GTA 6 Soundtrack Involvement Alongside Travis Scott - Consequence of Sound",
@@ -28761,6 +28818,32 @@
       "lang": null,
       "image": "https://sm.ign.com/t/ign_me/news/r/rockstar-g/rockstar-games-and-florida-officials-are-having-conversation_qjx8.1200.jpg",
       "description": "GTA 6: Rockstar, Miami in Talks for Vice City IRL&nbsp;&nbsp;IGN"
+    },
+    {
+      "title": "'GTA 6' Netflix extended look: Every song we heard during gameplay - Yahoo Tech",
+      "link": "https://tech.yahoo.com/gaming/articles/gta-6-netflix-extended-look-191229964.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPWUhoanNkTGtLQTk3cEpIVkZJTVFnX1NrSk9hZnNjUjd0YXZvelJLUndpb2F6bDhZX3FBVVpOa1JhcERUVEVnQzRJcDJZbTZnMEp6MkJQYk5MZFlCR0ZzMnQxc09qMHBKYjBYc21RZDVVc0ZMV1NCRnc1SnpOdlFsUFEwZ1ZZUmhT?oc=5",
+      "date": "2026-08-27T07:00:00+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://s.yimg.com/lo/mysterio/api/ba6cdd8d13f786a41064a3f6bf05b9a1cd13755fed47f7a356a24c5b814fdcaf/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fmashable_articles_863%2Fc86fdec000ac259a6323089fedcd1713.jpg",
+      "description": "'GTA 6' Netflix extended look: Every song we heard during gameplay&nbsp;&nbsp;Yahoo Tech"
+    },
+    {
+      "title": "‘GTA 6’ Extended Sneak Look Boosts Netflix Engagement By 50% - forbes.com",
+      "link": "https://www.forbes.com/sites/rickellis/2026/08/27/netflix-engagement-jumps-during-gta-vi-extended-sneak-look/",
+      "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNemZrcjRqTW50LWF0bmVhc2kyVmZnbER4eGY5Ti1OQjBicXdhYm9XMUlveWozaFBLZV82MEYwNDhZME1xdzdpemRxeTZnakVyblZLeDIyNW5kVnhEVHlOQ2V4WFpOY21qaGNEemZlVTE4UHhuLXV0VGw1Rjd6SUxIZTk2aFhCbXdRVWl1RGRIOXNqbE5jWGQwai1ZMkJOOUdpejc1RmNGNVJjeHdPeWc?oc=5",
+      "date": "2026-08-27T07:00:00+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": null,
+      "description": "‘GTA 6’ Extended Sneak Look Boosts Netflix Engagement By 50%&nbsp;&nbsp;forbes.com"
     },
     {
       "title": "GTA 6 : l'un des derniers leaks prouve que le jeu sera démentiel, Rockstar n'a pas menti - Gameblog",
