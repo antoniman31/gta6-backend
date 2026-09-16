@@ -72,5 +72,29 @@ jobs:
       # URL n'est pas un bug du robot). Bloquer les PR dessus rendrait
       # l'outil insupportable et on finirait par l'ignorer — il est là pour
       # être LU dans le journal de la CI, pas pour barrer la route.
+      # Le navigateur est installé SÉPARÉMENT du paquet : pip pose la
+      # bibliothèque, pas le Chromium qu'elle pilote. `--only-shell` prend la
+      # variante sans interface, deux fois plus légère à télécharger et
+      # suffisante ici — on ne regarde jamais l'écran, on mesure.
+      # Playwright vit dans requirements-dev.txt et non requirements.txt :
+      # ce dernier est installé par le robot à chaque passage, et il n'a
+      # aucun usage d'un navigateur.
+      - name: Installer les dépendances des contrôles rendus
+        run: pip install -r requirements-dev.txt
+
+      # Le navigateur s'installe SÉPARÉMENT du paquet : pip pose la
+      # bibliothèque, pas le Chromium qu'elle pilote. `--only-shell` prend la
+      # variante sans interface, plus légère à télécharger et suffisante ici —
+      # on ne regarde jamais l'écran, on mesure.
+      - name: Installer le navigateur de test
+        run: python -m playwright install --with-deps --only-shell chromium
+
+      # Ce que la lecture du code ne peut pas voir : un `hidden` battu par un
+      # `display:grid`, une entête collante qui recouvre son contenu, un
+      # libellé décentré de huit pixels. Quatre défauts de ce genre ont été
+      # trouvés le 16/09/2026, dont deux rendaient l'app pire qu'avant.
+      - name: Contrôles rendus dans un navigateur
+        run: python test_navigateur.py
+
       - name: Audit des données publiées
         run: python audit_donnees.py
