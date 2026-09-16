@@ -2388,7 +2388,7 @@ il n'avait rien rapporté, il ne rapportera probablement rien.
 
 **Une cryptomonnaie porte le nom du jeu.** Le fil en a d'ailleurs déjà parlé
 (*« GTA 6 Leaker Is Making Millions on a Memecoin »*). Et le filtre par
-mots-clés ne la rattrapera pas : la liste des 139 contient `gta6`, donc ces
+mots-clés ne la rattrapera pas : la liste contient `gta6`, donc ces
 articles passent. Si du cours de crypto apparaît dans le fil, c'est de là
 qu'il vient, et c'est la formule qu'il faudra réduire — pas la liste de
 mots-clés.
