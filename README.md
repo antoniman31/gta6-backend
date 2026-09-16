@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1198
+qui permet de tester tout le pipeline sans sortir de la machine. **1211
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1198 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Les 1211 vérifications de la suite étaient vertes dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
@@ -2506,7 +2506,7 @@ qu'aucun mot-clé n'en contient un autre, sur `KEYWORDS` comme sur
 
 ### On jetait soixante-dix pour cent de ce que Google donnait
 
-`MAX_ENTREES = 30` est le plafond par défaut : le robot ne regarde que
+`MAX_ENTREES = 100` est le plafond par défaut : le robot ne regarde que
 `parsed.entries[:30]`. Seules `rockstar-en` et `rockstar-fr` avaient été
 relevées à 100, le jour où quelqu'un s'est aperçu que des pages de Rockstar
 n'apparaissaient nulle part.
@@ -2839,6 +2839,95 @@ le job. La fenêtre nocturne est calculée en heure de Paris et **laisse
 passer** si elle échoue. Les actions restent épinglées au tag majeur et non
 au SHA : ce sont des actions GitHub first-party, le compromis est assumé et
 noté ici pour qu'il soit un choix et non un oubli.
+
+### Un plafond qui ne protégeait plus rien — 16/09/2026
+
+`MAX_ENTREES` valait 30. Le commentaire qui l'accompagnait disait pourquoi :
+le plafond existait « pour le coût, pas pour la pertinence », le coût étant
+le décodage des liens Google News — 51 s sur un passage de 74 s.
+
+Sauf que `decode_google_news_link()` rend la main immédiatement quand l'URL
+ne contient pas `news.google.com` :
+
+```python
+if not HAS_DECODER or "news.google.com" not in url:
+    return url
+```
+
+**Ce coût ne concerne donc que les flux Google News** — lesquels déclarent
+tous `max_entrees` explicitement et ne dépendaient déjà plus de ce défaut.
+Sur les 38 sources natives, le plafond ne faisait économiser *rien* : leurs
+entrées sont déjà téléchargées et analysées dans la même réponse HTTP, et
+leurs liens n'ont aucun décodage à subir. On jetait du contenu déjà payé.
+
+Relevé sur les douze derniers passages, douze fois sur douze, **18 sources
+étaient tronquées** :
+
+| Source | Exclusifs | Offertes | Examinées | Perdues/passage |
+|---|---|---|---|---|
+| `eurogamer` | 33 | 100 | 30 | **70** |
+| `rps` | 14 | 100 | 30 | **70** |
+| `pcgamesn` | 4 | 75 | 30 | 45 |
+| `pcgamer`, `gamesradar`, `ginjfo`, `gamekult`, `tomshw`, `gameinformer`, `dexerto-fr` | — | 50 | 30 | 20 |
+| `vgtimes` | 68 | 40 | 30 | 10 |
+| `ignfr` | 33 | 40 | 30 | 10 |
+| `gta6times` | 21 | 39 | 30 | 9 |
+
+**Le gain n'est pas quotidien, et il faut le dire.** À un passage par heure,
+aucune de ces sources ne publie trente articles entre deux passages : la
+troncature ne coûtait presque rien en régime normal. Le gain est en cas de
+PANNE — si le planificateur externe tombe et que le filet de 3 h prend le
+relais, une source active peut avoir dépassé trente, et ces articles-là sont
+perdus pour de bon puisqu'un flux n'expose qu'une fenêtre récente.
+
+L'autre justification — « les entrées 30 à 100 sont du bruit » — vaut pour un
+flux d'actualité générale et tombe pour `gta6times` et `gtaboom`, qui ne
+parlent que de GTA 6 : chez eux, l'entrée 35 vaut l'entrée 3.
+
+Le plafond garde son utilité de garde-fou — un flux malformé annonçant cent
+mille entrées ne fera pas exploser le passage — mais son défaut vaut
+désormais 100, comme les flux Google News.
+
+### L'accordéon des soucis, et le piège qu'il a révélé
+
+Deux sources cassées pour de bon — les flux RSS de YouTube — affichaient
+**deux lignes orange permanentes** sous la console : `57/59 sources` puis
+`2 cassées : Rockstar Games (YouTube), RockstarMag (YouTube)`. Un signal qui
+ne s'éteint jamais cesse d'être un signal : on finit par ne plus le voir, et
+la vraie panne du jour s'y noie.
+
+Le compteur de sources devient donc le bouton qui replie la ligne du détail.
+Il n'est un bouton **que** s'il y a quelque chose à déplier — quand tout
+répond, il reste du texte, sans chevron ni soulignement : un chevron qui
+n'ouvre rien est une promesse vide. Dix-sept pixels visibles, quarante-sept
+cliquables par pseudo-élément, comme le « ? » des paramètres : la ligne fait
+10 px de police, l'épaissir pour atteindre 44 px déformerait la console.
+
+**Le comportement retenu : replié, mais rouvert tout seul dès que la liste
+des soucis change.** Les deux YouTube restent muettes une fois acquittées ;
+le jour où une troisième source tombe, la signature change et la ligne se
+rouvre d'elle-même. On se débarrasse du bruit sans devenir aveugle au neuf.
+Une seule valeur stockée — la signature acquittée — plutôt qu'un booléen de
+plus à tenir en cohérence avec elle : replier acquitte, déplier efface
+l'acquittement.
+
+**Le piège, invisible à la lecture.** `storageGet` ne renvoie pas la chaîne
+stockée mais `{ value }` ou `null` — c'est ce qui permet de distinguer « rien
+de stocké » de « chaîne vide stockée ». Le premier jet écrivait
+`storageGet(...) || ""`, qui rend donc un **objet**, jamais égal à une
+signature : l'accordéon se rouvrait à chaque rechargement. Le code se lisait
+parfaitement ; seul le contrôle navigateur l'a vu, en rechargeant la page
+après avoir replié.
+
+**Et un test qui échouait sur sa propre documentation.** Le contrôle qui
+interdit ce `|| ""` le trouvait dans le commentaire expliquant justement
+pourquoi il est interdit. Les commentaires sont retirés avant la recherche —
+même travers que le mot « muette » sur la ligne du haut, rencontré plus tôt.
+
+Dix-huit vérifications dans un vrai Chromium, à 320 et 390 px : ouvert au
+premier affichage, la ligne du haut qui ne déborde pas, la zone de clic à
+47 px, le repli qui tient au rechargement, et la réouverture automatique
+quand une source de plus tombe.
 
 ## Pause nocturne : rien entre 0h et 5h
 

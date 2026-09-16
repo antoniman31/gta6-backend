@@ -278,7 +278,7 @@
      .aide d'un pseudo-élément qu'elle n'avait pas — dix-huit pixels de côté,
      dérogation accordée sur un motif inexistant. Un test lit maintenant le
      CSS et exige le mécanisme que la phrase revendique. */
-  .icon-btn, .card-mark, .search-clear-btn, .aide{min-height:0;}
+  .icon-btn, .card-mark, .search-clear-btn, .aide, .bascule-soucis{min-height:0;}
   button:hover{border-color:var(--accent);}
   button:active{transform:translateY(1px);}
   /* --accent-contrast, pas #ffffff : le blanc en dur donnait 2,14:1 sur le
@@ -898,6 +898,22 @@
     line-height:1.7; margin-top:2px;
   }
   .run-line .alerte, .run-soucis .alerte{color:var(--warn); font-weight:700;}
+  /* Le compteur de sources devient le bouton qui replie la ligne des soucis.
+     Deux sources cassées pour de bon — les flux YouTube — faisaient deux
+     lignes orange PERMANENTES sous la console : un signal qui ne s'éteint
+     jamais cesse d'être un signal.
+     Il n'est un bouton QUE s'il y a quelque chose à déplier : quand tout
+     répond, le compteur reste du texte, sans chevron ni soulignement. */
+  .bascule-soucis{
+    background:none; border:none; padding:0; margin:0; font:inherit;
+    color:inherit; cursor:pointer; position:relative;
+    text-decoration:underline dotted; text-underline-offset:3px;
+  }
+  /* 17 px visibles, 47 px cliquables. Même motif que le « ? » des
+     paramètres : la ligne fait 10 px de police, l'épaissir pour atteindre
+     44 px déformerait la console entière. */
+  .bascule-soucis::after{content:""; position:absolute; inset:-15px -6px;}
+  .bascule-soucis .chevron{margin-left:3px;}
   /* 7 px de rembourrage et non 3 : à 3, le bouton faisait 19 px de haut,
      sous le minimum de 24 px de WCAG 2.5.8. Ici le rembourrage suffit — la
      ligne n'en grandit que de 8 px, et ce bouton ne sert qu'une fois. */
@@ -4660,21 +4676,9 @@ function majLigneRun(data){
   const cassees = sante.filter(s => s.status === "cassee");
   const muettes = sante.filter(s => s.status === "muette").length;
 
-  // « 50/50 sources » dit la même chose que « toutes les sources répondent »
-  // en trois fois moins de place, et continue de dire quelque chose quand ça
-  // devient « 46/50 ». C'est ce qui permet à la ligne du haut de tenir.
-  //
-  // Répondre, c'est ne pas être muette ni cassée. Une source « tarie » répond
-  // très bien : elle n'a simplement rien publié depuis longtemps, ce qui est
-  // souvent parfaitement normal (Rockstar publie par à-coups). La compter en
-  // échec afficherait 46/50 en permanence pour un état sain.
-  if(sante.length){
-    const repondent = sante.length - muettes - cassees.length;
-    const compteur = repondent + "/" + sante.length + " sources";
-    etat.push(repondent < sante.length
-      ? '<span class="alerte">' + compteur + "</span>"
-      : compteur);
-  }
+  // Le compteur de sources est construit PLUS BAS, une fois les soucis
+  // connus : c'est lui qui les replie, il ne peut donc pas se dessiner avant
+  // de savoir s'il y a quelque chose à replier.
 
   if(muettes){
     soucis.push('<span class="alerte">' + muettes + " source" +
@@ -4713,12 +4717,99 @@ function majLigneRun(data){
       (data.decode_failures > 1 ? "s" : "") + " Google News en échec</span>");
   }
 
+  // « 50/50 sources » dit la même chose que « toutes les sources répondent »
+  // en trois fois moins de place, et continue de dire quelque chose quand ça
+  // devient « 46/50 ». C'est ce qui permet à la ligne du haut de tenir.
+  //
+  // Répondre, c'est ne pas être muette ni cassée. Une source « tarie » répond
+  // très bien : elle n'a simplement rien publié depuis longtemps, ce qui est
+  // souvent parfaitement normal (Rockstar publie par à-coups). La compter en
+  // échec afficherait 46/50 en permanence pour un état sain.
+  //
+  // Et c'est lui qui porte l'accordéon quand il y a des soucis : le compteur
+  // dit déjà QU'IL Y A un problème, la ligne du dessous dit LEQUEL. Replier
+  // la seconde sous le premier n'enlève donc aucun signal.
+  if(sante.length){
+    const repondent = sante.length - muettes - cassees.length;
+    const compteur = repondent + "/" + sante.length + " sources";
+    // UN SEUL push, par ternaire : le compteur est un morceau de la ligne,
+    // qu'il soit bouton ou texte. Deux push dans deux branches disaient la
+    // même chose au lecteur mais faisaient compter quatre morceaux à qui
+    // relit le code — et un test veille justement à ce qu'il n'y en ait que
+    // trois, parce que c'est ce qui garantit que la ligne ne se coupe pas.
+    //
+    // La signature voyage DANS le bouton : c'est le seul endroit qui survit
+    // à la reconstruction de la ligne à chaque passage. Gardée dans une
+    // variable de module, elle dériverait de ce qui est affiché.
+    const signature = signatureSoucis(cassees, muettes, baisse, data);
+    const ouvert = soucisOuverts(signature);
+    etat.push(soucis.length
+      ? '<button type="button" class="bascule-soucis alerte"'
+        + ' aria-controls="runSoucis" aria-expanded="' + ouvert + '"'
+        + ' data-signature="' + escapeHtml(signature) + '"'
+        + ' title="Afficher ou masquer le détail" onclick="basculeSoucis()">'
+        + compteur + '<span class="chevron">' + (ouvert ? "▾" : "▸") + "</span></button>"
+      : compteur);
+  }
+
   el.innerHTML = etat.join(" · ");
   el.style.display = etat.length ? "" : "none";
   if(elSoucis){
     elSoucis.innerHTML = soucis.join(" · ");
-    elSoucis.style.display = soucis.length ? "" : "none";
+    const ouvert = soucis.length
+      && soucisOuverts(signatureSoucis(cassees, muettes, baisse, data));
+    elSoucis.style.display = ouvert ? "" : "none";
   }
+}
+
+// ---------- Accordéon de la ligne des soucis ----------
+// Deux sources cassées pour de bon — les flux RSS de YouTube, que YouTube
+// ne sert plus — donnaient deux lignes orange PERMANENTES sous la console.
+// Un signal qui ne s'éteint jamais cesse d'être un signal : on finit par ne
+// plus le voir, et la vraie panne du jour se noie dedans.
+//
+// D'où le choix retenu : replié par défaut, MAIS rouvert tout seul dès que
+// la liste des soucis change. Les deux YouTube restent muettes une fois
+// acquittées ; le jour où une troisième source tombe, la signature change
+// et la ligne se rouvre d'elle-même. On se débarrasse du bruit sans devenir
+// aveugle au neuf.
+//
+// Une seule valeur stockée, la signature ACQUITTÉE — pas un booléen de plus
+// à tenir en cohérence avec elle. Replier acquitte la signature du moment ;
+// déplier efface l'acquittement, donc la ligne reste ouverte tant qu'on ne
+// la referme pas.
+const SOUCIS_ACQUITTES = "soucis-acquittes-v1";
+
+function signatureSoucis(cassees, muettes, baisse, data){
+  return [cassees.map(s => s.id).sort().join("+"), muettes, baisse,
+          data.decode_failures ? 1 : 0].join("|");
+}
+
+function soucisOuverts(signature){
+  // storageGet renvoie { value } ou null, jamais la chaîne nue : c'est ce
+  // qui permet de distinguer « rien de stocké » de « chaîne vide stockée ».
+  // Un `storageGet(...) || ""` rendait donc un OBJET, jamais égal à une
+  // signature — l'accordéon se rouvrait à chaque rechargement. Attrapé par
+  // le contrôle navigateur, invisible à la lecture.
+  const range = storageGet(SOUCIS_ACQUITTES);
+  return signature !== (range ? range.value : "");
+}
+
+function basculeSoucis(){
+  const ligne = document.getElementById("runSoucis");
+  const bouton = document.querySelector(".bascule-soucis");
+  if(!ligne || !bouton) return;
+  const ouvrait = bouton.getAttribute("aria-expanded") === "true";
+  // On relit la signature depuis le DOM plutôt que de la mémoriser : la ligne
+  // est reconstruite à chaque passage, un état gardé à côté dériverait.
+  const signature = bouton.dataset.signature || "";
+  try{
+    storageSet(SOUCIS_ACQUITTES, ouvrait ? signature : "");
+  }catch(e){ /* stockage indisponible : le repli ne survivra pas, tant pis */ }
+  ligne.style.display = ouvrait ? "none" : "";
+  bouton.setAttribute("aria-expanded", String(!ouvrait));
+  const chevron = bouton.querySelector(".chevron");
+  if(chevron) chevron.textContent = ouvrait ? "▸" : "▾";
 }
 
 // ---------- Détection d'une nouvelle version de l'app ----------
