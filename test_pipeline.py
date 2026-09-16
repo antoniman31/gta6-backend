@@ -918,13 +918,42 @@ def _verifie_flux_sans_source_fantome(chemin, fetch_feeds):
     #
     # Ces articles-là sont les pires à débusquer : ils sont vieux, donc en
     # bas du tri par date, donc invisibles à l'usage. Rien ne les signale.
+    #
+    # Un nom qui figure dans SOURCES_RENOMMEES n'est pas orphelin : il a un
+    # successeur déclaré, et repare_noms_de_sources() le rebranche au
+    # prochain passage. Le fichier publié, lui, porte forcément encore
+    # l'ancien nom entre le renommage et ce passage — l'exiger corrigé ici
+    # reviendrait à demander au test de prédire l'avenir. Ce qu'on interdit,
+    # c'est le nom qui ne mène à RIEN : ni à une source, ni à un successeur.
     connus = {f["name"] for f in fetch_feeds.FEEDS}
-    orphelins = collections.Counter(i["source"] for i in d["items"]
-                                    if i["source"] not in connus)
+    rebranchables = set(fetch_feeds.SOURCES_RENOMMEES)
+    orphelins = collections.Counter(
+        i["source"] for i in d["items"]
+        if i["source"] not in connus and i["source"] not in rebranchables)
     check(not orphelins,
           "%s : aucun article ne vient d'une source absente de FEEDS%s"
           % (nom, "" if not orphelins
              else " — %s" % dict(orphelins.most_common(3))))
+
+    # Et le successeur déclaré doit exister : une table de renommage qui
+    # pointe vers un nom absent de FEEDS ne rebrancherait rien du tout, en
+    # silence, tout en faisant passer le contrôle ci-dessus.
+    morts = sorted(n for n, (cible, _) in fetch_feeds.SOURCES_RENOMMEES.items()
+                   if cible not in connus)
+    check(not morts,
+          "chaque renommage déclaré vise une source qui existe%s"
+          % ("" if not morts else " — %s" % morts))
+
+    # Les « autres sources » portent le même nom que l'article principal.
+    # Les oublier laissait un article afficher, sous son nom corrigé, des
+    # reprises encore étiquetées à l'ancien.
+    reprises = collections.Counter(
+        a["source"] for i in d["items"] for a in (i.get("extraSources") or [])
+        if a.get("source") and a["source"] not in connus
+        and a["source"] not in rebranchables)
+    check(not reprises,
+          "%s : aucune reprise ne cite une source absente de FEEDS%s"
+          % (nom, "" if not reprises else " — %s" % dict(reprises.most_common(3))))
 
     # Même chose pour les journaux de santé : une source retirée qui reste
     # dans sources_health se compterait dans le « 48/48 » du bandeau, et

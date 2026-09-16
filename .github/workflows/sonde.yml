@@ -31,6 +31,12 @@ permissions:
 jobs:
   sonde:
     runs-on: ubuntu-latest
+    # Le seul des quatre workflows qui n'en déclarait pas. Sans, GitHub
+    # applique son défaut de 360 minutes : une sonde qui pend sur un site
+    # qui accepte la connexion et ne répond jamais brûle six heures de
+    # quota pour rien. FETCH_TIMEOUT vaut 20 s par adresse, donc même une
+    # longue liste tient très large dans les 10 minutes.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

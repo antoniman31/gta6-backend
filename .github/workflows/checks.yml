@@ -26,6 +26,18 @@ on:
 permissions:
   contents: read
 
+# Un push qui en suit un autre de près rend le premier sans objet : ses
+# contrôles portent sur du code déjà remplacé. On annule l'exécution en
+# cours plutôt que de la laisser finir — l'inverse exact du choix fait pour
+# update-feeds, et pour la raison inverse : là-bas une exécution abandonnée
+# perdrait des articles, ici elle ne perd qu'un verdict périmé.
+#
+# Le groupe inclut la ref : deux branches différentes ne doivent pas
+# s'annuler l'une l'autre.
+concurrency:
+  group: controles-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   controles:
     runs-on: ubuntu-latest
