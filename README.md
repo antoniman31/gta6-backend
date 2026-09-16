@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1237
+qui permet de tester tout le pipeline sans sortir de la machine. **1250
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1450,7 +1450,7 @@ mots-clés affichait « 42 mot-clés » et « aucun exclusion » : un pluriel
 français ne se fabrique pas en collant un « s » au dernier mot, et « aucun »
 a un genre. Les trois formes sont passées en toutes lettres, données par
 l'appelant. C'est aussi une capture qui a montré l'entête recouvrant le
-contenu. Les 1237 vérifications de la suite étaient vertes dans les deux cas.
+contenu. Toute la suite était verte dans les deux cas.
 
 **Verrouillé par 72 nouvelles vérifications** réparties en cinq tests, plus
 un contrôle de bout en bout dans un vrai Chromium à 390 px : l'entête reste
@@ -1756,6 +1756,55 @@ refaire l'abonnement depuis l'app.
 
 **Support.** Complet sur Android. Sur iPhone, l'app doit être installée sur
 l'écran d'accueil et le support y est plus restreint.
+
+### Rien n'arrivait quand le téléphone était verrouillé
+
+Signalé le 16/09/2026 : les notifications passaient écran allumé, jamais
+autrement. Défaut présent depuis l'ajout des push.
+
+**`pywebpush` envoie `TTL: 0` quand on ne lui dit rien.** Ce n'est pas une
+déduction, c'est écrit dans sa propre documentation, `pywebpush/__init__.py`
+ligne 318 : *« The Time To Live in seconds for this message if the recipient
+is not online. Defaults to "0", which discards the message immediately if the
+recipient is unavailable. »* Et ligne 353, `headers["ttl"] = str(ttl or 0)`
+s'applique à tous les envois.
+
+Ce que `TTL: 0` veut dire dans la norme (RFC 8030 §5.2) : le service de push
+tente la livraison **à cet instant précis** et, si l'appareil ne répond pas,
+**jette le message**. Pas de file d'attente, pas de seconde tentative.
+
+Un téléphone verrouillé depuis un moment n'est justement pas joignable :
+Android suspend la connexion pour économiser la batterie (Doze). Le message
+arrivait, ne trouvait personne, et disparaissait. Au déverrouillage il n'y
+avait rien à rattraper — il n'existait plus.
+
+**Deux durées, pas une.** Un récapitulatif est périmé au passage suivant :
+au-delà d'une heure il annoncerait un compte que le passage d'après a déjà
+corrigé, d'où `TTL_RECAP = 3600`. Une annonce de Rockstar ne se périme pas de
+la même façon et mérite d'arriver en retard plutôt que jamais, d'où
+`TTL_OFFICIEL = 86400`.
+
+**`Urgency` seulement pour Rockstar.** L'en-tête `Urgency` (RFC 8030 §5.3)
+dit au service de push si le message vaut la peine de réveiller un appareil
+endormi ; `pywebpush` n'en envoie aucun, donc il vaut `normal` par défaut.
+Seules les annonces officielles partent en `high`. Tout marquer urgent est
+exactement l'abus que les services de push finissent par sanctionner, et
+transformerait le réglage en bruit de fond.
+
+**Pourquoi le bouton « tester » restait vert.** Parce qu'on teste toujours
+écran allumé — le seul cas où un `TTL: 0` passe. Le test empruntait un chemin
+plus favorable que la vraie notification, donc il ne testait pas la vraie
+notification. Il envoie désormais avec exactement les mêmes durée de vie et
+urgence que le récapitulatif, et un contrôle l'exige.
+
+**Ce que cette correction ne peut pas réparer.** L'optimisation de batterie
+appliquée au navigateur, le mode « Ne pas déranger » et les réglages du canal
+de notification sont côté téléphone. Le code peut faire en sorte que le
+message attende ; il ne peut pas obtenir le droit de s'afficher.
+
+**Et ce qui n'était pas un défaut.** Entre minuit et 5h heure de Paris, seules
+les annonces officielles notifient — c'est la pause nocturne, voulue. Un test
+nocturne resté silencieux ne prouvait rien.
 
 ## Récapitulatif hebdomadaire — supprimé le 15/09/2026
 
@@ -3127,7 +3176,7 @@ médiane. Elle n'a pas été présentée comme un résultat.
 
 Jusqu'ici, deux façons de vérifier coexistaient sans être logées à la même
 enseigne. `test_pipeline.py` **lit les fichiers** et vérifie que ce qui est
-écrit est cohérent : 1237 vérifications, versionnées, exécutées à chaque
+écrit est cohérent : 1250 vérifications, versionnées, exécutées à chaque
 pull request. Les contrôles qui **ouvrent l'app dans un vrai navigateur**,
 eux, n'existaient que le temps d'une session de travail, lancés à la main,
 puis perdus.

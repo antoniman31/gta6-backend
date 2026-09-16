@@ -321,6 +321,84 @@ def test_push_payload():
           "un article sans clé 'title' ne fait pas planter le libellé")
 
 
+
+def test_push_survit_a_un_telephone_verrouille():
+    print("\n[push] une notification doit survivre à un téléphone endormi")
+    import sys as _sys, types, re, inspect
+    import push_notify
+
+    # Le défaut d'origine : send_all n'indiquait ni durée de vie ni urgence.
+    # pywebpush envoie alors TTL: 0, et sa propre documentation dit ce que
+    # ça veut dire — « discards the message immediately if the recipient is
+    # unavailable ». Téléphone verrouillé, connexion suspendue par Android :
+    # le message est jeté, définitivement. Rien n'arrivait au déverrouillage
+    # parce qu'il n'existait plus.
+    check(push_notify.TTL_RECAP > 0 and push_notify.TTL_OFFICIEL > 0,
+          "les deux durées de vie sont non nulles (TTL: 0 = message jeté)")
+    check(push_notify.TTL_OFFICIEL > push_notify.TTL_RECAP,
+          "une annonce Rockstar survit plus longtemps qu'un récapitulatif")
+    # Un récapitulatif périmé annoncerait un compte que le passage suivant a
+    # déjà corrigé : sa durée de vie ne doit pas dépasser la cadence du robot.
+    check(push_notify.TTL_RECAP <= 3600,
+          "le récapitulatif ne survit pas au-delà du passage suivant")
+
+    # Ce que send_all transmet VRAIMENT à pywebpush. Un faux module suffit :
+    # il n'est importé qu'au moment de l'appel, jamais au chargement.
+    appels = []
+
+    faux = types.ModuleType("pywebpush")
+    faux.WebPushException = type("WebPushException", (Exception,), {})
+    faux.webpush = lambda **kw: appels.append(kw)
+    ancien = _sys.modules.get("pywebpush")
+    _sys.modules["pywebpush"] = faux
+    try:
+        abo = [{"endpoint": "https://exemple.test/x"}]
+        push_notify.send_all(abo, {"title": "t"}, "cle",
+                             ttl=push_notify.TTL_OFFICIEL,
+                             urgence=push_notify.URGENCE_HAUTE)
+        push_notify.send_all(abo, {"title": "t"}, "cle")
+    finally:
+        if ancien is None:
+            _sys.modules.pop("pywebpush", None)
+        else:
+            _sys.modules["pywebpush"] = ancien
+
+    check(len(appels) == 2, "les deux envois ont bien atteint pywebpush")
+    officiel, defaut = appels
+    check(officiel.get("ttl") == push_notify.TTL_OFFICIEL,
+          "la durée de vie demandée est transmise telle quelle")
+    check(officiel.get("headers", {}).get("Urgency") == "high",
+          "une annonce Rockstar part en Urgency: high")
+    check(defaut.get("ttl") == push_notify.TTL_RECAP,
+          "sans précision, on retombe sur la durée du récapitulatif")
+    check(defaut.get("headers", {}).get("Urgency") == "normal",
+          "et sur l'urgence normale — tout marquer urgent est un abus que "
+          "les services de push finissent par sanctionner")
+
+    # Le piège qui reviendra : ajouter un appel à send_all en oubliant ces
+    # deux arguments. Les valeurs par défaut le rendraient silencieux — donc
+    # chaque appel doit les écrire, y compris le mode test.
+    corps = inspect.getsource(push_notify)
+    corps = re.sub(r"^\s*#.*$", "", corps, flags=re.M)
+    corps = re.sub(r'"""(?:.|\n)*?"""', "", corps)
+    # (?<!def ) écarte la définition : elle s'écrit exactement comme l'appel
+    # du récapitulatif, au mot « def » près.
+    appels_ecrits = re.findall(r"(?<!def )send_all\((?:[^()]|\([^()]*\))*\)", corps)
+    check(len(appels_ecrits) >= 3,
+          "les appels à send_all sont bien repérés (%d)" % len(appels_ecrits))
+    for a in appels_ecrits:
+        court = " ".join(a.split())[:60]
+        check("ttl=" in a and "urgence=" in a,
+              "cet appel dit sa durée de vie et son urgence : %s" % court)
+
+    # Le mode test doit emprunter le MÊME chemin que le récapitulatif. Un
+    # test plus favorable que la vraie notification ne teste rien : c'est ce
+    # qui a masqué le TTL: 0 pendant des semaines, le bouton restant vert
+    # parce qu'on teste toujours écran allumé.
+    source_test = inspect.getsource(push_notify.mode_test)
+    check("ttl=TTL_RECAP" in source_test and "urgence=URGENCE_NORMALE" in source_test,
+          "le bouton « tester » envoie exactement comme le récapitulatif")
+
 def test_push_vapid_subject():
     print("\n[push] identifiant de contact VAPID (le champ 'sub')")
     import importlib
@@ -3561,7 +3639,7 @@ def test_recap_du_matin_couvre_la_nuit():
              push_notify.check_subject, push_notify.load_subscriptions,
              discord_notify.DISCORD_WEBHOOK_URL)
     discord_notify.send_discord_with_retry = lambda e, t, **k: envoyes.append(("discord", e)) or True
-    push_notify.send_all = lambda s_, c, k: (envoyes.append(("push", c)), ([], []))[1]
+    push_notify.send_all = lambda s_, c, k, **kw: (envoyes.append(("push", c)), ([], []))[1]
     push_notify.check_subject = lambda s_: True
     push_notify.load_subscriptions = lambda: [{"endpoint": "https://exemple.test/x"}]
     discord_notify.DISCORD_WEBHOOK_URL = "https://exemple.test/webhook"
@@ -3719,7 +3797,7 @@ def test_alerte_officielle_rockstar():
     vrai_check = push_notify.check_subject
     vraie_charge = push_notify.load_subscriptions
     discord_notify.send_discord_with_retry = lambda e, t, **k: envoyes.append(("discord", e)) or True
-    push_notify.send_all = lambda subs, charge, cle: (envoyes.append(("push", charge)), ([], []))[1]
+    push_notify.send_all = lambda subs, charge, cle, **kw: (envoyes.append(("push", charge)), ([], []))[1]
     push_notify.check_subject = lambda s_: True
     push_notify.load_subscriptions = lambda: [{"endpoint": "https://exemple.test/x"}]
     discord_notify.DISCORD_WEBHOOK_URL = "https://exemple.test/webhook"
@@ -5651,6 +5729,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_canonical_link, test_canonicalize_stored_links,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
            test_push_masquage_endpoint,
+           test_push_survit_a_un_telephone_verrouille,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
            test_onglets_par_domaine, test_couverture_par_lien,
