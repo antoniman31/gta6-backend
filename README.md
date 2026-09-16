@@ -2537,7 +2537,7 @@ force les 100 créneaux à être récents. Les deux flux larges ont donc chacun
 un jumeau borné à sept jours — **ajouté à côté**, selon la règle établie avec
 Journal du Geek. La déduplication par lien fera le ménage ; ce qu'on saura
 dans une semaine, en comparant leurs articles exclusifs, c'est lequel attrape
-ce que l'autre manque. **57 → 60 sources.**
+ce que l'autre manque. **57 → 59 sources.**
 
 ### Compter ce qu'une source apporte, à chaque passage
 
@@ -2888,10 +2888,27 @@ Le plafond garde son utilité de garde-fou — un flux malformé annonçant cent
 mille entrées ne fera pas exploser le passage — mais son défaut vaut
 désormais 100, comme les flux Google News.
 
+**Mesuré au premier passage, et la prédiction était fausse.** On annonçait un
+rattrapage massif : jusqu'à 219 entrées de plus examinées d'un coup, donc une
+notification anormalement grosse. **Elle n'est jamais venue.** Le premier
+passage avec le plafond relevé a rapporté **+6 articles**, au milieu d'une
+nuit qui allait de +1 à +7. Au passage suivant, les dix sources natives
+concernées ont examiné **119 entrées de plus** et en ont tiré **zéro** article.
+
+Le raisonnement était faux sur un point : les entrées 30 à 100 d'un flux ne
+contiennent pas des articles jamais vus, mais surtout des articles **déjà
+dans le fil** — attrapés quand ils étaient en position 1 à 30 aux passages
+précédents, ou remontés par Google News entre-temps. La déduplication les
+écarte.
+
+Le changement reste justifié, mais pour la seule raison invoquée plus haut :
+**le cas de panne**. En régime normal il ne rapporte rien, et c'est ce qu'il
+fallait annoncer plutôt qu'une avalanche.
+
 ### L'accordéon des soucis, et le piège qu'il a révélé
 
 Deux sources cassées pour de bon — les flux RSS de YouTube — affichaient
-**deux lignes orange permanentes** sous la console : `57/60 sources` puis
+**deux lignes orange permanentes** sous la console : `57/59 sources` puis
 `2 cassées : Rockstar Games (YouTube), RockstarMag (YouTube)`. Un signal qui
 ne s'éteint jamais cesse d'être un signal : on finit par ne plus le voir, et
 la vraie panne du jour s'y noie.
@@ -3051,6 +3068,60 @@ rendaient **dépliées** malgré leur `hidden` : la liste faisait **3244 px**,
 soit pire qu'avant le regroupement. Une ligne — `.src-famille-corps[hidden]
 {display:none;}` — et elle retombe à **244 px**. Le HTML se lisait
 parfaitement ; seul le contrôle navigateur l'a vu.
+
+### Où part vraiment le délai, et pourquoi on n'y touche pas — 16/09/2026
+
+Question posée : « il y a rien qui pourrait accélérer et améliorer la
+récupération des articles ». La réponse tient dans une mesure, faite sur les
+soixante derniers passages en confrontant la date de publication de chaque
+article à l'heure du passage qui l'a vu en premier.
+
+```
+Délai médian publication → vu par le robot : 54 min
+  ├─ cadence entre deux passages ......... 47 min (médiane)
+  ├─ durée du passage ..................... 1 min 38
+  └─ attente que GitHub Pages serve ....... 36 s
+```
+
+**Le code pèse 3 % du délai.** Optimiser la collecte — plus de fils, moins de
+décodages, un cache — gagnerait quelques secondes sur cinquante-quatre
+minutes. C'est le genre de travail qui a l'air sérieux et ne sert à rien : il
+n'a pas été proposé.
+
+Et les flux natifs comme les recherches Google News ont la **même médiane**
+(~80 min sur une fenêtre de mesure plus large). Ce n'est donc pas un type de
+source qui traîne : la cadence commande les deux.
+
+**Le seul levier réel sur la vitesse coûte cher.** Passer la cadence de ~1 h
+à 30 min couperait le délai de moitié, mécaniquement. Mais sur les quatorze
+derniers passages, **treize avaient du nouveau** : une notification part donc
+presque à chaque fois, de l'ordre de vingt-cinq à trente par jour. Doubler la
+cadence double ce nombre. L'arbitrage — voir les articles vingt-cinq minutes
+plus tôt contre deux fois plus de notifications — appartient au propriétaire
+du fil, qui a tranché : **on ne touche à rien.**
+
+**Un levier qui marche, lui, et qui est prouvé.** Le jumeau Google News de
+Game Rant a rapporté **cinq articles exclusifs à son premier passage**. Huit
+autres sources natives ont le même profil — fenêtre courte, forte production
+— dont `ign` (56 exclusifs, 20 entrées), `rockstarintel` (55, 10 entrées),
+`polygon` (36, 10 entrées) et `insider` (26, 10 entrées).
+
+Elles ne sont **pas classables sans sonder** : une fenêtre de dix entrées ne
+coûte rien si le site publie peu, et cher s'il publie beaucoup comme Game
+Rant. La donnée qui distingue les deux n'est pas dans le journal de santé.
+La marche à suivre reste celle qui a servi pour Game Rant — sonder, puis
+n'ajouter que ce qui rapporte. Non fait, en attente d'une décision.
+
+**Ce qu'aucun réglage ne rattrapera.** La queue des délais est longue : 5 h au
+75ᵉ centile, 8 h au 90ᵉ. Ces articles-là ne sont pas en retard chez nous —
+ce sont des sites qui publient tard dans leur propre flux, ou Google News qui
+les indexe tard.
+
+**Une mesure jetée en chemin, parce qu'elle ne valait rien.** Un classement
+des sources natives « les plus lentes » avait été produit : effectifs de un ou
+deux articles, et deux sources renommées mal classées parce que les anciens
+articles portent l'ancien nom. Une médiane sur un article n'est pas une
+médiane. Elle n'a pas été présentée comme un résultat.
 
 ## Pause nocturne : rien entre 0h et 5h
 
