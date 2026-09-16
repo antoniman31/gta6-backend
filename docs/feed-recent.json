@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-16T06:23:46.285387+00:00",
+  "generated_at": "2026-09-16T07:02:37.985201+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 94.3,
+  "duration_seconds": 85.5,
   "decode_failures": 0,
-  "total_articles": 2786,
-  "new_this_run": 5,
+  "total_articles": 2787,
+  "new_this_run": 1,
   "hot_count": 8,
   "hot_threshold": 3,
   "sources_count": 59,
@@ -27,13 +27,13 @@
     },
     {
       "id": "rockstar-announce",
-      "name": "Rockstar Games (annonces)",
+      "name": "Google News (annonces Rockstar)",
       "official": true,
       "specialist": false
     },
     {
       "id": "gta6-netflix",
-      "name": "GTA 6 x Netflix",
+      "name": "Google News (Netflix)",
       "official": false,
       "specialist": true
     },
@@ -376,7 +376,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 18,
       "last_article": "2026-08-28T03:33:24+00:00",
       "days_since_last_article": 19,
@@ -385,7 +385,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -397,7 +397,7 @@
     },
     {
       "id": "rockstar-announce",
-      "name": "Rockstar Games (annonces)",
+      "name": "Google News (annonces Rockstar)",
       "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
@@ -410,12 +410,12 @@
     },
     {
       "id": "gta6-netflix",
-      "name": "GTA 6 x Netflix",
+      "name": "Google News (Netflix)",
       "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 261,
       "last_article": "2026-09-15T14:38:19+00:00",
       "days_since_last_article": 0,
@@ -437,15 +437,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 19,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -454,9 +454,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 646,
-      "last_article": "2026-09-16T06:00:41+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 647,
+      "last_article": "2026-09-16T06:40:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -467,8 +467,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 545,
+      "new_this_run": 0,
+      "articles_exclusifs": 544,
       "last_article": "2026-09-16T05:40:49+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -495,7 +495,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 11,
-      "last_article": "2026-09-15T21:49:36+00:00",
+      "last_article": "2026-09-16T02:33:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -548,7 +548,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 24,
       "last_article": "2026-09-12T06:40:08+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -593,15 +593,15 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 28,
       "last_article": "2026-09-15T16:07:40+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "rockstarintel",
@@ -658,10 +658,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 22,
       "last_article": "2026-09-11T04:55:07+00:00",
@@ -827,10 +827,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -1048,10 +1048,10 @@
     {
       "id": "gamesindustry",
       "name": "GamesIndustry.biz",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-14T16:22:08+00:00",
@@ -1133,138 +1133,33 @@
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-02T07:00:00+00:00",
-      "days_since_last_article": 13,
+      "days_since_last_article": 14,
       "status": "ok"
     }
   ],
   "sources_silence": {
-    "rockstar-en": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstar-fr": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstar-announce": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gta6-netflix": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
     "rockstar-youtube": {
       "depuis": "2026-09-16T02:02:27.531575+00:00",
-      "succes": 0,
-      "alertee": false
-    },
-    "gnews-fr": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-en": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-fr-7j": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-en-7j": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
       "succes": 1,
       "alertee": false
     },
     "rockstarmag-youtube": {
       "depuis": "2026-09-16T02:02:27.531575+00:00",
-      "succes": 0,
-      "alertee": false
-    },
-    "xboxygen": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "purexbox": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "trueach": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "jdg": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "numerama": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gamergen": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "frandroid": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "theverge": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "engadget": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "pushsquare": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "schreier": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "dexerto": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "mgg": {
-      "depuis": "2026-09-16T06:03:35.398775+00:00",
       "succes": 1,
       "alertee": false
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,99,99,0,99",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,0,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,99,99,0,99,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,100,100,0,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,15,0",
-    "gnews-fr": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "gnews-en-7j": "100,100,100,100,100,100,100,100,100,100,0,100",
+    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,15,0,15",
+    "gnews-fr": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gnews-en-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1272,7 +1167,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,0,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1293,27 +1188,27 @@
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "purexbox": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "trueach": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "jdg": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "frandroid": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "engadget": "100,100,100,100,100,100,100,100,100,100,0,99",
-    "pushsquare": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "rockstaractu": "20,20,20,20,0,20,20,0,20,20,20,20",
+    "xboxygen": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "trueach": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "jdg": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "frandroid": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "engadget": "100,100,100,100,100,100,100,100,100,0,99,99",
+    "pushsquare": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstaractu": "20,20,20,0,20,20,0,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gamesindustry": "100",
-    "jdg-natif": "30,30,30,30,30,30,30,30,30",
+    "gamesindustry": "100,100",
+    "jdg-natif": "30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,100,100,100,100,100,100,0,100",
-    "mgg": "100,100,100,100,100,100,100,100,100,100,0,100"
+    "dexerto": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "mgg": "100,100,100,100,100,100,100,100,100,0,100,100"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1330,7 +1225,7 @@
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 06:02:49 GMT"
+      "modified": "Wed, 16 Sep 2026 06:44:08 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1344,13 +1239,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"23b22-izVa+JGk0aZFAELQRElCYyVql+M\"",
+      "etag": "W/\"23c0d-eC/hgfr5dhs1bdjQSbc6VB/dmQw\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"3abb6b8f379936ac45a62b57ed4cff3a\"",
-      "modified": "Wed, 16 Sep 2026 04:30:48 GMT"
+      "etag": "W/\"5d43c3b3a4b23c70c2d1a4b528cbd65b\"",
+      "modified": "Wed, 16 Sep 2026 07:00:17 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1365,7 +1260,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 06:20:28 GMT"
+      "modified": "Wed, 16 Sep 2026 07:01:31 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1374,8 +1269,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aaa3071-3138\"",
-      "modified": "Wed, 16 Sep 2026 06:00:17 GMT"
+      "etag": "W/\"6aaa3e7f-32c8\"",
+      "modified": "Wed, 16 Sep 2026 07:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1384,8 +1279,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789530624\"",
-      "modified": "Wed, 16 Sep 2026 03:50:24 GMT"
+      "etag": "W/\"1789542004\"",
+      "modified": "Wed, 16 Sep 2026 07:00:04 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1405,22 +1300,22 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 16 Sep 2026 06:22:32 GMT"
+      "modified": "Wed, 16 Sep 2026 07:00:36 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
       "etag": null,
-      "modified": "Tue, 15 Sep 2026 12:30:00 GMT"
+      "modified": "Wed, 16 Sep 2026 06:30:00 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"ace885e0400504d899a275a2b3c1ca95\"",
-      "modified": "Wed, 16 Sep 2026 06:02:16 GMT"
+      "etag": "W/\"e522a53625c343966f391126b8a41974\"",
+      "modified": "Wed, 16 Sep 2026 07:00:21 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"7f47dd695c7219870013c8501c087ebc\"",
-      "modified": "Wed, 16 Sep 2026 06:22:08 GMT"
+      "etag": "W/\"33167824ced67250e8df7466b0591765\"",
+      "modified": "Wed, 16 Sep 2026 06:33:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1430,6 +1325,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Netflix : 100 millions de dollars pour 100.000 abonnés en plus, le trailer de GTA 6 a-t-il été rentable - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2103835/netflix-100-millions-de-dollars-pour-100-000-abonnes-en-plus-le-trailer-de-gta-6-a-t-il-ete-rentable.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPUmhpVGVzbHR3Z253UElEaTVxU09hWkFmQUp1X3NkSGRUTjFaRldfdlM2ZFhxQVlNdTVIM2ctMlJKNkdJSDBfdHhVX3VCVUdELTR3X1EtWms5Vi00VVBmWTB4R0VZb3AybjhYYnJFYkZRZmtmWDdKNHoxVHJlb2VWSFVfREFtQnRaWkVuNl9uMWJqN2k2VG5tdnRwQm5HZXpGVS1RVkR1anhLZzU0ZFNkZVFWWnQ1S01wdjREUWx3MjQ1Ry0teUpJTU9iSlhvMW5nSzNzNzlsNjJYUlU?oc=5",
+      "date": "2026-09-16T06:40:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/178940/1789397275-174-card.jpg",
+      "description": "Netflix : 100 millions de dollars pour 100.000 abonnés en plus, le trailer de GTA 6 a-t-il été rentable&nbsp;&nbsp;JeuxVideo.com"
+    },
     {
       "title": "GTA 6 : le premier acteur du casting confirmé - Begeek",
       "link": "https://www.begeek.fr/gta-6-le-premier-acteur-du-casting-confirme-440040",
@@ -1565,7 +1473,7 @@
       "link": "https://www.player.one/rockstar-games-teases-gta-6-soundtrack-online-posts-famous-artists-tied-game-164128",
       "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQMHl4Slp0MS1UMVFoNV9PRTQzSDhwR0x2TEhaN1o2YnU1Z3VDWGxBcXN5ckt5dkt2R3B0LVlaaHhseW5xMzJERlNtbmVhQnJRUGxkdlVjOXhDWFJkZUdNM2JBZTQ0RW13SW1ZbDlHLW5reE5vazJmU1FVTEQwbUtwU00xNmZtVExGQU5pcWJ4a3RLYmFJOGlIOUN1N1luLWNLS1dUVjczOGV5Zw?oc=5",
       "date": "2026-09-16T02:45:59+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -1584,7 +1492,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://sm.mashable.com/t/mashable_sea/article/w/want-time-/want-time-off-for-gta-6-heres-how-to-ask-your-boss_n33n.1200.jpg",
-      "description": "Want time off for 'GTA 6'? Here's how to ask your boss.&nbsp;&nbsp;sea.mashable.com"
+      "description": "Want time off for 'GTA 6'? Here's how to ask your boss.&nbsp;&nbsp;sea.mashable.com",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://mashable.com/entertainment/gta-6-take-leave-work-how-to"
+        }
+      ]
     },
     {
       "title": "In Grand Theft Auto VI, the car reacts to the character's weight when trying to open the door. - GameGPU",
@@ -1941,7 +1855,7 @@
       "link": "https://tribune.com.pk/story/2629484/stephen-root-confirms-he-plays-a-drug-trafficker-in-gta-6",
       "source_link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPNHhFQVcxSW5Bd1I0M0FtOFhvTmdudG45MXBWT3FJaFZCTFo4RWVjVHZBT3U3WVQ1OGV6c1lBWUc4WDB3Q013WVNYcldXeXhiZVlzQ1had2pEbVVCMlRIanYyVGpDR2FpZjB5Sy1ZZDZCdkdIQ3VwM3FySW0wbllnWDByakJKNFZxMlA3MFdUODVIcWI5MXdRdldR0gGiAUFVX3lxTE1DaVduMVZiUms3VFh4ZTVFdkM3VDllRXhNS3hNWGVoS3lxSGV0aTZvc3Z1T1VtckRjQ05vaWlqMVg1U2VOUEFSdXVjaVhKQUdXejY1dWFJQ1Rzdk5vRFVuNjhOZFZjVTNHdHZkUy1VTjlacVBKUDRXWE13Z2hJa3IwMUxwX2I1V0xKbDMxY2NPcDFhVDNsYlZmeDVCaTFUVjJDZw?oc=5",
       "date": "2026-09-15T17:57:05+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -2141,7 +2055,7 @@
       "link": "https://variety.com/2026/digital/news/stephen-root-gta-6-drug-trafficker-1236863082/",
       "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPS3B5OVlEcnhjNlFRTUZBcG5oUERrc0YzMGU1U1R4SnR4YXFudzdTOU5BVGJVTWZ3TG1UckVYU0ZORFk3cnBGZ1JiRlBPYWV0cURmZkRwYW9TNjBSZ2VDSGNNdnNyNVFLOVh4emtiajdXSUtoV2dSb3hxY2pLZ0VwZjlvOTZwQW5XRTdrRQ?oc=5",
       "date": "2026-09-15T16:34:00+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -2206,7 +2120,7 @@
       "link": "https://in.ign.com/grand-theft-auto-vi/271937/rockstar-games-begins-teasing-gta-6s-soundtrack-with-travis-scott-future-morgan-wallen-and-more",
       "source_link": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxOMDdIbzdZVnBRdWt4dUVlMG55eHFDVVM5dE5GTGpqcW1RR1VYS3VBZjZDVXZOQlVuY2owSlNDZlNvNE9Jc1FDcUppWEVWRHpiRWlhWHpRRlN6RmM1eTRBRmdUNFB2OWlUQ3MyNFlLSVV4c3R4b3ozc2dBNHQ3eGg0VHM2YUplalZtSjQ4UXJHQnBuM1ZoY2JycHB0TFRmRXAtekU3OGtMX2MzYjJ6VU1fdXJBTk9iRTBJZVpCX0V0NGF0RjVJYkdsRGhJQTZmZkZyZHkwWjNVOTY?oc=5",
       "date": "2026-09-15T16:23:20+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -2491,7 +2405,7 @@
       "link": "https://tech.yahoo.com/videos/huge-netflix-gta-6-deep-143819851.html",
       "source_link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE8zWFlPenBCaW85RjNIMUZOeURlWjBtdmJkX2JHb0h3a3RVRXE4WlRhZzFiT0lha0dxTXhSR2F2Zk96Y0dFdHdrekpGVzhvMW5lNkxxVkdnYkJ1bVR6a0lYRGtjWlVWQU9PU0Mwbno2ZUlla1ZXUVhn?oc=5",
       "date": "2026-09-15T14:38:19+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -2588,7 +2502,7 @@
       "link": "https://videoweek.com/2026/09/15/week-in-charts-kraft-heinz-sees-encouraging-early-signs-in-marketing-push-gta-vi-preview-drives-netflix-sign-ups-and-search-and-social-platforms-boost-us-ad-growth/",
       "source_link": "https://news.google.com/rss/articles/CBMiowJBVV95cUxNX184WmVhejBJUFZZQS1vUkowLTZheDFzTUdSVkFUeVBEdG84a3FPdWx2b3Jicm1adXJWOU1QbUw1RkNicWU4Y3hCaGMyeDFlZWZpM096ZWEzVm84a3pkTmVkRTE5WV9uQ2tQTFNXRlNabVNvZXVRNnVmcFRCTVh0Y3AycUxJSHFlNmpxMnBBTnF3X2RoQ1g5U0xSTFItMDJfNHFuSlBUSlZkUzZYXzhKVXktMDdkSEkyZHBKanFTRzlkaWlCcmdHZTdyVXZmbWhZaWdsVnh3alJkeDBxT1VzVzgyc2dIai1FaTR5UnR0dlJRSnNFdjBGZlVDN0JJOXdfNi03VXNCak1hc3hDb2FMNkdtTjl4c0dBWWpqczNIZVl3Zlk?oc=5",
       "date": "2026-09-15T13:00:43+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -2614,7 +2528,7 @@
       "link": "https://www.imdb.com/news/ni66009962/?ref_=ttnw_art_perm",
       "source_link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1WZ29KeEd5VHpYV0Q5Sk5jcjdTRktPa21odEZqbU5vRjFSU0FILTN6dmdWQVpfR3NGZHIwWGNvZzNrQ081MEp4ZnA4THJCWEc4MC1uLVRjX0VTV3piNzF6eklsTU82N00?oc=5",
       "date": "2026-09-15T12:23:25+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -2653,7 +2567,7 @@
       "link": "https://tribune.com.pk/story/2629434/stephen-root-confirms-gta-6-voice-role-as-brian-heder",
       "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNeHp0MDh1aU1tVGhCN1c4UXBUVVJqWWhRN1RrZ0RBM2Nzcmg0c2tsbEQ4LTFsY3ZaM3Y3ZjVkT0VHTXE4QTFHSEdNUDN1WGhDSTVlRjIzTnhYSnYtemJuOENWUElRZzB3UnQ4ZTR0ckxjaEpIcWwycWVVMmZZMDRURzhVQzhVVEZzV1ozb0hzMEQySGVI0gGcAUFVX3lxTE9vQkhxMG9CZVpSWjZNLV9yWkwtNlJZT1A1X3JVRTBIdHNPTFJiZEVsd0daMGNnSGY1aWZPQ2ZLWVVoaUsyY0wySFdyOXRIdGhnRGNNSUVTanV2b196cEF6VVBjXzdkb3dINGhWZ3ZZOG9SVVhKbGNRVlRzcmNaVWpMMlUzakFySFE2djNZYlZFVjdFWVBBMFR2MkFMcw?oc=5",
       "date": "2026-09-15T11:15:23+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -2943,7 +2857,7 @@
       "link": "https://www.joblo.com/grand-theft-auto-6-stephen-root/",
       "source_link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1vTlhxdXRZRU5JN3pCdWo5NGJxeE1LMlgtS0RHcEI3V0N1ZkNRM3ZUTWhXVHhpNUlrLTZWOWdyb2NiSWRQbHhkZ0JOZVc5RFhRN1hyNUVaNFYtaFNZbmFVT3locXrSAWpBVV95cUxQOGRuUlVNQzZjSkEwelROUkd1czZRdTJDYUpnVmFkZ1VYcC1iYm13QUFxZERfbXBPVGh5Z1lvSHRzc3FyVU02bXgxOWZtaW41MHE0eHd0UXZ5TWF0RzlIVkRTZDBIRmVwUGxR?oc=5",
       "date": "2026-09-14T19:30:28+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -3138,7 +3052,7 @@
       "link": "https://www.polygon.com/gta-6-first-actor-confirmed-stephen-root-widows-bay/",
       "source_link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOaUlNR1phRHJNYW83NzZ2Nk9FdmE2U1hvblk4d0pfdjEycE4tODZabDlNbDYybDVVVGNDZHU5d0lkUktaMXhrYmlxZW0weTF1NkhGLVlMTlplQnZxdTc2M3c0QTJNZHZJdFNnREJuaUtINUcyV28zbTZxQmdmclRCUlF3?oc=5",
       "date": "2026-09-14T15:09:24+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -3177,7 +3091,7 @@
       "link": "https://en.as.com/meristation/news/gta-6-confirms-one-of-its-biggest-cast-additions-fans-recognized-him-almost-instantly-just-by-hearing-his-voice-f202609-n/",
       "source_link": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxPQUtDSXVmRWZtcHlmT19haFZEendJR2JocG5wYkRzYXkxZkFoU0o1am5IRWl1SEM3OWhkWmlHazluUENQODdmaWVZajFhcHhqdldHd1kwcGZiSV9OVEJKYnlibENNUkhnRUNGdzhjMnBpMl9GejJROV9UdENMeU5wXzRUYm5iZWRiTEkxVFNFQ19VREZ0N1JzNS1pSXBLWVNmejU1M1lmRTVVT2NjUmhmTkoydS1vQWJTdTlPWUJxRVlwa0ZBVWFXSGtpZDRaeVVYbkh0c3dVQ1ZubHBfNmI3aHdEUGt2YndycEFkSXhn0gGCAkFVX3lxTE9qNWdqOHg2ME9HUm9DNjJpZW5XVGZLa2QzV2dUOWdMN2FxVGVIeVZUd0UtMGd6YU5hWGtGWWxOTjZjMlRNdlpDM1FYS0hpaFh4MmptekFPdm45QjR0c0puZ3NKOFFlWFUzTmswYjRjU3REakhPOTBva1ZLQXpGVW9SOTVOd1hSYTlFSElEa1NGemQzNFhOWjg1Q1c4WFBNQnJNQ256b2hQVzRaS2RseXVvTjd5bGlDRC1vRDh2OGxjb0kwbzVFalNKUUZidWdxQ1BFQS1hNy1meVNfcHVoSExoNmFIekF5bklveHZsWlpsSHU0X0NsemVPLXk2aDJfRXhLdw?oc=5",
       "date": "2026-09-14T14:39:04+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -3268,7 +3182,7 @@
       "link": "https://www.vice.com/en/article/gta-6-stephen-root-brian-heder-role/",
       "source_link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE10aTRiYmRmaXpfcHE0S3RydWlRcEsyN3E0TWoxb3lKaklXR2hYV01XOGYyVnNoUG9GUjZHYVlrdmRrMmxiZWhWdko2ZFkzLUVILW9zakZxRE5hNm1lSVVzSHBEdlhVZmswYnRkYk9qcmNVZkM4VXV3?oc=5",
       "date": "2026-09-14T13:01:54+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -3339,7 +3253,7 @@
       "link": "https://www.gamingbible.com/news/gta-6-first-voice-actor-emmy-stephen-root-586974-20260914",
       "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQMVEzVFpwZXdNLTg4RG9QVzU2cUNROGw3NUNyc29pZ0czNWVuS29YTkZtSzJsZzl3WGZLWmF2ZzB5MV9YYl9mVEF1X2U4ZlNvS2pxY3o0WHFKam00MmF5QjZMOXBpV0V5bF9ERFJibEYzaVdwOG9wdG1BaVF1UFVOdjRuTE5fRzZhUDFIQmpJNXhrVE5T?oc=5",
       "date": "2026-09-14T12:00:02+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -3469,7 +3383,7 @@
       "link": "https://nordic.ign.com/grand-theft-auto-vi/112813/first-major-cast-member-confirms-appearance-in-gta-6-seemingly-going-off-rockstars-script",
       "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxQN3I5eTIydVZnY3FhX1A0X1JNNDNEbTl6a2t1REk0WXl5VU9RS3VGRG5JVVpua0VkVmlaTExzQnpRZS11WExEUHhVc01oNThKcEpTQmJSVk1HYXM0eUF4V3lyc2dzbloybUVab0JCXzdpV1BaRDM3cjV1a01mWHQxSl9VN2JscFhHbDRnMWVKQ0g5UFZpbm9YaWtBeVBuWkZzQkpobE5KWEFScHpMMlB5WHM0aFg5RndBS0NseTdmOV9EbnBzOGN0dkhIZTJWZ2ZEZzYwQk5n?oc=5",
       "date": "2026-09-14T10:29:55+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -3508,7 +3422,7 @@
       "link": "https://www.nme.com/news/gaming-news/grand-theft-auto-6-cast-actor-voice-stephen-root-brian-heder-3968701",
       "source_link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOMEQxT296TF85RlhmcmpKUFVDaWFCa3lITks2NnRQRDhmR0RtVEJyajlSU00ybW1RVkt5cms2VWlWMTFzbS0xVmNJdzY2R2N3dE1rWHM2eUlFWm1aQUEzQWVRZUk2cmZYNy1RR0g3UmNLcndGcEZ3LUtLVUlUM3BOSXJ5TGJ0dGpYZTcwMWJFRm85eHlEbmNQNFBKUWFFTkJzZEQzM3UxeEo?oc=5",
       "date": "2026-09-14T10:15:05+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -3645,7 +3559,7 @@
       "link": "https://suaragarut.id/en/stephen-root-gta6-role",
       "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9sNDFwODhvb0oxWjJLYkFSNmFGRUhzYXBhbjNHZGVId3ctLVQzNURIc2xna1JIRkpxS1YtTC03VWRPeGFTVTAwUEtjMW5HNXFsS2d6aTNROEotcGc?oc=5",
       "date": "2026-09-14T07:45:51+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -4027,7 +3941,7 @@
       "link": "https://www.thenews.com.pk/latest/1416059-gta-6-follows-red-dead-redemption-2s-chapter-model-rockstar-confirms",
       "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQUVlmYUxmVXRzV1ByMERuODJfa0NNSTh0Nk02cUxqSDRmdVl0N1dqNXdoblFNQXAtTEpabzVkMXR4dlhOQ3gtTnBHcnlaeTIzU1k0bVlhRU42YWxkaDcyWWgzVzcxcDE2Yk5mcnNmS2d1LXBvcS12UUMwQm1vTmhYMzFfbjlaT05qdmFsaXF5dTJwb3ZyNEZtcjEzX0xTOVFtdkpHVWtFdnEtV1JhVzI40gGrAUFVX3lxTE0xN3ZYbHRpOC1ibm1DamttN3VELUZBM3dXTWcyT1A3cWhkUEtMc2ZKQU8tMTIyRDcyVVVJUzJCSWFsQjFCemM5OTd1ZHlvU2tEa2JqZ18zNGc1bGliVjlhZmZEWl84ZXhwUmR5VVNkS1BnQlcyVzhKU014T3dVTUxxdDFDSU9WUVFmekIxSUpmb3BlaUw3YTIzbnNkQ0hnNjVsSzZJejhtS2V4aw?oc=5",
       "date": "2026-09-13T12:51:39+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -4072,7 +3986,7 @@
       "link": "https://www.autoevolution.com/news/alleged-leak-claims-to-reveal-gta-6-collector-s-edition-package-and-what-s-inside-it-275507.html",
       "source_link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPVGpDUEhQYnJMbkUwUlEtZnJwZXBackNxYWY4bXNHUU1wTGhmcTl0OV8yMS00aXhncTdoQnp4Q2VlUlNqcVF6bzFhbldDOGhheTVOTmlXcjZkRC1mX2JEdmdCTkZPUzR3SzRnM0s1RFJEcTJYeE1mLWJxa1hfaUotY01jOURPeDNzc25mQjJDTlpkd3k0SWFzR0RETFdaaUdEYjdMMlVmdlI2T25LRXVrNDh5LWw2aXU0TUlEekl5N2FzdVlVa3ZKMy1mNA?oc=5",
       "date": "2026-09-13T07:05:13+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -4150,7 +4064,7 @@
       "link": "https://screenrant.com/gta-6-dual-sense-controllers-ps5-better-rockstar/",
       "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5nSUlyaU9QaGpya2pmZV82SUFBZV9YcGwwc1AzeUJSajJnLW52ZUZEM1RTR2x5Zmo1OWhzVEFURnpwazA2VURCZFFqcjEzTkVPNldfS1JsTXRpdThQbVhtSjZvbWx5TnVmWlNtemlDcVVQamFtZm5iTm4zRlU?oc=5",
       "date": "2026-09-13T02:00:00+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -4643,7 +4557,7 @@
       "link": "https://opencritic.com/news/36761/gta-6-could-be-coming-soon-to-miami-beach",
       "source_link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPT01vaUhLTW9JSzJVb2VxeGtCaTc1MWppaV9JdUN1SkpwR0dDZTZzREFXRjRnX3FkTXdueW1XX0hrel9NeWtucGxfWWlEcVFza0JFWDFpM0NPbGw5U09uRXpTNVRFZm5NTmdmYmdDWXBtUUkxZHlJckdpZFIzVXJBZw?oc=5",
       "date": "2026-09-11T20:53:58+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -5110,7 +5024,7 @@
       "link": "https://www.ign.com/articles/gta-6-developer-rockstar-says-it-was-forced-to-put-privacy-films-on-its-buildings-after-drones-were-used-to-snap-photos-through-office-windows",
       "source_link": "https://news.google.com/rss/articles/CBMigAJBVV95cUxNVUVKbWN3c1dZMDRUNFZpNkl3NFRpa1JHN2hPSzNsaVdYSnhTWDY0QlZUZDVhVzdmWXdBU0NXRUVGcmFSemc0UG9HU3dnX0podUhPWFJPRkRmQ095QlFTVFVpS1MyMTNGUGdKTjNQZDZLajZIcFpReHpfUDFYeks0ZmdBc05SdkhDSHh1QXRxT3JZb3VTZHJ6dmJ2OFRMdFNsUEVTUlJXelNmalBfd0pqRVdDcVRzQ1JvRUs3V3pGM1ZUMC16OF9oLTN3Q3lsRTBqQjQ4SS1NYzh0VGJHcXlrMDlfWF80Y25Cc1Nvdi03RE5CR05ubk9EelpGSHNSYnNq?oc=5",
       "date": "2026-09-11T15:28:53+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -5292,7 +5206,7 @@
       "link": "https://en.as.com/meristation/news/rockstar-reveals-one-of-the-secrets-behind-the-first-gta-6-trailer-tom-petty-helped-define-what-they-wanted-to-achieve-f202609-n/",
       "source_link": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxNM2ZsdldNVDN0VGZ3XzU5MW9QcUp4R1ZjR21tWTdWMWUtcnNzTWpuQWFBSDNTOUVkakViQjdabGh3dS10anJILU0xa0Nwd1d4bjlKOG4tcHRRdjA4YmY2OHRLSE42S0oxNnJVb000NTRucUNhZlZYZ0V1V1lGMXBUR3g5Q3NRUmtRMm9OaS1IMl9BZ0JDMXlINGJyQUtSMF9neXc1MGtCWDZtRUI0UVVfLTVaU2JMQ3JaNGM3R2RKcnZCcHcxN21Gb2ZUYVROVlBteFZNaWFZZG9aN3ozdDIwejJLYUxCbkdTV0hsZDgyaFFBQm1Eci1R0gGLAkFVX3lxTE1Odm54anZjajJYVjlxWkVDRVZVOVMxRVRzaFgwMnlHYmp5ckk5OE1VS1BIU1U0UjZmTmNYTEptRHdYeDY1ZkVnLXpaZ0JUWDJOOTRQd0F2VkdzSW8zZjNjV1hFSm9ic0JwMmxfRldPdzdDRUltc2NPV3N1Q01JTUhyU2k5ajUzazdfbGRydFQ4Z0ZvQnBzQzhsYU5kXzB6bG5kSFQyUmw3ZzdLbzJBUk1WaDJ3LWtWNVdjZ2o4Qzd5WF83QXBBMk4yQ1QwYWkzTHJ2bGNhMk1aWElzT2pZNGpQNUVZeHBieHZkaDlSUjI3UE9YbkMySGdDT0hkdXBReTY3SXVSbHM4RzgyVQ?oc=5",
       "date": "2026-09-11T14:06:42+00:00",
-      "source": "Rockstar Games (annonces)",
+      "source": "Google News (annonces Rockstar)",
       "official": false,
       "rockstarmag": false,
       "specialist": false,
@@ -5370,7 +5284,7 @@
       "link": "https://kotaku.com/gta6-grand-theft-auto-vi-voice-actors-rockstar-netflix-footage-2000734229",
       "source_link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNTzdkekotdnRUX2pDclFIaVlpNklSUHgzMUU3RW9mZlZEZFEycFMwTkVMdjZtVEc2M0s3dmtCck1MMnExR1daT2lncmhmZVBtREl2Q291V1NKSVNiOHdMendaNHNNX29SSmllZHl3eWE3ZHE4dlFvOGEwVExVQkVmYnRKU0ZoOWpOeW1NcmNoVUI5LVdKazEw?oc=5",
       "date": "2026-09-11T13:16:45+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -5422,7 +5336,7 @@
       "link": "https://gamingbolt.com/grand-theft-auto-6-limited-edition-dualsense-controllers-already-sold-out-after-pre-orders-open",
       "source_link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNbzR2Ump0VlNoZWRNb1JCZTZReUlMbjdkcmttdFB4cC1VZzFxZHpvZlZUNFhoYkZacnVGTUtJOFFFZ0tPdDdlVF94eUNvT0F6RWpGemRycGRXeFpXU0VUaDY1Wl9LeUQ3R1V1c0NmMFIwbk5MZU9yd3lCd2JmTURFSWswUm45M2FVMFRBb3FJRTJvdE9FdFpvN0JIT1U4MlpmSWg4UU1ILXlDVldlT1NXMnFsMjEyN3VmMXc?oc=5",
       "date": "2026-09-11T12:53:07+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
@@ -5461,26 +5375,13 @@
       "link": "https://metro.co.uk/2026/09/11/miami-agrees-advertise-gta-6-exchange-fixing-football-field-29585930/",
       "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQMXk2RG9KMVdfVS1WSXBaSW05eGRzVWVnRDRGeG81ejVTYXFhSkF3Z3RBLU1LWHdZT2RYeFlla3lsdEJtR2VnNi0wS1VwRzE0bk9PT01KV2NfTjNFR3JUbGdLX2lzc2JGZkpTNzhEanBSM1czU0RFOFU5czhMbUdxWFlzczZUbUlZZmdCUWpsSm9ld0o2LTJuZmMzdHNkbDA2S0HSAacBQVVfeXFMUEI5MkpMa1NYcGh2Z09vU3VyaEJHYTNuWmlENnlaRWo2ZzNneUNvcjBpVnNiV0NPZ3ppOGlFeGhqUjF1OUFBbjVjSjgyckhrZWIyblg0YTl0YXpBWTJobGlWRy12UTBUaUl2dHhrUEsyS1hpU2h5aFhmc0ZBbnliaHFQbjZoRTdZT0M3cGNrMmF6ZExpdFNwTTdHbUVfV09ZUHNxTkxOY2s?oc=5",
       "date": "2026-09-11T12:40:00+00:00",
-      "source": "GTA 6 x Netflix",
+      "source": "Google News (Netflix)",
       "official": false,
       "rockstarmag": false,
       "specialist": true,
       "lang": null,
       "image": "https://metro.co.uk/wp-content/uploads/2026/09/SEI_310228783-3b25_1789130441.jpg?quality=90&strip=all&w=1200&h=630&crop=1",
       "description": "Miami agrees to advertise GTA 6 in exchange for fixing their football field&nbsp;&nbsp;metro.co.uk"
-    },
-    {
-      "title": "GTA 6 online mode appears to receive Rockstar's first public acknowledgment, via mention of in-development \"32 player format\" in legal docs - rockpapershotgun.com",
-      "link": "https://www.rockpapershotgun.com/gta-6-online-mode-appears-to-receive-rockstars-first-public-acknowledgment-via-mention-of-in-development-32-player-format-in-legal-docs",
-      "source_link": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxOUG1wLWh6SEZoejlIQ3lqeUgyTDE3VVFuajVqUHctLS1UWVVmOXQ2a09rQXNwVDNpVl9hUWdHaWNDd1lTVDdVejdXWW5NQXk4WjAwaU10TWZWaGROTmJPRHlmR19yZTFPUkgwMW1qYVN6V1pkZnlPVmFPOW5qRkpaQXhqNVBFTmtvVjVVTDRCamtha0lVRDV6Wm9JUWRMYWhITEZTZGFxX21OSWpHVEpwbGo5aWoxVkVpNVAtOXRBRjh5ajFHRldycHg4bzMyV3NvaW5rVUc2Y19vUWFVbGZxcGI5WDhmTU54Nk95OUlDT0VWdzQ4T1pLWkFXWkY?oc=5",
-      "date": "2026-09-11T12:34:17+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://assetsio.gnwcdn.com/gta-6-online-apparent-court-docs-first-mention-01.jpg?width=1200&height=630&fit=crop&enable=upscale&auto=webp",
-      "description": "GTA 6 online mode appears to receive Rockstar's first public acknowledgment, via mention of in-development \"32 player format\" in legal docs&nbsp;&nbsp;rockpapershotgun.com"
     }
   ],
   "partial": true,
