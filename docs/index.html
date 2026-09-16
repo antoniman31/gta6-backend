@@ -990,9 +990,25 @@
   .switch input:checked + .slider{background:var(--accent);}
   .switch input:checked + .slider::before{transform:translateX(16px); background:var(--accent-contrast);}
 
-  .source-list{
-    display:grid; grid-template-columns:1fr 1fr; gap:6px;
+  /* La grille est descendue au niveau de la FAMILLE : la liste elle-même
+     n'est plus qu'une pile de sections repliables. Soixante bascules
+     indifférenciées faisaient 2600 px d'un seul tenant — le prix payé, et
+     assumé, pour avoir supprimé le défilement imbriqué. Les ranger par
+     famille rend l'onglet court et la source trouvable. */
+  .source-list{display:flex; flex-direction:column; gap:6px;}
+  .src-famille-titre{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    gap:8px; font-size:11px; text-align:left;
   }
+  .src-famille-titre .src-compte{color:var(--text-dim); font-weight:400;}
+  .src-famille-corps{display:grid; gap:6px; margin-top:6px;}
+  /* Indispensable, et c'est le piège : l'attribut `hidden` ne vaut qu'un
+     `display:none` de la feuille du NAVIGATEUR, que n'importe quelle règle
+     d'auteur bat. Sans ces deux lignes, les familles se rendaient dépliées
+     malgré leur `hidden` — la liste faisait 3244 px au lieu d'être repliée,
+     soit pire qu'avant le regroupement. Invisible à la lecture du HTML. */
+  .src-famille-corps[hidden]{display:none;}
+  .src-famille[hidden]{display:none;}
   /* <label> et non <div> : tout le rectangle bascule la source, nom compris.
      C'est la loi de Fitts appliquée au seul endroit du panneau où on vise
      cinquante-neuf fois de suite. */
@@ -1082,9 +1098,9 @@
      par nom : « Rockstar Games (officiel EN) » se tronque en « (offi… », qui
      ne se distingue plus de la version FR. Un nom illisible ne sert à rien,
      et la liste défile déjà chez elle. */
-  .panneau-onglet .source-list{grid-template-columns:minmax(0,1fr);}
+  .panneau-onglet .src-famille-corps{grid-template-columns:minmax(0,1fr);}
   @media (min-width:520px){
-    .panneau-onglet .source-list{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+    .panneau-onglet .src-famille-corps{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
   }
   #sourceList .source-row > div:first-child{min-width:0;}
   #sourceList .source-row > div:first-child > span{
@@ -1234,12 +1250,12 @@
   </div>
 
   <div class="tab-row tab-row-full">
-    <button class="tab active" id="tabAll" onclick="setTab('all')">Tous les articles</button>
+    <button class="tab active" id="tabAll" aria-pressed="true" onclick="setTab('all')">Tous les articles</button>
   </div>
   <div class="tab-row">
-    <button class="tab" id="tabNonRockstar" onclick="setTab('non-rockstar')">Non Rockstar <span class="tab-badge" id="badgeNonRockstar"></span></button>
-    <button class="tab" id="tabRockstar" onclick="setTab('rockstar')">Rockstar <span class="tab-badge" id="badgeRockstar"></span></button>
-    <button class="tab" id="tabRockstarmag" onclick="setTab('rockstarmag')">RockstarMag <span class="tab-badge" id="badgeRockstarmag"></span></button>
+    <button class="tab" id="tabNonRockstar" aria-pressed="false" onclick="setTab('non-rockstar')">Non Rockstar <span class="tab-badge" id="badgeNonRockstar"></span></button>
+    <button class="tab" id="tabRockstar" aria-pressed="false" onclick="setTab('rockstar')">Rockstar <span class="tab-badge" id="badgeRockstar"></span></button>
+    <button class="tab" id="tabRockstarmag" aria-pressed="false" onclick="setTab('rockstarmag')">RockstarMag <span class="tab-badge" id="badgeRockstarmag"></span></button>
   </div>
 
   <!-- Le compteur décrit la liste juste en dessous, pas la carte du haut.
@@ -1305,18 +1321,18 @@
     <div class="sheet-section">
       <span class="sheet-label">Affichage</span>
       <div class="sheet-btn-group">
-        <button class="active" id="filterAll" onclick="setFilter('all')">Tout</button>
-        <button id="filterUnread" onclick="setFilter('unread')">Non lus</button>
-        <button id="filterNew" onclick="setFilter('new')">Nouveaux</button>
+        <button class="active" id="filterAll" aria-pressed="true" onclick="setFilter('all')">Tout</button>
+        <button id="filterUnread" aria-pressed="false" onclick="setFilter('unread')">Non lus</button>
+        <button id="filterNew" aria-pressed="false" onclick="setFilter('new')">Nouveaux</button>
       </div>
     </div>
 
     <div class="sheet-section">
       <span class="sheet-label">Langue</span>
       <div class="sheet-btn-group">
-        <button class="active" id="tabLangAll" onclick="setLang('all')">Toutes langues <span class="tab-badge" id="badgeLangAll"></span></button>
-        <button id="tabFr" onclick="setLang('fr')">News FR <span class="tab-badge" id="badgeFr"></span></button>
-        <button id="tabEn" onclick="setLang('en')">News EN <span class="tab-badge" id="badgeEn"></span></button>
+        <button class="active" id="tabLangAll" aria-pressed="true" onclick="setLang('all')">Toutes langues <span class="tab-badge" id="badgeLangAll"></span></button>
+        <button id="tabFr" aria-pressed="false" onclick="setLang('fr')">News FR <span class="tab-badge" id="badgeFr"></span></button>
+        <button id="tabEn" aria-pressed="false" onclick="setLang('en')">News EN <span class="tab-badge" id="badgeEn"></span></button>
       </div>
     </div>
 
@@ -1709,6 +1725,7 @@ const DEFAULT_FEEDS = [
   { id: "jeuxactu", name: "JeuxActu", url: "https://www.jeuxactu.com/rss/ja.rss", enabled: true, official: false, lang: "fr" },
   { id: "actugaming", name: "ActuGaming", url: "https://www.actugaming.net/feed/", enabled: true, official: false, lang: "fr" },
   { id: "gamerant", name: "Game Rant", url: "https://gamerant.com/feed", enabled: true, official: false },
+  { id: "gamerant-gnews", name: "Google News (Game Rant)", url: "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
   { id: "dualshockers", name: "DualShockers", url: "https://www.dualshockers.com/feed", enabled: true, official: false },
   { id: "gta6times", name: "GTA6 Times", url: "https://gta6times.com/rss.xml", enabled: true, official: false, specialist: true },
   { id: "gameinformer", name: "Game Informer", url: "https://gameinformer.com/news.xml", enabled: true, official: false },
@@ -1755,7 +1772,7 @@ const PROXIES = [
 
 const DEFAULT_SETTINGS = {
   theme: "system",
-  keywords: ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gta-6", "gta-vi", "grand-theft-auto-6", "gta_6", "gta_vi", "gtaonline6", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "leonida", "cyberleek", "cyber leak", "cyberleak", "take-two", "take two", "taketwo", "take2", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "lucia caminos", "jason duval", "gta online 2"],
+  keywords: ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gtaonline6", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "leonida", "cyberleek", "cyber leak", "cyberleak", "take-two", "take two", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "lucia caminos", "jason duval", "gta online 2"],
   feeds: DEFAULT_FEEDS,
   // Liste noire, vide par défaut : c'est à l'usage qu'on découvre le bruit
   // qu'on veut écarter (arnaques crypto, mods GTA 5 déguisés en GTA 6…).
@@ -2086,7 +2103,7 @@ function populateSettingsUI(){
   // 32x19 px, le nom de la source à côté n'y répondait pas. Un <label> dans
   // un <label> étant invalide, c'est bien l'un ou l'autre.
   const list = document.getElementById("sourceList");
-  list.innerHTML = settings.feeds.map(f => `
+  const ligne = f => `
     <label class="source-row">
       <div>
         <span>${escapeHtml(f.name)}</span>
@@ -2096,8 +2113,20 @@ function populateSettingsUI(){
         <input type="checkbox" id="src-${f.id}" ${f.enabled ? "checked" : ""} onchange="appliqueReglages()">
         <span class="slider"></span>
       </span>
-    </label>
-  `).join("");
+    </label>`;
+  list.innerHTML = FAMILLES_SOURCES.map(nom => {
+    const membres = settings.feeds.filter(f => familleSource(f) === nom);
+    if(!membres.length) return "";
+    return `
+    <div class="src-famille" data-famille="${escapeHtml(nom)}">
+      <button type="button" class="src-famille-titre" aria-expanded="false"
+              onclick="basculeFamille(this)">
+        <span>${escapeHtml(nom)}</span>
+        <span class="src-compte">${membres.length}<span class="chevron"> ▸</span></span>
+      </button>
+      <div class="src-famille-corps" hidden>${membres.map(ligne).join("")}</div>
+    </div>`;
+  }).join("");
 
   litMaxDisplay();
   majCompteurMots("keywordsInput", "keywordsCount", "mot-clé", "mots-clés", "aucun mot-clé");
@@ -2943,13 +2972,28 @@ function restaureFiltres(){
 // silencieux : pose l'état et les classes sans redessiner le fil. loadState
 // enchaîne les trois puis rend UNE fois, au lieu de trois rendus successifs
 // sur trois cents articles.
+// Une bascule dit son état par la couleur ET par aria-pressed. Les onglets
+// du panneau Paramètres avaient été corrigés ; ceux des articles, non — ils
+// annonçaient donc quatre boutons identiques à un lecteur d'écran, et un
+// écran très contrasté ne distinguait plus l'onglet actif.
+//
+// aria-pressed et non role="tab" : de vrais onglets ARIA exigent la
+// navigation aux flèches et le retrait des boutons du parcours de
+// tabulation. Même choix qu'au panneau, pour la même raison.
+function marqueActif(id, actif){
+  const b = document.getElementById(id);
+  if(!b) return;
+  b.classList.toggle("active", actif);
+  b.setAttribute("aria-pressed", String(actif));
+}
+
 function setTab(t, silencieux){
   currentTab = t;
   visibleCount = PAGE_SIZE;
-  document.getElementById("tabAll").classList.toggle("active", t === "all");
-  document.getElementById("tabNonRockstar").classList.toggle("active", t === "non-rockstar");
-  document.getElementById("tabRockstar").classList.toggle("active", t === "rockstar");
-  document.getElementById("tabRockstarmag").classList.toggle("active", t === "rockstarmag");
+  marqueActif("tabAll", t === "all");
+  marqueActif("tabNonRockstar", t === "non-rockstar");
+  marqueActif("tabRockstar", t === "rockstar");
+  marqueActif("tabRockstarmag", t === "rockstarmag");
 
   const isLogs = (t === "logs");
   document.getElementById("feed").style.display = isLogs ? "none" : "flex";
@@ -2969,9 +3013,9 @@ function setTab(t, silencieux){
 function setLang(l, silencieux){
   currentLang = l;
   visibleCount = PAGE_SIZE;
-  document.getElementById("tabLangAll").classList.toggle("active", l === "all");
-  document.getElementById("tabFr").classList.toggle("active", l === "fr");
-  document.getElementById("tabEn").classList.toggle("active", l === "en");
+  marqueActif("tabLangAll", l === "all");
+  marqueActif("tabFr", l === "fr");
+  marqueActif("tabEn", l === "en");
   // setFilter rafraîchissait le badge, pas setLang : compter la langue ne
   // suffisait pas, encore fallait-il recompter au moment où elle change.
   updateActiveFiltersCount();
@@ -2983,9 +3027,9 @@ function setLang(l, silencieux){
 function setFilter(f, silencieux){
   currentFilter = f;
   visibleCount = PAGE_SIZE;
-  document.getElementById("filterAll").classList.toggle("active", f === "all");
-  document.getElementById("filterUnread").classList.toggle("active", f === "unread");
-  document.getElementById("filterNew").classList.toggle("active", f === "new");
+  marqueActif("filterAll", f === "all");
+  marqueActif("filterUnread", f === "unread");
+  marqueActif("filterNew", f === "new");
   updateActiveFiltersCount();
   sauvegardeFiltres();
   if(silencieux) return;
@@ -4924,13 +4968,56 @@ function majCompteurSources(){
   el.textContent = tous.filter(c => c.checked).length + " / " + tous.length + " actives";
 }
 
-// Filtre la liste sur le nom. Cinquante lignes à parcourir à l'œil pour en
+// Cinq familles, dans l'ordre d'affichage. Une source peut cocher plusieurs
+// cases — RockstarMag est spécialisée ET francophone — d'où un ordre de
+// PRIORITÉ plutôt qu'un test indépendant par famille : chaque source
+// apparaît une fois et une seule.
+const FAMILLES_SOURCES = ["Officielles", "Spécialisées GTA",
+                          "Recherches Google News",
+                          "Presse francophone", "Presse anglophone"];
+
+function familleSource(f){
+  if(f.official) return "Officielles";
+  if(f.specialist || f.rockstarmag) return "Spécialisées GTA";
+  if((f.url || "").includes("news.google.com")) return "Recherches Google News";
+  return f.lang === "fr" ? "Presse francophone" : "Presse anglophone";
+}
+
+function basculeFamille(bouton, force){
+  const corps = bouton.nextElementSibling;
+  if(!corps) return;
+  const ouvert = force === undefined
+    ? bouton.getAttribute("aria-expanded") !== "true"
+    : force;
+  corps.hidden = !ouvert;
+  bouton.setAttribute("aria-expanded", String(ouvert));
+  const chevron = bouton.querySelector(".chevron");
+  if(chevron) chevron.textContent = ouvert ? " ▾" : " ▸";
+}
+
+// Filtre la liste sur le nom. Soixante lignes à parcourir à l'œil pour en
 // désactiver une, c'était le vrai coût de cette liste.
+//
+// Le filtre commande aussi les familles : il les OUVRE là où il trouve, et
+// masque celles où il ne trouve rien. Chercher dans des sections repliées
+// sans les ouvrir ne montrerait aucun résultat — le filtre aurait l'air
+// cassé alors qu'il aurait bien travaillé.
 function filtreSources(){
   const champ = document.getElementById("sourceFilter");
   const q = (champ ? champ.value : "").trim().toLowerCase();
-  document.querySelectorAll("#sourceList .source-row").forEach(l => {
-    l.style.display = !q || l.textContent.toLowerCase().includes(q) ? "" : "none";
+  document.querySelectorAll("#sourceList .src-famille").forEach(fam => {
+    let visibles = 0;
+    fam.querySelectorAll(".source-row").forEach(l => {
+      const garde = !q || l.textContent.toLowerCase().includes(q);
+      l.style.display = garde ? "" : "none";
+      if(garde) visibles++;
+    });
+    fam.hidden = q && !visibles;
+    const bouton = fam.querySelector(".src-famille-titre");
+    // Sans requête on referme : sinon une recherche laisserait les familles
+    // ouvertes derrière elle, et l'onglet redeviendrait le mur qu'on vient
+    // de supprimer.
+    if(bouton) basculeFamille(bouton, Boolean(q) && visibles > 0);
   });
 }
 

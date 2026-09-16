@@ -4997,12 +4997,44 @@ def test_cibles_tactiles_du_panneau():
     # C'est la LIGNE qui est le <label>, donc tout le rectangle bascule. Un
     # <label> dans un <label> étant invalide, l'interrupteur doit être un
     # <span> : c'est l'inverse exact de l'ancien balisage.
-    gabarit = html[html.index('list.innerHTML = settings.feeds.map'):]
-    gabarit = gabarit[:gabarit.index('`).join("")')]
+    # Ancré sur le gabarit d'une LIGNE, pas sur la boucle qui l'appelle : la
+    # liste est passée d'un map direct à un rendu par familles, et le test
+    # visait la boucle. Ce qu'il vérifie — la ligne est un label, la bascule
+    # un span — ne dépend pas de la façon dont les lignes sont assemblées.
+    gabarit = html[html.index("const ligne = f => `"):]
+    gabarit = gabarit[:gabarit.index("</label>`;")]
     check('<label class="source-row">' in gabarit,
           "la ligne entière est le label de la case")
     check('<span class="switch">' in gabarit and '<label class="switch">' not in gabarit,
           "et l'interrupteur n'est plus un label imbriqué")
+
+    # Les soixante bascules ne font plus un mur : elles sont rangées en cinq
+    # familles repliées. Chaque source doit tomber dans UNE famille et une
+    # seule — d'où un ordre de priorité, RockstarMag étant à la fois
+    # spécialisée et francophone.
+    corps = html[html.index("function familleSource("):]
+    corps = corps[:corps.index("\n}")]
+    for critere in ("f.official", "f.specialist", "news.google.com", 'f.lang === "fr"'):
+        check(critere in corps, "la famille se décide aussi sur %s" % critere)
+    familles = re.search(r"const FAMILLES_SOURCES = \[([^\]]*)\]", html).group(1)
+    check(familles.count('"') // 2 == 5, "cinq familles déclarées")
+
+    # LE piège, et il ne se voit pas dans le HTML : l'attribut `hidden` ne
+    # vaut qu'un display:none de la feuille du NAVIGATEUR, que toute règle
+    # d'auteur bat. Avec display:grid sur le corps de famille et sans cette
+    # règle, les familles se rendaient DÉPLIÉES malgré leur hidden — la
+    # liste faisait 3244 px, soit pire qu'avant le regroupement.
+    check(".src-famille-corps[hidden]{display:none;}" in html,
+          "un corps de famille masqué l'est vraiment, malgré son display:grid")
+
+    # Le filtre commande les familles : chercher dans des sections repliées
+    # sans les ouvrir ne montrerait rien, et le filtre aurait l'air cassé.
+    corps = html[html.index("function filtreSources("):]
+    corps = corps[:corps.index("\n}")]
+    check("basculeFamille(" in corps, "le filtre ouvre les familles où il trouve")
+    check("fam.hidden" in corps, "et masque celles où il ne trouve rien")
+    check("Boolean(q)" in corps,
+          "vider le filtre referme tout, sinon l'onglet redevient un mur")
 
     # Le « ? » faisait 18 px, exempté du minimum par un commentaire qui lui
     # attribuait un pseudo-élément qu'il n'avait pas. On vérifie désormais le
@@ -5109,6 +5141,25 @@ def test_panneau_parametres_accessible():
         corps = corps[:corps.index("\n}")]
         check('setAttribute("aria-pressed"' in corps,
               "%s met l'attribut à jour, il ne fait pas que poser une classe" % fn)
+
+    # Les onglets d'ARTICLES avaient le même défaut que ceux du panneau, et
+    # n'avaient pas été corrigés avec eux : ils annonçaient quatre boutons
+    # identiques à un lecteur d'écran.
+    corps = html[html.index("function marqueActif("):]
+    corps = corps[:corps.index("\n}")]
+    check('setAttribute("aria-pressed"' in corps and 'classList.toggle("active"' in corps,
+          "une bascule dit son état par la couleur ET par aria-pressed")
+    for fn in ("setTab", "setLang", "setFilter"):
+        bloc = html[html.index("function %s(" % fn):]
+        bloc = bloc[:bloc.index("\n}")]
+        check('classList.toggle("active"' not in bloc,
+              "%s passe par marqueActif au lieu de poser la classe seule" % fn)
+        check("marqueActif(" in bloc, "%s marque bien ses boutons" % fn)
+    for ident in ("tabAll", "tabRockstar", "filterAll", "tabLangAll"):
+        bloc = html[html.rindex("<", 0, html.index('id="%s"' % ident)):]
+        bloc = bloc[:bloc.index(">") + 1]
+        check("aria-pressed=" in bloc,
+              "%s déclare son état initial dans le balisage" % ident)
 
     # Aucun champ du panneau ne doit tenir son nom d'un seul placeholder :
     # il disparaît à la première frappe, et n'en est pas un pour les outils

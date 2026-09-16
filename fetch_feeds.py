@@ -281,6 +281,14 @@ FEEDS = [
     {"id": "jeuxactu", "name": "JeuxActu", "url": "https://www.jeuxactu.com/rss/ja.rss", "official": False, "lang": "fr"},
     {"id": "actugaming", "name": "ActuGaming", "url": "https://www.actugaming.net/feed/", "official": False, "lang": "fr"},
     {"id": "gamerant", "name": "Game Rant", "url": "https://gamerant.com/feed", "official": False},
+    # Jumeau du précédent. Game Rant est la 4e source native du fil en
+    # articles exclusifs (59), mais son flux n'expose que DIX entrées pour
+    # environ 77 articles publiés sur trente jours : relever MAX_ENTREES n'y
+    # change rien, c'est le flux lui-même qui est court. Une recherche
+    # Google News sur le domaine voit large où le flux voit court.
+    # Sondé le 16/09/2026 : 100 entrées, 16 pertinentes, la plus récente
+    # d'un jour. Doublé et non remplacé — le flux natif reste plus rapide.
+    {"id": "gamerant-gnews", "name": "Google News (Game Rant)", "url": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
     {"id": "dualshockers", "name": "DualShockers", "url": "https://www.dualshockers.com/feed", "official": False},
     {"id": "gta6times", "name": "GTA6 Times", "url": "https://gta6times.com/rss.xml", "official": False, "specialist_source": True},
     {"id": "gameinformer", "name": "Game Informer", "url": "https://gameinformer.com/news.xml", "official": False},
@@ -466,7 +474,7 @@ VIDEOS_ARCHIVEES = [
 # jusqu'à présent malgré la duplication FEEDS/DEFAULT_FEEDS déjà documentée
 # plus haut dans ce fichier.
 KEYWORDS = [
-    "gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gta-6", "gta-vi", "grand-theft-auto-6", "gta_6", "gta_vi", "gtaonline6", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "leonida", "cyberleek", "cyber leak", "cyberleak", "take-two", "take two", "taketwo", "take2", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "lucia caminos", "jason duval", "gta online 2"
+    "gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gtaonline6", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "leonida", "cyberleek", "cyber leak", "cyberleak", "take-two", "take two", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "lucia caminos", "jason duval", "gta online 2"
 ]
 # Nom affiché -> identifiant. Les articles portent le NOM de leur source,
 # le journal de santé son ID : sans cette table, on ne peut pas confronter
