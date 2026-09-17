@@ -1797,6 +1797,14 @@ plus favorable que la vraie notification, donc il ne testait pas la vraie
 notification. Il envoie désormais avec exactement les mêmes durée de vie et
 urgence que le récapitulatif, et un contrôle l'exige.
 
+**Confirmé sur l'appareil, le 16/09/2026.** Téléphone laissé verrouillé
+longtemps : la notification était là au déverrouillage. C'est la seule preuve
+qui compte ici, et elle ne pouvait pas venir des tests. Ceux-ci vérifient que
+`ttl` et `Urgency` sont bien transmis à `pywebpush` — pas qu'un vrai service
+de push, sur un vrai téléphone endormi, en fait ce que la norme annonce. Sans
+ce relevé, la section ne dirait que « on a corrigé ce qu'on croyait être la
+cause » ; avec lui, elle dit que c'était la bonne.
+
 **Ce que cette correction ne peut pas réparer.** L'optimisation de batterie
 appliquée au navigateur, le mode « Ne pas déranger » et les réglages du canal
 de notification sont côté téléphone. Le code peut faire en sorte que le
