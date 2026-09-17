@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-17T21:41:07.774801+00:00",
+  "generated_at": "2026-09-17T22:02:23.360778+00:00",
   "attente_recap": {
-    "articles": 0,
+    "articles": 3,
     "officiels": 0,
-    "sommet": 0
+    "sommet": 1
   },
-  "duration_seconds": 88.2,
+  "duration_seconds": 86.8,
   "decode_failures": 0,
-  "total_articles": 3160,
+  "total_articles": 3163,
   "new_this_run": 3,
   "hot_count": 14,
   "hot_threshold": 3,
@@ -460,9 +460,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 751,
-      "last_article": "2026-09-17T19:45:00+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 752,
+      "last_article": "2026-09-17T21:32:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -474,8 +474,8 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 2,
-      "articles_exclusifs": 693,
-      "last_article": "2026-09-17T20:52:22+00:00",
+      "articles_exclusifs": 695,
+      "last_article": "2026-09-17T21:45:33+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -499,7 +499,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 18,
       "last_article": "2026-09-17T15:56:00+00:00",
       "days_since_last_article": 0,
@@ -586,10 +586,10 @@
     {
       "id": "rockstarmag",
       "name": "RockstarMag",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 30,
       "last_article": "2026-09-16T10:00:39+00:00",
@@ -664,10 +664,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 24,
       "last_article": "2026-09-17T15:00:20+00:00",
@@ -775,7 +775,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T21:58:01+00:00",
-      "days_since_last_article": 20,
+      "days_since_last_article": 21,
       "status": "ok"
     },
     {
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -1093,10 +1093,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1228,8 +1228,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"0220d5837082ec620a0157251d35b362\"",
-      "modified": "Thu, 17 Sep 2026 20:59:36 GMT"
+      "etag": "W/\"b9a659655759ec87455df1fe55d60b6a\"",
+      "modified": "Thu, 17 Sep 2026 21:40:04 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1239,7 +1239,7 @@
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
       "etag": null,
-      "modified": "Thu, 17 Sep 2026 16:25:02 GMT"
+      "modified": "Thu, 17 Sep 2026 21:57:06 GMT"
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
@@ -1269,7 +1269,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 17 Sep 2026 21:38:12 GMT"
+      "modified": "Thu, 17 Sep 2026 22:01:26 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1278,8 +1278,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aac5bea-2f62\"",
-      "modified": "Thu, 17 Sep 2026 21:30:18 GMT"
+      "etag": "W/\"6aac62f0-2f62\"",
+      "modified": "Thu, 17 Sep 2026 22:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1288,8 +1288,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789680915\"",
-      "modified": "Thu, 17 Sep 2026 21:35:15 GMT"
+      "etag": "W/\"1789682078\"",
+      "modified": "Thu, 17 Sep 2026 21:54:38 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1298,8 +1298,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aac44c0-b81\"",
-      "modified": "Thu, 17 Sep 2026 19:51:28 GMT"
+      "etag": "\"6aac60ce-b82\"",
+      "modified": "Thu, 17 Sep 2026 21:51:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1309,7 +1309,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 17 Sep 2026 21:39:14 GMT"
+      "modified": "Thu, 17 Sep 2026 22:01:10 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1328,12 +1328,51 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"acb2c907dd592cae362ac70c92f6ba3f\"",
-      "modified": "Thu, 17 Sep 2026 21:12:34 GMT"
+      "etag": "W/\"e59fc578b3ebd08cbcb4b16f752713a7\"",
+      "modified": "Thu, 17 Sep 2026 21:54:15 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Preorder the GTA 6 Album on Vinyl and CD—Here’s Where to Get the Exclusives - VICE",
+      "link": "https://www.vice.com/en/via/gta-6-album-preorder/",
+      "source_link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5kakVUSUtWSUtkM090ZnhpZ2VsalA2SWVkZkxNVjE4SXQyYjJ0MTRWZkxhbjBtX1lPRWtUTVBMYzh0ZkkxRXJPQUU3Umg1YmZMUnQ4NkZqQkU0ZXVfVHc?oc=5",
+      "date": "2026-09-17T21:45:33+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/gta-vi-the-album.webp?w=1024",
+      "description": "Preorder the GTA 6 Album on Vinyl and CD—Here’s Where to Get the Exclusives&nbsp;&nbsp;VICE"
+    },
+    {
+      "title": "GTA 6 Just Got Its Own Album, With Travis Scott, Keith Richards and a $125 Vinyl - Men's Journal",
+      "link": "https://www.mensjournal.com/entertainment/gta-6-just-got-its-own-album-with-travis-scott-keith-richards-and-a-125-vinyl",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOYVgtTTU4Y2JBS2w3MGtWUlBUcGRUNlFsTUd3ZVFTTVl3RWlqUlNIeUZvX1hhREd4U1pndnM0N2Q1SHZEaU4wYTIzNlIwdkNCNWw3WDhzLUpGbUZ2Ykd4Ml9LUVFfSXp3NWpycGZoS1hiVjRYRkgyV0hzREJPTDV2UU9ESElhR2ltWmxfVkMtQjFiLUxNd3Q2OEtaZ3ByR0JSdnQwQWgtaG1meDI4ZGlVTkpxVjVQd1NVWEZr?oc=5",
+      "date": "2026-09-17T21:35:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "GTA 6 Just Got Its Own Album, With Travis Scott, Keith Richards and a $125 Vinyl&nbsp;&nbsp;Men's Journal"
+    },
+    {
+      "title": "GTA VI finalement jouable sur PC d'ici Noël ? - Gamekyo.com",
+      "link": "https://www.gamekyo.com/blog_article488022.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE10czVISHdJczV0X0EtMmItRXNGOGpkRnNQS2Z5dmluclh5bUZqeDNRcTJBeDNuaVlwenh4RU9Gd0JwNUQ4bEVCNUlEdmRpRWR4aTFpSlJ2OFVTT3c?oc=5",
+      "date": "2026-09-17T21:32:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "http://www.gamekyo.com/Webmasters/Images/grand-theft-auto-vi_20220730_060731_intro.jpg",
+      "description": "GTA VI finalement jouable sur PC d'ici Noël ?&nbsp;&nbsp;Gamekyo.com"
+    },
     {
       "title": "Twitch CEO Says GTA 6 Multiplayer Will Launch Next Year - wolfsgamingblog.com",
       "link": "https://wolfsgamingblog.com/2026/09/17/twitch-ceo-says-gta-6-multiplayer-will-launch-next-year/",
