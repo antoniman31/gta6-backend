@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-17T21:02:38.963534+00:00",
+  "generated_at": "2026-09-17T21:41:07.774801+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 93.2,
+  "duration_seconds": 88.2,
   "decode_failures": 0,
-  "total_articles": 3157,
-  "new_this_run": 12,
+  "total_articles": 3160,
+  "new_this_run": 3,
   "hot_count": 14,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -408,7 +408,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 142,
       "last_article": "2026-09-17T19:57:48+00:00",
       "days_since_last_article": 0,
@@ -421,7 +421,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 271,
       "last_article": "2026-09-17T09:41:30+00:00",
       "days_since_last_article": 0,
@@ -460,7 +460,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 751,
       "last_article": "2026-09-17T19:45:00+00:00",
       "days_since_last_article": 0,
@@ -473,8 +473,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 5,
-      "articles_exclusifs": 692,
+      "new_this_run": 2,
+      "articles_exclusifs": 693,
       "last_article": "2026-09-17T20:52:22+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -486,7 +486,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-09-17T14:26:04+00:00",
       "days_since_last_article": 0,
@@ -499,8 +499,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 17,
+      "new_this_run": 1,
+      "articles_exclusifs": 18,
       "last_article": "2026-09-17T15:56:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -551,7 +551,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 25,
       "last_article": "2026-09-17T18:10:09+00:00",
       "days_since_last_article": 0,
@@ -840,16 +840,16 @@
       "new_this_run": 0,
       "articles_exclusifs": 22,
       "last_article": "2026-09-16T21:23:56+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -1080,10 +1080,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-08-12T12:32:59+00:00",
@@ -1228,8 +1228,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"e632ee1e7ca48be6070941473944a424\"",
-      "modified": "Thu, 17 Sep 2026 20:35:59 GMT"
+      "etag": "W/\"0220d5837082ec620a0157251d35b362\"",
+      "modified": "Thu, 17 Sep 2026 20:59:36 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1253,8 +1253,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"e6b993937dd97fca57c179e66096da9b\"",
-      "modified": "Thu, 17 Sep 2026 20:30:52 GMT"
+      "etag": "W/\"12e03c9110acce7d0d6537254ff1c170\"",
+      "modified": "Thu, 17 Sep 2026 21:36:39 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1269,7 +1269,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 17 Sep 2026 21:01:35 GMT"
+      "modified": "Thu, 17 Sep 2026 21:38:12 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1278,8 +1278,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aac54e0-2f62\"",
-      "modified": "Thu, 17 Sep 2026 21:00:16 GMT"
+      "etag": "W/\"6aac5bea-2f62\"",
+      "modified": "Thu, 17 Sep 2026 21:30:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1288,8 +1288,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789665295\"",
-      "modified": "Thu, 17 Sep 2026 17:14:55 GMT"
+      "etag": "W/\"1789680915\"",
+      "modified": "Thu, 17 Sep 2026 21:35:15 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1309,7 +1309,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 17 Sep 2026 21:01:37 GMT"
+      "modified": "Thu, 17 Sep 2026 21:39:14 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1323,13 +1323,13 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"d95a569a97ef4db2bf736ddfa5b559ac\"",
-      "modified": "Thu, 17 Sep 2026 20:05:11 GMT"
+      "etag": "W/\"b56d84fb9d107f3cb4cd57e1b3339c50\"",
+      "modified": "Thu, 17 Sep 2026 21:05:13 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"53b7296fe4e191a9e9557bc7947a6065\"",
-      "modified": "Thu, 17 Sep 2026 20:13:40 GMT"
+      "etag": "W/\"acb2c907dd592cae362ac70c92f6ba3f\"",
+      "modified": "Thu, 17 Sep 2026 21:12:34 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1346,6 +1346,19 @@
       "lang": null,
       "image": "https://i0.wp.com/wolfsgamingblog.com/wp-content/uploads/2026/08/gta-6-cover.jpg?fit=1200%2C675&ssl=1",
       "description": "Twitch CEO Says GTA 6 Multiplayer Will Launch Next Year&nbsp;&nbsp;wolfsgamingblog.com"
+    },
+    {
+      "title": "Grand Theft Auto VI Online to Launch Next Year, Claims Twitch CEO - Consequence of Sound",
+      "link": "https://consequence.net/2026/09/grand-theft-auto-6-online-release-date-twitch-ceo/",
+      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxONWxYanJidFpnb1FILVU5NWphT3FUNDVjZVVGWGdLRWNybGNBYzN2cjVCQXozM3pmejVmdzd3dUhmT3R3aG5WVVZYVUc1TFd5c0xTQXdBdWFvVWJMMGw1dF9tTFdiLUlpNXBvVUJsenVXckpuTWxoN1h6NERUajdfZDFCMnZQMHpCTEE?oc=5",
+      "date": "2026-09-17T20:47:05+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://consequence.net/wp-content/uploads/2026/09/grand-theft-auto-6-online-next-year-2027.jpg",
+      "description": "Grand Theft Auto VI Online to Launch Next Year, Claims Twitch CEO&nbsp;&nbsp;Consequence of Sound"
     },
     {
       "title": "Twitch chief hints GTA 6 multiplayer ‘online’ experience could land next year - digitaltrends.com",
@@ -1895,6 +1908,19 @@
       "lang": null,
       "image": "https://root-nation.com/wp-content/uploads/2026/09/gta-vi-the-album-3.jpg",
       "description": "Rockstar will release the GTA VI soundtrack on CD and vinyl&nbsp;&nbsp;Root-Nation.com"
+    },
+    {
+      "title": "GTA VI Online Gets Devastating Update, But There’s Still Good News - PlayStation LifeStyle",
+      "link": "https://www.playstationlifestyle.net/2026/09/17/gta-vi-online-update-gta-online-future/",
+      "source_link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOd0VxMXpIVlpneDJuQ1NSVTlXRWdMNThxVG9pVnNOV1FrX2d4OE1ibHdoZTFLWl84clhJLVdHdDNhVnlSdmJJZ1BzLUttd1pBYmZiOTVOYXZ2UG0zdks2d1JrN2x5a0tLYzlMQk05TG5CbExLTnNpNmFHbUtYaU8tRXozb1AzMUMyMDRTOVc2TGTSAZYBQVVfeXFMT09XUTFxUjZQWjB4XzBmelNqbUxSdTJzRE80X1NUUzB1NlZ2SXF2emVvQ01tRWZDWG04RVJnemh4RFZQM1lib3J1N0p1SUc4UU9LdHY1X0Q5a1dJR29scXRSaXdqdTZoNHIzdkRTZ0dzQ3Nob0tkNlA5bzZGQnZJLWN5aWJDVGJHZjJWVW55ZUNEc1JNRlNB?oc=5",
+      "date": "2026-09-17T17:00:45+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.playstationlifestyle.net/wp-content/uploads/sites/9/2026/09/GTA-6-1-1.jpg?resize=1200,630",
+      "description": "GTA VI Online Gets Devastating Update, But There’s Still Good News&nbsp;&nbsp;PlayStation LifeStyle"
     },
     {
       "title": "GTA VI : l’album officiel débarque avec une édition limitée à 124 € - iPhoneSoft",
@@ -2995,6 +3021,19 @@
       "description": "Album GTA 6 : où précommander les CD et vinyles de la bande originale officielle ?&nbsp;&nbsp;Numerama"
     },
     {
+      "title": "Atlantic Lands Star-Studded \"GTA VI\" Soundtrack - Hits Daily Double",
+      "link": "https://www.hitsdailydouble.com/news/releases/atlantic-grand-theft-auto-soundtrack-2026-09-17",
+      "source_link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPajZBUHgzcEhUUmYxS3NMdlhYekJKZnUwX1NWeEdzOVpzaVhqYzYyNjN6WDk1TVNQbDlSMTV2OWF1eWNpVGR0X2wxS2tMNm5vTjdsU2JENGRsWFowV1dFV0xJZ0VhZ3FRajYzY3IxU3BsQjU3Z2xWWnMzbTkxOUI4dWktU09Hc2tTMHFyMkgtYjktX3hXNlFQUQ?oc=5",
+      "date": "2026-09-17T13:49:47+00:00",
+      "source": "Google News (EN, 7 jours)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://res.cloudinary.com/hits-photos-archive/image/upload/v1789649443/GTAVI_-_Album_Art_zjaj3p.jpg",
+      "description": "Atlantic Lands Star-Studded \"GTA VI\" Soundtrack&nbsp;&nbsp;Hits Daily Double"
+    },
+    {
       "title": "GTA 6: The Album : Rockstar annonce sa bande originale - BlogNT",
       "link": "https://www.blog-nouvelles-technologies.fr/382876/gta-6-the-album-musique/",
       "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBWcGc2OGhLLU1NdjRNSTVFc2Z6T29JR3ctU2lYbUVTSjRJd1EwRlN5LXRHOGRiQzM5bTgxNk9uXzFJOHZZYlE4WGJGaVZ2d19BVU5tWXlldUlQc3hKdHlRTm03dFJxckEyTEExQWZfLWJFNmY3Y1JjcmdpQjlFajQ?oc=5",
@@ -3641,7 +3680,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://sm.ign.com/t/ign_ap/gallery/g/grand-thef/grand-theft-auto-6-the-album_kffg.1200.jpg",
-      "description": "Slideshow: Grand Theft Auto 6: The Album&nbsp;&nbsp;IGN Southeast Asia"
+      "description": "Slideshow: Grand Theft Auto 6: The Album&nbsp;&nbsp;IGN Southeast Asia",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://sea.ign.com/grand-theft-auto-vi-rumored-title/249005/grand-theft-auto-6-the-album?p=1"
+        }
+      ]
     },
     {
       "title": "GTA 6 : l'album musical sera disponible en CD et en vinyle, six morceaux à l'écoute dès maintenant - Gamekult",
