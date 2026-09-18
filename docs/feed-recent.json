@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-18T00:02:27.417352+00:00",
+  "generated_at": "2026-09-18T01:02:25.687431+00:00",
   "attente_recap": {
-    "articles": 14,
+    "articles": 22,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 83.2,
+  "duration_seconds": 86.4,
   "decode_failures": 0,
-  "total_articles": 3177,
-  "new_this_run": 10,
+  "total_articles": 3185,
+  "new_this_run": 8,
   "hot_count": 14,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -408,7 +408,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 143,
       "last_article": "2026-09-17T19:57:48+00:00",
       "days_since_last_article": 0,
@@ -443,15 +443,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 20,
-      "status": "ok"
+      "days_since_last_article": 21,
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -460,9 +460,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
-      "articles_exclusifs": 756,
-      "last_article": "2026-09-17T23:12:03+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 758,
+      "last_article": "2026-09-17T23:28:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -473,9 +473,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 5,
-      "articles_exclusifs": 701,
-      "last_article": "2026-09-17T23:53:31+00:00",
+      "new_this_run": 6,
+      "articles_exclusifs": 707,
+      "last_article": "2026-09-18T00:59:20+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -798,7 +798,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 61,
       "last_article": "2026-09-17T23:45:13+00:00",
       "days_since_last_article": 0,
@@ -846,10 +846,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -1093,10 +1093,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1157,9 +1157,9 @@
     }
   ],
   "sources_silence": {
-    "reddit-leaks": {
-      "depuis": "2026-09-17T23:02:28.932654+00:00",
-      "succes": 1,
+    "rockstar-youtube": {
+      "depuis": "2026-09-18T01:02:25.686744+00:00",
+      "succes": 0,
       "alertee": false
     }
   },
@@ -1169,7 +1169,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1220,7 +1220,7 @@
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,0,25",
+    "reddit-leaks": "25,25,25,25,25,25,25,25,25,0,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -1275,7 +1275,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 17 Sep 2026 23:58:48 GMT"
+      "modified": "Fri, 18 Sep 2026 01:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1284,8 +1284,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aac7f11-2f62\"",
-      "modified": "Fri, 18 Sep 2026 00:00:17 GMT"
+      "etag": "W/\"6aac8d1f-2f62\"",
+      "modified": "Fri, 18 Sep 2026 01:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1294,8 +1294,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1789682078\"",
-      "modified": "Thu, 17 Sep 2026 21:54:38 GMT"
+      "etag": "W/\"1789692095\"",
+      "modified": "Fri, 18 Sep 2026 00:41:35 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1315,7 +1315,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 18 Sep 2026 00:01:28 GMT"
+      "modified": "Fri, 18 Sep 2026 01:00:40 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1341,6 +1341,84 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "Rockstar Drops Six Debut Singles as ‘Grand Theft Auto VI: The Album’ Gets Full November Release Date - CULTR",
+      "link": "https://www.cultr.com/news/rockstar-drops-six-debut-singles-as-grand-theft-auto-vi-the-album-gets-full-nove/",
+      "source_link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQQm84a1BYaUIzMWwyeVR5NHVXcGZ3WFJoVDlVYVdkQ0VqRnR1RnJfdzVXXzZweGhrOTJlWHpoMnJfcmdlVjh2T24wZk5CMlY4bUlCaDBYUmFfU08zY0RHX3dhT0twNWFKckNHR2JsbW1LeHNCcDVHWXZrUlBKSmhnTWk5bjYtTWRtaTZHTTRCOFZoOVBaX1NfaWFjMEFtQWF0VG9yM3ZBalFJNkdW?oc=5",
+      "date": "2026-09-18T00:59:20+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.cultr.com/og/?title=Rockstar+Drops+Six+Debut+Singles+as+%E2%80%98Grand+Theft+Auto+VI%3A+The+Album%E2%80%99+Gets+Full+November+Release+Date&category=Gaming&img=https%3A%2F%2Fcdn.cultr.com%2F2026%2F09%2Fimages__2_.jpeg&author=Oliver+Tryon&date=2026-09-18T10%3A58%3A41",
+      "description": "Rockstar Drops Six Debut Singles as ‘Grand Theft Auto VI: The Album’ Gets Full November Release Date&nbsp;&nbsp;CULTR"
+    },
+    {
+      "title": "'Last Thing You Need' Lyrics: Morgan Wallen Drops New Song for GTA6 Album - Listen Now! - Just Jared",
+      "link": "https://www.justjared.com/2026/09/17/last-thing-you-need-lyrics-morgan-wallen-drops-new-song-for-gta6-album-listen-now/",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNZHI3TWotMC1MQTFvUEViZzdhdEhBdXpfZmtBOEhLX21TMlB4bkxyM1pPYnpBTE55UjYzOGJ0aVdDbkRNYkVHamNob3AtT1dyMndEQ1Q4cnB2ZnRqYTdFUGhadmVrMzBtWjlCWl9ld28xUWlDVXVMLXZqS2tNbHkwWXJLcjBzOGpkTk0zdkdOVDJONkU2VmlaeTVMbDdScEpMVkctWTExLU5QSjdlam0taGh4ZTloR0dNVjln?oc=5",
+      "date": "2026-09-18T00:57:32+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.justjared.com/wp-content/uploads/2026/09/morgan-wallen-last-thing-song.jpg",
+      "description": "'Last Thing You Need' Lyrics: Morgan Wallen Drops New Song for GTA6 Album - Listen Now!&nbsp;&nbsp;Just Jared"
+    },
+    {
+      "title": "Travis Scott Teases GTA 6 Cameo With Jack of Hearts Shoutout on RHYNO - GTA BOOM",
+      "link": "https://www.gtaboom.com/travis-scott-confirms-his-gta-6-track-was-recorded-at-the-jack-of-hearts-259f",
+      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOT3hKdGRGU09wTy01cVRDNzBLUHAxU2ZySlJNbmVpbjdqVXdFek56dkV3OXA0Mzd4Vm1wVkROOUk5SkI4VGNPcVRMZDRoZ1pBUWk2MXcxb0NVbVFHQlNuWnJBRWFoMmhaV0FKWGRUTGdYcFp2dmhmdjFzM3VlS2RwMDQxREw5VDRyN3B4Q1hUaGw1ei05Q3lCN0QtbmN6UWxaSVZz?oc=5",
+      "date": "2026-09-18T00:54:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/54/fe/travis-scott-confirms-his-gta-6-track-was-recorded-at-the-jack-of-hearts.jpg",
+      "description": "Travis Scott Teases GTA 6 Cameo With Jack of Hearts Shoutout on RHYNO&nbsp;&nbsp;GTA BOOM"
+    },
+    {
+      "title": "Rockstar Games Unveils 'GTA6' Soundtrack Album - Inven Global",
+      "link": "https://www.invenglobal.com/articles/26167/rockstar-games-unveils-gta6-soundtrack-album",
+      "source_link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNaDRZemh5d1V2ZnA3S0IxSlFyZGNJaVczX0xOX2FJcXVJbUplcHQ2dlQ3SndvN2M2dGlmaHAxVHdHWWpZenRhcDN1dW8xeWE1NU02eC11UVdQSU14ekVIZkJSaklFRkE1SElPcWM4THBYMlljeEhBeldUUHZBWFRndEpqMURTMU4tTG1neGV6Sno?oc=5",
+      "date": "2026-09-18T00:50:41+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static.invenglobal.com/upload/image/2026/09/18/i1789692546413050.jpeg",
+      "description": "Rockstar Games Unveils 'GTA6' Soundtrack Album&nbsp;&nbsp;Inven Global"
+    },
+    {
+      "title": "GTA 6 Will Launch With 13 Languages but No Turkish, Arabic or Hindi - GTA BOOM",
+      "link": "https://www.gtaboom.com/gta-6-is-getting-13-languages-at-launch-5ced",
+      "source_link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1OREQ1NGRsQ3hHcVR1blJPV2cyWjhUczd2THVib0ZJVUtaazFmRE9XWHlqYksyaGQxM29tdjBYdEdLdkpwYU1jRUVnZVRmdmhIUlhSRHNRTVR4cUdXMHdEOWp2YmJZbXRYT1ZIOHB3bVh2b0RKUzA4?oc=5",
+      "date": "2026-09-18T00:33:19+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1920/media/images/a8/ad/gta-6-is-getting-13-languages-at-launch.jpg",
+      "description": "GTA 6 Will Launch With 13 Languages but No Turkish, Arabic or Hindi&nbsp;&nbsp;GTA BOOM"
+    },
+    {
+      "title": "Spotify Teases GTA 6 Collaboration With Billboards in Major US Cities - TechPowerUp",
+      "link": "https://www.techpowerup.com/352815/spotify-teases-gta-6-collaboration-with-billboards-in-major-us-cities",
+      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQLTdSNXlwc2pfR0lOSkpCUVIyWXpfSmdWQTJpdjNod3ZFdHBCaGFNMzlMTGxzZVBqRVNZYmc3MVhKMXBaLUptWEFaUUpQSlZjaW52OVJ0aEc0RUZ1SS1yZjY3cy1nQjFNYkJfS1NVbTNlY2NwWFdEWUlVVUItNFhsOFR4LWZFVmhITmVKU3ZYVjhkQlZKVnh4NXJHZXlocjI3RjVKMzY0QdIBrAFBVV95cUxOREx1Y2w2OElMOGJfVElfM2E2M0RXcXh3ckUtQjBXZVAyUE5aeFlWLTRFV29zcko1cEZjYjR6QkxGcWlNeEwwUE1UMng5X1RfYTNlVGxqUzVSazJYZWNXODFNcGVQQnFZWFBDbWdEZU1nX1pwM3EzZko5N2dLUnhHcG4yMUhDNWMzOFd4ek01T1NJQWZDc3paanMyc0RyeVFkczhJaHFpYmRYa1ZH?oc=5",
+      "date": "2026-09-18T00:08:19+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://www.techpowerup.com/img/vlu2cDfCyfp3LMDs.jpg",
+      "description": "Spotify Teases GTA 6 Collaboration With Billboards in Major US Cities&nbsp;&nbsp;TechPowerUp"
+    },
+    {
       "title": "GTA Online for GTA VI will appear approximately a year after the story game - GameGPU",
       "link": "https://en.gamegpu.com/news/igry/gta-online-dlya-gta-vi-poyavitsya-primerno-cherez-god-posle-syuzhetnoj-igry",
       "source_link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOcGZTbHNkaGZUVmNaY2Q3Q1BCUUlzYlpmalZsdDNpYjhfTmRIQzJGWGNCOEppUE9ZUEF6aWRuQ0NrakxNbzEzSUZwSGh6X3hra3czUnRlX29lYnRKMXo0cFBBREk2Uk5RNXdCWHBmRFNaOTN5RVU5Vi05UkgwQTd2dS02MnJTeTVtaHE3dGVMRDFsemJyaGFaS1VqdmlyeUIwMEVVT05vR3dPbHRp?oc=5",
@@ -1365,6 +1443,32 @@
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/bazaart_eeaa2af8-c3b0-40b6-9a5d-bb27e8b37daf.jpeg?w=1600&h=900&fit=crop",
       "description": "Grand Theft Auto 6 has revealed exciting key details about its map, but one Florida-inspired location has yet to be confirmed."
+    },
+    {
+      "title": "Il n'y a pas de disque du jeu GTA 6, mais Rockstar commercialise des CD de la bande originale. - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Il-n-x27-y-a-pas-de-disque-du-jeu-GTA-6-mais-Rockstar-commercialise-des-CD-de-la-bande-originale.1402182.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxNcjUyYkxjcTdKa2J4N2R6Y1JnLVMzZVBwYVRqcmN2WmxrMkRWdm1VMVVNYjUtcF8zdktXbVlXY2psTHlDNmpkR1V4SHNoVG9YSUtlcjRfb3MySnVwa21zU2RLYWFOT2hWR3B2QlRsZ0c3X3FZWmU1dkRBdmhneHZqeFNudUZiWXc2cThsTzNIbzNKUXpTUmxwV2ZUVGJ2VmRkQk1aLVhtU1ZiMVluOFdCeE14Z0E1Q1dOV2pFX2xyak85REV2dGJJQ3gtcU5MaUgzMVVuU0ZHT0Y?oc=5",
+      "date": "2026-09-17T23:28:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/gta-6-cd-teaser.jpg",
+      "description": "Il n'y a pas de disque du jeu GTA 6, mais Rockstar commercialise des CD de la bande originale.&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "Take-Two laisse entendre que la date de sortie de GTA 6 Online est encore lointaine, l'accent étant mis sur le mode solo - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Take-Two-laisse-entendre-que-la-date-de-sortie-de-GTA-6-Online-est-encore-lointaine-l-x27-accent-etant-mis-sur-le-mode-solo.1402177.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxPbVI0dWl2SFpEaUpXTnUxdTRNM0tsQ1l4bmQ2aTYxZ1hFY3RhS2tCRG1vQVltT0hLVm1VWVh3Vk91WUlwQlZMbXVXNnEwOWc0VHFQUFFOalE3bkVBSTlZYXFDSktNTU9kVFJFRFo3bG1BdGl5dGR0c0hCNlY2M0ExRnhMdlZaLXM1SVpFT09tRjllTmR4RkVTRnVWTmhEc1J5NUdwb0VKUFgwSGtOQnoycTEtX1BVNGVtbzQwaVExQ0drT3hUVEdDbDJFOHFTdk9RLUU0LXJiQWxaX3kyVVJ3alM1ODRDenlneFZqLTFCLVV6d0F6QjFtWmhFTVE?oc=5",
+      "date": "2026-09-17T23:28:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6OnlineBannerNew.jpg",
+      "description": "Take-Two laisse entendre que la date de sortie de GTA 6 Online est encore lointaine, l'accent étant mis sur le mode solo&nbsp;&nbsp;Notebookcheck.fr"
     },
     {
       "title": "Rockstar Préparerait GTA VI Online Pour 2027, Bien Après La Sortie Solo De Novembre 2026 - Pause Hardware",
@@ -5295,110 +5399,6 @@
       "lang": null,
       "image": "https://rockstarintel.com/wp-content/uploads/2024/04/4fe134f73c98181761743c240503a19c4e2a6333.jpg",
       "description": "A new GTA Online Weekly Update has begun and the month long event called the Business Rivalries event continues. Rockstar have released a new vehicle, rotated various content around and have big, big bonuses. Check out everything happening in this GTA Online during this Event Week which will run from September 17th through 23rd. New [...]\nThe post GTA Online Event Week: New Car And Rewards (September 17th-23rd) appeared first on RockstarINTEL."
-    },
-    {
-      "title": "GTA 6 : Rockstar promet le monde le plus vaste, profond et peuplé de son histoire - La Crème Du Gaming",
-      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-rockstar-promet-le-monde-le-plus-vaste-profond-et-peuple-de-son-histoire-225582.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxNR1ppa0d2cGNoVzNfaFU4Um1XQllvc1QzWTMtOFNzdEI0R3Y0b1ZPWTg2Y0ZibEFwb1ZzRzZsNS1rRVBBay1rUW9KZkVPX1ZzTU5Bd211N2JjYkZ4N2xZQUFlVXpRODdTeU1OUVNLc3V6Vkdodi1aSGx2VU5GUGF1RHpiQUl6S0hFaWtCODhvUEp3cXJ4cUMySFFSWWpzejVaczdZbWh1S1BEOC14NFVRV2daRTFabDZFMkw4bUZiSzRFemJ5NWtEeXVuaGgzcThSckE?oc=5",
-      "date": "2026-09-16T19:30:31+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-rockstar-promet-le-monde-le-plus-vaste-profond-et-peuple-de-son-histoire.png",
-      "description": "GTA 6 : Rockstar promet le monde le plus vaste, profond et peuplé de son histoire&nbsp;&nbsp;La Crème Du Gaming"
-    },
-    {
-      "title": "Metroid Ravenous Logo Memes Make Phrases Like “Girl Dinner” And “They Took My Ass” Look So Metal",
-      "link": "https://www.gamespot.com/articles/metroid-ravenous-logo-memes-make-phrases-like-girl-dinner-and-they-took-my-ass-look-so-metal/",
-      "source_link": null,
-      "date": "2026-09-16T19:16:04+00:00",
-      "source": "GameSpot",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/NS2_1x1_MetroidRavenous_KeyArt1.jpg?w=300",
-      "description": "Hype emanating from the reveal of Metroid Ravenous has translated into an onslaught of memes after a logo generator circulated online. If you're on Reddit or Bluesky, you may have seen the instantly iconic image of Samus Aran aggressively pinning down a mysterious enemy for consumption, but now accompanied by stupid text like \"I ASKED FOR NO PICKLES\" in the Metroid Ravenous font.\n\n\n\nThe Pixelframe Design website unveiled a tool that lets anyone input any text and style it to look like the grainy"
-    },
-    {
-      "title": "Resident Evil Is Now The Highest-Rated Gaming Movie Ever",
-      "link": "https://www.gamespot.com/articles/resident-evil-is-now-the-highest-rated-gaming-movie-ever/",
-      "source_link": null,
-      "date": "2026-09-16T18:44:16+00:00",
-      "source": "GameSpot",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.gamespot.com/wp-content/uploads/2026/09/REMovie-Large.jpeg?w=300",
-      "description": "The Resident Evil movie from Weapons and Barbarian director Zach Cregger releases in theaters on September 18. Reviews from critics went live today, and the movie is earning high scores. GameSpot's Resident Evil review scored it an 8 and said it successfully captures the breathless terror of the games.\n\n\n\nIn fact, it's now the highest-rated video game movie ever. It boasts a mightily impressive 96% on Rotten Tomatoes from 71 reviews and an equally impressive 80 on GameSpot sister site Metacritic"
-    },
-    {
-      "title": "GTA 6 Soundtrack Heats Up: Travis Scott, Future, and More Tease Involvement as GTA 5 Reportedly Loses Tracks to Licensing Expiration - 玩具人 TOY PEOPLE",
-      "link": "https://www.toy-people.com/en/?p=114485",
-      "source_link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBfOWFVZXJuZm8xdmFaczJPQzlpbmFwZDVtY0dpY3hEOTFKY3p3SWtTM1NQUlVwR05QZGtmcktHZkFpWVlXbGxxY1EyUEJxQnVq?oc=5",
-      "date": "2026-09-16T18:20:32+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://img.toy-people.com/member/178958277442.jpg",
-      "description": "GTA 6 Soundtrack Heats Up: Travis Scott, Future, and More Tease Involvement as GTA 5 Reportedly Loses Tracks to Licensing Expiration&nbsp;&nbsp;玩具人 TOY PEOPLE"
-    },
-    {
-      "title": "Drama Around A PS5 Exploit, AI-Coding, Linux, And GTA 6 Has One Popular Hacker Calling It Quits",
-      "link": "https://kotaku.com/popular-playstation-hacker-calling-it-quits-due-to-ai-using-slop-kiddies-reporting-important-bug-to-sony-2000735105",
-      "source_link": null,
-      "date": "2026-09-16T18:20:26+00:00",
-      "source": "Kotaku",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://kotaku.com/app/uploads/2026/04/gta5hack-1200x675.jpg",
-      "description": "An anticipated open-source Linux mod for newer PS5 consoles might now be in danger of never happening"
-    },
-    {
-      "title": "Travis Scott’s Latest Move Has ‘GTA VI’ Fans Very Curious - Yahoo",
-      "link": "https://www.yahoo.com/news/videos/travis-scott-latest-move-gta-181203673.html",
-      "source_link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOWkVqd2EtaF9kUnFRQ1pEWkQzcnhVSFBQX2VFTmRBMzNkejRXcUpFUGZtWlNXMk9MTVlUbDlBN1VodjVpeXlxdWxXM0VMWXE5Rl9aMGloMEdHMUFfUTJLY3dkcEV5MzROanJ1MVB1TkRNaUo1Rm5QZExwcmY5blBDUXJhRQ?oc=5",
-      "date": "2026-09-16T18:12:03+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://s.yimg.com/lo/mysterio/api/b5476c005c2c709c23754ed64fd95c2ffc1e4914d18a06f1d7da6c9b477c27e1/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Frealitytea_videos_283%2F9651fb07dbbea3885916398fc4c42329.png",
-      "description": "Travis Scott’s Latest Move Has ‘GTA VI’ Fans Very Curious&nbsp;&nbsp;Yahoo"
-    },
-    {
-      "title": "JE RÉAGIS , GTA 6 : Le jeu qui va briser des couples - YouTube",
-      "link": "https://youtu.be/BI1HZzGvMV0?is=xenIuh_ejnH11OJj",
-      "source_link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE41enhKM1RUMk9BUTNlOUVKMlpudE9SQWM2M3NhVTlZUG0xR1FEQXpNcWVuR29VU2RkdE4xQlR5bTkyRTM4VmlnY2VZc0xqeDBxcVJ0SUZQeDZhbm1u?oc=5",
-      "date": "2026-09-16T18:06:42+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://i.ytimg.com/vi/BI1HZzGvMV0/hqdefault.jpg",
-      "description": "JE RÉAGIS , GTA 6 : Le jeu qui va briser des couples&nbsp;&nbsp;YouTube"
-    },
-    {
-      "title": "GTA 6 Extended Look Causes Surge in Console Prices",
-      "link": "https://gamerant.com/gta-6-extended-look-console-price-increases-low-stock/",
-      "source_link": null,
-      "date": "2026-09-16T18:00:13+00:00",
-      "source": "Game Rant",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-extended-look-causes-surge-in-console-prices.jpg?w=1600&h=900&fit=crop",
-      "description": "Rockstar's latest GTA 6 presentation appears to have triggered another wave of console demand ahead of the game's November launch."
     }
   ],
   "partial": true,
