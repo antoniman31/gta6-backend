@@ -491,7 +491,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1250
+qui permet de tester tout le pipeline sans sortir de la machine. **1259
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1813,6 +1813,98 @@ message attende ; il ne peut pas obtenir le droit de s'afficher.
 **Et ce qui n'était pas un défaut.** Entre minuit et 5h heure de Paris, seules
 les annonces officielles notifient — c'est la pause nocturne, voulue. Un test
 nocturne resté silencieux ne prouvait rien.
+
+## Une seconde de coupure devenait « backend inaccessible »
+
+Signalé le 17/09/2026, capture à l'appui : l'app affichait **MODE DIRECT** et
+ne voyait plus le backend. L'hypothèse de départ — « `feed.json` est devenu
+trop gros pour GitHub Pages » — était fausse, et c'est la façon dont elle a
+été écartée qui vaut d'être notée.
+
+### Trois mesures contre une intuition
+
+**La limite de Pages est de 1 Go pour tout le site.** Le site fait 3,4 Mo.
+2,8 Mo pour un fichier n'approche rien.
+
+**Le message aurait été différent.** Le code fait
+`throw new Error("HTTP " + res.status)` : un refus du serveur s'écrirait
+« HTTP 404 ». Le journal disait « Failed to fetch » — une requête qui n'est
+jamais partie.
+
+**Le chronomètre a tranché.** Les quatre lignes du journal portaient la même
+seconde, **22:26:43**. Un fichier trop lourd aurait mis plusieurs secondes à
+échouer. Un échec instantané ne parle pas de taille, il parle de réseau.
+
+Et l'app, rejouée dans un vrai Chromium avec ce `feed.json` de 2,8 Mo :
+300 articles lus, 300 affichés, zéro erreur.
+
+### Le vrai défaut, dans un commentaire trop confiant
+
+La lecture tente d'abord `feed-recent.json` (332 Ko) et ne prend
+`feed.json` (2,8 Mo) qu'en repli. Le journal montrait le **gros** fichier.
+
+La tentative sur le fichier allégé était enveloppée dans un `try/catch`
+annoté « pas de fichier allégé ». Ce commentaire disait la seule cause
+d'échec que son auteur avait en tête — le fichier absent, sur un backend
+d'une version antérieure. **Une coupure réseau tombe dans le même `catch`**,
+et l'app allait alors réclamer huit fois plus de données sur la connexion qui
+venait précisément de flancher.
+
+Les deux échecs se ressemblent dans le code et n'ont rien à voir :
+
+| ce qui se passe | bon repli |
+|---|---|
+| le serveur répond **404** | le fichier complet — il n'y a pas d'allégé |
+| la requête **n'arrive pas** | surtout pas le fichier complet |
+
+Désormais les deux sont distingués. Sur une panne réseau, le fichier allégé
+est **retenté une fois** après 1,2 s ; si ça échoue encore, l'échec remonte et
+le mode direct prend la main — au lieu d'aller chercher 2,8 Mo pour rien.
+
+### Un délai maximal, et un vrai
+
+Aucune des deux lectures n'était bornée : une connexion qui répond au ralenti
+laissait l'app suspendue sans fin. Elles passent maintenant par un
+`AbortController` à **15 s**.
+
+`AbortController` et pas une course de promesses : lui **annule** la requête.
+Une course rendrait la main au bout du délai mais laisserait le téléchargement
+se poursuivre en arrière-plan, sur la connexion qu'on cherche justement à
+ménager.
+
+### Ce que les contrôles voient maintenant
+
+**Six contrôles rendus**, qui fabriquent la panne avec `page.route()` — donc
+sans le moindre accès réseau, et parfaitement déterministes :
+
+| scénario | attendu |
+|---|---|
+| nominal | seul le fichier allégé est demandé |
+| coupure réseau | l'allégé est retenté une fois, le complet **jamais** demandé |
+| 404 sur l'allégé | on passe bien au complet, 3145 articles chargés |
+
+L'ancien code a été remis en place pour vérifier qu'ils le prennent : sur la
+coupure, il réclamait bien `feed.json`. **Huit contrôles de lecture** s'y
+ajoutent dans `test_pipeline.py` — dont un qui interdit le retour de la phrase
+« pas de fichier allégé » sur ce `catch`.
+
+Celui-là a d'abord échoué sur sa propre documentation, le commentaire qui
+explique le défaut citant forcément la phrase interdite. Même piège que le
+16/09 avec `|| ""`, même correctif : retirer les commentaires avant de
+chercher.
+
+### Ce qui n'était pas un défaut
+
+**La pointe du 17/09.** Le fil a pris 227 articles en dix heures, contre 67 par
+jour d'habitude. Ce n'est pas la déduplication qui a lâché : **222 des 230
+nouveaux liens sont datés du 17/09**, de la vraie actualité — Rockstar a
+annoncé *GTA 6: The Album*. La moyenne des sept jours pleins est de
+**74/jour**, à peine au-dessus de l'estimation de l'audit, et le plafond reste
+à environ huit mois. La déduplication a d'ailleurs fusionné 18 articles ce
+jour-là, et ne laisse que 7 paires proches sur 26 000 comparaisons.
+
+**Les « 0 source(s) active(s) »** du journal. Elles avaient été désactivées à
+la main, pour une capture d'écran plus lisible. Le mode direct fonctionne.
 
 ## Récapitulatif hebdomadaire — supprimé le 15/09/2026
 

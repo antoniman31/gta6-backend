@@ -33,9 +33,16 @@ ignorer le rouge, et le vrai défaut passe avec le reste. N'entrent donc ici
 que des mesures DÉTERMINISTES — des géométries, des présences, des attributs.
 
   On inclut     : tailles de cible, débordements, replié/déplié, centrage,
-                  état annoncé, et trois comportements au clic.
+                  état annoncé, trois comportements au clic, et le repli de
+                  lecture du backend.
   On n'inclut pas : comparaisons d'images, animations, délais, parcours à
                   plusieurs étapes, tout ce qui dépend du réseau.
+
+Le repli du backend mérite un mot, parce qu'il a l'air d'enfreindre la règle
+ci-dessus. Il ne dépend d'aucun réseau : le test FABRIQUE la panne avec
+page.route(), qui intercepte la requête avant qu'elle ne parte. Une coupure
+simulée est aussi déterministe qu'une géométrie — et c'est le seul moyen de
+voir ce défaut, invisible à la lecture comme en conditions normales.
 
 Le fil est servi depuis un serveur local jetable : aucun accès réseau, donc
 aucune raison de rougir un jour où un site tiers est lent.
@@ -370,6 +377,72 @@ def test_comportements(page, largeur):
     check(ecart >= 8, "le bilan garde de l'air sous les boutons (%d px)" % ecart)
 
 
+def test_repli_backend(nav, url):
+    """Une coupure réseau ne doit pas faire réclamer le fichier complet.
+
+    Le défaut, constaté sur le téléphone d'Antoni le 17/09/2026 : les quatre
+    lignes du journal portaient la MÊME seconde, et celle du milieu disait
+    « Lecture directe du backend : …/feed.json » — le fichier de 2,8 Mo, alors
+    que l'app aurait dû lire celui de 332 Ko.
+
+    La cause tenait dans un commentaire trop confiant. La tentative sur le
+    fichier allégé était enveloppée dans un try/catch annoté « pas de fichier
+    allégé » : il ne prévoyait qu'une cause d'échec, le fichier absent. Une
+    coupure réseau tombait dans le même catch, et l'app allait demander huit
+    fois plus de données sur la connexion qui venait de flancher.
+
+    Les deux échecs se ressemblent dans le code et n'ont rien à voir :
+      - le serveur répond 404  -> le fichier complet est le BON repli ;
+      - la requête n'arrive pas -> le fichier complet est le PIRE repli.
+    """
+    base = url.rsplit("/", 1)[0]
+
+    def joue(nom, brancher):
+        ctx = nav.new_context(viewport={"width": 390, "height": 850})
+        page = ctx.new_page()
+        demandes = []
+        page.on("request", lambda r: demandes.append(r.url.split("/")[-1].split("?")[0])
+                if ("feed.json" in r.url or "feed-recent.json" in r.url) else None)
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        brancher(page)
+        page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+        res = page.evaluate("""async () => {
+            try { await checkFromBackend(false); return {ok: true}; }
+            catch(e){ return {ok: false}; }
+        }""")
+        articles = page.evaluate("lastItems.length")
+        ctx.close()
+        return demandes, res, articles
+
+    # --- Nominal : le petit fichier suffit, le gros n'est jamais demandé.
+    d, res, n = joue("nominal", lambda pg: None)
+    check(res["ok"] and n > 0,
+          "[repli] lecture normale : %d article(s) chargé(s)" % n)
+    check(d.count("feed.json") == 0,
+          "[repli] lecture normale : le fichier complet n'est pas demandé (%s)" % d)
+
+    # --- LE défaut : coupure réseau sur le fichier allégé.
+    d, res, n = joue("coupure",
+                     lambda pg: pg.route("**/feed-recent.json*",
+                                         lambda route: route.abort("failed")))
+    check(d.count("feed.json") == 0,
+          "[repli] coupure réseau : le fichier complet n'est JAMAIS réclamé (%s)" % d)
+    check(d.count("feed-recent.json") == 2,
+          "[repli] coupure réseau : le fichier allégé est retenté une fois (%s)" % d)
+    check(not res["ok"],
+          "[repli] coupure réseau : l'échec remonte, pour laisser la main au mode direct")
+
+    # --- Repli légitime : le fichier allégé n'existe pas.
+    d, res, n = joue("404",
+                     lambda pg: pg.route("**/feed-recent.json*",
+                                         lambda route: route.fulfill(status=404, body="")))
+    check(d.count("feed.json") == 1,
+          "[repli] fichier allégé absent (404) : on passe bien au complet (%s)" % d)
+    check(res["ok"] and n > 0,
+          "[repli] fichier allégé absent (404) : %d article(s) chargé(s)" % n)
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -405,6 +478,10 @@ def main():
                       "[%d px] aucune erreur JavaScript%s"
                       % (largeur, "" if not erreurs else " — " + erreurs[0][:120]))
                 ctx.close()
+            # Hors de la boucle des largeurs : ce contrôle ne regarde pas une
+            # géométrie, et ouvre ses propres contextes pour brancher ses
+            # interceptions avant le chargement de la page.
+            test_repli_backend(nav, url)
             nav.close()
     finally:
         srv.shutdown()
