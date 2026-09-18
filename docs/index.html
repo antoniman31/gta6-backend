@@ -2833,6 +2833,25 @@ async function checkNow(force){
       return;
     }catch(e){
       addLog("fail", `Backend inaccessible (${escapeHtml(e.message || "erreur inconnue")}) — repli sur le mode direct.`);
+      // « Backend inaccessible » ne dit pas OÙ chercher, et la nuance est
+      // pourtant décisive.
+      //
+      // Un refus du serveur porte toujours un code, et checkFromBackend
+      // l'écrit tel quel (« HTTP 404 », « HTTP 503 ») : le problème est
+      // alors en ligne. Une erreur SANS code veut dire que la requête n'a
+      // jamais atteint le serveur — elle a été arrêtée avant, sur
+      // l'appareil ou sur le réseau local.
+      //
+      // Le 18/09/2026, un DNS privé bloquait github.io. Trois hypothèses
+      // ont été explorées côté serveur — fichier trop gros, quota Pages,
+      // bridage — toutes fausses, et toutes écartées par ce seul détail :
+      // « Failed to fetch » n'est pas un code HTTP. Cette ligne fait dire
+      // à l'app ce qu'il a fallu deux jours pour déduire.
+      if(!/^HTTP \d/.test(String(e && e.message || ""))){
+        addLog("info", "Cette erreur n'a pas de code HTTP : la requête n'a pas atteint "
+          + "le serveur. Regarde du côté DNS privé, VPN ou bloqueur de pub — "
+          + "github.io figure sur certaines listes de blocage.");
+      }
     }
   }
 

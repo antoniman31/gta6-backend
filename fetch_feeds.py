@@ -3018,7 +3018,9 @@ def main():
     # perte massive. Rien n'est écrit si le contrôle échoue — l'ancien
     # feed.json reste servi et le job passe en échec, ce qui déclenche le
     # signalement au service de surveillance.
-    feed_store.valide_avant_ecriture(output, stored)
+    # `dropped` vient de cap_items : la purge est DÉCLARÉE au garde-fou,
+    # sinon l'abaissement du plafond ferait échouer le passage qui l'applique.
+    feed_store.valide_avant_ecriture(output, stored, elagues=dropped)
 
     nb_allege = feed_store.write_feed_pair(output)
     print(f"Fichier allégé écrit : {nb_allege} article(s) dans docs/feed-recent.json")

@@ -23,7 +23,18 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 # Au-delà de ce nombre d'articles, les plus anciens sont retirés pour que le
 # fichier (et le temps de déduplication) n'augmentent pas indéfiniment.
-MAX_HISTORY_SIZE = 20000
+#
+# Abaissé de 20000 à 1500 le 18/09/2026. 20000 n'était pas un plafond, c'était
+# une absence de plafond : à 74 articles par jour, il n'aurait mordu que dans
+# huit mois, et feed.json aurait alors pesé 15 Mo — réécrits vingt-quatre fois
+# par jour. Il avait déjà atteint 2,5 Mo pour 3202 articles.
+#
+# 1500 est choisi sur ce que le fichier SERT vraiment. L'ouverture normale de
+# l'app lit feed-recent.json (300 articles) ; l'historique complet n'est
+# téléchargé que pour la recherche et le bouton « Tout charger ». Le plafond
+# décide donc de la profondeur de recherche, pas de ce qui s'affiche.
+# 1500 articles font environ dix-sept jours au régime actuel, pour 1,4 Mo.
+MAX_HISTORY_SIZE = 1500
 
 # Nombre de sources distinctes à partir duquel un sujet est considéré comme
 # une actualité majeure. Un article isolé est en général une reprise ou de
@@ -134,29 +145,50 @@ def sort_items(items):
     return sorted(items, key=lambda item: parse_date_key(item.get("date")), reverse=True)
 
 
+def item_protege(item):
+    """Un article que le plafond ne retirera jamais, quel que soit son âge.
+
+    Trois familles, et la même raison pour les trois : ce qu'on ne retrouve
+    pas ailleurs. Une reprise d'actualité se re-trouve sur dix sites ; ces
+    trois-là, non.
+
+      - « official » : les publications de Rockstar. Ce sont les PLUS
+        ANCIENNES de l'historique — l'annonce, le premier trailer, toute la
+        période d'attente — donc exactement celles qu'une troncature par la
+        fin emporterait en premier.
+      - « rockstarmag » : la source française de référence du fil, suivie
+        pour elle-même et pas pour sa reprise d'une dépêche.
+      - une actualité MAJEURE (HOT_SOURCE_THRESHOLD rédactions ou plus) :
+        quand trois rédactions couvrent le même sujet, c'est un évènement.
+        Les grosses journées sont précisément celles qu'un plafond au
+        compte emporte en premier, puisqu'elles produisent le plus de
+        volume.
+
+    Elles sont 116 sur 3 202 au 18/09/2026, soit 3,6 % : les protéger pour
+    toujours ne coûte presque rien en place.
+    """
+    if item.get("official") or item.get("rockstarmag"):
+        return True
+    return 1 + len(item.get("extraSources") or []) >= HOT_SOURCE_THRESHOLD
+
+
 def cap_items(items, max_size=MAX_HISTORY_SIZE):
-    """Plafonne l'historique en retirant les articles NON OFFICIELS les plus anciens.
+    """Plafonne l'historique en retirant les articles NON PROTÉGÉS les plus anciens.
 
     À n'appeler que sur une liste DÉJÀ triée par sort_items : sur une liste
     mal triée, la troncature retirerait les mauvais articles.
 
-    Les publications de Rockstar ne se retirent jamais. Ce sont les plus
-    anciennes de l'historique — l'annonce, le premier trailer, toute la
-    période d'attente — donc exactement celles qu'une troncature par la fin
-    emporterait en premier. Ce sont aussi les seules irremplaçables : la
-    reprise d'un site d'actu se retrouve ailleurs, le billet officiel non.
-    Elles sont 30 sur 1 512 aujourd'hui, la protection ne coûte donc rien
-    en place.
+    Ce qui est protégé, et pourquoi : voir item_protege.
 
     Le plafond reste un vrai plafond : ce qui est épargné à un article
-    officiel est pris sur un article ordinaire plus ancien, la liste
-    retombe bien à max_size.
+    protégé est pris sur un article ordinaire plus ancien, la liste retombe
+    bien à max_size.
 
     Un seul cas la dépasse : s'il n'y a pas assez d'articles ordinaires à
-    retirer, parce que les officiels seuls rempliraient l'historique. La
+    retirer, parce que les protégés seuls rempliraient l'historique. La
     liste reste alors plus longue que le plafond — dépasser d'un peu vaut
-    mieux que jeter ce qu'on a promis de garder. Inatteignable en pratique
-    (il faudrait 20 000 publications de Rockstar), mais une fonction ne
+    mieux que jeter ce qu'on a promis de garder. Loin d'être atteint
+    aujourd'hui (116 protégés pour un plafond de 1500), mais une fonction ne
     doit pas dépendre d'un « ça n'arrivera pas ».
     """
     a_retirer = len(items) - max_size
@@ -168,7 +200,7 @@ def cap_items(items, max_size=MAX_HISTORY_SIZE):
     gardes = []
     retires = 0
     for item in reversed(items):
-        if retires < a_retirer and not item.get("official"):
+        if retires < a_retirer and not item_protege(item):
             retires += 1
             continue
         gardes.append(item)
@@ -310,7 +342,7 @@ PERTE_MAX_RATIO = 0.10
 PERTE_MAX_ABSOLUE = 50
 
 
-def valide_avant_ecriture(data, precedent=None):
+def valide_avant_ecriture(data, precedent=None, elagues=0):
     """Vérifie qu'un flux est publiable, et lève FeedInvalide sinon.
 
     Publier un fichier abîmé est pire que ne rien publier : l'app le charge,
@@ -322,6 +354,16 @@ def valide_avant_ecriture(data, precedent=None):
     chute anormale du nombre d'articles. Une déduplication rétroactive en
     retire légitimement quelques-uns ; en perdre un dixième d'un coup est un
     bug, pas un nettoyage.
+
+    `elagues` : le nombre d'articles que cap_items a retirés VOLONTAIREMENT.
+    Sans ce paramètre, abaisser le plafond ferait échouer le premier passage
+    qui l'applique — au 18/09/2026, l'historique tombe de 3202 à ~1600, soit
+    la moitié : très au-delà du seuil de perte. Or ce n'est pas une perte,
+    c'est la purge demandée, et cap_items en rend le compte exact.
+
+    Le garde-fou n'en est pas affaibli : on ne soustrait que ce qui a été
+    délibérément retiré et compté. Un article qui disparaît EN PLUS de
+    l'élagage fait toujours monter le total et déclenche l'alerte.
     """
     items = data.get("items")
     if not isinstance(items, list):
@@ -341,11 +383,12 @@ def valide_avant_ecriture(data, precedent=None):
         raise FeedInvalide(f"{doublons} lien(s) en double — la déduplication a échoué")
 
     avant = len((precedent or {}).get("items") or [])
-    perdus = avant - len(items)
+    perdus = avant - len(items) - max(0, elagues)
     if avant and perdus > PERTE_MAX_ABSOLUE and perdus > avant * PERTE_MAX_RATIO:
         raise FeedInvalide(
             f"{perdus} articles perdus sur {avant} "
-            f"({100 * perdus / avant:.0f} %) — trop pour une purge normale")
+            f"({100 * perdus / avant:.0f} %) hors élagage volontaire "
+            f"({max(0, elagues)}) — trop pour une purge normale")
 
     return len(items)
 
