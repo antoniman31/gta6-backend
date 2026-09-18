@@ -2579,6 +2579,30 @@ function avecAntiCache(url){
   return url + (url.includes("?") ? "&" : "?") + "_t=" + Date.now();
 }
 
+// Délai maximal d'une lecture du backend, et pause avant la seconde
+// tentative sur le fichier allégé.
+//
+// Sans délai, une connexion qui répond au ralenti laissait l'app suspendue
+// sans fin : aucun article, aucun message, rien à quoi se raccrocher.
+const BACKEND_TIMEOUT_MS = 15000;
+const RECENT_RETRY_DELAY_MS = 1200;
+
+function pause(ms){
+  return new Promise(r => setTimeout(r, ms));
+}
+
+// AbortController, et pas une course de promesses : lui ANNULE vraiment la
+// requête. Une course rendrait la main au bout du délai mais laisserait le
+// téléchargement se poursuivre en arrière-plan — sur la connexion qu'on
+// cherche précisément à ménager.
+function fetchAvecDelai(url, ms){
+  if(typeof AbortController === "undefined") return fetch(url);
+  const ctrl = new AbortController();
+  const minuteur = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { signal: ctrl.signal })
+    .finally(() => clearTimeout(minuteur));
+}
+
 async function checkFromBackend(force){
   const complet = settings.backendUrl;
   const allege = recentUrlFrom(complet);
@@ -2587,18 +2611,51 @@ async function checkFromBackend(force){
   // allégé : ~50 Ko compressés contre ~164 Ko, à chaque ouverture.
   let url = complet;
   if(allege && !force){
-    try{
-      const essai = await fetch(avecAntiCache(allege));
-      if(essai.ok){
-        const data = await essai.json();
-        addLog("info", `Lecture du backend (allégé) : ${escapeHtml(allege)}`);
-        return await applyBackendData(data, allege);
+    // Deux échecs très différents arrivaient ici par le même chemin, et les
+    // confondre coûtait cher.
+    //
+    //   - Le serveur RÉPOND et dit non (404) : le fichier allégé n'existe
+    //     pas, c'est un backend d'une version antérieure. Demander le
+    //     fichier complet est alors exactement la bonne réaction.
+    //   - La requête N'ARRIVE PAS (« Failed to fetch ») : réseau coupé,
+    //     DNS, tunnel. Le fichier complet pèse huit fois plus lourd et
+    //     partirait sur la connexion qui vient justement de flancher.
+    //
+    // L'ancien code ne voyait que le premier cas — son commentaire disait
+    // « pas de fichier allégé ». Le 17/09/2026 une micro-coupure d'une
+    // seconde a donc fait réclamer 2,8 Mo, échouer, et basculer en mode
+    // direct : le journal montrait les quatre lignes à la même seconde.
+    let panneReseau = null;
+    for(let tentative = 0; tentative < 2; tentative++){
+      try{
+        const rep = await fetchAvecDelai(avecAntiCache(allege), BACKEND_TIMEOUT_MS);
+        if(rep.ok){
+          const data = await rep.json();
+          addLog("info", `Lecture du backend (allégé) : ${escapeHtml(allege)}`);
+          return await applyBackendData(data, allege);
+        }
+        // Réponse reçue, mais négative : le fichier n'est pas là. On sort
+        // vers le fichier complet, qui est le bon repli pour ce cas-là.
+        panneReseau = null;
+        break;
+      }catch(e){
+        panneReseau = e;
+        // Une seule seconde chance, et seulement sur le PETIT fichier : une
+        // coupure d'une seconde se rattrape, une vraie panne se constate
+        // vite. Insister davantage ferait patienter devant un mode direct
+        // qui, lui, fonctionne.
+        if(tentative === 0) await pause(RECENT_RETRY_DELAY_MS);
       }
-    }catch(e){ /* pas de fichier allégé : on prend le complet */ }
+    }
+    if(panneReseau){
+      addLog("fail", "Fichier allégé injoignable après deux tentatives — "
+        + "on ne réclame pas le fichier complet sur une connexion qui flanche.");
+      throw panneReseau;
+    }
   }
 
   addLog("info", `Lecture directe du backend : ${escapeHtml(url)}`);
-  const res = await fetch(avecAntiCache(url));
+  const res = await fetchAvecDelai(avecAntiCache(url), BACKEND_TIMEOUT_MS);
   if(!res.ok) throw new Error("HTTP " + res.status);
   const data = await res.json();
   return await applyBackendData(data, url);

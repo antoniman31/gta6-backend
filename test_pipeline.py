@@ -5696,6 +5696,57 @@ def test_icones_de_lapp():
               % (entree["src"], couleur))
 
 
+
+def test_lecture_backend_ne_gonfle_pas_sur_une_coupure():
+    print("\n[app] une coupure réseau ne doit pas faire réclamer le gros fichier")
+    import re
+    page = open("docs/index.html", encoding="utf-8").read()
+
+    corps = page[page.index("async function checkFromBackend"):]
+    corps = corps[:corps.index("\nasync function applyBackendData")]
+    # Sans cette ligne, le test échouerait sur sa propre documentation : le
+    # commentaire qui EXPLIQUE l'ancien défaut cite forcément la phrase
+    # interdite. Déjà rencontré le 16/09 avec `|| ""`.
+    sans_commentaires = re.sub(r"//.*", "", corps)
+
+    # Le défaut du 17/09/2026 tenait dans un commentaire trop confiant :
+    # « pas de fichier allégé » sur un catch qui attrapait AUSSI les pannes
+    # réseau. L'app demandait alors feed.json (2,8 Mo) sur la connexion qui
+    # venait de flancher. Ce test interdit le retour de cette confusion.
+    check("pas de fichier allégé" not in sans_commentaires,
+          "le catch ne prétend plus que le seul échec possible est un fichier absent")
+    check("panneReseau" in corps,
+          "checkFromBackend distingue une panne réseau d'une réponse négative")
+    check(corps.count("throw panneReseau") == 1,
+          "une panne réseau remonte, au lieu de basculer sur le fichier complet")
+
+    # Un délai maximal, et un VRAI : une course de promesses rendrait la main
+    # sans annuler le téléchargement, qui continuerait à consommer la
+    # connexion qu'on cherche à ménager.
+    check("AbortController" in page and "ctrl.abort()" in page,
+          "les lectures du backend sont annulables (AbortController)")
+    m = re.search(r"const BACKEND_TIMEOUT_MS\s*=\s*(\d+)", page)
+    check(m is not None, "un délai maximal de lecture est défini")
+    if m:
+        ms = int(m.group(1))
+        check(5000 <= ms <= 30000,
+              "ce délai vaut %d ms — assez pour une 3G lente, assez court "
+              "pour ne pas figer l'app" % ms)
+
+    # Les DEUX lectures doivent l'utiliser : n'en protéger qu'une laisserait
+    # exactement le chemin le plus lourd sans garde-fou.
+    check(corps.count("fetchAvecDelai(avecAntiCache(") == 2,
+          "le fichier allégé ET le fichier complet passent par le délai maximal")
+    check("await fetch(avecAntiCache(" not in corps,
+          "plus aucune lecture du backend ne part sans délai")
+
+    # Une seule seconde chance : insister ferait patienter devant un mode
+    # direct qui, lui, fonctionne.
+    m = re.search(r"tentative < (\d+)", corps)
+    check(m is not None and int(m.group(1)) == 2,
+          "le fichier allégé est retenté exactement une fois")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -5795,6 +5846,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_haut_de_page_une_seule_carte,
            test_validation_avant_ecriture,
            test_badge_de_notification_a_un_canal_alpha,
+           test_lecture_backend_ne_gonfle_pas_sur_une_coupure,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
     fn()
