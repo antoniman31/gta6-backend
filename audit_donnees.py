@@ -192,6 +192,11 @@ def audite(data):
                            f"{plafond} dans {jours / 30:.0f} mois")
             details.append(f"à plafond : {plafond * par_article / 1048576:.1f} Mo "
                            f"par écriture")
+        else:
+            # Se taire ici serait trompeur : on lirait une taille sans savoir
+            # si elle grandit encore. Au plafond, la réponse est non — et
+            # c'est le résultat recherché, pas une donnée manquante.
+            details.append(f"au plafond de {plafond} : la taille n'augmente plus")
         signale("info", "croissance", "Croissance de l'historique", details)
 
     return anomalies

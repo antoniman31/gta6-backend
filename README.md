@@ -231,23 +231,27 @@ d'où le planificateur externe.
    l'index interne de difflib en inversant les deux séquences aurait changé
    les résultats — `ratio()` n'est pas symétrique, 28 052 paires sur 33 670
    donnent un score différent selon l'ordre.
-10. **Plafonne l'historique à 20 000 articles** (`MAX_HISTORY_SIZE`) — au-delà,
+10. **Plafonne l'historique à 1 500 articles** (`MAX_HISTORY_SIZE`) — au-delà,
    les plus anciens sont retirés. Ce n'est donc pas un historique complet et
-   permanent, mais un historique glissant très large.
+   permanent, mais un historique glissant.
 
-   **Sauf les publications de Rockstar, qui ne se retirent jamais** (depuis
-   le 02/09/2026). Ce sont les plus anciennes du fil — l'annonce, le premier
-   trailer, toute la période d'attente : 32 articles dont le plus vieux date
-   du 04/02/2022 — donc exactement celles qu'une troncature par la fin
-   emporte en premier. Ce sont aussi les seules irremplaçables : la reprise
-   d'un site d'actu se retrouve ailleurs, le billet officiel non.
+   **Sauf trois familles, qui ne se retirent jamais** — les publications de
+   Rockstar (depuis le 02/09/2026), celles de RockstarMag et les actualités
+   majeures (depuis le 18/09/2026). Même raison pour les trois : on ne les
+   retrouve pas ailleurs. La reprise d'un site d'actu existe sur dix sites,
+   le billet officiel non ; RockstarMag est suivi pour lui-même ; et trois
+   rédactions sur un même sujet, c'est un évènement. Les officiels sont
+   aussi les plus anciens du fil — l'annonce, le premier trailer — donc
+   exactement ceux qu'une troncature par la fin emporte en premier.
 
-   Le plafond reste un vrai plafond : ce qui est épargné à un officiel est
+   Elles pèsent **128 articles sur 3 202** au 18/09/2026, soit 4 % : la
+   protection ne coûte presque rien en place.
+
+   Le plafond reste un vrai plafond : ce qui est épargné à un protégé est
    pris sur un article ordinaire plus ancien. Un seul cas le dépasse — pas
    assez d'articles ordinaires à retirer — et la liste reste alors plus
-   longue que 20 000 plutôt que de jeter ce qu'on a promis de garder. Il
-   faudrait 20 000 publications de Rockstar pour y arriver ; le cas est
-   testé quand même.
+   longue que 1 500 plutôt que de jeter ce qu'on a promis de garder ; le cas
+   est testé.
 
    **Échéance** (mesurée le 04/09/2026) : au rythme des deux dernières
    semaines — **116 articles/jour**, en hausse continue à l'approche de la
@@ -491,7 +495,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1259
+qui permet de tester tout le pipeline sans sortir de la machine. **1272
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1905,6 +1909,42 @@ jour-là, et ne laisse que 7 paires proches sur 26 000 comparaisons.
 
 **Les « 0 source(s) active(s) »** du journal. Elles avaient été désactivées à
 la main, pour une capture d'écran plus lisible. Le mode direct fonctionne.
+
+### Le coupable était un DNS privé, et le journal ne le disait pas
+
+Résolu le 18/09/2026. Après deux jours de recherche côté serveur, la cause
+était sur le téléphone : un **DNS privé** bloquait `github.io`. Mis en liste
+blanche, tout est reparti.
+
+**Trois hypothèses côté serveur, toutes fausses, toutes écartées par le même
+détail.** Fichier trop gros pour Pages, quota dépassé, bridage : elles ont un
+point commun, le serveur *répond*. Il répond « non », mais il répond — avec un
+code. Et l'app écrit ce code, puisqu'elle fait
+`throw new Error("HTTP " + res.status)`.
+
+Le journal disait **« Failed to fetch »**. Pas de code : la requête n'a jamais
+atteint le serveur. L'échec est en dessous du niveau HTTP. Aucun quota, aucune
+limite de taille, aucun bridage ne peut produire ça.
+
+Deux mesures l'ont confirmé avant qu'on regarde ailleurs :
+
+| mesure | résultat |
+|---|---|
+| Sonde depuis un runner GitHub | **HTTP 200** sur `feed.json`, `feed-recent.json` et `index.html` |
+| Bande passante consommée | **2,2 Go/mois** au pire, pour une limite indicative de 100 Go |
+
+**Et un détail rétrospectivement parlant.** Pages avait déployé la correction
+de la veille à 08h33min36s ; la capture du symptôme date de 08h34min57s, et
+montrait pourtant l'ancien code. Ce n'était pas un hasard : le service worker
+sert le squelette **réseau d'abord, cache en secours**. L'app tournait sur la
+version en cache *parce que* github.io était injoignable. Elle avait l'air
+parfaitement vivante — servie par le téléphone, pas par le serveur.
+
+**Le journal le dit maintenant.** Quand l'échec ne porte pas de code HTTP,
+l'app ajoute une ligne : *la requête n'a pas atteint le serveur, regarde du
+côté DNS privé, VPN ou bloqueur de pub*. `github.io` figure sur certaines
+listes de blocage parce qu'il héberge aussi des pages de phishing. Cette ligne
+fait dire à l'app ce qu'il a fallu deux jours pour déduire.
 
 ## Récapitulatif hebdomadaire — supprimé le 15/09/2026
 
@@ -4069,13 +4109,14 @@ commentaire).
 
 ## Limites connues et assumées
 
-- **Historique glissant, pas permanent** — plafonné à 20 000 articles
+- **Historique glissant, pas permanent** — plafonné à 1 500 articles
   (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique complet
-  depuis toujours.
-- **Poids de `feed.json` à terme** — 1 526 Ko aujourd'hui pour 1 895
-  articles ; au plafond de 20 000 il approcherait 15 Mo (~4 Mo compressés).
-  L'ouverture de l'app n'est pas concernée (elle charge `feed-recent.json`),
-  mais toute recherche déclenche le téléchargement de l'historique complet.
+  depuis toujours. Les officiels Rockstar, RockstarMag et les actualités
+  majeures y échappent.
+- **Poids de `feed.json`** — 1,29 Mo pour 1 500 articles, et c'est désormais
+  un plafond réel : il ne grossira plus. L'ouverture de l'app n'est de toute
+  façon pas concernée (elle charge `feed-recent.json`), mais toute recherche
+  déclenche le téléchargement de l'historique complet.
   Côté dépôt en revanche il n'y a pas de problème : Git ne stocke que les
   lignes changées (~30 à 90 lignes par passage), et l'ensemble du dépôt
   tient dans **4,5 Mo compactés pour 540 commits** (mesuré le 04/09/2026).

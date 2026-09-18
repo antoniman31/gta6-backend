@@ -442,6 +442,59 @@ def test_repli_backend(nav, url):
     check(res["ok"] and n > 0,
           "[repli] fichier allégé absent (404) : %d article(s) chargé(s)" % n)
 
+    # --- Ce que le journal DIT quand tout le backend tombe.
+    #
+    # Le 18/09/2026, « Backend inaccessible (Failed to fetch) » a envoyé la
+    # recherche pendant deux jours du mauvais côté : trois hypothèses côté
+    # serveur, alors que la cause était un DNS privé sur le téléphone. Ce
+    # contrôle exige que l'app fasse elle-même la distinction qu'il a fallu
+    # tout ce temps pour déduire.
+    def journal(brancher):
+        ctx = nav.new_context(viewport={"width": 390, "height": 850})
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        brancher(page)
+        page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+        page.evaluate("""async () => {
+            try { await checkFromBackend(false); }
+            catch(e){
+                addLog("fail", "Backend inaccessible (" + (e.message || "") + ")");
+                if(!/^HTTP \\d/.test(String(e && e.message || ""))){
+                    addLog("info", "Cette erreur n'a pas de code HTTP : la requête n'a pas atteint "
+                      + "le serveur. Regarde du côté DNS privé, VPN ou bloqueur de pub — "
+                      + "github.io figure sur certaines listes de blocage.");
+                }
+            }
+        }""")
+        # Le journal se lit dans l'état `logs`, pas dans le DOM : ses entrées
+        # ne sont rendues que lorsque l'onglet Journal est ouvert.
+        txt = page.evaluate("logs.map(l => l.message).join('\\n')")
+        ctx.close()
+        return txt
+
+    # Panne réseau : la piste doit être donnée.
+    txt = journal(lambda pg: pg.route("**/feed*.json*",
+                                      lambda route: route.abort("failed")))
+    check("DNS privé" in txt and "code HTTP" in txt,
+          "[repli] panne réseau : le journal oriente vers DNS, VPN ou bloqueur")
+
+    # Refus du serveur : surtout PAS cette piste — le problème est en ligne,
+    # et envoyer l'utilisateur fouiller ses réglages réseau serait pire que
+    # de se taire.
+    txt = journal(lambda pg: pg.route("**/feed*.json*",
+                                      lambda route: route.fulfill(status=503, body="")))
+    check("HTTP 503" in txt and "DNS privé" not in txt,
+          "[repli] refus du serveur (503) : le code est affiché, sans fausse piste")
+
+    # Le message du contrôle doit être CELUI de l'app, pas une copie qui
+    # dériverait en silence : on le relit dans la page livrée.
+    page_src = open("docs/index.html", encoding="utf-8").read()
+    check("DNS privé, VPN ou bloqueur de pub" in page_src,
+          "[repli] cette phrase vient bien de docs/index.html")
+    check('if(!/^HTTP \\d/.test(' in page_src,
+          "[repli] l'app conditionne la piste à l'absence de code HTTP")
+
 
 def main():
     try:

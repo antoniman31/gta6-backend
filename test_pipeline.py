@@ -86,9 +86,13 @@ def test_sort_and_cap():
 def test_plafond_epargne_rockstar():
     print("\n[tri] le plafond ne retire jamais une publication de Rockstar")
 
-    def art(lien, jour, officiel=False):
+    def art(lien, jour, officiel=False, rockstarmag=False, extra=0):
         item = article(lien, "2026-%02d-%02dT00:00:00+00:00" % (1 + jour // 28, 1 + jour % 28))
         item["official"] = officiel
+        if rockstarmag:
+            item["rockstarmag"] = True
+        if extra:
+            item["extraSources"] = [{"source": "s%d" % n} for n in range(extra)]
         return item
 
     # Le plus ancien de la liste est officiel : c'est le cas qui comptait,
@@ -135,6 +139,81 @@ def test_plafond_epargne_rockstar():
           "les deux ordinaires partent, les quatre officiels restent")
     check(all(i.get("official") for i in gardes),
           "il ne reste que du Rockstar")
+
+    # --- Les deux familles protégées ajoutées le 18/09/2026 ---
+    #
+    # Le plafond est passé de 20000 à 1500, donc il MORD désormais pour de
+    # bon : ce qui n'était qu'une précaution théorique décide maintenant, à
+    # chaque passage, de ce qui disparaît du fil. Trois familles sont
+    # gardées pour la même raison — on ne les retrouve pas ailleurs.
+    check(feed_store.item_protege({"official": True}),
+          "un article de Rockstar est protégé")
+    check(feed_store.item_protege({"rockstarmag": True}),
+          "un article de RockstarMag est protégé")
+    seuil = feed_store.HOT_SOURCE_THRESHOLD
+    chaud = {"extraSources": [{"source": "s%d" % n} for n in range(seuil - 1)]}
+    check(feed_store.item_protege(chaud),
+          "une actu majeure (%d rédactions) est protégée" % seuil)
+    tiede = {"extraSources": [{"source": "s%d" % n} for n in range(seuil - 2)]}
+    check(not feed_store.item_protege(tiede),
+          "une reprise par %d rédactions ne l'est pas" % (seuil - 1))
+    check(not feed_store.item_protege({"title": "x"}),
+          "un article ordinaire ne l'est pas")
+
+    # Le cas qui compte : les protégés sont les PLUS ANCIENS, donc ceux
+    # qu'une troncature par la fin emporterait en premier.
+    vieux_proteges = feed_store.sort_items([
+        art("rmag-vieux", 0, rockstarmag=True),
+        art("chaud-vieux", 1, extra=seuil - 1),
+        art("banal-1", 2), art("banal-2", 3), art("banal-3", 4),
+    ])
+    gardes, retires = feed_store.cap_items(vieux_proteges, max_size=3)
+    liens = [i["link"] for i in gardes]
+    check(retires == 2 and len(gardes) == 3,
+          "le plafond est atteint sans toucher aux protégés")
+    check("rmag-vieux" in liens and "chaud-vieux" in liens,
+          "RockstarMag et l'actu majeure survivent malgré leur âge")
+    check("banal-1" not in liens and "banal-2" not in liens,
+          "ce sont bien les ordinaires les plus anciens qui partent")
+
+
+def test_elagage_declare_au_garde_fou():
+    print("\n[feed] abaisser le plafond ne doit pas faire échouer le passage")
+    import feed_store
+
+    # Le piège, trouvé en lisant le code avant de l'écrire : le garde-fou
+    # refuse toute écriture qui perd plus de 10 % ET plus de 50 articles.
+    # Faire passer le plafond de 20000 à 1500 retire la moitié du fil d'un
+    # coup — le premier passage aurait donc planté, et le robot serait
+    # tombé en échec sur une purge parfaitement voulue.
+    avant = {"items": [{"link": str(i), "title": "t"} for i in range(3202)]}
+    apres = {"items": [{"link": str(i), "title": "t"} for i in range(1500)]}
+    retires = 1702
+
+    feed_store.valide_avant_ecriture(apres, avant, elagues=retires)
+    check(True, "une purge déclarée au garde-fou est acceptée")
+
+    # Et le garde-fou n'est pas affaibli pour autant : il ne pardonne que ce
+    # qui a été délibérément retiré ET compté par cap_items.
+    for annonce, cas in ((0, "non déclarée"), (retires - 700, "sous-déclarée")):
+        try:
+            feed_store.valide_avant_ecriture(apres, avant, elagues=annonce)
+            check(False, "une perte %s doit être refusée" % cas)
+        except feed_store.FeedInvalide:
+            check(True, "une perte %s est toujours refusée" % cas)
+
+    # Un élagage négatif ou absurde ne doit pas devenir un passe-droit.
+    try:
+        feed_store.valide_avant_ecriture(apres, avant, elagues=-5000)
+        check(False, "un élagage négatif ne doit pas tout autoriser")
+    except feed_store.FeedInvalide:
+        check(True, "un élagage négatif n'ouvre aucune brèche")
+
+    # Le paramètre est bien passé par l'appelant : sans ça, tout ce qui
+    # précède ne vaudrait que pour un appel qui n'existe pas.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check("valide_avant_ecriture(output, stored, elagues=dropped)" in src,
+          "fetch_feeds déclare au garde-fou ce que cap_items a retiré")
 
 
 def test_normalize_stored_dates():
@@ -5847,6 +5926,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_validation_avant_ecriture,
            test_badge_de_notification_a_un_canal_alpha,
            test_lecture_backend_ne_gonfle_pas_sur_une_coupure,
+           test_elagage_declare_au_garde_fou,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
     fn()
