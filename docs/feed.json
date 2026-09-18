@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-18T01:02:25.687431+00:00",
+  "generated_at": "2026-09-18T02:02:24.616990+00:00",
   "attente_recap": {
-    "articles": 22,
+    "articles": 25,
     "officiels": 0,
     "sommet": 1
   },
-  "duration_seconds": 86.4,
+  "duration_seconds": 86.9,
   "decode_failures": 0,
-  "total_articles": 3185,
-  "new_this_run": 8,
+  "total_articles": 3188,
+  "new_this_run": 3,
   "hot_count": 14,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -460,8 +460,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 758,
+      "new_this_run": 1,
+      "articles_exclusifs": 759,
       "last_article": "2026-09-17T23:28:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -473,9 +473,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 6,
-      "articles_exclusifs": 707,
-      "last_article": "2026-09-18T00:59:20+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 708,
+      "last_article": "2026-09-18T01:38:25+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -500,8 +500,8 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
-      "articles_exclusifs": 19,
-      "last_article": "2026-09-17T15:56:00+00:00",
+      "articles_exclusifs": 18,
+      "last_article": "2026-09-17T20:52:22+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -599,15 +599,15 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 30,
       "last_article": "2026-09-17T13:54:35+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -846,10 +846,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-02T11:04:54+00:00",
@@ -1022,7 +1022,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 14,
       "last_article": "2026-08-22T01:42:08+00:00",
-      "days_since_last_article": 26,
+      "days_since_last_article": 27,
       "status": "ok"
     },
     {
@@ -1161,6 +1161,11 @@
       "depuis": "2026-09-18T01:02:25.686744+00:00",
       "succes": 0,
       "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-18T02:02:24.616483+00:00",
+      "succes": 0,
+      "alertee": false
     }
   },
   "sources_entries_history": {
@@ -1169,7 +1174,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1181,7 +1186,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1220,7 +1225,7 @@
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "reddit-leaks": "25,25,25,25,25,25,25,25,25,0,25,25",
+    "reddit-leaks": "25,25,25,25,25,25,25,25,0,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100"
@@ -1254,7 +1259,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1d19b-zaD2g1hUwOrCsHD7Ngx3u2V/qdc\"",
+      "etag": "W/\"1c85b-6vUXt2F5gOffp53VTrJ9SXmo5dg\"",
       "modified": null
     },
     "kotaku": {
@@ -1275,7 +1280,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 18 Sep 2026 01:00:07 GMT"
+      "modified": "Fri, 18 Sep 2026 02:01:20 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1284,8 +1289,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aac8d1f-2f62\"",
-      "modified": "Fri, 18 Sep 2026 01:00:15 GMT"
+      "etag": "W/\"6aac9b33-2f62\"",
+      "modified": "Fri, 18 Sep 2026 02:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1304,8 +1309,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6aac7cf6-b83\"",
-      "modified": "Thu, 17 Sep 2026 23:51:18 GMT"
+      "etag": "\"6aac9910-b83\"",
+      "modified": "Fri, 18 Sep 2026 01:51:12 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1315,7 +1320,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 18 Sep 2026 01:00:40 GMT"
+      "modified": "Fri, 18 Sep 2026 02:01:11 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1340,6 +1345,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "‘Grand Theft Auto VI: The Album’ Rollout Starts Before GTA VI Even Launches - Man of Many",
+      "link": "https://manofmany.com/entertainment/gaming/grand-theft-auto-vi-the-album",
+      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5MS0c5RnNxNU9uNlFqNjR5cGNWcnFCOE5WbFVBOXN5NXNwNzRuelVvSXRiMzlJUzQxbUFNdzR4aUxaMzB5T0lwRWhsV1RNX0d2WGg5c2thTktYWjdGUTUwWmI0WDR6VnUzc3ExUzdXMmpSYlMxcVRlallNXzk?oc=5",
+      "date": "2026-09-18T01:38:25+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://manofmany.com/wp-content/uploads/2026/09/Grand-Theft-Auto-VI-The-Album-5.jpg",
+      "description": "‘Grand Theft Auto VI: The Album’ Rollout Starts Before GTA VI Even Launches&nbsp;&nbsp;Man of Many"
+    },
+    {
+      "title": "GTA 6 has turned October into a bloodbath, but Valor Mortis is hellbent on entering the fray - PC Gamer",
+      "link": "https://www.pcgamer.com/gaming-industry/gta-6-has-turned-october-into-a-new-release-bloodbath-but-aa-first-person-soulslike-valor-mortis-is-hellbent-on-entering-the-fray/",
+      "source_link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxPWkx3bEtvSFhzano1Ni0xQjhFLXVSUWNVT0lMZl9aaU1sSnpwVzZVQVhNSFNzdWJtNzNFSUhsTkNhaUxJRjBOSjQ5Yml2R1lUQnhXdVhsQ290VlFTTTMyVVBGMGpxZFV4a2IwbDZBZ0RiNlc3N0pvdHVpUXN2aHlYb1V3M2NSSl9UbFc1T1lyeTdrMC01X0J2OUdYaW1oVHdJcGVBdWIwUm1ZamVxY1E2dldzMm5PVklKTHhWZ0NLbFk4d2NBc05qX0ZfVzFOSHdxcHR1ejRqS3hJT3JKNVpOMHFoZGtRWXlET1RlbGYtZmdTeHdqQ0luOS0tNjJRamM?oc=5",
+      "date": "2026-09-18T01:23:40+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cdn.mos.cms.futurecdn.net/ofjZpctqnSuo7DbahTtZsC-1920-80.jpg",
+      "description": "GTA 6 has turned October into a bloodbath, but Valor Mortis is hellbent on entering the fray&nbsp;&nbsp;PC Gamer"
+    },
     {
       "title": "Rockstar Drops Six Debut Singles as ‘Grand Theft Auto VI: The Album’ Gets Full November Release Date - CULTR",
       "link": "https://www.cultr.com/news/rockstar-drops-six-debut-singles-as-grand-theft-auto-vi-the-album-gets-full-nove/",
@@ -1572,7 +1603,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://i0.wp.com/wolfsgamingblog.com/wp-content/uploads/2026/08/gta-6-cover.jpg?fit=1200%2C675&ssl=1",
-      "description": "Twitch CEO Says GTA 6 Multiplayer Will Launch Next Year&nbsp;&nbsp;wolfsgamingblog.com"
+      "description": "Twitch CEO Says GTA 6 Multiplayer Will Launch Next Year&nbsp;&nbsp;wolfsgamingblog.com",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "http://www.tweaktown.com/news/113611/twitch-ceo-says-gta-6-online-is-launching-next-year/index.html"
+        }
+      ]
     },
     {
       "title": "Grand Theft Auto VI Online to Launch Next Year, Claims Twitch CEO - Consequence of Sound",
@@ -3654,7 +3691,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://www.wowktv.com/wp-content/uploads/sites/52/2026/09/pic-for-future-images-2026-09-14T135117.913-1.png?w=1280",
-      "description": "West Virginia ranks No.4 for residents planning to use PTO for GTA VI release&nbsp;&nbsp;WOWK 13 News"
+      "description": "West Virginia ranks No.4 for residents planning to use PTO for GTA VI release&nbsp;&nbsp;WOWK 13 News",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://www.wowktv.com/news/west-virginia-ranks-no-4-for-residents-planning-to-use-pto-for-gta-vi-release/"
+        }
+      ]
     },
     {
       "title": "Rockstar unveils Grand Theft Auto VI Physical Media - OC3D",
@@ -4604,6 +4647,19 @@
       "lang": null,
       "image": null,
       "description": "GTA 6: The Album Announced, And It’ll Be On Physical Media&nbsp;&nbsp;GameSpot"
+    },
+    {
+      "title": "GTA 6 : L’album, c’est officiel, le jeu va avoir le droit à son album physique avec 34 morceaux – écouter les 6 premiers - JVMag",
+      "link": "https://jvmag.ch/2026/09/17/gta-6-lalbum-cest-officiel-le-jeu-va-avoir-le-droit-a-son-album-physique-avec-34-morceaux/",
+      "source_link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPTmExVjlYTUFndFBTby1HMUt1Y1pZOE1LSzR0WTNVeGgyLWk2LWdnSU5Zekd3ZFdKX045bXRSbXJmRnpjVVI2UVFfRTNySzBmZDM3TU1Xd1N0RGJWSU5jWXBqenljWE45ak1wMUJtUDBHLXdhalYybmRYbDg2cjdNaEp5cFdvQlhvdnk0MDVUbk1RLXp6V3dONjBzaHM4YlUtekVKX1doVTd4WlRFNTZBTVZRRjhUZXptUFHSAcIBQVVfeXFMUDNLVjJfMkVUbmVLdU8xNzZLbHZwNEFEb1AyZUlXOUc5YWRuS0dpZHA0dXo2R2RnUmFTM1V1alZrMFN1WXNSblpOcms2dTFhSV9Na1Z2RGs3SjE2alFuRk9LOTAzZHlUVFVON2luOGJuSUVPcUMxSURMQ1FaVmNuTHhiRVZCX1dTMERLYnhudm9ZRy1oNGtwU2pyUkF0aGZwSUI3aXN4TE9EWi16THB1ZWJYbjNPdHJiQXRwUTFrYUJxaGc?oc=5",
+      "date": "2026-09-17T12:13:15+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "GTA 6 : L’album, c’est officiel, le jeu va avoir le droit à son album physique avec 34 morceaux – écouter les 6 premiers&nbsp;&nbsp;JVMag"
     },
     {
       "title": "GTA 6 Leak Reveals Rockstar Planning Physical Release for Game's Music Album - IGN",
