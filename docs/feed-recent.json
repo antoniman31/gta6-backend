@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-19T04:03:10.766605+00:00",
+  "generated_at": "2026-09-19T04:58:02.754922+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 134.5,
+  "duration_seconds": 142.9,
   "decode_failures": 0,
   "total_articles": 1500,
-  "new_this_run": 264,
+  "new_this_run": 274,
   "hot_count": 17,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -421,8 +421,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 62,
-      "articles_exclusifs": 53,
+      "new_this_run": 61,
+      "articles_exclusifs": 52,
       "last_article": "2026-09-17T19:12:13+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -460,7 +460,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "articles_exclusifs": 419,
       "last_article": "2026-09-19T00:39:00+00:00",
       "days_since_last_article": 0,
@@ -473,9 +473,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 460,
-      "last_article": "2026-09-18T23:50:00+00:00",
+      "new_this_run": 4,
+      "articles_exclusifs": 461,
+      "last_article": "2026-09-19T04:02:25+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -521,10 +521,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 13,
       "last_article": "2026-09-18T21:50:31+00:00",
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -928,7 +928,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 16,
+      "new_this_run": 18,
       "articles_exclusifs": 2,
       "last_article": "2026-09-07T10:07:52+00:00",
       "days_since_last_article": 11,
@@ -967,7 +967,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 20,
+      "new_this_run": 25,
       "articles_exclusifs": 4,
       "last_article": "2026-09-11T17:22:00+00:00",
       "days_since_last_article": 7,
@@ -980,7 +980,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 14,
+      "new_this_run": 15,
       "articles_exclusifs": 0,
       "last_article": "2026-09-08T18:00:14+00:00",
       "days_since_last_article": 10,
@@ -1174,7 +1174,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,15,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,15,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1186,7 +1186,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1204,7 +1204,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "42,42,42,42,43,43,43,43,43,43,43,43",
+    "gta6times": "42,42,42,43,43,43,43,43,43,43,43,43",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1216,7 +1216,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "99,99,99,99,99,99,99,100,99,100,99,99",
+    "engadget": "99,99,99,99,99,99,100,99,100,99,99,99",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1239,8 +1239,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"839aada3881b46c7867b741b08d64cef\"",
-      "modified": "Sat, 19 Sep 2026 00:59:18 GMT"
+      "etag": "W/\"5fbee867e394807e8081beb275108818\"",
+      "modified": "Sat, 19 Sep 2026 04:27:10 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1280,7 +1280,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 19 Sep 2026 04:01:02 GMT"
+      "modified": "Sat, 19 Sep 2026 04:51:29 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1289,8 +1289,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aae08d0-305c\"",
-      "modified": "Sat, 19 Sep 2026 04:00:16 GMT"
+      "etag": "W/\"6aae0fd6-305c\"",
+      "modified": "Sat, 19 Sep 2026 04:30:14 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1320,7 +1320,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 19 Sep 2026 04:01:03 GMT"
+      "modified": "Sat, 19 Sep 2026 04:55:40 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1345,6 +1345,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Soundtrack Reveal Lines Up With A Prediction To The Day - Esquire India",
+      "link": "https://www.esquireindia.co.in/tech-and-auto/gaming/gta-6-soundtrack-travis-scott-future-metro-boomin-grand-theft-auto-vi-the-album",
+      "source_link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOcXJtRjBwQ1B2ZHhQLUw0cDMxRlY1VjdRcDRHdmVDTVRucWQwOXZxeWN0U3h2NWpBejZQM0lrQ2gzWHBBMW9ReHdhMS1uc1AzVWlKQklRVzNsNENtemEzTVN3RTRVel91ZWlQQWFjV001VWwzb0VpeTJ6eEREUENzWGVyc1lHOVAxaEd1a0EwYUY5d3ZlVi1YMlB6MFZmLTd4RmpNM1k4VlNLOVZzU2syVUIwM3cxaU4xeFZpdkZXV1N6UmY1NmFPeVZGY9IB2AFBVV95cUxPLWozMC1pUnY0V096S0ZIR01aR3JveGNPNUhkbm1YUXdIR3BraE5BZ0xkRWNQX1haSVNpMVNyclE4RkJWOUhrUC1wNXFQYXdWTDJ5UHkzNV9VTDZFWW9kbkRueTM4Y0lscXJ1YzdER3ZFeVE4S0ZIS0cwRTdobnREbVdtTW1jdmR0UnhUWUNiejZiS2dSRjh5YlY4eHhSXzBpNjZXR3BlQWE4VXNiY0pSeVFOandxM2JmcFRoQWZ1WnhaM1pUc0ktN05aYXFUdGw5LW44RF9YZHo?oc=5",
+      "date": "2026-09-19T04:02:25+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.assettype.com/esquireindia%2F2026-09-18%2Fewhpip28%2FGTA-6-Soundtrack-Reveal.jpg?w=1200&ar=40%3A21&auto=format%2Ccompress&ogImage=true&mode=crop&enlarge=true&overlay=false&overlay_position=bottom&overlay_width=100",
+      "description": "GTA 6 Soundtrack Reveal Lines Up With A Prediction To The Day&nbsp;&nbsp;Esquire India"
+    },
     {
       "title": "Le PDG de Take-Two répond à un investisseur inquiet du retard de GTA 6 - Notebookcheck.fr",
       "link": "https://www.notebookcheck.biz/Le-PDG-de-Take-Two-repond-a-un-investisseur-inquiet-du-retard-de-GTA-6.1402965.0.html",
@@ -1864,6 +1877,19 @@
       "lang": "fr",
       "image": "https://cdn.mos.cms.futurecdn.net/knPikneiqQ4a4p7AEdGPra-2560-80.jpg",
       "description": "Take-Two compte encore soutenir GTA Online après GTA 6 — le nouveau mode en ligne semble loin&nbsp;&nbsp;TechRadar"
+    },
+    {
+      "title": "Twitch CEO Dan Clancy Shares His Thoughts on GTA 6 for Twitch and Multiplayer Release - Yahoo Tech",
+      "link": "https://tech.yahoo.com/gaming/articles/twitch-ceo-dan-clancy-shares-160000407.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPZ0lRa1BjVWIwTFdobXFhZl9RZGRIbWRDNE5lTDVNcnhOMjJET3ZCVnRrLXU3dFd1WFlzbnBfZGE5UTRwQTZKQmpTQ1BYLThHekM2M2ZIMTIyckY4OGUwZnlZQUtiQl9tRDBSd1JnQ01hN1BKUUkxTF9rRllKdGFxa3FDcVVOV1BXaEE?oc=5",
+      "date": "2026-09-18T16:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://s.yimg.com/lo/mysterio/api/5c95d0b8bf946bbb558f679a4096578b27d793a4a709992f27828f0434ce584a/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_jpg/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fnerdable_734%2F4e547ebb1aa55d2d3a397ca9af569690.jpg",
+      "description": "Twitch CEO Dan Clancy Shares His Thoughts on GTA 6 for Twitch and Multiplayer Release&nbsp;&nbsp;Yahoo Tech"
     },
     {
       "title": "192GB Rockstar leak exposes canceled GTA 5 DLC and early GTA 6 map assets - TweakTown",
@@ -4712,6 +4738,19 @@
       "description": "“RHYNO” de Travis Scott est exactement ce qu'on attend d'une bande-originale de GTA 6&nbsp;&nbsp;gqmagazine.fr"
     },
     {
+      "title": "\"GTA VI\": Travis Scott et Keith Richards sur la bande originale du jeu - BFM",
+      "link": "https://www.bfmtv.com/culture/musique/gta-vi-travis-scott-et-keith-richards-sur-la-bande-originale-du-jeu_AD-202609170694.html",
+      "source_link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPNjlEWnB3U2ZtVXNOdVc5Wl9BdnR5SDlRTElmUFZ0R2Fab3BiUHhCMXdzNUNvdHotSGxFbG1SWDhobGlHdzBVVjNBVWxuMHZ6aGNRMTJQY3hOREJudlR6YTB1dVpaTlRlU3duaS1mZjdVaXhfdXdHcmlzNUo0NjhpWDRFRHNVWmFKel80alFZbXg0Z1plY01TU2txMm9POTByMlFveVZFMGd0ckdpWDFhT3NzaUNLSVQxQzNhd0s4TTZuWE13?oc=5",
+      "date": "2026-09-17T16:04:33+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/2JZCWHrWUaj3WrOkHXJR3mvy1F4=/6x4:1910x1075/1904x0/images/GTA-VI-l-album-2349922.jpg",
+      "description": "\"GTA VI\": Travis Scott et Keith Richards sur la bande originale du jeu&nbsp;&nbsp;BFM"
+    },
+    {
       "title": "Rockstar and Atlantic Records Announce Grand Theft Auto VI Soundtrack - ixbt.games",
       "link": "https://ixbt.games/en/news/2026/09/17/436486-rockstar-i-atlantic-records-anonsirovali-saundtrek-grand-theft-auto-vi.amp.html",
       "source_link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNOTF4S3gzYS1MR2IxNElqX09zYS1TUk5tNWRlejhCcTRZUjJUekFTS3hVRUZENi10M3dsZVg0TlhEYXlkQVJvR3dzSExUblhSd1g3SVdjV3JoMnJIMldlcmpadlptRkNvclgxQ3J3Yk1kWEJyVDdQQVNKbVAtWEY4TEUyN1NRRlB5Y2pUMlRiT3J0aTlZdm9PNGZQbnhRN0tNdm9sd0pHQXExSFZDXzdHVGlLbHFfWEVselZjT1JvSjJpUdIBwgFBVV95cUxNOTF4S3gzYS1MR2IxNElqX09zYS1TUk5tNWRlejhCcTRZUjJUekFTS3hVRUZENi10M3dsZVg0TlhEYXlkQVJvR3dzSExUblhSd1g3SVdjV3JoMnJIMldlcmpadlptRkNvclgxQ3J3Yk1kWEJyVDdQQVNKbVAtWEY4TEUyN1NRRlB5Y2pUMlRiT3J0aTlZdm9PNGZQbnhRN0tNdm9sd0pHQXExSFZDXzdHVGlLbHFfWEVselZjT1JvSjJpUQ?oc=5",
@@ -5335,51 +5374,6 @@
       "lang": null,
       "image": "https://images.soleretriever.com/blog/c5cc46fc52dd974e0062dcb91fb3fd6fdf2897ec-1240x760.png?rect=0,55,1240,651&w=1200&h=630&fit=fill&auto=format",
       "description": "Rockstar Games Announces Grand Theft Auto 6 The Album&nbsp;&nbsp;Sole Retriever"
-    },
-    {
-      "title": "Le studio Rockstar officialise l'album de la bande-son de GTA 6 - Le journal de la musique du 17 septembre - RTL2",
-      "link": "https://www.rtl2.fr/evenements/le-studio-rockstar-officialise-l-album-de-la-bande-son-de-gta-6-le-journal-de-la-musique-du-17-septembre-7900673522",
-      "source_link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPSldUenlvYktwbWx3TFE1Nk1nZXJYTmp0RktEbmNqeWwxeXZlQVQ4Z3VJUUJrV25nLTE0SE8wRHNTZjEzRXhaU1RPWkNlUVZZbEtoUVZEcnNTQ2VIMExPRVNzTU1ZWFAyT2pmbEVpSzZTTDRhN2t0aTA3ODhveE1YNUJUUDdNbnlGQmN1V3RIYnN0M1VLNmNGcjZ5ampoR21VNkpCZlZKOUVSMC1vZjJDWUZETlcySTVXVC1FckNrd2xhdkpwaDIxRmVnQmhpRzI3RGUyb3Atbk5na3c4MGtn?oc=5",
-      "date": "2026-09-17T14:30:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://images.rtl.fr/~c/2000v2000/rtl2/www/1867626-gta-6.jpg",
-      "description": "Le studio Rockstar officialise l'album de la bande-son de GTA 6 - Le journal de la musique du 17 septembre&nbsp;&nbsp;RTL2"
-    },
-    {
-      "title": "GTA 6 soundtrack reveal revives digital release debate - BBC",
-      "link": "https://www.bbc.co.uk/news/articles/cm3wjlxjnwg3o",
-      "source_link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBhNjRyeGQzaE5zc1JQQWVUX1FEci1yYkVDcDRCeDhvYmpmMjVlLWxHT1VQTlcydGF3bmpEUFVIRENXZ2RRT1d6S3AzbTRndUVVallMN3Q0NzBwdFZTR1E?oc=5",
-      "date": "2026-09-17T14:29:50+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://ichef.bbci.co.uk/ace/branded_news/1200/cpsprodpb/0f33/live/f0215a40-b2ad-11f1-a430-4d16ee157c41.jpg",
-      "description": "GTA 6 soundtrack reveal revives digital release debate&nbsp;&nbsp;BBC",
-      "extraSources": [
-        {
-          "source": "Google News (EN, 7 jours)",
-          "link": "https://www.bbc.com/news/articles/cm3wjlxjnwg3o"
-        }
-      ]
-    },
-    {
-      "title": "GTA 6 soundtrack album gets physical media launch, now available to pre-order in vinyl and CD formats - pcguide.com",
-      "link": "https://www.pcguide.com/news/gta-6-soundtrack-album-gets-physical-media-launch-now-available-to-pre-order-in-vinyl-and-cd-formats/",
-      "source_link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOQ1lILUM5TUpiN3R0RUVKNDl3R3JvMV9Xd3laYmJQSFZJUllub0o3T0JzZ2ZCQkVfc2VpVzhOT2NYeGVsb0NvU0lDc3I0Q2NIckxtWkkwaTMxaFdwSXZhNXdXWnV4RDlfQk5rZUpnSE9BOFBNMXJXOFQ0SGpWVU02WGFQMXc3YWlZVi1ZU3pCWXRZbWdjcnVZa19iSzVBdm1BMlp5R2ZFcjhXYndkVzE1UFNiNnhranRxbW1FUFIyc2tYdG1tOFNCNTNR?oc=5",
-      "date": "2026-09-17T14:28:37+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.pcguide.com/wp-content/uploads/2026/09/GTA-6-The-Album-Limited-Edition-Vinyl.jpg",
-      "description": "GTA 6 soundtrack album gets physical media launch, now available to pre-order in vinyl and CD formats&nbsp;&nbsp;pcguide.com"
     }
   ],
   "partial": true,
