@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-20T23:27:56.163208+00:00",
+  "generated_at": "2026-09-21T00:03:03.503097+00:00",
   "attente_recap": {
-    "articles": 857,
+    "articles": 1133,
     "officiels": 0,
     "sommet": 2
   },
-  "duration_seconds": 152.8,
+  "duration_seconds": 123.6,
   "decode_failures": 0,
   "total_articles": 1500,
-  "new_this_run": 283,
+  "new_this_run": 276,
   "hot_count": 19,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -461,7 +461,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 3,
-      "articles_exclusifs": 424,
+      "articles_exclusifs": 423,
       "last_article": "2026-09-20T20:22:26+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -720,10 +720,10 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 22,
-      "last_article": "2026-09-19T10:11:23+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "articles_exclusifs": 23,
+      "last_article": "2026-09-21T00:00:38+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -755,10 +755,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-20T07:00:00+00:00",
@@ -807,15 +807,15 @@
     {
       "id": "gamerant-gnews",
       "name": "Google News (Game Rant)",
-      "entries_fetched": 100,
+      "entries_fetched": 0,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 9,
+      "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-19T11:00:13+00:00",
       "days_since_last_article": 1,
-      "status": "ok"
+      "status": "muette"
     },
     {
       "id": "dualshockers",
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1136,7 +1136,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 3,
       "articles_exclusifs": 14,
       "last_article": "2026-09-20T20:28:35+00:00",
       "days_since_last_article": 0,
@@ -1156,7 +1156,13 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "gamerant-gnews": {
+      "depuis": "2026-09-21T00:03:03.502359+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1191,7 +1197,7 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,0",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "44,44,44,44,44,44,44,44,44,44,44,44",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1199,13 +1205,13 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "trueach": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "99,99,99,99,99,100,100,100,100,100,100,100",
+    "engadget": "99,99,99,99,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1269,7 +1275,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 20 Sep 2026 23:25:31 GMT"
+      "modified": "Mon, 21 Sep 2026 00:00:51 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1278,13 +1284,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab0657e-316e\"",
-      "modified": "Sun, 20 Sep 2026 23:00:14 GMT"
+      "etag": "W/\"6ab07392-316e\"",
+      "modified": "Mon, 21 Sep 2026 00:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"9977b57d81c3b03d2173a2cf991da080\"",
-      "modified": "Sun, 20 Sep 2026 16:16:47 GMT"
+      "etag": "W/\"90ee9b2414f2a9834218d20b7f6dd7ea\"",
+      "modified": "Sun, 20 Sep 2026 23:32:50 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1298,8 +1304,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab05557-b76\"",
-      "modified": "Sun, 20 Sep 2026 21:51:19 GMT"
+      "etag": "\"6ab0716f-b76\"",
+      "modified": "Sun, 20 Sep 2026 23:51:11 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1309,7 +1315,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 20 Sep 2026 23:25:32 GMT"
+      "modified": "Mon, 21 Sep 2026 00:00:52 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1334,6 +1340,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "The GTA 6 Album Was Hiding in a May Earnings Call the Whole Time",
+      "link": "https://www.gtaboom.com/the-gta-6-album-was-hiding-in-a-may-earnings-call-the-whole-time-daee",
+      "source_link": null,
+      "date": "2026-09-21T00:00:38+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.gtaboom.com/variants/1919/media/images/69/75/the-gta-6-album-was-hiding-in-a-may-earnings-call-the-whole-time.jpg",
+      "description": "The GTA 6 album Rockstar announced was described on a distributor's earnings call in May, a reminder that big details can hide in plain sight."
+    },
     {
       "title": "GTA 6's Art Style Is Now a Marketing Template for Real Brands - GTA BOOM",
       "link": "https://www.gtaboom.com/the-rockstar-effect-has-real-brands-styling-their-ads-in-gta-6-colors-259d",
@@ -20121,19 +20140,6 @@
       "lang": "fr",
       "image": "https://www.ginjfo.com/wp-content/uploads/2025/04/GTA6_VI_A1.jpg",
       "description": "GTA 6 sur Switch 2 ? Cdiscount référence quatre éditions totalement inconnues&nbsp;&nbsp;GinjFo"
-    },
-    {
-      "title": "Rockstar censure l'Extended Look de GTA 6 destiné au marché chinois - IGN France",
-      "link": "https://fr.ign.com/grand-theft-auto-6/91944/rockstar-censure-lextended-look-de-gta-6-destine-au-marche-chinois",
-      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQdExRU2R2UjZuRkdrV283cVpnVXZ2R3hqWHBwQm4yTTl4cGwzRVcxSXpMWHlwSGF2bUhvUHZqa3hoWTd5N2ZTZ2FPbXFQMkRHMFlEQ3NBRDduWnZfWmItelNwUlZjTlZlVU0wQzQ1WjhhaXc4Rjdrc1ZMX3Juc25IRzhlYWIxbWNXTDlETU5TbGdQZWYxOXBZRXFlcS1YUVU1N0pfaGR1cnJXSERaaHBV?oc=5",
-      "date": "2026-09-05T08:23:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://sm.ign.com/t/ign_fr/news/r/rockstar-c/rockstar-censors-gta-6-extended-look-trailer-for-china_pz8z.1200.jpg",
-      "description": "Rockstar censure l'Extended Look de GTA 6 destiné au marché chinois&nbsp;&nbsp;IGN France"
     },
     {
       "title": "Grand Theft Auto VI sera disponible à la précommande le 25 juin - Rockstar Games",
