@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-21T22:03:09.231951+00:00",
+  "generated_at": "2026-09-21T23:03:17.261342+00:00",
   "attente_recap": {
-    "articles": 263,
+    "articles": 536,
     "officiels": 0,
     "sommet": 2
   },
-  "duration_seconds": 128.6,
+  "duration_seconds": 134.2,
   "decode_failures": 0,
   "total_articles": 1500,
-  "new_this_run": 263,
+  "new_this_run": 273,
   "hot_count": 19,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -460,9 +460,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
+      "new_this_run": 4,
       "articles_exclusifs": 421,
-      "last_article": "2026-09-21T18:12:10+00:00",
+      "last_article": "2026-09-21T22:04:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -473,7 +473,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 6,
+      "new_this_run": 5,
       "articles_exclusifs": 480,
       "last_article": "2026-09-21T21:48:49+00:00",
       "days_since_last_article": 0,
@@ -521,10 +521,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 13,
       "last_article": "2026-09-21T11:51:47+00:00",
@@ -664,10 +664,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 7,
       "last_article": "2026-09-21T20:00:33+00:00",
@@ -681,7 +681,7 @@
       "http_status": 301,
       "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 19,
       "last_article": "2026-09-21T20:59:51+00:00",
       "days_since_last_article": 0,
@@ -720,7 +720,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 24,
       "last_article": "2026-09-21T21:56:43+00:00",
       "days_since_last_article": 0,
@@ -742,10 +742,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-17T06:02:18+00:00",
@@ -872,10 +872,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -889,7 +889,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 5,
+      "new_this_run": 4,
       "articles_exclusifs": 1,
       "last_article": "2026-09-10T08:00:00+00:00",
       "days_since_last_article": 11,
@@ -937,15 +937,15 @@
     {
       "id": "numerama",
       "name": "Numerama",
-      "entries_fetched": 0,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 13,
       "articles_exclusifs": 1,
       "last_article": "2026-09-09T12:15:00+00:00",
       "days_since_last_article": 12,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "gamergen",
@@ -1119,10 +1119,10 @@
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-17T17:28:25+00:00",
@@ -1159,7 +1159,7 @@
   "sources_silence": {
     "numerama": {
       "depuis": "2026-09-21T22:03:09.231312+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -1207,7 +1207,7 @@
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,100,100,0",
+    "numerama": "100,100,100,100,100,100,100,100,100,100,0,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1254,13 +1254,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2f0f8-RxWOlo5apJxDkSGkC0ft+HePXbs\"",
+      "etag": "W/\"2a439-A5BupDsU8RAKZSSsC4SBXxgCz38\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"b6e76e09596aae4aad98c8286e0f046a\"",
-      "modified": "Mon, 21 Sep 2026 21:00:08 GMT"
+      "etag": "W/\"016032642602a0e0e94ff7aeff0ee444\"",
+      "modified": "Mon, 21 Sep 2026 22:30:25 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1275,17 +1275,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 21 Sep 2026 21:58:01 GMT"
+      "modified": "Mon, 21 Sep 2026 22:57:28 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"e3b5850551996ab12c3afcc1df891014\"",
-      "modified": "Mon, 21 Sep 2026 16:02:59 GMT"
+      "etag": "\"7917a814e15dcd1f69f9be51c23ac247\"",
+      "modified": "Mon, 21 Sep 2026 22:01:45 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab1a8f1-2e8b\"",
-      "modified": "Mon, 21 Sep 2026 22:00:17 GMT"
+      "etag": "W/\"6ab1b701-2e8b\"",
+      "modified": "Mon, 21 Sep 2026 23:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1294,8 +1294,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1790027945\"",
-      "modified": "Mon, 21 Sep 2026 21:59:05 GMT"
+      "etag": "W/\"1790031556\"",
+      "modified": "Mon, 21 Sep 2026 22:59:16 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1312,15 +1312,10 @@
       "etag": "\"7e6929c1d50355123ef5ce19c7bc37d0-gzip\"",
       "modified": null
     },
-    "dexerto-fr": {
-      "url": "https://www.dexerto.fr/feed/",
-      "etag": null,
-      "modified": "Mon, 21 Sep 2026 22:00:44 GMT"
-    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 21 Sep 2026 22:01:07 GMT"
+      "modified": "Mon, 21 Sep 2026 23:00:19 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1339,12 +1334,25 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"1741834aaca63d07080714b7cb175920\"",
-      "modified": "Mon, 21 Sep 2026 20:26:50 GMT"
+      "etag": "W/\"394a658284aac1a996267951ad683a07\"",
+      "modified": "Mon, 21 Sep 2026 22:09:21 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar dévoile un vinyle GTA 6, mais le jeu n'aura pas de disque - pasqualepillitteri.it",
+      "link": "https://pasqualepillitteri.it/fr/news/17382/gta-6-vinyle-album-jeu-sans-disque",
+      "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNS29jNUZrZE9IeHpGbHVId1k0SHNTYU5pdjQ0TVVxZnY5ZlhJSkhnWFYzZDVVRUpBdVZpS1FObUNzNjZveFBxNkllMjR6dGFObm5wYkJHUUNNbFdNYkZQQ19nYXlKeVVlVGpGY1BiblFWUzRrdGJsQ2RWbW93bXU0dE4zOFI?oc=5",
+      "date": "2026-09-21T22:04:58+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Rockstar dévoile un vinyle GTA 6, mais le jeu n'aura pas de disque&nbsp;&nbsp;pasqualepillitteri.it"
+    },
     {
       "title": "O2 Will Let You Finance GTA 6 for 5p a Day Until 2029",
       "link": "https://www.gtaboom.com/o2-will-let-you-finance-gta-6-for-5p-a-day-until-2029",
@@ -5325,19 +5333,6 @@
       "lang": null,
       "image": "https://gta6times.com/news/keith-richards-gta-6-cover-premieres-album-nov-19/opengraph-image",
       "description": "The Rolling Stones guitarist's 'Bright Lights, Big City' cover is one of six early tracks from the 34-song GTA 6 soundtrack due November 19."
-    },
-    {
-      "title": "Take-Two reiterates the growing importance of PC for its GTA VI strategy - Instant Gaming News",
-      "link": "https://news.instant-gaming.com/en/articles/21977-take-two-reiterates-the-growing-importance-of-pc-for-its-gta-vi-strategy",
-      "source_link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNVF9ZbzQ2Y2xwWkJjeVlBVVQ2aUtrcnFWNkpIZzd5bUcydVRyNVZzRnZxTklTOXRWM0JiSnR0Q2hLN1NuaTJhN0FLZTRpVXJkUnVJRHBVWEI5TGVWWkp4cjVRUU94b01KVF95WnVBTHJvUnVLTUk4Rkd6cV9kMGZSZ1Y5LTBqT3p5a3Y3YXo5bEgyRG9lek03WHpvWDBRZmhsR1pGOE0yNktYbXUzY0pQVUVWLUlRdWVsSXdDQ091MA?oc=5",
-      "date": "2026-09-18T09:24:44+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://gaming-cdn.com/images/news/articles/21977/cover/take-two-reiterates-the-growing-importance-of-pc-for-its-gta-vi-strategy-cover6aacfed788449.jpg",
-      "description": "Take-Two reiterates the growing importance of PC for its GTA VI strategy&nbsp;&nbsp;Instant Gaming News"
     }
   ],
   "partial": true,
