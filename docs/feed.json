@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-21T05:03:14.692849+00:00",
+  "generated_at": "2026-09-21T05:22:52.810477+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 137.7,
+  "duration_seconds": 150.8,
   "decode_failures": 0,
   "total_articles": 1500,
-  "new_this_run": 295,
+  "new_this_run": 298,
   "hot_count": 19,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -460,9 +460,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 6,
-      "articles_exclusifs": 421,
-      "last_article": "2026-09-21T04:10:00+00:00",
+      "new_this_run": 5,
+      "articles_exclusifs": 422,
+      "last_article": "2026-09-21T05:08:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -755,10 +755,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-20T07:00:00+00:00",
@@ -1019,7 +1019,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22Take-Two%22+OR+%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 15,
+      "new_this_run": 14,
       "articles_exclusifs": 0,
       "last_article": null,
       "days_since_last_article": null,
@@ -1080,11 +1080,11 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
+      "not_modified": false,
+      "new_this_run": 5,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T10:04:42+00:00",
       "days_since_last_article": 1,
@@ -1174,7 +1174,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1186,7 +1186,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,0,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1202,7 +1202,7 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,100,100,0,100,100,100,100,100",
+    "gamerant-gnews": "100,100,100,100,100,0,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "44,44,44,44,44,44,44,44,44,44,44,44",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1280,7 +1280,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 21 Sep 2026 04:57:43 GMT"
+      "modified": "Mon, 21 Sep 2026 05:17:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1320,7 +1320,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 21 Sep 2026 05:01:06 GMT"
+      "modified": "Mon, 21 Sep 2026 05:20:30 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1329,8 +1329,8 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"f93681f14ef839bf3b6559a504a915b0\"",
-      "modified": "Sun, 20 Sep 2026 21:44:01 GMT"
+      "etag": "W/\"2670af00242bf0f15de9960453488d63\"",
+      "modified": "Mon, 21 Sep 2026 05:02:03 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
@@ -1345,6 +1345,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Où trouver une PS5 moins cher avant la sortie de GTA 6 ? La solution se trouve peut-être ici - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/ou-trouver-une-ps5-moins-cher-avant-la-sortie-de-gta-6-la-solution-se-trouve-peut-etre-ici_AB-202609210027.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQR2xNZEJTckt4ckRzMXEwd3ZWV1FxdVJpTXlzaE9zSFd5dDE0aklnNnJXYTB6dVNhdXlLaGE3Z3B5Wlpab2c2eXY0Um1RSDZCVENBWFhXUWNXcnU4VzcyNVUtSUM3eUw2RzgwSzg5S2QxUzh5amZRbmVPbU40VzhjektlYTdreV9nSFBkTndPc0czNDBKX253d0VxMm5iWDBaYjdXWEQ5TXZJLWdNWGc4Q1hUZl8yQkxxQjNONU1aemQyd09rYTM4dkREV2VDV0M2Q1hmbklZUExjZlc0VXFoVXMtOA?oc=5",
+      "date": "2026-09-21T05:08:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/BefYrS_gQr-mSFlK-TNrD95ikLk=/0x0:1600x900/1600x0/images/Comment-resister-a-la-PS5-dont-le-prix-s-effondre-exclusivement-sur-Cdiscount-1693233.jpg",
+      "description": "Où trouver une PS5 moins cher avant la sortie de GTA 6 ? La solution se trouve peut-être ici&nbsp;&nbsp;BFM"
+    },
     {
       "title": "Précommandez maintenant GTA VI et profiez d’un avantage exclusif grâce à Cultura - bfmtv.com",
       "link": "https://www.bfmtv.com/tech/bons-plans/precommandez-maintenant-gta-vi-et-profiez-d-un-avantage-exclusif-grace-a-cultura_AB-202609210019.html",
@@ -20113,25 +20126,6 @@
       "lang": "fr",
       "image": "https://i3.ytimg.com/vi/v-TJRwtucyA/hqdefault.jpg",
       "description": "Découvrez dès maintenant la nouvelle preview du créateur de contenus Rubius ! \n\nLire la preview : \nhttps://www.rockstarmag.fr/gta-6-de-nouvelles-informations-folles-grace-a-la-preview-de-rubius/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https:/"
-    },
-    {
-      "title": "Grand Theft Auto 6's controversial refuelling action reportedly takes about 10 seconds to perform, which Rockstar's co-studio head says is 'pretty fast for a fill-up'",
-      "link": "https://www.pcgamer.com/games/grand-theft-auto/grand-theft-auto-6s-controversial-refuelling-action-reportedly-takes-about-10-seconds-to-perform-which-rockstars-co-studio-head-says-is-pretty-fast-for-a-fill-up/",
-      "source_link": null,
-      "date": "2026-09-05T12:16:31+00:00",
-      "source": "PC Gamer",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/pG4Lm6TuDeWLKMmAHcBtPD-1280-80.jpg",
-      "description": "\"You can't complain about that\".",
-      "extraSources": [
-        {
-          "source": "Google News (EN)",
-          "link": "https://tech.yahoo.com/gaming/articles/grand-theft-auto-6s-controversial-121631055.html"
-        }
-      ]
     },
     {
       "title": "GTA 6 | De nouvelles informations folles grâce à la preview de Rubius",
