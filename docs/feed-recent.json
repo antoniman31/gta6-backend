@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-22T20:22:49.216125+00:00",
+  "generated_at": "2026-09-22T21:01:44.102309+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 36.1,
+  "duration_seconds": 40.3,
   "decode_failures": 0,
-  "total_articles": 1846,
-  "new_this_run": 1,
+  "total_articles": 1849,
+  "new_this_run": 3,
   "hot_count": 22,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -426,8 +426,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 89,
+      "new_this_run": 1,
+      "articles_exclusifs": 90,
       "last_article": "2026-09-22T13:23:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -491,9 +491,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "articles_exclusifs": 510,
-      "last_article": "2026-09-22T19:38:00+00:00",
+      "last_article": "2026-09-22T20:30:54+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -519,7 +519,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 32,
-      "last_article": "2026-09-22T10:29:03+00:00",
+      "last_article": "2026-09-22T16:04:33+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -539,10 +539,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 13,
       "last_article": "2026-09-22T18:02:12+00:00",
@@ -702,16 +702,16 @@
       "new_this_run": 0,
       "articles_exclusifs": 18,
       "last_article": "2026-09-21T20:59:51+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-11T15:31:24+00:00",
@@ -751,9 +751,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 21,
-      "last_article": "2026-09-22T14:57:14+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 22,
+      "last_article": "2026-09-22T20:58:09+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -864,10 +864,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-08T14:27:39+00:00",
@@ -1124,24 +1124,24 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 4,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
-      "new_this_run": 1,
+      "not_modified": true,
+      "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-22T20:18:21+00:00",
       "days_since_last_article": 0,
@@ -1189,10 +1189,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1202,21 +1202,21 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-17T16:44:30+00:00",
       "days_since_last_article": 5,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
     "reddit-gta6-suivi": {
       "depuis": "2026-09-22T14:01:53.970030+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -1283,7 +1283,7 @@
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30",
-    "reddit-gta6-suivi": "25,25,0,0,0,0,25,0,0,0,0,0"
+    "reddit-gta6-suivi": "25,0,0,0,0,25,0,0,0,0,0,25"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1319,13 +1319,13 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"70e0274619a06ee24de863f358d5f0f4\"",
-      "modified": "Tue, 22 Sep 2026 20:06:36 GMT"
+      "etag": "W/\"154a3e8679a1abf522e85e1c05419894\"",
+      "modified": "Tue, 22 Sep 2026 20:30:58 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 18:49:01 GMT"
+      "modified": "Tue, 22 Sep 2026 20:32:44 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1335,7 +1335,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 20:19:32 GMT"
+      "modified": "Tue, 22 Sep 2026 20:57:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1344,18 +1344,18 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab2de50-3247\"",
-      "modified": "Tue, 22 Sep 2026 20:00:16 GMT"
+      "etag": "W/\"6ab2ec60-3247\"",
+      "modified": "Tue, 22 Sep 2026 21:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"d9e15110aae60358b5911f7d6b31dfe4\"",
-      "modified": "Tue, 22 Sep 2026 19:52:48 GMT"
+      "etag": "W/\"97c8e8098a52c4e2a52533bbb6bd5a56\"",
+      "modified": "Tue, 22 Sep 2026 21:01:04 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1790106067\"",
-      "modified": "Tue, 22 Sep 2026 19:41:07 GMT"
+      "etag": "W/\"1790109679\"",
+      "modified": "Tue, 22 Sep 2026 20:41:19 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1375,7 +1375,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 20:22:21 GMT"
+      "modified": "Tue, 22 Sep 2026 21:00:22 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1410,6 +1410,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Baldur's Gate 3 and Clair Obscur: Expedition 33's Record Stands — GTA 6 Can't Sweep All Five Game of the Year Awards in One Season",
+      "link": "https://vgtimes.com/gaming-news/168524-late-grand-theft-auto-vi-release-will-block-a-one-season-awards-sweep.html",
+      "source_link": null,
+      "date": "2026-09-22T20:58:09+00:00",
+      "source": "VGTimes",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://files.vgtimes.com/posts/2026-09/late-grand-theft-auto-vi-release-will-block-a-one-season-awards-sweep-168524.webp",
+      "description": "The release date let the game down by the narrowest of margins. Eight days short of making the main awards season"
+    },
+    {
+      "title": "Stephen Adams jokes 'GTA VI' could hurt NBA performance - ESPN",
+      "link": "https://www.espn.com/video/clip/_/id/50008205",
+      "source_link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE43anBWMDByMzZnbktSa2FMbEdRbWNnMlg5dEQ3LTFqM21IM2FQSkVVODhOR2E3RDhDRXR0WjFDeEJpMVdic1FKbTZNc2tzYkNpRllDY0lWY2U?oc=5",
+      "date": "2026-09-22T20:30:54+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": null,
+      "description": "Stephen Adams jokes 'GTA VI' could hurt NBA performance&nbsp;&nbsp;ESPN"
+    },
     {
       "title": "Veteran NBA player warns of ‘league-wide’ dip in performance when GTA 6 launches",
       "link": "https://www.destructoid.com/veteran-nba-player-warns-of-league-wide-dip-in-performance-when-gta-6-launches/",
@@ -1726,7 +1752,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://assets-prd.ignimgs.com/2026/08/15/rssn-vcms-1786825622645.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "'You're Going to Take a Hit': Rainbow Six Siege Director Bracing for GTA 6 Launch Impact, Promises Players Who Stick Around Will Be Served 'Like Kings and Queens'&nbsp;&nbsp;IGN"
+      "description": "'You're Going to Take a Hit': Rainbow Six Siege Director Bracing for GTA 6 Launch Impact, Promises Players Who Stick Around Will Be Served 'Like Kings and Queens'&nbsp;&nbsp;IGN",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://me.ign.com/en/grand-theft-auto-vi/248229/youre-going-to-take-a-hit-rainbow-six-siege-director-bracing-for-gta-6-launch-impact-promises-player"
+        }
+      ]
     },
     {
       "title": "GTA 6 online multiplayer to launch in 2027? Twitch CEO Dan Clancy drops hint, says ‘You are going to see…’ - economictimes.com",
@@ -3617,6 +3649,19 @@
       "description": "GTA 6 et le modding, Rockstar Games met à jour ses règles&nbsp;&nbsp;INFINITY AREA"
     },
     {
+      "title": "Rockstar Games' New Modding Policy Crushes Influencers' Dreams for Monetized GTA 6 RP Servers - IGN",
+      "link": "https://me.ign.com/en/grand-theft-auto-vi/248227/rockstar-games-new-modding-policy-crushes-influencers-dreams-for-monetized-gta-6-rp-servers",
+      "source_link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOdkFZM3RXUEo0MmpUcV9JTk9zQ0xmeGxkVXhQX3doaVJEa2JVOHgzRkRwV2ZDeDhKUWk5YXlnMkVpdHBsLVU3eW1QZ0VLaFAyUllfbmltdUM3ckxlU3ZlMElaUVdtYmVuRS05MzZ2bW05djZKanRqNGVROFBWOEV1cE41aDNSU0RDeUZ4Z3A5VmlSamh6VlhWZ3JaYjlkT0dFckpoTVoycXZ5cTZNU3dQckhKTGxMaGlqZDBueVhydldsajNUUjFVVDdWZW9EcndhWno0RDFJUQ?oc=5",
+      "date": "2026-09-21T07:00:00+00:00",
+      "source": "Google News (annonces Rockstar)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://sm.ign.com/t/ign_me/news/r/rockstar-g/rockstar-games-new-modding-policy-crushes-influencers-dreams_x1ww.1200.jpg",
+      "description": "Rockstar Games' New Modding Policy Crushes Influencers' Dreams for Monetized GTA 6 RP Servers&nbsp;&nbsp;IGN"
+    },
+    {
       "title": "GTA 6 : pourquoi la version PC arrivera probablement plus vite que vous ne le pensez - tomsguide.fr",
       "link": "https://www.tomsguide.fr/gta-6-pourquoi-la-version-pc-arrivera-probablement-plus-vite-que-vous-ne-le-pensez/",
       "source_link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNR0ozd1FZa1BCZXF5c1lfOFM2OEhmbURmZlNBYmNJODNqLTJEVHFqZkpKSVZkb2pLc19PMlpPdWJXQUlEQWtPYTRrSVlqdUJDWDY4QWQ5bzRqWXg5QzZVZFVaZG9Sb29OMWZMYXcyeUMzOE41dHdSZjlPRm92SWMwcC1DVHZwMHVnQlE2bkVKRzBVek5qdUpvajd6djBsQ0NwLTRzbktteHJKWDVB?oc=5",
@@ -5376,45 +5421,6 @@
       "lang": null,
       "image": "https://static.gosugamers.net/16/d4/8a/d6937489848e7f336828ff85ddbcc0cbbe5e70792c0ffd1c742eb41e00.webp",
       "description": "192 GB of GTA VI and GTA V content reportedly leaked, including cut Liberty City DLC&nbsp;&nbsp;gosugamers.net"
-    },
-    {
-      "title": "Anticipated Soulslike Cuts Price to $40 USD to Compete Against GTA VI, Ocarina of Time, and Other Massive 2026 Blockbusters - levelup.com",
-      "link": "https://www.levelup.com/en/news/anticipated-soulslike-cuts-price-to-40-usd-to-compete-against-gta-vi-ocarina-of-time-and-other-massive-2026-blockbusters/",
-      "source_link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxOX2tncVB3OG9qQjJRZmpBT3BMNE9GVXNzMFRSMWFEdTVvMnJWTlVWeHRRUzNvYkp4TVhtNFN1ZC1QRmpUNEk5ODF1eWNVbUN2XzRGXzh4ZXJxbkprX1ducTBoTmJsQ0Z6SHE3cXZBQXJ0b28tZlo5M1RFSVp0akZXdC0zaTgzOTFrcHhENDRVRjNhLTZXZG9NWWE1Z2s3Tzg0NnAyT0trcU9EVWVKeDVKVmJNbEFXMVJpLVhLX25VVnJzRVd0aWZNN0JFNjZlN2RVWDVOd3dfblZpN0pRQW5tekhzNUVhSUgw?oc=5",
-      "date": "2026-09-18T17:44:45+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.levelup.com/resizer/v2/NC4CUOX35BH6XJNTX5QXFHORCI.jpg?auth=dca6c35b87c704f82edfb23859d72dbc2f84e16bc1895e530a6e11742b019bdb&height=630&width=1200&quality=70&smart=true",
-      "description": "Anticipated Soulslike Cuts Price to $40 USD to Compete Against GTA VI, Ocarina of Time, and Other Massive 2026 Blockbusters&nbsp;&nbsp;levelup.com"
-    },
-    {
-      "title": "Grand Theft Auto VI’s PC Launch Appears Imminent as Take-Two CEO Stokes Fan Expectations - levelup.com",
-      "link": "https://www.levelup.com/en/news/grand-theft-auto-vis-pc-launch-appears-imminent-as-take-two-ceo-stokes-fan-expectations/",
-      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOR1RkYk11ZGxkQUdUX0xkRUQ2RWxhWkhjNnBIMlNOQlpYMFVpRVc0ZTBkdkVFTEhEci1vT1JkZWgtazNienl1OEtaNWNXN2ktalFQeUtRZWpnRHluaHFMeGhJdWJIYlZ0YjBfdW03VTMxRGRMOHdwY2FFdXF3Q3N2bGVaR2c2SVdVN2hLbjVESXVJZ1ZkT0xEbE9FSzVOYjdncTJKTk81bWxIWW1XVjM4RDROT21kSG14LUtiMQ?oc=5",
-      "date": "2026-09-18T17:40:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://www.levelup.com/resizer/v2/JCF6MZAJG5EKBCLQI6C5JD5HAQ.jpg?auth=fc22023a473bd16908e360b6ee8c78b18006cfbd9391c28557b2be7f1e2db75e&height=630&width=1200&quality=70&smart=true",
-      "description": "Grand Theft Auto VI’s PC Launch Appears Imminent as Take-Two CEO Stokes Fan Expectations&nbsp;&nbsp;levelup.com"
-    },
-    {
-      "title": "NPCs in Grand Theft Auto VI will be able to avoid collisions with the player character. - GameGPU",
-      "link": "https://en.gamegpu.com/news/igry/npc-v-grand-theft-auto-vi-smogut-izbegat-stolknovenij-s-personazhami",
-      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOUGVJUVJBU2d0bkxxbldvdWpNTFlKSDJjc09uQkRLNGxRV19US0NYWXVrTm4tTGYzN0R1V3Q4NUx4cXJ5TFRxbTdfWkZRMkJzNm9KdFpfM21HQkZuZTdkZU05RFlKOXJfOE5mYnJpZkVEYU1UQ3NtVHpmLVM1SEsxN3JZOE1ZX1R2dGxYb0hCTlN2WnpYY0pBNC11UXk1OFMyN1JJ?oc=5",
-      "date": "2026-09-18T17:30:52+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/wk7bclwk7bc_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/wk7bclwk7bc_gpu.webp?width=1920&height=1080",
-      "description": "NPCs in Grand Theft Auto VI will be able to avoid collisions with the player character.&nbsp;&nbsp;GameGPU"
     }
   ],
   "partial": true,
