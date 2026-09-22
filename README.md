@@ -521,9 +521,11 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1289
+qui permet de tester tout le pipeline sans sortir de la machine. **1328
 vérifications** couvrant les dates (les trois formats présents dans
-l'historique), le tri, le plafonnement, la repasse rétroactive, le
+l'historique, et le refus de l'époque Unix), le tri, le plafonnement
+adaptatif, le plancher de rétention et les familles qu'il épargne, la
+repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
 `sub` contre le vrai validateur de `py_vapid`, le masquage des URL dans les
 messages d'erreur, l'équivalence entre récupération séquentielle et
@@ -4362,27 +4364,90 @@ couvrent une attente ne sont pas celles qui couvriront des correctifs et du
 multijoueur. Et **la profondeur de quinze jours** sera à reconsidérer, le
 rythme d'une veille n'ayant rien à voir avec celui d'un compte à rebours.
 
-### À faire en octobre : aligner le filtre d'entrée sur la fenêtre gardée
+### Fait le 22/09 : le filtre d'entrée est aligné sur la fenêtre gardée
 
-**Le problème.** `MAX_ARTICLE_AGE_DAYS` accepte quarante-cinq jours à
+**Le problème.** `MAX_ARTICLE_AGE_DAYS` acceptait quarante-cinq jours à
 l'entrée, alors que l'historique n'en garde que la profondeur visée. Tout
-article situé entre les deux est réabsorbé à chaque passage, pris pour neuf,
-puis élagué aussitôt. Depuis le correctif du 22/09 il n'est plus annoncé ni
-compté — mais il est toujours décodé et dédupliqué pour rien, à hauteur d'une
-vingtaine de secondes par passage.
+article situé entre les deux était réabsorbé à chaque passage, pris pour
+neuf, puis élagué aussitôt. Le correctif du matin l'avait fait taire — il
+n'était plus ni annoncé ni compté — mais il était toujours décodé et
+dédupliqué pour rien.
 
-**Pourquoi ça ne peut pas attendre novembre.** Le plafond est adaptatif : la
-fenêtre rétrécit quand le volume monte, jusqu'à environ trois jours au
-plafond dur. Le gaspillage grandit donc exactement le jour de la sortie. Et
-ce sont les sources LENTES qui l'alimentent — **29 sources sur 60** produisent
-dix articles ou moins sur la fenêtre, donc leurs cent entrées couvrent des
-mois, presque toutes hors fenêtre.
+**Le correctif.** `feed_store.plancher_de_retention()` calcule la date du
+plus vieil article ordinaire que l'historique garde effectivement, et
+`merge_results` refuse à l'entrée tout ce qui est plus ancien. Le plancher
+ne se calcule que si l'historique est plein (`len(items) >=
+taille_historique_visee(items)`) : tant qu'il ne l'est pas, rien n'est
+élagué, donc rien ne doit être refusé. Une première version appelait
+`cap_items` pour voir ce qui serait coupé — elle ne s'est jamais déclenchée,
+puisque l'historique stocké est déjà plafonné : il n'y avait jamais rien à
+couper.
 
-**Pourquoi pas tout de suite non plus.** Le correctif touche le filtre
-d'entrée, l'endroit où une erreur ne se voit pas : un article qui n'arrive
-jamais ne manque à personne. Le poser en octobre laisse des semaines pour
-l'observer avant que l'actualité s'emballe. Déployer ça en novembre serait le
-pire moment.
+**Les trois familles protégées passent toujours**, quelle que soit leur
+date : les articles officiels de Rockstar, ceux de RockstarMag, et les
+sujets chauds (au moins trois sources). Le filtre appelle exactement le même
+`item_protege()` que l'élagage — c'est ce qui garantit que les deux ne
+peuvent pas diverger.
+
+**Vérifié par équivalence, pas par raisonnement.** Le vrai historique a été
+rejoué deux fois, avec et sans le filtre :
+
+```
+sans filtre : 1500 articles publiés
+avec filtre : 1500 articles publiés, 150 refusés à l'entrée
+FICHIER PUBLIÉ IDENTIQUE : True
+  l'officiel vieux est conservé  : True
+  le RockstarMag vieux conservé  : True
+  les 20 récents sont conservés  : 20/20
+```
+
+**Ce que ça rapporte, honnêtement.** Pas les vingt secondes annoncées plus
+haut : le travail évité est du décodage de texte, pas du réseau, et il se
+compte en quelques secondes par passage. Le vrai bénéfice est ailleurs — le
+pipeline arrête de faire un travail qu'il défait aussitôt, et le nombre
+d'entrées refusées est désormais imprimé dans le journal, ce qui rend le
+gaspillage visible au lieu d'être à déduire. Ce gain grandit avec le volume :
+le plafond étant adaptatif, la fenêtre rétrécit le jour de la sortie, et ce
+sont les sources LENTES qui alimentent l'écart — **29 sources sur 60**
+produisent dix articles ou moins sur la fenêtre, donc leurs cent entrées
+couvrent des mois.
+
+**Pourquoi maintenant et pas en octobre**, comme il était écrit ici le matin
+même : attendre n'achète rien. Le correctif touche le filtre d'entrée,
+l'endroit où une erreur ne se voit pas — un article qui n'arrive jamais ne
+manque à personne. C'est précisément un argument pour le poser tôt : poser
+aujourd'hui donne huit semaines d'observation avant la sortie, poser en
+octobre en donne quatre. La version d'origine de ce paragraphe se
+contredisait.
+
+### Fait le 22/09 : un article ne peut plus être daté de 1970
+
+L'historique contenait un article daté du 01/01/1970 — une date d'époque
+Unix produite par un flux dont le champ `date` était vide ou illisible, et
+que `normalize_date` convertissait fidèlement. Un tel article tombe tout au
+fond du tri et n'en remonte jamais ; avec le plancher de rétention il aurait
+en plus été refusé à l'entrée à chaque passage.
+
+Trois verrous, parce qu'un seul n'aurait traité qu'un des trois cas :
+
+1. `normalize_date` refuse désormais `DATE_FLOOR` et renvoie `None` plutôt
+   qu'une date fausse ;
+2. `date_ou_premiere_vue()` donne à l'article sans date exploitable
+   l'instant où le robot l'a vu pour la première fois — ce qui est faux de
+   quelques heures au pire, au lieu de faux de cinquante-six ans ;
+3. `repare_dates_epoque()` fait la même chose rétroactivement sur
+   l'historique déjà écrit. La passe est idempotente : vérifié sur le vrai
+   fichier, 1 article corrigé au premier passage, 0 au second.
+
+### Fait le 22/09 : les deux lecteurs de liaison sont mutualisés
+
+`lire_liste()` et `lire_totaux_recap()` existaient en double, à l'identique,
+dans `push_notify.py` et `discord_notify.py`. Ils vivent maintenant dans
+`feed_store.py` et les deux modules les y prennent. Ce n'est pas une
+économie de lignes : c'est la garantie que le compte annoncé sur Discord et
+le compte annoncé en notification push ne peuvent plus diverger par
+divergence de code. Un test vérifie que les quatre références pointent bien
+vers la même implémentation.
 
 ### La cadence reste horaire, sortie comprise
 

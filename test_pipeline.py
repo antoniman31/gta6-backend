@@ -679,7 +679,7 @@ def test_fetch_parallele_identique():
     def parcours(resultats):
         """Rejoue la fusion et renvoie l'état final, comparable."""
         all_items, links_index, newly = [], {}, []
-        infos, counts, inchanges = fetch_feeds.merge_results(
+        infos, counts, inchanges, _refuses = fetch_feeds.merge_results(
             sources, resultats, all_items, links_index, newly,
             decoded_cache={}, afficher=False)
         return all_items, newly, infos, counts, inchanges
@@ -5996,6 +5996,249 @@ def test_plafond_suit_le_volume():
           "la profondeur obtenue ne dépasse pas la cible quand le plafond mord")
 
 
+
+def test_plancher_refuse_ce_qui_serait_elague():
+    print("\n[feed] un article condamné d'avance n'entre plus du tout")
+    import feed_store, datetime
+
+    # Pourquoi ce filtre. Le plafond garde une profondeur ; le filtre
+    # d'entrée accepte MAX_ARTICLE_AGE_DAYS (45 jours). Les flux resservent
+    # donc en permanence des articles situés entre les deux : absents de
+    # l'historique élagué, ils passaient pour neufs, étaient décodés,
+    # dédupliqués, comptés — puis élagués à la fin du même passage. C'est
+    # cette valse qui a produit le faux compteur du 22/09.
+    maintenant = datetime.datetime(2026, 9, 22, 12, 0, tzinfo=datetime.timezone.utc)
+
+    def art(lien, jours, **kw):
+        i = {"link": lien, "title": lien, "source": "Test",
+             "date": (maintenant - datetime.timedelta(days=jours)).isoformat()}
+        i.update(kw)
+        return i
+
+    # --- Le plancher ne se déclenche que sur un historique PLEIN ---
+    petit = feed_store.sort_items([art("a%d" % n, n % 10) for n in range(50)])
+    check(feed_store.plancher_de_retention(petit) is None,
+          "historique pas plein : aucun plancher, tout entre")
+
+    # Le piège rencontré en écrivant ceci : interroger cap_items pour savoir
+    # ce qui serait élagué ne marche pas. L'historique stocké sort DÉJÀ
+    # plafonné du passage précédent, donc cap_items n'a plus rien à retirer
+    # et le plancher serait toujours None — le filtre ne servirait jamais.
+    plein = feed_store.sort_items(
+        [art("vieux%d" % n, 30 + n % 20) for n in range(feed_store.MIN_HISTORY_SIZE)])
+    _, retires = feed_store.cap_items(plein)
+    check(retires == 0, "un historique déjà plafonné n'a plus rien à élaguer")
+    check(feed_store.plancher_de_retention(plein) is not None,
+          "et pourtant le plancher existe : il se lit sur le REMPLISSAGE, "
+          "pas sur ce que cap_items retirerait")
+
+    # --- Le plancher est bien le plus ancien ordinaire conservé ---
+    plancher = feed_store.plancher_de_retention(plein)
+    ordinaires = [feed_store.parse_date_key(i["date"]) for i in plein
+                  if not feed_store.item_protege(i)]
+    check(plancher == min(ordinaires),
+          "le plancher est la date du plus ancien article ordinaire gardé")
+
+    # --- Une date illisible ne doit pas écraser le plancher à 1970 ---
+    avec_bancal = plein + [{"link": "bancal", "title": "t", "date": "pas une date"}]
+    check(feed_store.plancher_de_retention(feed_store.sort_items(avec_bancal))
+          == plancher,
+          "un article mal daté ne tire pas le plancher jusqu'en 1970")
+
+    # --- LE contrat : refuser à l'entrée ne change pas le fichier publié ---
+    #
+    # Ce n'est pas « on espère ne rien perdre » : le plancher vient du même
+    # calcul que le plafond, donc tout article refusé aurait été retiré à la
+    # fin du même passage. Les deux chemins doivent donner le MÊME résultat.
+    entrants = ([art("recent%d" % n, n % 3) for n in range(20)]
+                + [art("tresvieux%d" % n, 60 + n) for n in range(40)]
+                + [art("officiel-vieux", 80, official=True)]
+                + [art("rmag-vieux", 70, rockstarmag=True)])
+
+    def publie(avec_filtre):
+        fil = list(plein)
+        refuses = 0
+        for it in entrants:
+            if (avec_filtre and plancher is not None
+                    and not feed_store.item_protege(it)
+                    and feed_store.parse_date_key(it["date"]) < plancher):
+                refuses += 1
+                continue
+            fil.append(it)
+        garde, _ = feed_store.cap_items(feed_store.sort_items(fil))
+        return [i["link"] for i in garde], refuses
+
+    sans, _ = publie(False)
+    avec, refuses = publie(True)
+    check(sans == avec,
+          "le fichier publié est IDENTIQUE avec et sans le filtre")
+    check(refuses == 40,
+          "les 40 articles condamnés d'avance sont refusés à l'entrée (%d)" % refuses)
+    check("officiel-vieux" in avec and "rmag-vieux" in avec,
+          "un protégé vieux passe toujours — c'est tout l'intérêt de le protéger")
+    check(sum(1 for l in avec if l.startswith("recent")) == 20,
+          "et les articles récents entrent tous")
+
+    # --- Le pipeline passe bien le plancher, et rend le compte des refus ---
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check("plancher = feed_store.plancher_de_retention(existing_items)" in src,
+          "le passage calcule le plancher sur l'état d'avant")
+    check("plancher=plancher" in src,
+          "et le transmet à merge_results")
+    check("refuses_trop_vieux[0] += 1" in src,
+          "les refus sont comptés, pas silencieux")
+    check("item_protege(item)" in src,
+          "les protégés sont exemptés dans la boucle de fusion")
+
+
+
+def test_lecteurs_de_liaison_mutualises():
+    print("\n[notif] les deux canaux lisent exactement la même chose")
+    import feed_store, discord_notify, push_notify, json as _json, os as _os, tempfile
+
+    # Ces deux lecteurs vivaient en double, à l'identique, dans
+    # discord_notify et push_notify — et c'était la zone la moins testée du
+    # dépôt (audit du 22/09). La duplication exacte est précisément ce qui
+    # avait dérivé en silence sur la liste des sources fin août : trois
+    # sources marquées « sans filtre » d'un côté et filtrées de l'autre.
+    #
+    # Ici l'enjeu est direct : deux copies qui divergeraient feraient
+    # annoncer deux nombres DIFFÉRENTS pour le même passage, l'un sur
+    # Discord et l'autre en notification push.
+    check(discord_notify.lire_liste is feed_store.lire_liste
+          and push_notify.lire_liste is feed_store.lire_liste,
+          "les deux canaux partagent la même lire_liste")
+    check(discord_notify.lire_totaux_recap is feed_store.lire_totaux_recap
+          and push_notify.lire_totaux_recap is feed_store.lire_totaux_recap,
+          "et la même lire_totaux_recap")
+
+    # --- lire_liste : tolérante par construction ---
+    #
+    # Un fichier absent est le cas NORMAL : le robot ne l'écrit que s'il a
+    # quelque chose à dire. Un fichier abîmé ne doit pas empêcher la
+    # notification de partir — mieux vaut annoncer sans détail que se taire.
+    check(feed_store.lire_liste("") == [], "chemin vide -> liste vide")
+    check(feed_store.lire_liste("/rien/du/tout.json") == [],
+          "fichier absent -> liste vide, pas une exception")
+
+    tmp = tempfile.mkdtemp()
+    def fichier(nom, contenu):
+        c = _os.path.join(tmp, nom)
+        with open(c, "w", encoding="utf-8") as f:
+            f.write(contenu)
+        return c
+
+    check(feed_store.lire_liste(fichier("bon.json", '[{"t": 1}]')) == [{"t": 1}],
+          "une vraie liste est rendue telle quelle")
+    check(feed_store.lire_liste(fichier("casse.json", "{pas du json")) == [],
+          "un JSON abîmé -> liste vide")
+    check(feed_store.lire_liste(fichier("objet.json", '{"a": 1}')) == [],
+          "un objet au lieu d'une liste -> liste vide")
+
+    # --- lire_totaux_recap : None plutôt qu'un compte à moitié lu ---
+    #
+    # Renvoyer un tuple partiel ferait annoncer un nombre FAUX, ce qui est
+    # pire que de retomber sur le comptage direct de la liste.
+    vrai = _os.environ.get("RECAP_TOTALS_FILE")
+    try:
+        _os.environ.pop("RECAP_TOTALS_FILE", None)
+        check(feed_store.lire_totaux_recap() is None,
+              "variable absente -> None, on retombe sur le comptage direct")
+
+        _os.environ["RECAP_TOTALS_FILE"] = fichier(
+            "t.json", _json.dumps({"articles": 14, "officiels": 1, "sommet": 4}))
+        check(feed_store.lire_totaux_recap() == (14, 1, 4),
+              "des totaux sains sont lus dans l'ordre attendu")
+
+        for nom, contenu, cas in (
+                ("vide.json", "", "fichier vide"),
+                ("liste.json", "[1, 2]", "une liste au lieu d'un objet"),
+                ("texte.json", '{"articles": "beaucoup"}', "un compte non numérique")):
+            _os.environ["RECAP_TOTALS_FILE"] = fichier(nom, contenu)
+            check(feed_store.lire_totaux_recap() is None,
+                  "%s -> None plutôt qu'un compte faux" % cas)
+
+        _os.environ["RECAP_TOTALS_FILE"] = "/rien/du/tout.json"
+        check(feed_store.lire_totaux_recap() is None,
+              "fichier absent -> None")
+    finally:
+        if vrai is None:
+            _os.environ.pop("RECAP_TOTALS_FILE", None)
+        else:
+            _os.environ["RECAP_TOTALS_FILE"] = vrai
+        import shutil; shutil.rmtree(tmp, ignore_errors=True)
+
+    # Les copies ne doivent pas revenir : c'est le seul moyen d'empêcher la
+    # divergence de se réinstaller au prochain ajustement.
+    for f in ("discord_notify.py", "push_notify.py"):
+        src = open(f, encoding="utf-8").read()
+        check("def lire_liste(" not in src and "def lire_totaux_recap(" not in src,
+              "%s ne redéfinit aucun des deux lecteurs" % f)
+
+
+
+def test_epoque_unix_nest_pas_une_date():
+    print("\n[dates] l'époque Unix est une absence de date, pas une date")
+    import fetch_feeds, feed_store, datetime
+
+    # Repéré par l'audit du 22/09 : la page de support de Rockstar arrivait
+    # datée du 01/01/1970 et se rangeait pour toujours en fin de liste.
+    # Comme elle est officielle, elle est protégée de l'élagage : elle y
+    # serait restée indéfiniment, avec une date qui ne veut rien dire.
+    t = datetime.datetime(2026, 9, 22, 10, 0, tzinfo=datetime.timezone.utc)
+
+    # On ne réécrit JAMAIS une date lisible. Inventer une date est
+    # exactement ce que normalize_date refuse de faire ; on comble une
+    # absence, on ne corrige pas une information.
+    check(fetch_feeds.date_ou_premiere_vue("2026-09-01T10:00:00+00:00", t)
+          == "2026-09-01T10:00:00+00:00",
+          "une date lisible est laissée intacte")
+    for cas, valeur in (("l'époque Unix", "1970-01-01T00:00:00+00:00"),
+                        ("une date vide", ""),
+                        ("une date illisible", "pas une date")):
+        check(fetch_feeds.date_ou_premiere_vue(valeur, t) == t.isoformat(),
+              "%s est remplacée par la première vue" % cas)
+
+    # normalize_date ne doit plus LAISSER PASSER l'époque en amont, sinon le
+    # repli ne servirait qu'à rattraper ce qu'on vient de produire.
+    import time
+    epoque = time.struct_time((1970, 1, 1, 0, 0, 0, 3, 1, 0))
+    check(fetch_feeds.normalize_date({"published_parsed": epoque}) == "",
+          "normalize_date ne rend plus la date d'époque, mais du vide")
+    vraie = time.struct_time((2026, 9, 1, 12, 0, 0, 1, 244, 0))
+    check(fetch_feeds.normalize_date({"published_parsed": vraie})
+          == "2026-09-01T12:00:00+00:00",
+          "et une vraie date structurée passe toujours")
+
+    # --- La reprise rétroactive ---
+    #
+    # L'historique n'est jamais rejoué dans le pipeline de collecte : sans
+    # elle, les articles déjà engrangés garderaient leur 1970 pour toujours.
+    fil = [{"link": "a", "title": "t", "date": "1970-01-01T00:00:00+00:00"},
+           {"link": "b", "title": "t", "date": "2026-09-10T00:00:00+00:00"},
+           {"link": "c", "title": "t", "date": ""}]
+    fetch_feeds.repare_dates_epoque(fil, t)
+    check(fil[0]["date"] == t.isoformat() and fil[2]["date"] == t.isoformat(),
+          "les articles sans date exploitable sont repositionnés")
+    check(fil[1]["date"] == "2026-09-10T00:00:00+00:00",
+          "et celui qui avait une vraie date n'a pas bougé")
+
+    # Idempotente : un second passage ne doit rien re-déplacer, sinon la
+    # date avancerait d'une heure à chaque exécution du robot.
+    plus_tard = t + datetime.timedelta(hours=3)
+    fetch_feeds.repare_dates_epoque(fil, plus_tard)
+    check(fil[0]["date"] == t.isoformat(),
+          "et un second passage ne la fait pas glisser (idempotente)")
+
+    # Branchée dans le pipeline, sinon tout ce qui précède décrit une
+    # fonction que personne n'appelle.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check("existing_items = repare_dates_epoque(existing_items)" in src,
+          "la reprise est appelée avec les autres corrections rétroactives")
+    check("date_ou_premiere_vue(date)" in src,
+          "et le repli s'applique à la construction de chaque article")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -6099,6 +6342,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_elagage_declare_au_garde_fou,
            test_un_article_elague_nest_pas_annonce,
            test_plafond_suit_le_volume,
+           test_plancher_refuse_ce_qui_serait_elague,
+           test_lecteurs_de_liaison_mutualises,
+           test_epoque_unix_nest_pas_une_date,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
     fn()
