@@ -495,7 +495,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1272
+qui permet de tester tout le pipeline sans sortir de la machine. **1280
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -1945,6 +1945,68 @@ l'app ajoute une ligne : *la requête n'a pas atteint le serveur, regarde du
 côté DNS privé, VPN ou bloqueur de pub*. `github.io` figure sur certaines
 listes de blocage parce qu'il héberge aussi des pages de phishing. Cette ligne
 fait dire à l'app ce qu'il a fallu deux jours pour déduire.
+
+### 300 « nouveaux » par heure pour 2 articles réels
+
+Signalé le 22/09/2026, capture Discord à l'appui : une notification par heure
+annonçant *« 301 nouveaux articles GTA 6 »*, *« 298 »*, *« 296 »*… et **1887**
+au récapitulatif du matin. Le rythme réel est de 74 par **jour**.
+
+**Régression introduite quatre jours plus tôt, par l'abaissement du plafond.**
+Les chiffres la datent à l'heure près :
+
+| | articles | durée | « nouveaux » annoncés |
+|---|---|---|---|
+| 18/09 06h02, avant le plafond | 3202 | 92 s | **2** |
+| 18/09 11h43, après | 1500 | 134 s | **259** |
+
+**Deux fenêtres qui ne se parlaient pas.** Le plafond de 1500 couvre environ
+dix-sept jours ; `MAX_ARTICLE_AGE_DAYS` en accepte quarante-cinq à l'entrée.
+Chaque passage réabsorbait donc les articles de 17 à 45 jours que les flux
+resservent — absents de l'historique élagué, ils passaient pour neufs — puis
+`cap_items` les rejetait aussitôt.
+
+Mesuré sur deux passages consécutifs : **2 articles réellement entrés,
+293 annoncés**. Le fichier n'a jamais été faux ; c'est le compte qui l'était,
+parce qu'il était arrêté avant le plafond.
+
+**Le correctif est un ordre, pas une règle de plus.** Le plafonnement passe
+maintenant AVANT tout ce qui exploite `newly_added`, et les articles entrés
+puis élagués dans le même passage sont retirés des nouveautés — et des
+compteurs par source, sinon la somme par source contredirait le total.
+
+Ce qui se répare du même coup : **45 secondes par passage**. `fetch_missing_images`
+téléchargeait les miniatures des 270 articles déjà condamnés. La durée revient
+de ~134 s à son niveau d'avant.
+
+**L'invariant, désormais tenu par un test :** on n'annonce jamais ce qu'on n'a
+pas gardé. Quatre contrôles vérifient l'ORDRE des étapes — plafond, puis
+réconciliation, puis miniatures, actus majeures et compte publié — parce que
+c'est l'ordre, et non la logique, qui était faux.
+
+### La vignette ouvre l'article
+
+Demandé le 22/09/2026. C'est la plus grande zone de la carte, et ne rien faire
+au clic la faisait passer pour décorative : il fallait viser le titre.
+
+**Le piège n'était pas de poser le lien, mais de ne pas en créer un second.**
+L'image est en `alt=""`. Une ancre focalisable autour d'elle serait un lien
+**sans intitulé** vers la même page que le titre : un lecteur d'écran
+annoncerait « lien » et rien d'autre, et le clavier gagnerait un arrêt inutile
+par carte. D'où `aria-hidden="true"` et `tabindex="-1"` — la souris et le
+doigt gagnent la cible, le clavier garde le seul lien qui se nomme.
+
+**`display:contents` sur l'enveloppe.** Sans lui, l'ancre deviendrait l'élément
+flex de `.card-top` et emporterait `align-self:stretch`, les marges négatives
+et toutes les surcharges du mode compact : il aurait fallu recopier
+`.card-thumb` sur deux sélecteurs, qui auraient divergé au premier ajustement.
+`display:contents` retire la boîte, pas l'élément — le clic fonctionne, la
+géométrie ne bouge pas. Un contrôle mesure le ratio 16/9 pour l'exiger.
+
+Sept contrôles rendus : l'image est dans un lien, il mène au même article que
+le titre, il est hors de l'arbre d'accessibilité, **la carte garde un seul
+lien focalisable**, la géométrie est intacte, le clic ouvre l'onglet, et
+l'article est marqué comme lu.
 
 ## Récapitulatif hebdomadaire — supprimé le 15/09/2026
 

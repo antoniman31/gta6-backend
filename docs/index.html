@@ -466,6 +466,14 @@
     border:0; border-bottom:1px solid var(--line); border-radius:0;
     background:var(--bg-elevated);
   }
+  /* display:contents — l'enveloppe ne produit aucune boîte, donc l'image
+     reste l'enfant flex direct de .card-top. Sans ça, l'ancre deviendrait
+     l'élément flex et emporterait align-self:stretch, les marges négatives
+     et toutes les surcharges du mode compact : il aurait fallu recopier
+     .card-thumb sur deux sélecteurs, et les deux auraient divergé au
+     premier ajustement. Le clic fonctionne quand même — display:contents
+     retire la boîte, pas l'élément. */
+  .card-thumb-lien{display:contents;}
   .card-favicon{width:14px; height:14px; border-radius:var(--r-xs); vertical-align:middle; margin-right:5px;}
   .card.official{
     border-color:#FF6B00; border-width:1.5px;
@@ -3430,7 +3438,21 @@ function renderCard(item, newLinks, searchQuery){
   // rendu, soit 60 requêtes pour trois cartes visibles. decoding="async"
   // évite en plus qu'un décodage bloque le rendu.
   const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" class="card-favicon" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : "";
-  const thumb = imageUrl ? `<img src="${escapeHtml(imageUrl)}" class="card-thumb" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : "";
+  const vignette = imageUrl ? `<img src="${escapeHtml(imageUrl)}" class="card-thumb" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : "";
+  // La vignette ouvre l'article, exactement comme le titre : même cible,
+  // même marquage en lu. C'est la plus grande zone de la carte, et ne rien
+  // faire au clic la faisait passer pour décorative.
+  //
+  // aria-hidden + tabindex="-1" ne sont pas des précautions décoratives :
+  // sans eux, chaque carte offrirait DEUX liens vers la même page, dont un
+  // sans intitulé (l'image est en alt=""). Un lecteur d'écran annoncerait
+  // « lien » sans rien d'autre, et la navigation au clavier gagnerait un
+  // arrêt inutile par carte. La souris et le doigt gagnent la cible, le
+  // clavier et le lecteur d'écran gardent le seul lien qui se nomme : le
+  // titre, juste à côté, qui mène au même endroit.
+  const thumb = (vignette && linkUrl)
+    ? `<a class="card-thumb-lien" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${vignette}</a>`
+    : vignette;
   const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
   const specialistBadge = (item.specialist && !item.official) ? `<span class="specialist-badge">SPÉCIALISTE GTA 6</span>` : "";
 
