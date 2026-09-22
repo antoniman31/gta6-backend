@@ -208,6 +208,130 @@ def audite(data):
     return anomalies
 
 
+
+def audite_archive(data, repertoire=None):
+    """Ce que la fenêtre ne peut pas dire d'elle-même : l'archive tient-elle ?
+
+    L'archive est écrite à chaque passage et n'est relue par personne. Un
+    fichier tronqué, un index périmé, un mois qui se vide : rien ne le
+    signalerait, et on ne s'en apercevrait que le jour où l'on chercherait
+    quelque chose d'ancien — c'est-à-dire trop tard, la fenêtre l'ayant
+    depuis longtemps oublié.
+
+    Trois questions, dans l'ordre de gravité :
+
+      1. l'archive contient-elle TOUT ce que la fenêtre contient ? C'est
+         l'invariant qui justifie l'archive. S'il tombe, des articles sont
+         en train de disparaître pour de bon ;
+      2. l'index dit-il la vérité sur les fichiers ? L'app ne lit que lui :
+         un index qui annonce un mois absent, ou qui oublie un fichier
+         présent, envoie l'app chercher dans le vide ou lui cache des
+         articles ;
+      3. les dates rangées correspondent-elles au mois du fichier ? Un
+         article d'août dans le fichier de septembre ne se perd pas, mais
+         il ne se retrouve pas non plus.
+    """
+    import os
+
+    repertoire = repertoire or feed_store.ARCHIVE_DIR
+    anomalies = []
+
+    def signale(gravite, code, message, exemples=()):
+        anomalies.append({"gravite": gravite, "code": code,
+                          "message": message, "exemples": list(exemples)})
+
+    chemin_index = os.path.join(repertoire, "index.json")
+    if not os.path.exists(chemin_index):
+        # Pas d'archive : ce n'est une anomalie que si la fenêtre, elle,
+        # contient quelque chose — sinon c'est un dépôt tout neuf.
+        if data.get("items"):
+            signale("attention", "archive-absente",
+                    "Aucune archive publiée alors que la fenêtre a des articles",
+                    [f"{repertoire}/index.json est introuvable",
+                     "le prochain passage du robot devrait la créer"])
+        return anomalies
+
+    try:
+        with open(chemin_index, encoding="utf-8") as f:
+            index = json.load(f)
+    except (OSError, ValueError) as e:
+        signale("grave", "archive-index-illisible",
+                "L'index de l'archive est illisible", [str(e)])
+        return anomalies
+
+    # --- 2. l'index décrit-il ce qui existe vraiment ?
+    annonces = {}
+    manquants = []
+    for entree in index.get("mois") or []:
+        for fichier in entree.get("fichiers") or []:
+            nom = fichier.get("fichier")
+            chemin = os.path.join(repertoire, nom or "")
+            if not nom or not os.path.exists(chemin):
+                manquants.append(f"{entree.get('mois')} → {nom} annoncé, absent du disque")
+                continue
+            annonces[nom] = fichier
+    if manquants:
+        signale("grave", "archive-fichier-manquant",
+                f"{len(manquants)} fichier(s) annoncé(s) par l'index et absent(s)",
+                manquants[:5])
+
+    sur_disque = {n for n in os.listdir(repertoire)
+                  if n.endswith(".json") and n != "index.json"}
+    orphelins = sorted(sur_disque - set(annonces))
+    if orphelins:
+        signale("attention", "archive-fichier-orphelin",
+                f"{len(orphelins)} fichier(s) présent(s) mais absent(s) de l'index",
+                orphelins[:5] + ["l'app ne les demandera jamais"])
+
+    # --- 1. l'archive contient-elle toute la fenêtre ?
+    archives = {}
+    for entree in index.get("mois") or []:
+        for item in feed_store.lire_mois(entree.get("mois"), repertoire):
+            if item.get("link"):
+                archives[item["link"]] = item
+
+    fenetre = {i["link"] for i in (data.get("items") or []) if i.get("link")}
+    perdus = sorted(fenetre - set(archives))
+    if perdus:
+        signale("grave", "archive-incomplete",
+                f"{len(perdus)} article(s) de la fenêtre absent(s) de l'archive",
+                perdus[:5] + ["c'est l'invariant que l'archive existe pour tenir"])
+
+    # --- 3. chaque article est-il dans le fichier de son mois ?
+    egares = []
+    for entree in index.get("mois") or []:
+        mois = entree.get("mois")
+        for item in feed_store.lire_mois(mois, repertoire):
+            if item.get("link") and feed_store.mois_de(item) != mois:
+                egares.append(f"{item['link']} daté {feed_store.mois_de(item)} "
+                              f"rangé dans {mois}")
+    if egares:
+        signale("attention", "archive-mois-faux",
+                f"{len(egares)} article(s) rangé(s) dans le mauvais mois",
+                egares[:5])
+
+    # --- et le compte-rendu, même quand tout va bien
+    total = index.get("articles") or 0
+    reel = len(archives)
+    if total != reel:
+        signale("attention", "archive-compte-faux",
+                "L'index annonce un total différent de ce qu'il contient",
+                [f"index : {total} articles", f"fichiers : {reel} articles"])
+
+    octets = sum(f.get("octets") or 0 for f in annonces.values())
+    mois = index.get("mois") or []
+    if mois:
+        signale("info", "archive", "Archive mensuelle", [
+            f"{reel} articles conservés sur {len(mois)} mois "
+            f"({mois[-1].get('mois')} → {mois[0].get('mois')})",
+            f"{len(annonces)} fichier(s), {octets / 1048576:.2f} Mo au total",
+            f"au-delà de la fenêtre : {reel - len(fenetre & set(archives))} "
+            f"article(s) que feed.json ne contient plus",
+        ])
+
+    return anomalies
+
+
 def rapporte(anomalies, sortie_json=False):
     if sortie_json:
         print(json.dumps(anomalies, ensure_ascii=False, indent=2))
@@ -233,7 +357,7 @@ def rapporte(anomalies, sortie_json=False):
 def main(argv):
     strict = "--strict" in argv
     data = feed_store.load_feed()
-    anomalies = audite(data)
+    anomalies = audite(data) + audite_archive(data)
     rapporte(anomalies, sortie_json="--json" in argv)
 
     # Par défaut on ne fait jamais échouer : ces anomalies sont des
