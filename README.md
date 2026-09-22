@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1392
+qui permet de tester tout le pipeline sans sortir de la machine. **1455
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -1726,11 +1726,83 @@ notification part sur ce seul motif :
 Le franchissement est détecté **au basculement uniquement** : un sujet déjà
 majeur qui gagne une 6ᵉ puis une 7ᵉ reprise ne réalerte pas.
 
-Aucun titre d'article n'y figure. Une version précédente reprenait celui du
-premier article pour éviter d'avoir à ouvrir l'app — mais « premier » ne
-veut rien dire ici : c'est l'ordre de `FEEDS`, pas une importance. Un titre
-tiré au hasard parmi plusieurs donne une idée fausse de ce que contient le
-lot. Un récapitulatif annonce combien ; le quoi est dans l'app, à un tap.
+**Le titre dit combien ; le corps dit quoi.** Pendant longtemps le
+récapitulatif n'affichait aucun titre d'article, et l'argument était juste :
+reprendre celui du *premier* article ne veut rien dire, « premier » étant
+l'ordre de `FEEDS` et pas une importance. Un titre tiré au hasard parmi dix
+donne une idée fausse du lot.
+
+L'argument ne visait que le tirage au hasard, pas le fait de citer. Depuis
+le 22/09/2026, les deux canaux citent — chacun selon ce qu'il sait afficher,
+et jamais en tirant au sort :
+
+- **Notification push** : le titre reste le compte, le corps porte l'article
+  le plus notable (`corps_recap`), suivi de « · et N autres ».
+- **Discord** : sous le même titre, les **cinq derniers articles**,
+  cliquables. Un téléphone ne sait pas afficher cinq liens dans une
+  notification ; Discord, si.
+
+Le classement n'est pas inventé pour l'occasion, c'est celui que l'app
+utilise déjà : un article **officiel** de Rockstar passe devant tout, puis
+viennent les plus **récents**. `article_le_plus_notable()` y ajoute le
+nombre de rédactions pour désigner *le* plus notable quand il n'y en a
+qu'un à citer.
+
+```
+🎮 12 nouveaux articles GTA 6
+─────────────────────────────────────────────
+⭐ [Grand Theft Auto VI: An Extended Look](…) — Rockstar Games
+🔥 [Rockstar resserre les règles de modding](…) — IGN · 5 sources
+• [Morgan Wallen dévoile un titre pour la B.O.](…) — Backstage Country
+• [Pourquoi GTA 6 n'est pas aux Golden Joystick](…) — GamesRadar+
+• [Take-Two confirme la fenêtre de sortie](…) — VGTimes
++ 7 autres dans l'app
+
+[Ouvrir GTA6_WATCH](…)
+```
+
+**Le titre de l'embed n'a pas bougé d'un caractère.** C'est le texte partagé
+mot pour mot avec le push (`libelle_recap`), et l'invariant « les deux
+canaux disent la même chose » tient toujours : seul le corps du message
+Discord s'enrichit. La règle « un seul message par passage » tient aussi —
+cinq liens dans un même embed, ce ne sont pas cinq messages.
+
+**Le nom du média est extrait du titre.** Les titres venus de Google News
+finissent par « - IGN », « - Frandroid », « - ixbt.games », et la source
+stockée est « Google News (EN) » : affichés ensemble, ils donnaient des
+lignes comme « … - GamesRadar+ — Google News (EN) ».
+`separe_titre_et_media()` coupe cette queue et s'en sert comme libellé de
+source. Mesuré sur les 1 811 articles du fil le 22/09/2026 : **1 437 titres
+contiennent « - », dont 1 411 dont la queue est bien un média ou un
+domaine**. Les 26 autres sont de vrais bouts de titre, tous écartés par
+trois bornes — 32 caractères, 4 mots, pas de ponctuation finale. Le doute
+profite toujours au titre : si la queue ne ressemble pas franchement à un
+média, rien n'est coupé. Le nettoyage est **d'affichage seulement** :
+`feed.json` et les cartes de l'app gardent le titre brut.
+
+**Le récapitulatif du matin cite lui aussi.** C'est le passage qui porte le
+plus gros lot — et le seul dont les articles ne sont plus « nouveaux » au
+moment où il parle : à 5h, ceux de la nuit sont publiés depuis des heures.
+Seuls leurs *comptes* survivaient dans `attente_recap`, trois entiers.
+Depuis le 22/09/2026, `attente_recap` porte en plus **jusqu'à cinq aperçus**
+de six champs (~800 octets), et `write_feed_pair()` les **retire du fichier
+allégé** : l'app le retélécharge à chaque ouverture, elle ne doit pas payer
+pour une donnée qu'aucune ligne d'`index.html` ne lit. Le coût réel est donc
+~800 octets dans `feed.json`, et uniquement entre minuit et 5h.
+
+**Un défaut trouvé en écrivant les tests.** `apercu_de()` ne calculait le
+nombre de rédactions que depuis `extraSources`. Un aperçu *relu* après la
+nuit ne porte plus `extraSources` — il porte le compte déjà fait — et
+retombait donc à « 1 source », perdant son 🔥 sur exactement le
+récapitulatif qui en a besoin. Un contrôle vérifie désormais que l'aller-
+retour par `feed.json` rend un aperçu **identique**.
+
+**Et un trou de couverture refermé au passage.** Toute cette arithmétique
+vivait dans `main()`, que rien dans la suite ne lance : elle était donc
+invérifiable — le trou exact par lequel était passée la profondeur
+d'historique restée inerte. Elle est extraite en `reporte_ou_annonce()`, et
+un contrôle lit la table des noms du code compilé de `main()` pour garantir
+qu'il l'appelle réellement au lieu d'en garder une copie.
 
 Le protocole Web Push ne demande **pas de serveur permanent** : il faut
 une paire de clés VAPID et, par appareil, un abonnement créé par le

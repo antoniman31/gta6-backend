@@ -505,6 +505,19 @@ def write_feed_pair(data, path=FEED_PATH):
     # recherche renverrait silencieusement des résultats incomplets.
     allege["partial"] = len(items) > RECENT_FEED_SIZE
     allege["full_url"] = os.path.basename(path)
+    # Les aperçus de la nuit ne servent qu'à discord_notify, qui lit le
+    # fichier COMPLET. L'app, elle, retélécharge celui-ci à chaque ouverture :
+    # y laisser cinq articles en double se paierait à chaque visite, pour
+    # quelque chose qu'aucune ligne de docs/index.html ne lit.
+    #
+    # dict() et non une écriture directe : `allege` est une copie de surface
+    # de `data`, modifier son attente_recap modifierait aussi celui du fichier
+    # complet — donc effacerait l'arriéré qu'on est en train de reporter.
+    attente = allege.get("attente_recap")
+    if isinstance(attente, dict) and "apercus" in attente:
+        sans = dict(attente)
+        sans.pop("apercus", None)
+        allege["attente_recap"] = sans
     write_feed(allege, recent_path_for(path))
     return len(allege["items"])
 
@@ -569,6 +582,31 @@ def lire_totaux_recap(variable="RECAP_TOTALS_FILE"):
                 int(data.get("sommet", 0)))
     except (TypeError, ValueError):
         return None
+
+
+def lire_apercus_recap(variable="RECAP_TOTALS_FILE"):
+    """Les articles que le récapitulatif peut citer, déposés par le robot.
+
+    Lecture SÉPARÉE de lire_totaux_recap, qui rend trois entiers et est
+    appelée aussi bien par Discord que par les notifications push. Élargir son
+    tuple aurait cassé le second pour un besoin qui ne concerne que le
+    premier.
+
+    Rend [] à la moindre anomalie : un récapitulatif sans liens reste un
+    récapitulatif juste, un récapitulatif avec des liens inventés ne l'est
+    pas.
+    """
+    chemin = os.environ.get(variable, "")
+    if not chemin:
+        return []
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return []
+    if not isinstance(data, dict):
+        return []
+    return apercus_assainis(data.get("apercus"))
 
 
 class FeedInvalide(Exception):
@@ -1053,6 +1091,150 @@ def corps_recap(items):
     if autres > 0:
         return f"{titre} · et {autres} autre{'s' if autres > 1 else ''}"
     return titre
+
+
+# ---------------------------------------------------------------------------
+# Aperçus : les quelques articles qu'un récapitulatif peut CITER
+# ---------------------------------------------------------------------------
+# Antoni, le 22/09/2026 : « faut aussi que tu détailles les notif discord avec
+# des liens pour les 5 derniers article ». Le récapitulatif Discord annonçait
+# un nombre et rien d'autre ; il annonce désormais un nombre ET montre les
+# cinq derniers, cliquables.
+#
+# Le titre du récapitulatif, lui, ne bouge pas : c'est le texte partagé mot
+# pour mot avec les notifications push (voir libelle_recap). Seul le corps du
+# message Discord s'enrichit — un téléphone ne sait pas afficher cinq liens
+# cliquables dans une notification, forcer la symétrie ici ne donnerait rien
+# de lisible.
+
+APERCU_RECAP_MAX = 5
+
+# Bornes de ce qui est reconnu comme un nom de MÉDIA en fin de titre.
+#
+# Les titres venus de Google News finissent par « - IGN », « - Frandroid »,
+# « - ixbt.games ». Affichés tels quels à côté du nom de la source, ils
+# donnaient des lignes comme « … - GamesRadar+ — Google News (EN) ».
+#
+# Mesuré sur les 1 811 articles du fil le 22/09/2026 : 1 437 titres
+# contiennent « - », et 1 411 de ces queues sont bien un média ou un domaine.
+# Les 26 autres sont de vrais morceaux de titre (« and it's finally time to
+# book that holiday to New Zealand », « VGC: "There's a bit of noise…" ») —
+# toutes trop longues, trop bavardes ou ponctuées, donc écartées par les
+# trois bornes ci-dessous. Le doute profite toujours au titre : quand la
+# queue ne ressemble pas franchement à un média, on ne coupe rien.
+MEDIA_MAX_CARACTERES = 32
+MEDIA_MAX_MOTS = 4
+MEDIA_PONCTUATION_INTERDITE = '.?!,;:)"»\u2019'
+
+
+def separe_titre_et_media(titre, source=""):
+    """Sépare « Un titre - IGN » en ("Un titre", "IGN").
+
+    Rend (titre inchangé, `source`) dès qu'il y a le moindre doute : mieux
+    vaut une ligne un peu redondante qu'un titre amputé de sa fin.
+    """
+    titre = (titre or "").strip()
+    defaut = (source or "").strip()
+    if " - " not in titre:
+        return titre, defaut
+    debut, queue = titre.rsplit(" - ", 1)
+    debut, queue = debut.strip(), queue.strip()
+    # Un titre réduit à rien n'est pas un titre : « - IGN » seul ne doit pas
+    # produire une ligne vide et cliquable.
+    if not debut or not queue:
+        return titre, defaut
+    if len(queue) > MEDIA_MAX_CARACTERES:
+        return titre, defaut
+    if len(queue.split()) > MEDIA_MAX_MOTS:
+        return titre, defaut
+    if queue[-1] in MEDIA_PONCTUATION_INTERDITE:
+        return titre, defaut
+    return debut, queue
+
+
+def apercu_de(item):
+    """La forme MINIMALE d'un article, telle qu'une notification la cite.
+
+    Six champs et pas un de plus. Cette forme est stockée telle quelle dans
+    feed.json pendant la pause nocturne (voir attente_recap), et tout champ
+    en trop s'y paierait à chaque passage.
+
+    Volontairement NON nettoyée : le titre est gardé brut, la séparation du
+    média se fait au moment de l'affichage. Un aperçu écrit à 2h du matin par
+    une version du robot ne doit pas figer la mise en forme que la version de
+    5h appliquera.
+    """
+    item = item if isinstance(item, dict) else {}
+    return {
+        "title": (item.get("title") or "").strip(),
+        "link": (item.get("link") or "").strip(),
+        "source": (item.get("source") or "").strip(),
+        "official": bool(item.get("official")),
+        # Un ARTICLE porte extraSources ; un aperçu déjà réduit, relu depuis
+        # feed.json après la pause nocturne, porte le compte déjà fait et plus
+        # aucune extraSources. Ne lire que le premier faisait retomber tout
+        # aperçu stocké à « 1 source » — donc perdre le 🔥 de l'actu majeure
+        # entre 2h et 5h, exactement sur le récapitulatif qui en a besoin.
+        "sources": (1 + len(item["extraSources"])
+                    if isinstance(item.get("extraSources"), list)
+                    else _compte_sources(item.get("sources"))),
+        "date": item.get("date") or "",
+    }
+
+
+def _compte_sources(valeur):
+    """Un nombre de rédactions relu, ou 1 pour tout ce qui n'en est pas un."""
+    if isinstance(valeur, int) and not isinstance(valeur, bool) and valeur >= 1:
+        return valeur
+    return 1
+
+
+def apercus_recap(items, maximum=APERCU_RECAP_MAX):
+    """Les articles à citer sous le récapitulatif, au plus `maximum`.
+
+    Ordre choisi par Antoni le 22/09/2026 : les plus RÉCENTS — c'est la
+    lecture littérale de « les 5 derniers » — mais un article officiel de
+    Rockstar remonte toujours en tête. C'est la hiérarchie déjà appliquée
+    partout ailleurs : vibration dédiée, notification persistante, pastille
+    orange dans l'app.
+
+    Le tri se fait en deux passes stables plutôt qu'avec une clé composite :
+    les dates sont des datetime, qu'on ne peut pas nier pour inverser
+    seulement ce critère-là. La stabilité garantit que les officiels gardent
+    entre eux leur ordre de date.
+
+    Accepte aussi bien des articles complets que des aperçus déjà réduits :
+    c'est ce qui permet d'empiler l'arriéré de la nuit passage après passage
+    sans jamais garder plus de `maximum` entrées.
+    """
+    lot = [apercu_de(i) for i in (items or ())
+           if isinstance(i, dict) and (i.get("title") or "").strip()
+           and (i.get("link") or "").strip()]
+    # Un même article peut arriver deux fois : une fois par l'arriéré déjà
+    # stocké, une fois par le passage en cours qui le redétecte.
+    vus, uniques = set(), []
+    for a in lot:
+        if a["link"] in vus:
+            continue
+        vus.add(a["link"])
+        uniques.append(a)
+    uniques.sort(key=lambda a: parse_date_key(a.get("date")), reverse=True)
+    uniques.sort(key=lambda a: 0 if a.get("official") else 1)
+    return uniques[:maximum]
+
+
+def apercus_assainis(brut, maximum=APERCU_RECAP_MAX):
+    """Relit une liste d'aperçus venue de feed.json, en se méfiant de tout.
+
+    Même esprit qu'attente_lue pour les compteurs : un fichier écrit par une
+    version antérieure n'a pas le champ, et une entrée aberrante ne doit pas
+    faire publier un lien vide ou un titre à rallonge. Tout ce qui n'est pas
+    exploitable disparaît silencieusement — une notification dégradée vaut
+    mieux qu'une notification absente.
+    """
+    if not isinstance(brut, list):
+        return []
+    return apercus_recap([a for a in brut if isinstance(a, dict)], maximum)
 
 
 def libelle_officiel(item):

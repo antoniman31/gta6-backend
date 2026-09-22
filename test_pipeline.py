@@ -3796,7 +3796,7 @@ def test_recap_du_matin_couvre_la_nuit():
     # version antérieure n'a pas le champ, et une valeur aberrante ne doit
     # pas faire annoncer n'importe quel nombre.
     import fetch_feeds
-    vide = {"articles": 0, "officiels": 0, "sommet": 0}
+    vide = {"articles": 0, "officiels": 0, "sommet": 0, "apercus": []}
     check(fetch_feeds.attente_lue({}) == vide, "un feed sans le champ repart de zéro")
     check(fetch_feeds.attente_lue({"attente_recap": "n_importe_quoi"}) == vide,
           "un champ qui n'est pas un objet aussi")
@@ -3805,7 +3805,7 @@ def test_recap_du_matin_couvre_la_nuit():
           "et toute valeur aberrante retombe à zéro")
     check(fetch_feeds.attente_lue(
               {"attente_recap": {"articles": 7, "officiels": 1, "sommet": 4}})
-          == {"articles": 7, "officiels": 1, "sommet": 4},
+          == {"articles": 7, "officiels": 1, "sommet": 4, "apercus": []},
           "un arriéré sain est lu tel quel")
 
     # La fusion après conflit de push : un MAXIMUM, jamais une somme — les
@@ -3815,7 +3815,8 @@ def test_recap_du_matin_couvre_la_nuit():
     fusion, _, _ = merge_feed.merge_feeds(
         {"items": [], "attente_recap": {"articles": 9, "officiels": 1, "sommet": 4}},
         {"items": [], "attente_recap": {"articles": 5, "officiels": 0, "sommet": 2}})
-    check(fusion["attente_recap"] == {"articles": 9, "officiels": 1, "sommet": 4},
+    check(fusion["attente_recap"] == {"articles": 9, "officiels": 1, "sommet": 4,
+                                      "apercus": []},
           "à la fusion, l'arriéré le plus élevé l'emporte (jamais la somme)")
 
     # ---- La nuit entière, bout en bout ----
@@ -3921,6 +3922,317 @@ def test_recap_du_matin_couvre_la_nuit():
          discord_notify.DISCORD_WEBHOOK_URL) = vrais
         shutil.rmtree(tmp, ignore_errors=True)
 
+
+
+def test_recap_discord_detaille():
+    print("\n[notif] le récapitulatif Discord montre les derniers articles")
+    import io, json as _json, contextlib, tempfile, os as _os, shutil as _shutil
+    import discord_notify, fetch_feeds, merge_feed
+
+    # ---- 1. Séparer le titre du média ----
+    #
+    # Mesuré sur les 1 811 articles du fil le 22/09/2026 : 1 437 titres
+    # contiennent « - », dont 1 411 dont la queue est bien un média. Les cas
+    # ci-dessous sont pris tels quels dans ce corpus.
+    sep = feed_store.separe_titre_et_media
+    check(sep("Why isn't GTA 6 in the Golden Joystick Awards? - GamesRadar+", "Google News")
+          == ("Why isn't GTA 6 in the Golden Joystick Awards?", "GamesRadar+"),
+          "le nom du média en fin de titre devient le libellé de source")
+    check(sep("GTA 6 delayed - ixbt.games", "Google News")[1] == "ixbt.games",
+          "un domaine en minuscules est un média comme un autre")
+    check(sep("Un truc - La Crème Du Gaming", "Google News")[1] == "La Crème Du Gaming",
+          "un média de quatre mots passe encore")
+    # Les trois garde-fous, sur de VRAIS titres du fil que la règle doit
+    # laisser intacts.
+    trop_long = ("GTA 6 arrive - Fiery opening statements reveal Rockstar's "
+                 "culture of secrecy as tribunal")
+    check(sep(trop_long, "IGN") == (trop_long, "IGN"),
+          "une queue trop longue n'est pas un média : le titre reste entier")
+    bavard = "Le jeu sort - and it's finally time to book that holiday"
+    check(sep(bavard, "IGN") == (bavard, "IGN"),
+          "une queue de plus de quatre mots non plus")
+    ponctue = "GTA 6 - AN EXTENDED LOOK (UN LARGE APERÇU, NETFLIX)"
+    check(sep(ponctue, "IGN") == (ponctue, "IGN"),
+          "et une queue ponctuée non plus")
+    check(sep("Un titre sans tiret", "VGTimes") == ("Un titre sans tiret", "VGTimes"),
+          "sans tiret, la source de l'article sert de libellé")
+    check(sep("", "IGN") == ("", "IGN"), "un titre vide ne casse rien")
+
+    # ---- 2. Le choix des cinq ----
+    def art(t, jour, off=False, extra=0, lien=None):
+        i = {"title": t, "link": lien or ("https://ex.test/" + t.replace(" ", "-")),
+             "source": "Google News (EN)", "official": off,
+             "date": "2026-09-%02dT12:00:00+00:00" % jour}
+        if extra:
+            i["extraSources"] = [{"source": "s%d" % n} for n in range(extra)]
+        return i
+
+    lot = [art("A", 10), art("B", 14), art("C", 12), art("D", 15),
+           art("E", 11), art("F", 13), art("Officiel", 9, off=True)]
+    cinq = feed_store.apercus_recap(lot)
+    check(len(cinq) == feed_store.APERCU_RECAP_MAX == 5, "on cite cinq articles au plus")
+    check(cinq[0]["title"] == "Officiel",
+          "l'officiel Rockstar passe en tête même s'il est le plus vieux")
+    check([a["title"] for a in cinq[1:]] == ["D", "B", "F", "C"],
+          "les autres sont les plus RÉCENTS, du plus récent au plus ancien : %s"
+          % [a["title"] for a in cinq[1:]])
+
+    # Le même article vu deux fois — une fois dans l'arriéré stocké, une fois
+    # redétecté par le passage en cours — ne prend pas deux lignes.
+    double = feed_store.apercus_recap([art("A", 10), art("A", 10), art("B", 14)])
+    check(len(double) == 2, "un article vu deux fois ne prend qu'une ligne")
+
+    check(feed_store.apercus_recap([]) == [], "un lot vide ne cite rien")
+    check(feed_store.apercus_recap(None) == [], "un lot absent non plus")
+    check(feed_store.apercus_recap([{"title": "x"}, {"link": "https://y.test"}]) == [],
+          "un article sans titre ou sans lien n'est pas citable")
+
+    # ---- 3. L'aller-retour par feed.json ----
+    #
+    # Un aperçu relu la nuit d'après doit être IDENTIQUE à ce qu'il était.
+    # Première version : apercu_de ne lisait que extraSources, donc tout
+    # aperçu stocké retombait à « 1 source » et perdait son 🔥 — précisément
+    # sur le récapitulatif du matin, le seul qui lise des aperçus stockés.
+    chaud = art("Sujet repris partout", 20, extra=3)
+    avant = feed_store.apercu_de(chaud)
+    check(avant["sources"] == 4, "un article compte sa source plus ses reprises")
+    apres = feed_store.apercus_assainis(_json.loads(_json.dumps([avant])))[0]
+    check(apres == avant,
+          "un aperçu relu depuis feed.json est identique à ce qu'il était : %s" % apres)
+
+    check(feed_store.apercus_assainis("pas une liste") == [],
+          "un champ d'aperçus abîmé ne fait pas planter le récapitulatif")
+    check(feed_store.apercus_assainis([None, 3, "x"]) == [],
+          "et ses entrées aberrantes disparaissent")
+
+    # ---- 4. La ligne affichée ----
+    ligne = discord_notify.ligne_apercu(feed_store.apercu_de(
+        art("Une info banale - IGN", 20)))
+    check(ligne.startswith("• ") and "](<https://" in ligne and "*IGN*" in ligne,
+          "une ligne ordinaire : puce, titre cliquable, média — %s" % ligne)
+    check(discord_notify.ligne_apercu(apres).startswith("🔥")
+          and "4 sources" in discord_notify.ligne_apercu(apres),
+          "un sujet au-dessus du seuil est marqué 🔥 et dit combien de rédactions")
+    check(discord_notify.ligne_apercu(feed_store.apercu_de(
+        art("Annonce", 20, off=True))).startswith("⭐"),
+          "une publication de Rockstar est marquée ⭐")
+    check("sources" not in discord_notify.ligne_apercu(feed_store.apercu_de(art("Banal", 20))),
+          "une ligne ordinaire ne dit pas « 1 sources »")
+
+    # Le Markdown du titre est neutralisé : « *checks notes* » et « [GTA6] »
+    # existent tous les deux dans le fil, et passeraient en italique ou
+    # casseraient le lien qui les entoure.
+    piege = discord_notify.ligne_apercu(feed_store.apercu_de(
+        art("[GTA6] des *notes* et du |markdown|", 20)))
+    check("\\[GTA6\\]" in piege and "\\*notes\\*" in piege,
+          "crochets et astérisques sont échappés : %s" % piege)
+
+    # Un lien qui contient une parenthèse terminerait le lien Markdown au
+    # milieu et ferait déborder l'URL sur le reste de la ligne. Aucun des
+    # 1 811 liens du fil n'en contient — la ligne tombe quand même en mode
+    # texte plutôt que de sortir cassée.
+    casse = discord_notify.ligne_apercu(feed_store.apercu_de(
+        art("Titre", 20, lien="https://ex.test/a(b)")))
+    check("](" not in casse and "Titre" in casse,
+          "un lien impossible à écrire en Markdown donne une ligne sans lien")
+
+    # Coupe des titres : le fil en contient déjà un de 137 caractères.
+    long = discord_notify.coupe("mot " * 60)
+    check(len(long) <= discord_notify.TITRE_MAX_CARACTERES + 1 and long.endswith("…"),
+          "un titre trop long est coupé avec une ellipse (%d)" % len(long))
+    check(discord_notify.coupe("court") == "court", "un titre court n'est pas touché")
+    check(discord_notify.coupe("X" * 300).endswith("…"),
+          "et un titre sans le moindre espace est coupé quand même")
+
+    # ---- 5. Le corps du message ----
+    corps = discord_notify.description_recap(cinq, total=12)
+    check(corps.count("\n") >= 5, "cinq lignes plus le pied de message")
+    check("+ 7 autres dans l'app" in corps,
+          "et le reste du lot est annoncé : %s" % corps.splitlines()[-3:])
+    check(corps.rstrip().endswith("[Ouvrir GTA6_WATCH](%s)" % discord_notify.SITE_URL),
+          "le lien vers l'app reste, en dernier")
+    check(discord_notify.description_recap([], 0)
+          == "[Ouvrir GTA6_WATCH](%s)" % discord_notify.SITE_URL,
+          "sans rien à citer, le corps redevient exactement celui d'avant")
+    check("autres dans l'app" not in discord_notify.description_recap(cinq, total=5),
+          "cinq articles sur cinq : pas de « + 0 autres »")
+
+    # Discord REFUSE l'embed entier (400) au-delà de 4096 caractères, et
+    # send_discord_with_retry ne retente pas une erreur définitive. Une ligne
+    # en moins vaut mieux qu'un récapitulatif perdu.
+    enormes = [feed_store.apercu_de(art("T%d" % n, 20, lien="https://ex.test/" + "y" * 1200))
+               for n in range(5)]
+    borne = discord_notify.description_recap(enormes, total=5)
+    check(len(borne) <= discord_notify.DESCRIPTION_MAX_CARACTERES + 200,
+          "un lot de liens démesurés reste sous la limite Discord (%d)" % len(borne))
+    check("Ouvrir GTA6_WATCH" in borne, "et le lien vers l'app survit à l'élagage")
+
+    # ---- 6. LE résultat : l'embed réellement envoyé porte les liens ----
+    envoyes = []
+    vrais = (discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL)
+    discord_notify.send_discord_with_retry = lambda e, t, **k: envoyes.append(e) or True
+    discord_notify.DISCORD_WEBHOOK_URL = "https://exemple.test/webhook"
+    tmp = tempfile.mkdtemp()
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.send_discord_notification([art("Un vrai titre - IGN", 21)])
+        check(len(envoyes) == 1, "toujours UN SEUL message, pas un par article")
+        embed = envoyes[0]
+        check(embed["title"] == feed_store.libelle_recap([art("Un vrai titre - IGN", 21)]),
+              "le titre de l'embed reste MOT POUR MOT celui partagé avec le push")
+        check("Un vrai titre" in embed["description"]
+              and "ex.test/Un-vrai-titre---IGN" in embed["description"],
+              "et le corps porte le titre ET son lien : %s" % embed["description"])
+
+        # ---- 7. La nuit, bout en bout : le récapitulatif de 5h cite ----
+        #
+        # C'est le passage qui porte le plus gros lot, et le seul dont les
+        # articles ne sont plus « nouveaux » au moment où il parle. Sans les
+        # aperçus stockés, c'était le seul récapitulatif sans aucun lien.
+        ctot = _os.path.join(tmp, "totaux.json")
+        cnew = _os.path.join(tmp, "new.json")
+        with open(cnew, "w", encoding="utf-8") as f:
+            _json.dump([], f)
+        with open(ctot, "w", encoding="utf-8") as f:
+            _json.dump({"articles": 12, "officiels": 0, "sommet": 1,
+                        "apercus": [feed_store.apercu_de(art("Article de 2h du matin", 22))]}, f)
+        anciens = {k: _os.environ.get(k) for k in ("NEW_ITEMS_FILE", "RECAP_TOTALS_FILE")}
+        _os.environ.update(NEW_ITEMS_FILE=cnew, RECAP_TOTALS_FILE=ctot)
+        try:
+            envoyes.clear()
+            with contextlib.redirect_stdout(io.StringIO()):
+                discord_notify.main()
+        finally:
+            for k, v in anciens.items():
+                if v is None: _os.environ.pop(k, None)
+                else: _os.environ[k] = v
+        check(len(envoyes) == 1, "le récapitulatif du matin part (%d)" % len(envoyes))
+        check("12 nouveaux" in envoyes[0]["title"],
+              "il annonce toujours les 12 de la nuit")
+        check("Article de 2h du matin" in envoyes[0]["description"],
+              "et il CITE un article de la nuit, qui n'est pourtant plus « nouveau » : %s"
+              % envoyes[0]["description"])
+    finally:
+        (discord_notify.send_discord_with_retry,
+         discord_notify.DISCORD_WEBHOOK_URL) = vrais
+        _shutil.rmtree(tmp, ignore_errors=True)
+
+    # ---- 8. L'empilement nocturne ----
+    attente = fetch_feeds.attente_lue({})
+    check(attente["apercus"] == [], "un feed sans le champ repart sans aperçu")
+    check(fetch_feeds.attente_vide()["apercus"] is not fetch_feeds.attente_vide()["apercus"],
+          "deux ardoises propres ne partagent PAS la même liste")
+    stocke = {"attente_recap": {"articles": 3, "officiels": 0, "sommet": 1,
+                                "apercus": [feed_store.apercu_de(art("Nuit 1", 20))]}}
+    relu = fetch_feeds.attente_lue(stocke)
+    check([a["title"] for a in relu["apercus"]] == ["Nuit 1"],
+          "un arriéré sain rend ses aperçus")
+    check(fetch_feeds.attente_lue({"attente_recap": {"apercus": "cassé"}})["apercus"] == [],
+          "un champ d'aperçus abîmé ne fait pas échouer le passage")
+    # Quatre passages nocturnes de trois articles : on n'en garde que cinq.
+    empile = relu["apercus"]
+    for n in range(4):
+        empile = feed_store.apercus_recap(
+            list(empile) + [art("N%d-%d" % (n, k), 21 + n) for k in range(3)])
+    check(len(empile) == 5, "quatre passages nocturnes n'empilent jamais plus de cinq aperçus")
+
+    # ---- 8 bis. Le report lui-même, joué pour de vrai ----
+    #
+    # Cette arithmétique vivait dans main(), que RIEN dans cette suite ne
+    # lance : elle était donc non vérifiable, exactement comme l'était le
+    # calcul de profondeur le jour où il est resté inerte sans que personne
+    # ne le voie. Elle a été extraite pour être jouée ici.
+    deposes = []
+    def depose(t): deposes.append(t)
+
+    def report(attente, nouveaux, nuit, promus=(), sommet=1, officiels=0):
+        del deposes[:]
+        with contextlib.redirect_stdout(io.StringIO()):
+            suite = fetch_feeds.reporte_ou_annonce(
+                attente, nouveaux, promus, officiels, sommet, nuit, depose=depose)
+        return suite, list(deposes)
+
+    # La nuit : rien n'est déposé, tout s'empile.
+    nuit1, envoi = report(fetch_feeds.attente_vide(), [art("Nuit A", 20)], nuit=True)
+    check(envoi == [], "un passage nocturne ne dépose rien à annoncer")
+    check(nuit1["articles"] == 1 and [a["title"] for a in nuit1["apercus"]] == ["Nuit A"],
+          "il met de côté le compte ET l'article à citer")
+    nuit2, _ = report(nuit1, [art("Nuit B", 21)], nuit=True)
+    check(nuit2["articles"] == 2
+          and [a["title"] for a in nuit2["apercus"]] == ["Nuit B", "Nuit A"],
+          "le passage suivant empile par-dessus, le plus récent devant : %s"
+          % [a["title"] for a in nuit2["apercus"]])
+
+    # Le matin : tout part, l'ardoise est effacée.
+    matin, envoi = report(nuit2, [art("Matin", 22)], nuit=False)
+    check(len(envoi) == 1, "le matin, les totaux sont déposés")
+    check(envoi[0]["articles"] == 3, "ils portent la nuit ET ce passage")
+    check([a["title"] for a in envoi[0]["apercus"]] == ["Matin", "Nuit B", "Nuit A"],
+          "et les trois articles à citer, du plus récent au plus ancien : %s"
+          % [a["title"] for a in envoi[0]["apercus"]])
+    check(matin == fetch_feeds.attente_vide(),
+          "après quoi l'ardoise est propre — l'arriéré n'est pas annoncé deux fois")
+
+    # Rien de neuf, rien en attente : on se tait.
+    _, envoi = report(fetch_feeds.attente_vide(), [], nuit=False)
+    check(envoi == [], "un passage sans rien de neuf ne dépose rien")
+
+    # Zéro article mais un sujet devenu majeur : le message part quand même,
+    # et il peut enfin dire DE QUOI il parle.
+    promu = art("Le sujet qui explose", 22, extra=3)
+    _, envoi = report(fetch_feeds.attente_vide(), [], nuit=False,
+                      promus=[promu], sommet=4)
+    check(len(envoi) == 1 and envoi[0]["articles"] == 0,
+          "une actu devenue majeure sans article neuf est quand même annoncée")
+    check([a["title"] for a in envoi[0]["apercus"]] == ["Le sujet qui explose"],
+          "et l'article promu est cité : c'était le seul message du robot à ne "
+          "montrer aucun lien")
+
+    # Le contrôle qui rend l'extraction honnête : main() appelle bien cette
+    # fonction, plutôt que d'en garder une copie. Lu dans la table des noms du
+    # code compilé, pas dans le texte source — un test qui lit du texte source
+    # est déjà passé au rouge dans ce dépôt pendant qu'on RENFORÇAIT le code
+    # qu'il surveillait.
+    check("reporte_ou_annonce" in fetch_feeds.main.__code__.co_names,
+          "main() appelle réellement le report, il n'en existe pas deux versions")
+
+    # ---- 9. Les aperçus ne partent PAS dans le fichier que l'app télécharge ----
+    tmp2 = tempfile.mkdtemp()
+    try:
+        chemin = _os.path.join(tmp2, "feed.json")
+        data = {"items": [art("Publié", 20)],
+                "attente_recap": {"articles": 1, "officiels": 0, "sommet": 1,
+                                  "apercus": [feed_store.apercu_de(art("Nuit", 20))]}}
+        feed_store.write_feed_pair(data, chemin)
+        complet = _json.load(open(chemin, encoding="utf-8"))
+        allege = _json.load(open(feed_store.recent_path_for(chemin), encoding="utf-8"))
+        check(complet["attente_recap"].get("apercus"),
+              "le fichier COMPLET garde les aperçus — c'est lui que le robot relit")
+        check("apercus" not in allege["attente_recap"],
+              "le fichier ALLÉGÉ ne les porte pas : l'app le retélécharge à chaque ouverture")
+        check(allege["attente_recap"]["articles"] == 1,
+              "mais il garde les compteurs, qui ne coûtent rien")
+        check(data["attente_recap"].get("apercus"),
+              "et l'objet d'origine n'est pas mutilé au passage — sinon l'arriéré "
+              "qu'on est en train de reporter serait effacé")
+    finally:
+        _shutil.rmtree(tmp2, ignore_errors=True)
+
+    # ---- 10. La fusion après conflit de push ----
+    #
+    # Les compteurs prennent le maximum ; les aperçus, eux, se RÉUNISSENT.
+    # Prendre « le plus long des deux » ferait perdre au récapitulatif du
+    # matin les articles que l'autre côté avait vus.
+    fusion, _, _ = merge_feed.merge_feeds(
+        {"items": [], "attente_recap": {"articles": 2, "officiels": 0, "sommet": 1,
+                                        "apercus": [feed_store.apercu_de(art("Chez nous", 20))]}},
+        {"items": [], "attente_recap": {"articles": 3, "officiels": 0, "sommet": 1,
+                                        "apercus": [feed_store.apercu_de(art("Chez eux", 21))]}})
+    titres = [a["title"] for a in fusion["attente_recap"]["apercus"]]
+    check(titres == ["Chez eux", "Chez nous"],
+          "la fusion réunit les aperçus des deux côtés, reclassés : %s" % titres)
+    check(fusion["attente_recap"]["articles"] == 3,
+          "et les compteurs prennent toujours le maximum")
 
 def test_alerte_officielle_rockstar():
     print("\n[notif] une annonce de Rockstar a son alerte à elle")
@@ -6839,6 +7151,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_echelle_m3_verrouillee,
            test_panneaux_sont_de_vrais_dialogues,
            test_recap_du_matin_couvre_la_nuit,
+           test_recap_discord_detaille,
            test_alerte_officielle_rockstar,
            test_pause_nocturne,
            test_filtres_persistants,

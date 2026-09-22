@@ -83,10 +83,19 @@ def merge_feeds(remote, ours):
     a_nous = ours.get("attente_recap") or {}
     au_loin = remote.get("attente_recap") or {}
     if isinstance(a_nous, dict) and isinstance(au_loin, dict) and (a_nous or au_loin):
-        merged["attente_recap"] = {
+        fusionnee = {
             cle: max(_entier(a_nous.get(cle)), _entier(au_loin.get(cle)))
             for cle in ("articles", "officiels", "sommet")
         }
+        # Les aperçus, eux, se RÉUNISSENT au lieu de se comparer : ce ne sont
+        # pas des cumuls mais des articles, et apercus_recap déduplique sur le
+        # lien puis reclasse le tout avant de garder les cinq premiers. Prendre
+        # « le plus long des deux » ferait perdre au récapitulatif du matin
+        # exactement les articles que l'autre côté avait vus.
+        fusionnee["apercus"] = feed_store.apercus_recap(
+            feed_store.apercus_assainis(a_nous.get("apercus"))
+            + feed_store.apercus_assainis(au_loin.get("apercus")))
+        merged["attente_recap"] = fusionnee
 
     return merged, recovered, removed
 
