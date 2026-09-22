@@ -127,11 +127,22 @@ def build_payload(new_items, promus=()):
     Le texte est celui de `feed_store.libelle_recap`, partagé avec Discord :
     les deux canaux annoncent mot pour mot la même chose.
 
-    Aucun titre d'article n'apparaît. Une version précédente reprenait le
-    titre du premier article pour éviter d'avoir à ouvrir l'app — mais
-    « premier » ne veut rien dire ici (c'est l'ordre de FEEDS, pas une
-    importance), et un titre choisi au hasard parmi plusieurs donne une
-    idée fausse de ce que contient le lot.
+    LE CORPS PORTE UN TITRE D'ARTICLE depuis le 22/09/2026. La version
+    d'avant n'en montrait aucun, et son commentaire disait pourquoi :
+    « premier » ne veut rien dire, c'est l'ordre de FEEDS et pas une
+    importance, donc un titre pris là donne une idée fausse du lot.
+    L'argument était juste — il ne visait que le choix « le premier ».
+
+    Antoni : les notifications « ne disent pas assez ». Le titre montré est
+    donc celui que `feed_store.article_le_plus_notable` désigne, selon
+    l'ordre que l'app utilise déjà pour juger de l'importance : officiel
+    Rockstar d'abord, puis le nombre de rédactions sur le sujet, puis la
+    date. Ce n'est pas un tirage au sort, et deux passages identiques
+    citent le même article.
+
+    Le corps retombe sur « Ouvrir GTA6_WATCH » quand il n'y a rien à citer —
+    c'est le cas du récapitulatif du matin, qui travaille sur des comptes
+    reportés sans garder les articles. Inventer un titre là serait mentir.
     """
     totaux = lire_totaux_recap()
     if totaux:
@@ -141,9 +152,10 @@ def build_payload(new_items, promus=()):
     else:
         titre = feed_store.libelle_recap(new_items, promus)
         majeure = feed_store.est_actu_majeure(new_items, promus)
+    corps = feed_store.corps_recap(list(new_items or ()) + list(promus or ()))
     return {
         "title": titre,
-        "body": "Ouvrir GTA6_WATCH",
+        "body": corps or "Ouvrir GTA6_WATCH",
         "url": SITE_URL,
         # Un tag identique remplace la notification précédente au lieu
         # d'empiler : après une nuit sans regarder son téléphone, on veut
@@ -180,6 +192,11 @@ def build_payload_officiel(item):
         # récapitulatif du passage suivant effacerait l'annonce d'un trailer
         # une demi-heure plus tard, en silence.
         "tag": feed_store.etiquette_officiel(item),
+        # Lu par le service worker. Une annonce de Rockstar doit se
+        # reconnaître SANS lire : une vibration à elle, et une bannière qui
+        # ne disparaît pas toute seule. Le récapitulatif de routine, lui,
+        # reste discret et s'efface comme n'importe quelle notification.
+        "officiel": True,
     }
 
 

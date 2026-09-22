@@ -110,6 +110,22 @@ self.addEventListener("push", (event) => {
       // d'empiler douze bannières après une nuit sans regarder le téléphone.
       tag: contenu.tag,
       renotify: true,
+      // Une annonce de Rockstar doit se reconnaître SANS avoir à lire le
+      // texte. Les deux notifications commençaient par le même emoji et
+      // avaient le même comportement ; sur un téléphone, à la volée, elles
+      // se confondaient (Antoni, 22/09/2026).
+      //
+      // `vibrate` : une pulsation longue, double, que la routine n'a pas.
+      // `requireInteraction` : la bannière reste tant qu'on ne l'a pas
+      // écartée, au lieu de se replier au bout de quelques secondes. C'est
+      // précisément l'annonce qu'on ne veut pas manquer en reposant son
+      // téléphone — et les trois plus grosses de l'histoire du jeu sont
+      // tombées entre 2h24 et 3h48 du matin.
+      //
+      // Les deux options sont ignorées silencieusement là où elles ne sont
+      // pas gérées : aucun risque pour les autres plateformes.
+      vibrate: contenu.officiel ? [200, 100, 200] : undefined,
+      requireInteraction: !!contenu.officiel,
       data: { url: contenu.url }
     })
   );

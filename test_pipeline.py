@@ -385,21 +385,77 @@ def test_push_payload():
     check("1 nouvel article" in un["title"], "singulier correct pour un seul article")
     check("officiel" in un["title"], "les articles officiels sont signalés")
 
-    # Ce que l'utilisateur a demandé le 29/08 : le récapitulatif annonce
-    # COMBIEN, jamais QUOI. Un titre d'article choisi parmi plusieurs donne
-    # une idée fausse du lot ("premier" = ordre de FEEDS, pas importance).
-    check("Rockstar annonce" not in un["title"] and "Rockstar annonce" not in un["body"],
-          "aucun titre d'article dans la notification, ni en titre ni en corps")
+    # LE TITRE reste un COMPTE — c'est la règle du 29/08 et elle tient : un
+    # lot de dix articles n'a pas de titre représentatif.
+    check("Rockstar annonce" not in un["title"],
+          "le TITRE de la notification annonce combien, jamais quoi")
+
+    # LE CORPS, lui, porte un titre d'article depuis le 22/09/2026, à la
+    # demande d'Antoni (« elles ne disent pas assez »). L'objection d'alors
+    # ne visait que le choix « le premier de la liste » ; celui-ci est
+    # classé, pas tiré au sort.
+    check(un["body"] == "Rockstar annonce la date de sortie",
+          "le CORPS cite l'article, au lieu de « Ouvrir GTA6_WATCH »")
 
     trois = push_notify.build_payload([
         {"title": "Un trailer inattendu", "official": False},
-        {"title": "Autre chose", "official": False},
+        {"title": "Repris partout", "official": False, "extraSources": [{}, {}]},
         {"title": "Encore autre chose", "official": False}])
     check("3 nouveaux articles" in trois["title"], "pluriel correct")
     check("officiel" not in trois["title"], "rien d'officiel : pas de mention parasite")
-    check("trailer" not in trois["body"] and "Autre chose" not in trois["body"],
-          "trois articles : toujours aucun titre repris")
-    check(trois["tag"] == un["tag"], "tag identique : une notification remplace la précédente")
+
+    # CE QUI EST CITÉ N'EST PAS LE PREMIER, c'est le plus notable — ici
+    # l'article que trois rédactions couvrent. C'est toute la différence
+    # avec la version rejetée en août.
+    check(trois["body"].startswith("Repris partout"),
+          "parmi trois, c'est le plus couvert qui est cité (« %s »)" % trois["body"])
+    check("et 2 autres" in trois["body"],
+          "et le reste est annoncé comme un nombre, pas énuméré")
+    check(trois["tag"] == "gta6watch-majeur",
+          "trois rédactions sur un sujet : c'est une actu majeure, tag à part")
+
+    # L'étiquette commune se vérifie entre deux lots de ROUTINE. Le lot
+    # ci-dessus n'en est pas un — trois rédactions sur le même sujet en font
+    # une actu majeure, qui reçoit exprès son propre tag pour ne pas être
+    # effacée par le récapitulatif suivant. Les comparer revenait à tester
+    # deux choses différentes sous un seul nom.
+    routine = push_notify.build_payload([
+        {"title": "Un trailer inattendu"}, {"title": "Autre chose"}])
+    check(routine["tag"] == un["tag"],
+          "deux récapitulatifs de routine partagent leur tag : le second "
+          "remplace le premier au lieu d'empiler")
+
+    # Un officiel passe devant un sujet plus couvert : c'est l'émetteur qui
+    # prime, pas le volume de reprises.
+    melange = push_notify.build_payload([
+        {"title": "Repris par quatre sites", "extraSources": [{}, {}, {}]},
+        {"title": "Le Newswire a parlé", "official": True}])
+    check(melange["body"].startswith("Le Newswire a parlé"),
+          "l'officiel est cité avant un sujet pourtant plus repris")
+
+    # Sans rien à citer — le récapitulatif du matin ne travaille que sur des
+    # comptes reportés — on ne doit pas inventer un titre.
+    import os as _os
+    _garde = _os.environ.pop("RECAP_TOTALS_FILE", None)
+    try:
+        vide = push_notify.build_payload([])
+        check(vide["body"] == "Ouvrir GTA6_WATCH",
+              "sans article à citer, le corps retombe sur le texte neutre")
+    finally:
+        if _garde is not None:
+            _os.environ["RECAP_TOTALS_FILE"] = _garde
+
+    # L'officiel doit se reconnaître SANS lire : autre emoji, vibration
+    # propre, bannière qui ne s'efface pas seule. Les deux commençaient par
+    # 🎮 et se confondaient sur un téléphone.
+    off = push_notify.build_payload_officiel({"title": "Trailer 3", "link": "https://r/1"})
+    check(off["title"].startswith("⭐") and not un["title"].startswith("⭐"),
+          "l'annonce officielle ne porte pas le même emoji que la routine")
+    check(off.get("officiel") is True and "officiel" not in un,
+          "le drapeau qui déclenche vibration et bannière persistante n'est posé que sur elle")
+    sw = open("docs/sw.js", encoding="utf-8").read()
+    check("vibrate: contenu.officiel" in sw and "requireInteraction: !!contenu.officiel" in sw,
+          "et le service worker s'en sert vraiment")
 
     # L'exigence de fond : Discord et le push disent MOT POUR MOT la même
     # chose. Garanti par construction (un seul libellé), vérifié ici pour

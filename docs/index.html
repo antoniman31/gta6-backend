@@ -2678,7 +2678,11 @@ async function applyBackendData(data, sourceUrl){
   if(typeof data.hot_threshold === "number" && data.hot_threshold > 0){
     hotThreshold = data.hot_threshold;
   }
-  historyPartial = !!data.partial;
+  // `partial` dit si CE FICHIER-CI contient tout, pas si l'app a tout. Les
+  // deux étaient confondus, et ça coûtait cher : voir la fusion plus bas.
+  const fichierComplet = !data.partial;
+  if(fichierComplet) historiqueCompletCharge = true;
+  historyPartial = !historiqueCompletCharge;
   historyFullUrl = data.full_url ? sourceUrl.replace(/[^/]+$/, data.full_url) : "";
   updateHistoryLine();
 
@@ -2717,11 +2721,54 @@ async function applyBackendData(data, sourceUrl){
   all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
   await saveSeen();
 
-  lastItems = all;
+  // ACTUALISER NE DOIT PLUS JETER CE QU'ON A CHARGÉ.
+  //
+  // Le défaut, signalé par Antoni le 22/09/2026 et reproduit dans un vrai
+  // navigateur : « Tout charger » donnait 1804 articles, et le moindre
+  // rafraîchissement en laissait 300. La cause tenait en une ligne —
+  // `lastItems = all` — où `all` est le contenu du fichier qu'on vient de
+  // lire. Au rafraîchissement c'est le fichier ALLÉGÉ, donc 300 articles
+  // écrasaient tout le reste, archive comprise.
+  //
+  // On fusionne donc quand le fichier reçu est plus court que ce qu'on a
+  // déjà : l'article qui arrive gagne — il est plus à jour, il a pu gagner
+  // une source ou une miniature — et tout ce qu'il ne mentionne pas reste
+  // en place.
+  //
+  // Un article que le backend a élagué survit ainsi côté app. C'est voulu :
+  // il est justement ce qu'on a demandé à garder, et l'archive le contient
+  // de toute façon.
+  if(fichierComplet || !lastItems.length || all.length >= lastItems.length){
+    lastItems = all;
+  }else{
+    const parLien = new Map(lastItems.map(i => [i.link, i]));
+    all.forEach(i => parLien.set(i.link, i));
+    lastItems = [...parLien.values()].sort(byDateDesc);
+  }
   lastNewLinks = new Set(newOnes.map(i => i.link));
   saveLastItems();
   applyFilters();
   firstLoad = false;
+
+  // TOUT CHARGER SANS QU'ON LE DEMANDE, mais seulement APRÈS avoir affiché.
+  //
+  // Décision d'Antoni du 22/09/2026 : au démarrage de l'app, l'historique
+  // complet et l'archive doivent arriver seuls. Trois précautions :
+  //
+  //   - une seule fois par session, d'où `rattrapageLance`. Sans ce garde,
+  //     chaque rafraîchissement relancerait deux téléchargements que la
+  //     fusion ci-dessus rend justement inutiles ;
+  //   - sans `await`, et après `applyFilters()` : le fil doit s'afficher
+  //     avec ses 300 articles en premier. Faire attendre l'affichage pour
+  //     un historique dont on ne se sert qu'en cherchant serait payer au
+  //     mauvais moment ;
+  //   - en silence si ça échoue. Le fil est déjà là ; une erreur sur le
+  //     rattrapage n'est pas une panne de l'app, et les deux fonctions
+  //     appelées écrivent déjà au journal ce qu'il faut.
+  if(!rattrapageLance){
+    rattrapageLance = true;
+    rattrapeToutEnArrierePlan();
+  }
 
   majLigneRun(data);
 
@@ -4070,6 +4117,26 @@ let hotThreshold = 3;
 // historyPartial dit qu'on ne voit pas tout : c'est ce qui empêche une
 // recherche de renvoyer silencieusement des résultats incomplets.
 let historyPartial = false;
+// Vrai dès que le fichier COMPLET a été lu une fois dans cette session. À ne
+// pas confondre avec `!historyPartial` : celui-là décrivait le dernier
+// fichier reçu, donc un rafraîchissement le remettait à « partiel » alors
+// que l'app avait toujours tout en mémoire.
+let historiqueCompletCharge = false;
+// Le rattrapage de démarrage n'a lieu qu'une fois par session : la fusion
+// d'`applyBackendData` fait que les rafraîchissements suivants n'ont rien à
+// retélécharger.
+let rattrapageLance = false;
+
+async function rattrapeToutEnArrierePlan(){
+  try{
+    if(historyPartial) await loadFullHistory("chargement automatique");
+  }catch(e){ /* déjà journalisé par loadFullHistory */ }
+  try{
+    await chargeIndexArchive();
+    updateArchiveLine();
+    if(!archiveChargee && resteDeLarchive()) await loadArchive();
+  }catch(e){ /* déjà journalisé par loadArchive */ }
+}
 let historyFullUrl = "";
 let historyLoading = false;
 

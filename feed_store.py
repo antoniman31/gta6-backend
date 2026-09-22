@@ -1005,6 +1005,56 @@ def articles_officiels(new_items):
             if isinstance(i, dict) and i.get("official")]
 
 
+def article_le_plus_notable(items):
+    """Celui qu'on cite quand on ne peut en citer qu'un.
+
+    Le récapitulatif n'affichait AUCUN titre, et le commentaire d'origine
+    disait pourquoi : « premier » ne veut rien dire, c'est l'ordre de FEEDS
+    et pas une importance, donc un titre pris là donne une idée fausse du
+    lot. L'argument était juste, et il ne visait que le choix « le premier
+    de la liste ».
+
+    Antoni, le 22/09/2026 : les notifications « ne disent pas assez ». Il y
+    a donc un titre à montrer — reste à ne pas le tirer au sort. L'ordre
+    ci-dessous n'est pas inventé pour l'occasion, c'est celui que l'app
+    utilise déjà pour décider ce qui est important :
+
+      1. un article OFFICIEL de Rockstar passe avant tout le reste ;
+      2. puis le nombre de RÉDACTIONS sur le même sujet — c'est ce qui
+         pilote le badge « actu majeure » et le seuil HOT_SOURCE_THRESHOLD ;
+      3. puis la date, le plus récent gagnant.
+
+    À égalité parfaite, le tri reste stable : deux passages identiques
+    citent le même article, ce qui évite qu'une notification remplacée par
+    une autre change de titre sans raison.
+    """
+    candidats = [i for i in (items or ()) if isinstance(i, dict) and i.get("title")]
+    if not candidats:
+        return None
+    return max(candidats, key=lambda i: (
+        1 if i.get("official") else 0,
+        1 + len(i.get("extraSources") or []),
+        parse_date_key(i.get("date")),
+    ))
+
+
+def corps_recap(items):
+    """Ce que la notification met sous son titre : un vrai titre d'article.
+
+    Rend une chaîne vide s'il n'y a rien à citer — le récapitulatif du matin
+    travaille sur des COMPTES reportés d'un passage à l'autre, sans garder
+    les articles, et inventer un titre dans ce cas serait mentir.
+    """
+    notable = article_le_plus_notable(items)
+    if not notable:
+        return ""
+    titre = (notable.get("title") or "").strip()
+    autres = len([i for i in (items or ()) if isinstance(i, dict) and i.get("title")]) - 1
+    if autres > 0:
+        return f"{titre} · et {autres} autre{'s' if autres > 1 else ''}"
+    return titre
+
+
 def libelle_officiel(item):
     """Le texte d'une alerte « officiel Rockstar », écrit UNE seule fois.
 
@@ -1019,7 +1069,13 @@ def libelle_officiel(item):
     ouvrir quoi que ce soit.
     """
     titre = (item.get("title") or "").strip() or "Nouvelle publication"
-    return "🎮 Rockstar Games — officiel", titre
+    # ⭐ et non 🎮. Les deux notifications commençaient par le MÊME emoji, et
+    # sur un téléphone c'est la première chose qu'on voit : « 🎮 Rockstar
+    # Games — officiel » et « 🎮 5 nouveaux articles GTA 6 » se ressemblaient
+    # au point qu'Antoni ne les distinguait pas d'un coup d'œil (22/09/2026).
+    # Le reste de la distinction est côté service worker : vibration propre
+    # et notification qui reste tant qu'on ne l'a pas écartée.
+    return "⭐ Rockstar Games — officiel", titre
 
 
 def etiquette_officiel(item):
