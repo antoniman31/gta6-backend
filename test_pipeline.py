@@ -2517,17 +2517,51 @@ def test_archives_ne_notifient_pas():
     # Chaque notification fait sortir le téléphone. Cinquante publications
     # de 2025 annoncées d'un bloc, ce sont cinquante dérangements pour du
     # vieux — le contraire de ce qu'on cherche en rapatriant l'historique.
-    nouveaux = [{"title": "Neuf", "link": "https://a.fr/1"},
-                {"title": "Vieux", "link": "https://a.fr/2", "archive": True}]
-    a_annoncer = [i for i in nouveaux if not i.get("archive")]
-    check(len(a_annoncer) == 1 and a_annoncer[0]["title"] == "Neuf",
+    import fetch_feeds
+    from datetime import datetime, timedelta, timezone
+    maintenant = datetime(2026, 9, 22, 13, 0, tzinfo=timezone.utc)
+
+    def art(nom, jours, **extra):
+        item = {"title": nom, "link": "https://a.fr/" + nom,
+                "date": (maintenant - timedelta(days=jours)).isoformat()}
+        item.update(extra)
+        return item
+
+    # Ce contrôle interrogeait le TEXTE de fetch_feeds — il cherchait la
+    # ligne du filtre mot pour mot. Il a viré au rouge le 22/09/2026 alors
+    # que le filtre avait été RENFORCÉ, parce que la ligne avait changé de
+    # forme. Un test qui décrit une ligne de code plutôt qu'une propriété se
+    # met en travers de sa propre amélioration : il interroge maintenant le
+    # prédicat lui-même.
+    nouveaux = [art("neuf", 0), art("vieux", 0, archive=True)]
+    a_notifier = [i for i in nouveaux if fetch_feeds.merite_notification(i, maintenant)]
+    check([i["title"] for i in a_notifier] == ["neuf"],
           "seul l'article réellement nouveau part en notification")
 
+    # Le cas général, trouvé après coup : un article peut arriver tard sans
+    # porter le drapeau `archive` — un flux qui ressert son fond, une
+    # fenêtre qui s'élargit, une source ajoutée aujourd'hui. Le 22/09, 268
+    # articles sont entrés d'un coup et le téléphone a annoncé « 268
+    # nouveaux articles GTA 6 ».
+    check(not fetch_feeds.merite_notification(art("tardif", 30), maintenant),
+          "un article de 30 jours entre sans faire vibrer le téléphone")
+    check(fetch_feeds.merite_notification(art("frais", 2), maintenant),
+          "un article de 2 jours reste une nouvelle : un flux lent n'est pas puni")
+    check(not fetch_feeds.merite_notification(
+              {"title": "sans date", "link": "https://a.fr/x"}, maintenant),
+          "sans date exploitable on se tait : le doute ne fait sonner personne")
+
     src = open("fetch_feeds.py", encoding="utf-8").read()
-    check('a_annoncer = [i for i in newly_added if not i.get("archive")]' in src,
-          "le filtre est bien posé sur le chemin des notifications")
-    check("write_new_items_file(a_annoncer)" in src,
+    check("write_new_items_file(a_notifier)" in src,
           "et c'est la liste filtrée qui est déposée, pas newly_added")
+
+    # Les DEUX canaux, pas un seul. Le 22/09 la liste du push était filtrée
+    # et le COMPTE annoncé sur Discord ne l'était pas : le récapitulatif a
+    # dit « 268 nouveaux » là où le push n'en listait aucun.
+    check('"articles": attente["articles"] + len(a_notifier)' in src,
+          "le compte du récapitulatif Discord lit la même liste que le push")
+    check("feed_store.articles_officiels(a_notifier)" in src,
+          "et le compte d'officiels aussi, sinon les deux divergeraient")
 
     # Le piège indirect : rapatrier des archives fait gagner une reprise à
     # des sujets déjà connus. Sans garde, une vague de « sujet devenu
