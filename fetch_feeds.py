@@ -1116,7 +1116,14 @@ def normalize_date(entry):
     if struct:
         try:
             dt = datetime(*struct[:6], tzinfo=timezone.utc)
-            return dt.isoformat()
+            # L'époque Unix n'est pas une date, c'est une absence de date.
+            # Repéré le 22/09/2026 : la page de support de Rockstar arrivait
+            # datée du 01/01/1970 et se rangeait pour toujours en fin de
+            # liste. Comme elle est officielle, elle est protégée de
+            # l'élagage — elle y serait donc restée indéfiniment, avec une
+            # date qui ne veut rien dire.
+            if dt != feed_store.DATE_FLOOR:
+                return dt.isoformat()
         except Exception:
             pass
     # Filet de sécurité si aucune date structurée n'est disponible : on
@@ -1130,6 +1137,27 @@ def normalize_date(entry):
         return ""
     parsed = feed_store.parse_date_key(raw)
     return raw if parsed == feed_store.DATE_FLOOR else parsed.isoformat()
+
+
+def date_ou_premiere_vue(date_iso, maintenant=None):
+    """Une date exploitable, ou l'instant où le robot découvre l'article.
+
+    Sans ce repli, un article sans date utilisable se range au 01/01/1970 et
+    y reste : en fin de liste, invisible, pour toujours.
+
+    On ne réécrit JAMAIS une date lisible — inventer une date est
+    précisément ce que normalize_date refuse de faire. On ne comble qu'une
+    absence, et la date de première vue est la seule information vraie dont
+    on dispose : « le robot l'a trouvé ce jour-là ».
+
+    L'effet de bord assumé : un article réellement ancien mais mal daté
+    remonte en tête. C'est cohérent avec le reste du passage, qui le compte
+    déjà comme nouveau puisqu'il vient d'entrer. Un seul article du fil était
+    dans ce cas au 22/09/2026.
+    """
+    if date_iso and feed_store.parse_date_key(date_iso) != feed_store.DATE_FLOOR:
+        return date_iso
+    return (maintenant or datetime.now(timezone.utc)).isoformat()
 
 
 def trop_vieux(date_iso, maintenant=None):
@@ -1484,7 +1512,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
             # repayer le décodage au prochain run. Absent pour les sources
             # qui ne passent pas par Google News.
             "source_link": source_link,
-            "date": date,
+            "date": date_ou_premiere_vue(date),
             "source": feed["name"],
             # Rapatrié alors qu'il date d'avant la fenêtre habituelle. Il
             # entre bien dans l'historique, mais ne doit déclencher AUCUNE
@@ -1721,7 +1749,8 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
 
 
 def merge_results(feeds, resultats, all_items, links_index, newly_added,
-                  decoded_cache=None, afficher=True, promus=None):
+                  decoded_cache=None, afficher=True, promus=None,
+                  plancher=None):
     """Fusionne les résultats des sources dans l'historique.
 
     ORDRE CRITIQUE : on parcourt `feeds`, jamais l'ordre d'arrivée des
@@ -1760,6 +1789,10 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
     # d'une liste tiendrait pour acquis qu'elle est déjà triée du plus
     # récent au plus ancien. C'est vrai du fichier publié, mais l'invariant
     # est garanti ici plutôt que documenté.
+    # Liste d'un élément plutôt qu'un entier : la boucle qui suit s'exécute
+    # dans la même fonction, mais le compteur est lu après, et une liste rend
+    # l'intention d'accumulation explicite au relecteur.
+    refuses_trop_vieux = [0]
     fenetre = fenetre_recente(all_items)
 
     # Index par titre exact sur TOUT l'historique, pas seulement la fenêtre.
@@ -1784,6 +1817,20 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
             inchanges += 1
         new_counts[feed["id"]] = 0
         for item in items:
+            # Refusé d'emblée : le plafond le retirerait à la fin du même
+            # passage. Le laisser entrer, c'était le décoder, le dédupliquer,
+            # le compter, puis le jeter — la valse qui a produit le faux
+            # compteur du 22/09 (293 annoncés pour 2 réels).
+            #
+            # Les articles PROTÉGÉS passent toujours, quel que soit leur âge :
+            # c'est tout l'intérêt de les protéger. item_protege est appelé
+            # ici et pas plus tôt parce que le statut officiel dépend du lien
+            # DÉCODÉ, inconnu avant ce point.
+            if (plancher is not None
+                    and not feed_store.item_protege(item)
+                    and feed_store.parse_date_key(item.get("date")) < plancher):
+                refuses_trop_vieux[0] += 1
+                continue
             deja = find_duplicate(item, all_items, links_index, fenetre, titles_index)
             if deja is None:
                 all_items.append(item)
@@ -1820,7 +1867,7 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
                 if (promus is not None and not item.get("archive")
                         and avant < HOT_SOURCE_THRESHOLD <= apres):
                     promus.append(deja)
-    return feed_infos, new_counts, inchanges
+    return feed_infos, new_counts, inchanges, refuses_trop_vieux[0]
 
 
 def fetch_missing_images(items):
@@ -2313,6 +2360,29 @@ def _nom_actuel(nom, lien, connus):
     return remplacant
 
 
+def repare_dates_epoque(items, maintenant=None):
+    """Remplace une date d'époque Unix par celle de la première réparation.
+
+    normalize_date refuse désormais l'époque à l'entrée, mais l'historique
+    n'est jamais rejoué : sans cette reprise, les articles déjà engrangés
+    garderaient leur 01/01/1970 pour toujours — et ceux qui sont protégés de
+    l'élagage, comme la page de support de Rockstar, n'en sortiraient jamais.
+
+    Idempotente : une fois la date corrigée, les passages suivants ne
+    touchent plus à rien. Renvoie le nombre d'articles réparés.
+    """
+    quand = (maintenant or datetime.now(timezone.utc)).isoformat()
+    repares = 0
+    for item in items:
+        if feed_store.parse_date_key(item.get("date")) == feed_store.DATE_FLOOR:
+            item["date"] = quand
+            repares += 1
+    if repares:
+        print(f"Correction rétroactive : {repares} article(s) daté(s) de l'époque "
+              f"Unix repositionné(s) à aujourd'hui")
+    return items
+
+
 def repare_noms_de_sources(items):
     """Rebranche les articles d'une source débaptisée sur son nom actuel.
 
@@ -2756,6 +2826,7 @@ def main():
     existing_items = deduplique_couverture(existing_items)
     existing_items = fusionne_doublons_de_titre(existing_items)
     existing_items = fusionne_ressemblances_de_titre(existing_items)
+    existing_items = repare_dates_epoque(existing_items)
 
     # Repasse rétroactive des dates : l'historique est rechargé tel quel et
     # ne repasse jamais dans le pipeline de collecte, donc les articles
@@ -2811,9 +2882,19 @@ def main():
               f"(trop anciennes pour son flux)")
 
     promus = []
-    feed_infos, new_counts, inchanges = merge_results(
+    # Sous quelle date un article ordinaire serait élagué à la fin de ce
+    # passage — voir feed_store.plancher_de_retention. Calculé sur l'état
+    # d'AVANT, donc sur des articles qu'on a effectivement gardés.
+    plancher = feed_store.plancher_de_retention(existing_items)
+    if plancher:
+        print(f"Plancher de rétention : {plancher.date()} — un article ordinaire "
+              f"plus ancien serait élagué, il n'entre pas")
+    feed_infos, new_counts, inchanges, refuses_vieux = merge_results(
         FEEDS, resultats, all_items, links_index, newly_added, decoded_cache,
-        promus=promus)
+        promus=promus, plancher=plancher)
+    if refuses_vieux:
+        print(f"  {refuses_vieux} article(s) refusé(s) à l'entrée : plus anciens "
+              f"que le plancher, donc condamnés d'avance")
     if promus:
         print(f"\n🚨 {len(promus)} sujet(s) devenu(s) majeur(s) ce passage "
               f"(reprises trouvées après coup) :")

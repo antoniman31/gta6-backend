@@ -261,44 +261,13 @@ def send_all(subscriptions, payload, private_key,
     return envoyes, expires
 
 
-def lire_totaux_recap():
-    """Ce que le récapitulatif doit annoncer, déposé par fetch_feeds.py.
+# Déplacée dans feed_store : les deux canaux doivent lire
+# EXACTEMENT la même chose, deux copies finiraient par diverger.
+lire_totaux_recap = feed_store.lire_totaux_recap
 
-    Contient les comptes du passage PLUS ceux mis de côté pendant la pause
-    nocturne : les articles de la nuit ont été publiés au fil de l'eau, donc
-    à 5h ils ne sont plus « nouveaux » et la liste ne les contient plus.
-    Sans ce fichier — lancement local, version antérieure — on retombe sur
-    le comptage direct de la liste, qui reste juste hors pause.
-    """
-    chemin = os.environ.get("RECAP_TOTALS_FILE", "")
-    if not chemin:
-        return None
-    try:
-        with open(chemin, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return None
-    if not isinstance(data, dict):
-        return None
-    try:
-        return (int(data.get("articles", 0)),
-                int(data.get("officiels", 0)),
-                int(data.get("sommet", 0)))
-    except (TypeError, ValueError):
-        return None
-
-
-def lire_liste(path):
-    """Lit un fichier JSON contenant une liste, ou renvoie []."""
-    if not path:
-        return []
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return data if isinstance(data, list) else []
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return []
-
+# Déplacée dans feed_store : les deux canaux doivent lire
+# EXACTEMENT la même chose, deux copies finiraient par diverger.
+lire_liste = feed_store.lire_liste
 
 def alerte_discord_push_mort(total):
     """Prévient sur Discord quand plus AUCUN appareil n'est joignable.

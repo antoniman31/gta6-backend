@@ -211,6 +211,41 @@ def taille_historique_visee(items, maintenant=None):
     return max(MIN_HISTORY_SIZE, min(MAX_HISTORY_SIZE, dans_la_fenetre))
 
 
+def plancher_de_retention(items, maintenant=None):
+    """La date sous laquelle un article ORDINAIRE serait élagué dès son entrée.
+
+    Sert à refuser en amont ce que cap_items retirerait de toute façon à la
+    fin du même passage. Le plancher vient donc du MÊME calcul que le
+    plafond — pas d'une constante parallèle qui divergerait au premier
+    ajustement.
+
+    Renvoie None quand il n'y a rien à refuser : historique pas encore
+    plein, ou plus aucun article ordinaire.
+
+    Attention au piège, rencontré en écrivant ceci : interroger cap_items
+    ne marche PAS. L'historique stocké sort déjà plafonné du passage
+    précédent, donc cap_items n'a plus rien à retirer et le plancher serait
+    toujours None — le filtre ne se déclencherait jamais. Ce qu'il faut
+    regarder, c'est si l'historique est PLEIN.
+
+    Pourquoi c'est sûr. Quand il est plein, ajouter un article plus ancien
+    que le plus vieux des ordinaires conservés le condamne : le plafond
+    retirera le plus ancien, et ce sera lui. Le refuser à l'entrée donne
+    donc exactement le même fichier publié — ce n'est pas une estimation
+    prudente, c'est une équivalence.
+
+    Une date illisible ne fixe jamais le plancher : elle vaut DATE_FLOOR,
+    donc elle l'écraserait à 1970 et le filtre ne refuserait plus rien.
+    Même raison qu'au calcul de la fenêtre.
+    """
+    if len(items) < taille_historique_visee(items):
+        return None
+    dates = [parse_date_key(i.get("date")) for i in items
+             if not item_protege(i)]
+    dates = [d for d in dates if d != DATE_FLOOR]
+    return min(dates) if dates else None
+
+
 def cap_items(items, max_size=None):
     """Plafonne l'historique en retirant les articles NON PROTÉGÉS les plus anciens.
 
@@ -368,6 +403,68 @@ def write_feed_pair(data, path=FEED_PATH):
     allege["full_url"] = os.path.basename(path)
     write_feed(allege, recent_path_for(path))
     return len(allege["items"])
+
+
+# ---------------------------------------------------------------------------
+# Fichiers de liaison entre le robot et les notifications
+# ---------------------------------------------------------------------------
+# fetch_feeds.py dépose ce qu'il a trouvé dans des fichiers hors du dépôt, et
+# discord_notify.py comme push_notify.py les relisent. Ces deux lecteurs
+# vivaient en double, à l'identique, dans les deux modules — la duplication
+# exacte que check_sources_sync.py existe pour surveiller ailleurs, et qui
+# avait déjà dérivé en silence sur la liste des sources fin août.
+#
+# Ils sont ici parce que les deux canaux doivent lire EXACTEMENT la même
+# chose : deux copies qui divergeraient feraient annoncer deux nombres
+# différents pour le même passage.
+
+
+def lire_liste(path):
+    """Lit un fichier JSON contenant une liste, ou renvoie [].
+
+    Tolérante par construction : un fichier absent est le cas NORMAL (le
+    robot ne l'écrit que s'il a quelque chose à dire), et un fichier abîmé
+    ne doit pas empêcher la notification de partir.
+    """
+    if not path:
+        return []
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return []
+
+
+def lire_totaux_recap(variable="RECAP_TOTALS_FILE"):
+    """Ce que le récapitulatif doit annoncer, déposé par fetch_feeds.py.
+
+    Contient les comptes du passage PLUS ceux mis de côté pendant la pause
+    nocturne : les articles de la nuit ont été publiés au fil de l'eau, donc
+    à 5h ils ne sont plus « nouveaux » et la liste ne les contient plus.
+    Sans ce fichier — lancement local, version antérieure — on retombe sur
+    le comptage direct de la liste, qui reste juste hors pause.
+
+    Renvoie None à la moindre anomalie plutôt qu'un tuple partiel : un
+    compte à moitié lu ferait annoncer un nombre faux, ce qui est pire que
+    de retomber sur le comptage direct.
+    """
+    chemin = os.environ.get(variable, "")
+    if not chemin:
+        return None
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    try:
+        return (int(data.get("articles", 0)),
+                int(data.get("officiels", 0)),
+                int(data.get("sommet", 0)))
+    except (TypeError, ValueError):
+        return None
 
 
 class FeedInvalide(Exception):
