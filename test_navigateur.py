@@ -506,6 +506,240 @@ def test_repli_backend(nav, url):
 
 
 
+
+def test_recherche_sans_accents(nav, url):
+    """Taper sans accent doit trouver ce qui en porte.
+
+    Mesuré sur les 1 846 articles du fil le 22/09/2026 : 523 titres portent
+    un accent, soit 28 %, et ce sont exactement les mots qu'on tape dans une
+    barre de recherche — « dévoilé » 29 fois, « précommande » 32, « aperçu »
+    19. La normalisation NFD existait pourtant déjà dans le fichier, pour la
+    similarité des titres ; la recherche ne s'en servait pas.
+
+    Le surlignage est vérifié en même temps, et séparément : une fois les
+    accents retirés, la position d'une correspondance ne désigne plus le
+    texte d'origine — « é » compte pour un caractère avant décomposition et
+    deux après. Un <mark> posé sur la position aplatie tomberait à côté,
+    d'un caractère par accent qui précède.
+    """
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # Un fil fabriqué : on veut des accents précis, pas ceux du jour.
+    page.evaluate("""() => {
+      lastItems = [
+        {title: "Rockstar dévoile un aperçu de GTA 6", link: "https://ex.test/1",
+         description: "La présentation était très attendue", date: "2026-09-20T10:00:00Z", source: "S"},
+        {title: "Précommandes ouvertes pour l'édition collector", link: "https://ex.test/2",
+         description: "", date: "2026-09-20T09:00:00Z", source: "S"},
+        {title: "A plain English headline", link: "https://ex.test/3",
+         description: "nothing accented here", date: "2026-09-20T08:00:00Z", source: "S"},
+      ];
+      lastNewLinks = new Set();
+      historyPartial = false;
+      rattrapageLance = true;
+    }""")
+
+    def cherche(q):
+        page.evaluate("""(q) => {
+          document.getElementById("searchInput").value = q;
+          visibleCount = 30;
+          applyFilters();
+        }""", q)
+        return page.evaluate("articlesAffiches().map(i => i.link)")
+
+    # Sans accent : c'est tout l'objet du changement.
+    for requete, attendu, pourquoi in [
+        ("devoile", "https://ex.test/1", "« devoile » trouve « dévoile »"),
+        ("apercu", "https://ex.test/1", "« apercu » trouve « aperçu »"),
+        ("precommande", "https://ex.test/2", "« precommande » trouve « Précommandes »"),
+        ("edition", "https://ex.test/2", "« edition » trouve « édition »"),
+        ("presentation", "https://ex.test/1", "et le résumé compte aussi : « presentation »"),
+    ]:
+        liens = cherche(requete)
+        check(attendu in liens, "%s (%d résultat(s))" % (pourquoi, len(liens)))
+
+    # Avec accent : ne doit rien casser. C'est le sens qu'on n'avait pas
+    # avant — aplatir un seul des deux côtés rendrait muet ce qui marchait.
+    for requete, attendu in [("dévoile", "https://ex.test/1"),
+                             ("précommande", "https://ex.test/2"),
+                             ("APERÇU", "https://ex.test/1")]:
+        liens = cherche(requete)
+        check(attendu in liens, "« %s » avec accent trouve toujours" % requete)
+
+    # Et une recherche qui ne doit rien ramener en ramène toujours zéro.
+    check(cherche("zzzintrouvable") == [], "une requête absente ne ramène rien")
+    check(len(cherche("english")) == 1, "un titre sans accent se cherche comme avant")
+
+    # ---- Le surlignage, aux bonnes bornes ----
+    marque = page.evaluate(
+        """() => highlightMatch("Rockstar dévoile un aperçu", "apercu")""")
+    check("<mark>aperçu</mark>" in marque,
+          "le surlignage entoure le mot ACCENTUÉ du texte d'origine : %s" % marque)
+    check(marque.startswith("Rockstar dévoile un "),
+          "et ce qui précède est intact, sans décalage : %s" % marque)
+
+    # Deux accents avant la correspondance : le décalage aurait été de deux.
+    deux = page.evaluate(
+        """() => highlightMatch("L'été à Vice City : précommande", "precommande")""")
+    check("<mark>précommande</mark>" in deux,
+          "deux accents avant la correspondance ne la décalent pas : %s" % deux)
+
+    # Plusieurs occurrences, et l'échappement HTML qui tient.
+    plusieurs = page.evaluate(
+        """() => highlightMatch("Édition, édition et <b>édition</b>", "edition")""")
+    check(plusieurs.count("<mark>") == 3,
+          "les trois occurrences sont surlignées (%d)" % plusieurs.count("<mark>"))
+    check("&lt;b&gt;" in plusieurs and "<b>" not in plusieurs,
+          "le balisage du titre reste échappé : <mark> est le seul produit ici")
+
+    # L'ancienne version passait la requête à une RegExp. Un titre contenant
+    # un caractère spécial de regex ne doit plus poser la question.
+    special = page.evaluate("""() => highlightMatch("GTA 6 (édition) [2026]", "(edition)")""")
+    check("<mark>(édition)</mark>" in special,
+          "une requête pleine de caractères de regex ne casse rien : %s" % special)
+    check(page.evaluate("""() => highlightMatch("Rien", "")""") == "Rien",
+          "une requête vide rend le titre tel quel")
+
+    ctx.close()
+
+
+def test_barre_detat_suit_le_theme(nav, url):
+    """La bande en haut du téléphone, en PWA installée.
+
+    <meta name="theme-color"> valait le bleu de l'accent depuis le premier
+    jour et aucune ligne ne la touchait : en thème sombre, une bande bleue
+    coiffait donc en permanence une application noire. Le bleu n'était le
+    fond d'aucun des deux thèmes.
+
+    Ce contrôle lit la balise APRÈS un vrai changement de thème dans un vrai
+    navigateur : vérifier que la constante existe ne dirait rien de ce que
+    le téléphone affiche.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    def barre():
+        return page.evaluate(
+            """() => document.querySelector('meta[name="theme-color"]').content.toLowerCase()""")
+
+    def fond():
+        return page.evaluate(
+            """() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim().toLowerCase()""")
+
+    for theme in ("dark", "light", "dark"):
+        page.evaluate("(t) => setTheme(t)", theme)
+        check(barre() == fond(),
+              "thème %s : la barre (%s) est exactement le fond de la page (%s)"
+              % (theme, barre(), fond()))
+
+    check(barre() != "#5493ff",
+          "et ce n'est plus le bleu d'accent, qui n'était le fond d'aucun thème")
+
+    # Le mode « système » doit lui aussi peindre la barre, sinon elle garde
+    # la couleur du thème précédemment choisi à la main.
+    page.emulate_media(color_scheme="light")
+    page.evaluate("() => setTheme('system')")
+    check(barre() == fond(),
+          "en mode système clair, la barre suit (%s)" % barre())
+    page.emulate_media(color_scheme="dark")
+    page.evaluate("() => applyTheme()")
+    check(barre() == fond(),
+          "et quand le téléphone bascule en sombre le soir, elle suit aussi (%s)" % barre())
+
+    ctx.close()
+
+
+def test_toast_annuler(nav, url):
+    """Ce qui se défait tout seul part sans question, et se reprend.
+
+    Choix d'Antoni le 22/09/2026 : le garde-fou suit la RÉVERSIBILITÉ. Marquer
+    des articles comme lus est un état local qui se rétablit à l'identique —
+    la confirmation qui disait « il n'y a pas de retour en arrière » énonçait
+    une contrainte qu'on vient de lever. Ce qui ne se retrouve nulle part
+    ailleurs garde sa confirmation.
+
+    Le piège que ce contrôle verrouille : annuler doit rendre EXACTEMENT
+    l'état d'avant. Rejouer l'inverse sur toute la liste affichée
+    remarquerait non lus des articles qui l'étaient déjà — l'annulation
+    ferait alors plus que défaire.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    page.evaluate("""() => {
+      lastItems = [
+        {title: "Un", link: "https://ex.test/1", date: "2026-09-20T10:00:00Z", source: "S"},
+        {title: "Deux", link: "https://ex.test/2", date: "2026-09-20T09:00:00Z", source: "S"},
+        {title: "Trois", link: "https://ex.test/3", date: "2026-09-20T08:00:00Z", source: "S"},
+      ];
+      lastNewLinks = new Set();
+      historyPartial = false;
+      rattrapageLance = true;
+      // « Trois » est DÉJÀ lu avant le geste : c'est lui qui piège une
+      // annulation écrite à l'envers de l'affichage.
+      readSet = new Set(["https://ex.test/3"]);
+      document.getElementById("searchInput").value = "";
+      applyFilters();
+    }""")
+
+    check(page.evaluate("readSet.size") == 1, "au départ, un seul article est lu")
+
+    # --- Le geste part sans confirmation ---
+    page.evaluate("() => markAllRead(true)")
+    page.wait_for_function("readSet.size === 3", timeout=3000)
+    check(page.evaluate("""() => document.getElementById("confirmOverlay").classList.contains("open")""") is False,
+          "aucune confirmation ne s'interpose : l'action est réversible")
+    check(page.evaluate("readSet.size") == 3, "les trois sont lus")
+
+    toast = page.locator("#toast")
+    check(toast.is_visible(), "le toast s'affiche")
+    check("2 articles marqués lus" in page.evaluate(
+              """() => document.getElementById("toastTexte").textContent"""),
+          "et il annonce les DEUX réellement changés, pas les trois affichés : %s"
+          % page.evaluate("""() => document.getElementById("toastTexte").textContent"""))
+
+    # Le focus ne doit pas avoir été volé : on vient de faire un geste
+    # volontaire, déplacer le curseur ferait perdre sa place dans la liste.
+    check(page.evaluate("""() => document.activeElement.id !== "toastAnnuler" """),
+          "le toast ne vole pas le focus")
+    check(page.evaluate("""() => document.getElementById("toast").getAttribute("role")""") == "status",
+          "role=status et non alert : le message accompagne, il n'interrompt pas")
+
+    # --- Annuler rend l'état EXACT d'avant ---
+    page.click("#toastAnnuler")
+    page.wait_for_function("readSet.size === 1", timeout=3000)
+    restant = page.evaluate("[...readSet]")
+    check(restant == ["https://ex.test/3"],
+          "après annulation, « Trois » est TOUJOURS lu — il l'était avant le "
+          "geste et l'annulation ne défait que ce que le geste a fait : %s" % restant)
+    check(toast.is_visible() is False, "et le toast se referme")
+
+    # --- Il disparaît tout seul, et l'action reste faite ---
+    page.evaluate("() => markAllRead(true)")
+    page.wait_for_function("readSet.size === 3", timeout=3000)
+    page.evaluate("() => { clearTimeout(_toastId); fermeToast(); }")
+    check(toast.is_visible() is False, "le toast expiré disparaît")
+    check(page.evaluate("readSet.size") == 3,
+          "et l'action reste faite : expirer n'annule pas")
+
+    # --- Ce qui n'est pas réversible garde sa confirmation ---
+    page.evaluate("() => { toutesSources(false); }")
+    page.wait_for_timeout(200)
+    check(page.evaluate("""() => document.getElementById("confirmOverlay").classList.contains("open")"""),
+          "« Tout désactiver » demande toujours confirmation : la sélection "
+          "perdue ne se rend pas")
+    page.evaluate("() => repondConfirmation(false)")
+
+    ctx.close()
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -892,6 +1126,9 @@ def main():
             test_vignette_ouvre_larticle(nav, url)
             test_archive_dans_lapp(nav, url)
             test_actualiser_ne_jette_plus_rien(nav, url)
+            test_recherche_sans_accents(nav, url)
+            test_barre_detat_suit_le_theme(nav, url)
+            test_toast_annuler(nav, url)
             nav.close()
     finally:
         srv.shutdown()

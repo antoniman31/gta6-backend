@@ -8,7 +8,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GTA6 Watch</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#5493ff">
+<!-- Valeur de départ, avant que le JavaScript ne résolve le thème : le fond
+     sombre, qui est celui de l'immense majorité des ouvertures. majCouleurBarre()
+     la corrige au chargement et à chaque changement de thème. Le bleu d'avant
+     n'était le fond d'aucun des deux thèmes — il coiffait l'application d'une
+     bande qui n'appartenait à rien. -->
+<meta name="theme-color" content="#0a0d0f">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
@@ -763,6 +768,34 @@
      c'est de là que partent la plupart des actions qu'elle protège, et une
      confirmation cachée derrière son propre déclencheur ne sert à rien. */
   .overlay.confirm-overlay{z-index:200; align-items:center;}
+  /* Toast « Annuler » : en bas, sous le pouce, au-dessus de la zone sûre du
+     téléphone. Il ne bloque rien — la page reste défilable derrière, à la
+     différence d'une confirmation modale : c'est tout l'intérêt, l'action
+     est déjà faite. */
+  .toast{
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index:400; display:flex; align-items:center; gap:14px;
+    background:var(--bg-elevated); color:var(--text);
+    border:1px solid var(--line); border-radius:var(--r-md);
+    padding:12px 14px; box-shadow:0 6px 24px rgba(0,0,0,.35);
+    max-width:min(440px, calc(100vw - 32px)); font-size:13px;
+  }
+  .toast[hidden]{display:none;}
+  /* 44 px de haut : la cible tactile minimale, la même que partout ailleurs
+     dans l'app. Un bouton qu'on rate pendant les cinq secondes où il existe
+     est un bouton qui n'existe pas. */
+  .toast-btn{
+    flex:0 0 auto; min-height:44px; padding:0 14px;
+    background:transparent; border:1px solid var(--accent);
+    color:var(--accent); border-radius:var(--r-sm);
+    font-weight:600; font-size:13px; cursor:pointer;
+  }
+  /* Pas de jeton « accent doux » dans ce projet : on teinte l'accent lui-même
+     plutôt que d'inventer une variable que le thème clair ne saurait pas
+     corriger. color-mix respecte donc les deux thèmes sans rien ajouter. */
+  .toast-btn:hover{background:color-mix(in srgb, var(--accent) 14%, transparent);}
+
   .confirm-panel{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
     max-width:400px; width:100%; padding:20px;
@@ -1179,6 +1212,17 @@
        les quatre se réécrivent au même instant, quatre régions auraient
        produit quatre annonces qui se coupent la parole. -->
   <div id="annonce" class="sr-only" role="status" aria-live="polite"></div>
+
+  <!-- Toast « Annuler ».
+       role="status" et non "alert" : une alerte interrompt la lecture en
+       cours, or ce message accompagne une action que l'utilisateur vient
+       de faire exprès. Il ne prend PAS le focus — le voler après un geste
+       volontaire fait perdre sa place dans la liste — mais son bouton
+       reste atteignable au clavier, juste après le contenu. -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <span id="toastTexte"></span>
+    <button type="button" id="toastAnnuler" class="toast-btn">Annuler</button>
+  </div>
 
 
   <!-- Une seule carte : l'identité du site, les actions qui modifient le
@@ -2265,6 +2309,7 @@ function applyTheme(){
     effective = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   }
   document.documentElement.setAttribute("data-theme", effective);
+  majCouleurBarre(effective);
   // En thème clair on propose de passer au sombre, et inversement : l'icône
   // dit ce que le clic va faire. Les deux demi-cercles d'avant décrivaient un
   // état, ce qui laissait deviner dans quel sens on allait.
@@ -2273,6 +2318,21 @@ function applyTheme(){
   //  et les citer les lui ferait reprendre pour du balisage encore en place.)
   document.getElementById("themeBtn").textContent = effective === "light" ? "🌙" : "☀️";
 }
+// Couleur de la barre d'état du téléphone, en PWA installée.
+//
+// La balise <meta name="theme-color"> était figée sur le bleu de l'accent
+// depuis le premier jour, et aucune ligne ne la touchait : en thème sombre,
+// une bande bleue coiffait donc en permanence une application noire. Les
+// valeurs sont celles de --bg dans chaque thème, lues dans la feuille de
+// style plus haut — la barre doit prolonger le fond de la page, pas
+// introduire une troisième couleur.
+const COULEUR_BARRE = { dark: "#0a0d0f", light: "#f4f7fa" };
+
+function majCouleurBarre(theme){
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", COULEUR_BARRE[theme] || COULEUR_BARRE.dark);
+}
+
 function setTheme(t){
   settings.theme = t;
   applyTheme();
@@ -2308,6 +2368,52 @@ function normalizeTitle(t){
     .replace(/\s+/g, " ")
     .trim();
 }
+// ---------- Recherche insensible aux accents ----------
+//
+// La normalisation NFD vivait déjà juste au-dessus, dans normalizeTitle, mais
+// elle ne servait qu'à la similarité des titres : la recherche, elle, se
+// contentait d'un toLowerCase(). Mesuré sur les 1 846 articles du fil le
+// 22/09/2026 : 523 titres portent un accent, soit 28 %, et les mots concernés
+// sont exactement ceux qu'on tape dans une barre de recherche — « dévoilé »
+// 29 fois, « précommande » 32, « vidéo » 22, « aperçu » 19, « présentation »
+// 12. Taper « precommande » sur un téléphone, sans accent comme tout le
+// monde, ne renvoyait rien.
+function sansAccents(texte){
+  return (texte || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// La même chose, mais en gardant la trace d'où venait chaque caractère.
+//
+// Indispensable au surlignage : une fois les accents retirés, la position
+// d'une correspondance ne désigne plus le texte d'origine. « é » compte pour
+// un caractère avant décomposition et deux après, donc un décalage d'un
+// caractère par accent — <mark> se serait posé à côté. `vers[i]` donne la
+// position, dans le texte d'origine, du i-ème caractère du texte aplati.
+function indexSansAccents(texte){
+  let plat = "";
+  const vers = [];
+  for(let i = 0; i < texte.length; i++){
+    const nu = sansAccents(texte[i]);
+    for(let k = 0; k < nu.length; k++){ plat += nu[k]; vers.push(i); }
+  }
+  return { plat: plat.toLowerCase(), vers };
+}
+
+// Texte aplati d'un article, calculé une fois par article et non à chaque
+// frappe. La recherche est relancée tous les 180 ms sur la totalité du fil —
+// jusqu'à 1 846 articles, titre plus résumé. WeakMap et non un champ ajouté
+// à l'article : les articles sont remplacés à chaque actualisation, et une
+// clé faible les laisse partir avec leur cache.
+const cacheTexteCherchable = new WeakMap();
+function texteCherchable(item){
+  let v = cacheTexteCherchable.get(item);
+  if(v === undefined){
+    v = sansAccents((item.title || "") + " " + (item.description || "")).toLowerCase();
+    cacheTexteCherchable.set(item, v);
+  }
+  return v;
+}
+
 function titleTokens(t){
   return new Set(normalizeTitle(t).split(" ").filter(w => w.length > 2));
 }
@@ -3396,8 +3502,13 @@ function clearSearch(){
 function estExclu(item){
   const exclus = settings.excludeKeywords;
   if(!exclus || exclus.length === 0) return false;
-  const foin = ((item.title || "") + " " + (item.description || "")).toLowerCase();
-  return exclus.some(mot => foin.includes(mot));
+  // Aplati des DEUX côtés, et pas seulement du foin : les mots de la liste
+  // noire sont saisis à la main et peuvent porter leurs accents. N'aplatir
+  // que le texte des articles ferait cesser de correspondre un mot déjà
+  // enregistré — une liste affinée pendant des semaines deviendrait muette
+  // sans que rien ne le dise.
+  const foin = texteCherchable(item);
+  return exclus.some(mot => foin.includes(sansAccents(mot).toLowerCase()));
 }
 
 // Tous les compteurs doivent partir d'ici, pas de lastItems : un badge qui
@@ -3426,10 +3537,8 @@ function articlesAffiches(){
 
   // La recherche porte aussi sur le résumé : beaucoup d'articles ne
   // mentionnent le sujet cherché que dans le corps du texte.
-  const q = document.getElementById("searchInput").value.trim().toLowerCase();
-  if(q) items = items.filter(i =>
-    i.title.toLowerCase().includes(q) ||
-    (i.description || "").toLowerCase().includes(q));
+  const q = sansAccents(document.getElementById("searchInput").value.trim()).toLowerCase();
+  if(q) items = items.filter(i => texteCherchable(i).includes(q));
 
   // Le plafond d'affichage en fait partie : c'est un réglage qui dit
   // combien d'articles la page montre. La pagination « Charger plus », en
@@ -3618,13 +3727,28 @@ function loadMore(){
 }
 
 function highlightMatch(title, query){
-  const escaped = escapeHtml(title);
-  if(!query) return escaped;
-  // Recherche insensible à la casse sur le texte déjà échappé, pour ne
-  // jamais casser l'échappement HTML avec des caractères du texte original.
-  const q = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // échappe les caractères spéciaux regex
-  const re = new RegExp("(" + q + ")", "ig");
-  return escaped.replace(re, "<mark>$1</mark>");
+  if(!query) return escapeHtml(title);
+  const q = sansAccents(query).toLowerCase();
+  if(!q) return escapeHtml(title);
+
+  // Plus de RegExp du tout. L'ancienne version cherchait dans le texte DÉJÀ
+  // échappé, ce qui obligeait à échapper aussi les caractères spéciaux de la
+  // requête — deux échappements imbriqués pour un simple surlignage. On
+  // cherche désormais dans le texte aplati, on retrouve les bornes dans le
+  // texte d'origine grâce à `vers`, et on n'échappe qu'au moment d'écrire :
+  // chaque morceau passe par escapeHtml, donc <mark> est le seul balisage
+  // que cette fonction produit.
+  const { plat, vers } = indexSansAccents(title);
+  let sortie = "", curseur = 0, depuis = 0, pos;
+  while((pos = plat.indexOf(q, depuis)) !== -1){
+    const debut = vers[pos];
+    const fin = vers[pos + q.length - 1] + 1;
+    sortie += escapeHtml(title.slice(curseur, debut))
+            + "<mark>" + escapeHtml(title.slice(debut, fin)) + "</mark>";
+    curseur = fin;
+    depuis = pos + q.length;
+  }
+  return sortie + escapeHtml(title.slice(curseur));
 }
 
 function renderCard(item, newLinks, searchQuery){
@@ -4056,6 +4180,56 @@ function toggleRead(safeId, link){
   applyFilters();
 }
 
+// ---------- Toast « Annuler » ----------
+//
+// Choix d'Antoni le 22/09/2026, après lecture de game-library : le garde-fou
+// suit la RÉVERSIBILITÉ du geste. Ce qui se défait tout seul reçoit un toast
+// et part sans question ; ce qui ne se retrouve nulle part ailleurs — le
+// jeton GitHub, la sélection des sources, les réglages — garde sa
+// confirmation, qui nomme déjà précisément ce qu'on perd.
+//
+// Marquer des articles comme lus est exactement le premier cas : l'état est
+// local, il se rétablit à l'identique, et la confirmation qui disait « il
+// n'y a pas de retour en arrière » énonçait une contrainte qu'on vient de
+// lever.
+const TOAST_DUREE = 5000;
+let _toastId = null;
+let _toastAnnule = null;
+
+function fermeToast(){
+  clearTimeout(_toastId);
+  _toastId = null;
+  _toastAnnule = null;
+  const t = document.getElementById("toast");
+  if(t) t.hidden = true;
+}
+
+function montreToast(texte, surAnnuler, duree = TOAST_DUREE){
+  const t = document.getElementById("toast");
+  // Pas de toast (balisage amputé) : l'action a DÉJÀ eu lieu, donc il n'y a
+  // rien à annuler en silence. On ne bloque pas, on se contente de ne pas
+  // proposer le retour.
+  if(!t) return;
+  // Un second toast remplace le premier, et la fenêtre d'annulation de
+  // celui-ci se ferme : son action reste faite, elle a déjà été enregistrée.
+  // Empiler deux toasts superposerait deux boutons « Annuler » qui ne
+  // défont pas la même chose.
+  fermeToast();
+  document.getElementById("toastTexte").textContent = texte;
+  _toastAnnule = surAnnuler;
+  t.hidden = false;
+  _toastId = setTimeout(fermeToast, duree);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const b = document.getElementById("toastAnnuler");
+  if(b) b.addEventListener("click", () => {
+    const faire = _toastAnnule;
+    fermeToast();
+    if(faire) faire();
+  });
+});
+
 async function markAllRead(makeRead){
   // Exactement la liste affichée — onglet, langue, filtre « Non lus »,
   // recherche et plafond compris. La même fonction que le rendu, pas une
@@ -4072,25 +4246,38 @@ async function markAllRead(makeRead){
   if(vise.length === 0) return;
 
   const verbe = makeRead === false ? "non lus" : "lus";
-  const etat = makeRead === false ? "lus" : "non lus";
-  // Les DEUX nombres : l'effet réel, et de quoi voir qu'on est sur le bon
-  // onglet avant de valider.
-  const ok = await demandeConfirmation(
-    `Marquer ${vise.length} article${vise.length > 1 ? "s" : ""} comme ${verbe} ?`,
-    `${vise.length} ${etat} parmi les ${affiches.length} affichés. `
-    + "Il n'y a pas de retour en arrière.",
-    `Marquer ${verbe}`);
-  if(!ok) return;
 
-  vise.forEach(i => {
-    if(makeRead === false){
-      readSet.delete(i.link);
-    }else{
-      readSet.add(i.link);
-    }
+  // Plus de confirmation ici : l'action part, et se reprend pendant cinq
+  // secondes. Elle annonçait jusqu'ici une irréversibilité qui était vraie
+  // et ne l'est plus.
+  //
+  // (La phrase remplacée n'est volontairement pas recopiée : le contrôle qui
+  //  vérifie sa disparition lit tout le fichier, commentaires compris, et la
+  //  citer la lui ferait reprendre pour du texte encore affiché. Même piège
+  //  que pour les glyphes du bouton de thème, plus haut.)
+  //
+  // On note les liens RÉELLEMENT modifiés, pas la liste affichée : annuler
+  // doit rendre exactement l'état d'avant. Rejouer l'inverse sur tout
+  // l'affichage marquerait non lus des articles qui l'étaient déjà avant le
+  // geste — l'annulation ferait alors plus que défaire.
+  const touches = vise.map(i => i.link);
+  touches.forEach(lien => {
+    if(makeRead === false){ readSet.delete(lien); }
+    else{ readSet.add(lien); }
   });
   await saveRead();
   applyFilters();
+
+  montreToast(
+    `${touches.length} article${touches.length > 1 ? "s" : ""} marqué${touches.length > 1 ? "s" : ""} ${verbe}.`,
+    async () => {
+      touches.forEach(lien => {
+        if(makeRead === false){ readSet.add(lien); }
+        else{ readSet.delete(lien); }
+      });
+      await saveRead();
+      applyFilters();
+    });
 }
 
 // ---------- Notifications push natives ----------
