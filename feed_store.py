@@ -210,19 +210,98 @@ def item_protege(item):
     return 1 + len(item.get("extraSources") or []) >= HOT_SOURCE_THRESHOLD
 
 
+# Sur combien de jours RÉVOLUS on mesure le débit. Sept : assez pour qu'un
+# jour creux ou un jour d'annonce ne décide pas à lui seul, assez court pour
+# suivre un changement de régime en une semaine.
+#
+# Le jour EN COURS est exclu. Il est incomplet par construction — à midi il
+# ne porte que la moitié de ses articles — et le compter tirerait la mesure
+# vers le bas à chaque passage de la matinée.
+JOURS_MESURE_DEBIT = 7
+
+
+def debit_quotidien(items, maintenant=None):
+    """Articles ordinaires par jour, en MÉDIANE sur les jours révolus.
+
+    La médiane et non la moyenne : le 18/09/2026 a produit 300 articles
+    quand la médiane de la semaine est à 94. Une moyenne aurait laissé ce
+    seul jour élargir la fenêtre d'un tiers, puis la laisser rétrécir dès
+    qu'il sort de la mesure — l'historique respirerait au rythme des
+    journées d'annonce au lieu de suivre le régime de fond.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    par_jour = {}
+    for item in items:
+        if item_protege(item):
+            continue
+        quand = parse_date_key(item.get("date"))
+        if quand == DATE_FLOOR:
+            continue
+        age = (maintenant - quand).days
+        if 1 <= age <= JOURS_MESURE_DEBIT:
+            par_jour[age] = par_jour.get(age, 0) + 1
+    if not par_jour:
+        return 0.0
+    comptes = sorted(par_jour.get(j, 0) for j in range(1, JOURS_MESURE_DEBIT + 1))
+    milieu = len(comptes) // 2
+    if len(comptes) % 2:
+        return float(comptes[milieu])
+    return (comptes[milieu - 1] + comptes[milieu]) / 2
+
+
 def taille_historique_visee(items, maintenant=None):
     """Combien d'articles garder pour couvrir MAX_HISTORY_DAYS, bornes comprises.
 
+    Le calcul part du DÉBIT observé — combien d'articles arrivent par jour —
+    et le multiplie par la profondeur voulue. Ce n'est pas un détail
+    d'implémentation, c'est la correction d'un défaut de conception.
+
+    LA VERSION PRÉCÉDENTE COMPTAIT LES ARTICLES DÉJÀ STOCKÉS qui tombaient
+    dans la fenêtre. C'est circulaire : la liste stockée est elle-même
+    plafonnée par le nombre que cette fonction rend. Conséquence mesurée le
+    22/09/2026 sur le vrai historique, 45 jours de robot simulés :
+
+        débit        gardés / profondeur obtenue
+        40/jour      1500 / 33 j      le plancher commande
+        94/jour      1500 / 14 j      <- le régime réel, et 14 n'est pas 30
+        142/jour     1500 /  9 j
+        200/jour     4000 / 19 j      la visée décolle enfin
+
+    Le seuil de bascule se calcule : la visée ne dépasse 1500 que si
+    l'apport d'un passage suffit à faire franchir ce nombre aux articles
+    ORDINAIRES stockés, soit un débit supérieur au nombre de protégés — 142
+    aujourd'hui. En dessous, la fenêtre est gelée à MIN_HISTORY_SIZE et
+    MAX_HISTORY_DAYS n'a AUCUN effet, quelle que soit sa valeur. Le passage
+    de 15 à 30 jours, le matin même, n'avait donc rien changé du tout.
+
+    Le débit, lui, ne dépend pas de ce qu'on garde : il se lit sur les jours
+    révolus, qui sont complets quoi qu'on élague. La même simulation avec ce
+    calcul-ci donne 28 jours à 94/jour et 27 à 142/jour, et retombe bien à
+    19 puis 7 jours aux gros débits — le plafond dur reprend la main, comme
+    voulu.
+
+    DEUX ESTIMATIONS, ET ON GARDE LA PLUS GÉNÉREUSE. Le débit dit ce que la
+    fenêtre DEVRAIT contenir ; le comptage dit ce qu'elle contient DÉJÀ.
+    Prendre le maximum, c'est refuser les deux erreurs opposées :
+
+      - le comptage seul ne peut pas faire grandir la fenêtre, pour la
+        raison circulaire ci-dessus ;
+      - le débit seul jetterait ce qu'on a la place de garder. Un afflux
+        massif sur un historique jeune n'a pas encore de jour révolu à
+        mesurer : le débit vaut alors zéro, et il faudrait couper au
+        plancher 4050 articles tous publiés dans la fenêtre. C'est un test
+        de la suite qui l'a dit, pas une relecture.
+
     On compte les articles ORDINAIRES : les protégés ne sont jamais retirés,
     les inclure ferait rétrécir la fenêtre à mesure qu'ils s'accumulent.
-
-    Une date illisible (DATE_FLOOR) ne compte pas dans la fenêtre : elle est
-    par construction plus vieille que tout, et la laisser peser reviendrait à
-    réduire la profondeur à cause d'un article mal daté.
+    Une date illisible (DATE_FLOOR) ne compte pas non plus.
     """
     maintenant = maintenant or datetime.now(timezone.utc)
+
+    par_le_debit = int(debit_quotidien(items, maintenant) * MAX_HISTORY_DAYS)
+
     limite = maintenant - timedelta(days=MAX_HISTORY_DAYS)
-    dans_la_fenetre = 0
+    deja_la = 0
     for item in items:
         if item_protege(item):
             continue
@@ -230,8 +309,10 @@ def taille_historique_visee(items, maintenant=None):
         if quand == DATE_FLOOR:
             continue
         if quand >= limite:
-            dans_la_fenetre += 1
-    return max(MIN_HISTORY_SIZE, min(MAX_HISTORY_SIZE, dans_la_fenetre))
+            deja_la += 1
+
+    vise = max(par_le_debit, deja_la)
+    return max(MIN_HISTORY_SIZE, min(MAX_HISTORY_SIZE, vise))
 
 
 def plancher_de_retention(items, maintenant=None):

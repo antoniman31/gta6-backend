@@ -6196,6 +6196,113 @@ def test_plafond_suit_le_volume():
 
 
 
+
+def test_la_profondeur_est_reellement_atteinte():
+    print("\n[tri] la profondeur annoncée est celle qu'on obtient vraiment")
+    import feed_store
+    from datetime import datetime, timedelta, timezone
+
+    # Ce contrôle existe parce qu'un réglage a été changé le 22/09/2026 —
+    # MAX_HISTORY_DAYS de 15 à 30 — sans que RIEN ne bouge dans le fichier
+    # publié, et sans qu'aucun test ne le dise. La suite vérifiait la
+    # fonction de calcul ; personne ne vérifiait que le robot, en la
+    # rejouant passage après passage, arrivait quelque part.
+    #
+    # La cause était circulaire : la visée se lisait sur les articles DÉJÀ
+    # stockés tombant dans la fenêtre, or cette liste est elle-même
+    # plafonnée par la visée. En dessous d'un certain débit, le système
+    # était gelé au plancher et la profondeur ne montait jamais.
+    #
+    # Un test de la fonction seule ne pouvait pas le voir. Celui-ci REJOUE
+    # le cap, jour après jour, et regarde ce qu'on obtient au bout.
+    maintenant = datetime(2026, 11, 19, 12, 0, tzinfo=timezone.utc)
+
+    def rejoue(par_jour, jours=45, proteges=140):
+        items = [{"link": "prot-%d" % n, "title": "t", "official": True,
+                  "date": (maintenant - timedelta(days=200 + n)).isoformat()}
+                 for n in range(proteges)]
+        n = 0
+        for j in range(jours):
+            quand = maintenant + timedelta(days=j + 1)
+            for k in range(par_jour):
+                n += 1
+                items.append({"link": "a-%d" % n, "title": "t",
+                              "date": (quand - timedelta(minutes=2 * k)).isoformat()})
+            items = feed_store.sort_items(items)
+            items, _ = feed_store.cap_items(
+                items, feed_store.taille_historique_visee(items, quand))
+        ordinaires = [i for i in items if not feed_store.item_protege(i)]
+        dates = sorted(feed_store.parse_date_key(i["date"]) for i in ordinaires)
+        return len(items), (dates[-1] - dates[0]).days
+
+    vise = feed_store.MAX_HISTORY_DAYS
+
+    # Régime réel du fil (94 articles/jour au 22/09). C'est LE cas qui
+    # échouait : 14 jours obtenus pour 30 demandés.
+    gardes, profondeur = rejoue(94)
+    check(abs(profondeur - vise) <= 3,
+          "à 94 articles/jour : %d jours obtenus pour %d demandés"
+          % (profondeur, vise))
+    check(gardes > feed_store.MIN_HISTORY_SIZE,
+          "et la fenêtre a bien dépassé le plancher (%d articles)" % gardes)
+
+    # Juste au-dessus du seuil de bascule de l'ancien calcul (le nombre de
+    # protégés). L'ancien y donnait 9 jours, le pire de tous.
+    gardes, profondeur = rejoue(142)
+    check(abs(profondeur - vise) <= 4,
+          "à 142 articles/jour : %d jours obtenus pour %d demandés"
+          % (profondeur, vise))
+
+    # Semaine creuse : le plancher commande, et la profondeur DÉPASSE la
+    # cible. C'est voulu — on ne jette pas ce qu'on a la place de garder.
+    gardes, profondeur = rejoue(40)
+    check(gardes == feed_store.MIN_HISTORY_SIZE and profondeur >= vise,
+          "semaine creuse : le plancher tient (%d articles, %d jours)"
+          % (gardes, profondeur))
+
+    # Jour de sortie : le plafond dur reprend la main et la fenêtre
+    # rétrécit. C'est ce qui protège le fichier le 19/11.
+    gardes, profondeur = rejoue(500)
+    check(gardes == feed_store.MAX_HISTORY_SIZE and profondeur < vise,
+          "gros débit : le plafond dur tranche (%d articles, %d jours)"
+          % (gardes, profondeur))
+
+    # Le débit se mesure sur les jours RÉVOLUS. Le jour en cours est
+    # incomplet par construction : à midi il ne porte que la moitié de ses
+    # articles, et le compter tirerait la mesure vers le bas à chaque
+    # passage de la matinée.
+    fil = [{"link": "j-%d-%d" % (j, k), "title": "t",
+            "date": (maintenant - timedelta(days=j, minutes=k)).isoformat()}
+           for j in range(1, 9) for k in range(100)]
+    fil += [{"link": "aujourdhui-%d" % k, "title": "t",
+             "date": (maintenant - timedelta(minutes=k)).isoformat()}
+            for k in range(3)]
+    check(feed_store.debit_quotidien(fil, maintenant) == 100,
+          "le jour en cours, incomplet, ne tire pas le débit vers le bas "
+          "(%g au lieu de 100)" % feed_store.debit_quotidien(fil, maintenant))
+
+    # La MÉDIANE et non la moyenne : un seul jour d'annonce ne doit pas
+    # élargir la fenêtre d'un tiers pour une semaine.
+    calme = [{"link": "c-%d-%d" % (j, k), "title": "t",
+              "date": (maintenant - timedelta(days=j, minutes=k)).isoformat()}
+             for j in range(1, 8) for k in range(80)]
+    pic = calme + [{"link": "pic-%d" % k, "title": "t",
+                    "date": (maintenant - timedelta(days=3, minutes=k)).isoformat()}
+                   for k in range(80, 700)]
+    check(feed_store.debit_quotidien(pic, maintenant) == 80,
+          "un jour à 700 articles ne bouge pas la médiane (%g)"
+          % feed_store.debit_quotidien(pic, maintenant))
+
+    # Et le garde-fou inverse : le débit ne doit JAMAIS faire jeter ce qui
+    # tient déjà dans la fenêtre. Un afflux massif sur un historique jeune
+    # n'a aucun jour révolu à mesurer.
+    afflux = [{"link": "neuf-%d" % n, "title": "t", "date": maintenant.isoformat()}
+              for n in range(feed_store.MAX_HISTORY_SIZE + 50)]
+    check(feed_store.taille_historique_visee(afflux, maintenant)
+          == feed_store.MAX_HISTORY_SIZE,
+          "un afflux sans jour révolu n'est pas coupé au plancher")
+
+
 def test_plancher_refuse_ce_qui_serait_elague():
     print("\n[feed] un article condamné d'avance n'entre plus du tout")
     import feed_store, datetime
@@ -6541,6 +6648,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_elagage_declare_au_garde_fou,
            test_un_article_elague_nest_pas_annonce,
            test_plafond_suit_le_volume,
+           test_la_profondeur_est_reellement_atteinte,
            test_plancher_refuse_ce_qui_serait_elague,
            test_lecteurs_de_liaison_mutualises,
            test_epoque_unix_nest_pas_une_date,

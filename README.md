@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1358
+qui permet de tester tout le pipeline sans sortir de la machine. **1366
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4488,7 +4488,84 @@ jours, elle, était pleine à ras bord : **79 articles par jour en médiane,
 1500. Autrement dit le plancher commandait et la profondeur visée n'avait
 jamais eu l'occasion de servir.
 
-### La profondeur passe à trente jours, et c'était bon marché
+### Sauf que ça ne marchait pas : le calcul était circulaire
+
+**Le passage de 15 à 30 jours n'a rien changé du tout.** Constaté le jour
+même, après la fusion, en vérifiant la sortie du robot en production plutôt
+qu'en se fiant à la suite de tests : la fenêtre gardait ses 1500 articles et
+ses 14 jours, exactement comme avant.
+
+**La cause.** `taille_historique_visee` comptait les articles DÉJÀ STOCKÉS
+qui tombaient dans la fenêtre. Or cette liste est elle-même plafonnée par le
+nombre que la fonction rend. Le calcul se mordait la queue. Quarante-cinq
+jours de robot simulés sur le vrai historique, avec l'ancien calcul :
+
+| débit | gardés | profondeur obtenue |
+|---|---|---|
+| 40/jour | 1500 | 33 j |
+| **94/jour** (le régime réel) | **1500** | **14 j** |
+| 142/jour | 1500 | 9 j |
+| 200/jour | 4000 | 19 j |
+
+Le seuil de bascule se calcule : la visée ne dépassait 1500 que si l'apport
+d'un passage suffisait à faire franchir ce nombre aux articles ordinaires
+stockés — soit un débit supérieur au nombre de protégés, **142 aujourd'hui**.
+En dessous, la fenêtre était gelée au plancher et `MAX_HISTORY_DAYS` n'avait
+**aucun effet, quelle que soit sa valeur**. Le réglage était décoratif depuis
+le jour de sa création.
+
+**Le correctif.** La visée part maintenant du **débit observé** — la médiane
+des articles ordinaires par jour sur les sept jours RÉVOLUS — multiplié par
+la profondeur voulue. Le débit, lui, ne dépend pas de ce qu'on garde.
+
+Deux détails qui comptent :
+
+- **le jour en cours est exclu.** Il est incomplet par construction : à midi
+  il ne porte que la moitié de ses articles, et le compter tirerait la
+  mesure vers le bas à chaque passage de la matinée ;
+- **la médiane, pas la moyenne.** Le 18/09 a produit 300 articles quand la
+  médiane de la semaine est à 94. Une moyenne aurait laissé ce seul jour
+  élargir la fenêtre d'un tiers, puis la laisser rétrécir dès qu'il sort de
+  la mesure — l'historique respirerait au rythme des journées d'annonce au
+  lieu de suivre le régime de fond.
+
+**Et les DEUX estimations sont gardées, la plus généreuse gagne.** Le débit
+dit ce que la fenêtre *devrait* contenir, le comptage ce qu'elle contient
+*déjà*. Le débit seul jetterait ce qu'on a la place de garder : un afflux
+massif sur un historique jeune n'a aucun jour révolu à mesurer, le débit
+vaut zéro, et il faudrait couper au plancher des milliers d'articles tous
+publiés dans la fenêtre. **C'est un test de la suite qui l'a dit**, pas une
+relecture — celui du plafond après fusion, qui a viré au rouge dès la
+première version du correctif.
+
+La même simulation, avec le nouveau calcul :
+
+| débit | avant | après |
+|---|---|---|
+| 40/jour | 1500 / 33 j | 1500 / 33 j |
+| **94/jour** | 1500 / **14 j** | 2820 / **28 j** |
+| 142/jour | 1500 / **9 j** | 4000 / **27 j** |
+| 200/jour | 4000 / 19 j | 4000 / 19 j |
+| 500/jour | 4000 / 7 j | 4000 / 7 j |
+
+Les gros débits sont inchangés — le plafond dur reprend la main et la fenêtre
+rétrécit, ce qui protège le fichier le 19/11.
+
+**Ce qui manquait pour l'attraper.** La suite vérifiait la FONCTION de calcul,
+et elle la vérifiait correctement. Personne ne vérifiait que le robot, en la
+rejouant passage après passage, arrivait quelque part. Le nouveau contrôle
+`test_la_profondeur_est_reellement_atteinte` rejoue quarante-cinq jours de
+cap et regarde la profondeur obtenue — c'est la seule forme de test qui
+pouvait voir une boucle fermée sur elle-même.
+
+**Conséquence immédiate, à ne pas prendre pour une panne.** La visée est
+passée à ~2790 alors que l'historique n'en contient que 1500 : il n'est donc
+plus « plein », le plancher de rétention se met en retrait (`None`) et les
+~300 refus par passage tombent à zéro le temps que la fenêtre se remplisse.
+Les deux mécanismes se composent comme prévu — le plancher ne refuse que ce
+qui serait élagué, et pour l'instant rien ne l'est.
+
+### Le raisonnement qui a mené au réglage — et qui, lui, tenait
 
 Je m'attendais à devoir arbitrer. La mesure dit qu'il n'y avait pas
 d'arbitrage à faire, pour une raison que j'avais sous les yeux sans la
