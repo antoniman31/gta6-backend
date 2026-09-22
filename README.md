@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1537
+qui permet de tester tout le pipeline sans sortir de la machine. **1538
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5239,6 +5239,51 @@ Le toast ne prend pas le focus — le voler après un geste volontaire fait
 perdre sa place dans la liste — mais son bouton reste atteignable au clavier,
 et il s'annonce en `role="status"` et non `alert` : il accompagne une action
 voulue, il ne l'interrompt pas.
+
+### Sortir ses réglages de l'appareil
+
+Tout vit dans le `localStorage` d'un navigateur : les réglages, les mots-clés
+affinés pendant des semaines, les 63 sources, l'état de lecture. Vider les
+données du site ou changer de téléphone efface le tout, sans retour.
+
+**Deux boutons dans ⚙️, et rien à déployer.** Le fichier porte les réglages,
+les articles lus et les articles déjà vus. Il ne porte **pas** :
+
+- **le jeton GitHub** — leçon reprise telle quelle de game-library (« l'export
+  contient les jeux mais jamais les clés »). Une sauvegarde doit pouvoir
+  rester dans un dossier de téléchargements, être envoyée par message ou
+  stockée ailleurs sans rien exposer. Le jeton se refabrique sur GitHub ; il
+  n'a rien à faire dans un fichier qui voyage ;
+- **le cache du fil** (`last-items-v1`), qui se reconstruit seul à la première
+  ouverture. Le recopier alourdirait le fichier de centaines de kilo-octets
+  d'articles qui reviennent tout seuls.
+
+**Un seul mode : remplacer.** game-library propose aussi « fusionner », parce
+qu'il réconcilie deux bibliothèques divergentes. Ici le besoin est un
+téléphone unique qu'on restaure : sur un appareil neuf il n'y a rien à
+fusionner, et sur l'appareil courant la question est justement « est-ce que je
+remplace ». Le mode manquant s'ajoutera le jour où deux appareils existeront.
+
+**La confirmation montre les chiffres des deux côtés** — `1 846 → 1 200`
+articles lus, les sources, les mots-clés — et la date de la sauvegarde.
+Importer par mégarde un fichier d'il y a un mois effacerait sinon un mois de
+lecture en silence.
+
+**Un fichier douteux est refusé EN BLOC**, jamais appliqué à moitié : un
+import partiel laisse un état que personne ne sait décrire, qui n'est ni
+l'ancien ni le nouveau. `valideSauvegarde()` rend une raison précise pour
+chacun des sept cas — pas du JSON, une autre application, une version plus
+récente, un champ absent, un champ du mauvais type — et sept contrôles
+navigateur les rejouent.
+
+Un détail qui aurait coûté un bug silencieux : le champ de fichier est **remis
+à zéro** après lecture. Sans ça, réimporter deux fois le même fichier ne
+déclenche pas de second `change`, et le second import semblerait ignoré sans
+qu'on sache pourquoi.
+
+Et le contrôle d'accessibilité du dépôt a attrapé un vrai défaut au passage :
+le champ de fichier n'avait pas de nom. Masqué ou non, il en a un maintenant —
+`display:none` est un détail de présentation, qui peut sauter.
 
 ### Ce qui n'avait rien à faire
 

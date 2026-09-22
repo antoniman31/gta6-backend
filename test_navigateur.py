@@ -740,6 +740,111 @@ def test_toast_annuler(nav, url):
 
     ctx.close()
 
+
+def test_sauvegarde_export_import(nav, url):
+    """Sortir ses réglages de l'appareil, et les y ramener.
+
+    Tout vit dans le localStorage d'un navigateur : vider les données du site
+    ou changer de téléphone efface les réglages, les mots-clés affinés pendant
+    des semaines et l'état de lecture, sans retour.
+
+    Deux propriétés sont verrouillées, et la seconde est la plus importante :
+    l'aller-retour rend exactement ce qu'on avait, et le JETON GITHUB N'Y EST
+    JAMAIS. Une sauvegarde doit pouvoir rester dans un dossier de
+    téléchargements sans rien exposer.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # Un état reconnaissable, jeton compris.
+    page.evaluate("""() => {
+      settings.keywords = ["gta 6", "un mot à moi"];
+      settings.maxDisplay = 123;
+      settings.denseMode = true;
+      readSet = new Set(["https://ex.test/a", "https://ex.test/b"]);
+      seenMap = {"https://ex.test/a": "2026-09-01T00:00:00Z"};
+      localStorage.setItem(STORAGE_PREFIX + TOKEN_STORAGE_KEY, "github_pat_SECRET_A_NE_PAS_EXPORTER");
+    }""")
+
+    paquet = page.evaluate("() => JSON.stringify(contenuSauvegarde())")
+
+    # ---- Ce que le fichier NE contient pas ----
+    check("SECRET_A_NE_PAS_EXPORTER" not in paquet,
+          "le jeton GitHub n'est pas dans la sauvegarde")
+    check("github_pat" not in paquet,
+          "et aucune trace d'un jeton, sous quelque forme que ce soit")
+    check("last-items" not in paquet and '"items"' not in paquet,
+          "le cache du fil non plus : il se reconstruit seul à l'ouverture")
+
+    # ---- Ce qu'il contient ----
+    import json as _json
+    d = _json.loads(paquet)
+    check(d["app"] == "GTA6_WATCH" and d["version"] == 1,
+          "le fichier s'annonce : application et version")
+    check("un mot à moi" in d["settings"]["keywords"], "les mots-clés y sont")
+    check(d["settings"]["maxDisplay"] == 123, "les seuils aussi")
+    check(sorted(d["lus"]) == ["https://ex.test/a", "https://ex.test/b"],
+          "les articles lus aussi")
+    check(d["vus"] == {"https://ex.test/a": "2026-09-01T00:00:00Z"},
+          "et les articles déjà vus")
+
+    # ---- L'aller-retour rend l'état exact ----
+    page.evaluate("""() => {
+      settings.keywords = ["autre chose"];
+      settings.maxDisplay = 500;
+      readSet = new Set();
+      seenMap = {};
+    }""")
+    page.evaluate("""(p) => {
+      const lu = valideSauvegarde(p);
+      settings = Object.assign({}, DEFAULT_SETTINGS, lu.data.settings);
+      readSet = new Set(lu.data.lus);
+      seenMap = lu.data.vus;
+    }""", paquet)
+    check(page.evaluate("settings.maxDisplay") == 123, "après import, le seuil est revenu")
+    check(page.evaluate("readSet.size") == 2, "et les deux articles lus aussi")
+    check(page.evaluate("""() => settings.keywords.includes("un mot à moi")"""),
+          "et le mot-clé personnel")
+
+    # Le jeton de l'appareil n'a pas été touché par l'import.
+    check(page.evaluate(
+              """() => localStorage.getItem(STORAGE_PREFIX + TOKEN_STORAGE_KEY)""")
+          == "github_pat_SECRET_A_NE_PAS_EXPORTER",
+          "et le jeton de CET appareil est intact — l'import n'y touche pas")
+
+    # ---- Les refus : en bloc, jamais à moitié ----
+    for brut, pourquoi in [
+        ("pas du json", "un fichier illisible"),
+        ('{"app":"AutreApp","version":1,"settings":{},"lus":[],"vus":{}}', "un fichier d'une autre app"),
+        ('{"app":"GTA6_WATCH","version":99,"settings":{},"lus":[],"vus":{}}', "une version plus récente"),
+        ('{"app":"GTA6_WATCH","version":1,"lus":[],"vus":{}}', "des réglages absents"),
+        ('{"app":"GTA6_WATCH","version":1,"settings":{},"vus":{}}', "une liste de lus absente"),
+        ('{"app":"GTA6_WATCH","version":1,"settings":{},"lus":[],"vus":[]}', "des vus du mauvais type"),
+        ("[]", "un tableau au lieu d'un objet"),
+    ]:
+        r = page.evaluate("(b) => valideSauvegarde(b)", brut)
+        check(r["ok"] is False and r.get("raison"),
+              "refusé avec une raison : %s → %s" % (pourquoi, r.get("raison", "")))
+
+    # Un fichier valide passe, évidemment — sinon les refus ci-dessus ne
+    # prouveraient rien.
+    check(page.evaluate("(p) => valideSauvegarde(p).ok", paquet) is True,
+          "et une vraie sauvegarde est bien acceptée")
+
+    # ---- Le champ de fichier se réarme ----
+    # Sans remise à zéro, réimporter DEUX FOIS le même fichier ne déclenche
+    # pas de second `change` : le second import semblerait ignoré.
+    html = page.content()
+    check('onchange="importerSauvegarde(this)"' in html,
+          "le champ de fichier est branché")
+    corps = page.evaluate("() => importerSauvegarde.toString()")
+    check('champ.value = ""' in corps,
+          "et il se réarme, sinon le même fichier ne s'importe qu'une fois")
+
+    ctx.close()
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -1129,6 +1234,7 @@ def main():
             test_recherche_sans_accents(nav, url)
             test_barre_detat_suit_le_theme(nav, url)
             test_toast_annuler(nav, url)
+            test_sauvegarde_export_import(nav, url)
             nav.close()
     finally:
         srv.shutdown()
