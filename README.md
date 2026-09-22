@@ -523,11 +523,12 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1328
+qui permet de tester tout le pipeline sans sortir de la machine. **1358
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
-adaptatif, le plancher de rétention et les familles qu'il épargne, la
-repasse rétroactive, le
+adaptatif, le plancher de rétention et les familles qu'il épargne,
+l'archive mensuelle et ses tranches, le fait que tout ce que le robot
+écrit soit bien commité ET ignoré par la CI, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
 `sub` contre le vrai validateur de `py_vapid`, le masquage des URL dans les
 messages d'erreur, l'équivalence entre récupération séquentielle et
@@ -4459,6 +4460,235 @@ le code n'y pèse que 3 %. Une cadence à quinze minutes diviserait le délai
 par sept, mais multiplierait par quatre les commits, les déploiements et les
 notifications — pour une veille qu'on consulte quand on y pense, pas en
 direct.
+
+## Les trois chantiers de la veille durable — 22/09/2026
+
+Les décisions ci-dessus laissaient trois sujets ouverts : la profondeur de
+l'historique, la révision des sources, le découpage de l'archive. Les trois
+ont été mesurés le même jour, parce qu'ils se décident sur les mêmes
+chiffres — et la mesure a renversé l'ordre dans lequel je comptais les
+prendre.
+
+### Ce que l'historique contient vraiment
+
+Avant tout arbitrage, le décompte sur les 1500 articles en fenêtre :
+
+| ancienneté | articles |
+|---|---|
+| moins de 24 h | 80 |
+| 1 à 3 jours | 122 |
+| 3 à 7 jours | 669 |
+| 7 à 15 jours | 520 |
+| plus de 15 jours | 109 |
+
+Les 109 derniers sont exactement les familles protégées — officiels,
+RockstarMag, sujets chauds — que l'élagage épargne. La fenêtre de quinze
+jours, elle, était pleine à ras bord : **79 articles par jour en médiane,
+94 en moyenne**, soit ~1400 ordinaires sur quinze jours pour un plancher à
+1500. Autrement dit le plancher commandait et la profondeur visée n'avait
+jamais eu l'occasion de servir.
+
+### La profondeur passe à trente jours, et c'était bon marché
+
+Je m'attendais à devoir arbitrer. La mesure dit qu'il n'y avait pas
+d'arbitrage à faire, pour une raison que j'avais sous les yeux sans la
+voir : **l'ouverture de l'app ne lit pas `feed.json`**. Elle lit
+`feed-recent.json`, 300 articles, dont la taille ne dépend pas de la
+profondeur. Le fichier complet ne part que sur la recherche et sur « Tout
+charger ».
+
+Les trois coûts que je redoutais ont été vérifiés un par un, et aucun ne
+tient :
+
+- **le dépôt git** : un commit du robot pèse son *delta*, et le delta suit
+  le nombre d'articles qui ont changé, pas la profondeur de l'historique.
+  Mesuré : 1028 passages, 1,5 Mo de `feed.json` réécrit à chaque fois, et le
+  pack entier fait **7,2 Mo** ;
+- **la déduplication** : ses deux passes sont déjà bornées indépendamment de
+  l'historique — `FENETRE_MAX` à 5000 et `FUSION_RETRO_MAX` à 3000 ;
+- **le téléphone** : inchangé à l'ouverture, par ce qui précède.
+
+Reste le seul coût réel, le téléchargement du fichier complet à la
+recherche : ~1,5 Mo devient ~2,6 Mo bruts, 465 Ko devient ~800 Ko une fois
+compressés. Sur une action explicite.
+
+`MAX_HISTORY_DAYS` passe donc de 15 à **30**, les deux bornes inchangées.
+Le plafond dur de 4000 devient mordant à partir de 134 articles/jour au lieu
+de 267 — c'est voulu : c'est lui qui protège le fichier le jour de la sortie.
+Le test du plafond, qui n'exerçait que deux de ses trois branches, les
+exerce maintenant toutes les trois, et **calcule ses débits à partir de
+`MAX_HISTORY_DAYS`** au lieu de les coder en dur — sans quoi il aurait
+recommencé à mentir au prochain réglage.
+
+### Les sources : la mesure a surtout confirmé l'existant
+
+Le décompte d'abord, parce qu'il est plus dur qu'attendu :
+
+- **1118 articles sur 1500 viennent de Google News**, soit 75 % ;
+- **22 des 63 sources passent par `news.google.com`** — pas seulement les
+  six qui portent ce nom, mais aussi The Verge, Engadget, Numerama,
+  Frandroid, Dexerto, MGG, Pure Xbox, TrueAchievements et d'autres, qui sont
+  des recherches `site:` déguisées sous le nom du média ;
+- **13 sources sur 63 n'ont produit aucun article** sur la fenêtre, dont 7
+  qui n'en ont jamais produit un seul.
+
+Une panne de ce seul domaine éteindrait donc un tiers de la liste d'un coup.
+Douze flux natifs ont été sondés pour voir ce qui pouvait s'en détacher.
+**Le résultat est surtout négatif, et c'est le résultat :**
+
+| candidat | verdict |
+|---|---|
+| The Verge, Engadget, Numerama, Push Square | 200, mais **0 retenue** — flux généralistes courts où GTA 6 ne passe pas |
+| TrueAchievements | 403 |
+| millenium.org/rss.xml | 404 |
+| Dexerto natif | déjà écarté le 15/09 pour la même raison, re-confirmé |
+| **xboxygen.com** | 301 → `/feed`, 50 entrées, **3 retenues du jour** |
+| **journaldugeek.com/feed/** | 30 entrées, **1 retenue du jour** |
+
+Deux ajouts seulement, et ce sont des **ajouts, pas des substitutions** —
+même raison que pour les flux par tag plus haut : un flux maison peut cesser
+de couvrir un sujet sans que rien ne le signale. Le cas du Journal du Geek
+le prouve sur pièce : ses deux accès existants ne rapportent rien (la
+recherche Google News n'a rien sorti depuis 22 jours, le flux par tag
+« gta-6 » revient vide) alors que son flux de site avait un article du jour.
+C'est exactement le défaut de balisage annoncé en septembre, pris sur le
+fait.
+
+Un mot sur un faux défaut. Le flux de Pure Xbox a laissé passer deux
+articles dont le titre ne parle pas de GTA 6 — « Final Fantasy VII
+Revelation… », « Upcoming Xbox Game Pass Title… ». Vérification faite,
+aucun mot-clé ne correspond dans le titre : c'est la *description* qui
+mentionne GTA 6. Le filtre lit titre + description, délibérément. Ce n'est
+pas un bogue, c'est le compromis assumé entre rappel et précision — mais
+c'est un coût des flux natifs que les recherches `site:` ne font pas payer,
+puisque Google a déjà trié.
+
+### Une source pour l'après-sortie, sur sept sondées
+
+Toute la liste avait été choisie pour couvrir une attente. Sept candidates
+ont été sondées sur l'angle correctifs / DLC / GTA Online :
+
+| candidat | verdict |
+|---|---|
+| `rockstargames.com/newswire.rss` et `/newswire/rss` | **HTTP 500, deux fois** — le Newswire n'a pas de flux natif |
+| `support.rockstargames.com/rss` | aucune réponse |
+| gtaforums.com | 403 |
+| gtabase.com | 404, comme au 15/09 |
+| gtanet.com | 200, 0 retenue sur 10 |
+| r/gtaonline (recherche « GTA 6 ») | 200, 2 retenues, la plus récente à **29 jours** — le sujet n'y existe pas encore, à re-sonder après le 19/11 |
+| **r/GTA6 (recherche update/patch/DLC/online)** | 25 entrées, **3 retenues**, la plus récente à 4 jours |
+
+La dernière est retenue. Elle cherche les mots qui *manquent* plutôt que
+« GTA 6 », qui va de soi sur ce subreddit — d'où « GTA 6 Online en 2027 »
+dans ses résultats. Réserve dite plutôt que tue : c'est la deuxième source
+sur `reddit.com`, et une première sonde groupée s'est fait renvoyer un 429.
+Un 429 laisse la source « muette » et jamais « cassée », donc elle revient
+seule sans fausse alerte ; le risque est un passage sans elle de temps en
+temps, pas une panne.
+
+### L'archive mensuelle : ce qui sort de la fenêtre ne sort plus du projet
+
+C'est le chantier qui change le plus, et celui dont j'avais mal jugé la
+place. J'avais dit le matin qu'il fallait régler la profondeur en premier
+« parce qu'elle conditionne les deux autres ». C'est l'inverse : une fenêtre,
+si profonde soit-elle, ne répondra jamais à « qu'est-ce qui s'est dit de ce
+DLC il y a six mois ». Trente jours ou quatre-vingt-dix ne change pas la
+nature du problème — il faut *garder*, pas *élargir*.
+
+`docs/archives/` contient désormais **un fichier par mois**, plus un
+`index.json`. Le robot y range **tout ce qu'il publie, à chaque passage** —
+et non « ce qu'il s'apprête à jeter ». La nuance porte tout le dispositif :
+
+- si l'archive rate un article une fois (passage interrompu, conflit de
+  push, bogue), le passage suivant le remet tant qu'il est encore dans la
+  fenêtre. N'archiver que les élagués n'offrirait **aucun rattrapage** :
+  l'article serait perdu des deux côtés et rien ne le dirait ;
+- la première exécution remplit l'archive avec l'historique entier au lieu
+  de partir de zéro. Essai à blanc sur les vraies données : **1500 articles
+  répartis sur 10 mois**, de décembre 2023 à septembre 2026, aucun perdu,
+  aucun inventé.
+
+Pourquoi le mois. Un mois **révolu ne change plus jamais** : son fichier est
+écrit une fois, plus aucun commit du robot ne le touche, et le navigateur
+peut le garder en cache indéfiniment. Un fichier unique serait réécrit
+vingt-quatre fois par jour ; un fichier par jour demanderait des centaines
+de requêtes pour couvrir une recherche d'un an.
+
+**Les tranches existent avant d'en avoir besoin.** Au-delà de 2500 articles,
+un mois est coupé en `2026-11.json`, `2026-11.2.json`, etc. — la première
+garde le nom nu, celui qu'on tape à la main pour vérifier. Un mois ordinaire
+tient en une tranche. Le mois de la sortie n'en fera pas 2800 mais plusieurs
+dizaines de milliers, et un fichier de 25 Mo ne se télécharge pas depuis un
+téléphone. Poser le découpage en novembre voudrait dire changer le format
+publié pendant le mois le plus chargé de la vie du projet : c'est le même
+argument qui a fait avancer le plancher de rétention au 22/09 plutôt qu'en
+octobre, et il vaut ici aussi.
+
+L'ordre d'écriture est réfléchi et le code le dit : l'archive part **après**
+le garde-fou — un passage refusé ne doit pas laisser de trace, l'archive
+n'ayant pas de second contrôle derrière elle — et **avant** le fichier
+publié — si l'écriture s'interrompt entre les deux, une archive en avance
+d'un passage ne demande aucune réparation, l'inverse ferait disparaître des
+articles élagués.
+
+L'index porte le **poids** de chaque fichier autant que son nombre
+d'articles : sans lui, l'app ne pourrait pas prévenir avant de lancer un
+téléchargement de plusieurs mégaoctets sur un forfait mobile — et c'est
+précisément le mois de la sortie qui sera le plus lourd.
+
+### Et l'app sait la lire
+
+Une ligne apparaît sous le compteur, **une fois la fenêtre déjà complète** —
+pas avant, sinon deux boutons concurrents proposeraient le même geste :
+
+```
+archive : 20 de plus, 2026-07 → 2026-08 (20 Ko)   [Charger l'archive]
+```
+
+Trois choix qui méritent d'être dits, parce qu'ils étaient tous les trois
+faciles à rater :
+
+- **elle annonce ce qu'elle AJOUTE, pas le total de l'archive.** L'archive
+  est un sur-ensemble de la fenêtre : afficher son total promettrait des
+  milliers d'articles pour n'en apporter que quelques dizaines ;
+- **elle donne le poids** avant de télécharger. C'est à ça que sert le champ
+  `octets` de l'index, et ce sera le mois de la sortie qui en aura besoin ;
+- **un article d'archive n'est jamais une nouveauté.** Le chargement ne
+  touche ni à `seenMap` ni à `lastNewLinks` — sans ça, un article de juillet
+  arrivant aujourd'hui ferait sonner les pastilles de non-lus pour des
+  centaines de vieux articles. C'est le défaut le plus probable de cette
+  fonctionnalité, et c'est celui qui est verrouillé le plus explicitement.
+
+L'index se charge **sans `await`** derrière l'affichage des articles : c'est
+un confort, il ne doit pas retarder le fil d'une milliseconde. Un backend
+d'une version antérieure n'a pas de répertoire `archives/` — dans ce cas la
+ligne reste muette et **rien ne s'affiche comme une panne**, parce que c'est
+une absence, pas une erreur.
+
+Quatorze contrôles en vrai navigateur couvrent tout ça, en interceptant le
+réseau plutôt qu'en écrivant de faux fichiers dans `docs/`.
+
+### Un contrôle qui perdait une course, et qui ne vérifiait pas ce qu'il disait
+
+La CI est passée au rouge le 22/09 sur `[vignette] le clic ouvre bien un
+onglet sur l'article`, puis au vert au commit suivant sans qu'une ligne de
+l'app ait changé. C'est le signalement d'un test fragile, pas un aléa
+d'infrastructure, et il avait **deux** défauts :
+
+- il **dormait 700 ms** en espérant que l'onglet soit apparu. Un runner
+  chargé met parfois plus longtemps. Remplacé par `expect_page`, qui attend
+  l'ÉVÉNEMENT avec une limite haute : le test est du coup plus sûr *et* plus
+  rapide dans le cas normal ;
+- son commentaire annonçait « on lit l'URL DEMANDÉE », et le code lisait
+  `pg.url` — l'URL de l'onglet. Or la cible est un vrai site, injoignable
+  depuis la CI, donc Chromium y met `chrome-error://chromewebdata/`.
+  L'assertion était donc écrite `... or bool(demandees)` : **n'importe quel
+  onglet** suffisait à la satisfaire. Elle lit maintenant l'adresse sur un
+  écouteur de requêtes, qui enregistre ce qui a été TENTÉ, et compare à
+  l'adresse attendue.
+
+Le contrôle est donc plus strict qu'avant, pas plus indulgent. Suite rejouée
+trois fois de suite pour vérifier qu'elle ne rebascule pas.
 
 ## Ajuster quelque chose
 

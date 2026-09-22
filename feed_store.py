@@ -42,12 +42,35 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 # Les deux bornes ne sont pas décoratives. Sans PLANCHER, une semaine creuse
 # réduirait l'historique à peau de chagrin ; sans PLAFOND, le jour de la
 # sortie du jeu ramènerait exactement le problème qu'on vient de régler — à
-# 1000 articles/jour, quinze jours feraient 15 000 articles et 13 Mo.
+# 1000 articles/jour, trente jours feraient 30 000 articles et 27 Mo.
 #
 # Le plafond dur est un arbitrage sur la recherche : à 4000 articles le
-# fichier pèse ~3,4 Mo, soit une dizaine de secondes de téléchargement sur un
+# fichier pèse ~3,7 Mo, soit une dizaine de secondes de téléchargement sur un
 # téléphone la première fois qu'on cherche.
-MAX_HISTORY_DAYS = 15
+#
+# QUINZE JOURS -> TRENTE, le 22/09/2026, quand le projet est devenu une veille
+# durable et non un compte à rebours. La mesure a dit que c'était bon marché,
+# contre mon attente :
+#
+#   - l'ouverture de l'app ne paie rien : elle lit feed-recent.json, dont la
+#     taille est fixée par RECENT_FEED_SIZE et ne bouge pas d'un octet ;
+#   - le dépôt git ne paie presque rien : un commit du robot ne pèse pas le
+#     fichier mais son DELTA, et le delta suit le nombre d'articles qui ont
+#     changé, pas la profondeur. Mesuré : 1028 passages, 7,2 Mo de pack ;
+#   - la déduplication ne paie rien non plus : ses deux passes sont déjà
+#     bornées indépendamment de l'historique (FENETRE_MAX = 5000 et
+#     FUSION_RETRO_MAX = 3000 dans fetch_feeds).
+#
+# Reste le seul vrai coût : le téléchargement du fichier complet, à la
+# recherche et au bouton « Tout charger ». ~1,5 Mo devient ~2,6 Mo bruts, 465
+# Ko devient ~800 Ko compressés — sur une action explicite, pas à chaque
+# ouverture.
+#
+# Trente jours et non quatre-vingt-dix : au-delà, c'est un problème d'ARCHIVE
+# et non de plafond. Chercher ce qui s'est dit d'un DLC six mois plus tôt
+# demande un découpage de l'historique en fichiers qu'on n'interroge qu'au
+# besoin, pas un fichier unique qu'on télécharge en entier. Voir le README.
+MAX_HISTORY_DAYS = 30
 MIN_HISTORY_SIZE = 1500
 MAX_HISTORY_SIZE = 4000
 
@@ -545,6 +568,202 @@ def write_feed(data, path=FEED_PATH):
         os.makedirs(directory, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+# ---------------------------------------------------------------------------
+# L'archive mensuelle
+#
+# feed.json est une FENÊTRE : il garde MAX_HISTORY_DAYS de profondeur et
+# jette le reste. Tant que le projet visait le 19/11/2026, jeter allait de
+# soi — personne ne cherche l'actualité d'il y a six mois d'un jeu qui n'est
+# pas sorti. Le projet est devenu une veille durable le 22/09/2026, et ce
+# geste est devenu une perte : chercher ce qui s'est dit d'un DLC six mois
+# plus tôt ne rentrera jamais dans une fenêtre, quel que soit son réglage.
+#
+# L'archive est l'autre moitié : un fichier par MOIS, sous docs/archives/,
+# plus un index. Ce qui sort de la fenêtre y est déjà, et y reste.
+#
+# Pourquoi le mois, et pas un seul gros fichier ni un fichier par jour :
+#
+#   - un mois RÉVOLU ne change plus jamais. Son fichier est écrit une fois,
+#     puis plus aucun commit du robot ne le touche — le dépôt ne grossit
+#     donc pas de son poids à chaque passage, et le navigateur peut le
+#     garder en cache indéfiniment. C'est toute la différence avec un
+#     fichier unique, qui serait réécrit vingt-quatre fois par jour ;
+#   - un fichier par jour ferait des centaines de requêtes pour couvrir une
+#     recherche d'un an. Le mois est le grain où l'on demande « et en
+#     mars ? » sans avoir à demander trente fois.
+#
+# CE N'EST PAS UN ÉLAGAGE DÉGUISÉ. On n'archive pas « ce qui va être jeté »,
+# on archive TOUT ce qui est publié, à chaque passage. La différence compte :
+#
+#   - si l'archive rate un article une fois (passage interrompu, conflit de
+#     push, bogue), le passage suivant le remet — tant qu'il est encore dans
+#     la fenêtre. N'archiver que les élagués n'offrirait aucun rattrapage :
+#     l'article serait perdu des deux côtés, et rien ne le dirait ;
+#   - la première exécution remplit l'archive avec l'historique entier au
+#     lieu de partir de zéro.
+#
+# Le prix est de réécrire le fichier du mois EN COURS à chaque passage. Les
+# autres ne bougent pas. C'est exactement le comportement voulu.
+# ---------------------------------------------------------------------------
+
+ARCHIVE_DIR = "docs/archives"
+
+# Au-delà, le mois est coupé en tranches numérotées. Un mois ordinaire
+# (~94 articles/jour) en fait environ 2800 et tient en une tranche. Le mois
+# de la sortie n'en fera pas 2800 mais plusieurs dizaines de milliers, et un
+# fichier de 25 Mo ne se télécharge pas depuis un téléphone.
+#
+# Les tranches existent DÈS MAINTENANT, avant d'en avoir besoin, et l'index
+# donne toujours une LISTE de fichiers même quand elle n'en contient qu'un.
+# Les ajouter en novembre voudrait dire changer le format publié pendant le
+# mois le plus chargé de la vie du projet — soit le pire moment possible,
+# exactement l'argument qui a fait avancer le plancher de rétention au 22/09
+# plutôt qu'en octobre.
+ARCHIVE_MAX_PAR_FICHIER = 2500
+
+
+def mois_de(item):
+    """Le mois d'un article, « YYYY-MM », d'après sa date."""
+    return parse_date_key(item.get("date")).strftime("%Y-%m")
+
+
+def _nom_tranche(mois, rang):
+    """« 2026-09.json » pour la première tranche, « 2026-09.2.json » ensuite.
+
+    La première tranche garde le nom nu pour que l'adresse la plus évidente
+    — celle qu'on tape à la main pour vérifier — soit la bonne.
+    """
+    return f"{mois}.json" if rang == 0 else f"{mois}.{rang + 1}.json"
+
+
+def tranches_du_mois(mois, repertoire=ARCHIVE_DIR):
+    """Les fichiers existants d'un mois, dans l'ordre."""
+    noms = []
+    rang = 0
+    while True:
+        chemin = os.path.join(repertoire, _nom_tranche(mois, rang))
+        if not os.path.exists(chemin):
+            return noms
+        noms.append(chemin)
+        rang += 1
+
+
+def lire_mois(mois, repertoire=ARCHIVE_DIR):
+    """Tous les articles archivés d'un mois, toutes tranches confondues."""
+    items = []
+    for chemin in tranches_du_mois(mois, repertoire):
+        try:
+            with open(chemin, encoding="utf-8") as f:
+                items.extend(json.load(f).get("items") or [])
+        except (OSError, ValueError):
+            # Une tranche illisible ne doit pas emporter le mois : ce qui
+            # suit la réécrira depuis ce qu'on a, et le passage suivant
+            # complètera depuis la fenêtre.
+            continue
+    return items
+
+
+def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None):
+    """Range `items` dans les fichiers de leur mois. Idempotent.
+
+    Rend un dictionnaire {mois: nombre d'articles archivés}, limité aux mois
+    RÉELLEMENT réécrits — un mois dont rien n'a changé n'est pas touché, et
+    c'est ce qui garde les commits du robot légers.
+
+    La fusion se fait par lien, l'article de `items` gagne : c'est la version
+    la plus à jour, celle qui a pu gagner des sources supplémentaires ou une
+    miniature depuis son archivage.
+    """
+    par_mois = {}
+    for item in items:
+        if not item.get("link"):
+            continue
+        par_mois.setdefault(mois_de(item), []).append(item)
+
+    ecrits = {}
+    for mois, neufs in par_mois.items():
+        existants = lire_mois(mois, repertoire)
+        fusion = {i["link"]: i for i in existants if i.get("link")}
+        avant = len(fusion)
+        inchange = all(fusion.get(i["link"]) == i for i in neufs)
+        if inchange and len(neufs) <= avant:
+            # Rien de neuf et rien de modifié : ne pas réécrire, pour ne pas
+            # produire un commit qui ne dit rien.
+            continue
+        fusion.update({i["link"]: i for i in neufs})
+        ranges = sort_items(list(fusion.values()))
+
+        # Les tranches se remplissent du plus RÉCENT au plus ancien, dans
+        # l'ordre du fil. La tranche nue est donc toujours celle qu'on veut
+        # d'abord, et un mois qui grossit ajoute une tranche à la fin sans
+        # redistribuer les précédentes.
+        tranches = [ranges[d:d + ARCHIVE_MAX_PAR_FICHIER]
+                    for d in range(0, len(ranges), ARCHIVE_MAX_PAR_FICHIER)] or [[]]
+        for rang, tranche in enumerate(tranches):
+            write_feed({"mois": mois, "tranche": rang + 1,
+                        "tranches": len(tranches),
+                        "generated_at": _horodatage(maintenant),
+                        "items": tranche},
+                       os.path.join(repertoire, _nom_tranche(mois, rang)))
+
+        # Un mois qui a rétréci (déduplication rétroactive) laisserait
+        # traîner ses anciennes tranches, que l'index ne citerait plus mais
+        # que le site servirait encore.
+        rang = len(tranches)
+        while True:
+            reste = os.path.join(repertoire, _nom_tranche(mois, rang))
+            if not os.path.exists(reste):
+                break
+            os.remove(reste)
+            rang += 1
+
+        ecrits[mois] = len(ranges)
+    return ecrits
+
+
+def ecrire_index_archives(repertoire=ARCHIVE_DIR, maintenant=None):
+    """Écrit docs/archives/index.json : ce que l'app lit pour savoir quoi demander.
+
+    L'index porte le POIDS de chaque fichier en plus de son nombre d'articles.
+    Sans lui, l'app ne peut pas prévenir avant de lancer un téléchargement de
+    plusieurs mégaoctets sur un forfait mobile — et c'est précisément le mois
+    de la sortie qui sera le plus lourd.
+    """
+    if not os.path.isdir(repertoire):
+        return {"mois": []}
+
+    mois_vus = sorted({nom.split(".")[0] for nom in os.listdir(repertoire)
+                       if nom.endswith(".json") and nom != "index.json"},
+                      reverse=True)
+    entrees = []
+    for mois in mois_vus:
+        fichiers = []
+        for chemin in tranches_du_mois(mois, repertoire):
+            try:
+                with open(chemin, encoding="utf-8") as f:
+                    nb = len(json.load(f).get("items") or [])
+            except (OSError, ValueError):
+                continue
+            fichiers.append({"fichier": os.path.basename(chemin),
+                             "articles": nb,
+                             "octets": os.path.getsize(chemin)})
+        if fichiers:
+            entrees.append({"mois": mois,
+                            "articles": sum(f["articles"] for f in fichiers),
+                            "octets": sum(f["octets"] for f in fichiers),
+                            "fichiers": fichiers})
+
+    index = {"generated_at": _horodatage(maintenant),
+             "articles": sum(e["articles"] for e in entrees),
+             "mois": entrees}
+    write_feed(index, os.path.join(repertoire, "index.json"))
+    return index
+
+
+def _horodatage(maintenant=None):
+    return (maintenant or datetime.now(timezone.utc)).isoformat()
 
 
 # ---------------------------------------------------------------------------

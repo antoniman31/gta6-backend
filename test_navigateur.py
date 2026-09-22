@@ -496,6 +496,158 @@ def test_repli_backend(nav, url):
           "[repli] l'app conditionne la piste à l'absence de code HTTP")
 
 
+
+def test_archive_dans_lapp(nav, url):
+    """L'archive mensuelle est atteignable depuis l'app, et sans dégât.
+
+    Le backend produit docs/archives/ depuis le 22/09/2026 ; sans ce qui
+    suit, ce ne seraient que des fichiers sur un serveur. Trois choses se
+    vérifient ici et nulle part ailleurs :
+
+      - la ligne n'apparaît QUE quand la fenêtre est déjà complète, sinon
+        deux boutons concurrents proposeraient le même geste ;
+      - ce qu'elle annonce est ce qu'elle AJOUTE, pas le total de l'archive.
+        L'archive est un sur-ensemble de la fenêtre : annoncer son total
+        promettrait des milliers d'articles pour n'en ajouter que quelques
+        centaines ;
+      - les articles d'archive ne comptent JAMAIS comme des nouveautés. Un
+        article de juillet qui arrive aujourd'hui ferait sonner les
+        pastilles de non-lus pour des centaines de vieux articles.
+    """
+    base = url.rsplit("/", 1)[0]
+
+    MOIS = {
+        "2026-08.json": [
+            {"link": "https://arch.test/a%d" % n, "title": "archive août %d" % n,
+             "date": "2026-08-%02dT10:00:00+00:00" % (n + 1), "source": "Test"}
+            for n in range(12)],
+        "2026-07.json": [
+            {"link": "https://arch.test/b%d" % n, "title": "archive juillet %d" % n,
+             "date": "2026-07-%02dT10:00:00+00:00" % (n + 1), "source": "Test"}
+            for n in range(8)],
+    }
+    EN_PLUS = sum(len(v) for v in MOIS.values())
+
+    def prepare(page, total_archive, casser_index=False):
+        """Branche un faux répertoire d'archives sur le réseau de la page."""
+        import json as _json
+
+        def index(route):
+            if casser_index:
+                return route.fulfill(status=404, body="")
+            route.fulfill(status=200, content_type="application/json",
+                          body=_json.dumps({
+                              "articles": total_archive,
+                              "mois": [
+                                  {"mois": "2026-08", "articles": 12, "octets": 12000,
+                                   "fichiers": [{"fichier": "2026-08.json",
+                                                 "articles": 12, "octets": 12000}]},
+                                  {"mois": "2026-07", "articles": 8, "octets": 8000,
+                                   "fichiers": [{"fichier": "2026-07.json",
+                                                 "articles": 8, "octets": 8000}]},
+                              ]}))
+
+        page.route("**/archives/index.json*", index)
+
+        # Une FABRIQUE, et pas un lambda à argument par défaut : Playwright
+        # appelle le gestionnaire avec (route, request), donc un
+        # `lambda route, it=items:` recevait la requête à la place des
+        # articles. L'erreur ne se voyait pas dans le verdict du test, elle
+        # partait dans un « Error occurred in event listener ».
+        def sert(items):
+            def gestionnaire(route, request=None):
+                route.fulfill(status=200, content_type="application/json",
+                              body=_json.dumps({"items": items}))
+            return gestionnaire
+
+        for nom, items in MOIS.items():
+            page.route("**/archives/" + nom + "*", sert(items))
+
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+
+    # Fenêtre INCOMPLÈTE : la ligne d'archive doit rester muette.
+    prepare(page, 99999)
+    page.evaluate("""async () => {
+        historyPartial = true; archiveIndex = null; archiveChargee = false;
+        await chargeIndexArchive(); updateArchiveLine();
+    }""")
+    check(not page.locator("#archiveLine").is_visible(),
+          "[archive] fenêtre incomplète : la ligne d'archive ne s'affiche pas")
+
+    # Fenêtre complète : on charge le vrai feed.json, puis on annonce une
+    # archive qui contient EN_PLUS articles de plus que lui.
+    page.evaluate("async () => { await checkFromBackend(true); }")
+    dans_fenetre = page.evaluate("lastItems.length")
+    check(dans_fenetre > 0,
+          "[archive] la fenêtre est chargée (%d article(s))" % dans_fenetre)
+
+    page.unroute("**/archives/index.json*")
+    prepare(page, dans_fenetre + EN_PLUS)
+    page.evaluate("""async () => {
+        historyPartial = false; archiveIndex = null; archiveChargee = false;
+        await chargeIndexArchive(); updateArchiveLine();
+    }""")
+    ligne = page.locator("#archiveLine")
+    check(ligne.is_visible(),
+          "[archive] fenêtre complète : la ligne d'archive apparaît")
+    txt = ligne.inner_text()
+    check(str(EN_PLUS) in txt,
+          "[archive] elle annonce ce qu'elle AJOUTE (%d), pas le total « %s »"
+          % (EN_PLUS, txt.replace("\n", " ")))
+    check("2026-07" in txt and "2026-08" in txt,
+          "[archive] elle donne la période couverte (« %s »)" % txt.replace("\n", " "))
+    check("Ko" in txt or "Mo" in txt,
+          "[archive] elle donne le poids, pour prévenir avant de télécharger")
+
+    # Le chargement lui-même.
+    avant_nouveaux = page.evaluate("lastNewLinks.size")
+    page.evaluate("async () => { await loadArchive(); }")
+    apres = page.evaluate("lastItems.length")
+    check(apres == dans_fenetre + EN_PLUS,
+          "[archive] chargée : %d articles au lieu de %d" % (apres, dans_fenetre))
+    check(page.evaluate("lastNewLinks.size") == avant_nouveaux,
+          "[archive] aucun article d'archive n'est compté comme nouveau")
+    check(page.evaluate(
+        "lastItems.filter(i => i.link.startsWith('https://arch.test/')).length") == EN_PLUS,
+        "[archive] les articles d'archive sont bien dans le fil")
+    check(page.evaluate("""() => {
+        const d = lastItems.map(i => new Date(i.date).getTime());
+        return d.every((v, n) => n === 0 || d[n - 1] >= v);
+    }"""), "[archive] le fil reste trié du plus récent au plus ancien")
+    check(not ligne.is_visible(),
+          "[archive] la ligne disparaît une fois l'archive chargée")
+
+    # Rejouer ne doit rien faire : sans ce garde, un double clic doublerait
+    # chaque article du fil.
+    page.evaluate("async () => { await loadArchive(); }")
+    check(page.evaluate("lastItems.length") == apres,
+          "[archive] rejouer le chargement n'ajoute rien")
+    ctx.close()
+
+    # Pas d'archive du tout (backend d'une version antérieure) : la ligne
+    # reste muette et RIEN ne s'affiche comme une panne.
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    prepare(page, 0, casser_index=True)
+    page.evaluate("""async () => {
+        historyPartial = false; archiveIndex = null; archiveChargee = false;
+        await chargeIndexArchive(); updateArchiveLine();
+    }""")
+    check(not page.locator("#archiveLine").is_visible(),
+          "[archive] pas d'archive : la ligne reste muette")
+    journal = page.evaluate("logs.map(l => l.level + ' ' + l.message).join('\\n')")
+    check("Archive indisponible" not in journal,
+          "[archive] pas d'archive : aucune erreur affichée, c'est une absence")
+    ctx.close()
+
+
 def test_vignette_ouvre_larticle(nav, url):
     """Cliquer la vignette doit ouvrir l'article, comme cliquer le titre.
 
@@ -569,13 +721,39 @@ def test_vignette_ouvre_larticle(nav, url):
     # Le clic navigue-t-il vraiment ? On lit l'URL DEMANDÉE : la cible est
     # un vrai site, injoignable depuis la CI, donc l'onglet finira en erreur
     # — ce qui compte est qu'il ait tenté la bonne adresse.
-    demandees = []
-    ctx.on("page", lambda pg: demandees.append(pg.url))
-    page.click(".card .card-thumb", force=True)
-    page.wait_for_timeout(700)
+    #
+    # `expect_page` et non `wait_for_timeout(700)`. La version d'origine
+    # dormait 700 ms en espérant que l'onglet soit apparu, puis regardait
+    # une liste remplie par un écouteur. C'est une COURSE, et elle a été
+    # perdue une fois en CI le 22/09/2026 : le contrôle a échoué sur un
+    # commit, puis passé sur le suivant sans qu'une ligne de l'app ait
+    # changé. Un runner chargé met parfois plus de 700 ms à ouvrir un
+    # onglet.
+    #
+    # `expect_page` attend l'ÉVÉNEMENT, avec une limite haute plutôt qu'un
+    # délai fixe : il rend la main dès que l'onglet existe, donc le test est
+    # à la fois plus sûr et plus rapide dans le cas normal. L'attente
+    # restant la même, ce qui est vérifié ne change pas d'un iota — c'est la
+    # façon d'attendre qui change, pas l'exigence.
+    # L'adresse se lit sur la REQUÊTE, pas sur `page.url` de l'onglet. Le
+    # commentaire ci-dessus l'annonçait déjà, mais le code lisait bien
+    # `pg.url` — et comme la cible est injoignable, Chromium y met
+    # « chrome-error://chromewebdata/ ». Un écouteur de requêtes, lui,
+    # enregistre l'adresse TENTÉE, qu'elle aboutisse ou non.
     attendu = info["hrefTitre"]
-    check(any(u == attendu for u in demandees) or bool(demandees),
+    demandees = []
+    ctx.on("request", lambda r: demandees.append(r.url))
+    try:
+        with ctx.expect_page(timeout=10000) as onglet:
+            page.click(".card .card-thumb", force=True)
+        ouvert = onglet.value
+    except Exception:
+        ouvert = None
+
+    check(ouvert is not None,
           "[vignette] le clic ouvre bien un onglet sur l'article")
+    check(attendu in demandees,
+          "[vignette] et c'est la bonne adresse qui est demandée (%s)" % attendu)
 
     lu = page.evaluate("""() => {
         const c = [...document.querySelectorAll('.card')].find(x => x.querySelector('.card-thumb'));
@@ -625,6 +803,7 @@ def main():
             # interceptions avant le chargement de la page.
             test_repli_backend(nav, url)
             test_vignette_ouvre_larticle(nav, url)
+            test_archive_dans_lapp(nav, url)
             nav.close()
     finally:
         srv.shutdown()

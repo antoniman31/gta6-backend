@@ -1275,6 +1275,7 @@
   <div class="console-status feed-count">
     <span id="countLine">0 article suivi</span>
     <span id="historyLine" class="history-line" style="display:none;"></span>
+    <span id="archiveLine" class="history-line" style="display:none;"></span>
   </div>
 
   <div class="pull-zone" id="pullZone"><span id="pullLabel"></span></div>
@@ -1760,7 +1761,10 @@ const DEFAULT_FEEDS = [
   { id: "reddit-leaks", name: "Reddit — fuites et rumeurs", url: "https://www.reddit.com/r/GamingLeaksAndRumours/search.rss?q=%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22&restrict_sr=on", enabled: true, official: false },
   { id: "destructoid", name: "Destructoid", url: "https://www.destructoid.com/feed/", enabled: true, official: false },
   { id: "dexerto", name: "Dexerto", url: "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false },
-  { id: "mgg", name: "MGG (Millenium)", url: "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" }
+  { id: "mgg", name: "MGG (Millenium)", url: "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "xboxygen-natif", name: "Xboxygen (flux natif)", url: "https://www.xboxygen.com/feed", enabled: true, official: false, lang: "fr" },
+  { id: "jdg-site", name: "Journal du Geek (flux natif)", url: "https://www.journaldugeek.com/feed/", enabled: true, official: false, lang: "fr" },
+  { id: "reddit-gta6-suivi", name: "Reddit — mises à jour et DLC", url: "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", enabled: true, official: false }
 ];
 
 const PROXIES = [
@@ -2678,6 +2682,11 @@ async function applyBackendData(data, sourceUrl){
   historyFullUrl = data.full_url ? sourceUrl.replace(/[^/]+$/, data.full_url) : "";
   updateHistoryLine();
 
+  // L'index de l'archive, sans await : c'est un confort, il ne doit pas
+  // retarder d'une milliseconde l'affichage des articles. La ligne
+  // apparaîtra quand il arrivera, ou jamais s'il n'y a pas d'archive.
+  chargeIndexArchive().then(updateArchiveLine);
+
   // Clé publique VAPID publiée par le backend : conditionne l'affichage de
   // la section « Notifications » dans les paramètres.
   if(data.vapid_public_key !== undefined){
@@ -2807,6 +2816,159 @@ async function loadFullHistory(raison){
       `<button class="small" onclick="loadFullHistory()">Réessayer</button>`;
   }finally{
     historyLoading = false;
+    // La ligne d'archive ne s'affiche qu'une fois la fenêtre complète : ce
+    // rafraîchissement est ce qui la fait apparaître juste après.
+    updateArchiveLine();
+    applyFilters();
+  }
+}
+
+// ---------- L'archive mensuelle ----------
+//
+// feed.json est une FENÊTRE : trente jours, puis les articles en sortent.
+// docs/archives/ garde tout le reste, un fichier par mois. Ce qui suit est
+// le seul endroit d'où l'app peut y accéder.
+//
+// Chargée à la demande et jamais d'office. Le fil ordinaire, la recherche
+// dans la fenêtre et le premier affichage ne doivent rien payer pour une
+// archive dont on ne se sert qu'en cherchant loin.
+let archiveIndex = null;
+let archiveChargee = false;
+let archiveEnCours = false;
+
+function archiveUrlFrom(fullUrl, fichier){
+  if(!fullUrl || !fullUrl.endsWith("feed.json")) return null;
+  return fullUrl.replace(/feed\.json$/, "archives/" + fichier);
+}
+
+function poidsLisible(octets){
+  if(octets >= 1048576) return (octets / 1048576).toFixed(1).replace(".", ",") + " Mo";
+  return Math.round(octets / 1024) + " Ko";
+}
+
+// Va chercher l'index, une seule fois. Silencieux en cas d'échec : un
+// backend d'une version antérieure n'a pas de répertoire d'archives, et une
+// erreur visible ferait croire à une panne là où il n'y a qu'une absence.
+async function chargeIndexArchive(){
+  if(archiveIndex !== null) return archiveIndex;
+  const url = archiveUrlFrom(settings.backendUrl, "index.json");
+  if(!url){ archiveIndex = {mois: []}; return archiveIndex; }
+  try{
+    const rep = await fetchAvecDelai(avecAntiCache(url), BACKEND_TIMEOUT_MS);
+    archiveIndex = rep.ok ? (await rep.json()) : {mois: []};
+  }catch(e){
+    archiveIndex = {mois: []};
+  }
+  return archiveIndex;
+}
+
+// Ce que l'archive ajouterait VRAIMENT, c'est-à-dire ce qu'elle contient
+// moins ce qui est déjà affiché. Annoncer son total brut promettrait des
+// milliers d'articles pour n'en ajouter que quelques centaines : l'archive
+// est un sur-ensemble de la fenêtre, pas un complément.
+function resteDeLarchive(){
+  if(!archiveIndex || !archiveIndex.mois || !archiveIndex.mois.length) return null;
+  const total = archiveIndex.articles || 0;
+  const enPlus = total - lastItems.length;
+  if(enPlus <= 0) return null;
+  const mois = archiveIndex.mois;
+  return {
+    enPlus,
+    octets: mois.reduce((n, m) => n + (m.octets || 0), 0),
+    plusAncien: mois[mois.length - 1].mois,
+    plusRecent: mois[0].mois
+  };
+}
+
+function updateArchiveLine(){
+  const el = document.getElementById("archiveLine");
+  if(!el) return;
+  // Tant que la fenêtre elle-même est incomplète, proposer l'archive
+  // mettrait deux boutons concurrents côte à côte pour le même geste.
+  // « Tout charger » d'abord, l'archive ensuite.
+  const reste = (historyPartial || archiveChargee) ? null : resteDeLarchive();
+  if(!reste){
+    el.style.display = "none";
+    return;
+  }
+  el.style.display = "flex";
+  el.innerHTML = `<span>archive : ${reste.enPlus} de plus, ` +
+    `${escapeHtml(reste.plusAncien)} → ${escapeHtml(reste.plusRecent)} ` +
+    `(${poidsLisible(reste.octets)})</span>` +
+    `<button class="small" onclick="loadArchive()">Charger l'archive</button>`;
+}
+
+// Télécharge les mois, du plus récent au plus ancien, et fusionne par lien.
+//
+// Deux choses que cette fonction ne fait PAS, et c'est délibéré :
+//
+//   - elle ne touche pas à seenMap ni à lastNewLinks. Un article de mars
+//     qui arrive aujourd'hui n'est pas une nouveauté ; le compter comme tel
+//     ferait sonner les pastilles de « non lus » pour des centaines
+//     d'articles vieux de plusieurs mois ;
+//   - elle n'écrase jamais un article déjà affiché. Celui de la fenêtre est
+//     le plus à jour — il a pu gagner des sources ou une miniature depuis
+//     son archivage.
+async function loadArchive(){
+  if(archiveEnCours || archiveChargee) return;
+  archiveEnCours = true;
+  const el = document.getElementById("archiveLine");
+  if(el) el.innerHTML = "<span>Chargement de l'archive…</span>";
+  addLog("info", "Chargement de l'archive mensuelle…");
+
+  const connus = new Set(lastItems.map(i => i.link));
+  const ajoutes = [];
+  let echecs = 0;
+  try{
+    for(const mois of (archiveIndex.mois || [])){
+      for(const f of (mois.fichiers || [])){
+        const url = archiveUrlFrom(settings.backendUrl, f.fichier);
+        if(!url) continue;
+        try{
+          const rep = await fetchAvecDelai(avecAntiCache(url), BACKEND_TIMEOUT_MS);
+          if(!rep.ok){ echecs++; continue; }
+          const data = await rep.json();
+          for(const item of (data.items || [])){
+            if(!item.link || connus.has(item.link)) continue;
+            connus.add(item.link);
+            ajoutes.push({
+              title: item.title,
+              link: item.link,
+              date: item.date,
+              source: item.source,
+              official: !!item.official,
+              rockstarmag: !!item.rockstarmag,
+              specialist: !!item.specialist,
+              lang: item.lang || null,
+              image: item.image || null,
+              description: item.description || "",
+              extraSources: item.extraSources || null,
+              favicon: faviconFor(item.link)
+            });
+          }
+        }catch(e){ echecs++; }
+      }
+    }
+
+    // Un mois manquant n'annule pas les autres : mieux vaut une archive
+    // incomplète, et le dire, que pas d'archive du tout.
+    if(!ajoutes.length && echecs){
+      throw new Error(`${echecs} fichier(s) d'archive illisible(s)`);
+    }
+
+    lastItems = lastItems.concat(ajoutes);
+    lastItems.sort(byDateDesc);
+    saveLastItems();
+    archiveChargee = true;
+    addLog("ok", `Archive chargée — ${ajoutes.length} article(s) de plus` +
+      (echecs ? `, ${echecs} fichier(s) illisible(s)` : "") + ".");
+    if(el) el.style.display = "none";
+  }catch(e){
+    addLog("fail", `Archive indisponible : ${escapeHtml(e.message || "erreur inconnue")}`);
+    if(el) el.innerHTML = `<span>Archive indisponible.</span>` +
+      `<button class="small" onclick="loadArchive()">Réessayer</button>`;
+  }finally{
+    archiveEnCours = false;
     applyFilters();
   }
 }

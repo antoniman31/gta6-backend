@@ -4640,8 +4640,31 @@ def test_variantes_du_nom_dans_les_requetes_google_news():
     #
     # La règle est donc : TOUTE source dont l'URL porte un paramètre de
     # recherche couvre les six écritures, quel que soit le service.
+    #
+    # UNE exception, et de la même nature que rockstar-en / rockstar-fr plus
+    # haut : quand la PORTÉE de la recherche garantit déjà le sujet, ajouter
+    # les écritures ne l'élargit pas, ça la rétrécit.
+    #
+    # reddit-gta6-suivi cherche `update OR patch OR DLC OR online` À
+    # L'INTÉRIEUR de r/GTA6. Sur ce subreddit, nommer le jeu va de soi et
+    # beaucoup de fils ne le font pas ; exiger une des six écritures en plus
+    # ne garderait que les fils qui le nomment explicitement — soit
+    # exactement l'inverse du but, qui est d'attraper l'angle correctifs /
+    # DLC / GTA Online que le reste de la liste ne couvre pas.
+    #
+    # L'exception n'est pas accordée sur parole : le test VÉRIFIE que la
+    # portée est bien ce qui la justifie. Si un jour cette source cessait
+    # d'être restreinte à son subreddit, elle retomberait sous la règle
+    # commune au lieu de garder une dérogation devenue fausse.
+    PORTEE_VAUT_FILTRE = {"reddit-gta6-suivi"}
+
     for feed in fetch_feeds.FEEDS:
         if "news.google.com" in feed["url"] or "q=" not in feed["url"]:
+            continue
+        if feed["id"] in PORTEE_VAUT_FILTRE:
+            check("/r/GTA6/" in feed["url"] and "restrict_sr=on" in feed["url"],
+                  "%s : la portée (r/GTA6, restrict_sr) tient lieu de filtre de jeu"
+                  % feed["id"])
             continue
         requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
         manquantes = [v for v in SIX if '"%s"' % v not in requete]
@@ -5678,6 +5701,171 @@ def _pixels_png(chemin):
     return largeur, hauteur, bpp, lignes
 
 
+
+def test_archive_mensuelle():
+    print("\n[archive] ce qui sort de la fenêtre ne sort pas du projet")
+    import feed_store, json, os, shutil, tempfile
+    from datetime import datetime, timedelta, timezone
+
+    rep = tempfile.mkdtemp(prefix="archive-")
+    try:
+        base = datetime(2026, 11, 19, 12, tzinfo=timezone.utc)
+
+        def art(n, quand=None, titre=None):
+            return {"link": "https://x.test/%d" % n,
+                    "title": titre or "titre %d" % n,
+                    "date": (quand or base - timedelta(minutes=n)).isoformat()}
+
+        # Trois mois, pour vérifier que le rangement suit la DATE de
+        # l'article et pas l'ordre dans lequel on les donne.
+        melange = [art(1), art(2, base - timedelta(days=40)),
+                   art(3), art(4, base - timedelta(days=80))]
+        feed_store.archiver(melange, rep)
+        check(sorted(n for n in os.listdir(rep)) == ["2026-08.json", "2026-10.json",
+                                                     "2026-11.json"],
+              "un fichier par mois, nommé d'après la date des articles")
+        check(len(feed_store.lire_mois("2026-11", rep)) == 2,
+              "et chaque article tombe dans le bon (2 en novembre)")
+
+        # LE point de toute l'affaire : la fenêtre élague, l'archive garde.
+        # Sans cette vérification, tout le reste ne serait que du rangement.
+        fenetre = [art(1)]
+        feed_store.archiver(fenetre, rep)
+        garde = {i["link"] for i in feed_store.lire_mois("2026-11", rep)}
+        check("https://x.test/3" in garde,
+              "un article disparu de la fenêtre reste dans son mois")
+
+        # Idempotence : rejouer le même passage ne doit produire AUCUNE
+        # écriture. Sinon le robot signerait vingt-quatre commits par jour
+        # sur des fichiers dont pas un octet n'a bougé.
+        feed_store.archiver(melange, rep)
+        check(feed_store.archiver(melange, rep) == {},
+              "rejouer un passage identique ne réécrit rien")
+
+        # Un article mis à jour (source supplémentaire, miniature trouvée)
+        # DOIT être réécrit : c'est la version de la fenêtre qui fait foi.
+        enrichi = dict(art(1))
+        enrichi["extraSources"] = [{"source": "ailleurs"}]
+        check(feed_store.archiver([enrichi], rep) != {},
+              "un article enrichi depuis est bien réécrit")
+        relu = {i["link"]: i for i in feed_store.lire_mois("2026-11", rep)}
+        check(relu["https://x.test/1"].get("extraSources"),
+              "et c'est la version enrichie qui est gardée")
+
+        # Le mois de la sortie. 2500 est un plafond par FICHIER, pas par
+        # mois : au-delà le mois est tranché, sinon novembre 2026 ferait un
+        # seul fichier de plusieurs dizaines de Mo.
+        gros = [art(n) for n in range(feed_store.ARCHIVE_MAX_PAR_FICHIER * 2 + 7)]
+        feed_store.archiver(gros, rep)
+        tranches = feed_store.tranches_du_mois("2026-11", rep)
+        check(len(tranches) == 3,
+              "un mois de sortie est coupé en tranches (%d ici)" % len(tranches))
+        check(os.path.basename(tranches[0]) == "2026-11.json",
+              "la première tranche garde le nom nu, celui qu'on tape à la main")
+        check(len(feed_store.lire_mois("2026-11", rep)) == len(gros),
+              "et la relecture les recolle sans en perdre un (%d)" % len(gros))
+
+        # Un mois qui rétrécit ne doit pas laisser de tranche orpheline : le
+        # site la servirait encore alors que l'index ne la cite plus.
+        for nom in os.listdir(rep):
+            os.remove(os.path.join(rep, nom))
+        feed_store.archiver(gros, rep)
+        feed_store.archiver([art(1)], rep)
+        # rejouer depuis un sous-ensemble ne rétrécit RIEN (c'est voulu),
+        # donc on force le cas en repartant d'un répertoire propre.
+        petit = tempfile.mkdtemp(prefix="archive-petit-")
+        try:
+            feed_store.archiver(gros, petit)
+            avant = len(feed_store.tranches_du_mois("2026-11", petit))
+            for nom in os.listdir(petit):
+                os.remove(os.path.join(petit, nom))
+            feed_store.archiver([art(1)], petit)
+            check(avant == 3 and len(feed_store.tranches_du_mois("2026-11", petit)) == 1,
+                  "un mois qui rétrécit ne laisse pas de tranche orpheline")
+        finally:
+            shutil.rmtree(petit, ignore_errors=True)
+
+        # L'index : c'est le seul fichier que l'app lit pour savoir quoi
+        # demander. Il porte le POIDS autant que le nombre, sans quoi l'app
+        # ne peut pas prévenir avant un téléchargement de plusieurs Mo.
+        index = feed_store.ecrire_index_archives(rep)
+        check(os.path.exists(os.path.join(rep, "index.json")),
+              "l'index est écrit dans le répertoire des archives")
+        check([e["mois"] for e in index["mois"]] ==
+              sorted([e["mois"] for e in index["mois"]], reverse=True),
+              "les mois y sont du plus récent au plus ancien")
+        nov = next(e for e in index["mois"] if e["mois"] == "2026-11")
+        check(nov["articles"] == len(gros),
+              "l'index annonce le vrai nombre d'articles du mois")
+        check(all(f["octets"] > 0 for f in nov["fichiers"]),
+              "et le poids de chaque tranche, pour prévenir avant de télécharger")
+        check(index["articles"] == sum(e["articles"] for e in index["mois"]),
+              "le total de l'index est la somme de ses mois")
+        check("index.json" not in [f["fichier"] for e in index["mois"]
+                                   for f in e["fichiers"]],
+              "l'index ne se liste pas lui-même comme un mois")
+
+        # Un article sans lien n'est pas archivable : il n'a pas d'identité,
+        # donc la fusion par lien le dupliquerait à chaque passage.
+        avant = len(feed_store.lire_mois("2026-11", rep))
+        feed_store.archiver([{"title": "sans lien", "date": base.isoformat()}], rep)
+        check(len(feed_store.lire_mois("2026-11", rep)) == avant,
+              "un article sans lien est ignoré plutôt que dupliqué sans fin")
+
+        # Une tranche illisible ne doit pas emporter le mois entier.
+        with open(os.path.join(rep, "2026-11.2.json"), "w", encoding="utf-8") as f:
+            f.write("{ceci n'est pas du JSON")
+        check(len(feed_store.lire_mois("2026-11", rep)) > 0,
+              "une tranche corrompue ne fait pas disparaître tout le mois")
+    finally:
+        shutil.rmtree(rep, ignore_errors=True)
+
+
+
+def test_ce_que_le_robot_publie_est_bien_commite():
+    print("\n[workflow] tout ce que le robot écrit est commité, et ignoré par la CI")
+    import re
+
+    # Deux oublis du même genre ont déjà eu lieu : feed-recent.json absent du
+    # paths-ignore (réparé le 16/09), et docs/archives/ qui aurait été écrit
+    # à chaque passage puis jeté avec le runner, sans la moindre erreur.
+    #
+    # Le point commun : `git add` prend des CHEMINS, pas « ce qui a changé ».
+    # Ajouter un fichier publié sans toucher au workflow ne casse rien, ne
+    # fait rien, et ne dit rien. Ce test est le seul endroit où ça se voit.
+    PUBLIES = ["docs/feed.json", "docs/feed-recent.json", "docs/archives"]
+
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    adds = re.findall(r"git add ([^\n]+)", wf)
+    check(len(adds) >= 2,
+          "le workflow du robot a bien ses deux `git add` (%d trouvés)" % len(adds))
+    # enumerate, et pas adds.index(ligne) : les deux lignes sont le MÊME
+    # texte, donc index() rendrait 0 pour les deux et le second bloc
+    # s'annoncerait sous le nom du premier. Un test qui ment sur ce qu'il
+    # vérifie est pire qu'un test absent.
+    for rang, ligne in enumerate(adds):
+        ou = "publication" if rang == 0 else "après fusion"
+        for chemin in PUBLIES:
+            check(chemin in ligne,
+                  "`git add` (%s) : %s est commité" % (ou, chemin))
+
+    # Et l'autre moitié : ce que le robot pousse doit être ignoré par la CI,
+    # SINON le filtre entier devient inopérant — GitHub ne saute un push que
+    # si TOUS les chemins modifiés y figurent.
+    checks = open(".github/workflows/checks.yml", encoding="utf-8").read()
+    bloc = checks.split("paths-ignore:")[1].split("permissions:")[0]
+    for chemin in PUBLIES:
+        check(chemin in bloc,
+              "paths-ignore couvre %s, sinon le filtre entier ne sert à rien"
+              % chemin)
+
+    # merge_feed.py réécrit l'archive après un conflit de push, parce que le
+    # `git reset --hard` du workflow vient d'effacer celle du passage.
+    mf = open("merge_feed.py", encoding="utf-8").read()
+    check("archiver(" in mf and "ecrire_index_archives(" in mf,
+          "merge_feed réarchive après fusion, le reset --hard ayant tout effacé")
+
+
 def test_icones_de_lapp():
     print("\n[pwa] les icônes déclarées existent et tiennent dans la zone sûre")
     import json, math, struct
@@ -5938,25 +6126,36 @@ def test_plafond_suit_le_volume():
         dates = [feed_store.parse_date_key(i["date"]) for i in gardes]
         return (dates[0] - dates[-1]).days
 
-    # Régime ordinaire : sous le plancher, donc le plancher s'applique — et
-    # la profondeur obtenue DÉPASSE la cible. C'est voulu : on ne jette pas
-    # ce qu'on a de la place à garder.
-    calme = fil(74)
-    vise = feed_store.taille_historique_visee(calme, maintenant)
+    # Les trois régimes, parce que le calcul a trois branches et qu'un test
+    # qui n'en visite qu'une laisse les deux autres libres de casser. Les
+    # débits sont choisis pour encadrer les bornes à la profondeur du jour :
+    # ils sont RECALCULÉS à partir de MAX_HISTORY_DAYS, pour que le test
+    # continue de dire la vérité si la profondeur rebouge.
+    j = feed_store.MAX_HISTORY_DAYS
+
+    # 1. Semaine creuse : la fenêtre voudrait moins que le plancher, donc le
+    # plancher s'applique — et la profondeur obtenue DÉPASSE la cible. C'est
+    # voulu : on ne jette pas ce qu'on a de la place à garder.
+    maigre = max(1, (feed_store.MIN_HISTORY_SIZE // j) - 10)
+    vise = feed_store.taille_historique_visee(fil(maigre), maintenant)
     check(vise == feed_store.MIN_HISTORY_SIZE,
-          "régime calme (74/jour) : le plancher de %d s'applique" % feed_store.MIN_HISTORY_SIZE)
+          "semaine creuse (%d/jour) : le plancher de %d s'applique"
+          % (maigre, feed_store.MIN_HISTORY_SIZE))
 
-    # Régime chargé : la fenêtre commande, entre les deux bornes.
-    charge = fil(249)
+    # 2. Régime ordinaire : la fenêtre commande, entre les deux bornes. C'est
+    # la seule branche où la profondeur gardée vaut vraiment celle qu'on vise.
+    ordinaire = (feed_store.MIN_HISTORY_SIZE + feed_store.MAX_HISTORY_SIZE) // (2 * j)
+    charge = fil(ordinaire)
     vise = feed_store.taille_historique_visee(charge, maintenant)
-    attendu = 249 * feed_store.MAX_HISTORY_DAYS
+    attendu = ordinaire * j
     check(feed_store.MIN_HISTORY_SIZE < vise < feed_store.MAX_HISTORY_SIZE,
-          "régime chargé (249/jour) : la fenêtre commande (%d articles)" % vise)
-    check(abs(vise - attendu) <= 249,
+          "régime ordinaire (%d/jour) : la fenêtre commande (%d articles)"
+          % (ordinaire, vise))
+    check(abs(vise - attendu) <= ordinaire,
           "et elle vise bien %d jours (%d visés pour ~%d attendus)"
-          % (feed_store.MAX_HISTORY_DAYS, vise, attendu))
+          % (j, vise, attendu))
 
-    # Jour de sortie : le plafond dur protège le fichier. C'est LE cas qui
+    # 3. Jour de sortie : le plafond dur protège le fichier. C'est LE cas qui
     # justifie la borne haute — quinze jours à ce rythme feraient 15 000
     # articles et une douzaine de Mo, soit le problème qu'on vient de régler.
     sortie = fil(1000)
@@ -6345,6 +6544,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plancher_refuse_ce_qui_serait_elague,
            test_lecteurs_de_liaison_mutualises,
            test_epoque_unix_nest_pas_une_date,
+           test_archive_mensuelle,
+           test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
     fn()
