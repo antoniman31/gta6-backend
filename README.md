@@ -513,11 +513,13 @@ Les deux tournent en CI (`.github/workflows/checks.yml`) sur chaque pull
 request et sur `main`. Les commits du robot ne les déclenchent pas — non pas
 grâce au `paths-ignore`, mais parce que GitHub ne déclenche aucun workflow
 sur un push signé par le `GITHUB_TOKEN` d'un workflow. Vérifié : 65 commits
-du robot le 28/08, zéro exécution de contrôle. Le `paths-ignore` sur
-`docs/feed.json` est une ceinture en plus de ces bretelles — et il est
-d'ailleurs incomplet, puisqu'il ne mentionne pas `docs/feed-recent.json`,
-écrit par le même commit. Sans conséquence aujourd'hui, mais à corriger si
-le robot venait à pousser avec un autre jeton.
+du robot le 28/08, zéro exécution de contrôle. Le `paths-ignore` est une
+ceinture en plus de ces bretelles, et il liste bien les **deux** fichiers que
+le robot pousse (`docs/feed.json` et `docs/feed-recent.json`) : GitHub ne
+saute un push que si TOUS les chemins modifiés y figurent, si bien que n'en
+lister qu'un rendait le filtre inopérant. C'était le cas jusqu'au 16/09. Ce
+paragraphe a lui-même décrit le trou pendant six jours après sa réparation —
+un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
