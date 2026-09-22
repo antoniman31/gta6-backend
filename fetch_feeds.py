@@ -2850,6 +2850,50 @@ def main():
             print("  sources concernées : "
                   + ", ".join(f"{fid} ({e:+d})" for fid, e in sorted(ecarts.items())))
 
+    # Tri sur la date RÉELLE (datetime), jamais sur la chaîne : des formats
+    # mélangés donnent un ordre faux en comparaison de texte.
+    all_items = feed_store.sort_items(all_items)
+
+    # Plafonne la taille de l'historique : au-delà de MAX_HISTORY_SIZE, on
+    # retire les articles les plus anciens plutôt que de laisser le fichier
+    # (et le temps de dédup) grossir indéfiniment. Les articles protégés
+    # sont épargnés, voir cap_items.
+    #
+    # La taille d'arrivée est lue sur la liste, pas recopiée depuis
+    # MAX_HISTORY_SIZE : dans le cas limite où les protégés empêchent de
+    # descendre jusqu'au plafond, annoncer le plafond serait un mensonge.
+    #
+    # ORDRE IMPORTANT — le plafond passe AVANT tout ce qui exploite
+    # `newly_added` (miniatures, actus majeures, comptes publiés,
+    # notifications). Il était placé après, et ça se voyait : le plafond
+    # ramené à 1500 le 18/09/2026 couvre environ dix-sept jours, alors que
+    # MAX_ARTICLE_AGE_DAYS en accepte quarante-cinq à l'entrée. Chaque
+    # passage réabsorbait donc les articles de 17 à 45 jours que les flux
+    # resservent — absents de l'historique élagué, ils passaient pour neufs
+    # — puis le plafond les rejetait aussitôt. Deux articles entraient
+    # vraiment, Discord en annonçait 270, et 45 secondes partaient à
+    # télécharger les miniatures d'articles déjà condamnés.
+    avant = len(all_items)
+    all_items, dropped = feed_store.cap_items(all_items)
+    if dropped:
+        print(f"Historique plafonné : {avant} -> {len(all_items)} "
+              f"({dropped} articles retirés, les plus anciens hors protégés)")
+
+    # Un article qui ne survit pas au passage n'est pas une nouveauté : il
+    # ne doit être ni annoncé, ni compté, ni coûter une miniature.
+    survivants = {i.get("link") for i in all_items}
+    ephemeres = [i for i in newly_added if i.get("link") not in survivants]
+    if ephemeres:
+        newly_added[:] = [i for i in newly_added if i.get("link") in survivants]
+        # Les compteurs par source publiés dans feed.json doivent suivre,
+        # sinon la somme des « nouveaux » par source contredirait le total.
+        for item in ephemeres:
+            fid = FEEDS_PAR_NOM.get(item.get("source"))
+            if fid and new_counts.get(fid):
+                new_counts[fid] -= 1
+        print(f"{len(ephemeres)} article(s) entré(s) puis élagué(s) dans le même "
+              f"passage — ni annoncés ni comptés (trop anciens pour le plafond)")
+
     chaudes = [i for i in all_items if is_hot(i)]
     chaudes_neuves = [i for i in newly_added if is_hot(i)]
     if chaudes_neuves:
@@ -2866,24 +2910,6 @@ def main():
     # Les miniatures ne sont cherchées qu'ici, sur les seuls articles
     # réellement retenus — et non plus sur tout ce que chaque flux renvoie.
     fetch_missing_images(newly_added)
-
-    # Tri sur la date RÉELLE (datetime), jamais sur la chaîne : des formats
-    # mélangés donnent un ordre faux en comparaison de texte.
-    all_items = feed_store.sort_items(all_items)
-
-    # Plafonne la taille de l'historique : au-delà de MAX_HISTORY_SIZE, on
-    # retire les articles les plus anciens plutôt que de laisser le fichier
-    # (et le temps de dédup) grossir indéfiniment. Les publications de
-    # Rockstar sont épargnées, voir cap_items.
-    #
-    # La taille d'arrivée est lue sur la liste, pas recopiée depuis
-    # MAX_HISTORY_SIZE : dans le cas limite où les officiels empêchent de
-    # descendre jusqu'au plafond, annoncer le plafond serait un mensonge.
-    avant = len(all_items)
-    all_items, dropped = feed_store.cap_items(all_items)
-    if dropped:
-        print(f"Historique plafonné : {avant} -> {len(all_items)} "
-              f"({dropped} articles retirés, les plus anciens hors Rockstar)")
 
     # État des sources, puis cumul des passages muets. L'état seul ne dit
     # que « muette maintenant » ; c'est le cumul qui distingue une panne

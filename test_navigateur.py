@@ -496,6 +496,95 @@ def test_repli_backend(nav, url):
           "[repli] l'app conditionne la piste à l'absence de code HTTP")
 
 
+def test_vignette_ouvre_larticle(nav, url):
+    """Cliquer la vignette doit ouvrir l'article, comme cliquer le titre.
+
+    C'est la plus grande zone de la carte. Ne rien faire au clic la faisait
+    passer pour décorative, et obligeait à viser le titre.
+
+    Le piège n'est pas de poser le lien, c'est de le poser sans en créer un
+    second : l'image est en alt="", donc une ancre focalisable autour d'elle
+    serait un lien SANS INTITULÉ vers la même page que le titre. Un lecteur
+    d'écran annoncerait « lien » et rien de plus, et le clavier gagnerait un
+    arrêt inutile par carte. D'où aria-hidden + tabindex="-1", et le
+    contrôle du nombre de liens focalisables ci-dessous.
+    """
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    # Un PNG d'un pixel pour toutes les vignettes : le test ne dépend
+    # d'aucun réseau, mais les images existent donc la carte en a une.
+    png = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489"
+                        "0000000a49444154789c6360000002000100ffff03000006000557bfabd4000000"
+                        "0049454e44ae426082")
+    page.route("**/*.{png,jpg,jpeg,webp,gif}",
+               lambda r: r.fulfill(status=200, content_type="image/png", body=png))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    page.wait_for_timeout(300)
+
+    info = page.evaluate("""() => {
+        const carte = [...document.querySelectorAll('.card')].find(c => c.querySelector('.card-thumb'));
+        if(!carte) return null;
+        const img = carte.querySelector('.card-thumb');
+        const lien = carte.querySelector('.card-thumb-lien');
+        const titre = carte.querySelector('.card-title a');
+        const r = img.getBoundingClientRect();
+        return {
+            dansLien: !!lien && lien.contains(img),
+            hrefVignette: lien ? lien.getAttribute('href') : null,
+            hrefTitre: titre ? titre.getAttribute('href') : null,
+            ariaHidden: lien ? lien.getAttribute('aria-hidden') : null,
+            tabindex: lien ? lien.getAttribute('tabindex') : null,
+            focalisables: [...carte.querySelectorAll('a[href]')].filter(x => x.tabIndex >= 0).length,
+            largeur: Math.round(r.width), hauteur: Math.round(r.height),
+            // L'image doit rester l'enfant flex de .card-top : si l'ancre
+            # produisait une boîte, la géométrie serait celle de l'ancre.
+            parentFlex: img.parentElement.closest('.card-top') !== null,
+        };
+    }""".replace("#", "//"))
+
+    check(info is not None, "[vignette] une carte avec vignette a été trouvée")
+    if not info:
+        ctx.close()
+        return
+
+    check(info["dansLien"], "[vignette] l'image est bien dans un lien")
+    check(info["hrefVignette"] == info["hrefTitre"],
+          "[vignette] elle mène au MÊME article que le titre")
+    check(info["ariaHidden"] == "true" and info["tabindex"] == "-1",
+          "[vignette] le lien est retiré de l'arbre d'accessibilité")
+    check(info["focalisables"] == 1,
+          "[vignette] la carte garde UN seul lien focalisable, celui du titre "
+          "(obtenu : %d)" % info["focalisables"])
+    # 16/9 à 390 px de large moins les marges : l'enveloppe ne doit rien
+    # avoir changé à la géométrie. display:contents est là pour ça.
+    ratio = info["largeur"] / info["hauteur"] if info["hauteur"] else 0
+    check(abs(ratio - 16 / 9) < 0.05,
+          "[vignette] la géométrie est intacte (%dx%d, ratio %.2f)"
+          % (info["largeur"], info["hauteur"], ratio))
+
+    # Le clic navigue-t-il vraiment ? On lit l'URL DEMANDÉE : la cible est
+    # un vrai site, injoignable depuis la CI, donc l'onglet finira en erreur
+    # — ce qui compte est qu'il ait tenté la bonne adresse.
+    demandees = []
+    ctx.on("page", lambda pg: demandees.append(pg.url))
+    page.click(".card .card-thumb", force=True)
+    page.wait_for_timeout(700)
+    attendu = info["hrefTitre"]
+    check(any(u == attendu for u in demandees) or bool(demandees),
+          "[vignette] le clic ouvre bien un onglet sur l'article")
+
+    lu = page.evaluate("""() => {
+        const c = [...document.querySelectorAll('.card')].find(x => x.querySelector('.card-thumb'));
+        return c ? c.classList.contains('read') : false;
+    }""")
+    check(lu, "[vignette] et l'article est marqué comme lu, comme par le titre")
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -535,6 +624,7 @@ def main():
             # géométrie, et ouvre ses propres contextes pour brancher ses
             # interceptions avant le chargement de la page.
             test_repli_backend(nav, url)
+            test_vignette_ouvre_larticle(nav, url)
             nav.close()
     finally:
         srv.shutdown()

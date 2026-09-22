@@ -5826,6 +5826,75 @@ def test_lecture_backend_ne_gonfle_pas_sur_une_coupure():
           "le fichier allégé est retenté exactement une fois")
 
 
+
+def test_un_article_elague_nest_pas_annonce():
+    print("\n[feed] un article qui ne survit pas au passage n'est pas une nouveauté")
+    import re, feed_store
+
+    # La régression, trouvée le 22/09/2026 sur une capture Discord : une
+    # notification par heure annonçant « 301 nouveaux articles GTA 6 »,
+    # « 298 », « 296 »… pour un rythme réel de 74 par JOUR. Et 1887 au
+    # récapitulatif du matin.
+    #
+    # Cause : le plafond ramené à 1500 le 18/09 couvre environ dix-sept
+    # jours, alors que MAX_ARTICLE_AGE_DAYS en accepte quarante-cinq à
+    # l'entrée. Chaque passage réabsorbait les articles de 17 à 45 jours que
+    # les flux resservent — absents de l'historique élagué, donc pris pour
+    # neufs — puis cap_items les rejetait aussitôt. Mesuré sur deux passages
+    # consécutifs : 2 articles réellement entrés, 293 annoncés.
+    #
+    # Le fichier n'a jamais été faux : c'est le COMPTE qui l'était, parce
+    # qu'il était arrêté avant le plafond.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    corps = src[src.index("def fetch_and_update"):] if "def fetch_and_update" in src else src
+
+    pos_cap = corps.index("all_items, dropped = feed_store.cap_items(all_items)")
+    pos_reconcile = corps.index("ephemeres = [i for i in newly_added")
+    pos_images = corps.index("fetch_missing_images(newly_added)")
+    pos_chaudes = corps.index("chaudes_neuves = [i for i in newly_added")
+    pos_publie = corps.index('"new_this_run": len(newly_added)')
+
+    check(pos_cap < pos_reconcile,
+          "le plafond passe avant la réconciliation des nouveautés")
+    for nom, pos in (("les miniatures ne voient", pos_images),
+                     ("les actus majeures ne voient", pos_chaudes),
+                     ("le compte publié ne voit", pos_publie)):
+        check(pos_reconcile < pos,
+              "%s que les articles qui ont survécu" % nom)
+
+    # La réconciliation elle-même, rejouée : un article trop vieux entre,
+    # le plafond le retire, il ne doit ni être annoncé ni compté.
+    def art(lien, jour, **kw):
+        i = {"link": lien, "title": lien, "source": "Test",
+             "date": "2026-%02d-%02dT00:00:00+00:00" % (1 + jour // 28, 1 + jour % 28)}
+        i.update(kw)
+        return i
+
+    recents = [art("recent-%d" % n, 20 + n % 8) for n in range(4)]
+    vieux = art("vieux-resservi", 0)
+    protege = art("officiel-vieux", 0, official=True)
+    all_items = feed_store.sort_items(recents + [vieux, protege])
+    newly_added = [vieux, protege, recents[0]]
+
+    all_items, _ = feed_store.cap_items(all_items, max_size=5)
+    survivants = {i["link"] for i in all_items}
+    restants = [i for i in newly_added if i["link"] in survivants]
+
+    check("vieux-resservi" not in survivants,
+          "l'article trop ancien est bien élagué")
+    check([i["link"] for i in restants] == ["officiel-vieux", "recent-%d" % 0],
+          "il disparaît des nouveautés ; l'officiel vieux et le récent restent")
+
+    # L'invariant qui résume tout : on n'annonce jamais ce qu'on n'a pas gardé.
+    check(all(i["link"] in survivants for i in restants),
+          "aucune nouveauté annoncée n'est absente du fil publié")
+
+    # Et le compteur par source doit suivre, sinon la somme par source
+    # contredirait le total affiché dans l'app.
+    check("new_counts[fid] -= 1" in corps,
+          "les compteurs par source sont décrémentés eux aussi")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -5927,6 +5996,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_badge_de_notification_a_un_canal_alpha,
            test_lecture_backend_ne_gonfle_pas_sur_une_coupure,
            test_elagage_declare_au_garde_fou,
+           test_un_article_elague_nest_pas_annonce,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
     fn()
