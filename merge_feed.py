@@ -122,6 +122,16 @@ def main():
     # pourrait être publié.
     feed_store.valide_avant_ecriture(merged, remote)
 
+    # L'archive est réécrite ici aussi, et ce n'est pas du zèle : le
+    # workflow fait `git reset --hard origin/main` avant d'appeler cette
+    # fusion, ce qui efface les fichiers d'archive que le passage venait
+    # d'écrire. Sans cette ligne, tout passage ayant subi un conflit de
+    # push n'archiverait rien. L'archivage étant cumulatif et idempotent,
+    # le passage suivant réparerait — mais seulement pour les articles
+    # encore en fenêtre, et un conflit tombe justement les jours chargés.
+    feed_store.archiver(merged.get("items") or [])
+    feed_store.ecrire_index_archives()
+
     feed_store.write_feed_pair(merged, out_path)
 
     print(f"[merge] local {len(ours.get('items', []))} article(s) + distant "

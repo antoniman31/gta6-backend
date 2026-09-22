@@ -437,6 +437,74 @@ FEEDS = [
     {"id": "destructoid", "name": "Destructoid", "url": "https://www.destructoid.com/feed/", "official": False},
     {"id": "dexerto", "name": "Dexerto", "url": "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
     {"id": "mgg", "name": "MGG (Millenium)", "url": "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
+
+    # ------------------------------------------------------------------
+    # Sondées le 22/09/2026, en cherchant à réduire la dépendance à Google
+    # News : 22 des 60 sources passent par news.google.com, et une panne
+    # de ce seul domaine en éteindrait un tiers d'un coup.
+    #
+    # La recherche a surtout CONFIRMÉ les choix déjà en place. Les flux
+    # natifs de The Verge, Engadget, Numerama et Push Square répondent tous
+    # 200 et ne retiennent RIEN — ce sont des flux généralistes courts (10 à
+    # 25 entrées) où GTA 6 ne passe presque jamais. TrueAchievements répond
+    # 403, millenium.org/rss.xml répond 404 : ni l'un ni l'autre n'a de flux
+    # natif, exactement comme la sonde du 15/09 le disait déjà. Aucune de
+    # ces six sources ne bascule.
+    #
+    # Deux seulement méritaient d'être ajoutées, et elles sont AJOUTÉES,
+    # pas substituées — même raison que pour les flux par tag plus haut :
+    # un flux maison peut cesser de couvrir un sujet sans que rien le
+    # signale, alors qu'une source qui disparaît de Google News, ça se voit.
+    #
+    #   xboxygen.com/spip.php?page=backend  301 -> /feed, 50 entrées, 3
+    #     retenues, la plus récente du jour — contre UN seul article
+    #     exclusif en quinze jours par la recherche Google News.
+    #   journaldugeek.com/feed/  30 entrées, 1 retenue du jour. Les deux
+    #     accès existants à ce média ne rapportent rien : la recherche
+    #     Google News n'a rien sorti depuis 22 jours, et le flux par tag
+    #     « gta-6 » revient vide — c'est précisément le défaut de balisage
+    #     annoncé plus haut, pris sur le fait.
+    # ------------------------------------------------------------------
+    {"id": "xboxygen-natif", "name": "Xboxygen (flux natif)", "url": "https://www.xboxygen.com/feed", "official": False, "lang": "fr"},
+    {"id": "jdg-site", "name": "Journal du Geek (flux natif)", "url": "https://www.journaldugeek.com/feed/", "official": False, "lang": "fr"},
+
+    # ------------------------------------------------------------------
+    # Sondée le 22/09/2026, en préparation de l'APRÈS-SORTIE. Toute la
+    # liste ci-dessus a été choisie pour couvrir une attente ; une veille
+    # de correctifs, de DLC et de GTA Online n'a pas les mêmes bons flux,
+    # et il vaut mieux s'en apercevoir maintenant qu'en décembre.
+    #
+    # Sept candidates sondées, une seule retenue, et c'est le résultat
+    # honnête plutôt qu'un score :
+    #
+    #   rockstargames.com/newswire.rss   HTTP 500, deux fois, sur les deux
+    #     formes d'adresse. Le Newswire N'A PAS de flux RSS natif — il
+    #     reste couvert par les deux recherches Google News officielles,
+    #     qui, elles, répondent.
+    #   support.rockstargames.com/rss    aucune réponse (délai dépassé).
+    #   gtaforums.com/discover/1.xml     403.
+    #   gtabase.com/feed/                404, comme au 15/09.
+    #   gtanet.com/feed/                 200 mais 0 retenue sur 10.
+    #   r/gtaonline (recherche GTA 6)    200, 2 retenues, la plus récente à
+    #     29 jours. Le sujet n'y existe pas encore ; à re-sonder après le
+    #     19/11, pas avant.
+    #   rockstarintel.com/feed/          9 retenues sur 10, du jour — mais
+    #     c'est DÉJÀ une source du fil. La sonde confirme qu'elle va bien,
+    #     elle n'ajoute rien.
+    #
+    # Celle qui reste vise précisément l'angle manquant : les mots
+    # « update », « patch », « DLC » et « online » plutôt que « GTA 6 »,
+    # qui va de soi sur ce subreddit. 25 entrées, 3 retenues, la plus
+    # récente à 4 jours — dont une sur « GTA 6 Online en 2027 ».
+    #
+    # Une réserve, dite plutôt que tue : c'est la DEUXIÈME source sur
+    # reddit.com, et une première sonde groupée s'est fait renvoyer un 429.
+    # PER_HOST_LIMIT et HOST_PAUSE espacent déjà les requêtes d'un même
+    # domaine, et un 429 laisse la source « muette » — jamais « cassée » —
+    # donc elle revient seule sans déclencher de fausse alerte. Le risque
+    # est un passage sans cette source de temps en temps, pas une panne.
+    # ------------------------------------------------------------------
+    {"id": "reddit-gta6-suivi", "name": "Reddit — mises à jour et DLC", "url": "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", "official": False},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.
@@ -3128,6 +3196,27 @@ def main():
     # `dropped` vient de cap_items : la purge est DÉCLARÉE au garde-fou,
     # sinon l'abaissement du plafond ferait échouer le passage qui l'applique.
     feed_store.valide_avant_ecriture(output, stored, elagues=dropped)
+
+    # L'archive AVANT le fichier publié, et APRÈS le garde-fou.
+    #
+    # Après le garde-fou, parce qu'un passage que le contrôle refuse ne doit
+    # pas laisser de trace : polluer l'archive avec un état jugé faux serait
+    # pire que de ne rien écrire, l'archive n'ayant pas de second contrôle
+    # derrière elle.
+    #
+    # Avant le fichier publié, parce que l'archive est ce qui GARDE. Si
+    # l'écriture s'interrompt entre les deux, mieux vaut une archive en
+    # avance d'un passage sur la fenêtre que l'inverse : dans un sens il n'y
+    # a rien à réparer, dans l'autre des articles élagués n'existeraient
+    # plus nulle part.
+    mois_ecrits = feed_store.archiver(all_items)
+    index_archives = feed_store.ecrire_index_archives()
+    if mois_ecrits:
+        detail = ", ".join(f"{m} ({n})" for m, n in sorted(mois_ecrits.items(),
+                                                           reverse=True))
+        print(f"Archive : {detail}")
+    print(f"Archive : {index_archives['articles']} article(s) conservé(s) "
+          f"sur {len(index_archives['mois'])} mois")
 
     nb_allege = feed_store.write_feed_pair(output)
     print(f"Fichier allégé écrit : {nb_allege} article(s) dans docs/feed-recent.json")
