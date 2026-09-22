@@ -5101,6 +5101,15 @@ function majLigneRun(data){
   // dit déjà QU'IL Y A un problème, la ligne du dessous dit LEQUEL. Replier
   // la seconde sous le premier n'enlève donc aucun signal.
   if(sante.length){
+    // Depuis le 22/09/2026, une source peut porter un troisième statut,
+    // « en_attente » : elle n'a pas été interrogée à ce passage parce que
+    // c'est le tour de l'autre (voir ROTATION_REDDIT côté robot). Elle n'est
+    // donc ni muette ni cassée, et elle compte ici comme répondante —
+    // volontairement. Le compteur dit « combien de sources ne posent pas de
+    // problème », et une source au repos n'en pose aucun : son dernier état
+    // connu était bon. La déduire ferait clignoter le compteur entre 62 et
+    // 63 toutes les heures, ce qui ressemblerait à une instabilité alors
+    // qu'il ne se passe rien.
     const repondent = sante.length - muettes - cassees.length;
     const compteur = repondent + "/" + sante.length + " sources";
     // UN SEUL push, par ternaire : le compteur est un morceau de la ligne,

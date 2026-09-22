@@ -3924,6 +3924,201 @@ def test_recap_du_matin_couvre_la_nuit():
 
 
 
+
+def test_rotation_reddit():
+    print("\n[reddit] on arrête de mentir sur le navigateur, et on se relaie")
+    import io, contextlib
+    import fetch_feeds
+    from datetime import datetime, timedelta, timezone
+
+    # ---- 1. Le User-Agent, par domaine ----
+    #
+    # Règle de Reddit, mot pour mot : « NEVER lie about your user-agent. This
+    # includes spoofing popular browsers […] We will ban liars with extreme
+    # prejudice. » Le robot envoyait un Chrome falsifié depuis une IP de
+    # runner GitHub, ce qui est le profil exact qu'ils étranglent.
+    honnete = fetch_feeds.USER_AGENT_REDDIT
+    check("Mozilla" not in honnete and "Chrome" not in honnete
+          and "Safari" not in honnete,
+          "l'agent Reddit ne se fait passer pour aucun navigateur : %r" % honnete)
+    check(honnete.count(":") >= 2,
+          "il suit la forme <plateforme>:<identifiant>:<version> que Reddit documente")
+    check("/u/" not in honnete,
+          "et il ne publie aucun pseudo dans un dépôt public (choix d'Antoni)")
+
+    for url in ("https://www.reddit.com/r/GTA6/search.rss?q=x",
+                "https://reddit.com/r/GTA6/new.rss",
+                "https://old.reddit.com/r/GTA6/.rss"):
+        check(fetch_feeds.agent_pour(url) == honnete,
+              "reddit reçoit l'agent honnête : %s" % url[:40])
+    for url in ("https://www.gamesradar.com/a", "https://news.google.com/rss",
+                "https://www.youtube.com/feeds/x", ""):
+        check(fetch_feeds.agent_pour(url) == fetch_feeds.USER_AGENT,
+              "les autres gardent l'agent d'avant : %r" % url[:40])
+
+    # Un domaine qui CONTIENT « reddit.com » sans en être ne doit pas hériter
+    # de l'agent Reddit — sinon n'importe qui obtiendrait qu'on s'annonce
+    # autrement en enregistrant reddit.com.exemple.test.
+    for piege in ("https://reddit.com.exemple.test/x",
+                  "https://notreddit.com/x", "https://fauxreddit.com/x"):
+        check(fetch_feeds.agent_pour(piege) == fetch_feeds.USER_AGENT,
+              "un sosie de domaine n'obtient pas l'agent Reddit : %s" % piege[:45])
+
+    # ---- 2. Ce qui part VRAIMENT sur le réseau ----
+    #
+    # Le contrôle qui compte. Cinq endroits envoient un User-Agent ; vérifier
+    # la fonction ne dit rien de ce que les appelants en font. On intercepte
+    # feedparser pour lire l'agent réellement passé.
+    vus = {}
+    vrai_parse = fetch_feeds.feedparser.parse
+
+    def faux_parse(url, agent=None, **kw):
+        vus[url] = agent
+        class Vide:
+            entries = []
+            status = 200
+            href = url
+            headers = {}
+            bozo = 0
+        return Vide()
+
+    fetch_feeds.feedparser.parse = faux_parse
+    try:
+        for url in ("https://www.reddit.com/r/GTA6/search.rss?q=x",
+                    "https://www.gamesradar.com/rss"):
+            with contextlib.redirect_stdout(io.StringIO()):
+                fetch_feeds.collect_feed_items(
+                    {"id": "t", "name": "T", "url": url, "official": False})
+    finally:
+        fetch_feeds.feedparser.parse = vrai_parse
+
+    check(vus.get("https://www.reddit.com/r/GTA6/search.rss?q=x") == honnete,
+          "la requête réellement émise vers Reddit porte l'agent honnête")
+    check(vus.get("https://www.gamesradar.com/rss") == fetch_feeds.USER_AGENT,
+          "et celle vers une autre source porte toujours l'ancien")
+
+    # ---- 3. Le tour de rôle ----
+    def a_minuit(h):
+        return datetime(2026, 9, 22, h, 0, tzinfo=timezone.utc)
+
+    feeds = [{"id": "autre", "name": "Autre"},
+             {"id": "reddit-leaks", "name": "Reddit — fuites"},
+             {"id": "reddit-gta6-suivi", "name": "Reddit — suivi"}]
+
+    tirages = []
+    for h in range(24):
+        pris, repos = fetch_feeds.feeds_a_interroger(feeds, a_minuit(h))
+        ids = [f["id"] for f in pris]
+        check("autre" in ids, "une source hors rotation part à tous les coups (h=%d)" % h)
+        check(len(repos) == 1, "exactement une source Reddit au repos (h=%d)" % h)
+        tirages.append(sorted(set(fetch_feeds.ROTATION_REDDIT) - repos)[0])
+
+    check(set(tirages) == set(fetch_feeds.ROTATION_REDDIT),
+          "sur 24 h, les deux sources Reddit passent")
+    check(tirages.count("reddit-leaks") == tirages.count("reddit-gta6-suivi") == 12,
+          "et à parts égales : %d / %d"
+          % (tirages.count("reddit-leaks"), tirages.count("reddit-gta6-suivi")))
+    check(all(a != b for a, b in zip(tirages, tirages[1:])),
+          "jamais deux heures de suite la même : chacune revient dans l'heure")
+    check(fetch_feeds.feeds_a_interroger(feeds, a_minuit(7))[1]
+          == fetch_feeds.feeds_a_interroger(feeds, a_minuit(7))[1],
+          "deux exécutions de la même heure font le même choix")
+
+    # Le garde-fou : retirer une des deux ne doit pas faire taire l'autre une
+    # heure sur deux. C'est le défaut qu'une rotation écrite naïvement
+    # produit, et il serait silencieux — la source survivante disparaîtrait
+    # sans qu'aucune alerte ne parte, puisque justement on n'alerte plus.
+    seule = [{"id": "autre", "name": "Autre"},
+             {"id": "reddit-leaks", "name": "Reddit — fuites"}]
+    for h in range(4):
+        pris, repos = fetch_feeds.feeds_a_interroger(seule, a_minuit(h))
+        check(repos == set() and len(pris) == 2,
+              "une seule source Reddit présente : aucune rotation (h=%d)" % h)
+
+    # ---- 4. Un repos n'est NI une panne NI un retour ----
+    repos_info = fetch_feeds.resultat_en_attente({"id": "x", "name": "Reddit — suivi"})[1]
+    check(repos_info.get("non_interrogee") is True,
+          "le résultat d'une source au repos est marqué comme tel")
+
+    au_repos = {"id": "reddit-gta6-suivi", "name": "Reddit — suivi",
+                "status": "en_attente"}
+    check(not fetch_feeds.ne_rapporte_rien(au_repos),
+          "« en attente » n'est pas comptée parmi les sources sans article")
+    check("en_attente" not in fetch_feeds.STATUTS_SANS_ARTICLE,
+          "et le statut est volontairement hors de STATUTS_SANS_ARTICLE")
+
+    # L'historique des volumes : surtout pas de zéro. Un zéro empilé un
+    # passage sur deux ferait voir la source « en forte baisse ».
+    serie = fetch_feeds.maj_historique_entrees(
+        {"reddit-gta6-suivi": {"raw_count": 0, "non_interrogee": True}},
+        {"reddit-gta6-suivi": "25,25,25"})
+    check(serie["reddit-gta6-suivi"] == "25,25,25",
+          "un repos n'empile aucun zéro dans l'historique : %s"
+          % serie["reddit-gta6-suivi"])
+    apres = fetch_feeds.maj_historique_entrees(
+        {"reddit-gta6-suivi": {"raw_count": 25}}, serie)
+    check(apres["reddit-gta6-suivi"] == "25,25,25,25",
+          "et le passage suivant empile normalement")
+
+    # ---- 5. LE contrôle : rejouer deux jours de rotation ----
+    #
+    # C'est ici que la rotation casse si elle casse. Une source qu'on
+    # n'interroge plus qu'une fois sur deux serait déclarée tombée au bout de
+    # DEAD_SOURCE_HOURS ; pire, ses tours de repos seraient comptés comme des
+    # réussites et annonceraient le RETOUR d'une source jamais rappelée. La
+    # fausse bonne nouvelle est celle qui coûte le plus cher : elle clôt le
+    # dossier.
+    def rejoue(jours, vivante=True):
+        """Deux passages par heure, comme en production."""
+        silence, toutes = {}, []
+        debut = datetime(2026, 9, 22, 0, 0, tzinfo=timezone.utc)
+        for pas in range(jours * 24 * 2):
+            quand = debut + timedelta(minutes=30 * pas)
+            _, repos = fetch_feeds.feeds_a_interroger(feeds, quand)
+            sante = []
+            for f in feeds:
+                if f["id"] in repos:
+                    sante.append(dict(f, status="en_attente"))
+                elif f["id"] == "reddit-gta6-suivi" and not vivante:
+                    sante.append(dict(f, status="muette"))
+                else:
+                    sante.append(dict(f, status="ok"))
+            silence, alertes = fetch_feeds.suivre_sources_muettes(
+                sante, silence, quand)
+            toutes.extend(alertes)
+        return toutes
+
+    calme = rejoue(2)
+    check(calme == [],
+          "deux jours de rotation sur des sources SAINES : aucune alerte (%s)"
+          % [a.get("type") for a in calme])
+
+    # Et la panne réelle reste détectée, malgré les tours de repos qui la
+    # traversent.
+    morte = rejoue(2, vivante=False)
+    tombees = [a for a in morte if a["type"] == "tombee"]
+    retours = [a for a in morte if a["type"] == "retour"]
+    check(len(tombees) == 1,
+          "une source vraiment muette est signalée une fois, malgré la rotation "
+          "(%d alerte(s))" % len(tombees))
+    check(tombees and tombees[0]["heures"] >= fetch_feeds.DEAD_SOURCE_HOURS,
+          "et pas avant DEAD_SOURCE_HOURS : %s h"
+          % (tombees[0]["heures"] if tombees else "—"))
+    check(retours == [],
+          "et AUCUN faux retour : un tour de repos n'est pas une réussite (%d)"
+          % len(retours))
+
+    # Le chronomètre d'une source au repos est reconduit à l'identique.
+    t0 = datetime(2026, 9, 22, 12, 0, tzinfo=timezone.utc)
+    avant = {"reddit-gta6-suivi": {"depuis": t0.isoformat(), "succes": 1,
+                                   "alertee": False}}
+    apres_repos, _ = fetch_feeds.suivre_sources_muettes(
+        [{"id": "reddit-gta6-suivi", "name": "R", "status": "en_attente"}],
+        avant, t0 + timedelta(hours=1))
+    check(apres_repos["reddit-gta6-suivi"] == avant["reddit-gta6-suivi"],
+          "le chronomètre d'une source au repos ne bouge pas d'un iota : %s"
+          % apres_repos["reddit-gta6-suivi"])
+
 def test_recap_discord_detaille():
     print("\n[notif] le récapitulatif Discord montre les derniers articles")
     import io, json as _json, contextlib, tempfile, os as _os, shutil as _shutil
@@ -7151,6 +7346,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_echelle_m3_verrouillee,
            test_panneaux_sont_de_vrais_dialogues,
            test_recap_du_matin_couvre_la_nuit,
+           test_rotation_reddit,
            test_recap_discord_detaille,
            test_alerte_officielle_rockstar,
            test_pause_nocturne,
