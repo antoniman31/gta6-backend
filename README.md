@@ -2001,14 +2001,36 @@ maintenant AVANT tout ce qui exploite `newly_added`, et les articles entrés
 puis élagués dans le même passage sont retirés des nouveautés — et des
 compteurs par source, sinon la somme par source contredirait le total.
 
-Ce qui se répare du même coup : **45 secondes par passage**. `fetch_missing_images`
-téléchargeait les miniatures des 270 articles déjà condamnés. La durée revient
-de ~134 s à son niveau d'avant.
+Ce qui se répare en partie du même coup : `fetch_missing_images`
+téléchargeait les miniatures des 270 articles déjà condamnés.
+
+**Une estimation corrigée par la mesure.** Cette section annonçait d'abord
+« 45 secondes par passage » et « la durée revient à son niveau d'avant ».
+Les deux étaient faux, et c'est le premier passage en production qui l'a dit :
+**142 s → 116 s, soit 26 secondes**, et non un retour aux 92 s d'avant le
+plafond. L'écart s'explique — le correctif retire le TÉLÉCHARGEMENT des
+miniatures, pas la réabsorption elle-même : décoder et dédupliquer ces
+articles coûte toujours la vingtaine de secondes qui reste.
+
+Ces 24 secondes n'ont volontairement pas été poursuivies. Le dépôt est public
+donc les minutes GitHub Actions sont gratuites, et le délai médian qui sépare
+d'un article est de 54 minutes dont 47 de cadence : gagner 24 secondes
+là-dessus ne se voit pas. Les deux façons de le faire ont chacune un défaut —
+un `MAX_ARTICLE_AGE_DAYS` fixe redeviendrait faux au premier changement de
+volume, et déduire le plancher de l'historique toucherait le filtre d'entrée,
+l'endroit où une erreur ne se voit pas puisqu'on ne remarque pas un article
+qui n'est jamais arrivé.
 
 **L'invariant, désormais tenu par un test :** on n'annonce jamais ce qu'on n'a
 pas gardé. Quatre contrôles vérifient l'ORDRE des étapes — plafond, puis
 réconciliation, puis miniatures, actus majeures et compte publié — parce que
 c'est l'ordre, et non la logique, qui était faux.
+
+**Confirmé en production le 22/09/2026.** Premier passage après la fusion :
+`new_this_run` annonce 0, et 0 lien est réellement entré — ils coïncident pour
+la première fois. Le journal du robot dit `[discord] aucun nouvel article à
+annoncer` et `[push] aucun nouvel article à annoncer` : avant, ce même passage
+aurait envoyé « ~270 nouveaux articles » sur les deux canaux.
 
 ### La vignette ouvre l'article
 
