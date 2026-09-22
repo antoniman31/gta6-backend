@@ -5846,11 +5846,39 @@ def test_archive_mensuelle():
         check(len(feed_store.lire_mois("2026-11", rep)) == avant,
               "un article sans lien est ignoré plutôt que dupliqué sans fin")
 
-        # Une tranche illisible ne doit pas emporter le mois entier.
+        # LE cas qui a failli coûter cher. Une tranche illisible n'est pas
+        # une tranche vide : réécrire le mois à partir de ce qu'on a pu lire
+        # remplacerait son contenu par un sous-ensemble, et l'archive étant
+        # le dernier endroit où vivent les articles sortis de la fenêtre,
+        # ils disparaîtraient pour de bon.
+        #
+        # Mesuré avant le correctif : un mois de 6000 articles en trois
+        # tranches, une seule tronquée, et le passage suivant en emportait
+        # 2500 définitivement, sans un mot.
+        avant_corruption = len(feed_store.lire_mois("2026-11", rep))
+        tranches_avant = len(feed_store.tranches_du_mois("2026-11", rep))
         with open(os.path.join(rep, "2026-11.2.json"), "w", encoding="utf-8") as f:
             f.write("{ceci n'est pas du JSON")
-        check(len(feed_store.lire_mois("2026-11", rep)) > 0,
-              "une tranche corrompue ne fait pas disparaître tout le mois")
+        lisible = len(feed_store.lire_mois("2026-11", rep))
+        check(0 < lisible < avant_corruption,
+              "une tranche corrompue ne fait pas disparaître tout le mois "
+              "en LECTURE (%d articles encore lisibles)" % lisible)
+
+        # Et surtout : le passage suivant ne doit RIEN réécrire de ce mois.
+        check(feed_store.archiver([art(1)], rep) == {},
+              "un mois dont une tranche est illisible n'est pas réécrit")
+        check(len(feed_store.tranches_du_mois("2026-11", rep)) == tranches_avant,
+              "ses tranches saines sont toutes encore là")
+        check(len(feed_store.lire_mois("2026-11", rep)) == lisible,
+              "et rien n'a été effacé : perdre un passage vaut mieux "
+              "qu'effacer une tranche")
+
+        # Le lecteur, lui, reste au mieux : l'app et l'audit préfèrent la
+        # moitié d'un mois à rien du tout. C'est `_lire_tranches` qui porte
+        # la distinction, et elle doit rester explicite.
+        _, casses = feed_store._lire_tranches("2026-11", rep)
+        check(casses == ["2026-11.2.json"],
+              "la tranche fautive est nommée, pas juste sautée en silence")
     finally:
         shutil.rmtree(rep, ignore_errors=True)
 
@@ -5927,6 +5955,20 @@ def test_laudit_surveille_larchive():
             f.write("{ceci n'est pas du JSON")
         check("archive-index-illisible" in codes(r=r),
               "un index illisible est signalé plutôt que de faire planter l'audit")
+
+        # Une tranche illisible gèle son mois : le robot refuse de le
+        # réécrire, donc il n'accueillera plus rien tant que ce n'est pas
+        # réparé. Un gel silencieux serait pire que la panne.
+        r = prepare()
+        casse = [n for n in os.listdir(r) if n != "index.json"][0]
+        with open(os.path.join(r, casse), "w", encoding="utf-8") as f:
+            f.write("{tronqué")
+        trouve = audit_donnees.audite_archive(fenetre, r)
+        check("archive-tranche-illisible" in {a["code"] for a in trouve},
+              "une tranche illisible est signalée par l'audit")
+        check(all(a["gravite"] == "grave" for a in trouve
+                  if a["code"] == "archive-tranche-illisible"),
+              "et en GRAVE : c'est un mois gelé, pas un détail")
 
         # Absence d'archive : anomalie SEULEMENT si la fenêtre a du contenu.
         # Un dépôt tout neuf n'a rien à se reprocher.
