@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-22T12:03:06.386729+00:00",
+  "generated_at": "2026-09-22T12:06:20.435899+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 136.3,
+  "duration_seconds": 117.1,
   "decode_failures": 0,
   "total_articles": 1500,
-  "new_this_run": 1,
+  "new_this_run": 2,
   "hot_count": 20,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -408,8 +408,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 46,
+      "new_this_run": 1,
+      "articles_exclusifs": 47,
       "last_article": "2026-09-22T08:48:39+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -473,8 +473,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 479,
+      "new_this_run": 1,
+      "articles_exclusifs": 480,
       "last_article": "2026-09-22T11:30:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -513,7 +513,7 @@
       "redirect": "https://www.pcgamer.com/feeds.xml",
       "not_modified": false,
       "new_this_run": 0,
-      "articles_exclusifs": 4,
+      "articles_exclusifs": 3,
       "last_article": "2026-09-19T19:47:25+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -521,10 +521,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-09-21T11:51:47+00:00",
@@ -755,10 +755,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-20T07:00:00+00:00",
@@ -799,7 +799,7 @@
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
       "new_this_run": 0,
-      "articles_exclusifs": 30,
+      "articles_exclusifs": 29,
       "last_article": "2026-09-22T11:06:54+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -811,8 +811,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 3,
+      "new_this_run": 0,
+      "articles_exclusifs": 2,
       "last_article": "2026-09-19T11:00:13+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -1067,15 +1067,15 @@
     {
       "id": "gamesindustry",
       "name": "GamesIndustry.biz",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-18T10:22:40+00:00",
       "days_since_last_article": 4,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "jdg-natif",
@@ -1159,7 +1159,7 @@
   "sources_silence": {
     "gamesindustry": {
       "depuis": "2026-09-22T12:03:06.385835+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -1169,7 +1169,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1181,11 +1181,11 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,0,10,0,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "polygon": "10,10,10,10,10,10,10,0,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1196,9 +1196,9 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "gamerant": "10,10,10,10,10,10,10,0,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "dualshockers": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "dualshockers": "10,10,10,10,10,10,10,0,10,10,10,10",
     "gta6times": "44,44,44,44,44,44,44,44,44,44,44,44",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
@@ -1217,7 +1217,7 @@
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,0",
+    "gamesindustry": "100,100,100,100,100,100,100,100,100,100,0,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
@@ -1275,7 +1275,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 12:00:57 GMT"
+      "modified": "Tue, 22 Sep 2026 12:04:27 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1315,7 +1315,12 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 12:00:58 GMT"
+      "modified": "Tue, 22 Sep 2026 12:04:29 GMT"
+    },
+    "gamesindustry": {
+      "url": "https://www.gamesindustry.biz/feed",
+      "etag": null,
+      "modified": "Tue, 22 Sep 2026 12:00:00 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
@@ -1329,8 +1334,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"f5b43b1991e029e673c35970770ba38b\"",
-      "modified": "Tue, 22 Sep 2026 12:00:18 GMT"
+      "etag": "W/\"8c6db2fa2223da4d517dd0577269be08\"",
+      "modified": "Tue, 22 Sep 2026 12:01:37 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1360,6 +1365,19 @@
       "lang": null,
       "image": "https://www.kitguru.net/wp-content/uploads/2026/09/gtao-732x330.jpg",
       "description": "Twitch CEO claims Grand Theft Auto VI Online will arrive “next year”&nbsp;&nbsp;KitGuru"
+    },
+    {
+      "title": "Take-Two Tries to Remove GTA V DLC Footage and Early GTA VI Map from the Internet - ixbt.games",
+      "link": "https://ixbt.games/en/news/2026/09/22/take-two-pytaetsia-udalit-iz-interneta-kadry-dopolnenii-dlia-gta-v-i-ranniuiu-kartu-gta-vi.html",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNd1BJWmdycVV1QmR0Ykx1cEM3S2J0NmZSeFFIZkgzdEkxbmQ3RmQwa000U0YtLV9tR3lVSUxPVUkzT1E4OEpXZVRsVmRUY2NPQXZUdXhqWlkxMWtRVFpRRXZiQm9GY1FLWnZSUi1DVnJ5a2xaS3F5MV9hUEJsVzVKMnRTdFdoY1c2bkM4Smd3TWU2TGxLWWdEM0VFYlZIdlE0ekNfSldJRi1jdXpXSnZUYVpabEhRWUJCa2tKMWhBNzg3djNNcThQTU1oRUNRZ9IB0wFBVV95cUxPajBvdW5vQlRWUTlLTGlOVl9LSWtHc2hNNnZoSVVkM19qNXh2YzBncnRQeEk3dmFQSFpuYklaVVVCdnBOWE05M1Z6V3cxM1VwRHpyU3owZjQtZzY4U0J3amhfTTktNzh2N0RBdWt6MERNc2hBdUxMb0R0UWE2X1p1RklvVFF2NFFMSmF1N2FXVnhZU1F1LW5aTlVnRFZwTnNPYXZidDVuVS1Vbmd0YWF4bTJtdWRjS3Y2TTJSX1gxZnBJakNhUTRrNXhVTXhIc09qc3Vj?oc=5",
+      "date": "2026-09-22T11:29:15+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1375196/media-qwpzzsmcukzgjpqtinwkke4y.png",
+      "description": "Take-Two Tries to Remove GTA V DLC Footage and Early GTA VI Map from the Internet&nbsp;&nbsp;ixbt.games"
     },
     {
       "title": "‘GTA VI’ Album Singles Generate 4.1 Million Spotify Streams in First 24 Hours - The Source Magazine",
@@ -5693,6 +5711,19 @@
       "description": "A huge batch of previously leaked Rockstar files has resurfaced online, giving players a new look at Grand Theft Auto 5's canceled content, including a surprisingly massive Liberty City expansion and the long-rumored Agent Trevor DLC.\n\n\n\nThe files reportedly total around 192GB, dwarfing the roughly 4GB collection of GTA 5 source code material that surfaced publicly in 2023. GTA modder TJGM has been digging through the newly accessible files and has already highlighted several discoveries, includ"
     },
     {
+      "title": "GTA Online Will Be Supported 'Beyond' GTA 6 Release, PC 'Becoming More and More Important' - IGN Africa",
+      "link": "https://za.ign.com/grand-theft-auto-online/241568/gta-online-will-be-supported-beyond-gta-6-release-pc-becoming-more-and-more-important",
+      "source_link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQRllIZFlGSnA3d0d3Nk9zaUNhcXBwWjJLN2hGODFpOFRGTS1LVVIycTdZRTh6NmE1LTJ4NjJ2LTZpRlF1U2ZNZ0lMa2tuY1BqaFRBc3o5bTBCQ0g5alBsZWMyMUdHcHdqaVZ5dVljMWwxNmphbU9vd2YyMXRvaHAzY2pfZ3Itb0hZUm5fREZpMkNDWkRkUzl1M3REVUV1RGg4VG14emh1QTFpRmc5TGNRc1R5U1c1UVJ3dVZBWGFHbHZvNFRkVS1aYWgwQmdUVzc0?oc=5",
+      "date": "2026-09-18T09:54:17+00:00",
+      "source": "Google News (annonces Rockstar)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://sm.ign.com/t/ign_za/news/g/gta-online/gta-online-will-be-supported-beyond-gta-6-release-pc-becomin_s21j.1200.jpg",
+      "description": "GTA Online Will Be Supported 'Beyond' GTA 6 Release, PC 'Becoming More and More Important'&nbsp;&nbsp;IGN Africa"
+    },
+    {
       "title": "GTA 5 : ce mod gratuit rend le jeu aussi beau que GTA 6, parfait pour patienter - PhonAndroid",
       "link": "https://www.phonandroid.com/gta-5-ce-mod-gratuit-rend-le-jeu-aussi-beau-que-gta-6-parfait-pour-patienter.html",
       "source_link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPZzlucXFLQkNMaVlQWGczdWRJN2ttOWdWUjV3YUZueFh0Y1J5aU5lc3ZoMjM4OHVlbmdtS3Y5SEdyWDBVVEhSdnhHcHI0a0dKemJwdlFPU1QtclNGOHlENFhrSW9aRTBfSlhxQWVaVzB2T01GUXVIUGdFTWJSRFAwNVpucklQdVI3RWpZMVZVbFduXzJYRHR5Q2lNbUl3U25fY1ZJOGhwV0V2SFdKaHc?oc=5",
@@ -7766,19 +7797,6 @@
       "lang": "fr",
       "image": "https://www.rockstarmag.fr/wp-content/uploads/2026/09/guide-precommandes-gta-6-the-album-rockstar-mag-1024x576.jpg",
       "description": "GTA 6 | Guide de précommandes de TOUTES les éditions vinyles&nbsp;&nbsp;Rockstar Mag"
-    },
-    {
-      "title": "Take-Two Issues New Official Statement on GTA 6 Online - GameRant",
-      "link": "https://gamerant.com/gta-6-online-just-got-a-disappointing-update/",
-      "source_link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFA0UWxpcmdKRlVaQktEUUs1LTJmTmgxMDhJV05sZDdIeUk3UkVzUzhfZkZLd0k1c2gxNTFvQWQydEFUM1htZjhVOGVVSzRjZ2JKeVRoTkZpNlVNcWMzT2FCdTJvdkJoWENpbnF3dGdKMWxCOVNC?oc=5",
-      "date": "2026-09-17T16:17:39+00:00",
-      "source": "Google News (Game Rant)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-jason-and-lucia-orange.jpg?w=1600&h=900&fit=crop",
-      "description": "Take-Two Issues New Official Statement on GTA 6 Online&nbsp;&nbsp;GameRant"
     },
     {
       "title": "Grand Theft Auto VI: The Album is the game's official soundtrack launching alongside the game with 34 original tracks — but it looks like the limited-edition vinyl has already sold out - TechRadar",
@@ -11518,7 +11536,13 @@
       "specialist": false,
       "lang": null,
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/lucia_caminos_07-1.jpg?w=1600&h=900&fit=crop",
-      "description": "Rockstar Games issues a new official statement about the Miami-inspired world of Leonida in GTA 6."
+      "description": "Rockstar Games issues a new official statement about the Miami-inspired world of Leonida in GTA 6.",
+      "extraSources": [
+        {
+          "source": "Google News (Game Rant)",
+          "link": "https://gamerant.com/gta-6-online-just-got-a-disappointing-update/"
+        }
+      ]
     },
     {
       "title": "GTA VI : Fred Again dans la bande son du jeu ? - Voltage.fr",
@@ -20092,19 +20116,6 @@
       "lang": null,
       "image": "https://images.purexbox.com/a0178de740880/large.jpg",
       "description": "GTA 6 Release Times Suggest Some Xbox Players Will Get Access Earlier Than Others&nbsp;&nbsp;Pure Xbox"
-    },
-    {
-      "title": "GTA 6's Criminal Profile system sounds pretty interesting, includes a 'shattered' state for players who DGAF",
-      "link": "https://www.pcgamer.com/games/grand-theft-auto/gta-6s-criminal-profile-system-sounds-pretty-interesting-isnt-a-direct-copy-of-red-deads-honor-system/",
-      "source_link": null,
-      "date": "2026-09-07T19:19:23+00:00",
-      "source": "PC Gamer",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://cdn.mos.cms.futurecdn.net/wAQbKw8yFQnKuSGffo7Pdh-1280-80.jpg",
-      "description": "There are reportedly four main states, Professional, Aggressive, Violent, and Psycho, plus a hard-to-reach state you can't come back from."
     },
     {
       "title": "GTA 6 | Le marketing pourrait débuter en octobre à Miami",

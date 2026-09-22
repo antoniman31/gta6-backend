@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-22T12:03:06.386729+00:00",
+  "generated_at": "2026-09-22T12:06:20.435899+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 136.3,
+  "duration_seconds": 117.1,
   "decode_failures": 0,
   "total_articles": 1500,
-  "new_this_run": 1,
+  "new_this_run": 2,
   "hot_count": 20,
   "hot_threshold": 3,
   "sources_count": 60,
@@ -408,8 +408,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 46,
+      "new_this_run": 1,
+      "articles_exclusifs": 47,
       "last_article": "2026-09-22T08:48:39+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -473,8 +473,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 479,
+      "new_this_run": 1,
+      "articles_exclusifs": 480,
       "last_article": "2026-09-22T11:30:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -513,7 +513,7 @@
       "redirect": "https://www.pcgamer.com/feeds.xml",
       "not_modified": false,
       "new_this_run": 0,
-      "articles_exclusifs": 4,
+      "articles_exclusifs": 3,
       "last_article": "2026-09-19T19:47:25+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -521,10 +521,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-09-21T11:51:47+00:00",
@@ -755,10 +755,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-20T07:00:00+00:00",
@@ -799,7 +799,7 @@
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
       "new_this_run": 0,
-      "articles_exclusifs": 30,
+      "articles_exclusifs": 29,
       "last_article": "2026-09-22T11:06:54+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -811,8 +811,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 3,
+      "new_this_run": 0,
+      "articles_exclusifs": 2,
       "last_article": "2026-09-19T11:00:13+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -1067,15 +1067,15 @@
     {
       "id": "gamesindustry",
       "name": "GamesIndustry.biz",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-18T10:22:40+00:00",
       "days_since_last_article": 4,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "jdg-natif",
@@ -1159,7 +1159,7 @@
   "sources_silence": {
     "gamesindustry": {
       "depuis": "2026-09-22T12:03:06.385835+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -1169,7 +1169,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1181,11 +1181,11 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,0,0,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,0,0,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,0,10,0,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "polygon": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "polygon": "10,10,10,10,10,10,10,0,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,50",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1196,9 +1196,9 @@
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "gamerant": "10,10,10,10,10,10,10,0,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "dualshockers": "10,10,10,10,10,10,10,10,0,10,10,10",
+    "dualshockers": "10,10,10,10,10,10,10,0,10,10,10,10",
     "gta6times": "44,44,44,44,44,44,44,44,44,44,44,44",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
@@ -1217,7 +1217,7 @@
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,0",
+    "gamesindustry": "100,100,100,100,100,100,100,100,100,100,0,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
@@ -1275,7 +1275,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 12:00:57 GMT"
+      "modified": "Tue, 22 Sep 2026 12:04:27 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1315,7 +1315,12 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 12:00:58 GMT"
+      "modified": "Tue, 22 Sep 2026 12:04:29 GMT"
+    },
+    "gamesindustry": {
+      "url": "https://www.gamesindustry.biz/feed",
+      "etag": null,
+      "modified": "Tue, 22 Sep 2026 12:00:00 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
@@ -1329,8 +1334,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"f5b43b1991e029e673c35970770ba38b\"",
-      "modified": "Tue, 22 Sep 2026 12:00:18 GMT"
+      "etag": "W/\"8c6db2fa2223da4d517dd0577269be08\"",
+      "modified": "Tue, 22 Sep 2026 12:01:37 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -1360,6 +1365,19 @@
       "lang": null,
       "image": "https://www.kitguru.net/wp-content/uploads/2026/09/gtao-732x330.jpg",
       "description": "Twitch CEO claims Grand Theft Auto VI Online will arrive “next year”&nbsp;&nbsp;KitGuru"
+    },
+    {
+      "title": "Take-Two Tries to Remove GTA V DLC Footage and Early GTA VI Map from the Internet - ixbt.games",
+      "link": "https://ixbt.games/en/news/2026/09/22/take-two-pytaetsia-udalit-iz-interneta-kadry-dopolnenii-dlia-gta-v-i-ranniuiu-kartu-gta-vi.html",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNd1BJWmdycVV1QmR0Ykx1cEM3S2J0NmZSeFFIZkgzdEkxbmQ3RmQwa000U0YtLV9tR3lVSUxPVUkzT1E4OEpXZVRsVmRUY2NPQXZUdXhqWlkxMWtRVFpRRXZiQm9GY1FLWnZSUi1DVnJ5a2xaS3F5MV9hUEJsVzVKMnRTdFdoY1c2bkM4Smd3TWU2TGxLWWdEM0VFYlZIdlE0ekNfSldJRi1jdXpXSnZUYVpabEhRWUJCa2tKMWhBNzg3djNNcThQTU1oRUNRZ9IB0wFBVV95cUxPajBvdW5vQlRWUTlLTGlOVl9LSWtHc2hNNnZoSVVkM19qNXh2YzBncnRQeEk3dmFQSFpuYklaVVVCdnBOWE05M1Z6V3cxM1VwRHpyU3owZjQtZzY4U0J3amhfTTktNzh2N0RBdWt6MERNc2hBdUxMb0R0UWE2X1p1RklvVFF2NFFMSmF1N2FXVnhZU1F1LW5aTlVnRFZwTnNPYXZidDVuVS1Vbmd0YWF4bTJtdWRjS3Y2TTJSX1gxZnBJakNhUTRrNXhVTXhIc09qc3Vj?oc=5",
+      "date": "2026-09-22T11:29:15+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1375196/media-qwpzzsmcukzgjpqtinwkke4y.png",
+      "description": "Take-Two Tries to Remove GTA V DLC Footage and Early GTA VI Map from the Internet&nbsp;&nbsp;ixbt.games"
     },
     {
       "title": "‘GTA VI’ Album Singles Generate 4.1 Million Spotify Streams in First 24 Hours - The Source Magazine",
@@ -5327,19 +5345,6 @@
       "lang": "fr",
       "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/une-enorme-fuite-rockstar-de-192-go-devoile-des-assets-de-gta-6-et-un-gta-5-tres-different.webp",
       "description": "Une énorme fuite Rockstar de 192 Go dévoile des assets de GTA 6 et un GTA 5 très différent&nbsp;&nbsp;La Crème Du Gaming"
-    },
-    {
-      "title": "Rupture de stock et revente sauvage : le vinyle collector de GTA 6 s'enflamme à 550 euros - RTBF",
-      "link": "https://www.rtbf.be/article/rupture-de-stock-et-revente-sauvage-le-vinyle-collector-de-gta-6-s-enflamme-a-550-euros-11787020",
-      "source_link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPVnBHMloyeGk1QW5mdDdnTldNWEpOeEhIbElLdHh0SllmcUF1NTNPRUFwczRIQjBZX0wwd2R0X2ZsX3RMS1lYUUFlNVZCZHpzYWNteXVRSDZ0NnczYVFqalZlbkdYOFRCWG9NMkxIQy1lTG9OT1d2dS03UklaNWRyY3BPdHlPbXFTOXliTHFDVnVicmtTdldJR3l6YWowcy1kM1V1QTNxR2RJcTVTdXJTTHljaTctYnFCcHZINTFtb09lQQ?oc=5",
-      "date": "2026-09-18T12:30:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://static-content.rtbf.be/article/image/1920x1080/9/6/1/2fa5014fe7c0cf53297c7211bfafec55.jpg",
-      "description": "Rupture de stock et revente sauvage : le vinyle collector de GTA 6 s'enflamme à 550 euros&nbsp;&nbsp;RTBF"
     }
   ],
   "partial": true,
