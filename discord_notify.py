@@ -76,14 +76,148 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3):
     return False
 
 
-def send_discord_notification(new_items, promus=()):
-    """Envoie UN SEUL message Discord récapitulatif, avec le nombre de
-    nouveaux articles trouvés et un lien vers le site — plutôt qu'un message
-    par article. Discord mobile ouvre toujours l'app Discord au tap sur une
-    notification (jamais une URL externe directement), donc le lien reste
-    cliquable DANS le message une fois Discord ouvert, pas au moment du tap
-    sur la notification système elle-même. N'échoue jamais l'étape si
-    Discord est indisponible ou mal configuré."""
+# ---------------------------------------------------------------------------
+# Le corps du récapitulatif : les derniers articles, cliquables
+# ---------------------------------------------------------------------------
+# Antoni, le 22/09/2026 : « faut aussi que tu détailles les notif discord avec
+# des liens pour les 5 derniers article ».
+#
+# Le TITRE de l'embed ne bouge pas d'un caractère : c'est le texte partagé
+# mot pour mot avec les notifications push (feed_store.libelle_recap), et
+# l'invariant « les deux canaux disent la même chose » tient toujours. Ce qui
+# s'ajoute, c'est le corps du message — propre à Discord, qui est le seul des
+# deux à savoir afficher cinq liens cliquables.
+
+# Discord tolère 4096 caractères de description. On est loin du compte avec
+# cinq lignes, mais un titre du fil monte déjà à 137 caractères et rien ne
+# garantit qu'un flux n'en enverra pas un de 500.
+TITRE_MAX_CARACTERES = 100
+
+# La vraie limite Discord pour une description d'embed est 4096. On s'arrête
+# avant : la ligne « + N autres dans l'app » s'ajoute APRÈS le calcul, et
+# mieux vaut de la marge qu'un 400 sur un caractère.
+DESCRIPTION_MAX_CARACTERES = 3900
+
+# Caractères qui changent le SENS d'une ligne Markdown Discord. Sans
+# échappement, « GTA 6's soundtrack has *checks notes* Keith Richards »
+# perdrait ses astérisques et passerait en italique, et un titre contenant
+# « [GTA6] » casserait le lien qui l'entoure. Les deux existent dans le fil.
+MARKDOWN_A_ECHAPPER = "\\[]*_`~|"
+
+# Un lien Markdown se termine à la première parenthèse fermante. Aucun des
+# 1 811 liens du fil n'en contient, ni d'espace — mais un flux mal formé
+# suffirait à faire déborder le lien sur le reste de la ligne, et une ligne
+# cassée est pire qu'une ligne sans lien.
+CARACTERES_INTERDITS_URL = "() <>"
+
+
+def echappe_markdown(texte):
+    """Neutralise ce qui ferait dérailler la mise en forme Discord."""
+    for c in MARKDOWN_A_ECHAPPER:
+        texte = texte.replace(c, "\\" + c)
+    return texte
+
+
+def coupe(texte, maximum=TITRE_MAX_CARACTERES):
+    """Coupe un titre trop long sur un espace, avec une ellipse."""
+    texte = (texte or "").strip()
+    if len(texte) <= maximum:
+        return texte
+    tronque = texte[:maximum].rstrip()
+    espace = tronque.rfind(" ")
+    # Un titre sans le moindre espace dans ses 100 premiers caractères existe
+    # (URL recopiée en guise de titre) : on coupe alors au caractère près
+    # plutôt que de rendre une chaîne vide.
+    if espace > maximum // 2:
+        tronque = tronque[:espace]
+    return tronque.rstrip(" ,;:-–—") + "…"
+
+
+def ligne_apercu(apercu):
+    """Une ligne du récapitulatif : marqueur, titre cliquable, média.
+
+    Le marqueur reprend la hiérarchie appliquée partout ailleurs — ⭐ pour une
+    publication de Rockstar, 🔥 pour un sujet couvert par assez de rédactions
+    pour être une actu majeure, • pour le reste.
+    """
+    titre_brut, media = feed_store.separe_titre_et_media(
+        apercu.get("title"), apercu.get("source"))
+    titre = echappe_markdown(coupe(titre_brut))
+    if not titre:
+        return ""
+
+    lien = (apercu.get("link") or "").strip()
+    if any(c in lien for c in CARACTERES_INTERDITS_URL):
+        lien = ""
+
+    sources = apercu.get("sources") or 1
+    if apercu.get("official"):
+        marqueur = "⭐"
+    elif sources >= feed_store.HOT_SOURCE_THRESHOLD:
+        marqueur = "🔥"
+    else:
+        marqueur = "•"
+
+    corps = f"[{titre}](<{lien}>)" if lien else titre
+    ligne = f"{marqueur} {corps}"
+    if media:
+        ligne += f" — *{echappe_markdown(media)}*"
+    # Le nombre de rédactions n'est dit que quand il est l'information : sur
+    # une ligne ordinaire il n'apprendrait rien.
+    if sources >= feed_store.HOT_SOURCE_THRESHOLD:
+        ligne += f" · {sources} sources"
+    return ligne
+
+
+def description_recap(apercus, total=0):
+    """Le corps de l'embed : les derniers articles, puis le lien vers l'app.
+
+    Rend le corps d'avant — le seul lien vers le site — quand il n'y a rien à
+    citer. C'est le cas d'un récapitulatif déclenché par un sujet devenu
+    majeur sans aucun article neuf, et celui d'un fichier d'aperçus absent
+    (version antérieure du robot, ou lancement à la main).
+    """
+    lignes = [l for l in (ligne_apercu(a) for a in (apercus or ())) if l]
+    pied = f"[Ouvrir GTA6_WATCH]({SITE_URL})"
+    if not lignes:
+        return pied
+
+    # Une ligne mesure ~250 caractères, donc cinq lignes sont très loin des
+    # 4096 tolérés par Discord. Mais un lien est de longueur arbitraire, et
+    # Discord ne tronque pas une description trop longue : il REFUSE l'embed
+    # entier avec un 400, que send_discord_with_retry ne retente pas. Un
+    # récapitulatif amputé d'une ligne vaut mieux qu'un récapitulatif perdu.
+    while lignes and len("\n".join(lignes)) + len(pied) + 2 > DESCRIPTION_MAX_CARACTERES:
+        lignes.pop()
+    if not lignes:
+        return pied
+
+    restants = max(0, int(total or 0) - len(lignes))
+    if restants:
+        lignes.append(f"*+ {restants} autre{'s' if restants > 1 else ''} "
+                      f"dans l'app*")
+    return "\n".join(lignes) + f"\n\n{pied}"
+
+
+def send_discord_notification(new_items, promus=(), apercus=None):
+    """Envoie UN SEUL message Discord récapitulatif : le nombre de nouveaux
+    articles en titre, et sous ce titre les derniers d'entre eux, cliquables.
+
+    Un seul message, toujours — la règle qui interdit un message PAR article
+    tient : cinq liens dans un même embed, ce n'est pas cinq messages.
+
+    Discord mobile ouvre toujours l'app Discord au tap sur une notification
+    (jamais une URL externe directement), donc les liens restent cliquables
+    DANS le message une fois Discord ouvert, pas au moment du tap sur la
+    notification système elle-même.
+
+    `apercus` : les articles à citer, déposés par le robot. Ils sont passés
+    explicitement plutôt que redérivés de `new_items`, parce que le
+    récapitulatif du matin porte l'arriéré de la nuit — des articles qui ne
+    sont plus « nouveaux » à 5h et ne figurent donc dans aucune liste. None
+    (lancement à la main) fait retomber sur new_items + promus.
+
+    N'échoue jamais l'étape si Discord est indisponible ou mal configuré."""
     if not DISCORD_WEBHOOK_URL:
         print("[discord] DISCORD_WEBHOOK_URL absent — notification désactivée.")
         return False
@@ -123,7 +257,13 @@ def send_discord_notification(new_items, promus=()):
         # même chose, et ne peuvent plus diverger.
         "title": titre,
         "url": SITE_URL,
-        "description": f"[Ouvrir GTA6_WATCH]({SITE_URL})",
+        # Les derniers articles, cliquables, puis le lien vers l'app. Quand
+        # il n'y a rien à citer, description_recap rend exactement le corps
+        # d'avant — le récapitulatif ne perd rien.
+        "description": description_recap(
+            apercus if apercus is not None
+            else feed_store.apercus_recap(list(new_items or ()) + list(promus or ())),
+            n),
         # Rouge d'alerte pour une actu majeure, bleu habituel sinon : la
         # couleur se repère d'un coup d'œil dans un salon Discord.
         "color": 0xE04F5F if majeure else 0x5493FF,
@@ -273,7 +413,15 @@ def main():
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 
-    send_discord_notification(new_items, promus)
+    # Déposés par le robot à côté des totaux : ils contiennent l'arriéré de
+    # la nuit, que new_items ne peut plus contenir.
+    # `or None` et non la liste telle quelle : une liste VIDE veut dire « le
+    # robot n'a rien déposé » (fichier absent, version antérieure, lancement à
+    # la main), et doit faire retomber sur new_items — pas produire un
+    # récapitulatif sans le moindre lien alors qu'on a les articles sous la
+    # main.
+    send_discord_notification(new_items, promus,
+                              feed_store.lire_apercus_recap() or None)
     # Cette étape ne doit JAMAIS faire échouer le workflow : les articles
     # sont déjà publiés à ce stade, une panne de Discord n'est pas une
     # panne du robot.

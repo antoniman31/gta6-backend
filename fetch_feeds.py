@@ -2136,11 +2136,34 @@ SILENCE_NOCTURNE = os.environ.get("SEULEMENT_OFFICIELS") == "1"
 # seulement une fois la publication confirmée.
 RECAP_TOTALS_FILE = os.environ.get("RECAP_TOTALS_FILE", "")
 
-# Trois entiers, pas les articles eux-mêmes : c'est tout ce dont
-# feed_store.libelle_recap_depuis_comptes a besoin, et feed.json est
-# téléchargé par l'app à chaque ouverture — y stocker des articles en double
-# se paierait à chaque visite.
-ATTENTE_VIDE = {"articles": 0, "officiels": 0, "sommet": 0}
+# Trois entiers — c'est tout ce dont feed_store.libelle_recap_depuis_comptes
+# a besoin pour écrire le titre du récapitulatif.
+ATTENTE_COMPTEURS = ("articles", "officiels", "sommet")
+
+# ... plus, depuis le 22/09/2026, les quelques articles que le récapitulatif
+# du matin pourra CITER. Le commentaire d'origine refusait de stocker des
+# articles ici, et son argument était juste : feed.json contient déjà tout le
+# fil, et le fichier allégé est retéléchargé par l'app à CHAQUE ouverture.
+#
+# Ce qui a changé, c'est qu'on ne stocke pas des articles mais cinq aperçus
+# de six champs (~800 octets), et surtout que feed_store.write_feed_pair les
+# retire du fichier allégé : l'app ne les télécharge jamais. Le coût réel est
+# donc ~800 octets dans feed.json, et uniquement entre minuit et 5h.
+#
+# Sans ça, le récapitulatif de 5h — celui qui porte le plus gros lot, donc
+# celui où le détail sert le plus — serait le seul à n'avoir aucun lien à
+# montrer : à 5h les articles de la nuit sont déjà publiés, donc plus
+# « nouveaux », donc absents de toutes les listes.
+def attente_vide():
+    """Une ardoise propre.
+
+    Une fonction et non une constante recopiée par dict() : l'arriéré
+    contient désormais une LISTE, et une copie de surface la partagerait
+    entre tous les passages — chacun empilerait ses aperçus dans celle du
+    précédent, y compris après l'avoir soi-disant effacée.
+    """
+    return {"articles": 0, "officiels": 0, "sommet": 0, "apercus": []}
+
 
 
 def attente_lue(stored):
@@ -2148,15 +2171,17 @@ def attente_lue(stored):
 
     Tolérante par construction : un fichier d'une version antérieure n'a pas
     le champ, et une valeur aberrante ne doit pas faire annoncer n'importe
-    quoi. Tout ce qui n'est pas un entier positif retombe à zéro.
+    quoi. Tout ce qui n'est pas un entier positif retombe à zéro, et tout
+    aperçu inexploitable disparaît.
     """
     brut = (stored or {}).get("attente_recap") or {}
     if not isinstance(brut, dict):
-        return dict(ATTENTE_VIDE)
-    propre = {}
-    for cle in ATTENTE_VIDE:
+        return attente_vide()
+    propre = attente_vide()
+    for cle in ATTENTE_COMPTEURS:
         v = brut.get(cle, 0)
         propre[cle] = v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else 0
+    propre["apercus"] = feed_store.apercus_assainis(brut.get("apercus"))
     return propre
 
 
@@ -2167,9 +2192,74 @@ def depose_totaux_recap(totaux):
     try:
         with open(RECAP_TOTALS_FILE, "w", encoding="utf-8") as f:
             json.dump(totaux, f, ensure_ascii=False)
-        print(f"  totaux du récapitulatif déposés -> {RECAP_TOTALS_FILE} : {totaux}")
+        # Les aperçus sont résumés à leur nombre : cinq titres complets
+        # noieraient la ligne dans un journal qu'on lit pour vérifier trois
+        # chiffres.
+        resume = {c: totaux.get(c, 0) for c in ATTENTE_COMPTEURS}
+        print(f"  totaux du récapitulatif déposés -> {RECAP_TOTALS_FILE} : "
+              f"{resume} + {len(totaux.get('apercus') or [])} aperçu(s)")
     except OSError as e:
         print(f"  [notif] impossible d'écrire {RECAP_TOTALS_FILE} : {e}")
+
+def reporte_ou_annonce(attente, a_notifier, promus, officiels_du_run,
+                       sommet_du_run, silence, depose=None):
+    """Décide ce qui est annoncé maintenant et ce qui attend le matin.
+
+    Extraite de main() le 22/09/2026, et pas par goût du découpage : cette
+    arithmétique était le cœur du récapitulatif et AUCUN test ne pouvait
+    l'exécuter, puisque rien dans la suite ne lance main(). C'est exactement
+    le trou par lequel était passée la profondeur d'historique — une valeur
+    changée, une fonction vérifiée, et un robot qui ne bougeait pas.
+
+    Rend la nouvelle ardoise, et dépose les totaux au passage s'il y a
+    quelque chose à annoncer. `depose` n'existe que pour les tests.
+    """
+    depose = depose or depose_totaux_recap
+
+    # Les articles que le récapitulatif citera. apercus_recap accepte aussi
+    # bien des articles complets que des aperçus déjà réduits, donc l'arriéré
+    # de la nuit et la moisson du passage se mélangent et se reclassent
+    # ensemble — officiels en tête, puis les plus récents, cinq au plus.
+    #
+    # `promus` entre dans le lot : un sujet qui vient de devenir majeur sans
+    # qu'aucun article neuf ne soit arrivé déclenche un récapitulatif, et
+    # c'est précisément l'article qu'on veut voir. Sans lui, l'alerte
+    # « actu majeure » resterait le seul message du robot à ne montrer aucun
+    # lien.
+    apercus_du_run = feed_store.apercus_recap(
+        list(attente.get("apercus") or ()) + list(a_notifier or ())
+        + list(promus or ()))
+
+    if silence:
+        # On se tait : les comptes s'ajoutent à ceux déjà en attente.
+        suite = {
+            "articles": attente["articles"] + len(a_notifier),
+            "officiels": attente["officiels"] + officiels_du_run,
+            # Un sommet est un maximum, pas une somme : trois passages à
+            # quatre sources sur le même sujet, ça reste quatre sources.
+            "sommet": max(attente["sommet"], sommet_du_run),
+            "apercus": apercus_du_run,
+        }
+        print(f"  Pause nocturne — {len(a_notifier)} article(s) mis de côté, "
+              f"{suite['articles']} en attente du récapitulatif du matin "
+              f"({len(suite['apercus'])} à citer).")
+        return suite
+
+    # On parle : le récapitulatif annonce ce passage ET tout l'arriéré, puis
+    # l'ardoise est effacée.
+    totaux = {
+        "articles": attente["articles"] + len(a_notifier),
+        "officiels": attente["officiels"] + officiels_du_run,
+        "sommet": max(attente["sommet"], sommet_du_run),
+        "apercus": apercus_du_run,
+    }
+    if totaux["articles"] or totaux["sommet"] >= HOT_SOURCE_THRESHOLD:
+        depose(totaux)
+    if attente["articles"]:
+        print(f"  Récapitulatif du matin : {len(a_notifier)} de ce passage "
+              f"+ {attente['articles']} mis de côté cette nuit.")
+    return attente_vide()
+
 
 # Clé publique VAPID, publiée dans feed.json pour que l'app puisse créer un
 # abonnement aux notifications push. Elle est publique par nature — c'est
@@ -3163,31 +3253,9 @@ def main():
                         feed_store.nb_sources_max(promus))
     officiels_du_run = len(feed_store.articles_officiels(a_notifier))
 
-    if SILENCE_NOCTURNE:
-        # On se tait : les comptes s'ajoutent à ceux déjà en attente.
-        attente = {
-            "articles": attente["articles"] + len(a_notifier),
-            "officiels": attente["officiels"] + officiels_du_run,
-            # Un sommet est un maximum, pas une somme : trois passages à
-            # quatre sources sur le même sujet, ça reste quatre sources.
-            "sommet": max(attente["sommet"], sommet_du_run),
-        }
-        print(f"  Pause nocturne — {len(a_notifier)} article(s) mis de côté, "
-              f"{attente['articles']} en attente du récapitulatif du matin.")
-    else:
-        # On parle : le récapitulatif annonce ce passage ET tout l'arriéré,
-        # puis l'ardoise est effacée.
-        totaux = {
-            "articles": attente["articles"] + len(a_notifier),
-            "officiels": attente["officiels"] + officiels_du_run,
-            "sommet": max(attente["sommet"], sommet_du_run),
-        }
-        if totaux["articles"] or totaux["sommet"] >= HOT_SOURCE_THRESHOLD:
-            depose_totaux_recap(totaux)
-        if attente["articles"]:
-            print(f"  Récapitulatif du matin : {len(a_notifier)} de ce passage "
-                  f"+ {attente['articles']} mis de côté cette nuit.")
-        attente = dict(ATTENTE_VIDE)
+    attente = reporte_ou_annonce(attente, a_notifier, promus,
+                                 officiels_du_run, sommet_du_run,
+                                 SILENCE_NOCTURNE)
 
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
