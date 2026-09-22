@@ -4636,13 +4636,37 @@ d'articles : sans lui, l'app ne pourrait pas prévenir avant de lancer un
 téléchargement de plusieurs mégaoctets sur un forfait mobile — et c'est
 précisément le mois de la sortie qui sera le plus lourd.
 
-**Ce qui n'est pas encore fait, et qu'il faut dire :** l'app ne lit pas
-encore l'archive. Les fichiers sont produits, publiés et testés (18
-vérifications), mais aucun bouton ne les demande. L'archive a été livrée
-d'abord parce qu'elle est la seule moitié **urgente** : chaque heure passée
-sans elle est une heure d'articles définitivement perdus, alors que
-l'interface peut arriver la semaine suivante sans que rien ne manque
-rétroactivement.
+### Et l'app sait la lire
+
+Une ligne apparaît sous le compteur, **une fois la fenêtre déjà complète** —
+pas avant, sinon deux boutons concurrents proposeraient le même geste :
+
+```
+archive : 20 de plus, 2026-07 → 2026-08 (20 Ko)   [Charger l'archive]
+```
+
+Trois choix qui méritent d'être dits, parce qu'ils étaient tous les trois
+faciles à rater :
+
+- **elle annonce ce qu'elle AJOUTE, pas le total de l'archive.** L'archive
+  est un sur-ensemble de la fenêtre : afficher son total promettrait des
+  milliers d'articles pour n'en apporter que quelques dizaines ;
+- **elle donne le poids** avant de télécharger. C'est à ça que sert le champ
+  `octets` de l'index, et ce sera le mois de la sortie qui en aura besoin ;
+- **un article d'archive n'est jamais une nouveauté.** Le chargement ne
+  touche ni à `seenMap` ni à `lastNewLinks` — sans ça, un article de juillet
+  arrivant aujourd'hui ferait sonner les pastilles de non-lus pour des
+  centaines de vieux articles. C'est le défaut le plus probable de cette
+  fonctionnalité, et c'est celui qui est verrouillé le plus explicitement.
+
+L'index se charge **sans `await`** derrière l'affichage des articles : c'est
+un confort, il ne doit pas retarder le fil d'une milliseconde. Un backend
+d'une version antérieure n'a pas de répertoire `archives/` — dans ce cas la
+ligne reste muette et **rien ne s'affiche comme une panne**, parce que c'est
+une absence, pas une erreur.
+
+Quatorze contrôles en vrai navigateur couvrent tout ça, en interceptant le
+réseau plutôt qu'en écrivant de faux fichiers dans `docs/`.
 
 ## Ajuster quelque chose
 
