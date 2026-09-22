@@ -231,9 +231,35 @@ d'où le planificateur externe.
    l'index interne de difflib en inversant les deux séquences aurait changé
    les résultats — `ratio()` n'est pas symétrique, 28 052 paires sur 33 670
    donnent un score différent selon l'ordre.
-10. **Plafonne l'historique à 1 500 articles** (`MAX_HISTORY_SIZE`) — au-delà,
-   les plus anciens sont retirés. Ce n'est donc pas un historique complet et
+10. **Plafonne l'historique à une PROFONDEUR** de 15 jours
+   (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 4 000 articles — au-delà, les
+   plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant.
+
+   **Une profondeur et non un nombre, depuis le 22/09/2026.** 1 500 valait
+   dix-sept jours à 74 articles/jour — le régime ordinaire — mais seulement
+   **six** à 249/jour, celui d'une journée d'annonce. Le jour de la sortie du
+   jeu, un nombre fixe n'aurait plus tenu qu'un jour ou deux. Ce que le
+   fichier sert, c'est la **recherche** : ce qui compte est de remonter
+   toujours aussi loin, pas de garder toujours autant d'articles.
+
+   Les deux bornes ne sont pas décoratives. Sans plancher, une semaine creuse
+   réduirait l'historique à peau de chagrin ; sans plafond dur, quinze jours à
+   1 000 articles/jour feraient 15 000 articles et une douzaine de Mo — le
+   problème qu'on venait justement de régler. Le plafond de 4 000 (~3,4 Mo)
+   est un arbitrage sur la recherche : une dizaine de secondes de
+   téléchargement sur un téléphone, la première fois qu'on cherche.
+
+   | régime | visé | retenu | profondeur |
+   |---|---|---|---|
+   | 74/jour (ordinaire) | 1 110 | **1 500** (plancher) | ~20 j |
+   | 249/jour (journée chargée) | 3 735 | **3 735** | 15 j |
+   | 1 000/jour (sortie) | 15 000 | **4 000** (plafond) | ~3 j |
+
+   Les articles protégés ne comptent pas dans la fenêtre : les inclure la
+   ferait rétrécir à mesure qu'ils s'accumulent. Une date illisible non plus —
+   elle est par construction plus vieille que tout, et la laisser peser
+   réduirait la profondeur à cause d'un seul article mal daté.
 
    **Sauf trois familles, qui ne se retirent jamais** — les publications de
    Rockstar (depuis le 02/09/2026), celles de RockstarMag et les actualités
@@ -495,7 +521,7 @@ le robot venait à pousser avec un autre jeton.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1280
+qui permet de tester tout le pipeline sans sortir de la machine. **1289
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique), le tri, le plafonnement, la repasse rétroactive, le
 nettoyage des liens, le cache de décodage, la validation du champ VAPID
@@ -4171,14 +4197,14 @@ commentaire).
 
 ## Limites connues et assumées
 
-- **Historique glissant, pas permanent** — plafonné à 1 500 articles
-  (`MAX_HISTORY_SIZE` dans `feed_store.py`), pas un vrai historique complet
-  depuis toujours. Les officiels Rockstar, RockstarMag et les actualités
-  majeures y échappent.
-- **Poids de `feed.json`** — 1,29 Mo pour 1 500 articles, et c'est désormais
-  un plafond réel : il ne grossira plus. L'ouverture de l'app n'est de toute
-  façon pas concernée (elle charge `feed-recent.json`), mais toute recherche
-  déclenche le téléchargement de l'historique complet.
+- **Historique glissant, pas permanent** — une profondeur de 15 jours
+  (`MAX_HISTORY_DAYS` dans `feed_store.py`), bornée entre 1 500 et 4 000
+  articles, pas un vrai historique complet depuis toujours. Les officiels
+  Rockstar, RockstarMag et les actualités majeures y échappent.
+- **Poids de `feed.json`** — 1,31 Mo aujourd'hui, 3,4 Mo au plafond dur, et
+  jamais au-delà. L'ouverture de l'app n'est de toute façon pas concernée
+  (elle charge `feed-recent.json`), mais toute recherche déclenche le
+  téléchargement de l'historique complet.
   Côté dépôt en revanche il n'y a pas de problème : Git ne stocke que les
   lignes changées (~30 à 90 lignes par passage), et l'ensemble du dépôt
   tient dans **4,5 Mo compactés pour 540 commits** (mesuré le 04/09/2026).

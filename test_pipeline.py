@@ -272,11 +272,27 @@ def test_merge_normalizes_and_caps():
           "les dates héritées du distant sont normalisées elles aussi")
     check(merged["items"][0]["link"] == "neuf", "et le tri s'applique au résultat")
 
-    gros = {"items": [article(f"a{i}", f"2026-0{1 + i % 8}-01T00:00:00+00:00")
-                      for i in range(feed_store.MAX_HISTORY_SIZE + 50)]}
-    merged, _, removed = merge_feed.merge_feeds({"items": []}, gros)
+    # Le plafond n'est plus un nombre fixe mais une profondeur bornée, donc
+    # ce test ne peut plus dater ses articles n'importe quand : la fenêtre
+    # décide. Les deux bornes sont vérifiées, puisque ce sont elles qui
+    # tiennent le fichier — et non plus une constante unique.
+    from datetime import datetime, timedelta, timezone
+    maintenant = datetime.now(timezone.utc)
+
+    # Tous dans la fenêtre, et en surnombre : on bute sur le PLAFOND dur.
+    recents = {"items": [article(f"a{i}", maintenant.isoformat())
+                         for i in range(feed_store.MAX_HISTORY_SIZE + 50)]}
+    merged, _, removed = merge_feed.merge_feeds({"items": []}, recents)
     check(len(merged["items"]) == feed_store.MAX_HISTORY_SIZE and removed == 50,
-          "le plafond s'applique aussi après fusion")
+          "le plafond dur s'applique aussi après fusion")
+
+    # Tous hors fenêtre : on retombe sur le PLANCHER, jamais en dessous.
+    vieux_iso = (maintenant - timedelta(days=feed_store.MAX_HISTORY_DAYS + 30)).isoformat()
+    vieux = {"items": [article(f"v{i}", vieux_iso)
+                       for i in range(feed_store.MIN_HISTORY_SIZE + 200)]}
+    merged, _, removed = merge_feed.merge_feeds({"items": []}, vieux)
+    check(len(merged["items"]) == feed_store.MIN_HISTORY_SIZE and removed == 200,
+          "et le plancher tient quand plus rien n'est dans la fenêtre")
 
 
 def test_merge_refuses_empty_local():
@@ -5895,6 +5911,91 @@ def test_un_article_elague_nest_pas_annonce():
           "les compteurs par source sont décrémentés eux aussi")
 
 
+
+def test_plafond_suit_le_volume():
+    print("\n[tri] le plafond vise une profondeur, pas un nombre d'articles")
+    import feed_store
+    from datetime import datetime, timedelta, timezone
+
+    # Pourquoi une profondeur plutôt qu'un nombre : 1500 valait dix-sept jours
+    # à 74 articles/jour — le régime ordinaire — mais seulement six à 249/jour,
+    # celui d'une journée d'annonce comme le 17/09/2026. Le jour de la sortie
+    # du jeu, un nombre fixe ne tiendrait plus qu'un jour ou deux.
+    #
+    # Ce qui compte n'est pas le nombre gardé : c'est que la RECHERCHE (seule
+    # à télécharger l'historique complet) remonte toujours aussi loin.
+    maintenant = datetime(2026, 11, 19, 12, 0, tzinfo=timezone.utc)
+
+    def fil(par_jour, jours=45):
+        items = []
+        for j in range(jours):
+            quand = (maintenant - timedelta(days=j)).isoformat()
+            items.extend({"link": "j%d-n%d" % (j, n), "title": "t", "date": quand}
+                         for n in range(par_jour))
+        return feed_store.sort_items(items)
+
+    def profondeur(gardes):
+        dates = [feed_store.parse_date_key(i["date"]) for i in gardes]
+        return (dates[0] - dates[-1]).days
+
+    # Régime ordinaire : sous le plancher, donc le plancher s'applique — et
+    # la profondeur obtenue DÉPASSE la cible. C'est voulu : on ne jette pas
+    # ce qu'on a de la place à garder.
+    calme = fil(74)
+    vise = feed_store.taille_historique_visee(calme, maintenant)
+    check(vise == feed_store.MIN_HISTORY_SIZE,
+          "régime calme (74/jour) : le plancher de %d s'applique" % feed_store.MIN_HISTORY_SIZE)
+
+    # Régime chargé : la fenêtre commande, entre les deux bornes.
+    charge = fil(249)
+    vise = feed_store.taille_historique_visee(charge, maintenant)
+    attendu = 249 * feed_store.MAX_HISTORY_DAYS
+    check(feed_store.MIN_HISTORY_SIZE < vise < feed_store.MAX_HISTORY_SIZE,
+          "régime chargé (249/jour) : la fenêtre commande (%d articles)" % vise)
+    check(abs(vise - attendu) <= 249,
+          "et elle vise bien %d jours (%d visés pour ~%d attendus)"
+          % (feed_store.MAX_HISTORY_DAYS, vise, attendu))
+
+    # Jour de sortie : le plafond dur protège le fichier. C'est LE cas qui
+    # justifie la borne haute — quinze jours à ce rythme feraient 15 000
+    # articles et une douzaine de Mo, soit le problème qu'on vient de régler.
+    sortie = fil(1000)
+    vise = feed_store.taille_historique_visee(sortie, maintenant)
+    check(vise == feed_store.MAX_HISTORY_SIZE,
+          "jour de sortie (1000/jour) : le plafond dur de %d tient"
+          % feed_store.MAX_HISTORY_SIZE)
+
+    # Les protégés ne comptent pas dans la fenêtre : les inclure la ferait
+    # rétrécir à mesure qu'ils s'accumulent, et l'historique se réduirait
+    # tout seul au fil des mois.
+    avec_proteges = charge + [
+        {"link": "off-%d" % n, "title": "t", "official": True,
+         "date": (maintenant - timedelta(days=2)).isoformat()}
+        for n in range(300)]
+    check(feed_store.taille_historique_visee(feed_store.sort_items(avec_proteges),
+                                             maintenant)
+          == feed_store.taille_historique_visee(charge, maintenant),
+          "300 articles protégés de plus ne rétrécissent pas la fenêtre")
+
+    # Une date illisible est plus vieille que tout par construction : la
+    # laisser peser réduirait la profondeur à cause d'un article mal daté.
+    avec_illisible = charge + [{"link": "bancal-%d" % n, "title": "t",
+                                "date": "pas une date"} for n in range(50)]
+    check(feed_store.taille_historique_visee(feed_store.sort_items(avec_illisible),
+                                             maintenant)
+          == feed_store.taille_historique_visee(charge, maintenant),
+          "un article mal daté ne compte pas dans la fenêtre")
+
+    # Et le bout du bout : cap_items sans max_size explicite doit utiliser
+    # cette visée, sinon tout ce qui précède ne décrirait qu'une fonction
+    # que personne n'appelle.
+    gardes, retires = feed_store.cap_items(sortie)
+    check(len(gardes) == feed_store.MAX_HISTORY_SIZE,
+          "cap_items sans argument applique bien la visée (%d gardés)" % len(gardes))
+    check(profondeur(gardes) <= feed_store.MAX_HISTORY_DAYS,
+          "la profondeur obtenue ne dépasse pas la cible quand le plafond mord")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -5997,6 +6098,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_lecture_backend_ne_gonfle_pas_sur_une_coupure,
            test_elagage_declare_au_garde_fou,
            test_un_article_elague_nest_pas_annonce,
+           test_plafond_suit_le_volume,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
     fn()

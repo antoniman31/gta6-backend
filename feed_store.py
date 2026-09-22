@@ -10,31 +10,46 @@ Il centralise les trois règles qui doivent absolument rester identiques
 partout, sous peine de corrompre l'historique :
   1. comment on interprète la date d'un article (parse_date_key) ;
   2. dans quel ordre les articles sont rangés (sort_items) ;
-  3. combien on en garde (MAX_HISTORY_SIZE / cap_items).
+  3. combien on en garde (MAX_HISTORY_DAYS et ses bornes / cap_items).
 """
 
 import hashlib
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-# Au-delà de ce nombre d'articles, les plus anciens sont retirés pour que le
-# fichier (et le temps de déduplication) n'augmentent pas indéfiniment.
+# Combien d'articles on garde — exprimé en JOURS, borné en nombre.
 #
-# Abaissé de 20000 à 1500 le 18/09/2026. 20000 n'était pas un plafond, c'était
-# une absence de plafond : à 74 articles par jour, il n'aurait mordu que dans
-# huit mois, et feed.json aurait alors pesé 15 Mo — réécrits vingt-quatre fois
-# par jour. Il avait déjà atteint 2,5 Mo pour 3202 articles.
+# Ce que l'historique complet sert vraiment : l'ouverture de l'app lit
+# feed-recent.json (300 articles) ; le fichier complet n'est téléchargé que
+# pour la RECHERCHE et le bouton « Tout charger ». Ces réglages décident donc
+# de la profondeur de recherche, pas de ce qui s'affiche.
 #
-# 1500 est choisi sur ce que le fichier SERT vraiment. L'ouverture normale de
-# l'app lit feed-recent.json (300 articles) ; l'historique complet n'est
-# téléchargé que pour la recherche et le bouton « Tout charger ». Le plafond
-# décide donc de la profondeur de recherche, pas de ce qui s'affiche.
-# 1500 articles font environ dix-sept jours au régime actuel, pour 1,4 Mo.
-MAX_HISTORY_SIZE = 1500
+# Trois étapes, et chacune répare la précédente :
+#
+#   20000  (jusqu'au 18/09/2026) — pas un plafond, une absence de plafond. À
+#          74 articles/jour il n'aurait mordu que dans huit mois, et feed.json
+#          aurait alors pesé 15 Mo réécrits vingt-quatre fois par jour.
+#    1500  (18/09) — un vrai plafond, mais un nombre FIXE face à un volume
+#          variable. 1500 vaut dix-sept jours à 74/jour… et six jours à
+#          249/jour, le régime d'une journée d'annonce comme le 17/09.
+#   jours  (22/09) — l'intention est une profondeur, pas un nombre. Ce qui
+#          suit vise MAX_HISTORY_DAYS et laisse le nombre flotter.
+#
+# Les deux bornes ne sont pas décoratives. Sans PLANCHER, une semaine creuse
+# réduirait l'historique à peau de chagrin ; sans PLAFOND, le jour de la
+# sortie du jeu ramènerait exactement le problème qu'on vient de régler — à
+# 1000 articles/jour, quinze jours feraient 15 000 articles et 13 Mo.
+#
+# Le plafond dur est un arbitrage sur la recherche : à 4000 articles le
+# fichier pèse ~3,4 Mo, soit une dizaine de secondes de téléchargement sur un
+# téléphone la première fois qu'on cherche.
+MAX_HISTORY_DAYS = 15
+MIN_HISTORY_SIZE = 1500
+MAX_HISTORY_SIZE = 4000
 
 # Nombre de sources distinctes à partir duquel un sujet est considéré comme
 # une actualité majeure. Un article isolé est en général une reprise ou de
@@ -172,7 +187,31 @@ def item_protege(item):
     return 1 + len(item.get("extraSources") or []) >= HOT_SOURCE_THRESHOLD
 
 
-def cap_items(items, max_size=MAX_HISTORY_SIZE):
+def taille_historique_visee(items, maintenant=None):
+    """Combien d'articles garder pour couvrir MAX_HISTORY_DAYS, bornes comprises.
+
+    On compte les articles ORDINAIRES : les protégés ne sont jamais retirés,
+    les inclure ferait rétrécir la fenêtre à mesure qu'ils s'accumulent.
+
+    Une date illisible (DATE_FLOOR) ne compte pas dans la fenêtre : elle est
+    par construction plus vieille que tout, et la laisser peser reviendrait à
+    réduire la profondeur à cause d'un article mal daté.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    limite = maintenant - timedelta(days=MAX_HISTORY_DAYS)
+    dans_la_fenetre = 0
+    for item in items:
+        if item_protege(item):
+            continue
+        quand = parse_date_key(item.get("date"))
+        if quand == DATE_FLOOR:
+            continue
+        if quand >= limite:
+            dans_la_fenetre += 1
+    return max(MIN_HISTORY_SIZE, min(MAX_HISTORY_SIZE, dans_la_fenetre))
+
+
+def cap_items(items, max_size=None):
     """Plafonne l'historique en retirant les articles NON PROTÉGÉS les plus anciens.
 
     À n'appeler que sur une liste DÉJÀ triée par sort_items : sur une liste
@@ -191,6 +230,8 @@ def cap_items(items, max_size=MAX_HISTORY_SIZE):
     aujourd'hui (116 protégés pour un plafond de 1500), mais une fonction ne
     doit pas dépendre d'un « ça n'arrivera pas ».
     """
+    if max_size is None:
+        max_size = taille_historique_visee(items)
     a_retirer = len(items) - max_size
     if a_retirer <= 0:
         return items, 0
