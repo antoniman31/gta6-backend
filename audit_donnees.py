@@ -180,7 +180,11 @@ def audite(data):
             (i.get("date") or "")[:10] for i in items if i.get("date"))
         derniers = [n for _, n in sorted(recents.items())[-14:]]
         rythme = sum(derniers) / len(derniers) if derniers else 0
-        plafond = feed_store.MAX_HISTORY_SIZE
+        # Le plafond n'est plus un nombre fixe : il vise MAX_HISTORY_DAYS,
+        # borné par le plancher et le plafond dur. C'est la visée du moment
+        # qu'il faut afficher, sinon l'audit annoncerait une échéance sur un
+        # nombre que le fil n'atteindra peut-être jamais.
+        plafond = feed_store.taille_historique_visee(items)
         reste = plafond - len(items)
         details = [
             f"{len(items)} articles, {octets / 1048576:.2f} Mo "
@@ -196,7 +200,9 @@ def audite(data):
             # Se taire ici serait trompeur : on lirait une taille sans savoir
             # si elle grandit encore. Au plafond, la réponse est non — et
             # c'est le résultat recherché, pas une donnée manquante.
-            details.append(f"au plafond de {plafond} : la taille n'augmente plus")
+            details.append(
+                f"au plafond du moment ({plafond} pour viser "
+                f"{feed_store.MAX_HISTORY_DAYS} jours) : la taille n'augmente plus")
         signale("info", "croissance", "Croissance de l'historique", details)
 
     return anomalies
