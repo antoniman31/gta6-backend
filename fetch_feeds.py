@@ -2029,6 +2029,48 @@ MAX_ENTREES = 100
 # son contenu en le prenant pour du 1ᵉʳ janvier 1970.
 MAX_ARTICLE_AGE_DAYS = 45
 
+# Au-delà de combien de jours un article qui ENTRE dans l'historique cesse
+# d'être une nouvelle à annoncer.
+#
+# Entrer dans l'historique et mériter de faire vibrer un téléphone sont deux
+# choses différentes, et la liste des vidéos archivées le disait déjà pour un
+# cas particulier. Le 22/09/2026 a montré le cas général : l'élargissement de
+# la fenêtre a fait entrer 268 articles d'un coup, et Discord comme le push
+# ont annoncé « 268 nouveaux articles GTA 6 ». Aucun n'était faux — ils sont
+# bien entrés et bien restés — mais aucun n'était une nouvelle non plus.
+#
+# SEPT JOURS, et le chiffre n'est pas arbitraire : les 268 se répartissaient
+# en 1 article de moins d'un jour et 267 entre 14 et 46 jours. Rien entre les
+# deux. Sept tombe au milieu de ce vide, donc assez loin des vraies
+# nouveautés pour qu'un flux lent ou un décalage horaire ne soit jamais
+# coupé, et assez loin du rapatriement pour ne rien en laisser passer.
+#
+# Ce qui est filtré ENTRE QUAND MÊME dans l'historique et compte dans les
+# « N nouveaux » par source publiés dans feed.json. Seules les notifications
+# s'en taisent — même règle que pour les archives, et pour la même raison :
+# une notification fait sortir le téléphone à tous les coups.
+JOURS_NOTIFICATION = 7
+
+
+def merite_notification(item, maintenant=None):
+    """Un article tout juste entré vaut-il de déranger quelqu'un ?
+
+    Deux motifs de se taire, et ils se rejoignent : le drapeau `archive`,
+    posé sur ce qu'on rapatrie exprès, et l'âge, qui attrape tout ce qui
+    arrive tard sans qu'on l'ait prévu — un flux qui ressert son fond, une
+    fenêtre qui s'élargit, une source ajoutée aujourd'hui.
+    """
+    if item.get("archive"):
+        return False
+    maintenant = maintenant or datetime.now(timezone.utc)
+    quand = feed_store.parse_date_key(item.get("date"))
+    if quand == feed_store.DATE_FLOOR:
+        # Sans date exploitable, on ne peut pas juger. On se tait : un
+        # silence de trop est une gêne, une notification de trop est un
+        # téléphone qui sonne pour rien.
+        return False
+    return (maintenant - quand) <= timedelta(days=JOURS_NOTIFICATION)
+
 # Durée d'indisponibilité continue avant de signaler une source comme
 # tombée. En HEURES, pas en passages — et c'est le point important.
 #
@@ -3043,6 +3085,16 @@ def main():
         print(f"{len(ephemeres)} article(s) entré(s) puis élagué(s) dans le même "
               f"passage — ni annoncés ni comptés (trop anciens pour le plafond)")
 
+    # Ce qui est entré, et ce qui mérite d'être annoncé. Les deux listes
+    # divergent dès qu'un article arrive en retard : il rejoint bien
+    # l'historique, il ne fait sonner aucun téléphone.
+    a_notifier = [i for i in newly_added if merite_notification(i)]
+    tardifs = len(newly_added) - len(a_notifier)
+    if tardifs:
+        print(f"{tardifs} article(s) entré(s) mais trop anciens pour être "
+              f"annoncés (plus de {JOURS_NOTIFICATION} jours) — ajoutés à "
+              f"l'historique en silence")
+
     chaudes = [i for i in all_items if is_hot(i)]
     chaudes_neuves = [i for i in newly_added if is_hot(i)]
     if chaudes_neuves:
@@ -3102,33 +3154,38 @@ def main():
     # portent aucune date de première vue, donc rien ne permet de le
     # recalculer après coup.
     attente = attente_lue(stored)
-    sommet_du_run = max(feed_store.nb_sources_max(newly_added),
+    # a_notifier et non newly_added : le récapitulatif Discord est une
+    # notification comme une autre. C'est cette ligne-ci qui manquait le
+    # 22/09/2026 — la liste du push était bien filtrée sur le drapeau
+    # `archive`, le COMPTE annoncé ne l'était pas, et Discord a donc dit
+    # « 268 nouveaux » là où le push n'en listait aucun.
+    sommet_du_run = max(feed_store.nb_sources_max(a_notifier),
                         feed_store.nb_sources_max(promus))
-    officiels_du_run = len(feed_store.articles_officiels(newly_added))
+    officiels_du_run = len(feed_store.articles_officiels(a_notifier))
 
     if SILENCE_NOCTURNE:
         # On se tait : les comptes s'ajoutent à ceux déjà en attente.
         attente = {
-            "articles": attente["articles"] + len(newly_added),
+            "articles": attente["articles"] + len(a_notifier),
             "officiels": attente["officiels"] + officiels_du_run,
             # Un sommet est un maximum, pas une somme : trois passages à
             # quatre sources sur le même sujet, ça reste quatre sources.
             "sommet": max(attente["sommet"], sommet_du_run),
         }
-        print(f"  Pause nocturne — {len(newly_added)} article(s) mis de côté, "
+        print(f"  Pause nocturne — {len(a_notifier)} article(s) mis de côté, "
               f"{attente['articles']} en attente du récapitulatif du matin.")
     else:
         # On parle : le récapitulatif annonce ce passage ET tout l'arriéré,
         # puis l'ardoise est effacée.
         totaux = {
-            "articles": attente["articles"] + len(newly_added),
+            "articles": attente["articles"] + len(a_notifier),
             "officiels": attente["officiels"] + officiels_du_run,
             "sommet": max(attente["sommet"], sommet_du_run),
         }
         if totaux["articles"] or totaux["sommet"] >= HOT_SOURCE_THRESHOLD:
             depose_totaux_recap(totaux)
         if attente["articles"]:
-            print(f"  Récapitulatif du matin : {len(newly_added)} de ce passage "
+            print(f"  Récapitulatif du matin : {len(a_notifier)} de ce passage "
                   f"+ {attente['articles']} mis de côté cette nuit.")
         attente = dict(ATTENTE_VIDE)
 
@@ -3240,13 +3297,12 @@ def main():
     # elles ne doivent faire vibrer aucun téléphone. Une notification fait
     # sortir le téléphone à tous les coups ; cinquante publications de 2025
     # annoncées d'un bloc, ce sont cinquante dérangements pour du vieux.
-    a_annoncer = [i for i in newly_added if not i.get("archive")]
-    archives = len(newly_added) - len(a_annoncer)
+    archives = len([i for i in newly_added if i.get("archive")])
     if archives:
         print(f"{archives} archive(s) rapatriée(s) en silence — ajoutées à "
               f"l'historique, aucune notification")
     if not is_first_run:
-        write_new_items_file(a_annoncer)
+        write_new_items_file(a_notifier)
     elif newly_added:
         print(f"Premier lancement : {len(newly_added)} article(s) initiaux, pas de notification envoyée.")
 
