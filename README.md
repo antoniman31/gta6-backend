@@ -4739,7 +4739,7 @@ La dernière est retenue. Elle cherche les mots qui *manquent* plutôt que
 dans ses résultats. Réserve dite plutôt que tue : c'est la deuxième source
 sur `reddit.com`, et une première sonde groupée s'est fait renvoyer un 429.
 
-#### Le 429 était mérité — deux fois
+#### Une cause, et une faute sans rapport
 
 La réserve ci-dessus disait aussi que « `PER_HOST_LIMIT` et `HOST_PAUSE`
 espacent déjà les requêtes d'un même domaine ». **C'était faux**, et la
@@ -4750,19 +4750,40 @@ source l'a payé. Mesuré sur les 12 derniers passages du 22/09/2026 :
 | `reddit-leaks` | `25,25,25,25,25,25,25,25,25,25,25,25` | 24 |
 | `reddit-gta6-suivi` | `25,25,25,25,0,0,0,0,25` | 3 |
 
-Toujours la même des deux qui tombe, jamais l'autre. Deux causes, et le code
-portait les deux.
+Toujours la même des deux qui tombe, jamais l'autre.
 
-**1. Les deux requêtes Reddit partaient en même temps.** `chaines_par_hote()`
-fait `min(PER_HOST_LIMIT, len(liste))` files par domaine : avec deux sources
-`reddit.com` et `PER_HOST_LIMIT = 3`, ça donne **deux files d'une source
-chacune**. Or `HOST_PAUSE` ne s'applique qu'*entre deux sources d'une même
-file*. Les deux requêtes partaient donc à ~0 seconde d'écart. Le garde-fou
-existait, il ne couvrait simplement pas ce cas — et le commentaire qui
-affirmait le contraire a survécu trois semaines.
+**La cause : les deux requêtes partaient en même temps.**
+`chaines_par_hote()` fait `min(PER_HOST_LIMIT, len(liste))` files par
+domaine : avec deux sources `reddit.com` et `PER_HOST_LIMIT = 3`, ça donne
+**deux files d'une source chacune**. Or `HOST_PAUSE` ne s'applique
+qu'*entre deux sources d'une même file*. Les deux requêtes partaient donc à
+~0 seconde d'écart. Le garde-fou existait, il ne couvrait simplement pas ce
+cas — et le commentaire qui affirmait le contraire a survécu trois semaines.
 
-**2. On mentait sur le `User-Agent`.** Les règles de l'API Reddit sont
-explicites sur les deux points qu'on violait :
+**La sonde du 22/09 à 20h29 le prouve, et corrige au passage ce que ce
+paragraphe affirmait d'abord.** Les deux URL sondées l'une après l'autre,
+dans la même seconde :
+
+```
+r/GTA6 (reddit-gta6-suivi)              → HTTP 200, 25 entrées, 3 pertinentes
+r/GamingLeaksAndRumours (reddit-leaks)  → HTTP 429
+```
+
+L'ordre était **inversé** par rapport à la production — et le perdant a
+changé avec lui. `reddit-leaks`, qui n'avait pas raté un passage en douze,
+prend le 429 dès qu'elle passe en second. Le 429 ne dépend donc ni du
+subreddit, ni de la requête, ni de la source : **la seconde requête vers
+`reddit.com` dans la même seconde se fait jeter, quelle qu'elle soit.** La
+limite d'environ une requête par minute et par IP, rapportée depuis juin
+2026, est mesurée chez nous.
+
+Accessoirement : `reddit-gta6-suivi` a rendu 25 entrées dont 3 pertinentes,
+la plus récente à 5 jours. Elle n'a jamais été une mauvaise source — elle
+perdait la course. L'idée de la retirer, envisagée le matin même faute de
+rendement, reposait sur un symptôme.
+
+**Et une faute sans rapport avec le débit : on mentait sur le
+`User-Agent`.** Les règles de l'API Reddit sont explicites :
 
 > *NEVER lie about your user-agent. This includes spoofing popular browsers
 > […] We will ban liars with extreme prejudice.*
@@ -4770,8 +4791,16 @@ explicites sur les deux points qu'on violait :
 > *Many default User-Agents […] are drastically limited to encourage unique
 > and descriptive user-agent strings.*
 
-Le robot envoyait un Chrome falsifié — depuis une IP de runner GitHub,
-partagée et de datacenter. C'est le profil exact qu'ils étranglent.
+Le robot envoyait un Chrome falsifié depuis une IP de runner GitHub,
+partagée et de datacenter. C'est le profil exact qu'ils étranglent — et
+c'est une violation qui expose à un bannissement, pas à un ralentissement.
+
+Ce paragraphe a d'abord annoncé « deux causes ». **C'était trop généreux
+pour celle-ci, et c'est corrigé ici plutôt que discrètement réécrit** :
+avant le correctif, la *première* requête passait déjà en 200 avec le Chrome
+falsifié, et la sonde ci-dessus montre que le rang dans la file suffit à
+tout expliquer. Rien ne permet de dire que l'agent coûtait du débit. Le
+changer était nécessaire ; ce n'est pas lui qui a débloqué la source.
 
 #### Ce qui a été fait le 22/09/2026
 
@@ -4841,10 +4870,16 @@ https://www.reddit.com/api/v1/access_token`, HTTP Basic avec le couple
 client, `grant_type=client_credentials`). Deux raisons de ne pas l'avoir
 fait tout de suite : `oauth.reddit.com` rend du **JSON et non du RSS**, donc
 il faudrait un lecteur Reddit à côté du chemin `feedparser` — le seul endroit
-du robot qui ne serait plus « une URL, un flux » ; et il vaut mieux mesurer
-une semaine avant, maintenant qu'on a arrêté de mentir et de tirer deux coups
-en même temps. À reprendre si les 429 persistent. C'est aussi l'assurance du
-jour où Reddit fermera le RSS public, ce qu'ils ont laissé entendre.
+du robot qui ne serait plus « une URL, un flux » ; et le tour de rôle ramène
+déjà le robot à UNE requête `reddit.com` par passage, toutes les 30 min, très
+loin de la limite. À mesurer une semaine avant d'en refaire un sujet.
+
+Ce qui le rendrait nécessaire, en revanche, est net depuis la sonde : **une
+troisième source Reddit est impossible sans lui.** Le tour de rôle fait déjà
+tomber chaque source à une interrogation par heure ; à trois, ce serait une
+toutes les 90 minutes, et à quatre, deux heures. OAuth est la seule façon
+d'en avoir plus de deux. C'est aussi l'assurance du jour où Reddit fermera
+le RSS public, ce qu'ils ont laissé entendre.
 
 ### L'archive mensuelle : ce qui sort de la fenêtre ne sort plus du projet
 
