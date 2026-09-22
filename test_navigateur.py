@@ -406,6 +406,13 @@ def test_repli_backend(nav, url):
         page.goto(url, wait_until="load")
         page.wait_for_selector("#feed", state="attached")
         brancher(page)
+        # Le rattrapage automatique du démarrage télécharge le fichier
+        # complet exprès, à la demande d'Antoni (22/09/2026). Ce contrôle-ci
+        # porte sur une question différente : une lecture normale ne doit
+        # pas ESCALADER vers le gros fichier faute de savoir lire un échec.
+        # Laisser le rattrapage tourner mélangerait les deux et rendrait le
+        # verdict illisible.
+        page.evaluate("rattrapageLance = true;")
         page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
         res = page.evaluate("""async () => {
             try { await checkFromBackend(false); return {ok: true}; }
@@ -455,6 +462,7 @@ def test_repli_backend(nav, url):
         page.goto(url, wait_until="load")
         page.wait_for_selector("#feed", state="attached")
         brancher(page)
+        page.evaluate("rattrapageLance = true;")
         page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
         page.evaluate("""async () => {
             try { await checkFromBackend(false); }
@@ -495,6 +503,76 @@ def test_repli_backend(nav, url):
     check('if(!/^HTTP \\d/.test(' in page_src,
           "[repli] l'app conditionne la piste à l'absence de code HTTP")
 
+
+
+
+def test_actualiser_ne_jette_plus_rien(nav, url):
+    """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
+
+    Reproduit avant d'écrire une ligne de correctif :
+
+        1. ouverture (fichier allégé)     :  300 articles
+        2. après « Tout charger »         : 1804 articles
+        3. APRÈS UNE SIMPLE ACTUALISATION :  300 articles
+
+    La cause tenait en une ligne, `lastItems = all`, où `all` est le contenu
+    du fichier qu'on vient de lire. Au rafraîchissement c'est le fichier
+    ALLÉGÉ, donc 300 articles écrasaient tout le reste, archive comprise.
+
+    Deux propriétés sont verrouillées ici, et elles sont indépendantes :
+    l'app ne perd plus ce qu'elle a chargé, et elle le charge toute seule au
+    démarrage.
+    """
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # --- Le rattrapage automatique : le fil D'ABORD, le reste derrière.
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    tout_de_suite = page.evaluate("lastItems.length")
+    check(0 < tout_de_suite <= 300,
+          "à l'affichage, seul le fichier allégé est là (%d articles) — le "
+          "rattrapage ne retarde pas le fil" % tout_de_suite)
+
+    page.wait_for_function("lastItems.length > %d" % tout_de_suite, timeout=20000)
+    page.wait_for_timeout(1200)
+    complet = page.evaluate("lastItems.length")
+    check(complet > tout_de_suite,
+          "puis l'historique complet arrive seul, sans un clic (%d articles)" % complet)
+    check(page.evaluate("historyPartial") is False,
+          "et l'app se sait complète")
+
+    # --- LE défaut : actualiser ne doit plus ramener à 300.
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    apres = page.evaluate("lastItems.length")
+    check(apres >= complet,
+          "après une actualisation : %d articles, pas %d" % (apres, tout_de_suite))
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    check(page.evaluate("lastItems.length") >= complet,
+          "et après une seconde actualisation, toujours autant")
+
+    # La fusion ne doit ni dupliquer ni désordonner.
+    check(page.evaluate("new Set(lastItems.map(i => i.link)).size === lastItems.length"),
+          "la fusion n'introduit aucun doublon de lien")
+    check(page.evaluate("""() => {
+        const d = lastItems.map(i => new Date(i.date).getTime());
+        return d.every((v, n) => n === 0 || d[n - 1] >= v);
+    }"""), "et le fil reste trié du plus récent au plus ancien")
+
+    # Une seule fois par session : la fusion rend tout retéléchargement
+    # inutile, et relancer deux gros fichiers à chaque actualisation serait
+    # exactement ce que le fichier allégé existe pour éviter.
+    demandes = []
+    page.on("request", lambda r: demandes.append(r.url.split("/")[-1].split("?")[0])
+            if "feed.json" in r.url else None)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    page.wait_for_timeout(1200)
+    check(demandes == [],
+          "une actualisation ne retélécharge PAS le fichier complet (%s)" % demandes)
+    ctx.close()
 
 
 def test_archive_dans_lapp(nav, url):
@@ -572,6 +650,7 @@ def test_archive_dans_lapp(nav, url):
     # Fenêtre INCOMPLÈTE : la ligne d'archive doit rester muette.
     prepare(page, 99999)
     page.evaluate("""async () => {
+        rattrapageLance = true;
         historyPartial = true; archiveIndex = null; archiveChargee = false;
         await chargeIndexArchive(); updateArchiveLine();
     }""")
@@ -580,6 +659,13 @@ def test_archive_dans_lapp(nav, url):
 
     # Fenêtre complète : on charge le vrai feed.json, puis on annonce une
     # archive qui contient EN_PLUS articles de plus que lui.
+    #
+    # `rattrapageLance` est armé À LA MAIN pour neutraliser le rattrapage
+    # automatique du démarrage : sans ça il chargerait l'archive tout seul
+    # pendant qu'on vérifie la ligne, et on lirait « Chargement de
+    # l'archive… » au lieu de ce qu'elle annonce. Ce contrôle-ci porte sur
+    # le chemin MANUEL ; l'automatique a le sien, plus bas.
+    page.evaluate("rattrapageLance = true;")
     page.evaluate("async () => { await checkFromBackend(true); }")
     dans_fenetre = page.evaluate("lastItems.length")
     check(dans_fenetre > 0,
@@ -637,6 +723,7 @@ def test_archive_dans_lapp(nav, url):
     page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
     prepare(page, 0, casser_index=True)
     page.evaluate("""async () => {
+        rattrapageLance = true;
         historyPartial = false; archiveIndex = null; archiveChargee = false;
         await chargeIndexArchive(); updateArchiveLine();
     }""")
@@ -804,6 +891,7 @@ def main():
             test_repli_backend(nav, url)
             test_vignette_ouvre_larticle(nav, url)
             test_archive_dans_lapp(nav, url)
+            test_actualiser_ne_jette_plus_rien(nav, url)
             nav.close()
     finally:
         srv.shutdown()

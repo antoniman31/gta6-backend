@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1384
+qui permet de tester tout le pipeline sans sortir de la machine. **1392
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4847,6 +4847,105 @@ donc l'audit le signale en **grave** avec le geste à faire.
 C'est aussi la démonstration que l'audit de l'archive, écrit une heure plus
 tôt, servait déjà : il a fallu l'étendre pour couvrir ce cas, mais sa
 structure a rendu l'ajout immédiat.
+
+## Ce qu'Antoni a demandé le 22/09, en fin de journée
+
+### Actualiser ne doit plus jeter ce qu'on a chargé
+
+*« Ça serait bien que l'historique et l'archive se chargent tout seuls suite
+à une actualisation. »* Ce n'était pas une demande de confort, c'était un
+**défaut**, reproduit dans un vrai navigateur avant d'écrire une ligne :
+
+```
+1. ouverture (fichier allégé)     :  300 articles
+2. après « Tout charger »         : 1804 articles
+3. APRÈS UNE SIMPLE ACTUALISATION :  300 articles
+```
+
+La cause tenait en une ligne, `lastItems = all`, où `all` est le contenu du
+fichier qu'on vient de lire. Au rafraîchissement c'est le fichier **allégé**,
+donc 300 articles écrasaient tout le reste, archive comprise. `partial`
+décrivait ce fichier-là, et l'app le prenait pour son propre état.
+
+**Deux correctifs, et le second ne coûte rien :**
+
+- **la fusion.** Quand le fichier reçu est plus court que ce qu'on a déjà,
+  on fusionne par lien au lieu de remplacer : l'article qui arrive gagne, ce
+  qu'il ne mentionne pas reste en place. Un article que le backend a élagué
+  survit ainsi côté app — c'est voulu, c'est justement ce qu'on a demandé à
+  garder. Zéro octet de réseau ;
+- **le rattrapage au démarrage.** L'historique complet puis l'archive se
+  chargent seuls, **une fois par session**, sans `await` et **après**
+  l'affichage du fil. Les 300 premiers articles s'affichent aussi vite
+  qu'avant ; le reste arrive derrière.
+
+Vérifié en vrai navigateur, huit contrôles : 300 affichés tout de suite,
+1807 une fois le rattrapage fini, **1807 après un rafraîchissement et après
+un second**, aucun doublon, tri intact — et **une actualisation ne
+retélécharge pas le fichier complet**, ce que la fusion rend inutile.
+
+Trois contrôles existants ont dû être ajustés, et pas parce qu'ils avaient
+tort : le rattrapage automatique télécharge exprès le fichier complet, ce
+qu'ils interdisaient. Ils arment maintenant `rattrapageLance` à la main pour
+continuer de vérifier ce qu'ils vérifiaient — qu'une lecture normale
+n'**escalade** pas vers le gros fichier faute de savoir lire un échec. Un
+téléchargement voulu et une escalade subie ne sont pas la même chose, et les
+confondre aurait rendu leur verdict illisible.
+
+### Les notifications disent enfin quoi, et l'officiel se distingue
+
+Deux demandes, deux réponses.
+
+**« Elles ne disent pas assez. »** Le corps portait « Ouvrir GTA6_WATCH ».
+Il porte maintenant un vrai titre d'article — et le commentaire d'août qui
+refusait ce titre avait raison sur un point qu'il faut garder : *« premier »
+ne veut rien dire, c'est l'ordre de FEEDS et pas une importance.* La
+réponse n'est donc pas de prendre le premier, mais de **classer** :
+
+1. un article **officiel** de Rockstar passe avant tout ;
+2. puis le **nombre de rédactions** sur le même sujet — c'est déjà ce qui
+   pilote le badge « actu majeure » ;
+3. puis la date.
+
+Le titre de la notification, lui, reste un **compte** : la règle du 29/08
+tient, un lot de dix articles n'a pas de titre représentatif. C'est le corps
+qui a changé, pas l'en-tête. Et quand il n'y a rien à citer — le
+récapitulatif du matin ne travaille que sur des comptes reportés — le corps
+retombe sur le texte neutre plutôt que d'inventer.
+
+**« L'officiel devrait se distinguer. »** Il l'était déjà plus que je ne le
+croyais : notification séparée, titre de l'article, tag propre, TTL d'un
+jour, urgence haute, et elle réveille même pendant la pause nocturne. Ce qui
+manquait est ailleurs — **les deux commençaient par le même emoji 🎮**, et
+sur un téléphone c'est la première chose qu'on voit. Trois différences
+maintenant :
+
+| | routine | officiel Rockstar |
+|---|---|---|
+| emoji | 🎮 | **⭐** |
+| vibration | celle du système | **pulsation double** |
+| bannière | s'efface seule | **reste jusqu'à ce qu'on l'écarte** |
+
+Les deux dernières sont ignorées sans risque là où elles ne sont pas gérées.
+
+### Trois dossiers fermés
+
+- **Les 8 sources muettes restent.** Une source qui n'apporte rien coûte une
+  requête par passage et rien d'autre ; pour une veille dont le but est de
+  ne rien rater, c'est une assurance bon marché. On n'y revient pas.
+- **Clubic reste dehors**, et cette fois c'est mesuré une seconde fois : ses
+  deux adresses redirigent vers le même flux, 50 entrées, **une** retenue —
+  un article sur des manettes Xbox en promotion. ActuGaming en flux natif :
+  zéro.
+- **Les deux messages de fusion aux balises parasites ne seront pas
+  réparés.** Réécrire l'historique de `main` en force pendant que le robot y
+  pousse toutes les heures coûte plus que deux lignes moches.
+
+### Et une règle de travail
+
+Antoni, 22/09 : **je fusionne dès que les quatre suites sont vertes**, sans
+demander. Ce qui touche au format publié ou aux notifications continue de
+passer par lui.
 
 ## Ajuster quelque chose
 
