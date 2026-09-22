@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-22T21:01:44.102309+00:00",
+  "generated_at": "2026-09-22T21:37:05.709836+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
-  "duration_seconds": 40.3,
+  "duration_seconds": 37.9,
   "decode_failures": 0,
-  "total_articles": 1849,
+  "total_articles": 1852,
   "new_this_run": 3,
   "hot_count": 22,
   "hot_threshold": 3,
@@ -426,7 +426,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 90,
       "last_article": "2026-09-22T13:23:30+00:00",
       "days_since_last_article": 0,
@@ -493,7 +493,7 @@
       "not_modified": false,
       "new_this_run": 1,
       "articles_exclusifs": 510,
-      "last_article": "2026-09-22T20:30:54+00:00",
+      "last_article": "2026-09-22T21:04:52+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -517,8 +517,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 32,
+      "new_this_run": 1,
+      "articles_exclusifs": 33,
       "last_article": "2026-09-22T16:04:33+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -539,10 +539,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 13,
       "last_article": "2026-09-22T18:02:12+00:00",
@@ -649,7 +649,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
-      "last_article": "2026-09-22T16:00:00+00:00",
+      "last_article": "2026-09-22T21:04:52+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -708,10 +708,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-11T15:31:24+00:00",
@@ -751,7 +751,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 22,
       "last_article": "2026-09-22T20:58:09+00:00",
       "days_since_last_article": 0,
@@ -851,14 +851,14 @@
     {
       "id": "gta6times",
       "name": "GTA6 Times",
-      "entries_fetched": 44,
+      "entries_fetched": 45,
       "http_status": 301,
       "redirect": "https://gta6times.com/feed.xml",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 26,
-      "last_article": "2026-09-19T05:28:59+00:00",
-      "days_since_last_article": 3,
+      "new_this_run": 1,
+      "articles_exclusifs": 27,
+      "last_article": "2026-09-22T21:25:58+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -1137,10 +1137,10 @@
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-22T20:18:21+00:00",
@@ -1213,13 +1213,7 @@
       "status": "ok"
     }
   ],
-  "sources_silence": {
-    "reddit-gta6-suivi": {
-      "depuis": "2026-09-22T14:01:53.970030+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1256,7 +1250,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "44,44,44,44,44,44,44,44,44,44,44,44",
+    "gta6times": "44,44,44,44,44,44,44,44,44,44,44,45",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1283,7 +1277,7 @@
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30",
-    "reddit-gta6-suivi": "25,0,0,0,0,25,0,0,0,0,0,25"
+    "reddit-gta6-suivi": "0,0,0,0,25,0,0,0,0,0,25,25"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1294,8 +1288,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"d11054e30d56740f108ac1e258ade97e\"",
-      "modified": "Tue, 22 Sep 2026 20:21:07 GMT"
+      "etag": "W/\"003a405fcf746449e53f0d3589d8b105\"",
+      "modified": "Tue, 22 Sep 2026 21:33:14 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1314,13 +1308,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2405a-iCeeDzMiGuvxefqxNUk8KUIhfTM\"",
+      "etag": "W/\"229b3-Wvlx5AHXvD8C7e0vspDOW6LwvSc\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"154a3e8679a1abf522e85e1c05419894\"",
-      "modified": "Tue, 22 Sep 2026 20:30:58 GMT"
+      "etag": "W/\"7f654a945591c44dfb596e169fa10b4d\"",
+      "modified": "Tue, 22 Sep 2026 21:30:51 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1335,7 +1329,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 20:57:30 GMT"
+      "modified": "Tue, 22 Sep 2026 21:35:16 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1344,18 +1338,18 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab2ec60-3247\"",
-      "modified": "Tue, 22 Sep 2026 21:00:16 GMT"
+      "etag": "W/\"6ab2f368-3247\"",
+      "modified": "Tue, 22 Sep 2026 21:30:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"97c8e8098a52c4e2a52533bbb6bd5a56\"",
-      "modified": "Tue, 22 Sep 2026 21:01:04 GMT"
+      "etag": "W/\"35548fbc0c40d276aaf318de9b0dc391\"",
+      "modified": "Tue, 22 Sep 2026 21:25:22 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1790109679\"",
-      "modified": "Tue, 22 Sep 2026 20:41:19 GMT"
+      "etag": "W/\"1790111662\"",
+      "modified": "Tue, 22 Sep 2026 21:14:22 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1375,7 +1369,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 21:00:22 GMT"
+      "modified": "Tue, 22 Sep 2026 21:36:37 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1394,8 +1388,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"34639fb060a235df9258dc4c4bdfb341\"",
-      "modified": "Tue, 22 Sep 2026 20:18:38 GMT"
+      "etag": "W/\"0e89d4b982f19708796458ec3adc7aa9\"",
+      "modified": "Tue, 22 Sep 2026 21:25:19 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -1410,6 +1404,38 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Siege Director: GTA 6 Will Hit Every Game",
+      "link": "https://gta6times.com/news/rainbow-six-siege-director-gta-6-launch-impact",
+      "source_link": null,
+      "date": "2026-09-22T21:25:58+00:00",
+      "source": "GTA6 Times",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://gta6times.com/news/rainbow-six-siege-director-gta-6-launch-impact/opengraph-image",
+      "description": "Rainbow Six Siege's creative director says GTA 6's November 19 launch will hurt every live game, and promises rewards for players who stay."
+    },
+    {
+      "title": "Grand Theft Auto 6's Miami Takeover Begins as Rockstar Spends Nearly $1 Million on 'Welcome to Vice City' Signage - IGN Southeast Asia",
+      "link": "https://sea.ign.com/grand-theft-auto-vi-rumored-title/249183/grand-theft-auto-6s-miami-takeover-begins-as-rockstar-spends-nearly-1-million-on-welcome-to-vice-cit",
+      "source_link": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxOVU9pdVluZk04Mmo1eGdLWHVPZWV0YWVvVjktbmRiTGdCUHFaQnh6dk9KU3JFaHhIVVFwWEhTblh4MmJXQ2xoeXpId01WbGR4ckFCUGlKYmxYUWdQMTBXMnR3OTZrLW8yaEZTZV9BUGJ3NldWV2s3Tkdsa3JxN2kwbnlEbDB5UkFXUWNVQllFaElaSnlQN1dhLXZNZHQ3aWZDSWxHVnVjTDI5dmk4UUxMcUFMUERYSzlNTnBQTkVUUjB6dXlYR2VkWnN0WE12UExVdnNvUU5lb09mVkQ0aDYxMXQ4X3Q0aVZ2RElwZUVldTlqcFk?oc=5",
+      "date": "2026-09-22T21:04:52+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://sm.ign.com/t/ign_ap/news/g/grand-thef/grand-theft-auto-6s-miami-takeover-begins-as-rockstar-spends_jwjg.1200.jpg",
+      "description": "Grand Theft Auto 6's Miami Takeover Begins as Rockstar Spends Nearly $1 Million on 'Welcome to Vice City' Signage&nbsp;&nbsp;IGN Southeast Asia",
+      "extraSources": [
+        {
+          "source": "IGN",
+          "link": "https://www.ign.com/articles/grand-theft-auto-6s-miami-takeover-begins-as-rockstar-spends-nearly-1-million-on-welcome-to-vice-city-signage"
+        }
+      ]
+    },
     {
       "title": "Baldur's Gate 3 and Clair Obscur: Expedition 33's Record Stands — GTA 6 Can't Sweep All Five Game of the Year Awards in One Season",
       "link": "https://vgtimes.com/gaming-news/168524-late-grand-theft-auto-vi-release-will-block-a-one-season-awards-sweep.html",
@@ -3435,6 +3461,19 @@
       "description": "Grand Theft Auto VI: The Album Soundtrack Wiki&nbsp;&nbsp;GTA BOOM"
     },
     {
+      "title": "Why GTA VI Represents a Health Check for the Gaming Industry - Cinapse.co",
+      "link": "https://cinapse.co/why-gta-vi-represents-a-health-check-for-the-gaming-industry/",
+      "source_link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNblZmcU1jZk0ycVNrMjM3Sm5MY2ZLcWRoREZ4QXY3WERFWWY2SjFpMm1TMXpsZGJrSkdUMkxiSFg0UnM3c0lZb3RpNHl1YWxjRy1sejdMVU55YkhjbUs0T05SY2g1b09JTjVPeTJOazQtZERRMG5OTl90Z2Iya0hjTGU4aDlWQjg?oc=5",
+      "date": "2026-09-21T10:00:30+00:00",
+      "source": "Google News (EN, 7 jours)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://cinapse.co/wp-content/uploads/2026/09/why-gta-vi-represents-a-health-check-for-the-gaming-industry-scaled.webp",
+      "description": "Why GTA VI Represents a Health Check for the Gaming Industry&nbsp;&nbsp;Cinapse.co"
+    },
+    {
       "title": "GTA 6 : une nouvelle carte dévoile Leonida avec un niveau de détail sans précédent – et plus petite que prévu - Notebookcheck.fr",
       "link": "https://www.notebookcheck.biz/GTA-6-une-nouvelle-carte-devoile-Leonida-avec-un-niveau-de-detail-sans-precedent-et-plus-petite-que-prevu.1404688.0.html",
       "source_link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOR2R5OFdnMnBrblFrLXBYcDRpSV9UZmxJZV8tR2R1QUk4U002RTBMMkZJMlFrbXk2ZWpVSFZsV2wzbjBWQmZxSTN1cGhzUHlBSVl2dTNHcG1KVUVldVo1UTdFM2ZNSjZSS0xia3plV2Y0eUhnejUyQ204Vnk5WDFNVGhac3dORmdmel9PUE1tXzBoRjFYcmJlcUpXS2hNYmVlT3FSX0wweWYxbV9vZGcwaEhRd3RNUnNtWVVVTjYzWDQxLVpjMlBhOEVhWXB6VjFvbWp5akIxWThtSGZsbGpPWGlMYW8?oc=5",
@@ -5382,45 +5421,6 @@
       "lang": null,
       "image": "https://assetsio.gnwcdn.com/gta-5-protags.png?width=690&quality=85&format=jpg&auto=webp",
       "description": " Rockstar Games' latest leak seemingly includes a nearly 200GB version of GTA 5's source code, suggesting the developer started and then scrapped plans for a Liberty City DLC, alongside very early files related to GTA 6. Read more"
-    },
-    {
-      "title": "Early GTA VI map, zombies, GTA V DLC, and frozen Trevor - almost 200 GB of Rockstar files leaked online - ixbt.games",
-      "link": "https://ixbt.games/en/news/2026/09/18/436731-ranniaia-versiia-karty-gta-vi-zombi-dlc-dlia-gta-v-i-zamorozennyi-trevor-v-set-slili-pocti-200-gb-failov-rockstar.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxQX3pDYmxTR25XMUl6RDVSaFFlWWtLZmRDWE5RcGowME51S01wUDJqbW80anJtSzBlb2I5UW9IVlNQM08yc3BqaHVwMV9MMlNqQkNkOVFJcERFcWlKV2xMbTYxZEhCeks0d1hTVm5SMFAwM29scnpqajJPZ2poSUc3UXhNSWRDQ0czNG41aVAyRkZCSjhmVHVDT0FVby1ONFN3a1cyZk1mRXc2dGdRaEdCeWM2RVNyNzFRVzBudDVnZTZYVjJ3QlVyTnJ2R29COEw2NGFiNmVHeGVmVW9xNzgwQjFRVkI1YkFJOEtUTEdJVjZ2ZnU0Z0HSAfsBQVVfeXFMUHZ1eWtqOW5CNWFCZjZkNGNBcjU3RUMwblpuS1VEalp6R1Bzdi1wZWZYXzRLcU96X2FFY0hweF9YUmNBbzFHTEczYVZURlhIZW10MEE3bWxQQ2E5RFRYYmwzV1hsQ1lPV01oSDNiRkdlbTJncHZOUTRYT05WaEVIUmNYS2RYMVdqLWh6RWh6OVY2QnhCN3ZmV1RoSDJQTzYwbXFPaUY0Sk1aTlJkSlNEYUtQbGdXd3VSTi11aW13WTlMVGJpWXdYV3RSWDJmVksyREhteEM2b0NiSFJ4VjRabVV2ZnVnV1B5U21taWlIeTh5YmZhVUVWbS03RjQ?oc=5",
-      "date": "2026-09-18T18:11:35+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1373560/media-2h8khcyof76kznmojf0hla8h.png",
-      "description": "Early GTA VI map, zombies, GTA V DLC, and frozen Trevor - almost 200 GB of Rockstar files leaked online&nbsp;&nbsp;ixbt.games"
-    },
-    {
-      "title": "GTA 6 Online Could Launch Next Year As Take-Two Talks Up PC Gaming - hothardware.com",
-      "link": "https://hothardware.com/news/gta-6-online-could-launch-next-year",
-      "source_link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9hUDZrb2E3ZWhpcVlMTlJDSmhmdVJpa0dsYXQ5RE1rRXJwYmZMR3ZkYWh0U2o0dmZQdk5RVUNzNzZERTJlVXo1OFhWb1B4ekoxNE94V3d3YnJ4bXNXY2E3R3JIaWJkUEJfX29YUHJlaXZIUQ?oc=5",
-      "date": "2026-09-18T17:55:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://images.hothardware.com/contentimages/newsitem/71658/content/16x9_2133x1200_highres-gta6-boating-afternoon.jpg",
-      "description": "GTA 6 Online Could Launch Next Year As Take-Two Talks Up PC Gaming&nbsp;&nbsp;hothardware.com"
-    },
-    {
-      "title": "192 GB of GTA VI and GTA V content reportedly leaked, including cut Liberty City DLC - gosugamers.net",
-      "link": "https://www.gosugamers.net/entertainment/news/79207-192-gb-of-gta-6-and-gta-5-content-reportedly-leaked-including-cut-liberty-city-dlc",
-      "source_link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOdXExV20wZHZzRFdOYmszbDdZR2pzTmpxNVczc3IwcFMtX0FQMWs1WS1yVXM1ZUJzcXRhTi1LRE01SVFEbDJkWUpFR0FiVExXcURPUHQ0T01PTFdKMWUtR3NvNDJlREpjM3F3R05zSmpxaXo1aVVJWHhjNm50ekZwbE1udExCeFZaS3RnUU1WdkNENlJObnhZZUdua3ZrVUlwTFRDU2g4MHlOTmRxbEF6VlJ1cU9DZE5CWEt2V3lhSmNhM3hvQW9RM2d3ZDRhOE0?oc=5",
-      "date": "2026-09-18T17:52:06+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": null,
-      "image": "https://static.gosugamers.net/16/d4/8a/d6937489848e7f336828ff85ddbcc0cbbe5e70792c0ffd1c742eb41e00.webp",
-      "description": "192 GB of GTA VI and GTA V content reportedly leaked, including cut Liberty City DLC&nbsp;&nbsp;gosugamers.net"
     }
   ],
   "partial": true,
