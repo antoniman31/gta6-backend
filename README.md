@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1455
+qui permet de tester tout le pipeline sans sortir de la machine. **1536
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4738,9 +4738,113 @@ La dernière est retenue. Elle cherche les mots qui *manquent* plutôt que
 « GTA 6 », qui va de soi sur ce subreddit — d'où « GTA 6 Online en 2027 »
 dans ses résultats. Réserve dite plutôt que tue : c'est la deuxième source
 sur `reddit.com`, et une première sonde groupée s'est fait renvoyer un 429.
-Un 429 laisse la source « muette » et jamais « cassée », donc elle revient
-seule sans fausse alerte ; le risque est un passage sans elle de temps en
-temps, pas une panne.
+
+#### Le 429 était mérité — deux fois
+
+La réserve ci-dessus disait aussi que « `PER_HOST_LIMIT` et `HOST_PAUSE`
+espacent déjà les requêtes d'un même domaine ». **C'était faux**, et la
+source l'a payé. Mesuré sur les 12 derniers passages du 22/09/2026 :
+
+| Source | 12 derniers passages | Articles apportés |
+|---|---|---|
+| `reddit-leaks` | `25,25,25,25,25,25,25,25,25,25,25,25` | 24 |
+| `reddit-gta6-suivi` | `25,25,25,25,0,0,0,0,25` | 3 |
+
+Toujours la même des deux qui tombe, jamais l'autre. Deux causes, et le code
+portait les deux.
+
+**1. Les deux requêtes Reddit partaient en même temps.** `chaines_par_hote()`
+fait `min(PER_HOST_LIMIT, len(liste))` files par domaine : avec deux sources
+`reddit.com` et `PER_HOST_LIMIT = 3`, ça donne **deux files d'une source
+chacune**. Or `HOST_PAUSE` ne s'applique qu'*entre deux sources d'une même
+file*. Les deux requêtes partaient donc à ~0 seconde d'écart. Le garde-fou
+existait, il ne couvrait simplement pas ce cas — et le commentaire qui
+affirmait le contraire a survécu trois semaines.
+
+**2. On mentait sur le `User-Agent`.** Les règles de l'API Reddit sont
+explicites sur les deux points qu'on violait :
+
+> *NEVER lie about your user-agent. This includes spoofing popular browsers
+> […] We will ban liars with extreme prejudice.*
+>
+> *Many default User-Agents […] are drastically limited to encourage unique
+> and descriptive user-agent strings.*
+
+Le robot envoyait un Chrome falsifié — depuis une IP de runner GitHub,
+partagée et de datacenter. C'est le profil exact qu'ils étranglent.
+
+#### Ce qui a été fait le 22/09/2026
+
+**Un `User-Agent` honnête pour `reddit.com`, et lui seul.** `USER_AGENT_REDDIT`
+vaut `python:gta6-watch:v1.0`, au format que Reddit documente
+(`<plateforme>:<identifiant>:<version>`). Le pseudo que leur format prévoit
+est volontairement absent : ils le demandent sans l'imposer, ce dépôt est
+public, et le cœur de la règle est de ne pas se faire passer pour un
+navigateur. Les 61 autres sources gardent l'agent d'avant.
+
+Le choix passe par `agent_pour(url)` et non par deux constantes recopiées :
+**cinq** endroits envoient un `User-Agent` (le flux, l'image de
+prévisualisation, la découverte de flux de la sonde, et les deux appels
+YouTube). En corriger quatre, c'est continuer de mentir une fois sur cinq
+sans que rien ne le dise. Un contrôle intercepte `feedparser` et lit l'agent
+*réellement émis* — vérifier la fonction n'aurait rien dit de ses appelants.
+
+**Un tour de rôle.** `ROTATION_REDDIT` fait se relayer les deux sources, sur
+la parité de l'heure UTC. Aucun état stocké : rien à fusionner après un
+conflit de push, et deux exécutions de la même heure font le même choix. Les
+passages tournent toutes les ~30 min, donc chaque source est interrogée au
+moins une fois par heure — assez pour du suivi de fuites.
+
+L'alternative écartée : forcer `reddit.com` dans une file unique avec une
+longue pause. Il faudrait ~65 s d'attente à l'intérieur d'un passage qui en
+dure 40, soit tripler sa durée pour économiser une requête.
+
+#### Le vrai travail n'était pas l'alternance
+
+**Une source non interrogée n'est pas une source muette**, et tout le suivi
+de santé raisonne sur « ce passage n'a rien rapporté ». Sans un troisième
+état, la rotation aurait produit deux fausses alertes symétriques :
+
+- au bout de `DEAD_SOURCE_HOURS`, une alerte Discord « **source tombée** »
+  pour une source qu'on n'avait simplement pas appelée ;
+- et pire, deux passages plus tard, ses tours de repos comptés comme des
+  réussites par `REPRISE_CONFIRMEE` auraient annoncé le « **retour** » d'une
+  source jamais rappelée. La fausse bonne nouvelle est celle qui coûte le
+  plus cher : elle clôt le dossier.
+
+D'où le statut `en_attente`, tenu **hors** de `STATUTS_SANS_ARTICLE`, et trois
+comportements :
+
+| Mécanisme | Ce qu'il fait d'un repos |
+|---|---|
+| `sources_health` | statut `en_attente`, ni muette ni cassée ni tarie |
+| `maj_historique_entrees` | n'empile **rien** — un `0` ferait voir la source « en forte baisse » un passage sur deux |
+| `suivre_sources_muettes` | reconduit le chronomètre **à l'identique** : ni échec, ni réussite |
+
+Le contrôle qui le prouve rejoue **deux jours de rotation à deux passages par
+heure**, une fois sur des sources saines (zéro alerte) et une fois avec une
+source réellement muette : la panne est bien signalée une fois, au bout de
+24 h, et aucun faux retour ne part. Vérifier les trois fonctions séparément
+n'aurait pas attrapé l'interaction.
+
+Côté app, une source `en_attente` compte comme répondante dans le compteur
+`62/63 sources` — volontairement : le compteur dit « combien ne posent pas
+de problème », et une source au repos n'en pose aucun. La déduire ferait
+clignoter le compteur toutes les heures pour rien.
+
+#### Ce qui n'a pas été fait
+
+**OAuth « app-only ».** Reddit accorde 60 requêtes/minute à un client OAuth
+enregistré, contre ~1/minute par IP en anonyme depuis juin 2026, et le palier
+gratuit couvre l'usage non commercial. Le flux est simple (`POST
+https://www.reddit.com/api/v1/access_token`, HTTP Basic avec le couple
+client, `grant_type=client_credentials`). Deux raisons de ne pas l'avoir
+fait tout de suite : `oauth.reddit.com` rend du **JSON et non du RSS**, donc
+il faudrait un lecteur Reddit à côté du chemin `feedparser` — le seul endroit
+du robot qui ne serait plus « une URL, un flux » ; et il vaut mieux mesurer
+une semaine avant, maintenant qu'on a arrêté de mentir et de tirer deux coups
+en même temps. À reprendre si les 429 persistent. C'est aussi l'assurance du
+jour où Reddit fermera le RSS public, ce qu'ils ont laissé entendre.
 
 ### L'archive mensuelle : ce qui sort de la fenêtre ne sort plus du projet
 

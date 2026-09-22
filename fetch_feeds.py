@@ -47,6 +47,46 @@ except ImportError:
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 
+# Ce qu'on annonce à reddit.com, et à lui seul.
+#
+# Leurs règles d'API sont explicites sur les deux points qu'on violait :
+#
+#   « NEVER lie about your user-agent. This includes spoofing popular
+#     browsers […] We will ban liars with extreme prejudice. »
+#   « Many default User-Agents […] are drastically limited to encourage
+#     unique and descriptive user-agent strings. »
+#
+# On envoyait donc un Chrome falsifié depuis une IP de runner GitHub —
+# partagée, de datacenter, et exactement le profil qu'ils étranglent. Le
+# format qu'ils documentent est « <plateforme>:<identifiant>:<version>
+# (by /u/<pseudo>) ».
+#
+# Le pseudo est volontairement absent : Reddit le demande mais ne l'impose
+# pas, ce dépôt est public, et le cœur de leur règle est de ne pas se faire
+# passer pour un navigateur — ce que cette chaîne respecte. Décision
+# d'Antoni le 22/09/2026.
+#
+# La version n'est pas décorative : « Including the version number and
+# updating it as you build your application allows us safely block old
+# buggy/broken versions of your app. » À incrémenter si le robot se met un
+# jour à mal se tenir envers eux.
+USER_AGENT_REDDIT = "python:gta6-watch:v1.0"
+
+
+def agent_pour(url):
+    """Le User-Agent à envoyer à cette adresse.
+
+    Une fonction et non deux constantes recopiées aux points d'appel : cinq
+    endroits envoient un User-Agent (le flux, l'image de prévisualisation,
+    la découverte de flux de la sonde, et les deux appels YouTube). En
+    corriger quatre et en oublier un, c'est continuer de mentir à Reddit une
+    fois sur cinq, sans que rien ne le dise.
+    """
+    hote = (urlparse(url or "").netloc or "").lower().split(":")[0]
+    if hote == "reddit.com" or hote.endswith(".reddit.com"):
+        return USER_AGENT_REDDIT
+    return USER_AGENT
+
 # Délai maximal d'attente sur une opération réseau, en secondes.
 #
 # feedparser.parse() n'accepte PAS de paramètre de timeout : il passe par
@@ -499,10 +539,17 @@ FEEDS = [
     #
     # Une réserve, dite plutôt que tue : c'est la DEUXIÈME source sur
     # reddit.com, et une première sonde groupée s'est fait renvoyer un 429.
-    # PER_HOST_LIMIT et HOST_PAUSE espacent déjà les requêtes d'un même
-    # domaine, et un 429 laisse la source « muette » — jamais « cassée » —
-    # donc elle revient seule sans déclencher de fausse alerte. Le risque
-    # est un passage sans cette source de temps en temps, pas une panne.
+    #
+    # La suite a donné tort à ce qui était écrit ici. « PER_HOST_LIMIT et
+    # HOST_PAUSE espacent déjà les requêtes d'un même domaine » : faux avec
+    # deux sources: min(PER_HOST_LIMIT, 2) fait DEUX files d'une source
+    # chacune, et HOST_PAUSE ne joue qu'entre deux sources d'une même file.
+    # Les deux requêtes Reddit partaient donc à ~0 seconde d'écart, et c'est
+    # toujours celle-ci qui tombait (25,25,25,25,0,0,0,0,25 contre 12 sur 12
+    # pour l'autre). Corrigé le 22/09/2026 : voir ROTATION_REDDIT, qui les
+    # fait se relayer, et USER_AGENT_REDDIT, qui arrête de mentir sur le
+    # navigateur. Un 429 laisse toujours la source « muette » et jamais
+    # « cassée », donc elle revient seule sans fausse alerte.
     # ------------------------------------------------------------------
     {"id": "reddit-gta6-suivi", "name": "Reddit — mises à jour et DLC", "url": "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", "official": False},
 ]
@@ -729,7 +776,8 @@ def image_du_flux(entry):
 def fetch_og_image(url, timeout=8):
     """Récupère l'image de prévisualisation (og:image) d'une vraie page article."""
     try:
-        resp = requests.get(url, timeout=timeout, headers={"User-Agent": USER_AGENT})
+        resp = requests.get(url, timeout=timeout,
+                            headers={"User-Agent": agent_pour(url)})
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
         tag = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "twitter:image"})
@@ -1368,7 +1416,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
 
     try:
         parsed = feedparser.parse(
-            feed["url"], agent=USER_AGENT,
+            feed["url"], agent=agent_pour(feed["url"]),
             etag=precedent.get("etag") or None,
             modified=precedent.get("modified") or None,
         )
@@ -1675,6 +1723,69 @@ def chaines_par_hote(feeds, par_hote=PER_HOST_LIMIT):
             files[rang % len(files)].append(feed)
         chaines.extend(files)
     return chaines
+
+
+# Sources interrogées À TOUR DE RÔLE plutôt qu'à chaque passage.
+#
+# Reddit limite le RSS anonyme par IP, et une IP de runner GitHub est
+# partagée, de datacenter, et mal vue. Le robot a deux sources sur
+# reddit.com — et chaines_par_hote les lançait EN MÊME TEMPS :
+# min(PER_HOST_LIMIT, 2) donne 2 files d'une source chacune, or HOST_PAUSE
+# ne s'applique qu'entre deux sources d'une MÊME file. Le commentaire écrit
+# en ajoutant la seconde source affirmait que « PER_HOST_LIMIT et HOST_PAUSE
+# espacent déjà les requêtes d'un même domaine » : c'était faux dans ce cas
+# précis, et corrigé là-bas aussi.
+#
+# Mesuré sur les 12 derniers passages, le 22/09/2026 :
+#     reddit-leaks       25,25,25,25,25,25,25,25,25,25,25,25
+#     reddit-gta6-suivi  25,25,25,25,0,0,0,0,25
+# Toujours la même des deux qui tombe, jamais l'autre.
+#
+# Une seule par passage, choisie sur la parité de l'heure UTC. Aucun état
+# stocké : rien à fusionner après un conflit de push, et deux exécutions de
+# la même heure font le même choix. Les passages tournent toutes les ~30 min,
+# donc chaque source est interrogée au moins une fois par heure — largement
+# assez pour du suivi de fuites.
+#
+# L'alternative écartée : forcer reddit.com dans une file unique avec une
+# longue pause. Il faudrait ~65 s d'attente à l'intérieur d'un passage qui en
+# dure 40, soit tripler sa durée pour économiser une requête.
+ROTATION_REDDIT = ("reddit-leaks", "reddit-gta6-suivi")
+
+
+def feeds_a_interroger(feeds, maintenant=None, rotation=ROTATION_REDDIT):
+    """Les sources de CE passage, et les identifiants laissés au repos.
+
+    Renvoie (liste à interroger, ensemble des identifiants en attente).
+
+    La rotation est restreinte aux sources RÉELLEMENT présentes. Sans ça,
+    supprimer l'une des deux de FEEDS ferait élire une source absente une
+    heure sur deux, et mettrait la survivante au repos — c'est-à-dire la
+    ferait taire définitivement, une heure sur deux, sans que rien ne le
+    signale. Une seule source présente : aucune rotation, elle passe à tous
+    les coups.
+    """
+    presentes = [fid for fid in rotation
+                 if any(f.get("id") == fid for f in feeds)]
+    if len(presentes) < 2:
+        return list(feeds), set()
+    maintenant = maintenant or datetime.now(timezone.utc)
+    elue = presentes[maintenant.hour % len(presentes)]
+    en_attente = {fid for fid in presentes if fid != elue}
+    return [f for f in feeds if f.get("id") not in en_attente], en_attente
+
+
+def resultat_en_attente(feed):
+    """Le résultat d'une source qu'on n'a PAS interrogée ce passage.
+
+    Une entrée en bonne et due forme, et pas une absence : tout ce qui suit
+    — la fusion, le bilan de santé, l'historique des volumes, le chronomètre
+    de silence — parcourt FEEDS et lit resultats[id]. Une clé manquante
+    ferait planter la fusion ; un résultat vide non marqué ferait pire, en
+    faisant passer la source pour muette.
+    """
+    return ([], {"raw_count": 0, "not_modified": False, "non_interrogee": True},
+            [f"[{feed['name']}] pas son tour ce passage — voir ROTATION_REDDIT"])
 
 
 def panne_de_serveur(statut):
@@ -2286,6 +2397,11 @@ def ne_rapporte_rien(source):
 # "normal". 12 passages = 6 heures : assez pour établir un régime de
 # croisière, assez court pour qu'un site qui change de rythme ne traîne pas
 # une référence obsolète pendant des jours.
+#
+# Sauf pour les sources en tour de rôle (ROTATION_REDDIT), qui n'empilent
+# une valeur qu'un passage sur deux : leurs 12 valeurs couvrent 12 heures et
+# non 6. C'est moins réactif, pas faux — la série reste une suite de volumes
+# comparables entre eux, et un repos n'y écrit rien plutôt qu'un zéro.
 HISTORIQUE_PASSAGES = 12
 
 # Une source est "en baisse" quand ses derniers passages tombent nettement
@@ -2317,11 +2433,16 @@ def maj_historique_entrees(feed_infos, precedent):
     Les réponses 304 ne sont pas empilées : elles ne disent rien du volume
     du flux, seulement qu'il n'a pas changé. Les compter comme des zéros
     ferait chuter la référence de toutes les sources bien élevées.
+
+    Une source non interrogée non plus, et pour la même raison en plus fort :
+    on ne sait même pas ce qu'elle aurait rendu. Un zéro empilé ici la ferait
+    voir « en forte baisse » par sources_en_baisse un passage sur deux —
+    exactement l'alerte que la rotation ne doit pas provoquer.
     """
     series = {}
     for fid, info in feed_infos.items():
         passe = _serie((precedent or {}).get(fid))
-        if not info.get("not_modified"):
+        if not info.get("not_modified") and not info.get("non_interrogee"):
             passe.append(int(info.get("raw_count", 0) or 0))
         passe = passe[-HISTORIQUE_PASSAGES:]
         if passe:
@@ -2402,6 +2523,19 @@ def suivre_sources_muettes(health, silence_precedent, maintenant=None):
     for source in health:
         sid = source["id"]
         chrono = _chrono_precedent((silence_precedent or {}).get(sid), maintenant)
+
+        # Une source non interrogée n'apporte AUCUNE information sur son
+        # état : son chronomètre est reconduit tel quel, sans échec ni
+        # réussite. Les deux branches suivantes lui feraient dire le
+        # contraire de la vérité — la première la déclarerait tombée au bout
+        # de DEAD_SOURCE_HOURS, et la seconde, pire encore, compterait ses
+        # tours de repos comme des réussites et annoncerait le RETOUR d'une
+        # source qu'on n'a jamais rappelée. La fausse bonne nouvelle est
+        # celle qui coûte le plus cher : elle clôt le dossier.
+        if source.get("status") == "en_attente":
+            if chrono is not None:
+                suivi[sid] = chrono
+            continue
 
         if ne_rapporte_rien(source):
             if chrono is None:
@@ -2939,7 +3073,13 @@ def build_sources_health(all_items, feed_infos, new_counts):
         # Un flux qui répond 304 ne renvoie aucune entrée, mais il est
         # parfaitement vivant : le confondre avec un flux mort produirait
         # une fausse alerte à chaque passage.
-        if raw == 0 and not info.get("not_modified"):
+        if info.get("non_interrogee"):
+            # Ni muette, ni cassée, ni tarie : on ne lui a rien demandé. Le
+            # statut existe pour que ce cas ne se confonde avec AUCUN des
+            # trois autres — voir ROTATION_REDDIT, et STATUTS_SANS_ARTICLE
+            # qui ne le contient volontairement pas.
+            status = "en_attente"
+        elif raw == 0 and not info.get("not_modified"):
             # "cassee" est un sous-cas de "muette" : le serveur a répondu,
             # mais avec autre chose qu'un flux. Distingué parce que les
             # gestes ne sont pas les mêmes — une source muette peut revenir
@@ -3058,12 +3198,26 @@ def main():
     if decoded_cache:
         print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) déjà résolu(s)")
 
-    # Téléchargement des 35 sources en parallèle. Voir fetch_all_feeds :
-    # seul le réseau est parallélisé, la fusion qui suit reste séquentielle.
+    # Téléchargement en parallèle. Voir fetch_all_feeds : seul le réseau est
+    # parallélisé, la fusion qui suit reste séquentielle.
+    #
+    # Toutes les sources ne partent pas à chaque passage : celles de
+    # ROTATION_REDDIT se relaient. Les autres sont interrogées comme avant.
+    a_interroger, en_attente = feeds_a_interroger(FEEDS)
     depart = time.time()
-    resultats = fetch_all_feeds(FEEDS, decoded_cache, http_state)
-    print(f"\n{len(FEEDS)} source(s) interrogée(s) en {time.time() - depart:.0f} s "
+    resultats = fetch_all_feeds(a_interroger, decoded_cache, http_state)
+    # Les sources au repos reçoivent un résultat MARQUÉ, et pas une absence :
+    # merge_results parcourt FEEDS et lit resultats[id] sans filet.
+    for feed in FEEDS:
+        if feed["id"] in en_attente:
+            resultats[feed["id"]] = resultat_en_attente(feed)
+    print(f"\n{len(a_interroger)} source(s) interrogée(s) sur {len(FEEDS)} "
+          f"en {time.time() - depart:.0f} s "
           f"({FETCH_WORKERS} de front, {PER_HOST_LIMIT} max par domaine)")
+    if en_attente:
+        noms = {f["id"]: f["name"] for f in FEEDS}
+        repos = ", ".join(sorted(noms.get(i, i) for i in en_attente))
+        print(f"  ⏸ au repos ce passage (tour de rôle) : {repos}")
 
     # Ce que la seconde tentative a rattrapé. Sans cette ligne la reprise
     # serait invisible : on ne saurait ni qu'elle a servi, ni qu'elle sert
@@ -3456,7 +3610,7 @@ def flux_declares(url_page):
     """Adresses de flux que la page déclare elle-même, s'il y en a."""
     try:
         resp = requests.get(url_page, timeout=FETCH_TIMEOUT,
-                            headers={"User-Agent": USER_AGENT})
+                            headers={"User-Agent": agent_pour(url_page)})
         soup = BeautifulSoup(resp.text, "html.parser")
     except Exception as e:
         print(f"  [sonde] page illisible pour la découverte : {e}")
@@ -3498,7 +3652,7 @@ def decris_video_youtube(url):
                          params={"url": f"https://www.youtube.com/watch?v={vid}",
                                  "format": "json"},
                          timeout=FETCH_TIMEOUT,
-                         headers={"User-Agent": USER_AGENT})
+                         headers={"User-Agent": agent_pour("https://www.youtube.com/")})
         if r.ok:
             titre = (r.json() or {}).get("title")
         else:
@@ -3526,7 +3680,7 @@ def decris_video_youtube(url):
     try:
         page = requests.get(f"https://www.youtube.com/watch?v={vid}",
                             timeout=FETCH_TIMEOUT,
-                            headers={"User-Agent": USER_AGENT})
+                            headers={"User-Agent": agent_pour("https://www.youtube.com/")})
         for motif in motifs:
             m = re.search(motif, page.text)
             if m:
