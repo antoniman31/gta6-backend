@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1370
+qui permet de tester tout le pipeline sans sortir de la machine. **1378
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4766,6 +4766,36 @@ d'infrastructure, et il avait **deux** défauts :
 
 Le contrôle est donc plus strict qu'avant, pas plus indulgent. Suite rejouée
 trois fois de suite pour vérifier qu'elle ne rebascule pas.
+
+### L'audit regarde enfin l'archive
+
+L'archive est écrite à chaque passage et **relue par personne**. Un fichier
+tronqué, un index périmé, un mois qui se vide : rien ne l'aurait signalé, et
+on s'en serait aperçu le jour où l'on aurait cherché quelque chose d'ancien
+— c'est-à-dire trop tard, la fenêtre l'ayant depuis longtemps oublié. C'est
+un trou que la livraison de l'archive avait creusé le matin même.
+
+`audit_donnees.py` pose maintenant trois questions, par gravité décroissante :
+
+1. **l'archive contient-elle TOUT ce que contient la fenêtre ?** C'est
+   l'invariant qui justifie son existence. S'il tombe, des articles sont en
+   train de disparaître pour de bon — signalé `grave` ;
+2. **l'index dit-il la vérité ?** L'app ne lit que lui. Un index qui annonce
+   un fichier absent l'envoie chercher dans le vide ; un fichier présent
+   qu'il ne cite pas ne sera jamais demandé, et ses articles n'existent pour
+   personne ;
+3. **chaque article est-il dans le fichier de son mois ?** Un article d'août
+   rangé en septembre ne se perd pas, mais il ne se retrouve pas non plus.
+
+**Les six pannes sont provoquées exprès dans la suite**, parce qu'un audit
+qu'on ne met jamais en échec ne prouve rien : article manquant, fichier
+annoncé et absent, fichier présent hors index, index illisible, absence
+totale d'archive — et le cas où cette absence est **normale**, un dépôt tout
+neuf n'ayant rien à se reprocher.
+
+L'audit affiche aussi, en temps normal, ce que l'archive garde **au-delà de
+la fenêtre** : c'est le chiffre qui dira, dans quelques mois, si elle sert
+vraiment à quelque chose.
 
 ## Ajuster quelque chose
 

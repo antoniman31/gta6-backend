@@ -5856,6 +5856,92 @@ def test_archive_mensuelle():
 
 
 
+
+def test_laudit_surveille_larchive():
+    print("\n[archive] l'audit voit les pannes de l'archive, pas seulement sa taille")
+    import audit_donnees, feed_store
+    import os, shutil, tempfile
+
+    # L'archive est écrite à chaque passage et relue par personne. Un
+    # fichier tronqué, un index périmé, un mois qui se vide : rien ne le
+    # signalerait, et on s'en apercevrait le jour où l'on chercherait
+    # quelque chose d'ancien — c'est-à-dire trop tard, la fenêtre l'ayant
+    # depuis longtemps oublié. D'où cet audit, et d'où ce contrôle : un
+    # audit qu'on ne met jamais en échec exprès ne prouve rien.
+    rep = tempfile.mkdtemp(prefix="t-audit-arch-")
+    autres = []
+    try:
+        fenetre = {"items": [
+            {"link": "https://a.fr/%d" % n, "title": "t",
+             "date": "2026-09-%02dT10:00:00+00:00" % (n % 9 + 1)}
+            for n in range(20)]}
+
+        def prepare():
+            r = tempfile.mkdtemp(prefix="t-audit-arch-")
+            autres.append(r)
+            feed_store.archiver(fenetre["items"], r)
+            feed_store.ecrire_index_archives(r)
+            return r
+
+        def codes(data=fenetre, r=None):
+            return {a["code"] for a in audit_donnees.audite_archive(data, r or rep)}
+
+        feed_store.archiver(fenetre["items"], rep)
+        feed_store.ecrire_index_archives(rep)
+
+        check(codes() == {"archive"},
+              "une archive saine ne signale rien d'autre que son bilan")
+
+        # LA panne qui compte : un article de la fenêtre absent de
+        # l'archive. C'est l'invariant que l'archive existe pour tenir ;
+        # s'il tombe, des articles disparaissent pour de bon.
+        gonfle = {"items": fenetre["items"] + [
+            {"link": "https://a.fr/perdu", "title": "t",
+             "date": "2026-09-01T10:00:00+00:00"}]}
+        check("archive-incomplete" in codes(gonfle),
+              "un article de la fenêtre absent de l'archive est signalé GRAVE")
+        check(all(a["gravite"] == "grave"
+                  for a in audit_donnees.audite_archive(gonfle, rep)
+                  if a["code"] == "archive-incomplete"),
+              "et c'est bien la gravité maximale, pas un simple avertissement")
+
+        # L'index est la seule chose que l'app lit. Un index qui annonce un
+        # fichier absent l'envoie chercher dans le vide.
+        r = prepare()
+        nom = [n for n in os.listdir(r) if n != "index.json"][0]
+        os.remove(os.path.join(r, nom))
+        check("archive-fichier-manquant" in codes(r=r),
+              "un fichier annoncé par l'index et absent du disque est signalé")
+
+        # L'inverse : un fichier que l'index ne cite pas ne sera jamais
+        # demandé. Ses articles existent et personne ne les verra.
+        r = prepare()
+        shutil.copy(os.path.join(r, nom if os.path.exists(os.path.join(r, nom))
+                                 else [n for n in os.listdir(r) if n != "index.json"][0]),
+                    os.path.join(r, "2025-01.json"))
+        check("archive-fichier-orphelin" in codes(r=r),
+              "un fichier présent mais absent de l'index est signalé")
+
+        r = prepare()
+        with open(os.path.join(r, "index.json"), "w", encoding="utf-8") as f:
+            f.write("{ceci n'est pas du JSON")
+        check("archive-index-illisible" in codes(r=r),
+              "un index illisible est signalé plutôt que de faire planter l'audit")
+
+        # Absence d'archive : anomalie SEULEMENT si la fenêtre a du contenu.
+        # Un dépôt tout neuf n'a rien à se reprocher.
+        vide = tempfile.mkdtemp(prefix="t-audit-vide-")
+        autres.append(vide)
+        check("archive-absente" in codes(r=vide),
+              "pas d'archive alors que la fenêtre a des articles : signalé")
+        check(codes({"items": []}, r=vide) == set(),
+              "pas d'archive et pas d'articles : rien à signaler, c'est un début")
+    finally:
+        shutil.rmtree(rep, ignore_errors=True)
+        for r in autres:
+            shutil.rmtree(r, ignore_errors=True)
+
+
 def test_ce_que_le_robot_publie_est_bien_commite():
     print("\n[workflow] tout ce que le robot écrit est commité, et ignoré par la CI")
     import re
@@ -6687,6 +6773,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_lecteurs_de_liaison_mutualises,
            test_epoque_unix_nest_pas_une_date,
            test_archive_mensuelle,
+           test_laudit_surveille_larchive,
            test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
