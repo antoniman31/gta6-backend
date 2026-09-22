@@ -2878,10 +2878,17 @@ confondus**, en perdrait avant qu'on les voie.
 | DualShockers | 10 | 15 |
 | ActuGaming | 10 | 15 |
 
-**Game Rant est le cas qui inquiète** : c'est la 5ᵉ source du classement des
-domaines, et sa fenêtre est la plus étroite. On ne peut pas élargir un flux
-que l'éditeur sert à dix entrées ; le remède serait un jumeau Google News
-`site:gamerant.com`, qui rend 100 entrées. Mesuré, pas encore appliqué.
+**Game Rant est le cas qui inquiétait** : c'est la 5ᵉ source du classement
+des domaines, et sa fenêtre est la plus étroite. On ne peut pas élargir un
+flux que l'éditeur sert à dix entrées ; le remède était un jumeau Google
+News `site:gamerant.com`, qui rend 100 entrées.
+
+**Fait depuis** — la source `gamerant-gnews` existe, et le relevé du
+22/09/2026 la crédite de **17 articles** là où le flux natif en apporte 37.
+Un tiers du Game Rant du fil passe donc par le jumeau : sans lui, il
+manquerait. Cette ligne a dit « pas encore appliqué » pendant plusieurs
+jours après l'avoir été — même défaut que le `paths-ignore` plus haut, et
+même leçon : **la documentation d'un manque doit mourir avec le manque.**
 
 ### Publier n'est pas servir
 
