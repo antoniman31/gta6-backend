@@ -4668,6 +4668,28 @@ une absence, pas une erreur.
 Quatorze contrôles en vrai navigateur couvrent tout ça, en interceptant le
 réseau plutôt qu'en écrivant de faux fichiers dans `docs/`.
 
+### Un contrôle qui perdait une course, et qui ne vérifiait pas ce qu'il disait
+
+La CI est passée au rouge le 22/09 sur `[vignette] le clic ouvre bien un
+onglet sur l'article`, puis au vert au commit suivant sans qu'une ligne de
+l'app ait changé. C'est le signalement d'un test fragile, pas un aléa
+d'infrastructure, et il avait **deux** défauts :
+
+- il **dormait 700 ms** en espérant que l'onglet soit apparu. Un runner
+  chargé met parfois plus longtemps. Remplacé par `expect_page`, qui attend
+  l'ÉVÉNEMENT avec une limite haute : le test est du coup plus sûr *et* plus
+  rapide dans le cas normal ;
+- son commentaire annonçait « on lit l'URL DEMANDÉE », et le code lisait
+  `pg.url` — l'URL de l'onglet. Or la cible est un vrai site, injoignable
+  depuis la CI, donc Chromium y met `chrome-error://chromewebdata/`.
+  L'assertion était donc écrite `... or bool(demandees)` : **n'importe quel
+  onglet** suffisait à la satisfaire. Elle lit maintenant l'adresse sur un
+  écouteur de requêtes, qui enregistre ce qui a été TENTÉ, et compare à
+  l'adresse attendue.
+
+Le contrôle est donc plus strict qu'avant, pas plus indulgent. Suite rejouée
+trois fois de suite pour vérifier qu'elle ne rebascule pas.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

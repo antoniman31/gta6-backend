@@ -721,13 +721,39 @@ def test_vignette_ouvre_larticle(nav, url):
     # Le clic navigue-t-il vraiment ? On lit l'URL DEMANDÉE : la cible est
     # un vrai site, injoignable depuis la CI, donc l'onglet finira en erreur
     # — ce qui compte est qu'il ait tenté la bonne adresse.
-    demandees = []
-    ctx.on("page", lambda pg: demandees.append(pg.url))
-    page.click(".card .card-thumb", force=True)
-    page.wait_for_timeout(700)
+    #
+    # `expect_page` et non `wait_for_timeout(700)`. La version d'origine
+    # dormait 700 ms en espérant que l'onglet soit apparu, puis regardait
+    # une liste remplie par un écouteur. C'est une COURSE, et elle a été
+    # perdue une fois en CI le 22/09/2026 : le contrôle a échoué sur un
+    # commit, puis passé sur le suivant sans qu'une ligne de l'app ait
+    # changé. Un runner chargé met parfois plus de 700 ms à ouvrir un
+    # onglet.
+    #
+    # `expect_page` attend l'ÉVÉNEMENT, avec une limite haute plutôt qu'un
+    # délai fixe : il rend la main dès que l'onglet existe, donc le test est
+    # à la fois plus sûr et plus rapide dans le cas normal. L'attente
+    # restant la même, ce qui est vérifié ne change pas d'un iota — c'est la
+    # façon d'attendre qui change, pas l'exigence.
+    # L'adresse se lit sur la REQUÊTE, pas sur `page.url` de l'onglet. Le
+    # commentaire ci-dessus l'annonçait déjà, mais le code lisait bien
+    # `pg.url` — et comme la cible est injoignable, Chromium y met
+    # « chrome-error://chromewebdata/ ». Un écouteur de requêtes, lui,
+    # enregistre l'adresse TENTÉE, qu'elle aboutisse ou non.
     attendu = info["hrefTitre"]
-    check(any(u == attendu for u in demandees) or bool(demandees),
+    demandees = []
+    ctx.on("request", lambda r: demandees.append(r.url))
+    try:
+        with ctx.expect_page(timeout=10000) as onglet:
+            page.click(".card .card-thumb", force=True)
+        ouvert = onglet.value
+    except Exception:
+        ouvert = None
+
+    check(ouvert is not None,
           "[vignette] le clic ouvre bien un onglet sur l'article")
+    check(attendu in demandees,
+          "[vignette] et c'est la bonne adresse qui est demandée (%s)" % attendu)
 
     lu = page.evaluate("""() => {
         const c = [...document.querySelectorAll('.card')].find(x => x.querySelector('.card-thumb'));
