@@ -4338,6 +4338,61 @@ commentaire).
   fichier à remplacer au lieu de plusieurs à garder synchronisés), au
   prix d'un fichier plus long à parcourir si besoin d'y retoucher.
 
+## Décisions prises, et ce qu'elles engagent — 22/09/2026
+
+Trois décisions issues d'un audit complet. Elles sont ici plutôt que dans un
+fil de discussion parce que c'est le seul endroit où elles survivent.
+
+### Le projet continue après la sortie — c'est une veille, pas un compte à rebours
+
+GTA6_WATCH ne s'arrête pas le 19/11/2026 : il devient une veille du jeu
+(mises à jour, DLC, GTA Online).
+
+**Cela renverse un arbitrage.** Le DÉCOUPAGE de l'historique en fichiers
+mensuels, plutôt qu'un seul `feed.json` — à ne pas confondre avec la
+pagination de l'affichage, qui existe déjà et sert tout autre chose — avait
+été écarté comme trop lourd pour un projet visant une date. Ce motif tombe.
+Un fil qui tourne pendant des années finira par rendre le plafond glissant
+insatisfaisant quel que soit son réglage : chercher ce qui s'est dit d'un DLC
+six mois plus tôt ne rentrera jamais dans quinze jours. Ce n'est pas décidé,
+mais ce n'est plus « trop gros pour ce projet ».
+
+Deux conséquences à prévoir. **Les sources devront être revues** : celles qui
+couvrent une attente ne sont pas celles qui couvriront des correctifs et du
+multijoueur. Et **la profondeur de quinze jours** sera à reconsidérer, le
+rythme d'une veille n'ayant rien à voir avec celui d'un compte à rebours.
+
+### À faire en octobre : aligner le filtre d'entrée sur la fenêtre gardée
+
+**Le problème.** `MAX_ARTICLE_AGE_DAYS` accepte quarante-cinq jours à
+l'entrée, alors que l'historique n'en garde que la profondeur visée. Tout
+article situé entre les deux est réabsorbé à chaque passage, pris pour neuf,
+puis élagué aussitôt. Depuis le correctif du 22/09 il n'est plus annoncé ni
+compté — mais il est toujours décodé et dédupliqué pour rien, à hauteur d'une
+vingtaine de secondes par passage.
+
+**Pourquoi ça ne peut pas attendre novembre.** Le plafond est adaptatif : la
+fenêtre rétrécit quand le volume monte, jusqu'à environ trois jours au
+plafond dur. Le gaspillage grandit donc exactement le jour de la sortie. Et
+ce sont les sources LENTES qui l'alimentent — **29 sources sur 60** produisent
+dix articles ou moins sur la fenêtre, donc leurs cent entrées couvrent des
+mois, presque toutes hors fenêtre.
+
+**Pourquoi pas tout de suite non plus.** Le correctif touche le filtre
+d'entrée, l'endroit où une erreur ne se voit pas : un article qui n'arrive
+jamais ne manque à personne. Le poser en octobre laisse des semaines pour
+l'observer avant que l'actualité s'emballe. Déployer ça en novembre serait le
+pire moment.
+
+### La cadence reste horaire, sortie comprise
+
+Pas d'accélération pour le 19/11. Décision cohérente avec ce qui a été
+mesuré : le délai médian de 54 minutes vient à 47 minutes de la cadence, et
+le code n'y pèse que 3 %. Une cadence à quinze minutes diviserait le délai
+par sept, mais multiplierait par quatre les commits, les déploiements et les
+notifications — pour une veille qu'on consulte quand on y pense, pas en
+direct.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
