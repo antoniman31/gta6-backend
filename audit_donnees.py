@@ -283,12 +283,32 @@ def audite_archive(data, repertoire=None):
                 f"{len(orphelins)} fichier(s) présent(s) mais absent(s) de l'index",
                 orphelins[:5] + ["l'app ne les demandera jamais"])
 
-    # --- 1. l'archive contient-elle toute la fenêtre ?
+    # --- 0. une tranche illisible, avant tout le reste
+    #
+    # C'est la panne la plus grave possible ici, et la moins visible : une
+    # tranche qu'on ne sait pas lire est un trou dont on ignore le contenu.
+    # `archiver` refuse désormais de réécrire un tel mois — sans quoi il le
+    # remplacerait par ce qu'il a pu lire, effaçant le reste pour de bon —
+    # mais ce refus gèle le mois : il n'accueillera plus rien tant que la
+    # tranche n'est pas réparée ou retirée. Ça ne doit pas passer inaperçu.
     archives = {}
+    illisibles = []
     for entree in index.get("mois") or []:
-        for item in feed_store.lire_mois(entree.get("mois"), repertoire):
+        items_mois, casses = feed_store._lire_tranches(entree.get("mois"), repertoire)
+        illisibles.extend(casses)
+        for item in items_mois:
             if item.get("link"):
                 archives[item["link"]] = item
+    if illisibles:
+        signale("grave", "archive-tranche-illisible",
+                f"{len(illisibles)} tranche(s) d'archive illisible(s)",
+                illisibles[:5] + [
+                    "le mois concerné est GELÉ : le robot refuse de le "
+                    "réécrire pour ne pas effacer ce qu'elles contenaient",
+                    "à réparer depuis l'historique git, ou à retirer si le "
+                    "contenu est récupérable autrement"])
+
+    # --- 1. l'archive contient-elle toute la fenêtre ?
 
     fenetre = {i["link"] for i in (data.get("items") or []) if i.get("link")}
     perdus = sorted(fenetre - set(archives))

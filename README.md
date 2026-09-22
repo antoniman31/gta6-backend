@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1378
+qui permet de tester tout le pipeline sans sortir de la machine. **1384
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4796,6 +4796,50 @@ neuf n'ayant rien à se reprocher.
 L'audit affiche aussi, en temps normal, ce que l'archive garde **au-delà de
 la fenêtre** : c'est le chiffre qui dira, dans quelques mois, si elle sert
 vraiment à quelque chose.
+
+### Une tranche abîmée effaçait 2500 articles, en silence
+
+Trouvé en relisant à froid le code de l'archive quelques heures après
+l'avoir livré. C'est le défaut le plus grave de la journée, et c'était
+exactement la perte que l'archive existe pour empêcher.
+
+**Le mécanisme.** `lire_mois` sautait une tranche illisible pour ne pas
+faire échouer la lecture entière — raisonnable pour un LECTEUR, l'app
+préférant la moitié d'un mois à rien. Mais `archiver` utilisait la même
+fonction avant de **réécrire** le mois. Une tranche qu'on ne sait pas lire
+devenait alors une tranche vide, et le mois était republié sans elle.
+
+**Mesuré, pas supposé.** Un mois de 6000 articles en trois tranches, une
+seule tronquée :
+
+```
+archive initiale : 6000 articles, 3 tranches
+après corruption : 3500 articles lisibles
+APRÈS le passage suivant : 3500 articles
+articles perdus DÉFINITIVEMENT : 2500
+```
+
+Sans un mot dans le journal. Et l'archive étant le dernier endroit où
+vivent les articles sortis de la fenêtre, « définitivement » est à prendre
+au pied de la lettre.
+
+**Le correctif.** `_lire_tranches()` rend les articles **et** la liste des
+tranches qu'il n'a pas su lire. `lire_mois` reste au mieux — c'est ce que
+veulent l'app et l'audit. `archiver`, lui, **refuse de toucher au mois**
+dès qu'une tranche manque à l'appel, et le dit dans le journal.
+
+Perdre la mise à jour d'un passage est sans conséquence : le suivant la
+refera, tant que les articles sont encore dans la fenêtre. Réécrire est
+irréversible. Entre les deux, le choix ne se discute pas.
+
+**Le revers, assumé et surveillé.** Ce refus **gèle** le mois : il
+n'accueillera plus rien tant que la tranche n'est pas réparée (l'historique
+git la contient) ou retirée. Un gel silencieux serait pire que la panne,
+donc l'audit le signale en **grave** avec le geste à faire.
+
+C'est aussi la démonstration que l'audit de l'archive, écrit une heure plus
+tôt, servait déjà : il a fallu l'étendre pour couvrir ce cas, mais sa
+structure a rendu l'ajout immédiat.
 
 ## Ajuster quelque chose
 

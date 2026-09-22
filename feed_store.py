@@ -731,19 +731,33 @@ def tranches_du_mois(mois, repertoire=ARCHIVE_DIR):
         rang += 1
 
 
-def lire_mois(mois, repertoire=ARCHIVE_DIR):
-    """Tous les articles archivés d'un mois, toutes tranches confondues."""
-    items = []
+def _lire_tranches(mois, repertoire=ARCHIVE_DIR):
+    """Les articles d'un mois, ET les tranches qu'on n'a pas su lire.
+
+    La distinction n'est pas cosmétique. Une tranche illisible veut dire
+    « je ne sais pas ce qu'il y avait dedans », ce qui n'est pas la même
+    chose que « il n'y avait rien » — et confondre les deux fait perdre des
+    articles pour de bon, voir `archiver`.
+    """
+    items, illisibles = [], []
     for chemin in tranches_du_mois(mois, repertoire):
         try:
             with open(chemin, encoding="utf-8") as f:
                 items.extend(json.load(f).get("items") or [])
         except (OSError, ValueError):
-            # Une tranche illisible ne doit pas emporter le mois : ce qui
-            # suit la réécrira depuis ce qu'on a, et le passage suivant
-            # complètera depuis la fenêtre.
-            continue
-    return items
+            illisibles.append(os.path.basename(chemin))
+    return items, illisibles
+
+
+def lire_mois(mois, repertoire=ARCHIVE_DIR):
+    """Tous les articles archivés d'un mois, toutes tranches confondues.
+
+    Au mieux : une tranche illisible est sautée plutôt que de faire échouer
+    la lecture entière. C'est ce que veut un LECTEUR — l'app, l'audit —
+    parce que la moitié d'un mois vaut mieux que rien. Ce n'est PAS ce que
+    veut celui qui va réécrire : lui doit passer par `_lire_tranches`.
+    """
+    return _lire_tranches(mois, repertoire)[0]
 
 
 def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None):
@@ -765,7 +779,29 @@ def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None):
 
     ecrits = {}
     for mois, neufs in par_mois.items():
-        existants = lire_mois(mois, repertoire)
+        existants, illisibles = _lire_tranches(mois, repertoire)
+
+        # LE GARDE-FOU DE L'ARCHIVE. Une tranche qu'on ne sait pas lire n'est
+        # pas une tranche vide. Réécrire le mois à partir de ce qu'on a pu
+        # lire remplacerait son contenu par un sous-ensemble, et l'archive
+        # étant le dernier endroit où vivent les articles sortis de la
+        # fenêtre, ils disparaîtraient pour de bon.
+        #
+        # Mesuré avant le correctif, sur un mois de 6000 articles en trois
+        # tranches : une seule tranche tronquée, et le passage suivant
+        # emportait 2500 articles définitivement, sans un mot. Exactement la
+        # perte que l'archive existe pour empêcher.
+        #
+        # On ne touche donc pas au mois. Perdre la mise à jour d'un passage
+        # est sans conséquence — le passage suivant la refera, tant que les
+        # articles sont encore dans la fenêtre — alors que réécrire est
+        # irréversible. L'audit, lui, le signalera comme grave.
+        if illisibles:
+            print(f"  [archive] {mois} NON réécrit : tranche(s) illisible(s) "
+                  f"({', '.join(illisibles)}). Réécrire le mois à partir du "
+                  f"reste effacerait ce qu'elles contenaient.")
+            continue
+
         fusion = {i["link"]: i for i in existants if i.get("link")}
         avant = len(fusion)
         inchange = all(fusion.get(i["link"]) == i for i in neufs)
