@@ -446,7 +446,12 @@ def main():
         return 0
 
     payload = build_payload(new_items, promus)
+    # Le CORPS autant que le titre. Le 22/09/2026, après avoir mis un titre
+    # d'article dans le corps, le journal ne permettait pas de vérifier ce
+    # qui était réellement parti : il n'imprimait que l'en-tête. Un canal
+    # qu'on ne peut pas relire est un canal qu'on croit sur parole.
     print(f"[push] envoi à {len(subscriptions)} appareil(s) : {payload['title']}")
+    print(f"       corps : {payload['body']}")
 
     envoyes, expires = send_all(subscriptions, payload, private_key,
                                 ttl=TTL_RECAP, urgence=URGENCE_NORMALE)
