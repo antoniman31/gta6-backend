@@ -1693,6 +1693,23 @@
       <div class="setting-desc" hidden>Format standard, réutilisable dans n'importe quel lecteur RSS (Feedly, NetNewsWire, FreshRSS…).</div>
     </div>
 
+    <div class="setting-group">
+      <span class="setting-label">Sauvegarde</span>
+      <button onclick="exporterSauvegarde()" class="pleine-largeur">Exporter mes réglages et mes lectures</button>
+      <button onclick="document.getElementById('importFichier').click()" class="pleine-largeur">Importer une sauvegarde</button>
+      <!-- Le champ de fichier est masqué et déclenché par le bouton : un
+           <input type="file"> brut s'affiche différemment sur chaque
+           navigateur et ne suit aucun des styles de ce panneau. -->
+      <!-- aria-label bien qu'il soit masqué : le contrôle d'accessibilité du
+           dépôt exige un nom sur tout champ, et il a raison de ne pas faire
+           d'exception — `display:none` est un détail de présentation, qui
+           peut sauter le jour où le champ devient visible. -->
+      <input type="file" id="importFichier" accept="application/json,.json"
+             aria-label="Fichier de sauvegarde à importer"
+             style="display:none" onchange="importerSauvegarde(this)">
+      <div class="setting-desc">Réglages, sources, mots-clés, articles lus et déjà vus. <strong>Le jeton GitHub n'y est jamais</strong> : une sauvegarde doit pouvoir traîner dans tes téléchargements sans rien exposer.</div>
+    </div>
+
     </div>
 
     <!-- Une action rare et destructive, à sa place : en bas, cernée de rouge,
@@ -2226,6 +2243,143 @@ function closeSettings(){
 function closeSettingsOnOverlay(e){
   if(e.target.id === "settingsOverlay") closeSettings();
 }
+// ---------- Sauvegarde : exporter, importer ----------
+//
+// Le besoin, posé par Antoni le 22/09/2026 : il consulte l'app depuis un
+// téléphone, et tout vit dans le localStorage de ce navigateur. Vider les
+// données du site, ou changer de téléphone, efface les réglages, les
+// mots-clés affinés pendant des semaines et l'état de lecture — sans retour.
+//
+// Une synchronisation entre appareils a été envisagée puis écartée : elle
+// demanderait un Worker à déployer et un état partagé qui peut diverger,
+// pour un besoin qui n'existe pas avec un seul appareil. Un fichier couvre
+// les deux vrais risques sans rien à maintenir.
+//
+// Le jeton GitHub N'EST PAS dedans, et c'est la leçon reprise telle quelle
+// de game-library : « l'export contient les jeux mais jamais les clés ». Une
+// sauvegarde doit pouvoir rester dans un dossier de téléchargements, être
+// envoyée par message ou stockée ailleurs sans rien exposer. Le jeton, lui,
+// se refabrique sur GitHub ; il n'a rien à faire dans un fichier qui voyage.
+const SAUVEGARDE_APP = "GTA6_WATCH";
+const SAUVEGARDE_VERSION = 1;
+
+function contenuSauvegarde(){
+  return {
+    app: SAUVEGARDE_APP,
+    version: SAUVEGARDE_VERSION,
+    exporte_le: new Date().toISOString(),
+    settings: settings,
+    lus: [...readSet],
+    vus: seenMap,
+  };
+}
+
+// Ce qu'on NE sauvegarde pas, dit ici pour que ça reste un choix et non un
+// oubli : le jeton GitHub (voir plus haut), et `last-items-v1`, qui n'est
+// qu'un cache du fil reconstruit à la première ouverture. Le recopier
+// alourdirait le fichier de centaines de kilo-octets d'articles qui
+// reviennent seuls.
+
+function exporterSauvegarde(){
+  try{
+    const texte = JSON.stringify(contenuSauvegarde(), null, 2);
+    const blob = new Blob([texte], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const jour = new Date().toISOString().slice(0, 10);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `gta6watch-sauvegarde-${jour}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // Libéré tout de suite : l'objet garde le fichier entier en mémoire tant
+    // qu'on ne le révoque pas, et le téléchargement est déjà lancé.
+    URL.revokeObjectURL(url);
+    addLog("ok", `Sauvegarde exportée : ${readSet.size} article(s) lu(s), ${settings.feeds.length} source(s).`);
+  }catch(e){
+    addLog("fail", "Export impossible : " + e.message);
+  }
+}
+
+// Relit un fichier de sauvegarde en se méfiant de tout.
+//
+// Rend { ok: true, data } ou { ok: false, raison }. Une seule porte d'entrée,
+// et elle refuse EN BLOC plutôt que d'appliquer ce qu'elle a compris : un
+// import à moitié fait laisse un état que personne ne sait décrire, et qui
+// n'est ni l'ancien ni le nouveau.
+function valideSauvegarde(brut){
+  let data;
+  try{ data = JSON.parse(brut); }
+  catch(e){ return { ok: false, raison: "Ce fichier n'est pas du JSON lisible." }; }
+  if(!data || typeof data !== "object" || Array.isArray(data))
+    return { ok: false, raison: "Ce fichier ne contient pas une sauvegarde." };
+  if(data.app !== SAUVEGARDE_APP)
+    return { ok: false, raison: "Ce fichier vient d'une autre application." };
+  if(typeof data.version !== "number" || data.version > SAUVEGARDE_VERSION)
+    return { ok: false, raison: "Cette sauvegarde vient d'une version plus récente de l'app." };
+  if(!data.settings || typeof data.settings !== "object" || Array.isArray(data.settings))
+    return { ok: false, raison: "Les réglages sont absents ou abîmés." };
+  if(!Array.isArray(data.lus))
+    return { ok: false, raison: "La liste des articles lus est absente ou abîmée." };
+  if(!data.vus || typeof data.vus !== "object" || Array.isArray(data.vus))
+    return { ok: false, raison: "La liste des articles déjà vus est absente ou abîmée." };
+  return { ok: true, data };
+}
+
+async function importerSauvegarde(champ){
+  const fichier = champ && champ.files && champ.files[0];
+  // Le champ est remis à zéro tout de suite : sans ça, réimporter DEUX FOIS
+  // le même fichier ne déclenche pas de second `change`, et le second import
+  // semblerait ignoré sans qu'on sache pourquoi.
+  if(champ) champ.value = "";
+  if(!fichier) return;
+
+  let brut;
+  try{ brut = await fichier.text(); }
+  catch(e){ addLog("fail", "Fichier illisible : " + e.message); return; }
+
+  const lu = valideSauvegarde(brut);
+  if(!lu.ok){
+    addLog("fail", "Import refusé — " + lu.raison);
+    await demandeConfirmation("Import impossible", lu.raison + "\n\nRien n'a été modifié.", "Fermer");
+    return;
+  }
+
+  // Les chiffres AVANT et APRÈS, côte à côte. Une récupération ne remplace
+  // rien sans qu'on ait vu ce qu'on échange : importer par mégarde une
+  // sauvegarde d'il y a un mois effacerait sinon un mois de lecture en
+  // silence.
+  const d = lu.data;
+  const sourcesApres = Array.isArray(d.settings.feeds) ? d.settings.feeds.length : 0;
+  const quand = d.exporte_le ? new Date(d.exporte_le).toLocaleString("fr-FR") : "date inconnue";
+  const ok = await demandeConfirmation(
+    "Remplacer les réglages et les lectures de cet appareil ?",
+    `Sauvegarde du ${quand}.\n\n`
+    + `Articles lus : ${readSet.size} → ${d.lus.length}\n`
+    + `Sources : ${settings.feeds.length} → ${sourcesApres}\n`
+    + `Mots-clés : ${settings.keywords.length} → ${(d.settings.keywords || []).length}\n\n`
+    + "Le jeton GitHub de cet appareil n'est pas touché : il ne voyage jamais "
+    + "dans une sauvegarde.",
+    "Remplacer");
+  if(!ok) return;
+
+  // Object.assign sur les valeurs par défaut, exactement comme au chargement :
+  // une sauvegarde d'une version antérieure n'a pas les réglages ajoutés
+  // depuis, et les laisser absents donnerait des undefined un peu partout.
+  settings = Object.assign({}, DEFAULT_SETTINGS, d.settings);
+  readSet = new Set(d.lus.filter(l => typeof l === "string"));
+  seenMap = d.vus;
+  storageSet("settings-v1", JSON.stringify(settings));
+  await saveRead();
+  await saveSeen();
+
+  applyTheme();
+  applyDensity();
+  populateSettingsUI();
+  applyFilters();
+  addLog("ok", `Sauvegarde importée : ${readSet.size} article(s) lu(s), ${settings.feeds.length} source(s).`);
+}
+
 async function resetSettings(){
   const ok = await demandeConfirmation(
     "Remettre tous les paramètres par défaut ?",
