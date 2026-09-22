@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1536
+qui permet de tester tout le pipeline sans sortir de la machine. **1537
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5157,6 +5157,102 @@ Les deux dernières sont ignorées sans risque là où elles ne sont pas gérée
 Antoni, 22/09 : **je fusionne dès que les quatre suites sont vertes**, sans
 demander. Ce qui touche au format publié ou aux notifications continue de
 passer par lui.
+
+## Ce que game-library a appris à GTA6_WATCH — 22/09/2026
+
+Antoni a un second projet, [`game-library`](https://github.com/antoniman31/game-library) :
+une bibliothèque de jeux en **React + Vite**, 33 modules, un Worker Cloudflare.
+Question posée : qu'est-ce qui pourrait servir ici ?
+
+**Aucune ligne n'est copiable.** GTA6_WATCH est un fichier HTML unique de
+5 000 lignes, sans build, servi tel quel. Ce qui se transporte, ce sont des
+décisions — et la lecture a surtout servi à trouver ce qui manquait vraiment,
+en écartant tout ce que cette app faisait déjà, parfois mieux (le panneau
+`Sheet` de game-library gère Échap et le verrou de défilement, mais pas le
+focus ; les dialogues d'ici, si).
+
+### La recherche ignorait les accents
+
+`normalizeTitle()` vivait dans ce fichier depuis longtemps, avec la
+normalisation NFD qu'il fallait — mais elle ne servait qu'à la **similarité
+des titres**. La recherche, elle, se contentait d'un `toLowerCase()`.
+
+Mesuré sur les 1 846 articles du fil :
+
+```
+523 titres portent un accent  (28 %)
+
+  31× « crème »        22× « vidéo »        15× « détails »
+  29× « dévoilé »      20× « précommande »  15× « édition »
+  24× « déjà »         19× « aperçu »       12× « présentation »
+```
+
+Ce sont exactement les mots qu'on tape dans une barre de recherche, et sur un
+téléphone on les tape **sans accent**. `precommande` ne renvoyait rien.
+
+Le vrai travail n'était pas le filtre, qui tient en une ligne, mais le
+**surlignage**. Une fois les accents retirés, la position d'une correspondance
+ne désigne plus le texte d'origine : « é » compte pour un caractère avant
+décomposition et deux après, donc `<mark>` se décalait d'un caractère par
+accent qui précède. `indexSansAccents()` garde la correspondance entre les
+deux textes, et le surlignage retrouve les bornes exactes.
+
+Bénéfice de bord : la `RegExp` a disparu. L'ancienne version cherchait dans le
+texte **déjà échappé**, ce qui obligeait à échapper aussi les caractères
+spéciaux de la requête — deux échappements imbriqués pour un surlignage. On
+cherche maintenant dans le texte aplati et on n'échappe qu'à l'écriture.
+
+La liste noire a suivi, et **des deux côtés** : n'aplatir que le texte des
+articles aurait rendu muet un mot déjà enregistré avec ses accents. Une liste
+affinée pendant des semaines aurait cessé de filtrer sans que rien ne le dise.
+
+### La barre d'état restait bleue
+
+`<meta name="theme-color">` valait le bleu de l'accent depuis le premier jour,
+et **aucune ligne ne la touchait**. En PWA installée, une bande bleue coiffait
+donc en permanence une application noire — un bleu qui n'était le fond d'aucun
+des deux thèmes. `COULEUR_BARRE` reprend les valeurs de `--bg`, et
+`majCouleurBarre()` est appelée là où `data-theme` est posé, donc au démarrage,
+au changement manuel, et quand le téléphone bascule le soir.
+
+### Ce qui se défait tout seul ne demande plus la permission
+
+game-library efface avec un toast « Annuler » de 5 s. Ici tout passait par une
+confirmation modale. Le garde-fou suit désormais la **réversibilité** :
+
+| Geste | Garde-fou | Pourquoi |
+|---|---|---|
+| Marquer N articles comme lus | **Toast « Annuler », 5 s** | état local, se rétablit à l'identique |
+| Effacer le jeton GitHub | Confirmation | GitHub ne réaffiche jamais un jeton créé |
+| Générer des clés VAPID | Confirmation | tous les appareils abonnés décrochent |
+| Réinitialiser les réglages | Confirmation | sources et mots-clés ne se rendent pas |
+| Tout désactiver | Confirmation | la sélection perdue ne se rend pas |
+
+Le piège n'était pas le toast mais l'**annulation**. Elle doit défaire ce que
+le geste a fait, pas rejouer l'inverse sur la liste affichée : un article déjà
+lu avant le geste serait alors remarqué non lu, et l'annulation ferait plus
+que défaire. `markAllRead` note donc les liens **réellement modifiés**, et ce
+sont eux seuls qui reviennent en arrière. Un contrôle navigateur place un
+article déjà lu au milieu du lot et vérifie qu'il l'est encore après retour.
+
+Le toast ne prend pas le focus — le voler après un geste volontaire fait
+perdre sa place dans la liste — mais son bouton reste atteignable au clavier,
+et il s'annonce en `role="status"` et non `alert` : il accompagne une action
+voulue, il ne l'interrompt pas.
+
+### Ce qui n'avait rien à faire
+
+**Nommer ce qu'on perd avant d'effacer.** C'était la proposition, et elle était
+fondée sur une lecture trop rapide : les confirmations d'ici nomment déjà la
+conséquence, mot pour mot dans l'esprit de `garde-fous.js`. Et le champ du
+jeton n'est jamais pré-rempli — on ne peut pas écraser d'un doigt qui glisse ce
+qu'on ne voit pas. Zéro ligne écrite, la proposition était en trop.
+
+**La synchronisation entre appareils.** Écartée après une question : GTA6_WATCH
+se consulte surtout depuis un téléphone, donc un Worker à déployer et un état
+partagé qui peut diverger ne répondraient à rien. Le vrai risque restant — un
+navigateur qui nettoie ses données, un changement de téléphone — se couvre par
+un export de fichier, sans infrastructure.
 
 ## Ajuster quelque chose
 

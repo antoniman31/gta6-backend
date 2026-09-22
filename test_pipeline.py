@@ -5511,9 +5511,17 @@ def test_confirmation_des_actions_sans_retour():
     check("z-index:200" in bloc,
           "il passe au-dessus du panneau Paramètres, d'où partent ces actions")
 
-    # Chaque action irréversible passe par la confirmation, et AUCUNE ne
+    # Chaque action IRRÉVERSIBLE passe par la confirmation, et AUCUNE ne
     # s'exécute avant la réponse.
-    for nom in ("markAllRead", "forgetGithubToken", "resetSettings",
+    #
+    # markAllRead a quitté cette liste le 22/09/2026. Le garde-fou suit
+    # désormais la réversibilité du geste : marquer des articles comme lus
+    # est un état local qui se rétablit à l'identique, donc il part sans
+    # question et se reprend au toast. Les quatre qui restent touchent des
+    # valeurs qui n'existent nulle part ailleurs — un jeton que GitHub ne
+    # réaffiche pas, une paire de clés, une sélection de sources, des
+    # réglages. Voir le contrôle du toast juste en dessous.
+    for nom in ("forgetGithubToken", "resetSettings",
                 "generateVapidKeys", "disablePush"):
         debut = html.index(f"function {nom}(")
         corps = html[debut:html.index("\n}", debut)]
@@ -5530,6 +5538,28 @@ def test_confirmation_des_actions_sans_retour():
     debut = html.index("function toggleRead(")
     check("demandeConfirmation" not in html[debut:html.index("\n}", debut)],
           "le ✓ d'une carte reste sans confirmation, c'est délibéré")
+
+    # Même chose pour « tout marquer comme lu », et pour la même raison
+    # inverse : il ne doit PAS reprendre de confirmation, il doit offrir un
+    # retour. Les deux moitiés sont vérifiées, parce qu'une seule ne dit
+    # rien : sans confirmation NI toast, l'action serait simplement devenue
+    # silencieuse et sans recours.
+    debut = html.index("async function markAllRead(")
+    corps = html[debut:html.index("\n}", debut)]
+    check("demandeConfirmation(" not in corps,
+          "« tout marquer comme lu » ne demande plus confirmation : c'est réversible")
+    check("montreToast(" in corps,
+          "mais il propose le retour, sinon il serait juste devenu silencieux")
+    check("il n'y a pas de retour en arrière" not in corps.lower(),
+          "et la phrase qui disait le contraire est partie avec la contrainte")
+
+    # L'annulation doit défaire CE QUE LE GESTE A FAIT, pas rejouer
+    # l'inverse sur tout l'affichage — sinon elle marquerait non lus des
+    # articles qui l'étaient déjà avant. Le comportement est vérifié dans le
+    # navigateur ; ici on verrouille le fait que la liste des liens touchés
+    # est bien celle qui sert à revenir en arrière.
+    check("const touches = vise.map(i => i.link);" in corps,
+          "l'annulation s'appuie sur les articles réellement modifiés")
 
     # Les deux issues sûres : le focus part sur Annuler, Échap et le clic
     # à côté refusent. Une validation par mégarde doit être inoffensive.
@@ -5561,18 +5591,26 @@ def test_confirmation_des_actions_sans_retour():
     # Le nombre annoncé doit être celui des articles qui vont VRAIMENT
     # changer d'état. Compter aussi les articles déjà lus annonçait « 247 »
     # sur un onglet où 29 seulement étaient non lus.
+    #
+    # La propriété n'a pas bougé le 22/09/2026, elle a changé d'endroit :
+    # c'est le toast qui l'annonce désormais, et non plus la confirmation.
     debut = html.index("async function markAllRead(")
     corps = html[debut:html.index("\n}", debut)]
     check("articlesAffiches()" in corps,
           "le marquage en masse part de la MÊME liste que l'affichage")
-    check("readSet.has(i.link)" in corps.split("demandeConfirmation(")[0],
+    check("readSet.has(i.link)" in corps.split("montreToast(")[0],
           "et ne retient que les articles dont l'état va changer")
-    check("vise.length" in corps.split("demandeConfirmation(")[1][:220],
-          "c'est ce nombre-là qui est annoncé")
-    check("affiches.length" in corps.split("demandeConfirmation(")[1][:320],
-          "avec le total affiché en regard, pour repérer le mauvais onglet")
-    check(corps.index("vise.length === 0") < corps.index("demandeConfirmation("),
-          "et rien n'est demandé quand aucun article ne changerait")
+    check("touches.length" in corps.split("montreToast(")[1][:220],
+          "c'est ce nombre-là que le toast annonce")
+    check(corps.index("vise.length === 0") < corps.index("montreToast("),
+          "et rien n'est annoncé quand aucun article ne changerait")
+
+    # Le total affiché en regard — « 29 parmi les 247 affichés » — a disparu
+    # avec la confirmation, et c'est voulu. Il servait à repérer AVANT de
+    # valider qu'on était sur le mauvais onglet ; pouvoir défaire APRÈS
+    # couvre le même besoin sans faire lire deux nombres en cinq secondes.
+    check("affiches.length" not in corps.split("montreToast(")[1],
+          "le toast annonce un seul nombre : l'annulation remplace la relecture")
 
     # La cause du défaut : markAllRead recopiait trois des six règles de
     # filtrage d'applyFilters, et les deux avaient dérivé. Une seule
