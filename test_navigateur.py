@@ -1027,8 +1027,10 @@ def test_vue_statistiques(nav, url):
     check(page.locator(".stats-histo").count() >= 1, "l'histogramme quotidien est dessiné")
     check(page.locator(".stats-histo em").count() == page.locator(".stats-histo").count(),
           "un seul chiffre écrit par histogramme — le maximum, pas un par colonne")
-    check(page.locator(".stats-tableau table").count() == page.locator(".stats-histo").count(),
-          "chaque histogramme a son tableau : l'infobulle ne s'affiche pas au doigt")
+    graphes = page.locator(".stats-histo").count() + page.locator(".stats-carte").count()
+    check(page.locator(".stats-tableau table").count() == graphes,
+          "chaque graphique — histogrammes et carte jour × heure — a son tableau : "
+          "tout reste lisible sans toucher une seule colonne")
     texte_fil = page.inner_text("#statsContenu")
     check("Articles par mois" not in texte_fil,
           "aucun histogramme mensuel : il faudrait que le robot publie sa couverture")
@@ -1444,6 +1446,116 @@ def test_officiel_et_filtres_etroits(nav, url):
         ctx.close()
 
 
+def test_graphiques_detailles(nav, url):
+    """Les graphiques refaits le 23/09/2026, à la demande d'Antoni (« plus détaillés et jolis »)."""
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    M = "2026-10-20T10:00:00Z"
+
+    # Des repères ronds, pas des bornes au hasard.
+    pas = page.evaluate("[pasGrille(300), pasGrille(402), pasGrille(133), pasGrille(30), pasGrille(1), pasGrille(7)]")
+    check(pas == [100, 100, 50, 10, 1, 2],
+          "le pas de la grille est le plus petit pas rond en cinq intervalles au plus : %s" % pas)
+    check(page.evaluate("Math.ceil(402 / pasGrille(402)) * pasGrille(402)") == 500,
+          "402 monte à 500, pas à 600 — la première version laissait un tiers du graphique vide")
+    check(page.evaluate("reperesAxe(7)") == [0, 1, 2, 3, 4, 5, 6],
+          "sept colonnes : sept étiquettes sous l'axe")
+    check(page.evaluate("reperesAxe(15, 7)") == [0, 7, 14],
+          "quinze jours : une étiquette par semaine, la dernière comprise")
+    check(page.evaluate("reperesAxe(24, 6)") == [0, 6, 12, 18, 23],
+          "vingt-quatre heures : 0, 6, 12, 18 et 23 h")
+
+    # Un fil connu, rendu pour de vrai dans la vue.
+    page.evaluate("""(m) => {
+      const items = [];
+      for(let j = 1; j <= 19; j++){
+        for(let k = 0; k < (j === 12 ? 30 : 5); k++){
+          items.push({title: "GTA 6 album " + j + " " + k, link: "l" + j + "-" + k, source: "S",
+                      lang: k % 3 ? "en" : "fr",
+                      date: "2026-10-" + String(j).padStart(2, "0") + "T" + String(8 + k % 10).padStart(2, "0") + ":00:00Z"});
+        }
+      }
+      lastItems = items; historyPartial = false;
+      derniereReponseBackend = {couverture_depuis: "2026-10-01"};
+      const vrai = Date; window.__maintenant = new vrai(m);
+      window.Date = class extends vrai {
+        constructor(...a){ super(...(a.length ? a : [window.__maintenant])); }
+        static now(){ return window.__maintenant.getTime(); }
+      };
+      setTab("stats"); ongletStatsChoisi("fil");
+    }""", M)
+    page.wait_for_selector(".stats-histo")
+    premier = page.locator(".stats-bloc").filter(has_text="Articles dans le fil, par jour")
+    check(premier.locator(".stats-grille").count() >= 3,
+          "l'histogramme quotidien a sa grille de repères (%d)" % premier.locator(".stats-grille").count())
+    check(premier.locator(".stats-grille span").all_inner_texts()[:2] == ["0", "10"],
+          "graduée en valeurs rondes à partir de zéro (%s)" % premier.locator(".stats-grille span").all_inner_texts())
+    check(premier.locator(".stats-mediane").count() == 1
+          and "médiane 5" in premier.locator(".stats-mediane").inner_text(),
+          "et sa médiane, écrite (%s)" % (premier.locator(".stats-mediane").all_inner_texts()))
+    check(premier.locator(".stats-col.pic").count() == 1
+          and premier.locator(".stats-col.pic em").inner_text() == "30",
+          "le jour le plus chargé est en accent plein, sa valeur écrite (30)")
+    check(len(premier.locator(".stats-axe span").all_inner_texts()) == 3,
+          "une date par semaine sous l'axe, la dernière comprise (%s)"
+          % premier.locator(".stats-axe span").all_inner_texts())
+
+    # Toucher une colonne en donne la valeur.
+    avant = premier.locator(".stats-lecture").inner_text()
+    premier.locator(".stats-col").nth(2).click()
+    apres = premier.locator(".stats-lecture").inner_text()
+    check("Touche" in avant and apres.replace("\n", " ").startswith("5 03/10"),
+          "toucher une colonne écrit sa valeur et sa date au-dessus du graphique (« %s »)" % apres.replace("\n", " "))
+    check(premier.locator(".stats-col.choisie").count() == 1,
+          "et la colonne touchée passe en accent plein — une seule à la fois")
+    premier.locator(".stats-col").nth(5).click()
+    check(premier.locator(".stats-col.choisie").count() == 1, "toucher une autre colonne déplace le choix")
+
+    # La carte jour × heure.
+    carte = page.locator(".stats-bloc").filter(has_text="Quand tombent")
+    check(carte.count() == 1 and carte.locator(".stats-case").count() == 7 * 24,
+          "la carte jour × heure a ses 168 cases")
+    pleines = carte.locator(".stats-case:not(.vide)").count()
+    check(0 < pleines < 7 * 24 and carte.locator(".stats-case.vide").count() == 7 * 24 - pleines,
+          "les heures sans article restent sur le fond, les autres prennent la teinte (%d pleines)" % pleines)
+    carte.locator(".stats-case:not(.vide)").first.click()
+    lu = carte.locator(".stats-lecture").inner_text().replace("\n", " ")
+    check(" h – " in lu and lu.split(" ")[0].isdigit(),
+          "toucher une case écrit sa valeur, son jour et son heure (« %s »)" % lu)
+
+    # Classements, langues, mots qui montent.
+    medias = page.locator(".stats-bloc").filter(has_text="Qui parle le plus")
+    check(medias.locator(".stats-barres .trait").count() >= 1, "les médias sont classés en barres")
+    langues = page.locator(".stats-bloc").filter(has_text="Français et anglais")
+    check(langues.locator(".stats-pile i").count() == 2 and langues.locator(".stats-cles span").count() == 2,
+          "français et anglais : une barre à deux parts, et sa légende avec les chiffres")
+    check("%" in langues.locator(".stats-cles").inner_text(), "la légende donne aussi les pourcentages")
+    # Les deux paires ont été passées au validateur de palette (daltonismes
+    # compris), chacune sur le fond de son thème : il faut que ce soit bien
+    # celle du thème affiché.
+    for theme, attendu in (("dark", ["#3987e5", "#d95926"]), ("light", ["#1d4ed8", "#eb6834"])):
+        couleurs = page.evaluate("""(t) => {
+          document.documentElement.setAttribute("data-theme", t);
+          const cs = getComputedStyle(document.documentElement);
+          return [cs.getPropertyValue("--langue-fr").trim(), cs.getPropertyValue("--langue-en").trim()];
+        }""", theme)
+        check(couleurs == attendu,
+              "thème %s : les deux teintes validées au script sont celles affichées (%s)" % (theme, couleurs))
+
+    # Ma lecture : la jauge.
+    page.evaluate("() => { readSet = new Set(lastItems.slice(0, 20).map(i => i.link)); ongletStatsChoisi('moi'); }")
+    page.wait_for_selector(".stats-jauge")
+    largeur = page.evaluate("document.querySelector('.stats-jauge i').style.width")
+    check(largeur.endswith("%") and float(largeur[:-1]) > 0, "la part lue se voit en jauge (%s)" % largeur)
+
+    check(not erreurs, "aucune erreur dans la page (%s)" % erreurs[:2])
+    ctx.close()
+
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -1839,6 +1951,7 @@ def main():
             test_heure_de_premiere_vue(nav, url)
             test_stats_quatre_rubriques(nav, url)
             test_officiel_et_filtres_etroits(nav, url)
+            test_graphiques_detailles(nav, url)
             nav.close()
     finally:
         srv.shutdown()
