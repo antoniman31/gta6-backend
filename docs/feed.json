@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T23:47:49.479001+00:00",
+  "generated_at": "2026-09-23T00:01:45.124200+00:00",
   "attente_recap": {
     "articles": 7,
     "officiels": 0,
@@ -47,10 +47,10 @@
       }
     ]
   },
-  "duration_seconds": 42.6,
+  "duration_seconds": 40.6,
   "decode_failures": 0,
-  "total_articles": 1861,
-  "new_this_run": 3,
+  "total_articles": 1863,
+  "new_this_run": 2,
   "hot_count": 22,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -481,8 +481,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 96,
+      "new_this_run": 1,
+      "articles_exclusifs": 97,
       "last_article": "2026-09-21T00:07:00+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -533,7 +533,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 513,
       "last_article": "2026-09-22T23:24:42+00:00",
       "days_since_last_article": 0,
@@ -559,7 +559,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 34,
       "last_article": "2026-09-22T20:30:54+00:00",
       "days_since_last_article": 0,
@@ -871,8 +871,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 16,
+      "new_this_run": 1,
+      "articles_exclusifs": 17,
       "last_article": "2026-09-20T02:00:23+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -932,10 +932,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1166,15 +1166,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1244,15 +1244,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-17T16:44:30+00:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {},
@@ -1292,7 +1292,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "44,44,44,44,44,44,44,44,45,45,45,45",
+    "gta6times": "44,44,44,44,44,44,44,45,45,45,45,45",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1371,7 +1371,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 23:44:14 GMT"
+      "modified": "Wed, 23 Sep 2026 00:00:42 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1380,8 +1380,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab30f88-3247\"",
-      "modified": "Tue, 22 Sep 2026 23:30:16 GMT"
+      "etag": "W/\"6ab31693-3247\"",
+      "modified": "Wed, 23 Sep 2026 00:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1400,8 +1400,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab2f84e-b84\"",
-      "modified": "Tue, 22 Sep 2026 21:51:10 GMT"
+      "etag": "\"6ab31472-b8d\"",
+      "modified": "Tue, 22 Sep 2026 23:51:14 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1411,7 +1411,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 22 Sep 2026 23:46:53 GMT"
+      "modified": "Wed, 23 Sep 2026 00:00:42 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -22200,6 +22200,19 @@
       "description": "Extended Look de GTA 6 : tout ce qu'on a appris des nouvelles images&nbsp;&nbsp;Red Bull"
     },
     {
+      "title": "Take-Two Gives New Official Statement on GTA 6 Leaks Investigation - GameRant",
+      "link": "https://gamerant.com/gta-6-leaks-investigation-take-two-statement/",
+      "source_link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFA5ZHNPUGdUX1ZSMkV0SFUwNVF6UkJUY0JfTVYyZWFwRmdmZ1BVcmZBMllJUzM1R3puVU5UM2tIY1haSGJyN01JVk42OGJTSXJiaHRLYVlxQWxCYTBmTGVNQktzOGxGSkF4bWpDNG9CeURqdWU0?oc=5",
+      "date": "2026-09-01T07:00:00+00:00",
+      "source": "Google News (Game Rant)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/gta-6-leaks-investigation-take-two-statement.jpg?w=1600&h=900&fit=crop",
+      "description": "Take-Two Gives New Official Statement on GTA 6 Leaks Investigation&nbsp;&nbsp;GameRant"
+    },
+    {
       "title": "GTA 6 : Une pluie d’informations sur Jason, Lucia, leur relation et nos planques dans le jeu",
       "link": "https://www.journaldugeek.com/2026/08/31/gta-6-une-pluie-dinformations-sur-jason-lucia-leur-relation-et-nos-planques-dans-le-jeu/",
       "source_link": null,
@@ -24591,6 +24604,19 @@
       "lang": null,
       "image": "https://www.engadget.com/img/gallery/guns-cars-and-chihuahuas-breaking-down-the-gta-6-extended-look/l-intro-1787886431.jpg",
       "description": "Guns, Cars And Chihuahuas: Breaking Down The GTA 6 Extended Look&nbsp;&nbsp;Engadget"
+    },
+    {
+      "title": "Everything revealed in GTA 6 ‘Extended Look’ on Netflix - The Big Lead",
+      "link": "https://www.thebiglead.com/gta-6-extended-look-gameplay-everything-revealed/",
+      "source_link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxQeEVMODdwaHJhaDNCUUVlZHp5UTA0MlkwbFkyTFNjdGNPa2RRUlUxUk0xRER3R0tjRGFKQkd5N2tzZzJ3N0l3c1NxdDIxSzE4TmpkSzlrX1ozM01fc2prOTVIZS1ZNmJlR3V5cjYwOUNuQzZRSWNmNnNSelU4OThwOVhR?oc=5",
+      "date": "2026-08-27T07:00:00+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": null,
+      "image": "https://www.thebiglead.com/wp-content/uploads/2026/08/GTA-6-Jason-and-Lucia-2.jpg",
+      "description": "Everything revealed in GTA 6 ‘Extended Look’ on Netflix&nbsp;&nbsp;The Big Lead"
     },
     {
       "title": "GTA 6 | Découvrez la nouvelle preview du jeu - Rockstar Mag",
