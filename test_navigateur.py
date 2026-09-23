@@ -845,6 +845,242 @@ def test_sauvegarde_export_import(nav, url):
 
     ctx.close()
 
+
+def test_vue_statistiques(nav, url):
+    """La vue statistiques, et d'abord le piège qu'elle devait éviter.
+
+    Le piège a été mal jugé deux fois. L'archive ne corrige pas les vieux
+    mois (créée la veille à partir de feed.json, elle a le même défaut), et
+    « le plus ancien article ordinaire » ne marque pas le début d'une
+    couverture complète : sur le fil réel, la falaise du 07/09 est la limite
+    de l'ancienne fenêtre de 15 jours, pas un creux de la presse. Rien dans
+    feed.json ne permet de dater une couverture complète.
+
+    La règle retenue ne devine rien : la rétention n'est jamais descendue
+    sous 15 jours, donc un histogramme borné à 14 jours complets ne contient
+    aucun jour élagué. Et AUCUNE date de couverture n'est affichée — c'est le
+    contrôle qui aurait attrapé la seconde erreur.
+
+    Le reste vérifie la bascule de vue dans setTab(), le point annoncé comme
+    risqué avant d'y toucher : ajouter une vue en oubliant un seul des
+    affichages laissait le fil ou la recherche sous les statistiques.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # Midi, heure de Paris, le 23/09/2026 : l'horloge est injectée.
+    MAINTENANT = "2026-09-23T10:00:00Z"
+
+    # ---- 1. LE piège : de vieux officiels, et 20 jours d'ordinaires ----
+    s = page.evaluate("""(m) => {
+      const items = [
+        {title: "Officiel 2023", link: "o1", date: "2023-12-05T12:00:00Z", official: true},
+        {title: "Officiel 2025", link: "o2", date: "2025-05-06T12:00:00Z", official: true},
+        {title: "Officiel juin", link: "o3", date: "2026-06-10T12:00:00Z", official: true},
+      ];
+      // Ordinaires du 03/09 au 23/09, trois par jour.
+      for(let j = 3; j <= 23; j++){
+        for(let k = 0; k < 3; k++){
+          const d = String(j).padStart(2, "0");
+          // padStart et non "T0" + heure : la première version écrivait
+          // « T010 » pour 10 h, une date invalide. Le code l'ignorait à juste
+          // titre, et c'est le test qui échouait.
+          items.push({title: "a" + j + k, link: "a" + j + "-" + k,
+                      date: "2026-09-" + d + "T" + String(k + 8).padStart(2, "0") + ":00:00Z"});
+        }
+      }
+      return calculeStats(items, null, new Date(m));
+    }""", MAINTENANT)
+    check("couvertureDepuis" not in s and "mois" not in s,
+          "le calcul ne produit AUCUNE date de couverture ni aucun mois : rien "
+          "dans le fil ne permet de les établir sans deviner")
+    check(s["officiels"] == 3, "les officiels sont comptés à part (%d)" % s["officiels"])
+
+    jours = [j["jour"] for j in s["jours"]]
+    check(len(jours) == 14,
+          "l'histogramme couvre 14 jours — sous la plus petite fenêtre de "
+          "rétention jamais utilisée, 15 jours (%d)" % len(jours))
+    check("2026-09-23" not in jours, "aujourd'hui, pas fini, n'y est pas")
+    check(jours[0] == "2026-09-09" and jours[-1] == "2026-09-22",
+          "il va du 09 au 22 (%s → %s)" % (jours[0], jours[-1]))
+    check(all(j["n"] == 3 for j in s["jours"]), "trois articles chaque jour")
+    check(s["mediane"] == 3, "médiane : 3 par jour (%d)" % s["mediane"])
+
+    # Une installation récente : le premier jour du fil, partiel, est exclu.
+    s_jeune = page.evaluate("""(m) => calculeStats([
+        {title: "a", link: "1", date: "2026-09-19T15:00:00Z"},
+        {title: "b", link: "2", date: "2026-09-20T12:00:00Z"},
+        {title: "c", link: "3", date: "2026-09-21T12:00:00Z"},
+        {title: "d", link: "4", date: "2026-09-22T12:00:00Z"},
+      ], null, new Date(m))""", MAINTENANT)
+    check([j["jour"] for j in s_jeune["jours"]] == ["2026-09-20", "2026-09-21", "2026-09-22"],
+          "sur un fil de quatre jours, le premier — partiel — n'est pas dessiné")
+
+    # ---- 2. Même avec cent jours de données, jamais plus de 14 ----
+    s2 = page.evaluate("""(m) => {
+      const items = [];
+      const d = new Date("2026-06-10T12:00:00Z");
+      while(d < new Date("2026-09-23T00:00:00Z")){
+        items.push({title: "x", link: "x" + d.getTime(), date: d.toISOString()});
+        d.setTime(d.getTime() + 86400000);
+      }
+      return calculeStats(items, null, new Date(m));
+    }""", MAINTENANT)
+    check(len(s2["jours"]) == 14,
+          "cent jours de données ne font pas un histogramme plus long : la "
+          "borne ne dépend pas de ce que le fil paraît contenir (%d)" % len(s2["jours"]))
+
+    # Une date illisible venue d'un flux ne plante rien et ne compte dans
+    # aucun jour. Le défaut est apparu ici par accident — le test lui-même
+    # fabriquait « T010 » — et il vaut mieux le verrouiller exprès.
+    s_bad = page.evaluate("""(m) => calculeStats([
+        {title: "ok", link: "1", date: "2026-09-20T12:00:00Z"},
+        {title: "abîmée", link: "2", date: "2026-09-21T010:00:00Z"},
+        {title: "ok", link: "3", date: "2026-09-22T12:00:00Z"},
+      ], null, new Date(m))""", MAINTENANT)
+    check(sum(j["n"] for j in s_bad["jours"]) == 1,
+          "une date illisible n'est comptée dans aucun jour (%s)"
+          % [(j["jour"], j["n"]) for j in s_bad["jours"]])
+
+    # Un jour SANS article, à l'intérieur de la couverture, est un vrai zéro.
+    s3 = page.evaluate("""(m) => calculeStats([
+        {title: "a", link: "1", date: "2026-09-18T12:00:00Z"},
+        {title: "b", link: "2", date: "2026-09-20T12:00:00Z"},
+        {title: "c", link: "3", date: "2026-09-22T12:00:00Z"},
+      ], null, new Date(m))""", MAINTENANT)
+    check([(j["jour"], j["n"]) for j in s3["jours"]]
+          == [("2026-09-19", 0), ("2026-09-20", 1), ("2026-09-21", 0), ("2026-09-22", 1)],
+          "un jour creux dans la couverture compte zéro, il n'est pas sauté : %s"
+          % [(j["jour"], j["n"]) for j in s3["jours"]])
+
+    # ---- 3. Sujets repris, et sources ----
+    s4 = page.evaluate("""(m) => calculeStats([
+        {title: "Peu repris", link: "p", date: "2026-09-20T12:00:00Z", extraSources: [{}]},
+        {title: "Très repris", link: "t", date: "2026-09-19T12:00:00Z", extraSources: [{}, {}, {}, {}]},
+        {title: "Seul", link: "s", date: "2026-09-21T12:00:00Z"},
+      ], {
+        sources_health: [
+          {id: "a", name: "Alpha", status: "ok", articles_exclusifs: 3},
+          {id: "b", name: "Bravo", status: "ok", articles_exclusifs: 19},
+          {id: "c", name: "Charlie", status: "tarie", articles_exclusifs: 0},
+          {id: "r", name: "Reddit — suivi", status: "en_attente", articles_exclusifs: 0},
+        ],
+        sources_declining: {a: {habituel: 20, recents: [2, 1, 3]}},
+      }, new Date(m))""", MAINTENANT)
+    check([r["titre"] for r in s4["repris"]] == ["Très repris", "Peu repris"],
+          "les sujets repris sont classés par nombre de rédactions, et un article "
+          "seul n'y figure pas")
+    check(s4["repris"][0]["redactions"] == 5, "l'article et ses 4 reprises : 5 rédactions")
+    check([p["nom"] for p in s4["sources"]["productives"]] == ["Bravo", "Alpha"],
+          "les sources qui apportent le plus, de la plus à la moins productive")
+    check(s4["sources"]["steriles"] == ["Charlie"],
+          "« aucun exclusif » ne compte pas une source simplement au repos : %s"
+          % s4["sources"]["steriles"])
+    check(s4["sources"]["enBaisse"] == ["Alpha"],
+          "les sources en baisse sont nommées, pas désignées par leur id")
+    check(s4["sources"]["statuts"] == {"ok": 2, "tarie": 1, "en_attente": 1},
+          "et les statuts sont comptés (%s)" % s4["sources"]["statuts"])
+
+    # ---- 4. La bascule de vue : chaque panneau affiché ou masqué ----
+    def visible(sel):
+        return page.evaluate("(s) => { const e = document.querySelector(s); "
+                             "return !!e && getComputedStyle(e).display !== 'none'; }", sel)
+
+    page.evaluate("""() => {
+      historyPartial = false; rattrapageLance = true; archiveChargee = true;
+      lastItems = [];
+      for(let j = 1; j <= 22; j++){
+        lastItems.push({title: "Article " + j, link: "https://ex.test/" + j,
+          source: "S", date: "2026-09-" + String(j).padStart(2, "0") + "T10:00:00Z",
+          extraSources: j === 5 ? [{source: "X", link: "https://y.test"}] : null});
+      }
+      derniereReponseBackend = {sources_health: [
+        {id: "a", name: "Alpha", status: "ok", articles_exclusifs: 4}]};
+    }""")
+    page.click("#statsBtn")
+    page.wait_for_selector("#statsContenu .stats-bloc", timeout=5000)
+    check(visible("#statsPanel"), "📊 ouvre le panneau des statistiques")
+    check(not visible("#feed"), "le fil est masqué sous les statistiques")
+    check(not visible(".search-row"), "la recherche aussi — elle n'a pas de sens ici")
+    check(not visible("#logsPanel"), "et le Journal reste fermé")
+    check(page.get_attribute("#statsBtn", "aria-pressed") == "true",
+          "le bouton annonce son état actif")
+
+    page.evaluate("() => setTab('logs')")
+    check(visible("#logsPanel") and not visible("#statsPanel"),
+          "passer au Journal referme les statistiques")
+    page.evaluate("() => setTab('all')")
+    check(visible("#feed") and visible(".search-row") and not visible("#statsPanel"),
+          "revenir au fil rend le fil ET la recherche")
+    check(page.get_attribute("#statsBtn", "aria-pressed") == "false",
+          "et le bouton redevient inactif")
+
+    # Une vue n'est pas mémorisée : rouvrir l'app ramène au fil.
+    page.evaluate("() => setTab('stats')")
+    memo = page.evaluate("() => JSON.parse(localStorage.getItem(STORAGE_PREFIX + CLE_FILTRES) || '{}').onglet")
+    check(memo != "stats", "l'onglet mémorisé n'est jamais « stats » (%s)" % memo)
+
+    # ---- 5. Le rendu : une seule étiquette, et un tableau ----
+    page.wait_for_selector(".stats-histo", timeout=5000)
+    check(page.locator(".stats-histo").count() >= 1, "l'histogramme quotidien est dessiné")
+    check(page.locator(".stats-histo em").count() == page.locator(".stats-histo").count(),
+          "un seul chiffre écrit par histogramme — le maximum, pas un par colonne")
+    check(page.locator(".stats-tableau table").count() == page.locator(".stats-histo").count(),
+          "chaque histogramme a son tableau : l'infobulle ne s'affiche pas au doigt")
+    texte_fil = page.inner_text("#statsContenu")
+    check("Articles par mois" not in texte_fil,
+          "aucun histogramme mensuel : il faudrait que le robot publie sa couverture")
+    check("ouverture complète" not in texte_fil and "depuis le" not in texte_fil,
+          "et AUCUNE date de couverture affichée — c'est l'affirmation fausse "
+          "que la première version montrait (« depuis le 07/08 »)")
+    check("pas la presse" in texte_fil,
+          "le graphique dit ce qu'il mesure : le fil, pas le volume de la presse")
+
+    # Bloc vide = bloc absent.
+    page.click("#statsOngletSources")
+    page.wait_for_timeout(100)
+    texte = page.inner_text("#statsContenu")
+    check("Alpha" in texte, "la rubrique Sources affiche la réponse du robot")
+    check("En forte baisse" not in texte,
+          "et n'affiche PAS « en forte baisse » quand aucune ne l'est")
+    check(page.get_attribute("#statsOngletSources", "aria-pressed") == "true",
+          "le sous-onglet actif l'annonce")
+
+    # ---- 6. Tant que l'historique est partiel : pas de chiffres faux ----
+    page.route("**/feed.json*", lambda r: r.abort())
+    page.evaluate("() => { historyPartial = true; ongletStats = 'fil'; renderStats(); }")
+    texte = page.inner_text("#statsContenu")
+    check("Chargement de l'historique complet" in texte,
+          "sur un historique partiel, la vue attend au lieu de calculer")
+    check(page.locator("#statsContenu .stats-histo").count() == 0,
+          "et ne dessine aucun histogramme sur les 300 articles récents")
+    page.unroute("**/feed.json*")
+
+    ctx.close()
+
+    # ---- 7. Pas de débordement sur un petit écran ----
+    ctx = nav.new_context(viewport={"width": 320, "height": 700})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("""() => {
+      historyPartial = false; rattrapageLance = true; archiveChargee = true;
+      lastItems = [];
+      const d = new Date("2026-08-01T12:00:00Z");
+      for(let n = 0; n < 60; n++){
+        lastItems.push({title: "Un titre d'article assez long pour tester le retour à la ligne " + n,
+          link: "https://ex.test/" + n, source: "S", date: new Date(d.getTime() + n * 86400000).toISOString(),
+          extraSources: n % 7 === 0 ? [{}, {}] : null});
+      }
+      setTab('stats');
+    }""")
+    page.wait_for_selector(".stats-histo", timeout=5000)
+    deborde = page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth")
+    check(not deborde, "à 320 px, la vue ne déborde pas horizontalement")
+    ctx.close()
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -1235,6 +1471,7 @@ def main():
             test_barre_detat_suit_le_theme(nav, url)
             test_toast_annuler(nav, url)
             test_sauvegarde_export_import(nav, url)
+            test_vue_statistiques(nav, url)
             nav.close()
     finally:
         srv.shutdown()

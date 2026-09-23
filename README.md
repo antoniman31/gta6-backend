@@ -5285,6 +5285,78 @@ Et le contrôle d'accessibilité du dépôt a attrapé un vrai défaut au passag
 le champ de fichier n'avait pas de nom. Masqué ou non, il en a un maintenant —
 `display:none` est un détail de présentation, qui peut sauter.
 
+### La vue statistiques, et le piège mal jugé deux fois
+
+Une icône 📊 dans l'en-tête, à côté du Journal — et pas dans la rangée
+d'onglets, qui ne porte que des **filtres** sur le fil. Les statistiques sont
+une **vue**, comme le Journal : elles remplacent le fil et masquent la
+recherche, qui n'y a pas de sens. Deux rubriques, sur le modèle de
+game-library : **Le fil** et **Les sources**, et chaque bloc disparaît quand il
+n'a rien à dire.
+
+**Le piège, jugé faux deux fois avant d'être compris.** Un graphique par mois
+tiré des articles montrerait un effondrement spectaculaire en remontant le
+temps. Ce n'est pas la presse qui se tait, c'est la rétention.
+
+1. *Première idée : l'archive corrige ça.* Fausse, mesurée : l'archive a été
+   créée le 22/09 à partir de `feed.json`, donc ses vieux mois ont le même
+   défaut — de 2023-12 à 2026-07, **uniquement des officiels**, zéro article
+   ordinaire.
+2. *Seconde idée : dessiner à partir du plus ancien article ordinaire.* Fausse
+   aussi, vue **en regardant le rendu** et pas en lisant le code :
+
+```
+04/09 → 07/09 :   7 à 8 articles par jour
+08/09 → 22/09 :  33 à 299 articles par jour
+```
+
+La falaise du 07/09, c'est 22/09 moins 15 jours : la limite de l'**ancienne
+fenêtre de rétention**, passée à 30 jours seulement le 22/09 à 14h44. Ce qui
+survit avant elle n'est même pas protégé — c'est ce que le plancher de 1 500
+articles a gardé. Et le volume dépend en plus des sources ajoutées au fil des
+semaines. La première version affichait donc « couverture complète depuis le
+07/08, soit 46 jours », et une médiane de 43 articles par jour tirée vers le
+bas par des jours élagués. Les deux étaient faux.
+
+**Rien dans `feed.json` ne permet de dater une couverture complète.** Toute date
+calculée côté app serait une devinette présentée comme un fait. La règle
+retenue n'en devine aucune : **la fenêtre de rétention n'est jamais descendue
+sous 15 jours**, donc un histogramme borné aux **14 derniers jours complets** ne
+contient, par construction, aucun jour élagué — avec l'ancienne fenêtre comme
+avec la nouvelle. La médiane, calculée sur ces seuls jours, passe à **84**.
+
+Le graphique dit aussi ce qu'il mesure, parce que sa lecture naturelle serait
+fausse : *« il mesure le fil, pas la presse »*. Un jour qui double peut être un
+jour où une source a été ajoutée.
+
+**Pas d'histogramme mensuel.** Il faudrait que le robot publie depuis quand il
+garde tout — une modification du format publié, à décider séparément.
+
+**Le graphique suit les règles de visualisation**, vérifiées plutôt
+qu'estimées : une seule série donc pas de légende (le titre la nomme) ;
+colonnes d'au plus 24 px, arrondies au sommet et carrées à la base, séparées
+par 2 px de fond ; **un seul chiffre écrit** — le maximum — plutôt qu'un par
+colonne ; et **un tableau** sous chaque histogramme, parce qu'une infobulle ne
+s'affiche pas au doigt. La couleur d'accent a été passée au validateur :
+**8,56:1** sur le fond sombre, **6,70:1** sur le clair, pour 3:1 requis.
+
+**Tant que l'historique est partiel, la rubrique « Le fil » attend** au lieu de
+calculer : sur les 300 articles du fichier allégé, elle annoncerait un rythme
+faux sans le dire. Elle déclenche le rattrapage, qui est idempotent, et se
+redessine quand il arrive.
+
+Deux libellés corrigés en regardant la capture : « leur contenu arrive déjà par
+d'autres sources » était faux pour une source tarie, qui n'apporte rien du
+tout ; et « dernière *annonce* officielle » promettait trop — le dernier élément
+officiel du 23/09 était un *« Follow … on yt »* de Rockstar. C'est une
+**publication** officielle.
+
+**La bascule de vue était le risque annoncé.** `setTab()` testait `isLogs` à
+trois endroits ; ajouter une vue en en oubliant un seul laissait le fil ou la
+recherche affichés sous les statistiques, sans la moindre erreur. `estVue` est
+calculé une fois, et un contrôle navigateur vérifie chaque panneau dans chaque
+vue. Une vue n'est jamais mémorisée : rouvrir l'app ramène au fil.
+
 ### Ce qui n'avait rien à faire
 
 **Nommer ce qu'on perd avant d'effacer.** C'était la proposition, et elle était
