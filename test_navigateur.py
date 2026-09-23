@@ -1081,6 +1081,71 @@ def test_vue_statistiques(nav, url):
     check(not deborde, "à 320 px, la vue ne déborde pas horizontalement")
     ctx.close()
 
+
+def test_entete_sans_vide(nav, url):
+    """L'entête tient sur une ligne, et ce qui en est sorti reste accessible.
+
+    Signalé par Antoni le 23/09/2026, capture à l'appui : un grand vide à
+    gauche de l'entête. Cinq boutons de 34 px ne tenaient plus à côté du
+    titre sous 390 px — et à sa largeur (≈ 368 px), le vide existait déjà
+    avec quatre. Il a choisi de sortir le thème et les informations de
+    l'entête ; le thème a son sélecteur dans ⚙️, les informations un bouton
+    dans ⚙️ et un autre en bas du fil.
+
+    Le piège verrouillé : applyTheme() écrivait l'icône dans #themeBtn. Le
+    bouton retiré sans cette ligne, getElementById rendait null et le
+    démarrage de l'app plantait dès le thème.
+    """
+    for largeur in (340, 360, 368, 390, 412):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800})
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector(".header-haut")
+        page.evaluate("""() => { const m = document.getElementById('modeIndicator');
+                                 m.className = 'mode-indicator backend';
+                                 m.innerHTML = '● Backend GitHub'; }""")
+        une_ligne = page.evaluate("""() => {
+          const t = document.querySelector('.brand').getBoundingClientRect();
+          const d = document.querySelector('.header-right').getBoundingClientRect();
+          return d.top < t.bottom; }""")
+        check(une_ligne, "[%d px] l'entête tient sur une ligne, sans le vide signalé" % largeur)
+        check(not erreurs, "[%d px] aucune erreur au démarrage — applyTheme() n'écrit plus "
+              "dans un bouton disparu%s" % (largeur, "" if not erreurs else " : " + erreurs[0][:100]))
+        ctx.close()
+
+    ctx = nav.new_context(viewport={"width": 368, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector(".header-actions")
+    boutons = page.evaluate("""() => [...document.querySelectorAll('.header-actions .icon-btn')]
+                                       .map(b => b.getAttribute('aria-label'))""")
+    check(len(boutons) == 3, "trois boutons dans l'entête : %s" % boutons)
+    check(page.locator("#themeBtn").count() == 0, "plus de bouton de thème dans l'entête")
+
+    # Le thème reste réglable, depuis ⚙️.
+    page.evaluate("() => openSettings()")
+    page.click("#themeLightBtn")
+    check(page.evaluate("() => document.documentElement.getAttribute('data-theme')") == "light",
+          "le sélecteur de ⚙️ passe bien en thème clair")
+    page.click("#themeDarkBtn")
+    check(page.evaluate("() => document.documentElement.getAttribute('data-theme')") == "dark",
+          "et en sombre")
+
+    # Les informations aussi : le panneau se FERME avant, deux dialogues
+    # empilés se disputeraient le focus et la touche Échap.
+    page.click("text=Informations et derniers passages du robot")
+    page.wait_for_timeout(200)
+    check(page.evaluate("() => document.getElementById('infoOverlay').classList.contains('open')"),
+          "le bouton de ⚙️ ouvre les informations")
+    check(not page.evaluate("() => document.getElementById('settingsOverlay').classList.contains('open')"),
+          "et referme les paramètres au passage")
+    page.evaluate("() => closeInfo()")
+    check(page.locator(".info-btn").count() == 1,
+          "le bouton ℹ️ en bas du fil est toujours là")
+    ctx.close()
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -1472,6 +1537,7 @@ def main():
             test_toast_annuler(nav, url)
             test_sauvegarde_export_import(nav, url)
             test_vue_statistiques(nav, url)
+            test_entete_sans_vide(nav, url)
             nav.close()
     finally:
         srv.shutdown()

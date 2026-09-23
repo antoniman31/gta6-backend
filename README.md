@@ -5396,6 +5396,44 @@ grave**, parce que l'app dessinerait un creux qui n'a jamais existé.
 Contrôle structurel, volontairement : un jour sans article peut être vrai, un
 mois absent de l'archive ne l'est pas.
 
+### L'entête avait un grand vide — 23/09/2026
+
+Signalé par Antoni, capture à l'appui : sous le titre, tout le bloc de droite
+(badge et boutons) passait à la ligne et laissait un grand vide à gauche.
+
+**Mesuré plutôt que supposé**, et le constat est plus nuancé qu'attendu : à sa
+largeur (≈ 368 px), **le vide existait déjà avec quatre boutons**. Le 📊 ajouté
+la veille l'a seulement étendu aux téléphones plus larges (390–412 px). Cinq
+boutons tactiles de 34 px ne tiennent pas à côté du titre sous 390 px.
+
+Deux dispositions ont été maquettées **dans l'app réelle** et envoyées en
+capture : deux lignes voulues avec les cinq boutons en pleine largeur, ou trois
+boutons seulement. Antoni a choisi la seconde. Le thème et ℹ️ quittent
+l'entête : le thème avait déjà son sélecteur à trois modes en tête de ⚙️,
+et les informations gagnent un bouton dans ⚙️, en plus de celui en bas du fil.
+La carte perd 52 px de haut, soit plus de fil visible à l'ouverture.
+
+**Le piège, annoncé avant de toucher à quoi que ce soit** : `applyTheme()`
+écrivait l'icône dans `#themeBtn` à chaque changement de thème. Retirer le
+bouton sans cette ligne, c'était un `getElementById` qui rend `null` et un
+démarrage d'app qui plante dès le thème. La ligne est partie avec le bouton,
+`toggleTheme()` aussi, qui n'avait plus d'appelant. Un contrôle navigateur
+guette les erreurs au démarrage à chaque largeur.
+
+Le bouton « Informations » de ⚙️ **ferme le panneau avant d'ouvrir le sien** :
+deux dialogues empilés se disputeraient le piège du focus et la touche Échap.
+
+Un contrôle existant exigeait 🌙 et ☀️ dans la page — ils servaient au bouton
+de thème. Il est réécrit, pas supprimé : il vérifie désormais que l'entête ne
+porte plus de bouton de thème *et* que le sélecteur de ⚙️ existe toujours, en
+disant pourquoi, pour que personne ne le remette « par cohérence » en
+réintroduisant le vide.
+
+**Ce qui reste : 320 px.** L'entête tient sur une ligne de 340 à 412 px. À 320
+il manque 16 px (258 disponibles, 274 nécessaires) ; les gagner demanderait de
+réduire le titre sur ces seuls écrans. Le retour à la ligne y reste le repli
+prévu pour ne pas déborder de la carte — sur des téléphones devenus rares.
+
 ### Ce qui n'avait rien à faire
 
 **Nommer ce qu'on perd avant d'effacer.** C'était la proposition, et elle était

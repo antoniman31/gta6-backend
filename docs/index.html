@@ -1286,15 +1286,21 @@
       </div>
       <div class="header-right">
         <div id="modeIndicator" class="mode-indicator"></div>
+        <!-- Trois boutons, et pas cinq. Avec le thème et les informations en
+             plus, l'entête ne tenait plus sur une ligne en dessous de 390 px :
+             le bloc de droite passait dessous et laissait un grand vide à
+             gauche (signalé par Antoni le 23/09/2026, capture à l'appui). Il
+             a choisi de les sortir d'ici : le thème a déjà son sélecteur à
+             trois modes dans ⚙️, et les informations ont un bouton dans ⚙️ et
+             un autre en bas du fil. Mesuré dans un navigateur : l'entête
+             tient désormais sur une ligne de 360 à 412 px. -->
         <div class="header-actions">
-          <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">🌙</button>
           <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙️<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
           <!-- Les statistiques sont une VUE, pas un filtre : elles vivent donc
                ici, à côté du Journal qui en est une aussi, et non dans la
                rangée d'onglets — qui ne porte que des filtres sur le fil. -->
           <button class="icon-btn" id="statsBtn" onclick="setTab('stats')" title="Statistiques" aria-label="Statistiques du fil" aria-pressed="false">📊</button>
           <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">📋<span id="badgeLogs" class="logs-error-badge"></span></button>
-          <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ℹ️</button>
         </div>
       </div>
     </div>
@@ -1530,6 +1536,15 @@
         automatique du soir comprise. Les deux autres forcent un thème quelle
         que soit l'heure.
       </div>
+    </div>
+
+    <!-- Arrivé ici le 23/09/2026 avec le thème : les deux ont quitté l'entête
+         pour qu'il tienne sur une ligne. Le panneau se FERME avant d'ouvrir
+         les informations : deux dialogues empilés se disputeraient le piège
+         du focus et la touche Échap. -->
+    <div class="setting-group">
+      <span class="setting-label">À propos</span>
+      <button class="pleine-largeur" onclick="closeSettings(); openInfo();">ℹ️ Informations et derniers passages du robot</button>
     </div>
 
     <!-- « Liste des articles » et non « Affichage » : l'onglet qui contient
@@ -2523,13 +2538,11 @@ function applyTheme(){
   }
   document.documentElement.setAttribute("data-theme", effective);
   majCouleurBarre(effective);
-  // En thème clair on propose de passer au sombre, et inversement : l'icône
-  // dit ce que le clic va faire. Les deux demi-cercles d'avant décrivaient un
-  // état, ce qui laissait deviner dans quel sens on allait.
-  // (Les glyphes remplacés ne sont volontairement pas recopiés ici : le test
-  //  qui vérifie leur disparition lit tout le fichier, commentaires compris,
-  //  et les citer les lui ferait reprendre pour du balisage encore en place.)
-  document.getElementById("themeBtn").textContent = effective === "light" ? "🌙" : "☀️";
+  // Plus de bouton de thème dans l'entête depuis le 23/09/2026 : il est
+  // sorti avec ℹ️ pour que l'entête tienne sur une ligne. La ligne qui y
+  // écrivait l'icône est partie avec lui — la laisser aurait fait planter
+  // applyTheme() à l'ouverture de l'app, donc tout le reste du démarrage,
+  // sur un getElementById qui rend null. Le thème se règle dans ⚙️.
 }
 // Couleur de la barre d'état du téléphone, en PWA installée.
 //
@@ -2551,10 +2564,6 @@ function setTheme(t){
   applyTheme();
   updateThemeButtons();
   saveSettings();
-}
-function toggleTheme(){
-  const current = document.documentElement.getAttribute("data-theme");
-  setTheme(current === "light" ? "dark" : "light");
 }
 // aria-pressed en plus de la classe : la sélection ne vivait que dans une
 // couleur de fond. Un lecteur d'écran annonçait trois boutons identiques.
