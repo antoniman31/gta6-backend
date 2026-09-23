@@ -4902,9 +4902,20 @@ def test_icones_en_emoji():
               "%s force la présentation emoji (U+FE0F) — %d occurrence(s) nue(s)"
               % (nom, nus))
 
-    for emoji, role in (("\U0001F319", "passer au thème sombre"),
-                        ("\u2600\uFE0F", "passer au thème clair"),
-                        ("\U0001F4CB", "le journal"),
+    # 🌙 et ☀️ ont quitté la liste le 23/09/2026 avec le bouton de thème de
+    # l'entête : Antoni l'a sorti, avec ℹ️, pour que l'entête tienne sur une
+    # ligne. Le thème se règle désormais dans ⚙️ par un sélecteur à trois
+    # libellés texte — plus d'icône à vérifier. Les deux contrôles ci-dessous
+    # disent pourquoi ils ont disparu, pour que personne ne les remette « par
+    # cohérence » en réintroduisant le vide qu'ils causaient.
+    entete = html[html.index('<header class="console">'):html.index("</header>")]
+    check("toggleTheme" not in entete and 'id="themeBtn"' not in entete,
+          "l'entête ne porte plus de bouton de thème — choix du 23/09/2026")
+    check('id="themeSystemBtn"' in html and 'id="themeLightBtn"' in html
+          and 'id="themeDarkBtn"' in html,
+          "et le thème reste réglable : son sélecteur à trois modes est dans ⚙️")
+
+    for emoji, role in (("\U0001F4CB", "le journal"),
                         ("\U0001F517", "copier le lien"),
                         ("\u2705", "marquer lu"),
                         ("\u21A9\uFE0F", "marquer non lu")):
