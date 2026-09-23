@@ -768,6 +768,53 @@
      c'est de là que partent la plupart des actions qu'elle protège, et une
      confirmation cachée derrière son propre déclencheur ne sert à rien. */
   .overlay.confirm-overlay{z-index:200; align-items:center;}
+  /* ---- Statistiques ----
+     Un bloc par question, et un bloc qui n'a rien à dire n'est pas dessiné :
+     un « aucune donnée » répété six fois occupe autant de place qu'un vrai
+     contenu (principe repris de game-library). */
+  .stats-onglets{display:flex; gap:8px; margin-bottom:12px;}
+  .stats-bloc{
+    background:var(--bg-panel); border:1px solid var(--line);
+    border-radius:var(--r-md); padding:14px; margin-bottom:10px;
+  }
+  .stats-bloc h3{font-size:13px; font-weight:600; margin:0 0 4px; color:var(--text);}
+  .stats-sous{font-size:12px; color:var(--text-dim); margin:0 0 10px;}
+  .stats-chiffres{display:flex; flex-wrap:wrap; gap:18px; margin:4px 0 2px;}
+  .stats-chiffre b{display:block; font-size:20px; font-weight:600; color:var(--text);}
+  .stats-chiffre span{font-size:11px; color:var(--text-dim);}
+  .stats-liste{list-style:none; margin:0; padding:0; font-size:13px;}
+  .stats-liste li{display:flex; justify-content:space-between; gap:12px;
+    padding:6px 0; border-top:1px solid var(--line);}
+  .stats-liste li:first-child{border-top:0;}
+  .stats-liste a{color:var(--text); text-decoration:none;}
+  .stats-liste .stats-n{color:var(--text-dim); flex:0 0 auto; font-variant-numeric:tabular-nums;}
+
+  /* Histogramme : une seule série, donc pas de légende — le titre la nomme.
+     Couleur d'accent, validée au script et non à l'œil : 8,56:1 sur le fond
+     sombre, 6,70:1 sur le clair, pour 3:1 requis sur un graphique. Colonnes
+     d'au plus 24 px, arrondies de 4 px au sommet et carrées à la base,
+     séparées par 2 px de fond plutôt que par un trait. */
+  .stats-histo{display:flex; align-items:flex-end; gap:2px; height:96px;
+    border-bottom:1px solid var(--line); padding-top:14px;}
+  .stats-col{flex:1 1 0; max-width:24px; min-width:3px; height:100%;
+    display:flex; align-items:flex-end; position:relative;}
+  .stats-col i{display:block; width:100%; background:var(--accent);
+    border-radius:var(--r-xs) var(--r-xs) 0 0; min-height:2px;}
+  /* Une seule valeur écrite dans le graphique : le maximum. Un chiffre sur
+     chaque colonne ne se lit plus ; le tableau porte les autres. */
+  .stats-col em{position:absolute; bottom:calc(100% + 2px); left:50%;
+    transform:translateX(-50%); font-style:normal; font-size:10px;
+    color:var(--text-dim); white-space:nowrap;}
+  .stats-axe{display:flex; justify-content:space-between; font-size:10px;
+    color:var(--text-dim); margin-top:4px;}
+  .stats-tableau{margin-top:8px; font-size:12px;}
+  .stats-tableau summary{cursor:pointer; color:var(--text-dim); min-height:32px;
+    display:flex; align-items:center;}
+  .stats-tableau table{width:100%; border-collapse:collapse; margin-top:6px;}
+  .stats-tableau td{padding:3px 0; border-top:1px solid var(--line);}
+  .stats-tableau td:last-child{text-align:right; font-variant-numeric:tabular-nums;}
+  .stats-attente{font-size:13px; color:var(--text-dim); padding:16px 2px;}
+
   /* Toast « Annuler » : en bas, sous le pouce, au-dessus de la zone sûre du
      téléphone. Il ne bloque rien — la page reste défilable derrière, à la
      différence d'une confirmation modale : c'est tout l'intérêt, l'action
@@ -1242,6 +1289,10 @@
         <div class="header-actions">
           <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Changer de thème" aria-label="Changer de thème">🌙</button>
           <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;">⚙️<span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
+          <!-- Les statistiques sont une VUE, pas un filtre : elles vivent donc
+               ici, à côté du Journal qui en est une aussi, et non dans la
+               rangée d'onglets — qui ne porte que des filtres sur le fil. -->
+          <button class="icon-btn" id="statsBtn" onclick="setTab('stats')" title="Statistiques" aria-label="Statistiques du fil" aria-pressed="false">📊</button>
           <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;">📋<span id="badgeLogs" class="logs-error-badge"></span></button>
           <button class="icon-btn" onclick="openInfo()" title="Informations" aria-label="Informations">ℹ️</button>
         </div>
@@ -1326,6 +1377,14 @@
 
   <div class="feed" id="feed">
     <div class="empty">Clique sur "Actualiser" pour charger les derniers articles.</div>
+  </div>
+
+  <div id="statsPanel" style="display:none;">
+    <div class="stats-onglets" role="group" aria-label="Rubrique des statistiques">
+      <button class="tab active" id="statsOngletFil" aria-pressed="true" onclick="ongletStatsChoisi('fil')">Le fil</button>
+      <button class="tab" id="statsOngletSources" aria-pressed="false" onclick="ongletStatsChoisi('sources')">Les sources</button>
+    </div>
+    <div id="statsContenu"></div>
   </div>
 
   <div id="logsPanel" style="display:none;">
@@ -3031,6 +3090,12 @@ async function applyBackendData(data, sourceUrl){
   }
 
   majLigneRun(data);
+  // Gardée pour la vue statistiques : sources_health et sources_declining
+  // n'existent que dans la réponse du robot, pas dans les articles.
+  derniereReponseBackend = data;
+  // Une actualisation pendant qu'on regarde les statistiques doit les mettre
+  // à jour : sinon elles décriraient le passage précédent en silence.
+  if(currentTab === "stats") renderStats();
 
   const finishedAt = new Date();
   document.getElementById("lastCheck").textContent = "dernière vérif (backend) : " + finishedAt.toLocaleTimeString('fr-FR');
@@ -3335,7 +3400,7 @@ async function checkNow(force){
   // Les skeletons ne remplacent l'affichage que s'il n'y a encore rien à
   // montrer (premier chargement) ; sinon les articles déjà connus restent
   // visibles pendant que le rafraîchissement se fait en fond.
-  if(lastItems.length === 0 && currentTab !== "logs"){
+  if(lastItems.length === 0 && currentTab !== "logs" && currentTab !== "stats"){
     showSkeletons(6);
   }
   const activeFeeds = settings.feeds.filter(f => f.enabled);
@@ -3548,15 +3613,29 @@ function setTab(t, silencieux){
   marqueActif("tabRockstar", t === "rockstar");
   marqueActif("tabRockstarmag", t === "rockstarmag");
 
+  // Deux VUES, et le reste sont des filtres sur le fil. Une vue remplace le
+  // fil entier et masque la recherche, qui n'y a pas de sens. `estVue` est
+  // calculé une fois : l'ancienne écriture testait `isLogs` à trois endroits,
+  // et ajouter une vue en oubliant l'un d'eux laissait le fil ou la barre de
+  // recherche affichés sous les statistiques — la référence JS→DOM cassée en
+  // silence, exactement le risque annoncé avant de toucher cette fonction.
   const isLogs = (t === "logs");
-  document.getElementById("feed").style.display = isLogs ? "none" : "flex";
+  const isStats = (t === "stats");
+  const estVue = isLogs || isStats;
+  document.getElementById("feed").style.display = estVue ? "none" : "flex";
   document.getElementById("logsPanel").style.display = isLogs ? "block" : "none";
-  document.querySelector(".search-row").style.display = isLogs ? "none" : "flex";
+  const panneauStats = document.getElementById("statsPanel");
+  if(panneauStats) panneauStats.style.display = isStats ? "block" : "none";
+  document.querySelector(".search-row").style.display = estVue ? "none" : "flex";
+  marqueActif("statsBtn", isStats);
 
   sauvegardeFiltres();
   if(silencieux) return;
   if(isLogs){
     renderLogs();
+    updateTabBadges();
+  }else if(isStats){
+    renderStats();
     updateTabBadges();
   }else{
     applyFilters();
@@ -4332,6 +4411,275 @@ function toggleRead(safeId, link){
   }
   saveRead();
   applyFilters();
+}
+
+// ---------- Statistiques du fil ----------
+//
+// Demandé par Antoni le 22/09/2026, sur le modèle de l'onglet Stats de
+// game-library : deux rubriques, et chaque bloc disparaît quand il n'a rien à
+// dire.
+//
+// LE PIÈGE, et il a été mal jugé DEUX fois avant d'être compris.
+//
+// Un graphique par mois tiré des articles montrerait un effondrement en
+// remontant le temps : les vieux mois ne contiennent que les officiels
+// protégés. Première idée, l'archive corrigerait ça — fausse, mesuré le
+// 23/09/2026 : créée la veille à partir de feed.json, elle a le même défaut.
+// Seconde idée, dessiner à partir du plus ancien article ordinaire — fausse
+// aussi, vue en regardant le rendu :
+//
+//     04/09 → 07/09 :   7 à 8 articles par jour
+//     08/09 → 22/09 :  33 à 299 articles par jour
+//
+// La falaise du 07/09 n'est pas de la presse calme, c'est la limite de
+// l'ancienne fenêtre de 15 jours (passée à 30 le 22/09 à 14h44). Ce qui
+// survit avant elle, c'est ce que le plancher de 1 500 articles a gardé, et
+// le volume dépend en plus des sources ajoutées au fil des semaines. RIEN
+// dans feed.json ne dit depuis quand le fil est complet : toute date de
+// « couverture » calculée ici serait une devinette présentée comme un fait.
+//
+// La règle retenue ne devine rien : la fenêtre de rétention n'est jamais
+// descendue sous 15 jours. Un histogramme borné aux 14 derniers jours
+// complets ne peut donc contenir, par construction, aucun jour élagué — ni
+// avec l'ancienne fenêtre, ni avec la nouvelle.
+//
+// Pas d'histogramme mensuel : il faudrait que le robot publie depuis quand
+// il garde tout, et c'est une modification du format publié, à décider.
+let derniereReponseBackend = null;
+let ongletStats = "fil";
+// 14 et pas 30 : borné sous la plus petite fenêtre de rétention que le robot
+// ait jamais eue (15 jours). Voir plus haut — c'est ce qui rend le graphique
+// juste sans avoir à deviner où commence la couverture.
+const STATS_JOURS = 14;
+const STATS_TOP = 5;
+
+// Le jour, à l'heure de Paris : c'est l'heure dans laquelle Antoni lit, et
+// un article publié à 23h30 le 12 n'appartient pas au 13.
+function jourParis(d){
+  return d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" }); // AAAA-MM-JJ
+}
+
+// Pure : ne lit ni le DOM ni les globales, pour être vérifiable sur un fil
+// fabriqué. `maintenant` est injectable pour la même raison.
+function calculeStats(items, backend, maintenant){
+  maintenant = maintenant || new Date();
+  const liste = (items || []).filter(i => i && i.date);
+  const ordinaires = liste.filter(i => !i.official);
+  const officiels = liste.filter(i => i.official);
+
+  let debut = null;
+  for(const i of ordinaires){
+    const d = new Date(i.date);
+    if(!isNaN(d) && (!debut || d < debut)) debut = d;
+  }
+
+  const premierJour = debut ? jourParis(debut) : null;
+
+  // Par jour, ordinaires seulement. Aujourd'hui n'est pas fini : exclu, sinon
+  // l'histogramme finirait sur une chute qui n'existe pas. Le premier jour du
+  // fil l'est aussi quand il tombe dans la fenêtre (installation récente) :
+  // il est partiel pour la même raison.
+  const parJour = {};
+  for(const i of ordinaires){
+    const d = new Date(i.date);
+    if(isNaN(d)) continue;
+    const j = jourParis(d);
+    parJour[j] = (parJour[j] || 0) + 1;
+  }
+  const jours = [];
+  if(debut){
+    const curseur = new Date(maintenant);
+    for(let n = 1; n <= STATS_JOURS; n++){
+      curseur.setTime(maintenant.getTime() - n * 86400000);
+      const j = jourParis(curseur);
+      if(j <= premierJour) break;
+      jours.unshift({ jour: j, n: parJour[j] || 0 });
+    }
+  }
+  const valeurs = jours.map(j => j.n).sort((a, b) => a - b);
+  const mediane = valeurs.length ? valeurs[Math.floor(valeurs.length / 2)] : 0;
+  const pic = jours.reduce((m, j) => (!m || j.n > m.n ? j : m), null);
+
+  const repris = liste
+    .filter(i => (i.extraSources || []).length >= 1)
+    .map(i => ({ titre: i.title, lien: i.link, date: i.date,
+                 redactions: 1 + i.extraSources.length }))
+    .sort((a, b) => b.redactions - a.redactions || (a.date < b.date ? 1 : -1))
+    .slice(0, STATS_TOP);
+
+  const officielRecent = officiels
+    .slice()
+    .sort((a, b) => (a.date < b.date ? 1 : -1))[0] || null;
+
+  const sante = (backend && backend.sources_health) || [];
+  const statuts = {};
+  for(const s of sante) statuts[s.status] = (statuts[s.status] || 0) + 1;
+  const productives = sante
+    .filter(s => (s.articles_exclusifs || 0) > 0)
+    .sort((a, b) => b.articles_exclusifs - a.articles_exclusifs)
+    .slice(0, STATS_TOP)
+    .map(s => ({ nom: s.name, n: s.articles_exclusifs }));
+  const steriles = sante
+    .filter(s => !(s.articles_exclusifs > 0) && s.status !== "en_attente")
+    .map(s => s.name)
+    .sort((a, b) => a.localeCompare(b, "fr"));
+  const noms = {};
+  for(const s of sante) noms[s.id] = s.name;
+  const enBaisse = Object.keys((backend && backend.sources_declining) || {})
+    .map(id => noms[id] || id);
+
+  return {
+    total: liste.length,
+    officiels: officiels.length,
+    officielRecent: officielRecent
+      ? { titre: officielRecent.title, lien: officielRecent.link, date: officielRecent.date }
+      : null,
+    jours, mediane, pic, repris,
+    sources: { total: sante.length, statuts, productives, steriles, enBaisse },
+  };
+}
+
+function dateCourte(aaaammjj){
+  const [a, m, j] = aaaammjj.split("-");
+  return `${j}/${m}`;
+}
+
+// Un histogramme à une série, et son tableau. Le tableau n'est pas une
+// option : une infobulle ne s'affiche pas au doigt, et un chiffre qu'on ne
+// peut lire qu'en survolant n'existe pas sur un téléphone.
+function histogramme(points, libelle, formatCle){
+  const max = Math.max(1, ...points.map(p => p.n));
+  let maxMarque = false;
+  const cols = points.map(p => {
+    const h = Math.round((p.n / max) * 100);
+    const etiquette = (!maxMarque && p.n === max) ? (maxMarque = true, `<em>${p.n}</em>`) : "";
+    const texte = `${formatCle(p.cle)} : ${p.n} article${p.n > 1 ? "s" : ""}`;
+    return `<span class="stats-col" title="${escapeAttr(texte)}" aria-label="${escapeAttr(texte)}">`
+         + `${etiquette}<i style="height:${h}%"></i></span>`;
+  }).join("");
+  const lignes = points.map(p => `<tr><td>${escapeHtml(formatCle(p.cle))}</td><td>${p.n}</td></tr>`).join("");
+  return `<div class="stats-histo" role="img" aria-label="${escapeAttr(libelle)}">${cols}</div>`
+       + `<div class="stats-axe"><span>${escapeHtml(formatCle(points[0].cle))}</span>`
+       + `<span>${escapeHtml(formatCle(points[points.length - 1].cle))}</span></div>`
+       + `<details class="stats-tableau"><summary>Voir les chiffres</summary>`
+       + `<table>${lignes}</table></details>`;
+}
+
+function blocStats(titre, sous, corps){
+  return `<section class="stats-bloc"><h3>${escapeHtml(titre)}</h3>`
+       + (sous ? `<p class="stats-sous">${sous}</p>` : "")
+       + corps + `</section>`;
+}
+
+function renderStatsFil(s){
+  const blocs = [];
+  if(s.total){
+    blocs.push(blocStats("Dans le fil", "",
+      `<div class="stats-chiffres">`
+      + `<div class="stats-chiffre"><b>${s.total}</b><span>articles</span></div>`
+      + (s.jours.length ? `<div class="stats-chiffre"><b>${s.mediane}</b><span>par jour, en médiane sur ${s.jours.length} jours</span></div>` : "")
+      + `<div class="stats-chiffre"><b>${s.officiels}</b><span>officiels</span></div>`
+      + `</div>`));
+  }
+  if(s.jours.length >= 2){
+    // Le sous-titre dit ce que mesure le graphique, parce que la lecture
+    // naturelle serait fausse : c'est ce que le FIL contient, pas le volume
+    // de la presse. Un jour qui double peut être un jour où une source a
+    // été ajoutée.
+    blocs.push(blocStats("Articles dans le fil, par jour",
+      `${s.jours.length} derniers jours complets, heure de Paris. `
+      + (s.pic ? `Le plus chargé : ${dateCourte(s.pic.jour)}, ${s.pic.n} articles. ` : "")
+      + `Le volume dépend aussi des sources suivies : il mesure le fil, pas la presse.`,
+      histogramme(s.jours.map(j => ({ cle: j.jour, n: j.n })),
+        `Articles par jour sur ${s.jours.length} jours`, dateCourte)));
+  }
+  if(s.repris.length){
+    blocs.push(blocStats("Les sujets les plus repris", "Nombre de rédactions sur le même sujet.",
+      `<ul class="stats-liste">` + s.repris.map(r =>
+        `<li><a href="${escapeAttr(safeUrl(r.lien) || "#")}" target="_blank" rel="noopener">${escapeHtml(r.titre)}</a>`
+        + `<span class="stats-n">${r.redactions}</span></li>`).join("") + `</ul>`));
+  }
+  if(s.officielRecent){
+    const d = new Date(s.officielRecent.date);
+    // « Publication » et non « annonce » : le drapeau `official` dit qui
+    // publie, pas ce que ça vaut. Le 23/09/2026, le dernier élément officiel
+    // du fil était un « Follow … on yt » de Rockstar — une annonce, non.
+    blocs.push(blocStats("Dernière publication officielle",
+      isNaN(d) ? "" : escapeHtml(d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" })),
+      `<ul class="stats-liste"><li><a href="${escapeAttr(safeUrl(s.officielRecent.lien) || "#")}" target="_blank" rel="noopener">${escapeHtml(s.officielRecent.titre)}</a></li></ul>`));
+  }
+  return blocs.join("") || `<p class="stats-attente">Rien à montrer pour l'instant.</p>`;
+}
+
+function renderStatsSources(s){
+  const src = s.sources;
+  if(!src.total) return `<p class="stats-attente">L'état des sources arrive avec la prochaine réponse du robot.</p>`;
+  const blocs = [];
+  const libelles = { ok: "répondent", tarie: "taries", muette: "muettes", cassee: "cassées", en_attente: "au repos (tour de rôle)" };
+  const ordre = ["ok", "en_attente", "tarie", "muette", "cassee"];
+  blocs.push(blocStats("État des sources", `${src.total} sources au dernier passage du robot.`,
+    `<div class="stats-chiffres">` + ordre.filter(k => src.statuts[k]).map(k =>
+      `<div class="stats-chiffre"><b>${src.statuts[k]}</b><span>${libelles[k]}</span></div>`).join("") + `</div>`));
+  if(src.productives.length){
+    blocs.push(blocStats("Celles qui apportent le plus",
+      "Articles qu'aucune autre source n'a remontés — les retirer les ferait perdre.",
+      `<ul class="stats-liste">` + src.productives.map(p =>
+        `<li><span>${escapeHtml(p.nom)}</span><span class="stats-n">${p.n}</span></li>`).join("") + `</ul>`));
+  }
+  if(src.enBaisse.length){
+    blocs.push(blocStats("En forte baisse",
+      "Elles répondent, mais rapportent bien moins qu'à l'habitude.",
+      `<ul class="stats-liste">` + src.enBaisse.map(n => `<li><span>${escapeHtml(n)}</span></li>`).join("") + `</ul>`));
+  }
+  if(src.steriles.length){
+    blocs.push(blocStats(`Aucun article exclusif (${src.steriles.length})`,
+      // « Leur contenu arrive déjà par d'autres sources », première version,
+      // était faux pour une source tarie, qui n'apporte rien du tout. Ce qui
+      // est vrai des deux cas : rien de ce qu'elles ont rapporté n'est
+      // introuvable ailleurs.
+      "Rien de ce qu'elles ont rapporté n'est introuvable ailleurs. Chacune coûte une requête par passage.",
+      `<ul class="stats-liste">` + src.steriles.map(n => `<li><span>${escapeHtml(n)}</span></li>`).join("") + `</ul>`));
+  }
+  return blocs.join("");
+}
+
+// Prêt pour la rubrique « Le fil » : l'historique complet doit être là.
+// Calculer sur les 300 articles du fichier allégé annoncerait une
+// couverture de trois jours et un rythme faux, sans le dire.
+function statsPretes(){
+  return !historyPartial;
+}
+
+function renderStats(){
+  const cible = document.getElementById("statsContenu");
+  if(!cible) return;
+  marqueActif("statsOngletFil", ongletStats === "fil");
+  marqueActif("statsOngletSources", ongletStats === "sources");
+  const s = calculeStats(lastItems, derniereReponseBackend, new Date());
+  if(ongletStats === "sources"){
+    cible.innerHTML = renderStatsSources(s);
+    return;
+  }
+  if(!statsPretes()){
+    cible.innerHTML = `<p class="stats-attente">Chargement de l'historique complet… `
+      + `Les chiffres calculés sur les seuls articles récents seraient faux.</p>`;
+    // Le rattrapage est idempotent : il ne recharge que ce qui manque.
+    rattrapeToutEnArrierePlan().then(() => { if(currentTab === "stats") renderStats(); });
+    return;
+  }
+  cible.innerHTML = renderStatsFil(s);
+  // L'archive peut encore arriver : on redessine quand elle est là, sans
+  // bloquer l'affichage de ce qui est déjà juste.
+  if(!archiveChargee){
+    rattrapeToutEnArrierePlan().then(() => {
+      if(currentTab === "stats" && archiveChargee) renderStats();
+    });
+  }
+}
+
+function ongletStatsChoisi(o){
+  ongletStats = o;
+  renderStats();
 }
 
 // ---------- Toast « Annuler » ----------
