@@ -149,6 +149,38 @@ def audite(data):
                 (f"{_domaine(i.get('link'))} — {i.get('title','?')[:40]}"
                  for i in officiels_hors))
 
+    # ---- Pages Rockstar : l'anglais et le français seulement ---------------
+    # La liste des langues écartées est explicite (voir
+    # LANGUES_ROCKSTAR_ECARTEES) : le site de Rockstar est inaccessible d'ici,
+    # et deviner « deux lettres » écarterait /VI/, les pages du jeu. Une
+    # langue encore jamais vue passerait donc le filtre sans bruit — ce
+    # contrôle-ci la fait voir, pour qu'on l'ajoute en connaissance de cause.
+    liens_rockstar = [i.get("link", "") for i in items]
+    liens_rockstar += [x.get("link", "") for i in items for x in (i.get("extraSources") or [])]
+    restees = [l for l in liens_rockstar if fetch_feeds.page_rockstar_hors_langue(l)]
+    if restees:
+        signale("attention", "rockstar-langue-ecartee",
+                f"{len(restees)} page(s) Rockstar dans une langue écartée encore "
+                f"dans le fil — le robot les retire au passage suivant",
+                restees)
+    inconnues = collections.Counter()
+    for lien in liens_rockstar:
+        if not fetch_feeds.sur_domaine(lien, ("rockstargames.com",)):
+            continue
+        segments = [x for x in urlparse(lien).path.split("/") if x]
+        prefixe = segments[0] if segments else ""
+        # Minuscules seulement : les langues du site s'écrivent ainsi (/fr/,
+        # /de/, /mx/), les pages du jeu en majuscules (/VI/).
+        if (len(segments) > 1 and prefixe.islower() and prefixe.isalpha()
+                and len(prefixe) == 2 and prefixe not in ("en", "fr")
+                and prefixe not in fetch_feeds.LANGUES_ROCKSTAR_ECARTEES):
+            inconnues[prefixe] += 1
+    if inconnues:
+        signale("info", "rockstar-langue-inconnue",
+                "préfixe(s) de langue Rockstar jamais vu(s) — à ajouter à "
+                "LANGUES_ROCKSTAR_ECARTEES si ce n'est ni de l'anglais ni du français",
+                (f"/{p}/ : {n} lien(s)" for p, n in inconnues.most_common()))
+
     # ---- Cohérence des deux fichiers publiés ------------------------------
     try:
         allege = feed_store.load_feed(feed_store.recent_path_for(feed_store.FEED_PATH))

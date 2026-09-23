@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1554
+qui permet de tester tout le pipeline sans sortir de la machine. **1583
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5502,6 +5502,78 @@ passait à la ligne et « Sources » débordait dans sa marge. Leur marge passe 
 **Remarqué en passant, hors de ce lot** : à 320 px, la rangée de filtres
 « Non Rockstar · Rockstar · RockstarMag » rogne ses libellés et le compteur de
 RockstarMag. La règle CSS en cause n'est pas modifiée ici.
+
+### « Officiel » veut dire publié par Rockstar — 23/09/2026
+
+Le dernier « officiel » du fil était *« Follow affmalyt on yt by DEV_GTA6 in
+Grand Theft Auto Online »*. En suivant le lien : une course GTA Online
+**créée par un joueur**, hébergée sur `socialclub.rockstargames.com`. Elle
+passait pour officielle parce que la règle ne regardait que le domaine — et
+un officiel part en notification. Trois décisions d'Antoni, sur mesure faite
+du fil et de l'archive entiers :
+
+**Social Club n'est jamais officiel** (`DOMAINES_NON_OFFICIELS`, robot et app).
+L'article reste dans le fil comme un article ordinaire. Rien à écrire pour le
+passé : `recheck_official_status` recalcule déjà chaque drapeau à chaque
+passage, il sera déclassé au suivant. Conséquence assumée : un officiel est
+gardé à vie, celui-ci sortira du fil avec la fenêtre (l'archive le garde).
+Le reste du domaine reste officiel, pages d'aide (`support.`) et boutique
+(`store.`) comprises.
+
+**Le site de Rockstar, en anglais et en français seulement.** Chaque article
+du Newswire existe en plusieurs langues avec le même identifiant ; l'annonce
+de l'album apparaissait en anglais, en allemand (`/de/`) et, en « autre
+source », en espagnol du Mexique (`/mx/`). La collecte écarte désormais ces
+pages dès que leur vrai lien est connu, et le journal dit combien.
+`retire_pages_hors_langue` a retiré celles déjà publiées — l'article et
+l'autre source —, et `archiver(…, exclure=…)` les retire de l'archive, qui
+sinon les garderait par construction. L'exclusion ne s'applique qu'aux mois
+que le fil touche, les seuls que l'archive relit ; une page à retirer encore
+dans le fil y est forcément. Si une fusion après conflit de push la
+remettait (`merge_feed.py` ne connaît pas la règle), le passage suivant la
+retire de nouveau.
+
+**Le piège, annoncé avant d'écrire une ligne** : `/VI/` — les pages du jeu —
+se lit comme un code de langue (le vietnamien). La liste est donc
+**explicite**, `LANGUES_ROCKSTAR_ECARTEES = ("de", "mx")`, et elle n'est pas
+devinée : le site de Rockstar étant inaccessible d'ici, elle vient de tous
+les liens Rockstar de l'historique git du fil (seuls `fr`, `de` et `mx` y
+apparaissent ; `VI` toujours en majuscules). Une langue jamais vue passerait
+donc le filtre ; `audit_donnees.py` la signale (`rockstar-langue-inconnue`),
+pour qu'on l'ajoute en connaissance de cause.
+
+**Des domaines vérifiés strictement.** En lisant le code : le domaine était
+cherché *n'importe où* dans l'adresse (`in netloc` côté robot, `includes`
+côté app). `faux-rockstargames.com`, `rockstargames.com.arnaque.net` ou
+`rockstargames.com@arnaque.net` auraient été officiels. Désormais : le nom
+d'hôte exact, ou un vrai sous-domaine — pour Rockstar, Take-Two et Rockstar
+Mag. Vérifié avant de corriger : **aucun article** du fil ni de l'archive ne
+change de statut.
+
+Effet mesuré sur une copie des vraies données : **45 officiels → 43** (la
+page allemande retirée, la course du joueur déclassée), 1 880 articles →
+1 879, l'archive de septembre de 1 555 à 1 554 ; un second passage ne
+réécrit rien.
+
+### Les trois filtres du fil sur téléphone — 23/09/2026
+
+Remarqué sur les captures de la vue statistiques : « Non Rockstar ·
+Rockstar · RockstarMag » rognait ses libellés à 320 px. **Mesuré plutôt que
+supposé, le défaut était bien plus large** : libellé et compteur côte à côte
+ne tiennent dans leur bouton qu'à partir de **480 px** de fenêtre. À 390 px,
+la largeur d'un téléphone courant, « RockstarMag 83 » touchait le bord.
+
+**Le premier contrôle écrit était faux**, et ce sont les captures qui l'ont
+montré : il comparait `scrollWidth` à `clientWidth`. Mais le contenu du
+bouton est centré, il déborde donc des deux côtés, et `scrollWidth` ne voit
+pas le débordement à gauche — le contrôle passait pendant que le texte
+touchait le bord. Il compare désormais la boîte réelle du texte à la zone
+intérieure du bouton, de 320 à 600 px.
+
+Sous 480 px, le compteur passe sous le libellé et la marge latérale descend
+à 4 px, comme pour les sous-onglets des statistiques ; sous 360 px,
+l'espacement entre lettres disparaît, sans quoi « RockstarMag » dépassait
+encore de 0,7 px à 320.
 
 ### Ce qui n'avait rien à faire
 
