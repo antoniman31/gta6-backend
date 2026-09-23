@@ -893,9 +893,9 @@ def test_vue_statistiques(nav, url):
       }
       return calculeStats(items, null, new Date(m));
     }""", MAINTENANT)
-    check("couvertureDepuis" not in s and "mois" not in s,
-          "le calcul ne produit AUCUNE date de couverture ni aucun mois : rien "
-          "dans le fil ne permet de les établir sans deviner")
+    check(s["couverture"] is None and s["mois"] == [],
+          "sans date publiée par le robot, AUCUNE couverture ni aucun mois : "
+          "rien dans le fil ne permet de les établir sans deviner")
     check(s["officiels"] == 3, "les officiels sont comptés à part (%d)" % s["officiels"])
 
     jours = [j["jour"] for j in s["jours"]]
@@ -1039,13 +1039,13 @@ def test_vue_statistiques(nav, url):
           "le graphique dit ce qu'il mesure : le fil, pas le volume de la presse")
 
     # Bloc vide = bloc absent.
-    page.click("#statsOngletSources")
+    page.click("#statsOnglet_sources")
     page.wait_for_timeout(100)
     texte = page.inner_text("#statsContenu")
     check("Alpha" in texte, "la rubrique Sources affiche la réponse du robot")
     check("En forte baisse" not in texte,
           "et n'affiche PAS « en forte baisse » quand aucune ne l'est")
-    check(page.get_attribute("#statsOngletSources", "aria-pressed") == "true",
+    check(page.get_attribute("#statsOnglet_sources", "aria-pressed") == "true",
           "le sous-onglet actif l'annonce")
 
     # ---- 6. Tant que l'historique est partiel : pas de chiffres faux ----
@@ -1077,8 +1077,13 @@ def test_vue_statistiques(nav, url):
       setTab('stats');
     }""")
     page.wait_for_selector(".stats-histo", timeout=5000)
-    deborde = page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth")
-    check(not deborde, "à 320 px, la vue ne déborde pas horizontalement")
+    # Les quatre rubriques, pas seulement la première : c'est le quatrième
+    # sous-onglet, « Ma lecture », qui dépassait de 49 px.
+    for o in ("fil", "sources", "robot", "moi"):
+        page.evaluate("(o) => ongletStatsChoisi(o)", o)
+        page.wait_for_timeout(100)
+        deborde = page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth")
+        check(not deborde, "à 320 px, la rubrique « %s » ne déborde pas horizontalement" % o)
     ctx.close()
 
 
@@ -1144,6 +1149,239 @@ def test_entete_sans_vide(nav, url):
     page.evaluate("() => closeInfo()")
     check(page.locator(".info-btn").count() == 1,
           "le bouton ℹ️ en bas du fil est toujours là")
+    ctx.close()
+
+
+def test_heure_de_premiere_vue(nav, url):
+    """L'heure où un article apparaît pour la première fois, et qu'elle tienne.
+
+    seenMap était réécrit en entier à chaque actualisation : une heure
+    ajoutée naïvement aurait été effacée au passage suivant. Et la poser sur
+    les articles déjà connus leur aurait donné à tous l'heure du déploiement.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    r = page.evaluate("""() => {
+      vusDepuis = null;
+      seenMap = { "https://ex.test/ancien": {title: "Ancien", date: "2026-09-01T10:00:00Z"} };
+      const lot = [
+        {title: "Ancien", link: "https://ex.test/ancien", date: "2026-09-01T10:00:00Z"},
+        {title: "Neuf", link: "https://ex.test/neuf", date: "2026-09-23T10:00:00Z"},
+      ];
+      const avant = Date.now();
+      memoriseVus(lot);
+      const premier = { ancien: seenMap["https://ex.test/ancien"].vu,
+                        neuf: seenMap["https://ex.test/neuf"].vu,
+                        depuis: vusDepuis, avant: avant,
+                        stocke: localStorage.getItem(STORAGE_PREFIX + CLE_VUS_DEPUIS) };
+      // Une seconde actualisation, plus tard : c'est elle qui effaçait tout.
+      memoriseVus(lot);
+      premier.neufApres = seenMap["https://ex.test/neuf"].vu;
+      premier.ancienApres = seenMap["https://ex.test/ancien"].vu;
+      return premier;
+    }""")
+    check(r["ancien"] is None,
+          "un article déjà connu ne reçoit PAS d'heure : lui donner l'heure du "
+          "déploiement ferait croire qu'on a tout vu au même instant")
+    check(r["neuf"] is not None and r["neuf"] >= r["avant"],
+          "un article nouveau reçoit l'heure où il apparaît")
+    check(r["neufApres"] == r["neuf"],
+          "et une seconde actualisation la CONSERVE — la réécriture de seenMap l'aurait effacée")
+    check(r["ancienApres"] is None, "l'article ancien reste sans heure après coup aussi")
+    check(r["depuis"] is not None and r["stocke"] == str(r["depuis"]),
+          "le début de l'enregistrement est posé une fois, et gardé sur le téléphone")
+
+    # La sauvegarde l'emporte et le restaure.
+    paquet = page.evaluate("() => JSON.stringify(contenuSauvegarde())")
+    import json as _json
+    d = _json.loads(paquet)
+    check(d.get("vus_depuis") == r["depuis"], "la sauvegarde emporte le début de l'enregistrement")
+    check(d["vus"]["https://ex.test/neuf"].get("vu") == r["neuf"],
+          "et l'heure de première vue de chaque article")
+    ctx.close()
+
+
+def test_stats_quatre_rubriques(nav, url):
+    """Chaque statistique ajoutée le 23/09/2026, sur un fil dont on connaît la réponse."""
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    M = "2026-10-20T10:00:00Z"   # 20/10, midi à Paris
+
+    # ---- 1. Avec la date de couverture : tous les jours depuis, plafonnés ----
+    s = page.evaluate("""(m) => {
+      const items = [];
+      for(let j = 1; j <= 19; j++){
+        items.push({title: "a", link: "l" + j, source: "S",
+                    date: "2026-10-" + String(j).padStart(2, "0") + "T10:00:00Z"});
+      }
+      return calculeStats(items, {couverture_depuis: "2026-10-08"}, new Date(m), {});
+    }""", M)
+    jours = [j["jour"] for j in s["jours"]]
+    check(jours[0] == "2026-10-08" and jours[-1] == "2026-10-19",
+          "avec la couverture publiée, les jours vont du 08 (premier jour complet) "
+          "à la veille : %s → %s" % (jours[0], jours[-1]))
+    check(s["couverture"] == "2026-10-08", "et la couverture est restituée telle quelle")
+    s_long = page.evaluate("""(m) => calculeStats([{title: "a", link: "x", date: "2026-10-19T10:00:00Z"}],
+        {couverture_depuis: "2026-01-01"}, new Date(m), {})""", M)
+    check(len(s_long["jours"]) == 30,
+          "une couverture ancienne ne donne jamais plus de 30 jours : l'histogramme reste lisible")
+
+    # ---- 2. Les mois : entièrement couverts, et archive chargée ----
+    fil_mois = """([m, arch]) => {
+      const items = [];
+      const d = new Date("2026-08-01T12:00:00Z");
+      while(d < new Date("2026-12-20T00:00:00Z")){
+        items.push({title: "x", link: "x" + d.getTime(), date: d.toISOString()});
+        d.setTime(d.getTime() + 86400000);
+      }
+      return calculeStats(items, {couverture_depuis: "2026-09-08"}, new Date(m), {archiveChargee: arch});
+    }"""
+    avec = page.evaluate(fil_mois, ["2026-12-20T10:00:00Z", True])
+    check([x["mois"] for x in avec["mois"]] == ["2026-10", "2026-11"],
+          "octobre et novembre, entiers, apparaissent — septembre (couvert depuis le 08) "
+          "et décembre (en cours) non : %s" % [x["mois"] for x in avec["mois"]])
+    sans = page.evaluate(fil_mois, ["2026-12-20T10:00:00Z", False])
+    check(sans["mois"] == [],
+          "sans l'archive chargée, aucun mois : un mois plus vieux que la fenêtre n'est entier qu'avec elle")
+
+    # ---- 3. Heures, jours de la semaine, langues ----
+    s3 = page.evaluate("""(m) => calculeStats([
+        {title: "a", link: "1", date: "2026-10-19T12:30:00Z", lang: "fr"},
+        {title: "b", link: "2", date: "2026-10-19T12:45:00Z", lang: "en"},
+        {title: "c", link: "3", date: "2026-10-18T21:30:00Z"},
+      ], {couverture_depuis: "2026-10-18"}, new Date(m), {})""", M)
+    check(s3["heures"][14] == 2,
+          "12 h 30 UTC en octobre, c'est 14 h à Paris : deux articles comptés à 14 h (%s)" % s3["heures"][14])
+    check(s3["heures"][23] == 1, "21 h 30 UTC, c'est 23 h à Paris")
+    check(s3["semaine"][0] == 2 and s3["semaine"][6] == 1,
+          "le 19/10/2026 est un lundi (indice 0), le 18 un dimanche (indice 6)")
+    check(s3["langues"] == {"fr": 1, "en": 1, "inconnue": 1},
+          "français, anglais, et la langue inconnue comptée à part plutôt que devinée : %s" % s3["langues"])
+
+    # ---- 4. Le vrai média, et les mots ----
+    medias = page.evaluate("""() => [
+        mediaDe({title: "Un sujet - IGN", source: "Google News (EN)"}),
+        mediaDe({title: "Un sujet - IGN", source: "GameSpot"}),
+        mediaDe({title: "Sujet - and it's finally time to book that holiday", source: "Google News (EN)"}),
+        mediaDe({title: "Pas de tiret", source: "Google News (FR)"}),
+      ]""")
+    check(medias[0] == "IGN", "un titre Google News rend son vrai média : %s" % medias[0])
+    check(medias[1] == "GameSpot",
+          "un flux natif garde sa source — la queue de titre y serait un sous-titre")
+    check(medias[2] == "Google News (EN)", "une queue trop bavarde n'est pas un média")
+    check(medias[3] == "Google News (FR)", "sans tiret, la source sert de média")
+
+    s4 = page.evaluate("""(m) => calculeStats([
+        {title: "GTA 6 : la bande-annonce dévoilée, la bande-annonce ! - IGN", link: "1", source: "Google News (FR)", date: "2026-10-19T10:00:00Z"},
+        {title: "Grand Theft Auto VI trailer devoile - GameSpot", link: "2", source: "Google News (EN)", date: "2026-10-19T11:00:00Z"},
+      ], {couverture_depuis: "2026-10-19"}, new Date(m), {})""", M)
+    mots = {x["nom"]: x["n"] for x in s4["mots"]}
+    check(mots.get("devoilee") == 1 and mots.get("devoile") == 1,
+          "les mots sont comparés sans accents (%s)" % mots)
+    check(mots.get("bande") == 1,
+          "un mot répété dans UN titre compte une seule fois : on compte des articles, pas des occurrences")
+    check(not any(m in mots for m in ("gta", "grand", "theft", "auto", "ign", "gamespot")),
+          "ni « GTA », ni le nom du média en fin de titre ne comptent comme sujet")
+
+    # ---- 5. Les mots qui montent : 14 jours exigés ----
+    montent = page.evaluate("""(m) => {
+      const items = [];
+      for(let j = 6; j <= 19; j++){
+        const jour = "2026-10-" + String(j).padStart(2, "0");
+        const n = j >= 13 ? 3 : 0;              // « leonida » n'apparaît que la dernière semaine
+        for(let k = 0; k < n; k++) items.push({title: "Leonida " + k, link: jour + k, date: jour + "T10:00:00Z"});
+        items.push({title: "Constant", link: "c" + jour, date: jour + "T10:00:00Z"});
+      }
+      return calculeStats(items, {couverture_depuis: "2026-10-06"}, new Date(m), {}).montent;
+    }""", M)
+    check(montent and montent[0]["nom"] == "leonida" and montent[0]["avant"] == 0,
+          "un mot absent la semaine d'avant et présent cette semaine monte (%s)" % montent[:2])
+    check(all(x["nom"] != "constant" for x in montent), "un mot stable ne monte pas")
+    court = page.evaluate("""(m) => calculeStats([{title: "Leonida", link: "1", date: "2026-10-19T10:00:00Z"}],
+        {couverture_depuis: "2026-10-12"}, new Date(m), {}).montent""", M)
+    check(court == [], "sur moins de 14 jours, aucune « montée » : la comparaison serait inégale")
+
+    # ---- 6. Officiels par année : axe continu ----
+    s6 = page.evaluate("""(m) => calculeStats([
+        {title: "o", link: "1", date: "2023-12-05T10:00:00Z", official: true},
+        {title: "o", link: "2", date: "2025-05-06T10:00:00Z", official: true},
+        {title: "o", link: "3", date: "2025-06-06T10:00:00Z", official: true},
+      ], null, new Date(m), {}).officielsAnnees""", M)
+    check(s6 == [{"an": "2023", "n": 1}, {"an": "2024", "n": 0}, {"an": "2025", "n": 2}],
+          "une année sans publication officielle apparaît à zéro plutôt que d'être sautée : %s" % s6)
+
+    # ---- 7. Sources et robot ----
+    s7 = page.evaluate("""(m) => calculeStats([], {
+        generated_at: "2026-10-20T09:40:00Z", duration_seconds: 42, new_this_run: 3,
+        total_articles: 1800, decode_failures: 0, attente_recap: {articles: 0},
+        sources_health: [
+          {id: "a", name: "Alpha", status: "ok", http_status: 200, entries_fetched: 25, days_since_last_article: 0},
+          {id: "b", name: "Bravo", status: "ok", http_status: null, not_modified: true, entries_fetched: 0, days_since_last_article: 12},
+          {id: "d", name: "Delta", status: "cassee", http_status: null, entries_fetched: 0, days_since_last_article: 3},
+          {id: "c", name: "Charlie", status: "tarie", http_status: 200, entries_fetched: 10, days_since_last_article: null},
+          {id: "r", name: "Reddit", status: "en_attente", http_status: null, entries_fetched: 0},
+        ]}, new Date(m), {archiveIndex: {mois: [{mois: "2026-09", articles: 1500}, {mois: "2026-10", articles: 900}]}})""", M)
+    codes = {c["code"]: c["n"] for c in s7["sources"]["codes"]}
+    check(codes == {"200": 2, "304": 1, "sans réponse": 1},
+          "les codes HTTP sont comptés, et la source au repos n'y figure pas — pas interrogée, pas de code : %s" % codes)
+    check(codes.get("304") == 1,
+          "un flux inchangé compte en 304 : le robot l'écrit not_modified, sans http_status — "
+          "le 23/09/2026, 17 sources passaient ainsi pour muettes")
+    check([v["nom"] for v in s7["sources"]["volume"]] == ["Alpha", "Charlie"],
+          "le volume rapporté classe les sources, sans celles à zéro")
+    check([(x["nom"], x["jours"]) for x in s7["sources"]["silencieuses"]] == [("Charlie", None), ("Bravo", 12)],
+          "les plus silencieuses : « jamais » d'abord, puis la plus ancienne ; une source du jour n'y est pas")
+    r = s7["robot"]
+    check(r["ilYaMin"] == 20, "le dernier passage date d'il y a 20 minutes (%s)" % r["ilYaMin"])
+    check(r["archiveArticles"] == 2400 and r["archiveMois"] == 2, "et l'archive est résumée : 2 400 articles sur 2 mois")
+
+    # ---- 8. Ma lecture, et le délai qui ne ment pas ----
+    s8 = page.evaluate("""(m) => {
+      const depuis = new Date("2026-10-10T00:00:00Z").getTime();
+      const items = [], vus = {};
+      for(let k = 0; k < 25; k++){
+        const pub = new Date("2026-10-15T10:00:00Z").getTime() + k * 3600000;
+        items.push({title: "n" + k, link: "n" + k, date: new Date(pub).toISOString(), source: "S"});
+        vus["n" + k] = {vu: pub + 30 * 60000};          // vu 30 minutes après
+      }
+      // Publié AVANT l'enregistrement, découvert tard : ne doit pas compter.
+      items.push({title: "vieux", link: "v", date: "2026-10-01T10:00:00Z", source: "S"});
+      vus["v"] = {vu: new Date("2026-10-18T10:00:00Z").getTime()};
+      items.push({title: "officiel", link: "o", date: "2026-10-16T10:00:00Z", official: true, source: "R"});
+      return calculeStats(items, {couverture_depuis: "2026-10-01"}, new Date(m),
+        {lus: new Set(["n0", "n1"]), vus, vusDepuis: depuis}).moi;
+    }""", M)
+    check(s8["delaisNotes"] == 25,
+          "25 délais notés : l'article publié avant l'enregistrement est exclu, il a été découvert tard, pas vu en retard (%s)" % s8["delaisNotes"])
+    check(s8["delaiMedianMin"] == 30, "délai médian : 30 minutes (%s)" % s8["delaiMedianMin"])
+    check(s8["lus"] == 2 and s8["officielsNonLus"] == 1, "deux lus, un officiel non lu")
+    peu = page.evaluate("""(m) => calculeStats([{title: "a", link: "a", date: "2026-10-15T10:00:00Z"}],
+        null, new Date(m), {vus: {a: {vu: new Date("2026-10-15T11:00:00Z").getTime()}},
+        vusDepuis: new Date("2026-10-01").getTime()}).moi.delaiMedianMin""", M)
+    check(peu is None, "sous 20 articles notés, aucun délai médian annoncé : un seul chiffre n'est pas une tendance")
+
+    # ---- 9. Le rendu des quatre rubriques ----
+    page.evaluate("""() => {
+      historyPartial = false; rattrapageLance = true; archiveChargee = true;
+      lastItems = [{title: "Un sujet - IGN", link: "https://ex.test/1", source: "Google News (EN)",
+                    date: new Date(Date.now() - 86400000).toISOString(), lang: "en"}];
+      derniereReponseBackend = {generated_at: new Date().toISOString(), duration_seconds: 40,
+        sources_health: [{id: "a", name: "Alpha", status: "ok", http_status: 200, entries_fetched: 25}]};
+      setTab('stats');
+    }""")
+    for o, attendu in (("sources", "Réponses au dernier passage"), ("robot", "Dernier passage"),
+                       ("moi", "Entre la publication et ton écran")):
+        page.evaluate("(o) => ongletStatsChoisi(o)", o)
+        page.wait_for_timeout(80)
+        check(attendu in page.inner_text("#statsContenu"),
+              "la rubrique « %s » affiche « %s »" % (o, attendu))
+        check(page.get_attribute("#statsOnglet_" + o, "aria-pressed") == "true",
+              "et son sous-onglet l'annonce")
     ctx.close()
 
 def test_actualiser_ne_jette_plus_rien(nav, url):
@@ -1538,6 +1776,8 @@ def main():
             test_sauvegarde_export_import(nav, url)
             test_vue_statistiques(nav, url)
             test_entete_sans_vide(nav, url)
+            test_heure_de_premiere_vue(nav, url)
+            test_stats_quatre_rubriques(nav, url)
             nav.close()
     finally:
         srv.shutdown()
