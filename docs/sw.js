@@ -21,7 +21,7 @@
 // de l'ancien service worker, ce qui évite de revivre l'incident de cache
 // tenace jamais élucidé. Ici c'est indispensable : sans remplacement,
 // l'ancien service worker resterait actif et ignorerait les push.
-const CACHE_NAME = "gta6watch-shell-v12";
+const CACHE_NAME = "gta6watch-shell-v13";
 const SHELL_URL = "./index.html";
 
 self.addEventListener("install", (event) => {
