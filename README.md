@@ -5434,6 +5434,75 @@ il manque 16 px (258 disponibles, 274 nécessaires) ; les gagner demanderait de
 réduire le titre sur ces seuls écrans. Le retour à la ligne y reste le repli
 prévu pour ne pas déborder de la carte — sur des téléphones devenus rares.
 
+### Le plus de statistiques possible : quatre rubriques — 23/09/2026
+
+La vue passe de deux rubriques à quatre, en sous-onglets : **Le fil**,
+**Sources**, **Robot**, **Ma lecture**. Chaque bloc disparaît toujours quand il
+n'a rien à dire. Deux paragraphes plus haut sont dépassés : il y a désormais un
+histogramme mensuel, et les jours ne sont plus bornés à 14.
+
+**Le fil.** Articles par jour sur **tous les jours complets depuis
+`couverture_depuis`**, plafonnés à 30 pour rester lisibles ; sans cette date
+(ancien `feed.json`), la règle des 14 jours reste en secours. Un jour sans
+article compte zéro au lieu d'être sauté. **Par mois**, seulement pour les mois
+entièrement couverts, et seulement une fois l'archive chargée : le mois de la
+couverture (commencé le 08) et le mois en cours sont exclus, puisqu'ils
+dessineraient une baisse qui n'en est pas une. Puis l'heure (Paris) et le jour
+de la semaine, les médias qui en parlent le plus (le vrai média est retrouvé
+dans le suffixe des titres Google News, selon une règle stricte : au plus 32
+caractères et 4 mots, sans ponctuation finale), les mots les plus fréquents
+hors mots vides, **les mots qui montent** (7 derniers jours contre les 7
+précédents, seulement avec 14 jours couverts, sinon la comparaison serait
+inégale), la répartition français/anglais, les sujets les plus repris, et les
+publications officielles par année, sur un axe continu : une année sans
+publication apparaît à zéro.
+
+**Sources.** L'état au dernier passage, celles qui apportent des articles
+qu'aucune autre ne remonte, le volume rapporté, les codes HTTP avec un
+libellé, les plus silencieuses (« jamais » d'abord), celles sans article
+exclusif, et celles en forte baisse. La source Reddit au repos (tour de rôle)
+n'a pas de code : elle n'a pas été interrogée, elle ne compte donc pas parmi
+les réponses.
+
+**Défaut vu en regardant la capture, pas dans les tests** : 17 sources
+s'affichaient « sans réponse ». Elles avaient toutes répondu 304. Sur un 304,
+le robot écrit `not_modified` et **n'écrit pas** `http_status` (le retour
+anticipé de `fetch_feeds.py` ne le porte pas), alors que le contrôle se
+servait d'un 304 dans `http_status`, une forme que le robot ne produit jamais.
+L'app lit maintenant `not_modified`, et le contrôle reprend la forme réelle,
+avec en plus une vraie source muette pour que les deux cas restent distincts.
+
+**Robot.** Heure du dernier passage et son ancienneté, durée, nouveaux
+articles, sources suivies, et la taille de ce qu'il garde : le fil et
+l'archive. Tant que l'app n'a pas reçu de réponse du robot depuis
+l'ouverture, Sources et Robot disent de toucher « Actualiser », parce que
+l'app ne relit pas le robot toute seule au démarrage. « Arrive avec la
+prochaine réponse » laissait croire qu'il suffisait d'attendre.
+
+**Ma lecture.** Calculée sur le téléphone, rien n'en sort : les articles lus,
+la part lue sur la fenêtre étudiée, les médias que tu lis le plus, et les
+publications officielles encore non lues.
+
+**Entre la publication et ton écran.** Pour mesurer ce délai, l'app note
+maintenant **l'heure de première vue** de chaque article (`vu` dans
+`seenMap`, jamais réécrite une fois posée), ainsi que la date de début de cet
+enregistrement (`vus-depuis-v1`). Les deux vont dans la sauvegarde. Le délai
+médian n'est affiché qu'à partir de **20 articles notés**, et seulement pour
+ceux **publiés après le début de l'enregistrement** : un article de la veille
+découvert à la mise à jour a été vu tard, pas en retard. Les délais négatifs
+(horloge d'une source en avance) sont écartés. Avant 20, le bloc dit où en est
+l'enregistrement plutôt que d'afficher un chiffre bâti sur trois articles.
+
+**Mis en page à 320 px.** Quatre sous-onglets dans 288 px, avec les 14 px de
+marge des onglets ordinaires, ne laissaient que 36 px de texte : « Le fil »
+passait à la ligne et « Sources » débordait dans sa marge. Leur marge passe à
+4 px. Un contrôle navigateur vérifie qu'aucune des quatre rubriques ne déborde
+à 320 px, la largeur la plus étroite.
+
+**Remarqué en passant, hors de ce lot** : à 320 px, la rangée de filtres
+« Non Rockstar · Rockstar · RockstarMag » rogne ses libellés et le compteur de
+RockstarMag. La règle CSS en cause n'est pas modifiée ici.
+
 ### Ce qui n'avait rien à faire
 
 **Nommer ce qu'on perd avant d'effacer.** C'était la proposition, et elle était

@@ -341,7 +341,10 @@
   .tab-row{display:flex; gap:8px; margin-bottom:12px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
   .tab-row::-webkit-scrollbar{display:none;}
   .tab-row-full .tab{flex:1; padding:10px 14px;}
-  .tab-row:not(.tab-row-full) .tab{flex:1; min-width:0; white-space:normal; text-align:center; line-height:1.3;}
+  /* Les sous-onglets des statistiques partagent CETTE déclaration plutôt
+     qu'une copie : à quatre sur 320 px, « Ma lecture » dépassait de 49 px
+     tant qu'ils gardaient la largeur de leur texte (mesuré au navigateur). */
+  .tab-row:not(.tab-row-full) .tab, .stats-onglets .tab{flex:1; min-width:0; white-space:normal; text-align:center; line-height:1.3;}
   /* Onglets et boutons d'action partagent une seule déclaration plutôt que
      deux qui se ressemblent : c'est ce qui garantit qu'ils ne divergeront
      pas à la prochaine retouche. Le centrage passe par flex et non par
@@ -773,6 +776,10 @@
      un « aucune donnée » répété six fois occupe autant de place qu'un vrai
      contenu (principe repris de game-library). */
   .stats-onglets{display:flex; gap:8px; margin-bottom:12px;}
+  /* Quatre onglets dans 288 px : avec les 14 px de marge de chaque côté des
+     onglets ordinaires, il restait 36 px de texte — « Le fil » passait à la
+     ligne et « Sources » débordait dans sa marge. */
+  .stats-onglets .tab{padding-left:4px; padding-right:4px;}
   .stats-bloc{
     background:var(--bg-panel); border:1px solid var(--line);
     border-radius:var(--r-md); padding:14px; margin-bottom:10px;
@@ -1386,9 +1393,13 @@
   </div>
 
   <div id="statsPanel" style="display:none;">
+    <!-- Quatre rubriques depuis le 23/09/2026. Libellés courts : la rangée
+         doit tenir sur 320 px sans passer à la ligne (mesuré au navigateur). -->
     <div class="stats-onglets" role="group" aria-label="Rubrique des statistiques">
-      <button class="tab active" id="statsOngletFil" aria-pressed="true" onclick="ongletStatsChoisi('fil')">Le fil</button>
-      <button class="tab" id="statsOngletSources" aria-pressed="false" onclick="ongletStatsChoisi('sources')">Les sources</button>
+      <button class="tab active" id="statsOnglet_fil" aria-pressed="true" onclick="ongletStatsChoisi('fil')">Le fil</button>
+      <button class="tab" id="statsOnglet_sources" aria-pressed="false" onclick="ongletStatsChoisi('sources')">Sources</button>
+      <button class="tab" id="statsOnglet_robot" aria-pressed="false" onclick="ongletStatsChoisi('robot')">Robot</button>
+      <button class="tab" id="statsOnglet_moi" aria-pressed="false" onclick="ongletStatsChoisi('moi')">Ma lecture</button>
     </div>
     <div id="statsContenu"></div>
   </div>
@@ -2101,6 +2112,11 @@ async function loadState(){
     if(seenRes && seenRes.value) seenMap = JSON.parse(seenRes.value) || {};
   }catch(e){}
   try{
+    const depuis = storageGet(CLE_VUS_DEPUIS);
+    const n = depuis && depuis.value ? Number(depuis.value) : NaN;
+    if(Number.isFinite(n) && n > 0) vusDepuis = n;
+  }catch(e){}
+  try{
     const readRes = storageGet("read-items-v1");
     if(readRes && readRes.value) readSet = new Set(JSON.parse(readRes.value));
   }catch(e){}
@@ -2213,6 +2229,47 @@ function pruneSeenMap(){
   if(links.length <= MAX_SEEN_ENTRIES) return;
   links.sort((a, b) => dateValue(seenMap[b].date) - dateValue(seenMap[a].date));
   for(const link of links.slice(MAX_SEEN_ENTRIES)) delete seenMap[link];
+}
+
+// ---------- Heure de première vue ----------
+//
+// Demandé par Antoni le 23/09/2026 : savoir un jour combien de temps
+// s'écoule entre la publication d'un article et le moment où il apparaît
+// chez lui. Rien ne le permettait — seenMap ne gardait que le titre, la
+// date et la source, et il était RÉÉCRIT en entier à chaque actualisation.
+// Un horodatage ajouté naïvement aurait donc été effacé au passage suivant.
+//
+// Deux règles, et c'est la seconde qui rend la statistique juste :
+//
+//   1. `vu` n'est posé que sur un lien ABSENT jusque-là, et conservé
+//      ensuite. Les ~1 800 articles déjà connus au déploiement n'en
+//      reçoivent pas : leur donner l'heure du déploiement ferait croire
+//      qu'on les a tous vus au même instant.
+//   2. le délai n'est calculé que pour les articles PUBLIÉS APRÈS le début
+//      de l'enregistrement (`vusDepuis`). Sur un téléphone neuf, ou quand
+//      l'archive apporte de vieux articles, tout arrive « nouveau » d'un
+//      coup ; ces articles-là n'ont pas été vus en retard, ils ont été
+//      découverts tard. Les exclure est ce qui fait mesurer un délai et non
+//      l'âge du fil.
+const CLE_VUS_DEPUIS = "vus-depuis-v1";
+let vusDepuis = null;   // horodatage (ms) du début de l'enregistrement
+
+function memoriseVus(items){
+  const maintenant = Date.now();
+  if(!vusDepuis){
+    vusDepuis = maintenant;
+    try{ storageSet(CLE_VUS_DEPUIS, String(vusDepuis)); }catch(e){ /* quota : on réessaiera */ }
+  }
+  for(const item of items){
+    const avant = seenMap[item.link];
+    seenMap[item.link] = {
+      title: item.title, date: item.date, source: item.source,
+      official: item.official, rockstarmag: item.rockstarmag,
+      // `avant ? avant.vu : maintenant` et non `avant?.vu || maintenant` :
+      // un article déjà connu SANS heure doit le rester (règle 1).
+      vu: avant ? avant.vu : maintenant,
+    };
+  }
 }
 
 async function saveSeen(){
@@ -2345,6 +2402,9 @@ function contenuSauvegarde(){
     settings: settings,
     lus: [...readSet],
     vus: seenMap,
+    // Sans lui, un téléphone restauré repartirait d'un enregistrement neuf
+    // et exclurait du délai de lecture tout ce qui a été noté avant.
+    vus_depuis: vusDepuis,
   };
 }
 
@@ -2443,6 +2503,10 @@ async function importerSauvegarde(champ){
   settings = Object.assign({}, DEFAULT_SETTINGS, d.settings);
   readSet = new Set(d.lus.filter(l => typeof l === "string"));
   seenMap = d.vus;
+  if(Number.isFinite(d.vus_depuis) && d.vus_depuis > 0){
+    vusDepuis = d.vus_depuis;
+    try{ storageSet(CLE_VUS_DEPUIS, String(vusDepuis)); }catch(e){}
+  }
   storageSet("settings-v1", JSON.stringify(settings));
   await saveRead();
   await saveSeen();
@@ -3046,7 +3110,7 @@ async function applyBackendData(data, sourceUrl){
   all.sort(byDateDesc);
 
   const newOnes = findNewItems(all);
-  all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
+  memoriseVus(all);
   await saveSeen();
 
   // ACTUALISER NE DOIT PLUS JETER CE QU'ON A CHARGÉ.
@@ -3480,7 +3544,7 @@ async function checkNow(force){
 
   const newOnes = findNewItems(all);
 
-  all.forEach(item => { seenMap[item.link] = { title: item.title, date: item.date, source: item.source, official: item.official, rockstarmag: item.rockstarmag }; });
+  memoriseVus(all);
   await saveSeen();
 
   // Fusionne avec les articles déjà connus au lieu de tout remplacer : si
@@ -4452,26 +4516,106 @@ function toggleRead(safeId, link){
 // complets ne peut donc contenir, par construction, aucun jour élagué — ni
 // avec l'ancienne fenêtre, ni avec la nouvelle.
 //
-// Pas d'histogramme mensuel : il faudrait que le robot publie depuis quand
-// il garde tout, et c'est une modification du format publié, à décider.
+// Pas d'histogramme mensuel tant que le robot ne disait pas depuis quand il
+// garde tout. Depuis le 23/09/2026 il le publie (`couverture_depuis`, voir
+// COUVERTURE_COMPLETE_DEPUIS côté robot), et les statistiques par jour
+// couvrent désormais TOUS les jours complets depuis cette date. La règle des
+// 14 jours reste en secours si la date manque (ancien feed.json, robot en
+// retard) : elle ne devine rien, puisque la rétention n'est jamais descendue
+// sous 15 jours.
 let derniereReponseBackend = null;
 let ongletStats = "fil";
-// 14 et pas 30 : borné sous la plus petite fenêtre de rétention que le robot
-// ait jamais eue (15 jours). Voir plus haut — c'est ce qui rend le graphique
-// juste sans avoir à deviner où commence la couverture.
-const STATS_JOURS = 14;
+const STATS_JOURS_SECOURS = 14;   // sans date de couverture : voir plus haut
+const STATS_JOURS_MAX = 30;       // un histogramme plus long ne se lit plus
+const STATS_MOIS_MIN = 2;         // un histogramme d'une seule barre ne dit rien
 const STATS_TOP = 5;
+const STATS_DELAI_MIN = 20;       // articles notés avant d'annoncer un délai médian
 
 // Le jour, à l'heure de Paris : c'est l'heure dans laquelle Antoni lit, et
 // un article publié à 23h30 le 12 n'appartient pas au 13.
 function jourParis(d){
   return d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" }); // AAAA-MM-JJ
 }
+function heureParis(d){
+  return Number(d.toLocaleString("en-GB", { timeZone: "Europe/Paris", hour: "2-digit", hourCycle: "h23" }));
+}
+// 0 = lundi … 6 = dimanche, à l'heure de Paris.
+function jourSemaineParis(d){
+  const j = new Date(jourParis(d) + "T12:00:00Z").getUTCDay();
+  return (j + 6) % 7;
+}
 
-// Pure : ne lit ni le DOM ni les globales, pour être vérifiable sur un fil
-// fabriqué. `maintenant` est injectable pour la même raison.
-function calculeStats(items, backend, maintenant){
+// Le média réel d'un article. Les agrégateurs Google News publient sous leur
+// propre nom et rangent le vrai média en fin de titre : « … - IGN ». Même
+// règle que separe_titre_et_media() côté robot, mesurée sur 1 437 titres
+// (1 411 queues sont bien un média) : au plus 32 caractères, 4 mots, pas de
+// ponctuation finale. Appliquée aux seuls agrégateurs : sur un flux natif,
+// la source EST le média, et une queue de titre y serait un sous-titre.
+function mediaDe(item){
+  const source = item.source || "?";
+  if(!/google news/i.test(source)) return source;
+  const t = (item.title || "").trim();
+  const i = t.lastIndexOf(" - ");
+  if(i <= 0) return source;
+  const queue = t.slice(i + 3).trim();
+  if(!queue || queue.length > 32 || queue.split(/\s+/).length > 4) return source;
+  if(/[.?!,;:)"»’]$/.test(queue)) return source;
+  return queue;
+}
+function titreSansMedia(item){
+  const m = mediaDe(item);
+  const t = (item.title || "").trim();
+  return (m !== item.source && t.endsWith(" - " + m)) ? t.slice(0, -(m.length + 3)) : t;
+}
+
+// Mots vides, et les mots que TOUT le fil contient : les compter ne dirait
+// rien de ce dont on parle. Comparaison sans accents, comme la recherche.
+const STATS_MOTS_IGNORES = new Set((
+  "gta grand theft auto rockstar games game jeu jeux video videos " +
+  "les des une est sur pour par dans avec pas plus son ses aux qui que quoi " +
+  "cette ces elle ils nous vous leur leurs mais comme tout tous toute fait " +
+  "etre avoir sont ont sera deja encore apres avant entre sans sous chez " +
+  "the and for with from that this are was will has have not you your " +
+  "its it's all new about into more than what when how why who can just " +
+  "out now get got his her their they them been being over after before " +
+  "here there says said could would should also may might one two first " +
+  "vs via upon while"
+).split(" "));
+
+function motsDe(item){
+  return sansAccents(titreSansMedia(item)).toLowerCase()
+    .replace(/[^a-z0-9' ]/g, " ").split(/\s+/)
+    .map(m => m.replace(/^'+|'+$/g, "").replace(/'s$/, ""))
+    .filter(m => m.length >= 3 && !/^\d+$/.test(m) && !STATS_MOTS_IGNORES.has(m));
+}
+
+// Les jours à étudier : complets, et sûrs d'être entiers.
+//
+// Avec la date de couverture publiée par le robot : tous les jours depuis,
+// sauf aujourd'hui qui n'est pas fini, plafonnés aux STATS_JOURS_MAX derniers.
+// Sans elle : les 14 derniers, et jamais le premier jour du fil, partiel sur
+// une installation récente.
+function joursEtudies(backend, maintenant, premierJour){
+  const couverture = backend && typeof backend.couverture_depuis === "string"
+    ? backend.couverture_depuis : null;
+  const limite = couverture ? STATS_JOURS_MAX : STATS_JOURS_SECOURS;
+  const jours = [];
+  const curseur = new Date(maintenant);
+  for(let n = 1; n <= limite; n++){
+    curseur.setTime(maintenant.getTime() - n * 86400000);
+    const j = jourParis(curseur);
+    if(couverture ? j < couverture : (!premierJour || j <= premierJour)) break;
+    jours.unshift(j);
+  }
+  return { jours, couverture };
+}
+
+// Pure : ne lit ni le DOM ni les globales d'état, pour être vérifiable sur
+// un fil fabriqué. Tout ce qui varie entre en paramètre.
+function calculeStats(items, backend, maintenant, lecture){
   maintenant = maintenant || new Date();
+  lecture = lecture || {};
+  const seuil = (backend && backend.hot_threshold) || 4;
   const liste = (items || []).filter(i => i && i.date);
   const ordinaires = liste.filter(i => !i.official);
   const officiels = liste.filter(i => i.official);
@@ -4481,76 +4625,212 @@ function calculeStats(items, backend, maintenant){
     const d = new Date(i.date);
     if(!isNaN(d) && (!debut || d < debut)) debut = d;
   }
+  const { jours: joursListe, couverture } =
+    joursEtudies(backend, maintenant, debut ? jourParis(debut) : null);
+  const dansFenetre = new Set(joursListe);
 
-  const premierJour = debut ? jourParis(debut) : null;
-
-  // Par jour, ordinaires seulement. Aujourd'hui n'est pas fini : exclu, sinon
-  // l'histogramme finirait sur une chute qui n'existe pas. Le premier jour du
-  // fil l'est aussi quand il tombe dans la fenêtre (installation récente) :
-  // il est partiel pour la même raison.
+  const fenetre = [];
   const parJour = {};
   for(const i of ordinaires){
     const d = new Date(i.date);
     if(isNaN(d)) continue;
     const j = jourParis(d);
+    if(!dansFenetre.has(j)) continue;
+    fenetre.push(i);
     parJour[j] = (parJour[j] || 0) + 1;
   }
-  const jours = [];
-  if(debut){
-    const curseur = new Date(maintenant);
-    for(let n = 1; n <= STATS_JOURS; n++){
-      curseur.setTime(maintenant.getTime() - n * 86400000);
-      const j = jourParis(curseur);
-      if(j <= premierJour) break;
-      jours.unshift({ jour: j, n: parJour[j] || 0 });
-    }
-  }
-  const valeurs = jours.map(j => j.n).sort((a, b) => a - b);
-  const mediane = valeurs.length ? valeurs[Math.floor(valeurs.length / 2)] : 0;
+  const jours = joursListe.map(j => ({ jour: j, n: parJour[j] || 0 }));
+  const triees = jours.map(j => j.n).sort((a, b) => a - b);
+  const mediane = triees.length ? triees[Math.floor(triees.length / 2)] : 0;
   const pic = jours.reduce((m, j) => (!m || j.n > m.n ? j : m), null);
+
+  const heures = Array.from({ length: 24 }, () => 0);
+  const semaine = Array.from({ length: 7 }, () => 0);
+  const medias = {};
+  const langues = { fr: 0, en: 0, inconnue: 0 };
+  const mots = {};
+  for(const i of fenetre){
+    const d = new Date(i.date);
+    heures[heureParis(d)]++;
+    semaine[jourSemaineParis(d)]++;
+    const m = mediaDe(i);
+    medias[m] = (medias[m] || 0) + 1;
+    langues[i.lang === "fr" || i.lang === "en" ? i.lang : "inconnue"]++;
+    for(const mot of new Set(motsDe(i))) mots[mot] = (mots[mot] || 0) + 1;
+  }
+  const top = (dict, n) => Object.entries(dict)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "fr"))
+    .slice(0, n).map(([nom, n]) => ({ nom, n }));
+
+  // Mots qui montent : les 7 derniers jours contre les 7 précédents. Il faut
+  // donc 14 jours complets, sinon la comparaison porterait sur des moitiés
+  // inégales et fabriquerait des hausses.
+  let montent = [];
+  if(joursListe.length >= 14){
+    const recents = new Set(joursListe.slice(-7));
+    const precedents = new Set(joursListe.slice(-14, -7));
+    const r = {}, p = {};
+    for(const i of fenetre){
+      const j = jourParis(new Date(i.date));
+      const cible = recents.has(j) ? r : precedents.has(j) ? p : null;
+      if(!cible) continue;
+      for(const mot of new Set(motsDe(i))) cible[mot] = (cible[mot] || 0) + 1;
+    }
+    montent = Object.keys(r)
+      .map(mot => ({ nom: mot, n: r[mot], avant: p[mot] || 0 }))
+      .filter(x => x.n >= 5 && x.n >= 2 * x.avant)
+      .sort((a, b) => (b.n - b.avant) - (a.n - a.avant) || a.nom.localeCompare(b.nom, "fr"))
+      .slice(0, 6);
+  }
+
+  // Par mois : seulement les mois ENTIÈREMENT couverts (leur premier jour
+  // est dans la couverture), jamais le mois en cours, et seulement quand
+  // l'archive est chargée — un mois plus vieux que la fenêtre de feed.json
+  // n'est entier qu'avec elle.
+  let mois = [];
+  if(couverture && lecture.archiveChargee){
+    const courant = jourParis(maintenant).slice(0, 7);
+    const parMois = {};
+    for(const i of ordinaires){
+      const d = new Date(i.date);
+      if(isNaN(d)) continue;
+      const m = jourParis(d).slice(0, 7);
+      parMois[m] = (parMois[m] || 0) + 1;
+    }
+    mois = Object.keys(parMois)
+      .filter(m => (m + "-01") >= couverture && m < courant)
+      .sort().map(m => ({ mois: m, n: parMois[m] }));
+  }
+
+  // Les officiels, seul historique long honnête : protégés à vie par le
+  // robot, ils sont tous là depuis la première annonce.
+  const officielsParAn = {};
+  for(const o of officiels){
+    const a = (o.date || "").slice(0, 4);
+    if(/^\d{4}$/.test(a)) officielsParAn[a] = (officielsParAn[a] || 0) + 1;
+  }
+  const annees = Object.keys(officielsParAn).sort();
+  const officielsAnnees = annees.length
+    ? Array.from({ length: Number(annees[annees.length - 1]) - Number(annees[0]) + 1 },
+        (_, k) => String(Number(annees[0]) + k)).map(a => ({ an: a, n: officielsParAn[a] || 0 }))
+    : [];
+  const officielRecent = officiels.slice().sort((a, b) => (a.date < b.date ? 1 : -1))[0] || null;
 
   const repris = liste
     .filter(i => (i.extraSources || []).length >= 1)
-    .map(i => ({ titre: i.title, lien: i.link, date: i.date,
-                 redactions: 1 + i.extraSources.length }))
-    .sort((a, b) => b.redactions - a.redactions || (a.date < b.date ? 1 : -1))
-    .slice(0, STATS_TOP);
+    .map(i => ({ titre: i.title, lien: i.link, date: i.date, redactions: 1 + i.extraSources.length }))
+    .sort((a, b) => b.redactions - a.redactions || (a.date < b.date ? 1 : -1));
+  const majeures = repris.filter(r => r.redactions >= seuil).length;
 
-  const officielRecent = officiels
-    .slice()
-    .sort((a, b) => (a.date < b.date ? 1 : -1))[0] || null;
-
+  // ---- Les sources ----
   const sante = (backend && backend.sources_health) || [];
   const statuts = {};
-  for(const s of sante) statuts[s.status] = (statuts[s.status] || 0) + 1;
-  const productives = sante
-    .filter(s => (s.articles_exclusifs || 0) > 0)
-    .sort((a, b) => b.articles_exclusifs - a.articles_exclusifs)
-    .slice(0, STATS_TOP)
-    .map(s => ({ nom: s.name, n: s.articles_exclusifs }));
-  const steriles = sante
-    .filter(s => !(s.articles_exclusifs > 0) && s.status !== "en_attente")
-    .map(s => s.name)
-    .sort((a, b) => a.localeCompare(b, "fr"));
+  const codes = {};
+  for(const s of sante){
+    statuts[s.status] = (statuts[s.status] || 0) + 1;
+    if(s.status === "en_attente") continue;       // pas interrogée, pas de code
+    // Sur un 304, le robot écrit not_modified sans http_status (voir le
+    // retour anticipé de fetch_feeds.py) : lu tel quel, un flux inchangé
+    // passait pour un flux muet — 17 sources « sans réponse » le 23/09/2026
+    // qui avaient toutes répondu.
+    const c = s.not_modified ? "304"
+      : s.http_status == null ? "sans réponse" : String(s.http_status);
+    codes[c] = (codes[c] || 0) + 1;
+  }
   const noms = {};
   for(const s of sante) noms[s.id] = s.name;
-  const enBaisse = Object.keys((backend && backend.sources_declining) || {})
-    .map(id => noms[id] || id);
+  const sources = {
+    total: sante.length, statuts,
+    codes: Object.entries(codes).sort((a, b) => b[1] - a[1]).map(([code, n]) => ({ code, n })),
+    productives: sante.filter(s => (s.articles_exclusifs || 0) > 0)
+      .sort((a, b) => b.articles_exclusifs - a.articles_exclusifs)
+      .slice(0, STATS_TOP).map(s => ({ nom: s.name, n: s.articles_exclusifs })),
+    volume: sante.filter(s => (s.entries_fetched || 0) > 0)
+      .sort((a, b) => b.entries_fetched - a.entries_fetched)
+      .slice(0, 8).map(s => ({ nom: s.name, n: s.entries_fetched })),
+    silencieuses: sante.filter(s => s.status !== "en_attente"
+        && (s.days_since_last_article == null || s.days_since_last_article >= 7))
+      .sort((a, b) => (b.days_since_last_article ?? 1e9) - (a.days_since_last_article ?? 1e9))
+      .slice(0, 6).map(s => ({ nom: s.name, jours: s.days_since_last_article })),
+    steriles: sante.filter(s => !(s.articles_exclusifs > 0) && s.status !== "en_attente")
+      .map(s => s.name).sort((a, b) => a.localeCompare(b, "fr")),
+    enBaisse: Object.keys((backend && backend.sources_declining) || {}).map(id => noms[id] || id),
+  };
+
+  // ---- Le robot ----
+  const b = backend || {};
+  const genere = b.generated_at ? new Date(b.generated_at) : null;
+  const robot = {
+    genere: genere && !isNaN(genere) ? genere.toISOString() : null,
+    ilYaMin: genere && !isNaN(genere) ? Math.max(0, Math.round((maintenant - genere) / 60000)) : null,
+    duree: typeof b.duration_seconds === "number" ? b.duration_seconds : null,
+    nouveaux: typeof b.new_this_run === "number" ? b.new_this_run : null,
+    total: typeof b.total_articles === "number" ? b.total_articles : null,
+    decodages: typeof b.decode_failures === "number" ? b.decode_failures : null,
+    enAttente: b.attente_recap && typeof b.attente_recap.articles === "number" ? b.attente_recap.articles : null,
+    sources: typeof b.sources_count === "number" ? b.sources_count : sante.length || null,
+    couverture,
+    archiveMois: lecture.archiveIndex ? (lecture.archiveIndex.mois || []).length : null,
+    archiveArticles: lecture.archiveIndex
+      ? (lecture.archiveIndex.mois || []).reduce((t, m) => t + (m.articles || 0), 0) : null,
+  };
+
+  // ---- Ma lecture ----
+  const lus = lecture.lus || new Set();
+  const vus = lecture.vus || {};
+  const luDans = l => lus.has(l.link);
+  const fenetreLue = fenetre.filter(luDans).length;
+  const mediasLus = {};
+  for(const i of liste) if(luDans(i)){ const m = mediaDe(i); mediasLus[m] = (mediasLus[m] || 0) + 1; }
+  const officielsNonLus = officiels.filter(o => !luDans(o))
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+  const delais = [];
+  if(lecture.vusDepuis){
+    for(const i of liste){
+      const v = vus[i.link];
+      const d = new Date(i.date);
+      if(!v || !v.vu || isNaN(d) || d.getTime() < lecture.vusDepuis) continue;
+      const ecart = v.vu - d.getTime();
+      if(ecart >= 0) delais.push(ecart);
+    }
+  }
+  delais.sort((a, b) => a - b);
+  const moi = {
+    lus: liste.filter(luDans).length,
+    total: liste.length,
+    fenetreLue, fenetreTotal: fenetre.length, joursFenetre: joursListe.length,
+    medias: top(mediasLus, STATS_TOP),
+    officielsNonLus: officielsNonLus.length,
+    officielsATLire: officielsNonLus.slice(0, STATS_TOP).map(o => ({ titre: o.title, lien: o.link })),
+    delaisNotes: delais.length,
+    delaiMedianMin: delais.length >= STATS_DELAI_MIN
+      ? Math.round(delais[Math.floor(delais.length / 2)] / 60000) : null,
+  };
 
   return {
-    total: liste.length,
-    officiels: officiels.length,
-    officielRecent: officielRecent
-      ? { titre: officielRecent.title, lien: officielRecent.link, date: officielRecent.date }
-      : null,
-    jours, mediane, pic, repris,
-    sources: { total: sante.length, statuts, productives, steriles, enBaisse },
+    total: liste.length, officiels: officiels.length, couverture,
+    jours, mediane, pic, heures, semaine, mois,
+    medias: top(medias, 10), mediasDistincts: Object.keys(medias).length,
+    mots: top(mots, 12), montent, langues,
+    officielsAnnees, officielRecent: officielRecent
+      ? { titre: officielRecent.title, lien: officielRecent.link, date: officielRecent.date } : null,
+    repris: repris.slice(0, STATS_TOP), majeures, seuil,
+    sources, robot, moi,
   };
 }
 
 function dateCourte(aaaammjj){
   const [a, m, j] = aaaammjj.split("-");
   return `${j}/${m}`;
+}
+function moisLisible(aaaamm){
+  const d = new Date(aaaamm + "-15T12:00:00Z");
+  return d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit", timeZone: "Europe/Paris" });
+}
+function dureeLisible(min){
+  if(min < 60) return `${min} min`;
+  const h = Math.floor(min / 60), r = min % 60;
+  return h < 48 ? `${h} h${r ? " " + String(r).padStart(2, "0") : ""}` : `${Math.round(h / 24)} jours`;
 }
 
 // Un histogramme à une série, et son tableau. Le tableau n'est pas une
@@ -4561,8 +4841,8 @@ function histogramme(points, libelle, formatCle){
   let maxMarque = false;
   const cols = points.map(p => {
     const h = Math.round((p.n / max) * 100);
-    const etiquette = (!maxMarque && p.n === max) ? (maxMarque = true, `<em>${p.n}</em>`) : "";
-    const texte = `${formatCle(p.cle)} : ${p.n} article${p.n > 1 ? "s" : ""}`;
+    const etiquette = (!maxMarque && p.n === max && p.n > 0) ? (maxMarque = true, `<em>${p.n}</em>`) : "";
+    const texte = `${formatCle(p.cle)} : ${p.n}`;
     return `<span class="stats-col" title="${escapeAttr(texte)}" aria-label="${escapeAttr(texte)}">`
          + `${etiquette}<i style="height:${h}%"></i></span>`;
   }).join("");
@@ -4579,16 +4859,35 @@ function blocStats(titre, sous, corps){
        + (sous ? `<p class="stats-sous">${sous}</p>` : "")
        + corps + `</section>`;
 }
+function chiffres(liste){
+  return `<div class="stats-chiffres">` + liste.filter(Boolean).map(([n, l]) =>
+    `<div class="stats-chiffre"><b>${n}</b><span>${escapeHtml(l)}</span></div>`).join("") + `</div>`;
+}
+function listeStats(lignes){
+  return `<ul class="stats-liste">` + lignes.join("") + `</ul>`;
+}
+function ligneNom(nom, n){
+  return `<li><span>${escapeHtml(nom)}</span>${n == null ? "" : `<span class="stats-n">${escapeHtml(String(n))}</span>`}</li>`;
+}
+function ligneLien(titre, lien, n){
+  return `<li><a href="${escapeAttr(safeUrl(lien) || "#")}" target="_blank" rel="noopener">${escapeHtml(titre)}</a>`
+       + (n == null ? "" : `<span class="stats-n">${n}</span>`) + `</li>`;
+}
+
+const JOURS_COURTS = ["lun", "mar", "mer", "jeu", "ven", "sam", "dim"];
 
 function renderStatsFil(s){
   const blocs = [];
+  const periode = s.jours.length
+    ? `${s.jours.length} jours complets${s.couverture ? `, depuis le ${dateCourte(s.jours[0].jour)}` : ""}, heure de Paris`
+    : "";
   if(s.total){
-    blocs.push(blocStats("Dans le fil", "",
-      `<div class="stats-chiffres">`
-      + `<div class="stats-chiffre"><b>${s.total}</b><span>articles</span></div>`
-      + (s.jours.length ? `<div class="stats-chiffre"><b>${s.mediane}</b><span>par jour, en médiane sur ${s.jours.length} jours</span></div>` : "")
-      + `<div class="stats-chiffre"><b>${s.officiels}</b><span>officiels</span></div>`
-      + `</div>`));
+    blocs.push(blocStats("Dans le fil", "", chiffres([
+      [s.total, "articles"],
+      s.jours.length && [s.mediane, `par jour, en médiane sur ${s.jours.length} jours`],
+      [s.officiels, "officiels"],
+      s.majeures && [s.majeures, `actus majeures (${s.seuil} rédactions ou plus)`],
+    ])));
   }
   if(s.jours.length >= 2){
     // Le sous-titre dit ce que mesure le graphique, parce que la lecture
@@ -4596,17 +4895,56 @@ function renderStatsFil(s){
     // de la presse. Un jour qui double peut être un jour où une source a
     // été ajoutée.
     blocs.push(blocStats("Articles dans le fil, par jour",
-      `${s.jours.length} derniers jours complets, heure de Paris. `
-      + (s.pic ? `Le plus chargé : ${dateCourte(s.pic.jour)}, ${s.pic.n} articles. ` : "")
+      `${periode}. ` + (s.pic ? `Le plus chargé : ${dateCourte(s.pic.jour)}, ${s.pic.n} articles. ` : "")
       + `Le volume dépend aussi des sources suivies : il mesure le fil, pas la presse.`,
-      histogramme(s.jours.map(j => ({ cle: j.jour, n: j.n })),
-        `Articles par jour sur ${s.jours.length} jours`, dateCourte)));
+      histogramme(s.jours.map(j => ({ cle: j.jour, n: j.n })), `Articles par jour sur ${s.jours.length} jours`, dateCourte)));
+  }
+  if(s.mois.length >= STATS_MOIS_MIN){
+    blocs.push(blocStats("Articles par mois", "Mois entièrement couverts seulement.",
+      histogramme(s.mois.map(m => ({ cle: m.mois, n: m.n })), `Articles par mois sur ${s.mois.length} mois`, moisLisible)));
+  }
+  const totalHeures = s.heures.reduce((a, b) => a + b, 0);
+  if(totalHeures){
+    const picH = s.heures.indexOf(Math.max(...s.heures));
+    blocs.push(blocStats("À quelle heure tombent les articles",
+      `${periode}. Le pic : ${picH} h – ${picH + 1} h.`,
+      histogramme(s.heures.map((n, h) => ({ cle: h, n })), "Articles par heure de la journée", h => `${h} h`)));
+  }
+  if(totalHeures && s.jours.length >= 7){
+    const semaines = Math.floor(s.jours.length / 7);
+    blocs.push(blocStats("Par jour de la semaine",
+      `Sur ${s.jours.length} jours, soit ${semaines} semaine${semaines > 1 ? "s" : ""} pleine${semaines > 1 ? "s" : ""}`
+      + (semaines < 4 ? " — une seule grosse journée pèse encore lourd." : "."),
+      histogramme(s.semaine.map((n, k) => ({ cle: k, n })), "Articles par jour de la semaine", k => JOURS_COURTS[k])));
+  }
+  if(s.medias.length){
+    blocs.push(blocStats("Qui parle le plus de GTA 6",
+      `${s.mediasDistincts} médias sur la période. Le vrai média est retrouvé dans les titres Google News.`,
+      listeStats(s.medias.map(m => ligneNom(m.nom, m.n)))));
+  }
+  if(s.mots.length){
+    blocs.push(blocStats("De quoi on parle", "Mots les plus fréquents dans les titres, hors « GTA » et mots courants.",
+      listeStats(s.mots.map(m => ligneNom(m.nom, m.n)))));
+  }
+  if(s.montent.length){
+    blocs.push(blocStats("Les mots qui montent", "Les 7 derniers jours contre les 7 précédents.",
+      listeStats(s.montent.map(m => ligneNom(m.nom, `${m.avant} → ${m.n}`)))));
+  }
+  const totalLangues = s.langues.fr + s.langues.en + s.langues.inconnue;
+  if(totalLangues){
+    blocs.push(blocStats("Français et anglais", periode, chiffres([
+      [s.langues.fr, "en français"], [s.langues.en, "en anglais"],
+      s.langues.inconnue && [s.langues.inconnue, "langue inconnue"],
+    ])));
   }
   if(s.repris.length){
     blocs.push(blocStats("Les sujets les plus repris", "Nombre de rédactions sur le même sujet.",
-      `<ul class="stats-liste">` + s.repris.map(r =>
-        `<li><a href="${escapeAttr(safeUrl(r.lien) || "#")}" target="_blank" rel="noopener">${escapeHtml(r.titre)}</a>`
-        + `<span class="stats-n">${r.redactions}</span></li>`).join("") + `</ul>`));
+      listeStats(s.repris.map(r => ligneLien(r.titre, r.lien, r.redactions)))));
+  }
+  if(s.officielsAnnees.length){
+    blocs.push(blocStats("Publications officielles, par année",
+      `${s.officiels} au total. Seul historique long complet : le robot les garde toutes.`,
+      histogramme(s.officielsAnnees.map(a => ({ cle: a.an, n: a.n })), "Publications officielles par année", a => a)));
   }
   if(s.officielRecent){
     const d = new Date(s.officielRecent.date);
@@ -4615,68 +4953,145 @@ function renderStatsFil(s){
     // du fil était un « Follow … on yt » de Rockstar — une annonce, non.
     blocs.push(blocStats("Dernière publication officielle",
       isNaN(d) ? "" : escapeHtml(d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" })),
-      `<ul class="stats-liste"><li><a href="${escapeAttr(safeUrl(s.officielRecent.lien) || "#")}" target="_blank" rel="noopener">${escapeHtml(s.officielRecent.titre)}</a></li></ul>`));
+      listeStats([ligneLien(s.officielRecent.titre, s.officielRecent.lien)])));
   }
   return blocs.join("") || `<p class="stats-attente">Rien à montrer pour l'instant.</p>`;
 }
 
+// Un code nu ne dit rien à qui ne les connaît pas : 301 et 302 sont des
+// redirections suivies, le flux est bien arrivé.
+const LIBELLES_HTTP = {
+  "200": "flux reçu",
+  "301": "redirigée pour de bon, flux reçu",
+  "302": "redirigée pour l'instant, flux reçu",
+  "304": "inchangé depuis le passage précédent",
+  "403": "accès refusé",
+  "404": "introuvable",
+  "410": "supprimée",
+  "429": "trop de requêtes",
+};
 function renderStatsSources(s){
   const src = s.sources;
-  if(!src.total) return `<p class="stats-attente">L'état des sources arrive avec la prochaine réponse du robot.</p>`;
+  if(!src.total) return `<p class="stats-attente">L'état des sources vient de la réponse du robot : touche « Actualiser » pour la lire.</p>`;
   const blocs = [];
   const libelles = { ok: "répondent", tarie: "taries", muette: "muettes", cassee: "cassées", en_attente: "au repos (tour de rôle)" };
-  const ordre = ["ok", "en_attente", "tarie", "muette", "cassee"];
   blocs.push(blocStats("État des sources", `${src.total} sources au dernier passage du robot.`,
-    `<div class="stats-chiffres">` + ordre.filter(k => src.statuts[k]).map(k =>
-      `<div class="stats-chiffre"><b>${src.statuts[k]}</b><span>${libelles[k]}</span></div>`).join("") + `</div>`));
+    chiffres(["ok", "en_attente", "tarie", "muette", "cassee"].filter(k => src.statuts[k])
+      .map(k => [src.statuts[k], libelles[k]]))));
   if(src.productives.length){
     blocs.push(blocStats("Celles qui apportent le plus",
       "Articles qu'aucune autre source n'a remontés — les retirer les ferait perdre.",
-      `<ul class="stats-liste">` + src.productives.map(p =>
-        `<li><span>${escapeHtml(p.nom)}</span><span class="stats-n">${p.n}</span></li>`).join("") + `</ul>`));
+      listeStats(src.productives.map(p => ligneNom(p.nom, p.n)))));
+  }
+  if(src.volume.length){
+    blocs.push(blocStats("Volume rapporté au dernier passage",
+      "Entrées renvoyées par le flux, avant filtre et doublons.",
+      listeStats(src.volume.map(v => ligneNom(v.nom, v.n)))));
+  }
+  if(src.codes.length){
+    blocs.push(blocStats("Réponses au dernier passage", "Code HTTP renvoyé par chaque source interrogée.",
+      listeStats(src.codes.map(c => ligneNom(LIBELLES_HTTP[c.code] ? c.code + " — " + LIBELLES_HTTP[c.code] : c.code, c.n)))));
   }
   if(src.enBaisse.length){
-    blocs.push(blocStats("En forte baisse",
-      "Elles répondent, mais rapportent bien moins qu'à l'habitude.",
-      `<ul class="stats-liste">` + src.enBaisse.map(n => `<li><span>${escapeHtml(n)}</span></li>`).join("") + `</ul>`));
+    blocs.push(blocStats("En forte baisse", "Elles répondent, mais rapportent bien moins qu'à l'habitude.",
+      listeStats(src.enBaisse.map(n => ligneNom(n)))));
+  }
+  if(src.silencieuses.length){
+    blocs.push(blocStats("Les plus silencieuses", "Sources sans article retenu depuis au moins une semaine.",
+      listeStats(src.silencieuses.map(x => ligneNom(x.nom, x.jours == null ? "jamais" : `${x.jours} j`)))));
   }
   if(src.steriles.length){
+    // « Leur contenu arrive déjà par d'autres sources », première version,
+    // était faux pour une source tarie, qui n'apporte rien du tout. Ce qui
+    // est vrai des deux cas : rien de ce qu'elles ont rapporté n'est
+    // introuvable ailleurs.
     blocs.push(blocStats(`Aucun article exclusif (${src.steriles.length})`,
-      // « Leur contenu arrive déjà par d'autres sources », première version,
-      // était faux pour une source tarie, qui n'apporte rien du tout. Ce qui
-      // est vrai des deux cas : rien de ce qu'elles ont rapporté n'est
-      // introuvable ailleurs.
       "Rien de ce qu'elles ont rapporté n'est introuvable ailleurs. Chacune coûte une requête par passage.",
-      `<ul class="stats-liste">` + src.steriles.map(n => `<li><span>${escapeHtml(n)}</span></li>`).join("") + `</ul>`));
+      listeStats(src.steriles.map(n => ligneNom(n)))));
+  }
+  return blocs.join("");
+}
+
+function renderStatsRobot(s){
+  const r = s.robot;
+  if(!r.genere) return `<p class="stats-attente">L'état du robot vient de sa réponse : touche « Actualiser » pour la lire.</p>`;
+  const blocs = [];
+  const quand = new Date(r.genere).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
+  blocs.push(blocStats("Dernier passage",
+    `À ${quand}, heure de Paris — il y a ${dureeLisible(r.ilYaMin)}.`,
+    chiffres([
+      r.duree != null && [r.duree < 60 ? `${Math.round(r.duree)} s` : `${Math.floor(r.duree / 60)} min ${String(Math.round(r.duree % 60)).padStart(2, "0")}`, "de collecte"],
+      r.nouveaux != null && [r.nouveaux, "nouveaux articles"],
+      r.sources != null && [r.sources, "sources suivies"],
+    ])));
+  blocs.push(blocStats("Ce qu'il garde", "", chiffres([
+    r.total != null && [r.total, "articles dans le fil"],
+    r.archiveArticles != null && [r.archiveArticles, `dans l'archive, répartis sur ${r.archiveMois} mois différents`],
+    r.couverture && [dateCourte(r.couverture), "complet depuis"],
+  ])));
+  if(r.decodages || r.enAttente){
+    blocs.push(blocStats("À surveiller", "", chiffres([
+      r.decodages && [r.decodages, "décodages Google News ratés"],
+      r.enAttente && [r.enAttente, "articles en attente du récapitulatif du matin"],
+    ])));
+  }
+  return blocs.join("");
+}
+
+function renderStatsMoi(s){
+  const m = s.moi;
+  if(!m.total) return `<p class="stats-attente">Rien à montrer pour l'instant.</p>`;
+  const blocs = [];
+  const taux = m.fenetreTotal ? Math.round(100 * m.fenetreLue / m.fenetreTotal) : null;
+  blocs.push(blocStats("Tes lectures",
+    "Calculé sur ce téléphone, rien n'en sort.",
+    chiffres([
+      [m.lus, "articles lus"],
+      [m.total - m.lus, "non lus"],
+      taux != null && [`${taux} %`, `lus sur les ${m.joursFenetre} derniers jours complets`],
+    ])));
+  blocs.push(blocStats("Entre la publication et ton écran",
+    m.delaiMedianMin != null
+      ? `Délai médian entre la publication d'un article et sa première apparition chez toi, sur ${m.delaisNotes} articles.`
+      : `En cours d'enregistrement : ${m.delaisNotes} article${m.delaisNotes > 1 ? "s" : ""} noté${m.delaisNotes > 1 ? "s" : ""} sur les ${STATS_DELAI_MIN} nécessaires. Seuls ceux publiés après le début de l'enregistrement comptent.`,
+    m.delaiMedianMin != null ? chiffres([[dureeLisible(m.delaiMedianMin), "en médiane"]]) : ""));
+  if(m.medias.length){
+    blocs.push(blocStats("Les médias que tu lis le plus", "",
+      listeStats(m.medias.map(x => ligneNom(x.nom, x.n)))));
+  }
+  if(m.officielsNonLus){
+    blocs.push(blocStats(`Publications officielles non lues (${m.officielsNonLus})`, "Les plus récentes d'abord.",
+      listeStats(m.officielsATLire.map(o => ligneLien(o.titre, o.lien)))));
   }
   return blocs.join("");
 }
 
 // Prêt pour la rubrique « Le fil » : l'historique complet doit être là.
-// Calculer sur les 300 articles du fichier allégé annoncerait une
-// couverture de trois jours et un rythme faux, sans le dire.
+// Calculer sur les 300 articles du fichier allégé annoncerait un rythme
+// faux, sans le dire.
 function statsPretes(){
   return !historyPartial;
 }
 
+const ONGLETS_STATS = ["fil", "sources", "robot", "moi"];
+
 function renderStats(){
   const cible = document.getElementById("statsContenu");
   if(!cible) return;
-  marqueActif("statsOngletFil", ongletStats === "fil");
-  marqueActif("statsOngletSources", ongletStats === "sources");
-  const s = calculeStats(lastItems, derniereReponseBackend, new Date());
-  if(ongletStats === "sources"){
-    cible.innerHTML = renderStatsSources(s);
-    return;
-  }
-  if(!statsPretes()){
+  for(const o of ONGLETS_STATS) marqueActif("statsOnglet_" + o, ongletStats === o);
+  const s = calculeStats(lastItems, derniereReponseBackend, new Date(), {
+    lus: readSet, vus: seenMap, vusDepuis, archiveChargee, archiveIndex,
+  });
+  if(ongletStats === "sources"){ cible.innerHTML = renderStatsSources(s); return; }
+  if(ongletStats === "robot"){ cible.innerHTML = renderStatsRobot(s); return; }
+  if((ongletStats === "fil" || ongletStats === "moi") && !statsPretes()){
     cible.innerHTML = `<p class="stats-attente">Chargement de l'historique complet… `
       + `Les chiffres calculés sur les seuls articles récents seraient faux.</p>`;
     // Le rattrapage est idempotent : il ne recharge que ce qui manque.
     rattrapeToutEnArrierePlan().then(() => { if(currentTab === "stats") renderStats(); });
     return;
   }
-  cible.innerHTML = renderStatsFil(s);
+  cible.innerHTML = ongletStats === "moi" ? renderStatsMoi(s) : renderStatsFil(s);
   // L'archive peut encore arriver : on redessine quand elle est là, sans
   // bloquer l'affichage de ce qui est déjà juste.
   if(!archiveChargee){
@@ -4687,7 +5102,7 @@ function renderStats(){
 }
 
 function ongletStatsChoisi(o){
-  ongletStats = o;
+  ongletStats = ONGLETS_STATS.includes(o) ? o : "fil";
   renderStats();
 }
 
