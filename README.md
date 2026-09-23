@@ -5575,6 +5575,58 @@ Sous 480 px, le compteur passe sous le libellé et la marge latérale descend
 l'espacement entre lettres disparaît, sans quoi « RockstarMag » dépassait
 encore de 0,7 px à 320.
 
+### Des graphiques plus détaillés — 23/09/2026
+
+Demandé par Antoni : « des graphiques plus détaillés et jolis ». Une maquette
+a d'abord été dessinée **dans l'app réelle, sur son vrai fil**, et envoyée
+en capture ; il l'a validée telle quelle. Ce qui change :
+
+- **Histogrammes** : une grille de repères ronds (0, 100, 200, 300) en
+  trait fin, des dates sous l'axe à chaque semaine, les heures à 0, 6, 12,
+  18 et 23 h, les sept jours de la semaine. La **médiane** est tracée sur le
+  graphique par jour. Le maximum reste le seul chiffre écrit, en accent
+  plein ; les autres colonnes sont atténuées.
+- **Toucher une colonne ou une case écrit sa valeur** au-dessus du graphique
+  — au doigt, une infobulle ne s'affiche pas. Un seul écouteur, posé sur le
+  document, parce que les graphiques sont redessinés à chaque rendu.
+- **Une carte jour × heure** (« Quand tombent les articles ») : 7 × 24 cases
+  d'une seule teinte, cinq crans du clair au foncé, le fond gardé pour une
+  heure sans article. Elle dit ce que les deux histogrammes ne disent qu'à
+  moitié : *le jeudi à 14 h*, pas « le jeudi » et « 14 h » séparément.
+- **Classements en barres** : médias, mots, sources qui apportent le plus,
+  volume rapporté, médias lus. Le nom, un trait proportionnel dessous, la
+  valeur à droite.
+- **Français et anglais** : une barre à deux parts, avec sa légende et ses
+  pourcentages. Une langue inconnue, s'il en reste, prend le gris des textes
+  secondaires : ce n'est pas une troisième série, c'est un manque.
+- **Les mots qui montent en haltères** : la semaine d'avant en gris, cette
+  semaine en accent, sur une échelle commune.
+- **Une jauge** pour la part lue, dans « Ma lecture ».
+
+**Les couleurs sont calculées, pas choisies à l'œil.** Les deux teintes des
+langues ont été passées à un validateur de palette (écart perçu, trois
+formes de daltonisme, contraste), chacune sur le fond de son thème : bleu et
+orange, `#3987e5` / `#d95926` en sombre, `#1d4ed8` / `#eb6834` en clair.
+L'accent de l'app, trop clair pour servir de série en thème sombre, a été
+refusé par le validateur pour ce rôle. Les colonnes atténuées sont l'accent
+mélangé à 70 % au fond de la carte : **4,77:1** en sombre, **3,57:1** en
+clair. La maquette était à 55 %, soit 2,61:1 en clair, sous les 3:1 requis
+— refusé au calcul avant d'écrire la version finale.
+
+**Deux défauts vus sur les captures, corrigés avant de publier** :
+- la graduation arrondissait max/3 vers le haut, et 402 montait à **600** —
+  un tiers du graphique vide. Elle prend désormais le plus petit pas rond
+  qui couvre le maximum en cinq intervalles : 402 monte à 500 ;
+- « Langue inconnue 4 · 0 % » se lisait comme « aucune » : une part qui
+  existe mais s'arrondit à zéro s'écrit « < 1 % ».
+
+Et un troisième, trouvé par le contrôle : la valeur touchée était collée à
+son libellé, un lecteur d'écran annonçait « 503/10 ». Une vraie espace les
+sépare.
+
+Chaque graphique garde son tableau « Voir les chiffres », carte comprise ;
+un contrôle navigateur compte un tableau par graphique.
+
 ### Ce qui n'avait rien à faire
 
 **Nommer ce qu'on perd avant d'effacer.** C'était la proposition, et elle était
