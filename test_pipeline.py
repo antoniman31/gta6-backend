@@ -3925,6 +3925,97 @@ def test_recap_du_matin_couvre_la_nuit():
 
 
 
+
+def test_langue_et_couverture_publiees():
+    print("\n[format] chaque article a sa langue, et le fil dit depuis quand il est complet")
+    import io, contextlib, json as _json, tempfile, os as _os, shutil as _shutil
+    import fetch_feeds, merge_feed, audit_donnees
+
+    # ---- 1. Toutes les sources ont une langue ----
+    #
+    # 39 sur 63 n'en avaient pas au 23/09/2026, toutes anglophones. Leurs
+    # articles partaient sans langue : l'onglet « News EN » de l'app ne
+    # montrait qu'une minorité des articles anglais.
+    sans = [f["id"] for f in fetch_feeds.FEEDS if f.get("lang") not in ("fr", "en")]
+    check(sans == [], "chaque source déclare « fr » ou « en » (%s)" % sans)
+
+    # ---- 2. La réparation rétroactive ----
+    items = [
+        {"title": "a", "link": "1", "source": "Google News (EN)"},
+        {"title": "b", "link": "2", "source": "Google News (FR)"},
+        {"title": "c", "link": "3", "source": "Google News (EN)", "lang": "fr"},
+        {"title": "d", "link": "4", "source": "Une source disparue"},
+    ]
+    with contextlib.redirect_stdout(io.StringIO()):
+        fetch_feeds.repare_langues(items)
+    check(items[0].get("lang") == "en", "un article anglais sans langue reçoit « en »")
+    check(items[1].get("lang") == "fr", "un article français sans langue reçoit « fr »")
+    check(items[2].get("lang") == "fr",
+          "une langue DÉJÀ posée n'est jamais réécrite, même si la source dit autre chose")
+    check(items[3].get("lang") is None,
+          "une source inconnue laisse l'article sans langue plutôt que d'en supposer une")
+    avant = _json.dumps(items, sort_keys=True)
+    with contextlib.redirect_stdout(io.StringIO()):
+        fetch_feeds.repare_langues(items)
+    check(_json.dumps(items, sort_keys=True) == avant, "la réparation est idempotente")
+
+    # L'ordre compte : la langue se retrouve par le nom ACTUEL de la source,
+    # donc après le renommage. Lu dans la table des noms du code compilé de
+    # main(), dans l'ordre de leur première apparition — pas dans le texte.
+    noms = list(fetch_feeds.main.__code__.co_names)
+    check("repare_langues" in noms, "main() appelle la réparation des langues")
+    check("repare_noms_de_sources" in noms
+          and noms.index("repare_noms_de_sources") < noms.index("repare_langues"),
+          "et après le renommage des sources, sans quoi une source renommée "
+          "ne retrouverait pas sa langue")
+
+    # ---- 3. La date de couverture ----
+    c = feed_store.COUVERTURE_COMPLETE_DEPUIS
+    import re as _re
+    check(bool(_re.fullmatch(r"\d{4}-\d{2}-\d{2}", c)), "la couverture est une date AAAA-MM-JJ (%s)" % c)
+    check(c == "2026-09-08",
+          "et c'est le 08/09 : premier jour COMPLET après la limite de "
+          "l'ancienne fenêtre de 15 jours (le 07/09 est partiel)")
+    check("COUVERTURE_COMPLETE_DEPUIS" in noms,
+          "main() la publie dans feed.json")
+    fusion, _, _ = merge_feed.merge_feeds(
+        {"items": [], "couverture_depuis": c}, {"items": [], "couverture_depuis": c})
+    check(fusion.get("couverture_depuis") == c,
+          "une fusion après conflit de push la conserve")
+
+    # ---- 4. L'audit repère un trou dans l'archive depuis la couverture ----
+    tmp = tempfile.mkdtemp()
+    try:
+        def archive(mois):
+            index = {"mois": [{"mois": m, "articles": 0, "fichiers": []} for m in mois]}
+            with open(_os.path.join(tmp, "index.json"), "w", encoding="utf-8") as f:
+                _json.dump(index, f)
+
+        data = {"items": [], "generated_at": "2026-11-15T10:00:00+00:00",
+                "couverture_depuis": "2026-09-08"}
+        archive(["2026-09", "2026-10", "2026-11"])
+        codes = [a["code"] for a in audit_donnees.audite_archive(data, tmp)]
+        check("archive-trou-couverture" not in codes,
+              "trois mois présents depuis la couverture : pas d'alerte")
+
+        archive(["2026-09", "2026-11"])
+        anomalies = audit_donnees.audite_archive(data, tmp)
+        trou = [a for a in anomalies if a["code"] == "archive-trou-couverture"]
+        check(len(trou) == 1 and trou[0]["gravite"] == "grave",
+              "octobre manque : l'audit le signale en GRAVE")
+        check(trou and "2026-10" in trou[0]["exemples"],
+              "et il nomme le mois manquant")
+
+        # Un mois antérieur à la couverture qui manque n'est pas un trou :
+        # l'archive n'a jamais prétendu le garder en entier.
+        archive(["2026-09", "2026-10", "2026-11"])
+        data_ancien = dict(data, couverture_depuis="2026-09-08")
+        codes = [a["code"] for a in audit_donnees.audite_archive(data_ancien, tmp)]
+        check("archive-trou-couverture" not in codes,
+              "août absent n'est pas une anomalie : il précède la couverture")
+    finally:
+        _shutil.rmtree(tmp, ignore_errors=True)
+
 def test_rotation_reddit():
     print("\n[reddit] on arrête de mentir sur le navigateur, et on se relaie")
     import io, contextlib
@@ -7384,6 +7475,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_echelle_m3_verrouillee,
            test_panneaux_sont_de_vrais_dialogues,
            test_recap_du_matin_couvre_la_nuit,
+           test_langue_et_couverture_publiees,
            test_rotation_reddit,
            test_recap_discord_detaille,
            test_alerte_officielle_rockstar,

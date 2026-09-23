@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1538
+qui permet de tester tout le pipeline sans sortir de la machine. **1554
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5356,6 +5356,45 @@ trois endroits ; ajouter une vue en en oubliant un seul laissait le fil ou la
 recherche affichés sous les statistiques, sans la moindre erreur. `estVue` est
 calculé une fois, et un contrôle navigateur vérifie chaque panneau dans chaque
 vue. Une vue n'est jamais mémorisée : rouvrir l'app ramène au fil.
+
+### Deux données de plus dans `feed.json` — 23/09/2026
+
+Antoni a demandé « le plus de statistiques possible ». Deux d'entre elles
+étaient impossibles sans que le robot publie une donnée de plus ; il a
+autorisé les deux changements de format.
+
+**La langue de chaque article.** 39 sources sur 63 n'avaient pas de champ
+`lang` — toutes anglophones : Google News (EN), IGN, GameSpot, Polygon, Game
+Rant, Reddit, Take-Two… Leurs articles partaient donc sans langue, et
+**1 210 des 1 873 articles du fil** n'en avaient pas. Conséquence déjà visible
+avant toute statistique : **l'onglet « News EN » de l'app ne montrait qu'une
+minorité des articles anglais**, puisqu'il filtre sur `lang === "en"`.
+
+Les 39 sources sont étiquetées dans `FEEDS` et dans la copie de secours de
+l'app (`check_sources_sync` compare les deux). `repare_langues()` complète ce
+qui a déjà été publié, d'après la source : les 1 210 sont tous réparés, il
+n'en reste aucun. La passe ne fait que **compléter** — une langue déjà posée
+n'est jamais réécrite, et une source inconnue laisse l'article sans langue
+plutôt que de lui en supposer une. Elle tourne **après** le renommage des
+sources, sans quoi une source renommée ne retrouverait pas la sienne ; un
+contrôle lit l'ordre des appels dans le code compilé de `main()`.
+
+L'onglet « News EN » se répare donc tout seul, au prochain passage du robot,
+sans une ligne de code côté app.
+
+**Depuis quand le fil est complet** — `couverture_depuis: "2026-09-08"`. C'est
+une constante (`COUVERTURE_COMPLETE_DEPUIS`), et elle est écrite en dur parce
+qu'**aucun article ne permet de la recalculer**. Elle vient de deux faits
+datés : jusqu'au 22/09 la fenêtre était de 15 jours, donc ce qui a survécu
+avant le 07/09 n'est qu'un reste ; et depuis le 22/09 l'archive reçoit le fil
+entier à chaque passage, donc plus rien ne se perd. Le 07/09 est partiel, le
+premier jour complet est le 08/09.
+
+Tant que l'archive tient, cette date ne bouge plus. `audit_donnees.py` le
+vérifie : **un mois absent de l'archive depuis cette date est signalé en
+grave**, parce que l'app dessinerait un creux qui n'a jamais existé.
+Contrôle structurel, volontairement : un jour sans article peut être vrai, un
+mois absent de l'archive ne l'est pas.
 
 ### Ce qui n'avait rien à faire
 

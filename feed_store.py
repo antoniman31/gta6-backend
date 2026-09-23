@@ -727,6 +727,32 @@ def write_feed(data, path=FEED_PATH):
 # autres ne bougent pas. C'est exactement le comportement voulu.
 # ---------------------------------------------------------------------------
 
+# Premier jour — heure de Paris — dont le fil, archive comprise, garde TOUS
+# les articles. Publié dans feed.json pour que l'app sache où commence une
+# statistique honnête.
+#
+# Ce n'est pas une valeur qu'on peut recalculer à partir des articles, et
+# c'est pour ça qu'elle est écrite ici en dur. Elle vient de deux faits
+# datés, qu'aucun article ne porte :
+#
+#   - jusqu'au 22/09/2026 à 14h44, la fenêtre de rétention était de 15 jours
+#     (MAX_HISTORY_DAYS). Au-delà, le robot élaguait, et ce qui a survécu
+#     avant le 07/09 n'est qu'un reste : ce que le plancher de 1 500
+#     articles a gardé, plus les articles protégés ;
+#   - le 22/09 l'archive a été créée à partir de cette fenêtre, et elle
+#     reçoit depuis le fil ENTIER à chaque passage (`archiver(all_items)`).
+#     Tout ce qui quitte la fenêtre y reste.
+#
+# Le 07/09 est donc le premier jour conservé, mais il est partiel (la limite
+# tombe en cours de journée) : le premier jour COMPLET est le 08/09. Mesuré
+# sur le fil le 23/09/2026 — 7 à 8 articles par jour jusqu'au 07/09, puis
+# 33 à 299 à partir du 08/09.
+#
+# Tant que l'archive tient, cette date ne bouge plus. audit_donnees.py
+# vérifie qu'aucun mois ne manque depuis : un trou la rendrait fausse, et
+# les statistiques de l'app avec elle.
+COUVERTURE_COMPLETE_DEPUIS = "2026-09-08"
+
 ARCHIVE_DIR = "docs/archives"
 
 # Au-delà, le mois est coupé en tranches numérotées. Un mois ordinaire

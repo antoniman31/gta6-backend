@@ -178,7 +178,7 @@ def echecs_decodage():
 FEEDS = [
     {"id": "rockstar-en", "name": "Rockstar Games (officiel EN)",
      "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en&gl=US&ceid=US:en",
-     "official": True, "max_entrees": 100, "garder_les_archives": True},
+     "official": True, "max_entrees": 100, "garder_les_archives": True, "lang": "en"},
     {"id": "rockstar-fr", "name": "Rockstar Games (officiel FR)",
      "url": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr",
      "official": True, "lang": "fr", "max_entrees": 100, "garder_les_archives": True},
@@ -195,9 +195,9 @@ FEEDS = [
     # officiels — statut_officiel() exige que le LIEN soit sur un domaine
     # Rockstar. Il ne fait que durcir son filtre de titres. Vérifié le
     # 16/09/2026 : 38 articles officiels dans le fil, aucun venu d'ici.
-    {"id": "rockstar-announce", "name": "Google News (annonces Rockstar)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True, "max_entrees": 100},
-    {"id": "gta6-netflix", "name": "Google News (Netflix)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True, "max_entrees": 100},
-    {"id": "take2-ir", "name": "Take-Two Investor Relations (officiel)", "url": "https://ir.take2games.com/rss/news-releases.xml?items=15", "official": True, "garder_les_archives": True},
+    {"id": "rockstar-announce", "name": "Google News (annonces Rockstar)", "url": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", "official": True, "max_entrees": 100, "lang": "en"},
+    {"id": "gta6-netflix", "name": "Google News (Netflix)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", "official": False, "specialist_source": True, "max_entrees": 100, "lang": "en"},
+    {"id": "take2-ir", "name": "Take-Two Investor Relations (officiel)", "url": "https://ir.take2games.com/rss/news-releases.xml?items=15", "official": True, "garder_les_archives": True, "lang": "en"},
     # Chaîne YouTube officielle de Rockstar.
     #
     # C'est LA source primaire : un trailer sort ici, la presse en parle dix
@@ -233,9 +233,9 @@ FEEDS = [
      # façon que 15 entrées, donc l'exemption ne peut pas déverser grand-
      # chose — mais sans elle, la seule vidéo GTA 6 un peu ancienne des 15
      # était écartée à chaque passage.
-     "garder_les_archives": True},
+     "garder_les_archives": True, "lang": "en"},
     {"id": "gnews-fr", "name": "Google News (FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
-    {"id": "gnews-en", "name": "Google News (EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
+    {"id": "gnews-en", "name": "Google News (EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
     # ------------------------------------------------------------------
     # Les mêmes recherches, bornées aux sept derniers jours par l'opérateur
     # `when:7d` de Google News. Ajoutées À CÔTÉ des deux précédentes, pas à
@@ -257,10 +257,10 @@ FEEDS = [
     # c'est laquelle attrape ce que l'autre manque.
     # ------------------------------------------------------------------
     {"id": "gnews-fr-7j", "name": "Google News (FR, 7 jours)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
-    {"id": "gnews-en-7j", "name": "Google News (EN, 7 jours)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
-    {"id": "pcgamer", "name": "PC Gamer", "url": "https://www.pcgamer.com/rss.xml", "official": False},
-    {"id": "insider", "name": "Insider Gaming", "url": "https://insider-gaming.com/feed/", "official": False},
-    {"id": "tomshw", "name": "Tom's Hardware", "url": "https://www.tomshardware.com/feeds/all", "official": False},
+    {"id": "gnews-en-7j", "name": "Google News (EN, 7 jours)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
+    {"id": "pcgamer", "name": "PC Gamer", "url": "https://www.pcgamer.com/rss.xml", "official": False, "lang": "en"},
+    {"id": "insider", "name": "Insider Gaming", "url": "https://insider-gaming.com/feed/", "official": False, "lang": "en"},
+    {"id": "tomshw", "name": "Tom's Hardware", "url": "https://www.tomshardware.com/feeds/all", "official": False, "lang": "en"},
     {"id": "jvcom", "name": "Jeuxvideo.com", "url": "https://www.jeuxvideo.com/rss/rss.xml", "official": False, "lang": "fr"},
     {"id": "gamekult", "name": "Gamekult", "url": "https://www.gamekult.com/feed.xml", "official": False, "lang": "fr"},
     {"id": "ignfr", "name": "IGN France", "url": "https://fr.ign.com/feed.xml", "official": False, "lang": "fr"},
@@ -300,27 +300,27 @@ FEEDS = [
     {"id": "rockstarmag-youtube", "name": "RockstarMag (YouTube)",
      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmU6lJbZKzpAU_S1h6Ec-dg",
      "official": False, "rockstarmag": True, "specialist_source": True, "lang": "fr"},
-    {"id": "rockstarintel", "name": "RockstarINTEL", "url": "https://rockstarintel.com/feed/", "official": False, "specialist_source": True},
-    {"id": "ign", "name": "IGN", "url": "https://feeds.ign.com/ign/games-all", "official": False},
-    {"id": "gamespot", "name": "GameSpot", "url": "https://www.gamespot.com/feeds/news/", "official": False},
-    {"id": "polygon", "name": "Polygon", "url": "https://www.polygon.com/rss/index.xml", "official": False},
+    {"id": "rockstarintel", "name": "RockstarINTEL", "url": "https://rockstarintel.com/feed/", "official": False, "specialist_source": True, "lang": "en"},
+    {"id": "ign", "name": "IGN", "url": "https://feeds.ign.com/ign/games-all", "official": False, "lang": "en"},
+    {"id": "gamespot", "name": "GameSpot", "url": "https://www.gamespot.com/feeds/news/", "official": False, "lang": "en"},
+    {"id": "polygon", "name": "Polygon", "url": "https://www.polygon.com/rss/index.xml", "official": False, "lang": "en"},
     # /rss répond 301 vers /feed depuis le 29/08/2026, de façon stable et
     # reproductible — contrairement aux 404 intermittents de YouTube, qui
     # eux étaient du rationnement. feedparser suit bien la redirection, mais
     # ce qu'il reçoit au bout n'est pas toujours un flux : la source
     # apparaissait muette la moitié du temps. Autant demander directement
     # l'adresse que le serveur réclame.
-    {"id": "kotaku", "name": "Kotaku", "url": "https://kotaku.com/feed", "official": False},
-    {"id": "gamesradar", "name": "GamesRadar+", "url": "https://www.gamesradar.com/rss/", "official": False},
-    {"id": "rps", "name": "Rock Paper Shotgun", "url": "https://www.rockpapershotgun.com/feed", "official": False},
-    {"id": "eurogamer", "name": "Eurogamer", "url": "https://www.eurogamer.net/feed", "official": False},
-    {"id": "gtaboom", "name": "GTA BOOM", "url": "https://www.gtaboom.com/feed.xml", "official": False},
-    {"id": "vgtimes", "name": "VGTimes", "url": "https://vgtimes.com/news/rss.xml", "official": False},
+    {"id": "kotaku", "name": "Kotaku", "url": "https://kotaku.com/feed", "official": False, "lang": "en"},
+    {"id": "gamesradar", "name": "GamesRadar+", "url": "https://www.gamesradar.com/rss/", "official": False, "lang": "en"},
+    {"id": "rps", "name": "Rock Paper Shotgun", "url": "https://www.rockpapershotgun.com/feed", "official": False, "lang": "en"},
+    {"id": "eurogamer", "name": "Eurogamer", "url": "https://www.eurogamer.net/feed", "official": False, "lang": "en"},
+    {"id": "gtaboom", "name": "GTA BOOM", "url": "https://www.gtaboom.com/feed.xml", "official": False, "lang": "en"},
+    {"id": "vgtimes", "name": "VGTimes", "url": "https://vgtimes.com/news/rss.xml", "official": False, "lang": "en"},
     {"id": "ginjfo", "name": "GinjFo", "url": "https://www.ginjfo.com/feed", "official": False, "lang": "fr"},
     {"id": "gameblog", "name": "Gameblog.fr", "url": "https://www.gameblog.fr/rssmap/rss_all.xml", "official": False, "lang": "fr"},
     {"id": "jeuxactu", "name": "JeuxActu", "url": "https://www.jeuxactu.com/rss/ja.rss", "official": False, "lang": "fr"},
     {"id": "actugaming", "name": "ActuGaming", "url": "https://www.actugaming.net/feed/", "official": False, "lang": "fr"},
-    {"id": "gamerant", "name": "Game Rant", "url": "https://gamerant.com/feed", "official": False},
+    {"id": "gamerant", "name": "Game Rant", "url": "https://gamerant.com/feed", "official": False, "lang": "en"},
     # Jumeau du précédent. Game Rant est la 4e source native du fil en
     # articles exclusifs (59), mais son flux n'expose que DIX entrées pour
     # environ 77 articles publiés sur trente jours : relever MAX_ENTREES n'y
@@ -328,12 +328,12 @@ FEEDS = [
     # Google News sur le domaine voit large où le flux voit court.
     # Sondé le 16/09/2026 : 100 entrées, 16 pertinentes, la plus récente
     # d'un jour. Doublé et non remplacé — le flux natif reste plus rapide.
-    {"id": "gamerant-gnews", "name": "Google News (Game Rant)", "url": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
-    {"id": "dualshockers", "name": "DualShockers", "url": "https://www.dualshockers.com/feed", "official": False},
-    {"id": "gta6times", "name": "GTA6 Times", "url": "https://gta6times.com/rss.xml", "official": False, "specialist_source": True},
-    {"id": "gameinformer", "name": "Game Informer", "url": "https://gameinformer.com/news.xml", "official": False},
-    {"id": "pcgamesn", "name": "PCGamesN", "url": "https://www.pcgamesn.com/mainrss.xml", "official": False},
-    {"id": "vgc", "name": "VGC", "url": "https://www.videogameschronicle.com/category/news/feed/", "official": False},
+    {"id": "gamerant-gnews", "name": "Google News (Game Rant)", "url": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
+    {"id": "dualshockers", "name": "DualShockers", "url": "https://www.dualshockers.com/feed", "official": False, "lang": "en"},
+    {"id": "gta6times", "name": "GTA6 Times", "url": "https://gta6times.com/rss.xml", "official": False, "specialist_source": True, "lang": "en"},
+    {"id": "gameinformer", "name": "Game Informer", "url": "https://gameinformer.com/news.xml", "official": False, "lang": "en"},
+    {"id": "pcgamesn", "name": "PCGamesN", "url": "https://www.pcgamesn.com/mainrss.xml", "official": False, "lang": "en"},
+    {"id": "vgc", "name": "VGC", "url": "https://www.videogameschronicle.com/category/news/feed/", "official": False, "lang": "en"},
 
     # ------------------------------------------------------------------
     # Sources ajoutées le 29/08/2026.
@@ -352,16 +352,16 @@ FEEDS = [
     # archives de plusieurs années.
     # ------------------------------------------------------------------
     {"id": "xboxygen", "name": "Xboxygen", "url": "https://news.google.com/rss/search?q=site:xboxygen.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
-    {"id": "purexbox", "name": "Pure Xbox", "url": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
-    {"id": "trueach", "name": "TrueAchievements", "url": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
+    {"id": "purexbox", "name": "Pure Xbox", "url": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
+    {"id": "trueach", "name": "TrueAchievements", "url": "https://news.google.com/rss/search?q=site:trueachievements.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
     {"id": "jdg", "name": "Journal du Geek", "url": "https://news.google.com/rss/search?q=site:journaldugeek.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
     {"id": "numerama", "name": "Numerama", "url": "https://news.google.com/rss/search?q=site:numerama.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
     {"id": "gamergen", "name": "Gamergen", "url": "https://news.google.com/rss/search?q=site:gamergen.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
     {"id": "frandroid", "name": "Frandroid", "url": "https://news.google.com/rss/search?q=site:frandroid.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
-    {"id": "theverge", "name": "The Verge", "url": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
-    {"id": "engadget", "name": "Engadget", "url": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
-    {"id": "pushsquare", "name": "Push Square", "url": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
-    {"id": "schreier", "name": "Jason Schreier", "url": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22Take-Two%22+OR+%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
+    {"id": "theverge", "name": "The Verge", "url": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
+    {"id": "engadget", "name": "Engadget", "url": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
+    {"id": "pushsquare", "name": "Push Square", "url": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
+    {"id": "schreier", "name": "Jason Schreier", "url": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22Take-Two%22+OR+%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
 
     # ------------------------------------------------------------------
     # Sources ajoutées le 15/09/2026, en remplacement des trois retirées
@@ -396,7 +396,7 @@ FEEDS = [
     # ------------------------------------------------------------------
     {"id": "rockstaractu", "name": "Rockstar Actu", "url": "https://rockstaractu.com/feed/", "official": False, "lang": "fr"},
     {"id": "dexerto-fr", "name": "Dexerto FR", "url": "https://www.dexerto.fr/feed/", "official": False, "lang": "fr"},
-    {"id": "tweaktown", "name": "TweakTown", "url": "https://www.tweaktown.com/feeds/news-mf.xml", "official": False},
+    {"id": "tweaktown", "name": "TweakTown", "url": "https://www.tweaktown.com/feeds/news-mf.xml", "official": False, "lang": "en"},
 
     # Ajoutée le 15/09/2026 après une sonde de dix candidates dont elle est
     # la SEULE rescapée. 100 entrées, 2 retenues, la plus récente du jour :
@@ -406,7 +406,7 @@ FEEDS = [
     # sources ne couvraient pas, et qui complète le fil investisseurs de
     # Take-Two sans le doubler : celui-ci ne parle que de Take-Two, celle-là
     # parle du secteur qui l'entoure.
-    {"id": "gamesindustry", "name": "GamesIndustry.biz", "url": "https://www.gamesindustry.biz/feed", "official": False},
+    {"id": "gamesindustry", "name": "GamesIndustry.biz", "url": "https://www.gamesindustry.biz/feed", "official": False, "lang": "en"},
 
     # ------------------------------------------------------------------
     # Ajoutées le 15/09/2026, troisième vague. Sondées, comme les autres.
@@ -440,7 +440,7 @@ FEEDS = [
     # ------------------------------------------------------------------
     {"id": "jdg-natif", "name": "Journal du Geek (tag)", "url": "https://www.journaldugeek.com/tag/gta-6/feed/", "official": False, "lang": "fr"},
     {"id": "frandroid-natif", "name": "Frandroid (tag)", "url": "https://www.frandroid.com/tag/gta-6/feed", "official": False, "lang": "fr"},
-    {"id": "reddit-leaks", "name": "Reddit — fuites et rumeurs", "url": "https://www.reddit.com/r/GamingLeaksAndRumours/search.rss?q=%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22&restrict_sr=on", "official": False},
+    {"id": "reddit-leaks", "name": "Reddit — fuites et rumeurs", "url": "https://www.reddit.com/r/GamingLeaksAndRumours/search.rss?q=%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22&restrict_sr=on", "official": False, "lang": "en"},
 
     # ------------------------------------------------------------------
     # Sondées le 15/09/2026. Trois ajouts sur quatre candidates, et les
@@ -474,8 +474,8 @@ FEEDS = [
     # remonteraient comme des nouveautés sans qu'il se soit rien passé.
     # Une réputation n'est pas une mesure.
     # ------------------------------------------------------------------
-    {"id": "destructoid", "name": "Destructoid", "url": "https://www.destructoid.com/feed/", "official": False},
-    {"id": "dexerto", "name": "Dexerto", "url": "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100},
+    {"id": "destructoid", "name": "Destructoid", "url": "https://www.destructoid.com/feed/", "official": False, "lang": "en"},
+    {"id": "dexerto", "name": "Dexerto", "url": "https://news.google.com/rss/search?q=site:dexerto.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
     {"id": "mgg", "name": "MGG (Millenium)", "url": "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
 
     # ------------------------------------------------------------------
@@ -551,7 +551,7 @@ FEEDS = [
     # navigateur. Un 429 laisse toujours la source « muette » et jamais
     # « cassée », donc elle revient seule sans fausse alerte.
     # ------------------------------------------------------------------
-    {"id": "reddit-gta6-suivi", "name": "Reddit — mises à jour et DLC", "url": "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", "official": False},
+    {"id": "reddit-gta6-suivi", "name": "Reddit — mises à jour et DLC", "url": "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", "official": False, "lang": "en"},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.
@@ -2745,6 +2745,37 @@ def repare_noms_de_sources(items):
     return items
 
 
+def repare_langues(items):
+    """Donne sa langue à un article qui n'en a pas, d'après sa source.
+
+    Jusqu'au 23/09/2026, 39 sources sur 63 n'avaient pas de champ `lang` —
+    toutes anglophones : Google News (EN), IGN, GameSpot, Polygon, Game Rant,
+    Reddit… Leurs articles partaient donc sans langue, et 1 210 des 1 873
+    articles du fil n'en avaient pas. Deux conséquences, dont une visible :
+    l'onglet « News EN » de l'app ne montrait qu'une minorité des articles
+    anglais, et une statistique FR/EN aurait été fausse.
+
+    Les sources sont corrigées dans FEEDS ; cette passe répare ce qui a déjà
+    été publié. Elle ne fait que COMPLÉTER : un article qui porte déjà une
+    langue n'est jamais réétiqueté, et une source inconnue (renommée ou
+    retirée depuis) laisse l'article tel quel plutôt que de lui en supposer
+    une. Idempotente.
+    """
+    langue_de = {feed["name"]: feed["lang"] for feed in FEEDS if feed.get("lang")}
+    repares = 0
+    for item in items:
+        if item.get("lang"):
+            continue
+        lang = langue_de.get(item.get("source"))
+        if lang:
+            item["lang"] = lang
+            repares += 1
+    if repares:
+        print(f"Correction rétroactive : {repares} article(s) sans langue "
+              f"étiqueté(s) d'après leur source")
+    return items
+
+
 def repare_attributions_croisees(items):
     """Retire les « autres sources » qui pointent vers un AUTRE article du fil.
 
@@ -3161,6 +3192,7 @@ def main():
     memorise_suffixes_medias(existing_items)
     existing_items = repare_vignettes_stockees(existing_items)
     existing_items = repare_noms_de_sources(existing_items)
+    existing_items = repare_langues(existing_items)
     existing_items = repare_attributions_croisees(existing_items)
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
@@ -3416,6 +3448,10 @@ def main():
         # Comptes en attente d'être annoncés. Non nuls uniquement entre
         # minuit et 5h, heure de Paris — voir le report ci-dessus.
         "attente_recap": attente,
+        # Depuis quand le fil, archive comprise, est complet : voir la
+        # constante dans feed_store. C'est elle qui permet à l'app de
+        # dessiner un graphique par jour ou par mois sans inventer.
+        "couverture_depuis": feed_store.COUVERTURE_COMPLETE_DEPUIS,
         # Durée réelle du passage. Publiée pour que l'app puisse dire l'état
         # du robot sans qu'on aille ouvrir GitHub Actions : une durée qui
         # dérive est le premier signe qu'une source traîne.

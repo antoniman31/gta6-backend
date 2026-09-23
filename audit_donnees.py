@@ -283,6 +283,34 @@ def audite_archive(data, repertoire=None):
                 f"{len(orphelins)} fichier(s) présent(s) mais absent(s) de l'index",
                 orphelins[:5] + ["l'app ne les demandera jamais"])
 
+    # --- 0 bis. la date de couverture est-elle toujours vraie ?
+    #
+    # feed.json annonce depuis quand le fil, archive comprise, est complet,
+    # et l'app s'en sert pour dessiner ses graphiques par jour et par mois.
+    # Cette promesse ne tient que si l'archive a TOUS les mois depuis. Un
+    # mois absent de l'index ferait afficher un creux qui n'a jamais existé
+    # — exactement le mensonge que la date existe pour empêcher. Contrôle
+    # structurel, et non une supposition sur un jour « trop calme » : un jour
+    # sans article peut être vrai, un mois absent de l'archive ne l'est pas.
+    couverture = data.get("couverture_depuis") or feed_store.COUVERTURE_COMPLETE_DEPUIS
+    presents = {e.get("mois") for e in index.get("mois") or []}
+    fin = (data.get("generated_at") or "")[:7]
+    if couverture and fin:
+        annee, mois_n = int(couverture[:4]), int(couverture[5:7])
+        attendus = []
+        while f"{annee:04d}-{mois_n:02d}" <= fin:
+            attendus.append(f"{annee:04d}-{mois_n:02d}")
+            mois_n += 1
+            if mois_n > 12:
+                annee, mois_n = annee + 1, 1
+        trous = [m for m in attendus if m not in presents]
+        if trous:
+            signale("grave", "archive-trou-couverture",
+                    f"{len(trous)} mois absent(s) de l'archive depuis la date "
+                    f"de couverture annoncée ({couverture})",
+                    trous[:5] + ["l'app dessinerait un creux qui n'existe pas : "
+                                 "corriger l'archive, ou reculer la date publiée"])
+
     # --- 0. une tranche illisible, avant tout le reste
     #
     # C'est la panne la plus grave possible ici, et la moins visible : une
