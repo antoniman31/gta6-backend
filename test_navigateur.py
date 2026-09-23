@@ -1556,6 +1556,137 @@ def test_graphiques_detailles(nav, url):
     ctx.close()
 
 
+def test_graphiques_autres_rubriques(nav, url):
+    """Sources, Robot et Ma lecture refaits en graphiques (23/09/2026)."""
+    import json as _json
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    demandes = []
+
+    def runs(route):
+        demandes.append(route.request.url)
+        def run(debut, fin, issue, evt):
+            return {"status": "completed", "conclusion": issue, "event": evt,
+                    "run_started_at": debut, "updated_at": fin, "created_at": debut}
+        corps = {"workflow_runs": [
+            run("2026-10-20T08:00:00Z", "2026-10-20T08:02:08Z", "success", "repository_dispatch"),
+            run("2026-10-20T07:00:00Z", "2026-10-20T07:03:30Z", "failure", "schedule"),
+            run("2026-10-20T06:00:00Z", "2026-10-20T06:01:40Z", "success", "workflow_dispatch"),
+            {"status": "in_progress", "conclusion": None, "event": "schedule",
+             "run_started_at": "2026-10-20T09:00:00Z", "updated_at": "2026-10-20T09:00:30Z"},
+        ]}
+        route.fulfill(status=200, content_type="application/json", body=_json.dumps(corps))
+    page.route("https://api.github.com/**", runs)
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    page.evaluate("""() => {
+      const items = [];
+      for(let j = 1; j <= 19; j++){
+        for(let k = 0; k < 6; k++){
+          items.push({title: "GTA 6 " + j + " " + k, link: "l" + j + "-" + k, source: "S", lang: "en",
+                      rockstarmag: k === 0, official: false,
+                      date: "2026-10-" + String(j).padStart(2, "0") + "T1" + k + ":00:00Z"});
+        }
+        items.push({title: "Officiel " + j, link: "o" + j, source: "R", lang: "en", official: true,
+                    date: "2026-10-" + String(j).padStart(2, "0") + "T09:00:00Z"});
+      }
+      lastItems = items; historyPartial = false;
+      // Un article sur deux lu, et une première vue notée pour 24 d'entre eux.
+      readSet = new Set(items.filter((_, i) => i % 2 === 0).map(i => i.link));
+      vusDepuis = Date.parse("2026-09-01T00:00:00Z");
+      seenMap = {};
+      items.slice(0, 24).forEach((it, i) => { seenMap[it.link] = { vu: Date.parse(it.date) + [2, 10, 20, 45, 90, 300, 900, 2000][i % 8] * 60000 }; });
+      archiveIndex = {mois: [{mois: "2026-10", articles: 900}, {mois: "2026-09", articles: 1500}, {mois: "2026-08", articles: 40}]};
+      archiveChargee = true;
+      derniereReponseBackend = {
+        couverture_depuis: "2026-09-08", generated_at: "2026-10-20T09:40:00Z",
+        sources_health: [
+          {id: "a", name: "Alpha", status: "ok", http_status: 200, entries_fetched: 25, days_since_last_article: 0},
+          {id: "b", name: "Bravo", status: "ok", http_status: null, not_modified: true, entries_fetched: 0, days_since_last_article: 12},
+          {id: "c", name: "Charlie", status: "cassee", http_status: 404, entries_fetched: 0, days_since_last_article: null},
+          {id: "d", name: "Delta", status: "tarie", http_status: 200, entries_fetched: 30, days_since_last_article: 20},
+          {id: "r", name: "Reddit", status: "en_attente", http_status: null, entries_fetched: 0},
+        ],
+        sources_entries_history: {a: "20,25,25", b: "5,5,5", c: "10,0", d: "30,30,30"},
+      };
+      const vrai = Date; window.__maintenant = new vrai("2026-10-20T10:00:00Z");
+      window.Date = class extends vrai {
+        constructor(...a){ super(...(a.length ? a : [window.__maintenant])); }
+        static now(){ return window.__maintenant.getTime(); }
+      };
+      setTab("stats"); ongletStatsChoisi("sources");
+    }""")
+
+    # ---- Sources ----
+    page.wait_for_selector(".stats-sparks")
+    etat = page.locator(".stats-bloc").filter(has_text="État des sources")
+    check(etat.locator(".stats-pile i").count() == 4
+          and "cassées 1" in etat.locator(".stats-cles").inner_text().replace("\n", " "),
+          "l'état des sources est une barre à parts, chaque statut nommé avec son nombre")
+    noms = page.locator(".stats-sparks li > span:first-child").all_inner_texts()
+    check(noms[:2] == ["Alpha", "Charlie"] and "Volume constant" in noms,
+          "les sources dont le volume bouge d'abord, puis les courbes plates (%s)" % noms)
+    check(page.locator(".stats-sparks svg polyline").count() == 4,
+          "une mini-courbe par source qui a au moins deux relevés")
+    rep = page.locator(".stats-bloc").filter(has_text="Réponses au dernier passage")
+    cles = rep.locator(".stats-cles").inner_text().replace("\n", " ")
+    check("flux reçu 2" in cles and "inchangé (304) 1" in cles and "erreur 1" in cles,
+          "les réponses en quatre familles, la source au repos exclue (%s)" % cles)
+    check(rep.locator(".stats-tableau td").count() > 0, "et le détail des codes reste dans son tableau")
+    sil = page.locator(".stats-bloc").filter(has_text="Les plus silencieuses").locator(".stats-barres li .n").all_inner_texts()
+    check(sil == ["jamais", "20 j", "12 j"], "les silencieuses en barres, « jamais » d'abord (%s)" % sil)
+
+    # ---- Robot ----
+    page.evaluate("ongletStatsChoisi('robot')")
+    page.wait_for_selector(".stats-bloc:has-text('Les derniers passages') .stats-col")
+    passages = page.locator(".stats-bloc").filter(has_text="Les derniers passages")
+    check(passages.locator(".stats-col").count() == 3,
+          "trois passages terminés dessinés, celui en cours écarté")
+    check(passages.locator(".stats-col.echec").count() == 1, "l'échec est en rouge")
+    check("2 réussis" in passages.locator(".stats-sous").inner_text(),
+          "le sous-titre compte les réussites (%s)" % passages.locator(".stats-sous").inner_text())
+    passages.locator(".stats-col").last.click()
+    lu = passages.locator(".stats-lecture").inner_text().replace("\n", " ")
+    check(lu.startswith("2 min 08") and "cron-job.org" in lu and "réussi" in lu,
+          "toucher un passage donne sa durée, son déclencheur et son issue (« %s »)" % lu)
+    page.evaluate("ongletStatsChoisi('sources'); ongletStatsChoisi('robot');")
+    page.wait_for_timeout(300)
+    check(len(demandes) == 1, "rouvrir Robot ne refait pas la requête à GitHub (%d requête(s))" % len(demandes))
+    archive = page.locator(".stats-bloc").filter(has_text="L'archive, mois par mois")
+    check(archive.locator(".stats-col").count() == 3 and archive.locator(".stats-col.ancien").count() == 1,
+          "l'archive mois par mois, août en gris : avant la couverture complète")
+
+    # ---- Ma lecture ----
+    page.evaluate("ongletStatsChoisi('moi')")
+    page.wait_for_selector(".stats-empile")
+    jour = page.locator(".stats-bloc").filter(has_text="jour par jour")
+    check(jour.locator(".stats-empile").count() >= 7 and jour.locator(".stats-cles span").count() == 2,
+          "lus et non lus empilés jour par jour, avec leur légende")
+    jour.locator(".stats-empile").last.click()
+    lecture = jour.locator(".stats-lecture").inner_text().replace("\n", " ")
+    check(" lus sur 6 · " in lecture, "toucher un jour donne ses lus sur son total (« %s »)" % lecture)
+    check(jour.locator(".stats-empile.choisie i.non-lu").count() == 1
+          and page.evaluate("getComputedStyle(document.querySelector('.stats-empile.choisie i.non-lu')).backgroundColor")
+          != page.evaluate("getComputedStyle(document.querySelector('.stats-empile.choisie i.lu')).backgroundColor"),
+          "la colonne touchée garde ses deux couleurs — le non-lu ne passe pas en accent")
+    jauges = page.locator(".stats-jauge-ligne .haut").all_inner_texts()
+    totaux = [j.replace("\n", " ").split(" / ")[1].split(" ")[0] for j in jauges]
+    check(len(jauges) == 3 and jauges[0].startswith("Rockstar") and totaux == ["19", "19", "95"],
+          "trois jauges aux règles des onglets : 19 officiels des mêmes jours, 19 RockstarMag, "
+          "95 ni l'un ni l'autre (%s)" % [j.replace("\n", " ") for j in jauges])
+    delais = page.locator(".stats-bloc").filter(has_text="Entre la publication").locator(".stats-col")
+    check(delais.count() == 7, "les délais en sept tranches fines (%d)" % delais.count())
+    valeurs = [int(x) for x in delais.evaluate_all("cols => cols.map(c => c.dataset.lecture)")]
+    check(valeurs == [3, 3, 3, 3, 3, 3, 6] and sum(valeurs) == 24,
+          "chaque délai tombe dans sa tranche, et les 24 notés sont comptés (%s)" % valeurs)
+
+    check(not erreurs, "aucune erreur dans la page (%s)" % erreurs[:2])
+    ctx.close()
+
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -1952,6 +2083,7 @@ def main():
             test_stats_quatre_rubriques(nav, url)
             test_officiel_et_filtres_etroits(nav, url)
             test_graphiques_detailles(nav, url)
+            test_graphiques_autres_rubriques(nav, url)
             nav.close()
     finally:
         srv.shutdown()

@@ -808,7 +808,7 @@
   .stats-grille{position:absolute; left:0; right:0; border-top:1px solid var(--line);
     pointer-events:none;}
   .stats-grille span{position:absolute; right:calc(100% + 6px); top:-7px; font-size:10px;
-    color:var(--text-dim); font-variant-numeric:tabular-nums;}
+    color:var(--text-dim); font-variant-numeric:tabular-nums; white-space:nowrap;}
   .stats-col{flex:1 1 0; min-width:3px; height:100%; display:flex; align-items:flex-end;
     justify-content:center; position:relative; cursor:pointer;}
   /* Colonnes atténuées : l'accent mélangé à 70 % au fond de la carte, et
@@ -888,6 +888,31 @@
   .stats-apres{background:var(--accent);}
   .stats-halteres .n{color:var(--text-dim); text-align:right; font-variant-numeric:tabular-nums;}
   .stats-legende-points{display:inline-flex; align-items:center; gap:4px; margin-right:12px;}
+  .stats-col.echec i{background:var(--danger);}
+  .stats-col.ancien i{background:color-mix(in srgb, var(--text-dim) 55%, var(--bg-panel));}
+  /* Lus et non lus empilés : le lu, en accent, porte sur la ligne de base ;
+     le non-lu, gris, arrondi au sommet. 2 px de fond entre les deux. */
+  .stats-empile{flex-direction:column; justify-content:flex-end; gap:2px;}
+  .stats-empile i.lu{background:var(--accent); border-radius:0; min-height:0;}
+  .stats-empile i.non-lu, .stats-cles i.non-lu{background:color-mix(in srgb, var(--text-dim) 35%, var(--bg-panel));}
+  .stats-empile i.non-lu{min-height:0;}
+  /* La colonne touchée garde ses deux couleurs : la règle générale
+     « colonne choisie = accent plein » peindrait le non-lu en lu. */
+  .stats-col.stats-empile.choisie i.non-lu{background:color-mix(in srgb, var(--text-dim) 55%, var(--bg-panel));}
+  .stats-col.stats-empile.choisie i.lu{background:var(--accent);}
+  .stats-cles-haut{margin-bottom:16px;}
+  .stats-sparks{list-style:none; margin:0; padding:0;}
+  .stats-sparks li{display:grid; grid-template-columns:minmax(0, 1fr) 92px 34px; gap:10px;
+    align-items:center; padding:5px 0; font-size:12px; color:var(--text);}
+  .stats-sparks li > span:first-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .stats-sparks .n{text-align:right; color:var(--text-dim); font-variant-numeric:tabular-nums;}
+  .stats-spark{display:block; width:92px; height:22px; overflow:visible;}
+  .stats-sparks .plates{padding-top:10px; font-size:11px; color:var(--text-dim); display:block;}
+  .stats-jauge-ligne{margin:8px 0 12px;}
+  .stats-jauge-ligne .haut{display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--text);}
+  .stats-jauge-ligne .haut small{color:var(--text-dim); font-variant-numeric:tabular-nums;}
+  .stats-jauge-ligne .stats-jauge{margin:4px 0 0; height:8px;}
+  .stats-note{font-size:11px; color:var(--text-dim); margin:8px 0 0;}
   .stats-jauge{height:10px; border-radius:var(--r-full); margin:12px 0 2px; overflow:hidden;
     background:color-mix(in srgb, var(--accent) 22%, var(--bg-panel));}
   .stats-jauge i{display:block; height:100%; background:var(--accent); border-radius:var(--r-full);}
@@ -4628,7 +4653,14 @@ const STATS_JOURS_SECOURS = 14;   // sans date de couverture : voir plus haut
 const STATS_JOURS_MAX = 30;       // un histogramme plus long ne se lit plus
 const STATS_MOIS_MIN = 2;         // un histogramme d'une seule barre ne dit rien
 const STATS_TOP = 5;
-const STATS_DELAI_MIN = 20;       // articles notés avant d'annoncer un délai médian
+const STATS_DELAI_MIN = 20;
+// Tranches du délai entre publication et première vue, choisies par Antoni
+// (23/09/2026) : fines dans la première heure, là où se joue « être là ».
+const STATS_TRANCHES_DELAI = [
+  { nom: "< 5 min", max: 5 }, { nom: "5–15 min", max: 15 }, { nom: "15–30 min", max: 30 },
+  { nom: "30–60 min", max: 60 }, { nom: "1–3 h", max: 180 }, { nom: "3–12 h", max: 720 },
+  { nom: "> 12 h", max: Infinity },
+];       // articles notés avant d'annoncer un délai médian
 
 // Le jour, à l'heure de Paris : c'est l'heure dans laquelle Antoni lit, et
 // un article publié à 23h30 le 12 n'appartient pas au 13.
@@ -4830,9 +4862,16 @@ function calculeStats(items, backend, maintenant, lecture){
   const sante = (backend && backend.sources_health) || [];
   const statuts = {};
   const codes = {};
+  // Les mêmes réponses, en quatre familles : ce qu'on veut savoir d'un coup
+  // d'œil, c'est combien ont donné un flux, pas lequel des trois codes.
+  const reponses = { recu: 0, inchange: 0, erreur: 0, sans: 0 };
   for(const s of sante){
     statuts[s.status] = (statuts[s.status] || 0) + 1;
     if(s.status === "en_attente") continue;       // pas interrogée, pas de code
+    if(s.not_modified) reponses.inchange++;
+    else if(s.http_status == null) reponses.sans++;
+    else if(s.http_status < 400) reponses.recu++;
+    else reponses.erreur++;
     // Sur un 304, le robot écrit not_modified sans http_status (voir le
     // retour anticipé de fetch_feeds.py) : lu tel quel, un flux inchangé
     // passait pour un flux muet — 17 sources « sans réponse » le 23/09/2026
@@ -4843,9 +4882,21 @@ function calculeStats(items, backend, maintenant, lecture){
   }
   const noms = {};
   for(const s of sante) noms[s.id] = s.name;
+  // Les derniers relevés de chaque source, publiés par le robot en chaîne
+  // « 20,20,18 » (voir maj_historique_entrees). Un 304 n'y est pas empilé :
+  // ce sont des relevés, pas strictement des passages. En tête, les sources
+  // dont le volume bouge ; une courbe plate n'a rien à signaler.
+  const brut = (backend && backend.sources_entries_history) || {};
+  const releves = v => (Array.isArray(v) ? v : String(v == null ? "" : v).split(","))
+    .filter(x => String(x).trim() !== "").map(Number).filter(Number.isFinite);
+  const historique = sante.map(s => ({ nom: s.name, vals: releves(brut[s.id]) }))
+    .filter(h => h.vals.length >= 2)
+    .map(h => ({ nom: h.nom, vals: h.vals, dernier: h.vals[h.vals.length - 1], bouge: new Set(h.vals).size > 1 }))
+    .sort((a, b) => (b.bouge - a.bouge) || (b.dernier - a.dernier) || a.nom.localeCompare(b.nom, "fr"));
   const sources = {
     total: sante.length, statuts,
     codes: Object.entries(codes).sort((a, b) => b[1] - a[1]).map(([code, n]) => ({ code, n })),
+    reponses, historique,
     productives: sante.filter(s => (s.articles_exclusifs || 0) > 0)
       .sort((a, b) => b.articles_exclusifs - a.articles_exclusifs)
       .slice(0, STATS_TOP).map(s => ({ nom: s.name, n: s.articles_exclusifs })),
@@ -4855,7 +4906,7 @@ function calculeStats(items, backend, maintenant, lecture){
     silencieuses: sante.filter(s => s.status !== "en_attente"
         && (s.days_since_last_article == null || s.days_since_last_article >= 7))
       .sort((a, b) => (b.days_since_last_article ?? 1e9) - (a.days_since_last_article ?? 1e9))
-      .slice(0, 6).map(s => ({ nom: s.name, jours: s.days_since_last_article })),
+      .map(s => ({ nom: s.name, jours: s.days_since_last_article })),
     steriles: sante.filter(s => !(s.articles_exclusifs > 0) && s.status !== "en_attente")
       .map(s => s.name).sort((a, b) => a.localeCompare(b, "fr")),
     enBaisse: Object.keys((backend && backend.sources_declining) || {}).map(id => noms[id] || id),
@@ -4877,6 +4928,10 @@ function calculeStats(items, backend, maintenant, lecture){
     archiveMois: lecture.archiveIndex ? (lecture.archiveIndex.mois || []).length : null,
     archiveArticles: lecture.archiveIndex
       ? (lecture.archiveIndex.mois || []).reduce((t, m) => t + (m.articles || 0), 0) : null,
+    archiveParMois: lecture.archiveIndex
+      ? (lecture.archiveIndex.mois || []).map(m => ({ mois: m.mois, articles: m.articles || 0 }))
+          .sort((a, b) => (a.mois < b.mois ? -1 : 1))
+      : [],
   };
 
   // ---- Ma lecture ----
@@ -4899,6 +4954,36 @@ function calculeStats(items, backend, maintenant, lecture){
     }
   }
   delais.sort((a, b) => a - b);
+  // Jour par jour, sur les mêmes jours et les mêmes articles que la part lue
+  // écrite juste au-dessus : les deux doivent raconter la même chose.
+  const luParJour = {};
+  for(const i of fenetre){
+    const j = jourParis(new Date(i.date));
+    luParJour[j] = luParJour[j] || { lus: 0, total: 0 };
+    luParJour[j].total++;
+    if(luDans(i)) luParJour[j].lus++;
+  }
+  // Par onglet, avec les règles des onglets (un article peut être à la fois
+  // Rockstar et RockstarMag). Les officiels ne sont pas dans la fenêtre des
+  // jours — ils sont gardés à vie —, on prend donc ceux publiés sur les
+  // mêmes jours.
+  const officielsFenetre = officiels.filter(i => dansFenetre.has(jourParis(new Date(i.date))));
+  const compte = l => ({ lus: l.filter(luDans).length, total: l.length });
+  const parOnglet = {
+    rockstar: compte(officielsFenetre),
+    rockstarmag: compte(fenetre.filter(i => i.rockstarmag)),
+    autre: compte(fenetre.filter(i => !i.rockstarmag)),
+  };
+  const tranches = [];
+  if(delais.length >= STATS_DELAI_MIN){
+    const bornes = STATS_TRANCHES_DELAI.map(t => t.max);
+    for(const t of STATS_TRANCHES_DELAI) tranches.push({ nom: t.nom, n: 0 });
+    for(const d of delais){
+      const min = d / 60000;
+      const k = bornes.findIndex(b => min < b);
+      tranches[k < 0 ? tranches.length - 1 : k].n++;
+    }
+  }
   const moi = {
     lus: liste.filter(luDans).length,
     total: liste.length,
@@ -4909,6 +4994,9 @@ function calculeStats(items, backend, maintenant, lecture){
     delaisNotes: delais.length,
     delaiMedianMin: delais.length >= STATS_DELAI_MIN
       ? Math.round(delais[Math.floor(delais.length / 2)] / 60000) : null,
+    parJour: joursListe.map(j => ({ jour: j, lus: (luParJour[j] || {}).lus || 0,
+                                    total: (luParJour[j] || {}).total || 0 })),
+    parOnglet, tranches,
   };
 
   return {
@@ -4973,27 +5061,30 @@ function reperesAxe(n, pas){
 // et la valeur de toute colonne touchée au-dessus du graphique — au doigt,
 // une infobulle ne s'affiche pas. Le tableau reste, pour tout lire d'un coup.
 function histogramme(points, libelle, formatCle, options = {}){
+  const valeur = options.formatValeur || (v => String(v));
+  const axeDe = options.formatAxe || formatCle;
   const max = Math.max(1, ...points.map(p => p.n));
   const pas = pasGrille(max);
   const haut = Math.ceil(max / pas) * pas;
   const pct = v => (v / haut * 100).toFixed(2);
   const grille = Array.from({ length: Math.round(haut / pas) + 1 }, (_, k) => k * pas)
-    .map(v => `<div class="stats-grille" style="bottom:${pct(v)}%"><span>${v}</span></div>`).join("");
+    .map(v => `<div class="stats-grille" style="bottom:${pct(v)}%"><span>${escapeHtml(valeur(v))}</span></div>`).join("");
   let maxMarque = false;
   const cols = points.map(p => {
     const pic = !maxMarque && p.n === max && p.n > 0;
     if(pic) maxMarque = true;
-    const texte = `${formatCle(p.cle)} : ${p.n}`;
-    return `<span class="stats-col${pic ? " pic" : ""}" data-lecture="${escapeAttr(String(p.n))}" `
+    const texte = `${formatCle(p.cle)} : ${valeur(p.n)}`;
+    const classe = options.classe ? options.classe(p) : "";
+    return `<span class="stats-col${pic ? " pic" : ""}${classe ? " " + classe : ""}" data-lecture="${escapeAttr(valeur(p.n))}" `
          + `data-libelle="${escapeAttr(formatCle(p.cle))}" title="${escapeAttr(texte)}">`
-         + (pic ? `<em style="bottom:calc(${pct(p.n)}% + 3px)">${p.n}</em>` : "")
+         + (pic ? `<em style="bottom:calc(${pct(p.n)}% + 3px)">${escapeHtml(valeur(p.n))}</em>` : "")
          + `<i style="height:${pct(p.n)}%"></i></span>`;
   }).join("");
   const mediane = options.mediane != null && options.mediane > 0
     ? `<div class="stats-mediane" style="bottom:${pct(options.mediane)}%"><span>médiane ${options.mediane}</span></div>` : "";
   const axe = reperesAxe(points.length, options.pasAxe).map(i =>
-    `<span style="left:${((i + 0.5) / points.length * 100).toFixed(2)}%">${escapeHtml(formatCle(points[i].cle))}</span>`).join("");
-  const lignes = points.map(p => `<tr><td>${escapeHtml(formatCle(p.cle))}</td><td>${p.n}</td></tr>`).join("");
+    `<span style="left:${((i + 0.5) / points.length * 100).toFixed(2)}%">${escapeHtml(axeDe(points[i].cle))}</span>`).join("");
+  const lignes = points.map(p => `<tr><td>${escapeHtml(formatCle(p.cle))}</td><td>${escapeHtml(valeur(p.n))}</td></tr>`).join("");
   return `<p class="stats-lecture" aria-live="polite">Touche une colonne pour lire sa valeur</p>`
        + `<div class="stats-histo" role="img" aria-label="${escapeAttr(libelle)}">${grille}${mediane}${cols}</div>`
        + `<div class="stats-axe" aria-hidden="true">${axe}</div>`
@@ -5025,6 +5116,62 @@ function carteSemaineHeure(carte){
        + `<div class="stats-heures" aria-hidden="true">${heures}</div>`
        + `<div class="stats-gradient" aria-hidden="true">moins ${CRANS_CARTE.map(o => `<i style="opacity:${o}"></i>`).join("")} plus</div>`
        + `<details class="stats-tableau"><summary>Voir les chiffres</summary><table>${tableau}</table></details>`;
+}
+
+// Une barre en parts, et sa légende avec les nombres : l'identité ne passe
+// jamais par la seule couleur.
+function pileStats(parts, libelle){
+  const visibles = parts.filter(p => p.n > 0);
+  const total = visibles.reduce((t, p) => t + p.n, 0);
+  if(!total) return "";
+  const part = n => { const v = Math.round(100 * n / total); return v === 0 ? "< 1" : v; };
+  return `<div class="stats-pile" role="img" aria-label="${escapeAttr(libelle + " : " + visibles.map(p => `${p.nom} ${p.n}`).join(", "))}">`
+    + visibles.map(p => `<i style="width:${(100 * p.n / total).toFixed(2)}%; background:${p.couleur}"></i>`).join("")
+    + `</div><div class="stats-cles">`
+    + visibles.map(p => `<span><i style="background:${p.couleur}"></i>${escapeHtml(p.nom)} ${p.n}`
+      + (p.pourcent ? ` <small>${part(p.n)} %</small>` : "") + `</span>`).join("")
+    + `</div>`;
+}
+
+// Mini-courbe : la forme d'une série, sans axe — la valeur exacte du dernier
+// point est écrite à côté.
+function sparklineStats(vals){
+  const l = 92, h = 22, max = Math.max(1, ...vals);
+  const pts = vals.map((v, i) => [i / Math.max(1, vals.length - 1) * l, h - 2 - v / max * (h - 4)]);
+  const [dx, dy] = pts[pts.length - 1];
+  return `<svg class="stats-spark" viewBox="0 0 ${l} ${h}" aria-hidden="true" focusable="false">`
+    + `<polyline points="${pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ")}" fill="none" `
+    + `stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`
+    + `<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="3.5" fill="var(--accent)" stroke="var(--bg-panel)" stroke-width="2"/></svg>`;
+}
+
+function jaugeStats(nom, lus, total){
+  const pct = total ? Math.round(100 * lus / total) : 0;
+  return `<div class="stats-jauge-ligne"><div class="haut"><span>${escapeHtml(nom)}</span>`
+    + `<small>${lus} / ${total} · ${pct} %</small></div>`
+    + `<div class="stats-jauge" role="img" aria-label="${escapeAttr(`${nom} : ${pct} % lus`)}"><i style="width:${total ? Math.max(pct, lus ? 1 : 0) : 0}%"></i></div></div>`;
+}
+
+// Lus et non lus, empilés jour par jour. Deux séries : légende obligatoire.
+function histogrammeLecture(jours){
+  const max = Math.max(1, ...jours.map(j => j.total));
+  const pas = pasGrille(max);
+  const haut = Math.ceil(max / pas) * pas;
+  const pct = v => (v / haut * 100).toFixed(2);
+  const grille = Array.from({ length: Math.round(haut / pas) + 1 }, (_, k) => k * pas)
+    .map(v => `<div class="stats-grille" style="bottom:${pct(v)}%"><span>${v}</span></div>`).join("");
+  const cols = jours.map(j => `<span class="stats-col stats-empile" data-lecture="${j.lus}" `
+    + `data-libelle="${escapeAttr(`lus sur ${j.total} · ${dateCourte(j.jour)}`)}" title="${escapeAttr(`${dateCourte(j.jour)} : ${j.lus} lus sur ${j.total}`)}">`
+    + `<i class="non-lu" style="height:${pct(j.total - j.lus)}%"></i><i class="lu" style="height:${pct(j.lus)}%"></i></span>`).join("");
+  const axe = reperesAxe(jours.length, 7).map(i =>
+    `<span style="left:${((i + 0.5) / jours.length * 100).toFixed(2)}%">${escapeHtml(dateCourte(jours[i].jour))}</span>`).join("");
+  const lignes = jours.map(j => `<tr><td>${escapeHtml(dateCourte(j.jour))}</td><td>${j.lus} lus</td><td>${j.total}</td></tr>`).join("");
+  return `<div class="stats-cles stats-cles-haut"><span><i style="background:var(--accent)"></i>lus</span>`
+    + `<span><i class="non-lu"></i>non lus</span></div>`
+    + `<p class="stats-lecture" aria-live="polite">Touche une colonne pour lire sa valeur</p>`
+    + `<div class="stats-histo" role="img" aria-label="Articles lus et non lus, jour par jour">${grille}${cols}</div>`
+    + `<div class="stats-axe" aria-hidden="true">${axe}</div>`
+    + `<details class="stats-tableau"><summary>Voir les chiffres</summary><table>${lignes}</table></details>`;
 }
 
 // Un classement : le nom, un trait proportionnel dessous, la valeur à droite.
@@ -5164,13 +5311,11 @@ function renderStatsFil(s){
       ["inconnue", "Langue inconnue", "var(--text-dim)"],
     ].filter(([k]) => s.langues[k]);
     // « 0 % » pour quatre articles se lisait comme « aucun ».
-    const partDe = k => { const p = Math.round(100 * s.langues[k] / totalLangues); return p === 0 && s.langues[k] ? "< 1" : p; };
+    // « 0 % » pour quatre articles se lisait comme « aucun » : pileStats
+    // écrit « < 1 % » pour une part qui existe mais s'arrondit à zéro.
     blocs.push(blocStats("Français et anglais", `${periode}.`,
-      `<div class="stats-pile" role="img" aria-label="${escapeAttr(parts.map(([k, nom]) => `${nom} ${partDe(k)} %`).join(", "))}">`
-      + parts.map(([k, , couleur]) => `<i style="width:${(100 * s.langues[k] / totalLangues).toFixed(2)}%; background:${couleur}"></i>`).join("")
-      + `</div><div class="stats-cles">`
-      + parts.map(([k, nom, couleur]) => `<span><i style="background:${couleur}"></i>${nom} ${s.langues[k]} <small>${partDe(k)} %</small></span>`).join("")
-      + `</div>`));
+      pileStats(parts.map(([k, nom, couleur]) => ({ nom, n: s.langues[k], couleur, pourcent: true })),
+        "Langues des articles")));
   }
   if(s.repris.length){
     blocs.push(blocStats("Les sujets les plus repris", "Nombre de rédactions sur le même sujet.",
@@ -5210,30 +5355,59 @@ function renderStatsSources(s){
   if(!src.total) return `<p class="stats-attente">L'état des sources vient de la réponse du robot : touche « Actualiser » pour la lire.</p>`;
   const blocs = [];
   const libelles = { ok: "répondent", tarie: "taries", muette: "muettes", cassee: "cassées", en_attente: "au repos (tour de rôle)" };
+  // Couleurs d'état, réservées à l'état : vert, gris, ambre, rouge — et
+  // chaque part nommée dans la légende avec son nombre.
   blocs.push(blocStats("État des sources", `${src.total} sources au dernier passage du robot.`,
-    chiffres(["ok", "en_attente", "tarie", "muette", "cassee"].filter(k => src.statuts[k])
-      .map(k => [src.statuts[k], libelles[k]]))));
+    pileStats([
+      { nom: libelles.ok, n: src.statuts.ok || 0, couleur: "var(--ok)" },
+      { nom: "au repos", n: src.statuts.en_attente || 0, couleur: "var(--text-dim)" },
+      { nom: libelles.tarie, n: src.statuts.tarie || 0, couleur: "var(--warn)" },
+      { nom: libelles.muette, n: src.statuts.muette || 0, couleur: "color-mix(in srgb, var(--danger) 55%, var(--bg-panel))" },
+      { nom: libelles.cassee, n: src.statuts.cassee || 0, couleur: "var(--danger)" },
+    ], "État des sources")));
   if(src.productives.length){
     blocs.push(blocStats("Celles qui apportent le plus",
       "Articles qu'aucune autre source n'a remontés — les retirer les ferait perdre.",
       barresStats(src.productives)));
   }
-  if(src.volume.length){
-    blocs.push(blocStats("Volume rapporté au dernier passage",
-      "Entrées renvoyées par le flux, avant filtre et doublons.",
-      barresStats(src.volume)));
+  if(src.historique.length){
+    const bougent = src.historique.filter(h => h.bouge);
+    const ligne = h => `<li><span>${escapeHtml(h.nom)}</span>${sparklineStats(h.vals)}<span class="n">${h.dernier}</span></li>`;
+    blocs.push(blocStats("Ce que chaque source rapporte, relevé après relevé",
+      `Entrées renvoyées par le flux, avant filtre et doublons, sur ses ${src.historique[0].vals.length} derniers relevés `
+      + `— du plus ancien au plus récent, le point est le dernier. Un passage « inchangé » (304) n'est pas un relevé. `
+      + `En tête, les ${bougent.length} sources dont le volume bouge.`,
+      `<ul class="stats-sparks">` + bougent.map(ligne).join("")
+      + (bougent.length && bougent.length < src.historique.length ? `<li><span class="plates">Volume constant</span></li>` : "")
+      + src.historique.filter(h => !h.bouge).map(ligne).join("") + `</ul>`));
   }
   if(src.codes.length){
-    blocs.push(blocStats("Réponses au dernier passage", "Code HTTP renvoyé par chaque source interrogée.",
-      listeStats(src.codes.map(c => ligneNom(LIBELLES_HTTP[c.code] ? c.code + " — " + LIBELLES_HTTP[c.code] : c.code, c.n)))));
+    const r = src.reponses;
+    blocs.push(blocStats("Réponses au dernier passage", "Chaque source interrogée, selon ce que son serveur a répondu.",
+      pileStats([
+        { nom: "flux reçu", n: r.recu, couleur: "var(--ok)" },
+        { nom: "inchangé (304)", n: r.inchange, couleur: "color-mix(in srgb, var(--ok) 45%, var(--bg-panel))" },
+        { nom: "erreur", n: r.erreur, couleur: "var(--danger)" },
+        { nom: "sans réponse", n: r.sans, couleur: "var(--warn)" },
+      ], "Réponses au dernier passage")
+      + `<details class="stats-tableau"><summary>Voir les codes</summary><table>`
+      + src.codes.map(c => `<tr><td>${escapeHtml(LIBELLES_HTTP[c.code] ? c.code + " — " + LIBELLES_HTTP[c.code] : c.code)}</td><td>${c.n}</td></tr>`).join("")
+      + `</table></details>`));
   }
   if(src.enBaisse.length){
     blocs.push(blocStats("En forte baisse", "Elles répondent, mais rapportent bien moins qu'à l'habitude.",
       listeStats(src.enBaisse.map(n => ligneNom(n)))));
   }
   if(src.silencieuses.length){
-    blocs.push(blocStats("Les plus silencieuses", "Sources sans article retenu depuis au moins une semaine.",
-      listeStats(src.silencieuses.map(x => ligneNom(x.nom, x.jours == null ? "jamais" : `${x.jours} j`)))));
+    // « Jamais » d'abord, barre pleine en gris : ce n'est pas une durée, on
+    // ne sait pas depuis quand.
+    const plusLong = Math.max(1, ...src.silencieuses.map(x => x.jours || 0));
+    blocs.push(blocStats("Les plus silencieuses",
+      "Jours depuis leur dernier article retenu, pour celles qui se taisent depuis au moins une semaine. « Jamais » : aucun article depuis qu'elles sont suivies.",
+      `<ul class="stats-barres">` + src.silencieuses.map(x =>
+        `<li><span class="nom"><span>${escapeHtml(x.nom)}</span><span class="trait" style="width:${x.jours == null ? 100 : (x.jours / plusLong * 100).toFixed(1)}%;`
+        + `${x.jours == null ? " background:var(--text-dim);" : ""}"></span></span>`
+        + `<span class="n">${x.jours == null ? "jamais" : x.jours + " j"}</span></li>`).join("") + `</ul>`));
   }
   if(src.steriles.length){
     // « Leur contenu arrive déjà par d'autres sources », première version,
@@ -5245,6 +5419,51 @@ function renderStatsSources(s){
       listeStats(src.steriles.map(n => ligneNom(n)))));
   }
   return blocs.join("");
+}
+
+// Les derniers passages du robot, lus sur GitHub à l'ouverture de la
+// rubrique — une requête, avec le jeton s'il est enregistré. Gardés cinq
+// minutes : renderStats() est rappelé à chaque actualisation, et chaque
+// rappel ne doit pas refaire la requête (60 par heure sans jeton).
+let passagesRobot = { runs: undefined, quand: 0, enCours: false };
+const PASSAGES_ROBOT_NB = 30;
+const PASSAGES_ROBOT_VALIDITE_MS = 5 * 60 * 1000;
+function chargePassagesRobot(){
+  if(passagesRobot.enCours) return;
+  if(passagesRobot.runs !== undefined && Date.now() - passagesRobot.quand < PASSAGES_ROBOT_VALIDITE_MS) return;
+  passagesRobot.enCours = true;
+  fetchRecentRuns(PASSAGES_ROBOT_NB).then(runs => {
+    passagesRobot = { runs, quand: Date.now(), enCours: false };
+    if(currentTab === "stats" && ongletStats === "robot") renderStats();
+  });
+}
+const DECLENCHEURS = { schedule: "planifié GitHub", repository_dispatch: "cron-job.org", workflow_dispatch: "manuel" };
+function passagesFinis(runs){
+  return runs.filter(r => r.status === "completed" && r.run_started_at && r.updated_at)
+    .map(r => ({ run: r, min: Math.max(0, (new Date(r.updated_at) - new Date(r.run_started_at)) / 60000) }))
+    .filter(p => Number.isFinite(p.min)).reverse();
+}
+function dureeMin(m){
+  const sec = Math.round(m * 60);
+  return sec < 60 ? `${sec} s` : `${Math.floor(sec / 60)} min ${String(sec % 60).padStart(2, "0")}`;
+}
+function passagesSousTitre(runs){
+  const p = passagesFinis(runs);
+  if(!p.length) return "Aucun passage terminé à montrer.";
+  const reussis = p.filter(x => x.run.conclusion === "success").length;
+  const med = p.map(x => x.min).sort((a, b) => a - b)[Math.floor(p.length / 2)];
+  return `${p.length} passages, ${reussis} réussi${reussis > 1 ? "s" : ""}. Hauteur : durée totale du passage, installation comprise ; `
+    + `en rouge, un échec. Médiane : ${dureeMin(med)}.`;
+}
+function passagesGraphe(runs){
+  const p = passagesFinis(runs);
+  if(!p.length) return "";
+  const heure = r => new Date(r.run_started_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
+  const issue = r => r.conclusion === "success" ? "réussi" : r.conclusion === "cancelled" ? "annulé" : "échec";
+  return histogramme(p.map(x => ({ cle: x.run, n: x.min })), "Durée des derniers passages du robot",
+    r => `${heure(r)} · ${DECLENCHEURS[r.event] || r.event} · ${issue(r)}`,
+    { formatValeur: v => Number.isInteger(v) ? `${v} min` : dureeMin(v), formatAxe: heure, pasAxe: 10,
+      classe: q => q.cle.conclusion !== "success" ? "echec" : "" });
 }
 
 function renderStatsRobot(s){
@@ -5264,6 +5483,19 @@ function renderStatsRobot(s){
     r.archiveArticles != null && [r.archiveArticles, `dans l'archive, répartis sur ${r.archiveMois} mois différents`],
     r.couverture && [dateCourte(r.couverture), "complet depuis"],
   ])));
+  blocs.push(blocStats("Les derniers passages", passagesRobot.runs && passagesRobot.runs.length
+      ? passagesSousTitre(passagesRobot.runs)
+      : passagesRobot.runs === null ? "GitHub n'a pas répondu : les passages s'afficheront à la prochaine ouverture."
+      : "Chargement depuis GitHub…",
+    passagesRobot.runs && passagesRobot.runs.length ? passagesGraphe(passagesRobot.runs) : ""));
+  if(r.archiveParMois.length >= 2){
+    const couv = (r.couverture || "").slice(0, 7);
+    blocs.push(blocStats("L'archive, mois par mois",
+      `${r.archiveArticles} articles sur ${r.archiveMois} mois.`
+      + (couv ? ` En gris : les mois d'avant la couverture complète (${dateCourte(r.couverture)}), qui ne gardent que les publications officielles.` : ""),
+      histogramme(r.archiveParMois.map(m => ({ cle: m.mois, n: m.articles })), "Articles archivés par mois", moisLisible,
+        { classe: p => couv && p.cle < couv ? "ancien" : "" })));
+  }
   if(r.decodages || r.enAttente){
     blocs.push(blocStats("À surveiller", "", chiffres([
       r.decodages && [r.decodages, "décodages Google News ratés"],
@@ -5287,11 +5519,27 @@ function renderStatsMoi(s){
     ]) + (taux != null
       ? `<div class="stats-jauge" role="img" aria-label="${taux} % lus"><i style="width:${Math.max(taux, taux ? 1 : 0)}%"></i></div>`
       : "")));
+  if(m.parJour.some(j => j.total)){
+    blocs.push(blocStats("Ta lecture, jour par jour",
+      `Les articles de chaque jour, lus et non lus, sur les ${m.joursFenetre} derniers jours complets.`,
+      histogrammeLecture(m.parJour)));
+  }
+  const o = m.parOnglet;
+  if(o.rockstar.total + o.rockstarmag.total + o.autre.total){
+    blocs.push(blocStats("Ce que tu lis, par onglet",
+      "Part lue de chaque onglet sur les mêmes jours. Rockstar compte les publications officielles de ces jours-là.",
+      jaugeStats("Rockstar", o.rockstar.lus, o.rockstar.total)
+      + jaugeStats("RockstarMag", o.rockstarmag.lus, o.rockstarmag.total)
+      + jaugeStats("Non Rockstar", o.autre.lus, o.autre.total)));
+  }
   blocs.push(blocStats("Entre la publication et ton écran",
     m.delaiMedianMin != null
       ? `Délai médian entre la publication d'un article et sa première apparition chez toi, sur ${m.delaisNotes} articles.`
       : `En cours d'enregistrement : ${m.delaisNotes} article${m.delaisNotes > 1 ? "s" : ""} noté${m.delaisNotes > 1 ? "s" : ""} sur les ${STATS_DELAI_MIN} nécessaires. Seuls ceux publiés après le début de l'enregistrement comptent.`,
-    m.delaiMedianMin != null ? chiffres([[dureeLisible(m.delaiMedianMin), "en médiane"]]) : ""));
+    m.delaiMedianMin != null
+      ? chiffres([[dureeLisible(m.delaiMedianMin), "en médiane"]])
+        + histogramme(m.tranches.map(t => ({ cle: t.nom, n: t.n })), "Articles vus, par délai depuis leur publication", t => t)
+      : ""));
   if(m.medias.length){
     blocs.push(blocStats("Les médias que tu lis le plus", "",
       barresStats(m.medias)));
@@ -5320,7 +5568,7 @@ function renderStats(){
     lus: readSet, vus: seenMap, vusDepuis, archiveChargee, archiveIndex,
   });
   if(ongletStats === "sources"){ cible.innerHTML = renderStatsSources(s); return; }
-  if(ongletStats === "robot"){ cible.innerHTML = renderStatsRobot(s); return; }
+  if(ongletStats === "robot"){ chargePassagesRobot(); cible.innerHTML = renderStatsRobot(s); return; }
   if((ongletStats === "fil" || ongletStats === "moi") && !statsPretes()){
     cible.innerHTML = `<p class="stats-attente">Chargement de l'historique complet… `
       + `Les chiffres calculés sur les seuls articles récents seraient faux.</p>`;

@@ -5627,6 +5627,59 @@ sépare.
 Chaque graphique garde son tableau « Voir les chiffres », carte comprise ;
 un contrôle navigateur compte un tableau par graphique.
 
+### Sources, Robot et Ma lecture en graphiques — 23/09/2026
+
+Suite directe du lot précédent, sur une seconde maquette tirée des vraies
+données et validée par Antoni, avec trois choix de sa part. **Rien ne change
+dans ce que le robot publie** : tout vient de données qui existaient déjà.
+
+**Sources**
+- *État des sources* : une barre à parts, une couleur d'état par statut
+  (vert, gris au repos, ambre tarie, rouge muette ou cassée), chaque part
+  nommée avec son nombre dans la légende.
+- *Ce que chaque source rapporte, relevé après relevé* : une mini-courbe
+  par source, **pour les 63** (choix d'Antoni), tirée de
+  `sources_entries_history`. En tête, celles dont le volume bouge, puis les
+  courbes plates. On y voit par exemple les 404 intermittents des flux
+  YouTube, en dents de scie. Ce sont des *relevés* et non strictement des
+  passages : le robot n'empile pas un 304, qui ne dit rien du volume (voir
+  `maj_historique_entrees`) — le sous-titre le dit.
+- *Réponses au dernier passage* : une barre en quatre familles (flux reçu,
+  inchangé, erreur, sans réponse), la source au repos exclue ; le détail
+  des codes reste dans son tableau.
+- *Les plus silencieuses* : toutes celles qui se taisent depuis au moins
+  une semaine, en barres, « jamais » d'abord et en gris — ce n'est pas une
+  durée.
+
+**Robot**
+- *Les derniers passages* : les 30 derniers, lus sur GitHub **à l'ouverture
+  de la rubrique** (choix d'Antoni), avec le jeton s'il est enregistré. Une
+  colonne par passage : la hauteur est la durée totale, installation
+  comprise ; un échec est en rouge ; un passage en cours est écarté.
+  Toucher une colonne donne l'heure, le déclencheur (cron-job.org,
+  planifié GitHub, manuel) et l'issue. La réponse est gardée cinq minutes :
+  `renderStats()` est rappelé à chaque actualisation, et sans jeton GitHub
+  n'accorde que 60 requêtes par heure. Si GitHub ne répond pas, le bloc le
+  dit, le reste s'affiche.
+- *L'archive, mois par mois* : en gris, les mois d'avant la couverture
+  complète, qui ne gardent que les publications officielles — leur creux ne
+  dit rien de la presse.
+
+**Ma lecture**
+- *Jour par jour* : lus en accent, non lus en gris, empilés, sur les mêmes
+  jours et les mêmes articles que la part lue écrite au-dessus.
+- *Par onglet* : trois jauges, aux règles des onglets (un article peut être
+  à la fois Rockstar et RockstarMag). Les officiels n'étant pas dans la
+  fenêtre des jours — gardés à vie —, la jauge Rockstar compte ceux publiés
+  sur les mêmes jours.
+- *Délais* : en sept tranches fines (choix d'Antoni) — < 5 min, 5–15,
+  15–30, 30–60 min, 1–3 h, 3–12 h, > 12 h —, dès les 20 articles notés.
+
+**Deux défauts pris par le contrôle avant de publier** : la colonne touchée
+d'un graphique empilé passait entièrement en accent (la règle générale
+« colonne choisie » peignait le non-lu en lu), et les graduations « 5 min »
+passaient sur deux lignes à 390 px.
+
 ### Ce qui n'avait rien à faire
 
 **Nommer ce qu'on perd avant d'effacer.** C'était la proposition, et elle était
