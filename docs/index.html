@@ -951,6 +951,22 @@
     .setting-buttons{flex-wrap:wrap;}
     .setting-buttons button{flex:1 1 auto;}
   }
+  /* Les trois filtres du fil, libellé et compteur côte à côte, ne tiennent
+     dans leur bouton qu'à partir de 480 px de fenêtre — mesuré au
+     navigateur, texte par texte. En dessous, c'est-à-dire sur tout
+     téléphone tenu droit, « RockstarMag 83 » mordait sur la marge jusqu'à
+     toucher le bord (390 px) ou en sortir (320 px). Le compteur passe sous
+     le libellé, et la marge latérale descend à 4 px comme pour les
+     sous-onglets des statistiques. */
+  @media (max-width:479px){
+    .tab-row:not(.tab-row-full) .tab{flex-direction:column; gap:2px; padding-left:4px; padding-right:4px;}
+    .tab-row:not(.tab-row-full) .tab .tab-badge{margin-left:0;}
+  }
+  /* À 320 px, « RockstarMag » dépassait encore de 0,7 px : sans l'espacement
+     entre lettres (0,24 px × 11), il tient. */
+  @media (max-width:359px){
+    .tab-row:not(.tab-row-full) .tab{letter-spacing:0;}
+  }
   .tag-badge.tag-hot{
     background:color-mix(in srgb, #ff6b35 18%, transparent);
     color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
@@ -2932,11 +2948,16 @@ async function fetchFeed(feed){
 // ROCKSTARMAG_DOMAINS de fetch_feeds.py.
 const DOMAINES_OFFICIELS = ["rockstargames.com", "take2games.com"];
 const DOMAINES_ROCKSTARMAG = ["rockstarmag.fr"];
+// Social Club héberge les créations des joueurs : sur le domaine de Rockstar,
+// mais pas publié par Rockstar. Aligné sur DOMAINES_NON_OFFICIELS du robot.
+const DOMAINES_NON_OFFICIELS = ["socialclub.rockstargames.com"];
 
+// Le domaine lui-même ou un de ses sous-domaines, rien d'autre. `includes`
+// acceptait « faux-rockstargames.com » et « rockstargames.com.arnaque.net ».
 function surDomaine(url, domaines){
   try{
     const hote = new URL(url, window.location.href).hostname.toLowerCase();
-    return domaines.some(d => hote.includes(d));
+    return domaines.some(d => hote === d || hote.endsWith("." + d));
   }catch(e){ return false; }
 }
 
@@ -2945,6 +2966,7 @@ function surDomaine(url, domaines){
 // légitimement vers youtube.com — domaine impossible à mettre dans la liste
 // globale sans rendre officielle n'importe quelle vidéo.
 function estOfficiel(url, feed){
+  if(surDomaine(url, DOMAINES_NON_OFFICIELS)) return false;
   if(surDomaine(url, DOMAINES_OFFICIELS)) return true;
   if(feed && feed.official){
     const propres = feed.officialDomains || DOMAINES_OFFICIELS;

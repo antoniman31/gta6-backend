@@ -641,12 +641,60 @@ def mots_cles_officiels(feed):
     return OFFICIAL_KEYWORDS + list(feed.get("official_keywords_extra") or [])
 
 
-def lien_officiel(url, domaines):
+# Sous-domaines d'un domaine officiel dont le contenu n'est PAS publié par
+# l'éditeur. Social Club héberge les créations des joueurs : le 22/09/2026,
+# « Follow affmalyt on yt by DEV_GTA6 », une course GTA Online faite par un
+# joueur, est entrée dans l'onglet Rockstar comme publication officielle —
+# et une publication officielle déclenche une notification.
+DOMAINES_NON_OFFICIELS = ("socialclub.rockstargames.com",)
+
+
+def sur_domaine(url, domaines):
+    """Le lien est-il sur l'un de ces domaines, ou sur un de leurs sous-domaines ?
+
+    Comparaison STRICTE, sur le nom d'hôte. Jusqu'au 23/09/2026 on cherchait
+    le domaine n'importe où dans `netloc` : « faux-rockstargames.com »,
+    « rockstargames.com.arnaque.net » ou « rockstargames.com@arnaque.net »
+    passaient pour officiels. Aucun article ne l'avait exploité — vérifié sur
+    le fil et l'archive entiers avant la correction —, mais un faux officiel
+    part en notification.
+    """
     try:
-        domaine = urlparse(url).netloc.lower()
+        hote = (urlparse(url).hostname or "").lower()
     except Exception:
         return False
-    return any(d in domaine for d in domaines)
+    return any(hote == d or hote.endswith("." + d) for d in domaines)
+
+
+def lien_officiel(url, domaines):
+    if sur_domaine(url, DOMAINES_NON_OFFICIELS):
+        return False
+    return sur_domaine(url, domaines)
+
+
+# Le site de Rockstar publie chaque article dans plusieurs langues, avec le
+# même identifiant (/newswire/article/7599a881942544/… en anglais, sous /de/
+# en allemand, sous /mx/ en espagnol du Mexique). Antoni suit l'anglais et le
+# français ; les autres langues faisaient apparaître la même annonce plusieurs
+# fois.
+#
+# Liste EXPLICITE, tirée des liens réellement vus dans tout l'historique du
+# dépôt au 23/09/2026 (fr, de, mx) — le site lui-même est inaccessible
+# d'ici. Surtout pas « deux lettres » : /VI/, les pages du jeu, se lirait
+# comme le vietnamien. Une langue qui apparaîtrait plus tard est signalée par
+# audit_donnees.py, pour être ajoutée ici en connaissance de cause.
+LANGUES_ROCKSTAR_ECARTEES = ("de", "mx")
+
+
+def page_rockstar_hors_langue(url):
+    """Une page du site de Rockstar dans une langue qu'on ne suit pas."""
+    if not sur_domaine(url, ("rockstargames.com",)):
+        return False
+    try:
+        segments = [s for s in urlparse(url).path.split("/") if s]
+    except Exception:
+        return False
+    return bool(segments) and segments[0].lower() in LANGUES_ROCKSTAR_ECARTEES
 
 
 # Domaine de Rockstar Mag. Même logique que pour les domaines officiels : ce
@@ -1584,6 +1632,7 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
                                   decoded_cache, journal)
 
     items = []
+    hors_langue = 0
     for entry, date, archive in gardees:
         title = entry.get("title", "")
         link = entry.get("link", "")
@@ -1606,6 +1655,10 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # Nettoyage des paramètres de pistage : deux liens vers le même
         # article ne doivent pas compter pour deux.
         real_link = feed_store.canonical_link(real_link)
+
+        if page_rockstar_hors_langue(real_link):
+            hors_langue += 1
+            continue
 
         # Les flux "officiels" sont en réalité des recherches Google News sur
         # site:rockstargames.com — Google peut aussi indexer des articles
@@ -1649,6 +1702,8 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
         # Rendu visible : c'est le signe qu'une source déverse ses archives,
         # et donc qu'il faut regarder si son flux est bien réglé.
         resume += f" ({vieux} archive(s) de plus de {MAX_ARTICLE_AGE_DAYS} jours écartée(s))"
+    if hors_langue:
+        resume += f" ({hors_langue} page(s) Rockstar dans une autre langue écartée(s))"
     journal.append(resume)
     return items, nouvel_etat, journal
 
@@ -2776,6 +2831,42 @@ def repare_langues(items):
     return items
 
 
+def retire_pages_hors_langue(items):
+    """Retire du fil les pages Rockstar dans une langue qu'on ne suit pas.
+
+    La collecte les écarte depuis le 23/09/2026 ; cette passe retire celles
+    qui étaient déjà entrées — la version allemande de l'annonce de l'album,
+    et sa version mexicaine rattachée comme « autre source » à l'article
+    anglais. Décidé par Antoni : l'anglais et le français seulement, y compris
+    pour ce qui était déjà publié. L'article anglais, lui, reste.
+
+    Rend la liste filtrée : un article retiré ne doit plus être compté nulle
+    part. Idempotente.
+    """
+    gardes = []
+    retires = 0
+    sources_retirees = 0
+    for item in items:
+        if page_rockstar_hors_langue(item.get("link", "")):
+            retires += 1
+            continue
+        autres = item.get("extraSources")
+        if autres:
+            restent = [x for x in autres if not page_rockstar_hors_langue(x.get("link", ""))]
+            if len(restent) != len(autres):
+                sources_retirees += len(autres) - len(restent)
+                if restent:
+                    item["extraSources"] = restent
+                else:
+                    item.pop("extraSources", None)
+        gardes.append(item)
+    if retires or sources_retirees:
+        print(f"Correction rétroactive : {retires} page(s) Rockstar et "
+              f"{sources_retirees} « autre(s) source(s) » dans une autre langue "
+              f"que l'anglais ou le français retirée(s)")
+    return gardes
+
+
 def repare_attributions_croisees(items):
     """Retire les « autres sources » qui pointent vers un AUTRE article du fil.
 
@@ -3193,6 +3284,7 @@ def main():
     existing_items = repare_vignettes_stockees(existing_items)
     existing_items = repare_noms_de_sources(existing_items)
     existing_items = repare_langues(existing_items)
+    existing_items = retire_pages_hors_langue(existing_items)
     existing_items = repare_attributions_croisees(existing_items)
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
@@ -3524,7 +3616,7 @@ def main():
     # avance d'un passage sur la fenêtre que l'inverse : dans un sens il n'y
     # a rien à réparer, dans l'autre des articles élagués n'existeraient
     # plus nulle part.
-    mois_ecrits = feed_store.archiver(all_items)
+    mois_ecrits = feed_store.archiver(all_items, exclure=page_rockstar_hors_langue)
     index_archives = feed_store.ecrire_index_archives()
     if mois_ecrits:
         detail = ", ".join(f"{m} ({n})" for m, n in sorted(mois_ecrits.items(),

@@ -824,7 +824,7 @@ def lire_mois(mois, repertoire=ARCHIVE_DIR):
     return _lire_tranches(mois, repertoire)[0]
 
 
-def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None):
+def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None, exclure=None):
     """Range `items` dans les fichiers de leur mois. Idempotent.
 
     Rend un dictionnaire {mois: nombre d'articles archivés}, limité aux mois
@@ -834,6 +834,14 @@ def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None):
     La fusion se fait par lien, l'article de `items` gagne : c'est la version
     la plus à jour, celle qui a pu gagner des sources supplémentaires ou une
     miniature depuis son archivage.
+
+    `exclure(lien)`, s'il est donné, retire de l'archive les articles déjà
+    rangés que le fil ne veut plus — l'archive n'a pas d'autre moyen
+    d'oublier, puisqu'elle garde par construction ce qui sort du fil. Il ne
+    s'applique qu'aux mois que `items` touche : ce sont les seuls qu'on
+    relit, et un article à retirer qui était encore dans le fil y est
+    forcément. Même garde-fou qu'ailleurs : un mois dont une tranche est
+    illisible n'est jamais réécrit.
     """
     par_mois = {}
     for item in items:
@@ -867,9 +875,16 @@ def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None):
             continue
 
         fusion = {i["link"]: i for i in existants if i.get("link")}
+        if exclure:
+            retires = [lien for lien in fusion if exclure(lien)]
+            for lien in retires:
+                del fusion[lien]
+            neufs = [i for i in neufs if not exclure(i["link"])]
+        else:
+            retires = []
         avant = len(fusion)
         inchange = all(fusion.get(i["link"]) == i for i in neufs)
-        if inchange and len(neufs) <= avant:
+        if inchange and len(neufs) <= avant and not retires:
             # Rien de neuf et rien de modifié : ne pas réécrire, pour ne pas
             # produire un commit qui ne dit rien.
             continue

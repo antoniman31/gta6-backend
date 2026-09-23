@@ -1384,6 +1384,66 @@ def test_stats_quatre_rubriques(nav, url):
               "et son sous-onglet l'annonce")
     ctx.close()
 
+def test_officiel_et_filtres_etroits(nav, url):
+    """La règle « officiel » de l'app, et les trois filtres sur petit écran (23/09/2026)."""
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    r = page.evaluate("""() => ({
+      www: estOfficiel("https://www.rockstargames.com/newswire/article/1/x", null),
+      support: estOfficiel("https://support.rockstargames.com/VI", null),
+      nu: estOfficiel("https://rockstargames.com/VI", null),
+      social: estOfficiel("https://socialclub.rockstargames.com/job/gtav/abc", {official: true}),
+      faux1: estOfficiel("https://faux-rockstargames.com/gta6", null),
+      faux2: estOfficiel("https://rockstargames.com.arnaque.net/gta6", null),
+      faux3: estOfficiel("https://rockstargames.com@arnaque.net/gta6", null),
+      yt: estOfficiel("https://www.youtube.com/watch?v=abc",
+                      {official: true, officialDomains: ["youtube.com", "youtu.be"]}),
+      rmag: estRockstarmag("https://www.rockstarmag.fr/a", null),
+      pasRmag: estRockstarmag("https://pasrockstarmag.fr/a", null),
+    })""")
+    check(r["www"] and r["support"] and r["nu"],
+          "l'app tient pour officiels le domaine de Rockstar et ses vrais sous-domaines")
+    check(not r["social"],
+          "mais pas Social Club, même depuis une source officielle — alignée sur le robot")
+    check(not (r["faux1"] or r["faux2"] or r["faux3"]),
+          "ni un domaine qui ne fait que CONTENIR rockstargames.com (`includes` les acceptait)")
+    check(r["yt"], "la chaîne YouTube de Rockstar garde son statut par ses domaines propres")
+    check(r["rmag"] and not r["pasRmag"], "même règle stricte pour Rockstar Mag")
+    ctx.close()
+
+    # Les trois filtres, avec les compteurs qu'ils portent en vrai. La boîte
+    # du TEXTE est comparée à la zone intérieure du bouton : le contenu est
+    # centré, il déborde donc des deux côtés, et scrollWidth ne voit pas le
+    # débordement à gauche — une première version de ce contrôle passait
+    # alors que « RockstarMag » touchait le bord à 390 px.
+    for largeur in (320, 360, 390, 412, 430, 479, 480, 600):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800})
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#tabRockstarmag")
+        mesures = page.evaluate("""() => {
+          document.getElementById("badgeNonRockstar").textContent = "1758";
+          document.getElementById("badgeRockstar").textContent = "45";
+          document.getElementById("badgeRockstarmag").textContent = "83";
+          return ["tabNonRockstar", "tabRockstar", "tabRockstarmag"].map(id => {
+            const e = document.getElementById(id), b = e.getBoundingClientRect();
+            const cs = getComputedStyle(e);
+            const r = document.createRange(); r.selectNodeContents(e);
+            const t = r.getBoundingClientRect();
+            const gauche = b.left + parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft);
+            const droite = b.right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
+            return [id, Math.max(gauche - t.left, t.right - droite)];
+          });
+        }""")
+        debordent = ["%s (+%.1f px)" % (m[0], m[1]) for m in mesures if m[1] > 0.5]
+        check(not debordent,
+              "à %d px, le texte des trois filtres reste dans son bouton, marge comprise (%s)"
+              % (largeur, ", ".join(debordent) or "aucun débordement"))
+        ctx.close()
+
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -1778,6 +1838,7 @@ def main():
             test_entete_sans_vide(nav, url)
             test_heure_de_premiere_vue(nav, url)
             test_stats_quatre_rubriques(nav, url)
+            test_officiel_et_filtres_etroits(nav, url)
             nav.close()
     finally:
         srv.shutdown()

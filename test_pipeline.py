@@ -1015,6 +1015,140 @@ def test_chaine_youtube_rockstar():
           "et leurs domaines d'origine")
 
 
+def test_officiel_strict_et_langues_rockstar():
+    print("\n[officiel] ce que Rockstar publie, et rien d'autre (23/09/2026)")
+    import fetch_feeds, feed_store, tempfile, types
+    ff = fetch_feeds
+    D = ff.OFFICIAL_DOMAINS
+
+    # ---- Domaines : le nom d'hôte, strictement ----
+    check(ff.lien_officiel("https://www.rockstargames.com/newswire/article/1/x", D),
+          "www.rockstargames.com est officiel")
+    check(ff.lien_officiel("https://support.rockstargames.com/VI", D)
+          and ff.lien_officiel("https://store.rockstargames.com/fr", D)
+          and ff.lien_officiel("https://ir.take2games.com/news", D)
+          and ff.lien_officiel("https://rockstargames.com/VI", D),
+          "le domaine nu et ses vrais sous-domaines (support, store, ir) restent officiels")
+    for faux in ("https://faux-rockstargames.com/gta6",
+                 "https://rockstargames.com.arnaque.net/gta6",
+                 "https://rockstargames.com@arnaque.net/gta6",
+                 "https://arnaque.net/?u=rockstargames.com"):
+        check(not ff.lien_officiel(faux, D),
+              f"{faux} n'est PAS officiel — `in netloc` l'acceptait jusqu'au 23/09/2026")
+    check(ff.statut_rockstarmag("https://www.rockstarmag.fr/a") is True
+          and ff.statut_rockstarmag("https://pasrockstarmag.fr/a") is False,
+          "même règle stricte pour Rockstar Mag")
+
+    # ---- Social Club : le contenu des joueurs ----
+    sc = "https://socialclub.rockstargames.com/job/gtav/MR7WC_66fEexGbljW_m1eA"
+    rs = next(f for f in ff.FEEDS if f["id"] == "rockstar-en")
+    check(ff.statut_officiel(sc, rs) is False,
+          "une page Social Club n'est pas officielle, même trouvée par la source officielle "
+          "(« Follow affmalyt on yt by DEV_GTA6 », 22/09/2026)")
+    stock = [{"title": "Follow affmalyt on yt by DEV_GTA6 in Grand Theft Auto Online",
+              "link": sc, "source": rs["name"], "official": True}]
+    ff.recheck_official_status(stock)
+    check(stock[0]["official"] is False,
+          "la repasse rétroactive la déclasse au passage suivant — sans rien retirer du fil")
+
+    # ---- Langues : liste explicite, jamais « deux lettres » ----
+    de = "https://www.rockstargames.com/de/newswire/article/7599a881942544/album"
+    mx = "https://www.rockstargames.com/mx/newswire/article/7599a881942544/album"
+    en = "https://www.rockstargames.com/newswire/article/7599a881942544/album"
+    fr = "https://www.rockstargames.com/fr/newswire/article/7599a881942544/album"
+    check(ff.page_rockstar_hors_langue(de) and ff.page_rockstar_hors_langue(mx),
+          "les versions allemande et mexicaine sont écartées")
+    check(not ff.page_rockstar_hors_langue(en) and not ff.page_rockstar_hors_langue(fr),
+          "l'anglais et le français passent")
+    check(not ff.page_rockstar_hors_langue("https://www.rockstargames.com/VI/music")
+          and not ff.page_rockstar_hors_langue("https://www.rockstargames.com/vi/music"),
+          "/VI/ — les pages du jeu — n'est pas une langue, en majuscules comme en minuscules")
+    check(not ff.page_rockstar_hors_langue("https://www.gamekult.com/de/gta6"),
+          "la règle ne vaut que pour le site de Rockstar")
+
+    # À la collecte : écartées avant d'exister.
+    liens = [en, de, mx, fr, "https://www.rockstargames.com/VI/music", sc]
+    flux = types.SimpleNamespace(
+        status=200, bozo=False, version="rss20", href=None, etag=None, modified=None,
+        entries=[{"title": f"Grand Theft Auto VI {n}", "summary": "", "link": l,
+                  "published": datetime.now(timezone.utc).isoformat()}
+                 for n, l in enumerate(liens)])
+    vrai = ff.feedparser.parse
+    ff.feedparser.parse = lambda *a, **k: flux
+    try:
+        items, _, journal = ff.collect_feed_items(
+            {"id": "t", "name": "Rockstar Games (officiel EN)", "official": True,
+             "url": "https://example.org/rss", "lang": "en"}, {}, {})
+    finally:
+        ff.feedparser.parse = vrai
+    retenus = [i["link"] for i in items]
+    check(de not in retenus and mx not in retenus and len(items) == 4,
+          f"la collecte écarte l'allemand et le mexicain, garde les 4 autres ({len(items)})")
+    check(any("2 page(s) Rockstar dans une autre langue" in l for l in journal),
+          "et le journal dit combien elle en a écarté")
+    officiels = {i["link"]: i["official"] for i in items}
+    check(officiels[sc] is False and officiels[en] is True and officiels[fr] is True,
+          "à la collecte, Social Club entre comme article ordinaire, le Newswire comme officiel")
+
+    # Ce qui était déjà publié : l'article et l'« autre source ».
+    fil = [{"title": "Album (de)", "link": de, "date": "2026-09-17T12:00:00+00:00"},
+           {"title": "Album", "link": en, "date": "2026-09-17T12:00:00+00:00",
+            "extraSources": [{"link": mx, "name": "Rockstar"}]},
+           {"title": "Album FR", "link": fr, "date": "2026-09-17T12:00:00+00:00",
+            "extraSources": [{"link": mx, "name": "Rockstar"},
+                             {"link": "https://www.ign.com/a", "name": "IGN"}]}]
+    fil = ff.retire_pages_hors_langue(fil)
+    check([i["link"] for i in fil] == [en, fr],
+          "la page allemande déjà publiée quitte le fil, l'anglaise et la française restent")
+    check("extraSources" not in fil[0]
+          and [x["link"] for x in fil[1]["extraSources"]] == ["https://www.ign.com/a"],
+          "la version mexicaine rattachée comme « autre source » part aussi, les autres restent")
+    check(ff.retire_pages_hors_langue(list(fil)) == fil, "idempotente")
+    ordre = ff.main.__code__.co_names
+    check("retire_pages_hors_langue" in ordre, "main() l'appelle")
+
+    # Et l'archive, qui garde par construction ce qui sort du fil.
+    with tempfile.TemporaryDirectory() as rep:
+        feed_store.archiver([{"title": "Album (de)", "link": de,
+                              "date": "2026-09-17T12:00:00+00:00"},
+                             {"title": "Album", "link": en,
+                              "date": "2026-09-17T12:00:00+00:00"}], rep)
+        ecrits = feed_store.archiver(fil, rep, exclure=ff.page_rockstar_hors_langue)
+        mois = [i["link"] for i in feed_store.lire_mois("2026-09", rep)]
+        check(de not in mois and en in mois and fr in mois,
+              "l'archive oublie la page allemande et garde le reste")
+        check(ecrits == {"2026-09": 2}, f"le mois est bien réécrit ({ecrits})")
+        check(feed_store.archiver(fil, rep, exclure=ff.page_rockstar_hors_langue) == {},
+              "au passage suivant, rien à réécrire")
+        feed_store.archiver([{"title": "x", "link": de,
+                              "date": "2026-09-18T12:00:00+00:00"}], rep,
+                            exclure=ff.page_rockstar_hors_langue)
+        check(de not in [i["link"] for i in feed_store.lire_mois("2026-09", rep)],
+              "et un article exclu qu'on lui tend n'y rentre pas")
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check("archiver(all_items, exclure=page_rockstar_hors_langue)" in src,
+          "main() archive avec l'exclusion")
+
+    # L'audit fait voir ce que la liste explicite ne connaît pas encore.
+    import audit_donnees
+    def codes(liens):
+        items = [{"title": "t", "link": l, "date": "2026-09-17T12:00:00+00:00",
+                  "source": "S"} for l in liens]
+        return {a["code"]: a for a in audit_donnees.audite({"items": items})}
+    c = codes(["https://www.rockstargames.com/es/newswire/article/1/x",
+               "https://www.rockstargames.com/VI/music",
+               "https://www.rockstargames.com/fr/newswire/article/1/x"])
+    check("rockstar-langue-inconnue" in c
+          and c["rockstar-langue-inconnue"]["exemples"] == ["/es/ : 1 lien(s)"],
+          "une langue jamais vue (/es/) est signalée — et seulement elle, ni /VI/ ni /fr/")
+    check(c["rockstar-langue-inconnue"]["gravite"] == "info", "en simple info : rien n'est cassé")
+    c = codes([de])
+    check("rockstar-langue-ecartee" in c and "rockstar-langue-inconnue" not in c,
+          "une page écartée encore présente est signalée comme telle")
+    check(not {"rockstar-langue-ecartee", "rockstar-langue-inconnue"} & set(codes([en, fr])),
+          "un fil propre ne déclenche rien")
+
+
 def test_garde_fou_archives():
     print("\n[collecte] les archives ne sont pas des nouvelles")
     import fetch_feeds
@@ -7446,6 +7580,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_survit_a_un_telephone_verrouille,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
+           test_officiel_strict_et_langues_rockstar,
            test_onglets_par_domaine, test_couverture_par_lien,
            test_chaine_youtube_rockstarmag,
            test_doublons_de_titre,
