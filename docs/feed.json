@@ -1,10 +1,18 @@
 {
-  "generated_at": "2026-09-23T01:01:39.944602+00:00",
+  "generated_at": "2026-09-23T02:02:15.375035+00:00",
   "attente_recap": {
-    "articles": 12,
+    "articles": 14,
     "officiels": 0,
     "sommet": 1,
     "apercus": [
+      {
+        "title": "Grand Theft Auto VI marks the end of an era for video game graphics - The Quinnipiac Chronicle",
+        "link": "https://quchronicle.com/94456/uncategorized/grand-theft-auto-vi-marks-the-end-of-an-era-for-video-game-graphics/",
+        "source": "Google News (EN)",
+        "official": false,
+        "sources": 1,
+        "date": "2026-09-23T01:51:25+00:00"
+      },
       {
         "title": "GTA VI marketing takes over Miami as \"Welcome to Vice City\" sign goes up at Kaseya Center - CBS News",
         "link": "https://www.cbsnews.com/miami/news/gta-6-miami-kaseya-center-welcome-to-vice-city-marketing/",
@@ -36,21 +44,13 @@
         "official": false,
         "sources": 1,
         "date": "2026-09-22T23:24:42+00:00"
-      },
-      {
-        "title": "Former Half-Life 2 writer says 10,000-person game teams “don’t work” but GTA 6 is an exception to the rule - Notebookcheck",
-        "link": "https://www.notebookcheck.net/Former-Half-Life-2-writer-says-10-000-person-game-teams-don-t-work-but-GTA-6-is-an-exception-to-the-rule.1406062.0.html",
-        "source": "Google News (EN)",
-        "official": false,
-        "sources": 1,
-        "date": "2026-09-22T23:00:00+00:00"
       }
     ]
   },
-  "duration_seconds": 39.1,
+  "duration_seconds": 41.0,
   "decode_failures": 0,
-  "total_articles": 1868,
-  "new_this_run": 5,
+  "total_articles": 1870,
+  "new_this_run": 2,
   "hot_count": 22,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -503,15 +503,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 26,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -520,7 +520,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 438,
       "last_article": "2026-09-22T23:35:00+00:00",
       "days_since_last_article": 0,
@@ -533,9 +533,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 3,
-      "articles_exclusifs": 516,
-      "last_article": "2026-09-23T00:48:53+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 518,
+      "last_article": "2026-09-23T01:51:25+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -659,15 +659,15 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 35,
       "last_article": "2026-09-22T07:00:36+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -874,7 +874,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 17,
       "last_article": "2026-09-20T02:00:23+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -932,10 +932,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1166,15 +1166,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1244,25 +1244,36 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-17T16:44:30+00:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-23T02:02:15.374278+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-23T02:02:15.374278+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1274,7 +1285,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,0,10,0,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1292,7 +1303,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "44,44,44,44,44,44,45,45,45,45,45,45",
+    "gta6times": "44,44,44,44,44,45,45,45,45,45,45,45",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1350,7 +1361,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"21edc-H5ieihxkPvlH4NC7N2M9IIvZ21A\"",
+      "etag": "W/\"1e4ad-8F9GtHu4BuqSUBrr7NHBdTuyK+A\"",
       "modified": null
     },
     "kotaku": {
@@ -1371,7 +1382,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 23 Sep 2026 01:01:07 GMT"
+      "modified": "Wed, 23 Sep 2026 02:01:12 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1380,8 +1391,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab3249f-3247\"",
-      "modified": "Wed, 23 Sep 2026 01:00:15 GMT"
+      "etag": "W/\"6ab332b3-3247\"",
+      "modified": "Wed, 23 Sep 2026 02:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1400,8 +1411,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab31472-b8d\"",
-      "modified": "Tue, 22 Sep 2026 23:51:14 GMT"
+      "etag": "\"6ab3308f-b84\"",
+      "modified": "Wed, 23 Sep 2026 01:51:11 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1411,7 +1422,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 23 Sep 2026 01:01:09 GMT"
+      "modified": "Wed, 23 Sep 2026 02:01:46 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1446,6 +1457,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Grand Theft Auto VI marks the end of an era for video game graphics - The Quinnipiac Chronicle",
+      "link": "https://quchronicle.com/94456/uncategorized/grand-theft-auto-vi-marks-the-end-of-an-era-for-video-game-graphics/",
+      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNZThka3pnZHZ2b0EyYUFWTDR0OTE5SVhBb2I1WVcwbVFFeHFjWW4wQVlSeHZUcUV2cllzWjA1a283YTJRaVZfdUFNRkNhVmtYNUtIRDJMU04yVjJiZVJsSjdBcTNRdVMxRXZPRjU3SjRPbWlJb1A2LWhQQmJxd3V1OWhpc3h6VHFmQWZyT1RWNmpDSmpzRHVBSHNQQWtrNFNIWnl4WHI4SnFQakFkU3RqVFpn?oc=5",
+      "date": "2026-09-23T01:51:25+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://quchronicle.com/wp-content/uploads/2026/09/GTA-Harry_Zeller.png",
+      "description": "Grand Theft Auto VI marks the end of an era for video game graphics&nbsp;&nbsp;The Quinnipiac Chronicle"
+    },
     {
       "title": "GTA VI marketing takes over Miami as \"Welcome to Vice City\" sign goes up at Kaseya Center - CBS News",
       "link": "https://www.cbsnews.com/miami/news/gta-6-miami-kaseya-center-welcome-to-vice-city-marketing/",
@@ -1613,6 +1637,19 @@
           "link": "https://www.ign.com/articles/grand-theft-auto-6s-miami-takeover-begins-as-rockstar-spends-nearly-1-million-on-welcome-to-vice-city-signage"
         }
       ]
+    },
+    {
+      "title": "GTA 6 Could Turn November Into a Disaster for Sports Leagues, Predicts NBA Star - Yahoo Sports",
+      "link": "https://sports.yahoo.com/articles/gta-6-could-turn-november-210030319.html",
+      "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9XaXFodVlBV3IzQzBPZ0x3UUpuVFNZUTVnYjFTNG41OXFOLVhCVzgzQS0yM0JZYmVFU2d4NUZGTEZRcDhnWFFJSTY5VXNaTjBZLW5MelpxOUdoWVNWT1U2c3lVUDFCRzF0dGZXYzhoY3VlRDcySXZDN25NRDRWTm8?oc=5",
+      "date": "2026-09-22T21:00:30+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": null,
+      "image": "https://s.yimg.com/lo/mysterio/api/c6208ef9fe842484cebcf7c0eb3ac66a729f6621b96fc77ac0f2c4e97b4d3caf/lightyear_networkapi/resizefill_w640_h360%3Bquality_80%3Bformat_webp/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fcomingsoon_net_477%2F342b7420933a9dc6502cead43c7d2172.jpg",
+      "description": "GTA 6 Could Turn November Into a Disaster for Sports Leagues, Predicts NBA Star&nbsp;&nbsp;Yahoo Sports"
     },
     {
       "title": "Baldur's Gate 3 and Clair Obscur: Expedition 33's Record Stands — GTA 6 Can't Sweep All Five Game of the Year Awards in One Season",
