@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-24T04:02:15.071397+00:00",
+  "generated_at": "2026-09-24T05:01:48.264690+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 72.9,
+  "duration_seconds": 48.6,
   "decode_failures": 0,
-  "total_articles": 2006,
-  "new_this_run": 4,
+  "total_articles": 2012,
+  "new_this_run": 6,
   "hot_count": 22,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -427,7 +427,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 100,
       "last_article": "2026-09-23T02:58:05+00:00",
       "days_since_last_article": 1,
@@ -440,8 +440,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 107,
+      "new_this_run": 2,
+      "articles_exclusifs": 109,
       "last_article": "2026-09-23T17:45:06+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -493,8 +493,8 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 2,
-      "articles_exclusifs": 560,
-      "last_article": "2026-09-24T01:16:00+00:00",
+      "articles_exclusifs": 562,
+      "last_article": "2026-09-24T04:22:21+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -696,15 +696,15 @@
     {
       "id": "gamesradar",
       "name": "GamesRadar+",
-      "entries_fetched": 0,
-      "http_status": null,
-      "redirect": null,
+      "entries_fetched": 50,
+      "http_status": 301,
+      "redirect": "https://www.gamesradar.com/feeds.xml",
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 18,
       "last_article": "2026-09-21T20:59:51+00:00",
       "days_since_last_article": 2,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "rps",
@@ -739,9 +739,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 26,
-      "last_article": "2026-09-24T03:40:11+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 28,
+      "last_article": "2026-09-24T05:00:43+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1099,10 +1099,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 16,
       "last_article": "2026-09-19T10:04:42+00:00",
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-07T06:20:38+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1190,10 +1190,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-17T16:44:30+00:00",
       "days_since_last_article": 6,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1227,21 +1227,21 @@
     },
     "gamesradar": {
       "depuis": "2026-09-24T04:02:15.070413+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,100,0,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
-    "gnews-fr": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-en-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
+    "gnews-fr": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-fr-7j": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-en-7j": "100,100,100,100,100,100,100,100,0,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1249,13 +1249,13 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
     "kotaku": "20,20,20,20,20,20,20,20,20,20,20,20",
-    "gamesradar": "50,50,50,50,50,50,50,50,50,50,50,0",
+    "gamesradar": "50,50,50,50,50,50,50,50,50,50,0,50",
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1265,23 +1265,23 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gamerant-gnews": "100,100,100,100,100,100,100,100,0,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "46,46,46,46,46,46,46,46,46,46,46,46",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "purexbox": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "trueach": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "jdg": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "frandroid": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "engadget": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "pushsquare": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "xboxygen": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "trueach": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "jdg": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "frandroid": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "engadget": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "pushsquare": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,0,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
@@ -1290,8 +1290,8 @@
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,0,0,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "mgg": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "dexerto": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "mgg": "100,100,100,100,100,100,100,100,0,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
     "reddit-gta6-suivi": "25,25,25,25,25,25,25,25,25,25,25,25"
@@ -1346,7 +1346,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 24 Sep 2026 04:01:14 GMT"
+      "modified": "Thu, 24 Sep 2026 05:01:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1355,13 +1355,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab4a051-2f51\"",
-      "modified": "Thu, 24 Sep 2026 04:00:17 GMT"
+      "etag": "W/\"6ab4ae5f-2eff\"",
+      "modified": "Thu, 24 Sep 2026 05:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"4235f5c3ebdae16fbf014a49069c034c\"",
-      "modified": "Thu, 24 Sep 2026 00:44:00 GMT"
+      "etag": "W/\"7c4fc4f5734f41d04b3435818f5f5dd8\"",
+      "modified": "Thu, 24 Sep 2026 05:00:59 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1386,7 +1386,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 24 Sep 2026 04:01:15 GMT"
+      "modified": "Thu, 24 Sep 2026 05:01:12 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1395,13 +1395,13 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"5a4316d41af481c74fafc7ddc8db385d\"",
-      "modified": "Thu, 24 Sep 2026 00:31:40 GMT"
+      "etag": "W/\"aab84cc72b9d1003623f3e26af923640\"",
+      "modified": "Thu, 24 Sep 2026 05:00:24 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"d7ed2e21edd48a9706e178bdd7fb4d31\"",
-      "modified": "Thu, 24 Sep 2026 01:05:29 GMT"
+      "etag": "W/\"a0257915940d6a731e16dc0f39345c58\"",
+      "modified": "Thu, 24 Sep 2026 05:00:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1415,12 +1415,64 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"5a4316d41af481c74fafc7ddc8db385d\"",
-      "modified": "Thu, 24 Sep 2026 00:31:40 GMT"
+      "etag": "W/\"076e5c389c020b0af886866c3110ff58\"",
+      "modified": "Thu, 24 Sep 2026 04:02:54 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rob Nelson Explained How Rockstar Is Building GTA 6 to Still Look Good in 2035",
+      "link": "https://www.gtaboom.com/rob-nelson-explained-how-rockstar-is-building-gta-6-to-still-look-good-in-2035",
+      "source_link": null,
+      "date": "2026-09-24T05:00:43+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.gtaboom.com/media/images/78/05/rob-nelson-explained-how-rockstar-is-building-gta-6-to-still-look-good-in-2035.jpg",
+      "description": "Rockstar North's Rob Nelson says GTA 6 aims to \"feel realistic\" rather than be photoreal, so its stylized look ages better over the years."
+    },
+    {
+      "title": "Everyone will play GTA VI: NBA star predicted problems for sports - ixbt.games",
+      "link": "https://ixbt.games/en/news/2026/09/24/437947-vse-budut-igrat-v-gta-vi-zvezda-nba-predskazal-problemy-dlia-sporta.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQdWFXQVFTNmJkTWZzaTVFWTVCUDBSOVBlbGVYeGVSMDg5T0piRlVZb2hSS3lyTU5EVVExcWpEbndyVm4yWTdTOW51UjNONWZQb25PX3k0RnVKTXdNQ1QyanZNeUZ5WlBKaTVGV1ZJLTVBNU5IaUtHRkVFbDJuU3BveElpczVwc0VhTmxnMzNiQVNlOWh6Y0l6V08tQXN3Y1BxaVl3TnRaYXZFSmNwZ3FqZFFybDhXeTJo0gG-AUFVX3lxTE5TUWVsTHhHblRhSmlXMjdtZjRRd1FzVk1pLVZidWh4Qi1xS2xpbm9VdF9Yd1M2Zmt4NUEwalJ1TUJQRjBKb1M3TGRaQjlyeWpITHNqM3NWMUVya2xsb01zUUtKVk1VSTVDYUdyQUlNa3lRUVpTbWtiS3ZaeEdIdFdHNVA3eFZVSkRZLTZQdG9fVUNnUUNSWXdWbVhWbFlXUWxLVjRSZ2IyU1FUS2F4RUtZVkM0WGJKS244SllQd3c?oc=5",
+      "date": "2026-09-24T04:22:21+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1375928/ff17ab04-dd39-41e3-95fb-5d804f8158a9.jpg",
+      "description": "Everyone will play GTA VI: NBA star predicted problems for sports&nbsp;&nbsp;ixbt.games"
+    },
+    {
+      "title": "Steven Adams predicts GTA 6 could affect sports leagues in November - The Express Tribune",
+      "link": "https://tribune.com.pk/story/2630997/steven-adams-predicts-gta-6-could-affect-sports-leagues-in-november",
+      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPNlA5Nkx1T2FSNnk1TXZFOWdKOEFJZ1p0WUpLNFpxM1EybDZ4d3FwOE1SYWlZd2JBZjdkMmk5dXA4bWFlZzJheWJmMFNEX3R6MlRrcVNYV3JaVldDaERGZHlCMnNFajRZQXBIcXJCY3hSdUVqUXhDV3c4azlDcjQwUDdzekc1ak4ySVFDZ05lZzgwNGF2OVQ1QzBSQ1FEcHlrWkxFSkNNTdIBrwFBVV95cUxNZHhnVm9wUWtxbTJaT1pyMTBaaGw5UUpJZzZPYlJxMkZWN2p6SWF6OFVvTWRyZnB6X3lKeEd5VWlvMkwydXNiRGw4TlBDU0kwWXJhOTg1Q3hucDVoM1NLM01HajcySEp0TjFEMVJPNGc3d1pUUndza2oteDA4aHlQOEprMXNYZUJBZVFZMG5taGRsbnN1aVVuUUlfNGxoNklRci1TY2MwTUR4U3l4Tmhr?oc=5",
+      "date": "2026-09-24T04:17:30+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://i.tribune.com.pk/media/images/gta-61786102714-0/gta-61786102714-0-640x480.webp",
+      "description": "Steven Adams predicts GTA 6 could affect sports leagues in November&nbsp;&nbsp;The Express Tribune"
+    },
+    {
+      "title": "Official GTA 6 Dummy Cases and Posters Are Appearing in UK Shops",
+      "link": "https://www.gtaboom.com/official-gta-6-dummy-cases-and-posters-are-appearing-in-uk-shops-3f64",
+      "source_link": null,
+      "date": "2026-09-24T04:10:28+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.gtaboom.com/variants/1920/media/images/a9/c7/official-gta-6-dummy-cases-and-posters-are-appearing-in-uk-shops.jpg",
+      "description": "Social media sightings show official GTA 6 dummy cases and posters at UK retailers including Currys and Smyths Toys."
+    },
     {
       "title": "Rainbow Six Siege Is Bracing for GTA 6 by Rewarding Loyal Players",
       "link": "https://www.gtaboom.com/rainbow-six-siege-is-bracing-for-gta-6-by-rewarding-loyal-players-2dc8",
@@ -5410,58 +5462,6 @@
       "lang": "en",
       "image": "https://manofmany.com/wp-content/uploads/2026/06/GTA-VI-Screenshots-0001-Vice-City-02.jpg",
       "description": "‘GTA 6’ Release Date Triggers Mass Leave Requests and HR Pushback&nbsp;&nbsp;Man of Many"
-    },
-    {
-      "title": "Rockstar Games Now Classifies Unofficial GTA Ports as Unauthorized - GTA BOOM",
-      "link": "https://www.gtaboom.com/rockstar-games-new-mod-guidelines-target-unofficial-gta-ports-20f4",
-      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOVG5oYmhUdmRXQnVHb3RNNEtmM255WlZMeEFxc0puend0Q0ktcUZFUHF1MlhLemVvNVUxNXpIWDFtSzNOZ0pQR0ktQ1MzdHR4cjlFeWxHcEZpWFBMam9ZSXJPM3JnQTI5RWxKYks4SHd4X0I4SlJWYkNEMF9ITnJQdUNwamg4S0tEQndLcXBoM1V0VW1C?oc=5",
-      "date": "2026-09-21T00:31:10+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://media.gtaboom.com/variants/1920/media/images/ab/8d/rockstar-games-new-mod-guidelines-target-unofficial-gta-ports.jpg",
-      "description": "Rockstar Games Now Classifies Unofficial GTA Ports as Unauthorized&nbsp;&nbsp;GTA BOOM"
-    },
-    {
-      "title": "Il est peu probable que Lucia fasse des révélations avant la date de sortie de GTA 6, Rockstar ayant mis en garde les acteurs contre les fuites - Notebookcheck.fr",
-      "link": "https://www.notebookcheck.biz/Il-est-peu-probable-que-Lucia-fasse-des-revelations-avant-la-date-de-sortie-de-GTA-6-Rockstar-ayant-mis-en-garde-les-acteurs-contre-les-fuites.1404331.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMilgJBVV95cUxNWmx6ZXdSQUk5aDVTaUVtb0dxd0swUWpBcGlBR3loV3VScHFJalFmOGxfdmJ1bm5HSjJudjhYUGVsdWVJbUpNeEctMEtRQnVGcFdMY1FIS2FVLWxHTTZyZ0I0UW12ODZpandQTFZWSUFHS0tuNFZpWFNDUXdpZVk1U0psWFFVTlFDdUFqb0JyMEhMaEZ0U2N2dllKZHdIRy1yb2JtRnpvSnBJekdnRzlTMFl5eVdpV0luVDhPbjV3bFB4ajN1MWJjVEJzX0tNWnNoa0lTTWxFQmxTLUQtV1VOZzlPdGJnNUZjd01wMzFueTNzaDltTlhSRHpwYVVocVdtbGFkM01yeFdrX2FiTDIyWGltZ2tvZw?oc=5",
-      "date": "2026-09-21T00:29:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6JasonLuciaNew.jpg",
-      "description": "Il est peu probable que Lucia fasse des révélations avant la date de sortie de GTA 6, Rockstar ayant mis en garde les acteurs contre les fuites&nbsp;&nbsp;Notebookcheck.fr"
-    },
-    {
-      "title": "Rockstar reminded GTA VI actors not to talk about their involvement after one of the roles was revealed - insider. - ixbt.games",
-      "link": "https://ixbt.games/en/news/2026/09/21/rockstar-napomnila-akteram-gta-vi-ne-rasskazyvat-o-svoem-ucastii-posle-togo-kak-byl-raskryt-ispolnitel-odnoi-iz-rolei-insaid.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi-wFBVV95cUxPcldLMWEyWE5xRXdORWMzQnJfa1g0VU84bUtQdnF1XzVxU1NDYXVaVERoMW9rRGNuS2Zab1ExTU9EbGhGUEI5Z21KNlJXYWFuWWhmTlRQdkczTFRaT04zRUxYRlBPU1RDZFVISHNScHp1anJWZFBobk1sV2Zrend5cmVFdHZkOVl6VzV4dC00SnN0ZnNSa201M2NxYjdjNkE1RG1nSVk0TlA2LW5PZlhJcVkyWVF3VlJWa0s5SnVNeThNaGJjY29wb3BhdEFyT0o1Z1RIN3o2Um1td19CNWpIMnZtbnloT0FqUHJWQ1JYTVFMY0k0XzNVcGtEQdIBgAJBVV95cUxQazE3b09PcGNmNXowSUdTRTF0NFpLeGljRzNzNjJpdXBBWWRVQWxkV0NiRFVRT21kQlBwakM3NDljWGV4QXF3TEtTUmZXN3NlMmNVQTJLc01aMG0yTlgyX2lmQVBrYkptdWE3RFpENDcyQTgzMm9iNDhkMDNMQmI2eTd5VENMQ1QwOHJTOEdFRm9SamZPdlh6dlZNNFg3eGRqOXdnUUZncEJYbXc5OWlXOWFWbDMxLVFiaHJrOXVnb1RGY2Nud0NlR2kwTFpvOFRQMTJGSnNlOUpxUG9pNVB4b1VqRzFRVE5QaUI2cF9IWlVNZUxWYngzY2xPRi1YVHAy?oc=5",
-      "date": "2026-09-21T00:26:18+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1374420/media-7t8xvko4t5tbybrwsufcyarh.png",
-      "description": "Rockstar reminded GTA VI actors not to talk about their involvement after one of the roles was revealed - insider.&nbsp;&nbsp;ixbt.games"
-    },
-    {
-      "title": "Lucia reveal before GTA 6 release date unlikely, as Rockstar warns actors about leaks - Notebookcheck",
-      "link": "https://www.notebookcheck.net/Lucia-reveal-before-GTA-6-release-date-unlikely-as-Rockstar-warns-actors-about-leaks.1404087.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNZnVqWU9tU1Y0NkdHME5Vd3ljM2xPc2kxMHVnLTlXbXllSWVjeEtobmNnVG90cVNoUzNEdm1KS0ExSHdLd2hSaWNpVEFJY1ZURzgzUjc4cUpkMmZlS21GR1FkckoxQXhuS3BXZy1ZeDU3OFhManAwT0RWX2xHejV0OWtZclVJSHVWTDFraHdkUzJBVUdGNGJiZkVwSDhCSEhmWTNsU0V2QUZSZmd6clEyNG5VUU1nZG9najhKMzdkZ2M2UzJUOUZCSA?oc=5",
-      "date": "2026-09-21T00:07:00+00:00",
-      "source": "Google News (Netflix)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": "en",
-      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6JasonLuciaNew.jpg",
-      "description": "Lucia reveal before GTA 6 release date unlikely, as Rockstar warns actors about leaks&nbsp;&nbsp;Notebookcheck"
     }
   ],
   "partial": true,
