@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T04:01:51.571327+00:00",
+  "generated_at": "2026-09-25T05:02:03.468713+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 51.2,
+  "duration_seconds": 56.2,
   "decode_failures": 0,
-  "total_articles": 2220,
-  "new_this_run": 2,
+  "total_articles": 2223,
+  "new_this_run": 3,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -481,8 +481,8 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "articles_exclusifs": 528,
-      "last_article": "2026-09-25T03:40:00+00:00",
+      "articles_exclusifs": 529,
+      "last_article": "2026-09-25T04:05:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 643,
-      "last_article": "2026-09-25T03:50:06+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 645,
+      "last_article": "2026-09-25T04:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1009,7 +1009,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -1100,10 +1100,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 16,
       "last_article": "2026-09-19T10:04:42+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 6,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 0,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1228,16 +1228,16 @@
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "rockstar-fr": "100,99,99,99,0,0,99,99,99,99,99,99",
-    "rockstar-announce": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,100,100,0,0,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "rockstar-fr": "99,99,99,0,0,99,99,99,99,99,99,99",
+    "rockstar-announce": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,100,0,0,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
-    "gnews-fr": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "gnews-en": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "gnews-fr-7j": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "gnews-en-7j": "100,100,100,100,0,0,100,100,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
+    "gnews-fr": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "gnews-en": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "gnews-fr-7j": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "gnews-en-7j": "100,100,100,0,0,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1261,33 +1261,33 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,0,0,100,100,100,100,100,100",
+    "gamerant-gnews": "100,100,100,0,0,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "46,46,46,46,46,46,46,46,46,46,46,46",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "purexbox": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "trueach": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "jdg": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "numerama": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "frandroid": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "engadget": "100,100,100,100,0,0,100,99,100,100,100,100",
-    "pushsquare": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,0,0,100,100,100,100,100,100",
+    "xboxygen": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "purexbox": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "trueach": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "jdg": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "numerama": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "gamergen": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "frandroid": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "engadget": "100,100,100,0,0,100,99,100,100,100,100,99",
+    "pushsquare": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "schreier": "100,100,100,0,0,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "tweaktown": "15,0,15,15,15,15,15,15,15,15,15,15",
+    "tweaktown": "0,15,15,15,15,15,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,0,0,100,100,100,100,100,100",
-    "mgg": "100,100,100,100,0,0,100,100,100,100,100,100",
+    "dexerto": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "mgg": "100,100,100,0,0,100,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
     "reddit-gta6-suivi": "25,25,25,25,25,25,25,25,25,25,25,25"
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 25 Sep 2026 03:58:55 GMT"
+      "modified": "Fri, 25 Sep 2026 05:00:56 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab5f1d1-2f5a\"",
-      "modified": "Fri, 25 Sep 2026 04:00:17 GMT"
+      "etag": "W/\"6ab5ffe1-2f5a\"",
+      "modified": "Fri, 25 Sep 2026 05:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 25 Sep 2026 04:01:15 GMT"
+      "modified": "Fri, 25 Sep 2026 05:01:22 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1391,8 +1391,8 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"923ef72c66bc31ba959da86abe257886\"",
-      "modified": "Thu, 24 Sep 2026 18:03:54 GMT"
+      "etag": "W/\"2745b669b57cda97758bdb587aea650f\"",
+      "modified": "Fri, 25 Sep 2026 05:00:19 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
@@ -1418,6 +1418,32 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "GTA 6 : en 25 ans, Rockstar n'a eu besoin que d'un seul objet pour nous prouver qu'ils avaient tout compris de notre époque et de la société - jeuxvideo.com",
+      "link": "https://www.jeuxvideo.com/news/2105670/gta-6-en-25-ans-rockstar-n-a-eu-besoin-que-d-un-seul-objet-pour-nous-prouver-qu-ils-avaient-tout-compris-de-notre-epoque-et-de-la-societe.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMijAJBVV95cUxOMlV5eFhrQ0RZVm94V3VRbHktNVFkUzlaYzlSMGg0NTdmNlQzdWZwS3Z6clpvYTNBYmN2NGd0cUFyYjJYZFVGQjc2bHZ0aWhTbVAyN1k3djdwQklGMldXdEFDWVRLMHNYZlFXSU1sVEg5ZU92RlhXVl9lMDFPMHN4VTJ5WGluVDVrY3Y3U09vRUlpQ2wtRUR5aElIakxJS3JFNjZqWGxMUjlWa3FlRUdwS0x0Z2MzSkhNV0Uya0ZEMFZ2cjNKWHMtR2lKbDZKYTRFYld4emliamtBT0N2NjJPLTc4M2Mzdzg4eGF4YlBiVVd0NXlhVjVRdm5JczZwRzNXSXdsYVItM2tMZjFh?oc=5",
+      "date": "2026-09-25T04:05:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/179009/1790091541-6255-card.jpg",
+      "description": "GTA 6 : en 25 ans, Rockstar n'a eu besoin que d'un seul objet pour nous prouver qu'ils avaient tout compris de notre époque et de la société&nbsp;&nbsp;jeuxvideo.com"
+    },
+    {
+      "title": "You can now get a £350 premium GTA 6 merch box, but you’ll need to buy the game separately - Top Gear",
+      "link": "https://www.topgear.com/car-news/gaming/you-can-now-get-a-ps350-premium-gta-6-merch-box-youll-need-buy-game-separately",
+      "source_link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOcmVoNnd3VW83bFIxdHZvdFhkY05VcERIdlAzRUFTUXdtaWRRdXI2RU9HSWIzOW5FVkZ5d1N4WEI5cWhjU1JBUjVCNDJScHFMRDZKSkJQYkNScTl6ejlHeXVhMkNXZlNSUUZud0lnaURZdXh0bVZOYWlLaGRhSGhsNjF5dmNGRGl2cTM5WHVkMkcwR2JQcTRWNTAzN0FBYkFRWG4xVE42SFRmTmN0dXN3Zm9zOFpEUEhiMXc?oc=5",
+      "date": "2026-09-25T04:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.topgear.com/sites/default/files/images/news-article/2026/09/61d5b3d049c6a14cca5f565fa1726700/GTA%206%20collection.jpg?w=1280&h=720",
+      "description": "You can now get a £350 premium GTA 6 merch box, but you’ll need to buy the game separately&nbsp;&nbsp;Top Gear"
+    },
+    {
       "title": "Xbox Exec Fires Back at Report Claiming Xbox Is Losing GTA 6 Pre Orders - gtaboom.com",
       "link": "https://www.gtaboom.com/xbox-cso-says-gta-6-is-breaking-pre-order-records-26dd",
       "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNU09zcGtVS3d2WUJmZDBJWG90OGJxWEwtQVk1UUh5RExQaldUSS0yaDlfMXpVa2txLXc5ckQtcjA0WUR1RnNfRW5tbW04ZmRjSmoyT3V4eGVubUdwbjFqeHRSM3h0UEZ3NUx6aENSNFJwQjA0MTNxNlBnMm40MS1jM09nQjg?oc=5",
@@ -1442,6 +1468,19 @@
       "lang": "fr",
       "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/nxYJdG0c-ARyXpZyGKWHvt-4YDs=/0x0:1600x900/1600x0/images/Non-vous-ne-revez-pas-cette-PS5-numerique-est-bien-a-ce-prix-a-quelques-semaines-de-la-sortie-de-GTA-6-2353172.jpg",
       "description": "Non vous ne rêvez pas, cette PS5 numérique est bien à ce prix à quelques semaines de la sortie de GTA 6&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "Rockstar Reveals $400 USD GTA 6 Collector’s Edition—You Still Need To Buy The Game - EFTM",
+      "link": "https://eftm.com/2026/09/rockstar-reveals-400-usd-gta-6-collectors-edition-you-still-need-to-buy-the-game-281277",
+      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQVThXNE40TzZQVDFjMk1la1hxTnBxRlV4Ukp3LU1WU3dpNF9iMXFRSlN0T3d1N2dBZ2dGR3Z0NllQaG1yTGVyenNnVm5VdWZDa3JhVFRaU0lWVXpqSWZYSW5hVUkzblk2S2JuREhwTEhldDFYUUNjNXY4Wk5FdDlpbThfdkNvT2tIeE5kd1ZaRFJZOTFMdDVLYms0MjFvbmNJUUowWHZRczJBZlEyR0lCbjlR0gG3AUFVX3lxTE5tNmw2WEYzNVo4LXZHRkZtQmFNLTJtRnN4X19fVFhKYnJ3S3lYLUlEU0x6NmZfNmpUa3NlMy01bFBUdEt4ZU83SmV4ZDgzOUc2SjhDY2hCVEJtVU56ZjNqUU4wdTlNRmo5WHc5Sk53NGlSMWZYdUtqamR1TEM5NDZrWEVPeDZybHo2MXNYNUVQanVhLVBOMHhfcWRQTU14T0UzRWRwcDZreF9mMTBqcDRCMDFrWUFZSQ?oc=5",
+      "date": "2026-09-25T02:03:45+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://eftm.com/wp-content/uploads/2026/09/GTA-Collectors-Edition.png",
+      "description": "Rockstar Reveals $400 USD GTA 6 Collector’s Edition—You Still Need To Buy The Game&nbsp;&nbsp;EFTM"
     },
     {
       "title": "GTA 6 Preorders Reportedly Skewed Heavily Toward PS5, Xbox Pushes Back - psxextreme.com",
