@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T05:02:03.468713+00:00",
+  "generated_at": "2026-09-25T05:17:12.630646+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 56.2,
+  "duration_seconds": 50.0,
   "decode_failures": 0,
-  "total_articles": 2223,
-  "new_this_run": 3,
+  "total_articles": 2225,
+  "new_this_run": 2,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -441,8 +441,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 115,
+      "new_this_run": 1,
+      "articles_exclusifs": 116,
       "last_article": "2026-09-23T17:45:06+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -480,8 +480,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 529,
+      "new_this_run": 0,
+      "articles_exclusifs": 528,
       "last_article": "2026-09-25T04:05:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -493,8 +493,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 645,
+      "new_this_run": 1,
+      "articles_exclusifs": 646,
       "last_article": "2026-09-25T04:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -775,10 +775,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-20T07:00:00+00:00",
@@ -1009,7 +1009,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 99,
+      "entries_fetched": 100,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -1100,10 +1100,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 16,
       "last_article": "2026-09-19T10:04:42+00:00",
@@ -1191,10 +1191,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1228,16 +1228,16 @@
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,99,0,0,99,99,99,99,99,99,99",
-    "rockstar-announce": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "rockstar-en": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "99,99,0,0,99,99,99,99,99,99,99,99",
+    "rockstar-announce": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,0,0,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
-    "gnews-fr": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "gnews-en": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "gnews-fr-7j": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "gnews-en-7j": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,15,0,0,0",
+    "gnews-fr": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "gnews-en": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "gnews-fr-7j": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "gnews-en-7j": "100,100,0,0,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1261,33 +1261,33 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "gamerant-gnews": "100,100,0,0,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "46,46,46,46,46,46,46,46,46,46,46,46",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "purexbox": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "trueach": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "jdg": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "numerama": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "frandroid": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "engadget": "100,100,100,0,0,100,99,100,100,100,100,99",
-    "pushsquare": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "xboxygen": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "trueach": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "jdg": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "numerama": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "frandroid": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "engadget": "100,100,0,0,100,99,100,100,100,100,99,100",
+    "pushsquare": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "schreier": "100,100,0,0,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "tweaktown": "0,15,15,15,15,15,15,15,15,15,15,15",
+    "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,0,0,100,100,100,100,100,100,100",
-    "mgg": "100,100,100,0,0,100,100,100,100,100,100,100",
+    "dexerto": "100,100,0,0,100,100,100,100,100,100,100,100",
+    "mgg": "100,100,0,0,100,100,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
     "reddit-gta6-suivi": "25,25,25,25,25,25,25,25,25,25,25,25"
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 25 Sep 2026 05:00:56 GMT"
+      "modified": "Fri, 25 Sep 2026 05:16:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1379,10 +1379,15 @@
       "etag": "\"b8937a88d4f9153fcab16be68bfffcc2-gzip\"",
       "modified": null
     },
+    "dexerto-fr": {
+      "url": "https://www.dexerto.fr/feed/",
+      "etag": null,
+      "modified": "Fri, 25 Sep 2026 05:16:07 GMT"
+    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 25 Sep 2026 05:01:22 GMT"
+      "modified": "Fri, 25 Sep 2026 05:16:37 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1411,8 +1416,8 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"923ef72c66bc31ba959da86abe257886\"",
-      "modified": "Thu, 24 Sep 2026 18:03:54 GMT"
+      "etag": "W/\"2745b669b57cda97758bdb587aea650f\"",
+      "modified": "Fri, 25 Sep 2026 05:00:19 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -2828,7 +2833,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://www.4wearegamers.com/wp-content/uploads/2026/09/gta-6-collector-edition.jpg",
-      "description": "GTA 6 : Rockstar dévoile un coffret collector à 400 euros… sans le jeu !&nbsp;&nbsp;4WeAreGamers"
+      "description": "GTA 6 : Rockstar dévoile un coffret collector à 400 euros… sans le jeu !&nbsp;&nbsp;4WeAreGamers",
+      "extraSources": [
+        {
+          "source": "Google News (FR, 7 jours)",
+          "link": "https://mcetv.ouest-france.fr/2026/gta-6-coffret-collector-400-euros-sans-jeu/"
+        }
+      ]
     },
     {
       "title": "'Grand Theft Auto VI game sold separately': GTA 6's fabled collector's box is here, but at $399 / £349 it isn't exactly what I was hoping for - TechRadar",
@@ -3197,6 +3208,19 @@
           "link": "https://www.svg.com/2267950/rockstar-400-dollar-gta-6-merch-box-game-not-included/"
         }
       ]
+    },
+    {
+      "title": "Grand Theft Auto VI: The Goodtime State – Vice City Collection collectible set announced - Gematsu",
+      "link": "https://www.gematsu.com/2026/09/grand-theft-auto-vi-the-goodtime-state-vice-city-collection-collectible-set-announced",
+      "source_link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQSnlPOEpWM0RUUTc0MWlQMGJfOGZsWVdGWjdtM19oNVd0M1NSdFRHTmcwbUd3QVAyc3NkTmdfRWZXNGFOeUhnSXJXOU40bDBOQUpmSTRiVmdRaklPbjY5YnY2eG9VNDNGeDhrb2pzaHI3SGZ6TnZHYU5JbDBaYXB2NXlXTlhuUFRJUE9DRzRETGQ5cXVfUUJKSTY5bnRIaC1wZVRQU1dXSW9SNWJvN0xOZVoyTWU0SGtl?oc=5",
+      "date": "2026-09-24T15:10:53+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.gematsu.com/wp-content/uploads/2026/09/GTA6-Set_09-24-26.jpg",
+      "description": "Grand Theft Auto VI: The Goodtime State – Vice City Collection collectible set announced&nbsp;&nbsp;Gematsu"
     },
     {
       "title": "Qui est Manni L. Perez, l’actrice qui a gagné 200 000 abonnés en quelques jours grâce à GTA VI - RTBF",
@@ -27195,6 +27219,19 @@
       "lang": "en",
       "image": "https://www.dexerto.com/cdn-image/wp-content/uploads/2026/08/29/Jason-and-Lucias-Apartment.jpg",
       "description": "GTA 6 fan tracks down Jason & Lucia’s real-life apartment years after it was demolished&nbsp;&nbsp;Dexerto"
+    },
+    {
+      "title": "First look at Grand Theft Auto 6 gameplay released on Netflix ahead of November launch - Scripps News",
+      "link": "https://www.scrippsnews.com/entertainment/first-look-at-grand-theft-auto-6-gameplay-released-on-netflix-ahead-of-november-launch",
+      "source_link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQZHpsdURsWkVHM2daN0JDcFc1Q2pnYnZ5XzNxRjBNdWlyTHJraEFaY2d4TldpNzJxWWFJdi1uR2wyZ0U5ZmRTeGplLW5CRjJQbkY4U09wbDZxTWhIekVlS1l2WWlXY3I0LXIxN19EMkNhc2dyaEVKdS1XWmN1T3owZHItbjF3cmZpN2V1S2pRQ3lPU29aMkFKZ3NMbTlRaVlOUXFMYnM0bTRSYkZPcGZlUUVRbW9la2ZsNTdRdE1odVlKTnY1dVNN?oc=5",
+      "date": "2026-08-29T07:00:00+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": "en",
+      "image": "https://ewscripps.brightspotcdn.com/dims4/default/9a02fe4/2147483647/strip/true/crop/1024x538+0+0/resize/1200x630!/quality/90/?url=http%3A%2F%2Fewscripps-brightspot.s3.amazonaws.com%2F4a%2F09%2Ff22770404a2784cc6d4f51a0aeea%2Fap22010464726483.jpg",
+      "description": "First look at Grand Theft Auto 6 gameplay released on Netflix ahead of November launch&nbsp;&nbsp;Scripps News"
     },
     {
       "title": "GTA 6 - Page 8 sur 9 - Frandroid",
