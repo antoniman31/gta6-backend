@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-24T23:02:05.701843+00:00",
+  "generated_at": "2026-09-25T00:01:56.324084+00:00",
   "attente_recap": {
-    "articles": 9,
+    "articles": 13,
     "officiels": 0,
     "sommet": 1
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 61.4,
+  "duration_seconds": 52.1,
   "decode_failures": 0,
-  "total_articles": 2200,
-  "new_this_run": 10,
+  "total_articles": 2204,
+  "new_this_run": 4,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -401,7 +401,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-24T11:56:10+00:00",
       "days_since_last_article": 0,
@@ -479,7 +479,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 523,
       "last_article": "2026-09-24T21:15:00+00:00",
       "days_since_last_article": 0,
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 7,
-      "articles_exclusifs": 636,
-      "last_article": "2026-09-24T22:21:24+00:00",
+      "new_this_run": 4,
+      "articles_exclusifs": 640,
+      "last_article": "2026-09-24T23:15:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -540,10 +540,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 13,
       "last_article": "2026-09-24T21:37:44+00:00",
@@ -709,10 +709,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T10:30:09+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1008,7 +1008,7 @@
     {
       "id": "engadget",
       "name": "Engadget",
-      "entries_fetched": 100,
+      "entries_fetched": 99,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:engadget.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-07T06:20:38+00:00",
@@ -1125,23 +1125,23 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 6,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-24T14:36:26+00:00",
@@ -1203,140 +1203,29 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
-  "sources_silence": {
-    "rockstar-en": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstar-fr": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "rockstar-announce": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gta6-netflix": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-fr": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-en": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-fr-7j": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gnews-en-7j": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gamerant-gnews": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "xboxygen": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "purexbox": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "trueach": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "jdg": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "numerama": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "gamergen": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "frandroid": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "theverge": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "engadget": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "pushsquare": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "schreier": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "dexerto": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    },
-    "mgg": {
-      "depuis": "2026-09-24T21:46:01.821601+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "rockstar-fr": "100,100,100,100,0,100,99,99,99,0,0,99",
-    "rockstar-announce": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "gta6-netflix": "100,100,100,100,0,100,100,100,100,0,0,100",
+    "rockstar-en": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "rockstar-fr": "100,100,100,0,100,99,99,99,0,0,99,99",
+    "rockstar-announce": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "gta6-netflix": "100,100,100,0,100,100,100,100,0,0,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "gnews-en": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "gnews-fr-7j": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "gnews-en-7j": "100,100,100,100,0,100,100,100,100,0,0,100",
+    "gnews-fr": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "gnews-en": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "gnews-fr-7j": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "gnews-en-7j": "100,100,100,0,100,100,100,100,0,0,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1360,33 +1249,33 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,0,100,100,100,100,0,0,100",
+    "gamerant-gnews": "100,100,100,0,100,100,100,100,0,0,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "46,46,46,46,46,46,46,46,46,46,46,46",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "purexbox": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "trueach": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "jdg": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "numerama": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "gamergen": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "frandroid": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "theverge": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "engadget": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "pushsquare": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "schreier": "100,100,100,100,0,100,100,100,100,0,0,100",
+    "xboxygen": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "purexbox": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "trueach": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "jdg": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "numerama": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "gamergen": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "frandroid": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "theverge": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "engadget": "100,100,100,0,100,100,100,100,0,0,100,99",
+    "pushsquare": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "schreier": "100,100,100,0,100,100,100,100,0,0,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "tweaktown": "15,15,15,15,15,15,0,15,15,15,15,15",
+    "tweaktown": "15,15,15,15,15,0,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,0,100,100,100,100,0,0,100",
-    "mgg": "100,100,100,100,0,100,100,100,100,0,0,100",
+    "dexerto": "100,100,100,0,100,100,100,100,0,0,100,100",
+    "mgg": "100,100,100,0,100,100,100,100,0,0,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
     "reddit-gta6-suivi": "25,25,25,25,25,25,25,25,25,25,25,25"
@@ -1420,7 +1309,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"231a0-LsQThe4gLq7pBTtEPEy+kkrSyuE\"",
+      "etag": "W/\"21a52-ReCvHGqUjw+QfvTURcv5PmtsikE\"",
       "modified": null
     },
     "kotaku": {
@@ -1441,7 +1330,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 24 Sep 2026 23:00:07 GMT"
+      "modified": "Thu, 24 Sep 2026 23:59:35 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1450,13 +1339,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab5ab7f-2f5a\"",
-      "modified": "Thu, 24 Sep 2026 23:00:15 GMT"
+      "etag": "W/\"6ab5b994-2f5a\"",
+      "modified": "Fri, 25 Sep 2026 00:00:20 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"5c0fff98ac8b7faac33d187c85f76ca3\"",
-      "modified": "Thu, 24 Sep 2026 22:59:03 GMT"
+      "etag": "W/\"c7d3144b23ce2418f06b4eb44a754d05\"",
+      "modified": "Thu, 24 Sep 2026 23:21:00 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1470,8 +1359,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab59b54-b90\"",
-      "modified": "Thu, 24 Sep 2026 21:51:16 GMT"
+      "etag": "\"6ab5b76e-b8f\"",
+      "modified": "Thu, 24 Sep 2026 23:51:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1481,7 +1370,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 24 Sep 2026 23:01:13 GMT"
+      "modified": "Fri, 25 Sep 2026 00:01:19 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1516,6 +1405,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "‘Grand Theft Auto 6’ Massive Collector’s Edition Revealed, But There Are Two Huge Catches - Men's Journal",
+      "link": "https://www.mensjournal.com/entertainment/grand-theft-auto-6-massive-collectors-edition-revealed-but-there-are-two-huge-catches",
+      "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPT18zMzZpSlhXM0I5Z2oxUW4zODNBR3ZtbWhyS0xvU2lQR2pZLUQya25XRlVKYmI3T1BNS21jRVBEbnV0Tnl0QzM4ZC0xbVIzLXI3dWMzSXdId0tRZHd1QkJ0cnJHQjd4ZGk5U3pqMEU0dENVQWdqVHp1cVg5QmwyVlRWQkhSUDZLY29oalZUTXlSazd1eGhVRkVVWkVfOFhXWDBVRUJ0SWRJc2ZXZFZSQjVoSFBsY0hhbmVzX1FkUE9Sc0RfLWc?oc=5",
+      "date": "2026-09-24T23:15:36+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "‘Grand Theft Auto 6’ Massive Collector’s Edition Revealed, But There Are Two Huge Catches&nbsp;&nbsp;Men's Journal"
+    },
+    {
+      "title": "Xbox Exec Isn’t Freaking Out Over GTA 6 Presales - GameSpot",
+      "link": "https://www.gamespot.com/articles/xbox-exec-isnt-freaking-out-over-gta-6-presales/",
+      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPOFBCZXd5UHV2bFBpMy1mZURWZjc0UlRaVzV3Y2t3S0JOeHJMd3ViM2k5dHBxa1JvMVRpZl9EU1ByVkF2aVZZMmZJaTRIWUtSMnJyeENNQnVjUlBQc3ZwQXRTSVVkNE5EOVBHNUZSZ04xVVV6dTlTM2Z0Tlh0d2VQMFlERk5SQmlkRFE?oc=5",
+      "date": "2026-09-24T23:06:48+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "Xbox Exec Isn’t Freaking Out Over GTA 6 Presales&nbsp;&nbsp;GameSpot"
+    },
+    {
+      "title": "GTA6 Collector’s Box Is $400, Has No Game - Dark Horizons",
+      "link": "https://www.darkhorizons.com/gta6-collectors-box-is-400-has-no-game/",
+      "source_link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5Ld2hFMWtuSHkzUjA1TG1iM1ctWFk1RkE2ZFAwekZfN0piWi02bG15NF80TS1fTW1DbTRFWjUwZTRyaHpod3hFWkI1NUpHbkh3UzY4c0pSYnZZdWdqUmtfN1E1Z3RHX19STmE2NXFnRnUtYmR0Qmw0?oc=5",
+      "date": "2026-09-24T23:05:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://cdndark.darkhorizons.com/wp-content/uploads/2026/09/gta6-collectors-box-is-400-has-no-game.jpg",
+      "description": "GTA6 Collector’s Box Is $400, Has No Game&nbsp;&nbsp;Dark Horizons"
+    },
     {
       "title": "Xbox CSO Issues Response To Report About GTA 6 Sales Being 'Heavily Skewed' Towards PS5 - Pure Xbox",
       "link": "https://www.purexbox.com/news/2026/09/xbox-cso-issues-response-to-report-about-gta-6-sales-being-heavily-skewed-towards-ps5",
@@ -1554,6 +1482,19 @@
       "lang": "en",
       "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6DualSidedMap.jpg",
       "description": "Rockstar leaks GTA 6 map with Collector's Edition pre-order, exposing Leonida locations&nbsp;&nbsp;Notebookcheck"
+    },
+    {
+      "title": "GTA 6 Collector’s Edition Costs $399.99, Goodtime State Box Comes Without the Game - Shane the Gamer",
+      "link": "https://www.shanethegamer.com/news/gta-6-collectors-edition-goodtime-state-vice-city/",
+      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQVEdhNlpFYjVWNk5mOE9SWjl2QnFBS2lMNEk3a2lpVnk3Sl9xZC13UFNLc2xqV1J0M3BPdWsyWFhSU2pOTERYeUJwa2gzb0ZpaHg5OVZWUFVOV1QtT3lUbjYyVkhFb0Fib05jZk9RUmJKQjA5T09vcFMwRE5CRE04WC1fTzhxQWdaNC1PWWJn?oc=5",
+      "date": "2026-09-24T22:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.shanethegamer.com/wp-content/uploads/2026/09/STG-Cover-1-5.webp",
+      "description": "GTA 6 Collector’s Edition Costs $399.99, Goodtime State Box Comes Without the Game&nbsp;&nbsp;Shane the Gamer"
     },
     {
       "title": "GTA 6 Collector's Edition is $400 and Includes a Statue - Resell Calendar",
@@ -5525,58 +5466,6 @@
       "lang": "fr",
       "image": null,
       "description": "Un aperçu possible du premier dévkit de GTA 6 est apparu en ligne&nbsp;&nbsp;EGW.News"
-    },
-    {
-      "title": "GTA 6 Ultimate à 85 € au lieu de 100 € : cette astuce Amazon permet d'économiser 15 € sur Xbox - Xboxygen",
-      "link": "https://www.xboxygen.com/bons-plans/368499-gta-6-ultimate-a-85-e-au-lieu-de-100-e-cette-astuce-amazon-permet-deconomiser-15-e-sur-xbox",
-      "source_link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNdHNpZ3JXelZFenBfdG1JV0RyR1Fna3ZrS2hwZlZhMEFPWHI2bzNPU1Q3NEhZV256ZFV6Znc2RUVVTmxRZjRYLWt5TW9KaGJja2ZXazFFcm02TlM4UnQ4NGctT2NJbldNOTlzdXBaMDZ4R1RrZUNLNHRZTDlGMTlrVG5DeFZyUG1NazY1cFd1YUR0NkQ2S1hFalRTd1NNS0xXb3BfQmxaY2hBX0xiWGRGUGdyNnFoZHE2Q1Y0VTh3UmRCMFR1Y0s4WmlXZkVoVGc?oc=5",
-      "date": "2026-09-22T19:12:38+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.xboxygen.com/wp-content/uploads/2026/09/GTA-6-ultimate-edition.jpg",
-      "description": "GTA 6 Ultimate à 85 € au lieu de 100 € : cette astuce Amazon permet d'économiser 15 € sur Xbox&nbsp;&nbsp;Xboxygen"
-    },
-    {
-      "title": "Steven Adams predicts an unusual problem for the NBA when GTA 6 drops: \"Performances are going to go down\" - Basketball Network",
-      "link": "https://www.basketballnetwork.net/off-the-court/steven-adams-warns-the-nba-about-the-gta-6-effect",
-      "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxQT1AtdHUydHZQbm5EbThTckRaM0VVSkRPdTJ3MFBaNWhqREdUbTZkci0zVGlpS0dxTWdONWFveTNTTkZDSkg2UUJQb2FJaF81MXZweUdLYmZFUC1zdkJoQVZmMnJTNFNxWkFOalpieXFxRE1XbFB3RjZoRXpLa3dRQ0tHYTNQZ2dCUkRsZlFLbWFvMEh1TFNTNnlTTDh3Zw?oc=5",
-      "date": "2026-09-22T19:06:57+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": null,
-      "description": "Steven Adams predicts an unusual problem for the NBA when GTA 6 drops: \"Performances are going to go down\"&nbsp;&nbsp;Basketball Network"
-    },
-    {
-      "title": "Grand Theft Auto VI's Sahara Arena has been compared to Miami's real-life Kaseya Center. - GameGPU",
-      "link": "https://en.gamegpu.com/news/igry/sahara-arena-iz-grand-theft-auto-vi-sravnili-s-realnym-kaseya-center-v-majami",
-      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQcC1hTGVmc1pXX3JYQzZzcGJnakxvcFBRMWFQM1VQVFNIdVhXcEtjYk0tSTVESk9VOGhZeFNxX1AwU0lscUFDRGF2OS1GYWJwT3BFWGpBcUVOMzZZQ0FMOWFhU18zSzV3RzFRUEpLazVid3VpNEdybS03YzVxZm1Ec2xuNDlMdjNpX0lZX0ExLTNNWThaR05mNTdEMHpYTVcxdC1FbUltdTlOWXJSM0Iw?oc=5",
-      "date": "2026-09-22T18:48:07+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gamegpu.com/images/1_2026/GAMES/Silent_Hill_Townfall/game/0gitlb0gitlb0gi_gpu.webp#joomlaImage://local-images/1_2026/GAMES/Silent_Hill_Townfall/game/0gitlb0gitlb0gi_gpu.webp?width=2752&height=1536",
-      "description": "Grand Theft Auto VI's Sahara Arena has been compared to Miami's real-life Kaseya Center.&nbsp;&nbsp;GameGPU"
-    },
-    {
-      "title": "Rockets' Steven Adams Sends Hilarious Warning to Entire NFL, NBA Ahead of GTA 6 Release - heavy.com",
-      "link": "https://heavy.com/sports/nba/houston-rockets/rockets-steven-adams-nfl-nba-gta-6-warning/",
-      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPVGpHbWhSWHFUWXpvSTBkazdkVzlDbzRCOWdxcGlONlBQeFBlRXNncmlOR2QxMTcxS0d0aUFpSXl1Q0RqMmpIc0NCR1VGZ3owaTdycGdIRWRteVhzR29YdTladjJHU2YxTTBfeG94V2pNd2xjT1dnYnlYbzBHUFBBOExWQmJrb2tRaEF6NG51aVMyZw?oc=5",
-      "date": "2026-09-22T18:31:28+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://heavy.com/wp-content/uploads/2026/09/san-antonio-spurs-v-oklahoma-city-thunder-game-seven-oklahoma-city-3.jpg?quality=65&strip=all",
-      "description": "Rockets' Steven Adams Sends Hilarious Warning to Entire NFL, NBA Ahead of GTA 6 Release&nbsp;&nbsp;heavy.com"
     }
   ],
   "partial": true,
