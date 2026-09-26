@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T03:01:58.246586+00:00",
+  "generated_at": "2026-09-26T04:02:03.024591+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,9 +7,9 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 55.6,
+  "duration_seconds": 60.0,
   "decode_failures": 0,
-  "total_articles": 2381,
+  "total_articles": 2384,
   "new_this_run": 3,
   "hot_count": 26,
   "hot_threshold": 3,
@@ -428,8 +428,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 113,
+      "new_this_run": 1,
+      "articles_exclusifs": 114,
       "last_article": "2026-09-25T10:01:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 3,
-      "articles_exclusifs": 708,
-      "last_article": "2026-09-26T02:38:23+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 709,
+      "last_article": "2026-09-26T03:17:33+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -831,10 +831,10 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 26,
-      "last_article": "2026-09-20T02:00:23+00:00",
-      "days_since_last_article": 6,
+      "new_this_run": 1,
+      "articles_exclusifs": 27,
+      "last_article": "2026-09-25T23:01:11+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -892,14 +892,14 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
-      "days_since_last_article": 6,
+      "days_since_last_article": 7,
       "status": "ok"
     },
     {
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 7,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 1,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1233,7 +1233,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1275,7 +1275,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "100,100,100,100,100,100,99,100,100,100,100,100",
+    "engadget": "100,100,100,100,100,99,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 02:59:23 GMT"
+      "modified": "Sat, 26 Sep 2026 03:59:28 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab73542-2fd2\"",
-      "modified": "Sat, 26 Sep 2026 03:00:18 GMT"
+      "etag": "W/\"6ab74350-2fd2\"",
+      "modified": "Sat, 26 Sep 2026 04:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1371,8 +1371,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab7250f-bb2\"",
-      "modified": "Sat, 26 Sep 2026 01:51:11 GMT"
+      "etag": "\"6ab7412e-bb3\"",
+      "modified": "Sat, 26 Sep 2026 03:51:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 03:00:49 GMT"
+      "modified": "Sat, 26 Sep 2026 04:00:29 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1417,6 +1417,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA VI Overhyped or Overpriced? $79.99 Debate [2026] - shattered.io",
+      "link": "https://shattered.io/gta-6-79-99-price-overhyped-debate-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFA0S25EY1ZQSW9iNkRpS2tyRlMxRVZVak15S0ZwcXJ2clBxYi1zY2tHWEFnRkd4V01mNHVwbklUR2FPZmVLWHU2REJwSHNPazB5emJFSGRTZFgxdXBLX2dBZG0zU3ZRd2pxMTBneG9B?oc=5",
+      "date": "2026-09-26T03:17:33+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://shattered.io/wp-content/uploads/2026/09/gta-6-79-99-price-overhyped-debate-2026-1.webp",
+      "description": "GTA VI Overhyped or Overpriced? $79.99 Debate [2026]&nbsp;&nbsp;shattered.io"
+    },
     {
       "title": "Is GTA 6 Overhyped? $79.99 Price Tag Sparks Debate - tech-insider.org",
       "link": "https://tech-insider.org/is-gta-6-overhyped-price-debate-2026/",
@@ -1494,6 +1507,19 @@
       "lang": "en",
       "image": "https://img.etimg.com/thumb/msid-134495098,width-1200,height-630,imgsize-361333,overlay-economictimes/articleshow.jpg",
       "description": "Is GTA 6 worth the hype after 13 years? Fans prepare for release amidst high expectations&nbsp;&nbsp;The Economic Times"
+    },
+    {
+      "title": "Grand Theft Auto 6 News, Trailer, Guides, and More - GameRant",
+      "link": "https://gamerant.com/db/video-game/grand-theft-auto-6/",
+      "source_link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9zVExySThXUGJlWWd5R1cyNjVmblZnLWhJeFBNMVpDVjBCcjNTYm1QdFdCNEdmZlRDOVRBZlBHcHBwdnZnLUk3RmpObTlRTjUtaDNTNll0YW5ERjlOMnhSOEJadDU?oc=5",
+      "date": "2026-09-25T23:01:11+00:00",
+      "source": "Google News (Game Rant)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/06/grand-theft-auto-6-tag-cover-art.jpg?w=1200&h=675&fit=crop",
+      "description": "Grand Theft Auto 6 News, Trailer, Guides, and More&nbsp;&nbsp;GameRant"
     },
     {
       "title": "It's Official: GTA 6 Won't Sweep the GOTY Awards",
@@ -4736,6 +4762,19 @@
       "lang": "fr",
       "image": "https://global-img.gamergen.com/grand-theft-auto-vi-gta-6-the-goodtime-state-vice-city-collection-collector-01-24-09-2026_0190000001060407.jpg",
       "description": "Grand Theft Auto VI : un collector vendu à un prix totalement délirant dévoilé, qui ne vend pas autant de rêve que le jeu...&nbsp;&nbsp;gamergen.com"
+    },
+    {
+      "title": "Rockstar Games Reveals $400 GTA 6 Collector Bundle Without Game Disc - technetbooks.com",
+      "link": "https://www.technetbooks.com/2026/09/rockstar-games-reveals-400-gta-6.html",
+      "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5ab0pGMTMzdXNjbEJzbk9kcjlRVUQ0ZVVDR1NTb0oxMFdzYTVnTVBQNHE3NDl3emhnZElpMktNTUhBaXpBdjRPXzgwOU9aQmlCOEtObUFXOGo1MzhpVXJEYWRWTkp1RkUtYW82N0VucXZhcm9kSVdDZmNOQXBNVXM?oc=5",
+      "date": "2026-09-24T16:01:00+00:00",
+      "source": "Google News (annonces Rockstar)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "Rockstar Games Reveals $400 GTA 6 Collector Bundle Without Game Disc&nbsp;&nbsp;technetbooks.com"
     },
     {
       "title": "Grand Theft Auto VI will be able to run at 120 FPS with Lossless Scaling, while the FPS limit is 30 FPS. - GameGPU",
