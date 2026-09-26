@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T05:01:54.617340+00:00",
+  "generated_at": "2026-09-26T05:22:21.432711+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 48.9,
+  "duration_seconds": 53.8,
   "decode_failures": 0,
-  "total_articles": 2386,
-  "new_this_run": 2,
+  "total_articles": 2389,
+  "new_this_run": 3,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -441,8 +441,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 120,
+      "new_this_run": 1,
+      "articles_exclusifs": 121,
       "last_article": "2026-09-23T17:45:06+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 569,
-      "last_article": "2026-09-26T04:40:00+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 570,
+      "last_article": "2026-09-26T05:00:58+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -775,10 +775,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-25T08:58:13+00:00",
@@ -909,8 +909,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 10,
+      "new_this_run": 1,
+      "articles_exclusifs": 11,
       "last_article": "2026-09-23T09:13:14+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -1233,7 +1233,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1275,7 +1275,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "100,100,100,100,99,100,100,100,100,100,100,100",
+    "engadget": "100,100,100,99,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 05:01:16 GMT"
+      "modified": "Sat, 26 Sep 2026 05:16:14 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1379,10 +1379,15 @@
       "etag": "\"de40ea85a920eb74e563957e02e92bb0-gzip\"",
       "modified": null
     },
+    "dexerto-fr": {
+      "url": "https://www.dexerto.fr/feed/",
+      "etag": null,
+      "modified": "Sat, 26 Sep 2026 05:21:06 GMT"
+    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 05:01:04 GMT"
+      "modified": "Sat, 26 Sep 2026 05:21:44 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1417,6 +1422,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 sur Switch 2 enfin évoqué par un ancien développeur de Rockstar - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-sur-switch-2-enfin-evoque-par-un-ancien-developpeur-de-rockstar-226444.html",
+      "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPNEk1U24wbExWSXNqRjRFSmR2Si03RlRINTRlVG1WQUJIWERKbmRaZGZMUFRIODNsdkl6Z3pybXlDNHhwb0VQODV4dGc2Z1o3QWM4TTgtd2QzRzlESTZDbzlVTXU0ckFIRVNBRmZsV0RwVDRkdGtjakhFMkN4c00tSUNublJlaWVSSDBwZVNrUWU2Zm5QdkdybFFvV1VNMk81Zk1DTEJLT0NuTzg4dkprWG01a09CQmtBaExqdUZpcHZ6MmZPbVE?oc=5",
+      "date": "2026-09-26T05:00:58+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/09/gta-6-sur-switch-2-enfin-evoque-par-un-ancien-developpeur-de-rockstar.webp",
+      "description": "GTA 6 sur Switch 2 enfin évoqué par un ancien développeur de Rockstar&nbsp;&nbsp;La Crème Du Gaming"
+    },
     {
       "title": "Cultura vous offre 10 euros pour la précommande de GTA VI, est-ce la meilleure offre du mois de septembre ? - BFM",
       "link": "https://www.bfmtv.com/tech/bons-plans/cultura-vous-offre-10-euros-pour-la-precommande-de-gta-vi-est-ce-la-meilleure-offre-du-mois-de-septembre_AB-202609260001.html",
@@ -28087,6 +28105,19 @@
       "description": "PlayStation dévoile deux manettes DualSense aux couleurs de GTA 6 : voici des images&nbsp;&nbsp;Numerama"
     },
     {
+      "title": "Grand Theft Auto VI Pre-Orders Surge Over 400% Following Netflix Presentation, With PS5 Sales Outpacing Xbox by a Wide Margin - levelup.com",
+      "link": "https://www.levelup.com/en/news/grand-theft-auto-vi-pre-orders-surge-over-400-following-netflix-presentation-with-ps5-sales-outpacing-xbox-by-a-wide-margin/",
+      "source_link": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxPWHpCMW1IOXZQVl9uLXJiN205UGtFZ2taT3pCY2dISVJSaGlwQ3FIV0dia1VnX3U5QVpNMFIxcmlnUWJqa1hPUDBRTzVwMVhhSjdBZVB6NC03SnhJckJVeXNFRHBvNkRIdl9zYzVYZ2FPVG8xUzkyZTZxeW5KTENsOVhoVGl2LU9DODVhdWlqZHNKUEtUenItc0c1ekxWODJpYmgtVEtQSzlTUUgzM3hDSzhjd21OeVlGRHF3LVRhWTdIWHZnOThaTjZ3RHdyRUZVdW04cWNhZ0lVWVIwX2FKU0xVUHJfdzlVdkI4RQ?oc=5",
+      "date": "2026-09-03T07:00:00+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": "en",
+      "image": "https://www.levelup.com/resizer/v2/THRWXYBXONAIZJ2UVNWYYQE5AA.jpg?auth=e80b1937c43e201281ae11c1ba2b1773c6721652a923021de206d5f0363eeb8f&height=630&width=1200&quality=70&smart=true",
+      "description": "Grand Theft Auto VI Pre-Orders Surge Over 400% Following Netflix Presentation, With PS5 Sales Outpacing Xbox by a Wide Margin&nbsp;&nbsp;levelup.com"
+    },
+    {
       "title": "PS5 Pro Sold Out at Major Retailers Ahead of GTA 6",
       "link": "https://gta6times.com/news/ps5-pro-sold-out-at-major-retailers-ahead-of-gta-6",
       "source_link": null,
@@ -32691,6 +32722,19 @@
       "lang": "en",
       "image": "https://www.dexerto.com/cdn-image/wp-content/uploads/2026/07/01/GTA-6-fans-roast-couples-bizarre-launch-week-contract.jpg",
       "description": "US Army battalion reportedly offers troops days off to play GTA 6 if they re-enlist&nbsp;&nbsp;Dexerto"
+    },
+    {
+      "title": "GTA 6 sur PC : quelle date de sortie ? Notre estimation grâce aux précédents jeux Rockstar - Xboxygen",
+      "link": "https://www.xboxygen.com/News/364228-gta-6-sur-pc-quelle-date-de-sortie-notre-estimation-grace-aux-precedents-jeux-rockstar",
+      "source_link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNd2RZdjh4UnNkSzN6MG1WbVNVdUd0cmk4Z0Z3NlZtMXJidzlsTHpDbnVzVWhwNjFXbm50TGFkTnZPZGpIcnE4Sm1qdEs4YjhkLUZjdC1KUmM4VTlkMkFKaGxBdW0wdGVhOFBkSEJQOXB4b1ZrdUpBZGxLX1IzQ0V3dFJrZ1IxTFVLODU0czR3S3ZZSkFYM1JhbDRLcUgyMW5tMHVYaUF5NzhhNzJqOVkzQ1VGU2NOazl6eEFKWUxORXM?oc=5",
+      "date": "2026-08-17T07:00:00+00:00",
+      "source": "Xboxygen",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.xboxygen.com/wp-content/uploads/2026/08/GTA-6-PC-sortie.jpg",
+      "description": "GTA 6 sur PC : quelle date de sortie ? Notre estimation grâce aux précédents jeux Rockstar&nbsp;&nbsp;Xboxygen"
     },
     {
       "title": "GTA 6 Extended Look premieres August 27, Netflix first",
