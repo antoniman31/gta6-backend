@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T04:02:03.024591+00:00",
+  "generated_at": "2026-09-26T05:01:54.617340+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 60.0,
+  "duration_seconds": 48.9,
   "decode_failures": 0,
-  "total_articles": 2384,
-  "new_this_run": 3,
+  "total_articles": 2386,
+  "new_this_run": 2,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -428,7 +428,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 114,
       "last_article": "2026-09-25T10:01:29+00:00",
       "days_since_last_article": 0,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 567,
-      "last_article": "2026-09-26T01:01:45+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 569,
+      "last_article": "2026-09-26T04:40:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,7 +493,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 709,
       "last_article": "2026-09-26T03:17:33+00:00",
       "days_since_last_article": 0,
@@ -831,7 +831,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 27,
       "last_article": "2026-09-25T23:01:11+00:00",
       "days_since_last_article": 0,
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 7,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 1,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1233,7 +1233,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1275,7 +1275,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "100,100,100,100,100,99,100,100,100,100,100,100",
+    "engadget": "100,100,100,100,99,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 03:59:28 GMT"
+      "modified": "Sat, 26 Sep 2026 05:01:16 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab74350-2fd2\"",
-      "modified": "Sat, 26 Sep 2026 04:00:16 GMT"
+      "etag": "W/\"6ab75161-2fd2\"",
+      "modified": "Sat, 26 Sep 2026 05:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 04:00:29 GMT"
+      "modified": "Sat, 26 Sep 2026 05:01:04 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1417,6 +1417,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Cultura vous offre 10 euros pour la précommande de GTA VI, est-ce la meilleure offre du mois de septembre ? - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/cultura-vous-offre-10-euros-pour-la-precommande-de-gta-vi-est-ce-la-meilleure-offre-du-mois-de-septembre_AB-202609260001.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxOcjVkNFlab2ZKd0VCbGh0N1d5Ti1TVGNOMVRBbnJwNWRIXzZYUEFGWXJzdFJfQVFNRnk4ZUF1aUJhQlZQQ0RINXQwMFREUmJxSDN2MEJkUGVrbVlaRkNfbk1ER1dYYXJvXzljTWJ3c2V0RXNMQjIwemxhWTRYVUN5MlJQN1ZKQTRLM3lUVTNxem1wQ2hrNFd1ejhMTnJFRVYxNzA4cFUyelBlSFdwUXRMYmNvMVdBNkFGWW02SE1MWUhIWVRtVDNQNmF5OF9fOTQ4cmdJbzY0MC1hMUlJdllLb1Y2LU1GczhwYUtWMjQ0NkhHQ2hoN2c?oc=5",
+      "date": "2026-09-26T04:40:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/Ri5GgeT6B-UiCBxaVk5LVGBYSN4=/0x0:1600x900/1600x0/images/GTA-VI-il-est-encore-temps-de-precommander-le-jeu-le-plus-attendu-de-l-annee-10-euros-offerts-2336735.jpg",
+      "description": "Cultura vous offre 10 euros pour la précommande de GTA VI, est-ce la meilleure offre du mois de septembre ?&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "Un Ancien De Rockstar Estime Possible Le Portage De GTA 6, Mais Peu Pertinent - Pause Hardware",
+      "link": "https://pausehardware.com/gta-6-switch-2-portage-rockstar/",
+      "source_link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBaMHFRMDhEdWZpdXVjNHZXeFNPYkFVYVdIQ1N3TjJlY0VBSkxDVGlyTFBOeTBPbEttYlBJd19uMnFDVUpBQlFvWGx3c1lOVnFHUlFDd1VWT0tNTjFwcG4wSzFSZVB2clgyM3c?oc=5",
+      "date": "2026-09-26T04:11:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://pausehardware.com/wp-content/uploads/2026/09/resized_gta-6-sur-switch-2-un-ancien-de-rockstar-reste-sce.jpg",
+      "description": "Un Ancien De Rockstar Estime Possible Le Portage De GTA 6, Mais Peu Pertinent&nbsp;&nbsp;Pause Hardware"
+    },
     {
       "title": "GTA VI Overhyped or Overpriced? $79.99 Debate [2026] - shattered.io",
       "link": "https://shattered.io/gta-6-79-99-price-overhyped-debate-2026/",
