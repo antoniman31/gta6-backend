@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T19:01:49.808825+00:00",
+  "generated_at": "2026-09-26T20:01:54.670818+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,9 +7,9 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 51.1,
+  "duration_seconds": 50.0,
   "decode_failures": 0,
-  "total_articles": 2445,
+  "total_articles": 2446,
   "new_this_run": 1,
   "hot_count": 26,
   "hot_threshold": 3,
@@ -480,8 +480,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 593,
+      "new_this_run": 1,
+      "articles_exclusifs": 594,
       "last_article": "2026-09-26T17:03:32+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -493,7 +493,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 726,
       "last_article": "2026-09-26T18:10:00+00:00",
       "days_since_last_article": 0,
@@ -535,7 +535,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-19T19:47:25+00:00",
-      "days_since_last_article": 6,
+      "days_since_last_article": 7,
       "status": "ok"
     },
     {
@@ -639,7 +639,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-25T19:33:05+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -684,10 +684,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-22T12:32:51+00:00",
@@ -723,10 +723,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-18T18:19:10+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 8,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1204,20 +1204,20 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,99,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,100,99,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1264,7 +1264,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "99,99,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "99,100,100,100,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1290,8 +1290,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"533df27298cd46d6c8d064f07cc14ea4\"",
-      "modified": "Sat, 26 Sep 2026 18:25:38 GMT"
+      "etag": "W/\"af0021bd9958cfaa7b623f040a7752c8\"",
+      "modified": "Sat, 26 Sep 2026 19:52:26 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1310,13 +1310,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"278e8-Q97PpvLM0cgETX4C9YqdOliJ8Zs\"",
+      "etag": "W/\"25528-dJFVVOvpcLt3fQt2+wJqxYB8p5c\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5a7d61fa86e92d637efef30208606260\"",
-      "modified": "Sat, 26 Sep 2026 17:30:58 GMT"
+      "etag": "W/\"10ede7c62965ab23b8c09c5044726dfc\"",
+      "modified": "Sat, 26 Sep 2026 19:59:17 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1326,12 +1326,12 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 15:28:01 GMT"
+      "modified": "Sat, 26 Sep 2026 19:16:49 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 19:01:14 GMT"
+      "modified": "Sat, 26 Sep 2026 19:59:29 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1340,8 +1340,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab81640-2f38\"",
-      "modified": "Sat, 26 Sep 2026 19:00:16 GMT"
+      "etag": "W/\"6ab82451-2f38\"",
+      "modified": "Sat, 26 Sep 2026 20:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1360,8 +1360,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab80615-ba0\"",
-      "modified": "Sat, 26 Sep 2026 17:51:17 GMT"
+      "etag": "\"6ab82234-ba0\"",
+      "modified": "Sat, 26 Sep 2026 19:51:16 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1371,7 +1371,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 19:01:16 GMT"
+      "modified": "Sat, 26 Sep 2026 20:01:08 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1390,8 +1390,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"1af96c2974ad8fa4661ef36fc992ff0d\"",
-      "modified": "Sat, 26 Sep 2026 18:32:06 GMT"
+      "etag": "W/\"27b7bae9ae993fabc128e0ff176961df\"",
+      "modified": "Sat, 26 Sep 2026 19:35:17 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -1587,6 +1587,19 @@
       "lang": "en",
       "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/6/videoframe_3212_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/6/videoframe_3212_gpu.webp?width=1920&height=1078",
       "description": "Grand Theft Auto VI may switch from hitscan to physically based bullet simulation&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "Grand Theft Auto VI pourrait passer d'une simulation de tir instantanée à une simulation de balles basée sur des principes physiques. - fr.gamegpu.com",
+      "link": "https://fr.gamegpu.com/news/igry/grand-theft-auto-vi-mozhet-perejti-ot-khitskana-k-fizicheskomu-modelirovaniyu-pul",
+      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQaGl1MExPeE5ISEpVbXlOM1JXNkVUNENvWnVrLUFRT3FIRjljbUN4S254VzZYLVNVZjBLbWNNVzQzdjdGd2xYeTZhM0g4NTNUTEVHLVVUX3FtcFc0anZEYTd2TnlIQndPc09xb0VNUUpVcEE5TGRSVVRMQnhOb1paM0Z3S05tZ1VwTFZJZXU4Qkg3MjJ5NGlyX3NsQTQxd3M4N2hucFV5VmFkeXZHaVhYODhnZ3A?oc=5",
+      "date": "2026-09-26T13:51:16+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/6/videoframe_3212_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/6/videoframe_3212_gpu.webp?width=1920&height=1078",
+      "description": "Grand Theft Auto VI pourrait passer d'une simulation de tir instantanée à une simulation de balles basée sur des principes physiques.&nbsp;&nbsp;fr.gamegpu.com"
     },
     {
       "title": "Is GTA 6 Coming To Nintendo Switch 2? Ex-Rockstar Dev Drops Bold Claim - HotHardware",
