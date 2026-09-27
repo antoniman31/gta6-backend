@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T07:01:53.615319+00:00",
+  "generated_at": "2026-09-27T08:02:06.168640+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 52.8,
+  "duration_seconds": 60.6,
   "decode_failures": 0,
-  "total_articles": 2468,
-  "new_this_run": 2,
+  "total_articles": 2471,
+  "new_this_run": 3,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 598,
-      "last_article": "2026-09-27T06:40:12+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 601,
+      "last_article": "2026-09-27T07:02:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,7 +493,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 738,
       "last_article": "2026-09-27T06:14:51+00:00",
       "days_since_last_article": 0,
@@ -509,7 +509,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-26T07:06:07+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -600,7 +600,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-09-25T07:06:01+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -684,10 +684,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-22T12:32:51+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1100,10 +1100,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 16,
       "last_article": "2026-09-19T10:04:42+00:00",
@@ -1126,23 +1126,23 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
-      "days_since_last_article": 8,
-      "status": "en_attente"
+      "days_since_last_article": 9,
+      "status": "ok"
     },
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-24T14:36:26+00:00",
@@ -1178,10 +1178,10 @@
     {
       "id": "xboxygen-natif",
       "name": "Xboxygen (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1191,10 +1191,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1204,31 +1204,25 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
-  "sources_silence": {
-    "rockstar-youtube": {
-      "depuis": "2026-09-27T02:01:52.234310+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,15",
+    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,0,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1240,7 +1234,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,15,15",
+    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1321,8 +1315,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"d76e4c88eff6506e7eb3977aab73f5af\"",
-      "modified": "Sat, 26 Sep 2026 20:30:50 GMT"
+      "etag": "W/\"9e8950ca50176a4ec722db29d6ddd1f7\"",
+      "modified": "Sun, 27 Sep 2026 07:53:46 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1337,7 +1331,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 06:56:39 GMT"
+      "modified": "Sun, 27 Sep 2026 07:59:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1346,8 +1340,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab8beff-2fa3\"",
-      "modified": "Sun, 27 Sep 2026 07:00:15 GMT"
+      "etag": "W/\"6ab8cd10-2f28\"",
+      "modified": "Sun, 27 Sep 2026 08:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1366,8 +1360,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab8aed2-ba1\"",
-      "modified": "Sun, 27 Sep 2026 05:51:14 GMT"
+      "etag": "\"6ab8caf2-b80\"",
+      "modified": "Sun, 27 Sep 2026 07:51:14 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1377,7 +1371,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 07:01:02 GMT"
+      "modified": "Sun, 27 Sep 2026 08:01:23 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1386,32 +1380,58 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"20fbfeeb5ada5258ce2ef5b539966407\"",
-      "modified": "Sat, 26 Sep 2026 16:00:36 GMT"
+      "etag": "W/\"7389c62ff09ffff5eeebc83aefd9c9bf\"",
+      "modified": "Sun, 27 Sep 2026 07:34:03 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"0d5290dc39db1c46eb717105a997a60a\"",
-      "modified": "Sun, 27 Sep 2026 06:28:03 GMT"
+      "etag": "W/\"98fd1c4367be254f63f220b9b3cdc8bf\"",
+      "modified": "Sun, 27 Sep 2026 08:00:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"5e611998857b976ed24ebd58e9fe7df1\"",
-      "modified": "Sun, 27 Sep 2026 04:38:15 GMT"
+      "etag": "W/\"af9d35d131e2a8fab1c7e3fe3fe64486\"",
+      "modified": "Sun, 27 Sep 2026 07:59:55 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
-      "etag": "W/\"8f9812006b07cabcb4f96f35208c0a3e\"",
-      "modified": "Sat, 26 Sep 2026 17:23:05 GMT"
+      "etag": "W/\"6a0138c49ebe5dc1ef6507b9b59260cd\"",
+      "modified": "Sun, 27 Sep 2026 07:59:44 GMT"
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"20fbfeeb5ada5258ce2ef5b539966407\"",
-      "modified": "Sat, 26 Sep 2026 16:00:36 GMT"
+      "etag": "W/\"7389c62ff09ffff5eeebc83aefd9c9bf\"",
+      "modified": "Sun, 27 Sep 2026 07:34:03 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : E.Leclerc casse le prix avec une précommande à 60 euros avant la sortie - MCE TV",
+      "link": "https://mcetv.ouest-france.fr/2026/gta-6-e-leclerc-precommande-prix-casse/",
+      "source_link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5jQnEtaDRyUnBtQkZyeXpPRFBHRW9zVE8yS1VTRmRWRV84ZW1JSDZHTFdHMzNud1lwYm1tRWg2bi1uY2swbWp6cHJIRkNYd0l2VzV0MllNVUFENk55amlMSl9tUkgtM1pRR1NxRFBjcFpJbHd4aF9PZXJGalQzOXM?oc=5",
+      "date": "2026-09-27T07:02:10+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://media-mcetv.ouest-france.fr/wp-content/uploads/2026/07/generique-leclerc.jpg",
+      "description": "GTA 6 : E.Leclerc casse le prix avec une précommande à 60 euros avant la sortie&nbsp;&nbsp;MCE TV"
+    },
+    {
+      "title": "GTA 6 : une sortie sur Switch 2 est-elle encore crédible ? - WorldOfGeek",
+      "link": "https://worldofgeek.fr/gta6-switch-2-credible/",
+      "source_link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFA3NHY3Vk5LUlNoMmNPcmZrOHJzTll1dHZBMTRTM1J4LThEaGZZX3ZOSHNSTGdOWXh1WWt5ZEtvNG9qTVFhVUNnVFpaWXkxZmpDS051UHh5SUlBUQ?oc=5",
+      "date": "2026-09-27T07:00:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://worldofgeek.fr/wp-content/uploads/2025/12/switch-2-nintendo-2026-1200x675.jpg",
+      "description": "GTA 6 : une sortie sur Switch 2 est-elle encore crédible ?&nbsp;&nbsp;WorldOfGeek"
+    },
     {
       "title": "GTA 6 : Rockstar a-t-il caché des indices sur le jeu dans la bande-son ? On a analysé les premiers morceaux - JeuxVideo.com",
       "link": "https://www.jeuxvideo.com/news/2106220/gta-6-rockstar-a-t-il-cache-des-indices-sur-le-jeu-dans-la-bande-son-on-a-analyse-les-premiers-morceaux.htm",
@@ -1489,6 +1509,19 @@
       "lang": "en",
       "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/6/gius1ngius1ngi_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/6/gius1ngius1ngi_gpu.webp?width=1920&height=1080",
       "description": "GTA 6 players plan to ditch cars to explore the world's details&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "Les joueurs de GTA 6 prévoient de se passer de voitures pour explorer les détails du monde. - GameGPU",
+      "link": "https://fr.gamegpu.com/news/igry/igroki-gta-6-planiruyut-otkazatsya-ot-mashin-radi-izucheniya-detalej-mira",
+      "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQeXR4VjV4VGpOYkJobnRNT0ZWQ2tkMU0yX3R6cHphejVaNU50QXlURGN5LUFGTFVJTUw2WEN1NU1SaHozbUZxLTVRYXU2TmxheUpoTlJfQWN2cHl6ZnY2Q2VsOVZrSXkwcEpHRDhOOVk0TFlKTXg4YjJ6T21peHpxZjExclFFUDg0TkFiZ3g0UXd1RTdteWxlZ2VJOVllRThrZVBLaVJSQVhwQQ?oc=5",
+      "date": "2026-09-27T02:18:10+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/6/gius1ngius1ngi_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/6/gius1ngius1ngi_gpu.webp?width=1920&height=1080",
+      "description": "Les joueurs de GTA 6 prévoient de se passer de voitures pour explorer les détails du monde.&nbsp;&nbsp;GameGPU"
     },
     {
       "title": "In a month, the value of GTA VI publisher fell by almost $6 billion - gameplay showcase and collector's edition announcement did not stop the stock price decline - ixbt.games",
