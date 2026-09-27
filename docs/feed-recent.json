@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-27T20:01:54.028002+00:00",
+  "generated_at": "2026-09-27T21:01:54.632721+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 57.7,
+  "duration_seconds": 56.0,
   "decode_failures": 0,
-  "total_articles": 2489,
-  "new_this_run": 1,
+  "total_articles": 2492,
+  "new_this_run": 3,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 607,
-      "last_article": "2026-09-27T19:44:00+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 610,
+      "last_article": "2026-09-27T20:56:38+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -547,7 +547,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 14,
       "last_article": "2026-09-25T20:20:10+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -703,7 +703,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 18,
       "last_article": "2026-09-21T20:59:51+00:00",
-      "days_since_last_article": 5,
+      "days_since_last_article": 6,
       "status": "ok"
     },
     {
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -976,7 +976,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-09-24T20:55:00+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-07T06:20:38+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 9,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,21 +1203,21 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 3,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "99,99,100,99,99,99,99,99,99,99,99,99",
+    "rockstar-fr": "99,100,99,99,99,99,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1289,8 +1289,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"b98ccc7b1e41c38d9732d1742c6da501\"",
-      "modified": "Sun, 27 Sep 2026 19:36:13 GMT"
+      "etag": "W/\"9cc818b4f65fccc761e5594ec7ea4bda\"",
+      "modified": "Sun, 27 Sep 2026 20:38:53 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1314,8 +1314,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"fb5f595653b02126de8ef1cefb2386ee\"",
-      "modified": "Sun, 27 Sep 2026 19:49:47 GMT"
+      "etag": "W/\"1a4287050c0f1e9ea5580aa4c6e32307\"",
+      "modified": "Sun, 27 Sep 2026 20:57:59 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1330,7 +1330,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 20:01:12 GMT"
+      "modified": "Sun, 27 Sep 2026 21:01:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1339,8 +1339,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab975d3-3077\"",
-      "modified": "Sun, 27 Sep 2026 20:00:19 GMT"
+      "etag": "W/\"6ab983e0-3077\"",
+      "modified": "Sun, 27 Sep 2026 21:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1367,10 +1367,15 @@
       "etag": "\"de40ea85a920eb74e563957e02e92bb0-gzip\"",
       "modified": null
     },
+    "dexerto-fr": {
+      "url": "https://www.dexerto.fr/feed/",
+      "etag": null,
+      "modified": "Sun, 27 Sep 2026 21:00:50 GMT"
+    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 20:01:14 GMT"
+      "modified": "Sun, 27 Sep 2026 21:00:39 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1384,13 +1389,13 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"1fa795d7c10d531651d7b0def4715877\"",
-      "modified": "Sun, 27 Sep 2026 18:00:00 GMT"
+      "etag": "W/\"5f4862ecf45c067f764dc3412570603a\"",
+      "modified": "Sun, 27 Sep 2026 20:29:36 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"fb2601809ef44193523ac0f1808a5661\"",
-      "modified": "Sun, 27 Sep 2026 19:30:02 GMT"
+      "etag": "W/\"a4c1b129dc0992f37441604c8dd763e9\"",
+      "modified": "Sun, 27 Sep 2026 20:32:00 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -1406,6 +1411,19 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "Blacksmith Master face à GTA 6 – Le pari fou d’Hooded - Les Players Du Dimanche",
+      "link": "https://lesplayersdudimanche.com/blacksmith-master-face-a-gta-6-le-pari-fou-dhooded/",
+      "source_link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPRXJ6MEQ4UnBtc1owVWNKZ0hXYVczOWtaMVE4ZW5UN0diSjZ6ZVY2a3g2WmllRXdrUmF1RXBfUGQxS1pyZXFWYVA2NEJZcHRRaDN0Skt3MlRWRGdnQkY4ajcyaDFVOFFvTHZqOHFYd1dHQngtMy1QZFJ2SEtQM1hWYnBJTVZRNXhuR0ZBYw?oc=5",
+      "date": "2026-09-27T20:56:38+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://lesplayersdudimanche.com/wp-content/uploads/2026/09/Blacksmith-Master-face-a-GTA-6-Le-pari-fou-dHooded.png",
+      "description": "Blacksmith Master face à GTA 6 – Le pari fou d’Hooded&nbsp;&nbsp;Les Players Du Dimanche"
+    },
+    {
       "title": "GTA 6 sans IA générative, GTA 5 RP va déjà plus loin - INFINITY AREA",
       "link": "https://infinity-area.com/article/gta-6-sans-ia-generative-gta-5-rp-va-deja-plus-loin",
       "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPN2I3a3ZyaTRuNXZQZHNyTzVXaDFXZktOQkh2NXVScGczSUpHX242SlBZeVlPSUNwUFpwcjNIM1V2NzB1bk9scHpKdlZXdGpUWWZGVUJ1eU9iNGFwLWtOeXY2SXkxUm5pOW03WnI3ZHlZQzFJTkhOWjBGVEs2RTlQUk01aEg5em5yQloybzhn?oc=5",
@@ -1417,6 +1435,19 @@
       "lang": "fr",
       "image": null,
       "description": "GTA 6 sans IA générative, GTA 5 RP va déjà plus loin&nbsp;&nbsp;INFINITY AREA"
+    },
+    {
+      "title": "Des acteurs potentiels pour les rôles principaux de GTA 6 révélés - EGW.News",
+      "link": "https://fr.egw.news/gaming/news/37505/gta-6-lead-actors-for-jason-and-lucia-possibly-rev-SlRt21-WM",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPTGk1V0ROQjdqTG1NRTFEb3ZfUXBlTl9tclA3X2NQZFdOU0YtazFrZEpPOEZpbkxGcnNMaGNrYk1TUFJrM1JsYTBYRDZVeFZiWWRlZnB0X01fS20wRU13ejBQVFdzZE9oNXVQa19NYUczXzNOOEZzTkVlVXFkSEtEaGw3ZkJ6Wk5sV2NsTW9VMkg5UzRfRDVvQ28zZmIxa0k?oc=5",
+      "date": "2026-09-27T19:29:18+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Des acteurs potentiels pour les rôles principaux de GTA 6 révélés&nbsp;&nbsp;EGW.News"
     },
     {
       "title": "Will GTA VI Come to Nintendo Switch 2? Former Rockstar Developer Says It Doesn’t Make Sense - levelup.com",
@@ -1443,6 +1474,19 @@
       "lang": "en",
       "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/Rockstar-Reveals-New-GTA-6-Artwork-of-Jason-and-Lucia.jpg?w=1280",
       "description": "Rockstar Reveals New GTA 6 Artwork of Jason and Lucia&nbsp;&nbsp;VICE"
+    },
+    {
+      "title": "GTA 6 voice cast – Rockstar rappelle les règles du secret - Les Players Du Dimanche",
+      "link": "https://lesplayersdudimanche.com/gta-6-voice-cast-rockstar-rappelle-les-regles-du-secret/",
+      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNT0pBelREVkhRU0ptaXZLbjhmYnZxb0dpMElPR1Q4a2FKcDhSWWxmOE02NDNyNU1CRXNnMmNpQTVoZmVQSVVMZ2ZPaHRFY0lyNGFOeGRScFhNcFpOZDVwOEJKaEJYYjB2RUJjeUN6VFlnb0FhWlNHQ3F1ck5kMlRlOU9YTVFHbU1SRm14WlF6Mm8wRFE?oc=5",
+      "date": "2026-09-27T14:50:03+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://lesplayersdudimanche.com/wp-content/uploads/2026/09/hDEpCpbkvXZtvrswTnCNom-2-1024x576.jpg",
+      "description": "GTA 6 voice cast – Rockstar rappelle les règles du secret&nbsp;&nbsp;Les Players Du Dimanche"
     },
     {
       "title": "GTA 6 Is Coming to Xbox Too, So Why Are PS5 Pre-Orders Dominating? - GamingBolt",
@@ -5367,45 +5411,6 @@
       "lang": "en",
       "image": "https://sm.ign.com/t/ign_za/news/g/gta-6-fans/gta-6-fans-are-outraged-by-400-collectors-set-and-are-compar_3j2e.1200.jpg",
       "description": "GTA 6 Fans Are Outraged by $400 Collector's Set and Are Comparing It to Red Dead Redemption 2's Version&nbsp;&nbsp;IGN Africa"
-    },
-    {
-      "title": "GTA 6 lance son édition collector à 400 €, mais il manque le plus important dans la boîte - BuzzArena",
-      "link": "https://www.buzzarena.com/gta-6-lance-son-edition-collector-a-400-e-mais-il-manque-le-plus-important-dans-la-boite-4564081",
-      "source_link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPeUVGc213TGVCdm0zTm9Tc2ZpVm1ubUZ4ajF0aGpBd0FJcEJna3gtU2N5VW9CS2cwR1hiR05KNVFZaHZWbElvS2VBbXZhRHExQWJTZVV5cmxKeEpDZmZnZ1R6U2w1VEJ1TXQxYjF1bEFoaHh1amtJZXItSUxIUHhpODFlTE1oNWNtazEtZnh2dWJ5N0gzQ2dhN3lHMHhpRlV0d0tROTJnMUlrUlZudHZBSlFUT1YtQWJoOVRFTzZ5RQ?oc=5",
-      "date": "2026-09-24T17:45:49+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.buzzarena.com/wp-content/uploads/2026/09/GTA-6-edition-collector.jpg",
-      "description": "GTA 6 lance son édition collector à 400 €, mais il manque le plus important dans la boîte&nbsp;&nbsp;BuzzArena"
-    },
-    {
-      "title": "Rockstar’s $975,000 GTA 6 “Welcome to Vice City” marketing deal raises eyebrows after Miami-Dade signs off without county board vote - Notebookcheck",
-      "link": "https://www.notebookcheck.net/Rockstar-s-975-000-GTA-6-Welcome-to-Vice-City-marketing-deal-raises-eyebrows-after-Miami-Dade-signs-off-without-county-board-vote.1407662.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMihAJBVV95cUxOdDEtYnpCU1FuWmVNbDY4VGlLYkJubXlJR1htdVJCdHpseEJ6THg2ektETlVvOWhVOVA2LUx3dkRLX3BLNFZEUHUxaE5DS0FueWE3NnotYklaNTNuVUdhTU81RzFHQVFkWGJTUGRtTE1QRktNbktBbXNUNU1xbjJydDBVaHpNTEhFRC05NHdxRDd2ZUtxaFp5aWlwdzRSOVZqTWxhelpTOThDRE5Zd3NjUGJCbXpQalcxLVlPSW13MURrQzk5N3g3MjVRSGMybk5icExCVlUzRUdXd21VQ2E2T2tzTi0waE0ycVNNcjI0MjBhbFJVbFpQb0M0d2lQUklmYjFzRA?oc=5",
-      "date": "2026-09-24T17:43:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA-VI-Welcome-to-Vice-City-Miami-Heat-Stadium-Billboard-Image-Source-gtaleaks-instagram.png",
-      "description": "Rockstar’s $975,000 GTA 6 “Welcome to Vice City” marketing deal raises eyebrows after Miami-Dade signs off without county board vote&nbsp;&nbsp;Notebookcheck"
-    },
-    {
-      "title": "[Grand Theft Auto 6] Jeu de l'année aux Game Awards 2026? - Gamekyo.com",
-      "link": "https://www.gamekyo.com/blog_article488124.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBMMmRkWDdnbS1ZQTlwNjAzQTJabjRGUGFFOU1QZm5nejhPTktuQ3c2OWNJNnlIbERRWGNuc2wwLXh4RE1UWWZuM1VlWVplV3JDS2VIdkNGU0ItNzg?oc=5",
-      "date": "2026-09-24T17:40:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "http://www.gamekyo.com/Webmasters/Images/grand-theft-auto-vi_20220730_060731_intro.jpg",
-      "description": "[Grand Theft Auto 6] Jeu de l'année aux Game Awards 2026?&nbsp;&nbsp;Gamekyo.com"
     }
   ],
   "partial": true,
