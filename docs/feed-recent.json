@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-27T02:01:52.235066+00:00",
+  "generated_at": "2026-09-27T03:02:02.120440+00:00",
   "attente_recap": {
-    "articles": 11,
+    "articles": 0,
     "officiels": 0,
-    "sommet": 2
+    "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 54.5,
+  "duration_seconds": 59.0,
   "decode_failures": 0,
-  "total_articles": 2461,
+  "total_articles": 2463,
   "new_this_run": 2,
   "hot_count": 26,
   "hot_threshold": 3,
@@ -440,7 +440,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 124,
       "last_article": "2026-09-23T17:45:06+00:00",
       "days_since_last_article": 3,
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 733,
-      "last_article": "2026-09-26T22:55:08+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 735,
+      "last_article": "2026-09-27T02:18:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1125,23 +1125,23 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 8,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-24T14:36:26+00:00",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 2,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1232,7 +1232,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1244,7 +1244,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1262,7 +1262,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "47,47,47,47,47,47,48,48,48,48,48,48",
+    "gta6times": "47,47,47,47,47,48,48,48,48,48,48,48",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1341,7 +1341,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 01:59:17 GMT"
+      "modified": "Sun, 27 Sep 2026 03:01:19 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1350,8 +1350,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab878b4-2f38\"",
-      "modified": "Sun, 27 Sep 2026 02:00:20 GMT"
+      "etag": "W/\"6ab886c1-2f38\"",
+      "modified": "Sun, 27 Sep 2026 03:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1378,15 +1378,10 @@
       "etag": "\"de40ea85a920eb74e563957e02e92bb0-gzip\"",
       "modified": null
     },
-    "dexerto-fr": {
-      "url": "https://www.dexerto.fr/feed/",
-      "etag": null,
-      "modified": "Sun, 27 Sep 2026 02:00:40 GMT"
-    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 02:01:15 GMT"
+      "modified": "Sun, 27 Sep 2026 03:01:21 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1405,8 +1400,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"eb5150f1af99444540867a8d154b9b96\"",
-      "modified": "Sat, 26 Sep 2026 21:55:54 GMT"
+      "etag": "W/\"8f6dbdc5599525ec45f1a4b9bf4a058c\"",
+      "modified": "Sun, 27 Sep 2026 02:39:19 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -1421,6 +1416,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 players plan to ditch cars to explore the world's details - GameGPU",
+      "link": "https://en.gamegpu.com/news/igry/igroki-gta-6-planiruyut-otkazatsya-ot-mashin-radi-izucheniya-detalej-mira",
+      "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQNWprLS1fOTFaaWJrQVhLUERURjRuRjV6UzFNbml6YjIzODhhWnlZd3FvQlU5anZzYk1tajY2cXdIMUFOVXI3OGpZckxqaC1TalRNWnl6S0w5QWFRaVpIdEktbGlfQnR4YWVrR1ptX29rb1lSN1lNTmVYUTh5XzRxMHh4bjc4dnpaenlGSl83ckJPMWtMNlpIUUlVNVNFWUJ6RTZvWGcxbGFpZw?oc=5",
+      "date": "2026-09-27T02:18:10+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/6/gius1ngius1ngi_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/6/gius1ngius1ngi_gpu.webp?width=1920&height=1080",
+      "description": "GTA 6 players plan to ditch cars to explore the world's details&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "In a month, the value of GTA VI publisher fell by almost $6 billion - gameplay showcase and collector's edition announcement did not stop the stock price decline - ixbt.games",
+      "link": "https://ixbt.games/en/news/2026/09/27/za-mesiac-stoimost-izdatelia-gta-vi-upala-pocti-na-6-milliarda-dollarov-pokaz-geimpleia-i-anons-kollekcionnogo-izdaniia-ne-ostanovili-snizenie-ceny-akcii.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiogJBVV95cUxOaFlNTGJLa0lwYzhkMEUwTW9qR0xNSVI2YzBJcGgzaFZWWnpCdU13Sk43anplQnNfRDV6eVViRHkxVXJEQ195ejk0ZjducGwxSkhqZWlvNkUtaHBxM1BDRTIyXzVTSVdMWWJ4Y0RnaVJPcVFGbGRWeUtuT3I0Ml9OMm5GV0pIV0M4VDZFdFpmU25tQWFxbmptTHU1VWpTXzJOSDE3SzZxVTNKWC0wd1dWU19QSnhUcDRWbjBqNmhpYWpuTlJLaF9KV043S1BialUzVTNuMzF1SFNsd19Bb0Rjb3NBenpzcURDbWRadFRITERVeG1fT1NoYjZCRkpXMXFoR29ockpJOVp1d3ZnZWFsMkZuS0dFdFJFOUpQbjFhVVlBUdIBpwJBVV95cUxOWGNwSmxMMGlpSDRBOThkRXZaODVSMGpFcXpsWmh4S2dORXJCY1EtMEtUcXJ4Wkc2bVB1eWhwc0xTUnRJWmtuaEVDWnVRV3YtbEI0ckl1b0dwWWN1ZXZDU2VGLVl6cFJ5NmVrY3prcTFuX1ZBWTItUHFGakFjWWlMcFg5QWZuTUVBMVpPemEyUnkySEJkQS1JV29VSDc5d05JVTJuLWlkOG8tb1ZmcW5kZHlJV1dWRWIyWllkREFqNm9meTY1dURNczhsOTlyLXRpYnI3OEJvZlF3eFFZTGVhLWM4T3FtNXh6aTJ3N0pMRHNZYzFXZnYtcjVOQndURWpxdm5tV1VlZDkwSUhBb0MzMG5oX2F1UmFCanA4aFUzN054V0REdm5N?oc=5",
+      "date": "2026-09-27T01:42:21+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1377106/media-ac958c7d9915f20ec615d90f2e68a667f888ccabb4387809fd9b54ea71cc2247.png",
+      "description": "In a month, the value of GTA VI publisher fell by almost $6 billion - gameplay showcase and collector's edition announcement did not stop the stock price decline&nbsp;&nbsp;ixbt.games"
+    },
     {
       "title": "Former Rockstar developer says a GTA 6 Switch 2 port 'doesn't make sense,' but thinks a smartphone version is possible - TweakTown",
       "link": "https://www.tweaktown.com/news/113769/former-rockstar-developer-says-a-gta-6-switch-2-port-doesnt-make-sense-but-thinks-a-smartphone-version-is-possible/index.html",
@@ -5390,38 +5411,6 @@
       "lang": "en",
       "image": "https://d1lss44hh2trtw.cloudfront.net/assets/articles/2026/09/24/rockstar-games-grand-theft-auto-6-goodtime-state-vice-city-collection_feature.jpg",
       "description": "Rockstar announces $399 GTA 6 swag box for pre-order&nbsp;&nbsp;Shacknews"
-    },
-    {
-      "title": "GTA VI Vice City Collection Costs $399.99, Game Not Included - Game News Plus",
-      "link": "https://gamenewsplus.net/news/gta-vi-vice-city-collection-costs-399-99-game-sold-separately-38947/",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNT1hLaVQ2enl3cmd4aGtaTzBVZElwQWxqcTN2MkFoTHA2MXZEYUQ1SVVxUXJSUFVSQ0pHclFCV3hZQUFGSzVxVHoyNzlKVU5DSGFYWi1odGlUMlpUV013Nlc0X1dMVHVrbVE0ZDJKTkUtQ1pqTHM3U0hZNUZza1d3M01ZTUhHdGxfamZEaWo3QzhUeTZOSGVWR3ktZVM5RGc?oc=5",
-      "date": "2026-09-24T16:24:39+00:00",
-      "source": "Google News (EN, 7 jours)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gamenewsplus.net/wp-content/uploads/2026/09/Grand-Theft-Auto-VI-The-Goodtime-State-–-Vice-City-Collection.webp",
-      "description": "GTA VI Vice City Collection Costs $399.99, Game Not Included&nbsp;&nbsp;Game News Plus",
-      "extraSources": [
-        {
-          "source": "Google News (annonces Rockstar)",
-          "link": "https://www.techpowerup.com/353065/rockstar-reveals-gta-6-vice-city-collection-box-at-usd-399-99-game-not-included"
-        }
-      ]
-    },
-    {
-      "title": "GTA 6 : Rockstar lance une version collector à 400 euros… sans le jeu - Frandroid",
-      "link": "https://www.frandroid.com/produits-android/console/3260055_gta-6-rockstar-lance-une-version-collector-a-400-euros-sans-le-jeu",
-      "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOQlI0WDgydXNlem1WNEtHV3RFUDgyd3RkSi04WXQtNlhjNldLVkhDbXlMYXAyNVpUbGZRcXhGRzhncDItazdSYkhFTVYzNzZqZUctVi1XQmswbnJsdnJOYU82WC1maFoxRjk4c1U2ZXkzOUFYXzZFZzNwdGFvaEVmTmdnaXNmUTl1MEVFV1h3cGVoWEVVbkVEVzlzNUpSNDNEQ2RRWmQxejhodnFIMGhLM2llMjRrTHZUbi1tMWh2ZWRCRVk?oc=5",
-      "date": "2026-09-24T16:23:35+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/image-457.png?resize=1600,900&key=bf0e94ff",
-      "description": "GTA 6 : Rockstar lance une version collector à 400 euros… sans le jeu&nbsp;&nbsp;Frandroid"
     }
   ],
   "partial": true,
