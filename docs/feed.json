@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T06:01:58.578141+00:00",
+  "generated_at": "2026-09-27T07:01:53.615319+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 55.6,
+  "duration_seconds": 52.8,
   "decode_failures": 0,
-  "total_articles": 2466,
-  "new_this_run": 0,
+  "total_articles": 2468,
+  "new_this_run": 2,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -463,15 +463,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 30,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 597,
-      "last_article": "2026-09-27T05:12:00+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 598,
+      "last_article": "2026-09-27T06:40:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 737,
-      "last_article": "2026-09-27T05:11:28+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 738,
+      "last_article": "2026-09-27T06:14:51+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -626,7 +626,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 37,
       "last_article": "2026-09-26T07:00:32+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -769,7 +769,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-17T06:02:18+00:00",
-      "days_since_last_article": 9,
+      "days_since_last_article": 10,
       "status": "ok"
     },
     {
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -925,7 +925,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-09-04T07:00:00+00:00",
-      "days_since_last_article": 22,
+      "days_since_last_article": 23,
       "status": "ok"
     },
     {
@@ -1016,7 +1016,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-09-03T07:00:00+00:00",
-      "days_since_last_article": 23,
+      "days_since_last_article": 24,
       "status": "ok"
     },
     {
@@ -1042,7 +1042,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 13,
       "last_article": "2026-08-22T07:00:00+00:00",
-      "days_since_last_article": 35,
+      "days_since_last_article": 36,
       "status": "tarie"
     },
     {
@@ -1120,21 +1120,21 @@
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-07T06:20:38+00:00",
-      "days_since_last_article": 19,
+      "days_since_last_article": 20,
       "status": "ok"
     },
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 8,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1204,24 +1204,19 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 2,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
     "rockstar-youtube": {
-      "depuis": "2026-09-27T02:01:52.234310+00:00",
-      "succes": 0,
-      "alertee": false
-    },
-    "rockstarmag-youtube": {
       "depuis": "2026-09-27T02:01:52.234310+00:00",
       "succes": 1,
       "alertee": false
@@ -1233,7 +1228,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1240,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,15",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1263,7 +1258,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "47,48,48,48,48,48,48,48,48,48,48,48",
+    "gta6times": "48,48,48,48,48,48,48,48,48,48,48,48",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1342,7 +1337,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 05:59:37 GMT"
+      "modified": "Sun, 27 Sep 2026 06:56:39 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1346,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab8b0f2-2f7c\"",
-      "modified": "Sun, 27 Sep 2026 06:00:18 GMT"
+      "etag": "W/\"6ab8beff-2fa3\"",
+      "modified": "Sun, 27 Sep 2026 07:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1377,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 06:01:20 GMT"
+      "modified": "Sun, 27 Sep 2026 07:01:02 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1396,8 +1391,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"ff9590854918d63c9de88c7a547abb4b\"",
-      "modified": "Sun, 27 Sep 2026 05:48:00 GMT"
+      "etag": "W/\"0d5290dc39db1c46eb717105a997a60a\"",
+      "modified": "Sun, 27 Sep 2026 06:28:03 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1417,6 +1412,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : Rockstar a-t-il caché des indices sur le jeu dans la bande-son ? On a analysé les premiers morceaux - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2106220/gta-6-rockstar-a-t-il-cache-des-indices-sur-le-jeu-dans-la-bande-son-on-a-analyse-les-premiers-morceaux.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQbEdab0JvSUt5UXc4V0pPQmdjendxUTM1UTM2MHBFaHFkTkRTUDBKdlFQY3lfa1c3ajRMMXkxMDVPeUtWZENTOEw1TG5BQ2FsazJGRThZVHpBTnc3UGJ4REp3WU11cTJXNWY0V21yZmpDY0tWMVRBbDlrNjM4Z09OWkNNcW1BWFJlQ2lwelhsVkdXZ1RhM1hqREV3R3o3NVAwY0dTTURNVndFc0gwVWd1Rl8xQWdTZ25BdXAyelkwTjBydE51MkZQU2NZMHRSUWcxOHRNdmNjVHViamNjNGxB?oc=5",
+      "date": "2026-09-27T06:40:12+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/179035/1790347491-979-card.jpg",
+      "description": "GTA 6 : Rockstar a-t-il caché des indices sur le jeu dans la bande-son ? On a analysé les premiers morceaux&nbsp;&nbsp;JeuxVideo.com"
+    },
+    {
+      "title": "Too much is expected from GTA VI: Insider Gaming editorial predicts scores below 90 points - ixbt.games",
+      "link": "https://ixbt.games/en/news/2026/09/27/438564-ot-gta-vi-zdut-sliskom-mnogogo-redakciia-insider-gaming-prognoziruet-ocenki-nize-90-ballov.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNclgtb1VicVVrM1FERjA2T1U0dFI5WnEyXzlQUV9OUWJCalBsTDBlNTdNVmxlYjF2Tkh6UE94TjJBUF9kN1Zob2RxZm1IWFBjX2hpeHMyZEVTd2tDenNVNF9lSlZMTHpKTWR4TXZWeVQ5WGpQVkpYOGhxYzY3SmlCeXFCWmw4MmtwY005eEFJVHJYNEw1RHg1bUdwU1pUZlpkcW4zQUxXckJpeGpPZ0diRWJNUU92UTF2R0U1N3h4ZUxxWHNOVnFIOHBCaDl1R2ZPWlFIdlZkRdIB3AFBVV95cUxNMWE0UUNfV1NHU2dvSEdVZXNEQjhuWGNpOVJNTER2aEphUi1LQ19LWkw4Zkg0Z3JOT01pR2xIdFZySVJNRUk4cS1fS0w0VkFRRTdpLWltWkY5MWM0c0RPTlN4X1NPTG9QS25uR3pmYzV3UzhKUWFSSlp2XzBXLXZrODZzRnQ3WUxwVmU0Y0NWSmlDaWEyQjRBSkMtalhkU2tFNVdLR3EzRWR5ZDFaS2JzbjNGV0U2M1VMYy1sVXRCLURCNDVkUnl3WEcwSjVjMHphd1EzMV9SX0E1UG91?oc=5",
+      "date": "2026-09-27T06:14:51+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1377183/f96f7f27-c5e8-4c9f-8d81-cf03b54a6488.jpg",
+      "description": "Too much is expected from GTA VI: Insider Gaming editorial predicts scores below 90 points&nbsp;&nbsp;ixbt.games"
+    },
     {
       "title": "E.Leclerc assomme la concurrence : GTA 6 est disponible à prix record ce dimanche - 20 Minutes",
       "link": "https://www.20minutes.fr/guide-achat/4248817-20260927-e-leclerc-assomme-concurrence-gta-6-disponible-prix-record-dimanche",
