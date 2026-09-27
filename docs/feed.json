@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T01:01:58.300726+00:00",
+  "generated_at": "2026-09-27T02:01:52.235066+00:00",
   "attente_recap": {
     "articles": 11,
     "officiels": 0,
@@ -48,10 +48,10 @@
     ]
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 55.6,
+  "duration_seconds": 54.5,
   "decode_failures": 0,
-  "total_articles": 2459,
-  "new_this_run": 1,
+  "total_articles": 2461,
+  "new_this_run": 2,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -469,7 +469,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 117,
       "last_article": "2026-09-26T14:59:38+00:00",
       "days_since_last_article": 0,
@@ -482,8 +482,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 122,
+      "new_this_run": 2,
+      "articles_exclusifs": 124,
       "last_article": "2026-09-23T17:45:06+00:00",
       "days_since_last_article": 3,
       "status": "ok"
@@ -504,15 +504,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 30,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -582,10 +582,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 14,
       "last_article": "2026-09-25T20:20:10+00:00",
@@ -660,15 +660,15 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 37,
       "last_article": "2026-09-26T07:00:32+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -933,10 +933,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1167,15 +1167,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 8,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1245,25 +1245,36 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-27T02:01:52.234310+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-27T02:01:52.234310+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1275,7 +1286,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1293,7 +1304,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "47,47,47,47,47,47,47,48,48,48,48,48",
+    "gta6times": "47,47,47,47,47,47,48,48,48,48,48,48",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1372,7 +1383,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 01:00:07 GMT"
+      "modified": "Sun, 27 Sep 2026 01:59:17 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1381,8 +1392,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab86aa0-2f38\"",
-      "modified": "Sun, 27 Sep 2026 01:00:16 GMT"
+      "etag": "W/\"6ab878b4-2f38\"",
+      "modified": "Sun, 27 Sep 2026 02:00:20 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1401,18 +1412,23 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab85a6d-ba2\"",
-      "modified": "Sat, 26 Sep 2026 23:51:09 GMT"
+      "etag": "\"6ab8768d-ba1\"",
+      "modified": "Sun, 27 Sep 2026 01:51:09 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
       "etag": "\"de40ea85a920eb74e563957e02e92bb0-gzip\"",
       "modified": null
     },
+    "dexerto-fr": {
+      "url": "https://www.dexerto.fr/feed/",
+      "etag": null,
+      "modified": "Sun, 27 Sep 2026 02:00:40 GMT"
+    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 27 Sep 2026 01:01:07 GMT"
+      "modified": "Sun, 27 Sep 2026 02:01:15 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -31229,6 +31245,19 @@
       "description": "GTA 6 takes iconic features from Red Dead Redemption 2 including Dead Eye & Honor System&nbsp;&nbsp;dexerto.com"
     },
     {
+      "title": "Sensor Tower: Netflix US mobile viewership increased 35% during GTA 6 extended preview - GamesIndustry.biz",
+      "link": "https://www.gamesindustry.biz/sensor-tower-netflix-us-mobile-viewership-increased-35-during-gta-6-extended-preview",
+      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOem1qSUVGOWYyN0lqSEdBQWdoTWtBOTBaektucmpHVkQtQko0Qkc1TDZqYnhRUXNQYWlrOFlXRGQzRC1OeEdMWGtJNUwydzFqQjRrSlNlMEZIeERCYnhzcmNnTk4xN1pzUm50d19kTkp4UlJ0bGc2azNvVjk5dmhSbl9iMGVJcENZYXRwdFB0Z2xuVFJJM3JmQnpNLURVWmVMUmZRZ0hOU1NlbDZQNXFRbkVkVG0?oc=5",
+      "date": "2026-08-28T07:00:00+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": "en",
+      "image": "https://assetsio.gnwcdn.com/lucia-jason-gta.jpg?width=1200&height=630&fit=crop&enable=upscale&auto=webp",
+      "description": "Sensor Tower: Netflix US mobile viewership increased 35% during GTA 6 extended preview&nbsp;&nbsp;GamesIndustry.biz"
+    },
+    {
       "title": "GTA 6 : les nouvelles images en 4K sont là et elles sont de toute beauté",
       "link": "https://www.journaldugeek.com/2026/08/28/gta-6-les-nouvelles-images-en-4k-sont-la-et-elles-sont-de-toute-beaute/",
       "source_link": null,
@@ -32390,6 +32419,19 @@
       "lang": "en",
       "image": "https://www.whats-on-netflix.com/wp-content/uploads/2026/08/gta-vi-preview-crashes-netflix.jpg",
       "description": "Netflix Survived the ‘GTA VI’ Premiere (Mostly)&nbsp;&nbsp;What's on Netflix"
+    },
+    {
+      "title": "More GTA 6 Previews Follow Netflix Stream to Reveal Even More About the Game - polygon.com",
+      "link": "https://www.polygon.com/gta-6-preview-roundup/",
+      "source_link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBQV0h5ZUhRV0ZrWjJDek55ZVBaTWdVMVdYajJraU9hQVV5YjAzR1hMaWh3TGh6NkxCSTB1NVdaNFI3VDhEQS1URGtXdWtkTmtLeVhwWlJfUXQ5QQ?oc=5",
+      "date": "2026-08-27T07:00:00+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": "en",
+      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/08/gta-6-mount-kalaga-grand-theft-auto.jpg?w=1600&h=900&fit=crop",
+      "description": "More GTA 6 Previews Follow Netflix Stream to Reveal Even More About the Game&nbsp;&nbsp;polygon.com"
     },
     {
       "title": "GTA 6 | Découvrez la nouvelle preview du jeu - Rockstar Mag",
