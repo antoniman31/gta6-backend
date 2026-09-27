@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-26T23:48:16.919751+00:00",
+  "generated_at": "2026-09-27T00:01:56.344747+00:00",
   "attente_recap": {
-    "articles": 10,
+    "articles": 11,
     "officiels": 0,
     "sommet": 2
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 55.7,
+  "duration_seconds": 53.9,
   "decode_failures": 0,
   "total_articles": 2458,
-  "new_this_run": 3,
+  "new_this_run": 1,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -479,8 +479,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 595,
+      "new_this_run": 1,
+      "articles_exclusifs": 596,
       "last_article": "2026-09-26T20:05:03+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -492,7 +492,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 733,
       "last_article": "2026-09-26T22:55:08+00:00",
       "days_since_last_article": 0,
@@ -518,8 +518,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 46,
+      "new_this_run": 0,
+      "articles_exclusifs": 45,
       "last_article": "2026-09-25T17:44:06+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 8,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {},
@@ -1251,7 +1251,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "47,47,47,47,47,47,47,47,47,48,48,48",
+    "gta6times": "47,47,47,47,47,47,47,47,48,48,48,48",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1330,7 +1330,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 23:47:30 GMT"
+      "modified": "Sat, 26 Sep 2026 23:56:42 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1339,8 +1339,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab85588-2f38\"",
-      "modified": "Sat, 26 Sep 2026 23:30:16 GMT"
+      "etag": "W/\"6ab85c92-2f38\"",
+      "modified": "Sun, 27 Sep 2026 00:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1359,8 +1359,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab83e4e-ba1\"",
-      "modified": "Sat, 26 Sep 2026 21:51:10 GMT"
+      "etag": "\"6ab85a6d-ba2\"",
+      "modified": "Sat, 26 Sep 2026 23:51:09 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1370,7 +1370,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 26 Sep 2026 23:46:44 GMT"
+      "modified": "Sun, 27 Sep 2026 00:01:19 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1501,6 +1501,19 @@
       "lang": "en",
       "image": "https://i.tribune.com.pk/media/images/pg-2-top-right-pic1768950532-0/pg-2-top-right-pic1768950532-0-640x480.webp",
       "description": "Xbox responds to reports of GTA 6 pre-orders favouring PS5&nbsp;&nbsp;tribune.com.pk"
+    },
+    {
+      "title": "L'acteur de Red Dead Redemption 2 a parlé de sa ressemblance avec Jason de GTA 6 - EGW.News",
+      "link": "https://fr.egw.news/gaming/news/37483/red-dead-redemption-2s-actor-speaks-about-similari-0qe1wpAUz",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQQVIxRW42Sm45SDhIZ19MaEREb1l2R0RlSnN0VFhDUU5MUVctZDE2OE5PRU9VQm5TS0d0OHdxNGlTM0xHNmhIazREUzNqMXZoSFoybGdBTGhRS3JNRTRoNTUyQVpsM0NhREV3QjV6MjgtQUlpTFJMTVY1QnR6ZFlwVVY4RXlHclhFSnZEN2ZQbFNodUs3TFJVLWpwS19HdWs?oc=5",
+      "date": "2026-09-26T17:24:40+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "L'acteur de Red Dead Redemption 2 a parlé de sa ressemblance avec Jason de GTA 6&nbsp;&nbsp;EGW.News"
     },
     {
       "title": "GTA 6 Vice City Collection includes 11-piece collector’s box without game - The Express Tribune",
@@ -5393,19 +5406,6 @@
       "lang": "fr",
       "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/image-457.png?resize=1600,900&key=bf0e94ff",
       "description": "GTA 6 : Rockstar lance une version collector à 400 euros… sans le jeu&nbsp;&nbsp;Frandroid"
-    },
-    {
-      "title": "Tout ce qu'on sait sur GTA 6: The Goodtime State – Vice City Collection – prix, date de sortie et autres détails - EGW.News",
-      "link": "https://fr.egw.news/gaming/news/37437/everything-known-about-gta-6-the-goodtime-state-vi-HJ_qRGwUU",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOWk1XZlMxMFNtajhYMGY2NHV2czlwc1F1OTN6Q0dDR3RXXzZpNXpBa3V3ZW5OLWJQOUw4VEVTMzhBdW5nS1JUXzBmSjVyN05rVXJwcXFuSlEycEFSb28zcVlQLU1TMnZ3aHlIWUNpZDVkRGxqZ0VvdUE2YU16NDFGUi1FWkozMUNiT1BsQlc1WXdsN0pLNzdTN2tQSTNyRTA?oc=5",
-      "date": "2026-09-24T16:21:48+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "Tout ce qu'on sait sur GTA 6: The Goodtime State – Vice City Collection – prix, date de sortie et autres détails&nbsp;&nbsp;EGW.News"
     }
   ],
   "partial": true,
