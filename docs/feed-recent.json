@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-28T01:02:04.578676+00:00",
+  "generated_at": "2026-09-28T02:01:53.418053+00:00",
   "attente_recap": {
-    "articles": 3,
+    "articles": 4,
     "officiels": 0,
     "sommet": 1
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 61.6,
+  "duration_seconds": 55.1,
   "decode_failures": 0,
-  "total_articles": 2498,
-  "new_this_run": 1,
+  "total_articles": 2500,
+  "new_this_run": 2,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -440,8 +440,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 126,
+      "new_this_run": 1,
+      "articles_exclusifs": 127,
       "last_article": "2026-09-23T17:45:06+00:00",
       "days_since_last_article": 4,
       "status": "ok"
@@ -462,15 +462,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 31,
-      "status": "tarie"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 610,
-      "last_article": "2026-09-27T20:56:38+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 611,
+      "last_article": "2026-09-27T22:21:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,7 +492,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 744,
       "last_article": "2026-09-27T22:21:36+00:00",
       "days_since_last_article": 0,
@@ -618,15 +618,15 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 37,
       "last_article": "2026-09-26T07:00:32+00:00",
       "days_since_last_article": 1,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 9,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,25 +1203,36 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 3,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "rockstar-youtube": {
+      "depuis": "2026-09-28T02:01:53.417318+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-28T02:01:53.417318+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "99,99,99,99,99,99,99,99,99,99,99,99",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1233,7 +1244,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1330,7 +1341,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 01:01:19 GMT"
+      "modified": "Mon, 28 Sep 2026 02:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1339,8 +1350,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab9bc20-3077\"",
-      "modified": "Mon, 28 Sep 2026 01:00:16 GMT"
+      "etag": "W/\"6ab9ca2f-3077\"",
+      "modified": "Mon, 28 Sep 2026 02:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1359,8 +1370,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab9abf6-b3e\"",
-      "modified": "Sun, 27 Sep 2026 23:51:18 GMT"
+      "etag": "\"6ab9c80e-b3e\"",
+      "modified": "Mon, 28 Sep 2026 01:51:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1370,7 +1381,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 01:01:04 GMT"
+      "modified": "Mon, 28 Sep 2026 02:01:10 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1417,6 +1428,19 @@
       "lang": "en",
       "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/6/Image_yqf8i0yqf8i0yqf8_ggpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/6/Image_yqf8i0yqf8i0yqf8_ggpu.webp?width=1920&height=1080",
       "description": "A former Rockstar developer explained why GTA 6 doesn't make sense for the Switch 2.&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "Un ancien développeur de Rockstar a expliqué pourquoi GTA 6 n'a pas de sens sur Switch 2. - GameGPU",
+      "link": "https://fr.gamegpu.com/news/igry/byvshij-razrabotchik-rockstar-obyasnil-pochemu-gta-6-ne-imeet-smysla-vypuskat-na-switch-2",
+      "source_link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNZ3Fwa0daSXBTcFM1a19Ydm45MkxkQUM4TUxVYjBpaWpCOVBwMVdFVGVtbTNYMDBzNy1oNndaRnJpRjdNVWVzSFlxRVRCWjRqeFVZeDhndW9xTWR4Sy1WLUlXalgxMnhuMzhucXg5ZlVLNkFKQ3pRbEFTRUVpaHlDZUFxS2M1TGhIZFlsQ29fTXBxSkQ4TGtBWFQ1cUh2cjNyekVFNFJGcGFyZFV5T3FuMDNNZF8tSUNZaC1uZk5uQQ?oc=5",
+      "date": "2026-09-27T22:21:36+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q3/Sent/6/Image_yqf8i0yqf8i0yqf8_ggpu.webp#joomlaImage://local-images/1_2026/NEWS/Q3/Sent/6/Image_yqf8i0yqf8i0yqf8_ggpu.webp?width=1920&height=1080",
+      "description": "Un ancien développeur de Rockstar a expliqué pourquoi GTA 6 n'a pas de sens sur Switch 2.&nbsp;&nbsp;GameGPU"
     },
     {
       "title": "Blacksmith Master face à GTA 6 – Le pari fou d’Hooded - Les Players Du Dimanche",
@@ -5381,19 +5405,6 @@
       "lang": "en",
       "image": "https://consequence.net/wp-content/uploads/2026/09/gta-6-collectors-box-no-game.jpg",
       "description": "Rockstar Unveils $400 Grand Theft Auto VI Collector's Set — But It Doesn't Include the Game&nbsp;&nbsp;consequence.net"
-    },
-    {
-      "title": "Pre-orders open for the $400 GTA 6 Collectors Edition - TheSixthAxis",
-      "link": "https://www.thesixthaxis.com/2026/09/24/pre-orders-open-for-the-400-gta-6-collectors-edition/",
-      "source_link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNZWs4R0pxd0Ruck54dUd1cjZfaWM2eU5TcEZXMkdMZGoxRlMydlJQbDh1b3lMXzNUdEswclctc1lVZk9lbEp1dmJIblZ2WVpnZGlZU3VCR0ZTamJwd1RodHZEaExza2Y2cHI5SjE1enptV3BaLURJcWVQM1AxWlktaml2cUNHaE9mYWFBRk00eTlvcnhzT1ZUSA?oc=5",
-      "date": "2026-09-24T18:07:50+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.thesixthaxis.com/wp-content/uploads/2026/06/GTA6-UltimateEdition-hero500.jpg",
-      "description": "Pre-orders open for the $400 GTA 6 Collectors Edition&nbsp;&nbsp;TheSixthAxis"
     }
   ],
   "partial": true,
