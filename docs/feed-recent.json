@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-28T05:46:20.414917+00:00",
+  "generated_at": "2026-09-28T06:02:05.333740+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 57.8,
+  "duration_seconds": 62.9,
   "decode_failures": 0,
-  "total_articles": 2509,
-  "new_this_run": 3,
+  "total_articles": 2511,
+  "new_this_run": 2,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -427,7 +427,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 120,
       "last_article": "2026-09-28T03:11:24+00:00",
       "days_since_last_article": 0,
@@ -462,15 +462,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 31,
-      "status": "cassee"
+      "status": "tarie"
     },
     {
       "id": "gnews-fr",
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 614,
-      "last_article": "2026-09-28T05:25:00+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 616,
+      "last_article": "2026-09-28T05:37:30+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 9,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1168,7 +1168,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 10,
       "last_article": "2026-09-25T11:06:00+00:00",
       "days_since_last_article": 2,
@@ -1177,6 +1177,19 @@
     {
       "id": "xboxygen-natif",
       "name": "Xboxygen (flux natif)",
+      "entries_fetched": 50,
+      "http_status": 200,
+      "redirect": null,
+      "not_modified": false,
+      "new_this_run": 0,
+      "articles_exclusifs": 0,
+      "last_article": null,
+      "days_since_last_article": null,
+      "status": "tarie"
+    },
+    {
+      "id": "jdg-site",
+      "name": "Journal du Geek (flux natif)",
       "entries_fetched": 0,
       "http_status": null,
       "redirect": null,
@@ -1188,36 +1201,23 @@
       "status": "tarie"
     },
     {
-      "id": "jdg-site",
-      "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 30,
-      "http_status": 200,
-      "redirect": null,
-      "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 0,
-      "last_article": null,
-      "days_since_last_article": null,
-      "status": "tarie"
-    },
-    {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 3,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-28T02:01:53.417318+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "rockstarmag-youtube": {
@@ -1232,7 +1232,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1244,7 +1244,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1341,17 +1341,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 05:42:54 GMT"
+      "modified": "Mon, 28 Sep 2026 05:58:43 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"ab5b70936970a17d2151325c4c34b56a\"",
-      "modified": "Mon, 28 Sep 2026 05:10:05 GMT"
+      "etag": "\"4d4432f2d4de22600105091ea1a79c94\"",
+      "modified": "Mon, 28 Sep 2026 05:48:25 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab9fb68-3077\"",
-      "modified": "Mon, 28 Sep 2026 05:30:16 GMT"
+      "etag": "W/\"6aba0271-3039\"",
+      "modified": "Mon, 28 Sep 2026 06:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1370,8 +1370,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ab9e42e-b3e\"",
-      "modified": "Mon, 28 Sep 2026 03:51:10 GMT"
+      "etag": "\"6aba004f-b3d\"",
+      "modified": "Mon, 28 Sep 2026 05:51:11 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1381,7 +1381,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 05:45:24 GMT"
+      "modified": "Mon, 28 Sep 2026 06:01:20 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1390,13 +1390,13 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"fd28c319ec324897cbcb00f54dc4c10f\"",
-      "modified": "Mon, 28 Sep 2026 05:29:07 GMT"
+      "etag": "W/\"c0a92a209db06679ae6efcd92695b399\"",
+      "modified": "Mon, 28 Sep 2026 06:00:58 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"533967ef54d6eb899292b5e310f9a29d\"",
-      "modified": "Mon, 28 Sep 2026 05:31:07 GMT"
+      "etag": "W/\"18c61e461c1f81bffe03f7b8143c7257\"",
+      "modified": "Mon, 28 Sep 2026 05:49:43 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1405,8 +1405,8 @@
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
-      "etag": "W/\"9d76cbb9a05dfe98edea97551a3f4570\"",
-      "modified": "Sun, 27 Sep 2026 16:44:44 GMT"
+      "etag": "W/\"d14f6c552d7a71b001c217461de2b96c\"",
+      "modified": "Mon, 28 Sep 2026 06:00:00 GMT"
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
@@ -1416,6 +1416,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Pourquoi Blacksmith Master sort délibérément le même jour que GTA 6 - Goclecd.fr",
+      "link": "https://www.goclecd.fr/pourquoi-blacksmith-master-sort-meme-jour-gta-6-news-r/",
+      "source_link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPZDRuT294N3RGY0s2OExXRzhkbnhDbTQtTG9JWkdiNEcwSDNGUGlaZnU4d0I3LXZQVmhwZDhTZ0Nqd1VHMHRqb0dGV0IzdmZxeXVYb2l1LVJMWGwtWklpTWJNbVM1WTZhQ1pTSXpSekh2LXRIclduanpqdENDZlBVMVBrZk4?oc=5",
+      "date": "2026-09-28T05:37:30+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.goclecd.fr/wp-content/uploads/featured-blacksmith-master-hooded-horse-launch-same-day-gta-6-not-afraid-early-access-1.0.webp",
+      "description": "Pourquoi Blacksmith Master sort délibérément le même jour que GTA 6&nbsp;&nbsp;Goclecd.fr"
+    },
     {
       "title": "GTA 6 approche : ces astuces pour s'équiper en console sans exploser son budget de fin d'année - Le Tribunal du Net",
       "link": "https://www.letribunaldunet.fr/bons-plans/gta-6-bons-plans-console-pas-cher.html",
@@ -5386,19 +5399,6 @@
           "link": "https://www.pesesurstart.com/2026/09/24/gta-6-un-coffret-de-560-qui-inclut-tout-sauf-le-jeu"
         }
       ]
-    },
-    {
-      "title": "Wardogs lead argues higher GTA 6 price could have set trend that prevents layoffs - Notebookcheck",
-      "link": "https://www.notebookcheck.net/Wardogs-lead-argues-higher-GTA-6-price-could-have-set-trend-that-prevents-layoffs.1407649.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNMkhKLU5rOFRKdlgtRFB6ZjVWQWVJUktUeXZHemNkVWFVZHBiOHBsLWRpWDh6RExhZjZ3dmNCZUU2VlhBTFJtX1BtOWxnTXlfMEZKeThGOVA3S1UwTVRzMG8wTnNIcWtLdjBrdldfcmZnU1liUV9MRFFVYzJLaHQ2c2I4UHNselN5ZVRCZ0c3MXE3OFBzYjlBXzcxU1RrRUp6YnNjZnM1d25XMXNpa3QtRFBrN0tJaU1lRDdrOHVvVzd5SlhB?oc=5",
-      "date": "2026-09-24T18:25:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6Money.jpg",
-      "description": "Wardogs lead argues higher GTA 6 price could have set trend that prevents layoffs&nbsp;&nbsp;Notebookcheck"
     }
   ],
   "partial": true,
