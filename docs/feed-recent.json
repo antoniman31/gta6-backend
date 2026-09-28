@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-28T00:01:56.577302+00:00",
+  "generated_at": "2026-09-28T01:02:04.578676+00:00",
   "attente_recap": {
-    "articles": 2,
+    "articles": 3,
     "officiels": 0,
     "sommet": 1
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 54.9,
+  "duration_seconds": 61.6,
   "decode_failures": 0,
-  "total_articles": 2497,
-  "new_this_run": 0,
+  "total_articles": 2498,
+  "new_this_run": 1,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -469,8 +469,8 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 30,
-      "status": "ok"
+      "days_since_last_article": 31,
+      "status": "tarie"
     },
     {
       "id": "gnews-fr",
@@ -492,8 +492,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 743,
+      "new_this_run": 1,
+      "articles_exclusifs": 744,
       "last_article": "2026-09-27T22:21:36+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 9,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 3,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1330,7 +1330,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 00:01:18 GMT"
+      "modified": "Mon, 28 Sep 2026 01:01:19 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1339,8 +1339,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab9ae13-3077\"",
-      "modified": "Mon, 28 Sep 2026 00:00:19 GMT"
+      "etag": "W/\"6ab9bc20-3077\"",
+      "modified": "Mon, 28 Sep 2026 01:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1370,7 +1370,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 00:01:20 GMT"
+      "modified": "Mon, 28 Sep 2026 01:01:04 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1456,6 +1456,19 @@
       "lang": "fr",
       "image": null,
       "description": "Des acteurs potentiels pour les rôles principaux de GTA 6 révélés&nbsp;&nbsp;EGW.News"
+    },
+    {
+      "title": "Grand Theft Auto 6 Early Review First 8 Hours (GTA VI 偽のレビュー) - youtu.be",
+      "link": "https://youtu.be/lx5fuVTutzY?si=o5Sr2vWKiE_BUqvQ",
+      "source_link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBXdnU4YjQ4cGF6c1ZrQ0MwaDJaYi1nNVpxMGJ4YllPdVBpWm1LVHE1RGxqc05WdlFtTVBMWjd5Z1RKMmRZcnBGMHJBRFduZk0tcGxlXzU1LUlTSmhq?oc=5",
+      "date": "2026-09-27T18:30:27+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://i.ytimg.com/vi/lx5fuVTutzY/hqdefault.jpg",
+      "description": "Grand Theft Auto 6 Early Review First 8 Hours (GTA VI 偽のレビュー)&nbsp;&nbsp;youtu.be"
     },
     {
       "title": "Will GTA VI Come to Nintendo Switch 2? Former Rockstar Developer Says It Doesn’t Make Sense - levelup.com",
@@ -5381,19 +5394,6 @@
       "lang": "en",
       "image": "https://www.thesixthaxis.com/wp-content/uploads/2026/06/GTA6-UltimateEdition-hero500.jpg",
       "description": "Pre-orders open for the $400 GTA 6 Collectors Edition&nbsp;&nbsp;TheSixthAxis"
-    },
-    {
-      "title": "GTA 6 Gives Fans a New Way to Enjoy Vice City Ahead of Launch - AOL.com",
-      "link": "https://www.aol.com/articles/gta-6-gives-fans-way-180555000.html",
-      "source_link": "https://news.google.com/rss/articles/CBMickFVX3lxTFBkQldZSW8zbHpNdVZSS2sxT1ZLcnZIV2RzSHZsaFRMaTVnQnZ2akI2bFpld2laYTcwdlhlSkpRS3Y5RHdwbEdxSWNyaUpzUUFaa2Y0eGwtNXJET0hWdlhFakk2OGVDWldpU3VqMHpWU1Rodw?oc=5",
-      "date": "2026-09-24T18:05:55+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://hermes.media.transform.aol.com/f1822fdc3395950be34f16db65a16123cf3bea1d/w_1200,c_scale,f_auto,q_auto/https://hermes.media.static.aol.com/media/2026/09/24/1fe85395-5db9-3a9c-8eba-e1a83d46348d/2f4de1cc-0c7e-42c4-a544-8ce5b3a09924.jpg",
-      "description": "GTA 6 Gives Fans a New Way to Enjoy Vice City Ahead of Launch&nbsp;&nbsp;AOL.com"
     }
   ],
   "partial": true,
