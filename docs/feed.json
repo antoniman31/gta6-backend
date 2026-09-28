@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T04:02:03.367373+00:00",
+  "generated_at": "2026-09-28T05:01:58.680497+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,9 +7,9 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 61.3,
+  "duration_seconds": 60.0,
   "decode_failures": 0,
-  "total_articles": 2503,
+  "total_articles": 2506,
   "new_this_run": 3,
   "hot_count": 26,
   "hot_threshold": 3,
@@ -428,7 +428,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 119,
       "last_article": "2026-09-28T03:11:24+00:00",
       "days_since_last_article": 0,
@@ -441,7 +441,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 128,
       "last_article": "2026-09-23T17:45:06+00:00",
       "days_since_last_article": 4,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 611,
-      "last_article": "2026-09-27T22:21:36+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 613,
+      "last_article": "2026-09-28T04:05:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 744,
-      "last_article": "2026-09-28T03:11:24+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 745,
+      "last_article": "2026-09-28T04:25:02+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -1100,10 +1100,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 16,
       "last_article": "2026-09-19T10:04:42+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 9,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1169,7 +1169,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 9,
       "last_article": "2026-09-25T11:06:00+00:00",
       "days_since_last_article": 2,
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 3,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1233,7 +1233,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 04:01:18 GMT"
+      "modified": "Mon, 28 Sep 2026 05:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ab9e651-3077\"",
-      "modified": "Mon, 28 Sep 2026 04:00:17 GMT"
+      "etag": "W/\"6ab9f45f-3077\"",
+      "modified": "Mon, 28 Sep 2026 05:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 04:01:09 GMT"
+      "modified": "Mon, 28 Sep 2026 05:00:59 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1391,8 +1391,8 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"229db291fb7b1ab555577b738b5d037f\"",
-      "modified": "Sun, 27 Sep 2026 17:29:45 GMT"
+      "etag": "W/\"ae888a2b92396adff0bd9de77dfb4de5\"",
+      "modified": "Mon, 28 Sep 2026 05:00:14 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
@@ -1417,6 +1417,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA VI not even in the top three: Japanese name the most anticipated games - ixbt.games",
+      "link": "https://ixbt.games/en/news/2026/09/28/438736-gta-vi-daze-ne-v-troike-iaponcy-nazvali-samye-ozidaemye-igry.html",
+      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPVXk4S1dOYXozamljR2RsOGlGaEJrZWE0aEJLYi1vYlRRRkotRVAwc1lUZGJJYVk2cGxhNk9icTZZZ1JWYmRuTmdEdTczYVVqbHh4Um83b2dDclFidnhXczB4MW9KcHJERVZaMFlqdmJNS3AxZ1JNRGpoZWFxYU5KNDBHbThKMHlJYUptQTZBUVBSVF9xMDAycW5VdmR5LXFUMVVIQlJxYjAzTlE2SGtj0gG0AUFVX3lxTE5YYWltamFuOEZrUm91c3lGN3lGd0tsVlRhNHpfVzg3YW1aQmxELXM0eEROTEtpRmtwOHBBUmFIRFE5QVR0bGJnbW9xRlZpUnByQlRnZTlBdUZSdWFDbzU1YXVmUWZwYkJ3djJsUlhua0xGeXYyQUIycU1GZzFaLTFxZWpESnc0bUZ1VWVERFlzOGhWTUwxbjFCOXRDXzRVQXhsTi1jXzYxQ3k3X1pDZ2xvc3pabg?oc=5",
+      "date": "2026-09-28T04:25:02+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.ixbt.games/stretch/1600x900/smart/jpeg/ixbt-data/1377520/ec4c1db7-f815-406a-b8c2-12d5e949c2b5.jpg",
+      "description": "GTA VI not even in the top three: Japanese name the most anticipated games&nbsp;&nbsp;ixbt.games"
+    },
+    {
+      "title": "Vous ne pourrez pas faire n'importe quoi avec GTA 6 : Rockstar part en guerre contre certains joueurs passionnés - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2106236/vous-ne-pourrez-pas-faire-n-importe-quoi-avec-gta-6-rockstar-part-en-guerre-contre-certains-joueurs-passionnes.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPcUF2YS0xbVdPZGM2MG1hOXk5eGdyYkhOQnd2STVfR0dfVXRBdUh3SmNhVTRwdGhMa3p6T1MwdFJCcWhCUmFRMk1Mc1J4a0hhOUpEd1FLVWxad0ZBcGFHeTYxbTlOb1gtRUM0MkZ4bGF4Q1Y3QlpTVTlyYUJaU3p6RG91TkUxRnlaSFNZM1pfaS00NF9teU9QOUk2Q0lhdVNJWFFrMGk4dnh1QWpuamExWG9sc2ZYZlFDZmpSaVNvWTNMSktKS0ZQaXphNXJVdkJVaE1pNHFkMWJzenF2MHhraF9jd2lRdGd6?oc=5",
+      "date": "2026-09-28T04:05:10+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/179034/1790344927-9404-card.jpg",
+      "description": "Vous ne pourrez pas faire n'importe quoi avec GTA 6 : Rockstar part en guerre contre certains joueurs passionnés&nbsp;&nbsp;JeuxVideo.com"
+    },
+    {
+      "title": "GTA VI précommande à prix cassé et collector à 399 euros sans le jeu : les droits de l'acheteur - Kohen Avocats",
+      "link": "https://kohenavocats.fr/2026/09/28/gta-vi-precommande-prix-collector-399-euros-droits-acheteur-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQNy1yQklZNmNpT25Mcnp6dEk2cURWWnJDYmotdkRWc2NhWHltbS1GblBEWm5PQzdMMHVia01oWWRxR3NGS3JjT0VxOGhQU01GRmxZbHFvaUlfTE9nZWtGUXR2VkxwcE1XRk5wVzZZWmk1bWFuSmZMbklxYzBVZTRGcUFTSzZUWGIzSzhqNGdNQU13R2tWdnlCQ1JMdkZ2VUwtMHc?oc=5",
+      "date": "2026-09-28T04:04:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "GTA VI précommande à prix cassé et collector à 399 euros sans le jeu : les droits de l'acheteur&nbsp;&nbsp;Kohen Avocats"
+    },
     {
       "title": "Vice City in Your Hands: Rockstar Reveals 'GTA 6 Collector's Edition' - Inven Global",
       "link": "https://www.invenglobal.com/articles/26527/vice-city-in-your-hands-rockstar-reveals-gta-6-collectors-edition",
