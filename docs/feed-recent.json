@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-09-29T14:02:03.440986+00:00",
+  "generated_at": "2026-09-29T15:02:40.227988+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 59.3,
+  "duration_seconds": 94.0,
   "decode_failures": 0,
-  "total_articles": 2634,
+  "total_articles": 2637,
   "new_this_run": 3,
   "hot_count": 27,
   "hot_threshold": 3,
@@ -440,10 +440,10 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 133,
       "last_article": "2026-09-28T14:27:22+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 786,
-      "last_article": "2026-09-29T13:00:14+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 788,
+      "last_article": "2026-09-29T14:36:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -661,7 +661,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 22,
       "last_article": "2026-09-29T13:07:36+00:00",
       "days_since_last_article": 0,
@@ -687,10 +687,10 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 8,
-      "last_article": "2026-09-22T12:32:51+00:00",
-      "days_since_last_article": 7,
+      "new_this_run": 1,
+      "articles_exclusifs": 9,
+      "last_article": "2026-09-29T15:00:05+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -865,10 +865,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-25T21:55:00+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -947,7 +947,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 7,
       "last_article": "2026-09-29T11:05:49+00:00",
       "days_since_last_article": 0,
@@ -1086,10 +1086,10 @@
     {
       "id": "gamesindustry",
       "name": "GamesIndustry.biz",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-18T10:22:40+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 11,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1145,7 +1145,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-24T14:36:26+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1221,7 +1221,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,0,0,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1229,11 +1229,11 @@
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "jvcom": "20,0,0,20,20,20,20,20,20,20,20,20",
+    "jvcom": "0,0,20,20,20,20,20,20,20,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,0,0,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1266,7 +1266,7 @@
     "engadget": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,20,20,20,20,20,0,20,20,20,20,20",
+    "rockstaractu": "20,20,20,20,20,0,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1289,13 +1289,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"5f82285155143e5953c9b9ceb54670af\"",
-      "modified": "Tue, 29 Sep 2026 13:59:02 GMT"
+      "etag": "W/\"b3928560179dbd89d9d8945e38e71c3b\"",
+      "modified": "Tue, 29 Sep 2026 14:57:21 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 13:14:43 GMT"
+      "modified": "Tue, 29 Sep 2026 14:44:29 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1309,13 +1309,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"200d5-C/z8vPPhjGefs/CBL7SuSeP8d/I\"",
+      "etag": "W/\"1f7db-QLoyvvOFb/Hn5h4SP26Q6B7YlcE\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"247b9fa60dffd72a85d1e05c7a80ebc9\"",
-      "modified": "Tue, 29 Sep 2026 13:38:38 GMT"
+      "etag": "W/\"6ea2e04176a95b6572df24da6eab9a76\"",
+      "modified": "Tue, 29 Sep 2026 15:00:05 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1325,27 +1325,27 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 13:15:16 GMT"
+      "modified": "Tue, 29 Sep 2026 14:02:00 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 14:00:07 GMT"
+      "modified": "Tue, 29 Sep 2026 14:59:58 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"12df21fd622e4ea22fe8b4ed6122cdd6\"",
-      "modified": "Tue, 29 Sep 2026 13:18:36 GMT"
+      "etag": "\"1f4bfa7f3c7e946ff4c38b399e29d841\"",
+      "modified": "Tue, 29 Sep 2026 14:39:56 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abbc472-2fcb\"",
-      "modified": "Tue, 29 Sep 2026 14:00:18 GMT"
+      "etag": "W/\"6abbd280-2fde\"",
+      "modified": "Tue, 29 Sep 2026 15:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"bf34df3a0e55a412672f92a5e579bae1\"",
-      "modified": "Tue, 29 Sep 2026 13:37:27 GMT"
+      "etag": "W/\"7a95b29d43a87dd174a4aeb08b362212\"",
+      "modified": "Tue, 29 Sep 2026 14:56:02 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1354,8 +1354,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"1d17e0aeb80982baf6629fe7218edf96\"",
-      "modified": "Tue, 29 Sep 2026 13:50:16 GMT"
+      "etag": "W/\"3e44baad6b713a60c972a21c7da23d81\"",
+      "modified": "Tue, 29 Sep 2026 14:42:15 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1367,44 +1367,88 @@
       "etag": "\"de40ea85a920eb74e563957e02e92bb0-gzip\"",
       "modified": null
     },
+    "dexerto-fr": {
+      "url": "https://www.dexerto.fr/feed/",
+      "etag": null,
+      "modified": "Tue, 29 Sep 2026 15:01:00 GMT"
+    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 14:01:24 GMT"
+      "modified": "Tue, 29 Sep 2026 15:01:06 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 12:30:00 GMT"
+      "modified": "Tue, 29 Sep 2026 14:39:42 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"2f8e7387de10117bdc70aeb421d0555d\"",
-      "modified": "Tue, 29 Sep 2026 13:49:57 GMT"
+      "etag": "W/\"475e7ed7b0e90d76c27b29323b04259b\"",
+      "modified": "Tue, 29 Sep 2026 14:57:19 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"b7b33fee2bcbabcb1f88031dfc86f8df\"",
-      "modified": "Tue, 29 Sep 2026 14:01:23 GMT"
+      "etag": "W/\"cdc6919bea400ebc0dea5d9fa5a03cc9\"",
+      "modified": "Tue, 29 Sep 2026 15:01:12 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"da4d5d301665808f49934ace7c6b2eb2\"",
-      "modified": "Tue, 29 Sep 2026 13:56:32 GMT"
+      "etag": "W/\"2dae5d35d13b63b74c188522991807c7\"",
+      "modified": "Tue, 29 Sep 2026 14:59:35 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
-      "etag": "W/\"e5959585202a213f4ad44c14c6c0e093\"",
-      "modified": "Tue, 29 Sep 2026 13:34:51 GMT"
+      "etag": "W/\"a7aebb3e25772fb9b08fa249f0070b2c\"",
+      "modified": "Tue, 29 Sep 2026 14:55:51 GMT"
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"2f8e7387de10117bdc70aeb421d0555d\"",
-      "modified": "Tue, 29 Sep 2026 13:49:57 GMT"
+      "etag": "W/\"475e7ed7b0e90d76c27b29323b04259b\"",
+      "modified": "Tue, 29 Sep 2026 14:57:19 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 5 Modder Cancels Nintendo Switch Port Just Days Before Launch After Previously Taunting Rockstar: ‘I Am Thankful For Take-Two’s Mercy’",
+      "link": "https://kotaku.com/gta-5-modder-cancels-nintendo-switch-port-just-days-before-launch-after-previously-taunting-rockstar-i-am-thankful-for-take-twos-mercy-2000738284",
+      "source_link": null,
+      "date": "2026-09-29T15:00:05+00:00",
+      "source": "Kotaku",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://kotaku.com/app/uploads/2026/04/gta5hack-1280x720.jpg",
+      "description": "The creator behind the planned port will not release any code or assets online in order to avoid a possible lawsuit"
+    },
+    {
+      "title": "World of Warcraft: Forever is Xbox's GTA 6 - Notebookcheck",
+      "link": "https://www.notebookcheck.net/World-of-Warcraft-Forever-is-Xbox-s-GTA-6.1411122.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOY1NUUW5YbGZvT29wNzVmUFpaaXQ3elZLRFpURlIxX0RnWlNYQzhyWkxuM3RrY2lXOW8zVW5lU0JlRHlvZmRIVDdUN2RlU2NBUkZJRFRhVUptRl9rNUZPZjJrR2o5WEMwQ284OHF3eHFqaG5XSHNlT0k3Y28tZFdtUVdlRk1sR3BYckszYVFQMA?oc=5",
+      "date": "2026-09-29T14:36:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/wow-xbox-gta-6.jpg",
+      "description": "World of Warcraft: Forever is Xbox's GTA 6&nbsp;&nbsp;Notebookcheck"
+    },
+    {
+      "title": "Upgrade your TV ahead of GTA VI release at up to $1,100 off: LG, Samsung, Hisense, more - 9to5Toys",
+      "link": "https://9to5toys.com/2026/09/29/upgrade-tv-ahead-gta-vi-release-deals/",
+      "source_link": "https://news.google.com/rss/articles/CBMiekFVX3lxTFBfUngxRFlCRDRSOTRlMktydWNXYl9ya2xOQmdWUk5xQ0N5bUY1U05qMU1VR2ZZQTVMOC1tQ0RKX0JpQUF6aUFKN3JXY0FMNTREOGc4RGxSbWtrLWVVY0JDdG9OcjhtQklqVGNKVk1yck5xOUppQmNDSDF3?oc=5",
+      "date": "2026-09-29T14:35:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://9to5toys.com/wp-content/uploads/sites/5/2026/09/TV-upgrade-deals-Grand-Theft-Auto-VI.jpg?quality=82&strip=all&resize=1200,628",
+      "description": "Upgrade your TV ahead of GTA VI release at up to $1,100 off: LG, Samsung, Hisense, more&nbsp;&nbsp;9to5Toys"
+    },
     {
       "title": "GTA 5 For Switch Mod Project Shuts Down, Dev Thanks Take-Two For Its “Mercy”",
       "link": "https://www.gamespot.com/articles/gta-5-for-switch-mod-project-shuts-down-dev-thanks-take-two-for-its-mercy/",
@@ -5325,45 +5369,6 @@
           "link": "https://www.dexerto.com/gta/xbox-responds-to-report-that-gta-6-pre-orders-are-way-more-popular-on-ps5-3412460/"
         }
       ]
-    },
-    {
-      "title": "Four Hundred Dollars Gets You the Grand Theft Auto VI Collector’s Box Which Doesn’t Include the Game - The FPS Review",
-      "link": "https://www.thefpsreview.com/2026/09/25/four-hundred-dollars-gets-you-the-grand-theft-auto-vi-collectors-box-which-doesnt-include-the-game/",
-      "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNVmJWc1pMSGV6WHJRWDdjTi1jVzFmMzRfUDBJY0RGVE1lNmlvNnNiWjBzNTVKaFp4V181eERTLU5BSUoxbUVEMkFEbHJFTXY2VGtfb3ZhY0R6ZnRETU1LejdoaWZ6YXZTLWxNZEhCZFpBNjN6U0FTTHNLMTJtNXoxc1ppenZ1WGY1Y19sMUpxVnZzWnJCVE1sV2JZZ2MyQ1BiVkJBYkItU1FGN3dqTnBNRHpXS29wMHY0ZUZTNERESGZSRlA2SWdlUHhIZXdpS3RnVlhGTXF3?oc=5",
-      "date": "2026-09-25T11:33:22+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://cdn.thefpsreview.com/wp-content/uploads/2026/09/gta-vi-collectors-box.webp",
-      "description": "Four Hundred Dollars Gets You the Grand Theft Auto VI Collector’s Box Which Doesn’t Include the Game&nbsp;&nbsp;The FPS Review"
-    },
-    {
-      "title": "GTA 6 Pre-Orders: Xbox Challenges PS5 Report - GameLuster",
-      "link": "https://gameluster.com/gta-6-pre-orders/",
-      "source_link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1UdEpmR2dObWs3VjFFSktXVk0zMkN0Qm95M09lb0x4WmxUMExuaUkwc2NSdFFOeFVuUUlEUFZRd29ZSk02aVlTVW9oQUNYclROcXc?oc=5",
-      "date": "2026-09-25T11:20:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gameluster.com/wp-content/uploads/2026/09/xbox-defends-gta-6-demand-ps5-lead-unproven.webp",
-      "description": "GTA 6 Pre-Orders: Xbox Challenges PS5 Report&nbsp;&nbsp;GameLuster"
-    },
-    {
-      "title": "Xbox is “Very Happy” With Grand Theft Auto 6 Pre-Orders Despite Reports Indicating Heavy PS5 Skew - gamingbolt.com",
-      "link": "https://gamingbolt.com/xbox-is-very-happy-with-grand-theft-auto-6-pre-orders-despite-reports-indicating-heavy-ps5-skew",
-      "source_link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOWHRiS3N6bW8tQXNKNElmaDRJUTZwOEhuNnFiSFhBa1I3bWNscXVvczZ1XzJzT3pFZmpNQjZUU01UclVjV0xHY1NYN09GQ0RyVFlIUGJ6WlIxZ0tkSUJHa1VFQVdtSDVnbUFOMXpUU0p3bU1fRlhfckxraGhubnNZM1Jva1FwTGUtRWcwOXJvRURHQ0lPR1lSTGt1N3dobWRPc3NYTjZWelQ0cjJlWVQ1UWFQd045X1RRVUE?oc=5",
-      "date": "2026-09-25T11:16:26+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gamingbolt.com/wp-content/uploads/2025/05/grand-theft-auto-6-image-20-scaled.jpg",
-      "description": "Xbox is “Very Happy” With Grand Theft Auto 6 Pre-Orders Despite Reports Indicating Heavy PS5 Skew&nbsp;&nbsp;gamingbolt.com"
     }
   ],
   "partial": true,
