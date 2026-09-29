@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T05:02:00.286202+00:00",
+  "generated_at": "2026-09-29T06:01:57.774082+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,9 +7,9 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 61.4,
+  "duration_seconds": 56.1,
   "decode_failures": 0,
-  "total_articles": 2601,
+  "total_articles": 2603,
   "new_this_run": 3,
   "hot_count": 26,
   "hot_threshold": 3,
@@ -441,7 +441,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 131,
       "last_article": "2026-09-28T14:27:22+00:00",
       "days_since_last_article": 0,
@@ -481,8 +481,8 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "articles_exclusifs": 642,
-      "last_article": "2026-09-29T04:34:51+00:00",
+      "articles_exclusifs": 643,
+      "last_article": "2026-09-29T05:22:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 777,
-      "last_article": "2026-09-29T03:45:34+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 779,
+      "last_article": "2026-09-29T05:03:45+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -762,10 +762,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-17T06:02:18+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -974,8 +974,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 14,
+      "new_this_run": 0,
+      "articles_exclusifs": 13,
       "last_article": "2026-09-24T20:55:00+00:00",
       "days_since_last_article": 4,
       "status": "ok"
@@ -1126,23 +1126,23 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 10,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-24T14:36:26+00:00",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 4,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1238,7 +1238,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1246,11 +1246,11 @@
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "jvcom": "20,20,20,20,20,20,20,20,20,20,20,0",
+    "jvcom": "20,20,20,20,20,20,20,20,20,20,0,0",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,15,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,15,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1347,22 +1347,22 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 05:01:18 GMT"
+      "modified": "Tue, 29 Sep 2026 05:57:42 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"041d1d0e576c49ed6a1e369fa33e6cd5\"",
-      "modified": "Mon, 28 Sep 2026 15:57:10 GMT"
+      "etag": "\"dd33f3c156d8cb9208d542ed3444cd20\"",
+      "modified": "Tue, 29 Sep 2026 05:56:04 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abb45e0-3114\"",
-      "modified": "Tue, 29 Sep 2026 05:00:16 GMT"
+      "etag": "W/\"6abb53ef-308b\"",
+      "modified": "Tue, 29 Sep 2026 06:00:15 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"b3132c82ab3f1771b549cda12b9c049c\"",
-      "modified": "Mon, 28 Sep 2026 21:31:36 GMT"
+      "etag": "W/\"c4d655b9f397338d8b1bd5265a5b17d2\"",
+      "modified": "Tue, 29 Sep 2026 06:00:39 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1376,8 +1376,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6abb35b3-ae2\"",
-      "modified": "Tue, 29 Sep 2026 03:51:15 GMT"
+      "etag": "\"6abb51ce-ae2\"",
+      "modified": "Tue, 29 Sep 2026 05:51:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1387,7 +1387,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 05:01:19 GMT"
+      "modified": "Tue, 29 Sep 2026 06:01:21 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1396,13 +1396,13 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"8d827332ae41f7c95de24bae9e898803\"",
-      "modified": "Tue, 29 Sep 2026 05:00:23 GMT"
+      "etag": "W/\"056902e53dcab6c840380f460b90c9b3\"",
+      "modified": "Tue, 29 Sep 2026 05:34:00 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"cf94f88182466059905af78ab0f40ba0\"",
-      "modified": "Tue, 29 Sep 2026 04:58:26 GMT"
+      "etag": "W/\"60244a44da519e0112de0f3b00dda0f1\"",
+      "modified": "Tue, 29 Sep 2026 05:28:46 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1416,12 +1416,51 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"df2b5d9b3d41db4ab1e8d807e1855329\"",
-      "modified": "Tue, 29 Sep 2026 04:34:51 GMT"
+      "etag": "W/\"056902e53dcab6c840380f460b90c9b3\"",
+      "modified": "Tue, 29 Sep 2026 05:34:00 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "La sortie de GTA VI approche et la précommande sur Cultura peut vous rapporter un bon d’achat, mais pas seulement - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/la-sortie-de-gta-vi-approche-et-la-precommande-sur-cultura-peut-vous-rapporter-un-bon-d-achat-mais-pas-seulement_AB-202609290026.html",
+      "source_link": "https://news.google.com/rss/articles/CBMigAJBVV95cUxOTlQybFN3amZMWFZ1TzQzX3h6ZE1RQU92WWpDRXBpU0NRNWFvVGozbGVaX2VkQ2Q5a29QVFRxRno4M2RGVmJfbTlVRGFJSDV0V19kQm1nMDZ6RTNZS3gtME5jcnI0dTVrOUNDbWdNTW95RDlTVTJLdnRrUUFiMEFDQnI1eWVUOWJteVluQVRVWnFaNnlqT0J4ZDQyU1FYTTZ2Tk1kNG4xNFotMVpxQ2IyM1hZSTJlVTJpUnhobjd1MDZaQU9WQlZ1WUtUY3ZSOXo4NDF2Z29SaVBfT1ZuYXhzdVF6dElURXJkSUZLV1NKWGktckllYjFaUGNoSFh2Zld0?oc=5",
+      "date": "2026-09-29T05:22:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/vFFAcHv1VTHSwtN65c60qaapsH0=/0x0:1600x900/1600x0/images/GTA-6-Le-jeu-le-plus-attendu-de-l-annee-est-deja-disponible-a-la-precommande-a-un-prix-peu-attendu-2321225.jpg",
+      "description": "La sortie de GTA VI approche et la précommande sur Cultura peut vous rapporter un bon d’achat, mais pas seulement&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "The $700 Grand Theft Auto 6 Collector’s Edition Sold Out Instantly In Australia - Press Start Australia",
+      "link": "https://press-start.com.au/news/playstation/2026/09/28/the-700-grand-theft-auto-6-collectors-edition-sold-out-instantly-in-australia/",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOTTVFS0tVQWkxZ1FBakpKay0xR05KejNzQ2lDU2xfTE5ibEo3bmZOaFJuWFR5bFdvbldzRUZSdEdRN0pGbmFjVnZRTU5ScVJncnFXWDVrRnRLN0ZWRko2eXhtWXZvSUJVLXZkV2JJZ3pyMERxQWxMWkZCZG5QSDFCLTdoX3BtYVFyZTR1WEpwZ1RrQV9UOUdhWXMtbThGbDVMXzN1S3FhTnFidEtOSHZjMktaSWdHdy0ySkFYQ0d1RWdMa0pSbmIxVFd2NkRDQdIB0wFBVV95cUxQWW5UamplZ3R2RXd3LTVQZ1hTWlpVT1RFaThRVUhzTHJWcmt2b1NXdW5QZWF3cFJPVmFfTFB3SmptLUVsQUtIQUl5V29SV3Z6TXJKSHNKeFQ4SWFiZmlUMHVYRExuS3I0bDBZSVU4VEp0ejJyUUJDNmprLTk1V093OE4tVWNsZ2x2TWx2b29EV0Z5eERDOFBMSHYyWVpUODNDSHR0T1pEVkZ3ZVViSWcxVGx0dDNqVFFlVDhDQWpfLXNfWFhvdW1MTlR3elpSbExweTVV?oc=5",
+      "date": "2026-09-29T05:03:45+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://press-start.com.au/wp-content/uploads/2026/09/GTA-EB-SOLD-OUT-1.jpg",
+      "description": "The $700 Grand Theft Auto 6 Collector’s Edition Sold Out Instantly In Australia&nbsp;&nbsp;Press Start Australia"
+    },
+    {
+      "title": "Top 3 Best Sites to Buy GTA 6 Boosting Services Reviewed - South Florida Reporter",
+      "link": "https://southfloridareporter.com/top-3-best-sites-to-buy-gta-6-boosting-services-reviewed/",
+      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQelZUdEJwTnUtb1plNmRSTWN5SExqX1E3NHNUUFgteXJ0cmxpcDJEN041VnFod2djWEFad05xU0g5cDFhUUFrZWtjRVVMOVdwc1AwOV9oeDExNFZ6OE5UaUZmNmxsV3Myb2RUdVF1MEhrMm5KUUY4REo5dHhxMTh4alVoUENUdDIyNElLdmRxbEdTQlJD?oc=5",
+      "date": "2026-09-29T05:01:09+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://southfloridareporter.com/wp-content/uploads/2026/09/dreamstime_s_231482344.jpg",
+      "description": "Top 3 Best Sites to Buy GTA 6 Boosting Services Reviewed&nbsp;&nbsp;South Florida Reporter"
+    },
     {
       "title": "Le podcast du Journal du Geek : GTA VI n’a-t-il vraiment aucun adversaire ? - Journal du Geek",
       "link": "https://www.journaldugeek.com/2026/09/29/le-podcast-du-journal-du-geek-gta-vi-na-t-il-vraiment-aucun-adversaire/",
@@ -19300,25 +19339,6 @@
       "description": "Why GTA VI is hard to showcase&nbsp;&nbsp;NeoTeo"
     },
     {
-      "title": "Grand Theft Auto VI aura bien droit à un format physique... pour son album ! - GamerGen",
-      "link": "https://gamergen.com/actualites/grand-theft-auto-vi-gta-6-aura-bien-droit-format-physique-album-342670-1",
-      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQU0JQaVB5U1FRUkNueUVnazJaV2pvVmdwdV9YaEEyMGt5NldhUEJvaThpWFFiXzE5NHpQSko0bEdocEJzME9BMzVzNDFuWVp2cmtMRlhMam9pdFk5emRIOW9OR2MwQ3M4b1hTSGhBNjZvbDNnM0Q3d3l0Q1EtNHhYVEdQc1dzS3A0NWd5NVFZTDJoRU4yMGx3SUhhbW1NTXZIVU81SXlvc9IBrAFBVV95cUxNclRreUFJWUlOV1k1SnJLTkJVTHI4Q0VBZHRpVmtZUWRyQlp2VlV2Mno1N2FNeUdjUG1uWmlqQWNQMDR4UGYyc09HaWQ2bkI0dW9IWGZyZ21meFNQYU9ZMUZWRFcwMDI4OXlydS1ha2QwWFMwY3pERnpOX2d5NWUya1ppVkV5U2JBVms2U0R4V1VSU0dOdWJzcWUxdWNuT0JMMGpYajRaajlOWERi?oc=5",
-      "date": "2026-09-17T12:51:36+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://global-img.gamergen.com/grand-theft-auto-vi-gta-6-album-17-09-2026_0190000001060288.jpg",
-      "description": "Grand Theft Auto VI aura bien droit à un format physique... pour son album !&nbsp;&nbsp;GamerGen",
-      "extraSources": [
-        {
-          "source": "Gamergen",
-          "link": "https://www.gamergen.com/actualites/grand-theft-auto-vi-gta-6-aura-bien-droit-format-physique-album-342670-1"
-        }
-      ]
-    },
-    {
       "title": "grand theft auto vi the album - GamerGen",
       "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBrcUdtMnNoWF9LQmpaTjBVOUxjSVNZaEx4a21KNFdZWnhJTjlWLWw4dUFFenBDV3V2OUtacXRXU0JNWGlSTEhNX2RLU3RkYzNkLTlvV0FZcDdEU0JoOFZXYUtWZU1TVGM?oc=5",
       "source_link": null,
@@ -20462,7 +20482,13 @@
       "specialist": false,
       "lang": "fr",
       "image": null,
-      "description": "Grand Theft Auto VI aura bien droit à un format physique... pour son album !&nbsp;&nbsp;gamergen.com"
+      "description": "Grand Theft Auto VI aura bien droit à un format physique... pour son album !&nbsp;&nbsp;gamergen.com",
+      "extraSources": [
+        {
+          "source": "Google News (FR)",
+          "link": "https://gamergen.com/actualites/grand-theft-auto-vi-gta-6-aura-bien-droit-format-physique-album-342670-1"
+        }
+      ]
     },
     {
       "title": "GTA 6 : la tracklist se précise, plus de 10 artistes dont les Rolling Stones et PinkPantheress teasent leur présence - Xboxygen",
