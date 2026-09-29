@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-29T08:01:54.405075+00:00",
+  "generated_at": "2026-09-29T09:01:59.096147+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 50.0,
+  "duration_seconds": 56.5,
   "decode_failures": 0,
-  "total_articles": 2610,
-  "new_this_run": 2,
+  "total_articles": 2614,
+  "new_this_run": 4,
   "hot_count": 26,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -440,7 +440,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 132,
       "last_article": "2026-09-28T14:27:22+00:00",
       "days_since_last_article": 0,
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 645,
-      "last_article": "2026-09-29T06:55:07+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 648,
+      "last_article": "2026-09-29T08:25:29+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -722,10 +722,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-18T18:19:10+00:00",
@@ -781,7 +781,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-25T08:58:13+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -807,8 +807,8 @@
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-08-29T08:15:46+00:00",
-      "days_since_last_article": 30,
-      "status": "ok"
+      "days_since_last_article": 31,
+      "status": "tarie"
     },
     {
       "id": "gamerant",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
@@ -924,7 +924,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-27T08:20:33+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -963,7 +963,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 18,
       "last_article": "2026-09-25T08:21:07+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -986,8 +986,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 26,
+      "new_this_run": 1,
+      "articles_exclusifs": 27,
       "last_article": "2026-09-11T17:22:00+00:00",
       "days_since_last_article": 17,
       "status": "ok"
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 23,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 11,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1221,7 +1221,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,15,0,0,15,15",
+    "rockstar-youtube": "15,15,15,15,15,0,15,0,0,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1229,11 +1229,11 @@
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
-    "jvcom": "20,20,20,20,20,20,20,20,0,0,20,20",
+    "jvcom": "20,20,20,20,20,20,20,0,0,20,20,20",
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,0,15,0,0,15,15",
+    "rockstarmag-youtube": "15,15,15,15,0,0,15,0,0,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1289,13 +1289,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"6e50ee4a5cd5736f57d5ca7fe8eaa297\"",
-      "modified": "Tue, 29 Sep 2026 08:00:41 GMT"
+      "etag": "W/\"24b8337798d3e37e7ad9817e487d3c6a\"",
+      "modified": "Tue, 29 Sep 2026 08:53:55 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 07:31:51 GMT"
+      "modified": "Tue, 29 Sep 2026 08:21:04 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1314,8 +1314,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5693c4f0e223d3e767116747545116e6\"",
-      "modified": "Tue, 29 Sep 2026 08:00:31 GMT"
+      "etag": "W/\"49ece76a6da1a3f9130dc2ff3f4654c1\"",
+      "modified": "Tue, 29 Sep 2026 08:14:11 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1325,27 +1325,27 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Mon, 28 Sep 2026 19:05:03 GMT"
+      "modified": "Tue, 29 Sep 2026 08:36:23 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 08:00:07 GMT"
+      "modified": "Tue, 29 Sep 2026 09:01:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"dd4944fa1aee789c1e9931534b934e63\"",
-      "modified": "Tue, 29 Sep 2026 07:53:58 GMT"
+      "etag": "\"99642cee631c4974a1c2e642f3f21dfa\"",
+      "modified": "Tue, 29 Sep 2026 08:52:20 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abb7011-3046\"",
-      "modified": "Tue, 29 Sep 2026 08:00:17 GMT"
+      "etag": "W/\"6abb7e21-3011\"",
+      "modified": "Tue, 29 Sep 2026 09:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"c4e52eb295afbd20bcee92ecb5701eb1\"",
-      "modified": "Tue, 29 Sep 2026 07:57:54 GMT"
+      "etag": "W/\"b3b1753b96953ff005b9e0e6fc0b98b4\"",
+      "modified": "Tue, 29 Sep 2026 08:52:31 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1370,7 +1370,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 29 Sep 2026 08:01:18 GMT"
+      "modified": "Tue, 29 Sep 2026 09:01:23 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1379,32 +1379,71 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"22d154ae0916848a40ac64ea751b14cc\"",
-      "modified": "Tue, 29 Sep 2026 07:31:22 GMT"
+      "etag": "W/\"d16df52c0b8a01e842bc2770256906ca\"",
+      "modified": "Tue, 29 Sep 2026 08:39:10 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"c34649d9cdd625aa0d680fa65cb61959\"",
-      "modified": "Tue, 29 Sep 2026 08:00:46 GMT"
+      "etag": "W/\"c4d2c9ba2a510b4c111c3ec0521a33f2\"",
+      "modified": "Tue, 29 Sep 2026 08:57:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"973366f1bc5eee48c565b2301824286d\"",
-      "modified": "Tue, 29 Sep 2026 07:52:22 GMT"
+      "etag": "W/\"a75f94d2453e46f3c306c7e87d9326cd\"",
+      "modified": "Tue, 29 Sep 2026 08:01:14 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
-      "etag": "W/\"474a405e5afa23af68aa2c0859f58311\"",
-      "modified": "Tue, 29 Sep 2026 08:00:00 GMT"
+      "etag": "W/\"49b22a0476a36910bb95bd93dc5944a0\"",
+      "modified": "Tue, 29 Sep 2026 08:59:27 GMT"
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"22d154ae0916848a40ac64ea751b14cc\"",
-      "modified": "Tue, 29 Sep 2026 07:31:22 GMT"
+      "etag": "W/\"d16df52c0b8a01e842bc2770256906ca\"",
+      "modified": "Tue, 29 Sep 2026 08:39:10 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "« Une expérience probablement médiocre » GTA 6 sur Nintendo Switch 2 n'aurait pas de sens pour cet ancien développeur de Rockstar - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-nintendo-switch-2-version-pas-de-sens-declaration-jeremy-hartvick-724048",
+      "source_link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNOXVmdVc3dUZ2NDRaWS0zeWl1dmdaV3hhRXpTU1FzRXlEQXVlZm1XTkVRSDhneDRMWFdXX0ZDR1lZaTVCRFFZckVuRHZTemtISWtxaG9uekpnYWM5OHBqRVY2ZGlHMXdwM0d1SlliTXB2eUk1TXFtV1V5dzg5UmNrZlItQUdCcFNfREZ4RE5IRmUwQ0hrX2dDcWlNUWQ4MFVMc3d4UkFSNExrdmtJMzBRZ2dJQVJtTzc3dEZBWQ?oc=5",
+      "date": "2026-09-29T08:25:29+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img//_6a96bdb806c72.jpg",
+      "description": "« Une expérience probablement médiocre » GTA 6 sur Nintendo Switch 2 n'aurait pas de sens pour cet ancien développeur de Rockstar&nbsp;&nbsp;Gameblog"
+    },
+    {
+      "title": "Oubliez Red Dead Redemption 3, Rockstar ferait revenir l'un de ses jeux les plus sous-côtés après GTA 6 selon ce leak - Gameblog",
+      "link": "https://www.gameblog.fr/jeu-video/ed/news/la-noire-2-red-dead-redemption-3-gta-6-rockstar-leak-724044",
+      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOTzRHQlNvU05PTUZGZjFzRlgtbmVuUnRaamctaDZjd1lJVVdua2tLRVFpV19lZU1RZTZUalgwM3JqLWtwS0lPVmM0ak1QM2lMTV9WaGJ5VVR6cjZBTy1XVHRPNlpTNEpkdDdwcFUwUk8yb2l3VGJsa3BCSjNUYmZuYXgyTW1rbUR5MEl0aUI1VDRuYmZEVXJNSGFRU1dkekxORXN3?oc=5",
+      "date": "2026-09-29T08:19:20+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn-uploads.gameblog.fr/img/news/704918_690369fc198e1.jpg",
+      "description": "Oubliez Red Dead Redemption 3, Rockstar ferait revenir l'un de ses jeux les plus sous-côtés après GTA 6 selon ce leak&nbsp;&nbsp;Gameblog"
+    },
+    {
+      "title": "Rockstar et Epic Games, selon les rumeurs, travaillent sur une collaboration dans le cadre de GTA 6 - EGW.News",
+      "link": "https://fr.egw.news/gaming/news/37524/rockstar-and-epic-games-might-have-a-collaboration-5jWPEBZHW",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQX1lyLW10TGVia25BeFFDZFBNVVlKNm9PVDlfX29wTEgtNVJ1Y09YR1F1TVczckRsVkNYS3Nsdmw4THRaY1RrZm5feTRHWWxjbjlndWhzaTVHWXhMVnZlMEg2VUpsTzVkdGhmMWgyWVBSTlhNcXRKYkJ5OV9FTHIxUTl5b21zSFpnSzZNZmRQb2pkeFZoNUthYzFVbGRNNXM?oc=5",
+      "date": "2026-09-29T07:32:18+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Rockstar et Epic Games, selon les rumeurs, travaillent sur une collaboration dans le cadre de GTA 6&nbsp;&nbsp;EGW.News"
+    },
     {
       "title": "L.A. Noire 2 après GTA 6 ? Le leak revient, mais Rockstar n'a rien confirmé - pasqualepillitteri.it",
       "link": "https://pasqualepillitteri.it/fr/news/19132/la-noire-2-rumor-rockstar-2030-fr",
@@ -5313,45 +5352,6 @@
       "lang": "en",
       "image": null,
       "description": "Rockstar Announces ‘GTA 6’ Collector’s Box, But It Comes Without The Game&nbsp;&nbsp;AugustMan Singapore"
-    },
-    {
-      "title": "GTA 6 Collector’s Edition costs $400 and doesn’t include a copy of the game – here’s what you get - The Shortcut | Matt Swider",
-      "link": "https://www.theshortcut.com/p/gta-6-collectors-edition-costs-400-and-doesnt-include-a-copy-of-the-game-heres-what-you-get",
-      "source_link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQSXNMT0l0MDBCazM4aHhiazdOWTRsS0RweXF4a05oVzJ0THcyVlJ6X3JxZFZ4aGtwREpqY1ppRGQzcHhQTEIyeTRMbTRkSVFPS0ktTzZhVWFMWDRFb21SSW1HYjVJZl9QYTRXc0NqV1AtU0pTa0xfcldZRE1WWmJFYVJOeWFnN0Y2dFVZcmpLTzZZWVlmdnM2LXYxSmx3ZHJ6ZkJWYnBOMm55T3FpeWpETmJ2NVlXMzg5dHYwLTJB?oc=5",
-      "date": "2026-09-25T09:15:26+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://substackcdn.com/image/fetch/$s_!B5Xr!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fcda0ec7f-4a7f-4908-8fa4-cde331fecaac_1920x1005.png",
-      "description": "GTA 6 Collector’s Edition costs $400 and doesn’t include a copy of the game – here’s what you get&nbsp;&nbsp;The Shortcut | Matt Swider"
-    },
-    {
-      "title": "Rockstar's GTA 6 Collector's Edition Doesn't Even Include the Game - ThePCEnthusiast",
-      "link": "https://thepcenthusiast.com/gta-6-collectors-edition-revealed/",
-      "source_link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE03c3h1SjlqSUp0SGhNZzNZb1h2UDlfTDJ6ckJCamI5UlhNRWNPUm1mcUJjTXdnblBrTDV1QWtUclQ0bVlUX01ZMVlfaExRX2pJekpKaVU3OFNSdkxBajdVN29lSHhJOUw0M1JhRlFNUQ?oc=5",
-      "date": "2026-09-25T09:06:08+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": null,
-      "description": "Rockstar's GTA 6 Collector's Edition Doesn't Even Include the Game&nbsp;&nbsp;ThePCEnthusiast"
-    },
-    {
-      "title": "GTA 6 : alors que la PS5 dominerait largement les précommandes, Xbox fait une déclaration surprenante - Xboxygen",
-      "link": "https://www.xboxygen.com/News/368787-gta-6-alors-que-la-ps5-dominerait-largement-les-precommandes-xbox-fait-une-declaration-surprenante",
-      "source_link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQekJfYVdmQkdzYTY0OWFyZjV1N2Z1Y1RhVW1HZ1E5eVk2NmVyOFFRNEpyQzhTYnVKNV9kWkl3N1MwUWtISWZLMnRXZXJqZDN2OFY1aXlDNXNJRnlxb2VvR05rc3lEVmViVHBqcTl0WXd4V3pWV29VZ2Z0UTJYanRmQzJLR3c2TDlnU3ZBcE9xeEpraFpDUTJmRDBLSWdxSlgtNGRfazJxVTVIVHJQNE1zQmlpUGpwRW9vS3paUmNGSmh6Y0s5Rll1aDJfcEhSbzd2?oc=5",
-      "date": "2026-09-25T09:04:50+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.xboxygen.com/wp-content/uploads/2026/06/GTA-6-version-boite.jpg",
-      "description": "GTA 6 : alors que la PS5 dominerait largement les précommandes, Xbox fait une déclaration surprenante&nbsp;&nbsp;Xboxygen"
     }
   ],
   "partial": true,
