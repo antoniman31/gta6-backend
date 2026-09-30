@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-30T14:01:55.948315+00:00",
+  "generated_at": "2026-09-30T15:01:58.829489+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 53.1,
+  "duration_seconds": 52.4,
   "decode_failures": 0,
-  "total_articles": 2793,
-  "new_this_run": 7,
+  "total_articles": 2795,
+  "new_this_run": 2,
   "hot_count": 29,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -443,7 +443,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 140,
       "last_article": "2026-09-28T14:27:22+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 4,
-      "articles_exclusifs": 709,
-      "last_article": "2026-09-30T13:37:15+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 710,
+      "last_article": "2026-09-30T14:43:28+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,7 +492,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 863,
       "last_article": "2026-09-30T13:28:34+00:00",
       "days_since_last_article": 0,
@@ -635,9 +635,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 27,
-      "last_article": "2026-09-30T10:16:31+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 28,
+      "last_article": "2026-09-30T14:14:43+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -661,7 +661,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 24,
       "last_article": "2026-09-30T13:14:00+00:00",
       "days_since_last_article": 0,
@@ -690,7 +690,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 9,
       "last_article": "2026-09-29T15:00:05+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -761,10 +761,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-17T06:02:18+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 12,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,31 +1203,25 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 5,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
-  "sources_silence": {
-    "rockstarintel": {
-      "depuis": "2026-09-30T13:01:59.993803+00:00",
-      "succes": 1,
-      "alertee": false
-    }
-  },
+  "sources_silence": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1239,8 +1233,8 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,0,0,15,15,15,15,15,15,15,15,15",
-    "rockstarintel": "10,10,10,10,10,10,10,10,10,10,0,10",
+    "rockstarmag-youtube": "0,0,15,15,15,15,15,15,15,15,15,15",
+    "rockstarintel": "10,10,10,10,10,10,10,10,10,0,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
     "polygon": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1257,8 +1251,8 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "48,49,49,49,49,49,49,49,49,49,49,49",
-    "gameinformer": "0,50,50,50,0,50,50,50,50,50,50,50",
+    "gta6times": "49,49,49,49,49,49,49,49,49,49,49,49",
+    "gameinformer": "50,50,50,0,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1295,13 +1289,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"fc42037e1179859d2d6362d6dbd65189\"",
-      "modified": "Wed, 30 Sep 2026 13:46:09 GMT"
+      "etag": "W/\"d780c9391ed090cdcdf25f72724d20f4\"",
+      "modified": "Wed, 30 Sep 2026 14:43:37 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 13:25:55 GMT"
+      "modified": "Wed, 30 Sep 2026 14:07:56 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1310,33 +1304,33 @@
     },
     "rockstarintel": {
       "url": "https://rockstarintel.com/feed/",
-      "etag": "\"223ca7a1da2ab178b1d7e73a151396e9\"",
-      "modified": "Wed, 30 Sep 2026 11:10:15 GMT"
+      "etag": "\"84014aaaad401e62aa762ade1bef800c\"",
+      "modified": "Wed, 30 Sep 2026 14:18:45 GMT"
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1c87d-tc61b9qwV8tNggNUMNIKvlJZtCI\"",
+      "etag": "W/\"1fd48-aM1vCLRkIjr7a9Klai/vjJzuP5E\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"abf3e7913f071ef59187b4a88fb1630a\"",
-      "modified": "Wed, 30 Sep 2026 14:00:13 GMT"
+      "etag": "W/\"37382fb7ea3b35aeacb13d7402d16aa3\"",
+      "modified": "Wed, 30 Sep 2026 15:00:23 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 14:00:00 GMT"
+      "modified": "Wed, 30 Sep 2026 14:30:00 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 14:00:34 GMT"
+      "modified": "Wed, 30 Sep 2026 14:18:14 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 13:57:22 GMT"
+      "modified": "Wed, 30 Sep 2026 15:01:25 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1345,77 +1339,98 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abd15f0-3025\"",
-      "modified": "Wed, 30 Sep 2026 14:00:16 GMT"
+      "etag": "W/\"6abd2400-2ffc\"",
+      "modified": "Wed, 30 Sep 2026 15:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"3e8443d7af8a56b27e9e88d28db7762f\"",
-      "modified": "Wed, 30 Sep 2026 13:50:12 GMT"
+      "etag": "W/\"efbb746511852129f97f902a43cfc078\"",
+      "modified": "Wed, 30 Sep 2026 14:55:57 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1790774673\"",
-      "modified": "Wed, 30 Sep 2026 13:24:33 GMT"
+      "etag": "W/\"1790779693\"",
+      "modified": "Wed, 30 Sep 2026 14:48:13 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"ec74fc38ded6e7ca8c0295d4bbf9ef8e\"",
-      "modified": "Wed, 30 Sep 2026 13:05:06 GMT"
+      "etag": "W/\"89705f30456255be9d1917565aca5f13\"",
+      "modified": "Wed, 30 Sep 2026 14:19:37 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6abd05be-bba\"",
-      "modified": "Wed, 30 Sep 2026 12:51:10 GMT"
+      "etag": "\"6abd21e2-b74\"",
+      "modified": "Wed, 30 Sep 2026 14:51:14 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
       "etag": "\"edcaa4692f93a7196f37da29d49551fd-gzip\"",
       "modified": null
     },
-    "dexerto-fr": {
-      "url": "https://www.dexerto.fr/feed/",
-      "etag": null,
-      "modified": "Wed, 30 Sep 2026 14:00:52 GMT"
-    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 14:01:05 GMT"
+      "modified": "Wed, 30 Sep 2026 15:01:19 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 14:00:00 GMT"
+      "modified": "Wed, 30 Sep 2026 14:06:09 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"428547ccd2420a77911b31181683ec76\"",
-      "modified": "Wed, 30 Sep 2026 13:38:18 GMT"
+      "etag": "W/\"c5876777342b41c43785af9cbdcdb647\"",
+      "modified": "Wed, 30 Sep 2026 14:34:17 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"e66e8ec511f321c58afdd05bcb52a6c9\"",
-      "modified": "Wed, 30 Sep 2026 13:54:02 GMT"
+      "etag": "W/\"b633a53fbb77400065d942da1fc0523d\"",
+      "modified": "Wed, 30 Sep 2026 14:46:53 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"b7257d2ce6a9ebe61ee9f1a96365e494\"",
-      "modified": "Wed, 30 Sep 2026 13:59:36 GMT"
+      "etag": "W/\"be0ea9c504f39d809aae8e5d62453f28\"",
+      "modified": "Wed, 30 Sep 2026 15:00:55 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
-      "etag": "W/\"0c1f59c9ab9a9137d8bb4097d1dd4515\"",
-      "modified": "Wed, 30 Sep 2026 13:30:38 GMT"
+      "etag": "W/\"a4de54fecba358253b089e5747025822\"",
+      "modified": "Wed, 30 Sep 2026 14:42:12 GMT"
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"428547ccd2420a77911b31181683ec76\"",
-      "modified": "Wed, 30 Sep 2026 13:38:18 GMT"
+      "etag": "W/\"c5876777342b41c43785af9cbdcdb647\"",
+      "modified": "Wed, 30 Sep 2026 14:34:17 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : préparez-vous à une météo chaotique avec des ouragans - Pèse sur start",
+      "link": "https://www.pesesurstart.com/2026/09/30/gta-6--preparez-vous-a-une-meteo-chaotique-avec-des-ouragans",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOdFZOUk1yUm9nX1FsRmRONVZHcGQ3R3lKQVNNMW5pbjJKZmtpbHhQR0x1cUw2NEZ6SXpsZWc3d2tEdnhfMmpMS3I2WUMxMlVkS05NczdxV2loMXV3VDMwVGhxaGdaTHgyb0VTanlPLTA1bWtfcklOdEhod1ViMlBRQkFBeTFtanJfNThfdWRxbk9tYzM0NF9PbDNPUV9JWVJ4LWc?oc=5",
+      "date": "2026-09-30T14:43:28+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://m1.quebecormedia.com/emp/emp/gta_6_meteoa3cbb1f5-f2dc-487a-90df-91116bb0fff1_ORIGINAL.jpg?impolicy=crop-resize&x=0&y=0&w=1920&h=1080&width=1200",
+      "description": "GTA 6 : préparez-vous à une météo chaotique avec des ouragans&nbsp;&nbsp;Pèse sur start"
+    },
+    {
+      "title": "New GTA 6 Merch Previewed Ahead Of Release",
+      "link": "https://rockstarintel.com/new-gta-6-merch-previewed-ahead-of-release/",
+      "source_link": null,
+      "date": "2026-09-30T14:14:43+00:00",
+      "source": "RockstarINTEL",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": "en",
+      "image": "https://rockstarintel.com/wp-content/uploads/2026/09/ULTIMATE_EDITION_GOODTIME_GEAR_01_1280.webp",
+      "description": "We&#8217;ve just got our first look at some new GTA 6 merch. These are just some of the items that will be available to purchase very soon.&#160; Last week we reported on how dozens of items were uploaded to the Rockstar Store. One of those items ended up being from the Grand Theft Auto VI: [...]\nThe post New GTA 6 Merch Previewed Ahead Of Release appeared first on RockstarINTEL."
+    },
     {
       "title": "Faune féroce et vents à 200 km/h : c’est GTA 6 ou une épreuve de Koh-Lanta ? - Konbini",
       "link": "https://www.konbini.com/internet/faune-feroce-et-vents-a-200-km-h-cest-gta-6-ou-une-epreuve-de-koh-lanta/",
@@ -5351,32 +5366,6 @@
       "lang": "en",
       "image": "https://www.levelup.com/resizer/v2/GCZNV7LFAJEOBCZC77WGT7AGIM.jpg?auth=e496326100e5cdf3058dadef0477338168285074a56e56632be67f0dccc17215&height=630&width=1200&quality=70&smart=true",
       "description": "Will GTA VI Come to Nintendo Switch 2? Former Rockstar Developer Says It Doesn’t Make Sense&nbsp;&nbsp;levelup.com"
-    },
-    {
-      "title": "Blacksmith Master Launches Alongside GTA 6 - GameLuster",
-      "link": "https://gameluster.com/blacksmith-master-gta-6-launch/",
-      "source_link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBrSHRacHFQaVpyRGkzRXI0dTEtcGNOSF9aVk00WUN0bDd2dUZYV211elozQWRzaktkOHRndHo1MExOaW0tY0VmWDJHblJrMlpZUGZXcEhLbmN0ckp1S21ua0IyVTI?oc=5",
-      "date": "2026-09-27T16:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gameluster.com/wp-content/uploads/2026/09/blacksmith-masters-1-0-launch-gta-6-day.webp",
-      "description": "Blacksmith Master Launches Alongside GTA 6&nbsp;&nbsp;GameLuster"
-    },
-    {
-      "title": "Rockstar Reveals New GTA 6 Artwork of Jason and Lucia - VICE",
-      "link": "https://www.vice.com/en/article/gta-6-jason-lucia-new-artwork-game-informer/",
-      "source_link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPNkdUNDg1MUtPZE5qdGNGZ3F1ZURTTnM5WllNbTYyX2Noa2ZBT19EY2U1Y21Fa3k0akZvOGpmNTlUVjlQQ1l0TXQzTjFVX1RqQ1V5RENxRHZJU0dCUGtubDJfdWVxR3VtWENKSENtVmtmbmN4OXRFOEZsSl9aWlhfUE9n?oc=5",
-      "date": "2026-09-27T14:50:22+00:00",
-      "source": "Google News (annonces Rockstar)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/09/Rockstar-Reveals-New-GTA-6-Artwork-of-Jason-and-Lucia.jpg?w=1280",
-      "description": "Rockstar Reveals New GTA 6 Artwork of Jason and Lucia&nbsp;&nbsp;VICE"
     }
   ],
   "partial": true,
