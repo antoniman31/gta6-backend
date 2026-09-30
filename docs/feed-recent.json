@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-30T03:01:57.501879+00:00",
+  "generated_at": "2026-09-30T04:02:02.577718+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 54.2,
+  "duration_seconds": 62.9,
   "decode_failures": 0,
-  "total_articles": 2714,
-  "new_this_run": 2,
+  "total_articles": 2719,
+  "new_this_run": 5,
   "hot_count": 29,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 677,
-      "last_article": "2026-09-30T01:19:13+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 678,
+      "last_article": "2026-09-30T03:31:32+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 844,
-      "last_article": "2026-09-30T02:50:20+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 847,
+      "last_article": "2026-09-30T03:36:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -618,15 +618,15 @@
     {
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 39,
       "last_article": "2026-09-29T23:08:44+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -683,10 +683,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 9,
       "last_article": "2026-09-29T15:00:05+00:00",
@@ -891,14 +891,14 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-19T03:29:44+00:00",
-      "days_since_last_article": 10,
+      "days_since_last_article": 11,
       "status": "ok"
     },
     {
@@ -1077,10 +1077,10 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 0,
-      "last_article": "2026-09-28T15:36:14+00:00",
-      "days_since_last_article": 1,
+      "new_this_run": 1,
+      "articles_exclusifs": 1,
+      "last_article": "2026-09-30T03:19:11+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 11,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,20 +1203,25 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-09-30T01:01:59.733680+00:00",
+      "succes": 0,
+      "alertee": false
+    },
+    "rockstarmag-youtube": {
+      "depuis": "2026-09-30T04:02:02.576586+00:00",
       "succes": 0,
       "alertee": false
     }
@@ -1227,7 +1232,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1239,7 +1244,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1336,7 +1341,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 03:01:21 GMT"
+      "modified": "Wed, 30 Sep 2026 04:01:16 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1345,8 +1350,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abc7b42-2fde\"",
-      "modified": "Wed, 30 Sep 2026 03:00:18 GMT"
+      "etag": "W/\"6abc8950-2fde\"",
+      "modified": "Wed, 30 Sep 2026 04:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1365,8 +1370,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6abc6b0e-b0c\"",
-      "modified": "Wed, 30 Sep 2026 01:51:10 GMT"
+      "etag": "\"6abc872f-b0c\"",
+      "modified": "Wed, 30 Sep 2026 03:51:11 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1376,7 +1381,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 03:01:23 GMT"
+      "modified": "Wed, 30 Sep 2026 04:00:49 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1411,6 +1416,58 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA VI's hurricanes, map size, romance, and 170 animal species explained in new report - GosuGamers",
+      "link": "https://www.gosugamers.net/entertainment/news/79271-gta-vi-s-hurricanes-map-size-minigames-and-170-animal-species-explained-in-new-report",
+      "source_link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNZFI2Y0wteW1rRjdUaXBXS2xCckxaQzBYX3BhZ2JKXzc5cGc5eEZHTEJDY1R4NW8xTHFfUXZLSkFTZEUtcnJMNy1SNVpnajk2cHE0MDVjZVRnc0hjTFhqUDJGb1B1V1l2cWNreTBjUWpBaVVPRkdLWWphYjFQXzRmSVhJVXZNb2ZkczFmYzlHeGpQeDM0T04xU080UGY2TkwzaGNpa0Vld1hFcmF1WXBaeEFLUC1Idks1TXd3aHhZOWFJeDBRN29xQmo3SDJndE91WjFR?oc=5",
+      "date": "2026-09-30T03:36:44+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static.gosugamers.net/d1/12/12/3f005d681e7ade86f785b0255ba9cb00efef7f6c05515759a90b020af5.webp",
+      "description": "GTA VI's hurricanes, map size, romance, and 170 animal species explained in new report&nbsp;&nbsp;GosuGamers"
+    },
+    {
+      "title": "GTA 6 dévoile de nouveaux secrets explosifs - Watson",
+      "link": "https://www.watson.ch/fr/divertissement/jeux-video/404042429-gta-6-devoile-de-nouveaux-secrets-explosifs",
+      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxObkVyUmhrd2d1Q0JGb0dFelo3MEM2TWI2OGxHY2c1Qk1SSFRpWmo2QWp5MUZQMXlGTFBkSW5yYTRNTlVtTFk4RzZiYzM4eTM0ZGdhb3VYRXppbHFYXzNEdFBjUC10S1pjT0Z3ZnZZQ09pd1dXYVVVZ0xRNFVuWnlxWFJIVG1fWXlaVTdDTTZ4Z2ZySXlnaThtMTM1aXpGTVJZQ1Ywb3V5RQ?oc=5",
+      "date": "2026-09-30T03:31:32+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.watson.ch/fr/imgdb/f6d5/Z1200,675,640,323,167,167/1701396947688922",
+      "description": "GTA 6 dévoile de nouveaux secrets explosifs&nbsp;&nbsp;Watson"
+    },
+    {
+      "title": "Take-Two shuts down unofficial native GTA V port days before its biggest update",
+      "link": "https://www.tweaktown.com/rss/click/news/113822/?c=news-mf",
+      "source_link": null,
+      "date": "2026-09-30T03:19:11+00:00",
+      "source": "TweakTown",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static.tweaktown.com/news/1/1/113822_5_take-two-shuts-down-unofficial-native-gta-port-days-before-launch_full.png",
+      "description": "The same developer previously released a similar unofficial GTA V port for the original Nintendo Switch, which is also being shut down.Continue reading at TweakTown"
+    },
+    {
+      "title": "GTA VI's November launch could spark a rush of GTA-style games on Roblox - Briefs Finance",
+      "link": "https://www.briefs.co/news/gta-vi-s-november-launch-could-spark-a-rush-of-gta-style-gam/",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNWUE2S1hlbzV3V0RMNVNMZ1A3VkhwNE5OUGJudEUxZ1BJb01FT2JsdGtrMHNiOXJhc0tEMHNneGh1RDNMeW9RXzV4NHJRbElJTmdTNjJKdTRUXzVUbzBjR2dfZTJXUWk2THo4RFllU3dSVENNbWNXWi1PWUNWZE16UnhJcElEOGRTWFZ3bnhFblBkdw?oc=5",
+      "date": "2026-09-30T03:11:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.briefs.co/wp-content/uploads/2026/09/gta-vi-s-november-launch-could-spark-a-rush-of-gta-style-gam.png",
+      "description": "GTA VI's November launch could spark a rush of GTA-style games on Roblox&nbsp;&nbsp;Briefs Finance"
+    },
     {
       "title": "GTA 6 Activities, Weather System Info Surfaces; Expect Over 170 Animal Species - MP1st",
       "link": "https://mp1st.com/news/gta-6-activities-weather-system-info-surfaces-expect-over-170-animal-species",
@@ -1683,6 +1740,19 @@
       "lang": "en",
       "image": "https://www.svg.com/img/gallery/all-25-gta-6-side-activities-confirmed-by-rockstar-so-far/l-intro-1790714911.jpg",
       "description": "All 25+ GTA 6 Side Activities Confirmed By Rockstar (So Far)&nbsp;&nbsp;svg.com"
+    },
+    {
+      "title": "Rockstar Confirms GTA 6 Simulates Tropical Storms and Hurricanes - me.ign.com",
+      "link": "https://me.ign.com/en/grand-theft-auto-vi/248416/rockstar-confirms-gta-6-simulates-tropical-storms-and-hurricanes",
+      "source_link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNY1BDYnFjQktEdmRKSjdSdmVGV04zYThoTWY2MHlVV1lpUjFtcHpKWndnZ2xjYTBXeGVkUmZ3U1JpbldJYVlKZkpvS20xRl9rU2NtSFdPNVBRQW8tVzFvdjM5YWlYQXVRNEowcmNScWZqVXVKdHdWZEV0b2lLdnQ3OUZia0ZXZUFQdEVrNzBITnNwYmN0cTlXQ2xmRHBvX29mVjVoYWdaV2dMUjEwak9Zdm0xTQ?oc=5",
+      "date": "2026-09-29T20:43:53+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://sm.ign.com/t/ign_me/news/r/rockstar-c/rockstar-confirms-gta-6-simulates-tropical-storms-and-hurric_bczx.1200.jpg",
+      "description": "Rockstar Confirms GTA 6 Simulates Tropical Storms and Hurricanes&nbsp;&nbsp;me.ign.com"
     },
     {
       "title": "GTA 6 Brings Jet Skiing, Mini Golf & Much More Side Activities, Rockstar Confirms - AOL.com",
@@ -5307,71 +5377,6 @@
       "lang": "en",
       "image": "https://s1.cdn.autoevolution.com/images/news/the-gta-6-collectors-set-is-official-ridiculously-expensive-game-not-included-276152_1.jpeg",
       "description": "The GTA 6 Collector's Set Is Official: Ridiculously Expensive, Game Not Included&nbsp;&nbsp;autoevolution"
-    },
-    {
-      "title": "NBA 2KTV Host Claims Rockstar Emailed Her About a GTA 6 Copy - GTA BOOM",
-      "link": "https://www.gtaboom.com/nba-2ktv-host-alexis-morgan-says-rockstar-emailed-her-about-a-gta-6-copy-65a1",
-      "source_link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNc3RPNnlaeEZhb3VpN0RIN21fazB1cndqY2R0Wi00QVM2VlZuaEE0VDBhTTJBMkdxaVZPNGVHcXJGSl9ZVEJva2pCZGI3WUlpMDBURjRtR1F3dThja0JFTE9QaGI4d0FXM2lXTDY1d2NPbG4zdDczcUkyZkkyS3JxdV9vaWgySTVFdDEyRjBUd0gxNTBHcFJjbXFkYXZYLW5jMXIw?oc=5",
-      "date": "2026-09-26T08:25:02+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://media.gtaboom.com/variants/1920/media/images/16/ae/nba-2ktv-host-alexis-morgan-says-rockstar-emailed-her-about-a-gta-6-copy.jpg",
-      "description": "NBA 2KTV Host Claims Rockstar Emailed Her About a GTA 6 Copy&nbsp;&nbsp;GTA BOOM"
-    },
-    {
-      "title": "Les fans de GTA 6 impriment déjà en 3D des items issus de l'édition collector du jeu à 400 balles - fr.ign.com",
-      "link": "https://fr.ign.com/grand-theft-auto-6/92590/les-fans-de-gta-6-impriment-deja-en-3d-des-items-issus-de-ledition-collector-du-jeu-a-400-balles",
-      "source_link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOOWVJV3cweUZwVURtM1dKQndyRXdPa3VjN3owZ0syZl9OaDZzaDdydXhVVnFCaEV5WkhhMzU1bHJCR3ZBR01MSkhaeW9QRHRiSWJVRHBsYXlNT2VoaENxZUpMaXlZOTRNdFo5RWNnVkR3TkgzYWpQUXpHRTRKYnNfT04wS3BXWHlqN0NsVDdDVWRHZFhNZnF5Z1haa3BJVFhxTnY4b21ZeGRzY1g2dnlUbUVieTQ3VGFpRDI4TlJRMzlVMjk0NG5vZVdBRUdhcW5FNFM0eUMtUQ?oc=5",
-      "date": "2026-09-26T08:10:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-6-fans/gta-6-fans-are-already-3d-printing-items-in-the-games-400-co_f7xc.1200.jpg",
-      "description": "Les fans de GTA 6 impriment déjà en 3D des items issus de l'édition collector du jeu à 400 balles&nbsp;&nbsp;fr.ign.com"
-    },
-    {
-      "title": "GTA 6 sur PC plus vite que prévu ? - Begeek",
-      "link": "https://www.begeek.fr/gta-6-sur-pc-plus-vite-que-prevu-440507",
-      "source_link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBQYThBb3lNZWZxQXQ5VE15clhwQ1MyUHQzYWpjd09LWHJObm5YYXRvRUlMdVYyZ3VUSmJFRDBkWVNpcUhQMmZsWHRVUWE0aHdqZFhVbzZrcVRzcVhkTlRlOEltczh5OEhWVDVUNzdR?oc=5",
-      "date": "2026-09-26T08:00:47+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.begeek.fr/wp-content/uploads/2026/08/gta-6.webp",
-      "description": "GTA 6 sur PC plus vite que prévu ?&nbsp;&nbsp;Begeek"
-    },
-    {
-      "title": "GTA VI : le prix de 79,99 € pèse-t-il trop lourd en Europe ? - Presse Agence",
-      "link": "https://presseagence.fr/paris-gta-vi-un-prix-unique-de-7999-e-un-impact-economique-tres-different-selon-les-pays/",
-      "source_link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOblE3UXFlZE40NUoyU25ENW5ILXFwWEpvNFVadm16ZHRvUEZVSThSVS1sZjdDV20wNU1pLXdFNDRJUnFxSzhmZGJONFhNNGZpeXFfV2tJUXlrQlcyX29DeEdwUEd3RWFuMHQ2RlNnNUJMaWdGNFdIMTdpaDF5NS1XNTRGNW9xek15d081N1F3dHlnTl80SVBCNnlQcW1vMlRaX1l3cUpKdko5aHZmRGprSW9USQ?oc=5",
-      "date": "2026-09-26T08:00:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://presseagence.fr/wp-content/uploads/EUROPE_GTA_PRIX_UNIQUE_IMPACT_img_01_reaction.webp",
-      "description": "GTA VI : le prix de 79,99 € pèse-t-il trop lourd en Europe ?&nbsp;&nbsp;Presse Agence"
-    },
-    {
-      "title": "Le club de golf dans GTA 6 sera de la taille d’une ville entière de Red Dead Redemption 2 - EGW.News",
-      "link": "https://fr.egw.news/gaming/news/37469/gta-6s-golf-course-will-be-as-big-as-the-entire-ci-rMffb5IZH",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNTmhqTTRjTTNiRE1abnVLcF9yTGQ2Q1o0Y00ycVhRRmlaVG1OOHB0eUFfcFJQb2p5aDNpdDhCNFJnQkVnMTNGbTlxZS1ZeVF3MjB4emozZDhHTi1uZ3g4ekV4SUdZWUV3dXRkNXdNMjB6OGF4MXBHUTQ4WjZSbk1EeXZSYlZkb2ZTYlliVUMzSEJoYTFvQmc2aEZMekJGajA?oc=5",
-      "date": "2026-09-26T07:55:52+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "Le club de golf dans GTA 6 sera de la taille d’une ville entière de Red Dead Redemption 2&nbsp;&nbsp;EGW.News"
     }
   ],
   "partial": true,
