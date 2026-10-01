@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-01T04:02:06.853692+00:00",
+  "generated_at": "2026-10-01T05:01:56.028967+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 64.3,
+  "duration_seconds": 57.2,
   "decode_failures": 0,
-  "total_articles": 2845,
-  "new_this_run": 0,
+  "total_articles": 2848,
+  "new_this_run": 3,
   "hot_count": 30,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 721,
-      "last_article": "2026-09-30T18:42:00+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 722,
+      "last_article": "2026-10-01T04:30:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "articles_exclusifs": 881,
-      "last_article": "2026-10-01T02:50:00+00:00",
+      "last_article": "2026-10-01T04:55:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -583,10 +583,10 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 5,
-      "last_article": "2026-09-27T09:14:00+00:00",
-      "days_since_last_article": 3,
+      "new_this_run": 1,
+      "articles_exclusifs": 6,
+      "last_article": "2026-10-01T04:30:00+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -865,10 +865,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-25T21:55:00+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -1079,7 +1079,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
-      "last_article": "2026-10-01T01:13:07+00:00",
+      "last_article": "2026-10-01T04:55:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 12,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 6,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1232,7 +1232,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1244,7 +1244,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,0,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1341,7 +1341,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 04:01:21 GMT"
+      "modified": "Thu, 01 Oct 2026 05:00:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1350,8 +1350,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abddad2-2fa8\"",
-      "modified": "Thu, 01 Oct 2026 04:00:18 GMT"
+      "etag": "W/\"6abde8e0-2fa8\"",
+      "modified": "Thu, 01 Oct 2026 05:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1360,8 +1360,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1790822405\"",
-      "modified": "Thu, 01 Oct 2026 02:40:05 GMT"
+      "etag": "W/\"1790829609\"",
+      "modified": "Thu, 01 Oct 2026 04:40:09 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1370,8 +1370,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6abdca9f-b28\"",
-      "modified": "Thu, 01 Oct 2026 02:51:11 GMT"
+      "etag": "\"6abde6c0-b28\"",
+      "modified": "Thu, 01 Oct 2026 04:51:12 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1381,7 +1381,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 04:01:02 GMT"
+      "modified": "Thu, 01 Oct 2026 05:00:45 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1416,6 +1416,51 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar confirm 10+ new details about Grand Theft Auto 6 gameplay - TweakTown",
+      "link": "https://www.tweaktown.com/news/113817/rockstar-confirm-10-plus-new-details-about-grand-theft-auto-6-gameplay/index.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOcUFNbWs0SUpJTkhmZUdYSnRkdkxfWlFvMDM4X3k2OHd5UmhzR3lUeWhGUVlqRUgwZHZXeUF3Ym84NEtmV0hlRE1rMXotMlQ5RVR3T3FBV04wdW9acEx6UGVJbU40UllVTy1uUVkwM1FiaGpLVnQzaDdGS2tjcGhIalMxLWsyRGVKVkhoUzV5QlNNckVzMjdmeFBGeUZWeGFxeTV6bTNZamFvVlNwUWZac0lxS0E3LTZtelBR?oc=5",
+      "date": "2026-10-01T04:55:13+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static.tweaktown.com/news/1/1/113817_1_rockstar-confirm-10-new-details-about-grand-theft-auto-6-gameplay_full.png",
+      "description": "Rockstar confirm 10+ new details about Grand Theft Auto 6 gameplay&nbsp;&nbsp;TweakTown",
+      "extraSources": [
+        {
+          "source": "TweakTown",
+          "link": "https://www.tweaktown.com/rss/click/news/113817/?c=news-mf"
+        }
+      ]
+    },
+    {
+      "title": "Vous l'attendez depuis 10 ans : voici où précommander votre exemplaire de GTA 6 au meilleur prix - Auto Plus",
+      "link": "https://www.autoplus.fr/pratique/comparatifs-guides-achat/vous-lattendez-depuis-10-ans-voici-ou-precommander-votre-exemplaire-de-gta-6-au-meilleur-prix-1469089.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxNTi1uVU13amxMNXNuME9SN1RjUGNyTExfNXU5N3JTVVk2QzI4REl6VEZwTmNpS0dMWUxBcjFHNmZkQXJtUl9sc0ZXemZJdmFEYmxtN3RqaEFDTXh3VDd1aDR1bG4tRnlZcmZ4UzJtSDVxWC1EbUlPT1JQSnpzcVlxYXpBMngtZlE2dldYMXY4b0xGSGdsVzhVYUNyRTczVkRZeWlaLWo5dTQ0dnRTei1LWHhaanVqTnVvWXdoM29TZ21Vdm9LQ1lDZkJHTnhqX1dFV2J2cnJ0QjM3RHRpSndlSEFWOElCaDRBQkx6d1AtVGp3UHRPdkRn?oc=5",
+      "date": "2026-10-01T04:30:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sf1.autoplus.fr/wp-content/uploads/autoplus/2026/09/vous-lattendez-depuis-10-ans-voici-ou-precommander-votre-exemplaire-de-gta-6-au-meilleur-prix.jpg",
+      "description": "Vous l'attendez depuis 10 ans : voici où précommander votre exemplaire de GTA 6 au meilleur prix&nbsp;&nbsp;Auto Plus"
+    },
+    {
+      "title": "Agenda - Ace Combat 8, Gears of War E-Day, Aion 2, Castlevania Belmont's Curse, Phantom Blade Zero.... Les sorties JV du mois d'octobre 2026",
+      "link": "https://www.gamekult.com/actualite/ace-combat-8-gears-of-war-e-day-aion-2-castlevania-belmont-s-curse-phantom-blade-zero-les-sorties-jv-du-mois-d-octobre-2026-3050872270.html",
+      "source_link": null,
+      "date": "2026-10-01T04:30:00+00:00",
+      "source": "Gamekult",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://cdn.gamekult.com/optim/images/news/30/3050872270/ace-combat-8-gears-of-war-e-day-aion-2-castlevania-belmont-s-curse-phantom-blade-zero-les-sorties-jv-du-mois-d-octobre-2026-58b7b3e0__800_800__1787-0-2649-862.png",
+      "description": "Après un mois de septembre d'une richesse folle, la saison du « vite, vite, il faut sortir notre jeu avant GTA 6 » se poursuit avec un bien joli mois d'octobre en perspective. Et n'oubliez pas que « Choisir, c'est renoncer »."
+    },
     {
       "title": "After GTA 6 Collector's Edition falls flat, fans covet Rockstar merch sent to influencers - Notebookcheck",
       "link": "https://www.notebookcheck.net/After-GTA-6-Collector-s-Edition-falls-flat-fans-covet-Rockstar-merch-sent-to-influencers.1412656.0.html",
@@ -5350,55 +5395,6 @@
       "lang": "en",
       "image": null,
       "description": "JPMorgan reiterates Take-Two stock rating on GTA VI sales outlook&nbsp;&nbsp;Investing.com UK"
-    },
-    {
-      "title": "New GTA 6 Artwork Shows Jason And Lucia In Bullet-Riddled Getaway Car - HotHardware",
-      "link": "https://hothardware.com/news/new-gta-6-artwork-shows-jason-lucia-bullet-riddled-getaway-car",
-      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPS3lwY2lsMWdOSTBjQWl6Yk1YTlpzWllHcTRXamZnd3dpV1NNZndGZTg5V3ZtWGNCNmZPRnphelZrQWJIUWR4eFBteERBdXhjSXFIUGZQOVo3Yk1RUk9PeUVjZUxBZUxMd2N5OUUxT0Fwc1lwM2c5ODRxUW9XR2dsRThqRlJCcjhpYU1YZTQ2SXVQOTZrSHc?oc=5",
-      "date": "2026-09-28T13:27:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://images.hothardware.com/contentimages/newsitem/71719/content/16x9_2133x1200_highres-gta-vi-lucia-jason.jpg",
-      "description": "New GTA 6 Artwork Shows Jason And Lucia In Bullet-Riddled Getaway Car&nbsp;&nbsp;HotHardware"
-    },
-    {
-      "title": "GTA 6’s “advanced” weather system finally confirmed after years of rumors - Dexerto",
-      "link": "https://www.dexerto.com/gta/gta-6s-advanced-weather-system-finally-confirmed-after-years-of-rumors-3413021/",
-      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPTWFUR01lSFhVSnhwQ0E4aHJ1ZjRscUlZSG94MUZES3g5cGxHLWtWYks1NHBveUFQMllJdXpUTHB3Q2k0QTBjRGhGVGh4X2gwUEJ2VFRLaDRJck10NGoxUENyblR0dlpjanVOajIxU3pxUVpIU2VDcHItaWJ1SzAwZWlpbWpXUWVwYXJFbVpaanREWlNrRExwQklKOEdrSzdDbF85b0QwdGJ4NzQ?oc=5",
-      "date": "2026-09-28T13:25:58+00:00",
-      "source": "Dexerto",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.dexerto.com/cdn-image/wp-content/uploads/2026/09/04/gta-6-youtube-rules.jpg",
-      "description": "GTA 6’s “advanced” weather system finally confirmed after years of rumors&nbsp;&nbsp;Dexerto",
-      "extraSources": [
-        {
-          "source": "Google News (EN)",
-          "link": "https://tribune.com.pk/story/2632071/gta-6-advanced-weather-system-confirmed-amid-rumours"
-        },
-        {
-          "source": "Google News (EN, 7 jours)",
-          "link": "https://www.svg.com/2272767/gta-6-advanced-weather-system-rockstar/"
-        }
-      ]
-    },
-    {
-      "title": "GTA 6 : les joueurs commencent à compter les jours autrement à mesure que la sortie approche - menow.fr",
-      "link": "https://www.menow.fr/gta-6-les-joueurs-commencent-a-compter-les-jours-autrement-a-mesure-que-la-sortie-approche/",
-      "source_link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNdnRPdmVUS0xOTDNpNFNWMzlVWnYyM3VJZDF3dXdQX3VkTlZqNWNPSEM0RkRQZUU5bzRDTUgyYkVOVFlTWkVMS0hjMndER3BWNnA5RzQyNkg0TFhWSWVYekZHUy1lNm9zY2lCZl9UM21TQW12czlfLWc1LVNidlhHTWhBejJEaXZ4cEJJMFdKWE95TnR2bHlkY21rNG9XU0FBNVhqWTR1ZTJzcGh4ajIzWUl3?oc=5",
-      "date": "2026-09-28T13:23:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.menow.fr/wp-content/uploads/2026/08/gta6-2026.webp",
-      "description": "GTA 6 : les joueurs commencent à compter les jours autrement à mesure que la sortie approche&nbsp;&nbsp;menow.fr"
     }
   ],
   "partial": true,
