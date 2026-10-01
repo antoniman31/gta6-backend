@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T09:01:57.605303+00:00",
+  "generated_at": "2026-10-01T10:02:02.711893+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 57.2,
+  "duration_seconds": 60.6,
   "decode_failures": 0,
-  "total_articles": 2871,
-  "new_this_run": 6,
+  "total_articles": 2875,
+  "new_this_run": 4,
   "hot_count": 30,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 3,
-      "articles_exclusifs": 732,
-      "last_article": "2026-10-01T08:56:43+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 734,
+      "last_article": "2026-10-01T09:46:52+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 3,
-      "articles_exclusifs": 890,
-      "last_article": "2026-10-01T08:24:01+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 891,
+      "last_article": "2026-10-01T09:05:28+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -593,14 +593,14 @@
     {
       "id": "ignfr",
       "name": "IGN France",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 40,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
-      "new_this_run": 0,
-      "articles_exclusifs": 6,
-      "last_article": "2026-09-25T07:06:01+00:00",
-      "days_since_last_article": 6,
+      "not_modified": false,
+      "new_this_run": 1,
+      "articles_exclusifs": 7,
+      "last_article": "2026-10-01T09:12:29+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -684,10 +684,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 10,
       "last_article": "2026-09-30T15:30:05+00:00",
@@ -723,10 +723,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 8,
       "last_article": "2026-09-18T18:19:10+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 13,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 6,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {},
@@ -1222,7 +1222,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,0,0,0,0,0,15,15,15",
+    "rockstar-youtube": "15,15,15,0,0,0,0,0,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1234,7 +1234,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,15,15,15",
+    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,0,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1290,13 +1290,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"85cbb81c1f69f4cf0e9e4a92342173a3\"",
-      "modified": "Thu, 01 Oct 2026 08:57:06 GMT"
+      "etag": "W/\"657dee3771d07ddef3a18d67842a29f6\"",
+      "modified": "Thu, 01 Oct 2026 09:48:02 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 07:48:29 GMT"
+      "modified": "Thu, 01 Oct 2026 09:12:29 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1326,27 +1326,27 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Wed, 30 Sep 2026 19:26:32 GMT"
+      "modified": "Thu, 01 Oct 2026 09:52:39 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 08:58:45 GMT"
+      "modified": "Thu, 01 Oct 2026 10:01:21 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "\"dbc0b43799eb2192430c66a70f8fe314\"",
-      "modified": "Thu, 01 Oct 2026 08:33:45 GMT"
+      "etag": "\"65c1e666f31afefba99bcdebda8f3970\"",
+      "modified": "Thu, 01 Oct 2026 09:27:17 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abe2122-2f83\"",
-      "modified": "Thu, 01 Oct 2026 09:00:18 GMT"
+      "etag": "W/\"6abe2f32-3012\"",
+      "modified": "Thu, 01 Oct 2026 10:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"187cbf05cfff18359da77205446e801c\"",
-      "modified": "Thu, 01 Oct 2026 08:59:50 GMT"
+      "etag": "W/\"a8566b5b53e8b1aa486ab212e999b4c4\"",
+      "modified": "Thu, 01 Oct 2026 09:20:23 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1355,8 +1355,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"9e3cad6c679fcf3613d90f4c6e45be65\"",
-      "modified": "Thu, 01 Oct 2026 09:00:25 GMT"
+      "etag": "W/\"e3f1e3e821ce500072108f502fa82c56\"",
+      "modified": "Thu, 01 Oct 2026 09:59:19 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1365,47 +1365,99 @@
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
-      "etag": "\"09358e8e93f98d0d7b8051bd8c834bc8-gzip\"",
+      "etag": "\"6112fe6ce95e80370e6b0c57982e9dc4-gzip\"",
       "modified": null
     },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 09:01:15 GMT"
+      "modified": "Thu, 01 Oct 2026 10:01:20 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 08:25:00 GMT"
+      "modified": "Thu, 01 Oct 2026 09:26:54 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"c9fb4da4b1dfffc45270fea9f772a467\"",
-      "modified": "Thu, 01 Oct 2026 08:58:30 GMT"
+      "etag": "W/\"89ab11092f02a1ebefb6d8a57bf6be34\"",
+      "modified": "Thu, 01 Oct 2026 09:54:27 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"be8783d196cdd734193ae34f88a75007\"",
-      "modified": "Thu, 01 Oct 2026 08:56:01 GMT"
+      "etag": "W/\"717143c4b11642eada04ebd98820d7b5\"",
+      "modified": "Thu, 01 Oct 2026 09:54:55 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"0851870c280984eff2a57f8d878ee7b7\"",
-      "modified": "Thu, 01 Oct 2026 08:58:27 GMT"
+      "etag": "W/\"90df9227d3cd95cf496dd55de31110fa\"",
+      "modified": "Thu, 01 Oct 2026 10:00:46 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
-      "etag": "W/\"c56004d60b72b8a136c981a6dff9bfe1\"",
-      "modified": "Thu, 01 Oct 2026 09:00:29 GMT"
+      "etag": "W/\"bdf5e14a26699c20d1ab1e7e86dbb71d\"",
+      "modified": "Thu, 01 Oct 2026 10:00:27 GMT"
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"2ac8be4044f18b4652aecb1c4571bd42\"",
-      "modified": "Thu, 01 Oct 2026 08:47:00 GMT"
+      "etag": "W/\"89ab11092f02a1ebefb6d8a57bf6be34\"",
+      "modified": "Thu, 01 Oct 2026 09:54:27 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : carte géante, ouragans locaux et 170 espèces animales dévoilés - Android MT",
+      "link": "https://android-mt.ouest-france.fr/news/gta-6-carte-geante-ouragans-locaux-et-170-especes-animales-devoiles/224003/",
+      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNbmFkMllKR2hLZnNWclR5SVZ0Rm94UUJDVGVFQms0ZGkwelI0MjhzbEsxWWw2SHQ2N2NuWjhheTljNldxNmE1MGRmTG5jVDk0UlNQUS16M2F5OFRmVEozaXRfQjZ2Wm5pY3VBOUtzYXVBaWtiWGRQR1FORlFMd0xzRHdlNG5uX3M5NnNkMDdsOWk2YXpDaVZ3M2I0OFN4NERWdHRzdmE1R0lDYWY2WnVuRGFpVXVrQQ?oc=5",
+      "date": "2026-10-01T09:46:52+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://android-mt.ouest-france.fr/wp-content/uploads/2026/09/Des-nouvelles-de-GTA-.jpg",
+      "description": "GTA 6 : carte géante, ouragans locaux et 170 espèces animales dévoilés&nbsp;&nbsp;Android MT"
+    },
+    {
+      "title": "Les devs de GTA 6 sont allés au strip-club, mais c’était pour le boulot, promis - Journal du Geek",
+      "link": "https://www.journaldugeek.com/2026/10/01/les-devs-de-gta-6-sont-alles-au-strip-club-mais-cetait-pour-le-boulot-promis/",
+      "source_link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQSkZUZVA2Q1ROMHEyT1NqMFlIM015MmFrVEN3em9mSHNZRmFPLW82cUh3Wi1nUm5NSkJqS205RUtGTTF3elBwS2VybXJLSTAtMTVXN3VwYVh4TXgxSWFkU3dIU1Qta043UTdGWDVGOXo5dzlDQW1fdlI5VkxMX0hRY29FN2NrR245ckEzSUI0R1JhR21vQ2d3cV9CX09TZjJtLWRwVEFLYjlrNFE0cDZiN2dXS2N2UmFlMkE?oc=5",
+      "date": "2026-10-01T09:33:41+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/08/gta-6-nouvelles-images-previews-27-aout-2026-09-1600x900.jpg",
+      "description": "Les devs de GTA 6 sont allés au strip-club, mais c’était pour le boulot, promis&nbsp;&nbsp;Journal du Geek"
+    },
+    {
+      "title": "Un modder GTA 5 provoque Rockstar avec son portage Nintendo Switch non officiel, et se prend une mise en demeure de la part de Take-Two",
+      "link": "https://fr.ign.com/grand-theft-auto-v/92728/un-modder-gta-5-provoque-rockstar-avec-son-portage-nintendo-switch-non-officiel-et-se-prend-une-mise",
+      "source_link": null,
+      "date": "2026-10-01T09:12:29+00:00",
+      "source": "IGN France",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sm.ign.com/t/ign_fr/news/g/gta-5-modd/gta-5-modder-taunts-rockstar-with-unofficial-nintendo-switch_qs33.1200.jpg",
+      "description": "\n« Je ne m’attendais pas à ce qu’ils ripostent aussi violemment. »"
+    },
+    {
+      "title": "GTA VI Developers Spent Years Visiting Strip Clubs and Relaxing on Florida Beaches, Latest PS5 and PS5 Pro Jailbroken - The Most Interesting News for September 30 - ixbt.games",
+      "link": "https://ixbt.games/en/news/2026/10/01/samoe-interesnoe-za-30-sentiabria.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPNEphSHRWSlNzRThVRXl0enFMT3ZFY2l1bERIYklKVWdmQ0RjMnJfVjJZdUt2U09nVEJGM1JGTGFvVnZYc1FvX1pDOXpSbG5OLW8xNWF6VEpyUWNkcjJWWFVBZGZqOGhXRFdfUHRYeTItLUdjaWJRNXNLZ1BOS1ZoWE5R0gGHAUFVX3lxTE5nSjVYQ0hUamNZWE9aZV82MzFBR0hSalVEZ052UVFJQnBKNEgtckN3TkZjVW5QU095UWlDY1ZBdEVJMExnMUVWUEo4bTRWNnJjVU5qQ1dsUTVnYjJESTBDYlE1ZFAtTGZZaV9iUXNKZmhxa21VV1c3c0hKQm5XRkx3S3U5bS1FUQ?oc=5",
+      "date": "2026-10-01T09:05:28+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1379135/b35907d3-39d9-42cc-b53e-c9ccf0fa6497.avif",
+      "description": "GTA VI Developers Spent Years Visiting Strip Clubs and Relaxing on Florida Beaches, Latest PS5 and PS5 Pro Jailbroken - The Most Interesting News for September 30&nbsp;&nbsp;ixbt.games"
+    },
     {
       "title": "GTA 6 : 12 nouveautés de gameplay qui font monter la hype - next-stage.fr",
       "link": "https://www.next-stage.fr/2026/10/gta-6-nouveautes-gameplay.html",
