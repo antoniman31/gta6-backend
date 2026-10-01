@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-01T00:48:07.287644+00:00",
+  "generated_at": "2026-10-01T01:01:53.238189+00:00",
   "attente_recap": {
-    "articles": 10,
+    "articles": 11,
     "officiels": 0,
     "sommet": 3
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 56.4,
+  "duration_seconds": 53.9,
   "decode_failures": 0,
-  "total_articles": 2841,
+  "total_articles": 2842,
   "new_this_run": 1,
   "hot_count": 30,
   "hot_threshold": 3,
@@ -427,7 +427,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 140,
       "last_article": "2026-09-30T18:27:48+00:00",
       "days_since_last_article": 0,
@@ -469,7 +469,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
-      "days_since_last_article": 33,
+      "days_since_last_article": 34,
       "status": "tarie"
     },
     {
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "articles_exclusifs": 879,
-      "last_article": "2026-09-30T23:08:51+00:00",
+      "last_article": "2026-10-01T00:58:34+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 12,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 6,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1330,7 +1330,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 00:44:24 GMT"
+      "modified": "Thu, 01 Oct 2026 00:59:22 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1339,8 +1339,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abda999-2fa8\"",
-      "modified": "Thu, 01 Oct 2026 00:30:17 GMT"
+      "etag": "W/\"6abdb0a1-2fa8\"",
+      "modified": "Thu, 01 Oct 2026 01:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1359,23 +1359,18 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6abd9263-b28\"",
-      "modified": "Wed, 30 Sep 2026 22:51:15 GMT"
+      "etag": "\"6abdae7f-b28\"",
+      "modified": "Thu, 01 Oct 2026 00:51:11 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
       "etag": "\"8a8a82f0175ee86b0d48984ac3b5f8c1-gzip\"",
       "modified": null
     },
-    "dexerto-fr": {
-      "url": "https://www.dexerto.fr/feed/",
-      "etag": null,
-      "modified": "Thu, 01 Oct 2026 00:47:17 GMT"
-    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 00:47:14 GMT"
+      "modified": "Thu, 01 Oct 2026 01:01:11 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1410,6 +1405,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Rockstar Confirms GTA 6 Will Skip Disney World, Universal and the Space Coast - GTA BOOM",
+      "link": "https://www.gtaboom.com/these-are-the-famous-florida-landmarks-gta-6-is-leaving-out-8a8d",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPWF9UaUpvMkVsSmZrSHptM2RFLUswWld3Uk9kSXhRUTZIeXY2a3ZYUGVjbEhRTklsN0RMdHRScjRlejBBTElqbF9yWVluaDN0VEVpNXo3R3pjbS1QSGo1OHBjUUozWnpYeV9pVF9ycnh5bmNMZFVrNHE0QWY1TnZiZllaZnozTlkzdFU0OUE4cVdhUQ?oc=5",
+      "date": "2026-10-01T00:58:34+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.gtaboom.com/variants/1920/media/images/ed/28/these-are-the-famous-florida-landmarks-gta-6-is-leaving-out.jpg",
+      "description": "Rockstar Confirms GTA 6 Will Skip Disney World, Universal and the Space Coast&nbsp;&nbsp;GTA BOOM"
+    },
     {
       "title": "‘Grand Theft Auto VI’ Becomes First Video Game of 2026 to Top List of Titles People Are Most Excited About - Yahoo",
       "link": "https://www.yahoo.com/entertainment/articles/grand-theft-auto-vi-becomes-230851503.html",
@@ -1453,7 +1461,13 @@
       "specialist": false,
       "lang": "en",
       "image": "https://sm.ign.com/t/ign_ap/video/g/gta-6-devs/gta-6-devs-visited-real-strip-clubs-for-research-ign-daily-f_afu4.1200.jpg",
-      "description": "GTA 6 Devs Visited Real Strip Clubs for Research - IGN Daily Fix&nbsp;&nbsp;IGN Southeast Asia"
+      "description": "GTA 6 Devs Visited Real Strip Clubs for Research - IGN Daily Fix&nbsp;&nbsp;IGN Southeast Asia",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://pk.ign.com/grand-theft-auto-vi-rumored-title/261887/gta-6-devs-visited-real-strip-clubs-for-research-ign-daily-fix"
+        }
+      ]
     },
     {
       "title": "You Probably Shouldn't Expect a Disney World Parody in GTA 6 - IGN",
@@ -5374,19 +5388,6 @@
       "lang": "en",
       "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA-6-Sammlerstuecke-im-3D-Druck.jpg",
       "description": "GTA 6 collector’s box too expensive? Fan offers 3D-printable Macca figure&nbsp;&nbsp;Notebookcheck"
-    },
-    {
-      "title": "GTA 6 Guides Hub – How To Do Everything In Grand Theft Auto 6 - GameSpot",
-      "link": "https://www.gamespot.com/articles/gta-6-guides-hub-how-to-do-everything-in-grand-theft-auto-6/",
-      "source_link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNdFF6UnluN3ZuRllodngxaTJFTnlXZmdxSzR1Q0E0U1NzQS16eWFOeWtxdjV5Wmd6QUlIanlfVUtHdG1Eel93cjdNRlVCMVdNandnc2ktdTV6VnRNRVhsX1M2NkxRMXJPaFd1ZXVLM1A0SzBoX0wxMXh4a21iUWkyakxrTjIyazExbU1wTDVrWktoejdveHpLSnhn?oc=5",
-      "date": "2026-09-28T11:44:13+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": null,
-      "description": "GTA 6 Guides Hub – How To Do Everything In Grand Theft Auto 6&nbsp;&nbsp;GameSpot"
     }
   ],
   "partial": true,
