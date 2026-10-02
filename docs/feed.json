@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T10:01:58.626129+00:00",
+  "generated_at": "2026-10-02T11:02:05.879741+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 56.8,
+  "duration_seconds": 58.3,
   "decode_failures": 0,
-  "total_articles": 2999,
-  "new_this_run": 3,
+  "total_articles": 3007,
+  "new_this_run": 8,
   "hot_count": 33,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -457,7 +457,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
-      "days_since_last_article": 99,
+      "days_since_last_article": 100,
       "status": "tarie"
     },
     {
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 750,
-      "last_article": "2026-10-02T08:17:25+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 752,
+      "last_article": "2026-10-02T09:48:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 3,
-      "articles_exclusifs": 939,
-      "last_article": "2026-10-02T09:40:20+00:00",
+      "new_this_run": 4,
+      "articles_exclusifs": 943,
+      "last_article": "2026-10-02T11:00:01+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -623,10 +623,10 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 39,
-      "last_article": "2026-09-29T23:08:44+00:00",
-      "days_since_last_article": 2,
+      "new_this_run": 1,
+      "articles_exclusifs": 40,
+      "last_article": "2026-10-01T17:34:50+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -704,16 +704,16 @@
       "new_this_run": 0,
       "articles_exclusifs": 20,
       "last_article": "2026-09-29T10:36:53+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-29T16:08:50+00:00",
@@ -740,9 +740,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 35,
-      "last_article": "2026-10-01T10:07:44+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 36,
+      "last_article": "2026-10-02T10:02:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -1087,14 +1087,14 @@
     {
       "id": "gamesindustry",
       "name": "GamesIndustry.biz",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-18T10:22:40+00:00",
-      "days_since_last_article": 13,
+      "days_since_last_article": 14,
       "status": "ok"
     },
     {
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 14,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 7,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1222,7 +1222,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,0,0,0,0,15,0,15,15,15,15",
+    "rockstar-youtube": "15,0,0,0,0,15,0,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1234,7 +1234,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,0,0,0,0,0,0,15,15,15,15",
+    "rockstarmag-youtube": "15,0,0,0,0,0,0,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,0,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1264,7 +1264,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "100,100,100,100,100,100,100,100,100,100,99,99",
+    "engadget": "100,100,100,100,100,100,100,100,100,99,99,99",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1290,13 +1290,13 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"26ed8aa4f7b426f43e4031936b6c1f26\"",
-      "modified": "Fri, 02 Oct 2026 09:56:49 GMT"
+      "etag": "W/\"2f39ef67040ae2d1551fa121bbdbbc40\"",
+      "modified": "Fri, 02 Oct 2026 10:58:59 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 09:53:19 GMT"
+      "modified": "Fri, 02 Oct 2026 10:04:45 GMT"
     },
     "rockstarmag": {
       "url": "https://www.rockstarmag.fr/feed/",
@@ -1310,13 +1310,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2219f-BU2wEmsAaUaofGvOfUoZLZ8jTU8\"",
+      "etag": "W/\"21b22-723YZQRRT0axEoHKZzCFi0fcMVU\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"a39cccf462604a4e5d116c7cca29de20\"",
-      "modified": "Fri, 02 Oct 2026 09:45:47 GMT"
+      "etag": "W/\"a82aeceb2e4be28315ed256279358613\"",
+      "modified": "Fri, 02 Oct 2026 10:15:10 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1326,22 +1326,22 @@
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 09:28:14 GMT"
+      "modified": "Fri, 02 Oct 2026 10:56:20 GMT"
     },
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 09:58:15 GMT"
+      "modified": "Fri, 02 Oct 2026 11:01:22 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
-      "etag": "W/\"1df3c4596856fa290023f217edf6d421\"",
-      "modified": "Fri, 02 Oct 2026 09:01:43 GMT"
+      "etag": "W/\"50f9fcab7c5d14f244032f0cd4a2457f\"",
+      "modified": "Fri, 02 Oct 2026 10:21:03 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abf80b0-304c\"",
-      "modified": "Fri, 02 Oct 2026 10:00:16 GMT"
+      "etag": "W/\"6abf8ec2-3038\"",
+      "modified": "Fri, 02 Oct 2026 11:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1355,8 +1355,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"8aeba0930893f2416b352fe072320786\"",
-      "modified": "Fri, 02 Oct 2026 09:52:35 GMT"
+      "etag": "W/\"cf70fda1a2fd60fd25ffbda87300a067\"",
+      "modified": "Fri, 02 Oct 2026 10:45:43 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1371,41 +1371,119 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 10:01:25 GMT"
+      "modified": "Fri, 02 Oct 2026 11:01:11 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 08:03:39 GMT"
+      "modified": "Fri, 02 Oct 2026 10:10:00 GMT"
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"4d2ed9d17720e66773a36631341a35e8\"",
-      "modified": "Fri, 02 Oct 2026 10:00:36 GMT"
+      "etag": "W/\"e18cc141bd8deb7da0adf7fedbb88f4d\"",
+      "modified": "Fri, 02 Oct 2026 10:59:26 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"005c83263e19320058abd9503129aba3\"",
-      "modified": "Fri, 02 Oct 2026 09:43:55 GMT"
+      "etag": "W/\"1e1daad971c85f6ec2dbbe4b039eb453\"",
+      "modified": "Fri, 02 Oct 2026 10:48:04 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"ea15536f1ac130d761841aa28dceec44\"",
-      "modified": "Fri, 02 Oct 2026 09:58:01 GMT"
+      "etag": "W/\"718a8b1d12526cb3dc3a2c6322ab737e\"",
+      "modified": "Fri, 02 Oct 2026 10:46:39 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
-      "etag": "W/\"6f3db47d8a729bfecee46aed53d97270\"",
-      "modified": "Fri, 02 Oct 2026 09:53:35 GMT"
+      "etag": "W/\"1769182771ace8a99b7a7ac493abd424\"",
+      "modified": "Fri, 02 Oct 2026 10:24:07 GMT"
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"4d2ed9d17720e66773a36631341a35e8\"",
-      "modified": "Fri, 02 Oct 2026 10:00:36 GMT"
+      "etag": "W/\"e18cc141bd8deb7da0adf7fedbb88f4d\"",
+      "modified": "Fri, 02 Oct 2026 10:59:26 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 age rating teases return of controversial minigame as newest entry usurps GTA 5 - GAMINGbible",
+      "link": "https://www.gamingbible.com/news/gta-6-age-rating-teases-return-controversial-minigame-559776-20261002",
+      "source_link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQdG9fTThsZS1vS3d4U2Q2b2t1STBfY1BNZXRLYzBFNnBqbF82N1I2T3FMVlp1elNSSWlTN28tRHhKbHpXU1pmVTd4RnNJYk45aEZtYWRhX2IyTUFZQlFKaEhScUZUalF0NkdIakg4TE8zNFFUdUdMTjlLbmhaLTNuWjhrUkFLVVp0S05Ea05Md1BFbnRXSlNmNC1jempIQ3hFblpXRA?oc=5",
+      "date": "2026-10-02T11:00:01+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blt35b63d183f2c4e55/6abf85af1518ab3e078b0c33/custom-d24f68e9-6c56-4a13-bbf6-3614ec62100f-reference-only-16x9-clean.png",
+      "description": "GTA 6 age rating teases return of controversial minigame as newest entry usurps GTA 5&nbsp;&nbsp;GAMINGbible"
+    },
+    {
+      "title": "Kingdom Come: Deliverance 2 lead wants GTA 6 to open the door to charging more for games, even though the popularity of Rockstar's series \"beats me\" - GamesRadar+",
+      "link": "https://www.gamesradar.com/games/grand-theft-auto/kingdom-come-deliverance-2-lead-wants-gta-6-to-open-the-door-to-charging-more-for-games-even-though-the-popularity-of-rockstars-series-beats-me/",
+      "source_link": "https://news.google.com/rss/articles/CBMinwJBVV95cUxOOTh0YWFjakloTXJ6SzlQV0lWNm5pcFFncVdaTmZSYjlGNWNRUXRkUDlocVpYY2FrZ21DVGo5Q1RFQmN3dWZnQ2RsWWNYaXNzeGxFWmJENXBCUlVRRHpaV1NjRFNxa253YUE3dlZEcWMxTFZCcHlKcVlLVHV1eEV3XzRHSnQ0VVlIekZWQUpxZExTQlk4dFQtWWN1YzdsWV81dWd3aS1LdWo2aGtlYkhSRDRnZlYzcFpmQ0ZLNEFoOVpQaXNwd092U2hfbk42VTFqbEVBTEJCZkxlRUw2Rkx3OWg3YTc3eWQycHF1bEJnQ1hmc3FaRjRzbXF0NG9ESUFnNjhHaVZGdWRacXZjYmd1ZGhnMmRkMWFhalUzVmU5MA?oc=5",
+      "date": "2026-10-02T10:34:09+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://cdn.mos.cms.futurecdn.net/5SZMxgxPtfdQsuELcPj4hf-1920-80.jpg",
+      "description": "Kingdom Come: Deliverance 2 lead wants GTA 6 to open the door to charging more for games, even though the popularity of Rockstar's series \"beats me\"&nbsp;&nbsp;GamesRadar+"
+    },
+    {
+      "title": "GTA 6: Huge New York mural apparently kicks off final marketing phase - Notebookcheck",
+      "link": "https://www.notebookcheck.net/GTA-6-Huge-New-York-mural-apparently-kicks-off-final-marketing-phase.1414170.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOYUw3WjN1bm5BMFZOS3JKSmQ5RHdWQ1htbVRTMlZBRTdlUjN2Y0NlY2tEcWNXOWpLZkFqUk5SZWxjekhIQ1RSRUdwZDQ0cTVZYk9GNmhRSmVQLUpGSGRnUzhzc2MzNkF2TFZtV3pDZHpLa2hvdnNnQXlEeHp1aExQNHpzR1pGNkxobnB4cmVLLTh2ajlieTBrNC1NZDlxaVBEZ2FveHo1NW9EcEo2YXk2cFU3bw?oc=5",
+      "date": "2026-10-02T10:24:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA-6-Standard-Promo58.jpg",
+      "description": "GTA 6: Huge New York mural apparently kicks off final marketing phase&nbsp;&nbsp;Notebookcheck"
+    },
+    {
+      "title": "Warhorse Co-Founder 'Fails to Understand' GTA 6 Hype, But Hopes It Pushes Prices Up Anyway - Insider Gaming",
+      "link": "https://insider-gaming.com/warhorse-studio-gta-6-price-rise/",
+      "source_link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9LZEVBQlJhZ0diTVJtUHJlOUcybVlaMFhjSFBoS240ejFnVUdYeTRMUkF5Q2dsQTYwOTkwVnZLWTNpRFJ1Y0RmVWRka0hjU215YkhpQUppUmdQRWptUjJ6YXRVem5PaVZNMEw0OQ?oc=5",
+      "date": "2026-10-02T10:21:57+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://insider-gaming.com/wp-content/uploads/2026/09/Jason_and_Lucia_04-scaled.jpg",
+      "description": "Warhorse Co-Founder 'Fails to Understand' GTA 6 Hype, But Hopes It Pushes Prices Up Anyway&nbsp;&nbsp;Insider Gaming"
+    },
+    {
+      "title": "Warhorse Studios Co-Founder Hopes GTA 6 Will Make Every Game More Expensive",
+      "link": "https://www.gtaboom.com/warhorse-studios-co-founder-hopes-gta-6-will-make-every-game-more-expensive-774c",
+      "source_link": null,
+      "date": "2026-10-02T10:02:00+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.gtaboom.com/variants/1920/media/images/2d/7c/warhorse-studios-co-founder-hopes-gta-6-will-make-every-game-more-expensive.jpg",
+      "description": "Warhorse co founder Martin Klima is rooting for GTA 6's $80 price to stick, hoping it pushes the whole industry's prices up."
+    },
+    {
+      "title": "Rockstar affirme que les joueurs de GTA 6 ne parcourront pas l’intégralité de la carte en terminant l’histoire. - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Rockstar-affirme-que-les-joueurs-de-GTA-6-ne-parcourront-pas-l-integralite-de-la-carte-en-terminant-l-histoire.1414277.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxOc0E4dVdLODktZEFMTTVlZGRxVmdCVnJfX0JCYkotQnN4amJkTkxwX04wVUdfUzhtR1ludlo0aDRwWUI5OEczUUNrVEhJTEJNYnVObFc5bTEwUXYzbmtsRkdpbDZsWUhKNVNHMldRaTBlTGIyZE9WZXZhRDRIX2lFejRoWHBYclBCU0xPQWhmVzVNdzVRQWFPQWswM1JsNU5NdjZlcDdrNG1HVmlodkpXNFowa0J6QjFJVmFtNEkybEhQYmhPejJEUjM4eXE1N1JPWXBnYjV6Rl9rbkdldUpNMkJ2Tm5LeVlsbWZz?oc=5",
+      "date": "2026-10-02T09:48:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/featured.0y5yxwenpsgc3-1-1.jpg",
+      "description": "Rockstar affirme que les joueurs de GTA 6 ne parcourront pas l’intégralité de la carte en terminant l’histoire.&nbsp;&nbsp;Notebookcheck.fr"
+    },
     {
       "title": "GTA 6 Rating Officially Confirms Sex Will Indeed Be in the Game - Polygon.com",
       "link": "https://www.polygon.com/grand-theft-auto-gta-6-sex-scenes-rating-mature/",
@@ -1587,6 +1665,19 @@
       "lang": "en",
       "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1379446/106951d2-e12a-4ae4-b99c-c21bc35e5bdd.jpg",
       "description": "God of War Laufey is Selling Like Hotcakes - Only GTA VI is Ahead&nbsp;&nbsp;ixbt.games"
+    },
+    {
+      "title": "Confirmé : GTA 6 contiendra des scènes érotiques explicites - EGW.News",
+      "link": "https://fr.egw.news/gaming/news/37592/gta-6-confirmed-to-feature-explicit-and-sensual-sc-I9gqxPue1",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNcnRIQkZXZkpOazQ0dzI1RUpwbUxhci1RQXJXYmVBb2NENW1zOFE0clFOc0RHTUJManNOeUtfeGdLaEYwTVBuOTZFVThVcG01TkxpR3A0WWpQb2xBcVI0M29OTXZWV19jNTM3SlBiUWZka2Rvbi1LZ245c2Fhd1k1Tm5PWHJFeXl0VC0xNkRSd2ZWT29ROUlKSE9abDcwalE?oc=5",
+      "date": "2026-10-02T05:37:31+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Confirmé : GTA 6 contiendra des scènes érotiques explicites&nbsp;&nbsp;EGW.News"
     },
     {
       "title": "GTA 6 est interdit aux moins de 18 ans ! Violence, nudité, contenu sexuel… - JVMag",
@@ -2140,6 +2231,19 @@
       "lang": "en",
       "image": "https://i.tribune.com.pk/media/images/gta1753787649-0/gta1753787649-0-640x480.webp",
       "description": "GTA 6 story missions will not cover entire map, Rockstar says&nbsp;&nbsp;The Express Tribune"
+    },
+    {
+      "title": "+480 DÉTAILS & EASTER EGGS DE LA PRÉSENTATION NETFLIX DE GTA 6 (ANALYSE ULTRA-DÉTAILLÉE)",
+      "link": "https://www.youtube.com/watch?v=udmAWcot-Q8",
+      "source_link": null,
+      "date": "2026-10-01T17:34:50+00:00",
+      "source": "RockstarMag (YouTube)",
+      "official": false,
+      "rockstarmag": true,
+      "specialist": true,
+      "lang": "fr",
+      "image": "https://i2.ytimg.com/vi/udmAWcot-Q8/hqdefault.jpg",
+      "description": "Découvrez dès maintenant l'analyse ULTRA détaillée de la présentation Netflix du 27 août 2026 de 27 minutes avec plus de 480 détails et easter eggs ! \n\nVoir l'analyse écrite : \nhttps://www.rockstarmag.fr/gta-6-lanalyse-detaillee-de-la-presentation-netflix\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_"
     },
     {
       "title": "GTA 6 a reçu sa classification ESRB, et c'est « M » comme on pouvait s’y attendre - IGN France",
