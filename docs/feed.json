@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T23:02:05.083791+00:00",
+  "generated_at": "2026-10-02T00:02:08.692937+00:00",
   "attente_recap": {
     "articles": 11,
     "officiels": 0,
@@ -48,9 +48,9 @@
     ]
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 62.4,
+  "duration_seconds": 63.5,
   "decode_failures": 0,
-  "total_articles": 2959,
+  "total_articles": 2960,
   "new_this_run": 1,
   "hot_count": 32,
   "hot_threshold": 3,
@@ -535,7 +535,7 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 0,
-      "articles_exclusifs": 925,
+      "articles_exclusifs": 924,
       "last_article": "2026-10-01T22:25:51+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -560,7 +560,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 60,
       "last_article": "2026-10-01T21:17:25+00:00",
       "days_since_last_article": 0,
@@ -667,7 +667,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 39,
       "last_article": "2026-09-29T23:08:44+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -725,10 +725,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 10,
       "last_article": "2026-09-30T15:30:05+00:00",
@@ -933,10 +933,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -1080,8 +1080,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22Take-Two%22+OR+%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 4,
+      "new_this_run": 1,
+      "articles_exclusifs": 5,
       "last_article": "2026-08-22T07:00:00+00:00",
       "days_since_last_article": 40,
       "status": "tarie"
@@ -1168,14 +1168,14 @@
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
       "entries_fetched": 0,
-      "http_status": null,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 13,
-      "status": "en_attente"
+      "status": "muette"
     },
     {
       "id": "destructoid",
@@ -1245,18 +1245,24 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 7,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
-  "sources_silence": {},
+  "sources_silence": {
+    "reddit-leaks": {
+      "depuis": "2026-10-02T00:02:08.692181+00:00",
+      "succes": 0,
+      "alertee": false
+    }
+  },
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1314,7 +1320,7 @@
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
+    "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,0",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1356,8 +1362,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"766c82967446e1071866bd17b44c654d\"",
-      "modified": "Thu, 01 Oct 2026 22:42:16 GMT"
+      "etag": "W/\"e62cd9f4d68c165aeef764e1bd92df03\"",
+      "modified": "Fri, 02 Oct 2026 00:00:13 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1372,7 +1378,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 23:01:18 GMT"
+      "modified": "Fri, 02 Oct 2026 00:01:25 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1381,8 +1387,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abee600-3006\"",
-      "modified": "Thu, 01 Oct 2026 23:00:16 GMT"
+      "etag": "W/\"6abef411-3006\"",
+      "modified": "Fri, 02 Oct 2026 00:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1401,8 +1407,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6abed5cf-af2\"",
-      "modified": "Thu, 01 Oct 2026 21:51:11 GMT"
+      "etag": "\"6abef1ef-b08\"",
+      "modified": "Thu, 01 Oct 2026 23:51:11 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1412,7 +1418,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 01 Oct 2026 23:01:20 GMT"
+      "modified": "Fri, 02 Oct 2026 00:01:01 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -4973,7 +4979,13 @@
       "specialist": false,
       "lang": "en",
       "image": "https://images.purexbox.com/da789dc9ede15/1280x720.jpg",
-      "description": "Five Key Things We Learned About GTA 6 From The Game Informer Cover Story&nbsp;&nbsp;Pure Xbox"
+      "description": "Five Key Things We Learned About GTA 6 From The Game Informer Cover Story&nbsp;&nbsp;Pure Xbox",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://www.gamespot.com/videos/gta-6-10-details-we-learned-from-the-game-informer-cover-story/"
+        }
+      ]
     },
     {
       "title": "GTA 6's Long-Rumored Dynamic Weather System Is Real After All - DualShockers",
@@ -40294,6 +40306,19 @@
       "lang": "en",
       "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/08/gta-6-day-night-cycle-time-leaked.jpg?w=1600&h=900&fit=crop",
       "description": "GTA 6 Day/Night Cycle Revealed in Latest Leak&nbsp;&nbsp;GameRant"
+    },
+    {
+      "title": "GTA 6 leaks have reportedly led to a morale drop at Rockstar, with Netflix frustrated as well - TweakTown",
+      "link": "https://www.tweaktown.com/news/113202/gta-6-leaks-have-reportedly-led-to-a-morale-drop-at-rockstar-with-netflix-frustrated-as-well/index.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxOQ3ZPcWVsbkZueVNTZU9iRnBzSGRjZ2ZsTUZMdWVjUVhUQTRZbzNnUkhBODZCdWpRTHlqQlVWSmJSd2JQenkzVUw5a0RRUVZiNUloMGlEWWRpR2c3MlZ6bEI5SVFvU0Zqb3hKQ29iNkRYbDlJeTFhSGFld0Z1czl2Y0lyQ0ZBOGNHUkMtdkxzNzhHTGZkYlh2RzBwTjlXdTVRWFQwTnVEc1pYVy1CS3hJT1N6Rk1UbUtBZGNCSDhWQzhtblhtazc2eEluUDhsaWRaQlRGWmN2Qm0?oc=5",
+      "date": "2026-08-22T07:00:00+00:00",
+      "source": "Jason Schreier",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static.tweaktown.com/news/1/1/113202_3_gta-6-leaks-have-reportedly-led-to-morale-drop-at-rockstar-with-netflix-frustrated-as-well_full.jpg",
+      "description": "GTA 6 leaks have reportedly led to a morale drop at Rockstar, with Netflix frustrated as well&nbsp;&nbsp;TweakTown"
     },
     {
       "title": "Jason Schreier: Rockstar Introduced Strict Security Measures in 2024 Following GTA 6 Leak",
