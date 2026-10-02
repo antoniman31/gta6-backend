@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-02T02:02:06.683406+00:00",
+  "generated_at": "2026-10-02T03:02:03.321969+00:00",
   "attente_recap": {
-    "articles": 15,
+    "articles": 0,
     "officiels": 0,
-    "sommet": 2
+    "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 67.5,
+  "duration_seconds": 62.6,
   "decode_failures": 0,
-  "total_articles": 2964,
-  "new_this_run": 3,
+  "total_articles": 2968,
+  "new_this_run": 4,
   "hot_count": 32,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -427,8 +427,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 143,
+      "new_this_run": 1,
+      "articles_exclusifs": 144,
       "last_article": "2026-10-01T10:11:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 3,
-      "articles_exclusifs": 927,
-      "last_article": "2026-10-02T01:48:00+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 928,
+      "last_article": "2026-10-02T02:00:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -540,10 +540,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 15,
       "last_article": "2026-09-28T15:33:30+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -999,8 +999,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 12,
+      "new_this_run": 1,
+      "articles_exclusifs": 13,
       "last_article": "2026-09-24T16:12:10+00:00",
       "days_since_last_article": 7,
       "status": "ok"
@@ -1025,8 +1025,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:pushsquare.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 7,
+      "new_this_run": 1,
+      "articles_exclusifs": 8,
       "last_article": "2026-09-24T18:00:00+00:00",
       "days_since_last_article": 7,
       "status": "ok"
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 13,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 7,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1237,7 +1237,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1249,7 +1249,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "rockstarintel": "10,10,10,10,10,0,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1305,8 +1305,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"2f58929d69cc6c6dfa2b8e49b949e0ee\"",
-      "modified": "Thu, 01 Oct 2026 21:08:49 GMT"
+      "etag": "W/\"ba42457d57879a16b3f94345412f595a\"",
+      "modified": "Fri, 02 Oct 2026 02:39:24 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1325,7 +1325,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"22f73-G9/USCAaWvF5oEATaHJc7aRq1tg\"",
+      "etag": "W/\"23314-DvcV64Y52gIHv02lpPvzr0PI13I\"",
       "modified": null
     },
     "kotaku": {
@@ -1346,7 +1346,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 02:01:19 GMT"
+      "modified": "Fri, 02 Oct 2026 03:01:14 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1355,8 +1355,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abf1033-3006\"",
-      "modified": "Fri, 02 Oct 2026 02:00:19 GMT"
+      "etag": "W/\"6abf1e41-3006\"",
+      "modified": "Fri, 02 Oct 2026 03:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1386,7 +1386,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 02:00:38 GMT"
+      "modified": "Fri, 02 Oct 2026 03:01:23 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1421,6 +1421,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 May Not Include Parodies of Walt Disney World and Universal Studios - Walt Disney World News Today",
+      "link": "https://wdwnt.com/2026/10/gta-6-may-not-include-parodies-of-walt-disney-world-and-universal-studios/",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOaDNXZmFnTzlOaXViNEF4b21iMC1KQVJlOXlna050VmFrLXpjUDR0RVJaaU5uZnpkYVM5OUhwNjdhX010QmlnS2NzajA0dDZlRVlaQVBsNnN0RXZ5dFViZHcwWERBY2N3STdRN0hqYVFabzRUamxrQms0NEhxc1VVME9HcndRMDg2dTdBTnh6alZWcl9JdThDMF9hSUE2ZlpZRFE?oc=5",
+      "date": "2026-10-02T02:00:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://r2-media.wdwnt.com/2026/10/rockstar-games-grand-theft-auto-6.webp",
+      "description": "GTA 6 May Not Include Parodies of Walt Disney World and Universal Studios&nbsp;&nbsp;Walt Disney World News Today"
+    },
     {
       "title": "QSSR could bring GTA 6 PS5 performance closer to PS5 Pro, says analysis of AI upscaler - Notebookcheck",
       "link": "https://www.notebookcheck.net/QSSR-could-bring-GTA-6-PS5-performance-closer-to-PS5-Pro-says-analysis-of-AI-upscaler.1413793.0.html",
@@ -5451,19 +5464,6 @@
       "lang": "en",
       "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/08/grand-theft-auto-6-bandana-logo.jpg?w=1200&h=675&fit=crop",
       "description": "'GTA 6' Fans Are Hammering the Game Informer App Into Oblivion Right Now&nbsp;&nbsp;Polygon.com"
-    },
-    {
-      "title": "Indie CEO défie l'économie de GTA 6 : \"Rockstar doit vendre à tous les propriétaires de console\" - omgpu.com",
-      "link": "https://www.omgpu.com/indie-ceo-defie-leconomie-de-gta-6-rockstar-doit-vendre-a-tous-les-proprietaires-de-console/",
-      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxObXFTekJLY21uRTU1cTFVc0NMRWRNUFZIS0JEOFhKTHAzajFsQ1dnd2JDeWoyUTdPOFdwaEpEMF9qeXdQdS1rUEpKd3ZrR3h4SmltZl9COEVYM0Z5NHhER2lFaUVGTVZ3UUJtblpTQ2l4QXlqTlJ3RGhHSFpnQ1NUcElVQTllUkt4Z3FRbEVBN2F2STV3SnlnMmk5c2ZqcG1tWkpaSl9WRG1kNnZNTDZ4NnhtZGw?oc=5",
-      "date": "2026-09-29T17:24:27+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.omgpu.com/wp-content/uploads/2026/09/Indie-CEO-defie-leconomie-de-GTA-6-Rockstar-doit.jpeg",
-      "description": "Indie CEO défie l'économie de GTA 6 : \"Rockstar doit vendre à tous les propriétaires de console\"&nbsp;&nbsp;omgpu.com"
     }
   ],
   "partial": true,
