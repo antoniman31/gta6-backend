@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-10-02T04:02:35.398297+00:00",
+  "generated_at": "2026-10-02T05:02:11.348444+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 60.4,
+  "duration_seconds": 68.0,
   "decode_failures": 0,
-  "total_articles": 2971,
-  "new_this_run": 3,
-  "hot_count": 32,
+  "total_articles": 2976,
+  "new_this_run": 5,
+  "hot_count": 33,
   "hot_threshold": 3,
   "sources_count": 63,
   "sources": [
@@ -480,8 +480,8 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 2,
-      "articles_exclusifs": 743,
-      "last_article": "2026-10-02T03:14:08+00:00",
+      "articles_exclusifs": 745,
+      "last_article": "2026-10-02T04:55:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 929,
-      "last_article": "2026-10-02T02:00:00+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 932,
+      "last_article": "2026-10-02T04:46:24+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -520,7 +520,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 60,
-      "last_article": "2026-10-01T21:17:25+00:00",
+      "last_article": "2026-10-01T22:25:51+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -586,7 +586,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-01T04:30:00+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-30T12:01:45+00:00",
@@ -1080,7 +1080,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-10-01T04:55:13+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 21,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 13,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 7,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1232,7 +1232,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1244,7 +1244,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,0,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1341,7 +1341,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 04:01:55 GMT"
+      "modified": "Fri, 02 Oct 2026 05:01:24 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1350,13 +1350,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6abf2c52-3006\"",
-      "modified": "Fri, 02 Oct 2026 04:00:18 GMT"
+      "etag": "W/\"6abf3a60-3006\"",
+      "modified": "Fri, 02 Oct 2026 05:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"c20278f34c420c0b53b0af6e7899b056\"",
-      "modified": "Thu, 01 Oct 2026 19:18:31 GMT"
+      "etag": "W/\"9562af2e66b348cb8bd711d7af5e7928\"",
+      "modified": "Fri, 02 Oct 2026 05:00:06 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1378,15 +1378,10 @@
       "etag": "\"6112fe6ce95e80370e6b0c57982e9dc4-gzip\"",
       "modified": null
     },
-    "dexerto-fr": {
-      "url": "https://www.dexerto.fr/feed/",
-      "etag": null,
-      "modified": "Fri, 02 Oct 2026 04:01:34 GMT"
-    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 02 Oct 2026 04:01:29 GMT"
+      "modified": "Fri, 02 Oct 2026 05:01:26 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1421,6 +1416,58 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Comment résister à la précommande de GTA VI quand Cultura propose une offre aussi intéressante - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/comment-resister-a-la-precommande-de-gta-vi-quand-cultura-propose-une-offre-aussi-interessante_AB-202610020044.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNbFRzWHY3dy1pUG9ZQXpJQllXQ0VRTEp5UV9MalhIV0NST1JtUk82a0ZZUVo1cVNXYzhOemNkUHI5UHFFdWtNS1JLNWlWaE1TNmJCbVlxUzV5eHc0M3ZxSWlmTktKRmJLQ3pSSTRTbGhPZTNJejhqR2tNbUZrODdCdDllcGUzckV5RDZ1NFBFRjVxVkFPZDh4Z3NlSjFDUUFmenZxTm5kS25ScXB4THJDdnpaR3Fua0NaakdpSS1DNUEzdlJmMjNuM25VaWI1elkyeUdKMC1SYU8tUE9nNmVjb2QyTjNCUUt5?oc=5",
+      "date": "2026-10-02T04:55:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/gs98ohWOZlM1TMeMAqFjf6mWEqY=/0x0:1600x900/1600x0/images/Sortie-GTA-6-le-jeu-de-la-decennie-affole-les-internautes-depuis-l-affichage-de-ce-prix-sur-Amazon-2312639.jpg",
+      "description": "Comment résister à la précommande de GTA VI quand Cultura propose une offre aussi intéressante&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "GTA 6 Is Officially Rated M for Mature, With Sex Scenes Listed in Australia and New Zealand - gHacks",
+      "link": "https://www.ghacks.net/2026/10/02/gta-6-is-officially-rated-m-for-mature-with-sex-scenes-listed-in-australia-and-new-zealand/",
+      "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQZDNkeWwzRVhQRkhuTXE4OEczS1lmVXZzQ3hCRk52a1h3Mnc4YkU3OTkta2NOTkI5WGtJdGN5UFdYbTc3LUVHOGhLUDgycEtnOW1MQkRQRFVOMFc4WHFhanc0bnFZa0VGRm5ORnVRR0lWcUw1RG5JdnpUdVZmcTBaNnIyMUpxYkdWQ2V3Z1c1NTFMcHVtdXBzaHJtcGVSdHc2LXE1SkNJN2dtbVc3YXhlSExBRzhsTmpSZmFwZFViNjVEbFk?oc=5",
+      "date": "2026-10-02T04:46:24+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.ghacks.net/wp-content/uploads/2026/10/gHacks-articles-2026-10-02T124554.389.png",
+      "description": "GTA 6 Is Officially Rated M for Mature, With Sex Scenes Listed in Australia and New Zealand&nbsp;&nbsp;gHacks"
+    },
+    {
+      "title": "South Park Is Turning GTA 6 Into a Season 29 Running Joke - GTA BOOM",
+      "link": "https://www.gtaboom.com/south-park-may-be-turning-gta-6-into-a-season-long-punchline-75bf",
+      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOalBIUWNrdkRsUnFWdzNhblUwU2d4NEdzTWlRUk9NOXRxR2ZRaGpBVnAySFlDMkdaSU9fV3czWXo3bklJUXh3dVZibGZ2aFFQOVVlTDJNUlkxbFJaTWtkczJjNEdqd3RUQ1YtX1N6UUVVQUJIQmplcmNaMU9hTW5TZTNXTVNadUJSMnF6SUtEWi1DSkU?oc=5",
+      "date": "2026-10-02T04:20:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.gtaboom.com/variants/1920/media/images/9e/30/south-park-may-be-turning-gta-6-into-a-season-long-punchline.jpg",
+      "description": "South Park Is Turning GTA 6 Into a Season 29 Running Joke&nbsp;&nbsp;GTA BOOM"
+    },
+    {
+      "title": "E.Leclerc vide déjà ses stocks GTA 6 : le jeu est à prix record ce week-end - 20 Minutes",
+      "link": "https://www.20minutes.fr/guide-achat/4250489-20261002-e-leclerc-vide-deja-stocks-gta-6-jeu-prix-record-week-end",
+      "source_link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQS0RqSmVXUGh6Q2FOUXY5WGkxQ0FqZDBwbWFBWHp4UmFsbE5meFREWkltRF9rblUzazZ4WFdVV2hCdjBEWUVtTGJ2OHRNdXBqdW9SV1R0QkdqTFJTOTJrMVdlbl9nRy1Hbm1JWVBpWkFMUUlmOHBwVzMzWlZQZFREcG9fSENob0dWVG8tS1RackZvN0Y4MmpiWENQc0RRbzFfMXM5QjlqcE8wWDM2WmRMMQ?oc=5",
+      "date": "2026-10-02T04:12:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.20mn.fr/HvTjT2vgQYC6ZS93-FWkXSk/1444x920_gta-6-sur-quelle-site-et-a-quelle-heure-precommander-le-jeu-ce-jeudi",
+      "description": "E.Leclerc vide déjà ses stocks GTA 6 : le jeu est à prix record ce week-end&nbsp;&nbsp;20 Minutes"
+    },
     {
       "title": "Les précommandes de God of War Laufey impressionnent sur le PlayStation Store, où seul GTA 6 fait mieux. - Notebookcheck.fr",
       "link": "https://www.notebookcheck.biz/Les-precommandes-de-God-of-War-Laufey-impressionnent-sur-le-PlayStation-Store-ou-seul-GTA-6-fait-mieux.1413943.0.html",
@@ -1513,6 +1560,19 @@
       "description": "Killing the Time: What to Play While Waiting for GTA VI To Download?&nbsp;&nbsp;psxextreme.com"
     },
     {
+      "title": "Could GTA VI bring back casinos? - News Channel 3-12",
+      "link": "https://keyt.com/stacker-gaming/2026/10/01/could-gta-vi-bring-back-casinos/",
+      "source_link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNbnlRaGhSV0NFeG5QYnZoV3RqaTRPV1Qzc25oZVdTUkVFTTlxMTBBVkRYRmNnRFFJX2MwazdKSlhLUkxIOUFmWFhBQm9DMXFIMm9sNHkxWGhac3lOUkU0NXhja1ZNR0hGelpTc2hlMmdSajZ3R3k0Wko4WFFBMDU1UA?oc=5",
+      "date": "2026-10-01T22:35:35+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://keyt.b-cdn.net/2026/10/Bodog-GTA-VI.jpg",
+      "description": "Could GTA VI bring back casinos?&nbsp;&nbsp;News Channel 3-12"
+    },
+    {
       "title": "New GTA 6 Age Rating Confirms Game Will Feature Sex Scenes - IGN India",
       "link": "https://in.ign.com/grand-theft-auto-vi/273436/new-gta-6-age-rating-confirms-game-will-feature-sex-scenes",
       "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxONDFKS2pUOEFiMUswdWVHdFRHZG42V0prbUJ6SFNUZmdDSjQ3RHBEUlJVaGRNTkY2Unc1T1JoWi1YUWtHUzhHZmRHbkhNRGxJM2RMdzFzbFBZQk5SM2Q5N0FnUVZDQnpLNHltSEFfZlZkbV9TU1BXdXF0Wm52cm0wRTNpR1UyNmEwb1FNdldTRDRqYmxlU3BWR2xjLVZCaVlxQ2pkX3FxWQ?oc=5",
@@ -1528,6 +1588,10 @@
         {
           "source": "IGN",
           "link": "https://www.ign.com/articles/new-gta-6-age-rating-confirms-game-will-feature-sex-scenes"
+        },
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://sea.ign.com/grand-theft-auto-vi-rumored-title/249699/new-gta-6-age-rating-confirms-game-will-feature-sex-scenes"
         }
       ]
     },
@@ -5399,71 +5463,6 @@
       "lang": "fr",
       "image": "https://i2.ytimg.com/vi/AounTgHpAes/hqdefault.jpg",
       "description": "Découvrez dès maintenant les 12 nouvelles images de GTA 6 ! \n\nVoir les images :\nhttps://www.rockstarmag.fr/gta-6-12-nouvelles-images-pour-mettre-en-avant-la-meteo-et-la-region-de-leonida/\n\n__________________________________________\n\nSUIVRE ROCKSTAR MAG' :\n_ Le site : https://www.rockstarmag.fr\n_ Twitter : https://twitter.com/Rockstar_Mag\n_ Threads : https://www.threads.net/@rmagfr\n_ Instagram : https://www.instagram.com/rmagfr\n_ Discord : https://discord.gg/qChhq6BmbB\n_ Facebook : https://www.fa"
-    },
-    {
-      "title": "GTA 6 aura plus de 170 espèces d'animales représentées en jeu, avec la possibilité de visiter des zoos - ActuGaming",
-      "link": "https://www.actugaming.net/gta-6-aura-plus-de-170-especes-danimales-representees-en-jeu-avec-la-possibilite-de-visiter-des-zoos-827284/",
-      "source_link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxOUmI3RFBCZWIxYW4zeTlpQWtJWXJUck1kM2xHaTlfSngxdUtwN1B4UFFkNzRtc19keDhJNzBmWU1RbGtNUU1wbVhWaHA2dGx4T3hET25rUUJYODRSOFNNbFhiZGlSYzJWX05CMzZoU1I3TzZsN0pIS3hsaFRVcUtpanVKM0VVelcyWVhGNi1rOGJ2c2tJVmNFMHZrQUhyeWpXeVZ6dmZjRUpYRk92TWxyaWR4NjFaOEN4UVFmaS1PV2RMTV9Da0ZwVGV4UjhhNFV5?oc=5",
-      "date": "2026-09-29T17:39:45+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://static.actugaming.net/media/2026/08/gta-6-leonida-keys-06-889x500.jpg",
-      "description": "GTA 6 aura plus de 170 espèces d'animales représentées en jeu, avec la possibilité de visiter des zoos&nbsp;&nbsp;ActuGaming"
-    },
-    {
-      "title": "New GTA VI details surface today: 2x map size, tropical storms, in-game activities, more - 9to5Toys",
-      "link": "https://9to5toys.com/2026/09/29/new-gta-vi-details-map-size/",
-      "source_link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9GWnJhOXZuODY0YzdISjhvampnR1VUbDJQYjJmRWhYdDFvRkMwbHI1d3dIZ3c1ODNHRnhxODlYWXlwUVFzRXVGeTlkdGJOZWJnYVJMZVZJdTZFSlJnYnM1YkpUUkgzV1VUcnBybg?oc=5",
-      "date": "2026-09-29T17:39:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://9to5toys.com/wp-content/uploads/sites/5/2026/06/Grand-Theft-Auto-6-preorders.jpg?quality=82&strip=all&resize=1200,628",
-      "description": "New GTA VI details surface today: 2x map size, tropical storms, in-game activities, more&nbsp;&nbsp;9to5Toys"
-    },
-    {
-      "title": "GTA 6 map is ‘twice as big’ as GTA 5 - KitGuru",
-      "link": "https://www.kitguru.net/gaming/matthew-wilson/gta-6-map-is-twice-as-big-as-gta-5/",
-      "source_link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcWtsSkRMeEM3ZEtrdW5IV0RxT2RtRG53MjhfMHFCdEI2SHBuRWdNV29rU3V3VGN1a0ZTWFB3d1F6ejNMMnFmUTMxYTNaa0hmX0JUcG8yb0ZKOUdRLS1zSHpFYUJyLUEwZHFEWm1CNmZFaWI1OGIzVEFvRFlRVnRzaHJZWlFDY2lL?oc=5",
-      "date": "2026-09-29T17:36:25+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.kitguru.net/wp-content/uploads/2025/03/GTA-6-map-732x330.png",
-      "description": "GTA 6 map is ‘twice as big’ as GTA 5&nbsp;&nbsp;KitGuru"
-    },
-    {
-      "title": "GTA 6 Has Hurricanes, 170 Animals, Fun Activities, Weather System Detailed",
-      "link": "https://rockstarintel.com/gta-6-has-hurricanes-170-animals-fun-activities-weather-system-detailed/",
-      "source_link": null,
-      "date": "2026-09-29T17:30:58+00:00",
-      "source": "RockstarINTEL",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": "en",
-      "image": "https://rockstarintel.com/wp-content/uploads/2026/09/jason_gi.webp",
-      "description": "The long awaited GTA 6 Game Informer cover story is here. We have brand new details on the game&#8217;s advanced weather systems and more directly from senior Rockstar Games designers. Let&#8217;s take a look at the most important new bits of info from the 14-page cover story found inside of Game Informer issue 382. Weather [...]\nThe post GTA 6 Has Hurricanes, 170 Animals, Fun Activities, Weather System Detailed appeared first on RockstarINTEL."
-    },
-    {
-      "title": "GTA 6 : Game Informer dévoile le ciel et la faune de Leonida, sept semaines avant la sortie - GeeksLands",
-      "link": "https://geekslands.fr/gta-6-ouragans-faune-leonida/",
-      "source_link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9DZGVuWEJfUnZvUlZqejF3azJOaWMtWEY0VWZQRWFiZFAyQ1pSYnd3UTRtV04tMmQxbERpa2V0UUhacGk5VkFZYTFZMms5cjdmT1hpR2E5NF9pZVRtc2p3SA?oc=5",
-      "date": "2026-09-29T17:29:29+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://geekslands.fr/api/og-image/api/uploads/featured/gta-joueurs-reviennent-pas-7209.jpg",
-      "description": "GTA 6 : Game Informer dévoile le ciel et la faune de Leonida, sept semaines avant la sortie&nbsp;&nbsp;GeeksLands"
     }
   ],
   "partial": true,
