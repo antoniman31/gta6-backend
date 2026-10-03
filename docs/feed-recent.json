@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-03T05:02:03.967564+00:00",
+  "generated_at": "2026-10-03T06:01:53.299173+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 63.5,
+  "duration_seconds": 54.3,
   "decode_failures": 0,
   "total_articles": 3066,
-  "new_this_run": 7,
+  "new_this_run": 0,
   "hot_count": 33,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -492,8 +492,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 1012,
+      "new_this_run": 0,
+      "articles_exclusifs": 1011,
       "last_article": "2026-10-03T04:48:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -830,7 +830,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 3,
+      "new_this_run": 0,
       "articles_exclusifs": 19,
       "last_article": "2026-09-30T18:00:13+00:00",
       "days_since_last_article": 2,
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-10-02T16:16:25+00:00",
@@ -986,7 +986,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 13,
       "last_article": "2026-09-30T06:05:03+00:00",
       "days_since_last_article": 2,
@@ -1099,10 +1099,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 7,
       "last_article": "2026-09-28T15:57:47+00:00",
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-07T06:20:38+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 22,
       "last_article": "2026-09-18T07:47:00+00:00",
       "days_since_last_article": 14,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1190,10 +1190,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-09-24T16:41:44+00:00",
       "days_since_last_article": 8,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1232,7 +1232,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1244,7 +1244,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "rockstarintel": "0,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1274,7 +1274,7 @@
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "97,97,96,97,96,96,96,98,98,96,96,97",
+    "engadget": "97,96,97,96,96,96,98,98,96,96,97,97",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1341,7 +1341,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 03 Oct 2026 04:59:26 GMT"
+      "modified": "Sat, 03 Oct 2026 05:59:30 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1350,8 +1350,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ac08be0-3026\"",
-      "modified": "Sat, 03 Oct 2026 05:00:16 GMT"
+      "etag": "W/\"6ac099f1-3049\"",
+      "modified": "Sat, 03 Oct 2026 06:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1370,8 +1370,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ac07bae-b78\"",
-      "modified": "Sat, 03 Oct 2026 03:51:10 GMT"
+      "etag": "\"6ac097cd-b79\"",
+      "modified": "Sat, 03 Oct 2026 05:51:09 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1381,7 +1381,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 03 Oct 2026 05:01:16 GMT"
+      "modified": "Sat, 03 Oct 2026 06:01:16 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1390,13 +1390,13 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"4341f3bfbab1d123e5b419002fb77f15\"",
-      "modified": "Fri, 02 Oct 2026 19:38:37 GMT"
+      "etag": "W/\"cab3d9a984e1ca4b0a00803a4713755a\"",
+      "modified": "Sat, 03 Oct 2026 05:41:24 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"d0b19e245b31df96bb6d9ab8a7bc74aa\"",
-      "modified": "Fri, 02 Oct 2026 19:05:11 GMT"
+      "etag": "W/\"03bf1e71b9eb8bb63b3705fd970ae493\"",
+      "modified": "Sat, 03 Oct 2026 05:29:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1410,8 +1410,8 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"4341f3bfbab1d123e5b419002fb77f15\"",
-      "modified": "Fri, 02 Oct 2026 19:38:37 GMT"
+      "etag": "W/\"cab3d9a984e1ca4b0a00803a4713755a\"",
+      "modified": "Sat, 03 Oct 2026 05:41:24 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
@@ -4144,7 +4144,13 @@
       "specialist": false,
       "lang": "en",
       "image": "https://cdn.mos.cms.futurecdn.net/KAVCkMQ6m9p7Ayo6NQ3BdD-2560-80.jpg",
-      "description": "Kingdom Come: Deliverance studio co-founder hopes Grand Theft Auto 6 will 'blaze a trail' to higher game prices&nbsp;&nbsp;PC Gamer"
+      "description": "Kingdom Come: Deliverance studio co-founder hopes Grand Theft Auto 6 will 'blaze a trail' to higher game prices&nbsp;&nbsp;PC Gamer",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://finance.yahoo.com/media-advertising/articles/kingdom-come-deliverance-studio-co-201304056.html"
+        }
+      ]
     },
     {
       "title": "GTA 6’s E rating mirrors GTA 5’s, so I expect even more of the same levels of crude ridiculousness",
