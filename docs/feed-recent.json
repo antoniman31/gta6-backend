@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-05T06:01:37.824186+00:00",
+  "generated_at": "2026-10-05T06:06:53.592032+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 33.3,
-  "decode_failures": 346,
-  "total_articles": 3210,
+  "duration_seconds": 32.4,
+  "decode_failures": 348,
+  "total_articles": 3212,
   "new_this_run": 2,
   "hot_count": 47,
   "hot_threshold": 3,
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 828,
-      "last_article": "2026-10-05T05:02:00+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 829,
+      "last_article": "2026-10-05T06:00:35+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -761,15 +761,15 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": 500,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-03T16:10:32+00:00",
       "days_since_last_article": 1,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "gameblog",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-10-03T09:40:41+00:00",
@@ -973,7 +973,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 18,
       "last_article": "2026-10-04T20:10:56+00:00",
       "days_since_last_article": 0,
@@ -989,7 +989,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-09-30T06:05:03+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
@@ -1099,10 +1099,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-28T15:57:47+00:00",
@@ -1177,10 +1177,10 @@
     {
       "id": "xboxygen-natif",
       "name": "Xboxygen (flux natif)",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-10-04T08:43:51+00:00",
@@ -1227,21 +1227,21 @@
     },
     "ginjfo": {
       "depuis": "2026-10-05T06:01:37.822433+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "rockstar-en": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,0,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
-    "gnews-fr": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "gnews-en": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "gnews-fr-7j": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "gnews-en-7j": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "gnews-fr": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "gnews-en": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "gnews-fr-7j": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "gnews-en-7j": "100,100,0,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1249,7 +1249,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1259,29 +1259,29 @@
     "rps": "100,100,100,100,100,100,100,100,100,100,100,100",
     "eurogamer": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gtaboom": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "vgtimes": "40,0,40,40,40,40,40,40,40,40,40,40",
-    "ginjfo": "50,50,50,50,50,50,50,50,50,50,50,0",
+    "vgtimes": "0,40,40,40,40,40,40,40,40,40,40,40",
+    "ginjfo": "50,50,50,50,50,50,50,50,50,50,0,50",
     "gameblog": "13,13,13,13,13,13,13,13,13,13,13,13",
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gamerant-gnews": "100,100,0,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "46,46,46,46,46,46,46,46,46,46,46,46",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "purexbox": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "trueach": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "jdg": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "numerama": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "frandroid": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "engadget": "96,98,98,0,97,97,98,98,98,98,98,98",
-    "pushsquare": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "xboxygen": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "trueach": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "jdg": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "numerama": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "frandroid": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "engadget": "98,98,0,97,97,98,98,98,98,98,98,98",
+    "pushsquare": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "schreier": "100,100,0,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
@@ -1290,8 +1290,8 @@
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,0,100,100,100,100,100,100,100,100",
-    "mgg": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "dexerto": "100,100,0,100,100,100,100,100,100,100,100,100",
+    "mgg": "100,100,0,100,100,100,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
     "reddit-gta6-suivi": "25,25,25,25,25,25,25,25,25,25,25,25"
@@ -1346,12 +1346,17 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 05 Oct 2026 05:58:13 GMT"
+      "modified": "Mon, 05 Oct 2026 06:06:39 GMT"
+    },
+    "ginjfo": {
+      "url": "https://www.ginjfo.com/feed",
+      "etag": null,
+      "modified": "Mon, 05 Oct 2026 06:04:20 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ac33cf3-2ec5\"",
-      "modified": "Mon, 05 Oct 2026 06:00:19 GMT"
+      "etag": "W/\"6ac33cf2-2ec5\"",
+      "modified": "Mon, 05 Oct 2026 06:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1381,7 +1386,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 05 Oct 2026 06:01:25 GMT"
+      "modified": "Mon, 05 Oct 2026 06:06:41 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1395,8 +1400,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"4bf1500ec3dc923fc9dc9b9f3b22ba2f\"",
-      "modified": "Mon, 05 Oct 2026 05:55:11 GMT"
+      "etag": "W/\"e2f58b9f988fb95467969928514643e6\"",
+      "modified": "Mon, 05 Oct 2026 06:05:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1410,12 +1415,25 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"2db0855a43131bd66e7c27cae9ce6fb1\"",
-      "modified": "Mon, 05 Oct 2026 05:29:48 GMT"
+      "etag": "W/\"3b3701acdeed8ed95cc8505b721d047e\"",
+      "modified": "Mon, 05 Oct 2026 06:01:32 GMT"
     }
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 assume plus que jamais son côté ultra-adulte - Begeek",
+      "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQWjVqR0pOV01XQWJBSGVaWkZublFWTVoxd0tUOG16SEMxS2JyaGhsWWQ0OEdOWUZyVmxfTW5GS3lfeERxQmg0Qnk4YnY4VlQ3bGJqazgybVAtTXlkNjlkQ3lvbHV5ZFQ2a1ZUVmVwV3V3WHdfdnktTzAxQTV4b1lGSk1leVNFZw?oc=5",
+      "source_link": null,
+      "date": "2026-10-05T06:00:35+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300-rw",
+      "description": "GTA 6 assume plus que jamais son côté ultra-adulte&nbsp;&nbsp;Begeek"
+    },
     {
       "title": "GTA VI : cette astuce validée par les internautes pour télécharger le jeu PS5 en avance - Le Figaro",
       "link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxOT0ZuUGhkdXdNWjRXY3kxa1VialduVzdjclJnU1I5WFo2a1lMMW00UjlEZGFvNXJBUHk5ZXFvS0RZa1pKMjVfNVdFbUxlZzhxZUdVVERJQzEzcy1OanpiLXVsd2ZKUlF4YzNCVm9RMnRXcTFTS1QycnFDLXBnUWFIcVN4cmFFZWVMekpXTHNVc3VDWXU4OE5rQmZuVjlLeVQ3QlBHc0ExRHRGYUhlamxhcVA1VmFPa0tSbk5XcUs0RWNHV3R3aXd2MjNFU3M1TTVmOGNfdTZB?oc=5",
@@ -3185,6 +3203,25 @@
       "lang": "fr",
       "image": "https://geekslands.fr/api/og-image/api/uploads/featured/gta-6-jason-lucia-vice-city-1035.jpg",
       "description": "GTA 6 : date de sortie, prix, précommande et PC, l'officiel et la rumeur avant le lancement&nbsp;&nbsp;GeeksLands"
+    },
+    {
+      "title": "GTA 6 : Jason affronte Link dans une parodie du Saturday Night Live - GinjFo",
+      "link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPSmgtLUxveGg3dEJMOVpkZy1kN0pVb1R0eUVkZDctNVdZSExMd1JrUXNyZlkybnV4NmNOOHRVbWtGaEN6Z3UxLUNQSjhfVGNlNUY0Um83T1ZEMC12T0FKcnpCUHVnOVUtNms4SDNsaWRDNFlhamlxNkQzb1hFWmpQc2Jvb0FQS2dBeHBjRElydzFxbE5lQ0paX0h4Q2NKeXYzN1Zod0tCajRGZjJVVEloVXd2TU01b1VWRnhMWEtCV0Q0Qk9FdnhjSDZSLWFtZXk2WXhqVEp3?oc=5",
+      "source_link": null,
+      "date": "2026-10-03T07:00:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300-rw",
+      "description": "GTA 6 : Jason affronte Link dans une parodie du Saturday Night Live&nbsp;&nbsp;GinjFo",
+      "extraSources": [
+        {
+          "source": "GinjFo",
+          "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-jason-affronte-link-dans-une-parodie-du-saturday-night-live-20261005"
+        }
+      ]
     },
     {
       "title": "Que peut-on acheter pour le même prix que la collector de GTA 6 ? - jeuxvideo.com",
@@ -5607,32 +5644,6 @@
       "lang": "en",
       "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1379480/3a4ebed4-87fd-4f50-83f4-a0e036ccec9e.png",
       "description": "Football Manager 27 is not afraid of GTA VI - trailer shown and release date revealed for PC, consoles and smartphones&nbsp;&nbsp;ixbt.games"
-    },
-    {
-      "title": "There's a sexual content warning on GTA VI product page - Instant Gaming News",
-      "link": "https://news.instant-gaming.com/en/articles/22203-there-s-a-sexual-content-warning-on-gta-vi-product-page",
-      "source_link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQY19Nbl9RVnotejdmdl9YRVZxSktqTmZ3MThMUFI1OWIzQzlwLTh5T0JtdEFFOXNnbHJheVM5Y0Zob0duYklyZnJ4Y1Fqb2Vwd3NpeGxibHJZZGZvSmpSNlNJSXlXQU5MZ0dwYklEY0xVTm9TRVg0a1FsUUxYbTV6ckVWeGlXVnpkcXRtQkpCLUFRcVRWOFd6d1BjdC1zdjROWG1OXzNLZVg?oc=5",
-      "date": "2026-10-02T08:56:25+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gaming-cdn.com/images/news/articles/22203/cover/there-s-a-sexual-content-warning-on-gta-vi-product-page-cover6abf6e1db6c29.jpg",
-      "description": "There's a sexual content warning on GTA VI product page&nbsp;&nbsp;Instant Gaming News"
-    },
-    {
-      "title": "Galerie d'images: En images : l'évolution de Jason et Lucia dans GTA VI depuis 2023 - IGN France",
-      "link": "https://fr.ign.com/grand-theft-auto-6/92752/in-pictures-how-gta-6s-jason-and-lucia-have-evolved-since-2023",
-      "source_link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPRHIyYnRZd3RJZEo0amM5VzFHeTBlRG5QeGdKUzB4cVJlc3loU2RPRWNIaUhHN2FKbmRzRV95UjJiVFEySGJFSmlDQUtuUWhwSWNTRjNBci13Sm1Jb0loeWk3RE9pcVhSSnV2c0VOMEVoTnlnQ1lha01BS091a1FIbUtwclRzTDVQUldnbXNLbXdpQ3ZTTXdwOTZmRDNZa0VkR2gtTExCZlRkUQ?oc=5",
-      "date": "2026-10-02T08:17:25+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://sm.ign.com/t/ign_fr/gallery/i/in-picture/in-pictures-how-gta-6s-jason-and-lucia-have-evolved-since-20_rd2z.1200.jpg",
-      "description": "Galerie d'images: En images : l'évolution de Jason et Lucia dans GTA VI depuis 2023&nbsp;&nbsp;IGN France"
     }
   ],
   "partial": true,
