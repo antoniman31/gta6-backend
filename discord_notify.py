@@ -334,7 +334,18 @@ def send_source_alerts(alertes):
 
     tombees = [a for a in alertes if a.get("type") == "tombee"]
     retours = [a for a in alertes if a.get("type") == "retour"]
+    # Le décodage Google News passe par le même canal : c'est le même
+    # geste pour qui lit — quelque chose s'est arrêté, ou est revenu.
+    casses = [a for a in alertes if a.get("type") == "decodage-casse"]
+    repares = [a for a in alertes if a.get("type") == "decodage-ok"]
     lignes = []
+    for a in casses:
+        lignes.append(f"🔴 **Décodage Google News** à l'arrêt — {a.get('raison')}.\n"
+                      f"Les liens restent sur news.google.com, et plus aucun "
+                      f"article n'est reconnu comme officiel.")
+    for a in repares:
+        duree = f" après {a.get('heures')} h" if a.get("heures") is not None else ""
+        lignes.append(f"🟢 **Décodage Google News** rétabli{duree}.")
     for a in tombees:
         # En heures et non en passages : un passage n'est pas une unité de
         # temps, l'écart entre deux va de 30 min à près de 5 h selon que
@@ -346,11 +357,11 @@ def send_source_alerts(alertes):
         lignes.append(f"🟢 **{a.get('name')}** est revenue.")
 
     embed = {
-        "title": "⚠️ État des sources" if tombees else "✅ État des sources",
+        "title": "⚠️ État des sources" if (tombees or casses) else "✅ État des sources",
         "url": SITE_URL,
         "description": "\n".join(lignes),
         # Rouge s'il y a une panne, vert si ce sont uniquement des retours.
-        "color": 0xE04F5F if tombees else 0x4FE07A,
+        "color": 0xE04F5F if (tombees or casses) else 0x4FE07A,
     }
     print(f"  [discord] envoi de {len(alertes)} alerte(s) de source...")
     return send_discord_with_retry(embed, f"alerte source ({len(alertes)})")

@@ -39,11 +39,19 @@ from bs4 import BeautifulSoup
 
 import feed_store
 
+# Le décodeur est optionnel : sans lui, les liens Google News restent tels
+# quels et le robot continue de tourner. Mais un repli muet est exactement
+# ce qui a coûté trois jours le 03/10/2026 — selectolax 1.0 a rendu
+# googlenewsdecoder inimportable, HAS_DECODER est passé à False, et plus
+# rien n'a été décodé sans qu'un seul message le dise. La RAISON est donc
+# conservée, et main() la crie au lieu de l'avaler (voir requirements.txt).
 try:
     from googlenewsdecoder import gnewsdecoder
     HAS_DECODER = True
-except ImportError:
+    DECODEUR_ABSENT = None
+except ImportError as e:
     HAS_DECODER = False
+    DECODEUR_ABSENT = str(e)
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 
@@ -157,18 +165,29 @@ _DECODE_SEMA = threading.Semaphore(DECODE_WORKERS)
 # lieu de la laisser dans les logs. Verrou nécessaire : predecode_links est
 # appelé depuis plusieurs fils, un par flux Google News.
 _DECODE_ECHECS = 0
+# Les TENTATIVES, et pas seulement les échecs : « 430 échecs » ne dit pas si
+# c'est 430 sur 440 (un mauvais jour chez Google) ou 430 sur 430 (le
+# décodeur ne marche plus du tout). Seul le second cas est une panne, et
+# c'est celui qu'on veut crier.
+_DECODE_TENTATIVES = 0
 _DECODE_ECHECS_LOCK = threading.Lock()
 
 
 def reinitialise_echecs_decodage():
-    global _DECODE_ECHECS
+    global _DECODE_ECHECS, _DECODE_TENTATIVES
     with _DECODE_ECHECS_LOCK:
         _DECODE_ECHECS = 0
+        _DECODE_TENTATIVES = 0
 
 
 def echecs_decodage():
     with _DECODE_ECHECS_LOCK:
         return _DECODE_ECHECS
+
+
+def tentatives_decodage():
+    with _DECODE_ECHECS_LOCK:
+        return _DECODE_TENTATIVES
 
 # ---------------------------------------------------------------------------
 # Liste des sources — copiée depuis DEFAULT_FEEDS dans gta6-watch.html.
@@ -752,7 +771,13 @@ def decode_google_news_link(url):
         # décodages en vol au même instant.
         with _DECODE_SEMA:
             result = gnewsdecoder(url, interval=1)
-        if result.get("status") and result.get("decoded_url"):
+        # googlenewsdecoder 0.2.1 renvoie {"success": ..., "decoded_url"} ;
+        # 0.1.7 renvoyait {"status": ...}. Les deux sont lues : ne tester
+        # que la nouvelle clé rendrait un retour en arrière aussi muet que
+        # la panne qu'on vient de corriger. Le décodage a continué d'échouer
+        # à 100 % après la montée de version du 05/10/2026 pour cette seule
+        # raison — la clé lue n'existait plus.
+        if (result.get("success") or result.get("status")) and result.get("decoded_url"):
             return result["decoded_url"]
     except Exception as e:
         print(f"  [decode] échec pour {url[:60]}... : {e}")
@@ -1383,6 +1408,9 @@ def predecode_links(liens, decoded_cache=None, journal=None):
         return {}
     resolus = {}
     rates = 0
+    global _DECODE_TENTATIVES
+    with _DECODE_ECHECS_LOCK:
+        _DECODE_TENTATIVES += len(a_faire)
     with ThreadPoolExecutor(max_workers=min(DECODE_WORKERS, len(a_faire))) as executor:
         for lien, vrai in zip(a_faire, executor.map(decode_google_news_link, a_faire)):
             resolus[lien] = vrai
@@ -2624,6 +2652,63 @@ def suivre_sources_muettes(health, silence_precedent, maintenant=None):
     return suivi, alertes
 
 
+# En dessous de ce nombre de tentatives, un passage ne prouve rien : deux
+# liens ratés peuvent l'être pour deux mauvais jours chez Google.
+DECODAGE_MIN_POUR_JUGER = 10
+
+
+def suit_le_decodage(tentatives, echecs, precedent, absent=None, maintenant=None):
+    """Dit si le décodage Google News est tombé, et n'alerte qu'au basculement.
+
+    Même principe que suivre_sources_muettes, et pour la même raison : une
+    alerte à chaque passage, c'est 24 messages par jour qu'on finit par ne
+    plus lire. On ne signale donc que le moment où l'état change.
+
+    Trois cas, dans cet ordre :
+
+    - la bibliothèque ne s'importe pas : panne certaine, et c'est
+      exactement celle du 03/10/2026, restée muette trois jours parce que
+      l'ImportError était avalée en silence (voir HAS_DECODER) ;
+    - assez de tentatives, et TOUTES ratées : le décodeur répond encore mais
+      ne décode plus rien — l'autre forme qu'a prise la même panne après la
+      montée de version du 05/10 ;
+    - au moins un succès : tout va bien.
+
+    Un passage sans tentative (aucun lien Google News neuf) ne juge de rien
+    et reconduit l'état précédent tel quel. Rend (etat, alertes).
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    avant = dict(precedent or {})
+    etait_casse = bool(avant.get("casse"))
+
+    if absent:
+        casse, raison = True, f"bibliothèque inimportable — {absent}"
+    elif tentatives >= DECODAGE_MIN_POUR_JUGER and echecs >= tentatives:
+        casse, raison = True, f"{echecs} tentative(s) sur {tentatives}, toutes en échec"
+    elif tentatives > 0 and echecs < tentatives:
+        casse, raison = False, ""
+    else:
+        return avant, []
+
+    if casse == etait_casse:
+        # L'état n'a pas changé : on garde la date de bascule d'origine,
+        # sinon « depuis » repartirait de zéro à chaque passage.
+        if casse:
+            avant["raison"] = raison
+        return avant, []
+
+    if casse:
+        return ({"casse": True, "raison": raison,
+                 "depuis": maintenant.isoformat()},
+                [{"type": "decodage-casse", "raison": raison}])
+
+    heures = None
+    if avant.get("depuis"):
+        ecoule = maintenant - feed_store.parse_date_key(avant["depuis"])
+        heures = round(ecoule.total_seconds() / 3600, 1)
+    return {}, [{"type": "decodage-ok", "heures": heures}]
+
+
 def write_source_alerts_file(alertes):
     """Dépose les alertes de source pour l'étape de notification."""
     if not SOURCE_ALERTS_FILE or not alertes:
@@ -3491,7 +3576,17 @@ def main():
                   f"depuis {a['heures']} h")
         else:
             print(f"✅ Source rétablie : {a['name']} — après {a['heures']} h de panne")
-    write_source_alerts_file(alertes_sources)
+    # Le décodage Google News est suivi comme une source : il peut tomber
+    # tout seul, et c'est arrivé sans qu'un seul message le dise.
+    etat_decodage, alertes_decodage = suit_le_decodage(
+        tentatives_decodage(), echecs_decodage(),
+        stored.get("decodage_etat"), DECODEUR_ABSENT)
+    for a in alertes_decodage:
+        if a["type"] == "decodage-casse":
+            print(f"⚠️  Décodage Google News TOMBÉ — {a['raison']}")
+        else:
+            print(f"✅ Décodage Google News rétabli — après {a['heures']} h")
+    write_source_alerts_file(alertes_sources + alertes_decodage)
 
     duree = round(time.monotonic() - debut_passage, 1)
     rates_decodage = echecs_decodage()
@@ -3572,6 +3667,7 @@ def main():
         # Compteurs de passages muets consécutifs, uniquement pour les
         # sources en difficulté. Sert à n'alerter qu'une fois par panne.
         "sources_silence": silence,
+        "decodage_etat": etat_decodage,
         # Volume des derniers passages, par source, en chaîne compacte.
         # Permet de repérer une source qui se dégrade sans mourir — invisible
         # autrement, puisqu'elle continue de répondre.
