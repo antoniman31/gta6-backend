@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1583
+qui permet de tester tout le pipeline sans sortir de la machine. **1604
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -534,8 +534,9 @@ nettoyage des liens, le cache de décodage, la validation du champ VAPID
 messages d'erreur, l'équivalence entre récupération séquentielle et
 parallèle, le plafond de requêtes par domaine, la déduplication à
 l'intérieur d'un même passage, la promotion d'un sujet entre deux passages,
-le suivi des sources muettes, le garde-fou contre les archives, l'unicité
-des identifiants de source — et surtout la
+le suivi des sources muettes, le suivi du décodage Google News et sa
+réparation rétroactive (fil ET archive), le garde-fou contre les archives,
+l'unicité des identifiants de source — et surtout la
 fusion, c'est elle qui décide si des articles sont perdus quand deux
 exécutions se chevauchent. Le dernier bloc rejoue ces règles sur le vrai
 `docs/feed.json` du dépôt.
@@ -5693,6 +5694,152 @@ se consulte surtout depuis un téléphone, donc un Worker à déployer et un ét
 partagé qui peut diverger ne répondraient à rien. Le vrai risque restant — un
 navigateur qui nettoie ses données, un changement de téléphone — se couvre par
 un export de fichier, sans infrastructure.
+
+## La panne du décodage Google News — 03/10/2026
+
+Trois jours de panne totale, silencieuse, sur la moitié des sources. Elle est
+racontée ici en entier parce que la cause n'était pas dans le code du dépôt et
+qu'aucun test ne pouvait la voir venir.
+
+### Ce qui s'est passé
+
+Les six sources Google News ne donnent pas l'adresse de l'article : elles
+donnent une adresse de kiosque, `news.google.com/rss/articles/CBMi…`, qu'il
+faut décoder. C'est le rôle de `googlenewsdecoder`, et le décodeur est importé
+sous `try` — sans lui le robot doit continuer de tourner plutôt que de
+s'arrêter net.
+
+Le 03/10/2026 à 15h23 UTC, `selectolax` publie sa version 1.0.0 et retire son
+ancien moteur d'analyse, « Modest ». `googlenewsdecoder` en dépend sans borne
+haute (`selectolax>=0.4.12`) et importe précisément celui-là. Au passage
+suivant, 16h00 UTC — trente-sept minutes plus tard — `pip` installe la 1.0.0,
+l'import lève `ImportError`, le `try` l'attrape, `HAS_DECODER` passe à `False`,
+et le robot continue comme si de rien n'était.
+
+Les conséquences se sont empilées, et aucune n'était visible dans le journal :
+
+- les articles entrent avec le lien du kiosque. 398 dans la fenêtre, 453 dans
+  l'archive au moment de la réparation ;
+- l'app affiche le favicon et le nom du kiosque au lieu de ceux du média,
+  parce qu'elle les déduit du domaine du lien ;
+- Google News sert la même vignette grise pour tous : les articles perdent
+  leur miniature ;
+- **plus aucun article n'est reconnu comme officiel.** `statut_officiel` juge
+  sur le domaine du lien DÉCODÉ : une annonce de Rockstar arrivée par Google
+  News devenait un article ordinaire, sans notification ;
+- la déduplication par lien ne rapproche plus deux kiosques différents qui
+  mènent au même article.
+
+Un second défaut s'est glissé par-dessus, et il aurait prolongé la panne après
+la réparation du premier : Dependabot avait relevé `googlenewsdecoder` dans la
+PR #130, et la nouvelle version renomme la clé de sa réponse — `status`
+devient `success`. Le code lisait `result.get("status")`, donc même un
+décodeur réparé n'aurait rien rendu. Il lit désormais les deux.
+
+### La vraie cause
+
+Pas `selectolax`, et pas `googlenewsdecoder` : **onze dépendances indirectes
+n'étaient pas épinglées**. `requirements.txt` ne figeait que les cinq paquets
+que le robot importe lui-même. Tout ce que `pip` tirait derrière elles prenait
+la dernière version publiée, à chaque passage, sans que rien ne soit testé.
+
+Épingler les directes ne protège donc de rien : la version qui tourne
+réellement est celle du graphe entier. `requirements.txt` fige maintenant les
+35 paquets, et Dependabot voit enfin ce qui est installé plutôt qu'un tiers de
+l'ensemble. `selectolax` y reste sous la 1.0 tant que le décodeur importe
+`selectolax.parser` ; à relever quand il passera à `selectolax.lexbor`.
+
+Pour mettre à jour : installer dans un environnement vide, vérifier que
+`from googlenewsdecoder import gnewsdecoder` passe, puis `pip freeze`.
+
+### Pourquoi personne n'a rien vu pendant trois jours
+
+Le robot surveille ses sources — une source muette déclenche une alerte
+Discord — mais le décodage n'était surveillé par rien. Il échouait à 100 %
+sans qu'une seule ligne le dise, et les sources, elles, répondaient
+parfaitement : elles rendaient des articles, simplement avec le mauvais lien.
+
+`suit_le_decodage()` comble ce trou. Le décodage est désormais suivi comme une
+source : il a un état publié dans `feed.json` (`decodage_etat`), il déclenche
+une alerte Discord quand il tombe et une autre quand il revient, et l'alerte
+n'est émise qu'au CHANGEMENT d'état — pas à chaque passage. Deux garde-fous :
+
+- `DECODAGE_MIN_POUR_JUGER = 10` : en dessous de dix tentatives, on ne
+  conclut rien. Un passage où trois liens échouent n'est pas une panne ;
+- la raison est conservée. Quand c'est l'import qui a échoué, le message
+  Discord porte le texte de l'`ImportError`, c'est-à-dire exactement le nom
+  du paquet fautif.
+
+### La réparation rétroactive — 06/10/2026
+
+Réparer le décodeur ne répare pas les articles déjà entrés : l'historique est
+rechargé tel quel, il ne repasse jamais par la collecte. Les 453 seraient
+restés pour toujours avec le lien du kiosque. Antoni a demandé une correction
+rétroactive, et tout d'un coup plutôt qu'étalée.
+
+Trois passes, dans cet ordre :
+
+1. **`redecode_liens_stockes()`** reprend les articles du fil. Pour chacun,
+   l'ancien lien part dans `source_link`, le vrai lien le remplace, et la
+   vignette du kiosque est effacée pour que la vraie soit cherchée ensuite.
+   Elle tourne AVANT `recheck_official_status`, qui juge sur le domaine : lui
+   donner les liens réparés est ce qui remet les annonces Rockstar à leur
+   place ;
+2. **`fetch_missing_images()`** reçoit ces articles en plus des articles
+   neufs. C'est la seule exception à sa règle « jamais sur l'historique », et
+   elle est nécessaire : sans elle, les articles qu'on vient de priver de leur
+   vignette grise n'en auraient plus du tout ;
+3. **`redecode_archives()`** fait la même chose dans `docs/archives/`. Elle
+   n'est pas facultative pour deux raisons. L'archive garde ce que le fil a
+   perdu — 55 articles n'existaient plus que là, et aucune autre passe ne
+   serait venue les chercher. Et surtout, sans elle la réparation du fil
+   ABÎMERAIT l'archive : `archiver` fusionne par lien, donc un article dont le
+   lien change y entrerait une seconde fois, à côté de sa copie restée sous
+   l'ancien lien, que plus rien ne retirerait. Elle corrige la copie archivée
+   en place, et la fusion retrouve sa clé.
+
+Un budget de temps encadre les deux passes de décodage
+(`BUDGET_REDECODAGE_S`, `BUDGET_REDECODAGE_ARCHIVE_S`). Le job est coupé à
+20 minutes et un job coupé ne publie RIEN — ni les articles du jour, ni les
+réparations déjà faites. Ce qui dépasse repart au passage suivant, puisqu'un
+décodage raté n'est jamais mis en cache. La passe s'arrête aussi d'elle-même
+si un lot entier ne résout rien : insister sur 400 liens quand Google refuse
+ne ferait qu'aggraver le refus.
+
+Tout cela est idempotent. Un article déjà décodé n'a plus de lien
+`news.google.com`, donc plus rien à faire — les passes coûtent zéro une fois
+le travail fait, et peuvent rester en place.
+
+### Côté app : ne pas perdre les articles lus
+
+Tout l'état local est rangé PAR LIEN — articles lus, articles déjà vus, copie
+locale du fil. Changer un lien côté serveur revient donc, vu du navigateur, à
+remplacer un article par un autre : les 453 seraient redevenus non lus ET
+« nouveaux » d'un coup, badge compris.
+
+`migreLiensDecodes()` suit le déménagement. `source_link` porte l'ancien lien
+et était déjà publié : il suffit. La fonction ne CRÉE jamais rien, elle
+déplace ce qui existe — donc elle est sûre, et idempotente puisqu'au passage
+suivant l'ancienne clé n'existe plus. Elle est appelée sur le fil et sur
+chaque fichier d'archive, les 55 articles sortis de la fenêtre ne passant que
+par le second.
+
+Elle sert au-delà de cette panne : `source_link` est posé chaque fois qu'un
+lien Google News est résolu, donc toute correction future de lien sera reprise
+de la même façon, sans une ligne à écrire.
+
+### Ce qu'on en retient
+
+- Une dépendance indirecte non épinglée est une dépendance non testée. Le
+  fichier fige le graphe entier, pas la façade.
+- Un `try: import` qui se rabat silencieusement doit garder la raison et la
+  dire. `DECODEUR_ABSENT` existe pour ça.
+- Tout ce qui peut tomber tout seul doit être surveillé comme une source. Les
+  sources l'étaient, le décodage ne l'était pas, et c'est exactement par là
+  que c'est arrivé.
+- Une correction de collecte ne corrige pas l'historique. Toute passe
+  rétroactive doit traiter le fil ET l'archive, sans quoi la fusion par lien
+  fabrique des doublons.
 
 ## Ajuster quelque chose
 
