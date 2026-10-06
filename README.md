@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1688
+qui permet de tester tout le pipeline sans sortir de la machine. **1689
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5744,6 +5744,46 @@ Le dernier est le plus parlant : c'est la série de RockstarMag que
 rendrait ses trois épisodes identiques et désarmerait le garde-fou. Le
 minimum d'apprentissage est là pour ça, et il reste.
 
+## Le seuil de ressemblance descend à 0,72 — 06/10/2026
+
+Le retrait du nom de média a rapproché 43 paires au lieu de 22. Restait le
+mur : huit reprises de la même actualité groupées entre **0,743 et 0,747**,
+juste sous un seuil de 0,75.
+
+Le README demandait déjà que toucher à ce seuil se vérifie « en rejouant
+l'historique, pas en raisonnant ». C'est ce qui a été fait : la passe de
+fusion rejouée sur le fil (3 248 articles) ET sur l'archive entière (3 637),
+à chaque seuil, en lisant **une par une** les fusions supplémentaires.
+
+```
+0,74    +5 fusions
+0,73    +9
+0,72   +13 sur le fil, +15 sur l'archive
+```
+
+**Les 28 sont de vrais doublons, sans exception** : le coffret à 400 $ chez
+cinq médias, le teasing Spotify en français et en anglais, les 4,1 millions
+d'écoutes de l'album, la blague de Steven Adams sur la NBA, la carte « deux
+fois plus grande », Lucia comparée à Arthur Morgan. Aucune fusion abusive.
+
+On s'arrête à **0,72 et pas plus bas** : c'est la limite de ce qui a été
+relu. En dessous, personne ne peut dire ce qui se passerait.
+
+Le seuil est partagé avec la déduplication de la COLLECTE, pas seulement
+avec la passe rétroactive — c'est ce qui rendait l'abaissement délicat, et
+c'est pourquoi il a fallu un rejeu plutôt qu'un échantillon. Le défaut par
+défaut de l'app (`similarityThreshold`) suit, pour que le mode direct juge
+comme le robot.
+
+### Le corpus figé a fait son travail
+
+`test_fusions_du_corpus_fige` attendait huit fusions et en a trouvé neuf : le
+coffret à 400 $ chez IGN Nordic et chez consequence.net, publiés le même
+jour, que 0,75 laissait passer. Le test a signalé le changement avant qu'on
+le découvre en production — c'est exactement ce qu'on lui demande. Le nombre
+reste écrit en dur pour qu'un réglage ne puisse pas bouger ces fusions en
+silence.
+
 ## Une bourse de crypto n'est pas une source d'actualité — 06/10/2026
 
 Un jeton nommé « RICH OFF GTA 6 » a suffi à faire entrer Coinbase, OKX et
@@ -6302,7 +6342,7 @@ de la même façon, sans une ligne à écrire.
   (partagé par le robot et l'outil de fusion, pour que les deux appliquent
   exactement la même règle). Les articles marqués `official` y échappent,
   voir `cap_items`
-- **Déduplication** : `SIMILARITY_THRESHOLD` (le seuil de 0,75),
+- **Déduplication** : `SIMILARITY_THRESHOLD` (le seuil de 0,72),
   `FENETRE_HEURES`, `TITLE_SIMILARITY_WINDOW` (plancher) et `FENETRE_MAX`
   (plafond), en tête de `fetch_feeds.py`. Toucher au seuil se vérifie en
   rejouant l'historique, pas en raisonnant : c'est la mesure qui a montré

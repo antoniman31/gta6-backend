@@ -778,7 +778,31 @@ def statut_rockstarmag(url, feed=None):
     if lien_officiel(url, ROCKSTARMAG_DOMAINS):
         return True
     return bool(feed and feed.get("rockstarmag"))
-SIMILARITY_THRESHOLD = 0.75
+# Deux titres au-dessus de ce score sont le même article.
+#
+# 0,75 jusqu'au 06/10/2026, et c'était un cran trop strict. En comparant
+# tous les titres du fil deux à deux, 307 paires d'articles de SOURCES
+# DIFFÉRENTES se ressemblaient sans être fusionnées — et les huit plus
+# proches, toutes la même actualité, étaient groupées entre 0,743 et 0,747.
+# Pas une dispersion : un mur, juste sous le seuil.
+#
+# L'ABAISSEMENT A ÉTÉ VÉRIFIÉ PAR REJEU, pas par raisonnement — le README
+# le demandait déjà. La passe de fusion a été rejouée sur le fil (3 248
+# articles) et sur l'archive entière (3 637) à chaque seuil, et les
+# fusions SUPPLÉMENTAIRES ont été lues une par une :
+#
+#     0,74   +5 fusions
+#     0,73   +9
+#     0,72  +13 sur le fil, +15 sur l'archive
+#
+# Les 28 sont de vrais doublons, sans exception : le coffret à 400 $ chez
+# cinq médias, le teasing Spotify en français et en anglais, les 4,1
+# millions d'écoutes de l'album, la blague de Steven Adams sur la NBA, la
+# carte « deux fois plus grande ». Aucune fusion abusive.
+#
+# On s'arrête à 0,72 et pas plus bas : c'est la limite de ce qui a été
+# RELU. En dessous, je ne saurais plus dire.
+SIMILARITY_THRESHOLD = 0.72
 
 
 def matches_keywords(text, keywords):
