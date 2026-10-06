@@ -1774,6 +1774,118 @@ def test_graphiques_autres_rubriques(nav, url):
     ctx.close()
 
 
+def test_archive_mois_par_mois(nav, url):
+    """Un bouton par mois, et un mois demandé ne télécharge que lui.
+
+    Le chargement automatique prend toute l'archive, donc cette ligne
+    n'apparaît que lorsqu'il n'a pas abouti — réseau coupé, délai dépassé.
+    C'est exactement le moment où tout redemander d'un coup a le plus de
+    chances d'échouer encore, et où ne vouloir qu'un mois est légitime.
+
+    GTA 6 sort le 19/11/2026 : le mois de la sortie pèsera plusieurs fois
+    ce que pèse l'archive entière aujourd'hui (3,4 Mo pour 11 mois). Le
+    bouton global annoncerait alors un poids que personne ne cliquerait.
+    """
+    import json as _json
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+
+    MOIS = {"2026-09": 3, "2026-08": 2, "2026-07": 1}
+    index = {"generated_at": "2026-10-06T12:00:00Z",
+             "articles": sum(MOIS.values()),
+             "mois": [{"mois": m, "articles": n, "octets": 500_000 * n,
+                       "fichiers": [{"fichier": m + ".json", "articles": n,
+                                     "octets": 500_000 * n}]}
+                      for m, n in MOIS.items()]}
+
+    demandes = []
+
+    def sert(route):
+        chemin = route.request.url.split("?")[0].split("/")[-1]
+        demandes.append(chemin)
+        if chemin == "index.json":
+            corps = index
+        else:
+            m = chemin[:-5]
+            corps = {"mois": m, "items": [
+                {"title": f"{m} article {k}", "link": f"https://x.test/{m}/{k}",
+                 "date": f"{m}-15T1{k}:00:00+00:00"} for k in range(MOIS[m])]}
+        route.fulfill(status=200, content_type="application/json",
+                      body=_json.dumps(corps))
+
+    page.route("**/archives/*.json*", sert)
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # L'app croit avoir sa fenêtre complète, et pas encore l'archive :
+    # c'est l'état dans lequel la ligne s'affiche.
+    page.evaluate("""(index) => {
+      settings.backendUrl = location.href.replace(/[^/]+$/, "feed.json");
+      historyPartial = false; lastItems = []; archiveIndex = index;
+      archiveChargee = false; moisCharges = new Set();
+      updateArchiveLine();
+    }""", index)
+
+    ligne = page.locator("#archiveLine")
+    boutons = ligne.locator("button")
+    check(boutons.count() == 4,
+          "trois mois + un bouton « Tout » (%d boutons)" % boutons.count())
+    libelles = boutons.all_inner_texts()
+    # 1 500 000 octets = 1,4 Mio : poidsLisible compte en multiples de 1024,
+    # comme tout ce qui annonce un poids de téléchargement.
+    check(libelles[0].startswith("sept.") and "1,4 Mo" in libelles[0],
+          "chaque mois annonce SON poids, pas celui de l'archive (« %s »)" % libelles[0])
+    check(libelles[-1].startswith("Tout") and "2,9 Mo" in libelles[-1],
+          "et le bouton global annonce la somme (« %s »)" % libelles[-1])
+
+    # --- un mois, et un seul -------------------------------------------
+    demandes.clear()
+    boutons.first.click()
+    page.wait_for_function("moisCharges.has('2026-09')", timeout=10000)
+    check(demandes == ["2026-09.json"],
+          "cliquer un mois ne télécharge QUE lui (%s)" % demandes)
+    check(page.evaluate("lastItems.length") == 3,
+          "ses articles sont bien entrés")
+    check(page.evaluate("archiveChargee") is False,
+          "et l'app ne se croit pas complète : il manque deux mois, les "
+          "statistiques mensuelles seraient fausses")
+    check(ligne.locator("button").count() == 3,
+          "le mois chargé disparaît des boutons (%d restants)"
+          % ligne.locator("button").count())
+
+    # --- le reste d'un coup --------------------------------------------
+    demandes.clear()
+    ligne.locator("button").last.click()
+    page.wait_for_function("archiveChargee === true", timeout=10000)
+    check(sorted(demandes) == ["2026-07.json", "2026-08.json"],
+          "« Tout » ne redemande pas le mois déjà là (%s)" % sorted(demandes))
+    check(page.evaluate("lastItems.length") == 6, "les six articles sont là")
+    check(ligne.evaluate("e => e.style.display") == "none",
+          "et la ligne disparaît une fois l'archive complète")
+
+    # --- une tranche qui échoue ne fait pas croire le mois chargé ------
+    page.unroute("**/archives/*.json*")
+    # Un SEUL gestionnaire, et pas deux : Playwright donne la priorité à
+    # celui enregistré en dernier, donc une route générale ajoutée après une
+    # route précise masque la précise — le 503 ne serait jamais servi.
+    page.route("**/archives/*.json*",
+               lambda r: r.fulfill(status=503, body="")
+               if "2026-08.json" in r.request.url else sert(r))
+    page.evaluate("""(index) => {
+      lastItems = []; archiveChargee = false; moisCharges = new Set();
+      archiveIndex = index; updateArchiveLine();
+    }""", index)
+    page.evaluate("async () => { await loadArchive(); }")
+    check(page.evaluate("moisCharges.has('2026-08')") is False,
+          "un mois dont une tranche a échoué n'est PAS marqué chargé — sinon "
+          "il quitterait les boutons et ne serait jamais redemandé")
+    check(page.evaluate("archiveChargee") is False,
+          "et l'archive ne se déclare pas complète")
+    check(page.evaluate("moisCharges.has('2026-09') && moisCharges.has('2026-07')"),
+          "les mois qui ont répondu, eux, sont bien acquis")
+    ctx.close()
+
+
 def test_actualiser_ne_jette_plus_rien(nav, url):
     """Le défaut signalé par Antoni le 22/09/2026, et sa réparation.
 
@@ -2172,6 +2284,7 @@ def main():
             test_repli_backend(nav, url)
             test_vignette_ouvre_larticle(nav, url)
             test_archive_dans_lapp(nav, url)
+            test_archive_mois_par_mois(nav, url)
             test_actualiser_ne_jette_plus_rien(nav, url)
             test_recherche_sans_accents(nav, url)
             test_barre_detat_suit_le_theme(nav, url)

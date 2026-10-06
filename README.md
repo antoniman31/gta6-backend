@@ -5695,6 +5695,70 @@ partagé qui peut diverger ne répondraient à rien. Le vrai risque restant — 
 navigateur qui nettoie ses données, un changement de téléphone — se couvre par
 un export de fichier, sans infrastructure.
 
+## L'archive se charge mois par mois — 06/10/2026
+
+GTA 6 sort le 19 novembre. L'archive pèse aujourd'hui 3,4 Mo pour onze mois ;
+le mois de la sortie en pèsera plusieurs fois autant à lui seul, à ~986
+octets par article. Le changement se fait donc maintenant, tant que le volume
+permet de le tester tranquillement — le faire en décembre serait le faire
+dans l'urgence.
+
+### Ce que je croyais, et ce qui est vrai
+
+Je pensais l'archive purement optionnelle : une ligne, un bouton, un poids
+annoncé avant de cliquer. C'est faux. `rattrapeToutEnArrierePlan()` la
+télécharge **en entier, automatiquement, à chaque ouverture de l'app**, après
+l'affichage du fil. Le bouton n'est qu'un recours pour quand ce rattrapage
+n'a pas abouti.
+
+Antoni a décidé de **ne pas toucher à ce chargement automatique** : il reste
+global et sans limite. Le choix est assumé, et il a son revers, dit ici plutôt
+que taire : en décembre, l'app prendra plusieurs mégaoctets toute seule à chaque
+ouverture. Le jour où ça gêne, c'est `rattrapeToutEnArrierePlan` qu'il faudra
+borner, pas la ligne d'archive.
+
+### Un bouton par mois
+
+La ligne d'archive n'apparaît que lorsque le rattrapage automatique n'a pas
+abouti — réseau coupé, délai dépassé, onglet fermé trop tôt. C'est
+précisément le moment où tout redemander d'un coup a le plus de chances
+d'échouer encore, et où ne vouloir qu'un mois est légitime.
+
+`docs/archives/index.json` porte le poids de CHAQUE mois depuis le 22/09 : il
+a été écrit pour ça, il suffisait de s'en servir.
+
+```
+archive : 20 de plus, 2026-07 → 2026-08 (20 Ko)
+[ août 26 (12 Ko) ] [ juil. 26 (8 Ko) ] [ Tout (20 Ko) ]
+```
+
+Trois règles tiennent le reste :
+
+- **`loadArchive(mois)`** prend un mois, `loadArchive()` prend tout ce qui
+  manque. Le rattrapage automatique et le bouton « Tout » passent par la
+  seconde forme, inchangée ;
+- **un mois n'est acquis que si TOUTES ses tranches sont arrivées.** Le
+  marquer sur une lecture partielle le retirerait des boutons, et ce qui
+  manque ne serait plus jamais redemandé ;
+- **`archiveChargee` se déduit** des mois réellement lus au lieu d'être posé
+  dès qu'une passe se termine. C'est lui qui commande le graphique mensuel
+  des statistiques, qu'un mois manquant fausserait.
+
+Le bouton « Tout » disparaît quand il ne reste qu'un mois : deux boutons pour
+le même geste ne servent personne.
+
+### Ce que le test a appris
+
+Deux échecs à l'écriture du contrôle navigateur, aucun dans le code de l'app :
+
+- `poidsLisible` compte en multiples de 1024. 1 500 000 octets font 1,4 Mo,
+  pas 1,5. Mon attente était fausse, pas l'affichage ;
+- **Playwright donne la priorité au gestionnaire de route enregistré en
+  DERNIER.** Une route précise posée avant une route générale est masquée par
+  elle : mon 503 simulé n'était jamais servi, et le test passait en croyant
+  vérifier l'échec d'une tranche. Un seul gestionnaire qui aiguille, et le
+  cas se vérifie vraiment.
+
 ## Le cache de décodage quitte le réseau — 06/10/2026
 
 Une mesure, et tout le reste en découle. Poids réellement transféré, gzippé,
