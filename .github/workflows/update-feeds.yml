@@ -211,7 +211,7 @@ jobs:
           # passage puis jetés avec le runner, sans la moindre erreur pour
           # le dire. Un répertoire qui n'existe pas encore ne fait pas
           # échouer `git add`.
-          git add docs/feed.json docs/feed-recent.json docs/archives
+          git add docs/feed.json docs/feed-recent.json docs/archives decode-cache.json
           # Commit systématique, même si generated_at est la seule vraie
           # différence : Git compresse les diffs (delta), donc le coût réel
           # en espace est minime. L'alternative (ignorer generated_at dans
@@ -266,7 +266,7 @@ jobs:
             # elle compte double : le `git reset --hard` ci-dessus a effacé
             # les fichiers d'archive du passage, c'est merge_feed.py qui
             # vient de les réécrire depuis le fil fusionné.
-            git add docs/feed.json docs/feed-recent.json docs/archives
+            git add docs/feed.json docs/feed-recent.json docs/archives decode-cache.json
             if git diff --quiet --cached; then
               echo "Le distant contient déjà tout — rien à republier."
               exit 0

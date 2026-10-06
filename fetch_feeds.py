@@ -3632,10 +3632,25 @@ def main():
 
     # Liens Google News déjà résolus lors des exécutions précédentes : évite
     # de repayer une seconde de décodage par article déjà connu.
-    decoded_cache = {item["source_link"]: item["link"]
-                     for item in existing_items if item.get("source_link")}
+    #
+    # Il vient de son propre fichier depuis le 06/10/2026, et non plus du
+    # champ `source_link` des articles publiés : celui-ci pesait 54 % de ce
+    # que le téléphone téléchargeait, pour un cache que l'app n'ouvre
+    # jamais. Voir feed_store.CACHE_DECODAGE_PATH.
+    decoded_cache = feed_store.lire_cache_decodage()
+    depuis_fichier = len(decoded_cache)
+    # Amorce, et reprise après un conflit de push : les articles encore
+    # jeunes portent leur source_link, et le fichier peut avoir été ramené
+    # en arrière par un `git reset --hard`. Les relire ne coûte rien et
+    # évite de re-décoder ce qu'on connaît déjà.
+    for item in existing_items:
+        if item.get("source_link"):
+            decoded_cache.setdefault(item["source_link"], item["link"])
     if decoded_cache:
-        print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) déjà résolu(s)")
+        repris = len(decoded_cache) - depuis_fichier
+        detail = f" (+{repris} repris sur les articles)" if repris else ""
+        print(f"Cache de décodage Google News : {len(decoded_cache)} lien(s) "
+              f"déjà résolu(s){detail}")
 
     # Téléchargement en parallèle. Voir fetch_all_feeds : seul le réseau est
     # parallélisé, la fusion qui suit reste séquentielle.
@@ -3947,11 +3962,46 @@ def main():
     # avance d'un passage sur la fenêtre que l'inverse : dans un sens il n'y
     # a rien à réparer, dans l'autre des articles élagués n'existeraient
     # plus nulle part.
+    # LE CACHE DE DÉCODAGE, puis l'élagage de source_link. Dans cet ordre,
+    # et après le garde-fou : le cache est ce qui PERMET de retirer le champ
+    # des articles publiés, donc il doit être sur le disque avant qu'on y
+    # touche. Un passage que le contrôle refuse ne laisse rien derrière lui,
+    # ici comme pour l'archive.
+    for item in all_items:
+        if item.get("source_link"):
+            decoded_cache.setdefault(item["source_link"], item["link"])
+    avant_elagage = len(decoded_cache)
+    decoded_cache = feed_store.elague_cache_decodage(decoded_cache, all_items)
+    feed_store.ecrire_cache_decodage(decoded_cache)
+    perimes = avant_elagage - len(decoded_cache)
+    print(f"Cache de décodage écrit : {len(decoded_cache)} lien(s)"
+          + (f", {perimes} périmé(s) retiré(s)" if perimes else ""))
+
+    # Le champ ne sert plus qu'à l'app, et seulement sur les articles
+    # récents : le reste est du poids mort sur le réseau.
+    alleges = feed_store.elague_source_link(all_items)
+    if alleges:
+        print(f"source_link retiré de {alleges} article(s) de plus de "
+              f"{feed_store.JOURS_SOURCE_LINK_PUBLIE} jours "
+              f"(le cache de décodage les garde)")
+
     # L'archive garde ce que le fil a perdu : elle a ses propres articles
     # mal décodés, que personne d'autre ne viendrait réparer. À faire AVANT
     # la fusion ci-dessous, qui se fait par lien — voir redecode_archives.
     redecode_archives(decoded_cache, liens_du_fil={i["link"] for i in all_items
                                                    if i.get("link")})
+
+    # L'archive s'allège APRÈS redecode_archives, et pas avant : celle-ci
+    # pose un source_link tout neuf sur les articles qu'elle répare, et le
+    # retirer dans la foulée vaut mieux que le publier pour un passage.
+    # Même raison d'être que la passe ci-dessus, d'ailleurs : `archiver` ne
+    # relit que les mois que la fenêtre touche, donc les plus anciens
+    # garderaient le champ indéfiniment — or c'est là qu'est la moitié du
+    # poids de l'archive.
+    alleges_arch, mois_alleges = feed_store.elague_source_link_archives()
+    if alleges_arch:
+        print(f"  [archive] source_link retiré de {alleges_arch} article(s) "
+              f"sur {len(mois_alleges)} mois")
 
     mois_ecrits = feed_store.archiver(all_items, exclure=page_rockstar_hors_langue)
     index_archives = feed_store.ecrire_index_archives()

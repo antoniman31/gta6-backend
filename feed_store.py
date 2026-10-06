@@ -690,6 +690,125 @@ def write_feed(data, path=FEED_PATH):
 
 
 # ---------------------------------------------------------------------------
+# Le cache de décodage Google News
+#
+# POURQUOI IL A SON PROPRE FICHIER, HORS DE docs/
+#
+# `source_link` — le lien de kiosque d'où vient un article — était publié
+# sur chaque article. Mesuré le 06/10/2026 sur le fil réel :
+#
+#     feed.json      994 Ko gzip, dont 533 Ko de source_link  (53,6 %)
+#     archives      1116 Ko gzip, dont 593 Ko de source_link  (53 %)
+#
+# 33 % des octets BRUTS, mais 54 % des octets COMPRESSÉS : les liens de
+# kiosque sont du base64, donc à haute entropie, donc quasi incompressibles
+# là où tout le reste se tasse. Un chargement complet coûtait 2,27 Mo au
+# téléphone ; la moitié servait à un cache que l'app n'ouvre jamais.
+#
+# Car le lecteur de ce cache est le ROBOT, et lui seul : sans lui, chaque
+# passage re-décoderait les liens Google News déjà résolus, à une seconde
+# par lien. Le besoin est réel, sa place sur le réseau ne l'était pas.
+#
+# Le fichier vit donc à la racine et non dans docs/ : GitHub Pages ne sert
+# que docs/, si bien que l'app ne peut même pas le demander par erreur.
+# C'est de l'état de travail, pas du contenu de site.
+#
+# Les articles gardent tout de même source_link pendant
+# JOURS_SOURCE_LINK_PUBLIE jours, pour que l'app puisse suivre un lien
+# corrigé jusqu'à sa nouvelle adresse — voir elague_source_link.
+# ---------------------------------------------------------------------------
+CACHE_DECODAGE_PATH = "decode-cache.json"
+
+
+def lire_cache_decodage(path=CACHE_DECODAGE_PATH):
+    """{lien de kiosque -> vrai lien}, ou {} si le fichier manque.
+
+    Un cache absent ou abîmé n'est JAMAIS une erreur : il se reconstruit
+    tout seul au fil des passages, au prix de quelques décodages. Le faire
+    échouer priverait le fil de sa mise à jour pour une donnée dérivée.
+    """
+    try:
+        with open(path, encoding="utf-8") as f:
+            brut = json.load(f)
+    except (OSError, ValueError):
+        return {}
+    liens = brut.get("liens") if isinstance(brut, dict) else None
+    if not isinstance(liens, dict):
+        return {}
+    return {k: v for k, v in liens.items()
+            if isinstance(k, str) and isinstance(v, str) and k and v}
+
+
+def ecrire_cache_decodage(cache, path=CACHE_DECODAGE_PATH, maintenant=None):
+    """Écrit le cache, TRIÉ. Rend le nombre d'entrées.
+
+    Le tri n'est pas cosmétique. Le robot réécrit ce fichier 28 fois par
+    jour ; dans l'ordre d'insertion, deux passages voisins le brasseraient
+    différemment et Git ne saurait plus en faire un petit delta. Trié, un
+    passage qui ajoute trois liens produit un diff de trois lignes.
+    """
+    write_feed({"generated_at": _horodatage(maintenant),
+                "liens": dict(sorted(cache.items()))}, path)
+    return len(cache)
+
+
+def elague_cache_decodage(cache, items):
+    """Ne garde que les entrées encore susceptibles de servir.
+
+    Une entrée sert si son ARTICLE est encore dans la fenêtre : un lien de
+    kiosque qui reparaît dans un flux pointe vers un article que
+    `plancher_de_retention` refuserait de toute façon s'il en était sorti,
+    et ce refus tombe AVANT le décodage (voir le test « on ne décode pas ce
+    qu'on jette »). Garder l'entrée ne ferait donc rien gagner.
+
+    Les liens des « autres sources » comptent aussi : un article dédupliqué
+    y survit sous son propre lien, et c'est lui que le flux resservira.
+    """
+    vivants = set()
+    for item in items:
+        if item.get("link"):
+            vivants.add(item["link"])
+        for autre in (item.get("extraSources") or []):
+            if autre.get("link"):
+                vivants.add(autre["link"])
+    return {brut: vrai for brut, vrai in cache.items() if vrai in vivants}
+
+
+# Combien de jours un article publié garde son `source_link`.
+#
+# Ce champ ne sert plus qu'à une chose côté app : suivre un article jusqu'à
+# sa nouvelle adresse quand le robot corrige son lien, pour qu'il ne
+# redevienne pas « non lu » (voir migreLiensDecodes). Sept jours couvrent
+# tout téléphone qui ouvre l'app une fois par semaine.
+#
+# Le réglage a été choisi sur mesure, pas au jugé. Poids de feed.json gzippé
+# selon la fenêtre, au 06/10/2026 : aucune 461 Ko, 2 j 504 Ko, 7 j 615 Ko,
+# 14 j 749 Ko, 30 j 966 Ko. Sept jours prennent les trois quarts du gain en
+# laissant une marge confortable ; au-delà de quatorze, il n'y a plus de
+# gain du tout.
+JOURS_SOURCE_LINK_PUBLIE = 7
+
+
+def elague_source_link(items, maintenant=None, jours=JOURS_SOURCE_LINK_PUBLIE):
+    """Retire `source_link` des articles publiés trop vieux. Rend le compte.
+
+    À n'appeler QU'APRÈS avoir écrit le cache de décodage : c'est lui qui
+    garde la correspondance pour le robot. Ici on ne décide que de ce que le
+    téléphone télécharge.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    limite = maintenant - timedelta(days=jours)
+    retires = 0
+    for item in items:
+        if not item.get("source_link"):
+            continue
+        if parse_date_key(item.get("date")) < limite:
+            item.pop("source_link", None)
+            retires += 1
+    return retires
+
+
+# ---------------------------------------------------------------------------
 # L'archive mensuelle
 #
 # feed.json est une FENÊTRE : il garde MAX_HISTORY_DAYS de profondeur et
@@ -948,6 +1067,36 @@ def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None, exclure=None):
         fusion.update({i["link"]: i for i in neufs})
         ecrits[mois] = ecrire_mois(mois, fusion.values(), repertoire, maintenant)
     return ecrits
+
+
+def elague_source_link_archives(repertoire=None, maintenant=None,
+                                jours=JOURS_SOURCE_LINK_PUBLIE):
+    """Même élagage, dans l'archive. Rend (articles allégés, mois réécrits).
+
+    Indispensable, et pas seulement pour faire bonne mesure : `archiver` ne
+    relit que les mois que la fenêtre touche. Les mois plus anciens ne sont
+    jamais réécrits, donc ils garderaient leur `source_link` pour toujours —
+    or c'est là qu'est la moitié du poids. Mesuré au 06/10/2026 : 593 Ko
+    gzippés sur les 1116 de l'archive.
+
+    Idempotente, et soumise au garde-fou habituel : un mois dont une tranche
+    est illisible n'est pas touché.
+    """
+    repertoire = repertoire or ARCHIVE_DIR
+    maintenant = maintenant or datetime.now(timezone.utc)
+    total, ecrits = 0, []
+    for mois in mois_archives(repertoire):
+        items, illisibles = lire_mois_pour_reecriture(mois, repertoire)
+        if illisibles:
+            print(f"  [archive] {mois} NON allégé : tranche(s) illisible(s) "
+                  f"({', '.join(illisibles)})")
+            continue
+        n = elague_source_link(items, maintenant, jours)
+        if n:
+            ecrire_mois(mois, items, repertoire, maintenant)
+            total += n
+            ecrits.append(mois)
+    return total, ecrits
 
 
 def ecrire_index_archives(repertoire=ARCHIVE_DIR, maintenant=None):
