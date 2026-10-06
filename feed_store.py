@@ -90,6 +90,20 @@ MAX_HISTORY_SIZE = 4000
 # une fonction morte.
 HOT_SOURCE_THRESHOLD = 3
 
+# Combien d'annonces officielles reçoivent leur PROPRE notification avant
+# qu'on les regroupe.
+#
+# La boucle d'envoi était sans plafond : un article officiel, une
+# notification, autant de fois qu'il le faut. Mesuré sur tout l'historique,
+# le maximum est de 3 dans une même heure et 4 par jour — le problème est
+# donc théorique aujourd'hui. Mais c'est la pause nocturne qui décide : de
+# 0h à 5h, SEULES les annonces officielles réveillent le téléphone, et une
+# rafale de dix y passerait intégralement.
+#
+# Cinq, parce que c'est au-dessus de tout ce qu'on a jamais observé : le
+# plafond ne se verra jamais, sauf le jour où il servira.
+NOTIFS_OFFICIELLES_MAX = 5
+
 FEED_PATH = "docs/feed.json"
 
 # Nombre d'articles publiés dans le fichier allégé, que l'app charge en

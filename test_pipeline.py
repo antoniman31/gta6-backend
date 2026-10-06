@@ -3517,6 +3517,179 @@ def test_journal_des_incidents():
           "le journal est publié dans feed.json")
 
 
+def test_plafond_des_mots_rares():
+    print("\n[fusion] un mot courant ne doit attirer personne, à toute échelle")
+    import fetch_feeds
+
+    # LE DÉFAUT, mesuré le 06/10/2026 : « 15 % des titres » se desserre à
+    # mesure que le fil grandit. À 3 000 titres, un mot présent dans 450
+    # comptait encore comme rare, et produisait cent mille paires à
+    # comparer — 18 s sur un passage qui en dure 34, pour deux fusions.
+    #
+    # Ce contrôle-ci est le SEUL qui exerce vraiment le plafond absolu : il
+    # faut plus de 533 titres pour qu'il morde (en dessous, le relatif est
+    # plus serré), et un corpus de cette taille se fabrique ici en trois
+    # lignes plutôt que de peser 200 Ko dans le dépôt.
+    N = 1000
+    assert N * fetch_feeds.FUSION_RETRO_MOT_COMMUN > fetch_feeds.FUSION_RETRO_MOT_RARE_MAX
+
+    courant = fetch_feeds.FUSION_RETRO_MOT_RARE_MAX + 20   # au-dessus du plafond
+    rare = fetch_feeds.FUSION_RETRO_MOT_RARE_MAX - 20      # en dessous
+
+    titres = ["remplissage unique%d quelconque%d" % (k, k) for k in range(N)]
+    # Deux mots partagés par trop de titres : ensemble ils ne désignent rien.
+    for k in range(courant):
+        titres[k] += " aimantalpha aimantbeta"
+    # Deux mots partagés par peu de titres : ensemble ils désignent un sujet.
+    for k in range(courant, courant + rare):
+        titres[k] += " subpoena microtransactions"
+
+    paires = set(fetch_feeds._paires_candidates(titres))
+    check((0, 1) not in paires,
+          "deux titres qui ne partagent que des mots COURANTS ne sont pas "
+          "comparés — c'est ce qui coûtait 18 s par passage")
+    check((courant, courant + 1) in paires,
+          "deux titres qui partagent des mots RARES le sont toujours")
+    check(len(paires) < courant * courant / 2,
+          "et la masse de paires inutiles a bien disparu (%d paires)" % len(paires))
+
+    # LE RELATIF REPREND LA MAIN SUR UN PETIT CORPUS, et rien n'y change.
+    #
+    # Premier jet de ce contrôle : 60 titres partageant tous les mêmes deux
+    # mots, en attendant qu'ils soient appariés. Faux — à 60 titres le seuil
+    # relatif vaut 9, donc un mot présent 60 fois était DÉJÀ écarté, bien
+    # avant qu'on parle de plafond absolu. Le contrôle vérifiait l'inverse
+    # de ce qu'il annonçait.
+    #
+    # Ce qui se vérifie vraiment : sous 533 titres le plafond effectif est
+    # le relatif, donc la frontière tombe là où elle tombait avant.
+    PETIT = 60
+    relatif = int(fetch_feeds.FUSION_RETRO_MOT_COMMUN * PETIT)      # 9
+    petit = ["remplissage unique%d quelconque%d" % (k, k) for k in range(PETIT)]
+    for k in range(relatif - 2):                 # sous le seuil : apparié
+        petit[k] += " subpoena microtransactions"
+    for k in range(relatif + 5, PETIT):          # au-dessus : écarté
+        petit[k] += " aimantalpha aimantbeta"
+    paires_petit = set(fetch_feeds._paires_candidates(petit))
+    check((0, 1) in paires_petit,
+          "sous 533 titres, deux mots partagés par moins de 15 % des titres "
+          "apparient toujours — le plafond absolu ne mord pas")
+    check((relatif + 5, relatif + 6) not in paires_petit,
+          "et le seuil relatif écarte toujours ce qu'il écartait avant")
+
+
+def test_fusions_du_corpus_fige():
+    print("\n[fusion] les rapprochements connus tiennent, sur un corpus qui ne bouge pas")
+    import fetch_feeds, json, copy
+
+    # 700 articles réels, pris dans l'archive du 06/10/2026 : les 17 qui
+    # participent aux huit fusions connues, plus du remplissage pour que les
+    # fréquences de mots ressemblent à celles d'un vrai fil.
+    #
+    # CE QU'IL NE COUVRE PAS, et c'est important : à 700 articles les
+    # fréquences sont cinq fois plus basses que sur l'archive entière, si
+    # bien que même un plafond de 15 y conserve les huit fusions. Ce corpus
+    # garde la LOGIQUE de rapprochement — la règle des sources, l'interdit
+    # de chaînage, les séries, le minimum de mots — pas le réglage du
+    # plafond. Celui-ci est tenu par test_plafond_des_mots_rares.
+    corpus = json.load(open("corpus_fusion.json", encoding="utf-8"))
+    check(len(corpus) == 700, "le corpus figé est bien là (%d articles)" % len(corpus))
+
+    avant = copy.deepcopy(corpus)
+    restants = fetch_feeds.fusionne_ressemblances_de_titre(avant)
+    absorbes = {i["link"] for i in avant} - {i["link"] for i in restants}
+    check(len(absorbes) == 8,
+          "les huit rapprochements connus sont retrouvés (%d)" % len(absorbes))
+
+    # Nommément, pour qu'un échec dise LEQUEL a disparu.
+    attendus = {
+        "la même annonce Rockstar en deux langues",
+        "le même article IGN par deux requêtes Google News",
+        "la déclaration Rockstar reprise par OpenCritic et Game Rant",
+        "le prochain jeu de Rockstar, ScreenRant et GameRant",
+    }
+    titres = {i["title"] for i in avant if i["link"] in absorbes}
+    check(any("Vice City Collection" in t for t in titres), "dont l'annonce Vice City")
+    check(any("ScreenRant" in t for t in titres),
+          "dont le rapprochement ScreenRant/GameRant — celui que le plafond "
+          "le plus serré faisait disparaître")
+    check(any("Lucia" in t for t in titres),
+          "dont la reprise française d'un article anglais")
+
+    # Idempotence : le gardien ne disparaît jamais du fil, donc le passage
+    # suivant reprend exactement la même décision.
+    check(fetch_feeds.fusionne_ressemblances_de_titre(list(restants)) is not None
+          and len(fetch_feeds.fusionne_ressemblances_de_titre(list(restants))) == len(restants),
+          "rejouée sur son propre résultat, la passe ne fusionne plus rien")
+
+
+def test_plafond_des_annonces_officielles():
+    print("\n[notifications] une rafale d'annonces ne fait pas une rafale de réveils")
+    import feed_store, push_notify, discord_notify
+
+    # La boucle d'envoi n'avait pas de borne : un officiel, une
+    # notification. Mesuré sur tout l'historique, le maximum est de 3 par
+    # heure et 4 par jour — donc rien ne s'est jamais vu. Mais de 0h à 5h,
+    # SEULES les annonces officielles réveillent le téléphone : une rafale
+    # de dix y passerait en entier.
+    N = feed_store.NOTIFS_OFFICIELLES_MAX
+    check(N >= 4, "le plafond est au-dessus du maximum jamais observé (4/jour)")
+
+    officiels = [{"title": "Annonce %d" % k, "link": "https://rockstargames.com/%d" % k,
+                  "source": "Rockstar Games", "official": True,
+                  "date": "2026-11-19T0%d:00:00+00:00" % (k % 10)} for k in range(N + 4)]
+
+    # --- push ---
+    envois = []
+    vrai_send = push_notify.send_all
+    vrai_subs = push_notify.load_subscriptions
+    vrai_key = os.environ.get("VAPID_PRIVATE_KEY")
+    push_notify.send_all = lambda subs, charge, cle, **kw: (envois.append(charge), (1, []))[1]
+    push_notify.load_subscriptions = lambda: [{"endpoint": "https://x.test/1"}]
+    try:
+        os.environ["VAPID_PRIVATE_KEY"] = "test"
+        os.environ["SEULEMENT_OFFICIELS"] = "1"       # pause nocturne : le pire cas
+        chemin = os.path.join(tempfile.mkdtemp(), "neufs.json")
+        json.dump(officiels, open(chemin, "w"))
+        os.environ["NEW_ITEMS_FILE"] = chemin
+        push_notify.main()
+    finally:
+        push_notify.send_all = vrai_send
+        push_notify.load_subscriptions = vrai_subs
+        os.environ.pop("SEULEMENT_OFFICIELS", None)
+        if vrai_key is None: os.environ.pop("VAPID_PRIVATE_KEY", None)
+
+    check(len(envois) == N + 1,
+          "%d annonces donnent %d notifications : %d détaillées plus une groupée "
+          "(obtenu %d)" % (len(officiels), N + 1, N, len(envois)))
+    check(all("Annonce" in (e.get("body") or "") for e in envois[:N]),
+          "les premières gardent leur titre : une annonce de Rockstar se lit "
+          "sans rien ouvrir")
+    check("4" in (envois[-1].get("body") or ""),
+          "et la dernière annonce le nombre restant (« %s »)" % envois[-1].get("body", "")[:60])
+    check(envois[-1].get("tag") != envois[0].get("tag"),
+          "la groupée a son propre tag : elle ne remplace pas une annonce détaillée")
+
+    # --- Discord : le même plafond, par le même réglage ---
+    cartes = []
+    vrai_envoi = discord_notify.send_discord_with_retry
+    vrai_url = discord_notify.DISCORD_WEBHOOK_URL
+    discord_notify.send_discord_with_retry = lambda embed, quoi="": (cartes.append(embed), True)[1]
+    discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/hook"
+    try:
+        discord_notify.send_official_alerts(officiels)
+    finally:
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+
+    check(len(cartes) == N + 1,
+          "Discord suit la même règle (%d cartes)" % len(cartes))
+    check(cartes[-1]["title"].startswith("+ 4"),
+          "sa carte de groupe dit combien (« %s »)" % cartes[-1]["title"][:40])
+    check(cartes[-1]["description"].count("•") == 4,
+          "et liste les annonces restantes plutôt que de les perdre")
+
+
 def test_historique_entrees():
     print("\n[sources] repérer une source qui se dégrade sans mourir")
     import fetch_feeds
@@ -7997,6 +8170,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_reparation_retroactive_du_decodage,
            test_cache_de_decodage_hors_du_fil,
            test_journal_des_incidents,
+           test_plafond_des_mots_rares,
+           test_fusions_du_corpus_fige,
+           test_plafond_des_annonces_officielles,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,

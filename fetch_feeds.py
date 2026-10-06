@@ -3384,6 +3384,41 @@ FUSION_RETRO_MOT_COMMUN = 0.15   # un mot présent dans plus de 15 % des titres
                                  # ne désigne plus personne
 FUSION_RETRO_MOTS_PARTAGES = 2   # deux candidats en partagent au moins deux
 
+# LE PLAFOND ABSOLU, ET POURQUOI LE RELATIF NE SUFFISAIT PAS.
+#
+# « 15 % des titres » se desserre à mesure que le fil grandit, c'est-à-dire
+# exactement à l'envers de ce qu'on veut. À 3 000 titres, un mot présent
+# dans 450 d'entre eux comptait encore comme rare — et il produisait à lui
+# seul une centaine de milliers de paires à comparer.
+#
+# Mesuré le 06/10/2026, sur le fil réel :
+#
+#     titres   plafond   paires candidates   comparaison
+#       500        75           8 404            782 ms
+#     1 000       150          28 225          1 977 ms
+#     2 000       300         111 443          8 033 ms
+#     3 000       450         223 997         18 411 ms
+#
+# Dix-huit secondes sur un passage qui en dure trente-quatre — 60 % du
+# temps du robot — pour trouver DEUX articles à fusionner.
+#
+# Un mot dans 15 % des titres n'est rare à aucune échelle. Le plafond est
+# donc borné en absolu, et le `min` garde le relatif quand il est plus
+# serré : en dessous de 533 articles, rien ne change.
+#
+# La valeur vient d'une mesure du point de rupture, pas d'une intuition.
+# Rejoué sur trois corpus (le fil, l'archive entière, le fil d'il y a
+# soixante passages), en vérifiant à chaque fois que les MÊMES articles
+# sont fusionnés :
+#
+#     plafond 120 → 4,2 s   identique partout
+#     plafond  80 → 2,5 s   identique partout
+#     plafond  60 → 1,7 s   identique partout
+#     plafond  40 → 1,2 s   PERD une fusion réelle sur l'archive
+#
+# 80, soit le double du seuil où ça casse. −87 % pour une marge de 2×.
+FUSION_RETRO_MOT_RARE_MAX = 80
+
 # Une fois le nom du jeu et celui du média retirés, certains titres ne
 # pèsent plus que deux mots — et deux mots génériques se ressemblent
 # forcément. « extended look gta 6 - GamerGen » se réduit à « extended
@@ -3405,12 +3440,17 @@ def _paires_candidates(comparables):
     même chose partagent « microtransactions » ou « subpoena », deux qui
     n'ont rien à voir ne partagent que « the » et « new ». Mesuré : 7,7 s,
     et aucune paire manquée par rapport au balayage complet.
+
+    Ce qui compte pour « rare », c'est le plafond — voir
+    FUSION_RETRO_MOT_RARE_MAX, qui explique pourquoi le seuil relatif seul
+    laissait passer cent mille paires inutiles.
     """
     index = defaultdict(list)
     for position, titre in enumerate(comparables):
         for mot in set(titre.split()):
             index[mot].append(position)
-    plafond = max(2, int(FUSION_RETRO_MOT_COMMUN * len(comparables)))
+    plafond = min(max(2, int(FUSION_RETRO_MOT_COMMUN * len(comparables))),
+                  FUSION_RETRO_MOT_RARE_MAX)
     partages = defaultdict(int)
     for positions in index.values():
         if len(positions) > plafond:
