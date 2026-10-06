@@ -1293,6 +1293,74 @@ def test_reprise_des_liens_redecodes(nav, url):
     ctx.close()
 
 
+def test_bloc_incidents(nav, url):
+    """Le bloc qui s'affiche MÊME VIDE, et c'est tout son intérêt.
+
+    Le 05/10/2026 au soir j'ai annoncé qu'une source rendait un flux vide
+    « depuis deux passages » et qu'une alerte partirait. Les deux étaient
+    faux : la panne datait de trois jours, avait duré deux heures, et
+    s'était réparée seule. Pour le savoir il avait fallu rejouer 120
+    versions de feed.json.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    socle = """(incidents) => {
+      derniereReponseBackend = {
+        generated_at: "2026-10-06T20:00:00Z",
+        sources_health: [{id: "a", name: "Alpha", status: "ok",
+                          http_status: 200, entries_fetched: 25,
+                          days_since_last_article: 0}],
+        sources_incidents: incidents,
+      };
+      setTab("stats"); ongletStatsChoisi("sources");
+    }"""
+
+    # --- le cas le plus fréquent, et le plus utile : rien à signaler ----
+    page.evaluate(socle, [])
+    page.wait_for_selector(".stats-bloc")
+    vide = page.locator(".stats-bloc").filter(has_text="Incidents des 30 derniers jours")
+    check(vide.count() == 1,
+          "le bloc existe même sans incident — « aucun » est une information, "
+          "pas un vide à masquer")
+    check("Aucun incident depuis 30 jours" in vide.inner_text(),
+          "et il le dit en toutes lettres (« %s »)" % vide.inner_text().replace("\n", " ")[:80])
+
+    # --- avec des incidents --------------------------------------------
+    page.evaluate(socle, [
+        {"source": "reddit-leaks", "nom": "Reddit — fuites et rumeurs",
+         "debut": "2026-10-02T00:02:00Z", "fin": "2026-10-02T02:02:00Z",
+         "heures": 2.0, "alertee": False},
+        {"source": "__decodage__", "nom": "Décodage Google News",
+         "debut": "2026-10-03T17:23:00Z", "fin": "2026-10-06T07:33:00Z",
+         "heures": 62.2, "alertee": True},
+    ])
+    page.wait_for_selector(".stats-bloc")
+    bloc = page.locator(".stats-bloc").filter(has_text="Incidents des 30 derniers jours")
+    titre = bloc.locator("h4, .stats-titre, strong").first.inner_text() if bloc.locator("h4, .stats-titre, strong").count() else bloc.inner_text()
+    check("(2)" in titre or "(2)" in bloc.inner_text(),
+          "le nombre figure au titre")
+    lignes = bloc.locator("li").all_inner_texts()
+    check(len(lignes) == 2, "une ligne par incident (%d)" % len(lignes))
+    check("Reddit" in lignes[0] and "2 h" in lignes[0] and "résolu seul" in lignes[0],
+          "la panne courte est marquée « résolu seul » — c'est CE détail que "
+          "je n'avais pas su dire (« %s »)" % lignes[0].replace("\n", " "))
+    check("Décodage Google News" in lignes[1] and "alerte" in lignes[1],
+          "le décodage y figure comme une source, et son alerte est signalée "
+          "(« %s »)" % lignes[1].replace("\n", " "))
+    check("3 j" in lignes[1],
+          "une panne de 62 h se lit en jours, pas en heures (« %s »)"
+          % lignes[1].replace("\n", " "))
+
+    # --- le piège du sélecteur -----------------------------------------
+    check(page.locator(".stats-bloc").filter(has_text="État des sources").count() == 1,
+          "le nouveau bloc ne reprend pas la phrase « État des sources » : "
+          "deux blocs la portant casseraient le sélecteur des autres contrôles")
+    ctx.close()
+
+
 def test_stats_quatre_rubriques(nav, url):
     """Chaque statistique ajoutée le 23/09/2026, sur un fil dont on connaît la réponse."""
     ctx = nav.new_context(viewport={"width": 390, "height": 850})
@@ -2294,6 +2362,7 @@ def main():
             test_entete_sans_vide(nav, url)
             test_heure_de_premiere_vue(nav, url)
             test_reprise_des_liens_redecodes(nav, url)
+            test_bloc_incidents(nav, url)
             test_stats_quatre_rubriques(nav, url)
             test_officiel_et_filtres_etroits(nav, url)
             test_graphiques_detailles(nav, url)

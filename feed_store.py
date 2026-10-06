@@ -717,6 +717,63 @@ def write_feed(data, path=FEED_PATH):
 # JOURS_SOURCE_LINK_PUBLIE jours, pour que l'app puisse suivre un lien
 # corrigé jusqu'à sa nouvelle adresse — voir elague_source_link.
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Le journal des incidents
+#
+# POURQUOI IL EXISTE
+#
+# Le 05/10/2026 au soir, j'ai annoncé à Antoni que `reddit-leaks` rendait un
+# flux vide « depuis deux passages » et qu'une alerte Discord partirait le
+# lendemain. Les deux étaient faux. En rejouant 120 versions de feed.json :
+# la source n'avait été muette QU'UNE FOIS, le 02/10 à 00h02, revenue à
+# 02h02, et aucune alerte n'était partie ni n'aurait pu partir.
+#
+# Il n'y avait pas d'autre moyen de le savoir. Le projet sait dire « elle va
+# mal MAINTENANT » (sources_health) et « DEPUIS QUAND » (sources_silence).
+# Il ne savait pas dire « elle est tombée deux fois ce mois-ci, et les deux
+# fois elle est revenue seule » — parce que suivre_sources_muettes cesse de
+# suivre une source rétablie et jette, à cette ligne, tout ce qu'elle savait
+# de l'épisode.
+#
+# LA RÈGLE QUI SÉPARE LES DEUX
+#
+#     sources_silence   est l'ÉTAT    : ce qui va mal en ce moment.
+#     sources_incidents est la MÉMOIRE : ce qui est allé mal et n'y va plus.
+#
+# Une panne EN COURS n'entre donc jamais dans le journal. L'y écrire en plus
+# créerait deux sources de vérité qui finiraient par se contredire, et
+# obligerait à réécrire une entrée ouverte à chaque passage.
+# ---------------------------------------------------------------------------
+
+# Trente jours, comme SILENT_SOURCE_DAYS : c'est déjà l'horizon du projet,
+# et le bloc affiché annonce une période.
+INCIDENTS_JOURS = 30
+
+# Ceinture, qui ne devrait jamais servir. Une source qui ALTERNE échec et
+# réussite ne ferme jamais son incident (REPRISE_CONFIRMEE remet le compteur
+# à zéro à chaque échec), donc le clignotement ne peut pas inonder le
+# journal. Le pire cas réel est une source qui tombe une fois puis réussit
+# deux fois, en boucle : ~16 entrées par jour, dont 100 couvrent six jours.
+INCIDENTS_MAX = 100
+
+
+def ajoute_incidents(journal, nouveaux, maintenant=None):
+    """Ajoute des incidents clos au journal, et l'élague. Rend le journal.
+
+    Élagué dans cet ordre : d'abord par l'âge, ensuite par le nombre. Le
+    plafond s'applique en dernier pour qu'un afflux d'incidents récents ne
+    puisse pas pousser dehors un incident d'hier au profit d'un d'il y a
+    trois semaines.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    limite = maintenant - timedelta(days=INCIDENTS_JOURS)
+    tout = list(journal or []) + list(nouveaux or [])
+    gardes = [i for i in tout
+              if i.get("fin") and parse_date_key(i["fin"]) >= limite]
+    gardes.sort(key=lambda i: i["fin"], reverse=True)
+    return gardes[:INCIDENTS_MAX]
+
+
 CACHE_DECODAGE_PATH = "decode-cache.json"
 
 

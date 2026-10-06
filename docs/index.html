@@ -5040,6 +5040,14 @@ function calculeStats(items, backend, maintenant, lecture){
     steriles: sante.filter(s => !(s.articles_exclusifs > 0) && s.status !== "en_attente")
       .map(s => s.name).sort((a, b) => a.localeCompare(b, "fr")),
     enBaisse: Object.keys((backend && backend.sources_declining) || {}).map(id => noms[id] || id),
+    // Les pannes CLOSES, publiées par le robot. À ne pas confondre avec
+    // `statuts`, qui dit ce qui va mal en ce moment : ici c'est ce qui est
+    // allé mal et n'y va plus. Le plus récent d'abord, le robot les range
+    // déjà ainsi.
+    incidents: ((backend && backend.sources_incidents) || [])
+      .filter(i => i && i.fin)
+      .map(i => ({ nom: i.nom || noms[i.source] || i.source,
+                   fin: i.fin, heures: i.heures, alertee: !!i.alertee })),
   };
 
   // ---- Le robot ----
@@ -5495,6 +5503,41 @@ function renderStatsSources(s){
       { nom: libelles.muette, n: src.statuts.muette || 0, couleur: "color-mix(in srgb, var(--danger) 55%, var(--bg-panel))" },
       { nom: libelles.cassee, n: src.statuts.cassee || 0, couleur: "var(--danger)" },
     ], "État des sources")));
+  // LE BLOC QUI S'AFFICHE MÊME VIDE, et c'est tout son intérêt.
+  //
+  // Le 05/10/2026 au soir j'ai annoncé à Antoni qu'une source rendait un
+  // flux vide « depuis deux passages » et qu'une alerte partirait. Les deux
+  // étaient faux : la panne datait de trois jours plus tôt, avait duré deux
+  // heures, et s'était réparée seule. Pour le savoir il avait fallu rejouer
+  // 120 versions de feed.json.
+  //
+  // « Aucun incident depuis 30 jours » est donc la ligne la plus utile de
+  // tout ce panneau : c'est l'affichage le plus fréquent, et celui qui
+  // m'aurait évité de me tromper. La masquer quand il n'y a rien reviendrait
+  // à ne rendre lisible que la mauvaise nouvelle.
+  //
+  // Le titre évite soigneusement les mots « État des sources » : les
+  // contrôles navigateur repèrent les blocs par leur texte, et deux blocs
+  // portant cette phrase casseraient leur sélecteur.
+  {
+    const inc = src.incidents;
+    const jour = f => { const d = new Date(f); return isNaN(d) ? "" :
+      d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", timeZone: "Europe/Paris" }); };
+    const duree = h => h == null ? "" :
+      (h < 1 ? Math.round(h * 60) + " min" : (h < 24 ? h + " h" : Math.round(h / 24) + " j"));
+    blocs.push(blocStats(`Incidents des 30 derniers jours${inc.length ? " (" + inc.length + ")" : ""}`,
+      inc.length
+        ? "Pannes de source terminées. Une source en difficulté en ce moment figure dans le bloc du dessus."
+        : "",
+      inc.length
+        ? listeStats(inc.map(i => `<li><span>${escapeHtml(i.nom)} · `
+            + `${escapeHtml(jour(i.fin))}, ${escapeHtml(duree(i.heures))}</span>`
+            + `<span class="stats-n">`
+            + (i.alertee ? "alerte envoyée" : "résolu seul")
+            + `</span></li>`))
+        : `<p class="stats-attente">Aucun incident depuis 30 jours.</p>`));
+  }
+
   if(src.productives.length){
     blocs.push(blocStats("Celles qui apportent le plus",
       "Articles qu'aucune autre source n'a remontés — les retirer les ferait perdre.",

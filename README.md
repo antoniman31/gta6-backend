@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1627
+qui permet de tester tout le pipeline sans sortir de la machine. **1649
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5694,6 +5694,116 @@ se consulte surtout depuis un téléphone, donc un Worker à déployer et un ét
 partagé qui peut diverger ne répondraient à rien. Le vrai risque restant — un
 navigateur qui nettoie ses données, un changement de téléphone — se couvre par
 un export de fichier, sans infrastructure.
+
+## Le journal des incidents — 06/10/2026
+
+Ce chantier vient d'une erreur que j'ai commise, et il existe pour qu'elle
+ne se refasse pas.
+
+### Ce que j'ai dit, et ce qui était vrai
+
+Le 05/10 au soir, j'ai annoncé à Antoni que `reddit-leaks` rendait un flux
+vide « depuis deux passages » et qu'une alerte Discord partirait le
+lendemain vers 18h. En rejouant **120 versions de `feed.json`** :
+
+| annoncé | réel |
+|---|---|
+| flux vide depuis deux passages | **un seul** passage muet sur 120 |
+| hier soir | le **02/10 à 00h02 UTC**, trois jours plus tôt |
+| une alerte va partir | `alertee: false` — aucune, et aucune possible |
+
+Rejouer l'historique Git était le **seul** moyen de le savoir. Le projet
+savait dire « elle va mal MAINTENANT » (`sources_health`) et « DEPUIS
+QUAND » (`sources_silence`). Il ne savait pas dire « elle est tombée deux
+fois ce mois-ci, et les deux fois elle est revenue seule ».
+
+La mémoire se perdait à une ligne précise de `suivre_sources_muettes` :
+
+```python
+if chrono["succes"] >= REPRISE_CONFIRMEE:
+    ...
+    continue          # l'incident disparaît pour toujours
+```
+
+À cet endroit le robot a tout sous la main — date de chute, date de retour,
+alerte ou non — puis il jette.
+
+### La règle qui sépare les deux
+
+```
+sources_silence    est l'ÉTAT     : ce qui va mal en ce moment.
+sources_incidents  est la MÉMOIRE : ce qui est allé mal et n'y va plus.
+```
+
+Une panne **en cours** n'entre donc jamais au journal. L'y écrire créerait
+deux sources de vérité qui finiraient par se contredire, et obligerait à
+réécrire une entrée ouverte à chaque passage.
+
+### Déduit, et non posé
+
+`incidents_termines()` ne vit pas dans `suivre_sources_muettes` : une source
+rétablie est exactement **celle qui était suivie avant et ne l'est plus
+après**. Le déduire du dehors évite de changer une signature qu'appellent
+six contrôles.
+
+Deux cas ressemblent à un rétablissement sans en être un, et les confondre
+écrirait des incidents imaginaires :
+
+- une **source au repos** (tour de rôle Reddit) garde son chronomètre dans
+  le suivi — elle n'en sort pas, donc elle n'est jamais vue comme revenue ;
+- une **source retirée de FEEDS** en sort sans être revenue de quoi que ce
+  soit. Elle n'a plus d'état dans `sources_health` : c'est ce qui la
+  distingue.
+
+### Le décodage compte comme une source
+
+`suit_le_decodage` a la même forme que `suivre_sources_muettes`, et perd son
+épisode de la même façon. Il entre au journal sous l'identifiant réservé
+`__decodage__` — deux soulignés, hors d'atteinte d'un identifiant de FEEDS.
+
+Sans lui, le journal aurait oublié **la panne du 03/10 : 62,2 heures, 851
+articles abîmés**, le plus gros incident de la vie du projet. Un journal
+d'incidents qui rate celui-là rate sa cible.
+
+### Rétention
+
+Trente jours (`INCIDENTS_JOURS`), plafonné à 100 (`INCIDENTS_MAX`), élagué
+par l'âge d'abord et par le nombre ensuite — pour qu'un afflux récent ne
+pousse pas dehors un incident d'hier au profit d'un d'il y a trois semaines.
+
+Le plafond ne devrait jamais servir : une source qui **alterne** échec et
+réussite ne ferme jamais son incident, puisque `REPRISE_CONFIRMEE` remet son
+compteur à zéro à chaque échec. Le clignotement ne peut donc pas inonder le
+journal.
+
+### Le bloc qui s'affiche même vide
+
+Dans les statistiques, rubrique Sources, juste après l'état courant :
+
+```
+Incidents des 30 derniers jours (2)
+Pannes de source terminées. Une source en difficulté en ce moment
+figure dans le bloc du dessus.
+
+  Reddit — fuites et rumeurs · 2 oct., 2 h        résolu seul
+  Décodage Google News · 6 oct., 3 j           alerte envoyée
+```
+
+Et quand il n'y a rien :
+
+```
+Incidents des 30 derniers jours
+Aucun incident depuis 30 jours.
+```
+
+**C'est cette dernière ligne qui justifie le chantier.** C'est l'affichage le
+plus fréquent, et c'est celui qui m'aurait évité de me tromper. La masquer
+quand il n'y a rien reviendrait à ne rendre lisible que la mauvaise
+nouvelle.
+
+Le titre évite soigneusement les mots « État des sources » : les contrôles
+navigateur repèrent les blocs par leur texte, et deux blocs portant cette
+phrase casseraient le sélecteur des autres. Un contrôle le vérifie.
 
 ## L'archive se charge mois par mois — 06/10/2026
 
