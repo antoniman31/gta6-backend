@@ -1126,8 +1126,16 @@ def test_officiel_strict_et_langues_rockstar():
         check(de not in [i["link"] for i in feed_store.lire_mois("2026-09", rep)],
               "et un article exclu qu'on lui tend n'y rentre pas")
     src = open("fetch_feeds.py", encoding="utf-8").read()
-    check("archiver(all_items, exclure=page_rockstar_hors_langue)" in src,
-          "main() archive avec l'exclusion")
+    # L'exclusion passée à archiver couvre les DEUX règles depuis le
+    # 06/10/2026 : la mauvaise langue d'une page Rockstar, et les pages de
+    # cours de jeton. L'archive n'a pas d'autre moyen d'oublier.
+    appel = src[src.index("mois_ecrits = feed_store.archiver("):]
+    appel = appel[:appel.index("\n    index_archives")]
+    check("exclure=" in appel and "page_rockstar_hors_langue" in appel,
+          "main() archive en excluant les pages Rockstar hors langue")
+    check("page_de_cotation_crypto" in appel,
+          "et les pages de cotation, sinon l'archive garderait ce que le fil "
+          "vient de retirer")
 
     # L'audit fait voir ce que la liste explicite ne connaît pas encore.
     import audit_donnees
@@ -3688,6 +3696,96 @@ def test_plafond_des_annonces_officielles():
           "sa carte de groupe dit combien (« %s »)" % cartes[-1]["title"][:40])
     check(cartes[-1]["description"].count("•") == 4,
           "et liste les annonces restantes plutôt que de les perdre")
+
+
+def test_suffixe_domaine_coupe_sans_apprentissage():
+    print("\n[fusion] le nom du média part même quand on ne l'a vu qu'une fois")
+    import fetch_feeds
+    from difflib import SequenceMatcher
+
+    # LE CAS DES DÉPÊCHES D'AGENCE. Une dépêche reprise par des dizaines de
+    # petits journaux locaux : chacun n'apparaît qu'une fois, donc aucun
+    # n'atteint SUFFIXE_MEDIA_MINIMUM, donc son nom restait dans le titre
+    # comparé. Mesuré le 06/10/2026 sur le fil réel, trois reprises du même
+    # article rataient la fusion à 0,747 contre un seuil de 0,75.
+    fetch_feeds.memorise_suffixes_medias([])        # rien d'appris, exprès
+
+    a = "Could GTA VI bring back casinos? - suncommercial.com"
+    b = "Could GTA VI bring back casinos? - newscentermaine.com"
+    ca, cb = fetch_feeds.titre_comparable(a), fetch_feeds.titre_comparable(b)
+    check(ca == cb == "could bring back casinos",
+          "deux reprises de la même dépêche donnent le MÊME titre comparé "
+          "(« %s » / « %s »)" % (ca, cb))
+    check(SequenceMatcher(None, ca, cb).ratio() >= fetch_feeds.SIMILARITY_THRESHOLD,
+          "donc elles franchissent le seuil, ce qu'elles ne faisaient pas")
+
+    # Et ce qui N'EST PAS un domaine reste en place tant qu'on ne l'a pas appris.
+    check(fetch_feeds.titre_comparable("GTA 6 cars - all 89 confirmed vehicles")
+          == "cars all 89 confirmed vehicles",
+          "un segment final qui est du CONTENU n'est pas coupé — sans ce "
+          "garde-fou, « GTA 6 cars » perdrait tout son sujet")
+    check(fetch_feeds.titre_comparable("GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE !")
+          .endswith("on découvre cela ensemble"),
+          "la série de RockstarMag garde sa fin : c'est elle qui distingue "
+          "ses épisodes, et titres_dune_meme_serie en dépend")
+
+    # Le garde-fou des suffixes protégés tient toujours.
+    fetch_feeds.memorise_suffixes_medias(
+        [{"title": "Un titre quelconque ici - Vice City"}] * 5)
+    check("vice city" in fetch_feeds.titre_comparable("Les radios - Vice City"),
+          "« Vice City » reste protégé : c'est la ville, pas un média")
+
+    # Un faux domaine ne doit pas passer pour un domaine.
+    fetch_feeds.memorise_suffixes_medias([])
+    check(fetch_feeds.titre_comparable("Le prix monte - 80 euros et 5.99 de plus")
+          != "le prix monte",
+          "une fin qui contient un point sans être un domaine n'est pas coupée")
+
+
+def test_pages_de_cotation_ecartees():
+    print("\n[filtre] une bourse de crypto n'est pas une source d'actualité")
+    import fetch_feeds
+
+    liens = [
+        "https://www.coinbase.com/price/rich-off-gta-6-solana-eitkygvu3gcyhkgf",
+        "https://www.okx.com/fr-fr/price/rich-off-gta-6-rich",
+        "https://www.binance.com/en/price/rich-off-gta-6",
+    ]
+    for lien in liens:
+        check(fetch_feeds.page_de_cotation_crypto(lien),
+              "écartée : %s" % lien.split("/")[2])
+    for lien in ("https://www.ign.com/articles/gta-6-price-explained",
+                 "https://www.gamespot.com/gta-6-collector-edition-400-price"):
+        check(not fetch_feeds.page_de_cotation_crypto(lien),
+              "gardé : %s" % lien.split("/")[2])
+
+    # CE QUE LA MESURE A FAIT ABANDONNER. Premier réflexe : écarter les
+    # titres contenant « price », « charts », « marketcap ». Sur le fil
+    # réel, 43 titres les contiennent et 41 sont légitimes — le prix de
+    # GTA 6 à 80 $, le coffret à 400 $, les audiences Netflix. Le filtre par
+    # mots-clés aurait supprimé l'un des sujets les plus chauds du moment.
+    # Le domaine, lui, ne se trompe pas.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    bloc = src[src.index("BOURSES_CRYPTO = "):src.index("def page_rockstar_hors_langue")]
+    for mot in ("price", "charts", "marketcap", "cours"):
+        check(('"%s"' % mot) not in bloc,
+              "le filtre ne juge pas sur le mot « %s »" % mot.strip())
+
+    # La passe rétroactive retire les quatre déjà entrés, et les « autres
+    # sources » qui pointeraient là aussi.
+    items = [
+        {"link": "https://www.ign.com/a", "title": "Vrai article",
+         "extraSources": [{"source": "OKX", "link": "https://www.okx.com/price/x"},
+                          {"source": "VGC", "link": "https://www.vgc.net/b"}]},
+        {"link": "https://www.coinbase.com/price/rich-off-gta-6", "title": "Cotation"},
+    ]
+    restants = fetch_feeds.retire_pages_hors_langue(items)
+    check(len(restants) == 1 and restants[0]["link"] == "https://www.ign.com/a",
+          "la page de cotation est retirée du fil")
+    check([x["source"] for x in restants[0]["extraSources"]] == ["VGC"],
+          "et elle ne reste pas non plus comme « autre source »")
+    check(fetch_feeds.retire_pages_hors_langue(restants) == restants,
+          "rejouée, la passe ne retire plus rien")
 
 
 def test_historique_entrees():
@@ -8173,6 +8271,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plafond_des_mots_rares,
            test_fusions_du_corpus_fige,
            test_plafond_des_annonces_officielles,
+           test_suffixe_domaine_coupe_sans_apprentissage,
+           test_pages_de_cotation_ecartees,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,

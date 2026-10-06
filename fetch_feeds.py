@@ -705,6 +705,31 @@ def lien_officiel(url, domaines):
 LANGUES_ROCKSTAR_ECARTEES = ("de", "mx")
 
 
+# Les plateformes d'échange de cryptomonnaies publient une page de cours
+# par jeton, et un jeton nommé « RICH OFF GTA 6 » suffit à faire entrer
+# Coinbase, OKX et Binance dans un fil d'actualité de jeu vidéo. Quatre
+# articles au 06/10/2026, et il y en aura d'autres : la spéculation sur le
+# nom d'un jeu s'intensifie à l'approche de sa sortie.
+#
+# LE FILTRE EST SUR LE DOMAINE, ET SEULEMENT SUR LUI. Mon premier réflexe
+# avait été d'écarter les titres contenant « price », « charts » ou
+# « marketcap ». Mesuré avant de l'écrire : 43 titres du fil les
+# contiennent, dont 41 parfaitement légitimes — le prix de GTA 6 à 80 $, le
+# coffret à 400 $, les audiences Netflix. Le filtre par mots-clés aurait
+# supprimé l'un des sujets les plus chauds du moment.
+#
+# Une bourse ne publie jamais d'article de jeu vidéo : le domaine ne se
+# trompe pas, là où le vocabulaire se trompait quarante et une fois.
+BOURSES_CRYPTO = ("coinbase.com", "okx.com", "binance.com", "coinmarketcap.com",
+                  "coingecko.com", "kucoin.com", "bybit.com", "crypto.com",
+                  "gate.io", "mexc.com", "bitget.com", "kraken.com")
+
+
+def page_de_cotation_crypto(url):
+    """Une page de cours de jeton, qui n'a rien d'un article."""
+    return sur_domaine(url or "", BOURSES_CRYPTO)
+
+
 def page_rockstar_hors_langue(url):
     """Une page du site de Rockstar dans une langue qu'on ne suit pas."""
     if not sur_domaine(url, ("rockstargames.com",)):
@@ -929,10 +954,59 @@ def memorise_suffixes_medias(items, minimum=SUFFIXE_MEDIA_MINIMUM):
     return _SUFFIXES_MEDIAS
 
 
+# Un segment final qui est un NOM DE DOMAINE nu : « suncommercial.com »,
+# « newscentermaine.com », « criticalhit.net ». Il est coupé sans attendre
+# de l'avoir vu trois fois, parce qu'un vrai bout de titre ne se termine
+# jamais par un domaine seul — le risque de couper du sens est nul.
+#
+# C'EST LE CAS DES DÉPÊCHES D'AGENCE, et c'est pour elles que cette règle
+# existe. Une dépêche AP ou Reuters est reprise par des dizaines de petits
+# titres qui n'apparaissent qu'une fois chacun dans le fil : le seuil
+# d'apprentissage de SUFFIXE_MEDIA_MINIMUM ne les atteint jamais, donc leur
+# nom restait dans le titre comparé et faisait diverger deux copies du même
+# article. Mesuré le 06/10/2026 : « Could GTA VI bring back casinos? » vu
+# chez trois journaux locaux ratait la fusion à 0,747 contre un seuil de
+# 0,75, uniquement à cause de ça.
+#
+# Gain mesuré sur le fil réel : 22 paires rapprochées -> 43, et AUCUN titre
+# réduit à moins de deux mots de plus qu'avant.
+_SUFFIXE_DOMAINE = re.compile(
+    r"^[\w.-]+\.(com|fr|net|org|io|co|ca|ch|be|tv|news|gg|info)$", re.I)
+
+
 def sans_suffixe_media(titre):
-    """Le titre sans son « - Nom du média » final, s'il en a un de connu."""
+    """Le titre sans son « - Nom du média » final, s'il en a un de reconnu.
+
+    Deux façons de le reconnaître, et pas une seule :
+
+    - il a été APPRIS sur l'historique (vu au moins SUFFIXE_MEDIA_MINIMUM
+      fois). C'est la règle d'origine, prudente par construction ;
+    - il est un nom de DOMAINE nu, auquel cas la fréquence n'a pas à entrer
+      en jeu — voir _SUFFIXE_DOMAINE.
+
+    Ce qui a été ESSAYÉ ET REFUSÉ : couper tout segment final, sans
+    condition. Il en ressort 60 paires au lieu de 43, mais sur les 618
+    segments vus une seule fois, cinq sont du vrai contenu :
+
+        « GTA 6 cars - all 89 confirmed vehicles »  -> « GTA 6 cars »
+        « GTA 6 - La collector en images »          -> « GTA 6 »
+        « Cover Reveal – Grand Theft Auto VI »      -> « Cover Reveal »
+        « DualSense PS5 – Édition spéciale GTA 6 »  -> la manette
+        « GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE ! »
+
+    Le dernier est le plus parlant : c'est la série de RockstarMag que
+    titres_dune_meme_serie existe justement pour tenir séparée. Couper ce
+    suffixe rendrait ses trois épisodes identiques et désarmerait le
+    garde-fou. Le minimum d'apprentissage est là pour ça.
+    """
     trouve = _SUFFIXE_MEDIA.search(titre or "")
-    if trouve and normalize_title(trouve.group(1)) in _SUFFIXES_MEDIAS:
+    if not trouve:
+        return titre
+    segment = trouve.group(1).strip()
+    if normalize_title(segment) in _SUFFIXES_PROTEGES:
+        return titre
+    if (normalize_title(segment) in _SUFFIXES_MEDIAS
+            or _SUFFIXE_DOMAINE.match(segment)):
         return titre[:trouve.start()]
     return titre
 
@@ -1686,6 +1760,9 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
 
         if page_rockstar_hors_langue(real_link):
             hors_langue += 1
+            continue
+
+        if page_de_cotation_crypto(real_link):
             continue
 
         # Les flux "officiels" sont en réalité des recherches Google News sur
@@ -2989,7 +3066,7 @@ def repare_langues(items):
 
 
 def retire_pages_hors_langue(items):
-    """Retire du fil les pages Rockstar dans une langue qu'on ne suit pas.
+    """Retire du fil ce qui n'y a pas sa place : mauvaise langue, cotation.
 
     La collecte les écarte depuis le 23/09/2026 ; cette passe retire celles
     qui étaient déjà entrées — la version allemande de l'annonce de l'album,
@@ -2997,19 +3074,26 @@ def retire_pages_hors_langue(items):
     anglais. Décidé par Antoni : l'anglais et le français seulement, y compris
     pour ce qui était déjà publié. L'article anglais, lui, reste.
 
+    S'y ajoutent depuis le 06/10/2026 les pages de cours de jeton — voir
+    BOURSES_CRYPTO. Quatre étaient entrées sous le nom d'un jeton « RICH OFF
+    GTA 6 », servies par Coinbase, OKX et Binance.
+
     Rend la liste filtrée : un article retiré ne doit plus être compté nulle
     part. Idempotente.
     """
     gardes = []
     retires = 0
     sources_retirees = 0
+    def ecartee(lien):
+        return page_rockstar_hors_langue(lien) or page_de_cotation_crypto(lien)
+
     for item in items:
-        if page_rockstar_hors_langue(item.get("link", "")):
+        if ecartee(item.get("link", "")):
             retires += 1
             continue
         autres = item.get("extraSources")
         if autres:
-            restent = [x for x in autres if not page_rockstar_hors_langue(x.get("link", ""))]
+            restent = [x for x in autres if not ecartee(x.get("link", ""))]
             if len(restent) != len(autres):
                 sources_retirees += len(autres) - len(restent)
                 if restent:
@@ -3018,9 +3102,9 @@ def retire_pages_hors_langue(items):
                     item.pop("extraSources", None)
         gardes.append(item)
     if retires or sources_retirees:
-        print(f"Correction rétroactive : {retires} page(s) Rockstar et "
-              f"{sources_retirees} « autre(s) source(s) » dans une autre langue "
-              f"que l'anglais ou le français retirée(s)")
+        print(f"Correction rétroactive : {retires} page(s) écartée(s) et "
+              f"{sources_retirees} « autre(s) source(s) » — mauvaise langue "
+              f"d'une page Rockstar, ou page de cours de jeton")
     return gardes
 
 
@@ -4129,7 +4213,10 @@ def main():
         print(f"  [archive] source_link retiré de {alleges_arch} article(s) "
               f"sur {len(mois_alleges)} mois")
 
-    mois_ecrits = feed_store.archiver(all_items, exclure=page_rockstar_hors_langue)
+    mois_ecrits = feed_store.archiver(
+        all_items,
+        exclure=lambda lien: (page_rockstar_hors_langue(lien)
+                              or page_de_cotation_crypto(lien)))
     index_archives = feed_store.ecrire_index_archives()
     if mois_ecrits:
         detail = ", ".join(f"{m} ({n})" for m, n in sorted(mois_ecrits.items(),

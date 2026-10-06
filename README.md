@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1669
+qui permet de tester tout le pipeline sans sortir de la machine. **1688
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5694,6 +5694,72 @@ se consulte surtout depuis un téléphone, donc un Worker à déployer et un ét
 partagé qui peut diverger ne répondraient à rien. Le vrai risque restant — un
 navigateur qui nettoie ses données, un changement de téléphone — se couvre par
 un export de fichier, sans infrastructure.
+
+## Deux reprises de la même dépêche, à 0,003 du seuil — 06/10/2026
+
+En comparant tous les titres deux à deux, 307 paires d'articles de sources
+DIFFÉRENTES se ressemblent sans être fusionnées. Les huit plus proches sont
+toutes la même actualité, et toutes entre **0,743 et 0,747** — contre un
+seuil de 0,75. Ce n'est pas une dispersion, c'est un mur.
+
+```
+0.747  Twitch CEO claims GTA 6 Online will launch in 2027 - TheSixthAxis
+       Twitch CEO says GTA 6 multiplayer will launch in 2027 - PC Gamer
+
+0.747  Could GTA VI bring back casinos? - Omaha World-Herald
+       Could GTA VI bring back casinos? - suncommercial.com
+```
+
+### La cause : le nom du média survit quand il est rare
+
+`_SUFFIXES_MEDIAS` s'apprend sur l'historique, avec un minimum de trois
+occurrences. Une **dépêche d'agence** est par nature reprise par des dizaines
+de petits titres qui n'apparaissent qu'une fois chacun : aucun n'atteint le
+minimum, leur nom reste dans le titre comparé, et c'est lui seul qui fait
+diverger deux copies du même article.
+
+Le correctif coupe aussi le segment final quand c'est un **nom de domaine
+nu** — `suncommercial.com`, `newscentermaine.com` — sans attendre de l'avoir
+vu trois fois. Un vrai bout de titre ne se termine jamais par un domaine
+seul, donc le risque de couper du sens est nul.
+
+**22 paires rapprochées → 43, et aucun titre réduit à moins de deux mots de
+plus qu'avant.**
+
+### Ce qui a été essayé et REFUSÉ
+
+Couper tout segment final, sans condition : 60 paires au lieu de 43. Mais
+sur les 618 segments vus une seule fois, cinq sont du vrai contenu :
+
+```
+« GTA 6 cars - all 89 confirmed vehicles »  ->  « GTA 6 cars »
+« GTA 6 - La collector en images »          ->  « GTA 6 »
+« Cover Reveal – Grand Theft Auto VI »      ->  « Cover Reveal »
+« DualSense PS5 – Édition spéciale GTA 6 »  ->  la manette
+« GTA 6 : UN LARGE APERÇU - ON DÉCOUVRE CELA ENSEMBLE ! »
+```
+
+Le dernier est le plus parlant : c'est la série de RockstarMag que
+`titres_dune_meme_serie` existe pour tenir séparée. Couper ce suffixe
+rendrait ses trois épisodes identiques et désarmerait le garde-fou. Le
+minimum d'apprentissage est là pour ça, et il reste.
+
+## Une bourse de crypto n'est pas une source d'actualité — 06/10/2026
+
+Un jeton nommé « RICH OFF GTA 6 » a suffi à faire entrer Coinbase, OKX et
+Binance dans le fil : quatre pages de cours, qui ne sont pas des articles.
+Il y en aura d'autres — la spéculation sur le nom d'un jeu s'intensifie à
+l'approche de sa sortie.
+
+**Le filtre est sur le DOMAINE, et seulement sur lui.** Le premier réflexe
+était d'écarter les titres contenant « price », « charts » ou « marketcap ».
+Mesuré avant de l'écrire : **43 titres du fil les contiennent, dont 41
+parfaitement légitimes** — le prix de GTA 6 à 80 $, le coffret à 400 $, les
+audiences Netflix. Le filtre par mots-clés aurait supprimé l'un des sujets
+les plus chauds du moment.
+
+Une bourse ne publie jamais d'article de jeu vidéo : le domaine ne se trompe
+pas, là où le vocabulaire se trompait quarante et une fois.
 
 ## Le robot passait 60 % de son temps sur deux fusions — 06/10/2026
 
