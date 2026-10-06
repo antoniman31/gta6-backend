@@ -1958,7 +1958,20 @@ def test_vignette_ouvre_larticle(nav, url):
             hrefTitre: titre ? titre.getAttribute('href') : null,
             ariaHidden: lien ? lien.getAttribute('aria-hidden') : null,
             tabindex: lien ? lien.getAttribute('tabindex') : null,
-            focalisables: [...carte.querySelectorAll('a[href]')].filter(x => x.tabIndex >= 0).length,
+            // Les liens focalisables qui mènent AU MÊME ARTICLE que le
+            // titre — c'est précisément ce que ce contrôle surveille : la
+            // vignette ne doit pas en ajouter un second, sans intitulé.
+            //
+            // Et non « tous les liens de la carte » : la ligne « + N autres
+            // sources » en porte un par rédaction, focalisables à dessein,
+            // et elle vit dans .card-top comme le reste. Compter la carte
+            // entière rendait le verdict dépendant du fil du jour — le
+            // 06/10/2026 la première carte à vignette a gagné une autre
+            // source, et ce contrôle est passé au rouge sans qu'une seule
+            // ligne de code ait bougé.
+            focalisables: [...carte.querySelectorAll('a[href]')]
+                .filter(x => x.tabIndex >= 0
+                             && x.getAttribute('href') === titre.getAttribute('href')).length,
             largeur: Math.round(r.width), hauteur: Math.round(r.height),
             // L'image doit rester l'enfant flex de .card-top : si l'ancre
             # produisait une boîte, la géométrie serait celle de l'ancre.
@@ -1977,7 +1990,7 @@ def test_vignette_ouvre_larticle(nav, url):
     check(info["ariaHidden"] == "true" and info["tabindex"] == "-1",
           "[vignette] le lien est retiré de l'arbre d'accessibilité")
     check(info["focalisables"] == 1,
-          "[vignette] la carte garde UN seul lien focalisable, celui du titre "
+          "[vignette] la vignette et le titre ne font qu'UN seul lien focalisable "
           "(obtenu : %d)" % info["focalisables"])
     # 16/9 à 390 px de large moins les marges : l'enveloppe ne doit rien
     # avoir changé à la géométrie. display:contents est là pour ça.

@@ -1,5 +1,72 @@
-feedparser==6.0.14
-requests==2.34.2
+# Dépendances du robot, TOUTES épinglées à la version exacte — y compris
+# celles qu'on n'installe pas soi-même.
+#
+# POURQUOI LA LISTE EST COMPLÈTE DEPUIS LE 06/10/2026
+#
+# Jusque-là, seules les cinq dépendances directes étaient épinglées. Les
+# autres — celles que pip tire derrière elles — prenaient la dernière
+# version publiée à chaque passage du robot. Onze paquets dans ce cas, et
+# c'est le douzième qui a cassé :
+#
+#   selectolax 1.0.0, publiée le 03/10/2026 à 15h23 UTC, retire son ancien
+#   moteur d'analyse (« Modest »). googlenewsdecoder en dépend sans borne
+#   haute (selectolax>=0.4.12) et importe précisément celui-là. L'import du
+#   décodeur lève donc ImportError, fetch_feeds l'attrape, HAS_DECODER passe
+#   à False, et le décodage Google News s'arrête — SILENCIEUSEMENT.
+#
+#   Premier passage en échec : 16h00 UTC le même jour. Trente-sept minutes
+#   après la publication sur PyPI. Trois jours plus tard, 394 articles
+#   pointaient vers news.google.com au lieu de leur site, et plus aucun
+#   article n'était reconnu comme officiel — le statut officiel se décide
+#   sur le domaine du lien DÉCODÉ (voir statut_officiel).
+#
+# Épingler les directes ne protège donc de rien : la version qui tourne
+# vraiment est celle du graphe entier. Ce fichier le fige en entier, et
+# Dependabot voit désormais ce qui est réellement installé plutôt qu'un
+# tiers de l'ensemble.
+#
+# POUR METTRE À JOUR : installer dans un environnement vide, vérifier que
+# `from googlenewsdecoder import gnewsdecoder` passe, puis `pip freeze`.
+
+# ---- Directes : ce que le robot importe lui-même -------------------------
 beautifulsoup4==4.15.0
+feedparser==6.0.14
 googlenewsdecoder==0.2.1
 pywebpush==2.5.0
+requests==2.34.2
+
+# ---- Indirectes : tirées par les cinq ci-dessus --------------------------
+# selectolax est la raison d'être de ce bloc. Elle reste SOUS la 1.0 tant
+# que googlenewsdecoder importe `selectolax.parser` : son dépôt n'a pas
+# bougé depuis le 21/09/2026 et aucune version corrigée n'est publiée.
+# À relever dès que le décodeur passera à `selectolax.lexbor`.
+selectolax==0.4.13
+
+aiohappyeyeballs==2.7.1
+aiohttp==3.14.4
+aiosignal==1.4.0
+anyio==4.15.1
+attrs==26.1.0
+certifi==2026.7.22
+cffi==2.1.1
+charset-normalizer==3.5.2
+cryptography==50.0.2
+feedparser-sgmllib==2.1.0
+frozenlist==1.8.0
+h11==0.16.0
+h2==4.4.1
+hpack==4.2.0
+http_ece==1.2.1
+httpcore==1.0.9
+httpx==0.28.1
+hyperframe==6.1.0
+idna==3.20
+multidict==6.9.1
+propcache==0.5.4
+py-vapid==1.9.4
+pycparser==3.0
+socksio==1.0.0
+soupsieve==2.10
+typing_extensions==4.16.0
+urllib3==2.8.0
+yarl==1.25.1
