@@ -3606,8 +3606,14 @@ def test_fusions_du_corpus_fige():
     avant = copy.deepcopy(corpus)
     restants = fetch_feeds.fusionne_ressemblances_de_titre(avant)
     absorbes = {i["link"] for i in avant} - {i["link"] for i in restants}
-    check(len(absorbes) == 8,
-          "les huit rapprochements connus sont retrouvés (%d)" % len(absorbes))
+    # NEUF, et pas huit depuis le 06/10/2026. Le corpus en rendait huit
+    # tant que SIMILARITY_THRESHOLD valait 0,75 ; l'abaisser à 0,72 en
+    # révèle un neuvième — le coffret à 400 $ chez IGN Nordic et chez
+    # consequence.net, publiés le même jour. C'est le test qui a signalé
+    # le changement, et c'est ce qu'on lui demande : le nombre est écrit en
+    # dur pour qu'un réglage ne puisse pas bouger ces fusions en silence.
+    check(len(absorbes) == 9,
+          "les neuf rapprochements connus sont retrouvés (%d)" % len(absorbes))
 
     # Nommément, pour qu'un échec dise LEQUEL a disparu.
     attendus = {
@@ -3623,6 +3629,9 @@ def test_fusions_du_corpus_fige():
           "le plus serré faisait disparaître")
     check(any("Lucia" in t for t in titres),
           "dont la reprise française d'un article anglais")
+    check(any("IGN Nordic" in t for t in titres),
+          "dont le coffret à 400 $ chez IGN Nordic et consequence.net — "
+          "celui que le seuil de 0,75 laissait passer")
 
     # Idempotence : le gardien ne disparaît jamais du fil, donc le passage
     # suivant reprend exactement la même décision.
