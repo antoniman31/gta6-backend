@@ -432,9 +432,28 @@ def main():
     # Une notification par annonce officielle, AVANT le récapitulatif : sur
     # un téléphone, la dernière arrivée est celle du dessus, et on veut que
     # ce soit le récapitulatif qui se range sous l'annonce, pas l'inverse.
-    for item in officiels:
+    # Au-delà du plafond, une seule notification pour le reste. La boucle
+    # était sans borne : dix annonces d'affilée faisaient dix réveils, et
+    # pendant la pause nocturne ce sont les SEULES qui passent. Voir
+    # feed_store.NOTIFS_OFFICIELLES_MAX.
+    detaillees = officiels[:feed_store.NOTIFS_OFFICIELLES_MAX]
+    groupees = officiels[feed_store.NOTIFS_OFFICIELLES_MAX:]
+    for item in detaillees:
         charge = build_payload_officiel(item)
         print(f"[push] annonce officielle : {charge['body'][:60]}")
+        envoyes, expires = send_all(subscriptions, charge, private_key,
+                                    ttl=TTL_OFFICIEL, urgence=URGENCE_HAUTE)
+        print(f"[push] {envoyes}/{len(subscriptions)} envoyée(s)"
+              + (f", {len(expires)} abonnement(s) expiré(s)" if expires else ""))
+    if groupees:
+        charge = {
+            "title": "🎮 Rockstar enchaîne les annonces",
+            "body": f"{len(groupees)} autre(s) annonce(s) officielle(s) — "
+                    + feed_store.libelle_officiel(groupees[0])[1],
+            "url": SITE_URL,
+            "tag": "officiels-groupes",
+        }
+        print(f"[push] {len(groupees)} annonce(s) groupée(s) : {charge['body'][:60]}")
         envoyes, expires = send_all(subscriptions, charge, private_key,
                                     ttl=TTL_OFFICIEL, urgence=URGENCE_HAUTE)
         print(f"[push] {envoyes}/{len(subscriptions)} envoyée(s)"

@@ -299,7 +299,11 @@ def send_official_alerts(officiels):
         return False
 
     envoyees = 0
-    for item in officiels:
+    # Au-delà du plafond, une seule carte pour le reste : dix annonces
+    # d'affilée feraient dix notifications. Voir NOTIFS_OFFICIELLES_MAX.
+    detaillees = officiels[:feed_store.NOTIFS_OFFICIELLES_MAX]
+    groupees = officiels[feed_store.NOTIFS_OFFICIELLES_MAX:]
+    for item in detaillees:
         entete, titre = feed_store.libelle_officiel(item)
         lien = (item.get("link") or "").strip()
         source = (item.get("source") or "Rockstar Games").strip()
@@ -313,7 +317,19 @@ def send_official_alerts(officiels):
         }
         if send_discord_with_retry(embed, f"officiel Rockstar — {titre[:40]}"):
             envoyees += 1
-    print(f"  [discord] {envoyees}/{len(officiels)} alerte(s) officielle(s) envoyée(s).")
+    if groupees:
+        embed = {
+            "title": f"+ {len(groupees)} autre(s) annonce(s) officielle(s)"[:250],
+            "url": SITE_URL,
+            "description": "\n".join(
+                f"• [{feed_store.libelle_officiel(i)[1][:70]}]({(i.get('link') or SITE_URL).strip()})"
+                for i in groupees)[:3800],
+            "color": COULEUR_OFFICIEL,
+        }
+        if send_discord_with_retry(embed, f"{len(groupees)} officiels groupés"):
+            envoyees += 1
+    print(f"  [discord] {envoyees} envoi(s) pour {len(officiels)} alerte(s) officielle(s)"
+          + (f", dont {len(groupees)} groupée(s)" if groupees else "") + ".")
     return envoyees > 0
 
 

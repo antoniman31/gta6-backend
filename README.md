@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1649
+qui permet de tester tout le pipeline sans sortir de la machine. **1669
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5694,6 +5694,114 @@ se consulte surtout depuis un téléphone, donc un Worker à déployer et un ét
 partagé qui peut diverger ne répondraient à rien. Le vrai risque restant — un
 navigateur qui nettoie ses données, un changement de téléphone — se couvre par
 un export de fichier, sans infrastructure.
+
+## Le robot passait 60 % de son temps sur deux fusions — 06/10/2026
+
+Chronométrage de chaque passe rétroactive, sur les 3 240 articles réels :
+
+```
+fusionne_ressemblances_de_titre    19 973 ms   ← 60 % du passage
+recheck_official_status                62 ms
+fusionne_doublons_de_titre             12 ms
+cap_items                               6 ms
+repare_noms_de_sources                  2 ms
+repare_attributions_croisees            1 ms
+deduplique_couverture                   0 ms
+repare_langues                          0 ms
+```
+
+Vingt secondes, sur un passage qui en dure trente-quatre, pour trouver
+**deux** articles à fusionner.
+
+### La cause
+
+Pas la génération des paires candidates — elle coûte 748 ms. La boucle de
+comparaison, sur **243 983 paires**. Et leur nombre grandit au carré :
+
+| titres | plafond de rareté | paires | comparaison |
+|---|---|---|---|
+| 500 | 75 | 8 404 | 782 ms |
+| 1 000 | 150 | 28 225 | 1 977 ms |
+| 2 000 | 300 | 111 443 | 8 033 ms |
+| 3 000 | 450 | **223 997** | **18 411 ms** |
+
+`FUSION_RETRO_MOT_COMMUN = 0.15` est un seuil **relatif** : « un mot présent
+dans plus de 15 % des titres ne désigne plus personne ». À 3 000 titres, un
+mot présent dans 450 comptait donc encore comme rare, et produisait à lui
+seul une centaine de milliers de paires.
+
+**Le filtre se desserrait à mesure que le fil grandissait**, exactement à
+l'envers de ce qu'on veut. Un mot dans 15 % des titres n'est rare à aucune
+échelle.
+
+### Le correctif, et son point de rupture
+
+`FUSION_RETRO_MOT_RARE_MAX = 80`, pris en `min` avec le relatif — sous 533
+titres, le relatif reste plus serré et rien ne change.
+
+La valeur vient d'une mesure, pas d'une intuition. La passe a été rejouée
+sur trois corpus en vérifiant à chaque fois que **les mêmes articles** sont
+fusionnés :
+
+| plafond | fil (3 240) | archive (3 635) | fil d'il y a 60 passages |
+|---|---|---|---|
+| relatif 15 % | 20 159 ms | 19 452 ms | 22 024 ms |
+| 120 | 4 177 ms ✓ | 3 746 ms ✓ | 4 422 ms ✓ |
+| **80** | **2 452 ms ✓** | **2 712 ms ✓** | **2 795 ms ✓** |
+| 60 | 1 674 ms ✓ | 1 710 ms ✓ | 2 151 ms ✓ |
+| 40 | 1 164 ms ✓ | 1 259 ms ✗ **perd une fusion** | 1 378 ms ✓ |
+
+À 40, l'archive perd un rapprochement réel — ScreenRant et GameRant sur le
+prochain jeu de Rockstar. 80 est le double de ce seuil.
+
+**Résultat : les huit passes rétroactives enchaînées passent de ~20,1 s à
+2,4 s, et le passage médian de 34 s à ~16 s.** Vingt-huit fois par jour.
+
+### Ce que la mesure a RASSURÉ
+
+`FUSION_RETRO_MAX = 3000` plafonne déjà le nombre de titres balayés : le
+coût n'explosait donc pas le jour de la sortie, il était borné. C'était ma
+crainte en commençant, et elle était infondée.
+
+### Deux gardes, parce qu'un seul ne suffisait pas
+
+`corpus_fusion.json` fige 700 articles réels — les 17 qui participent aux
+huit fusions connues, plus du remplissage. `test_fusions_du_corpus_fige`
+vérifie que les huit tiennent.
+
+**Mais ce corpus ne garde PAS le plafond, et c'est écrit dans le test.** À
+700 articles les fréquences de mots sont cinq fois plus basses que sur
+l'archive entière : même un plafond de 15 y conserve les huit fusions. Le
+corpus garde la LOGIQUE de rapprochement — règle des sources, interdit de
+chaînage, séries, minimum de mots — pas le réglage.
+
+Le plafond, lui, est tenu par `test_plafond_des_mots_rares`, qui fabrique
+1 000 titres synthétiques : deux mots partagés par 100 titres ne doivent
+apparier personne, deux mots partagés par 60 doivent toujours apparier. Il
+faut plus de 533 titres pour que le plafond absolu morde, et un corpus de
+cette taille se fabrique en trois lignes plutôt que de peser 200 Ko de plus.
+
+Le premier jet de ce contrôle était faux, d'ailleurs : 60 titres partageant
+tous les mêmes deux mots, en attendant qu'ils soient appariés. À 60 titres
+le seuil relatif vaut 9, donc un mot présent 60 fois était DÉJÀ écarté bien
+avant qu'on parle de plafond absolu — le contrôle vérifiait l'inverse de ce
+qu'il annonçait.
+
+## Une rafale d'annonces ne fait plus une rafale de réveils — 06/10/2026
+
+La boucle d'envoi des annonces officielles n'avait pas de borne : un
+article officiel, une notification, autant de fois qu'il le faut — dans
+`push_notify` comme dans `discord_notify`.
+
+Mesuré sur tout l'historique : **jamais plus de 3 dans une même heure, 4
+par jour**. Le problème était donc théorique, et c'est dit ici plutôt que
+gonflé. Mais de 0h à 5h, seules les annonces officielles réveillent le
+téléphone : une rafale de dix y passerait en entier.
+
+`NOTIFS_OFFICIELLES_MAX = 5` — au-delà, une seule notification groupée qui
+annonce le nombre et, côté Discord, liste les titres restants. Cinq, parce
+que c'est au-dessus de tout ce qu'on a jamais observé : le plafond ne se
+verra jamais, sauf le jour où il servira.
 
 ## Le journal des incidents — 06/10/2026
 
