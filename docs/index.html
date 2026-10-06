@@ -3486,6 +3486,12 @@ async function loadFullHistory(raison){
 let archiveIndex = null;
 let archiveChargee = false;
 let archiveEnCours = false;
+// Les mois réellement en mémoire. `archiveChargee` en découle : il vaut
+// vrai quand il ne manque plus rien. Les deux existent parce qu'ils ne
+// répondent pas à la même question — « ai-je TOUT ? » décide des
+// statistiques mensuelles, « qu'est-ce qui me manque ? » décide des
+// boutons.
+let moisCharges = new Set();
 
 function archiveUrlFrom(fullUrl, fichier){
   if(!fullUrl || !fullUrl.endsWith("feed.json")) return null;
@@ -3522,12 +3528,16 @@ function resteDeLarchive(){
   const total = archiveIndex.articles || 0;
   const enPlus = total - lastItems.length;
   if(enPlus <= 0) return null;
-  const mois = archiveIndex.mois;
+  // Ce qu'il reste à aller chercher, et pas l'archive entière : le
+  // chargement automatique en a déjà pris une partie, souvent la totalité.
+  const manquants = archiveIndex.mois.filter(m => !moisCharges.has(m.mois));
+  if(!manquants.length) return null;
   return {
     enPlus,
-    octets: mois.reduce((n, m) => n + (m.octets || 0), 0),
-    plusAncien: mois[mois.length - 1].mois,
-    plusRecent: mois[0].mois
+    manquants,
+    octets: manquants.reduce((n, m) => n + (m.octets || 0), 0),
+    plusAncien: manquants[manquants.length - 1].mois,
+    plusRecent: manquants[0].mois
   };
 }
 
@@ -3537,16 +3547,29 @@ function updateArchiveLine(){
   // Tant que la fenêtre elle-même est incomplète, proposer l'archive
   // mettrait deux boutons concurrents côte à côte pour le même geste.
   // « Tout charger » d'abord, l'archive ensuite.
-  const reste = (historyPartial || archiveChargee) ? null : resteDeLarchive();
+  const reste = historyPartial ? null : resteDeLarchive();
   if(!reste){
     el.style.display = "none";
     return;
   }
   el.style.display = "flex";
+  // UN BOUTON PAR MOIS, et pas seulement un bouton global.
+  //
+  // Le chargement automatique prend tout, donc cette ligne n'apparaît que
+  // lorsqu'il n'a pas abouti — réseau coupé, délai dépassé, onglet fermé
+  // trop tôt. C'est précisément le moment où tout redemander d'un coup a le
+  // plus de chances d'échouer encore, et où ne vouloir qu'un mois est
+  // légitime. L'index porte le poids de chaque mois : il a été écrit pour
+  // ça, il suffisait de s'en servir.
+  const unSeul = reste.manquants.length === 1;
   el.innerHTML = `<span>archive : ${reste.enPlus} de plus, ` +
     `${escapeHtml(reste.plusAncien)} → ${escapeHtml(reste.plusRecent)} ` +
     `(${poidsLisible(reste.octets)})</span>` +
-    `<button class="small" onclick="loadArchive()">Charger l'archive</button>`;
+    reste.manquants.map(m =>
+      `<button class="small" onclick="loadArchive('${escapeHtml(m.mois)}')">` +
+      `${escapeHtml(moisLisible(m.mois))} (${poidsLisible(m.octets || 0)})</button>`).join("") +
+    (unSeul ? "" :
+      `<button class="small" onclick="loadArchive()">Tout (${poidsLisible(reste.octets)})</button>`);
 }
 
 // Télécharge les mois, du plus récent au plus ancien, et fusionne par lien.
@@ -3560,24 +3583,32 @@ function updateArchiveLine(){
 //   - elle n'écrase jamais un article déjà affiché. Celui de la fenêtre est
 //     le plus à jour — il a pu gagner des sources ou une miniature depuis
 //     son archivage.
-async function loadArchive(){
-  if(archiveEnCours || archiveChargee) return;
+async function loadArchive(moisVoulu){
+  if(archiveEnCours) return;
+  // Sans argument : tout ce qui manque, comme avant. Avec : ce mois-là
+  // seulement. Le rattrapage automatique et le bouton « Tout » passent par
+  // la première forme, les boutons mensuels par la seconde.
+  const aPrendre = (archiveIndex.mois || [])
+    .filter(m => !moisCharges.has(m.mois) && (!moisVoulu || m.mois === moisVoulu));
+  if(!aPrendre.length) return;
   archiveEnCours = true;
   const el = document.getElementById("archiveLine");
-  if(el) el.innerHTML = "<span>Chargement de l'archive…</span>";
-  addLog("info", "Chargement de l'archive mensuelle…");
+  const quoi = moisVoulu ? moisLisible(moisVoulu) : "l'archive mensuelle";
+  if(el) el.innerHTML = `<span>Chargement de ${escapeHtml(quoi)}…</span>`;
+  addLog("info", `Chargement de ${quoi}…`);
 
   const connus = new Set(lastItems.map(i => i.link));
   const ajoutes = [];
   let echecs = 0;
   try{
-    for(const mois of (archiveIndex.mois || [])){
+    for(const mois of aPrendre){
+      let moisOk = true;
       for(const f of (mois.fichiers || [])){
         const url = archiveUrlFrom(settings.backendUrl, f.fichier);
         if(!url) continue;
         try{
           const rep = await fetchAvecDelai(avecAntiCache(url), BACKEND_TIMEOUT_MS);
-          if(!rep.ok){ echecs++; continue; }
+          if(!rep.ok){ echecs++; moisOk = false; continue; }
           const data = await rep.json();
           // Les articles sortis de la fenêtre n'existent plus QUE dans
           // l'archive : leur reprise de lien ne peut se faire qu'ici.
@@ -3607,8 +3638,12 @@ async function loadArchive(){
               favicon: faviconFor(item.link)
             });
           }
-        }catch(e){ echecs++; }
+        }catch(e){ echecs++; moisOk = false; }
       }
+      // Un mois n'est « à nous » que si TOUTES ses tranches sont arrivées.
+      // Le marquer sur une lecture partielle le retirerait des boutons, et
+      // ce qui manque ne serait plus jamais redemandé.
+      if(moisOk) moisCharges.add(mois.mois);
     }
 
     // Un mois manquant n'annule pas les autres : mieux vaut une archive
@@ -3620,10 +3655,13 @@ async function loadArchive(){
     lastItems = lastItems.concat(ajoutes);
     lastItems.sort(byDateDesc);
     saveLastItems();
-    archiveChargee = true;
+    // « Tout est là » reste ce qui commande les statistiques mensuelles :
+    // un mois manquant les fausserait. Il se déduit maintenant des mois
+    // réellement lus, au lieu d'être posé dès qu'une passe s'est terminée.
+    archiveChargee = (archiveIndex.mois || []).every(m => moisCharges.has(m.mois));
     addLog("ok", `Archive chargée — ${ajoutes.length} article(s) de plus` +
       (echecs ? `, ${echecs} fichier(s) illisible(s)` : "") + ".");
-    if(el) el.style.display = "none";
+    updateArchiveLine();
   }catch(e){
     addLog("fail", `Archive indisponible : ${escapeHtml(e.message || "erreur inconnue")}`);
     if(el) el.innerHTML = `<span>Archive indisponible.</span>` +
