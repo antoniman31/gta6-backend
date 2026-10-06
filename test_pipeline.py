@@ -3413,6 +3413,110 @@ def test_cache_de_decodage_hors_du_fil():
           "l'archive est allégée au même passage que le fil")
 
 
+def test_journal_des_incidents():
+    print("\n[sources] se souvenir d'une panne qui s'est réparée toute seule")
+    import fetch_feeds, feed_store
+    from datetime import datetime, timedelta, timezone
+
+    # Le scénario est celui du 02/10/2026, rejoué : reddit-leaks muette un
+    # passage, revenue au suivant, jamais alertée. Pour le savoir, il avait
+    # fallu rejouer 120 versions de feed.json — c'est ce que ce journal
+    # remplace.
+    t0 = datetime(2026, 10, 2, 0, 2, tzinfo=timezone.utc)
+
+    def sante(statut, sid="reddit-leaks", nom="Reddit — fuites et rumeurs"):
+        return [{"id": sid, "name": nom, "status": statut}]
+
+    suivi, alertes = fetch_feeds.suivre_sources_muettes(sante("muette"), {}, t0)
+    check(not alertes and suivi["reddit-leaks"]["succes"] == 0,
+          "la panne commence sans alerte : il faut 24 h pour en déclencher une")
+    check(fetch_feeds.incidents_termines(sante("muette"), {}, suivi, t0) == [],
+          "et rien n'est inscrit tant qu'elle dure — le journal est une "
+          "mémoire, pas un état")
+
+    # Deux passages réussis d'affilée : REPRISE_CONFIRMEE est atteint, la
+    # source quitte le suivi, et c'est là que tout se perdait.
+    t1 = t0 + timedelta(hours=1)
+    suivi1, _ = fetch_feeds.suivre_sources_muettes(sante("ok"), suivi, t1)
+    check(fetch_feeds.incidents_termines(sante("ok"), suivi, suivi1, t1) == [],
+          "une seule réussite ne clôt rien : la reprise doit être confirmée")
+    t2 = t0 + timedelta(hours=2)
+    suivi2, alertes2 = fetch_feeds.suivre_sources_muettes(sante("ok"), suivi1, t2)
+    finis = fetch_feeds.incidents_termines(sante("ok"), suivi1, suivi2, t2)
+    check(suivi2 == {} and not alertes2,
+          "la source est rétablie, et sans alerte puisqu'il n'y en avait pas eu")
+    check(len(finis) == 1 and finis[0]["source"] == "reddit-leaks",
+          "l'incident est inscrit au moment exact où le suivi l'oublie")
+    check(finis[0]["debut"] == t0.isoformat() and finis[0]["heures"] == 2.0,
+          "avec sa durée réelle (%s h)" % finis[0].get("heures"))
+    check(finis[0]["alertee"] is False,
+          "et marqué « résolu seul » — c'est CE détail que je n'avais pas su dire")
+    check(finis[0]["nom"] == "Reddit — fuites et rumeurs",
+          "le nom lisible est gardé : un identifiant ne se lit pas")
+
+    # Une panne longue, elle, a bien été annoncée.
+    longue = {"reddit-leaks": {"depuis": t0.isoformat(), "succes": 1, "alertee": True}}
+    t3 = t0 + timedelta(hours=30)
+    s3, _ = fetch_feeds.suivre_sources_muettes(sante("ok"), longue, t3)
+    f3 = fetch_feeds.incidents_termines(sante("ok"), longue, s3, t3)
+    check(f3 and f3[0]["alertee"] is True and f3[0]["heures"] == 30.0,
+          "une panne de 30 h est inscrite comme ayant été alertée")
+
+    # LES DEUX FAUX RÉTABLISSEMENTS, qui écriraient des incidents imaginaires.
+    repos = [{"id": "reddit-leaks", "name": "R", "status": "en_attente"}]
+    s4, _ = fetch_feeds.suivre_sources_muettes(repos, longue, t3)
+    check(fetch_feeds.incidents_termines(repos, longue, s4, t3) == [],
+          "une source au repos (tour de rôle) ne s'est PAS rétablie : on ne "
+          "l'a pas interrogée, on ne sait rien d'elle")
+    check(fetch_feeds.incidents_termines([], longue, {}, t3) == [],
+          "une source RETIRÉE de FEEDS non plus — elle sort du suivi sans "
+          "être revenue de quoi que ce soit")
+
+    # --- le décodage, compté comme une source à part entière -------------
+    casse = {"casse": True, "raison": "No module named 'selectolax.parser'",
+             "depuis": "2026-10-03T17:23:00+00:00"}
+    fin = datetime(2026, 10, 6, 7, 33, tzinfo=timezone.utc)
+    inc = fetch_feeds.incident_de_decodage(casse, {}, fin)
+    check(len(inc) == 1 and inc[0]["source"] == fetch_feeds.ID_DECODAGE,
+          "le décodage Google News entre au journal comme une source")
+    check(inc[0]["heures"] == 62.2,
+          "la panne du 03/10 y figure avec ses %s heures — l'incident le plus "
+          "grave du projet, que le journal aurait sinon oublié" % inc[0]["heures"])
+    check(fetch_feeds.incident_de_decodage(casse, casse, fin) == [],
+          "tant qu'il est cassé, rien n'est inscrit")
+    check(fetch_feeds.incident_de_decodage({}, {}, fin) == [],
+          "et un décodage qui va bien n'inscrit rien non plus")
+    check(fetch_feeds.ID_DECODAGE.startswith("__"),
+          "son identifiant est hors d'atteinte d'un vrai identifiant de source")
+
+    # --- la rétention ----------------------------------------------------
+    def inc_a(jours, n=0):
+        q = fin - timedelta(days=jours)
+        return {"source": "s%d" % n, "nom": "S", "debut": q.isoformat(),
+                "fin": q.isoformat(), "heures": 1.0, "alertee": False}
+
+    j = feed_store.ajoute_incidents([inc_a(40), inc_a(29, 1)], [inc_a(0, 2)], fin)
+    check([i["source"] for i in j] == ["s2", "s1"],
+          "au-delà de 30 jours, un incident sort du journal (%s)"
+          % [i["source"] for i in j])
+    check(j == sorted(j, key=lambda i: i["fin"], reverse=True),
+          "le plus récent d'abord : c'est celui qu'on vient lire")
+    gros = [inc_a(1, n) for n in range(150)]
+    check(len(feed_store.ajoute_incidents(gros, [], fin)) == feed_store.INCIDENTS_MAX,
+          "et le plafond de %d tient, au cas où une source clignoterait"
+          % feed_store.INCIDENTS_MAX)
+    check(feed_store.ajoute_incidents(None, [], fin) == [],
+          "un journal absent n'est pas une erreur : il se remplit tout seul")
+
+    # --- et le robot le publie ------------------------------------------
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    corps = src[src.index("def main("):]
+    check(corps.index("incidents_termines(") < corps.index("feed_store.ajoute_incidents("),
+          "les incidents sont relevés avant d'être versés au journal")
+    check('"sources_incidents": journal_incidents' in corps,
+          "le journal est publié dans feed.json")
+
+
 def test_historique_entrees():
     print("\n[sources] repérer une source qui se dégrade sans mourir")
     import fetch_feeds
@@ -7892,6 +7996,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_compteur_echecs_decodage,
            test_reparation_retroactive_du_decodage,
            test_cache_de_decodage_hors_du_fil,
+           test_journal_des_incidents,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,

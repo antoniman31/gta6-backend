@@ -2709,6 +2709,78 @@ def suit_le_decodage(tentatives, echecs, precedent, absent=None, maintenant=None
     return {}, [{"type": "decodage-ok", "heures": heures}]
 
 
+# Identifiant réservé au décodage Google News dans le journal d'incidents.
+#
+# Il n'est pas une source de FEEDS, mais il tombe comme une source, il est
+# suivi comme une source (suit_le_decodage a la même forme que
+# suivre_sources_muettes), et sa panne du 03/10/2026 — trois jours, 851
+# articles abîmés — est le plus gros incident que le projet ait connu. Un
+# journal d'incidents qui l'oublierait raterait sa cible.
+#
+# Les deux soulignés le mettent hors d'atteinte d'un vrai identifiant de
+# source : check_sources_sync vérifie que ceux de FEEDS sont uniques, aucun
+# ne peut prendre cette forme par accident.
+ID_DECODAGE = "__decodage__"
+
+NOM_DECODAGE = "Décodage Google News"
+
+
+def incidents_termines(health, silence_precedent, suivi, maintenant=None):
+    """Les pannes de source qui viennent de se CLORE, à ce passage.
+
+    Déduite plutôt que posée dans suivre_sources_muettes : une source
+    rétablie est exactement celle qui était suivie avant et ne l'est plus
+    après. Le calculer ici évite de changer la signature de cette
+    fonction-là, et donc de toucher aux six contrôles qui l'appellent.
+
+    Deux cas ne sont PAS des rétablissements, et les confondre ferait écrire
+    des incidents imaginaires :
+
+    - une source au repos (tour de rôle) garde son chronomètre dans `suivi`,
+      donc elle n'en sort pas. Le test `sid in suivi` suffit ;
+    - une source RETIRÉE de FEEDS sort du suivi sans être revenue de quoi
+      que ce soit. Elle n'a plus d'état dans `health` : c'est ce qui la
+      distingue.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    etats = {s["id"]: s for s in health}
+    finis = []
+    for sid, chrono in (silence_precedent or {}).items():
+        if sid in suivi or sid not in etats:
+            continue
+        debut = chrono.get("depuis")
+        if not debut:
+            continue
+        ecoule = maintenant - feed_store.parse_date_key(debut)
+        finis.append({"source": sid, "nom": etats[sid].get("name") or sid,
+                      "debut": debut, "fin": maintenant.isoformat(),
+                      "heures": round(ecoule.total_seconds() / 3600, 1),
+                      "alertee": bool(chrono.get("alertee"))})
+    return finis
+
+
+def incident_de_decodage(precedent, etat, maintenant=None):
+    """L'incident clos du décodage, s'il vient de se rétablir. [] sinon.
+
+    Même raisonnement qu'au-dessus, appliqué à suit_le_decodage : elle rend
+    un état vide au rétablissement, et jette ce qu'elle savait de la panne.
+    """
+    if not (precedent or {}).get("casse") or etat:
+        return []
+    maintenant = maintenant or datetime.now(timezone.utc)
+    debut = precedent.get("depuis")
+    if not debut:
+        return []
+    ecoule = maintenant - feed_store.parse_date_key(debut)
+    heures = round(ecoule.total_seconds() / 3600, 1)
+    return [{"source": ID_DECODAGE, "nom": NOM_DECODAGE, "debut": debut,
+             "fin": maintenant.isoformat(), "heures": heures,
+             # Le décodage n'a pas de seuil de 24 h : dès qu'il est jugé
+             # cassé, l'alerte part. Un incident de décodage est donc
+             # toujours un incident qui a été annoncé.
+             "alertee": True}]
+
+
 def write_source_alerts_file(alertes):
     """Dépose les alertes de source pour l'étape de notification."""
     if not SOURCE_ALERTS_FILE or not alertes:
@@ -3820,6 +3892,10 @@ def main():
     # d'un hoquet, et qui permet de n'alerter qu'une fois.
     sante = build_sources_health(all_items, feed_infos, new_counts)
     silence, alertes_sources = suivre_sources_muettes(sante, silence_precedent)
+    # Ce qui vient de se rétablir, AVANT que le suivi n'en perde la trace.
+    # C'est le seul endroit où l'épisode existe encore en entier : voir
+    # feed_store, section « Le journal des incidents ».
+    incidents_neufs = incidents_termines(sante, silence_precedent, silence)
     for a in alertes_sources:
         if a["type"] == "tombee":
             print(f"⚠️  Source tombée : {a['name']} — ne rapporte plus rien "
@@ -3831,6 +3907,13 @@ def main():
     etat_decodage, alertes_decodage = suit_le_decodage(
         tentatives_decodage(), echecs_decodage(),
         stored.get("decodage_etat"), DECODEUR_ABSENT)
+    incidents_neufs += incident_de_decodage(stored.get("decodage_etat"),
+                                            etat_decodage)
+    journal_incidents = feed_store.ajoute_incidents(
+        stored.get("sources_incidents"), incidents_neufs)
+    for i in incidents_neufs:
+        print(f"📓 Incident clos : {i['nom']} — {i['heures']} h"
+              + ("" if i["alertee"] else ", résolu seul, sans alerte"))
     for a in alertes_decodage:
         if a["type"] == "decodage-casse":
             print(f"⚠️  Décodage Google News TOMBÉ — {a['raison']}")
@@ -3937,6 +4020,9 @@ def main():
         # Permet à l'app de proposer les notifications push sans que la clé
         # soit codée en dur dans index.html : elle suit la configuration du
         # dépôt, et disparaît si le secret est retiré.
+        # La mémoire des pannes closes. `sources_silence` dit ce qui va mal
+        # maintenant ; ceci dit ce qui est allé mal et n'y va plus.
+        "sources_incidents": journal_incidents,
         "vapid_public_key": VAPID_PUBLIC_KEY,
         "items": all_items,
     }
