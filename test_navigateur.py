@@ -1206,6 +1206,93 @@ def test_heure_de_premiere_vue(nav, url):
     ctx.close()
 
 
+def test_reprise_des_liens_redecodes(nav, url):
+    """Un lien corrigé côté robot ne doit pas remettre l'article en non lu.
+
+    Du 03/10/2026 au 06/10, 453 articles sont entrés avec le lien du kiosque
+    Google News. Le robot les a re-décodés — mais tout l'état local est rangé
+    PAR LIEN. Sans reprise, les 453 redevenaient non lus ET « nouveaux » d'un
+    coup, badge compris.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    r = page.evaluate("""() => {
+      const KIOSQUE = "https://news.google.com/rss/articles/CBMiAAA";
+      const VRAI = "https://ign.com/gta6-trailer";
+      const AUTRE = "https://pcgamer.com/stable";
+
+      // L'état d'AVANT la correction : l'article est lu, il est connu, et la
+      // copie locale du fil le porte encore sous le lien du kiosque.
+      readSet = new Set([KIOSQUE, AUTRE]);
+      seenMap = { [KIOSQUE]: {title: "Trailer", date: "2026-10-04T10:00:00Z", vu: 1700000000000},
+                  [AUTRE]: {title: "Stable", date: "2026-10-04T09:00:00Z", vu: 1700000000001} };
+      lastItems = [{title: "Trailer", link: KIOSQUE, date: "2026-10-04T10:00:00Z",
+                    favicon: "kiosque"},
+                   {title: "Stable", link: AUTRE, date: "2026-10-04T09:00:00Z"}];
+      firstLoad = false;
+
+      // Ce que le robot publie APRÈS la réparation.
+      const bruts = [{title: "Trailer", link: VRAI, source_link: KIOSQUE,
+                      date: "2026-10-04T10:00:00Z"},
+                     {title: "Stable", link: AUTRE, date: "2026-10-04T09:00:00Z"}];
+      const bouges = migreLiensDecodes(bruts);
+
+      const apres = {
+        bouges: bouges,
+        luVrai: readSet.has(VRAI), luKiosque: readSet.has(KIOSQUE),
+        luAutre: readSet.has(AUTRE), tailleLus: readSet.size,
+        vuVrai: seenMap[VRAI] ? seenMap[VRAI].vu : null,
+        vuKiosque: !!seenMap[KIOSQUE],
+        titreVu: seenMap[VRAI] ? seenMap[VRAI].title : null,
+        liensLocaux: lastItems.map(i => i.link),
+        faviconRefait: lastItems[0].favicon !== "kiosque",
+        // La question qui compte : après reprise, l'article n'est plus
+        // « nouveau ». C'est findNewItems qui décide du badge.
+        nouveaux: findNewItems(bruts.map(i => ({...i}))).length,
+        // Et le stockage a suivi : un rechargement ne doit pas tout défaire.
+        lusStockes: JSON.parse(localStorage.getItem(STORAGE_PREFIX + "read-items-v1") || "[]"),
+      };
+      // Idempotence : rejouée sur la même réponse, elle ne doit rien casser.
+      apres.rejoue = migreLiensDecodes(bruts);
+      apres.luVraiApres = readSet.has(VRAI);
+      apres.tailleApres = readSet.size;
+      return apres;
+    }""")
+
+    check(r["luVrai"] and not r["luKiosque"],
+          "l'article lu l'est toujours, suivi jusqu'à sa nouvelle adresse")
+    check(r["luAutre"] and r["tailleLus"] == 2,
+          "rien n'est créé ni perdu : la reprise DÉPLACE, elle n'ajoute pas")
+    check(r["vuVrai"] == 1700000000000 and not r["vuKiosque"],
+          "l'heure de première vue suit aussi — sinon la statistique de délai repartirait de zéro")
+    check(r["titreVu"] == "Trailer", "et l'entrée déménage entière, pas seulement sa clé")
+    check(r["nouveaux"] == 0,
+          "l'article re-décodé n'est pas annoncé comme nouveau : c'est tout "
+          "l'objet de la reprise, 453 badges d'un coup sinon")
+    check(r["liensLocaux"][0] == "https://ign.com/gta6-trailer",
+          "la copie locale du fil suit, sinon la fusion le mettrait À CÔTÉ de son ancienne version")
+    check(r["faviconRefait"], "et son favicon est recalculé sur le nouveau domaine")
+    check(sorted(r["lusStockes"]) == sorted(["https://ign.com/gta6-trailer",
+                                             "https://pcgamer.com/stable"]),
+          "le tout est écrit sur le téléphone, pas seulement en mémoire")
+    check(r["rejoue"] == 0 and r["luVraiApres"] and r["tailleApres"] == 2,
+          "rejouée, la reprise ne fait plus rien : l'ancienne clé n'existe plus")
+
+    # Un article jamais lu ne doit pas DEVENIR lu au passage.
+    r2 = page.evaluate("""() => {
+      readSet = new Set(); seenMap = {}; lastItems = [];
+      migreLiensDecodes([{title: "X", link: "https://a.test/x",
+                          source_link: "https://news.google.com/rss/articles/X"}]);
+      return { lus: readSet.size, vus: Object.keys(seenMap).length };
+    }""")
+    check(r2["lus"] == 0 and r2["vus"] == 0,
+          "sur un état vide elle ne crée rien — elle ne marque jamais lu de sa propre initiative")
+    ctx.close()
+
+
 def test_stats_quatre_rubriques(nav, url):
     """Chaque statistique ajoutée le 23/09/2026, sur un fil dont on connaît la réponse."""
     ctx = nav.new_context(viewport={"width": 390, "height": 850})
@@ -2093,6 +2180,7 @@ def main():
             test_vue_statistiques(nav, url)
             test_entete_sans_vide(nav, url)
             test_heure_de_premiere_vue(nav, url)
+            test_reprise_des_liens_redecodes(nav, url)
             test_stats_quatre_rubriques(nav, url)
             test_officiel_et_filtres_etroits(nav, url)
             test_graphiques_detailles(nav, url)

@@ -819,9 +819,66 @@ def lire_mois(mois, repertoire=ARCHIVE_DIR):
     Au mieux : une tranche illisible est sautée plutôt que de faire échouer
     la lecture entière. C'est ce que veut un LECTEUR — l'app, l'audit —
     parce que la moitié d'un mois vaut mieux que rien. Ce n'est PAS ce que
-    veut celui qui va réécrire : lui doit passer par `_lire_tranches`.
+    veut celui qui va réécrire : lui doit passer par
+    `lire_mois_pour_reecriture`.
     """
     return _lire_tranches(mois, repertoire)[0]
+
+
+def lire_mois_pour_reecriture(mois, repertoire=ARCHIVE_DIR):
+    """Les articles d'un mois ET la liste des tranches illisibles.
+
+    Ce que `lire_mois` refuse de dire, et que doit savoir quiconque va
+    réécrire le mois : une tranche illisible n'est pas une tranche vide.
+    Réécrire sans le savoir remplacerait le mois par un sous-ensemble —
+    voir le garde-fou d'`archiver`, qui lit par ici pour cette raison.
+    """
+    return _lire_tranches(mois, repertoire)
+
+
+def mois_archives(repertoire=ARCHIVE_DIR):
+    """Les mois présents dans l'archive, du plus récent au plus ancien."""
+    if not os.path.isdir(repertoire):
+        return []
+    return sorted({nom.split(".")[0] for nom in os.listdir(repertoire)
+                   if nom.endswith(".json") and nom != "index.json"},
+                  reverse=True)
+
+
+def ecrire_mois(mois, items, repertoire=ARCHIVE_DIR, maintenant=None):
+    """Réécrit TOUTES les tranches d'un mois à partir de `items`. Rend leur nombre d'articles.
+
+    Sans égard pour ce qui s'y trouvait : l'appelant a déjà fusionné. Il
+    lui revient donc d'avoir lu le mois par `lire_mois_pour_reecriture` et
+    de s'être arrêté sur une tranche illisible.
+    """
+    ranges = sort_items(list(items))
+
+    # Les tranches se remplissent du plus RÉCENT au plus ancien, dans
+    # l'ordre du fil. La tranche nue est donc toujours celle qu'on veut
+    # d'abord, et un mois qui grossit ajoute une tranche à la fin sans
+    # redistribuer les précédentes.
+    tranches = [ranges[d:d + ARCHIVE_MAX_PAR_FICHIER]
+                for d in range(0, len(ranges), ARCHIVE_MAX_PAR_FICHIER)] or [[]]
+    for rang, tranche in enumerate(tranches):
+        write_feed({"mois": mois, "tranche": rang + 1,
+                    "tranches": len(tranches),
+                    "generated_at": _horodatage(maintenant),
+                    "items": tranche},
+                   os.path.join(repertoire, _nom_tranche(mois, rang)))
+
+    # Un mois qui a rétréci (déduplication rétroactive) laisserait traîner
+    # ses anciennes tranches, que l'index ne citerait plus mais que le site
+    # servirait encore.
+    rang = len(tranches)
+    while True:
+        reste = os.path.join(repertoire, _nom_tranche(mois, rang))
+        if not os.path.exists(reste):
+            break
+        os.remove(reste)
+        rang += 1
+
+    return len(ranges)
 
 
 def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None, exclure=None):
@@ -889,33 +946,7 @@ def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None, exclure=None):
             # produire un commit qui ne dit rien.
             continue
         fusion.update({i["link"]: i for i in neufs})
-        ranges = sort_items(list(fusion.values()))
-
-        # Les tranches se remplissent du plus RÉCENT au plus ancien, dans
-        # l'ordre du fil. La tranche nue est donc toujours celle qu'on veut
-        # d'abord, et un mois qui grossit ajoute une tranche à la fin sans
-        # redistribuer les précédentes.
-        tranches = [ranges[d:d + ARCHIVE_MAX_PAR_FICHIER]
-                    for d in range(0, len(ranges), ARCHIVE_MAX_PAR_FICHIER)] or [[]]
-        for rang, tranche in enumerate(tranches):
-            write_feed({"mois": mois, "tranche": rang + 1,
-                        "tranches": len(tranches),
-                        "generated_at": _horodatage(maintenant),
-                        "items": tranche},
-                       os.path.join(repertoire, _nom_tranche(mois, rang)))
-
-        # Un mois qui a rétréci (déduplication rétroactive) laisserait
-        # traîner ses anciennes tranches, que l'index ne citerait plus mais
-        # que le site servirait encore.
-        rang = len(tranches)
-        while True:
-            reste = os.path.join(repertoire, _nom_tranche(mois, rang))
-            if not os.path.exists(reste):
-                break
-            os.remove(reste)
-            rang += 1
-
-        ecrits[mois] = len(ranges)
+        ecrits[mois] = ecrire_mois(mois, fusion.values(), repertoire, maintenant)
     return ecrits
 
 
@@ -930,9 +961,7 @@ def ecrire_index_archives(repertoire=ARCHIVE_DIR, maintenant=None):
     if not os.path.isdir(repertoire):
         return {"mois": []}
 
-    mois_vus = sorted({nom.split(".")[0] for nom in os.listdir(repertoire)
-                       if nom.endswith(".json") and nom != "index.json"},
-                      reverse=True)
+    mois_vus = mois_archives(repertoire)
     entrees = []
     for mois in mois_vus:
         fichiers = []

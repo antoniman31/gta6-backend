@@ -2990,6 +2990,233 @@ def repare_attributions_croisees(items):
     return items
 
 
+# Vignette que Google News sert à la place de celle de l'article : la même
+# pour tous, reconnaissable à son hôte. Un article qui la porte n'a pas de
+# vraie miniature, il a celle du kiosque.
+VIGNETTE_GOOGLE_NEWS = "lh3.googleusercontent.com"
+
+# Budget de temps de la repasse de décodage, en secondes. Antoni a demandé
+# « tout d'un coup » (06/10/2026) plutôt que par petits lots ; ce budget est
+# le filet qui va avec. Le workflow coupe le job à 20 minutes, et un job
+# coupé ne publie RIEN — ni les articles du jour, ni les réparations déjà
+# faites. Mieux vaut en réparer 300 et publier que 453 et tout perdre. Ce
+# qui dépasse repart au passage suivant, puisque rien n'est mis en cache
+# tant que le décodage échoue.
+BUDGET_REDECODAGE_S = 300
+
+
+def redecode_liens_stockes(items, decoded_cache=None, budget_s=BUDGET_REDECODAGE_S,
+                           horloge=time.monotonic):
+    """Re-décode les liens restés sur news.google.com dans l'historique.
+
+    Entre le 03/10/2026 17h23 et le 06/10 07h33, selectolax 1.0 a rendu le
+    décodeur inimportable et 453 articles sont entrés avec leur lien de
+    kiosque au lieu de celui de l'article (voir requirements.txt). Ils ne
+    repassent jamais par la collecte : sans cette passe, ils garderaient
+    pour toujours le mauvais lien, le favicon de Google au lieu de celui du
+    média, et sa vignette grise.
+
+    Ce qu'elle fait pour chaque lien re-décodé :
+
+    - l'ancien lien part dans `source_link`. Ce n'est pas de l'archivage :
+      l'app s'en sert pour retrouver l'article dans ce qui est déjà lu, et
+      ne pas remettre 453 articles en « non lus ». Le champ existe déjà et
+      sert déjà au cache de décodage, rien de nouveau n'est publié ;
+    - la vignette du kiosque est effacée, pour que la récupération de
+      miniatures qui tourne plus loin aille chercher la vraie sur la page.
+
+    Le statut officiel n'est PAS recalculé ici : recheck_official_status
+    s'en charge au même passage, et c'est son travail. Cette passe lui rend
+    simplement des liens sur lesquels il peut enfin se prononcer.
+
+    Rend (items, nombre réparé, articles privés de leur vignette). La
+    dernière liste est à passer à fetch_missing_images : elle ne regarde
+    d'ordinaire que les articles NEUFS, et ceux-ci sont de l'historique —
+    sans elle, ils resteraient sans miniature pour toujours.
+
+    Idempotente : un article déjà décodé n'a plus de lien news.google.com,
+    donc plus rien à faire.
+    """
+    a_reparer = [i for i in items if "news.google.com" in (i.get("link") or "")]
+    if not a_reparer:
+        return items, 0, []
+
+    debut = horloge()
+    sans_vignette = []
+    repares = 0
+    restants = len(a_reparer)
+    # Par paquets, pour rendre la main entre deux : le budget ne peut être
+    # vérifié qu'entre deux lots, pas au milieu d'un appel réseau.
+    PAQUET = 40
+    for depart in range(0, len(a_reparer), PAQUET):
+        if horloge() - debut >= budget_s:
+            print(f"  [redécodage] budget de {budget_s} s atteint — "
+                  f"{restants} article(s) repris au passage suivant")
+            break
+        lot = a_reparer[depart:depart + PAQUET]
+        resolus = predecode_links([i["link"] for i in lot], decoded_cache)
+        avant = repares
+        for item in lot:
+            vrai = resolus.get(item["link"])
+            if not vrai or vrai == item["link"]:
+                continue
+            item["source_link"] = item["link"]
+            item["link"] = vrai
+            if VIGNETTE_GOOGLE_NEWS in (item.get("image") or ""):
+                item["image"] = None
+                sans_vignette.append(item)
+            repares += 1
+            restants -= 1
+        # Rien de réparé sur tout un paquet : Google refuse (limitation, ou
+        # panne). Insister sur 400 liens ne ferait qu'aggraver le refus et
+        # brûler le passage — on s'arrête, le suivant reprendra.
+        if repares == avant:
+            print("  [redécodage] aucun lien résolu sur ce lot — arrêt, "
+                  "reprise au passage suivant")
+            break
+
+    if repares:
+        print(f"Correction rétroactive : {repares} lien(s) Google News re-décodé(s) "
+              f"— l'ancien lien est conservé pour retrouver les articles déjà lus")
+        if sans_vignette:
+            print(f"  dont {len(sans_vignette)} vignette(s) de kiosque effacée(s), "
+                  f"à remplacer par la vraie")
+    return items, repares, sans_vignette
+
+
+# L'archive a sa propre enveloppe de temps, plus courte : l'essentiel de son
+# travail est GRATUIT (les liens du fil, déjà résolus au-dessus, lui sont
+# donnés par le cache), et il ne lui reste à décoder que les articles sortis
+# de la fenêtre — 55 sur 453 au 06/10/2026.
+BUDGET_REDECODAGE_ARCHIVE_S = 90
+
+
+def redecode_archives(decoded_cache=None, liens_du_fil=(),
+                      repertoire=feed_store.ARCHIVE_DIR,
+                      budget_s=BUDGET_REDECODAGE_ARCHIVE_S,
+                      horloge=time.monotonic, maintenant=None,
+                      cherche_miniatures=None):
+    """Applique la même réparation que redecode_liens_stockes à l'archive.
+
+    Pourquoi une passe séparée plutôt que de laisser `archiver` recopier le
+    fil réparé : l'archive garde ce que le fil a perdu. Au 06/10/2026 elle
+    comptait 453 liens de kiosque contre 398 dans le fil — les 55 autres ne
+    sont plus nulle part ailleurs, et aucune autre passe ne viendrait
+    jamais les chercher.
+
+    Et sans elle, la réparation du fil ABÎMERAIT l'archive : `archiver`
+    fusionne par lien. Un article dont le lien change y entrerait une
+    seconde fois sous son vrai lien, à côté de sa copie restée sous le lien
+    news.google.com, que plus rien ne viendrait retirer. Cette passe
+    corrige la copie archivée EN PLACE, donc la fusion retrouve sa clé.
+
+    `liens_du_fil` sert à ne pas payer deux fois les miniatures : un
+    article encore dans le fil verra sa copie d'archive écrasée par celle
+    du fil quelques lignes plus loin, c'est là qu'elle est cherchée.
+
+    Rend (nombre réparé, mois réécrits). Idempotente, et soumise au même
+    garde-fou que tout ce qui réécrit l'archive : un mois dont une tranche
+    est illisible n'est pas touché.
+    """
+    if cherche_miniatures is None:
+        cherche_miniatures = fetch_missing_images
+    cache = decoded_cache if decoded_cache is not None else {}
+    liens_du_fil = set(liens_du_fil)
+
+    debut = horloge()
+    total = 0
+    reecrits = {}          # mois -> articles, gardés pour ne pas relire le disque
+    vignettes_a_chercher = []
+    for mois in feed_store.mois_archives(repertoire):
+        items, illisibles = feed_store.lire_mois_pour_reecriture(mois, repertoire)
+        if illisibles:
+            print(f"  [archive] {mois} NON re-décodé : tranche(s) illisible(s) "
+                  f"({', '.join(illisibles)})")
+            continue
+        a_reparer = [i for i in items if "news.google.com" in (i.get("link") or "")]
+        if not a_reparer:
+            continue
+
+        # Le cache d'abord, et sans regarder l'horloge : ce sont les liens
+        # que le fil vient de résoudre, ils ne coûtent rien.
+        resolus = {}
+        restants = []
+        for item in a_reparer:
+            vrai = cache.get(item["link"])
+            if vrai and vrai != item["link"]:
+                resolus[item["link"]] = vrai
+            else:
+                restants.append(item)
+
+        # Puis le réseau, pour ce que le fil n'a pas vu passer.
+        PAQUET = 40
+        for depart in range(0, len(restants), PAQUET):
+            if horloge() - debut >= budget_s:
+                print(f"  [archive] budget de {budget_s} s atteint — "
+                      f"{len(restants) - depart} article(s) au passage suivant")
+                break
+            lot = restants[depart:depart + PAQUET]
+            gagnes = {brut: vrai
+                      for brut, vrai in predecode_links([i["link"] for i in lot], cache).items()
+                      if vrai and vrai != brut}
+            resolus.update(gagnes)
+            if not gagnes:
+                print("  [archive] aucun lien résolu sur ce lot — arrêt")
+                break
+
+        if not resolus:
+            continue
+
+        # La refusion par lien n'est pas décorative : deux liens de kiosque
+        # différents peuvent mener au même article, et ils feraient alors
+        # doublon sous la même clé.
+        fusion = {}
+        repares = 0
+        for item in items:
+            vrai = resolus.get(item.get("link"))
+            if vrai:
+                item["source_link"] = item["link"]
+                item["link"] = vrai
+                if VIGNETTE_GOOGLE_NEWS in (item.get("image") or ""):
+                    item["image"] = None
+                    # Un article encore dans le fil verra sa copie d'archive
+                    # écrasée par celle du fil quelques lignes plus loin :
+                    # c'est là que sa miniature est cherchée, pas ici.
+                    if vrai not in liens_du_fil:
+                        vignettes_a_chercher.append(item)
+                repares += 1
+            if item.get("link"):
+                fusion[item["link"]] = item
+
+        ranges = feed_store.sort_items(list(fusion.values()))
+        feed_store.ecrire_mois(mois, ranges, repertoire, maintenant)
+        reecrits[mois] = ranges
+        total += repares
+        doublons = len(items) - len(fusion)
+        detail = f", {doublons} doublon(s) ainsi révélé(s)" if doublons else ""
+        print(f"  [archive] {mois} : {repares} lien(s) re-décodé(s){detail}")
+
+    # Les miniatures APRÈS l'écriture des mois, et c'est délibéré : si le
+    # job est coupé pendant cette recherche, l'archive est déjà réparée et
+    # le passage suivant n'a plus que les miniatures à finir. Dans l'autre
+    # ordre, tout serait à refaire.
+    if vignettes_a_chercher:
+        print(f"\n  [archive] {len(vignettes_a_chercher)} article(s) sortis du fil "
+              f"à pourvoir d'une vraie miniature")
+        if cherche_miniatures(vignettes_a_chercher):
+            # `items` sont les objets eux-mêmes : ils portent déjà la
+            # miniature trouvée, il suffit de réécrire les mois concernés.
+            trouves = {id(i) for i in vignettes_a_chercher if i.get("image")}
+            for mois, items in reecrits.items():
+                if any(id(i) in trouves for i in items):
+                    feed_store.ecrire_mois(mois, items, repertoire, maintenant)
+
+    if total:
+        print(f"Correction rétroactive de l'archive : {total} lien(s) re-décodé(s) "
+              f"sur {len(reecrits)} mois ({', '.join(sorted(reecrits))})")
+    return total, sorted(reecrits)
+
+
 def recheck_official_status(items):
     """Recalcule les drapeaux d'onglet sur les articles déjà stockés.
 
@@ -3371,6 +3598,9 @@ def main():
     existing_items = repare_langues(existing_items)
     existing_items = retire_pages_hors_langue(existing_items)
     existing_items = repare_attributions_croisees(existing_items)
+    # Avant recheck_official_status, qui juge sur le domaine du lien : lui
+    # donner les liens réparés, sinon il se prononcerait sur news.google.com.
+    existing_items, _redecodes, vignettes_perdues = redecode_liens_stockes(existing_items)
     existing_items = recheck_official_status(existing_items)
     existing_items = deduplique_couverture(existing_items)
     existing_items = fusionne_doublons_de_titre(existing_items)
@@ -3563,7 +3793,12 @@ def main():
 
     # Les miniatures ne sont cherchées qu'ici, sur les seuls articles
     # réellement retenus — et non plus sur tout ce que chaque flux renvoie.
-    fetch_missing_images(newly_added)
+    #
+    # `vignettes_perdues` est l'exception à « jamais sur l'historique » :
+    # ce sont les articles dont redecode_liens_stockes vient d'effacer la
+    # vignette du kiosque Google. Ils n'ont plus d'image du tout, et sans
+    # cette ligne rien ne viendrait leur en chercher une.
+    fetch_missing_images(newly_added + vignettes_perdues)
 
     # État des sources, puis cumul des passages muets. L'état seul ne dit
     # que « muette maintenant » ; c'est le cumul qui distingue une panne
@@ -3712,6 +3947,12 @@ def main():
     # avance d'un passage sur la fenêtre que l'inverse : dans un sens il n'y
     # a rien à réparer, dans l'autre des articles élagués n'existeraient
     # plus nulle part.
+    # L'archive garde ce que le fil a perdu : elle a ses propres articles
+    # mal décodés, que personne d'autre ne viendrait réparer. À faire AVANT
+    # la fusion ci-dessous, qui se fait par lien — voir redecode_archives.
+    redecode_archives(decoded_cache, liens_du_fil={i["link"] for i in all_items
+                                                   if i.get("link")})
+
     mois_ecrits = feed_store.archiver(all_items, exclure=page_rockstar_hors_langue)
     index_archives = feed_store.ecrire_index_archives()
     if mois_ecrits:

@@ -2399,6 +2399,84 @@ async function saveRead(){
   try{ storageSet("read-items-v1", JSON.stringify([...readSet])); }
   catch(e){ console.error("Erreur sauvegarde read", e); }
 }
+
+// ---------- Reprise des liens re-décodés ----------
+//
+// Du 03/10/2026 17h23 au 06/10 07h33, le décodeur de liens Google News du
+// robot était en panne (voir requirements.txt) : 453 articles sont entrés
+// avec le lien du KIOSQUE — news.google.com/rss/articles/… — au lieu de
+// celui de l'article. Le robot les a re-décodés depuis.
+//
+// Mais tout l'état local est rangé PAR LIEN : les articles lus, les
+// articles déjà vus, la copie locale du fil. Changer un lien côté serveur
+// revient donc, vu d'ici, à remplacer un article par un autre. Sans cette
+// reprise, les 453 redeviendraient non lus ET « nouveaux » d'un coup —
+// badge compris.
+//
+// `source_link` porte l'ancien lien, et il était déjà publié : il suffit à
+// suivre. La reprise ne CRÉE jamais rien, elle ne fait que déplacer ce qui
+// existe, ce qui la rend sûre et idempotente — au passage suivant
+// l'ancienne clé n'existe plus, il n'y a plus rien à déplacer.
+//
+// Elle sert au-delà de cette panne : `source_link` est posé à chaque fois
+// qu'un lien Google News est résolu, donc toute correction future de lien
+// sera reprise de la même façon, sans rien à écrire.
+function migreLiensDecodes(bruts){
+  const corresp = new Map();
+  for(const item of (bruts || [])){
+    if(item && item.source_link && item.link && item.source_link !== item.link){
+      corresp.set(item.source_link, item.link);
+    }
+  }
+  if(!corresp.size) return 0;
+
+  let lus = 0, vus = 0, locaux = 0;
+  for(const [avant, apres] of corresp){
+    if(readSet.has(avant)){
+      readSet.delete(avant);
+      readSet.add(apres);
+      lus++;
+    }
+    if(seenMap[avant]){
+      // Jamais d'écrasement : si le nouveau lien est déjà connu, c'est son
+      // entrée qui est juste — elle porte l'heure de première vue réelle.
+      if(!seenMap[apres]) seenMap[apres] = seenMap[avant];
+      delete seenMap[avant];
+      vus++;
+    }
+  }
+  // La copie locale du fil aussi, sinon la fusion du fichier allégé
+  // ajouterait l'article corrigé À CÔTÉ de son ancienne version au lieu de
+  // la remplacer : elle fusionne par lien, elle aussi.
+  //
+  // Et s'il s'y trouve DÉJÀ sous son vrai lien, la vieille entrée est
+  // RETIRÉE plutôt que renommée. Ce cas n'est pas théorique : la panne a
+  // fait entrer plusieurs articles deux fois, une fois décodés et une fois
+  // non, et les renommer tous les deux fabriquerait exactement le doublon
+  // qu'on cherche à faire disparaître. Mesuré sur le fil réel : 15.
+  const dejaLa = new Set(lastItems.map(i => i.link));
+  const garde = [];
+  for(const item of lastItems){
+    const apres = corresp.get(item.link);
+    if(!apres){ garde.push(item); continue; }
+    locaux++;
+    if(dejaLa.has(apres)) continue;
+    dejaLa.add(apres);
+    item.link = apres;
+    item.favicon = faviconFor(apres);
+    garde.push(item);
+  }
+  if(locaux) lastItems = garde;
+
+  if(lus) saveRead();
+  if(vus) saveSeen();
+  if(locaux) saveLastItems();
+  if(lus || vus || locaux){
+    addLog("info", `Liens corrigés côté robot : ${lus} article(s) lu(s) et ` +
+      `${vus} déjà vu(s) suivis jusqu'à leur nouvelle adresse.`);
+  }
+  return lus + vus + locaux;
+}
 function saveLastItems(){
   try{
     const garde = lastItems.slice(0, MAX_PERSISTED_ITEMS);
@@ -3217,6 +3295,10 @@ async function applyBackendData(data, sourceUrl){
     }
   }
 
+  // AVANT la projection, qui ne garde pas `source_link`, et avant
+  // findNewItems, qui déclarerait « nouveaux » les articles re-décodés.
+  migreLiensDecodes(data.items);
+
   const all = (data.items || []).map(item => ({
     title: item.title,
     link: item.link,
@@ -3497,6 +3579,16 @@ async function loadArchive(){
           const rep = await fetchAvecDelai(avecAntiCache(url), BACKEND_TIMEOUT_MS);
           if(!rep.ok){ echecs++; continue; }
           const data = await rep.json();
+          // Les articles sortis de la fenêtre n'existent plus QUE dans
+          // l'archive : leur reprise de lien ne peut se faire qu'ici.
+          // `connus` a été bâti sur les liens d'AVANT : la reprise vient
+          // d'en changer, il citerait des adresses que plus rien ne porte
+          // et laisserait entrer l'article corrigé une seconde fois.
+          if(migreLiensDecodes(data.items)){
+            connus.clear();
+            lastItems.forEach(i => connus.add(i.link));
+            ajoutes.forEach(i => connus.add(i.link));
+          }
           for(const item of (data.items || [])){
             if(!item.link || connus.has(item.link)) continue;
             connus.add(item.link);

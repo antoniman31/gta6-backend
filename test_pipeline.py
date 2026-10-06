@@ -1904,10 +1904,28 @@ def test_miniatures_seulement_sur_les_nouveaux():
     # La fonction ne reçoit que newly_added : un article n'y passe qu'une
     # fois dans sa vie. Verrouillé ici pour que la même erreur ne se refasse
     # pas, dans un sens ou dans l'autre.
-    check("fetch_missing_images(newly_added)" in html,
-          "la recherche de miniatures ne porte que sur les nouveaux articles")
+    #
+    # Une seule exception depuis le 06/10/2026, et elle est NOMMÉE :
+    # `vignettes_perdues`, les articles d'historique dont la réparation
+    # rétroactive vient d'effacer la vignette grise de Google News. Ils
+    # n'ont plus d'image du tout ; sans cette ligne, personne n'irait leur
+    # en chercher une. Ce n'est pas un balayage de l'historique — la liste
+    # ne contient que ce que le passage a lui-même modifié.
+    check("fetch_missing_images(newly_added + vignettes_perdues)" in html,
+          "la recherche de miniatures porte sur les nouveaux articles, "
+          "plus les seuls articles que la réparation vient de priver d'image")
+    check("existing_items, _redecodes, vignettes_perdues = redecode_liens_stockes" in html,
+          "et cette liste vient bien de la passe de réparation, pas d'un "
+          "filtre sur tout l'historique")
     check(html.count("fetch_missing_images(") == 2,
-          "et elle n'est appelée qu'à cet endroit — définition comprise")
+          "elle n'est appelée qu'à cet endroit — définition comprise")
+    # redecode_archives cherche les miniatures des articles SORTIS du fil,
+    # et par une fonction injectable : c'est ce qui la rend testable sans
+    # réseau. Elle ne doit pas appeler fetch_missing_images en dur.
+    corps_archives = html[html.index("def redecode_archives"):html.index("def recheck_official_status")]
+    check("cherche_miniatures(" in corps_archives
+          and "fetch_missing_images(" not in corps_archives,
+          "l'archive passe par la fonction injectée, jamais en dur")
 
     # Le garde-fou retiré ne doit pas revenir sans preuve : son abandon après
     # 7 jours privait de miniature les archives, qui arrivent justement avec
@@ -3170,6 +3188,112 @@ def test_compteur_echecs_decodage():
 
     fetch_feeds.reinitialise_echecs_decodage()
     check(fetch_feeds.echecs_decodage() == 0, "et le compteur se réinitialise")
+
+
+def test_reparation_retroactive_du_decodage():
+    print("\n[Google News] réparer ce qui est entré pendant la panne du 03/10")
+    import fetch_feeds, feed_store, os, shutil, tempfile
+
+    VIGNETTE = "https://lh3.googleusercontent.com/proxy/abc=-w280-h168"
+
+    def kiosque(n, image=VIGNETTE, date="2026-10-04T10:0%d:00+00:00"):
+        return {"link": "https://news.google.com/rss/articles/CBMi%d" % n,
+                "title": "article %d" % n, "source": "Google News",
+                "date": date % (n % 10), "image": image}
+
+    table = {"https://news.google.com/rss/articles/CBMi1": "https://ign.com/a1",
+             "https://news.google.com/rss/articles/CBMi2": "https://gamespot.com/a2",
+             "https://news.google.com/rss/articles/CBMi3": "https://ign.com/a3"}
+
+    reel = fetch_feeds.predecode_links
+    fetch_feeds.predecode_links = lambda liens, cache=None, journal=None: {
+        l: table.get(l, l) for l in liens}
+    try:
+        # --- le fil ---------------------------------------------------
+        propre = {"link": "https://pcgamer.com/deja-bon", "title": "déjà bon",
+                  "date": "2026-10-04T09:00:00+00:00", "image": "https://pcgamer.com/i.jpg"}
+        vraie_image = kiosque(2, image="https://gamespot.com/vraie.jpg")
+        items = [kiosque(1), vraie_image, propre]
+        items, repares, sans_vignette = fetch_feeds.redecode_liens_stockes(items)
+
+        check(repares == 2, "les deux liens de kiosque sont re-décodés, le bon lien est laissé")
+        check(items[0]["link"] == "https://ign.com/a1", "le vrai lien remplace celui du kiosque")
+        check(items[0]["source_link"] == "https://news.google.com/rss/articles/CBMi1",
+              "l'ancien lien est gardé dans source_link : c'est lui qui retrouve les articles lus")
+        check(items[0]["image"] is None,
+              "la vignette grise de Google est effacée pour qu'on en cherche une vraie")
+        check(vraie_image["image"] == "https://gamespot.com/vraie.jpg",
+              "une VRAIE miniature déjà trouvée n'est pas effacée au passage")
+        check([i["link"] for i in sans_vignette] == ["https://ign.com/a1"],
+              "et seuls les articles réellement privés d'image sont rendus à fetch_missing_images")
+        check(propre == {"link": "https://pcgamer.com/deja-bon", "title": "déjà bon",
+                         "date": "2026-10-04T09:00:00+00:00",
+                         "image": "https://pcgamer.com/i.jpg"},
+              "un article qui n'est pas passé par Google News n'est pas touché")
+
+        # Idempotence : plus un seul lien news.google.com, donc plus rien à faire.
+        check(fetch_feeds.redecode_liens_stockes(items)[1] == 0,
+              "rejouée, la passe ne refait rien")
+
+        # Le budget coupe ENTRE deux paquets, et ce qui reste repart au
+        # passage suivant plutôt que d'être perdu.
+        gros = [kiosque(1) for _ in range(200)]
+        for n, i in enumerate(gros):
+            i["link"] = "https://news.google.com/rss/articles/G%d" % n
+            table[i["link"]] = "https://media.test/%d" % n
+        tictac = iter([0] + [0] * 2 + [999] * 50)
+        _, coupes, _ = fetch_feeds.redecode_liens_stockes(
+            gros, budget_s=10, horloge=lambda: next(tictac))
+        restants = sum(1 for i in gros if "news.google.com" in i["link"])
+        check(0 < coupes < 200, "le budget coupe la passe au lieu de risquer le job (%d réparés)" % coupes)
+        check(coupes + restants == 200, "et rien n'est perdu : le reste repart au passage suivant")
+
+        # --- l'archive ------------------------------------------------
+        rep = tempfile.mkdtemp(prefix="archive-decodage-")
+        try:
+            sorti_du_fil = kiosque(3)
+            feed_store.archiver([kiosque(1), sorti_du_fil], rep)
+            check(len(feed_store.lire_mois("2026-10", rep)) == 2, "deux articles archivés")
+
+            vues = []
+            total, mois = fetch_feeds.redecode_archives(
+                decoded_cache={"https://news.google.com/rss/articles/CBMi1":
+                               "https://ign.com/a1"},
+                liens_du_fil={"https://ign.com/a1"},
+                repertoire=rep,
+                cherche_miniatures=lambda items: vues.extend(items))
+
+            archive = {i["link"]: i for i in feed_store.lire_mois("2026-10", rep)}
+            check(total == 2 and mois == ["2026-10"],
+                  "l'archive est réparée elle aussi — sinon les 55 articles sortis "
+                  "de la fenêtre garderaient le lien du kiosque pour toujours")
+            check(set(archive) == {"https://ign.com/a1", "https://ign.com/a3"},
+                  "y compris l'article que le fil ne connaît plus, décodé par le réseau")
+            check(archive["https://ign.com/a1"]["source_link"].startswith("https://news.google.com"),
+                  "l'archive garde elle aussi l'ancien lien")
+            check([i["link"] for i in vues] == ["https://ign.com/a3"],
+                  "seul l'article sorti du fil fait chercher une miniature ici : "
+                  "la copie d'archive de l'autre sera écrasée par celle du fil")
+
+            # LE point de la passe : `archiver` fusionne par lien. Sans
+            # réparation en place, l'article corrigé entrerait une SECONDE
+            # fois à côté de sa copie restée sous le lien du kiosque.
+            du_fil = dict(kiosque(1))
+            du_fil["link"] = "https://ign.com/a1"
+            du_fil["source_link"] = "https://news.google.com/rss/articles/CBMi1"
+            du_fil["image"] = "https://ign.com/vraie.jpg"
+            feed_store.archiver([du_fil], rep)
+            apres = feed_store.lire_mois("2026-10", rep)
+            check(len(apres) == 2,
+                  "le fil réparé se fond dans l'archive réparée sans créer de doublon")
+
+            check(fetch_feeds.redecode_archives(repertoire=rep,
+                                                cherche_miniatures=lambda i: None) == (0, []),
+                  "rejouée, la passe d'archive ne réécrit aucun mois")
+        finally:
+            shutil.rmtree(rep, ignore_errors=True)
+    finally:
+        fetch_feeds.predecode_links = reel
 
 
 def test_historique_entrees():
@@ -5143,13 +5267,43 @@ def test_readme_ne_cite_que_des_constantes_reelles():
     # dix jours un DEAD_SOURCE_RUNS valant 6 « passages » alors que le code
     # compte DEAD_SOURCE_HOURS = 24 heures. Personne ne l'a vu, parce que
     # rien ne reliait les deux fichiers. Maintenant si.
+    #
+    # Lu à l'ANALYSEUR et non à l'expression régulière : celle-ci exigeait la
+    # colonne 0, donc elle ne voyait pas les constantes posées dans un
+    # `try:` de module — HAS_DECODER et DECODEUR_ABSENT, précisément celles
+    # que le README doit citer pour raconter la panne du 03/10/2026. Une
+    # constante invisible au test est une constante que le README ne peut
+    # pas nommer, ce qui pousse à mal documenter pour faire passer un test.
+    import ast
+
+    def constantes_du_module(arbre, source):
+        """Les affectations MAJUSCULES de premier niveau, `try`/`if` compris."""
+        trouvees = {}
+        def parcours(corps):
+            for noeud in corps:
+                if isinstance(noeud, ast.Assign):
+                    for cible in noeud.targets:
+                        if isinstance(cible, ast.Name) and re.fullmatch(r"[A-Z][A-Z0-9_]{2,}", cible.id):
+                            trouvees.setdefault(cible.id,
+                                                (ast.get_source_segment(source, noeud.value) or "").strip())
+                elif isinstance(noeud, (ast.Try, ast.If)):
+                    # Le corps d'un `try` ou d'un `if` de module reste du
+                    # niveau module. Pas les fonctions ni les classes :
+                    # leurs variables locales ne sont pas des constantes.
+                    for bloc in (noeud.body, noeud.orelse,
+                                 getattr(noeud, "finalbody", []),
+                                 *[h.body for h in getattr(noeud, "handlers", [])]):
+                        parcours(bloc)
+        parcours(arbre.body)
+        return trouvees
+
     code = {}
     for fichier in glob.glob("*.py"):
         if fichier.startswith("test_"):
             continue
-        for m in re.finditer(r"^([A-Z][A-Z0-9_]{2,})\s*=\s*(.+?)\s*(?:#.*)?$",
-                             open(fichier, encoding="utf-8").read(), re.M):
-            code.setdefault(m.group(1), m.group(2).strip())
+        source = open(fichier, encoding="utf-8").read()
+        for nom, valeur in constantes_du_module(ast.parse(source), source).items():
+            code.setdefault(nom, valeur)
 
     # L'app est un fichier unique en JavaScript ; ses constantes sont aussi
     # citables que celles du Python. Elles étaient jusqu'ici EXEMPTÉES une par
@@ -5200,6 +5354,11 @@ def test_readme_ne_cite_que_des_constantes_reelles():
     # sinon il passerait tout aussi bien sur un README vide.
     check("DEAD_SOURCE_HOURS" in code and "SIMILARITY_THRESHOLD" in code,
           "le test lit bien les constantes du code Python")
+    check("HAS_DECODER" in code and "DECODEUR_ABSENT" in code,
+          "y compris celles posées dans un `try:` de module, que la lecture "
+          "à l'expression régulière manquait")
+    check("PAQUET" not in code,
+          "et pas les variables locales d'une fonction, qui ne sont pas des constantes")
     check("GTA6_RELEASE" in code and "STORAGE_PREFIX" in code,
           "et celles du JavaScript de l'app")
     check(len([n for n, _ in cites if n in code]) >= 10,
@@ -7053,7 +7212,7 @@ def test_un_article_elague_nest_pas_annonce():
 
     pos_cap = corps.index("all_items, dropped = feed_store.cap_items(all_items)")
     pos_reconcile = corps.index("ephemeres = [i for i in newly_added")
-    pos_images = corps.index("fetch_missing_images(newly_added)")
+    pos_images = corps.index("fetch_missing_images(newly_added + vignettes_perdues)")
     pos_chaudes = corps.index("chaudes_neuves = [i for i in newly_added")
     pos_publie = corps.index('"new_this_run": len(newly_added)')
 
@@ -7613,6 +7772,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_validateurs_lies_a_leur_url,
            test_timeout_reseau, test_source_cassee_vs_muette,
            test_compteur_echecs_decodage,
+           test_reparation_retroactive_du_decodage,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
