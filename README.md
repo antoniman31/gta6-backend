@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1604
+qui permet de tester tout le pipeline sans sortir de la machine. **1627
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5694,6 +5694,98 @@ se consulte surtout depuis un téléphone, donc un Worker à déployer et un ét
 partagé qui peut diverger ne répondraient à rien. Le vrai risque restant — un
 navigateur qui nettoie ses données, un changement de téléphone — se couvre par
 un export de fichier, sans infrastructure.
+
+## Le cache de décodage quitte le réseau — 06/10/2026
+
+Une mesure, et tout le reste en découle. Poids réellement transféré, gzippé,
+comme GitHub Pages le sert :
+
+```
+feed.json      1004 Ko  dont 533 Ko de source_link   (53 %)
+archives       1127 Ko  dont 593 Ko de source_link   (53 %)
+```
+
+`source_link` — le lien de kiosque Google News d'où vient un article — pesait
+**33 % des octets bruts mais 53 % des octets compressés**. Ces liens sont du
+base64 : à haute entropie, donc quasi incompressibles, là où titres,
+descriptions et domaines se tassent très bien. Ils dominaient le fichier
+compressé sans dominer le fichier brut, ce qui est exactement le genre de
+chose qu'on ne voit pas sans mesurer.
+
+**Et l'app ne s'en sert presque pas.** Son unique lecteur côté navigateur est
+`migreLiensDecodes`, qui suit un article jusqu'à sa nouvelle adresse quand le
+robot corrige son lien. Le vrai consommateur est le ROBOT : sans ce cache, il
+re-décoderait à chaque passage des liens déjà résolus, à une seconde pièce.
+
+Le besoin était réel, sa place sur le réseau ne l'était pas.
+
+### Ce qui a changé
+
+Le cache a son propre fichier, **`decode-cache.json`, à la racine et non dans
+`docs/`** : GitHub Pages ne sert que `docs/`, si bien que l'app ne peut même
+pas le demander par erreur. C'est de l'état de travail, pas du contenu de
+site.
+
+Deux détails qui comptent plus qu'ils n'en ont l'air :
+
+- **il est écrit TRIÉ.** Le robot le réécrit 28 fois par jour ; dans l'ordre
+  d'insertion, deux passages voisins le brasseraient différemment et Git ne
+  saurait plus en faire un petit delta. Trié, un passage qui ajoute trois
+  liens produit un diff de trois lignes ;
+- **il s'élague tout seul.** Une entrée n'est gardée que si son article est
+  encore joignable — dans la fenêtre, ou cité comme « autre source » d'un
+  article de la fenêtre. Un lien de kiosque qui reparaît dans un flux pointe
+  vers un article que `plancher_de_retention` refuserait de toute façon, et
+  ce refus tombe AVANT le décodage. Garder l'entrée ne ferait rien gagner.
+
+Les articles publiés gardent `source_link` **sept jours**
+(`JOURS_SOURCE_LINK_PUBLIE`), pour que l'app puisse suivre un lien corrigé.
+Le réglage vient de la mesure, pas du jugé — poids de `feed.json` gzippé
+selon la fenêtre : aucune 461 Ko, 2 j 504 Ko, **7 j 615 Ko**, 14 j 749 Ko,
+30 j 966 Ko. Sept jours prennent les trois quarts du gain et couvrent tout
+téléphone qui ouvre l'app une fois par semaine.
+
+L'ordre dans `main` n'est pas négociable, et un test le verrouille : le
+garde-fou de publication, PUIS l'écriture du cache, PUIS l'élagage du champ,
+PUIS la publication. Retirer le champ avant d'avoir écrit le cache perdrait
+la correspondance pour de bon.
+
+### L'archive aussi, et il fallait y penser
+
+`archiver` ne relit que les mois que la fenêtre touche. Les mois plus anciens
+ne sont jamais réécrits : ils auraient gardé leur `source_link` indéfiniment,
+or c'est là qu'est la moitié du poids de l'archive.
+`elague_source_link_archives` fait la passe, une fois, puis ne trouve plus
+rien à faire. Même garde-fou que partout ailleurs : un mois dont une tranche
+est illisible n'est pas touché.
+
+### Le résultat
+
+```
+                      avant      après
+index.html            108 Ko     108 Ko
+feed-recent.json      107 Ko     107 Ko
+feed.json            1004 Ko     619 Ko
+archives             1127 Ko     681 Ko
+chargement complet   2,29 Mo    1,48 Mo    (−35 %)
+```
+
+La **première ouverture ne change pas** : les 300 articles du fichier allégé
+ont tous moins de sept jours, ils gardent donc leur `source_link`. Le gain
+est sur ce qui vient après — le rattrapage automatique de l'historique
+complet, et l'archive. C'est-à-dire sur tout ce qu'un téléphone télécharge
+une fois qu'il a affiché quelque chose.
+
+Effet secondaire : 832 Ko bruts de moins à chaque écriture de `feed.json`,
+soit 28 fois par jour, ce qui freine d'autant la croissance du dépôt.
+
+### Ce que la mesure a fait ABANDONNER
+
+Ne plus stocker les booléens à `false` (`official`, `rockstarmag`,
+`specialist`) retire 166 Ko bruts — et **6 Ko gzippés, 0,6 %**. Les booléens
+répétés sont précisément ce que la compression efface. L'idée paraissait
+bonne et aurait touché le format publié pour rien ; elle a été écartée sur
+le chiffre, pas sur l'intuition.
 
 ## La panne du décodage Google News — 03/10/2026
 

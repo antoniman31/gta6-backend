@@ -3296,6 +3296,123 @@ def test_reparation_retroactive_du_decodage():
         fetch_feeds.predecode_links = reel
 
 
+def test_cache_de_decodage_hors_du_fil():
+    print("\n[réseau] le cache de décodage quitte ce que le téléphone télécharge")
+    import feed_store, json, os, shutil, tempfile
+    from datetime import datetime, timedelta, timezone
+
+    maintenant = datetime(2026, 10, 6, 12, tzinfo=timezone.utc)
+
+    def art(n, jours, kiosque=True):
+        i = {"link": "https://media.test/a%d" % n, "title": "titre %d" % n,
+             "date": (maintenant - timedelta(days=jours)).isoformat()}
+        if kiosque:
+            i["source_link"] = "https://news.google.com/rss/articles/CBMi%d" % n
+        return i
+
+    rep = tempfile.mkdtemp(prefix="cache-")
+    chemin = os.path.join(rep, "decode-cache.json")
+    try:
+        # --- le fichier ------------------------------------------------
+        check(feed_store.lire_cache_decodage(chemin) == {},
+              "un cache absent rend {} — il se reconstruit, il ne fait pas échouer le passage")
+        open(chemin, "w").write("ceci n'est pas du JSON")
+        check(feed_store.lire_cache_decodage(chemin) == {},
+              "un cache illisible non plus")
+
+        cache = {"https://news.google.com/rss/articles/CBMi2": "https://media.test/a2",
+                 "https://news.google.com/rss/articles/CBMi1": "https://media.test/a1"}
+        feed_store.ecrire_cache_decodage(cache, chemin, maintenant)
+        check(feed_store.lire_cache_decodage(chemin) == cache,
+              "ce qu'on écrit est ce qu'on relit")
+        ecrit = json.load(open(chemin, encoding="utf-8"))
+        check(list(ecrit["liens"]) == sorted(cache),
+              "les liens sont TRIÉS : réécrit 28 fois par jour, un ordre instable "
+              "empêcherait Git d'en faire un petit delta")
+
+        # Une entrée mal formée est ignorée plutôt que de tout faire tomber.
+        json.dump({"liens": {"bon": "https://x.test/1", "mauvais": None, "": "vide"}},
+                  open(chemin, "w"))
+        check(feed_store.lire_cache_decodage(chemin) == {"bon": "https://x.test/1"},
+              "les entrées abîmées sont écartées une par une")
+
+        # --- l'élagage du cache ----------------------------------------
+        items = [art(1, 1), art(2, 20)]
+        items[1]["extraSources"] = [{"source": "ailleurs", "link": "https://autre.test/b"}]
+        cache = {"k1": "https://media.test/a1",      # article du fil
+                 "k2": "https://autre.test/b",       # autre source d'un article du fil
+                 "k3": "https://parti.test/vieux"}   # plus nulle part
+        reste = feed_store.elague_cache_decodage(cache, items)
+        check(set(reste) == {"k1", "k2"},
+              "le cache garde ce qui peut encore servir, et jette le reste (%s)" % sorted(reste))
+        check("k2" in reste,
+              "y compris les « autres sources » : c'est sous ce lien-là qu'un "
+              "article dédupliqué reparaîtra dans son flux")
+        check(feed_store.elague_cache_decodage(reste, items) == reste,
+              "rejoué, l'élagage ne retire plus rien")
+
+        # --- l'élagage de source_link ----------------------------------
+        items = [art(1, 1), art(2, 3), art(3, 10), art(4, 60), art(5, 2, kiosque=False)]
+        n = feed_store.elague_source_link(items, maintenant, jours=7)
+        gardent = [i["link"] for i in items if i.get("source_link")]
+        check(n == 2, "les deux articles de plus de 7 jours perdent leur source_link")
+        check(gardent == ["https://media.test/a1", "https://media.test/a2"],
+              "les récents le gardent : c'est eux que l'app doit pouvoir suivre")
+        check(feed_store.elague_source_link(items, maintenant, jours=7) == 0,
+              "rejoué, il n'y a plus rien à retirer")
+
+        # LE point de tout le lot : ce qu'on retire est bien ce qui pesait.
+        # Mesuré le 06/10/2026 sur le fil réel, 994 Ko gzip dont 533 de
+        # source_link. Ici on vérifie la mécanique, pas le chiffre.
+        avec = len(json.dumps([art(n, 30) for n in range(50)], ensure_ascii=False))
+        sans_items = [art(n, 30) for n in range(50)]
+        feed_store.elague_source_link(sans_items, maintenant, jours=7)
+        sans = len(json.dumps(sans_items, ensure_ascii=False))
+        check(sans < avec * 0.75,
+              "retirer le champ allège réellement le fichier publié (%d -> %d o)" % (avec, sans))
+    finally:
+        shutil.rmtree(rep, ignore_errors=True)
+
+    # --- l'archive, que `archiver` seul n'aurait jamais allégée --------
+    rep = tempfile.mkdtemp(prefix="arch-alleger-")
+    try:
+        vieux = art(9, 400)          # un mois que la fenêtre ne touche plus
+        recent = art(10, 1)
+        feed_store.archiver([vieux, recent], rep, maintenant)
+        n, mois = feed_store.elague_source_link_archives(rep, maintenant, jours=7)
+        reste = {i["link"]: i.get("source_link")
+                 for m in feed_store.mois_archives(rep)
+                 for i in feed_store.lire_mois(m, rep)}
+        check(n == 1 and reste[vieux["link"]] is None,
+              "un mois ancien est allégé lui aussi — sinon il garderait le champ "
+              "pour toujours, `archiver` ne le relisant jamais")
+        check(reste[recent["link"]] is not None,
+              "et l'article récent garde le sien, dans l'archive comme dans le fil")
+        check(feed_store.elague_source_link_archives(rep, maintenant, jours=7) == (0, []),
+              "rejouée, la passe ne réécrit aucun mois")
+    finally:
+        shutil.rmtree(rep, ignore_errors=True)
+
+    # --- et le robot s'en sert bien dans cet ordre ----------------------
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    corps = src[src.index("def main("):]
+    pos_ecrit = corps.index("feed_store.ecrire_cache_decodage(")
+    pos_elague = corps.index("feed_store.elague_source_link(")
+    pos_garde = corps.index("feed_store.valide_avant_ecriture(")
+    pos_publie = corps.index("feed_store.write_feed_pair(")
+    check(pos_garde < pos_ecrit,
+          "le cache n'est écrit qu'APRÈS le garde-fou : un passage refusé ne laisse rien")
+    check(pos_ecrit < pos_elague,
+          "le cache est sur le disque AVANT qu'on retire le champ des articles — "
+          "sinon la correspondance serait perdue pour de bon")
+    check(pos_elague < pos_publie,
+          "et l'élagage précède la publication, sinon il ne servirait à rien")
+    check("feed_store.lire_cache_decodage()" in corps,
+          "le cache est relu depuis son fichier au début du passage")
+    check(corps.index("feed_store.elague_source_link_archives(") < pos_publie,
+          "l'archive est allégée au même passage que le fil")
+
+
 def test_historique_entrees():
     print("\n[sources] repérer une source qui se dégrade sans mourir")
     import fetch_feeds
@@ -6991,7 +7108,8 @@ def test_ce_que_le_robot_publie_est_bien_commite():
     # Le point commun : `git add` prend des CHEMINS, pas « ce qui a changé ».
     # Ajouter un fichier publié sans toucher au workflow ne casse rien, ne
     # fait rien, et ne dit rien. Ce test est le seul endroit où ça se voit.
-    PUBLIES = ["docs/feed.json", "docs/feed-recent.json", "docs/archives"]
+    PUBLIES = ["docs/feed.json", "docs/feed-recent.json", "docs/archives",
+               "decode-cache.json"]
 
     wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
     adds = re.findall(r"git add ([^\n]+)", wf)
@@ -7773,6 +7891,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_timeout_reseau, test_source_cassee_vs_muette,
            test_compteur_echecs_decodage,
            test_reparation_retroactive_du_decodage,
+           test_cache_de_decodage_hors_du_fil,
            test_historique_entrees, test_diagnostic_redirection,
            test_plafond_epargne_rockstar, test_prefiltre_de_ressemblance,
            test_ergonomie_tactile,
