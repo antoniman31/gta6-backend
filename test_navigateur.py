@@ -988,12 +988,28 @@ def test_vue_statistiques(nav, url):
         return page.evaluate("(s) => { const e = document.querySelector(s); "
                              "return !!e && getComputedStyle(e).display !== 'none'; }", sel)
 
+    # LES DATES SONT RELATIVES À AUJOURD'HUI, et ce n'est pas un détail.
+    #
+    # Elles étaient écrites en dur : « 2026-09-01 » à « 2026-09-22 ». Sans
+    # `couverture_depuis`, la fenêtre des statistiques vaut
+    # STATS_JOURS_SECOURS = 14 jours, et elle avance d'un jour par jour. Le
+    # 06/10/2026 elle allait du 22/09 au 05/10 et attrapait le dernier
+    # article du lot, au jour près. Le 07/10 à minuit heure de Paris elle
+    # est passée au 23/09, le fil de référence s'est retrouvé ENTIÈREMENT
+    # hors fenêtre, l'histogramme n'a plus eu une seule colonne non nulle
+    # et le contrôle du maximum écrit est tombé — sur un code que personne
+    # n'avait touché.
+    #
+    # Un contrôle qui expire tout seul à une date qu'aucun commentaire
+    # n'annonce est pire qu'un contrôle absent : il part en rouge un matin,
+    # sur la branche de quelqu'un d'autre, et accuse le mauvais changement.
     page.evaluate("""() => {
       historyPartial = false; rattrapageLance = true; archiveChargee = true;
       lastItems = [];
+      const base = Date.now();
       for(let j = 1; j <= 22; j++){
         lastItems.push({title: "Article " + j, link: "https://ex.test/" + j,
-          source: "S", date: "2026-09-" + String(j).padStart(2, "0") + "T10:00:00Z",
+          source: "S", date: new Date(base - j * 86400000).toISOString(),
           extraSources: j === 5 ? [{source: "X", link: "https://y.test"}] : null});
       }
       derniereReponseBackend = {sources_health: [
@@ -1026,7 +1042,21 @@ def test_vue_statistiques(nav, url):
     page.wait_for_selector(".stats-histo", timeout=5000)
     check(page.locator(".stats-histo").count() >= 1, "l'histogramme quotidien est dessiné")
     check(page.locator(".stats-histo em").count() == page.locator(".stats-histo").count(),
-          "un seul chiffre écrit par histogramme — le maximum, pas un par colonne")
+          "un seul chiffre écrit par histogramme — le maximum, pas un par colonne "
+          "(%d em pour %d histogramme(s))"
+          % (page.locator(".stats-histo em").count(),
+             page.locator(".stats-histo").count()))
+    # Le filet qui aurait nommé la vraie cause ci-dessus. Zéro colonne
+    # remplie ne se distingue pas, dans le contrôle précédent, d'un maximum
+    # qu'on aurait oublié d'écrire — et c'est pourtant tout l'écart entre
+    # « le fil de référence a glissé hors fenêtre » et « le rendu est
+    # cassé ».
+    vides = page.locator('.stats-histo .stats-col[data-lecture="0"]').count()
+    colonnes = page.locator(".stats-histo .stats-col").count()
+    check(colonnes > 0 and vides < colonnes,
+          "et le fil de référence tombe bien DANS la fenêtre : %d colonne(s) "
+          "remplie(s) sur %d, pas un histogramme vide"
+          % (colonnes - vides, colonnes))
     graphes = page.locator(".stats-histo").count() + page.locator(".stats-carte").count()
     check(page.locator(".stats-tableau table").count() == graphes,
           "chaque graphique — histogrammes et carte jour × heure — a son tableau : "

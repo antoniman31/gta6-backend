@@ -168,7 +168,7 @@ comparer. **Rien à faire.**
 | articles officiels | 50 |
 | sources | 63 |
 | `test_pipeline` | 1 709 vérifications |
-| `test_navigateur` | 330 contrôles |
+| `test_navigateur` | 331 contrôles |
 | taille du dépôt (GitHub) | 35 Mo |
 | `CACHE_NAME` | `gta6watch-shell-v18` |
 | `SIMILARITY_THRESHOLD` | 0,72 |
