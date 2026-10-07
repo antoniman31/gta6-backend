@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-10-06T23:01:25.783794+00:00",
+  "generated_at": "2026-10-07T00:01:32.215518+00:00",
   "attente_recap": {
-    "articles": 14,
+    "articles": 22,
     "officiels": 0,
     "sommet": 3
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 22.9,
+  "duration_seconds": 25.7,
   "decode_failures": 0,
-  "total_articles": 3242,
-  "new_this_run": 1,
-  "hot_count": 45,
+  "total_articles": 3250,
+  "new_this_run": 8,
+  "hot_count": 46,
   "hot_threshold": 3,
   "sources_count": 63,
   "sources": [
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 1108,
-      "last_article": "2026-10-06T22:56:27+00:00",
+      "new_this_run": 8,
+      "articles_exclusifs": 1116,
+      "last_article": "2026-10-06T23:44:55+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -540,10 +540,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 14,
       "last_article": "2026-10-06T22:12:27+00:00",
@@ -636,7 +636,7 @@
       "redirect": null,
       "not_modified": true,
       "new_this_run": 0,
-      "articles_exclusifs": 29,
+      "articles_exclusifs": 28,
       "last_article": "2026-10-06T22:38:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -677,7 +677,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-06T00:00:16+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-10-03T09:40:41+00:00",
@@ -1079,7 +1079,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
-      "last_article": "2026-10-06T20:40:12+00:00",
+      "last_article": "2026-10-06T22:38:46+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-08T10:08:19+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 14,
       "last_article": "2026-10-02T18:00:38+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-01T22:41:19+00:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {},
@@ -1310,13 +1310,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1c69f-V4xsAnoyPwSqpxmkTc134hWCMmI\"",
+      "etag": "W/\"1b5e3-+qRYtK0WVOocwf/R/1XfAQQMyIg\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"d045b1b7b7ba36ff0123d628fdb3c734\"",
-      "modified": "Tue, 06 Oct 2026 22:49:25 GMT"
+      "etag": "W/\"99a45050f9210b80e5e431c42d2638ef\"",
+      "modified": "Tue, 06 Oct 2026 23:05:48 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1331,7 +1331,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 06 Oct 2026 23:01:07 GMT"
+      "modified": "Wed, 07 Oct 2026 00:01:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1340,8 +1340,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ac57d80-2f59\"",
-      "modified": "Tue, 06 Oct 2026 23:00:16 GMT"
+      "etag": "W/\"6ac58b95-2f59\"",
+      "modified": "Wed, 07 Oct 2026 00:00:21 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1360,8 +1360,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ac56d4f-c06\"",
-      "modified": "Tue, 06 Oct 2026 21:51:11 GMT"
+      "etag": "\"6ac5896e-c07\"",
+      "modified": "Tue, 06 Oct 2026 23:51:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1371,7 +1371,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 06 Oct 2026 23:00:36 GMT"
+      "modified": "Wed, 07 Oct 2026 00:01:12 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1385,8 +1385,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"dc49c60cdaa6fb4ccbfc590acfd87684\"",
-      "modified": "Tue, 06 Oct 2026 19:05:33 GMT"
+      "etag": "W/\"b95df1dfe7827586b833226922e02141\"",
+      "modified": "Wed, 07 Oct 2026 00:00:42 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1407,6 +1407,110 @@
   "sources_incidents": [],
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 is reportedly coming to Xbox Cloud, opening doors to PC mayhem via streaming - Digital Trends",
+      "link": "https://www.digitaltrends.com/gaming/gta-6-is-reportedly-coming-to-xbox-cloud-opening-doors-to-pc-mayhem-via-streaming/",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQUWZjSWx4c2F0WkE5YUMyWlAzLUZiV0tjTnI0ajNzTjhBaTI2QUkzTWQyUzRiZy05dVNfeWxTTHFfMnd3dm9qclFjeGQzMjVmd21yQ3lWYlM0cXZYQ1RFOWo5YVFMRThjTkhDeThVNi1BRWdFVTdhQWtRVVBxZXlybDdqbTFTUUVfVExzR1lZUjJ5TFVXY3ZPaFQyY1hFUXpFZnZvbUJEMFNhS0JSMFdsZ0dnX3BkZlBJYUZj?oc=5",
+      "date": "2026-10-06T23:44:55+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "GTA 6 is reportedly coming to Xbox Cloud, opening doors to PC mayhem via streaming&nbsp;&nbsp;Digital Trends"
+    },
+    {
+      "title": "XBOX Secures Exclusive Rights for the Earliest GTA 6 PC Experience - DualShockers",
+      "link": "https://www.dualshockers.com/xbox-secures-exclusive-rights-for-the-earliest-gta-6-pc-experience/",
+      "source_link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNUm9tX3NTRHNDbWEtVVJCdnVPSllwSXdiYnNINVZMcUEtTzkyNEk2QXNWSy1XUDJ6V19OUENxWV9MLXFkXzZXcEZjNXBBazRGNDlCUkM2clBmSGJXNmlaOENpdjNlQ3VfLTdld3RkVFNGUDE1QjZuSFhheDc4QXNzaUhabUphVXI4VjVYeXNvZWQxdkExOWp5dUVZNGE?oc=5",
+      "date": "2026-10-06T23:37:38+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static0.dualshockersimages.com/wordpress/wp-content/uploads/2026/09/rockstar-just-unveiled-strict-new-mod-rules-and-gta-6-might-pay-the-price-1.jpg?w=1600&h=900&fit=crop",
+      "description": "XBOX Secures Exclusive Rights for the Earliest GTA 6 PC Experience&nbsp;&nbsp;DualShockers"
+    },
+    {
+      "title": "Xbox Cloud Gaming to stream GTA 6 exclusively on release date, benefiting PC gamers - Notebookcheck",
+      "link": "https://www.notebookcheck.net/Xbox-Cloud-Gaming-to-stream-GTA-6-exclusively-on-release-date-benefiting-PC-gamers.1417471.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNdWItUFFpYzFMdXJNdFlTNUV6Tnd0aXd4X2FhVWtLMDVMekV2RlNMVGRYZllnYVEwcG5LOXVlTkpBalF4OVhCbGVnYkFLZ19jSmt4ellwcjVfVmNJNUFTWVlmNWtWREQyOVU1UklVVGhMckhlT1N6QmdFMW4xTmd4czBnVS1zRlJQQkduY216Znd2X21GVGEtU25PZG1BU0lEa2lYSzNpS3Y2TDVGaFhGdE5SRlZZUlM0enotRXZoY1U3bjBrTFE?oc=5",
+      "date": "2026-10-06T23:34:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6CloudStreaming.jpg",
+      "description": "Xbox Cloud Gaming to stream GTA 6 exclusively on release date, benefiting PC gamers&nbsp;&nbsp;Notebookcheck"
+    },
+    {
+      "title": "Xbox Secures GTA VI Streaming Rights - Dark Horizons",
+      "link": "https://www.darkhorizons.com/xbox-secures-gta-vi-streaming-rights/",
+      "source_link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9TUGhpRXdnRmRiN3piS2dybEhRTXlneHJEWHRtMFVRMm1LUy1kMUdlQ2NacEFlS1ZzTUlHR0dxR0tlek5nOUhBcDZjVU5NYU5aQTlyOXFoMWRSUXFGelN4V0ZRNG45cDZ5bFBQWF8zU05PSHJs?oc=5",
+      "date": "2026-10-06T23:32:46+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://cdndark.darkhorizons.com/wp-content/uploads/2026/10/xbox-secures-gta-vi-streaming-rights.jpg",
+      "description": "Xbox Secures GTA VI Streaming Rights&nbsp;&nbsp;Dark Horizons"
+    },
+    {
+      "title": "Microsoft Reportedly Secures Exclusive GTA 6 Cloud Streaming Rights - GTA BOOM",
+      "link": "https://www.gtaboom.com/xbox-reportedly-has-exclusive-gta-6-cloud-streaming-rights-at-launch-1a7b",
+      "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxQTlZjSDVmdlptUW9lTVF4N0N3UVdfWlcyaDdIWTh1SzdFb3JQYWtRVEl3bVA0dDIxdlpTQjA4VzNzblVKRzg1eV9wZWxmeVNjTUlnOU14WkhjUDlqaEp4R1k5djRBSGNONEFORFh3UFUyal9qczRtWDE0dUZ5MDhRbXVlejJka19mMkpOU29MM2ZjWTR1aWhsR29kbnZ4Zw?oc=5",
+      "date": "2026-10-06T23:18:05+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.gtaboom.com/variants/1919/media/images/49/19/xbox-reportedly-has-exclusive-gta-6-cloud-streaming-rights-at-launch.jpg",
+      "description": "Microsoft Reportedly Secures Exclusive GTA 6 Cloud Streaming Rights&nbsp;&nbsp;GTA BOOM"
+    },
+    {
+      "title": "GTA 6 Will Be Playable on PC This November Through Xbox Deal - VICE",
+      "link": "https://www.vice.com/en/article/gta-6-will-be-playable-on-pc-this-november-through-xbox-deal/",
+      "source_link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPX1lFcmlCeERKUjBOZGxpNXp3RUtId0padHd3SHFUbWEtc1dOWU1XYWdMZ01qajQ3elhQMlZOV1ZRVWhGWHZ4Rmo4SnlJLVNXUk8xcnp6azQ3YWZiNlIzRFB5QVljcERKbDVMS1pFLVloZjE5X040QkRQd1dCNy15aHhIcnppNG9vU2xXNEFUX3ZUS25ocDFrUA?oc=5",
+      "date": "2026-10-06T23:12:06+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/10/GTA-6-Will-Be-Playable-on-PC-This-November-Through-Xbox-Deal.jpg?w=1280",
+      "description": "GTA 6 Will Be Playable on PC This November Through Xbox Deal&nbsp;&nbsp;VICE"
+    },
+    {
+      "title": "Xbox Cloud Gaming to Be Sole Streaming Option for GTA 6 at Launch - Northeast Times",
+      "link": "https://northeasttimes.com/2026/10/06/xbox-cloud-gaming-to-be-sole-streaming-option-for-gta-6-at-launch/",
+      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxPMi1QVUIzUGZybEdUbHRvSmU3RDR0THdYTU02UV9KQV9zUklvWmMtQmJFZnpqanZkdWM1aXFmWC1FSEVaSVIyZ2Jna0ZCY2ZHenJhWExzSUYtMjVsZ0w1OVdrZm40TDdXNXVuVDVyQ0xXcFRiT2tEbHE5U21iU0F0eTJrOEV0TThUMi00V1ZYRGphYmdMbkM3UjlsN3duVWkwSXo5MUFtdw?oc=5",
+      "date": "2026-10-06T23:06:43+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.northeasttimes.com/uploads/2026/10/xbox-cloud-gaming-to-be-sole-streaming-option-for-gta-6-at-l.webp",
+      "description": "Xbox Cloud Gaming to Be Sole Streaming Option for GTA 6 at Launch&nbsp;&nbsp;Northeast Times"
+    },
+    {
+      "title": "Report: Xbox Lands Exclusive Streaming Deal For GTA 6 At Launch - Pure Xbox",
+      "link": "https://www.purexbox.com/news/2026/10/report-xbox-lands-exclusive-streaming-deal-for-gta-6-at-launch",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPRktNdkN6c0Y2eXBDUFI3OEdPRWh0RUdYaUgyS1ZzanltZzkwYkRPYXl0Z2xTQmotdkZYVV9ZOWhqQzVSbVBIV2U3UW40SEg4S29RS1NGOWR6VktJZi12eGJNUHhqYVU4Z3NqeWZUU3ZpYjdvdWhwZkl2M2FySDIzUnktNk5Hbk1CaFg0YjNSSDB6Nkh3S05tbDhfenlhdU9ISVE?oc=5",
+      "date": "2026-10-06T23:05:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://images.purexbox.com/d8e39d7c972cb/1280x720.jpg",
+      "description": "Report: Xbox Lands Exclusive Streaming Deal For GTA 6 At Launch&nbsp;&nbsp;Pure Xbox"
+    },
     {
       "title": "Xbox Reportedly Secures Exclusive Cloud Streaming Rights to GTA 6, Could Make Game Playable on PC at Launch - IGN Pakistan",
       "link": "https://pk.ign.com/grand-theft-auto-vi-rumored-title/262134/xbox-reportedly-secures-exclusive-cloud-streaming-rights-to-gta-6-could-make-game-playable-on-pc-at",
@@ -1444,7 +1548,17 @@
       "specialist": true,
       "lang": "en",
       "image": "https://rockstarintel.com/wp-content/uploads/2026/08/mega-3-1787856672032-copy-1280.webp",
-      "description": "XBOX have reportedly secured the exclusive rights to steam GTA 6 from launch day. That&#8217;s according to The Verge. This will be a big get for XBOX considering PlayStation has had the marketing deal so far. Plus, XBOX has some other significant plans for their streaming service which we&#8217;ll take a look at later in [...]\nThe post XBOX Acquires Exclusive GTA 6 Rights For Streaming appeared first on RockstarINTEL."
+      "description": "XBOX have reportedly secured the exclusive rights to steam GTA 6 from launch day. That&#8217;s according to The Verge. This will be a big get for XBOX considering PlayStation has had the marketing deal so far. Plus, XBOX has some other significant plans for their streaming service which we&#8217;ll take a look at later in [...]\nThe post XBOX Acquires Exclusive GTA 6 Rights For Streaming appeared first on RockstarINTEL.",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://www.tweaktown.com/news/113949/xbox-makes-gta-6-exclusivity-deal-for-cloud-streaming/index.html"
+        },
+        {
+          "source": "TweakTown",
+          "link": "https://www.tweaktown.com/rss/click/news/113949/?c=news-mf"
+        }
+      ]
     },
     {
       "title": "Wife Surprises Husband With Handmade Los Santos to Vice City GTA 6 Boarding Pass - GTA BOOM",
@@ -5392,116 +5506,6 @@
       "lang": "fr",
       "image": "https://www.ginjfo.com/wp-content/uploads/2025/05/GTA6_BAO2.jpg",
       "description": "GTA 6 imposera le tout dernier firmware PS5, une mauvaise nouvelle pour les consoles jailbreakées&nbsp;&nbsp;GinjFo"
-    },
-    {
-      "title": "‘GTA 6’ Rated PEGI 18 For Decapitation, Sex Scenes And Cocaine - Forbes",
-      "link": "https://www.forbes.com/sites/paultassi/2026/10/03/gta-6-rated-pegi-18-for-decapitation-sex-scenes-and-cocaine/",
-      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxObzVaVndJNl9GcU9Jb3FON0EtZHl1UURrS0dnZHFqTVAyZFR4OG5kbTRiUDdKd0tQa0o3cXh5NWNGal9YVHZkWGtkVjB1ay00VUlpcm9CbjJrNHF3T3QtU2pVRmxNUlA2aWRKUEpQZ2F1bUNDT2tYYXdLel85aDhJb0loLWFPcjlfTWtpbkZyR2Z2bm4zM25ocmdMSHhYVnVmcy1VaWtkNHFvUHNPaVZ3?oc=5",
-      "date": "2026-10-03T15:53:09+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": null,
-      "description": "‘GTA 6’ Rated PEGI 18 For Decapitation, Sex Scenes And Cocaine&nbsp;&nbsp;Forbes"
-    },
-    {
-      "title": "GTA Creator Has Avoided GTA 6 While Making New Open-World Games",
-      "link": "https://www.polygon.com/dan-houser-absured-ventures-open-world-game/",
-      "source_link": null,
-      "date": "2026-10-03T15:50:02+00:00",
-      "source": "Polygon",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://static0.polygonimages.com/wordpress/wp-content/uploads/2026/04/gta-6-take-two-earnings-call-header.jpg?w=1600&h=900&fit=crop",
-      "description": "Rockstar founder Dan Houser is avoiding GTA 6's gameplay reveal while working on a new open-world game at Absurd Ventures, his new company",
-      "extraSources": [
-        {
-          "source": "Google News (EN)",
-          "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1QT3FTZE5aaloyMk13UTBQQ1ZaMzN0NFlhNUpmWk95RlNUNmNza2FFU3RQVXBTQTNvRkczRjluQ0hOdzR5S1RXSmFWTTVxM1VZbURhQ2tUT25Jd05aWlV3aFlLSTd6TnlwWFBsX19wTHhuMEJmYUNR?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "Windows 11, 32 Go de RAM et Nova Lake-S : les lectures incontournables de la semaine sur GinjFo",
-      "link": "https://www.ginjfo.com/actualites/windows-11-32-go-de-ram-et-nova-lake-s-les-lectures-incontournables-de-la-semaine-sur-ginjfo-20261003",
-      "source_link": null,
-      "date": "2026-10-03T15:50:01+00:00",
-      "source": "GinjFo",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://images.ginjfo.com/2026/10/ginjfo-semaine-27-septembre-3-octobre-2026-1920x1080-1.jpg",
-      "description": "Windows 11, 32 Go de RAM, Intel Nova Lake-S, GTA 6, test DDR5 et baisse des prix des GPU : retrouvez les temps forts de la semaine sur GinjFo.\nCet article Windows 11, 32 Go de RAM et Nova Lake-S : les lectures incontournables de la semaine sur GinjFo a été publié en premier par GinjFo."
-    },
-    {
-      "title": "Rockstar co-founder Dan Houser is avoiding GTA 6 so it doesn't \"distract or disrupt\" his new games, including another open-world comedy - GamesRadar+",
-      "link": "https://www.gamesradar.com/games/grand-theft-auto/rockstar-co-founder-dan-houser-is-avoiding-gta-6-so-it-doesnt-distract-or-disrupt-his-new-games-including-another-open-world-comedy/",
-      "source_link": "https://news.google.com/rss/articles/CBMijwJBVV95cUxPT2ZDV1MwLThHbFdKemlkNFhkdG9wS093Wk9vMGxLSTFQam9PSTZFNHJGSHZ4V1FPNkZyVE1SWmdfWWlRTVR6SGZiaDZIZ2VlQTRycjA3ZkJucjdReDJSQXd2T3o4VWk2WHRxeUcwTUxQa1g3X1FiZF9aVlowUTRSN3UwOGZNdV8zbm5PaUtlcjFpcm9uMnB4LV9ueWpPb1VPLWlUcUJfWEdRb0dsWW9qOEU0YmJ1ZTloaVFWZG9zaFlNNDkxczhhTWI4TEg4YkVQdjNzNGV0X25wS2JSQjZmNzhkalBCSktIM0hkQU1xUHZSMXowQnNaX1VBUHpJWUdHTEVMQnN0WlByZEJNRkM4?oc=5",
-      "date": "2026-10-03T15:23:51+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://cdn.mos.cms.futurecdn.net/GrtqtSun9vQVcmcsb63nDh-1920-80.jpg",
-      "description": "Rockstar co-founder Dan Houser is avoiding GTA 6 so it doesn't \"distract or disrupt\" his new games, including another open-world comedy&nbsp;&nbsp;GamesRadar+"
-    },
-    {
-      "title": "Une possible fuite de GTA 6 révèle de nombreux détails sur l'histoire, les fins et plus encore - EGW.News",
-      "link": "https://fr.egw.news/gaming/news/37619/possible-gta-6-leak-reveals-lots-of-story-details--YkBys00BU",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOakZpTjU0X3BmUnYtazJnU1A5ejB5X050c1JXTzVlb1RMNGRmMXFLQ0VoSUwzUDJqMVFKSDVmcTFiNnNaSXR2cDhXd1pEUkQzUmlTWVU5VnBCUjRETlJ2T3lxQXY0Y1ZmM0Qta05fTzU3N2dCaVJPLUN4QmNGQWxOd2VacHhVMkJWUWgyQzJEdkpZRHRmelNxaUNic3VKY2M?oc=5",
-      "date": "2026-10-03T15:22:12+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "Une possible fuite de GTA 6 révèle de nombreux détails sur l'histoire, les fins et plus encore&nbsp;&nbsp;EGW.News"
-    },
-    {
-      "title": "GTA 6 : de nouvelles captures d’écran aux accents de Pulp Fiction et de nouveaux détails sur Jason et Lucia - Notebookcheck.fr",
-      "link": "https://www.notebookcheck.biz/GTA-6-de-nouvelles-captures-d-ecran-aux-accents-de-Pulp-Fiction-et-de-nouveaux-details-sur-Jason-et-Lucia.1415215.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxPX1lOYU84SXhzbDRXTHVFSzVocUJwRGNvNXdlQndXYlQ5SHZZZFFLNVZwV0doc0Q3NlVCVGU3MUROcGlrQ2sxSG9kaWlSQzQzaV9iRlg2cFp5WHRYTHFwMHJoZnBtQzJKbVNKa2xDZE15OEVSRjVLbTdHR3ZEX2R3OXNfVFpDemVEdkJ3SGo1d0tKVWxndVA4RDdxdmo4MDhacWpSejdIZVhHUFBQcHhkaE5aNlowWUdDQnFnN3NDMk54N2Z3SGRlVVBvNTUwRDMyVTJOUWpyYjRvS2lSd0dnWVZKOU8?oc=5",
-      "date": "2026-10-03T15:08:50+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA-6-Teaser.jpg",
-      "description": "GTA 6 : de nouvelles captures d’écran aux accents de Pulp Fiction et de nouveaux détails sur Jason et Lucia&nbsp;&nbsp;Notebookcheck.fr"
-    },
-    {
-      "title": "GTA 6 : les fans peuvent s'attendre à un événement spécial du Miami Heat un jour avant sa sortie - Notebookcheck.fr",
-      "link": "https://www.notebookcheck.biz/GTA-6-les-fans-peuvent-s-attendre-a-un-evenement-special-du-Miami-Heat-un-jour-avant-sa-sortie.1415211.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNXy1jQzRsTm81UEgweG1UZzdoQnNEbGZXcUJ1clMtTmJNOWhqTjF4RTNRdVhDSXp3TXJ1UGhkN0dWcTNONDV1WGg1N2Ezd09rSHlISVpzYkJYbDJ0QXBNZFRQSHNjWDFGTE9IeTRGeDlleGZFOXBhTlA2M1BXUm1PMndoN0NRbUtMRS11OXRyNS05ODh2VVE3eWJaS1hmQWNiM05ieUc1MC05MGRUdk04VXgzM3UxTUVuOEhULUU2ZmpDMFJRU2hTLWtpeWl5QUo0bUZ0WlJ3?oc=5",
-      "date": "2026-10-03T15:08:49+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA-6-Collection-Teaser.jpg",
-      "description": "GTA 6 : les fans peuvent s'attendre à un événement spécial du Miami Heat un jour avant sa sortie&nbsp;&nbsp;Notebookcheck.fr"
-    },
-    {
-      "title": "GTA 6 Ultimate Edition pour PS5 à seulement 90 $ grâce à cette offre sur une carte cadeau PlayStation Store - Notebookcheck.fr",
-      "link": "https://www.notebookcheck.biz/GTA-6-Ultimate-Edition-pour-PS5-a-seulement-90-grace-a-cette-offre-sur-une-carte-cadeau-PlayStation-Store.1415209.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxNUnl3blE3Q0F2U0NacnpINW9Zb3ZLeWtrSlBpSk56dXVDWXh4YVNfeUhfeWpEaHRjLXRMdHM0cVpadEdiRHR3WW9lN0t3MjlZVjdfSC1KMGRNTXFKNWNiMnVvM1hGSzhiWVZXeUNCT2NhUnkyRlZidGVkWHhsZG5vajFmNHZraU9CbnBFM0JqRTJJdG8tWUdaVW5FUGdJXzRsdDdueHNYVGg2QUJFdjV6TWZPVlRGMFgzVXB5YnpCTHRvNGJXa0VyUUFleUl1N21SR1N6QkNRRjduWndVOWJ3T0tWUEc?oc=5",
-      "date": "2026-10-03T15:08:48+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/gta-6-ultimate-edition-ps5-playstation-store-deal.jpg",
-      "description": "GTA 6 Ultimate Edition pour PS5 à seulement 90 $ grâce à cette offre sur une carte cadeau PlayStation Store&nbsp;&nbsp;Notebookcheck.fr"
     }
   ],
   "partial": true,
