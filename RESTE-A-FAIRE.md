@@ -167,13 +167,15 @@ comparer. **Rien à faire.**
 | articles regroupant plusieurs rédactions | 287 (jusqu'à 5 sources) |
 | articles officiels | 50 |
 | sources | 63 |
-| `test_pipeline` | 1 689 vérifications |
-| `test_navigateur` | 323 contrôles |
+| `test_pipeline` | 1 709 vérifications |
+| `test_navigateur` | 331 contrôles |
 | taille du dépôt (GitHub) | 35 Mo |
-| `CACHE_NAME` | `gta6watch-shell-v17` |
+| `CACHE_NAME` | `gta6watch-shell-v18` |
 | `SIMILARITY_THRESHOLD` | 0,72 |
 | `HOT_SOURCE_THRESHOLD` | 3 |
 | `MAX_PERSISTED_ITEMS` | 300 |
+| `DEAD_SOURCE_HOURS` | **12** (24 jusqu'au 07/10) |
+| `INCIDENTS_DUREE_MIN_H` | 3,0 |
 
 ---
 
@@ -190,3 +192,29 @@ Sept fusions : #132, #133 (plan), #134, #135, #136, #137, #138, #139.
 5. **La déduplication passe de 20,1 s à 2,4 s** par passage.
 6. **Les reprises d'une même dépêche se rejoignent** — 22 paires → 43.
 7. **Le seuil descend à 0,72**, après rejeu complet des deux corpus.
+
+---
+
+## Ce qui a été livré le 07/10/2026
+
+**Le journal des incidents, repris le lendemain de sa livraison.** Antoni a
+demandé pourquoi la panne du décodeur n'y figurait pas. Réponse : le journal
+est chronologique, il n'inscrit un incident qu'à sa clôture, et le décodeur
+s'était rétabli quinze heures avant que le journal n'existe.
+
+La question en a ouvert une autre. Les **630 versions de `feed.json`** ont
+été rejouées : **319 pannes terminées en 21 jours**, soit **449 par mois
+pour un plafond de 100**. Le journal livré la veille se serait rempli en une
+semaine et « aucun incident depuis 30 jours » ne se serait plus jamais
+affiché — la fonctionnalité s'annulait elle-même.
+
+1. **La liste ne retient que les incidents de plus de 3 h**, et jamais les
+   nuits YouTube, déclarées `tombe_la_nuit` dans `FEEDS`. Il en reste 8 par
+   mois au lieu de 449.
+2. **Un compteur par source et par mois** prend tout le reste, hoquets
+   compris — sinon une source qui tombe onze fois par jour sans jamais
+   passer trois heures redeviendrait invisible.
+3. **Les sept incidents notables d'avant le journal ont été semés**, dont la
+   panne du décodeur, redatée sur `decode_failures` : 61,6 h et non 62,2.
+4. **`DEAD_SOURCE_HOURS` passe de 24 à 12 h.** La plus longue des 319 pannes
+   dure 8 h 30 : le seuil de 24 h ne pouvait pas se déclencher.

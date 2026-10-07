@@ -988,12 +988,28 @@ def test_vue_statistiques(nav, url):
         return page.evaluate("(s) => { const e = document.querySelector(s); "
                              "return !!e && getComputedStyle(e).display !== 'none'; }", sel)
 
+    # LES DATES SONT RELATIVES À AUJOURD'HUI, et ce n'est pas un détail.
+    #
+    # Elles étaient écrites en dur : « 2026-09-01 » à « 2026-09-22 ». Sans
+    # `couverture_depuis`, la fenêtre des statistiques vaut
+    # STATS_JOURS_SECOURS = 14 jours, et elle avance d'un jour par jour. Le
+    # 06/10/2026 elle allait du 22/09 au 05/10 et attrapait le dernier
+    # article du lot, au jour près. Le 07/10 à minuit heure de Paris elle
+    # est passée au 23/09, le fil de référence s'est retrouvé ENTIÈREMENT
+    # hors fenêtre, l'histogramme n'a plus eu une seule colonne non nulle
+    # et le contrôle du maximum écrit est tombé — sur un code que personne
+    # n'avait touché.
+    #
+    # Un contrôle qui expire tout seul à une date qu'aucun commentaire
+    # n'annonce est pire qu'un contrôle absent : il part en rouge un matin,
+    # sur la branche de quelqu'un d'autre, et accuse le mauvais changement.
     page.evaluate("""() => {
       historyPartial = false; rattrapageLance = true; archiveChargee = true;
       lastItems = [];
+      const base = Date.now();
       for(let j = 1; j <= 22; j++){
         lastItems.push({title: "Article " + j, link: "https://ex.test/" + j,
-          source: "S", date: "2026-09-" + String(j).padStart(2, "0") + "T10:00:00Z",
+          source: "S", date: new Date(base - j * 86400000).toISOString(),
           extraSources: j === 5 ? [{source: "X", link: "https://y.test"}] : null});
       }
       derniereReponseBackend = {sources_health: [
@@ -1026,7 +1042,21 @@ def test_vue_statistiques(nav, url):
     page.wait_for_selector(".stats-histo", timeout=5000)
     check(page.locator(".stats-histo").count() >= 1, "l'histogramme quotidien est dessiné")
     check(page.locator(".stats-histo em").count() == page.locator(".stats-histo").count(),
-          "un seul chiffre écrit par histogramme — le maximum, pas un par colonne")
+          "un seul chiffre écrit par histogramme — le maximum, pas un par colonne "
+          "(%d em pour %d histogramme(s))"
+          % (page.locator(".stats-histo em").count(),
+             page.locator(".stats-histo").count()))
+    # Le filet qui aurait nommé la vraie cause ci-dessus. Zéro colonne
+    # remplie ne se distingue pas, dans le contrôle précédent, d'un maximum
+    # qu'on aurait oublié d'écrire — et c'est pourtant tout l'écart entre
+    # « le fil de référence a glissé hors fenêtre » et « le rendu est
+    # cassé ».
+    vides = page.locator('.stats-histo .stats-col[data-lecture="0"]').count()
+    colonnes = page.locator(".stats-histo .stats-col").count()
+    check(colonnes > 0 and vides < colonnes,
+          "et le fil de référence tombe bien DANS la fenêtre : %d colonne(s) "
+          "remplie(s) sur %d, pas un histogramme vide"
+          % (colonnes - vides, colonnes))
     graphes = page.locator(".stats-histo").count() + page.locator(".stats-carte").count()
     check(page.locator(".stats-tableau table").count() == graphes,
           "chaque graphique — histogrammes et carte jour × heure — a son tableau : "
@@ -1307,36 +1337,46 @@ def test_bloc_incidents(nav, url):
     page.goto(url, wait_until="load")
     page.wait_for_selector("#feed", state="attached")
 
-    socle = """(incidents) => {
+    socle = """([incidents, compte]) => {
       derniereReponseBackend = {
         generated_at: "2026-10-06T20:00:00Z",
         sources_health: [{id: "a", name: "Alpha", status: "ok",
                           http_status: 200, entries_fetched: 25,
                           days_since_last_article: 0}],
         sources_incidents: incidents,
+        sources_incidents_compte: compte,
       };
       setTab("stats"); ongletStatsChoisi("sources");
     }"""
 
     # --- le cas le plus fréquent, et le plus utile : rien à signaler ----
-    page.evaluate(socle, [])
+    page.evaluate(socle, [[], {}])
     page.wait_for_selector(".stats-bloc")
     vide = page.locator(".stats-bloc").filter(has_text="Incidents des 30 derniers jours")
     check(vide.count() == 1,
           "le bloc existe même sans incident — « aucun » est une information, "
           "pas un vide à masquer")
-    check("Aucun incident depuis 30 jours" in vide.inner_text(),
-          "et il le dit en toutes lettres (« %s »)" % vide.inner_text().replace("\n", " ")[:80])
+    check("Aucun incident de plus de trois heures depuis 30 jours" in vide.inner_text(),
+          "et il le dit en toutes lettres, SEUIL COMPRIS : sans le seuil, la "
+          "phrase promettrait zéro coupure là où il y en a 449 par mois "
+          "(« %s »)" % vide.inner_text().replace("\n", " ")[:90])
+    check(page.locator(".stats-bloc").filter(has_text="Coupures par source").count() == 0,
+          "et sans compteur, pas de bloc de compteur")
 
     # --- avec des incidents --------------------------------------------
-    page.evaluate(socle, [
+    #
+    # Les deux vraies entrées du fil au 07/10/2026 : la plus courte que le
+    # filtre laisse passer, et la panne du décodeur — l'incident le plus
+    # grave du projet, celui que le journal avait manqué parce qu'il s'était
+    # refermé quinze heures avant que le journal n'existe.
+    page.evaluate(socle, [[
         {"source": "reddit-leaks", "nom": "Reddit — fuites et rumeurs",
-         "debut": "2026-10-02T00:02:00Z", "fin": "2026-10-02T02:02:00Z",
-         "heures": 2.0, "alertee": False},
+         "debut": "2026-10-02T00:02:00Z", "fin": "2026-10-02T04:02:00Z",
+         "heures": 4.0, "alertee": False},
         {"source": "__decodage__", "nom": "Décodage Google News",
-         "debut": "2026-10-03T17:23:00Z", "fin": "2026-10-06T07:33:00Z",
-         "heures": 62.2, "alertee": True},
-    ])
+         "debut": "2026-10-03T16:01:34Z", "fin": "2026-10-06T05:36:17Z",
+         "heures": 61.6, "alertee": True},
+    ], {}])
     page.wait_for_selector(".stats-bloc")
     bloc = page.locator(".stats-bloc").filter(has_text="Incidents des 30 derniers jours")
     titre = bloc.locator("h4, .stats-titre, strong").first.inner_text() if bloc.locator("h4, .stats-titre, strong").count() else bloc.inner_text()
@@ -1344,7 +1384,7 @@ def test_bloc_incidents(nav, url):
           "le nombre figure au titre")
     lignes = bloc.locator("li").all_inner_texts()
     check(len(lignes) == 2, "une ligne par incident (%d)" % len(lignes))
-    check("Reddit" in lignes[0] and "2 h" in lignes[0] and "résolu seul" in lignes[0],
+    check("Reddit" in lignes[0] and "4 h" in lignes[0] and "résolu seul" in lignes[0],
           "la panne courte est marquée « résolu seul » — c'est CE détail que "
           "je n'avais pas su dire (« %s »)" % lignes[0].replace("\n", " "))
     check("Décodage Google News" in lignes[1] and "alerte" in lignes[1],
@@ -1352,6 +1392,40 @@ def test_bloc_incidents(nav, url):
           "(« %s »)" % lignes[1].replace("\n", " "))
     check("3 j" in lignes[1],
           "une panne de 62 h se lit en jours, pas en heures (« %s »)"
+          % lignes[1].replace("\n", " "))
+
+    # --- LE COMPTEUR, qui dit ce que la liste filtrée ne dit plus -------
+    #
+    # Sans lui, une source qui tombe onze fois par jour sans jamais passer
+    # trois heures n'apparaîtrait nulle part. C'est exactement le cas des
+    # deux flux YouTube, qui sont les deux premiers du classement réel.
+    page.evaluate(socle, [[], {
+        "2026-09": {"vg247": {"nom": "VG247", "n": 2, "heures": 3.0}},
+        "2026-10": {
+            "rockstar-youtube": {"nom": "Rockstar Games (YouTube)", "n": 6, "heures": 38.0},
+            "jvc": {"nom": "Jeuxvideo.com", "n": 1, "heures": 0.5},
+        },
+    }])
+    page.wait_for_selector(".stats-bloc")
+    cpt = page.locator(".stats-bloc").filter(has_text="Coupures par source")
+    check(cpt.count() == 1, "le bloc paraît dès qu'il y a de quoi compter")
+    lignes = cpt.locator("li").all_inner_texts()
+    check(len(lignes) == 2,
+          "il ne montre QUE le mois le plus récent — deux mois empilés "
+          "diraient une tendance que personne n'a demandée (%d lignes)"
+          % len(lignes))
+    check("Rockstar Games (YouTube)" in lignes[0] and "6 coupures" in lignes[0],
+          "la source la plus coupée d'abord, avec son nombre (« %s »)"
+          % lignes[0].replace("\n", " "))
+    check("38 h" in lignes[0] or "2 j" in lignes[0],
+          "et sa durée cumulée (« %s »)" % lignes[0].replace("\n", " "))
+    check("Jeuxvideo.com" in lignes[1] and "1 coupure" in lignes[1]
+          and "coupures" not in lignes[1],
+          "une seule coupure se dit au singulier (« %s »)"
+          % lignes[1].replace("\n", " "))
+    check("au total" not in lignes[1],
+          "et une demi-heure cumulée ne s'affiche pas : « 30 min au total » "
+          "sur un mois entier n'apprend rien (« %s »)"
           % lignes[1].replace("\n", " "))
 
     # --- le piège du sélecteur -----------------------------------------

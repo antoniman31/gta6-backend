@@ -3498,10 +3498,13 @@ def test_journal_des_incidents():
           "son identifiant est hors d'atteinte d'un vrai identifiant de source")
 
     # --- la rétention ----------------------------------------------------
-    def inc_a(jours, n=0):
+    def inc_a(jours, n=0, heures=4.0):
+        # 4 h et non 1 h : en dessous de INCIDENTS_DUREE_MIN_H un incident
+        # n'entre plus au journal du tout, et ce bloc-ci teste la rétention,
+        # pas le filtre. Celui-ci a son propre test, juste en dessous.
         q = fin - timedelta(days=jours)
         return {"source": "s%d" % n, "nom": "S", "debut": q.isoformat(),
-                "fin": q.isoformat(), "heures": 1.0, "alertee": False}
+                "fin": q.isoformat(), "heures": heures, "alertee": False}
 
     j = feed_store.ajoute_incidents([inc_a(40), inc_a(29, 1)], [inc_a(0, 2)], fin)
     check([i["source"] for i in j] == ["s2", "s1"],
@@ -3523,6 +3526,147 @@ def test_journal_des_incidents():
           "les incidents sont relevés avant d'être versés au journal")
     check('"sources_incidents": journal_incidents' in corps,
           "le journal est publié dans feed.json")
+    check(corps.index("feed_store.compte_incidents(") > corps.index("incidents_termines("),
+          "le compteur est nourri des mêmes incidents, sans filtre")
+    check('"sources_incidents_compte": compteur_incidents' in corps,
+          "et il est publié à côté du journal")
+
+
+def test_le_journal_ne_liste_que_les_incidents_notables():
+    print("\n[incidents] la liste filtre, le compteur prend tout")
+    import feed_store, fetch_feeds
+
+    # POURQUOI CE FILTRE EXISTE, mesuré le 07/10/2026 en rejouant les 630
+    # versions de docs/feed.json : 319 pannes terminées en 21 jours, soit
+    # 449 par mois pour un plafond de 100. Le journal livré la veille se
+    # serait rempli en une semaine, à quinze lignes par jour, et « aucun
+    # incident depuis 30 jours » — la ligne qui justifiait de l'écrire — ne
+    # se serait plus jamais affichée.
+    def inc(heures, routine=False, sid="vg247", nom="VG247",
+            fin="2026-10-05T12:00:00+00:00"):
+        i = {"source": sid, "nom": nom, "debut": "2026-10-05T06:00:00+00:00",
+             "fin": fin, "heures": heures, "alertee": False}
+        if routine:
+            i["routine"] = True
+        return i
+
+    seuil = feed_store.INCIDENTS_DUREE_MIN_H
+    check(feed_store.incident_notable(inc(seuil)),
+          "une panne de %s h est listée" % seuil)
+    check(not feed_store.incident_notable(inc(seuil - 0.1)),
+          "un hoquet plus court ne l'est pas — il y en a 380 par mois")
+    check(not feed_store.incident_notable(inc(99.0, routine=True)),
+          "et une source déclarée nocturne ne l'est JAMAIS, si longue "
+          "soit-elle : c'est un horaire, pas une panne")
+
+    maintenant = datetime(2026, 10, 5, 13, 0, tzinfo=timezone.utc)
+    tout = [inc(5.0), inc(0.5, sid="jvc", nom="JV"),
+            inc(4.0, routine=True, sid="rockstar-youtube", nom="YT")]
+    journal = feed_store.ajoute_incidents([], tout, maintenant)
+    check([i["source"] for i in journal] == ["vg247"],
+          "sur trois incidents clos, un seul est listé (%s)"
+          % [i["source"] for i in journal])
+
+    # MAIS RIEN N'EST PERDU. C'est la contrepartie du filtre, et elle compte
+    # autant que lui : une source qui hoquette onze fois par jour sans
+    # jamais dépasser trois heures deviendrait invisible sans ce compteur.
+    compteur = feed_store.compte_incidents({}, tout, maintenant)
+    check(sorted(compteur["2026-10"]) == ["jvc", "rockstar-youtube", "vg247"],
+          "les trois sont au compteur, nocturne et hoquet compris (%s)"
+          % sorted(compteur.get("2026-10", {})))
+    check(compteur["2026-10"]["vg247"]["n"] == 1
+          and compteur["2026-10"]["vg247"]["heures"] == 5.0,
+          "avec leur nombre et leur durée cumulée")
+
+    # Le cumul est la raison d'être du compteur : il doit survivre au
+    # passage suivant, sinon il ne dit rien de plus que la liste.
+    compteur = feed_store.compte_incidents(compteur, [inc(1.0)], maintenant)
+    check(compteur["2026-10"]["vg247"]["n"] == 2
+          and compteur["2026-10"]["vg247"]["heures"] == 6.0,
+          "un second hoquet s'ajoute au précédent (%s fois, %s h)"
+          % (compteur["2026-10"]["vg247"]["n"],
+             compteur["2026-10"]["vg247"]["heures"]))
+
+    ancien = {"2026-07": {"a": {"nom": "A", "n": 1, "heures": 1.0}},
+              "2026-08": {"a": {"nom": "A", "n": 1, "heures": 1.0}},
+              "2026-09": {"a": {"nom": "A", "n": 1, "heures": 1.0}}}
+    garde = feed_store.compte_incidents(ancien, [], maintenant)
+    check(sorted(garde) == ["2026-08", "2026-09"],
+          "seuls les %d derniers mois sont gardés (%s)"
+          % (feed_store.INCIDENTS_MOIS_GARDES, sorted(garde)))
+
+    # L'entrée du compteur est la MÊME que celle du passage précédent, pas
+    # une copie partagée : muter le résultat ne doit pas réécrire l'état
+    # stocké, sinon un contrôle de publication comparerait une valeur à
+    # elle-même.
+    stocke = {"2026-10": {"a": {"nom": "A", "n": 1, "heures": 1.0}}}
+    feed_store.compte_incidents(stocke, [inc(2.0, sid="a", nom="A")], maintenant)
+    check(stocke["2026-10"]["a"]["n"] == 1,
+          "et l'état d'entrée n'est pas modifié au passage")
+
+    # --- les flux nocturnes sont DÉCLARÉS, pas devinés -------------------
+    nocturnes = [f["id"] for f in fetch_feeds.FEEDS if f.get("tombe_la_nuit")]
+    check(sorted(nocturnes) == ["rockstar-youtube", "rockstarmag-youtube"],
+          "deux flux sont déclarés nocturnes, les deux YouTube (%s)" % nocturnes)
+    check(fetch_feeds.source_nocturne("rockstar-youtube")
+          and not fetch_feeds.source_nocturne("vg247"),
+          "et la déclaration se lit dans FEEDS, pas dans une liste à part")
+
+    # Le marquage se fait à la CLÔTURE, là où l'incident est fabriqué : si
+    # incidents_termines ne le posait pas, le filtre ne verrait rien.
+    t0 = datetime(2026, 10, 5, 4, 0, tzinfo=timezone.utc)
+    t1 = datetime(2026, 10, 5, 8, 0, tzinfo=timezone.utc)
+    sante = [{"id": "rockstar-youtube", "name": "Rockstar Games (YouTube)"},
+             {"id": "vg247", "name": "VG247"}]
+    avant = {"rockstar-youtube": {"depuis": t0.isoformat(), "succes": 0,
+                                  "alertee": False},
+             "vg247": {"depuis": t0.isoformat(), "succes": 0, "alertee": False}}
+    clos = {i["source"]: i for i in
+            fetch_feeds.incidents_termines(sante, avant, {}, t1)}
+    check(clos["rockstar-youtube"].get("routine") is True,
+          "la nuit YouTube est marquée routine à sa clôture")
+    check("routine" not in clos["vg247"],
+          "et la panne de VG247, à la même heure et de la même durée, ne "
+          "l'est pas — c'est la source qui décide, pas l'horaire")
+
+
+def test_les_incidents_passes_sont_dans_le_fil():
+    print("\n[incidents] les pannes d'avant le journal ont été semées")
+    import json
+
+    # Le journal a été écrit le 06/10/2026 au soir et il est CHRONOLOGIQUE :
+    # il n'enregistre un incident qu'au moment où celui-ci se referme. La
+    # panne du décodeur Google News s'était rétablie à 07h36 le matin même,
+    # quinze heures plus tôt — elle n'y était donc pas, et l'incident le
+    # plus grave du projet manquait au journal des incidents.
+    #
+    # Les sept notables des trois semaines précédentes ont été reconstruits
+    # en rejouant les 630 versions de docs/feed.json à travers
+    # incidents_termines, puis semés dans le fil. Ce contrôle existe pour
+    # que personne ne les efface par mégarde en régénérant le fichier.
+    fil = json.load(open("docs/feed.json", encoding="utf-8"))
+    journal = fil.get("sources_incidents") or []
+    decodeur = [i for i in journal if i.get("source") == "__decodage__"]
+    check(len(decodeur) == 1,
+          "la panne du décodeur est au journal (%d entrée(s))" % len(decodeur))
+    check(decodeur and decodeur[0]["heures"] > 48,
+          "avec ses %s heures, mesurées sur decode_failures : 0 échec au "
+          "passage de 15h02 le 03/10, 126 à celui de 16h01, et retour à 0 "
+          "le 06/10 à 05h36" % (decodeur[0]["heures"] if decodeur else "?"))
+
+    compte = fil.get("sources_incidents_compte") or {}
+    check(len(compte) <= 2, "le compteur ne garde que deux mois (%s)"
+          % sorted(compte))
+    total = sum(e["n"] for m in compte.values() for e in m.values())
+    check(total > 300,
+          "et il porte les %d coupures reconstruites, pas seulement les "
+          "notables" % total)
+
+    recent = json.load(open("docs/feed-recent.json", encoding="utf-8"))
+    check(recent.get("sources_incidents") == journal
+          and recent.get("sources_incidents_compte") == compte,
+          "le fichier allégé porte les mêmes — c'est lui que l'app lit "
+          "d'abord, et un écart ferait clignoter le panneau")
 
 
 def test_plafond_des_mots_rares():
@@ -8277,6 +8421,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_reparation_retroactive_du_decodage,
            test_cache_de_decodage_hors_du_fil,
            test_journal_des_incidents,
+           test_le_journal_ne_liste_que_les_incidents_notables,
+           test_les_incidents_passes_sont_dans_le_fil,
            test_plafond_des_mots_rares,
            test_fusions_du_corpus_fige,
            test_plafond_des_annonces_officielles,

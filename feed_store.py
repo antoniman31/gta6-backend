@@ -763,16 +763,64 @@ def write_feed(data, path=FEED_PATH):
 # et le bloc affiché annonce une période.
 INCIDENTS_JOURS = 30
 
-# Ceinture, qui ne devrait jamais servir. Une source qui ALTERNE échec et
-# réussite ne ferme jamais son incident (REPRISE_CONFIRMEE remet le compteur
-# à zéro à chaque échec), donc le clignotement ne peut pas inonder le
-# journal. Le pire cas réel est une source qui tombe une fois puis réussit
-# deux fois, en boucle : ~16 entrées par jour, dont 100 couvrent six jours.
+# Ceinture. Elle ne devrait plus servir maintenant que la liste est filtrée
+# (voir INCIDENTS_DUREE_MIN_H) : sur les 21 jours reconstruits, huit
+# incidents par mois passaient le filtre.
 INCIDENTS_MAX = 100
+
+# Durée en dessous de laquelle un incident est COMPTÉ mais pas LISTÉ.
+#
+# Mesuré en rejouant les 630 versions de docs/feed.json de l'historique Git
+# à travers incidents_termines, le 07/10/2026 — 21,3 jours, du 15/09 au
+# 06/10 :
+#
+#     319 pannes terminées, soit 15 PAR JOUR
+#        moins d'1 h     25
+#        1 à 3 h        246
+#        3 à 12 h        48
+#        plus de 12 h     0     <- aucune, jamais
+#
+# Le journal tel qu'il a été livré le 06/10 au soir en aurait enregistré
+# 449 par mois pour un plafond de 100 : quinze lignes par jour, rempli en
+# une semaine, et « aucun incident depuis 30 jours » plus jamais affiché —
+# c'est-à-dire précisément la ligne qui justifiait de l'écrire.
+#
+# Trois heures laissent 8 incidents par mois une fois les flux nocturnes
+# écartés. Les 380 autres ne disparaissent pas pour autant : ils alimentent
+# compte_incidents, qui répond à « est-ce que cette source va bien ces
+# temps-ci ? » sans noyer la liste.
+INCIDENTS_DUREE_MIN_H = 3.0
+
+# Mois de comptage gardés. Deux suffisent pour « ce mois-ci » et « le mois
+# dernier » ; au-delà, l'historique Git reste la source de vérité.
+INCIDENTS_MOIS_GARDES = 2
+
+
+def incident_notable(incident):
+    """Cet incident mérite-t-il sa LIGNE, ou seulement son trait au compteur ?
+
+    Deux raisons de ne pas lister :
+
+    - il a duré moins de INCIDENTS_DUREE_MIN_H. Un hoquet d'un passage n'est
+      pas une panne, et il y en a onze par jour ;
+    - sa source est déclarée `tombe_la_nuit`. Les deux flux YouTube
+      descendent chaque nuit entre 4 h et 8 h — 43 épisodes sur 21 jours,
+      soit 61 par mois à eux deux, les deux plus gros « fautifs » du
+      classement. Ce n'est pas une panne, c'est un horaire, et le README le
+      documente depuis le 16/09/2026.
+
+    Rien n'est caché pour autant : l'un comme l'autre comptent au compteur
+    par source. Une source non déclarée qui se mettrait à tomber toutes les
+    nuits s'y verrait tout de suite, et c'est ce qui permet de n'avoir à
+    déclarer que ce qu'on a observé.
+    """
+    if incident.get("routine"):
+        return False
+    return (incident.get("heures") or 0) >= INCIDENTS_DUREE_MIN_H
 
 
 def ajoute_incidents(journal, nouveaux, maintenant=None):
-    """Ajoute des incidents clos au journal, et l'élague. Rend le journal.
+    """Ajoute au journal les incidents clos NOTABLES. Rend le journal.
 
     Élagué dans cet ordre : d'abord par l'âge, ensuite par le nombre. Le
     plafond s'applique en dernier pour qu'un afflux d'incidents récents ne
@@ -781,11 +829,50 @@ def ajoute_incidents(journal, nouveaux, maintenant=None):
     """
     maintenant = maintenant or datetime.now(timezone.utc)
     limite = maintenant - timedelta(days=INCIDENTS_JOURS)
-    tout = list(journal or []) + list(nouveaux or [])
+    tout = list(journal or []) + [i for i in (nouveaux or []) if incident_notable(i)]
     gardes = [i for i in tout
               if i.get("fin") and parse_date_key(i["fin"]) >= limite]
     gardes.sort(key=lambda i: i["fin"], reverse=True)
     return gardes[:INCIDENTS_MAX]
+
+
+def compte_incidents(compteur, nouveaux, maintenant=None):
+    """Le nombre de pannes par source et par mois, hoquets compris.
+
+    C'est la réponse à « est-ce que cette source va bien ces temps-ci ? » —
+    la question à laquelle je n'ai pas su répondre le 05/10/2026, et qui
+    m'avait fait rejouer 120 versions de feed.json pour découvrir que je
+    m'étais trompé.
+
+    Compté par MOIS plutôt que sur une fenêtre glissante : un cumul exact et
+    deux clés suffisent, là où une fenêtre exigerait de garder la date de
+    chaque hoquet — 456 par mois, soit plus de poids que la liste qu'on
+    vient justement d'alléger.
+
+    Le poids est borné des deux côtés : INCIDENTS_MOIS_GARDES mois et autant
+    de sources qu'il en existe. Mesuré sur l'historique réel, 320 coupures
+    réparties sur deux mois et 38 sources tiennent en 5 ko bruts.
+    """
+    # Copie en PROFONDEUR : une copie de surface partagerait les entrées
+    # {nom, n, heures} avec `stored`, et incrémenter le compteur réécrirait
+    # l'état d'AVANT ce passage. Le garde-fou de publication compare les
+    # deux — il comparerait alors une valeur à elle-même.
+    compteur = {mois: {sid: dict(e) for sid, e in sources.items()}
+                for mois, sources in (compteur or {}).items()}
+    for incident in (nouveaux or []):
+        fin = incident.get("fin")
+        sid = incident.get("source")
+        if not fin or not sid:
+            continue
+        mois = parse_date_key(fin).strftime("%Y-%m")
+        entree = compteur.setdefault(mois, {}).setdefault(
+            sid, {"nom": incident.get("nom") or sid, "n": 0, "heures": 0.0})
+        entree["nom"] = incident.get("nom") or entree["nom"]
+        entree["n"] += 1
+        entree["heures"] = round(entree["heures"] + (incident.get("heures") or 0), 1)
+    for mois in sorted(compteur, reverse=True)[INCIDENTS_MOIS_GARDES:]:
+        del compteur[mois]
+    return compteur
 
 
 CACHE_DECODAGE_PATH = "decode-cache.json"

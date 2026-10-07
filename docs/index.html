@@ -5048,6 +5048,21 @@ function calculeStats(items, backend, maintenant, lecture){
       .filter(i => i && i.fin)
       .map(i => ({ nom: i.nom || noms[i.source] || i.source,
                    fin: i.fin, heures: i.heures, alertee: !!i.alertee })),
+    // Le décompte COMPLET du mois en cours, hoquets d'un passage et nuits
+    // YouTube compris — ceux que la liste ci-dessus écarte justement pour
+    // rester lisible. Répond à « est-ce que cette source va bien ces
+    // temps-ci ? », là où `incidents` répond à « qu'est-ce qui est tombé ».
+    hoquets: (() => {
+      const parMois = (backend && backend.sources_incidents_compte) || {};
+      const mois = Object.keys(parMois).sort().pop();
+      if(!mois) return { mois: null, sources: [] };
+      return { mois, sources: Object.keys(parMois[mois] || {})
+        .map(id => ({ nom: (parMois[mois][id] || {}).nom || noms[id] || id,
+                      n: (parMois[mois][id] || {}).n || 0,
+                      heures: (parMois[mois][id] || {}).heures || 0 }))
+        .filter(x => x.n > 0)
+        .sort((a, b) => b.n - a.n || a.nom.localeCompare(b.nom, "fr")) };
+    })(),
   };
 
   // ---- Le robot ----
@@ -5527,7 +5542,7 @@ function renderStatsSources(s){
       (h < 1 ? Math.round(h * 60) + " min" : (h < 24 ? h + " h" : Math.round(h / 24) + " j"));
     blocs.push(blocStats(`Incidents des 30 derniers jours${inc.length ? " (" + inc.length + ")" : ""}`,
       inc.length
-        ? "Pannes de source terminées. Une source en difficulté en ce moment figure dans le bloc du dessus."
+        ? "Pannes de source de plus de trois heures, terminées. Une source en difficulté en ce moment figure dans le bloc du dessus."
         : "",
       inc.length
         ? listeStats(inc.map(i => `<li><span>${escapeHtml(i.nom)} · `
@@ -5535,7 +5550,31 @@ function renderStatsSources(s){
             + `<span class="stats-n">`
             + (i.alertee ? "alerte envoyée" : "résolu seul")
             + `</span></li>`))
-        : `<p class="stats-attente">Aucun incident depuis 30 jours.</p>`));
+        : `<p class="stats-attente">Aucun incident de plus de trois heures depuis 30 jours.</p>`));
+
+    // LE COMPTEUR, qui dit ce que la liste filtrée ne dit plus.
+    //
+    // Sans seuil, le journal enregistrerait 456 pannes par mois pour un
+    // plafond de 100 : quinze lignes par jour, rempli en une semaine, et
+    // « aucun incident » jamais affiché. Avec le seuil, il en reste sept —
+    // mais une source qui hoquette onze fois par jour redeviendrait
+    // invisible. Ce bloc-ci est ce qui empêche ça : les courts ne sont pas
+    // jetés, ils sont comptés.
+    const hq = src.hoquets;
+    if(hq.sources.length){
+      const d = hq.mois ? new Date(hq.mois + "-01T12:00:00Z") : null;
+      const moisLu = d && !isNaN(d)
+        ? d.toLocaleDateString("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" })
+        : "";
+      const courant = hq.mois === new Date().toISOString().slice(0, 7);
+      blocs.push(blocStats(`Coupures par source, ${courant ? "ce mois-ci" : moisLu}`,
+        "Toutes les interruptions, y compris celles d'un seul passage et les nuits où YouTube ne répond pas. "
+        + "Un chiffre qui monte sans qu'aucun incident ne soit listé, c'est une source qui s'effrite.",
+        listeStats(hq.sources.map(x => `<li><span>${escapeHtml(x.nom)}</span>`
+          + `<span class="stats-n">${x.n} coupure${x.n > 1 ? "s" : ""}`
+          + (x.heures >= 1 ? ` · ${escapeHtml(duree(x.heures))} au total` : "")
+          + `</span></li>`))));
+    }
   }
 
   if(src.productives.length){
