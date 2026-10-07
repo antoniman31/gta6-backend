@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T03:01:27.409125+00:00",
+  "generated_at": "2026-10-07T04:01:31.016067+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 25.9,
+  "duration_seconds": 25.5,
   "decode_failures": 0,
-  "total_articles": 3266,
-  "new_this_run": 3,
+  "total_articles": 3270,
+  "new_this_run": 4,
   "hot_count": 46,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 855,
-      "last_article": "2026-10-07T00:12:11+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 857,
+      "last_article": "2026-10-07T03:23:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 1123,
-      "last_article": "2026-10-07T02:51:16+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 1124,
+      "last_article": "2026-10-07T03:24:35+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -519,9 +519,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 75,
-      "last_article": "2026-10-06T16:20:52+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 76,
+      "last_article": "2026-10-06T23:33:09+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -541,10 +541,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 15,
       "last_article": "2026-10-07T00:48:32+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-10-03T09:40:41+00:00",
@@ -1039,7 +1039,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Jason+Schreier%22+(Rockstar+OR+%22Take-Two%22+OR+%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-24T07:00:00+00:00",
       "days_since_last_article": 43,
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 14,
       "last_article": "2026-10-02T18:00:38+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-01T22:41:19+00:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1234,7 +1234,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,15,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1246,7 +1246,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1302,8 +1302,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"954be497ebe096c4c42dcd65c44dd719\"",
-      "modified": "Wed, 07 Oct 2026 01:37:51 GMT"
+      "etag": "W/\"e6dee25be1f82aa6e7a890c41115976e\"",
+      "modified": "Wed, 07 Oct 2026 03:53:59 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1327,8 +1327,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"61dda7187a203e649e5be863959f5746\"",
-      "modified": "Wed, 07 Oct 2026 02:40:20 GMT"
+      "etag": "W/\"71e7c22c54e3cfe057b4168b1cdff5db\"",
+      "modified": "Wed, 07 Oct 2026 03:51:24 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1343,7 +1343,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 07 Oct 2026 03:01:06 GMT"
+      "modified": "Wed, 07 Oct 2026 04:01:08 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1352,8 +1352,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ac5b5c1-2f59\"",
-      "modified": "Wed, 07 Oct 2026 03:00:17 GMT"
+      "etag": "W/\"6ac5c3d2-2f59\"",
+      "modified": "Wed, 07 Oct 2026 04:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1372,8 +1372,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ac5a593-c06\"",
-      "modified": "Wed, 07 Oct 2026 01:51:15 GMT"
+      "etag": "\"6ac5c1b7-c07\"",
+      "modified": "Wed, 07 Oct 2026 03:51:19 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1383,7 +1383,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 07 Oct 2026 03:00:52 GMT"
+      "modified": "Wed, 07 Oct 2026 04:01:10 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1828,6 +1828,32 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "MSFT Stock Nears All-Time High: Xbox Moves To Secure Exclusive Rights To Stream Grand Theft Auto VI, Report Says - Stocktwits",
+      "link": "https://stocktwits.com/news-articles/markets/equity/msft-stock-nears-all-time-high-xbox-moves-to-secure-exclusive-rights-to-stream-grand-theft-auto-vi-report-says/cZDHxJ5RBlq",
+      "source_link": "https://news.google.com/rss/articles/CBMihAJBVV95cUxQQ0I2bUY1R19nY1Q5b3ZnRjhXdTlzVlBYWjhiUlo4d0ZZVmZ5enctZGFFSW5NdkYwVG03bTlBaWR1bnZrelBUUlRGZHpFMUhwZkJuUzg0OEdzX1UwTHF6N1dteF95YzZtNEJxN05maThSVUNPZXhodE05SHE4NXdUNGFvMktHbGhZSGJTcno4TDBLNVFPc1hwdW5TR0d0ZzNJdFIwY0VaRkVaUXhLMlBMU2t0ZE1DbzJ1dEtmaXRCXzBBbC1vLS16OER6dzBiRUVTT3Z1LWNYUGZLblhYZzY0ajZNZjBxRDBWTi16cC1wMDJhMGxMcVk0anNUTkdkcTlGTEhqYw?oc=5",
+      "date": "2026-10-07T03:24:35+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://news.stocktwits-cdn.com/large_Getty_Images_2192875226_jpg_2d15dbd306.webp",
+      "description": "MSFT Stock Nears All-Time High: Xbox Moves To Secure Exclusive Rights To Stream Grand Theft Auto VI, Report Says&nbsp;&nbsp;Stocktwits"
+    },
+    {
+      "title": "[Zelda: Ocarina of Time Remake] Son atout face à Grand Theft Auto VI - Gamekyo.com",
+      "link": "https://www.gamekyo.com/blog_article488310.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE0tN19CXzU5X3h4Q2poaEYzWXhEd1hmTWtQSW9hcjRybV9VSXd2N0xCV1J0c0x5dnppT3FQa1FOck9hdVJZOXdxOTJnOEtSbnlidFpqYS0xelNpTFE?oc=5",
+      "date": "2026-10-07T03:23:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "http://www.gamekyo.com/Webmasters/Images/the-legend-of-zelda-ocarina-of-time_20260811_080836_intro.jpg",
+      "description": "[Zelda: Ocarina of Time Remake] Son atout face à Grand Theft Auto VI&nbsp;&nbsp;Gamekyo.com"
+    },
+    {
       "title": "'Playable on PC Too?' Rumors Swirl Over Microsoft Securing GTA6 Streaming Exclusivity - Inven Global",
       "link": "https://www.invenglobal.com/articles/26877/playable-on-pc-too-rumors-swirl-over-microsoft-securing-gta6-streaming-exclusivity",
       "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPbFJ2NnU5ZWs2bGl1eE9sMS15Y3htWjRlaVVpN1BPVUxudHNLSEhTcHhJUk5PXzg1OGJRTWprT3VwOVlZVHV2N2g4dXlWY0IxSDFVUWJ4Mk1TdkxvWjItOEdmYUVSUDhyTnE5bzV6YVRWTkhhellVUmp3eWR3a3diek1pSHM3eklUQUtGZlhuSy1GT3g3blFUanFwd0RmS1BsMDZzQzI0MVdaMXVjSzBHQktrRlU4QndRMEhEUGFZa1pEWTg?oc=5",
@@ -1839,6 +1865,19 @@
       "lang": "en",
       "image": "https://static.invenglobal.com/upload/image/2026/10/07/i1791341346409651.jpeg",
       "description": "'Playable on PC Too?' Rumors Swirl Over Microsoft Securing GTA6 Streaming Exclusivity&nbsp;&nbsp;Inven Global"
+    },
+    {
+      "title": "Xbox Cloud Gaming diffusera GTA 6 en streaming en exclusivité le jour de sa sortie, au bénéfice des joueurs PC - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Xbox-Cloud-Gaming-diffusera-GTA-6-en-streaming-en-exclusivite-le-jour-de-sa-sortie-au-benefice-des-joueurs-PC.1417810.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxPTVQ2NEtPVHdGc2ZnTlVhalpqVU53aXNWMk93T09QN0xheWlCcnU1Q28zR3UtVXMtamN2RDdleGc5ZEh3eE9MR0E2QXhWY21oNmdnYklMYllSSXVJY3hxZmFneGFocTV0X1I4MWRrUmF0a08zLWV4VTY2c3lyc2pvYlhUUzBISDR6X0MxR3c4ejdxekEtWVZjbk01X1FQbjFiU0JXcDdoN052WnBGaEJwSHozOTdUcnUtbkR3dkprdTlQT2pXNXZGaFNRODRKUHB3aU9qNU40WFdsQk8xTDZidHRxVFRwb0h4REE?oc=5",
+      "date": "2026-10-07T02:40:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6CloudStreaming.jpg",
+      "description": "Xbox Cloud Gaming diffusera GTA 6 en streaming en exclusivité le jour de sa sortie, au bénéfice des joueurs PC&nbsp;&nbsp;Notebookcheck.fr"
     },
     {
       "title": "GTA 6 Is Officially Playable On PC At Launch, With One Major Caveat - OpenCritic",
@@ -1995,6 +2034,19 @@
       "lang": "en",
       "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6CloudStreaming.jpg",
       "description": "Xbox Cloud Gaming to stream GTA 6 exclusively on release date, benefiting PC gamers&nbsp;&nbsp;Notebookcheck"
+    },
+    {
+      "title": "GTA 6 Cloud Streaming Reportedly Exclusive to Xbox - TechPowerUp",
+      "link": "https://www.techpowerup.com/353446/gta-6-cloud-streaming-reportedly-exclusive-to-xbox",
+      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNaDJBV2V6LTRJUmNvZXgtYXpid0VrbVFvQWdOSHowWmtsbmpGUzVSVVZRQUQ0WTBhYVZDNGRLSzdBTWhUeDRkYTYxclZOamVaZGVpZ2hmQ2E3ckpuaWtERk8weFNzTlllYXdnQTNLOGdOUXhibklTekZwUmZYdXlDdFhpN3A2WjR3NEVmb0NR0gGTAUFVX3lxTE84RE8zamFkc1h0UmgzRi01NFM1OGFfOFdmUHlxWm8wMHlaU3RyRWxpbGxfc3JtX1FBZHdWTU4zemVSRFoxNDJiU1EweFJyaGhmcnRvUDZVQ3d5ck1tcnNnN05icjQ3cTYtNGVfMUJwZklnd1BsMW5Zc2k3bmo1NmpYRG5MS0Zlc2EyanVXLTZpZ0FvYw?oc=5",
+      "date": "2026-10-06T23:33:09+00:00",
+      "source": "Google News (EN, 7 jours)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.techpowerup.com/img/9og93JFkFksxl1fB.jpg",
+      "description": "GTA 6 Cloud Streaming Reportedly Exclusive to Xbox&nbsp;&nbsp;TechPowerUp"
     },
     {
       "title": "Xbox Secures GTA VI Streaming Rights - Dark Horizons",
@@ -12823,7 +12875,6 @@
     {
       "title": "Rockstar Games Confirms Dynamic Weather System for GTA 6 - suaragarut.id",
       "link": "https://suaragarut.id/en/rockstar-games-confirms-gta-6-weather",
-      "source_link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1tR29UWS1NNmUwSlJJdGtvUDQ0U210Q0tpUDI2azM1bm81VEwxUFNMWHpUY2dwWGhYaC1UeDdHZlFEOU5mWHh5YXFqUGI3UzhLOEFZUi0yUDhza25MTkhfYkxUMXlBb0FBY1BLa3dBWQ?oc=5",
       "date": "2026-09-30T04:00:14+00:00",
       "source": "Google News (annonces Rockstar)",
       "official": false,
@@ -12836,7 +12887,6 @@
     {
       "title": "GTA VI's hurricanes, map size, romance, and 170 animal species explained in new report - GosuGamers",
       "link": "https://www.gosugamers.net/entertainment/news/79271-gta-vi-s-hurricanes-map-size-minigames-and-170-animal-species-explained-in-new-report",
-      "source_link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNZFI2Y0wteW1rRjdUaXBXS2xCckxaQzBYX3BhZ2JKXzc5cGc5eEZHTEJDY1R4NW8xTHFfUXZLSkFTZEUtcnJMNy1SNVpnajk2cHE0MDVjZVRnc0hjTFhqUDJGb1B1V1l2cWNreTBjUWpBaVVPRkdLWWphYjFQXzRmSVhJVXZNb2ZkczFmYzlHeGpQeDM0T04xU080UGY2TkwzaGNpa0Vld1hFcmF1WXBaeEFLUC1Idks1TXd3aHhZOWFJeDBRN29xQmo3SDJndE91WjFR?oc=5",
       "date": "2026-09-30T03:36:44+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -12849,7 +12899,6 @@
     {
       "title": "GTA 6 dévoile de nouveaux secrets explosifs - Watson",
       "link": "https://www.watson.ch/fr/divertissement/jeux-video/404042429-gta-6-devoile-de-nouveaux-secrets-explosifs",
-      "source_link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxObkVyUmhrd2d1Q0JGb0dFelo3MEM2TWI2OGxHY2c1Qk1SSFRpWmo2QWp5MUZQMXlGTFBkSW5yYTRNTlVtTFk4RzZiYzM4eTM0ZGdhb3VYRXppbHFYXzNEdFBjUC10S1pjT0Z3ZnZZQ09pd1dXYVVVZ0xRNFVuWnlxWFJIVG1fWXlaVTdDTTZ4Z2ZySXlnaThtMTM1aXpGTVJZQ1Ywb3V5RQ?oc=5",
       "date": "2026-09-30T03:31:32+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -12875,7 +12924,6 @@
     {
       "title": "GTA VI's November launch could spark a rush of GTA-style games on Roblox - Briefs Finance",
       "link": "https://www.briefs.co/news/gta-vi-s-november-launch-could-spark-a-rush-of-gta-style-gam/",
-      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNWUE2S1hlbzV3V0RMNVNMZ1A3VkhwNE5OUGJudEUxZ1BJb01FT2JsdGtrMHNiOXJhc0tEMHNneGh1RDNMeW9RXzV4NHJRbElJTmdTNjJKdTRUXzVUbzBjR2dfZTJXUWk2THo4RFllU3dSVENNbWNXWi1PWUNWZE16UnhJcElEOGRTWFZ3bnhFblBkdw?oc=5",
       "date": "2026-09-30T03:11:00+00:00",
       "source": "Google News (EN)",
       "official": false,
