@@ -252,7 +252,10 @@ FEEDS = [
      # façon que 15 entrées, donc l'exemption ne peut pas déverser grand-
      # chose — mais sans elle, la seule vidéo GTA 6 un peu ancienne des 15
      # était écartée à chaque passage.
-     "garder_les_archives": True, "lang": "en"},
+     "garder_les_archives": True,
+     # Voir SOURCES_NOCTURNES : cette chaîne ne répond plus entre 4 h et
+     # 8 h du matin, et ce n'est pas une panne.
+     "tombe_la_nuit": True, "lang": "en"},
     {"id": "gnews-fr", "name": "Google News (FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
     {"id": "gnews-en", "name": "Google News (EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", "official": False, "max_entrees": 100, "lang": "en"},
     # ------------------------------------------------------------------
@@ -318,7 +321,10 @@ FEEDS = [
     # parle de GTA 6.
     {"id": "rockstarmag-youtube", "name": "RockstarMag (YouTube)",
      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmU6lJbZKzpAU_S1h6Ec-dg",
-     "official": False, "rockstarmag": True, "specialist_source": True, "lang": "fr"},
+     "official": False, "rockstarmag": True, "specialist_source": True,
+     # Voir SOURCES_NOCTURNES. Même horaire que la chaîne officielle : ce
+     # n'est pas la chaîne, c'est YouTube.
+     "tombe_la_nuit": True, "lang": "fr"},
     {"id": "rockstarintel", "name": "RockstarINTEL", "url": "https://rockstarintel.com/feed/", "official": False, "specialist_source": True, "lang": "en"},
     {"id": "ign", "name": "IGN", "url": "https://feeds.ign.com/ign/games-all", "official": False, "lang": "en"},
     {"id": "gamespot", "name": "GameSpot", "url": "https://www.gamespot.com/feeds/news/", "official": False, "lang": "en"},
@@ -2377,16 +2383,36 @@ def merite_notification(item, maintenant=None):
 # n'y a eu que 9 passages dans la journée entière. Le même seuil signifiait
 # des choses dix fois différentes selon le jour.
 #
-# 24 h plutôt que 12 : sur toute la période, la panne continue la plus
-# longue jamais observée dure 8 h 48 (Kotaku), et 6 passages se sont
-# déclenchés 10 fois pour des pannes qui se sont toutes réparées seules.
-# 12 h ne laisserait qu'une marge de 1,4× sur un maximum estimé à partir de
-# cinq jours seulement — trop mince. 24 h en laisse 2,7×.
+# 24 h au départ, descendu à 12 le 06/10/2026 — et c'est le même
+# raisonnement qui donne les deux réponses, avec dix fois plus de données.
 #
-# Ce que ça coûte : une panne de 8 h passe désormais sans alerte. C'est
-# assumé — l'app affiche l'état des sources à chaque passage, sous les
-# boutons. Cette alerte-ci n'est pas le tableau de bord, c'est le réveil.
-DEAD_SOURCE_HOURS = 24
+# L'argument de départ : la panne la plus longue observée durait 8 h 48
+# (Kotaku), 12 h ne laissait qu'une marge de 1,4× sur un maximum estimé à
+# partir de CINQ JOURS, et cinq jours ne suffisent pas à connaître le pire
+# cas. 24 h en laissait 2,7×.
+#
+# Ce qui a changé : les 630 versions de docs/feed.json ont été rejouées le
+# 07/10/2026 à travers incidents_termines, soit 21,3 jours et 319 pannes
+# terminées — pas cinq jours, et pas une estimation.
+#
+#     moins d'1 h     25
+#     1 à 3 h        246
+#     3 à 12 h        48
+#     plus de 12 h     0     <- aucune, jamais
+#
+# La plus longue de ces 319 dure 8 h 30. Le maximum n'est donc plus estimé,
+# il est mesuré, et il confirme le chiffre de départ au lieu de le démentir.
+# Mais il dit aussi que le seuil de 24 h ne POUVAIT PAS se déclencher :
+# c'était un réveil débranché. À 12 h il sonnera la première fois qu'un flux
+# dépassera tout ce qu'on a jamais vu — exactement ce qu'on lui demande.
+#
+# Ce que ça coûte : rien de mesurable. Les deux flux YouTube tombent toutes
+# les nuits, mais 4 h. Si une source se met à osciller autour de 12 h, c'est
+# REPRISE_CONFIRMEE qui tient la barrière, pas ce nombre-ci.
+#
+# À revoir après le 19 novembre : les serveurs des rédactions prendront une
+# charge sans rapport avec ce qu'on a mesuré en septembre.
+DEAD_SOURCE_HOURS = 12
 
 # Nombre de passages RÉUSSIS D'AFFILÉE avant de considérer qu'une source
 # est vraiment rétablie et de remettre son chronomètre à zéro.
@@ -2826,6 +2852,24 @@ ID_DECODAGE = "__decodage__"
 NOM_DECODAGE = "Décodage Google News"
 
 
+def source_nocturne(sid):
+    """Cette source est-elle déclarée `tombe_la_nuit` dans FEEDS ?
+
+    Les deux flux YouTube ne répondent plus entre 4 h et 8 h du matin — 17
+    nuits sur les 19 observées depuis le 1er septembre. Le README le
+    documente depuis le 16/09/2026 et personne n'a jamais eu à agir : c'est
+    un horaire, pas une panne.
+
+    Lu dans FEEDS à chaque appel plutôt que figé en constante : un test qui
+    remplace le catalogue doit pouvoir changer la réponse, et parcourir 63
+    entrées deux fois par heure ne coûte rien.
+    """
+    for feed in FEEDS:
+        if feed.get("id") == sid:
+            return bool(feed.get("tombe_la_nuit"))
+    return False
+
+
 def incidents_termines(health, silence_precedent, suivi, maintenant=None):
     """Les pannes de source qui viennent de se CLORE, à ce passage.
 
@@ -2853,10 +2897,17 @@ def incidents_termines(health, silence_precedent, suivi, maintenant=None):
         if not debut:
             continue
         ecoule = maintenant - feed_store.parse_date_key(debut)
-        finis.append({"source": sid, "nom": etats[sid].get("name") or sid,
-                      "debut": debut, "fin": maintenant.isoformat(),
-                      "heures": round(ecoule.total_seconds() / 3600, 1),
-                      "alertee": bool(chrono.get("alertee"))})
+        incident = {"source": sid, "nom": etats[sid].get("name") or sid,
+                    "debut": debut, "fin": maintenant.isoformat(),
+                    "heures": round(ecoule.total_seconds() / 3600, 1),
+                    "alertee": bool(chrono.get("alertee"))}
+        # Marqué, pas écarté : feed_store.incident_notable décide de la
+        # LISTE, le compteur par source prend tout le monde. Une source
+        # nocturne qui se mettrait à tomber en plein jour verrait quand
+        # même son compteur grimper.
+        if source_nocturne(sid):
+            incident["routine"] = True
+        finis.append(incident)
     return finis
 
 
@@ -2876,7 +2927,7 @@ def incident_de_decodage(precedent, etat, maintenant=None):
     heures = round(ecoule.total_seconds() / 3600, 1)
     return [{"source": ID_DECODAGE, "nom": NOM_DECODAGE, "debut": debut,
              "fin": maintenant.isoformat(), "heures": heures,
-             # Le décodage n'a pas de seuil de 24 h : dès qu'il est jugé
+             # Le décodage n'a pas de seuil d'attente : dès qu'il est jugé
              # cassé, l'alerte part. Un incident de décodage est donc
              # toujours un incident qui a été annoncé.
              "alertee": True}]
@@ -4059,9 +4110,18 @@ def main():
                                             etat_decodage)
     journal_incidents = feed_store.ajoute_incidents(
         stored.get("sources_incidents"), incidents_neufs)
+    # Le compteur, lui, prend TOUT : les hoquets d'un passage et les nuits
+    # YouTube comme le reste. C'est la différence entre « qu'est-ce qui est
+    # tombé » et « est-ce que cette source va bien ces temps-ci ».
+    compteur_incidents = feed_store.compte_incidents(
+        stored.get("sources_incidents_compte"), incidents_neufs)
     for i in incidents_neufs:
-        print(f"📓 Incident clos : {i['nom']} — {i['heures']} h"
-              + ("" if i["alertee"] else ", résolu seul, sans alerte"))
+        detail = "" if i["alertee"] else ", résolu seul, sans alerte"
+        if i.get("routine"):
+            detail += ", nocturne"
+        if not feed_store.incident_notable(i):
+            detail += " — compté, pas listé"
+        print(f"📓 Incident clos : {i['nom']} — {i['heures']} h" + detail)
     for a in alertes_decodage:
         if a["type"] == "decodage-casse":
             print(f"⚠️  Décodage Google News TOMBÉ — {a['raison']}")
@@ -4165,12 +4225,16 @@ def main():
             for fid, inf in feed_infos.items()
             if inf.get("etag") or inf.get("modified")
         },
+        # La mémoire des pannes closes. `sources_silence` dit ce qui va mal
+        # maintenant ; ceci dit ce qui est allé mal et n'y va plus. Filtré
+        # aux incidents NOTABLES : voir feed_store.INCIDENTS_DUREE_MIN_H.
+        "sources_incidents": journal_incidents,
+        # Et le décompte complet, par mois et par source, hoquets compris.
+        # Deux mois gardés, quelques centaines d'octets.
+        "sources_incidents_compte": compteur_incidents,
         # Permet à l'app de proposer les notifications push sans que la clé
         # soit codée en dur dans index.html : elle suit la configuration du
         # dépôt, et disparaît si le secret est retiré.
-        # La mémoire des pannes closes. `sources_silence` dit ce qui va mal
-        # maintenant ; ceci dit ce qui est allé mal et n'y va plus.
-        "sources_incidents": journal_incidents,
         "vapid_public_key": VAPID_PUBLIC_KEY,
         "items": all_items,
     }

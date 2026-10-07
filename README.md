@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1689
+qui permet de tester tout le pipeline sans sortir de la machine. **1709
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -2185,16 +2185,22 @@ stockage persistant) et envoie un message Discord **au moment où l'état
 bascule** :
 
 ```
-🔴 VG247 ne renvoie plus rien depuis 24 h.
+🔴 VG247 ne renvoie plus rien depuis 12 h.
 🟢 VG247 est revenue.
 ```
 
-- **`DEAD_SOURCE_HOURS = 24`** — en HEURES, pas en passages. Un passage n'est
+- **`DEAD_SOURCE_HOURS = 12`** — en HEURES, pas en passages. Un passage n'est
   pas une unité de temps : l'écart entre deux va d'une heure à près de cinq
   selon que GitHub honore ou abandonne son exécution planifiée, donc
-  « depuis 6 passages » ne disait rien d'exploitable. Vingt-quatre heures,
-  c'est assez pour écarter une panne serveur passagère ou une coupure
-  réseau, assez peu pour ne pas laisser un flux mort passer la semaine.
+  « depuis 6 passages » ne disait rien d'exploitable.
+
+  **Descendu de 24 à 12 le 07/10/2026.** Les 630 versions de `feed.json` ont
+  été rejouées : 319 pannes terminées en 21 jours, et **la plus longue dure
+  8 h 30**. Aucune n'a jamais atteint 12 h, et encore moins 24. Le seuil de
+  24 h ne pouvait donc pas se déclencher — c'était un réveil débranché. À
+  12 h il sonnera la première fois qu'un flux dépassera tout ce qu'on a vu,
+  ce qui est exactement sa raison d'être. À revoir après le 19 novembre :
+  les serveurs des rédactions ne connaîtront pas la charge de septembre.
 
   *(Ce README a documenté une constante DEAD_SOURCE_RUNS valant 6 jusqu'au
   04/09/2026 — elle n'a jamais existé dans le code. Repérée en comparant une
@@ -3365,7 +3371,7 @@ perdue. Il faudrait que Rockstar publie seize vidéos entre 4h et 9h pour
 qu'une seule tombe hors fenêtre.
 
 **Et aucune alerte ne part, ce qui est correct.** `DEAD_SOURCE_HOURS` vaut
-24, les pannes durent 3 à 4 h : le seuil n'est jamais atteint. Seize nuits
+12, les pannes durent 3 à 4 h : le seuil n'est jamais atteint. Seize nuits
 sans une seule alerte Discord. C'est précisément ce que ce seuil sert à
 éviter — être réveillé pour un incident passager qui se répare seul. Le seul
 indice reste la console, entre 4h et 9h, d'où le fait que ça se remarque le
@@ -3888,9 +3894,10 @@ avance chaque heure sans interruption — il n'y a plus d'écart à tolérer, et
 seuil est **revenu à 4h**, ce qui rend une vraie panne visible trois heures
 plus tôt.
 
-`DEAD_SOURCE_HOURS` n'a pas bougé : il compte en **heures** et non en
-passages, précisément pour être insensible à ce genre de changement de
-cadence.
+`DEAD_SOURCE_HOURS` n'a pas bougé pour autant : il compte en **heures** et
+non en passages, précisément pour être insensible à ce genre de changement
+de cadence. (Il est passé de 24 à 12 le 07/10/2026, mais pour une autre
+raison : la mesure, pas la cadence.)
 
 ### Ce que la simulation a prouvé, et ce qu'elle a d'abord raté
 
@@ -5975,9 +5982,11 @@ Deux cas ressemblent à un rétablissement sans en être un, et les confondre
 épisode de la même façon. Il entre au journal sous l'identifiant réservé
 `__decodage__` — deux soulignés, hors d'atteinte d'un identifiant de FEEDS.
 
-Sans lui, le journal aurait oublié **la panne du 03/10 : 62,2 heures, 851
+Sans lui, le journal aurait oublié **la panne du 03/10 : 61,6 heures, 851
 articles abîmés**, le plus gros incident de la vie du projet. Un journal
-d'incidents qui rate celui-là rate sa cible.
+d'incidents qui rate celui-là rate sa cible — et il l'a ratée quand même,
+pour une autre raison. Voir « Les sept incidents d'avant le journal », plus
+bas.
 
 ### Rétention
 
@@ -5985,10 +5994,101 @@ Trente jours (`INCIDENTS_JOURS`), plafonné à 100 (`INCIDENTS_MAX`), élagué
 par l'âge d'abord et par le nombre ensuite — pour qu'un afflux récent ne
 pousse pas dehors un incident d'hier au profit d'un d'il y a trois semaines.
 
-Le plafond ne devrait jamais servir : une source qui **alterne** échec et
-réussite ne ferme jamais son incident, puisque `REPRISE_CONFIRMEE` remet son
-compteur à zéro à chaque échec. Le clignotement ne peut donc pas inonder le
-journal.
+### Le lendemain : le journal tel que livré se serait noyé — 07/10/2026
+
+Le 06/10 au soir, j'ai écrit que le plafond de 100 ne servirait jamais,
+parce qu'une source qui **alterne** échec et réussite ne ferme jamais son
+incident. Le raisonnement est juste. La conclusion était fausse : je n'avais
+pas compté les sources qui ne clignotent pas, mais qui tombent et reviennent
+proprement, plusieurs fois par jour.
+
+Les **630 versions de `docs/feed.json`** ont été rejouées à travers
+`incidents_termines` le lendemain. Sur 21,3 jours :
+
+| durée | nombre |
+|---|---|
+| moins d'1 h | 25 |
+| 1 à 3 h | **246** |
+| 3 à 12 h | 48 |
+| plus de 12 h | **0 — jamais** |
+| **total** | **319, soit 15 par jour** |
+
+**449 incidents par mois pour un plafond de 100.** Le journal se serait
+rempli en une semaine, à quinze lignes par jour, et « aucun incident depuis
+30 jours » — la ligne qui justifiait de l'écrire — ne se serait plus jamais
+affichée. La fonctionnalité se serait annulée elle-même au premier mois.
+
+### La liste filtre, le compteur prend tout
+
+Deux champs plutôt qu'un, parce qu'il y a deux questions :
+
+```
+sources_incidents         qu'est-ce qui est tombé ?      filtré, lisible
+sources_incidents_compte  cette source va bien ?         tout, par mois
+```
+
+`incident_notable()` écarte de la **liste** deux choses :
+
+- **les pannes de moins de `INCIDENTS_DUREE_MIN_H` = 3 h.** Un hoquet d'un
+  passage n'est pas une panne, et il y en a 380 par mois ;
+- **les sources déclarées `tombe_la_nuit`** dans `FEEDS`. Les deux flux
+  YouTube descendent chaque nuit entre 4 h et 8 h — 43 épisodes sur 21
+  jours, soit 61 par mois à eux deux, et **les deux premières places du
+  classement**. Ce n'est pas une panne, c'est un horaire, documenté plus
+  haut dans ce README depuis le 16/09.
+
+Il en reste **8 par mois**. C'est une liste qu'on lit.
+
+Rien n'est jeté pour autant, et c'est la contrepartie qui rend le filtre
+acceptable : `compte_incidents()` compte **tout**, par mois et par source,
+hoquets et nuits compris. Une source qui tomberait onze fois par jour sans
+jamais passer trois heures deviendrait invisible sans lui — or c'est
+exactement le profil des deux flux YouTube. Deux mois gardés
+(`INCIDENTS_MOIS_GARDES`), 5 ko bruts pour 320 coupures sur 38 sources.
+
+Le marquage `routine` est posé à la **clôture**, dans `incidents_termines`,
+là où l'incident est fabriqué. Il est **déclaré dans `FEEDS`, pas deviné** :
+une source non déclarée qui se mettrait à tomber toutes les nuits verrait
+son compteur grimper tout de suite, ce qui permet de ne déclarer que ce
+qu'on a réellement observé.
+
+### Les sept incidents d'avant le journal
+
+Le journal est **chronologique** : il n'enregistre un incident qu'au moment
+où celui-ci se referme. Écrit le 06/10 à 22h33, il était donc vide — et la
+panne du décodeur, rétablie le matin même à 07h36, n'y figurait pas. Quinze
+heures d'écart, et l'incident le plus grave du projet manquait au journal
+des incidents.
+
+Les notables des trois semaines précédentes ont donc été **semés** dans
+`docs/feed.json`, reconstruits par le même rejeu :
+
+| fin | durée | source |
+|---|---|---|
+| 06/10 | **61,6 h** | Décodage Google News |
+| 05/10 | 3,1 h | Xboxygen (flux natif) |
+| 02/10 | 4,0 h | Reddit — fuites et rumeurs |
+| 29/09 | 3,0 h | Jeuxvideo.com |
+| 23/09 | 6,0 h | Reddit — fuites et rumeurs |
+| 22/09 | 7,6 h | Reddit — mises à jour et DLC |
+| 18/09 | 5,0 h | VGTimes |
+
+La panne du décodeur est la seule qui ne vienne pas du rejeu :
+`decodage_etat` n'existait pas encore pendant la panne, donc **aucune**
+version de `feed.json` ne la porte. Elle a été datée sur `decode_failures`,
+qui lui était publié :
+
+```
+03/10 15h02:51 UTC    0 échec     <- dernier passage sain
+03/10 16h01:34 UTC  126 échecs    <- premier passage en panne
+06/10 05h01:39 UTC  428 échecs    <- dernier passage en panne
+06/10 05h36:17 UTC    0 échec     <- premier passage réparé (PR #131)
+```
+
+Soit 61,6 h, aux bornes exactes qu'aurait retenues `suit_le_decodage`. (Le
+chiffre de 62,2 h annoncé le 06/10 était une approximation de mémoire ; les
+bornes ci-dessus sont mesurées.) Le compteur a été semé de la même façon,
+avec les 320 coupures des deux derniers mois.
 
 ### Le bloc qui s'affiche même vide
 
@@ -5996,24 +6096,39 @@ Dans les statistiques, rubrique Sources, juste après l'état courant :
 
 ```
 Incidents des 30 derniers jours (2)
-Pannes de source terminées. Une source en difficulté en ce moment
-figure dans le bloc du dessus.
+Pannes de source de plus de trois heures, terminées. Une source en
+difficulté en ce moment figure dans le bloc du dessus.
 
-  Reddit — fuites et rumeurs · 2 oct., 2 h        résolu seul
+  Reddit — fuites et rumeurs · 2 oct., 4 h        résolu seul
   Décodage Google News · 6 oct., 3 j           alerte envoyée
+
+Coupures par source, ce mois-ci
+Toutes les interruptions, y compris celles d'un seul passage et les
+nuits où YouTube ne répond pas. Un chiffre qui monte sans qu'aucun
+incident ne soit listé, c'est une source qui s'effrite.
+
+  Rockstar Games (YouTube)              6 coupures · 2 j au total
+  RockstarMag (YouTube)                 6 coupures · 2 j au total
+  Rockstar Games (officiel EN)          4 coupures · 6 h au total
 ```
 
 Et quand il n'y a rien :
 
 ```
 Incidents des 30 derniers jours
-Aucun incident depuis 30 jours.
+Aucun incident de plus de trois heures depuis 30 jours.
 ```
 
 **C'est cette dernière ligne qui justifie le chantier.** C'est l'affichage le
 plus fréquent, et c'est celui qui m'aurait évité de me tromper. La masquer
 quand il n'y a rien reviendrait à ne rendre lisible que la mauvaise
-nouvelle.
+nouvelle. Elle **dit son seuil** : sans « de plus de trois heures », elle
+promettrait zéro coupure là où il y en a 449 par mois, et redeviendrait le
+genre de phrase qui m'a fait me tromper.
+
+Le compteur ne montre que **le mois le plus récent** : deux mois empilés
+diraient une tendance que personne n'a demandée, et le mois précédent reste
+dans `feed.json` pour qui veut le lire.
 
 Le titre évite soigneusement les mots « État des sources » : les contrôles
 navigateur repèrent les blocs par leur texte, et deux blocs portant cette

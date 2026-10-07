@@ -1307,36 +1307,46 @@ def test_bloc_incidents(nav, url):
     page.goto(url, wait_until="load")
     page.wait_for_selector("#feed", state="attached")
 
-    socle = """(incidents) => {
+    socle = """([incidents, compte]) => {
       derniereReponseBackend = {
         generated_at: "2026-10-06T20:00:00Z",
         sources_health: [{id: "a", name: "Alpha", status: "ok",
                           http_status: 200, entries_fetched: 25,
                           days_since_last_article: 0}],
         sources_incidents: incidents,
+        sources_incidents_compte: compte,
       };
       setTab("stats"); ongletStatsChoisi("sources");
     }"""
 
     # --- le cas le plus fréquent, et le plus utile : rien à signaler ----
-    page.evaluate(socle, [])
+    page.evaluate(socle, [[], {}])
     page.wait_for_selector(".stats-bloc")
     vide = page.locator(".stats-bloc").filter(has_text="Incidents des 30 derniers jours")
     check(vide.count() == 1,
           "le bloc existe même sans incident — « aucun » est une information, "
           "pas un vide à masquer")
-    check("Aucun incident depuis 30 jours" in vide.inner_text(),
-          "et il le dit en toutes lettres (« %s »)" % vide.inner_text().replace("\n", " ")[:80])
+    check("Aucun incident de plus de trois heures depuis 30 jours" in vide.inner_text(),
+          "et il le dit en toutes lettres, SEUIL COMPRIS : sans le seuil, la "
+          "phrase promettrait zéro coupure là où il y en a 449 par mois "
+          "(« %s »)" % vide.inner_text().replace("\n", " ")[:90])
+    check(page.locator(".stats-bloc").filter(has_text="Coupures par source").count() == 0,
+          "et sans compteur, pas de bloc de compteur")
 
     # --- avec des incidents --------------------------------------------
-    page.evaluate(socle, [
+    #
+    # Les deux vraies entrées du fil au 07/10/2026 : la plus courte que le
+    # filtre laisse passer, et la panne du décodeur — l'incident le plus
+    # grave du projet, celui que le journal avait manqué parce qu'il s'était
+    # refermé quinze heures avant que le journal n'existe.
+    page.evaluate(socle, [[
         {"source": "reddit-leaks", "nom": "Reddit — fuites et rumeurs",
-         "debut": "2026-10-02T00:02:00Z", "fin": "2026-10-02T02:02:00Z",
-         "heures": 2.0, "alertee": False},
+         "debut": "2026-10-02T00:02:00Z", "fin": "2026-10-02T04:02:00Z",
+         "heures": 4.0, "alertee": False},
         {"source": "__decodage__", "nom": "Décodage Google News",
-         "debut": "2026-10-03T17:23:00Z", "fin": "2026-10-06T07:33:00Z",
-         "heures": 62.2, "alertee": True},
-    ])
+         "debut": "2026-10-03T16:01:34Z", "fin": "2026-10-06T05:36:17Z",
+         "heures": 61.6, "alertee": True},
+    ], {}])
     page.wait_for_selector(".stats-bloc")
     bloc = page.locator(".stats-bloc").filter(has_text="Incidents des 30 derniers jours")
     titre = bloc.locator("h4, .stats-titre, strong").first.inner_text() if bloc.locator("h4, .stats-titre, strong").count() else bloc.inner_text()
@@ -1344,7 +1354,7 @@ def test_bloc_incidents(nav, url):
           "le nombre figure au titre")
     lignes = bloc.locator("li").all_inner_texts()
     check(len(lignes) == 2, "une ligne par incident (%d)" % len(lignes))
-    check("Reddit" in lignes[0] and "2 h" in lignes[0] and "résolu seul" in lignes[0],
+    check("Reddit" in lignes[0] and "4 h" in lignes[0] and "résolu seul" in lignes[0],
           "la panne courte est marquée « résolu seul » — c'est CE détail que "
           "je n'avais pas su dire (« %s »)" % lignes[0].replace("\n", " "))
     check("Décodage Google News" in lignes[1] and "alerte" in lignes[1],
@@ -1352,6 +1362,40 @@ def test_bloc_incidents(nav, url):
           "(« %s »)" % lignes[1].replace("\n", " "))
     check("3 j" in lignes[1],
           "une panne de 62 h se lit en jours, pas en heures (« %s »)"
+          % lignes[1].replace("\n", " "))
+
+    # --- LE COMPTEUR, qui dit ce que la liste filtrée ne dit plus -------
+    #
+    # Sans lui, une source qui tombe onze fois par jour sans jamais passer
+    # trois heures n'apparaîtrait nulle part. C'est exactement le cas des
+    # deux flux YouTube, qui sont les deux premiers du classement réel.
+    page.evaluate(socle, [[], {
+        "2026-09": {"vg247": {"nom": "VG247", "n": 2, "heures": 3.0}},
+        "2026-10": {
+            "rockstar-youtube": {"nom": "Rockstar Games (YouTube)", "n": 6, "heures": 38.0},
+            "jvc": {"nom": "Jeuxvideo.com", "n": 1, "heures": 0.5},
+        },
+    }])
+    page.wait_for_selector(".stats-bloc")
+    cpt = page.locator(".stats-bloc").filter(has_text="Coupures par source")
+    check(cpt.count() == 1, "le bloc paraît dès qu'il y a de quoi compter")
+    lignes = cpt.locator("li").all_inner_texts()
+    check(len(lignes) == 2,
+          "il ne montre QUE le mois le plus récent — deux mois empilés "
+          "diraient une tendance que personne n'a demandée (%d lignes)"
+          % len(lignes))
+    check("Rockstar Games (YouTube)" in lignes[0] and "6 coupures" in lignes[0],
+          "la source la plus coupée d'abord, avec son nombre (« %s »)"
+          % lignes[0].replace("\n", " "))
+    check("38 h" in lignes[0] or "2 j" in lignes[0],
+          "et sa durée cumulée (« %s »)" % lignes[0].replace("\n", " "))
+    check("Jeuxvideo.com" in lignes[1] and "1 coupure" in lignes[1]
+          and "coupures" not in lignes[1],
+          "une seule coupure se dit au singulier (« %s »)"
+          % lignes[1].replace("\n", " "))
+    check("au total" not in lignes[1],
+          "et une demi-heure cumulée ne s'affiche pas : « 30 min au total » "
+          "sur un mois entier n'apprend rien (« %s »)"
           % lignes[1].replace("\n", " "))
 
     # --- le piège du sélecteur -----------------------------------------
