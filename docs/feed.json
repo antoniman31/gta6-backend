@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-08T01:01:24.012591+00:00",
+  "generated_at": "2026-10-08T01:14:05.963348+00:00",
   "attente_recap": {
-    "articles": 16,
+    "articles": 17,
     "officiels": 0,
     "sommet": 1,
     "apercus": [
@@ -48,10 +48,10 @@
     ]
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 23.9,
+  "duration_seconds": 25.3,
   "decode_failures": 0,
-  "total_articles": 3239,
-  "new_this_run": 3,
+  "total_articles": 3241,
+  "new_this_run": 2,
   "hot_count": 45,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -521,8 +521,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 864,
+      "new_this_run": 0,
+      "articles_exclusifs": 863,
       "last_article": "2026-10-07T22:25:05+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -534,7 +534,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 1154,
       "last_article": "2026-10-07T23:36:28+00:00",
       "days_since_last_article": 0,
@@ -548,7 +548,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 1,
-      "articles_exclusifs": 42,
+      "articles_exclusifs": 43,
       "last_article": "2026-10-07T19:06:32+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -582,10 +582,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-07T00:48:32+00:00",
@@ -725,10 +725,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 7,
       "last_article": "2026-10-06T22:12:27+00:00",
@@ -872,8 +872,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:gamerant.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 16,
+      "new_this_run": 1,
+      "articles_exclusifs": 17,
       "last_article": "2026-10-06T09:02:13+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -1294,7 +1294,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "46,46,46,46,46,46,46,46,47,47,47,47",
+    "gta6times": "46,46,46,46,46,46,46,47,47,47,47,47",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1373,7 +1373,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 08 Oct 2026 01:01:05 GMT"
+      "modified": "Thu, 08 Oct 2026 01:13:45 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1382,8 +1382,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ac6eb20-2ff4\"",
-      "modified": "Thu, 08 Oct 2026 01:00:16 GMT"
+      "etag": "W/\"6ac6eb21-2ff4\"",
+      "modified": "Thu, 08 Oct 2026 01:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1410,15 +1410,10 @@
       "etag": "\"25a7b0a328f095a139c4718485a824a2-gzip\"",
       "modified": null
     },
-    "dexerto-fr": {
-      "url": "https://www.dexerto.fr/feed/",
-      "etag": null,
-      "modified": "Thu, 08 Oct 2026 01:00:55 GMT"
-    },
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 08 Oct 2026 01:01:06 GMT"
+      "modified": "Thu, 08 Oct 2026 01:13:46 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -2830,6 +2825,19 @@
       "description": "Zelda Ocarina of Time : ce remake peut-il rivaliser avec GTA 6 ?&nbsp;&nbsp;www.next-stage.fr"
     },
     {
+      "title": "GTA 6 : de nouvelles bandes-annonces arrivent après le show Netflix - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-de-nouvelles-bandes-annonces-arrivent-apres-le-show-netflix-222229.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPR0dqM25FeEIwU3k0UEFzX2VHQTdOWE53UlA4OGNJSENVVzJfUW14dEFfTEtMQjVmMUd4Q0IzMVgxazlhRDNGS093dWxZdVlScjFCeUV5TGxGZE1rSXg3OF9KcGpPREdqZEJtZktRSmpFUEZqZGo0NzBMa2pBUndiNS16a1JZalVack9oTW1HUGl6V2Z2Nzl2c1RleUVXenJRT0NxaDBQd0lMNENMaFZHMkpLSUJkaUs1ZWtRZlp2V3E?oc=5",
+      "date": "2026-10-07T13:15:17+00:00",
+      "source": "Google News (FR, 7 jours)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sf.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/08/gta-6-de-nouvelles-bandes-annonces-arrivent-apres-le-show-netflix-1200x660.jpg",
+      "description": "GTA 6 : de nouvelles bandes-annonces arrivent après le show Netflix&nbsp;&nbsp;La Crème Du Gaming"
+    },
+    {
       "title": "GTA 6 arrivera bien sur Xbox Cloud Gaming, mais pas sur PC et sans exclusivité - GinjFo",
       "link": "https://www.ginjfo.com/actualites/logiciels/jeux-video-logiciels/gta-6-arrivera-bien-sur-xbox-cloud-gaming-mais-pas-sur-pc-et-sans-exclusivite-20261007",
       "source_link": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxNdm1ET1NRNXZ2czh0TTZkMnRmUUo0YnIxOXQ2dVdmMFpZUlM0aXl4YlV5cWY2YmN1aER6NW1QRXV5UnhyTkd3aHhCNGNkYmo5emNTdjVwX2hPSE45R2VRSU1kZkNDbWlKdHhNSVVDcGs3TVNYRXBhNDBSbW43bmVQaG5YR3oyRk9EdzhCTTRVLUU3RHA5c05BY1FucUNqZXdKX21kdzFLV2I0RFFCN1dhUXQ4bGpJZHpuQVVwNFN0UHBpX1JfRjQzSnBIdkl0bVBUQUVXME0yeVJ3SHVnQnlCV2EwMkxGZw?oc=5",
@@ -3664,7 +3672,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://geekslands.fr/api/og-image/api/uploads/featured/gta-6-lucia-caminos-moto-bar-9e3a.jpg",
-      "description": "GTA 6 sur PC par le cloud Xbox : Microsoft dément l'exclusivité rapportée par The Verge&nbsp;&nbsp;GeeksLands"
+      "description": "GTA 6 sur PC par le cloud Xbox : Microsoft dément l'exclusivité rapportée par The Verge&nbsp;&nbsp;GeeksLands",
+      "extraSources": [
+        {
+          "source": "Google News (FR, 7 jours)",
+          "link": "https://geekslands.fr/gta-6-pc-cloud-xbox-dementi/"
+        }
+      ]
     },
     {
       "title": "GTA VI is getting a Discord campaign on November 17 - Instant Gaming News",
@@ -40365,6 +40379,18 @@
       "lang": "en",
       "image": "https://www.dexerto.com/cdn-image/wp-content/uploads/2026/09/09/gta-6-jason-lucia-escape.jpg",
       "description": "Ex-Rockstar dev predicts GTA 6 Online will let RP players make real money from custom content&nbsp;&nbsp;Dexerto"
+    },
+    {
+      "title": "Rockstar Officially Details GTA 6's Criminal Profile System - GameRant",
+      "link": "https://gamerant.com/gta-6-criminal-profile-jason-lucia/",
+      "date": "2026-09-09T07:00:00+00:00",
+      "source": "Google News (Game Rant)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2026/09/lucia_caminos_08.jpg?w=1600&h=900&fit=crop",
+      "description": "Rockstar Officially Details GTA 6's Criminal Profile System&nbsp;&nbsp;GameRant"
     },
     {
       "title": "GTA 6 : la version PC pourrait sortir plus tôt que prévu à cause du prix des consoles",
