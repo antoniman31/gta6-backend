@@ -1,11 +1,18 @@
 # Ce qu'il reste à faire
 
-**Rien n'est cassé, rien n'est urgent.** Ce fichier existe pour qu'on reprenne
-plus tard sans redériver ce qui a déjà été mesuré.
+**Rien n'est cassé.** Ce fichier existe pour qu'on reprenne plus tard sans
+redériver ce qui a déjà été mesuré.
 
-Écrit le 06/10/2026 au soir, complété le 07/10 au matin.
-Base : `main` après la PR #141.
-**GTA 6 sort le 19 novembre 2026, soit dans 43 jours.**
+Deux choses ne sont plus « sans urgence » depuis l'audit du 08/10, et les
+deux se corrigent en quelques lignes : **4.1** (un mot-clé manquant au mode
+de secours, sur le scénario exact du jour de la sortie) et **4.2** (le
+message de quota conseille de détruire l'état de lecture). Tout le reste
+attend.
+
+Écrit le 06/10/2026 au soir, complété le 07/10, puis le 08/10 par un audit
+complet des 46 fichiers (section 4).
+Base : `main` après la PR #142.
+**GTA 6 sort le 19 novembre 2026, soit dans 42 jours.**
 
 ---
 
@@ -45,27 +52,34 @@ rubrique interface ci-dessous, point 3.1.
 
 ---
 
-## 2. La revue de sécurité
+## 2. La revue de sécurité — FAITE le 08/10/2026
 
-Jamais faite formellement. Le dépôt est **public** et manipule :
+Elle était la rubrique « jamais faite formellement » de ce fichier. L'audit
+du 08/10 l'a couverte, sauf un point. Le dépôt est **public** et manipule un
+PAT GitHub (cron-job.org), les clés VAPID (la privée en secret, la publique
+dans `feed.json`), `PUSH_SUBSCRIPTIONS`, `DISCORD_WEBHOOK_URL` et
+`HEALTHCHECK_URL`.
 
-- un PAT GitHub (cron-job.org), censément limité à `gta6-backend` et à
-  « Contents: Read and write » ;
-- les clés VAPID (la privée en secret, la publique dans `feed.json`) ;
-- `PUSH_SUBSCRIPTIONS` ;
-- `DISCORD_WEBHOOK_URL`, qui doit rester masquée dans les journaux ;
-- `HEALTHCHECK_URL`.
+**Ce qui est vérifié, et comment :**
 
-**Ce qui a déjà été vérifié au passage** (06/10, en analysant autre chose) :
-aucun champ d'article n'est interpolé dans du HTML sans `escapeHtml`, et
-`safeId` est du base64 filtré en alphanumérique. L'injection par un titre
-d'article hostile est donc couverte.
+| surface | résultat |
+|---|---|
+| secrets dans le dépôt | **aucun**, ni dans les fichiers suivis ni dans **tout l'historique Git** (`.py`, `.yml`, `.html`, `.md`). Le seul « webhook » du dépôt est une valeur de test. |
+| injection XSS | **close.** Les 7 interpolations `href`/`src` passent par `safeUrl()` (http(s) seulement) ; les deux `a.href = url` sont des `blob:` locaux. `escapeAttr` échappe l'antislash **puis** l'apostrophe **avant** l'échappement HTML — l'ordre correct pour un gestionnaire `onclick` à guillemets simples. |
+| permissions des workflows | minimales : `contents: read` partout, `contents: write` pour le seul robot. |
+| PR de fork | `checks.yml` tourne sur `pull_request` et **non** `pull_request_target` : jeton en lecture seule, aucun secret atteignable. |
+| injection de script Actions | **aucune surface.** Zéro `${{ }}` dans un bloc `run:` — tout passe par `env:`, et `sonde.yml` documente explicitement pourquoi. |
+| service worker | n'intercepte que les navigations (jamais `feed.json`). La charge utile du push est chiffrée VAPID ; son `url` vient de `item.link`, mais `statut_officiel` compare le **nom d'hôte** et `urlparse("javascript:…").hostname` vaut `None` — un lien à schéma douteux ne peut donc pas devenir officiel ni atteindre une notification. |
+| ce que `feed.json` expose | 21 clés passées en revue, **rien de sensible**. `vapid_public_key` est publique par construction. `feed_http_state` publie les ETags par source : de la plomberie interne servie à tous les visiteurs, 3,3 ko, sans conséquence. |
 
-**Ce qui ne l'a pas été** : les permissions déclarées des workflows, la
-surface du service worker, la portée réelle du PAT, ce que `feed.json`
-expose par inadvertance.
+**Ce qui reste, et que je ne peux PAS vérifier d'ici** : la portée réelle du
+PAT cron-job.org. Elle se lit sur
+`github.com/settings/personal-access-tokens` — à confirmer à l'œil :
+dépôt `gta6-backend` uniquement, « Contents: Read and write » uniquement.
 
-Il existe un outil de revue dédié dans l'environnement.
+**Deux durcissements à faire** (voir 4.10 et 4.11) : `.gitignore` ne couvre
+pas `.env`, et les Actions sont épinglées au tag majeur alors que PyPI est
+épinglé à l'exact.
 
 ---
 
@@ -178,6 +192,380 @@ plus grave mais demande une mesure avant de choisir les seuils.
 
 ---
 
+## 4. Ce que l'audit complet du 08/10/2026 a trouvé
+
+Les 46 fichiers suivis, ~24 000 lignes. Analyse statique (AST Python,
+extraction des 225 fonctions JS), relecture des chemins à risque, et
+**mesure sur les données réelles** : 3 270 articles, 2 835 entrées de cache,
+46 jours d'historique Git.
+
+### Ce qui est sain — et c'est l'essentiel du résultat
+
+**Code mort : zéro.** 225 fonctions JS, 88 fonctions Python de premier
+niveau, toutes référencées. Aucun import inutilisé, aucun `except` nu,
+aucun défaut mutable, aucun `TODO`.
+
+**Intégrité des données : zéro anomalie** sur six contrôles indépendants de
+`audit_donnees.py` — aucun lien hors http(s), **aucune collision de
+`safeId`** sur 3 270 liens, aucune date aberrante, aucune entité HTML ni
+mojibake dans les titres, aucune source orpheline, `extraSources` sain.
+L'élagage de `source_link` est exact (0 article hors fenêtre n'en garde un),
+et le cache de décodage est propre (0 valeur restée sur `news.google.com`).
+
+`audit_donnees.py`, lui, a trouvé un vrai défaut que mes contrôles ne
+cherchaient pas — voir **4.13**. C'est exactement ce pour quoi il existe.
+
+**Trois pistes explorées qui ne sont PAS des problèmes**, à ne pas rouvrir :
+
+- un lien `javascript:` ne peut pas devenir officiel (comparaison sur le
+  nom d'hôte) ;
+- un article promu majeur ne peut pas être élagué puis annoncé quand même
+  (`item_protege` protège exactement la condition qui le rend majeur) ;
+- `build_sources_health` et `echecs_decodage` ne rendent jamais `None` —
+  faux positifs de mon analyseur (`return` nu dans une fonction imbriquée,
+  `return` dans un `with`).
+
+---
+
+### 4.1 — Le filtre officiel diverge en mode de secours, sur LE mot qui compte
+
+**Le constat le plus sérieux de l'audit, et le seul qui ait une échéance.**
+
+`FEEDS` donne à la chaîne YouTube de Rockstar un mot-clé supplémentaire :
+
+```python
+"official_keywords_extra": ["trailer"],
+```
+
+Le commentaire juste au-dessus dit pourquoi : « Une vidéo intitulée
+simplement *Trailer 3* ne contient aucun de ces mots-clés et serait
+rejetée : **précisément le jour qui compte.** »
+
+Le mode de secours de l'app (`filterFeedItems`, docs/index.html) n'a
+**aucun mécanisme équivalent** : sa liste de six mots-clés officiels est
+codée en dur, sans extension par source.
+
+Le reste concorde — j'ai comparé : les six mots-clés de base sont
+**identiques**, et les deux côtés filtrent sur le **titre seul**. L'écart se
+réduit à ce seul mot, sur cette seule source. Mais c'est celui qui a été
+ajouté exprès.
+
+**Conséquence** : backend injoignable + vidéo appelée « Trailer 3 » =
+l'app ne l'affiche pas. Deux conditions rares, que le mois de la sortie
+maximise toutes les deux.
+
+**Et rien ne le dirait.** `check_sources_sync.py`, dont c'est toute la
+raison d'être, ne compare pas ce champ. Quatre champs de `FEEDS` lui
+échappent : `garder_les_archives`, `max_entrees`, `tombe_la_nuit` (les trois
+sans équivalent JS, légitimement) et `official_keywords_extra`.
+
+**Correctif** : la donnée côté JS, **plus** la comparaison du champ dans
+`check_sources_sync.py` pour que ça ne redérive pas.
+
+---
+
+### 4.2 — `readSet` n'a pas de plafond, et le message d'erreur conseille de détruire l'irremplaçable
+
+`seenMap` est plafonné à 2 000 entrées, `lastItems` à 300, dans les deux cas
+avec un commentaire citant la limite de 5 Mo. **`readSet` a échappé au même
+traitement** : c'est la seule structure qui croît sans borne, et la seule
+dont le contenu ne se reconstitue pas.
+
+Mesuré, en UTF-16 (ce que compte réellement le navigateur) :
+
+```
+seenMap    plafonné à 2000   0,47 Mo
+lastItems  plafonné à  300   0,53 Mo
+readSet    NON PLAFONNÉ      1,67 Mo aujourd'hui (3 270 liens)
+                             -> il reste 4,00 Mo, soit ~19 600 liens
+```
+
+| échéance | liens lus | empreinte |
+|---|---|---|
+| aujourd'hui | 3 270 | 1,67 Mo |
+| 19 novembre | 7 932 | 2,62 Mo |
+| 31 décembre | 12 594 | 3,57 Mo |
+| 1er mars 2027 | 19 254 | **4,93 Mo** |
+
+À 111 articles/jour le quota tombe vers **début mars**. Mais si la sortie
+fait monter le volume : à 600/jour, **27 jours** ; à 1 000/jour, **16
+jours**. Le pire cas n'est pas théorique — « Tout marquer lu » ajoute
+jusqu'à 500 liens d'un geste (`maxDisplay` vaut 500 par défaut et monte à
+20 000).
+
+**Le vrai problème est ce qui se passe ensuite.** Quand l'écriture échoue,
+`storageSet` affiche : « Stockage local plein — […] **Vide les données du
+site** pour repartir sur une base saine. » Suivre ce conseil détruit
+`readSet` définitivement. La sauvegarde existe et contient bien `lus` (et
+exclut correctement le jeton GitHub) — mais **le message ne la mentionne
+pas**, et elle est dans un autre panneau. Au moment précis où il faut
+exporter, l'app dit de supprimer.
+
+**Correctif immédiat** : une phrase dans ce message. Le plafonnement de
+`readSet` lui-même demande une mesure — borner sans faire réapparaître des
+articles comme non lus, par exemple en ne gardant que les liens encore
+présents dans le fil ou l'archive.
+
+---
+
+### 4.3 — `merge_feed.py` ne fusionne pas les champs cumulatifs ajoutés depuis
+
+Le script de reprise après conflit de push fait `merged = dict(ours)` et ne
+traite explicitement que **trois clés** : `items`, `total_articles`,
+`attente_recap`.
+
+Pour `attente_recap`, le piège est identifié et commenté sur place : « c'est
+un CUMUL, et le nôtre a été calculé à partir d'un feed.json que le distant a
+entre-temps dépassé ». Le même raisonnement s'applique maintenant à quatre
+clés postérieures au script :
+
+```
+sources_incidents           cumulatif — le distant est perdu
+sources_incidents_compte    cumulatif — le distant est perdu   (livré le 07/10)
+sources_entries_history     cumulatif — le distant est perdu
+sources_silence             cumulatif — le distant est perdu
+```
+
+Gravité faible : le workflow sérialise ses exécutions (`concurrency`) et le
+checkout force `ref: main`. Mais c'est le même angle mort, laissé ouvert
+pour les champs d'après.
+
+---
+
+### 4.4 — Le cache de décodage est perdu après un conflit de push
+
+Dans la boucle de reprise de `update-feeds.yml` :
+
+```bash
+git reset --hard origin/main        # efface tout ce que le passage a écrit
+python merge_feed.py ...            # réécrit feed.json, feed-recent.json, docs/archives
+git add docs/feed.json docs/feed-recent.json docs/archives decode-cache.json
+```
+
+Le commentaire raisonne explicitement sur les archives effacées par le
+`reset` (« ici elle compte double ») — mais `decode-cache.json`, ajouté à
+cette ligne plus tard, n'est **pas** réécrit par `merge_feed.py`. Le
+`git add` porte donc sur la version de `origin/main` : **c'est un
+non-opérant**, et les liens décodés pendant le passage sont perdus.
+
+Sans gravité pour le fil publié (les liens décodés sont déjà dans les
+articles) : le passage suivant re-décode. Mais c'est du réseau payé deux
+fois, sur le composant qui est précisément tombé le 3 octobre.
+
+Deux autres asymétries du même chemin, auto-réparées au passage suivant :
+`merge_feed.py` archive **sans** le `exclure=` que `main()` applique (pages
+Rockstar hors langue, cotations crypto), et n'élague pas `source_link`.
+
+---
+
+### 4.5 — `main()` : 493 lignes, complexité ≈ 82, jamais exécutée par un test
+
+De loin la plus grosse fonction du dépôt — trois fois la suivante
+(`collect_feed_items`, 302 lignes). Elle décide de tout ce qui est publié.
+
+**Aucun test ne l'exécute.** Deux tests ouvrent `fetch_feeds.py`, découpent
+le texte à partir de `def main(` et vérifient que des chaînes s'y trouvent :
+
+```python
+check('"sources_incidents": journal_incidents' in corps, ...)
+```
+
+Tout ce qu'elle orchestre est bien testé **isolément** ; l'orchestration,
+non. Un test qui lit du texte ne peut attraper ni un ordre d'opérations
+inversé, ni une mauvaise variable passée, ni un chemin d'exception.
+
+La fragilité est vécue, pas théorique : le 07/10, renommer une variable
+locale de `compte_incidents` en `compteur_incidents` a cassé un test alors
+que le comportement était rigoureusement identique.
+
+`main()` prend ses entrées de `load_feed()` et du réseau, et
+`fetch_all_feeds` a déjà un paramètre `collecte` injectable : **un test qui
+l'exécute de bout en bout sur un faux fil est à portée.**
+
+---
+
+### 4.6 — 55 assertions portent sur du texte source
+
+38 tests sur 123 inspectent du texte plutôt que du comportement. Une partie
+est légitime — le README ne citant que des constantes réelles, les workflows
+épinglant leurs dépendances, les contrastes CSS : là, **le texte EST
+l'artefact**.
+
+Mais une bonne part pose des assertions sur le JS
+(`"demandeConfirmation(" in corps`, `"readSet.has(i.link)" in corps.split(…)`)
+alors qu'une suite navigateur de 331 contrôles existe et pourrait les
+vérifier en les exécutant. Coût : un renommage anodin casse un test vert, et
+une régression qui préserve le texte passe.
+
+---
+
+### 4.7 — `hot_count` est publié et lu par personne
+
+Écrit une fois (`fetch_feeds.py:4195`), **relu nulle part** : ni le robot,
+ni l'app, ni Discord, ni le push, ni l'audit, ni un test. Vestige de la
+ligne d'état, qui a fini par n'afficher que durée / nouveaux / sources.
+
+Deux octets : le coût n'est pas la place. Le coût est que le README
+(ligne 2278) décrit un test qui « compare `total_articles` **et
+`hot_count`** au fichier complet » — or **ce test ne couvre que
+`total_articles`**. La documentation décrit une protection à moitié
+existante.
+
+---
+
+### 4.8 — Dérive documentaire
+
+La docstring de `fetch_feeds.py`, les vingt premières lignes du fichier
+principal, celles qu'on lit en premier :
+
+| écrit | réel |
+|---|---|
+| « les mêmes **35** que dans le tracker HTML » | **63** sources (35 est le nombre de *mots-clés*) |
+| « contacter **34** flux » | **63** |
+
+Et `.github/dependabot.yml` : « une montée de version qui casserait les
+**130** vérifications » → **1 709**.
+
+Le garde-fou contre ce genre de dérive existe
+(`test_readme_ne_cite_que_des_constantes_reelles`) mais sa portée s'arrête
+aux **constantes du README** : ni les nombres, ni les docstrings des autres
+fichiers.
+
+---
+
+### 4.9 — 21 vignettes ne s'afficheront jamais
+
+21 articles portent une image en `http://`. L'app est servie en HTTPS :
+c'est du **contenu mixte**, le navigateur les bloque. `onerror` les masque
+proprement, donc ça dégrade bien — mais ce sont 21 cartes sans vignette pour
+une raison purement mécanique. Presque toutes viennent de deux domaines
+(`gamekyo.com`, `geeknplay.fr`) et se réduisent à ~5 URL distinctes.
+
+Cinq articles ont aussi un **lien** en `http://`, dont deux sur
+`store.rockstargames.com` — correctement reconnus officiels (la comparaison
+porte sur l'hôte), donc sans incidence.
+
+---
+
+### 4.10 — `.gitignore` ne couvre pas `.env`
+
+Deux lignes : `__pycache__/` et `*.pyc`. Rien n'empêche un `.env` local de
+partir dans un dépôt **public**. Rien n'a jamais fuité — vérifié sur tout
+l'historique — mais c'est la protection la moins chère du dépôt, et elle
+manque.
+
+---
+
+### 4.11 — PyPI est épinglé à l'exact, les Actions au tag majeur
+
+`requirements.txt` fige **tout le graphe**, avec trente lignes de
+commentaire expliquant pourquoi (l'incident `selectolax` du 03/10). Les
+workflows, eux, utilisent `actions/checkout@v7` — un tag mobile. Dependabot
+surveille les deux, mais il signale une *nouvelle version*, pas un *retag*
+de `v7`. Seule asymétrie avec la politique affichée du dépôt.
+
+---
+
+### 4.12 — Le garde-fou de publication ne protège que les articles
+
+`valide_avant_ecriture` vérifie la structure, les liens, les titres, les
+doublons et la perte massive — **sur `items` uniquement**. Un bug qui
+viderait `sources_incidents` ou ferait reculer le compteur publierait en
+silence. Choix de portée défendable (les articles sont le produit), mais il
+mérite d'être nommé.
+
+---
+
+### 4.13 — Trois articles vivent dans deux tranches d'archive à la fois
+
+**Le seul défaut VIVANT trouvé par l'audit** — et c'est `audit_donnees.py`
+qui l'a signalé tout seul, ce qui est plutôt une bonne nouvelle :
+
+```
+⚠ L'index annonce un total différent de ce qu'il contient
+     index : 4123 articles
+     fichiers : 4120 articles
+```
+
+Trois liens apparaissent dans **deux tranches mensuelles**, avec **deux
+dates différentes** :
+
+| lien | tranche | date |
+|---|---|---|
+| `lacremedugaming.fr/…-boite-v` | `2026-09.json` | 10/09 |
+| | `2026-10.json` | 07/10 |
+| `lacremedugaming.fr/…-7-nouvelle` | `2026-09.json` | 10/09 |
+| | `2026-10.json` | 07/10 |
+| `mashable.com/…netflix-extended-look` | `2026-08.json` | 27/08 |
+| | `2026-10.json` | 07/10 |
+
+**Mécanisme** : la date de l'article a changé entre deux archivages (la
+source a republié avec un nouveau `pubDate`). `archiver` l'écrit dans
+`mois_de(item)`, donc dans la tranche du **nouveau** mois, et **rien ne le
+retire de l'ancienne** : son `exclure=` « ne s'applique qu'aux mois que
+`items` touche », et l'ancien mois n'est plus jamais relu.
+
+**Ce que ça fait vraiment** : l'app déduplique sur le lien au chargement
+(`connus.has(item.link)`), donc **aucune carte en double à l'écran**. Mais
+elle garde la **première** occurrence rencontrée : pour ces trois articles,
+la date affichée dépend de l'ordre de chargement des mois. Et l'index
+annonce 3 articles et un poids qui n'existent pas.
+
+3 sur 4 120, soit 0,07 % — mais ça **s'accumule**, et c'est apparu entre le
+07 et le 08/10.
+
+---
+
+### 4.14 — Une décision à prendre : les pages Rockstar en italien et en espagnol
+
+`audit_donnees.py` signale deux préfixes de langue jamais vus, avec la
+consigne « à ajouter à `LANGUES_ROCKSTAR_ECARTEES` si ce n'est ni de
+l'anglais ni du français » :
+
+```
+/it/ : 1 lien   store.rockstargames.com/it/…/buy-gta-vi-album-standard-vinyl
+/es/ : 1 lien   rockstargames.com/es/newswire/…/the-music-of-grand-theft-auto-vi…
+```
+
+**Suivre cette consigne aurait coûté du contenu.** J'ai vérifié : les
+équivalents anglais de ces deux annonces **ne sont PAS dans le fil**. Ces
+pages localisées en sont la seule copie. `LANGUES_ROCKSTAR_ECARTEES` ne
+vaut que `('de', 'mx')` — c'est une liste de REFUS, pas une liste
+d'autorisation, et c'est précisément ce qui a évité la perte.
+
+**Le vrai risque est en novembre.** Rockstar publiera en huit langues, et
+chaque page localisée est `official: True`, donc une notification. Le
+`NOTIFS_OFFICIELLES_MAX = 5` plafonne les notifications, mais rien ne
+regrouperait les huit pages dans le fil : les URL diffèrent, et la fusion
+par similarité de titre ne les attrapera que si le titre reste en anglais
+(ce qui est le cas de ces deux-là, pas forcément des suivantes).
+
+**Décision à prendre, pas un bug** : ne rien faire (on garde tout, au risque
+de voir la même annonce huit fois), ou regrouper les pages Rockstar sur
+l'identifiant d'article plutôt que sur l'URL complète. À mesurer sur
+l'historique avant de choisir.
+
+---
+
+### L'ordre dans lequel je ferais ça
+
+1. **4.1 — le mot `trailer` en mode secours.** Petit, daté, et c'est le
+   scénario du jour de la sortie.
+2. **4.2 — la phrase du message de quota.** Ajouter « exporte d'abord ta
+   sauvegarde » avant « vide les données du site ». Le plafonnement de
+   `readSet` demande une mesure et peut attendre ; la phrase, non.
+3. **4.8 et 4.10** — dix minutes à deux : la docstring, le
+   `dependabot.yml`, et `.env` dans `.gitignore`.
+4. **4.5** — le test qui exécute `main()`. Le plus gros chantier, et le seul
+   qui change durablement la confiance qu'on peut avoir dans un passage.
+
+Puis **4.13** (trois articles en double dans l'archive) et **4.14** (la
+décision sur les pages Rockstar localisées, à mesurer avant novembre).
+
+4.3, 4.4, 4.6, 4.7, 4.9, 4.11 et 4.12 sont réels mais sans urgence.
+
+---
+
 ## Ce qui est RÉGLÉ et ne doit pas être rouvert
 
 ### Le mode hors-ligne : vérifié, il marche
@@ -190,24 +578,33 @@ affichées, zéro erreur JavaScript**. Pas de page blanche dans le métro.
 quota de 5 Mo et une écriture sur deux échouerait en silence. **Ne pas y
 toucher.**
 
-### La croissance du dépôt : fausse alerte, de ma part
+### La croissance du dépôt : fausse alerte, puis mauvais thermomètre
 
-J'avais annoncé le 06/10 au matin « 68 Mo en 21 jours, ~97 Mo par mois ».
-**C'était faux** : je mesurais `.git` en incluant les objets non compactés,
-que Git et GitHub rassemblent ensuite.
+**Premier temps.** J'avais annoncé le 06/10 au matin « 68 Mo en 21 jours,
+~97 Mo par mois ». C'était faux : je mesurais `.git` en incluant les objets
+non compactés, que Git rassemble ensuite. J'ai corrigé en me reportant au
+chiffre de l'API GitHub — 35 Mo — en écrivant ici qu'il était « **la seule
+qui compte** ».
+
+**Second temps, l'audit du 08/10.** Ce chiffre-là ne compte pas non plus :
+l'API annonçait **53 Mo** deux jours plus tard, soit +50 % en 48 h, pendant
+que le contenu réel n'avait pas bougé. C'est de la comptabilité
+serveur avant ramassage, pas de la croissance.
+
+**Le bon thermomètre est le paquet local**, et il est stable :
 
 ```
-.git avant compactage        88 Mo
-.git après compactage        25 Mo
-taille déclarée par GitHub   35 Mo   ← la seule qui compte
+git count-objects -vH  ->  size-pack: 28,44 Mio   (46 jours)
 ```
 
-44 jours d'existence, 35 Mo, soit **~24 Mo par mois**. Coût réel par
-version : `feed.json` 10 ko, `feed-recent.json` 7 ko, `decode-cache.json`
-**0 ko** (l'écriture triée fait son travail). Environ 0,7 Mo par jour.
+Croissance réelle mesurée sur cinq jours : **~130 Mo de blobs bruts par
+jour**, que la compression delta ramène à **~0,6 Mo/jour** empaqueté — ce
+qui confirme l'ordre de grandeur annoncé le 06/10 (0,7 Mo/jour). `feed.json`
+est réécrit en entier à chaque passage mais change très peu : Git ne stocke
+que l'écart.
 
-À la sortie : ~55 Mo. GitHub est à l'aise jusqu'à 1 Go. **Rien à faire**,
-juste à regarder une fois après novembre.
+À la sortie : ~40 Mo empaquetés. GitHub est à l'aise jusqu'à 1 Go. **Rien à
+faire** — et si on regarde un jour, c'est `size-pack` qu'on lit, pas l'API.
 
 ### Reddit : on n'y touche plus (décision du 06/10)
 
@@ -253,30 +650,52 @@ comparer. **Rien à faire.**
 
 ---
 
-## Chiffres de référence au 07/10/2026, 06h00 Paris
+## Chiffres de référence au 08/10/2026, 06h00 Paris
 
-| | |
+Le fil bouge d'heure en heure : ces chiffres sont un instantané, pas des
+constantes. Ceux cités dans la section 4 sont ceux mesurés **au moment de
+l'audit**, et ne bougent plus.
+
+| le fil | |
 |---|---|
-| articles dans le fil | 3 266 |
-| articles dans l'archive | 3 672 |
-| **jour le plus chargé jamais vu** | **309 articles le 17/09**, dont 6 majeurs |
-| articles par jour, en médiane | 13 |
-| durée d'un passage | **22 s** (56 s avant les correctifs du jour) |
-| chargement complet sur téléphone | **1,49 Mo** gzip (2,29 Mo avant) |
+| articles dans le fil | 3 222 |
+| articles dans l'archive | 4 123 |
+| **jour le plus chargé jamais vu** | **309 articles le 17/09**, dont 6 majeurs (2 %) |
+| durée d'un passage | 34,6 s |
+| chargement complet sur téléphone | **1,49 Mo** gzip (2,29 Mo avant le 06/10) |
 | liens dupliqués | 0 |
-| articles regroupant plusieurs rédactions | 289 (jusqu'à 5 sources) |
-| articles officiels | 51 |
-| articles avec vignette | 2 851 |
+| articles regroupant plusieurs rédactions | 291 (jusqu'à 5 sources) |
+| articles officiels | 62 |
+| articles avec vignette | 2 840 |
 | sources | 63 |
-| `test_pipeline` | 1 709 vérifications |
+| mots-clés | 35 |
+
+| le dépôt | |
+|---|---|
+| `size-pack` (**la mesure à suivre**) | **28,44 Mio** — ~0,6 Mo/jour |
+| taille annoncée par l'API GitHub | 53 Mo — *instable, à ne pas suivre* |
+| fichiers suivis / lignes | 46 / ~24 000 |
+| fonctions JS / mortes | 225 / **0** |
+| fonctions Python de premier niveau (`fetch_feeds`) | 88 |
+| `main()` | 493 lignes, complexité ≈ 82, **0 test l'exécute** |
+
+| les contrôles | |
+|---|---|
+| `test_pipeline` | 123 tests, 1 709 vérifications |
 | `test_navigateur` | 331 contrôles |
-| taille du dépôt (GitHub) | 35 Mo |
+| tests inspectant du texte source | 38 (55 assertions) |
+
+| les constantes | |
+|---|---|
 | `CACHE_NAME` | `gta6watch-shell-v18` |
 | `SIMILARITY_THRESHOLD` | 0,72 |
 | `HOT_SOURCE_THRESHOLD` | 3 |
 | `MAX_PERSISTED_ITEMS` | 300 |
+| `MAX_SEEN_ENTRIES` | 2 000 |
+| `readSet` | **aucun plafond** — voir 4.2 |
 | `DEAD_SOURCE_HOURS` | **12** (24 jusqu'au 07/10) |
 | `INCIDENTS_DUREE_MIN_H` | 3,0 |
+| `JOURS_SOURCE_LINK_PUBLIE` | 7 |
 
 ---
 
@@ -319,3 +738,20 @@ affiché — la fonctionnalité s'annulait elle-même.
    panne du décodeur, redatée sur `decode_failures` : 61,6 h et non 62,2.
 4. **`DEAD_SOURCE_HOURS` passe de 24 à 12 h.** La plus longue des 319 pannes
    dure 8 h 30 : le seuil de 24 h ne pouvait pas se déclencher.
+
+---
+
+## Ce qui a été fait le 08/10/2026
+
+**L'audit complet** des 46 fichiers suivis — aucune ligne de code modifiée.
+Le résultat est la section 4 ci-dessus : quatorze constats, et surtout la
+confirmation mesurée que l'essentiel est sain (zéro code mort, zéro anomalie
+de données, surface XSS close, aucun secret dans tout l'historique).
+
+Il clôt au passage la **revue de sécurité** (section 2), qui était ouverte
+depuis la création de ce fichier. Il reste un seul point qui ne se vérifie
+pas depuis le dépôt : la portée réelle du PAT cron-job.org.
+
+Deux chiffres de ce fichier étaient faux et sont corrigés : la taille du
+dépôt (l'API GitHub n'est pas un thermomètre) et le nombre de contrôles
+navigateur.
