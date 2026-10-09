@@ -1672,7 +1672,147 @@ def test_officiel_et_filtres_etroits(nav, url):
         check(not debordent,
               "à %d px, le texte des trois filtres reste dans son bouton, marge comprise (%s)"
               % (largeur, ", ".join(debordent) or "aucun débordement"))
+
+        # LA RANGÉE DU HAUT, depuis qu'elle porte deux boutons (09/10/2026).
+        #
+        # Deux mesures et non une, parce que le défaut trouvé en la livrant
+        # n'était PAS un débordement de texte : `.tab` est en
+        # `white-space:nowrap` et `flex-shrink:0`, donc le texte tenait
+        # parfaitement dans des boutons dont la somme dépassait l'écran. La
+        # rangée devenait scrollable, et « Actu majeure » était coupé de
+        # 50 px à 320 px — invisible tant qu'on ne balayait pas. Un onglet
+        # qu'il faut deviner est un onglet mort.
+        haut = page.evaluate("""() => {
+          document.getElementById("badgeMajeur").textContent = "50";
+          const row = document.querySelectorAll('.tab-row')[0];
+          const dedans = ["tabAll", "tabMajeur"].map(id => {
+            const e = document.getElementById(id), b = e.getBoundingClientRect();
+            const cs = getComputedStyle(e);
+            const r = document.createRange(); r.selectNodeContents(e);
+            const t = r.getBoundingClientRect();
+            const g = b.left + parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft);
+            const d = b.right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
+            return [id, Math.max(g - t.left, t.right - d)];
+          });
+          return {dedans, coupe: row.scrollWidth - row.clientWidth};
+        }""")
+        trop = ["%s (+%.1f px)" % (m[0], m[1]) for m in haut["dedans"] if m[1] > 0.5]
+        check(not trop,
+              "à %d px, le texte des deux vues reste dans son bouton (%s)"
+              % (largeur, ", ".join(trop) or "aucun débordement"))
+        check(haut["coupe"] <= 0,
+              "et la rangée du haut ENTIÈRE tient dans l'écran à %d px : sans ça "
+              "« Actu majeure » est coupé et personne ne le trouve (%+d px)"
+              % (largeur, haut["coupe"]))
         ctx.close()
+
+
+def test_onglet_actu_majeure(nav, url):
+    """L'onglet livré le 09/10/2026, à la demande d'Antoni.
+
+    Ce n'est PAS un filtre du jour. Mesuré sur le fil réel avant de le
+    construire : 50 articles majeurs sur 3 291, médiane d'UN par jour, et
+    12 des 30 derniers jours n'en ont produit aucun. En filtre du jour,
+    l'onglet aurait été vide 40 % du temps — on l'ouvre une fois, il est
+    vide, on ne l'ouvre plus. En chronologie complète il couvre deux mois
+    et se lit d'un bout à l'autre.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # Un fil où les majeurs sont ANCIENS et les ordinaires récents : c'est
+    # ce qui distingue une chronologie d'un filtre du jour. Si l'onglet ne
+    # montrait que les récents, il serait vide ici.
+    page.evaluate("""() => {
+      historyPartial = false; rattrapageLance = true; archiveChargee = true;
+      hotThreshold = 3;
+      lastItems = [];
+      for(let j = 1; j <= 10; j++){
+        lastItems.push({title: "Ordinaire " + j, link: "https://ex.test/o" + j,
+          source: "VG247", date: new Date(Date.now() - j * 3600000).toISOString(),
+          lang: "en"});
+      }
+      [["Vieux majeur A", 3, 40], ["Vieux majeur B", 4, 55],
+       ["Majeur d'hier", 3, 1]].forEach((m, k) => {
+        const extra = [];
+        for(let q = 1; q < m[1]; q++) extra.push({source: "S" + q, link: "https://ex.test/x" + k + q});
+        lastItems.push({title: m[0], link: "https://ex.test/m" + k, source: "IGN",
+          date: new Date(Date.now() - m[2] * 86400000).toISOString(),
+          lang: "en", extraSources: extra});
+      });
+      // Un article à DEUX rédactions : sous le seuil, il ne doit pas entrer.
+      lastItems.push({title: "Deux seulement", link: "https://ex.test/deux",
+        source: "IGN", date: new Date().toISOString(), lang: "en",
+        extraSources: [{source: "S", link: "https://ex.test/y"}]});
+      lastItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+      derniereReponseBackend = {hot_threshold: 3};
+      applyFilters();
+    }""")
+
+    check(page.locator("#tabMajeur").count() == 1, "l'onglet existe")
+    rangee = page.evaluate("""() => {
+      const r = document.querySelectorAll('.tab-row')[0];
+      return [...r.querySelectorAll('.tab')].map(e => e.id);
+    }""")
+    check(rangee == ["tabAll", "tabMajeur"],
+          "il est dans la rangée du HAUT, à côté de « Tous les articles » — "
+          "la rangée du bas découpe par source, celle-ci par importance (%s)" % rangee)
+
+    page.evaluate("() => setTab('majeur')")
+    page.wait_for_timeout(150)
+    titres = page.locator("#feed .card-title").all_inner_texts()
+    check(sorted(titres) == ["Majeur d'hier", "Vieux majeur A", "Vieux majeur B"],
+          "il montre TOUTE la chronologie, un majeur de 55 jours compris, et "
+          "rien d'autre (%s)" % titres)
+    check("Deux seulement" not in titres,
+          "un sujet à deux rédactions reste dehors : le seuil vient du backend")
+    check(titres[0] == "Majeur d'hier",
+          "du plus récent au plus ancien, comme le fil (%s)" % titres[0])
+
+    # Le badge de la carte et le filtre de l'onglet disent la MÊME chose.
+    # C'est la raison d'être de estMajeur() : recalculés séparément, ils
+    # auraient pu diverger sans qu'aucun contrôle ne le voie.
+    badges = page.locator("#feed .tag-hot").all_inner_texts()
+    check(len(badges) == 3 and all("ACTU MAJEURE" in b for b in badges),
+          "chaque carte de l'onglet porte le badge, et il dit le nom de "
+          "l'onglet (%s)" % badges)
+    check(any("4 SOURCES" in b for b in badges),
+          "le nombre de rédactions reste écrit : cinq n'est pas trois (%s)" % badges)
+
+    # La pastille compte les NON LUS, comme les trois autres onglets.
+    def pastille():
+        return page.locator("#badgeMajeur").inner_text()
+    check(pastille() == "3", "la pastille compte les trois non lus (%s)" % pastille())
+    page.evaluate("""async () => {
+      readSet.add("https://ex.test/m0"); await saveRead(); applyFilters();
+    }""")
+    page.wait_for_timeout(150)
+    check(pastille() == "2", "elle descend quand on en lit un (%s)" % pastille())
+    page.evaluate("""async () => {
+      ["https://ex.test/m1", "https://ex.test/m2"].forEach(l => readSet.add(l));
+      await saveRead(); applyFilters();
+    }""")
+    page.wait_for_timeout(150)
+    check(pastille() == "",
+          "et elle disparaît quand tout est lu, au lieu d'afficher 0 (« %s »)" % pastille())
+
+    # L'onglet doit SURVIVRE à un rechargement. Sans son entrée dans
+    # ONGLETS_MEMORISES il retomberait sur « Tous », en silence.
+    memo = page.evaluate("() => JSON.parse(localStorage.getItem(STORAGE_PREFIX + CLE_FILTRES) || '{}').onglet")
+    check(memo == "majeur", "l'onglet choisi est mémorisé (%s)" % memo)
+    page.reload(wait_until="load")
+    page.wait_for_selector("#tabMajeur")
+    page.wait_for_timeout(250)
+    actif = page.get_attribute("#tabMajeur", "aria-pressed")
+    check(actif == "true",
+          "et il est toujours actif après rechargement (aria-pressed=%s)" % actif)
+
+    check(not erreurs, "aucune erreur JavaScript (%s)" % (erreurs or "aucune"))
+    ctx.close()
 
 
 def test_graphiques_detailles(nav, url):
@@ -2439,6 +2579,7 @@ def main():
             test_bloc_incidents(nav, url)
             test_stats_quatre_rubriques(nav, url)
             test_officiel_et_filtres_etroits(nav, url)
+            test_onglet_actu_majeure(nav, url)
             test_graphiques_detailles(nav, url)
             test_graphiques_autres_rubriques(nav, url)
             nav.close()

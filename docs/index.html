@@ -1063,6 +1063,24 @@
   @media (max-width:479px){
     .tab-row:not(.tab-row-full) .tab{flex-direction:column; gap:2px; padding-left:4px; padding-right:4px;}
     .tab-row:not(.tab-row-full) .tab .tab-badge{margin-left:0;}
+    /* MÊME REMÈDE POUR LA RANGÉE DU HAUT, depuis qu'elle porte deux
+       boutons (09/10/2026). `.tab` est en `white-space:nowrap` et
+       `flex-shrink:0`, donc la rangée NE RÉTRÉCIT PAS : elle déborde et
+       devient scrollable. Mesuré au navigateur avant correction, avec la
+       pastille à « 50 » :
+
+           320 px : contenu 338 px pour 288 px visibles -> « Actu majeure »
+                    coupé de 50 px
+           360 px :                                     -> coupé de 10 px
+           390 px et au-delà : entier
+
+       Un onglet qu'il faut deviner et faire défiler pour voir est un
+       onglet mort, et c'est précisément le nouveau. On autorise donc le
+       rétrécissement et le retour à la ligne, comme pour les trois filtres
+       du dessous. */
+    .tab-row-full .tab{min-width:0; flex-shrink:1; white-space:normal;
+                       text-align:center; line-height:1.3;
+                       padding-left:6px; padding-right:6px;}
   }
   /* À 320 px, « RockstarMag » dépassait encore de 0,7 px : sans l'espacement
      entre lettres (0,24 px × 11), il tient. */
@@ -1483,8 +1501,19 @@
     </button>
   </div>
 
+  <!-- La rangée du haut porte les deux vues du fil ENTIER : tout, et ce qui
+       compte. Les trois de la rangée du dessous découpent le fil par
+       famille de source ; celle-ci le découpe par importance, ce qui est un
+       autre axe — d'où deux rangées et non cinq boutons à la file.
+       « Actu majeure » n'est pas un filtre du jour : c'est la CHRONOLOGIE
+       complète des sujets qu'au moins HOT_SOURCE_THRESHOLD rédactions ont
+       couverts, du plus récent au plus ancien. Mesuré le 09/10/2026 : 50
+       articles sur 3 291, et 12 des 30 derniers jours n'en ont produit
+       aucun. En filtre du jour l'onglet serait vide 40 % du temps ; en
+       chronologie il couvre deux mois et se lit d'un bout à l'autre. -->
   <div class="tab-row tab-row-full">
     <button class="tab active" id="tabAll" aria-pressed="true" onclick="setTab('all')">Tous les articles</button>
+    <button class="tab" id="tabMajeur" aria-pressed="false" onclick="setTab('majeur')">🔥 Actu majeure <span class="tab-badge" id="badgeMajeur"></span></button>
   </div>
   <div class="tab-row">
     <button class="tab" id="tabNonRockstar" aria-pressed="false" onclick="setTab('non-rockstar')">Non Rockstar <span class="tab-badge" id="badgeNonRockstar"></span></button>
@@ -3859,7 +3888,7 @@ const CLE_FILTRES = "filtres-v1";
 // On ne restaure que des valeurs connues. Une clé corrompue, ou écrite par
 // une version antérieure, retombe sur le défaut plutôt que de coincer l'app
 // dans un état qu'aucun bouton ne sait défaire.
-const ONGLETS_MEMORISES = ["all", "non-rockstar", "rockstar", "rockstarmag"];
+const ONGLETS_MEMORISES = ["all", "majeur", "non-rockstar", "rockstar", "rockstarmag"];
 const LANGUES_MEMORISEES = ["all", "fr", "en"];
 // « new » n'y est délibérément pas : ce filtre s'appuie sur lastNewLinks, qui
 // est reconstruit de zéro à chaque ouverture et reste VIDE tant qu'aucun
@@ -3936,6 +3965,7 @@ function setTab(t, silencieux){
   currentTab = t;
   visibleCount = PAGE_SIZE;
   marqueActif("tabAll", t === "all");
+  marqueActif("tabMajeur", t === "majeur");
   marqueActif("tabNonRockstar", t === "non-rockstar");
   marqueActif("tabRockstar", t === "rockstar");
   marqueActif("tabRockstarmag", t === "rockstarmag");
@@ -4078,6 +4108,27 @@ function articlesVisibles(){
   return lastItems.filter(i => !estExclu(i));
 }
 
+// Combien de rédactions couvrent le même sujet. L'article lui-même compte
+// pour une, ses reprises pour le reste.
+function nombreDeRedactions(item){
+  return 1 + ((item && item.extraSources) ? item.extraSources.length : 0);
+}
+
+// UN SEUL ENDROIT décide qu'un article est majeur, et c'est tout l'intérêt
+// de cette fonction. Trois appelants s'en servent : le filtre de l'onglet
+// « Actu majeure », sa pastille de non-lus, et le badge 🔥 de la carte.
+// Recalculé à trois endroits, le même article aurait pu porter le badge
+// sans entrer dans l'onglet, ou l'inverse — une incohérence qu'aucun
+// contrôle n'aurait attrapée puisque les trois calculs auraient été
+// « justes » séparément.
+//
+// `hotThreshold` vient du backend (`hot_threshold`), pas d'une constante
+// codée ici : le jour où le seuil bougera, l'onglet, la pastille et le
+// badge bougeront ensemble.
+function estMajeur(item){
+  return nombreDeRedactions(item) >= hotThreshold;
+}
+
 // La liste réellement affichée, onglet, filtres, recherche et plafond
 // compris. UNE seule définition, parce que markAllRead en recopiait trois
 // des six lignes et que les deux avaient dérivé : le marquage en masse
@@ -4088,6 +4139,9 @@ function articlesAffiches(){
 
   if(currentTab === "rockstar") items = items.filter(i => i.official);
   if(currentTab === "rockstarmag") items = items.filter(i => i.rockstarmag);
+  // Toute la chronologie, pas seulement les récents : voir le commentaire
+  // de la rangée d'onglets. Le tri par date est déjà celui du fil.
+  if(currentTab === "majeur") items = items.filter(estMajeur);
   if(currentTab === "non-rockstar") items = items.filter(i => !i.official && !i.rockstarmag);
   if(currentLang === "fr") items = items.filter(i => i.lang === "fr");
   if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
@@ -4152,6 +4206,7 @@ function updateTabBadges(){
   const unreadRockstar = visibles.filter(i => i.official && !readSet.has(i.link)).length;
   const unreadRockstarmag = visibles.filter(i => i.rockstarmag && !readSet.has(i.link)).length;
   const unreadNonRockstar = visibles.filter(i => !i.official && !i.rockstarmag && !readSet.has(i.link)).length;
+  const unreadMajeur = visibles.filter(i => estMajeur(i) && !readSet.has(i.link)).length;
   const unreadFr = visibles.filter(i => i.lang === "fr" && !readSet.has(i.link)).length;
   const unreadEn = visibles.filter(i => i.lang !== "fr" && !readSet.has(i.link)).length;
 
@@ -4167,6 +4222,7 @@ function updateTabBadges(){
   poseBadge("badgeRockstar", unreadRockstar);
   poseBadge("badgeRockstarmag", unreadRockstarmag);
   poseBadge("badgeNonRockstar", unreadNonRockstar);
+  poseBadge("badgeMajeur", unreadMajeur);
   poseBadge("badgeLangAll", unreadAll);
   poseBadge("badgeFr", unreadFr);
   poseBadge("badgeEn", unreadEn);
@@ -4360,9 +4416,13 @@ function renderCard(item, newLinks, searchQuery){
   // jette plus les doublons de titre : il compte les sources. Quand
   // plusieurs rédactions publient la même chose dans la foulée, c'est en
   // général un trailer, une date ou une annonce — pas de la supputation.
-  const nbSources = 1 + (item.extraSources ? item.extraSources.length : 0);
-  const hotBadge = nbSources >= hotThreshold
-    ? `<span class="tag-badge tag-hot">🔥 ${nbSources} SOURCES</span>` : "";
+  const nbSources = nombreDeRedactions(item);
+  // Le libellé dit « ACTU MAJEURE » et pas seulement le nombre : c'est le
+  // nom de l'onglet qui porte ces articles, et il répond à la question
+  // qu'on se pose en le voyant — pourquoi CET article y est. Le nombre
+  // reste, parce qu'un sujet à cinq rédactions n'est pas un sujet à trois.
+  const hotBadge = estMajeur(item)
+    ? `<span class="tag-badge tag-hot">🔥 ACTU MAJEURE · ${nbSources} SOURCES</span>` : "";
 
   // Les liens des autres sources dorment dans feed.json depuis le début : les
   // rendre cliquables permet de lire la même actu chez la rédaction de son
