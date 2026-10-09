@@ -704,11 +704,36 @@ def lien_officiel(url, domaines):
 # fois.
 #
 # Liste EXPLICITE, tirée des liens réellement vus dans tout l'historique du
-# dépôt au 23/09/2026 (fr, de, mx) — le site lui-même est inaccessible
-# d'ici. Surtout pas « deux lettres » : /VI/, les pages du jeu, se lirait
-# comme le vietnamien. Une langue qui apparaîtrait plus tard est signalée par
-# audit_donnees.py, pour être ajoutée ici en connaissance de cause.
-LANGUES_ROCKSTAR_ECARTEES = ("de", "mx")
+# dépôt — le site lui-même est inaccessible d'ici. Surtout pas « deux
+# lettres » : /VI/, les pages du jeu, se lirait comme le vietnamien. Une
+# langue qui apparaîtrait plus tard est signalée par audit_donnees.py, pour
+# être ajoutée ici en connaissance de cause.
+#
+# C'est exactement ce qui s'est passé le 09/10/2026 : l'audit a signalé
+# /it/ et /es/, et br, it, es rejoignent la liste. Relevé sur le fil ET
+# l'archive avant de décider :
+#
+#     /fr/ : 34   gardé — Antoni lit le français
+#     /VI/ : 16   GARDÉ, ce n'est PAS une langue (voir ci-dessus)
+#     /it/ :  2   écarté
+#     /br/ :  2   écarté
+#     /es/ :  2   écarté
+#     /ru/ :  1   écarté — apparu le 09/10 PENDANT ce changement
+#
+# Et la raison d'écarter, mesurée : 10 des 12 articles du Newswire présents
+# dans l'historique y sont en PLUSIEURS langues. L'annonce des stations de
+# radio (o3982oa93a23k4) y figure CINQ fois — en, fr, es, br, ru. La
+# cinquième est arrivée pendant l'écriture de ce commentaire, ce qui dit
+# assez que ce n'est pas une projection pour novembre mais l'état du fil.
+#
+# CE QUE ÇA COÛTE, dit ici parce que ce n'est pas nul : la page boutique
+# du vinyle (store.rockstargames.com/it/…/buy-gta-vi-album-standard-vinyl)
+# n'a AUCUN équivalent en ou fr dans le fil. Elle part. C'est un article
+# perdu contre trois doublons retirés, et le choix est assumé.
+#
+# L'exclusion s'applique aussi à l'archive, via le `exclure=` passé à
+# archiver() : ces liens disparaissent du fil ET des mois déjà rangés.
+LANGUES_ROCKSTAR_ECARTEES = ("br", "de", "es", "it", "mx", "ru")
 
 
 # Les plateformes d'échange de cryptomonnaies publient une page de cours

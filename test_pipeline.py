@@ -1056,13 +1056,40 @@ def test_officiel_strict_et_langues_rockstar():
     mx = "https://www.rockstargames.com/mx/newswire/article/7599a881942544/album"
     en = "https://www.rockstargames.com/newswire/article/7599a881942544/album"
     fr = "https://www.rockstargames.com/fr/newswire/article/7599a881942544/album"
-    check(ff.page_rockstar_hors_langue(de) and ff.page_rockstar_hors_langue(mx),
-          "les versions allemande et mexicaine sont écartées")
+    # br, es et it ont rejoint la liste le 09/10/2026, signalés par
+    # audit_donnees.py exactement comme le mécanisme le prévoit. Mesuré
+    # avant de décider : 10 des 12 articles du Newswire de l'historique y
+    # sont en plusieurs langues, et celui des stations de radio y figure
+    # QUATRE fois (en, fr, es, br).
+    br = "https://www.rockstargames.com/br/newswire/article/7599a881942544/album"
+    es = "https://www.rockstargames.com/es/newswire/article/7599a881942544/album"
+    it = "https://store.rockstargames.com/it/merchandise/buy-gta-vi-album"
+    ru = "https://www.rockstargames.com/ru/newswire/article/7599a881942544/album"
+    for url, langue in ((de, "allemande"), (mx, "mexicaine"), (br, "brésilienne"),
+                        (es, "espagnole"), (it, "italienne"), (ru, "russe")):
+        check(ff.page_rockstar_hors_langue(url),
+              "la version %s est écartée" % langue)
     check(not ff.page_rockstar_hors_langue(en) and not ff.page_rockstar_hors_langue(fr),
           "l'anglais et le français passent")
     check(not ff.page_rockstar_hors_langue("https://www.rockstargames.com/VI/music")
           and not ff.page_rockstar_hors_langue("https://www.rockstargames.com/vi/music"),
           "/VI/ — les pages du jeu — n'est pas une langue, en majuscules comme en minuscules")
+
+    # LE GARDE-FOU À LA SOURCE, et pas seulement sur le comportement.
+    #
+    # Le contrôle au-dessus vérifie que /VI/ passe AUJOURD'HUI. Celui-ci
+    # verrouille la cause : « vi » ne doit jamais entrer dans la liste. Le
+    # jour où quelqu'un lira l'avertissement de audit_donnees.py — « préfixe
+    # jamais vu, à ajouter si ce n'est ni de l'anglais ni du français » — et
+    # prendra /VI/ pour du vietnamien, ce sont 16 pages Rockstar qui
+    # disparaîtraient du fil ET de l'archive, en silence. Le commentaire le
+    # dit depuis le 23/09 ; rien ne l'empêchait.
+    check("vi" not in ff.LANGUES_ROCKSTAR_ECARTEES,
+          "« vi » n'est PAS dans la liste des langues écartées — c'est le "
+          "nom du jeu, pas le vietnamien (%s)" % (ff.LANGUES_ROCKSTAR_ECARTEES,))
+    check(all(len(l) == 2 and l.islower() for l in ff.LANGUES_ROCKSTAR_ECARTEES),
+          "et la liste ne contient que des codes à deux lettres minuscules, "
+          "comparables au premier segment du chemin")
     check(not ff.page_rockstar_hors_langue("https://www.gamekult.com/de/gta6"),
           "la règle ne vaut que pour le site de Rockstar")
 
@@ -1143,12 +1170,16 @@ def test_officiel_strict_et_langues_rockstar():
         items = [{"title": "t", "link": l, "date": "2026-09-17T12:00:00+00:00",
                   "source": "S"} for l in liens]
         return {a["code"]: a for a in audit_donnees.audite({"items": items})}
-    c = codes(["https://www.rockstargames.com/es/newswire/article/1/x",
+    # L'exemple était /es/ jusqu'au 09/10/2026. Il a cessé d'en être un le
+    # jour où l'audit l'a signalé pour de vrai et où es a rejoint la liste :
+    # c'est la boucle complète du mécanisme, et c'est ce test qui l'a vue se
+    # refermer. /pl/ prend le relais — jamais vu dans l'historique.
+    c = codes(["https://www.rockstargames.com/pl/newswire/article/1/x",
                "https://www.rockstargames.com/VI/music",
                "https://www.rockstargames.com/fr/newswire/article/1/x"])
     check("rockstar-langue-inconnue" in c
-          and c["rockstar-langue-inconnue"]["exemples"] == ["/es/ : 1 lien(s)"],
-          "une langue jamais vue (/es/) est signalée — et seulement elle, ni /VI/ ni /fr/")
+          and c["rockstar-langue-inconnue"]["exemples"] == ["/pl/ : 1 lien(s)"],
+          "une langue jamais vue (/pl/) est signalée — et seulement elle, ni /VI/ ni /fr/")
     check(c["rockstar-langue-inconnue"]["gravite"] == "info", "en simple info : rien n'est cassé")
     c = codes([de])
     check("rockstar-langue-ecartee" in c and "rockstar-langue-inconnue" not in c,
