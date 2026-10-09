@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1719
+qui permet de tester tout le pipeline sans sortir de la machine. **1726
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5543,12 +5543,43 @@ retire de nouveau.
 
 **Le piège, annoncé avant d'écrire une ligne** : `/VI/` — les pages du jeu —
 se lit comme un code de langue (le vietnamien). La liste est donc
-**explicite**, `LANGUES_ROCKSTAR_ECARTEES = ("de", "mx")`, et elle n'est pas
-devinée : le site de Rockstar étant inaccessible d'ici, elle vient de tous
-les liens Rockstar de l'historique git du fil (seuls `fr`, `de` et `mx` y
-apparaissent ; `VI` toujours en majuscules). Une langue jamais vue passerait
-donc le filtre ; `audit_donnees.py` la signale (`rockstar-langue-inconnue`),
-pour qu'on l'ajoute en connaissance de cause.
+**explicite** et pas devinée : le site de Rockstar étant inaccessible d'ici,
+elle vient de tous les liens Rockstar de l'historique git du fil. Une langue
+jamais vue passe le filtre ; `audit_donnees.py` la signale
+(`rockstar-langue-inconnue`), pour qu'on l'ajoute en connaissance de cause.
+
+**Et c'est exactement ce qui s'est passé le 09/10/2026.** L'audit a signalé
+`/it/` et `/es/`, jamais vus jusque-là. Relevé sur le fil ET l'archive avant
+de décider :
+
+```
+/fr/ : 34   gardé — le français est suivi
+/VI/ : 16   GARDÉ, ce n'est pas une langue
+/it/ :  2   écarté
+/br/ :  2   écarté
+/es/ :  2   écarté
+/ru/ :  1   écarté — apparu PENDANT le changement, le 09/10
+```
+
+La liste passe donc à
+`LANGUES_ROCKSTAR_ECARTEES = ("br", "de", "es", "it", "mx", "ru")`.
+La raison est mesurée : **10 des 12 articles du Newswire présents
+dans l'historique y sont en plusieurs langues**, et celui des stations de
+radio y figure **cinq fois** — en, fr, es, br, ru. La cinquième est apparue
+pendant l'écriture de ce paragraphe : ce n'était pas une projection pour
+novembre, c'était l'état du fil.
+
+**Ce que ça coûte, dit plutôt que taire** : la page boutique du vinyle
+(`store.rockstargames.com/it/…`) n'a aucun équivalent en ou fr dans le fil.
+Elle part. Un article perdu contre trois doublons retirés, et le choix est
+assumé.
+
+**Un garde-fou de plus, au passage.** Le `/VI/` était protégé par un
+commentaire et par un contrôle de comportement. Rien n'empêchait d'écrire
+`vi` dans la liste — le jour où quelqu'un lirait l'avertissement de l'audit
+et le prendrait pour du vietnamien, **16 pages Rockstar disparaîtraient du
+fil et de l'archive, en silence**. Un contrôle verrouille maintenant la
+cause : `"vi" not in LANGUES_ROCKSTAR_ECARTEES`.
 
 **Des domaines vérifiés strictement.** En lisant le code : le domaine était
 cherché *n'importe où* dans l'adresse (`in netloc` côté robot, `includes`

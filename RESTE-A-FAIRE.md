@@ -43,10 +43,66 @@ seulement en volume — tout parlera du même sujet, et la convergence sera
 plus forte qu'un jour de rumeur. Mais c'est une hypothèse. `HOT_SOURCE_THRESHOLD`
 reste à 3 et il n'y a **aucune raison mesurée** d'y toucher avant la sortie.
 
-**Ce qu'il faudrait pour trancher** : rejouer la distribution du nombre de
-rédactions par sujet, jour par jour, et regarder comment elle se déforme
-les jours de forte convergence (les trois pics de septembre). Si elle tient
-à 2 % sur les pics, le seuil fixe tiendra aussi le 19 novembre.
+**MESURÉ LE 09/10/2026 — ET LE SEUIL TIENT.** 4 203 articles uniques, fil
+et archive, sur les 32 jours de couverture complète.
+
+| journées | nb | part de majeurs, médiane | max |
+|---|---|---|---|
+| moins de 100 articles | 17 | 0,0 % | 2,4 % |
+| 100 à 149 | 8 | 1,3 % | 3,4 % |
+| **150 et plus** | 7 | **1,4 %** | **3,8 %** |
+
+Corrélation entre le volume du jour et la part de majeurs : **r = +0,32**.
+Faible. En appliquant la pire part observée au volume d'un jour de sortie :
+
+```
+ 300 articles/jour ->  3 majeurs (médiane) ...  11 (au pire observé)
+1000 articles/jour ->  9 majeurs            ...  38
+2000 articles/jour -> 19 majeurs            ...  75
+```
+
+Même au pire, une liste de 38 reste lisible — vingt-cinq fois plus courte
+que le fil. **`HOT_SOURCE_THRESHOLD` reste à 3, et la question est close.**
+
+**Ce que la mesure a sorti d'autre, et qui compte plus.** Le taux de
+regroupement (2 rédactions ou plus) **ne suit pas le volume** : 6,4 % en
+médiane les petites journées, 7,0 % les grosses. Ce qui le fait bouger,
+c'est l'ÉVÉNEMENT, pas le nombre d'articles :
+
+```
+17/09   315 articles   13,7 % regroupés   (Twitch CEO)
+24/09   212 articles   19,3 %             (coffret 400 $)
+02/10   200 articles   15,5 %             (Miami HEAT)
+18/09   182 articles    4,4 %             rien de fédérateur
+07/10   188 articles    4,8 %             idem
+08/10   285 articles    7,0 %             idem
+```
+
+**Le badge mesure donc la bonne chose** : la convergence éditoriale, pas le
+volume. C'est précisément ce qu'on lui demande.
+
+**Mais le rappel de la déduplication est le vrai plafond.** Le 08/10, 265
+des 285 articles sont restés seuls, et parmi eux **24 paires se recouvrent
+à 50 % ou plus**. Deux vraies reprises manquées, vérifiées à la main :
+
+```
+0,717  « GTA VI to include Metal themed radio station hosted by SLAYER's… »
+       « 'Grand Theft Auto VI' To Feature An In-Game Metal Radio Station… »
+```
+
+**0,717 pour un seuil à 0,72.** Trois millièmes.
+
+La cause n'est pas le seuil, c'est que **le nom du jeu n'est pas ramené à
+une forme unique avant la comparaison** : « GTA VI » et « Grand Theft Auto
+VI » font diverger deux titres qui disent la même chose. `_MOTS_SANS_VALEUR`
+le fait déjà, mais seulement pour l'appariement par mot rare, pas pour la
+similarité elle-même. Mesuré sur les deux paires manquées : unifier le nom
+en ferait passer **une** (0,717 → 0,769, fusionnée), pas l'autre (0,595 →
+0,705).
+
+**Piste pour 3.1, pas pour le seuil.** Et elle exige le même rejeu complet
+des deux corpus que le passage à 0,72 : améliorer le signal n'est pas
+abaisser la barre, mais ça déplace quand même ce qui fusionne.
 
 **Le vrai problème du jour J n'est pas le badge : c'est le mur.** Voir la
 rubrique interface ci-dessous, point 3.1.
@@ -817,7 +873,7 @@ l'audit**, et ne bougent plus.
 
 | les contrôles | |
 |---|---|
-| `test_pipeline` | 124 tests, 1 719 vérifications |
+| `test_pipeline` | 124 tests, 1 726 vérifications |
 | `test_navigateur` | 360 contrôles |
 | articles « actu majeure » | 51 (1,5 %) |
 | badge SPÉCIALISTE / VIDÉO / LEAK | 251 / 183 / 162 |
@@ -899,6 +955,13 @@ rubrique », plus haut.
 
 **Les deux rangées d'onglets sont désormais pleines.** Toute vue
 supplémentaire passera par la feuille Filtres, pas par un sixième bouton.
+
+**Plus tard dans la journée** : la mesure du seuil (§1, question close — il
+reste à 3) et l'extension de `LANGUES_ROCKSTAR_ECARTEES` à br, es, it, ru.
+`/ru/` est apparu PENDANT le changement, cinquième copie de la même annonce
+Rockstar : la duplication multilingue n'était pas une projection pour
+novembre. Et un contrôle verrouille enfin `"vi" not in` la liste — le
+commentaire avertissait depuis le 23/09, rien ne l'empêchait.
 
 ---
 
