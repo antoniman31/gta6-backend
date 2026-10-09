@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1726
+qui permet de tester tout le pipeline sans sortir de la machine. **1743
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -6164,6 +6164,61 @@ dans `feed.json` pour qui veut le lire.
 Le titre évite soigneusement les mots « État des sources » : les contrôles
 navigateur repèrent les blocs par leur texte, et deux blocs portant cette
 phrase casseraient le sélecteur des autres. Un contrôle le vérifie.
+
+## main() s'exécute enfin dans un test — 09/10/2026
+
+**Le constat 4.5 de l'audit du 08/10.** `main()` fait 493 lignes et une
+complexité de 82 — trois fois la fonction suivante. C'est elle qui décide
+de tout ce qui est publié. **Aucun test ne l'exécutait.** Deux d'entre eux
+découpaient son texte source à partir de `def main(` et vérifiaient que des
+chaînes s'y trouvaient :
+
+```python
+check('"sources_incidents": journal_incidents' in corps, …)
+```
+
+Tout ce qu'elle orchestre était bien testé isolément ; l'orchestration, non.
+Un test qui lit du texte ne peut attraper ni un ordre d'opérations inversé,
+ni une mauvaise variable passée, ni un chemin d'exception. Et il casse sur
+un renommage anodin : le 07/10, renommer une variable locale a fait tomber
+un contrôle alors que le comportement était rigoureusement identique.
+
+### Ce qui est neutralisé, et rien d'autre
+
+| neutralisé | pourquoi |
+|---|---|
+| `collect_feed_items` | la feuille réseau. Tout le reste de `fetch_all_feeds` tourne pour de vrai : les files par domaine, les fils, la reprise. |
+| `fetch_missing_images` | va chercher les `og:image` sur le web. |
+| `HOST_PAUSE` | une politesse d'une seconde entre deux requêtes vers le même domaine. Il n'y a pas de serveur à ménager ici, et la garder coûtait **8,5 s par passage** pour ne rien vérifier. |
+
+Le reste s'exécute : lecture du fil, réparations rétroactives,
+déduplication, plafond, santé des sources, incidents, garde-fou de
+publication, écriture du fil, de l'allégé, de l'archive, de son index et du
+cache de décodage. Le tout dans un répertoire jetable, et le répertoire de
+travail est rendu tel qu'il était — un contrôle le vérifie.
+
+### Ce que seul un passage complet montre
+
+- **La déduplication de bout en bout.** Deux reprises du même sujet entrent
+  par deux sources et ressortent **en une**, la perdante conservée en
+  source supplémentaire. C'est l'ordre de `FEEDS` qui décide laquelle
+  possède l'article, et cet ordre ne s'observe nulle part ailleurs.
+- **L'état cumulatif fait l'aller-retour.** `sources_incidents` et
+  `sources_incidents_compte` sont relus depuis `stored` et republiés : les
+  perdre les remettrait à zéro à chaque passage, en silence.
+- **Le compteur annoncé est le vrai.** `new_this_run` est comparé à ce qui
+  est réellement entré, et le journal du passage ne signale aucun écart.
+- **Les quatre fichiers sont écrits ensemble**, et l'allégé annonce le
+  total du fichier COMPLET — le piège documenté plus haut.
+- **Ce que le fil écarte n'entre pas dans l'archive.** Elle garde par
+  construction ; c'est `exclure=` qui l'en empêche.
+- **L'idempotence.** Un second passage sur les mêmes données n'ajoute ni ne
+  perd aucun article. Chaque étape prise à part peut être idempotente sans
+  que leur enchaînement le soit.
+
+**18 vérifications, en moins d'une seconde.** Les deux contrôles sur le
+texte de `main()` restent : ils vérifient un ORDRE d'instructions que le
+résultat seul ne montre pas.
 
 ## L'onglet « Actu majeure » — 09/10/2026
 

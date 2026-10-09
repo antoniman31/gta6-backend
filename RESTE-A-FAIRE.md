@@ -550,7 +550,7 @@ Rockstar hors langue, cotations crypto), et n'élague pas `source_link`.
 
 ---
 
-### 4.5 — `main()` : 493 lignes, complexité ≈ 82, jamais exécutée par un test
+### 4.5 — ~~`main()` jamais exécutée par un test~~ — RÉGLÉ le 09/10/2026
 
 De loin la plus grosse fonction du dépôt — trois fois la suivante
 (`collect_feed_items`, 302 lignes). Elle décide de tout ce qui est publié.
@@ -573,6 +573,24 @@ que le comportement était rigoureusement identique.
 `main()` prend ses entrées de `load_feed()` et du réseau, et
 `fetch_all_feeds` a déjà un paramètre `collecte` injectable : **un test qui
 l'exécute de bout en bout sur un faux fil est à portée.**
+
+**C'est fait.** `test_un_passage_complet_du_robot`, 18 vérifications, moins
+d'une seconde. Trois choses seulement sont neutralisées — `collect_feed_items`
+(la feuille réseau), `fetch_missing_images`, et `HOST_PAUSE` (une seconde de
+politesse par requête, 8,5 s par passage pour ne rien vérifier). Tout le
+reste s'exécute, dans un répertoire jetable.
+
+Ce que seul le passage complet montre : la déduplication de bout en bout
+(deux reprises entrent par deux sources, ressortent en une, la perdante
+gardée en source supplémentaire — c'est l'ordre de `FEEDS` qui décide), le
+report de l'état cumulatif, l'exactitude de `new_this_run`, l'écriture
+simultanée des quatre fichiers, le fait que l'archive n'hérite pas de ce
+que le fil écarte, et **l'idempotence** : un second passage n'ajoute ni ne
+perd rien.
+
+Les deux contrôles sur le texte de `main()` restent : ils vérifient un
+ORDRE d'instructions que le résultat seul ne montre pas. **4.6 reste donc
+ouvert**, mais avec un argument de moins.
 
 ---
 
@@ -748,8 +766,7 @@ l'historique avant de choisir.
    `readSet` demande une mesure et peut attendre ; la phrase, non.
 3. **4.8 et 4.10** — dix minutes à deux : la docstring, le
    `dependabot.yml`, et `.env` dans `.gitignore`.
-4. **4.5** — le test qui exécute `main()`. Le plus gros chantier, et le seul
-   qui change durablement la confiance qu'on peut avoir dans un passage.
+4. ~~**4.5** — le test qui exécute `main()`.~~ **Fait le 09/10/2026.**
 
 Puis **4.13** (trois articles en double dans l'archive) et **4.14** (la
 décision sur les pages Rockstar localisées, à mesurer avant novembre).
@@ -869,11 +886,11 @@ l'audit**, et ne bougent plus.
 | fichiers suivis / lignes | 46 / ~24 000 |
 | fonctions JS / mortes | 225 / **0** |
 | fonctions Python de premier niveau (`fetch_feeds`) | 88 |
-| `main()` | 493 lignes, complexité ≈ 82, **0 test l'exécute** |
+| `main()` | 493 lignes, complexité ≈ 82, **1 test l'exécute** |
 
 | les contrôles | |
 |---|---|
-| `test_pipeline` | 124 tests, 1 726 vérifications |
+| `test_pipeline` | 126 tests, 1 743 vérifications |
 | `test_navigateur` | 360 contrôles |
 | articles « actu majeure » | 51 (1,5 %) |
 | badge SPÉCIALISTE / VIDÉO / LEAK | 251 / 183 / 162 |
@@ -957,7 +974,8 @@ rubrique », plus haut.
 supplémentaire passera par la feuille Filtres, pas par un sixième bouton.
 
 **Plus tard dans la journée** : la mesure du seuil (§1, question close — il
-reste à 3) et l'extension de `LANGUES_ROCKSTAR_ECARTEES` à br, es, it, ru.
+reste à 3), l'extension de `LANGUES_ROCKSTAR_ECARTEES` à br, es, it, ru, et
+**le test qui exécute `main()`** (4.5, réglé).
 `/ru/` est apparu PENDANT le changement, cinquième copie de la même annonce
 Rockstar : la duplication multilingue n'était pas une projection pour
 novembre. Et un contrôle verrouille enfin `"vi" not in` la liste — le

@@ -5811,6 +5811,180 @@ def test_filtres_persistants():
           "le texte de recherche n'est pas mémorisé")
 
 
+def test_un_passage_complet_du_robot():
+    print("\n[bout en bout] main() tourne EN ENTIER, sur un faux réseau")
+    import contextlib, io, json, os, tempfile
+    import fetch_feeds as ff
+
+    # POURQUOI CE CONTRÔLE EXISTE.
+    #
+    # main() fait 493 lignes et une complexité de 82 — trois fois la
+    # fonction suivante. C'est elle qui décide de tout ce qui est publié.
+    # Jusqu'au 09/10/2026, AUCUN test ne l'exécutait : deux d'entre eux
+    # découpaient son texte source à partir de « def main( » et vérifiaient
+    # que des chaînes s'y trouvaient. Tout ce qu'elle orchestre est bien
+    # testé isolément ; l'orchestration, non.
+    #
+    # Un test qui lit du texte ne peut attraper ni un ordre d'opérations
+    # inversé, ni une mauvaise variable passée, ni un chemin d'exception.
+    # Et il casse sur un renommage anodin : le 07/10, renommer une variable
+    # locale a fait tomber un contrôle alors que le comportement était
+    # rigoureusement identique.
+    #
+    # CE QU'ON NEUTRALISE, ET RIEN D'AUTRE :
+    #   - collect_feed_items : la feuille réseau. Tout le reste de
+    #     fetch_all_feeds tourne pour de vrai — les files par domaine, les
+    #     fils, la reprise.
+    #   - fetch_missing_images : va chercher les og:image sur le web.
+    #   - HOST_PAUSE : une politesse d'une seconde entre deux requêtes vers
+    #     le même domaine. Il n'y a pas de serveur à ménager ici, et la
+    #     garder coûtait 8,5 s par passage pour ne rien vérifier.
+    #
+    # Le reste — lecture du fil, réparations rétroactives, déduplication,
+    # plafond, santé des sources, incidents, garde-fou de publication,
+    # écriture du fil, de l'allégé, de l'archive et du cache — s'exécute.
+
+    QUAND = "2026-10-09T10:00:00+00:00"
+    GARDE = "https://www.videogameschronicle.com/news/gta-6-bout-en-bout"
+    REPRISE = "https://www.ign.com/articles/gta-6-bout-en-bout-repris"
+    HORS_LANGUE = "https://www.rockstargames.com/es/newswire/article/zz/essai"
+    CRYPTO = "https://www.coinbase.com/price/rich-off-gta-6"
+    HIER = "https://www.kotaku.com/article-dhier"
+
+    servi = {
+        "vgc": [("GTA 6 : le grand essai de bout en bout", GARDE),
+                ("Une page Rockstar en espagnol", HORS_LANGUE),
+                ("RICH OFF GTA 6 price today", CRYPTO)],
+        "ign": [("GTA 6 : le grand essai de bout en bout, repris", REPRISE)],
+    }
+
+    def collecte(feed, decoded_cache=None, http_state=None):
+        """Ce que collect_feed_items rendrait, filtres d'entrée compris."""
+        items = []
+        for titre, lien in servi.get(feed["id"], []):
+            if ff.page_rockstar_hors_langue(lien) or ff.page_de_cotation_crypto(lien):
+                continue
+            items.append({"title": titre, "link": lien, "source_link": None,
+                          "date": QUAND, "source": feed["name"],
+                          "official": ff.statut_officiel(lien, feed),
+                          "rockstarmag": ff.statut_rockstarmag(lien, feed),
+                          "specialist": feed.get("specialist_source", False),
+                          "lang": feed.get("lang"), "image": None,
+                          "description": ""})
+        return items, {"raw_count": len(items), "not_modified": False}, []
+
+    depart = {
+        "items": [{"title": "Un article d'hier", "link": HIER,
+                   "date": "2026-10-08T10:00:00+00:00", "source": "Kotaku",
+                   "official": False, "rockstarmag": False, "specialist": False,
+                   "lang": "en", "image": None, "description": ""}],
+        "sources_incidents": [{"source": "vgc", "nom": "VGC",
+                               "debut": "2026-10-01T00:00:00+00:00",
+                               "fin": "2026-10-01T06:00:00+00:00",
+                               "heures": 6.0, "alertee": True}],
+        "sources_incidents_compte": {"2026-10": {"vgc": {"nom": "VGC", "n": 1,
+                                                         "heures": 6.0}}},
+    }
+
+    def passage(rep, etat_initial=None):
+        os.makedirs(os.path.join(rep, "docs"), exist_ok=True)
+        if etat_initial is not None:
+            with open(os.path.join(rep, "docs/feed.json"), "w", encoding="utf-8") as f:
+                json.dump(etat_initial, f, ensure_ascii=False)
+        cwd, c, i, p = (os.getcwd(), ff.collect_feed_items,
+                        ff.fetch_missing_images, ff.HOST_PAUSE)
+        os.chdir(rep)
+        ff.collect_feed_items = collecte
+        ff.fetch_missing_images = lambda items: None
+        ff.HOST_PAUSE = 0
+        try:
+            with contextlib.redirect_stdout(io.StringIO()) as journal:
+                ff.main()
+            with open("docs/feed.json", encoding="utf-8") as f:
+                return json.load(f), journal.getvalue()
+        finally:
+            os.chdir(cwd)
+            ff.collect_feed_items, ff.fetch_missing_images, ff.HOST_PAUSE = c, i, p
+
+    with tempfile.TemporaryDirectory() as rep:
+        fil, journal = passage(rep, depart)
+        liens = {i["link"] for i in fil["items"]}
+
+        # ---- 1. le fil publié dit ce qu'il faut --------------------------
+        check(HIER in liens,
+              "l'article d'hier est toujours là : un passage AJOUTE, il ne "
+              "republie pas ce qu'il vient de lire")
+        check(HORS_LANGUE not in liens,
+              "la page Rockstar en espagnol n'entre pas")
+        check(CRYPTO not in liens, "ni la page de cotation crypto")
+
+        # ---- 2. la déduplication a tourné, de bout en bout ---------------
+        #
+        # Les deux reprises du même sujet sont entrées par DEUX sources et
+        # ressortent EN UNE. C'est ce que seul un passage complet montre :
+        # merge_results parcourt FEEDS dans l'ordre, et c'est cet ordre qui
+        # décide laquelle possède l'article.
+        survivants = [i for i in fil["items"] if i["link"] in (GARDE, REPRISE)]
+        check(len(survivants) == 1,
+              "les deux reprises du même sujet n'en font qu'une (%d)" % len(survivants))
+        extra = [e.get("link") for e in (survivants[0].get("extraSources") or [])]
+        check(extra == [GARDE] and survivants[0]["link"] == REPRISE,
+              "et la perdante survit en source supplémentaire, sans perdre son "
+              "lien (%s)" % extra)
+
+        # ---- 3. l'état cumulatif fait l'aller-retour ---------------------
+        check(len(fil["sources_incidents"]) == 1
+              and fil["sources_incidents"][0]["source"] == "vgc",
+              "le journal des incidents lu dans `stored` est republié")
+        check(fil["sources_incidents_compte"]["2026-10"]["vgc"]["n"] == 1,
+              "le compteur par source aussi — il est cumulatif, le perdre le "
+              "remettrait à zéro à chaque passage")
+
+        # ---- 4. le compteur annoncé est le vrai --------------------------
+        entres = len(fil["items"]) - len(depart["items"])
+        check(fil["new_this_run"] == entres,
+              "new_this_run annonce exactement ce qui est entré (%d annoncés, "
+              "%d entrés)" % (fil["new_this_run"], entres))
+        check("compteur incohérent" not in journal,
+              "et main() ne signale aucun écart de compteur")
+
+        # ---- 5. les quatre fichiers sont écrits ENSEMBLE -----------------
+        with open(os.path.join(rep, "docs/feed-recent.json"), encoding="utf-8") as f:
+            allege = json.load(f)
+        # Le piège documenté au README : dans l'allégé, total_articles décrit
+        # le flux ENTIER, pas les lignes présentes. Le recalculer depuis
+        # l'extrait donnerait une valeur fausse.
+        check(allege["total_articles"] == fil["total_articles"],
+              "le fichier allégé annonce le total du fichier COMPLET (%s vs %s)"
+              % (allege["total_articles"], fil["total_articles"]))
+        archives = os.path.join(rep, "docs/archives")
+        check(os.path.exists(os.path.join(archives, "index.json")),
+              "l'index de l'archive est écrit dans le même passage")
+        mois = [n for n in os.listdir(archives) if n != "index.json"]
+        check("2026-10.json" in mois, "et le mois courant est archivé (%s)" % sorted(mois))
+        with open(os.path.join(archives, "2026-10.json"), encoding="utf-8") as f:
+            arch = {i["link"] for i in json.load(f)["items"]}
+        check(HORS_LANGUE not in arch and CRYPTO not in arch,
+              "ce que le fil écarte n'entre pas davantage dans l'archive — "
+              "elle garde par construction, c'est `exclure=` qui l'en empêche")
+        check(os.path.exists(os.path.join(rep, "decode-cache.json")),
+              "le cache de décodage est écrit hors de docs/")
+
+        # ---- 6. un second passage identique n'ajoute RIEN ----------------
+        #
+        # L'idempotence ne se démontre qu'ici : chaque étape prise à part
+        # peut être idempotente sans que leur enchaînement le soit.
+        fil2, _ = passage(rep)
+        check(fil2["new_this_run"] == 0,
+              "un second passage sur les mêmes données n'ajoute aucun article "
+              "(%d)" % fil2["new_this_run"])
+        check(len(fil2["items"]) == len(fil["items"]),
+              "et n'en perd aucun (%d -> %d)" % (len(fil["items"]), len(fil2["items"])))
+
+    check(os.path.basename(os.getcwd()) == "gta6-backend",
+          "le test a bien rendu le répertoire de travail d'origine")
+
+
 def test_un_seul_juge_de_lactu_majeure():
     print("\n[app] « majeur » se décide à UN seul endroit")
     import re
@@ -8516,6 +8690,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_alerte_officielle_rockstar,
            test_pause_nocturne,
            test_filtres_persistants,
+           test_un_passage_complet_du_robot,
            test_un_seul_juge_de_lactu_majeure,
            test_icones_en_emoji,
            test_contraste_des_deux_themes,
