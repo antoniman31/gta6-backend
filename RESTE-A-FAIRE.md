@@ -681,13 +681,13 @@ l'audit**, et ne bougent plus.
 
 | les contrôles | |
 |---|---|
-| `test_pipeline` | 123 tests, 1 709 vérifications |
-| `test_navigateur` | 331 contrôles |
+| `test_pipeline` | 124 tests, 1 719 vérifications |
+| `test_navigateur` | 360 contrôles |
 | tests inspectant du texte source | 38 (55 assertions) |
 
 | les constantes | |
 |---|---|
-| `CACHE_NAME` | `gta6watch-shell-v18` |
+| `CACHE_NAME` | `gta6watch-shell-v19` |
 | `SIMILARITY_THRESHOLD` | 0,72 |
 | `HOT_SOURCE_THRESHOLD` | 3 |
 | `MAX_PERSISTED_ITEMS` | 300 |

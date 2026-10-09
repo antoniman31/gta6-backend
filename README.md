@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1709
+qui permet de tester tout le pipeline sans sortir de la machine. **1719
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -6133,6 +6133,89 @@ dans `feed.json` pour qui veut le lire.
 Le titre évite soigneusement les mots « État des sources » : les contrôles
 navigateur repèrent les blocs par leur texte, et deux blocs portant cette
 phrase casseraient le sélecteur des autres. Un contrôle le vérifie.
+
+## L'onglet « Actu majeure » — 09/10/2026
+
+Demandé par Antoni : un onglet à côté de « Tous les articles ».
+
+### La mesure qui a décidé de ce qu'il contient
+
+Avant d'écrire une ligne, compté sur le fil réel :
+
+```
+50 articles majeurs sur 3 291        1,5 %
+   3 rédactions : 40
+   4 rédactions :  9
+   5 rédactions :  1
+
+médiane : 1 par jour
+12 des 30 derniers jours : AUCUN
+```
+
+**C'est ce 12 sur 30 qui a tranché.** En filtre du jour, l'onglet aurait été
+vide 40 % du temps — on l'ouvre une fois, il est vide, on ne l'ouvre plus.
+En **chronologie complète** il couvre deux mois, il est toujours plein, et
+il se lit d'un bout à l'autre comme l'histoire de ce qui a compté. Antoni a
+choisi la chronologie.
+
+Le filtre est le même dans les deux cas ; c'est la PROMESSE qui change.
+
+### Un seul juge, trois appelants
+
+L'onglet, sa pastille de non-lus et le badge 🔥 de la carte répondent à la
+même question. Le badge la calculait en ligne dans `renderCard` ; l'onglet
+aurait pu la recalculer ailleurs. Deux calculs séparés peuvent diverger —
+un article avec le badge mais absent de l'onglet, ou l'inverse — et les
+deux auraient été « justes » isolément, donc invisibles à tout contrôle.
+
+`estMajeur(item)` est désormais le seul endroit qui décide, et il lit
+`hotThreshold` (publié par le backend sous `hot_threshold`) plutôt qu'une
+constante recopiée : le jour où le seuil bougera, les trois bougeront
+ensemble. Un contrôle vérifie qu'aucun des trois ne refait le calcul dans
+son coin.
+
+Le vocabulaire suit : la carte passe de `🔥 3 SOURCES` à
+**`🔥 ACTU MAJEURE · 3 SOURCES`**. En lisant une carte on voit maintenant
+POURQUOI elle est dans cet onglet. Le nombre reste — un sujet à cinq
+rédactions n'est pas un sujet à trois.
+
+### Le défaut trouvé en le livrant, et qu'aucune relecture n'aurait vu
+
+La rangée du haut porte maintenant deux boutons. Mesuré au navigateur,
+pastille à « 50 » :
+
+```
+320 px : contenu 338 px pour 288 px visibles -> « Actu majeure » coupé de 50 px
+360 px :                                     -> coupé de 10 px
+390 px et au-delà : entier
+```
+
+**Et le texte ne débordait d'aucun bouton.** C'est ce qui rend le défaut
+sournois : `.tab` est en `white-space:nowrap` et `flex-shrink:0`, donc les
+boutons gardaient leur largeur idéale et c'est la RANGÉE qui débordait, en
+devenant scrollable. Le contrôle de débordement de texte existant — celui
+écrit pour « RockstarMag » le 23/09 — serait passé au vert.
+
+Un onglet qu'il faut deviner et faire défiler pour voir est un onglet mort,
+et c'était justement le nouveau. Même remède que pour la rangée du bas :
+sous 479 px, les deux boutons ont le droit de rétrécir et de revenir à la
+ligne.
+
+Deux contrôles plutôt qu'un, maintenant, à huit largeurs : le texte tient
+dans son bouton, **et** la rangée entière tient dans l'écran.
+
+### Ce que ça n'a pas coûté
+
+**Zéro ligne de backend.** `extraSources` est publié sur chaque article
+depuis le début et `hot_threshold` depuis presque aussi longtemps : l'app
+avait déjà tout ce qu'il fallait, elle ne s'en servait que pour un badge.
+
+`HOT_SOURCE_THRESHOLD` n'a pas bougé et reste à 3. L'onglet le rend visible
+pour la première fois, ce qui augmente l'enjeu du seuil à l'approche du
+19 novembre — mais la mesure est faite : le 17/09, 309 articles dans la
+journée, et la proportion de majeurs est restée à 2 %. Le seuil fixe a tenu
+le seul vrai pic qu'on ait. Le changer en même temps que l'onglet aurait
+été changer deux choses à la fois.
 
 ## L'archive se charge mois par mois — 06/10/2026
 

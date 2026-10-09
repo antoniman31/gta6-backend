@@ -5751,7 +5751,7 @@ def test_filtres_persistants():
           "l'onglet du journal n'est pas restauré")
     check('"all"' in etats and '"unread"' in etats,
           "mais « Tout » et « Non lus » le sont")
-    for t in ('"all"', '"non-rockstar"', '"rockstar"', '"rockstarmag"'):
+    for t in ('"all"', '"majeur"', '"non-rockstar"', '"rockstar"', '"rockstarmag"'):
         check(t in onglets, "onglet mémorisé : %s" % t)
 
     # Un détour par un état non mémorisable ne doit pas effacer le choix
@@ -5778,6 +5778,49 @@ def test_filtres_persistants():
     corps = re.search(r"function sauvegardeFiltres\(\)\{(.*?)\n\}", html, re.S).group(1)
     check("searchQuery" not in corps and "searchInput" not in corps,
           "le texte de recherche n'est pas mémorisé")
+
+
+def test_un_seul_juge_de_lactu_majeure():
+    print("\n[app] « majeur » se décide à UN seul endroit")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+
+    # POURQUOI CE CONTRÔLE EXISTE. L'onglet « Actu majeure » (09/10/2026),
+    # sa pastille de non-lus et le badge 🔥 de la carte répondent à la même
+    # question. Recalculés séparément — et le badge l'était, en ligne dans
+    # renderCard — ils pouvaient diverger : un article avec le badge mais
+    # absent de l'onglet, ou l'inverse. Les trois calculs auraient été
+    # « justes » isolément, et aucun contrôle n'aurait vu l'incohérence.
+    check(len(re.findall(r"function estMajeur\(", html)) == 1,
+          "estMajeur est défini une seule fois")
+
+    # Le seuil vient du backend, pas d'une constante recopiée : le jour où
+    # il bougera, l'onglet, la pastille et le badge bougeront ensemble.
+    corps = re.search(r"function estMajeur\(item\)\{(.*?)\n\}", html, re.S).group(1)
+    check("hotThreshold" in corps,
+          "et il lit hotThreshold, que le backend publie (hot_threshold)")
+
+    for quoi, extrait in (
+            ("le filtre de l'onglet",
+             re.search(r"function articlesAffiches\(\)\{(.*?)\n\}", html, re.S).group(1)),
+            ("la pastille",
+             re.search(r"function updateTabBadges\(\)\{(.*?)\n\}", html, re.S).group(1)),
+            ("le badge de la carte",
+             re.search(r"function renderCard\(.*?\n\}", html, re.S).group(0))):
+        # L'identifiant, pas « estMajeur( » : le filtre le passe par
+        # RÉFÉRENCE (`items.filter(estMajeur)`), ce qui est la bonne
+        # écriture et n'a pas de parenthèse. Première version du contrôle
+        # trop stricte, elle refusait le code correct.
+        import re as _re
+        check(_re.search(r"\bestMajeur\b", extrait),
+              "%s passe par estMajeur" % quoi)
+        check(">= hotThreshold" not in extrait,
+              "%s ne refait pas le calcul dans son coin" % quoi)
+
+    # Le vocabulaire est aligné : l'onglet et le badge disent la même chose,
+    # pour qu'on voie en lisant une carte pourquoi elle est dans cet onglet.
+    check("ACTU MAJEURE" in html and "Actu majeure" in html,
+          "le badge de la carte et l'onglet portent le même nom")
 
 
 def test_icones_en_emoji():
@@ -8442,6 +8485,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_alerte_officielle_rockstar,
            test_pause_nocturne,
            test_filtres_persistants,
+           test_un_seul_juge_de_lactu_majeure,
            test_icones_en_emoji,
            test_contraste_des_deux_themes,
            test_readme_ne_cite_que_des_constantes_reelles,
