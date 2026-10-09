@@ -9,8 +9,9 @@ de secours, sur le scénario exact du jour de la sortie) et **4.2** (le
 message de quota conseille de détruire l'état de lecture). Tout le reste
 attend.
 
-Écrit le 06/10/2026 au soir, complété le 07/10, puis le 08/10 par un audit
-complet des 46 fichiers (section 4).
+Écrit le 06/10/2026 au soir, complété le 07/10, le 08/10 par un audit
+complet des 46 fichiers (section 4), et le 09/10 (3.6 annulée, 3.7 et 3.8
+ajoutées, onglet « Actu majeure » livré).
 Base : `main` après la PR #142.
 **GTA 6 sort le 19 novembre 2026, soit dans 42 jours.**
 
@@ -83,7 +84,7 @@ pas `.env`, et les Actions sont épinglées au tag majeur alors que PyPI est
 
 ---
 
-## 3. Interface et expérience — six pistes, par ordre d'intérêt
+## 3. Interface et expérience — huit pistes, par ordre d'intérêt
 
 Relevé le 07/10/2026 en relisant `docs/index.html` en entier.
 
@@ -155,6 +156,13 @@ visuel que le badge « officiel », qui ne concerne que 51 articles sur
 langue et vidéo en gris muet ou en icône seule ; ne révéler les quatre
 boutons qu'au survol ou à l'appui long, comme le fait déjà le balayage.
 
+**Légèrement aggravé le 09/10** : le badge est passé de « 🔥 3 SOURCES » à
+« 🔥 ACTU MAJEURE · 3 SOURCES » pour s'aligner sur l'onglet. Sur une carte
+qui cumule majeur + officiel, les badges tiennent maintenant sur deux
+rangs au lieu d'un. Vérifié au navigateur : ça reste lisible, et la
+hiérarchie se lit même mieux — mais c'est une ligne de plus, et ce point-ci
+est celui qui en comptait déjà sept.
+
 ### 3.4 — Les 51 officiels méritent une forme, pas qu'un filtre
 
 L'onglet Rockstar filtre déjà sur `official`, et ça marche. Mais il rend la
@@ -170,25 +178,153 @@ Surveiller « date de sortie » ou « précommande » chaque semaine veut dire
 le retaper chaque semaine. Trois ou quatre puces de recherches récentes
 sous le champ coûtent peu.
 
-### 3.6 — Une pastille de santé dans l'entête
+### 3.6 — ~~Une pastille de santé dans l'entête~~ — ELLE EXISTE DÉJÀ
 
-`sources_health`, `sources_incidents`, `sources_incidents_compte`,
-`decodage_etat`, les durées de passage : tout est dans `feed.json`, mais ne
-se lit qu'en ouvrant Statistiques → Sources. Un point vert ou orange dans
-l'entête dirait « le robot va bien » sans détour.
+**Annulée le 09/10/2026. C'est moi qui avais écrit cette idée, et elle
+partait d'une affirmation fausse** : « tout est dans `feed.json`, mais ne se
+lit qu'en ouvrant Statistiques → Sources ». Non. L'entête le dit déjà, et
+plutôt bien :
 
-C'est exactement ce qui a manqué le 05/10, le soir où j'ai raconté
-n'importe quoi sur une panne de `reddit-leaks` faute de savoir la lire.
+| ce qui existe | où | quand |
+|---|---|---|
+| `● Backend GitHub` / `● Mode direct` | entête, à droite | toujours |
+| `26 s · 9 nouveaux · 63/63 sources` | sous les boutons | toujours |
+| le compteur devient un **bouton rouge dépliable** | même ligne | dès qu'un souci apparaît |
+| `N muettes · N cassées : IGN, Kotaku… · N en forte baisse · N décodages en échec` | ligne du dessous | seulement s'il y a un souci, et il se souvient si on l'avait déplié, par *signature* du problème |
+| bandeau pleine largeur « aucune mise à jour depuis N h » | haut de page | si `generated_at` dépasse **4 h** |
+
+Le seuil de 4 h porte même trois calibrations documentées (2 h → 7 h → 4 h).
+Et le jour de la panne du décodeur, la ligne des soucis aurait affiché
+« 126 décodages Google News en échec » : la donnée y était.
+
+**Rien à construire.** La leçon est pour moi : c'est la deuxième idée de ce
+fichier à ne pas survivre à la lecture du code — après « un fil officiel
+seulement », qui était déjà l'onglet Rockstar. Les deux ont été écrites sans
+avoir ouvert `docs/index.html` assez loin.
+
+---
+
+### 3.7 — Les 63 interrupteurs de source ne font RIEN en mode backend
+
+**Trouvé le 09/10/2026. Ce n'est pas une idée, c'est une dette : l'app
+affiche une fonction qui n'existe pas.**
+
+Le chemin backend construit le fil depuis `feed.json` et ne consulte
+**jamais** `settings.feeds[].enabled`. La chaîne d'affichage
+(`articlesAffiches`) filtre sur les mots-clés exclus, l'onglet, la langue,
+l'état lu, la recherche et le plafond — **jamais sur la source**. Décocher
+« IGN » dans Paramètres ne retire pas un seul article.
+
+Ils ne servent qu'au **mode de secours**, où l'app va chercher les flux
+elle-même (`activeFeeds` dans `checkNow`).
+
+Et ce n'est pas un oubli discret. Un commentaire du 22/09 affirme le
+contraire, noir sur blanc :
+
+> « le plafond, les mots-clés d'exclusion et **les sources actives**
+> décident pourtant de ce qu'affiche `applyFilters()`, qui n'était jamais
+> rappelé. Couper une source puis presser "Appliquer" ne changeait donc
+> rien à l'écran. »
+
+Le correctif de l'époque a ajouté le **redessinage**. Le filtre que ce
+redessinage devait déclencher n'a jamais existé côté backend.
+
+**DÉCISION PRISE (Antoni, 09/10)** : ni les faire marcher, ni les masquer —
+**garder la section, repliée, sous un titre qui dit la vérité** (« Sources
+— n'agit qu'en mode de secours »). Masquer aurait eu un revers : on ne
+pourrait plus préparer le réglage à froid, seulement pendant une panne,
+c'est-à-dire au pire moment.
+
+À faire avec :
+
+- la même correction sur le panneau Informations, qui affiche
+  `sources : A · B · C` construit depuis les sources actives — trompeur
+  pour exactement la même raison ;
+- **ne rien effacer** : `enabled` reste en mémoire, dans `localStorage` et
+  dans la sauvegarde, pour que le mode de secours continue de le respecter ;
+- des contrôles : section repliée et étiquetée quand le backend répond,
+  pleinement utile en mode direct, et l'état survit à l'aller-retour.
+
+---
+
+### 3.8 — Trois badges affichés, aucun moyen de filtrer dessus
+
+C'est le profil exact qui a fait marcher l'onglet « Actu majeure » : un
+signal **déjà visible sur la carte**, sur lequel on ne peut pas agir.
+Mesuré le 09/10/2026 :
+
+| badge | articles | % du fil | médiane/jour | jours à 0 sur 30 |
+|---|---|---|---|---|
+| **SPÉCIALISTE GTA 6** | 251 | 7,6 % | 3 | 1 |
+| **VIDÉO** | 183 | 5,5 % | 3 | 5 |
+| **LEAK** | 162 | 4,9 % | 2 | 9 |
+
+**Mais deux des trois ont un défaut de qualité, et il faut le régler AVANT
+de les exposer comme filtre.**
+
+- **VIDÉO est faux à 25 %.** La regex contient `\bvideo\b`, qui attrape
+  « video game », « jeux vidéo » et le nom du média *Video Games
+  Chronicle*. 45 des 183 n'ont rien d'une vidéo : « GTA 6 On Track To
+  Overthrow The Best-Selling **Video Game** Of All-Time », « Faut-il
+  craindre une hausse du prix des **jeux vidéo** ». Sur une carte, un badge
+  de travers fait hausser les épaules ; **comme filtre, un quart de faux
+  serait inutilisable**. Resserrer ramène à 138 — et corrige du même coup
+  45 cartes mal badgées aujourd'hui, ce qui vaut d'être fait même sans
+  filtre.
+- **SPÉCIALISTE est à 38 % du Netflix.** 95 des 251 viennent de « Google
+  News (Netflix) », qui est une recherche thématique et non une rédaction
+  spécialiste GTA 6. Les vrais spécialistes (RockstarMag, RockstarINTEL,
+  GTA6 Times) font 156. Un filtre rendrait ce mélange visible d'un coup :
+  c'est peut-être très bien, mais c'est une décision à prendre.
+- **LEAK est propre** : 8 sur 8 à la vérification à l'aveugle.
+
+**Où les mettre : PAS en onglet.** Mesuré en livrant « Actu majeure » : la
+rangée du haut est à sa limite (sous 479 px ses deux boutons doivent déjà
+rétrécir et passer à la ligne) et celle du bas aussi (deux media queries
+rien que pour « RockstarMag »). Un sixième bouton ne rentre pas. La feuille
+**Filtres** a la place, quatre sections déjà, et une pastille qui compte
+les filtres actifs.
 
 ---
 
 ### Ce que je recommanderais de faire en premier
 
-**3.2, puis 3.1.** 3.2 est de l'assemblage pur, sert tous les jours, et
-prépare le jour J mieux que n'importe quoi d'autre. 3.1 est le problème
-plus grave mais demande une mesure avant de choisir les seuils.
+**3.7 d'abord** — ce n'est pas une idée mais une dette, la décision est
+prise, et c'est petit. Puis **3.2**, de l'assemblage pur qui sert tous les
+jours et prépare le jour J mieux que n'importe quoi d'autre. **3.1** est le
+problème plus grave mais demande une mesure avant de choisir les seuils.
 
-3.3 à 3.6 sont du confort réel, sans échéance.
+3.3 à 3.5 et 3.8 sont du confort réel, sans échéance. **3.6 est annulée.**
+
+Dans 3.8, le resserrage de la regex VIDÉO se tient tout seul : il corrige
+45 cartes mal badgées aujourd'hui, sans attendre qu'on construise un
+filtre.
+
+---
+
+### Ce qui a été LIVRÉ de cette rubrique
+
+**L'onglet « 🔥 Actu majeure » (09/10/2026, PR #144).** Chronologie
+complète des sujets couverts par trois rédactions ou plus, à côté de
+« Tous les articles ». 50 articles, deux mois d'histoire, pastille de
+non-lus.
+
+Trois choses à en retenir pour les suivantes :
+
+1. **Le profil qui marche** : le signal existait déjà à l'écran (le badge
+   🔥) sans qu'on puisse agir dessus, la donnée était déjà publiée
+   (`extraSources`), et c'était mesurable avant de construire. C'est ce
+   dernier point qui a choisi la chronologie plutôt que le filtre du jour —
+   12 jours vides sur 30.
+2. **Un seul juge.** Le badge calculait « est-ce majeur » en ligne dans
+   `renderCard`. Deux calculs séparés peuvent diverger sans qu'aucun
+   contrôle ne le voie. `estMajeur()` est maintenant le seul à décider, et
+   lit `hotThreshold` publié par le backend.
+3. **La capture a servi à quelque chose.** À 320 px, « Actu majeure » était
+   coupé de 50 px — et le texte ne débordait d'aucun bouton : `.tab` est en
+   `white-space:nowrap` et `flex-shrink:0`, donc c'est la RANGÉE qui
+   débordait. Le contrôle de débordement existant serait passé au vert. Il
+   en mesure deux maintenant.
 
 ---
 
@@ -650,7 +786,7 @@ comparer. **Rien à faire.**
 
 ---
 
-## Chiffres de référence au 08/10/2026, 06h00 Paris
+## Chiffres de référence au 09/10/2026, 08h00 Paris
 
 Le fil bouge d'heure en heure : ces chiffres sont un instantané, pas des
 constantes. Ceux cités dans la section 4 sont ceux mesurés **au moment de
@@ -683,11 +819,14 @@ l'audit**, et ne bougent plus.
 |---|---|
 | `test_pipeline` | 124 tests, 1 719 vérifications |
 | `test_navigateur` | 360 contrôles |
+| articles « actu majeure » | 51 (1,5 %) |
+| badge SPÉCIALISTE / VIDÉO / LEAK | 251 / 183 / 162 |
 | tests inspectant du texte source | 38 (55 assertions) |
 
 | les constantes | |
 |---|---|
 | `CACHE_NAME` | `gta6watch-shell-v19` |
+| onglets du fil | 5 — **les deux rangées sont pleines** |
 | `SIMILARITY_THRESHOLD` | 0,72 |
 | `HOT_SOURCE_THRESHOLD` | 3 |
 | `MAX_PERSISTED_ITEMS` | 300 |
@@ -738,6 +877,28 @@ affiché — la fonctionnalité s'annulait elle-même.
    panne du décodeur, redatée sur `decode_failures` : 61,6 h et non 62,2.
 4. **`DEAD_SOURCE_HOURS` passe de 24 à 12 h.** La plus longue des 319 pannes
    dure 8 h 30 : le seuil de 24 h ne pouvait pas se déclencher.
+
+---
+
+## Ce qui a été fait le 09/10/2026
+
+**Livré : l'onglet « 🔥 Actu majeure »** (PR #144), avec son correctif de
+mise en page trouvé à la capture — voir « Ce qui a été LIVRÉ de cette
+rubrique », plus haut.
+
+**Consigné, sans toucher au code** :
+
+- **3.6 annulée.** La pastille de santé existe déjà dans l'entête, et mon
+  affirmation du contraire était fausse.
+- **3.7 ajoutée** — les 63 interrupteurs de source ne font rien en mode
+  backend, et un commentaire du code affirme l'inverse. Décision prise :
+  section repliée et étiquetée « n'agit qu'en mode de secours ».
+- **3.8 ajoutée** — trois badges affichés sans filtre possible, dont deux à
+  nettoyer avant de les exposer (VIDÉO faux à 25 %, SPÉCIALISTE à 38 % du
+  Netflix).
+
+**Les deux rangées d'onglets sont désormais pleines.** Toute vue
+supplémentaire passera par la feuille Filtres, pas par un sixième bouton.
 
 ---
 
