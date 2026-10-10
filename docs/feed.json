@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T05:01:30.143634+00:00",
+  "generated_at": "2026-10-10T06:01:30.067272+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -9,8 +9,8 @@
   "couverture_depuis": "2026-09-08",
   "duration_seconds": 28.5,
   "decode_failures": 0,
-  "total_articles": 3419,
-  "new_this_run": 0,
+  "total_articles": 3422,
+  "new_this_run": 3,
   "hot_count": 54,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 905,
-      "last_article": "2026-10-10T00:38:00+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 908,
+      "last_article": "2026-10-10T05:32:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -808,7 +808,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-10-07T05:59:08+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T12:19:42+00:00",
@@ -1113,10 +1113,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-03T14:36:14+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 7,
       "last_article": "2026-10-08T14:16:46+00:00",
       "days_since_last_article": 1,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1205,14 +1205,14 @@
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
       "entries_fetched": 0,
-      "http_status": 200,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 2,
-      "status": "muette"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1234,16 +1234,16 @@
   },
   "decodage_etat": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,0,100,0,100,100",
+    "rockstar-en": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,0,100,0,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
-    "gnews-fr": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "gnews-en": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "gnews-fr-7j": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "gnews-en-7j": "100,100,100,100,100,100,100,0,100,0,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,15,0,0,0",
+    "gnews-fr": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "gnews-en": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "gnews-fr-7j": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "gnews-en-7j": "100,100,100,100,100,100,0,100,0,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1251,7 +1251,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1267,23 +1267,23 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,100,100,100,0,100,0,100,100",
+    "gamerant-gnews": "100,100,100,100,100,100,0,100,0,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "47,47,47,47,47,47,47,47,47,47,47,47",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "purexbox": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "trueach": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "jdg": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "numerama": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "gamergen": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "frandroid": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "theverge": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "engadget": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "pushsquare": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "schreier": "100,100,100,100,100,100,100,0,100,0,100,100",
+    "xboxygen": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "purexbox": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "trueach": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "jdg": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "numerama": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "gamergen": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "frandroid": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "theverge": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "engadget": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "pushsquare": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "schreier": "100,100,100,100,100,100,0,100,0,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
@@ -1292,8 +1292,8 @@
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,100,100,100,0,100,0,100,100",
-    "mgg": "100,100,100,100,100,100,100,0,100,0,100,100",
+    "dexerto": "100,100,100,100,100,100,0,100,0,100,100,100",
+    "mgg": "100,100,100,100,100,100,0,100,0,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
     "reddit-gta6-suivi": "25,25,25,25,25,25,25,25,25,25,25,0"
@@ -1348,7 +1348,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 10 Oct 2026 04:57:14 GMT"
+      "modified": "Sat, 10 Oct 2026 06:01:04 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1357,13 +1357,13 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ac9c660-303c\"",
-      "modified": "Sat, 10 Oct 2026 05:00:16 GMT"
+      "etag": "W/\"6ac9d471-30a8\"",
+      "modified": "Sat, 10 Oct 2026 06:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
-      "etag": "W/\"f5e7d38ab6d52d12aa997878f16585b0\"",
-      "modified": "Fri, 09 Oct 2026 17:42:40 GMT"
+      "etag": "W/\"dcd4a41cdba4010645a5ad2be0765728\"",
+      "modified": "Sat, 10 Oct 2026 06:00:14 GMT"
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
@@ -1377,8 +1377,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ac9b62f-b0a\"",
-      "modified": "Sat, 10 Oct 2026 03:51:11 GMT"
+      "etag": "\"6ac9d251-b09\"",
+      "modified": "Sat, 10 Oct 2026 05:51:13 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1388,7 +1388,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 10 Oct 2026 05:00:44 GMT"
+      "modified": "Sat, 10 Oct 2026 06:01:06 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1402,8 +1402,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"b1a345bcf1d3a4b7800c17b1accc83a7\"",
-      "modified": "Fri, 09 Oct 2026 21:50:13 GMT"
+      "etag": "W/\"2faa2474d464bfe2e8f0e1a7e942ad11\"",
+      "modified": "Sat, 10 Oct 2026 05:41:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -2008,6 +2008,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Les précommandes de Zelda: Ocarina of Time sur Switch 2 établissent un record sur Amazon, éclipsant GTA 6 - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Les-precommandes-de-Zelda-Ocarina-of-Time-sur-Switch-2-etablissent-un-record-sur-Amazon-eclipsant-GTA-6.1420832.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxPeGFpN3laM3VnbVc5TFJUSlN0TnJfTjFCY2JwS1VxdGxjejBFQndicnpNUmdjUWFqMU1MZWdjcmVfZTBGWlNHVWVERmVENlRhTWt2THZRZnZocXFYbzJLaGRvQVRDMmxxTEtsT0dJZzNRY2FtNW16ekxwVGhQVjJWeWJVbTF5ejJVLUtSSl90b3o3bU1qWFJHUTZ3NkNudlZuMXpJSkpKZmczLXVKN3RPSXhNRWtWaTlmN3E5NEc5ZHh1bFFGQ3VUUm92R2xxWkNvbVQxeWRWRE9QbjFYclA2b0dn?oc=5",
+      "date": "2026-10-10T05:32:13+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/ZeldaOcarinaofTimeFoilCover.jpg",
+      "description": "Les précommandes de Zelda: Ocarina of Time sur Switch 2 établissent un record sur Amazon, éclipsant GTA 6&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "\"Je trouve ça stylé\" : GTA 6 s'offre une pub monumentale sur ces tours emblématiques aux portes de Paris - Actu.fr",
+      "link": "https://actu.fr/ile-de-france/bagnolet_93006/je-trouve-ca-style-gta-6-s-offre-une-pub-monumentale-sur-ces-tours-emblematiques-aux-portes-de-paris_64906392.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxNZmVhX3F4VzVURGhWSmt0a2c0ZXhOTU5ZREd2emNDZGF3NzlXUlRxdll6NXFZWGExaFUwY1IxNzFfaXJxN1ZWTkE2WUpraThmUVpJemlTZjRESWJhWUlpejFKR05WNzdTT2NaWFMwVnA4NTB4LW9TLUViVnRHYmNKSGgtQUhkWFBEWEVLWVBQMU9BXy1mRk1GTS1scWZhdEtwRnFXYXo1TmVGbTlZcFhUdmxUM05UeUxlUnRpckFvWlJsNTlIUW53S2IxakVXVTRETVIxa3ZtZEZkOFcwY2hzVHZNZVkyWVhRNHRDVWs5R3o?oc=5",
+      "date": "2026-10-10T05:26:01+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://static.actu.fr/uploads/2026/10/img-1731.jpg",
+      "description": "\"Je trouve ça stylé\" : GTA 6 s'offre une pub monumentale sur ces tours emblématiques aux portes de Paris&nbsp;&nbsp;Actu.fr"
+    },
+    {
+      "title": "GTA 6 approche : ne le commandez surtout pas sur PS5 avant d’avoir vu cette offre moins chère et avec un pack bonus - Le Figaro",
+      "link": "https://www.lefigaro.fr/bons-plans/high-tech/gta-6-approche-ne-le-commandez-surtout-pas-sur-ps5-avant-d-avoir-vu-cette-offre-moins-chere-et-avec-un-pack-bonus-20261010",
+      "source_link": "https://news.google.com/rss/articles/CBMi-wFBVV95cUxQRlJmU0I3MFNPSHNWYjlkUXYzeWxqbUNtOXVLeENPejEwTk1aVVYzcExvTmY5TW1zVUFEOWJGY2hlSlRKRXN0c2hWaGRFN19UYnBGTmItT21JVi14RXpLTjFfMVJac1J0UGxMQzlWYTNZbmcxRko3TUMyRkNuVThMVmZOVzBDODR1cmpCVGhZRFl0bW1ZU3JqaVQydUZOWVJJeWdycTZfREdnV09nSVpWMnhEZ01VaUQyaFcwa3Rmd1JIbWdqQml1OXJXWm1LNnZFeS0tdHE2c3RjaWZpdEVkRmhScERDS1ZEUFhrZUkwcGFxUHhVcUxUUWJnNA?oc=5",
+      "date": "2026-10-10T05:19:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://i.f1g.fr/media/cms/1200x630_crop/2026/10/08/d6e8bbf835ace1cf333a4fcba75a56f464b2770ba15d900f9916b27aba6d4633.jpg",
+      "description": "GTA 6 approche : ne le commandez surtout pas sur PS5 avant d’avoir vu cette offre moins chère et avec un pack bonus&nbsp;&nbsp;Le Figaro"
+    },
     {
       "title": "GTA 6 Reveals Radio Stations Featuring Burna Boy, Robyn and Slayer Members. - Tekedia",
       "link": "https://www.tekedia.com/forum/topic/gta-6-reveals-radio-stations-featuring-burna-boy-robyn-and-slayer-members/?part=1",
@@ -15176,7 +15215,6 @@
     {
       "title": "Grand Theft Auto VI collaboration with Miami Heat Announced for November 18, 2026 - mxdwn Games",
       "link": "https://games.mxdwn.com/news/grand-theft-auto-vi-collaboration-with-miami-heat-announced-for-november-18-2026/",
-      "source_link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQM1JuZGtzc2lSZHJRcnpKWXdLQmc5akFoRjBSZUR2M0ZJU3FrVWVINlJZVzVWLV9VZlo2bkkzdVlSa0VILUJCQWNBTFJteHRJclNodER0UXBUcllPR1YxSWU3NDNvOEVDN09yWVRFaTh4Q2lNODQxTEF6SEdXMFA3d25uNHJmazNYN0pxM2tIVHpMYjFsNnRvZkpmVVlPd01SMXBsenFLSjB0UmZIWmJv0gG0AUFVX3lxTFBrLTdvVnl6dDNQTlRSeHZVVGZxTkMyOHlvdGJfdHhaM1ZZMVhma3VNanFBN0VwZXl2czZoX3VVMVlUMmp3dXFOclNPOFBkUlZ6aTk0eEUzRExYclpjd0djQXpxNExJU1dhVmluSzBBYmRZS19fdkxNUzhlTk9EVzBobFg2ajhoSjVVdjZSc2QzTkJDRl8yNVZ3aHRLMHlnaWdKeTJoMEZrNXkzUzRZRVZyRzdFaA?oc=5",
       "date": "2026-10-03T06:00:57+00:00",
       "source": "Google News (EN, 7 jours)",
       "official": false,
@@ -15189,7 +15227,6 @@
     {
       "title": "GTA 6 s’invite sur le parquet du Miami Heat - Begeek",
       "link": "https://www.begeek.fr/gta-6-sinvite-sur-le-parquet-du-miami-heat-440852",
-      "source_link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9pYlhSUGlUM3d0dEdKNllJb0tPYzZUUU8yMWM4bi1rY3k5aFotQWl0cDB3MGpjV3RTOEVGVWN3d05zSnVzTlhYWE1qc1A3Q1R0a2xWckZHbXV6THJlSkZORUU2ajI3ejh0SjZ4TzFZcEhlQl80T2REUFVDSQ?oc=5",
       "date": "2026-10-03T06:00:03+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -15202,7 +15239,6 @@
     {
       "title": "GTA 6 : Take-Two nous en dit plus sur la sortie PC et GTA Online - WorldOfGeek",
       "link": "https://worldofgeek.fr/take-two-declaration-gta-6-online-pc/",
-      "source_link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBrSEthV3Atc0NCM0daZS0zZTRyNDY3bHNkdGhmbzIzaGE2Qm02eElKVkFqZnJoUDhIbEFxN2djVEZRZHl3U2NWb3ZQRHNrRjlOMUVxdV96MVdmeVF2ZC1JYmk5RjF2dGVFRUFNbQ?oc=5",
       "date": "2026-10-03T06:00:00+00:00",
       "source": "Google News (FR)",
       "official": false,
