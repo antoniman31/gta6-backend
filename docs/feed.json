@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T03:01:36.082286+00:00",
+  "generated_at": "2026-10-12T04:01:37.101869+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 27.9,
+  "duration_seconds": 27.1,
   "decode_failures": 0,
-  "total_articles": 3488,
-  "new_this_run": 3,
+  "total_articles": 3489,
+  "new_this_run": 1,
   "hot_count": 54,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -402,7 +402,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 44,
       "last_article": "2026-10-08T19:11:53+00:00",
       "days_since_last_article": 3,
@@ -441,7 +441,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 87,
       "last_article": "2026-10-10T07:50:31+00:00",
       "days_since_last_article": 1,
@@ -463,15 +463,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-08-27T18:00:48-07:00",
       "days_since_last_article": 45,
-      "status": "tarie"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1276,
-      "last_article": "2026-10-11T23:32:54+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 1277,
+      "last_article": "2026-10-12T03:17:44+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T12:19:42+00:00",
@@ -951,7 +951,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-10-08T03:37:14+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T14:16:46+00:00",
       "days_since_last_article": 3,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1204,21 +1204,21 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 4,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-10-11T23:01:50.768837+00:00",
-      "succes": 1,
+      "succes": 0,
       "alertee": false
     },
     "rockstarmag-youtube": {
@@ -1234,7 +1234,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,15,0,0,15",
+    "rockstar-youtube": "15,15,15,15,15,0,0,15,0,0,15,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1246,7 +1246,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1264,7 +1264,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "47,47,47,47,47,48,48,48,48,48,48,48",
+    "gta6times": "47,47,47,47,48,48,48,48,48,48,48,48",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1322,7 +1322,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"2ffee-mtgM2UyzVwDVChHSMb7kNLirsik\"",
+      "etag": "W/\"2fd26-3GaclbV9X05QO83V1Kxb52/PK4E\"",
       "modified": null
     },
     "kotaku": {
@@ -1343,7 +1343,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 12 Oct 2026 03:01:09 GMT"
+      "modified": "Mon, 12 Oct 2026 04:01:13 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1352,8 +1352,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6acc4d40-2fc3\"",
-      "modified": "Mon, 12 Oct 2026 03:00:16 GMT"
+      "etag": "W/\"6acc5b50-2fc3\"",
+      "modified": "Mon, 12 Oct 2026 04:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1372,8 +1372,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6acc3d0f-b4d\"",
-      "modified": "Mon, 12 Oct 2026 01:51:11 GMT"
+      "etag": "\"6acc5930-b4d\"",
+      "modified": "Mon, 12 Oct 2026 03:51:12 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1383,7 +1383,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 12 Oct 2026 03:00:45 GMT"
+      "modified": "Mon, 12 Oct 2026 04:01:15 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -2016,6 +2016,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Leak: CYBERLEEK Ties Build to $30M Crypto Bet - shattered.io",
+      "link": "https://shattered.io/gta-6-cyberleek-30m-crypto-disc-threat-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFAwWDhBNUhSRnV0UWNKWFNWeWlaaXFfMzdMR25ucUxicmVNVllJR3VreG43eVZ0VGY5b0RiWWFrYmJEQlc3MTlnd1ctU2FPYUd4V3BFdGRGcnRpZV9oWG92QXRjYTZ2bkxqUnBmQUdhUDlWd0U?oc=5",
+      "date": "2026-10-12T03:17:44+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://shattered.io/wp-content/uploads/2026/10/gta-6-cyberleek-30m-crypto-disc-threat-2026-gen.jpg",
+      "description": "GTA 6 Leak: CYBERLEEK Ties Build to $30M Crypto Bet&nbsp;&nbsp;shattered.io"
+    },
     {
       "title": "Rockstar Mailed a GTA 6 Fan a Poster After He Simply Asked for One - GTA BOOM",
       "link": "https://www.gtaboom.com/rockstar-mailed-a-gta-6-fan-a-poster-after-he-simply-asked-for-one-08a7",
@@ -15863,7 +15876,6 @@
     {
       "title": "GTA 6 sur PS5 exigera la mise à jour du firmware 14.10.00 le jour de sa sortie, bloquant ainsi le jailbreak - La Crème Du Gaming",
       "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-sur-ps5-exigera-la-mise-a-jour-du-firmware-14-10-00-le-jour-de-sa-sortie-bloquant-ainsi-le-jailbreak-227242.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxNLXc3T0NhS1FWWkF5MXZ2YTNjcmFjU2FoTGZWZ2MzYW1oTG5mdE0xeWlyaTBhc295OXVfYi04M0V0OUlrdVBVYWw5aDNqNGN3WmpoVm1Wd01ObExIQURzdWdwWnF3YUVxRng1bURxc2RZdUFrNDgxNV83Zk5WNW14Nnh6b3pGdkxSLXppX2JGakx6SEJicUtoVTM1VFRjemFMcE1kbG1qcWRBRDQ2bGg3X1Yxbmw4REJwMkNRaUwyTnRNVlNSZy15bTZhQlltcklselNmYWNqVjNhaEJXdlQ4XzhMdEY3Q0tZWExtQ1hiNFVhcnY2UkNv?oc=5",
       "date": "2026-10-05T04:00:50+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -15876,7 +15888,6 @@
     {
       "title": "Saturday Night Live Pokes Fun at The Legend of Zelda vs. GTA 6 Debate - Comic Book Resources",
       "link": "https://www.cbr.com/saturday-night-live-gta-6-legend-of-zelda/",
-      "source_link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE0zR1Q2bUdRS1FiSl9Ra0g1NHRscXp0V1hiNXpPY1NqRWZxWEkzZUtMU3lJV3hJUjIxVTlGQlNRN0NZVGtIdFF0S1h5SFJ3aDFuNWg0bVBBbWl3SGFkcjh2bU9hRUxnLUJvU2gtX3N3RQ?oc=5",
       "date": "2026-10-05T03:06:00+00:00",
       "source": "Google News (EN, 7 jours)",
       "official": false,
