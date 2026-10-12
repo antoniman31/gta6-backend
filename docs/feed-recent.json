@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-12T04:01:37.101869+00:00",
+  "generated_at": "2026-10-12T05:01:25.223531+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 27.1,
+  "duration_seconds": 24.7,
   "decode_failures": 0,
-  "total_articles": 3489,
-  "new_this_run": 1,
+  "total_articles": 3492,
+  "new_this_run": 3,
   "hot_count": 54,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -440,8 +440,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 87,
+      "new_this_run": 1,
+      "articles_exclusifs": 88,
       "last_article": "2026-10-10T07:50:31+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 940,
-      "last_article": "2026-10-11T22:13:00+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 942,
+      "last_article": "2026-10-12T04:48:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,7 +492,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 1277,
       "last_article": "2026-10-12T03:17:44+00:00",
       "days_since_last_article": 0,
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T12:19:42+00:00",
@@ -1099,10 +1099,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-28T15:57:47+00:00",
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-08T10:08:19+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T14:16:46+00:00",
       "days_since_last_article": 3,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1233,7 +1233,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,0,0,15,0,0,15,0",
+    "rockstar-youtube": "15,15,15,15,0,0,15,0,0,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,0,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1263,7 +1263,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "47,47,47,47,48,48,48,48,48,48,48,48",
+    "gta6times": "47,47,47,48,48,48,48,48,48,48,48,48",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 12 Oct 2026 04:01:13 GMT"
+      "modified": "Mon, 12 Oct 2026 05:00:56 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6acc5b50-2fc3\"",
-      "modified": "Mon, 12 Oct 2026 04:00:16 GMT"
+      "etag": "W/\"6acc6963-2fc3\"",
+      "modified": "Mon, 12 Oct 2026 05:00:19 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 12 Oct 2026 04:01:15 GMT"
+      "modified": "Mon, 12 Oct 2026 05:00:32 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1391,13 +1391,13 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"10c64bd3c4d9cce82f5eee2ba6f1bbc1\"",
-      "modified": "Sun, 11 Oct 2026 16:06:42 GMT"
+      "etag": "W/\"99302c1ccb778e9a527745ae932b7c85\"",
+      "modified": "Mon, 12 Oct 2026 05:00:51 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"08af74d9dce032eee89e5c90dfba769f\"",
-      "modified": "Sun, 11 Oct 2026 23:05:13 GMT"
+      "etag": "W/\"d579df387aa8e1fbfc1192ced8750892\"",
+      "modified": "Mon, 12 Oct 2026 04:54:48 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -2015,6 +2015,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA VI déjà moins cher depuis ce lundi matin : voici où le trouver au meilleur prix pendant une durée très limitée - BFM",
+      "link": "https://www.bfmtv.com/tech/bons-plans/gta-vi-deja-moins-cher-depuis-ce-lundi-matin-voici-ou-le-trouver-au-meilleur-prix-pendant-une-duree-tres-limitee_AB-202610120001.html",
+      "source_link": "https://news.google.com/rss/articles/CBMigAJBVV95cUxPSDZ3MWVsdVExQVZXOFJjSTlGQjhnY2xTSllydkxHajhXLWNieFZXZzZ1SG1qVmhLdDNpNndYd3kycFhXVE5UWDdzSkVRcm5ya3A1b2I2bUg0a1c2eHN0bGhUeGZKd1BwckpCOUJsMmZPUXh2MldCSmZHVFRnWHlhb1NBTmRGVS0yNTZkbzE0NC1ZUTc5cnJadDg0a1lZdEd3Y3Q4Zk9KbG1lQXMxeVJyZHR6Vmh5TVBxWTMwamN0Q1dzT1oxUlozb01wdXFpRFludV9PaEs3NzlMczNOblYtRnNBc1JNZG1EYTRjaHVMWENJU2MycUpIQTk1Tk1ETVY2?oc=5",
+      "date": "2026-10-12T04:48:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/LtIF8NkNx_8wKarWX3oq3BLdObo=/0x0:1600x900/1600x0/images/GTA-VI-deja-moins-cher-depuis-ce-lundi-matin-voici-ou-le-trouver-au-meilleur-prix-pendant-une-duree-tres-limitee-2361497.jpg",
+      "description": "GTA VI déjà moins cher depuis ce lundi matin : voici où le trouver au meilleur prix pendant une durée très limitée&nbsp;&nbsp;BFM"
+    },
+    {
+      "title": "Même si elles sont déjà toutes millionnaires, ces stars n'ont pas résisté à participer à GTA 6 - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2108535/meme-si-elles-sont-deja-toutes-millionnaires-ces-stars-n-ont-pas-resiste-a-participer-a-gta-6.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPZXMtOXlkZENLaXdpN1pCQU4zM25hMjB6VGNWNjlhakh5dm51VFZld0o3VmpFU0FvY1phR1RPWHhlT29ZYWNXTDVoRnpPejd0a0lsbkswVWhxdkpBdEtkNHI1M0ZDVEFiUU1YZVh1NEptZmxPSmxzS2ZWaEh0VGtGM1JxU1RmRExsUmphTE83SHdhM21PZnVaWVJRdWFlQk9ERDNDa2Z2XzRBNlhoN09icVVLRmZEYmNBT1doclZZM3dMZnlGdGwwaTgwa0NlTjVGOHc?oc=5",
+      "date": "2026-10-12T04:05:05+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/179156/1791561420-2643-card.jpg",
+      "description": "Même si elles sont déjà toutes millionnaires, ces stars n'ont pas résisté à participer à GTA 6&nbsp;&nbsp;JeuxVideo.com"
+    },
     {
       "title": "GTA 6 Leak: CYBERLEEK Ties Build to $30M Crypto Bet - shattered.io",
       "link": "https://shattered.io/gta-6-cyberleek-30m-crypto-disc-threat-2026/",
@@ -5970,32 +5996,6 @@
       "lang": "fr",
       "image": null,
       "description": "GTA 6 : Rockstar ouvre sa boutique avec T-shirts, Zippo et goodies Vice City&nbsp;&nbsp;TheSiteOueb"
-    },
-    {
-      "title": "While we wait for GTA 6, the demo that inspired the original Grand Theft Auto's vehicle physics is now playable online - Creative Bloq",
-      "link": "https://www.creativebloq.com/news/while-we-wait-for-gta-6-the-demo-that-inspired-the-original-grand-theft-autos-vehicle-physics-is-now-playable-online",
-      "source_link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxPcHVUMG81YUdkZ0l3ek1KNG5iTGR1azRhQVpoVWlYNUkzX0tNNU5NY293VGFkV2V1MTlUTzZ1M1V4QXVwSVpEWmduN3lrQ0lUQTRWdHh1UkhCS2lXSXpiNzZWR0Q0QXZwLXZyWV9nY3VObk5BWlJ4TVlBYVRudDZTSWJLcDlUYmE4R2g3VnN5NHBBaFJ3S01jcHN4ZlpnTWVqVlBTVEgtNnVsaWYwU3JnTG5QNS1YeGNobUExQTUwNjVGTFk1eHFSbHdrQ2l5Y3BYbU5KVDBhbUlxN05SMWRFbGxmMUc?oc=5",
-      "date": "2026-10-09T06:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://cdn.mos.cms.futurecdn.net/74vtDSRUvBdVVxhJGq7VmU-1200-80.jpg",
-      "description": "While we wait for GTA 6, the demo that inspired the original Grand Theft Auto's vehicle physics is now playable online&nbsp;&nbsp;Creative Bloq"
-    },
-    {
-      "title": "Fuite GTA 6 : vue à la première personne et personnalisation des véhicules - Frandroid",
-      "link": "https://www.frandroid.com/produits-android/console/3278797_un-mois-avant-sa-sortie-gta-6-victime-dune-nouvelle-fuite-dampleur-avec-25-minutes-de-gameplay-devoilees",
-      "source_link": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxObHl4dGJBNFBNTEpVM0pta1FjOXNwaW5qNmpNcmotOWdsVnRWMEhuTURQNmxpdHVuRWdmNHdNaFdRVmlFNGFxWmptbmVOejdGS2RnYVNRaWtUY05wck92UTNRSHVEZ3FpUUpmQ0xBRS1wcEp2TlcwenZqVS1GeFZJRTA1aFk0S3U0R1Rpck1oM3dWUkJ0Ni1wOFNXRk04X1lWTmpBdXc2TGRsSkJHbkZZRmNPTG5kZUNHcG9aMXhaX1JfNFZERUhOQ0FSb3NtRjZrLXlYQmFhWGpfNHYzQzByY0dOSUpyaVZTSWZlU3FqYUNEa2ZiRnc?oc=5",
-      "date": "2026-10-09T05:42:06+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/08/grand-theft-auto-vi-an-extended-look-00-13-31.png?resize=1600,900&key=8b97978f",
-      "description": "Fuite GTA 6 : vue à la première personne et personnalisation des véhicules&nbsp;&nbsp;Frandroid"
     }
   ],
   "partial": true,
