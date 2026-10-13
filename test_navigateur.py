@@ -2447,8 +2447,20 @@ def test_vignette_ouvre_larticle(nav, url):
     png = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489"
                         "0000000a49444154789c6360000002000100ffff03000006000557bfabd4000000"
                         "0049454e44ae426082")
-    page.route("**/*.{png,jpg,jpeg,webp,gif}",
-               lambda r: r.fulfill(status=200, content_type="image/png", body=png))
+    # Par TYPE DE RESSOURCE, et pas par extension. Le glob
+    # `**/*.{png,jpg,jpeg,webp,gif}` a tenu jusqu'au 13/10/2026, puis la
+    # première carte à vignette est devenue un article dont l'image porte
+    # une chaîne de requête :
+    #
+    #     …/gta-6-apercu-etendu-14-resized.jpeg?resize=1600,900&key=6ae0c341
+    #
+    # Le glob ne matchait plus, l'image partait sur le vrai réseau — bloqué
+    # ici —, `onerror` masquait la vignette, et le test cliquait sur un
+    # élément invisible. Il a échoué sur `main` sans qu'une ligne de l'app
+    # ait changé : c'est la DONNÉE qui avait bougé. Le type de ressource,
+    # lui, ne dépend ni de l'extension ni de la query.
+    page.route("**/*", lambda r: r.fulfill(status=200, content_type="image/png", body=png)
+               if r.request.resource_type == "image" else r.continue_())
     page.goto(url, wait_until="load")
     page.wait_for_selector("#feed", state="attached")
     page.evaluate("settings.backendUrl = '%s/feed.json';" % base)

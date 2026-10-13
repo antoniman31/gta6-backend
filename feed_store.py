@@ -165,6 +165,33 @@ def is_iso_date(value):
     return bool(value) and bool(_ISO_PREFIX.match(str(value)))
 
 
+def https_les_vignettes(items):
+    """Repasse en https les vignettes servies en http. Rend le nombre corrigé.
+
+    L'app est servie en HTTPS. Une image en `http://` est du CONTENU MIXTE :
+    le navigateur la bloque, sans rien dire. `onerror` masque proprement la
+    vignette, donc ça dégrade bien — mais ce sont des cartes sans image pour
+    une raison purement mécanique. Mesuré le 13/10/2026 : 26 articles, et
+    presque tous sur deux domaines (gamekyo.com, geeknplay.fr).
+
+    ON NE PERD RIEN À ESSAYER, et c'est ce qui rend le correctif évident :
+    l'image est DÉJÀ bloquée. Si l'hôte ne répond pas en https, elle reste
+    masquée exactement comme aujourd'hui ; s'il répond, la carte gagne sa
+    vignette. Le pire cas est le statu quo.
+
+    Même famille que normalize_stored_dates : l'historique est rechargé tel
+    quel à chaque passage et ne repasse jamais par la collecte, donc une
+    vignette posée par une version antérieure y resterait pour toujours.
+    """
+    corriges = 0
+    for item in items:
+        img = item.get("image")
+        if isinstance(img, str) and img.startswith("http://"):
+            item["image"] = "https://" + img[len("http://"):]
+            corriges += 1
+    return corriges
+
+
 def normalize_stored_dates(items):
     """Réécrit en ISO 8601 les dates stockées qui n'y sont pas déjà.
 
@@ -683,6 +710,33 @@ def valide_avant_ecriture(data, precedent=None, elagues=0):
             f"{perdus} articles perdus sur {avant} "
             f"({100 * perdus / avant:.0f} %) hors élagage volontaire "
             f"({max(0, elagues)}) — trop pour une purge normale")
+
+    # LE RESTE DU FICHIER, et pas seulement les articles.
+    #
+    # Jusqu'au 13/10/2026 ce garde-fou ne regardait que `items`. Le choix de
+    # portée était défendable — les articles sont le produit — mais il
+    # laissait passer en silence un bug qui viderait la mémoire des
+    # incidents ou ferait reculer un compteur cumulatif. Or ces champs ont
+    # exactement la propriété qui rend une perte invisible : personne ne les
+    # regarde au quotidien, et le passage suivant repart de l'état publié.
+    #
+    # Deux règles seulement, et volontairement grossières. On ne vérifie pas
+    # que les valeurs sont JUSTES — c'est le travail des tests — mais qu'un
+    # champ cumulatif ne disparaît pas et ne recule pas d'un coup.
+    for cle in ("sources_incidents", "sources_incidents_compte",
+                "sources_entries_history", "sources_silence"):
+        if cle in (precedent or {}) and (precedent or {}).get(cle) and cle not in data:
+            raise FeedInvalide(f"« {cle} » a disparu du fichier à publier")
+
+    # Le journal des incidents ne rétrécit que par la fenêtre de rétention,
+    # qui retire un ou deux mois à la fois — jamais la moitié d'un coup.
+    av = (precedent or {}).get("sources_incidents")
+    ap = data.get("sources_incidents")
+    if isinstance(av, list) and isinstance(ap, list) and len(av) >= 10 \
+       and len(ap) < len(av) / 2:
+        raise FeedInvalide(
+            f"le journal des incidents tombe de {len(av)} à {len(ap)} entrées "
+            f"— trop pour la seule fenêtre de rétention")
 
     return len(items)
 

@@ -157,7 +157,7 @@ jobs:
           fi
 
       - name: Récupérer le dépôt
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # `ref: main` au lieu du SHA figé au déclenchement : un run
           # planifié peut avoir attendu 35 min en file avant de démarrer, et
@@ -165,7 +165,7 @@ jobs:
           ref: main
 
       - name: Installer Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
 
@@ -253,11 +253,21 @@ jobs:
               echo '{"items":[]}' > "$RUNNER_TEMP/theirs.json"
             fi
 
+            # Le cache de décodage est mis à l'abri AVANT le reset, et
+            # remis après. Sans ça le `git add decode-cache.json` plus bas
+            # porte sur la version d'origin/main — un non-opérant — et tous
+            # les liens décodés pendant le passage sont perdus. Sans gravité
+            # pour le fil publié (les liens décodés sont déjà dans les
+            # articles), mais c'est du réseau payé deux fois, sur le
+            # composant précisément tombé le 3 octobre.
+            cp decode-cache.json "$RUNNER_TEMP/decode-cache.json" 2>/dev/null || true
+
             # On repart de l'état distant, puis la fusion écrit directement
             # dans docs/ : le commit local rejeté est remplacé, jamais
             # rebasé. merge_feed régénère aussi le fichier allégé, pour que
             # les deux restent cohérents.
             git reset --hard origin/main
+            cp "$RUNNER_TEMP/decode-cache.json" decode-cache.json 2>/dev/null || true
             if ! python merge_feed.py "$RUNNER_TEMP/theirs.json" "$RUNNER_TEMP/ours.json" docs/feed.json; then
               echo "Fusion impossible — abandon sans écraser le dépôt distant."
               exit 1
