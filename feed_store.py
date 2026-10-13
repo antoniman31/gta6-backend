@@ -94,15 +94,28 @@ HOT_SOURCE_THRESHOLD = 3
 # qu'on les regroupe.
 #
 # La boucle d'envoi était sans plafond : un article officiel, une
-# notification, autant de fois qu'il le faut. Mesuré sur tout l'historique,
-# le maximum est de 3 dans une même heure et 4 par jour — le problème est
-# donc théorique aujourd'hui. Mais c'est la pause nocturne qui décide : de
-# 0h à 5h, SEULES les annonces officielles réveillent le téléphone, et une
-# rafale de dix y passerait intégralement.
+# notification, autant de fois qu'il le faut.
 #
-# Cinq, parce que c'est au-dessus de tout ce qu'on a jamais observé : le
-# plafond ne se verra jamais, sauf le jour où il servira.
-NOTIFS_OFFICIELLES_MAX = 5
+# CE COMMENTAIRE A ÉTÉ FAUX, et la façon dont il l'est vaut d'être gardée.
+# Il affirmait : « le maximum est de 3 dans une même heure et 4 par jour —
+# le problème est donc théorique aujourd'hui », et justifiait le plafond de
+# cinq par « c'est au-dessus de tout ce qu'on a jamais observé : le plafond
+# ne se verra jamais ». Remesuré le 13/10/2026 sur le fil réel :
+#
+#     maximum par HEURE : 16   (08/10/2026, 18h)
+#     maximum par JOUR  : 27   (08/10/2026)
+#
+# Le plafond avait donc déjà servi, et il avait été dépassé d'un facteur
+# trois, pendant que le commentaire continuait d'annoncer qu'il ne servirait
+# jamais. Une mesure vieillit ; une mesure DATÉE se rattrape.
+#
+# DIX, choisi par Antoni le 13/10/2026. Le jour de la sortie, chaque annonce
+# officielle compte vraiment, et les regrouper ferait perdre le détail de
+# celle qu'on attend. Ce que ça coûte, dit plutôt que tu : de 0h à 5h, SEULS
+# les officiels réveillent le téléphone, donc une rafale nocturne peut faire
+# dix vibrations d'affilée au lieu de cinq. C'est un choix assumé, pas un
+# oubli.
+NOTIFS_OFFICIELLES_MAX = 10
 
 FEED_PATH = "docs/feed.json"
 

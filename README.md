@@ -5940,15 +5940,33 @@ La boucle d'envoi des annonces officielles n'avait pas de borne : un
 article officiel, une notification, autant de fois qu'il le faut — dans
 `push_notify` comme dans `discord_notify`.
 
-Mesuré sur tout l'historique : **jamais plus de 3 dans une même heure, 4
-par jour**. Le problème était donc théorique, et c'est dit ici plutôt que
-gonflé. Mais de 0h à 5h, seules les annonces officielles réveillent le
-téléphone : une rafale de dix y passerait en entier.
+Mesuré à l'époque sur tout l'historique : jamais plus de 3 dans une même
+heure, 4 par jour. Le problème était donc théorique, et le plafond fut posé
+à 5 — « au-dessus de tout ce qu'on a jamais observé : il ne se verra
+jamais ».
 
-`NOTIFS_OFFICIELLES_MAX = 5` — au-delà, une seule notification groupée qui
-annonce le nombre et, côté Discord, liste les titres restants. Cinq, parce
-que c'est au-dessus de tout ce qu'on a jamais observé : le plafond ne se
-verra jamais, sauf le jour où il servira.
+**Ce paragraphe est devenu faux, et la façon dont il l'est vaut d'être
+gardée.** Remesuré le 13/10/2026 sur le fil réel :
+
+| | avant (mesure d'origine) | remesuré le 13/10 |
+|---|---|---|
+| maximum par heure | 3 | **16** (08/10, 18h) |
+| maximum par jour | 4 | **27** (08/10) |
+
+Le plafond avait déjà servi, et il avait été dépassé **d'un facteur trois**,
+pendant que le commentaire continuait d'annoncer qu'il ne servirait jamais.
+Une mesure vieillit ; une mesure **datée** se rattrape — c'est pour ça
+qu'elles le sont toutes ici.
+
+`NOTIFS_OFFICIELLES_MAX = 10` depuis le 13/10/2026 — au-delà, une seule
+notification groupée qui annonce le nombre et, côté Discord, liste les
+titres restants. Dix, choisi par Antoni : le jour de la sortie, chaque
+annonce officielle compte vraiment et les regrouper ferait perdre le détail
+de celle qu'on attend.
+
+**Ce que ça coûte, dit plutôt que tu** : de 0h à 5h, seules les annonces
+officielles réveillent le téléphone. Une rafale nocturne peut donc faire
+dix vibrations d'affilée au lieu de cinq. C'est un choix assumé.
 
 ## Le journal des incidents — 06/10/2026
 
@@ -7062,6 +7080,73 @@ Maximum observé : **quatre**, jamais six. Et le badge de langue n'apparaît
 que pour le français, avec `background:transparent` et `--text-dim` — il
 est **déjà** en gris muet. Toucher à la hiérarchie visuelle pour 3,1 % des
 cartes serait du risque sans bénéfice.
+
+## La répétition générale du 19 novembre — 13/10/2026
+
+Tout ce qui a été construit en octobre est dimensionné pour le jour de la
+sortie, mais rien n'avait jamais été éprouvé **ensemble** à cette échelle.
+Une journée de sortie a donc été fabriquée à partir des **vrais titres** du
+corpus (8 258 titres de l'archive et du fil), puis passée dans le robot
+entier, plusieurs fois, à trois volumes.
+
+### Le robot tient
+
+| volume d'un jour | gardés | dédupliqués | 1er passage | 2e passage |
+|---|---|---|---|---|
+| 300 | 294 | 2,0 % | 2,5 s | 0,1 s |
+| 900 | 849 | 5,7 % | **26,4 s** | 0,8 s |
+| 1 800 | 1 500 | 16,7 % | **91,5 s** | 1,2 s |
+
+La durée est **quadratique** — six fois le volume, trente-sept fois le
+temps — ce qui est attendu d'une comparaison de similarité par paires. Pour
+un cron horaire, 91 s reste confortable, et c'est dit plutôt que découvert
+le 19 au matin.
+
+Le taux de déduplication **monte avec le volume**, et c'est le
+comportement voulu : plus il arrive d'articles dans la fenêtre, plus il y a
+de reprises à fusionner.
+
+### L'app tient aussi
+
+**1 800 cartes rendues en 265 ms**, 61 en-têtes, aucune erreur JavaScript.
+Le découpage adaptatif du jour J donne bien un en-tête pour une trentaine
+d'articles, à l'échelle où il a été conçu.
+
+### Une fausse alerte, corrigée en la mesurant
+
+Le second passage rendait 591 articles au lieu de 579 : douze de moins sans
+la moindre nouvelle entrée. J'ai d'abord annoncé une perte. **C'en est
+pas une** : c'est la déduplication rétroactive qui rattrape des reprises
+arrivées ensemble au premier passage, et l'archive garde les 591. Vérifié
+sur sept passages d'affilée : 579 puis stable. Ça converge.
+
+### LE VRAI RISQUE, et aucune fiche ne l'avait vu
+
+`MAX_HISTORY_DAYS` vaut trente jours et `MAX_HISTORY_SIZE` quatre mille
+articles. Le fil annonce une
+rétention de **trente jours** — mais le plafond est un **nombre
+d'articles**, pas un nombre de jours :
+
+| rythme | ce que 4 000 articles couvrent |
+|---|---|
+| 125/jour (octobre) | **32 jours** — la fenêtre de 30 jours est ce qui lie |
+| 900/jour | **4,4 jours** |
+| 1 800/jour | **2,2 jours** |
+
+La semaine de la sortie, la fenêtre de trente jours devient une fiction :
+l'app par défaut ne montrerait plus que l'avant-veille. **Rien n'est
+perdu** — l'archive garde tout et se charge mois par mois — mais le fil
+principal, les statistiques calculées dessus et le bloc « Ce que j'ai
+raté » travailleraient sur deux jours sans le dire.
+
+(Le bloc d'entrée, lui, le dit déjà : il annonce « au moins N » dès que
+l'historique chargé ne couvre pas l'absence.)
+
+Relever le plafond n'est pas gratuit : 4 000 articles pèsent 2,6 Mo par
+écriture, vingt-sept fois par jour. Le tripler triplerait aussi la
+croissance du dépôt, mesurée à **1,1 Mo/jour** aujourd'hui (deux méthodes
+concordantes : ratio de compression global, et 34,3 Mo ÷ 896 commits × 27
+commits/jour). C'est une décision à prendre, pas un bug à corriger.
 
 ## Ajuster quelque chose
 
