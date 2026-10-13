@@ -688,6 +688,8 @@ mérite d'être nommé.
 
 ### 4.13 — Trois articles vivent dans deux tranches d'archive à la fois
 
+> **RÉGLÉ le 13/10/2026.** Ils étaient **six** au moment du correctif, contre trois le 09/10 : l'écart grandissait tout seul. `feed_store.dedoublonne_archives()` fait désormais respecter l'invariant « un lien n'est rangé que dans un mois » sur toute l'archive, à chaque passage, entre `archiver` et l'écriture de l'index — la copie la plus récente gagne. Mesuré sur l'archive réelle : 4647 → 4641, deux mois réécrits, rejeu à zéro. Voir le README, « Un article republié restait dans deux mois ».
+
 **Le seul défaut VIVANT trouvé par l'audit** — et c'est `audit_donnees.py`
 qui l'a signalé tout seul, ce qui est plutôt une bonne nouvelle :
 
@@ -727,6 +729,8 @@ annonce 3 articles et un poids qui n'existent pas.
 ---
 
 ### 4.14 — Une décision à prendre : les pages Rockstar en italien et en espagnol
+
+> **TRANCHÉ le 09/10/2026, et reconduit le 13/10.** `it`, `es`, `br` puis `ru` ont rejoint `LANGUES_ROCKSTAR_ECARTEES` le 09/10 ; `zh`, signalé par l'audit quatre jours plus tard, l'a rejointe le 13/10 — c'était la **sixième** copie du même article des stations de radio. L'analyse ci-dessous reste lisible pour la trace, mais sa conclusion (« les équivalents anglais ne sont pas dans le fil ») s'est révélée fausse à la vérification du 09/10. Le mécanisme tient : l'audit nomme la langue, elle coûte une ligne.
 
 `audit_donnees.py` signale deux préfixes de langue jamais vus, avec la
 consigne « à ajouter à `LANGUES_ROCKSTAR_ECARTEES` si ce n'est ni de
@@ -768,8 +772,9 @@ l'historique avant de choisir.
    `dependabot.yml`, et `.env` dans `.gitignore`.
 4. ~~**4.5** — le test qui exécute `main()`.~~ **Fait le 09/10/2026.**
 
-Puis **4.13** (trois articles en double dans l'archive) et **4.14** (la
-décision sur les pages Rockstar localisées, à mesurer avant novembre).
+~~Puis **4.13** (trois articles en double dans l'archive) et **4.14** (la
+décision sur les pages Rockstar localisées, à mesurer avant novembre).~~
+**Les deux sont faits le 13/10/2026.**
 
 4.3, 4.4, 4.6, 4.7, 4.9, 4.11 et 4.12 sont réels mais sans urgence.
 

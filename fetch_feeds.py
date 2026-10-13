@@ -719,12 +719,16 @@ def lien_officiel(url, domaines):
 #     /br/ :  2   écarté
 #     /es/ :  2   écarté
 #     /ru/ :  1   écarté — apparu le 09/10 PENDANT ce changement
+#     /zh/ :  1   écarté — signalé par l'audit le 13/10, quatre jours après
 #
 # Et la raison d'écarter, mesurée : 10 des 12 articles du Newswire présents
 # dans l'historique y sont en PLUSIEURS langues. L'annonce des stations de
-# radio (o3982oa93a23k4) y figure CINQ fois — en, fr, es, br, ru. La
-# cinquième est arrivée pendant l'écriture de ce commentaire, ce qui dit
-# assez que ce n'est pas une projection pour novembre mais l'état du fil.
+# radio (o3982oa93a23k4) y figure maintenant SIX fois — en, fr, es, br, ru,
+# zh. La cinquième est arrivée pendant l'écriture de ce commentaire le
+# 09/10, la sixième quatre jours plus tard, ce qui dit assez que ce n'est
+# pas une projection pour novembre mais le rythme réel du fil. Chaque
+# nouvelle langue coûte exactement une ligne ici, parce que l'audit la
+# nomme avant qu'elle ne fasse du bruit.
 #
 # CE QUE ÇA COÛTE, dit ici parce que ce n'est pas nul : la page boutique
 # du vinyle (store.rockstargames.com/it/…/buy-gta-vi-album-standard-vinyl)
@@ -733,7 +737,7 @@ def lien_officiel(url, domaines):
 #
 # L'exclusion s'applique aussi à l'archive, via le `exclure=` passé à
 # archiver() : ces liens disparaissent du fil ET des mois déjà rangés.
-LANGUES_ROCKSTAR_ECARTEES = ("br", "de", "es", "it", "mx", "ru")
+LANGUES_ROCKSTAR_ECARTEES = ("br", "de", "es", "it", "mx", "ru", "zh")
 
 
 # Les plateformes d'échange de cryptomonnaies publient une page de cours
@@ -4330,6 +4334,16 @@ def main():
         all_items,
         exclure=lambda lien: (page_rockstar_hors_langue(lien)
                               or page_de_cotation_crypto(lien)))
+    # APRÈS archiver, et avant l'index. archiver vient peut-être d'écrire la
+    # copie neuve d'un article republié sous la même URL avec une date
+    # fraîche : c'est à cet instant précis que l'ancienne copie devient
+    # orpheline dans son mois d'origine, et l'index doit compter après le
+    # ménage, pas avant.
+    doublons, mois_dedoublonnes = feed_store.dedoublonne_archives()
+    if doublons:
+        print(f"  [archive] {doublons} doublon(s) inter-mois retiré(s) "
+              f"sur {', '.join(mois_dedoublonnes)}")
+
     index_archives = feed_store.ecrire_index_archives()
     if mois_ecrits:
         detail = ", ".join(f"{m} ({n})" for m, n in sorted(mois_ecrits.items(),
