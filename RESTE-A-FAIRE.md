@@ -155,6 +155,8 @@ bien sur `item.official` — le « fil officiel » existe comme filtre.
 
 ### 3.1 — Le mur du jour J
 
+> **FAIT le 13/10/2026 — et deux des trois pistes ci-dessous sont mortes à la mesure.** Replier les reprises n'absorbe que 10,6 % du volume (91 % des articles n'ont qu'une rédaction) : le pire jour passe de 290 à 247. La barre de pic annoncerait « 0 sujet majeur » un jour de pic, « majeur » étant à 0 % pendant trois jours. Et les tranches horaires FIXES donnent 23 en-têtes sur une journée normale tout en laissant 177 articles dans un palier le 19 novembre. Livré : un découpage **adaptatif à la minute**, cible 30, seuil 60, sur « Aujourd'hui » et « Hier ». Le pire jour réel (290) devient 10 en-têtes, aucun groupe au-dessus de 30, la nuit en un bloc de dix heures et le pic en tranches de vingt minutes. 11 contrôles de navigateur. Voir le README, « Le mur du jour J ».
+
 **Le point le plus important de cette rubrique, et le seul qui ait une
 échéance.**
 

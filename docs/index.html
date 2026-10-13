@@ -4584,6 +4584,118 @@ function dayBucket(dateStr){
   return "Plus ancien";
 }
 
+// ---------- Le mur du jour J ----------
+//
+// Le 17/09, 223 articles sont tombés dans un seul palier « Aujourd'hui » ;
+// le 08/10, 290. Les paliers Aujourd'hui / Hier / Cette semaine sont bien
+// pensés pour une dizaine d'articles par jour — à 290 ils ne séparent plus
+// rien, et le 19 novembre sera pire.
+//
+// CE QUI A ÉTÉ MESURÉ ET ÉCARTÉ, le 13/10/2026 :
+//
+//   - replier les reprises par sujet : 91 % des articles n'ont QU'UNE
+//     rédaction. Replier n'absorbe que 10,6 % du volume, et le pire jour
+//     passe de 290 à 247. Ça ne casse pas le mur ;
+//   - une barre de pic « N articles, 6 sujets majeurs » : « majeur » est à
+//     0 % pendant les trois premiers jours (c'est un signal rétrospectif,
+//     voir le bloc « Ce que j'ai raté »). Un jour de pic, elle annoncerait
+//     zéro sujet majeur ;
+//   - des tranches horaires FIXES : 23 en-têtes sur une journée normale,
+//     un titre tous les quatre articles. Et le 19 novembre, le plus gros
+//     palier horaire ferait encore 177 articles — le mur revient.
+//
+// CE QUI MARCHE : un découpage ADAPTATIF. On fusionne les minutes
+// consécutives tant que le groupe tient sous la cible, donc la granularité
+// se resserre toute seule là où ça déborde. Mesuré sur le pire jour réel
+// (290 articles) : 10 en-têtes, aucun groupe au-dessus de 30, la nuit en un
+// seul bloc de dix heures et le pic découpé en tranches de vingt minutes.
+//
+// Les deux réglages sont mesurés, pas devinés :
+//   - CIBLE 30 : 4 en-têtes médians sur un jour chargé, 10 au pire. À 20 on
+//     monte à 16 et la journée se couvre de titres ; à 40 un groupe fait
+//     déjà trois écrans de téléphone.
+//   - SEUIL 60 : en dessous, la journée reste un seul bloc. 23 jours sur 34
+//     basculent, ce qui correspond au fil depuis septembre (médiane 94).
+const TRANCHE_CIBLE = 30;
+const TRANCHE_SEUIL = 60;
+
+// Seuls les paliers d'UNE SEULE journée se découpent. « Cette semaine » en
+// couvre plusieurs : une tranche horaire y serait ambiguë sans la date.
+const PALIERS_DECOUPABLES = ["Aujourd'hui", "Hier"];
+
+function heureCourte(d){
+  return String(d.getHours()).padStart(2, "0") + "h"
+       + String(d.getMinutes()).padStart(2, "0");
+}
+
+// Découpe une journée en tranches d'au plus `cible` articles.
+//
+// `items` arrive du plus RÉCENT au plus ancien, et les tranches sortent
+// dans le même ordre : c'est l'ordre du fil, on ne le renverse pas.
+//
+// On ne coupe JAMAIS au milieu d'une minute. Sans cette règle, deux
+// articles de 16h49 pouvaient tomber de part et d'autre d'une frontière, et
+// deux en-têtes voisins affichaient la même borne — « … – 16h49 » suivi de
+// « 16h49 – … », ce qui se lit comme une erreur.
+function decoupeEnTranches(items, cible){
+  const minute = i => {
+    const d = new Date(i.date);
+    return isNaN(d) ? null : Math.floor(d.getTime() / 60000);
+  };
+  const tranches = [];
+  let courante = [];
+  for(let n = 0; n < items.length; n++){
+    courante.push(items[n]);
+    const suivant = items[n + 1];
+    const finDeMinute = !suivant || minute(suivant) !== minute(items[n]);
+    if(courante.length >= cible && finDeMinute){
+      tranches.push(courante);
+      courante = [];
+    }
+  }
+  if(courante.length){
+    // Un reste trop maigre rejoint la tranche précédente plutôt que de
+    // former un en-tête pour trois articles.
+    if(tranches.length && courante.length < cible / 3) tranches[tranches.length - 1].push(...courante);
+    else tranches.push(courante);
+  }
+  return tranches;
+}
+
+function libelleTranche(palier, tranche){
+  const dates = tranche.map(i => new Date(i.date)).filter(d => !isNaN(d));
+  if(!dates.length) return palier;
+  const fin = heureCourte(dates[0]);
+  const debut = heureCourte(dates[dates.length - 1]);
+  return debut === fin ? `${palier} · ${debut}` : `${palier} · ${debut} – ${fin}`;
+}
+
+// Rend la liste des paliers à dessiner : [{libelle, items}]. Un palier qui
+// ne déborde pas garde son nom nu et reste un seul bloc — l'app ne change
+// de forme que les jours où elle le doit.
+// `tailles` porte le nombre RÉEL d'articles du palier, pagination comprise,
+// alors que `buckets` ne contient que ceux déjà rendus. Sans cette
+// distinction le seuil ne se déclencherait qu'au troisième « charger plus » :
+// le fil n'affiche que trente cartes au départ, donc aucun palier ne
+// dépasserait soixante avant d'avoir été déplié à la main. Or la journée
+// COMPTE 290 articles dès le premier écran, et c'est là qu'il faut le dire.
+function paliersDuFil(buckets, ordre, tailles){
+  const sortie = [];
+  for(const palier of ordre){
+    const dedans = buckets[palier];
+    if(!dedans || !dedans.length) continue;
+    const taille = (tailles && tailles[palier]) || dedans.length;
+    if(!PALIERS_DECOUPABLES.includes(palier) || taille <= TRANCHE_SEUIL){
+      sortie.push({ libelle: palier, items: dedans });
+      continue;
+    }
+    for(const tranche of decoupeEnTranches(dedans, TRANCHE_CIBLE)){
+      sortie.push({ libelle: libelleTranche(palier, tranche), items: tranche });
+    }
+  }
+  return sortie;
+}
+
 function renderFeed(items, newLinks, searchQuery){
   const feedEl = document.getElementById("feed");
   if(items.length === 0){
@@ -4604,12 +4716,18 @@ function renderFeed(items, newLinks, searchQuery){
     buckets[b].push(item);
   });
 
-  const cardsHtml = bucketOrder
-    .filter(b => buckets[b] && buckets[b].length > 0)
-    .map(bucket => `
+  // Les tailles réelles, comptées sur la liste ENTIÈRE et pas sur les
+  // cartes déjà rendues — voir paliersDuFil.
+  const tailles = {};
+  capped.forEach(item => {
+    const b = dayBucket(item.date);
+    tailles[b] = (tailles[b] || 0) + 1;
+  });
+
+  const cardsHtml = paliersDuFil(buckets, bucketOrder, tailles).map(p => `
       <div class="day-group">
-        <h2 class="day-label">${bucket}</h2>
-        ${buckets[bucket].map(item => enveloppeCarte(item, newLinks, searchQuery)).join("")}
+        <h2 class="day-label">${escapeHtml(p.libelle)}</h2>
+        ${p.items.map(item => enveloppeCarte(item, newLinks, searchQuery)).join("")}
       </div>
     `).join("");
 

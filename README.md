@@ -6812,6 +6812,66 @@ ordre serait passé. Il injecte maintenant un article officiel **daté de 30
 heures**, plus vieux que les spécialistes présents : s'il remonte, c'est
 son rang qui l'a placé, pas sa fraîcheur.
 
+## Le mur du jour J — 13/10/2026
+
+Le 17/09, **223 articles sont tombés dans un seul palier « Aujourd'hui »** ;
+le 08/10, **290**. Les paliers `Aujourd'hui / Hier / Cette semaine / Plus
+ancien` sont bien pensés pour une dizaine d'articles par jour. À 290 ils ne
+séparent plus rien : on fait défiler, on charge trente de plus, on
+recommence. Le 19 novembre sera pire, et c'est déjà arrivé sans lui.
+
+### Deux pistes sur trois sont mortes à la mesure
+
+| piste | verdict mesuré |
+|---|---|
+| replier les reprises par sujet | **91 % des articles n'ont qu'une rédaction.** Replier n'absorbe que 10,6 % : le pire jour passe de 290 à 247 |
+| barre de pic « N articles, 6 sujets majeurs » | « majeur » est à **0 % pendant trois jours** — un jour de pic, elle annoncerait zéro |
+| tranches horaires **fixes** | **23 en-têtes** sur une journée normale, et encore **177 articles** dans un palier le 19 novembre |
+
+### Ce qui marche : un découpage adaptatif
+
+On fusionne les minutes consécutives tant que le groupe tient sous la
+cible. La granularité se resserre donc **toute seule** là où ça déborde. Le
+pire jour réel, 290 articles :
+
+```
+00h25 – 10h54 :  30      ← la nuit en un seul bloc de dix heures
+10h54 – 13h59 :  29
+13h59 – 15h40 :  27
+16h25 – 16h49 :  30      ← vingt-quatre minutes, là où ça déborde
+16h49 – 17h30 :  30
+20h26 – 23h59 :  27
+```
+
+**10 en-têtes, aucun groupe au-dessus de 30.** Un jour calme reste un seul
+bloc nommé « Aujourd'hui » : l'app ne change de forme que les jours où elle
+le doit.
+
+Les deux réglages sont mesurés, pas devinés. **Cible 30** : 4 en-têtes
+médians sur un jour chargé, 10 au pire ; à 20 on monte à 16 et la journée
+se couvre de titres, à 40 un groupe fait déjà trois écrans de téléphone.
+**Seuil 60** : 23 jours sur 34 basculent, ce qui correspond au fil depuis
+septembre (médiane 94 articles/jour).
+
+« Cette semaine » ne se découpe jamais — il couvre plusieurs jours, et une
+tranche horaire y serait ambiguë sans la date.
+
+### Deux pièges, et une mesure que j'ai dû refaire
+
+- **On ne coupe jamais au milieu d'une minute.** Sans cette règle, deux
+  articles de 16h49 tombaient de part et d'autre d'une frontière et deux
+  en-têtes voisins affichaient la même borne — « … – 16h49 » suivi de
+  « 16h49 – … », ce qui se lit comme un bogue. Une tranche déborde donc
+  plutôt que de couper : mesuré à 42 dans le test, pour une cible de 30.
+- **Le seuil se mesure sur la vraie taille du jour, pas sur les cartes
+  rendues.** Le fil n'en affiche que trente au départ : sur les cartes
+  rendues, aucun palier n'aurait dépassé soixante avant trois « charger
+  plus ». Or la journée compte 290 articles dès le premier écran.
+- **Une mesure refaite** : mon premier « plus gros groupe = 59 » venait des
+  jours **non basculés** — un jour à 59 articles reste un bloc — et pas du
+  découpage. Corrigée, elle montre que descendre sous l'heure n'apporte
+  rien, ce que la première version laissait croire.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

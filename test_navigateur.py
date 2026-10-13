@@ -2797,6 +2797,142 @@ def test_ce_que_jai_rate(nav, url):
     ctx.close()
 
 
+def test_mur_du_jour_j(nav, url):
+    """Une journée de pic se découpe en tranches, une journée calme non.
+
+    Le 17/09, 223 articles sont tombés dans un seul palier « Aujourd'hui » ;
+    le 08/10, 290. Le 19 novembre sera pire. Mesuré avant de coder : les
+    tranches horaires FIXES donnent 23 en-têtes sur une journée normale et
+    laissent encore 177 articles dans un palier le jour de la sortie. Seul
+    un découpage adaptatif tient — il se resserre là où ça déborde.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    def journee(n, pas_minutes=3, doublons_minute=0):
+        """Fabrique n articles du jour, espacés, et rend les en-têtes rendus."""
+        return page.evaluate("""([n, pas, dbl]) => {
+            rattrapageLance = true;
+            const base = new Date(); base.setHours(22, 0, 0, 0);
+            lastItems = [];
+            for(let k = 0; k < n; k++){
+                const d = new Date(base.getTime() - k * pas * 60000);
+                lastItems.push({
+                    link: 'https://t.test/' + k, title: 'Article ' + k,
+                    source: 'Test', date: d.toISOString(),
+                });
+            }
+            // Des articles À LA MÊME MINUTE, pour le contrôle de coupure.
+            for(let k = 0; k < dbl; k++){
+                const d = new Date(base.getTime() - 29 * pas * 60000);
+                lastItems.push({
+                    link: 'https://t.test/dbl' + k, title: 'Même minute ' + k,
+                    source: 'Test', date: d.toISOString(),
+                });
+            }
+            lastItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+            visibleCount = 1000; settings.maxDisplay = 1000;
+            applyFilters();
+            return [...document.querySelectorAll('.day-group')].map(g => ({
+                libelle: g.querySelector('.day-label').textContent,
+                n: g.querySelectorAll('.card').length,
+            }));
+        }""", [n, pas_minutes, doublons_minute])
+
+    # --- Journée calme : un seul bloc, nom nu. L'app ne change de forme que
+    # les jours où elle le doit.
+    g = journee(40)
+    check(len(g) == 1 and g[0]["libelle"] == "Aujourd'hui",
+          "[mur] une journée de 40 articles reste un seul bloc « %s »"
+          % g[0]["libelle"])
+
+    # --- Juste sous le seuil : toujours un bloc.
+    g = journee(60)
+    check(len(g) == 1,
+          "[mur] à 60 articles, le seuil n'est pas encore franchi (%d bloc)"
+          % len(g))
+
+    # --- Journée de pic : ça se découpe.
+    g = journee(290, pas_minutes=3)
+    check(len(g) > 1, "[mur] à 290 articles, la journée se découpe (%d tranches)" % len(g))
+    check(max(x["n"] for x in g) <= 40,
+          "[mur] aucune tranche ne dépasse la cible de façon déraisonnable "
+          "(max %d)" % max(x["n"] for x in g))
+    check(all("Aujourd'hui · " in x["libelle"] for x in g),
+          "[mur] chaque tranche porte le jour ET ses heures (%s)" % g[0]["libelle"])
+
+    # Les heures descendent : le fil va du plus récent au plus ancien, et le
+    # découpage ne doit pas renverser cet ordre.
+    import re as _re
+    bornes = [_re.findall(r"(\d\d)h(\d\d)", x["libelle"]) for x in g]
+    debuts = [int(b[0][0]) * 60 + int(b[0][1]) for b in bornes if b]
+    check(debuts == sorted(debuts, reverse=True),
+          "[mur] les tranches descendent dans le temps, comme le fil (%s)" % debuts)
+
+    # --- LA RÈGLE QUI ÉVITE UN EN-TÊTE ABSURDE. On ne coupe jamais au milieu
+    # d'une minute : sinon deux en-têtes voisins affichent la même borne
+    # — « … – 16h49 » suivi de « 16h49 – … » — et ça se lit comme un bogue.
+    g = journee(200, pas_minutes=3, doublons_minute=12)
+    fins = [_re.findall(r"(\d\d)h(\d\d)", x["libelle"]) for x in g]
+    paires = [(b[0], b[-1]) for b in fins if len(b) == 2]
+    chevauche = any(paires[k][0] == paires[k + 1][1] for k in range(len(paires) - 1))
+    check(not chevauche,
+          "[mur] deux tranches voisines ne partagent jamais une borne (%s)"
+          % [x["libelle"] for x in g[:3]])
+    # Et la règle a bien DÛ jouer : treize articles partagent une minute à
+    # l'endroit exact où la cible de 30 voulait couper, donc au moins une
+    # tranche déborde. Sans cette exigence, le contrôle ci-dessus resterait
+    # vert dans un fil où aucune minute n'est partagée — c'est-à-dire sans
+    # jamais tester ce qu'il prétend tester.
+    check(max(x["n"] for x in g) > 30,
+          "[mur] la règle a joué : une tranche déborde pour ne pas couper "
+          "une minute en deux (max %d)" % max(x["n"] for x in g))
+
+    # --- « Cette semaine » couvre PLUSIEURS jours : une tranche horaire y
+    # serait ambiguë sans la date. Il ne se découpe donc jamais.
+    g = page.evaluate("""() => {
+        const base = new Date(); base.setHours(12, 0, 0, 0);
+        lastItems = [];
+        for(let k = 0; k < 150; k++){
+            const d = new Date(base.getTime() - (3 * 86400000) - k * 60000);
+            lastItems.push({link: 'https://s.test/' + k, title: 'S' + k,
+                            source: 'Test', date: d.toISOString()});
+        }
+        visibleCount = 1000; settings.maxDisplay = 1000;
+        applyFilters();
+        return [...document.querySelectorAll('.day-label')].map(h => h.textContent);
+    }""")
+    check(g == ["Cette semaine"],
+          "[mur] « Cette semaine » ne se découpe pas, il couvre plusieurs "
+          "jours (%s)" % g)
+
+    # --- LE PIÈGE DE LA PAGINATION. Le fil ne rend que trente cartes au
+    # départ : si le seuil se mesurait sur les cartes RENDUES, il ne se
+    # déclencherait qu'au troisième « charger plus ». Or la journée compte
+    # 290 articles dès le premier écran, et c'est là qu'il faut le dire.
+    decoupe = page.evaluate("""() => {
+        const base = new Date(); base.setHours(22, 0, 0, 0);
+        lastItems = [];
+        for(let k = 0; k < 290; k++){
+            lastItems.push({link: 'https://p.test/' + k, title: 'P' + k, source: 'Test',
+                            date: new Date(base.getTime() - k * 3 * 60000).toISOString()});
+        }
+        visibleCount = 30; settings.maxDisplay = 1000;
+        applyFilters();
+        return [...document.querySelectorAll('.day-label')].map(h => h.textContent);
+    }""")
+    check(len(decoupe) == 1 and "·" in decoupe[0],
+          "[mur] dès le premier écran de 30 cartes, le découpage est déjà "
+          "annoncé (%s)" % decoupe)
+
+    check(not erreurs, "[mur] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -2854,6 +2990,7 @@ def main():
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_ce_que_jai_rate(nav, url)
+            test_mur_du_jour_j(nav, url)
             test_graphiques_detailles(nav, url)
             test_graphiques_autres_rubriques(nav, url)
             nav.close()
