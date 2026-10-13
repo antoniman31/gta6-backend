@@ -1227,6 +1227,89 @@ def archiver(items, repertoire=ARCHIVE_DIR, maintenant=None, exclure=None):
     return ecrits
 
 
+def dedoublonne_archives(repertoire=None, maintenant=None):
+    """Fait respecter l'invariant : un lien n'est rangé que dans UN mois.
+
+    Rend (articles retirés, [mois réécrits]).
+
+    POURQUOI ÇA N'ALLAIT PAS DE SOI. `archiver` range chaque article dans
+    le mois de SA DATE, et ne relit que les mois que la fenêtre touche. Tant
+    qu'un article garde sa date, les deux coïncident. Mais un média qui
+    republie un article sous la MÊME URL avec une date fraîche — c'est
+    courant, et ça l'est de plus en plus à l'approche de la sortie — le fait
+    changer de mois : la copie neuve est écrite dans le nouveau mois, et
+    l'ancienne reste orpheline dans l'ancien, que plus rien ne relira jamais.
+
+    Mesuré au 13/10/2026, avant ce correctif : 6 articles rangés dans deux
+    mois à la fois, contre 3 quatre jours plus tôt. Tous le même motif —
+    même URL, deux dates, parfois deux titres (« 7 Major GTA 6 Questions »
+    devenu « 12 Biggest GTA 6 Questions »). L'index annonçait 4647 articles
+    pour 4641 réellement distincts.
+
+    QUI GAGNE : la copie la plus RÉCENTE. C'est la version mise à jour, et
+    c'est déjà la règle de fusion d'`archiver` (« l'article du fil gagne »).
+    À égalité de date, celle dont le mois correspond à sa propre date.
+
+    CE QUE ÇA COÛTE, dit ici parce que ce n'est pas nul : un mois révolu
+    pouvait jusqu'ici n'être écrit qu'une fois et mis en cache pour
+    toujours. Il peut maintenant être réécrit, le jour où il perd un
+    doublon. C'est rare (6 en un mois) et c'est le prix de l'invariant —
+    sans lui, le compteur de l'archive dérive indéfiniment.
+
+    Garde-fou habituel : un mois dont une tranche est illisible n'est ni lu
+    ni réécrit, et ses articles ne participent pas à la comparaison. On ne
+    retire jamais une copie en se fiant à un mois qu'on ne sait pas lire.
+    """
+    repertoire = repertoire or ARCHIVE_DIR
+
+    par_mois = {}
+    for mois in mois_archives(repertoire):
+        items, illisibles = lire_mois_pour_reecriture(mois, repertoire)
+        if illisibles:
+            print(f"  [archive] {mois} ignoré par le dédoublonnage : "
+                  f"tranche(s) illisible(s) ({', '.join(illisibles)})")
+            continue
+        par_mois[mois] = items
+
+    vus = {}
+    for mois, items in par_mois.items():
+        for item in items:
+            lien = item.get("link")
+            if lien:
+                vus.setdefault(lien, []).append((mois, item))
+
+    # Un article dont le mois ne correspond pas à sa date est déjà rangé de
+    # travers ; à égalité de date c'est lui qu'on sacrifie en premier.
+    def rang(copie):
+        mois, item = copie
+        return (parse_date_key(item.get("date")), mois_de(item) == mois, mois)
+
+    # On désigne un gagnant par lien, puis on RECONSTRUIT les mois concernés
+    # à partir de ces gagnants. Filtrer par lien emporterait aussi le
+    # gagnant quand les deux copies sont dans le même mois (deux tranches
+    # d'un gros mois), ce qui transformerait un doublon en disparition.
+    touches = set()
+    gardes = {}
+    for lien, copies in vus.items():
+        gardes[lien] = max(copies, key=rang)
+        if len(copies) > 1:
+            touches.update(mois for mois, _ in copies)
+
+    total, ecrits = 0, []
+    for mois in sorted(touches):
+        restants = [i for i in par_mois[mois]
+                    if not i.get("link")
+                    or (gardes[i["link"]][0] == mois
+                        and gardes[i["link"]][1] is i)]
+        retires = len(par_mois[mois]) - len(restants)
+        if not retires:
+            continue
+        ecrire_mois(mois, restants, repertoire, maintenant)
+        total += retires
+        ecrits.append(mois)
+    return total, ecrits
+
+
 def elague_source_link_archives(repertoire=None, maintenant=None,
                                 jours=JOURS_SOURCE_LINK_PUBLIE):
     """Même élagage, dans l'archive. Rend (articles allégés, mois réécrits).

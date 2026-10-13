@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1743
+qui permet de tester tout le pipeline sans sortir de la machine. **1754
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5559,15 +5559,18 @@ de décider :
 /br/ :  2   écarté
 /es/ :  2   écarté
 /ru/ :  1   écarté — apparu PENDANT le changement, le 09/10
+/zh/ :  1   écarté — signalé par l'audit le 13/10, quatre jours après
 ```
 
 La liste passe donc à
-`LANGUES_ROCKSTAR_ECARTEES = ("br", "de", "es", "it", "mx", "ru")`.
+`LANGUES_ROCKSTAR_ECARTEES = ("br", "de", "es", "it", "mx", "ru", "zh")`.
 La raison est mesurée : **10 des 12 articles du Newswire présents
 dans l'historique y sont en plusieurs langues**, et celui des stations de
-radio y figure **cinq fois** — en, fr, es, br, ru. La cinquième est apparue
-pendant l'écriture de ce paragraphe : ce n'était pas une projection pour
-novembre, c'était l'état du fil.
+radio y figure **six fois** — en, fr, es, br, ru, zh. La cinquième est
+apparue pendant l'écriture de ce paragraphe le 09/10, la sixième quatre
+jours plus tard : ce n'était pas une projection pour novembre, c'est le
+rythme réel du fil. Chaque nouvelle langue coûte une ligne, parce que
+l'audit la nomme avant qu'elle ne fasse du bruit.
 
 **Ce que ça coûte, dit plutôt que taire** : la page boutique du vinyle
 (`store.rockstargames.com/it/…`) n'a aucun équivalent en ou fr dans le fil.
@@ -6604,6 +6607,61 @@ de la même façon, sans une ligne à écrire.
 - Une correction de collecte ne corrige pas l'historique. Toute passe
   rétroactive doit traiter le fil ET l'archive, sans quoi la fusion par lien
   fabrique des doublons.
+
+## Un article republié restait dans deux mois — 13/10/2026
+
+L'audit annonçait, quatre jours après le lot précédent :
+
+```
+⚠ L'index annonce un total différent de ce qu'il contient
+     index : 4647 articles
+     fichiers : 4641 articles
+```
+
+Six articles étaient rangés dans **deux mois d'archive à la fois**. Ils
+étaient trois quatre jours plus tôt : l'écart grandissait tout seul.
+
+**La cause, et elle n'avait rien d'un bogue d'écriture.** Les six avaient
+exactement le même motif — un média republie un article sous la **même
+URL** avec une date fraîche, parfois un nouveau titre :
+
+```
+2026-09.json  2026-09-15T21:35:50  7 Major GTA 6 Questions the Previews Hav…
+2026-10.json  2026-10-06T21:35:51  12 Biggest GTA 6 Questions the Previews…
+```
+
+`archiver()` range chaque article dans le mois de **sa date du jour**, et ne
+relit que les mois que la fenêtre touche. Quand la date passe de septembre à
+octobre, la copie neuve est écrite dans octobre et **celle de septembre
+devient orpheline pour toujours** : plus rien ne la relira. Rien dans le
+code n'imposait qu'un lien n'existe que dans un mois.
+
+Ce n'était pas visible sur le site — le fil dédoublonne à l'affichage —
+mais le compteur de l'archive dérivait, et il allait dériver bien plus vite
+en novembre.
+
+**`dedoublonne_archives()`** fait désormais respecter l'invariant sur toute
+l'archive, à chaque passage, entre `archiver` et l'écriture de l'index. En
+cas de doublon, **la copie la plus récente gagne** : c'est la version mise à
+jour, et c'est déjà la règle de fusion d'`archiver`. Mesuré sur l'archive
+réelle : 4647 → 4641, deux mois réécrits, et le rejeu ne touche plus rien.
+
+**Ce que ça coûte, dit plutôt que tu.** Un mois révolu pouvait jusqu'ici
+n'être écrit qu'une fois et mis en cache pour toujours. Il peut maintenant
+être réécrit, le jour où il perd un doublon. C'est rare — six en un mois —
+et c'est le prix de l'invariant.
+
+**Le piège, écrit puis corrigé.** Ma première version retirait « le lien »
+du mois perdant. Quand les deux copies sont dans le **même** mois (deux
+tranches d'un gros mois, ce que novembre fera), ça emportait aussi le
+gagnant : un doublon serait devenu une disparition. On reconstruit donc le
+mois à partir des gagnants, jamais en filtrant par lien. Un test tient ce
+cas.
+
+Garde-fou habituel, le même que partout dans l'archive : un mois dont une
+tranche est illisible n'est **ni lu ni réécrit**, et ses articles ne
+participent pas à la comparaison. On ne retire jamais une copie en se fiant
+à un mois qu'on ne sait pas lire.
 
 ## Ajuster quelque chose
 

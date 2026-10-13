@@ -1065,8 +1065,14 @@ def test_officiel_strict_et_langues_rockstar():
     es = "https://www.rockstargames.com/es/newswire/article/7599a881942544/album"
     it = "https://store.rockstargames.com/it/merchandise/buy-gta-vi-album"
     ru = "https://www.rockstargames.com/ru/newswire/article/7599a881942544/album"
+    # Le 13/10, quatre jours après avoir écarté br/es/it/ru, l'audit a
+    # signalé /zh/ — et c'était la SIXIÈME copie du même article des
+    # stations de radio. Le mécanisme a fonctionné comme prévu : l'audit
+    # nomme la langue, elle rejoint la liste, une ligne.
+    zh = "https://www.rockstargames.com/zh/newswire/article/o3982oa93a23k4/radio"
     for url, langue in ((de, "allemande"), (mx, "mexicaine"), (br, "brésilienne"),
-                        (es, "espagnole"), (it, "italienne"), (ru, "russe")):
+                        (es, "espagnole"), (it, "italienne"), (ru, "russe"),
+                        (zh, "chinoise")):
         check(ff.page_rockstar_hors_langue(url),
               "la version %s est écartée" % langue)
     check(not ff.page_rockstar_hors_langue(en) and not ff.page_rockstar_hors_langue(fr),
@@ -7774,6 +7780,119 @@ def test_archive_mensuelle():
 
 
 
+def test_un_lien_nest_range_que_dans_un_mois():
+    print("\n[archive] un article republié ne reste pas dans deux mois")
+    import feed_store, fetch_feeds as ff
+    import json, os, shutil, tempfile
+    from datetime import datetime, timezone
+
+    rep = tempfile.mkdtemp(prefix="dedoublon-")
+    try:
+        lien = "https://media.test/gta-6-questions"
+
+        def art(quand, titre):
+            return {"link": lien, "title": titre, "date": quand.isoformat()}
+
+        # LE CAS RÉEL, et pas une construction. Mesuré sur l'archive le
+        # 13/10/2026 : 6 articles rangés dans deux mois à la fois, tous le
+        # même motif — un média republie sous la MÊME URL avec une date
+        # fraîche, parfois un nouveau titre (« 7 Major GTA 6 Questions »
+        # devenu « 12 Biggest GTA 6 Questions »). archiver range la copie
+        # neuve dans le nouveau mois et ne relit jamais l'ancien.
+        septembre = datetime(2026, 9, 15, 21, 35, tzinfo=timezone.utc)
+        octobre = datetime(2026, 10, 6, 21, 35, tzinfo=timezone.utc)
+        feed_store.archiver([art(septembre, "7 Major GTA 6 Questions")], rep)
+        feed_store.archiver([art(octobre, "12 Biggest GTA 6 Questions")], rep)
+
+        deux = [m for m in ("2026-09", "2026-10")
+                if any(i["link"] == lien for i in feed_store.lire_mois(m, rep))]
+        check(deux == ["2026-09", "2026-10"],
+              "sans dédoublonnage, l'article existe bien dans les DEUX mois "
+              "— c'est la panne qu'on corrige, pas une hypothèse")
+
+        n, mois = feed_store.dedoublonne_archives(rep)
+        check(n == 1 and mois == ["2026-09"],
+              "le dédoublonnage en retire un, et ne réécrit que le mois "
+              "qui perd quelque chose (%d, %s)" % (n, mois))
+        check(not feed_store.lire_mois("2026-09", rep),
+              "la copie orpheline de septembre est partie")
+        reste = feed_store.lire_mois("2026-10", rep)
+        check(len(reste) == 1 and reste[0]["title"] == "12 Biggest GTA 6 Questions",
+              "et c'est la version la PLUS RÉCENTE qui survit, pas la première "
+              "archivée — c'est elle que le média a mise à jour")
+
+        check(feed_store.dedoublonne_archives(rep) == (0, []),
+              "rejouer ne retire rien et ne réécrit rien : sinon le robot "
+              "signerait un commit par passage sur des mois révolus")
+
+        # Le sens inverse : une date CORRIGÉE vers le passé. Le gagnant
+        # reste le plus récent, donc c'est la copie d'octobre — mais il ne
+        # doit rester qu'une copie dans tous les cas.
+        feed_store.archiver([art(datetime(2026, 8, 2, tzinfo=timezone.utc),
+                                 "titre d'août")], rep)
+        n, _ = feed_store.dedoublonne_archives(rep)
+        total = sum(len(feed_store.lire_mois(m, rep))
+                    for m in feed_store.mois_archives(rep))
+        check(n == 1 and total == 1,
+              "une date corrigée vers le passé laisse elle aussi une seule "
+              "copie (%d retiré, %d au total)" % (n, total))
+
+        # LE PIÈGE QUE J'AI ÉCRIT PUIS CORRIGÉ. Deux copies du même lien
+        # dans le MÊME mois (deux tranches d'un gros mois) : retirer « le
+        # lien » du mois emporterait aussi le gagnant, et le doublon
+        # deviendrait une disparition. On reconstruit donc le mois à partir
+        # des gagnants, jamais en filtrant par lien.
+        jumeau = tempfile.mkdtemp(prefix="dedoublon-jumeau-")
+        try:
+            a = art(octobre, "ancien")
+            b = art(datetime(2026, 10, 9, tzinfo=timezone.utc), "récent")
+            feed_store.ecrire_mois("2026-10", [a], jumeau)
+            with open(os.path.join(jumeau, "2026-10.2.json"), "w",
+                      encoding="utf-8") as f:
+                json.dump({"mois": "2026-10", "tranche": 2, "tranches": 2,
+                           "items": [b]}, f)
+            n, _ = feed_store.dedoublonne_archives(jumeau)
+            restant = feed_store.lire_mois("2026-10", jumeau)
+            check(n == 1 and len(restant) == 1 and restant[0]["title"] == "récent",
+                  "deux copies dans le même mois : il en reste UNE, la "
+                  "récente — pas zéro (%d retiré, %d restant)"
+                  % (n, len(restant)))
+        finally:
+            shutil.rmtree(jumeau, ignore_errors=True)
+
+        # Le garde-fou habituel. Une tranche illisible veut dire « je ne
+        # sais pas ce qu'il y avait dedans ». On ne retire aucune copie en
+        # se fiant à un mois qu'on ne sait pas lire, et on ne le réécrit pas.
+        casse = tempfile.mkdtemp(prefix="dedoublon-casse-")
+        try:
+            feed_store.archiver([art(septembre, "septembre")], casse)
+            feed_store.archiver([art(octobre, "octobre")], casse)
+            with open(os.path.join(casse, "2026-09.2.json"), "w",
+                      encoding="utf-8") as f:
+                f.write("{pas du JSON")
+            n, mois = feed_store.dedoublonne_archives(casse)
+            check(n == 0 and mois == [],
+                  "un mois dont une tranche est illisible n'est ni lu ni "
+                  "réécrit par le dédoublonnage")
+            check(any(i["link"] == lien
+                      for i in feed_store.lire_mois("2026-09", casse)),
+                  "et sa copie reste en place plutôt que d'être retirée "
+                  "sur une lecture partielle")
+        finally:
+            shutil.rmtree(casse, ignore_errors=True)
+    finally:
+        shutil.rmtree(rep, ignore_errors=True)
+
+    # Le dédoublonnage ne sert à rien s'il n'est pas appelé, et il doit
+    # l'être APRÈS archiver — qui vient peut-être d'écrire la copie neuve —
+    # et AVANT l'index, qui compte.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check(src.index("feed_store.archiver(")
+          < src.index("feed_store.dedoublonne_archives(")
+          < src.index("feed_store.ecrire_index_archives()"),
+          "main() dédoublonne entre l'archivage et l'écriture de l'index")
+
+
 def test_laudit_surveille_larchive():
     print("\n[archive] l'audit voit les pannes de l'archive, pas seulement sa taille")
     import audit_donnees, feed_store
@@ -8721,6 +8840,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_lecteurs_de_liaison_mutualises,
            test_epoque_unix_nest_pas_une_date,
            test_archive_mensuelle,
+           test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,
            test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
