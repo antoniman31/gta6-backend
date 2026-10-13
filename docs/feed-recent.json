@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-13T04:01:33.270654+00:00",
+  "generated_at": "2026-10-13T05:01:26.837893+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 26.4,
+  "duration_seconds": 25.8,
   "decode_failures": 0,
-  "total_articles": 3474,
-  "new_this_run": 3,
+  "total_articles": 3476,
+  "new_this_run": 2,
   "hot_count": 53,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -440,7 +440,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 47,
       "last_article": "2026-10-10T07:50:31+00:00",
       "days_since_last_article": 2,
@@ -480,8 +480,8 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 2,
-      "articles_exclusifs": 949,
-      "last_article": "2026-10-13T03:13:37+00:00",
+      "articles_exclusifs": 951,
+      "last_article": "2026-10-13T04:27:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -540,10 +540,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 15,
       "last_article": "2026-10-12T12:25:25+00:00",
@@ -619,14 +619,14 @@
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
       "entries_fetched": 0,
-      "http_status": 500,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 50,
       "last_article": "2026-10-09T07:00:14+00:00",
       "days_since_last_article": 3,
-      "status": "muette"
+      "status": "cassee"
     },
     {
       "id": "rockstarintel",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T12:19:42+00:00",
@@ -956,7 +956,7 @@
     {
       "id": "numerama",
       "name": "Numerama",
-      "entries_fetched": 0,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -964,7 +964,7 @@
       "articles_exclusifs": 7,
       "last_article": "2026-09-25T08:21:07+00:00",
       "days_since_last_article": 17,
-      "status": "muette"
+      "status": "ok"
     },
     {
       "id": "gamergen",
@@ -1099,10 +1099,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-09-28T15:57:47+00:00",
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-09-08T10:08:19+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T14:16:46+00:00",
       "days_since_last_article": 4,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 5,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1227,7 +1227,7 @@
     },
     "numerama": {
       "depuis": "2026-10-13T04:01:33.269606+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     }
   },
@@ -1238,7 +1238,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1250,7 +1250,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1276,7 +1276,7 @@
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,100,100,0",
+    "numerama": "100,100,100,100,100,100,100,100,100,100,0,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1295,7 +1295,7 @@
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "reddit-gta6-suivi": "25,25,25,25,25,25,0,25,25,25,25,25"
+    "reddit-gta6-suivi": "25,25,25,25,25,0,25,25,25,25,25,25"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1306,8 +1306,8 @@
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"77ecc583f9eb4619a928d3c65916d143\"",
-      "modified": "Mon, 12 Oct 2026 19:28:17 GMT"
+      "etag": "W/\"7c6f49fd52835fda38f08518772f7793\"",
+      "modified": "Tue, 13 Oct 2026 04:31:19 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1347,7 +1347,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 13 Oct 2026 03:56:27 GMT"
+      "modified": "Tue, 13 Oct 2026 04:57:16 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1356,8 +1356,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6acdacd2-310b\"",
-      "modified": "Tue, 13 Oct 2026 04:00:18 GMT"
+      "etag": "W/\"6acdbae1-310b\"",
+      "modified": "Tue, 13 Oct 2026 05:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1387,7 +1387,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 13 Oct 2026 04:01:12 GMT"
+      "modified": "Tue, 13 Oct 2026 05:00:23 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1396,13 +1396,13 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"708c9e3d3e1204199504d006105c1ca0\"",
-      "modified": "Mon, 12 Oct 2026 19:00:51 GMT"
+      "etag": "W/\"fd6958cde02aae3fdd65faf49888da93\"",
+      "modified": "Tue, 13 Oct 2026 05:00:17 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"082dd816035d3a01287bf21edeb8aeca\"",
-      "modified": "Tue, 13 Oct 2026 00:05:14 GMT"
+      "etag": "W/\"cf773b49f4493576738d47e997db3070\"",
+      "modified": "Tue, 13 Oct 2026 04:41:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -2196,6 +2196,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "[GTA6 Leak] Après Jason, Cyberleek dévoile Lucia dans son plus simple appareil - Gamekyo.com",
+      "link": "https://www.gamekyo.com/blog_article488412.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9PbFVZSmNzbUp1RklvbEVQMFFQUmRVa2VHellkTzRjd3I3Yl8tQVhYbGpfel9Ia3BRRGF4WHVaeC0wVVBDOXJXSE5kc2RVOTVjT0JGMndWQTdYc1E?oc=5",
+      "date": "2026-10-13T04:27:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "http://www.gamekyo.com/Webmasters/Images/grand-theft-auto-vi_20220730_060731_intro.jpg",
+      "description": "[GTA6 Leak] Après Jason, Cyberleek dévoile Lucia dans son plus simple appareil&nbsp;&nbsp;Gamekyo.com"
+    },
+    {
+      "title": "GTA 6 : Rockstar confirme une fonctionnalité inédite que même Red Dead Redemption 2 n'avait pas - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-rockstar-confirme-une-fonctionnalite-inedite-que-meme-red-dead-redemption-2-navait-pas-230757.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOVWhRQXhhZmVTUFJDUzhuUXlCZTBER2xPcThxNDBIX3BhM0JzOTh1Q2lEcy0xbnFQTUJiLXp3UHNVTUFMNGpnRVhPb3RiV3dwbEpPRm9xNTl3dnEtXzlZZFFkcnoxZDVpVGNGWWxHcWNnS1pXTkpNSTVXZU54ZDVnbjBJUkxvaVJCREVZUnBWVjVhS21GZWc3MHJNcXRsNGlWeV8tRlNWQWFVQ2Q2dE1JUDFUcldPQ0xYbXljaWdzOEwyV3d1UXNzZnpYTWhWanI0bmt1QzBFODNuODFfM0IzbVJwVWY?oc=5",
+      "date": "2026-10-13T04:00:03+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sf.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/10/gta-6-rockstar-confirme-une-fonctionnalite-inedite-que-meme-red-dead-redemption-2-navait-pas-1200x660.png",
+      "description": "GTA 6 : Rockstar confirme une fonctionnalité inédite que même Red Dead Redemption 2 n'avait pas&nbsp;&nbsp;La Crème Du Gaming"
+    },
     {
       "title": "Cyberleek affirme que la version de GTA 6 dépasse les 200 Go, laissant présager une taille de fichier massive sur PS5 et Xbox - Notebookcheck.fr",
       "link": "https://www.notebookcheck.biz/Cyberleek-affirme-que-la-version-de-GTA-6-depasse-les-200-Go-laissant-presager-une-taille-de-fichier-massive-sur-PS5-et-Xbox.1422619.0.html",
@@ -6183,32 +6209,6 @@
       "lang": "en",
       "image": null,
       "description": "Nintendo President Doesn’t Rule Out GTA 6 Coming to Nintendo Switch 2&nbsp;&nbsp;Men's Journal"
-    },
-    {
-      "title": "GTA 6 Fan Says Rockstar Sent Them a Poster Just Because They Asked Nicely - IGN India",
-      "link": "https://in.ign.com/grand-theft-auto-vi/274094/gta-6-fan-says-rockstar-sent-them-a-poster-just-because-they-asked-nicely",
-      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQcW1tYVlKSk5zeUNDbXNoOURjUkp6ZnYwNkNqWmpyRXl4dERpeGlhNTVZWEtUVFAtTkNRaThmWkM3Ukc4anItUjdIWVd0Znd4NlBYWHVKU2tHV0diX3F4R2t3cC1wSU1WNENEbXBMVTNHci1QMVRBdlJmSXdtN0pUQ2FrR2tFQ1ZhZHJJOFBOTndHS3I3bC1oZ2JXTEZtYUpBMkdmVy0xM1JXNFRCLUI4OWFyeFZXLXhGVnVn?oc=5",
-      "date": "2026-10-10T00:08:03+00:00",
-      "source": "Google News (annonces Rockstar)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://sm.ign.com/t/ign_in/news/g/gta-6-fan-/gta-6-fan-says-rockstar-sent-them-a-poster-just-because-they_adnm.1200.jpg",
-      "description": "GTA 6 Fan Says Rockstar Sent Them a Poster Just Because They Asked Nicely&nbsp;&nbsp;IGN India"
-    },
-    {
-      "title": "GTA 6 Fan Says They Asked Rockstar to Send Them a Poster All the Way to Brazil — So They Did - IGN",
-      "link": "https://www.ign.com/articles/gta-6-fan-says-rockstar-sent-them-a-poster-just-because-they-asked-nicely",
-      "source_link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOSTREcTBRRFBkcUxjbFh3OGtHdVBjdlRteGRKcmUtbVhlY3BfZnhKbGxtVWl3cFZuYklfU3Q1YzgyWm4xajNhcDc4bnE3My1XMFdLalFDZFR0TWg1WTBMREtHamEwSXdDSVN5aV9kX0gybkVnMEhuSFIzQlVTek00X016dHd5TzdURS1jM05kd1p4NkZoaWVxTmFudXJCWTdTOVExUQ?oc=5",
-      "date": "2026-10-09T23:56:24+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://assets-prd.ignimgs.com/2026/10/09/gta-6-cover-art-1791589629353.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "GTA 6 Fan Says They Asked Rockstar to Send Them a Poster All the Way to Brazil — So They Did&nbsp;&nbsp;IGN"
     }
   ],
   "partial": true,
