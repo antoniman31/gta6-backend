@@ -2662,6 +2662,141 @@ def test_sources_disent_la_verite(nav, url):
     ctx.close()
 
 
+def test_ce_que_jai_rate(nav, url):
+    """Le bloc d'entrée : un bilan vrai, puis les sources suivies.
+
+    CE QU'IL N'EST PAS. L'idée d'origine était « les cinq sujets importants
+    parus depuis la dernière visite ». Mesuré sur le fil réel le 13/10/2026,
+    elle ne tient pas : « majeur » est à 0 % pendant trois jours (c'est un
+    signal rétrospectif, il faut que d'autres médias reprennent l'article),
+    les articles ne se regroupent pas en sujets (119 donnent 117 groupes),
+    et un top 5 par score servait quatre fois la même fuite. D'où un bilan
+    chiffré plus les sources que le robot étiquette lui-même.
+    """
+    base = url.rsplit("/", 1)[0]
+
+    def session(heures, avant=None):
+        ctx = nav.new_context(viewport={"width": 390, "height": 850})
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        page.evaluate("rattrapageLance = true;")
+        page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+        if heures is None:
+            page.evaluate("derniereVisite = null;")
+        else:
+            page.evaluate("() => { derniereVisite = Date.now() - %d*3600*1000; }" % heures)
+        if avant:
+            avant(page)
+        page.evaluate("async () => { await checkFromBackend(false); }")
+        page.evaluate("applyFilters();")
+        etat = page.evaluate("""() => {
+            const el = document.getElementById('rateBloc');
+            const bilan = el.querySelector('.rate-bilan');
+            return {
+                affiche: el.style.display,
+                plein: el.dataset.plein,
+                bilan: bilan ? bilan.textContent : "",
+                lignes: [...el.querySelectorAll('.rate-liste li a')].map(a => ({
+                    source: a.querySelector('.rate-source').textContent,
+                    href: a.getAttribute('href'),
+                })),
+            };
+        }""")
+        return page, ctx, etat, erreurs
+
+    # --- Première visite : aucun point de référence, donc AUCUN bloc. Mieux
+    # vaut rien qu'un bandeau qui annonce zéro.
+    page, ctx, etat, err = session(None)
+    check(etat["affiche"] == "none" and etat["plein"] == "0",
+          "[raté] sans visite précédente, pas de bloc du tout")
+    ctx.close()
+
+    # --- 36 h : le cas courant. Le compte est EXACT, parce que la fenêtre
+    # chargée (≈300 articles, soit 2 j 1/2 au rythme mesuré) la couvre.
+    page, ctx, etat, err = session(36)
+    check(etat["affiche"] == "block" and etat["plein"] == "1",
+          "[raté] après 36 h d'absence, le bloc est là")
+    check("Depuis ta dernière visite" in etat["bilan"],
+          "[raté] il s'ouvre sur un bilan (« %s »)" % etat["bilan"][:60])
+    check("au moins" not in etat["bilan"],
+          "[raté] et sur 36 h le compte est exact, pas minoré")
+    check(0 < len(etat["lignes"]) <= 4,
+          "[raté] au plus quatre lignes, et il rétrécit au lieu de se "
+          "remplir (%d ici)" % len(etat["lignes"]))
+    check(all(l["href"].startswith("http") for l in etat["lignes"]),
+          "[raté] chaque ligne mène à son article")
+
+    # Les sources suivies, et SEULEMENT elles : pas de score inventé.
+    srcs = page.evaluate("""() => {
+        const liens = [...document.querySelectorAll('#rateBloc .rate-liste a')]
+            .map(a => a.getAttribute('href'));
+        return liens.map(h => {
+            const i = lastItems.find(x => x.link === h);
+            return i ? Boolean(i.official || i.specialist || i.rockstarmag) : false;
+        });
+    }""")
+    check(all(srcs),
+          "[raté] toutes les lignes viennent de sources suivies (%s)" % srcs)
+
+    # L'ordre : officiels, puis spécialistes, puis RockstarMag.
+    #
+    # ON INJECTE UN OFFICIEL. Sans lui le fil réel ne contient aujourd'hui
+    # que des spécialistes — mesuré : 26 jours sur 30 sans le moindre
+    # article officiel — et le contrôle rendait [1, 1, 1, 1], « trié » par
+    # accident. Il serait resté vert en laissant passer n'importe quel
+    # ordre. Et l'officiel est VIEUX : s'il remontait par sa date, on ne
+    # saurait pas si c'est son rang ou sa fraîcheur qui l'a placé.
+    rangs = page.evaluate("""() => {
+        lastItems.push({
+            link: 'https://www.rockstargames.com/newswire/article/zzz-test',
+            title: 'Annonce officielle de contrôle',
+            source: 'Rockstar Games (officiel EN)',
+            official: true,
+            date: new Date(Date.now() - 30*3600*1000).toISOString(),
+        });
+        applyFilters();
+        return [...document.querySelectorAll('#rateBloc .rate-liste a')]
+            .map(a => lastItems.find(x => x.link === a.getAttribute('href')))
+            .map(i => i.official ? 0 : i.specialist ? 1 : 2);
+    }""")
+    check(rangs and rangs[0] == 0 and rangs == sorted(rangs) and len(set(rangs)) > 1,
+          "[raté] un officiel passe DEVANT des spécialistes plus récents, "
+          "et l'ordre reste officiel → spécialiste → RockstarMag (%s)" % rangs)
+
+    # Cliquer une ligne la marque lue — sinon le bloc redit éternellement la
+    # même chose à quelqu'un qui l'a déjà suivi.
+    lien = etat["lignes"][0]["href"]
+    page.evaluate("marqueLuDepuisRate('%s')" % lien)
+    check(page.evaluate("readSet.has('%s')" % lien),
+          "[raté] cliquer une ligne marque l'article comme lu")
+    check(not err, "[raté] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
+
+    # --- 10 jours : LE cas malhonnête. La fenêtre chargée ne couvre plus
+    # l'absence, et un compte sec mentirait sans le dire — « 300 articles »
+    # après une semaine, alors qu'il y en a eu mille. On ne sait pas combien
+    # il en manque, donc on ne l'invente pas.
+    page, ctx, etat, err = session(24 * 10)
+    check("au moins" in etat["bilan"],
+          "[raté] au-delà de la fenêtre chargée, le compte se dit minoré "
+          "(« %s »)" % etat["bilan"][:70])
+    ctx.close()
+
+    # --- Le bloc suit le fil : il n'a aucun sens sous les statistiques.
+    page, ctx, etat, err = session(36)
+    page.evaluate("setTab('stats')")
+    cache = page.evaluate("document.getElementById('rateBloc').style.display")
+    page.evaluate("setTab('all')")
+    revenu = page.evaluate("document.getElementById('rateBloc').style.display")
+    check(cache == "none" and revenu == "block",
+          "[raté] masqué sous Statistiques, rendu en revenant au fil "
+          "(%s puis %s)" % (cache, revenu))
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -2718,6 +2853,7 @@ def main():
             test_officiel_et_filtres_etroits(nav, url)
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
+            test_ce_que_jai_rate(nav, url)
             test_graphiques_detailles(nav, url)
             test_graphiques_autres_rubriques(nav, url)
             nav.close()

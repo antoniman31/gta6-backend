@@ -182,6 +182,8 @@ Trois pistes, de la moins à la plus ambitieuse :
 
 ### 3.2 — « Ce que j'ai raté » : le point d'entrée qui manque
 
+> **FAIT le 13/10/2026, mais PAS comme décrit ci-dessous.** La mesure a contredit le plan : « majeur » est à 0 % pendant trois jours (signal rétrospectif), les articles ne se regroupent pas en sujets (119 → 117 groupes), et un top 5 par score servait quatre fois la même fuite avec 10 à 23 articles à égalité avec le cinquième. Le bloc livré est donc un **bilan chiffré toujours vrai** (minoré explicitement quand l'historique partiel ne couvre pas l'absence) suivi de **jusqu'à quatre lignes des sources suivies** — officiels, spécialistes, RockstarMag. Il rétrécit les jours creux au lieu de se remplir, et n'apparaît pas à la première visite. Nouvel horodatage `derniere-visite-v1`. 12 contrôles de navigateur. Voir le README, « Ce que j'ai raté, et les trois idées que la mesure a tuées ».
+
 **La meilleure idée de la liste, et le meilleur amortisseur pour le jour J.**
 
 Chaque ouverture te pose en haut d'une liste de 3 266 articles. Le chip

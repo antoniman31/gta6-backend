@@ -6728,6 +6728,90 @@ de la liste pour prouver que les **familles** sont repliées : à travers un
 la mauvaise raison**. Il ouvre donc explicitement le repli avant de mesurer,
 après avoir vérifié qu'il partait bien fermé.
 
+## Ce que j'ai raté, et les trois idées que la mesure a tuées — 13/10/2026
+
+Chaque ouverture posait Antoni en haut d'une liste de plus de trois mille
+articles. Le chip « Reprendre où j'en étais » restaure une *position* ; il
+ne dit pas ce qui s'est passé.
+
+L'idée écrite était : **cinq lignes en tête, les sujets importants parus
+depuis la dernière visite**. Mesuré sur le fil réel avant d'écrire une
+ligne de code, elle ne tient pas. Trois fois.
+
+**1. « Majeur » est un signal rétrospectif, pas une actualité.**
+
+| âge de l'article | majeurs |
+|---|---|
+| 0–1 j | **0 %** |
+| 1–2 j | **0 %** |
+| 2–3 j | **0 %** |
+| 7–14 j | 1,4 % |
+| 14–30 j | 1,8 % |
+
+Un article ne devient majeur que quand d'autres rédactions le reprennent,
+ce qui prend des jours. Un bloc filtré là-dessus aurait été **vide presque
+tous les jours**. Même chose pour « officiel » : 26 jours sur 30 à zéro.
+
+**2. Les articles ne se regroupent pas en sujets.**
+
+Espoir : transformer 121 articles en 5 sujets. Mesuré : **119 articles
+donnent 117 groupes**, et le top 5 des groupes couvre 5 à 11 % de la
+journée. La déduplication du robot a déjà absorbé la redondance ; ce qui
+reste est vraiment une centaine d'histoires distinctes par jour.
+
+**3. Un top 5 par score se répète, et son cinquième est tiré au sort.**
+
+Essayé sur de vrais jours. Le 11/10, **quatre des cinq meilleures lignes
+étaient la même fuite Cyberleek**. Et 10 à 23 articles étaient à égalité
+avec le cinquième : le trait entre 5e et 6e place ne décidait rien.
+Filtrer les doublons par recouvrement de titre échoue aussi — « *Cyberleek's
+New GTA 6 Leak: Naked Lucia* » et « *GTA 6's Leaked Naked Lucia May Not Be
+in The Game* » ne partagent que deux mots utiles.
+
+### Ce qui est livré à la place
+
+Un **bilan chiffré**, toujours vrai, puis **jusqu'à quatre lignes de ce que
+les sources suivies ont publié** — officiels, spécialistes GTA,
+RockstarMag. Pas de classement inventé : on ne juge pas les articles, on
+nomme qui les a publiés. Mesuré : médiane 3 par jour, 2 jours à zéro sur
+30, et c'est disponible **dès l'arrivée** de l'article, contrairement à
+« majeur ».
+
+Il **rétrécit** les jours creux au lieu de se remplir, et n'apparaît pas du
+tout à la première visite ni quand rien n'est paru. Un bandeau qui montre
+cinq lignes quoi qu'il arrive apprend vite à être ignoré.
+
+### Le compte qui aurait menti
+
+L'app démarre sur le fichier allégé : environ 300 articles, soit **deux
+jours et demi** au rythme mesuré de 121 par jour. Une absence plus longue
+déborde cette fenêtre, et un compte sec aurait affiché « 300 articles »
+après une semaine, alors qu'il y en a eu mille. On ne sait pas combien il
+en manque, donc on ne l'invente pas : le bloc dit « **au moins** 300 ». Un
+contrôle tient les deux cas, à 36 h et à 10 jours.
+
+### Deux détails qui comptent
+
+- **`derniere-visite-v1` est lu AVANT d'être écrasé**, à l'init, à côté de
+  `chargerReprise()` et pour la même raison. L'horodatage est réécrit dès
+  que la page passe en arrière-plan ; une lecture plus tardive ne
+  trouverait que l'heure de la visite en cours, et le bloc n'aurait plus
+  rien à comparer.
+- **Le bloc est hors de `#feed`**, parce que `renderFeed()` réécrit
+  `innerHTML` en entier et sort tôt quand aucun article ne passe les
+  filtres. Dedans, il disparaîtrait au premier filtre — alors qu'il parle
+  de ce qui est *paru*, pas de ce qui est *affiché*. Il est masqué avec le
+  fil sous Statistiques et Journal, dans `setTab`, qui portait déjà
+  l'avertissement sur ce piège exact.
+
+### Un contrôle qui passait pour la mauvaise raison
+
+Le test d'ordre rendait `[1, 1, 1, 1]` : le fil réel ne contenant que des
+spécialistes ce jour-là, « trié » était vrai par accident et n'importe quel
+ordre serait passé. Il injecte maintenant un article officiel **daté de 30
+heures**, plus vieux que les spécialistes présents : s'il remonte, c'est
+son rang qui l'a placé, pas sa fraîcheur.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
