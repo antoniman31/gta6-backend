@@ -6990,6 +6990,79 @@ faible gain : la suite navigateur couvre déjà ces comportements, et
 réécrire des tests verts est le meilleur moyen d'en casser un sans s'en
 apercevoir. Laissé ouvert, délibérément.
 
+## Les quatre derniers points de l'interface — 13/10/2026
+
+### 3.8 — Les badges deviennent des filtres, mais la regex d'abord
+
+Trois signaux étaient **déjà visibles** sur la carte et on ne pouvait rien
+en faire : c'est le profil exact qui a fait marcher l'onglet « Actu
+majeure ». Mesuré sur 3 511 articles — spécialiste 191 (5,4 %), vidéo 148
+(4,2 %), fuite 221 (6,3 %).
+
+**La regex VIDÉO était fausse à un quart.** Elle contenait `\bvideo\b` nu,
+qui attrapait :
+
+```
+GTA 6 On Track To Overthrow The Best-Selling Video Game Of All-Time
+Will GTA 6 make its way to Switch 2? — Video Games Chronicle
+Bad Bunny et Lana Del Rey, animateurs de radio du jeu vidéo GTA VI
+Jeux vidéo : le mode multijoueur de GTA 6 attendu en 2027
+```
+
+199 articles marqués VIDÉO, dont **51 faux positifs**. Après resserrage
+(`\bvideo\b(?!\s*games?\b)` et `vidéo` non précédé de « jeu(x) ») : **148**,
+et les 51 écartés **vérifiés un par un** — aucune vraie vidéo perdue.
+
+**Pas de nouvel onglet** : la rangée en compte déjà cinq et déborde à
+320 px. Le geste est posé là où l'information est — on clique le badge
+qu'on voit. Une barre nomme le filtre actif, sans quoi un fil filtré
+ressemblerait à un fil vide.
+
+**Un seul juge par badge**, comme `estMajeur`. Et le juge « spécialiste »
+dit exactement ce que la carte montre — `specialist && !official` — sinon
+le filtre ramènerait des cartes dépourvues du badge qu'on vient de cliquer.
+
+### 3.4 — Les officiels en chronologie
+
+L'onglet Rockstar filtrait déjà sur `official` et rendait la **même liste
+de cartes**. Ils sont 77 depuis le début : ça ne se lit pas comme un fil,
+ça se lit comme une histoire. Colonne datée, séparée par année (2022 →
+2026), **sans pagination** — une histoire se lit d'un bout à l'autre.
+
+**Ce que la chronologie a révélé, et que personne n'avait vu** : 28 des 77
+« officiels » (36 %) sont des pages `store.rockstargames.com` — porte-clés,
+t-shirts — et 5 des pages de support. Les cinq premières entrées de
+l'histoire officielle sont des articles de boutique. Les écarter serait une
+**décision de contenu**, et une page boutique a déjà été gardée
+délibérément le 09/10 ; c'est signalé, pas tranché.
+
+### 3.5 — La recherche se souvient
+
+Quatre puces sous le champ. Mémorisées **après le débounce**, pas à chaque
+frappe — sinon « d », « da », « dat » auraient rempli la rangée. Moins de
+trois caractères n'est pas une recherche, c'est une frappe en cours. La
+casse ne crée pas de doublon : « lucia » et « LUCIA » ne gâchent pas deux
+des quatre places. Quatre et pas dix : au-delà, la rangée passe à la ligne
+et devient une deuxième barre d'outils.
+
+### 3.3 — Close sans travaux, parce que la fiche était fausse
+
+Elle annonçait « jusqu'à six badges » et « rien ne hiérarchise — le badge
+de langue a le même poids visuel que le badge officiel ». Mesuré :
+
+| badges affichés | cartes |
+|---|---|
+| **0** | **52,3 %** |
+| 1 | 39,6 % |
+| 2 | 5,0 % |
+| 3 | 2,9 % |
+| 4 | 0,2 % |
+
+Maximum observé : **quatre**, jamais six. Et le badge de langue n'apparaît
+que pour le français, avec `background:transparent` et `--text-dim` — il
+est **déjà** en gris muet. Toucher à la hiérarchie visuelle pour 3,1 % des
+cartes serait du risque sans bénéfice.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

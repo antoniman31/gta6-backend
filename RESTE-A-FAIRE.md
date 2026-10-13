@@ -203,6 +203,8 @@ réalisation, alors que 3.1 est le problème plus grave.
 
 ### 3.3 — La carte porte sept informations à plat
 
+> **CLOSE SANS TRAVAUX le 13/10/2026 — la fiche était fausse.** Mesuré sur 3 511 articles : **52 % des cartes n'affichent AUCUN badge**, 40 % en affichent un, et **3,1 % seulement en portent trois ou plus** (maximum observé : quatre, jamais six). Le badge de langue, désigné comme fautif, n'apparaît que pour le français et il est **déjà** en gris muet (`.tag-lang` : fond transparent, `--text-dim`). Toucher à la hiérarchie visuelle pour 3 % des cartes serait du risque sans bénéfice.
+
 Une carte peut afficher : vignette, favicon, nom de source, **jusqu'à six
 badges** (majeur, officiel, spécialiste, fuite, vidéo, langue), titre, date,
 ligne « + N sources », et **quatre boutons** d'action.
@@ -225,6 +227,8 @@ est celui qui en comptait déjà sept.
 
 ### 3.4 — Les 51 officiels méritent une forme, pas qu'un filtre
 
+> **FAIT le 13/10/2026.** Ils sont 77 aujourd'hui. L'onglet Rockstar se rend en colonne datée, séparée par année (2022 → 2026), sans pagination : une histoire se lit d'un bout à l'autre. Aucun nouvel onglet. **Signalé au passage, non tranché** : 28 des 77 (36 %) sont des pages `store.rockstargames.com` — porte-clés, t-shirts — et 5 des pages de support. Les écarter serait une décision de contenu, et une page boutique a déjà été gardée délibérément le 09/10.
+
 L'onglet Rockstar filtre déjà sur `official`, et ça marche. Mais il rend la
 **même liste de cartes**, dans le même ordre, à la même densité. Or 51
 articles depuis le début, c'est court : ça se lit comme une **chronologie**,
@@ -232,6 +236,8 @@ pas comme un fil. Une colonne verticale datée, du premier teaser à
 aujourd'hui, serait la page qu'on montre à quelqu'un.
 
 ### 3.5 — La recherche n'a pas de mémoire
+
+> **FAIT le 13/10/2026.** Quatre puces sous le champ, remplies après le débounce (pas à chaque frappe), insensibles à la casse, chacune effaçable. Moins de trois caractères n'est pas mémorisé : c'est une frappe en cours.
 
 Champ, mot-clé, résultats. Pas d'historique, pas de recherche enregistrée.
 Surveiller « date de sortie » ou « précommande » chaque semaine veut dire
@@ -310,6 +316,8 @@ c'est-à-dire au pire moment.
 ---
 
 ### 3.8 — Trois badges affichés, aucun moyen de filtrer dessus
+
+> **FAIT le 13/10/2026.** La regex VIDÉO d'abord : **199 → 148**, les 51 écartés vérifiés un par un, aucune vraie vidéo perdue. Puis les badges deviennent cliquables — pas de nouvel onglet, la rangée en compte déjà cinq et déborde à 320 px. Un seul juge par badge, partagé par la carte et le filtre.
 
 C'est le profil exact qui a fait marcher l'onglet « Actu majeure » : un
 signal **déjà visible sur la carte**, sur lequel on ne peut pas agir.
