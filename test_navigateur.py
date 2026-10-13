@@ -54,6 +54,7 @@ de lui : celui-là doit continuer de tourner partout sans navigateur.
 import http.server
 import os
 import socketserver
+import json
 import sys
 import threading
 
@@ -3095,6 +3096,67 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     check(page.evaluate(
             "document.documentElement.scrollWidth <= window.innerWidth") is True,
           "[chrono] et la vignette ne fait pas déborder la page en largeur")
+
+    # CE QUE LA CHRONOLOGIE AVAIT AUSSI PERDU. Les vignettes n'étaient que
+    # la perte VISIBLE ; elle laissait aussi tomber les quatre boutons, les
+    # badges et l'heure. Antoni a demandé de tout remettre le 13/10/2026.
+    actions = page.evaluate("""() => ({
+        boutons: document.querySelectorAll('.chrono-actions .card-mark').length,
+        points: document.querySelectorAll('.chrono-point').length,
+        // openPreview lit itemsById, que seule renderFeed remplissait : sans
+        // ça le bouton 👁️ ne faisait RIEN, en silence.
+        connus: [...document.querySelectorAll('.chrono-point')]
+                  .every(li => itemsById[li.id.replace('card-', '')]),
+        heure: /\d\d:\d\d/.test(document.querySelector('.chrono-date').textContent),
+        hauteur: Math.round(document.querySelector('.chrono-point').getBoundingClientRect().height),
+    })""")
+    check(actions["boutons"] >= actions["points"] * 2,
+          "[chrono] chaque entrée porte ses boutons d'action (%d pour %d "
+          "entrées)" % (actions["boutons"], actions["points"]))
+    check(actions["connus"],
+          "[chrono] chaque entrée est inscrite dans itemsById — sinon le "
+          "bouton d'aperçu ne fait rien, en silence")
+    check(actions["heure"],
+          "[chrono] la date porte l'heure : douze annonces du même jour ne "
+          "s'ordonnent pas avec « 8 octobre » seul")
+    # Les boutons sont COMPACTS. À la première version ils reprenaient
+    # .card-actions tel quel — quatre boutons pleine largeur — et la
+    # chronologie redevenait une liste de cartes avec un trait à gauche.
+    check(actions["hauteur"] < 200,
+          "[chrono] une entrée reste compacte malgré les boutons (%d px)"
+          % actions["hauteur"])
+
+    # Et SEULEMENT les badges qui disent quelque chose. Mesuré sur les 77
+    # officiels : « OFFICIEL ROCKSTAR » serait sur 100 % des lignes et LEAK
+    # sur zéro. Deux badges morts, qui ne sont pas rendus.
+    badges = page.evaluate("""() => ({
+        officiel: document.querySelectorAll('.chrono-point .official-badge').length,
+        leak: document.querySelectorAll('.chrono-point .tag-leak').length,
+        majeur: document.querySelectorAll('.chrono-point .tag-hot').length,
+        video: document.querySelectorAll('.chrono-point .tag-video').length,
+        vraisMajeurs: lastItems.filter(i => i.official && estMajeur(i)).length,
+        vraiesVideos: lastItems.filter(i => i.official && estVideo(i)).length,
+    })""")
+    check(badges["officiel"] == 0 and badges["leak"] == 0,
+          "[chrono] pas de badge qui serait sur toutes les lignes ou sur "
+          "aucune (officiel %d, leak %d)" % (badges["officiel"], badges["leak"]))
+    check(badges["majeur"] == badges["vraisMajeurs"]
+          and badges["video"] == badges["vraiesVideos"],
+          "[chrono] et les badges utiles y sont tous (%d majeurs, %d vidéos)"
+          % (badges["majeur"], badges["video"]))
+
+    # Le bouton marque lu SANS ouvrir l'article — c'est la seule perte qui
+    # empêchait de FAIRE quelque chose.
+    lien = page.evaluate("""() => {
+        const li = document.querySelector('.chrono-point');
+        const id = li.id.replace('card-', '');
+        const item = itemsById[id];
+        toggleRead(id, item.link);
+        return item.link;
+    }""")
+    check(page.evaluate("readSet.has(%s)" % json.dumps(lien)),
+          "[chrono] le bouton marque lu sans ouvrir l'article")
+    page.evaluate("(l) => { readSet.delete(l); applyFilters(); }", lien)
 
     # Les autres onglets gardent leurs cartes.
     page.evaluate("setTab('all')")

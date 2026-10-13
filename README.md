@@ -7058,6 +7058,33 @@ Vignette carrée de 72 px, pas pleine largeur : à 200 px par entrée on
 retrouvait la liste de cartes qu'on venait de remplacer. Un contrôle exige
 maintenant que chaque officiel qui a une image la montre.
 
+**Et les images n'étaient que la perte VISIBLE.** En cherchant pourquoi je
+ne l'avais pas vue, j'ai comparé ligne à ligne ce que porte une carte et ce
+que portait la chronologie. Elle laissait aussi tomber les quatre boutons
+d'action, les badges, la ligne « + N sources », l'heure exacte, le balayage
+et le repère « lu jusqu'ici ». Signalé à Antoni avant qu'il ne les trouve
+un par un ; il a demandé de remettre **les boutons et les badges**.
+
+Trois mesures ont décidé du détail :
+
+| badge | sur les 77 officiels | rendu ? |
+|---|---|---|
+| OFFICIEL ROCKSTAR | **77** (100 %) | non — un badge sur toutes les lignes n'informe pas |
+| LEAK | **0** | non — un badge qui n'apparaît jamais est du code mort |
+| 🔥 ACTU MAJEURE | 4 | oui |
+| VIDÉO | 10 | oui |
+
+**Un bouton qui n'aurait rien fait.** `openPreview` lit `itemsById`, que
+seule `renderFeed` remplissait — et la chronologie sort AVANT. Le bouton
+👁️ aurait été muet, en silence. La chronologie inscrit donc chaque entrée
+dans `itemsById`, et un contrôle l'exige.
+
+**Les boutons sont compacts, et c'est la deuxième version.** La première
+reprenait `.card-actions` tel quel : quatre boutons pleine largeur par
+entrée, et la chronologie redevenait une liste de cartes avec un trait à
+gauche — exactement ce qu'elle existe pour ne pas être. Mesuré : une entrée
+fait **121 px**, et un contrôle refuse qu'elle dépasse 200.
+
 **Ce que la chronologie a révélé, et que personne n'avait vu** : 28 des 77
 « officiels » (36 %) sont des pages `store.rockstargames.com` — porte-clés,
 t-shirts — et 5 des pages de support. Les cinq premières entrées de
