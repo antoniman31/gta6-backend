@@ -540,6 +540,21 @@
   }
   .chrono-lien:hover .chrono-titre{text-decoration:underline;}
   .chrono-source{display:block; font-size:11px; color:var(--text-dim); margin-top:2px;}
+  .chrono-badges{display:flex; gap:4px; flex-wrap:wrap; margin-top:6px;}
+  /* Les boutons sont COMPACTS ici, et pas étirés comme sur une carte. À la
+     première version ils reprenaient .card-actions tel quel — quatre
+     boutons pleine largeur par entrée — et la chronologie redevenait une
+     liste de cartes avec un trait à gauche, ce qu'elle existe pour ne pas
+     être. Ils se rangent sous le texte, alignés à gauche de la vignette. */
+  .chrono-actions{
+    display:flex; gap:6px; margin-top:6px; margin-left:82px; justify-content:flex-start;
+  }
+  .chrono-actions .card-mark{
+    flex:0 0 auto; min-width:0; width:auto; padding:4px 10px; font-size:12px;
+  }
+  @media (max-width: 400px){
+    .chrono-actions{margin-left:0;}
+  }
 
   .recherches-recentes{
     display:flex; gap:6px; flex-wrap:wrap; margin:0 0 10px;
@@ -4834,6 +4849,12 @@ function renderChronologie(items){
       ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })
       : "date inconnue";
     const lu = readSet.has(item.link);
+    // MÊME IDENTIFIANT QUE LA CARTE, et c'est indispensable : openPreview
+    // lit itemsById, que seule renderFeed remplissait. Sans cette ligne le
+    // bouton 👁️ ne faisait RIEN, en silence — exactement le genre de bouton
+    // mort qu'on ne remarque qu'en appuyant dessus.
+    const safeId = btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, "");
+    itemsById[safeId] = item;
     // LA VIGNETTE, oubliée à la première version et signalée par Antoni dans
     // l'heure. J'avais mesuré que 69 des 77 officiels en portent une, puis
     // construit une forme qui les jetait toutes sans le dire. Une
@@ -4848,17 +4869,40 @@ function renderChronologie(items){
       ? `<img src="${escapeHtml(item.image)}" class="chrono-vignette" alt=""
               loading="lazy" decoding="async" onerror="this.style.display='none'">`
       : "";
+    // L'HEURE, en plus du jour. « 8 octobre » sur douze annonces du même
+    // jour ne les ordonne pas ; c'est le seul endroit du fil où plusieurs
+    // entrées partagent une date.
+    const heure = bon
+      ? d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+
+    // Seulement les badges qui DISENT quelque chose ici. Mesuré sur les 77
+    // officiels : « OFFICIEL ROCKSTAR » serait sur 100 % des lignes, et LEAK
+    // sur ZÉRO — deux badges morts. Restent « actu majeure » (4) et
+    // « vidéo » (10). Les mêmes juges que partout, jamais une copie.
+    const badges =
+      (estMajeur(item)
+        ? `<span class="tag-badge tag-hot">🔥 ACTU MAJEURE · ${nombreDeRedactions(item)} SOURCES</span>` : "")
+      + (estVideo(item)
+        ? `<button type="button" class="tag-badge tag-video" onclick="filtreBadge(event,'video')" title="Ne montrer que les vidéos">VIDÉO</button>` : "");
+
     return sep + `
-      <li class="chrono-point${lu ? " lu" : ""}">
-        <span class="chrono-date">${jour}</span>
+      <li class="chrono-point${lu ? " lu" : ""}" id="card-${safeId}">
+        <span class="chrono-date">${jour}${heure ? ` · ${heure}` : ""}</span>
         <a class="chrono-lien" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
-           onclick="marqueLuDepuisRate('${escapeAttr(item.link)}')">
+           onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">
           ${vignette}
           <span class="chrono-texte">
             <span class="chrono-titre">${escapeHtml(item.title || "")}</span>
             <span class="chrono-source">${escapeHtml(item.source || "")}</span>
           </span>
         </a>
+        ${badges ? `<div class="chrono-badges">${badges}</div>` : ""}
+        <div class="card-actions chrono-actions">
+          <button class="card-mark" data-icon-only="1" title="${lu ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${lu ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${lu ? "↩️" : "✅"}</button>
+          <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">🔗</button>
+          ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">👁️</button>` : ""}
+          ${item.lang !== "fr" ? `<button class="card-mark" data-icon-only="1" title="Traduire en français" aria-label="Traduire en français" onclick="openTranslated('${escapeAttr(item.link)}')">🇫🇷</button>` : ""}
+        </div>
       </li>`;
   }).join("");
   return `<ol class="chrono">${lignes}</ol>`;
