@@ -3147,6 +3147,55 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
               "[badges] et il ne gonfle pas la rangée de source (%d px)"
               % tailles["rangee"])
 
+    # LE TEXTE CENTRÉ DANS LE BADGE, et les badges de même hauteur.
+    #
+    # Signalé par Antoni le 13/10/2026 : « le texte sur les badges est mal
+    # centré en hauteur ». Deux défauts, tous les deux réels.
+    #
+    #   - les hauteurs ne se suivaient pas : « SPÉCIALISTE GTA 6» faisait
+    #     16 px, « FR » 17 et les badges de couleur 18 ;
+    #   - et le texte était haut d'un pixel dans les badges de couleur. Une
+    #     boîte se centre sur ascendante + descendante de la police ; des
+    #     capitales n'occupent jamais la descendante.
+    #
+    # Le contrôle mesure le GABARIT DE CAPITALE, pas l'encre du libellé :
+    # « VIDÉO » monte plus haut que « LEAK » à cause de son accent, et l'œil
+    # ne juge pas là-dessus. Les métriques viennent du canvas, avec la
+    # police réellement résolue — aucune valeur de police codée ici.
+    centrage = page.evaluate("""() => {
+        const cv = document.createElement('canvas').getContext('2d');
+        return [...document.querySelectorAll(
+                  '.card-src-row .tag-badge, .card-src-row .specialist-badge, '
+                + '.card-src-row .official-badge')].map(el => {
+            const cs = getComputedStyle(el);
+            const fs = parseFloat(cs.fontSize);
+            let lh = parseFloat(cs.lineHeight);
+            if(!isFinite(lh)) lh = fs * 1.2;
+            cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+            const m = cv.measureText('H');
+            const fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+            const base = parseFloat(cs.paddingTop) + parseFloat(cs.borderTopWidth)
+                       + (lh - (fa + fd)) / 2 + fa;
+            const h = el.getBoundingClientRect().height;
+            return {nom: el.className.split(' ').pop(),
+                    haut: h,
+                    dessus: base - m.actualBoundingBoxAscent,
+                    dessous: h - base - m.actualBoundingBoxDescent};
+        });
+    }""")
+    check(len(centrage) >= 3,
+          "[badges] la carte mesurée porte bien plusieurs badges (%d)"
+          % len(centrage))
+    pires = max(centrage, key=lambda b: abs(b["dessous"] - b["dessus"]))
+    check(abs(pires["dessous"] - pires["dessus"]) <= 0.25,
+          "[badges] les capitales sont centrées dans le badge (pire cas : "
+          "%s, %.2f px au-dessus, %.2f en dessous)"
+          % (pires["nom"], pires["dessus"], pires["dessous"]))
+    hauteurs = sorted({round(b["haut"], 2) for b in centrage})
+    check(len(hauteurs) == 1,
+          "[badges] et tous les badges de la rangée font la même hauteur "
+          "(%s)" % hauteurs)
+
     # La zone de clic est ÉLARGIE malgré tout — cinquième dérogation aux
     # 44 px, assumée : il n'y a que 6 px sous le badge avant le titre, donc
     # une zone de 44 px lui volerait des appuis. ~24 px est tout ce que la

@@ -489,7 +489,7 @@
   }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800;
-    background:#FF6B00; color:#100800; padding:2px 6px; border-radius:var(--r-xs);
+    background:#FF6B00; color:#100800; border-radius:var(--r-xs);
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -498,13 +498,41 @@
      téléphone — or « SPÉCIALISTE GTA 6 » et « VIDÉO » portent du sens. */
   .tag-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
-    padding:2px 6px; border-radius:var(--r-xs); letter-spacing:0.03em; white-space:nowrap;
+    border-radius:var(--r-xs); letter-spacing:0.03em; white-space:nowrap;
+  }
+  /* UNE SEULE GÉOMÉTRIE POUR TOUS LES BADGES DE LA RANGÉE, et deux
+     défauts qu'elle corrige, signalés par Antoni le 13/10/2026 : « le
+     texte sur les badges est mal centré en hauteur ».
+     Il avait raison, deux fois.
+
+     1. LES HAUTEURS NE SE SUIVAIENT PAS. Mesuré sur une carte réelle :
+        « SPÉCIALISTE GTA 6 » faisait 16 px, « FR » 17 et les badges de
+        couleur 18 — trois remplissages et deux bordures différents pour
+        des étiquettes posées côte à côte.
+
+     2. LE TEXTE ÉTAIT HAUT D'UN PIXEL. Une boîte se centre sur
+        ascendante + descendante de la police ; des CAPITALES n'occupent
+        jamais la descendante. Mesuré sur les neuf badges : 4,50 px
+        au-dessus du gabarit de capitale, 5,50 en dessous. L'étiquette
+        « FR », elle, tombait juste (4,50 / 4,50) parce qu'elle héritait
+        d'un interligne plus serré — le défaut venait du `line-height:1.4`
+        posé sur la forme BOUTON, pas de la couleur.
+
+     D'où un interligne explicite plutôt qu'hérité, une bordure
+     transparente pour que les pleins et les bordurés fassent la même
+     hauteur, et un remplissage asymétrique qui rend au bas du badge le
+     pixel que la descendante inoccupée lui prenait. Les valeurs sont
+     remesurées par un contrôle, pas déduites. */
+  .tag-badge, .specialist-badge, .official-badge{
+    line-height:12px;
+    padding:2.5px 6px 1.5px;
+    border:1px solid transparent;
   }
   /* Les badges de contenu sont des BOUTONS depuis le 13/10/2026 : la règle
      globale sur button leur imposerait une bordure, un fond et 10px de
      padding. On la neutralise plutôt que de dupliquer .tag-badge. */
   button.tag-badge, button.specialist-badge{
-    border:none; cursor:pointer; line-height:1.4;
+    cursor:pointer;
     /* min-height:0 — SANS LUI le badge héritait des 44 px imposés à tout
        bouton et devenait un pavé. Mesuré le 13/10/2026 sur le téléphone
        d'Antoni : 44 px de haut contre 17 pour un badge normal, et toute la
@@ -625,7 +653,7 @@
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
   .specialist-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
-    background:transparent; color:var(--accent); border:1px solid var(--accent); padding:1px 5px; border-radius:var(--r-xs);
+    background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:var(--r-xs);
     letter-spacing:0.03em; white-space:nowrap;
   }
   .card-src-row{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin-bottom:6px;}

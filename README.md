@@ -7333,6 +7333,39 @@ Chaque badge a sa couleur, et **les neuf contrastes ont été calculés avant
 d'écrire le CSS** : de 4,70:1 pour le plus serré à 7,90:1, tous au-dessus
 du seuil AA. Un contrôle refuse tout badge rendu sans sa classe de couleur.
 
+### « Le texte sur les badges est mal centré en hauteur »
+
+Antoni, en regardant la page. Il avait raison, et deux fois plutôt qu'une.
+
+**Les hauteurs ne se suivaient pas.** Mesuré sur une carte réelle :
+« SPÉCIALISTE GTA 6 » faisait 16 px, « FR » 17 et les badges de couleur
+18 — trois remplissages et deux bordures différents pour des étiquettes
+posées côte à côte.
+
+**Et le texte était haut d'un pixel.** Une boîte se centre sur
+ascendante + descendante de la police ; des capitales n'occupent jamais la
+descendante. Mesuré au gabarit de capitale : 4,50 px au-dessus, 5,50 en
+dessous, sur les neuf badges. L'étiquette « FR » tombait juste, elle, parce
+qu'elle héritait d'un interligne plus serré — autrement dit le défaut
+venait du `line-height` posé sur la forme bouton, pas de la couleur.
+
+Les badges partagent maintenant **une seule géométrie** : interligne
+explicite plutôt qu'hérité, bordure transparente pour que les pleins et les
+bordurés fassent la même hauteur, et un remplissage asymétrique qui rend au
+bas du badge le pixel que la descendante inoccupée lui prenait. Les douze
+badges font 18 px et affichent 5,00 px de part et d'autre des capitales.
+
+**Deux contrôles le verrouillent**, et ils mesurent le gabarit de capitale
+et non l'encre du libellé : « VIDÉO » monte plus haut que « LEAK » à cause
+de son accent, et l'œil ne juge pas là-dessus. Les métriques sont lues au
+canvas avec la police réellement résolue, donc aucune valeur de police
+n'est codée dans le test.
+
+Le contrôle qui existait ne pouvait pas voir ce défaut : il comparait la
+hauteur d'un badge-bouton à celle d'un badge-étiquette avec deux pixels de
+tolérance. Un pixel d'écart passait, et le centrage interne ne l'intéressait
+pas.
+
 ### Un test qui accusait le code d'un défaut lui appartenant
 
 Quatre contrôles de la chronologie sont tombés d'un coup : cinquante
