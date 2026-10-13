@@ -7069,10 +7069,10 @@ Trois mesures ont décidé du détail :
 
 | badge | sur les 77 officiels | rendu ? |
 |---|---|---|
-| `OFFICIEL ROCKSTAR` | **77** (100 %) | non — un badge sur toutes les lignes n'informe pas |
-| `LEAK` | **0** | non — un badge qui n'apparaît jamais est du code mort |
-| `🔥 ACTU MAJEURE` | 4 | oui |
-| `VIDÉO` | 10 | oui |
+| OFFICIEL ROCKSTAR | **77** (100 %) | non — un badge sur toutes les lignes n'informe pas |
+| LEAK | **0** | non — un badge qui n'apparaît jamais est du code mort |
+| 🔥 ACTU MAJEURE | 4 | oui |
+| VIDÉO | 10 | oui |
 
 **Un bouton qui n'aurait rien fait.** `openPreview` lit `itemsById`, que
 seule `renderFeed` remplissait — et la chronologie sort AVANT. Le bouton
