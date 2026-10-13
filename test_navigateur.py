@@ -117,6 +117,23 @@ def ouvre_parametres(page):
     page.wait_for_selector("#settingsOverlay .settings-panel", state="visible")
 
 
+def ouvre_liste_sources(page):
+    """Déplie le <details> des sources, et rend ce qu'il valait avant.
+
+    Depuis le 13/10/2026 la liste est repliée quand le robot alimente le fil
+    — les interrupteurs n'y décident de rien. Les contrôles qui visent la
+    liste elle-même (cibles tactiles, repli des familles, filtre) doivent
+    donc l'ouvrir d'abord. Rendre l'état d'origine n'est pas cosmétique :
+    sans lui, un contrôle qui mesure « c'est bien replié » passerait parce
+    que le <details> est fermé, pas parce que les familles le sont.
+    """
+    etait = page.evaluate("document.getElementById('sourcesRepli').open")
+    if not etait:
+        page.click("#sourcesResume")
+        page.wait_for_selector("#sourceList .src-famille", state="visible")
+    return etait
+
+
 # --------------------------------------------------------------------------
 # Cibles tactiles
 # --------------------------------------------------------------------------
@@ -150,6 +167,7 @@ def test_cibles_tactiles(page, largeur):
     # La ligne de source est le contrôle le plus nombreux du panneau. Elle a
     # longtemps mesuré 32x19 px, et seul l'interrupteur y répondait.
     page.click('.panneau-tabs button[data-cible="src"]')
+    ouvre_liste_sources(page)
     page.click(".src-famille-titre")
     boite = page.locator("#sourceList .source-row").first.bounding_box()
     check(boite and boite["height"] >= CIBLE_MINIMALE,
@@ -207,6 +225,16 @@ def test_replie_est_replie(page, largeur):
     print("\n[%d px] ce qui est annoncé replié l'est vraiment" % largeur)
     ouvre_parametres(page)
     page.click('.panneau-tabs button[data-cible="src"]')
+
+    # La liste entière est repliée tant que le robot alimente le fil : les
+    # interrupteurs n'y décident de rien, et c'est le titre qui le dit.
+    check(page.evaluate("document.getElementById('sourcesRepli').open") is False,
+          "la liste des sources est repliée tant que le robot répond")
+
+    # ON L'OUVRE AVANT DE MESURER. Le contrôle ci-dessous porte sur les
+    # FAMILLES, pas sur le <details> : les mesurer à travers un repli fermé
+    # donnerait une hauteur de 0 et un vert qui ne prouve rien.
+    ouvre_liste_sources(page)
 
     # LE défaut que ce contrôle existe pour attraper : l'attribut `hidden` ne
     # vaut qu'un display:none de la feuille du NAVIGATEUR, que toute règle
@@ -342,6 +370,7 @@ def test_comportements(page, largeur):
     print("\n[%d px] trois gestes qui ont déjà cassé" % largeur)
     ouvre_parametres(page)
     page.click('.panneau-tabs button[data-cible="src"]')
+    ouvre_liste_sources(page)
     page.click(".src-famille-titre")
 
     # Le <label> n'enveloppait que la case : cliquer le NOM ne faisait rien.
@@ -2525,6 +2554,114 @@ def test_vignette_ouvre_larticle(nav, url):
     ctx.close()
 
 
+def test_sources_disent_la_verite(nav, url):
+    """Les 63 interrupteurs de source ne font RIEN quand le robot alimente le fil.
+
+    Le chemin backend construit le fil depuis feed.json et ne consulte jamais
+    settings.feeds[].enabled : décocher « IGN » n'en retire pas un article.
+    Pire, un commentaire du 22/09/2026 affirmait le contraire, et la
+    description de la section disait « une source éteinte n'est plus
+    interrogée, et ses articles déjà reçus sortent de la liste ».
+
+    La section reste — on doit pouvoir préparer le réglage À FROID, pas
+    seulement pendant une panne — mais elle est repliée et étiquetée quand
+    le robot répond, et pleinement utile en mode de secours.
+    """
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("rattrapageLance = true;")
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+
+    ouvre_parametres(page)
+    etat = page.evaluate("""() => ({
+        mode: document.getElementById('modeIndicator').className,
+        ouvert: document.getElementById('sourcesRepli').open,
+        titre: document.getElementById('sourcesLabelTexte').textContent,
+        resume: document.getElementById('sourcesResume').textContent,
+        desc: document.getElementById('sourcesDesc').textContent,
+        ligne: document.getElementById('infoSourcesLine').textContent,
+        nbCases: document.querySelectorAll('#sourceList input[type=checkbox]').length,
+        aide: !!document.querySelector('#sourcesGroup .setting-label .aide'),
+    })""")
+
+    check("backend" in etat["mode"],
+          "[sources] on est bien en mode backend (%s)" % etat["mode"])
+    check(etat["ouvert"] is False,
+          "[sources] la section est REPLIÉE quand le robot répond")
+    check("secours" in etat["titre"],
+          "[sources] et son titre le dit : « %s »" % etat["titre"])
+    # Le résumé ne RÉPÈTE pas l'avertissement du titre : à 320 px les deux
+    # passaient à la ligne pour dire la même chose. Il ne porte que le
+    # décompte, et c'est le titre qui prévient.
+    check(etat["resume"] == "63 sources",
+          "[sources] le résumé replié ne porte que le décompte, sans répéter "
+          "le titre (« %s »)" % etat["resume"])
+    check("ne retirent aucun article" in etat["desc"],
+          "[sources] l'explication ne prétend plus l'inverse")
+    check("sortent de la liste" not in etat["desc"],
+          "[sources] l'ancienne phrase fausse a bien disparu")
+
+    # LE PIÈGE DU BALISAGE. greffeAides() cherche la .setting-desc[hidden] en
+    # « :scope > » du .setting-group, et greffe le « ? » dans .setting-label.
+    # Enfermer le groupe entier dans le <details>, ou écrire le titre avec
+    # label.textContent, faisait disparaître l'aide sans un mot.
+    check(etat["aide"],
+          "[sources] le bouton « ? » du groupe a survécu à la réorganisation")
+
+    # La ligne du panneau Informations était construite depuis les cases
+    # cochées : fausse pour exactement la même raison. Elle annonce
+    # maintenant ce que le ROBOT interroge, ce qui est à la fois vrai et plus
+    # utile que de la retirer.
+    check("robot" in etat["ligne"] and "63" in etat["ligne"],
+          "[sources] la ligne des Informations annonce les sources du ROBOT "
+          "(« %s »)" % etat["ligne"])
+
+    # ON N'EFFACE RIEN : le mode de secours doit retrouver le réglage.
+    check(etat["nbCases"] == 63,
+          "[sources] les 63 interrupteurs sont toujours là, repliés "
+          "(%d)" % etat["nbCases"])
+
+    # --- Bascule en mode direct : ils redeviennent la vraie commande.
+    page.evaluate("""() => {
+        const m = document.getElementById('modeIndicator');
+        m.className = 'mode-indicator direct';
+        populateSettingsUI();
+    }""")
+    direct = page.evaluate("""() => ({
+        ouvert: document.getElementById('sourcesRepli').open,
+        titre: document.getElementById('sourcesLabelTexte').textContent,
+        desc: document.getElementById('sourcesDesc').textContent,
+        ligne: document.getElementById('infoSourcesLine').textContent,
+    })""")
+    check(direct["ouvert"] is True,
+          "[sources] en mode de secours la section se DÉPLIE toute seule — "
+          "c'est là qu'elle sert, et c'est le pire moment pour un clic de plus")
+    check(direct["titre"] == "Sources actives",
+          "[sources] et retrouve son vrai titre (« %s »)" % direct["titre"])
+    check("décident lesquels" in direct["desc"],
+          "[sources] l'explication redevient celle d'une commande réelle")
+    check("robot" not in direct["ligne"],
+          "[sources] la ligne des Informations reliste les sources de l'appareil")
+
+    # Un déplient-replient manuel ne doit pas être défait au prochain rendu :
+    # populateSettingsUI est rejouée à chaque vérification, et refermer sous
+    # le doigt une liste qu'on vient d'ouvrir serait pire que tout.
+    page.evaluate("document.getElementById('sourcesRepli').open = false;")
+    page.evaluate("populateSettingsUI();")
+    check(page.evaluate("document.getElementById('sourcesRepli').open") is False,
+          "[sources] un repli manuel survit au rendu suivant, à mode constant")
+
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.evaluate("populateSettingsUI(); updateSourcesLine();")
+    check(not erreurs, "[sources] aucune erreur JavaScript (%s)" % (erreurs[:1],))
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -2580,6 +2717,7 @@ def main():
             test_stats_quatre_rubriques(nav, url)
             test_officiel_et_filtres_etroits(nav, url)
             test_onglet_actu_majeure(nav, url)
+            test_sources_disent_la_verite(nav, url)
             test_graphiques_detailles(nav, url)
             test_graphiques_autres_rubriques(nav, url)
             nav.close()

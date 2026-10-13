@@ -6663,6 +6663,71 @@ tranche est illisible n'est **ni lu ni réécrit**, et ses articles ne
 participent pas à la comparaison. On ne retire jamais une copie en se fiant
 à un mois qu'on ne sait pas lire.
 
+## Les interrupteurs de source disent enfin la vérité — 13/10/2026
+
+Le panneau Paramètres affichait soixante-trois interrupteurs, un par source,
+et **aucun ne faisait quoi que ce soit** tant que le robot alimentait le
+fil. Le chemin backend lit `feed.json` et ne consulte jamais
+`settings.feeds[].enabled` : décocher « IGN » n'en retirait pas un article.
+
+Pire, la page affirmait le contraire à deux endroits :
+
+- la description de la section : « *une source éteinte n'est plus
+  interrogée, et ses articles déjà reçus sortent de la liste* » ;
+- le panneau Informations : une ligne `sources : A · B · C` construite
+  depuis les cases cochées.
+
+**Ni les faire marcher, ni les masquer.** Les masquer aurait eu un revers :
+on ne pourrait plus préparer le réglage à froid, seulement pendant une
+panne — c'est-à-dire au pire moment. La section reste donc, **repliée et
+étiquetée** quand le robot répond, **dépliée et pleinement utile** en mode
+de secours, où ces interrupteurs sont la vraie commande.
+
+Un **juge unique**, `sourcesAgissent()`, décide pour les trois endroits qui
+en dépendent — le repli, le titre, la ligne des Informations. Sans lui on
+remplaçait un mensonge par trois. Il lit le mode **réellement en cours** et
+pas l'intention : un backend configuré mais injoignable fait basculer la
+page en mode direct, et ce jour-là les interrupteurs redeviennent vrais.
+
+**La ligne des Informations n'est pas retirée, elle devient vraie.** Le fil
+publie `sources_count`, donc elle annonce « sources : 63 interrogées par le
+robot » — ce que je ne savais pas en rédigeant la fiche 3.7, qui proposait
+seulement de la supprimer.
+
+### Deux pièges de balisage, signalés parce qu'ils étaient invisibles
+
+`greffeAides()` greffe le bouton « ? » de chaque réglage en cherchant une
+`.setting-desc[hidden]` en **`:scope >`** du `.setting-group`, et l'injecte
+dans `.setting-label`. Donc :
+
+- enfermer le groupe entier dans le `<details>` faisait **disparaître
+  l'aide**, sans un mot. Seul le *contenu* est replié ; l'étiquette et la
+  description restent enfants directs ;
+- écrire le nouveau titre avec `label.textContent` aurait **effacé le
+  bouton `?`**. Le titre passe par un `<span>` dédié.
+
+Un contrôle vérifie que le « ? » a survécu.
+
+### Ce que les captures ont corrigé, et que les tests ne voyaient pas
+
+Deux fois, comme pour l'onglet « Actu majeure » :
+
+- le titre et le résumé **disaient la même chose**, et à 320 px les deux
+  passaient à la ligne. Le résumé ne porte plus que le décompte ;
+- la pastille du résumé utilisait `--card`/`--border` : la bordure
+  **disparaissait** sur le fond du panneau, et le seul contrôle qui ouvre
+  les soixante-trois interrupteurs ne se lisait pas comme un contrôle. Elle
+  reprend les jetons des boutons de famille, `--bg-panel`/`--line`.
+
+### Trois contrôles existants ont dû être corrigés, et un de justesse
+
+Trois tests atteignaient `#sourceList` directement ; ils ouvrent maintenant
+le repli. Le cas délicat est `test_replie_est_replie`, qui mesure la hauteur
+de la liste pour prouver que les **familles** sont repliées : à travers un
+`<details>` fermé cette hauteur vaut 0, et le contrôle serait passé **pour
+la mauvaise raison**. Il ouvre donc explicitement le repli avant de mesurer,
+après avoir vérifié qu'il partait bien fermé.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
