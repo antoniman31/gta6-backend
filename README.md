@@ -232,7 +232,7 @@ d'où le planificateur externe.
    les résultats — `ratio()` n'est pas symétrique, 28 052 paires sur 33 670
    donnent un score différent selon l'ordre.
 10. **Plafonne l'historique à une PROFONDEUR** de 15 jours
-   (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 4 000 articles — au-delà, les
+   (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 12 000 articles — au-delà, les
    plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant.
 
@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1775
+qui permet de tester tout le pipeline sans sortir de la machine. **1787
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5940,15 +5940,33 @@ La boucle d'envoi des annonces officielles n'avait pas de borne : un
 article officiel, une notification, autant de fois qu'il le faut — dans
 `push_notify` comme dans `discord_notify`.
 
-Mesuré sur tout l'historique : **jamais plus de 3 dans une même heure, 4
-par jour**. Le problème était donc théorique, et c'est dit ici plutôt que
-gonflé. Mais de 0h à 5h, seules les annonces officielles réveillent le
-téléphone : une rafale de dix y passerait en entier.
+Mesuré à l'époque sur tout l'historique : jamais plus de 3 dans une même
+heure, 4 par jour. Le problème était donc théorique, et le plafond fut posé
+à 5 — « au-dessus de tout ce qu'on a jamais observé : il ne se verra
+jamais ».
 
-`NOTIFS_OFFICIELLES_MAX = 5` — au-delà, une seule notification groupée qui
-annonce le nombre et, côté Discord, liste les titres restants. Cinq, parce
-que c'est au-dessus de tout ce qu'on a jamais observé : le plafond ne se
-verra jamais, sauf le jour où il servira.
+**Ce paragraphe est devenu faux, et la façon dont il l'est vaut d'être
+gardée.** Remesuré le 13/10/2026 sur le fil réel :
+
+| | avant (mesure d'origine) | remesuré le 13/10 |
+|---|---|---|
+| maximum par heure | 3 | **16** (08/10, 18h) |
+| maximum par jour | 4 | **27** (08/10) |
+
+Le plafond avait déjà servi, et il avait été dépassé **d'un facteur trois**,
+pendant que le commentaire continuait d'annoncer qu'il ne servirait jamais.
+Une mesure vieillit ; une mesure **datée** se rattrape — c'est pour ça
+qu'elles le sont toutes ici.
+
+`NOTIFS_OFFICIELLES_MAX = 10` depuis le 13/10/2026 — au-delà, une seule
+notification groupée qui annonce le nombre et, côté Discord, liste les
+titres restants. Dix, choisi par Antoni : le jour de la sortie, chaque
+annonce officielle compte vraiment et les regrouper ferait perdre le détail
+de celle qu'on attend.
+
+**Ce que ça coûte, dit plutôt que tu** : de 0h à 5h, seules les annonces
+officielles réveillent le téléphone. Une rafale nocturne peut donc faire
+dix vibrations d'affilée au lieu de cinq. C'est un choix assumé.
 
 ## Le journal des incidents — 06/10/2026
 
@@ -7062,6 +7080,128 @@ Maximum observé : **quatre**, jamais six. Et le badge de langue n'apparaît
 que pour le français, avec `background:transparent` et `--text-dim` — il
 est **déjà** en gris muet. Toucher à la hiérarchie visuelle pour 3,1 % des
 cartes serait du risque sans bénéfice.
+
+## La répétition générale du 19 novembre — 13/10/2026
+
+Tout ce qui a été construit en octobre est dimensionné pour le jour de la
+sortie, mais rien n'avait jamais été éprouvé **ensemble** à cette échelle.
+Une journée de sortie a donc été fabriquée à partir des **vrais titres** du
+corpus (8 258 titres de l'archive et du fil), puis passée dans le robot
+entier, plusieurs fois, à trois volumes.
+
+### Le robot tient
+
+| volume d'un jour | gardés | dédupliqués | 1er passage | 2e passage |
+|---|---|---|---|---|
+| 300 | 294 | 2,0 % | 2,5 s | 0,1 s |
+| 900 | 849 | 5,7 % | **26,4 s** | 0,8 s |
+| 1 800 | 1 500 | 16,7 % | **91,5 s** | 1,2 s |
+
+La durée est **quadratique** — six fois le volume, trente-sept fois le
+temps — ce qui est attendu d'une comparaison de similarité par paires. Pour
+un cron horaire, 91 s reste confortable, et c'est dit plutôt que découvert
+le 19 au matin.
+
+Le taux de déduplication **monte avec le volume**, et c'est le
+comportement voulu : plus il arrive d'articles dans la fenêtre, plus il y a
+de reprises à fusionner.
+
+### L'app tient aussi
+
+**1 800 cartes rendues en 265 ms**, 61 en-têtes, aucune erreur JavaScript.
+Le découpage adaptatif du jour J donne bien un en-tête pour une trentaine
+d'articles, à l'échelle où il a été conçu.
+
+### Une fausse alerte, corrigée en la mesurant
+
+Le second passage rendait 591 articles au lieu de 579 : douze de moins sans
+la moindre nouvelle entrée. J'ai d'abord annoncé une perte. **C'en est
+pas une** : c'est la déduplication rétroactive qui rattrape des reprises
+arrivées ensemble au premier passage, et l'archive garde les 591. Vérifié
+sur sept passages d'affilée : 579 puis stable. Ça converge.
+
+### LE VRAI RISQUE, et aucune fiche ne l'avait vu
+
+`MAX_HISTORY_DAYS` vaut trente jours et `MAX_HISTORY_SIZE` quatre mille
+articles. Le fil annonce une
+rétention de **trente jours** — mais le plafond est un **nombre
+d'articles**, pas un nombre de jours :
+
+| rythme | ce que 4 000 articles couvrent |
+|---|---|
+| 125/jour (octobre) | **32 jours** — la fenêtre de 30 jours est ce qui lie |
+| 900/jour | **4,4 jours** |
+| 1 800/jour | **2,2 jours** |
+
+La semaine de la sortie, la fenêtre de trente jours devient une fiction :
+l'app par défaut ne montrerait plus que l'avant-veille. **Rien n'est
+perdu** — l'archive garde tout et se charge mois par mois — mais le fil
+principal, les statistiques calculées dessus et le bloc « Ce que j'ai
+raté » travailleraient sur deux jours sans le dire.
+
+(Le bloc d'entrée, lui, le dit déjà : il annonce « au moins N » dès que
+l'historique chargé ne couvre pas l'absence.)
+
+**Décision prise le 13/10/2026 : le plafond passe à douze mille.** Il
+couvre 13 jours à 900 articles/jour et 6,6 à 1 800 — une vraie semaine sous
+les yeux le jour où il y a le plus à lire.
+
+Ce que ça coûte, et ce que ça ne coûte pas. À 732 octets par article,
+12 000 font ~8,4 Mo bruts contre ~2,9, et la croissance du dépôt passe
+d'environ **1,1 à ~3 Mo par jour** (mesure du 13/10 par deux méthodes
+concordantes : ratio de compression global, et 34,3 Mo ÷ 896 commits × 27
+commits/jour). En revanche **la déduplication ne paie rien** : ses deux
+passes sont bornées indépendamment de l'historique (`FENETRE_MAX`,
+`FUSION_RETRO_MAX`), et la répétition le confirme — la durée d'un passage
+suit le nombre d'articles REÇUS, pas la profondeur gardée. L'ouverture de
+l'app ne paie rien non plus : elle lit `feed-recent.json`, dont la taille
+est fixée par `RECENT_FEED_SIZE`.
+
+**La durée quadratique, elle, reste telle quelle.** Même à 3 600 articles
+dans une heure on serait autour de six minutes, très en dessous de ce
+qu'un job GitHub Actions accepte. Optimiser le cœur de la déduplication
+sans en avoir besoin, à cinq semaines de la sortie, serait du risque
+gratuit — la mesure est écrite, on saura où regarder.
+
+## La répétition des notifications — 13/10/2026
+
+Le robot et l'app avaient été éprouvés au volume du jour J ; les
+notifications, non. Or c'est le seul composant qui réveille vraiment
+quelqu'un.
+
+### Les plafonds tiennent
+
+| rafale | notifications Discord |
+|---|---|
+| 1 officiel | 1 |
+| 5 officiels | 5 |
+| 16 officiels | **11** (10 détaillées + 1 groupée) |
+| 150 officiels | **11** |
+| 900 articles ordinaires | **1** |
+
+La charge utile du push reste à ~230 octets quel que soit le volume, très
+en dessous des 4 Ko que les pousseurs acceptent.
+
+### Le défaut que la répétition a trouvé
+
+Le message groupé annonçait « **+ 140 autre(s) annonce(s) officielle(s)** »
+et n'en listait que **29** — la vingt-neuvième coupée en plein milieu d'un
+mot. L'ancienne écriture joignait tous les titres puis coupait à 3 800
+caractères : le compte du titre était juste, le corps mentait, et rien ne
+le disait.
+
+Les lignes s'empilent maintenant une par une tant que le budget tient, et
+ce qui ne rentre pas est **nommé** : « … et 111 autre(s), toutes dans
+l'app. » Un message qui s'arrête proprement en disant combien il cache vaut
+mieux qu'un message coupé net.
+
+### Un test qui aurait menti
+
+Ma première version du contrôle écrivait « 113 » en dur — un chiffre relevé
+sur un autre jeu de titres. Il serait tombé le jour où Rockstar intitule
+ses annonces autrement, sans qu'aucun défaut n'existe. Le nombre est
+désormais **lu dans le message**, et c'est l'arithmétique qui est vérifiée :
+listées + annoncées non listées = le compte du titre.
 
 ## Ajuster quelque chose
 
