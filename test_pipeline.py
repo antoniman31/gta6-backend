@@ -5963,6 +5963,15 @@ def test_un_passage_complet_du_robot():
         check(allege["total_articles"] == fil["total_articles"],
               "le fichier allégé annonce le total du fichier COMPLET (%s vs %s)"
               % (allege["total_articles"], fil["total_articles"]))
+        # hot_count aussi, et pas par symétrie : le README affirme depuis le
+        # départ que « le test les compare donc au fichier complet » en
+        # nommant les DEUX champs, alors que seul total_articles était
+        # vérifié. La documentation décrivait une protection à moitié
+        # existante — c'est le défaut 4.7 de l'audit, et le combler coûte
+        # une ligne.
+        check(allege.get("hot_count") == fil.get("hot_count"),
+              "et son hot_count aussi, comme le README l'annonce (%s vs %s)"
+              % (allege.get("hot_count"), fil.get("hot_count")))
         archives = os.path.join(rep, "docs/archives")
         check(os.path.exists(os.path.join(archives, "index.json")),
               "l'index de l'archive est écrit dans le même passage")
@@ -7992,6 +8001,146 @@ def test_laudit_surveille_larchive():
             shutil.rmtree(r, ignore_errors=True)
 
 
+def test_menage_de_laudit():
+    print("\n[audit] les neuf points de ménage, et les garde-fous qui les tiennent")
+    import merge_feed, feed_store, fetch_feeds as ff
+    import re, glob
+
+    # ---- 4.3 : les quatre clés cumulatives ajoutées APRÈS merge_feed.py.
+    # `merged = dict(ours)` les perdait toutes les quatre, exactement comme
+    # il perdait attente_recap avant qu'on le remarque.
+    art = lambda l, d: {"link": l, "title": "t", "date": d}
+    maintenant = "2026-10-13T08:00:00+00:00"
+    distant = {
+        "items": [art("https://d.test/1", maintenant)],
+        "sources_incidents": [{"source": "a", "nom": "A", "debut": "2026-10-01T00:00:00+00:00"},
+                              {"source": "b", "nom": "B", "debut": "2026-10-02T00:00:00+00:00"}],
+        "sources_incidents_compte": {"2026-10": {"a": {"nom": "A", "n": 7, "heures": 9.0}}},
+        "sources_entries_history": {"a": "1,2,3,4,5"},
+        "sources_silence": {"a": {"depuis": "2026-10-01T00:00:00+00:00", "succes": 0, "alertee": True}},
+    }
+    local = {
+        "items": [art("https://l.test/1", maintenant)],
+        "sources_incidents": [{"source": "a", "nom": "A", "debut": "2026-10-01T00:00:00+00:00"}],
+        "sources_incidents_compte": {"2026-10": {"a": {"nom": "A", "n": 5, "heures": 11.0}}},
+        "sources_entries_history": {"a": "4,5"},
+        "sources_silence": {"a": {"depuis": "2026-10-03T00:00:00+00:00", "succes": 0, "alertee": False}},
+    }
+    f, _, _ = merge_feed.merge_feeds(distant, local)
+
+    check(len(f["sources_incidents"]) == 2,
+          "[audit] 4.3 l'incident que seul le distant avait vu survit à la "
+          "fusion (%d)" % len(f["sources_incidents"]))
+    e = f["sources_incidents_compte"]["2026-10"]["a"]
+    check(e["n"] == 7 and e["heures"] == 11.0,
+          "[audit] 4.3 le compteur prend le maximum entrée par entrée, "
+          "jamais la somme (n=%s, heures=%s)" % (e["n"], e["heures"]))
+    check(f["sources_entries_history"]["a"] == "1,2,3,4,5",
+          "[audit] 4.3 l'historique garde la chaîne la plus longue (%s)"
+          % f["sources_entries_history"]["a"])
+    sil = f["sources_silence"]["a"]
+    check(sil["depuis"] == "2026-10-01T00:00:00+00:00",
+          "[audit] 4.3 le chronomètre garde le début le PLUS ANCIEN — sinon "
+          "une panne de six heures repart à zéro (%s)" % sil["depuis"])
+    check(sil["alertee"] is True,
+          "[audit] 4.3 et `alertee` est un OU : le perdre renverrait "
+          "l'alerte Discord à chaque passage")
+
+    # ---- 4.4 : le cache de décodage survit au `git reset --hard`.
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    avant = wf.index("git reset --hard origin/main")
+    sauve = wf.index('cp decode-cache.json "$RUNNER_TEMP/decode-cache.json"')
+    rendu = wf.index('cp "$RUNNER_TEMP/decode-cache.json" decode-cache.json')
+    check(sauve < avant < rendu,
+          "[audit] 4.4 le cache de décodage est mis à l'abri AVANT le reset "
+          "et remis après — sinon le `git add` porte sur la version distante")
+
+    mf = open("merge_feed.py", encoding="utf-8").read()
+    check("exclure=" in mf and "page_rockstar_hors_langue" in mf,
+          "[audit] 4.4 la fusion archive avec les MÊMES exclusions que le "
+          "passage normal")
+    check("elague_source_link_archives" in mf,
+          "[audit] 4.4 et allège l'archive qu'elle vient de réécrire")
+
+    # ---- 4.7 : hot_count. Le README affirme que le test compare les DEUX
+    # champs au fichier complet ; il n'en couvrait qu'un.
+    readme = open("README.md", encoding="utf-8").read()
+    if "`total_articles` et `hot_count`" in readme:
+        corps = s_source = open("test_pipeline.py", encoding="utf-8").read()
+        check('allege.get("hot_count") == fil.get("hot_count")' in corps,
+              "[audit] 4.7 le test compare bien hot_count au fichier complet, "
+              "comme le README l'annonce")
+
+    # ---- 4.8 : plus aucun nombre de sources en dur dans la docstring.
+    tete = open("fetch_feeds.py", encoding="utf-8").read().split('"""')[1]
+    faux = re.findall(r"\b(3[0-9]|4[0-9]|5[0-9])\b", tete)
+    check(not faux,
+          "[audit] 4.8 la docstring n'annonce plus de compte de sources en "
+          "dur — elle a dit « 35 » et « 34 » pendant que le robot en "
+          "interrogeait 63 (trouvé : %s)" % faux)
+    dep = open(".github/dependabot.yml", encoding="utf-8").read()
+    check("130" not in dep,
+          "[audit] 4.8 et dependabot.yml n'annonce plus « les 130 "
+          "vérifications » pour une suite qui en compte plus de 1700")
+
+    # ---- 4.9 : les vignettes en http sont du contenu mixte, donc bloquées.
+    items = [{"link": "a", "image": "http://x.test/i.jpg"},
+             {"link": "b", "image": "https://y.test/i.jpg"},
+             {"link": "c"}]
+    n = feed_store.https_les_vignettes(items)
+    check(n == 1 and items[0]["image"] == "https://x.test/i.jpg",
+          "[audit] 4.9 une vignette en http repasse en https (%d corrigée)" % n)
+    check(items[1]["image"] == "https://y.test/i.jpg" and "image" not in items[2],
+          "[audit] 4.9 et rien d'autre n'est touché")
+    check(feed_store.https_les_vignettes(items) == 0,
+          "[audit] 4.9 l'opération est idempotente")
+    check("https_les_vignettes" in open("fetch_feeds.py", encoding="utf-8").read(),
+          "[audit] 4.9 et main() la rejoue sur l'historique, qui ne repasse "
+          "jamais par la collecte")
+
+    # ---- 4.10 : un .env local ne peut pas partir dans un dépôt PUBLIC.
+    gi = open(".gitignore", encoding="utf-8").read()
+    check(".env" in gi.split(),
+          "[audit] 4.10 .gitignore couvre .env (la protection la moins chère "
+          "du dépôt, et elle manquait)")
+
+    # ---- 4.11 : les Actions épinglées au SHA, comme PyPI l'est à l'exact.
+    # Dependabot signale une nouvelle VERSION, jamais un retag de v7.
+    mobiles = []
+    for chemin in sorted(glob.glob(".github/workflows/*.yml")):
+        for ref in re.findall(r"uses:\s*([^\s]+)", open(chemin, encoding="utf-8").read()):
+            apres = ref.split("@", 1)[1] if "@" in ref else ""
+            if not re.fullmatch(r"[0-9a-f]{40}", apres):
+                mobiles.append("%s → %s" % (chemin.split("/")[-1], ref))
+    check(not mobiles,
+          "[audit] 4.11 toutes les Actions sont épinglées à un SHA de commit, "
+          "pas à un tag mobile (%s)" % mobiles)
+
+    # ---- 4.12 : le garde-fou de publication ne regardait que les articles.
+    precedent = {"items": [art("https://x.test/%d" % k, maintenant) for k in range(20)],
+                 "sources_incidents": [{"source": "a", "debut": str(k)} for k in range(20)]}
+    bon = dict(precedent)
+    try:
+        feed_store.valide_avant_ecriture({"items": precedent["items"]}, precedent)
+        disparu = False
+    except feed_store.FeedInvalide:
+        disparu = True
+    check(disparu,
+          "[audit] 4.12 un fichier où « sources_incidents » a disparu est "
+          "refusé, au lieu de publier en silence")
+    try:
+        feed_store.valide_avant_ecriture(
+            {"items": precedent["items"], "sources_incidents": [{"source": "a", "debut": "0"}]},
+            precedent)
+        recule = False
+    except feed_store.FeedInvalide:
+        recule = True
+    check(recule,
+          "[audit] 4.12 et un journal qui tombe de 20 entrées à 1 aussi")
+    feed_store.valide_avant_ecriture(bon, precedent)
+    check(True, "[audit] 4.12 tandis qu'un fichier intact passe sans broncher")
+
+
 def test_ce_que_le_robot_publie_est_bien_commite():
     print("\n[workflow] tout ce que le robot écrit est commité, et ignoré par la CI")
     import re
@@ -8007,7 +8156,12 @@ def test_ce_que_le_robot_publie_est_bien_commite():
                "decode-cache.json"]
 
     wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
-    adds = re.findall(r"git add ([^\n]+)", wf)
+    # Les lignes de COMMENTAIRE sont écartées. Sans ça, une explication qui
+    # cite « le `git add decode-cache.json` plus bas » était comptée comme
+    # une commande : le test trouvait trois `git add` au lieu de deux et
+    # annonçait le mauvais bloc sous le mauvais nom. Un test qui compte des
+    # commandes ne doit pas compter des phrases.
+    adds = re.findall(r"^\s*git add ([^\n]+)", wf, re.M)
     check(len(adds) >= 2,
           "le workflow du robot a bien ses deux `git add` (%d trouvés)" % len(adds))
     # enumerate, et pas adds.index(ligne) : les deux lignes sont le MÊME
@@ -8842,6 +8996,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,
+           test_menage_de_laudit,
            test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):

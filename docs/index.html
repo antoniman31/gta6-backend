@@ -500,6 +500,61 @@
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
     padding:2px 6px; border-radius:var(--r-xs); letter-spacing:0.03em; white-space:nowrap;
   }
+  /* Les badges de contenu sont des BOUTONS depuis le 13/10/2026 : la règle
+     globale sur button leur imposerait une bordure, un fond et 10px de
+     padding. On la neutralise plutôt que de dupliquer .tag-badge. */
+  button.tag-badge, button.specialist-badge{border:none; cursor:pointer; line-height:1.4;}
+  button.tag-badge:hover, button.specialist-badge:hover{filter:brightness(1.15);}
+  /* La chronologie des officiels. Le trait vertical porte toute la lecture :
+     c'est lui qui transforme une liste en histoire. */
+  .chrono{list-style:none; margin:0; padding:0 0 0 14px; border-left:2px solid var(--line);}
+  .chrono-annee{
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+    color:var(--text-dim); letter-spacing:0.08em; margin:18px 0 8px -22px;
+    padding-left:8px; background:var(--bg); display:inline-block;
+  }
+  .chrono-annee:first-child{margin-top:0;}
+  .chrono-point{position:relative; margin:0 0 14px; padding-left:4px;}
+  .chrono-point::before{
+    content:""; position:absolute; left:-21px; top:6px; width:8px; height:8px;
+    border-radius:var(--r-full); background:var(--accent);
+  }
+  .chrono-point.lu::before{background:var(--line);}
+  .chrono-point.lu .chrono-titre{color:var(--text-dim);}
+  .chrono-date{
+    display:block; font-family:'JetBrains Mono',monospace; font-size:10px;
+    color:var(--text-dim); text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .chrono-titre{
+    display:block; color:var(--text); text-decoration:none;
+    font-size:14px; line-height:1.35; margin:2px 0;
+  }
+  .chrono-titre:hover{text-decoration:underline;}
+  .chrono-source{font-size:11px; color:var(--text-dim);}
+
+  .recherches-recentes{
+    display:flex; gap:6px; flex-wrap:wrap; margin:0 0 10px;
+  }
+  .recherche-puce{
+    display:inline-flex; align-items:center; border:1px solid var(--line);
+    border-radius:var(--r-full); background:var(--bg-panel); overflow:hidden;
+  }
+  .recherche-puce button{
+    border:none; background:transparent; padding:5px 4px 5px 10px;
+    font-size:11px; color:var(--text-dim); cursor:pointer; border-radius:0;
+  }
+  .recherche-puce .recherche-croix{padding:5px 9px 5px 4px; font-size:10px;}
+  .recherche-puce button:hover{color:var(--text);}
+  .badge-filtre{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin:0 0 12px; padding:8px 10px; border-radius:var(--r-sm);
+    border:1px solid var(--line); background:var(--bg-panel);
+  }
+  .badge-filtre-nom{
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+    letter-spacing:0.03em; color:var(--text);
+  }
+  .badge-filtre-compte{font-size:11px; color:var(--text-dim); flex:1 1 auto;}
   .tag-leak{background:#e11d48; color:#fff;}
   .tag-video{background:#7c3aed; color:#fff;}
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
@@ -1545,6 +1600,10 @@
     </button>
   </div>
 
+  <!-- Les dernières recherches. Masquées tant qu'il n'y en a pas : une
+       rangée vide sous le champ serait une ligne de plus pour rien. -->
+  <div class="recherches-recentes" id="recherchesRecentes" style="display:none;"></div>
+
   <!-- La rangée du haut porte les deux vues du fil ENTIER : tout, et ce qui
        compte. Les trois de la rangée du dessous découpent le fil par
        famille de source ; celle-ci le découpe par importance, ce qui est un
@@ -1585,6 +1644,11 @@
        qu'il parle de ce qui est paru, pas de ce qui est affiché.
        Il est masqué avec le fil dans les vues Statistiques et Journal :
        voir setTab, qui porte déjà l'avertissement sur ce piège. -->
+  <!-- Le filtre de badge en cours. Sans cette barre, un fil filtré sur
+       « fuite » ressemblerait à un fil vide : les cartes écartées ne sont
+       plus là pour montrer quel badge est actif. -->
+  <div class="badge-filtre" id="badgeFiltre" style="display:none;"></div>
+
   <div class="rate-bloc" id="rateBloc" style="display:none;"></div>
 
   <div class="feed" id="feed">
@@ -4139,6 +4203,10 @@ function setTab(t, silencieux){
   document.getElementById("feed").style.display = estVue ? "none" : "flex";
   // Le bloc « Ce que j'ai raté » suit le fil : il n'a pas de sens sous les
   // statistiques. majBlocRate() décide ensuite s'il a quelque chose à dire.
+  const puces = document.getElementById("recherchesRecentes");
+  if(puces) puces.style.display = estVue ? "none" : (recherchesRecentes.length ? "flex" : "none");
+  const barreBadge = document.getElementById("badgeFiltre");
+  if(barreBadge && estVue) barreBadge.style.display = "none";
   const blocRate = document.getElementById("rateBloc");
   if(blocRate) blocRate.style.display = estVue ? "none" : (blocRate.dataset.plein === "1" ? "block" : "none");
   document.getElementById("logsPanel").style.display = isLogs ? "block" : "none";
@@ -4231,7 +4299,77 @@ function updateActiveFiltersCount(){
 let searchDebounceId = null;
 function debouncedSearch(){
   clearTimeout(searchDebounceId);
-  searchDebounceId = setTimeout(() => { visibleCount = PAGE_SIZE; applyFilters(); }, 180);
+  searchDebounceId = setTimeout(() => {
+    visibleCount = PAGE_SIZE;
+    applyFilters();
+    memoriseRecherche(document.getElementById("searchInput").value);
+  }, 180);
+}
+
+// ---------- La mémoire de la recherche ----------
+//
+// Surveiller « date de sortie » ou « précommande » chaque semaine voulait
+// dire le retaper chaque semaine. Trois puces sous le champ suffisent.
+//
+// Pourquoi QUATRE et pas dix : au-delà, la rangée passe à la ligne sur un
+// téléphone et devient une deuxième barre d'outils. Trois à quatre, c'est
+// le nombre de sujets qu'on suit vraiment en parallèle.
+const CLE_RECHERCHES = "recherches-v1";
+const RECHERCHES_MAX = 4;
+let recherchesRecentes = [];
+
+function chargeRecherches(){
+  try{
+    const v = storageGet(CLE_RECHERCHES);
+    const l = v && v.value ? JSON.parse(v.value) : [];
+    recherchesRecentes = Array.isArray(l) ? l.filter(x => typeof x === "string").slice(0, RECHERCHES_MAX) : [];
+  }catch(e){ recherchesRecentes = []; }
+  majRecherches();
+}
+
+// Appelée APRÈS le débounce, donc une seule fois par recherche terminée.
+// L'appeler à chaque frappe aurait mémorisé « d », « da », « dat »…
+function memoriseRecherche(texte){
+  const q = (texte || "").trim();
+  // Deux caractères ne sont pas une recherche, c'est une frappe en cours.
+  if(q.length < 3) return;
+  const bas = q.toLowerCase();
+  // La casse ne distingue pas deux recherches : « GTA » et « gta » donnent
+  // le même résultat, les garder toutes les deux gâcherait une des quatre
+  // places. On garde la dernière forme tapée.
+  recherchesRecentes = [q].concat(
+    recherchesRecentes.filter(x => x.toLowerCase() !== bas)).slice(0, RECHERCHES_MAX);
+  try{ storageSet(CLE_RECHERCHES, JSON.stringify(recherchesRecentes)); }catch(e){}
+  majRecherches();
+}
+
+function relanceRecherche(texte){
+  const champ = document.getElementById("searchInput");
+  if(!champ) return;
+  champ.value = texte;
+  toggleClearButton();
+  visibleCount = PAGE_SIZE;
+  applyFilters();
+}
+
+function oublieRecherche(ev, texte){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  recherchesRecentes = recherchesRecentes.filter(x => x !== texte);
+  try{ storageSet(CLE_RECHERCHES, JSON.stringify(recherchesRecentes)); }catch(e){}
+  majRecherches();
+}
+
+function majRecherches(){
+  const el = document.getElementById("recherchesRecentes");
+  if(!el) return;
+  if(!recherchesRecentes.length){ el.style.display = "none"; el.innerHTML = ""; return; }
+  el.innerHTML = recherchesRecentes.map(q => `
+    <span class="recherche-puce">
+      <button type="button" class="recherche-texte" onclick="relanceRecherche(${JSON.stringify(q).replace(/"/g, "&quot;")})">${escapeHtml(q)}</button>
+      <button type="button" class="recherche-croix" aria-label="Oublier « ${escapeAttr(q)} »"
+              onclick="oublieRecherche(event, ${JSON.stringify(q).replace(/"/g, "&quot;")})">✕</button>
+    </span>`).join("");
+  el.style.display = "flex";
 }
 
 function toggleClearButton(){
@@ -4295,6 +4433,75 @@ function estMajeur(item){
 // des six lignes et que les deux avaient dérivé : le marquage en masse
 // ignorait le filtre « Non lus » et la recherche, tout en affirmant dans sa
 // confirmation ne concerner « que les articles affichés ». C'était faux.
+// ---------- Les badges deviennent des filtres ----------
+//
+// Trois signaux étaient DÉJÀ visibles sur la carte, et on ne pouvait rien
+// en faire. C'est le profil exact qui a fait marcher l'onglet « Actu
+// majeure ». Mesuré le 13/10/2026 sur 3 511 articles : spécialiste 191
+// (5,4 %), vidéo 148 (4,2 %), fuite 221 (6,3 %).
+//
+// Pas de nouvel onglet : la rangée en compte déjà cinq et déborde à 320 px.
+// Le geste est posé LÀ OÙ L'INFORMATION EST — on clique le badge qu'on voit.
+//
+// UN SEUL JUGE par badge, comme estMajeur. La carte et le filtre doivent
+// dire la même chose ; deux expressions recopiées divergent au premier
+// ajustement, et c'est précisément ce qui est arrivé à VIDÉO.
+//
+// LA REGEX VIDÉO, RESSERRÉE. L'ancienne contenait `\bvideo\b` nu, qui
+// attrapait « video game », « jeux vidéo » et le nom du média *Video Games
+// Chronicle*. Mesuré avant/après sur le fil réel : 199 articles marqués
+// VIDÉO, dont 51 faux positifs — « GTA 6 On Track To Overthrow The
+// Best-Selling Video Game Of All-Time », « Bad Bunny et Lana Del Rey,
+// animateurs de radio du très attendu jeu vidéo GTA VI ». Après
+// resserrage : 148, et VÉRIFIÉ UN PAR UN que les 51 écartés sont tous des
+// faux positifs, aucune vraie vidéo perdue.
+const RE_FUITE = /\bleak(s|ed)?\b|\bfuite/i;
+const RE_VIDEO = /\btrailer\b|\bgameplay\b|\bfootage\b|\bvideo\b(?!\s*games?\b)|(?<!jeux )(?<!jeu )\bvidéo\b|\bclip\b/i;
+
+function estFuite(item){ return RE_FUITE.test((item && item.title) || ""); }
+function estVideo(item){ return RE_VIDEO.test((item && item.title) || ""); }
+// `&& !official` et pas `specialist` tout court : le badge ne s'affiche
+// QUE sur une carte non officielle — un article de Rockstar porte déjà
+// « OFFICIEL », et empiler les deux n'apprend rien. Le juge doit dire
+// exactement ce que la carte montre, sinon le filtre ramène des cartes
+// dépourvues du badge sur lequel on vient de cliquer.
+function estSpecialiste(item){
+  return Boolean(item && item.specialist && !item.official);
+}
+
+const JUGES_BADGE = { leak: estFuite, video: estVideo, specialist: estSpecialiste };
+const NOMS_BADGE = { leak: "LEAK", video: "VIDÉO", specialist: "SPÉCIALISTE GTA 6" };
+
+// Pas mémorisé entre deux sessions, à dessein : c'est un coup d'œil, pas
+// un réglage. Retrouver le fil filtré sur « fuite » trois jours plus tard
+// sans se rappeler pourquoi serait une mauvaise surprise.
+let badgeActif = null;
+
+function filtreBadge(ev, cle){
+  // Le badge vit dans une carte dont le titre et la vignette sont des
+  // liens. Sans ça, cliquer le badge ouvrirait l'article.
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  badgeActif = (badgeActif === cle) ? null : cle;
+  visibleCount = PAGE_SIZE;
+  applyFilters();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function videBadge(){
+  badgeActif = null;
+  applyFilters();
+}
+
+function majBarreBadge(nb){
+  const el = document.getElementById("badgeFiltre");
+  if(!el) return;
+  if(!badgeActif){ el.style.display = "none"; el.innerHTML = ""; return; }
+  el.innerHTML = `<span class="badge-filtre-nom">${NOMS_BADGE[badgeActif]}</span>`
+    + `<span class="badge-filtre-compte">${nb} article${nb > 1 ? "s" : ""}</span>`
+    + `<button type="button" class="small" onclick="videBadge()">Tout afficher</button>`;
+  el.style.display = "flex";
+}
+
 function articlesAffiches(){
   let items = articlesVisibles();
 
@@ -4306,6 +4513,8 @@ function articlesAffiches(){
   if(currentTab === "non-rockstar") items = items.filter(i => !i.official && !i.rockstarmag);
   if(currentLang === "fr") items = items.filter(i => i.lang === "fr");
   if(currentLang === "en") items = items.filter(i => i.lang !== "fr");
+
+  if(badgeActif && JUGES_BADGE[badgeActif]) items = items.filter(JUGES_BADGE[badgeActif]);
 
   if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
   if(currentFilter === "new") items = items.filter(i => lastNewLinks.has(i.link));
@@ -4472,6 +4681,7 @@ function applyFilters(){
   const items = articlesAffiches();
 
   renderFeed(items, lastNewLinks, q);
+  majBarreBadge(items.length);
   majBlocRate();
   updateTabBadges();
   updateDocumentTitle();
@@ -4583,6 +4793,49 @@ function dayBucket(dateStr){
   if(diffDays > 1 && diffDays <= 7) return "Cette semaine";
   return "Plus ancien";
 }
+
+// ---------- Les officiels en chronologie ----------
+//
+// L'onglet Rockstar filtrait déjà sur `official`, et ça marchait — mais il
+// rendait la MÊME liste de cartes, dans le même ordre, à la même densité.
+// Or ils sont 77 depuis le début du projet : ça ne se lit pas comme un fil,
+// ça se lit comme une HISTOIRE. Une colonne datée, du premier teaser à
+// aujourd'hui, est la page qu'on montre à quelqu'un.
+//
+// Pas de nouvel onglet ni de nouveau filtre : c'est la forme de l'onglet
+// existant qui change, et seulement la sienne.
+//
+// Le seuil existe parce que la chronologie n'a de sens que si elle tient à
+// l'écran. Au-delà, on revient aux cartes — et 77 entrées d'ici novembre,
+// ça laisse de la marge.
+const CHRONO_MAX = 400;
+
+function renderChronologie(items){
+  if(!items.length) return '<div class="empty">Aucun article correspondant.</div>';
+  let annee = null;
+  const lignes = items.map(item => {
+    const d = new Date(item.date);
+    const bon = !isNaN(d);
+    const an = bon ? d.getFullYear() : null;
+    // Un séparateur d'année, et seulement quand elle change : la
+    // chronologie couvre plusieurs années, et « 12 mars » sans année ne
+    // dit rien à trois ans de distance.
+    const sep = (bon && an !== annee) ? `<li class="chrono-annee">${(annee = an)}</li>` : "";
+    const jour = bon
+      ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })
+      : "date inconnue";
+    const lu = readSet.has(item.link);
+    return sep + `
+      <li class="chrono-point${lu ? " lu" : ""}">
+        <span class="chrono-date">${jour}</span>
+        <a class="chrono-titre" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
+           onclick="marqueLuDepuisRate('${escapeAttr(item.link)}')">${escapeHtml(item.title || "")}</a>
+        <span class="chrono-source">${escapeHtml(item.source || "")}</span>
+      </li>`;
+  }).join("");
+  return `<ol class="chrono">${lignes}</ol>`;
+}
+
 
 // ---------- Le mur du jour J ----------
 //
@@ -4703,6 +4956,14 @@ function renderFeed(items, newLinks, searchQuery){
     return;
   }
 
+  // L'onglet Rockstar se rend en CHRONOLOGIE, pas en cartes — voir
+  // renderChronologie. Avant la pagination : une histoire se lit d'un bout
+  // à l'autre, pas trente entrées à la fois.
+  if(currentTab === "rockstar" && items.length <= CHRONO_MAX){
+    feedEl.innerHTML = renderChronologie(items);
+    return;
+  }
+
   const capped = items.slice(0, settings.maxDisplay);
   const shown = capped.slice(0, visibleCount);
   itemsById = {};
@@ -4820,13 +5081,15 @@ function renderCard(item, newLinks, searchQuery){
     ? `<a class="card-thumb-lien" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${vignette}</a>`
     : vignette;
   const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
-  const specialistBadge = (item.specialist && !item.official) ? `<span class="specialist-badge">SPÉCIALISTE GTA 6</span>` : "";
+  const specialistBadge = estSpecialiste(item)
+    ? `<button type="button" class="specialist-badge" onclick="filtreBadge(event,'specialist')" title="Ne montrer que les sources spécialisées">SPÉCIALISTE GTA 6</button>` : "";
 
-  // Badges de contenu, détectés depuis le titre — repérage rapide du type
-  // d'article sans avoir à lire le titre en entier.
-  const titleLower = (item.title || "").toLowerCase();
-  const leakBadge = /\bleak(s|ed)?\b|\bfuite/i.test(titleLower) ? `<span class="tag-badge tag-leak">LEAK</span>` : "";
-  const videoBadge = /\btrailer\b|\bgameplay\b|\bvideo\b|\bvidéo\b|\bfootage\b|\bclip\b/i.test(titleLower) ? `<span class="tag-badge tag-video">VIDÉO</span>` : "";
+  // Badges de contenu — même principe qu'estMajeur : UN SEUL juge, partagé
+  // par la carte et par le filtre. Voir estFuite / estVideo plus haut.
+  const leakBadge = estFuite(item)
+    ? `<button type="button" class="tag-badge tag-leak" onclick="filtreBadge(event,'leak')" title="Ne montrer que les fuites">LEAK</button>` : "";
+  const videoBadge = estVideo(item)
+    ? `<button type="button" class="tag-badge tag-video" onclick="filtreBadge(event,'video')" title="Ne montrer que les vidéos">VIDÉO</button>` : "";
   const langBadge = item.lang === "fr" ? `<span class="tag-badge tag-lang">FR</span>` : "";
 
   // Nombre de rédactions qui couvrent la même actualité. Le backend ne
@@ -7687,6 +7950,7 @@ chargerReprise();
 // ne trouverait plus que l'heure de la visite en cours — et le bloc
 // « Ce que j'ai raté » n'aurait plus rien à comparer.
 chargeDerniereVisite();
+chargeRecherches();
 loadState();
 updateCountdown();
 // Relève la signature de référence sans attendre : c'est celle de la

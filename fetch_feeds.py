@@ -7,7 +7,7 @@ manuellement — il s'exécute automatiquement toutes les heures et publie
 son résultat dans docs/feed.json, servi ensuite par GitHub Pages.
 
 Ce que fait ce script, dans l'ordre :
-1. Lit la liste des sources ci-dessous (les mêmes 35 que dans le tracker HTML)
+1. Lit la liste des sources ci-dessous (FEEDS), partagée avec le tracker HTML
 2. Récupère chaque flux RSS — aucun souci de CORS ici, on est côté serveur
 3. Pour les flux Google News : décode le vrai lien de l'article (au lieu du
    lien de redirection news.google.com) via le package googlenewsdecoder
@@ -17,7 +17,12 @@ Ce que fait ce script, dans l'ordre :
 7. Écrit tout dans docs/feed.json, un fichier statique servi par GitHub Pages
 
 Le tracker HTML n'aura plus qu'à lire ce seul fichier JSON, au lieu de
-contacter 34 flux + des proxys CORS à chaque vérification.
+contacter lui-même toutes les sources + des proxys CORS à chaque
+vérification.
+
+Aucun compte de sources n'est écrit ici, à dessein : il vit dans le code
+(len(FEEDS)) et dans feed.json (sources_count). Un nombre recopié dans une
+docstring dérive tout seul — voir le README, « La dérive documentaire ».
 """
 
 import json
@@ -3915,6 +3920,12 @@ def main():
     # déduplication par similarité de titre (elle ne compare alors plus aux
     # articles réellement récents). Idempotente.
     fixed_dates = feed_store.normalize_stored_dates(existing_items)
+    # Même endroit, même raison : l'historique ne repasse jamais par la
+    # collecte, donc une vignette en http y resterait bloquée pour toujours.
+    vignettes_https = feed_store.https_les_vignettes(existing_items)
+    if vignettes_https:
+        print(f"  {vignettes_https} vignette(s) repassée(s) en https "
+              f"(contenu mixte, bloqué par le navigateur)")
     if fixed_dates:
         print(f"Correction rétroactive : {fixed_dates} date(s) convertie(s) au format ISO 8601")
 

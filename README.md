@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1754
+qui permet de tester tout le pipeline sans sortir de la machine. **1775
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -6871,6 +6871,197 @@ tranche horaire y serait ambiguë sans la date.
   jours **non basculés** — un jour à 59 articles reste un bloc — et pas du
   découpage. Corrigée, elle montre que descendre sous l'heure n'apporte
   rien, ce que la première version laissait croire.
+
+## Le ménage de l'audit : neuf points, et leurs garde-fous — 13/10/2026
+
+L'audit complet du 09/10 avait laissé neuf constats réels mais sans urgence.
+Les voici traités, chacun avec le contrôle qui l'empêche de revenir.
+
+### 4.3 — `merge_feed.py` perdait quatre champs cumulatifs
+
+Le script de reprise après conflit de push fait `merged = dict(ours)` et ne
+traitait explicitement que trois clés. Le piège d'`attente_recap` — « c'est
+un CUMUL, et le nôtre a été calculé à partir d'un feed.json que le distant a
+entre-temps dépassé » — s'appliquait mot pour mot à quatre clés ajoutées
+depuis. Elles n'ont pas la même forme, donc pas la même règle :
+
+| clé | règle | pourquoi |
+|---|---|---|
+| `sources_incidents` | union par (source, début) | une liste : celui qui a vu une panne de plus ne doit pas la perdre |
+| `sources_incidents_compte` | maximum entrée par entrée | même raison qu'`attente_recap` : additionner compterait double |
+| `sources_entries_history` | la chaîne la plus longue | fenêtre glissante, elle se recoupe d'elle-même |
+| `sources_silence` | le nôtre, mais `depuis` le plus ancien et `alertee` en OU | voir ci-dessous |
+
+**`sources_silence` n'est pas cumulatif au même sens**, et c'est ce qui
+rendait la règle non évidente : ce sont des états vivants, reconstruits à
+chaque passage depuis les 63 sources réellement contactées. Notre côté est
+donc le plus frais. Mais deux détails, précisément ceux qu'une fusion naïve
+casse : reprendre notre `depuis` remettrait le chronomètre à zéro et une
+panne de six heures repartirait à zéro ; perdre `alertee` renverrait
+l'alerte Discord à chaque passage.
+
+### 4.4 — Le cache de décodage était perdu après un conflit
+
+`git reset --hard origin/main` efface tout ce que le passage a écrit.
+`merge_feed.py` réécrit le fil et les archives — mais pas
+`decode-cache.json`, ajouté au `git add` plus tard. Le `git add` portait
+donc sur la version d'`origin/main` : **un non-opérant**, et tous les liens
+décodés pendant le passage étaient perdus. Sans gravité pour le fil publié,
+mais c'est du réseau payé deux fois, sur le composant précisément tombé le
+3 octobre. Le cache est maintenant mis à l'abri avant le reset et remis
+après.
+
+Deux asymétries du même chemin, corrigées aussi : la fusion archivait
+**sans** le `exclure=` que `main()` applique — un conflit de push
+réintroduisait dans l'archive les pages Rockstar hors langue et les
+cotations crypto que le passage venait d'écarter — et n'allégeait pas
+`source_link`, c'est-à-dire la moitié du poids de l'archive.
+
+### 4.7 — Le README décrivait une protection à moitié existante
+
+Il affirme que le test « compare `total_articles` **et `hot_count`** au
+fichier complet ». Le test ne couvrait que `total_articles`. Corrigé en
+ajoutant le contrôle manquant, pas en affaiblissant la phrase.
+
+### 4.8 — La dérive documentaire
+
+| écrit | réel |
+|---|---|
+| docstring : « les mêmes **35** que dans le tracker HTML » | **63** sources (35 était le nombre de *mots-clés*) |
+| docstring : « contacter **34** flux » | **63** |
+| `dependabot.yml` : « les **130** vérifications » | **1 775** |
+
+Les vingt premières lignes du fichier principal sont celles qu'on lit en
+premier, et elles mentaient depuis des mois. **Les nombres sont retirés
+plutôt que corrigés** : ils vivent dans le code (`len(FEEDS)`) et dans
+`feed.json` (`sources_count`), et un compte recopié dérive tout seul. Un
+test interdit désormais qu'un compte de sources revienne dans la docstring.
+
+Au passage, deux fois le même piège en écrivant ces correctifs : ma note
+historique citait « 35 » et « 130 », et déclenchait mes propres contrôles.
+L'histoire appartient à ce README, pas aux fichiers.
+
+### 4.9 — 26 vignettes ne s'affichaient jamais
+
+L'app est servie en HTTPS ; une image en `http://` est du **contenu mixte**,
+que le navigateur bloque sans rien dire. 26 articles, presque tous sur deux
+domaines. `onerror` masquait proprement, donc ça dégradait bien — mais pour
+une raison purement mécanique.
+
+**On ne perd rien à essayer**, et c'est ce qui rend le correctif évident :
+l'image est déjà bloquée. Si l'hôte ne répond pas en https elle reste
+masquée, exactement comme avant ; s'il répond, la carte gagne sa vignette.
+Le pire cas est le statu quo. Rejoué sur l'historique à chaque passage, au
+même endroit que `normalize_stored_dates` et pour la même raison.
+
+### 4.10 — `.gitignore` ne couvrait pas `.env`
+
+Deux lignes seulement. Rien n'a jamais fuité — vérifié sur tout
+l'historique — mais c'était la protection la moins chère du dépôt, dans un
+dépôt **public**.
+
+### 4.11 — Les Actions étaient épinglées au tag majeur
+
+`requirements.txt` fige tout le graphe au numéro exact, avec trente lignes
+expliquant pourquoi (l'incident `selectolax` du 03/10). Les workflows, eux,
+utilisaient `actions/checkout@v7` — un tag **mobile**. Dependabot signale
+une nouvelle *version*, jamais un *retag* de `v7`. Tout est désormais
+épinglé au SHA de commit, avec le commentaire `# v7` pour que Dependabot
+continue de les suivre. Un test refuse toute référence qui ne soit pas
+quarante caractères hexadécimaux.
+
+### 4.12 — Le garde-fou de publication ne protégeait que les articles
+
+`valide_avant_ecriture` ne regardait que `items`. Le choix de portée était
+défendable, mais il laissait passer en silence un bug qui viderait la
+mémoire des incidents ou ferait reculer un compteur — des champs que
+personne ne regarde au quotidien, et dont le passage suivant repart.
+
+Deux règles seulement, volontairement grossières : un champ cumulatif
+présent avant ne peut pas **disparaître**, et le journal des incidents ne
+peut pas tomber de moitié d'un coup. On ne vérifie pas que les valeurs sont
+justes — c'est le travail des tests — mais qu'elles ne s'évaporent pas.
+
+### 4.6 — Non fait, et pourquoi
+
+55 assertions portent sur du texte source plutôt que sur du comportement.
+Le constat est juste. Mais convertir 38 tests est un gros remaniement à
+faible gain : la suite navigateur couvre déjà ces comportements, et
+réécrire des tests verts est le meilleur moyen d'en casser un sans s'en
+apercevoir. Laissé ouvert, délibérément.
+
+## Les quatre derniers points de l'interface — 13/10/2026
+
+### 3.8 — Les badges deviennent des filtres, mais la regex d'abord
+
+Trois signaux étaient **déjà visibles** sur la carte et on ne pouvait rien
+en faire : c'est le profil exact qui a fait marcher l'onglet « Actu
+majeure ». Mesuré sur 3 511 articles — spécialiste 191 (5,4 %), vidéo 148
+(4,2 %), fuite 221 (6,3 %).
+
+**La regex VIDÉO était fausse à un quart.** Elle contenait `\bvideo\b` nu,
+qui attrapait :
+
+```
+GTA 6 On Track To Overthrow The Best-Selling Video Game Of All-Time
+Will GTA 6 make its way to Switch 2? — Video Games Chronicle
+Bad Bunny et Lana Del Rey, animateurs de radio du jeu vidéo GTA VI
+Jeux vidéo : le mode multijoueur de GTA 6 attendu en 2027
+```
+
+199 articles marqués VIDÉO, dont **51 faux positifs**. Après resserrage
+(`\bvideo\b(?!\s*games?\b)` et `vidéo` non précédé de « jeu(x) ») : **148**,
+et les 51 écartés **vérifiés un par un** — aucune vraie vidéo perdue.
+
+**Pas de nouvel onglet** : la rangée en compte déjà cinq et déborde à
+320 px. Le geste est posé là où l'information est — on clique le badge
+qu'on voit. Une barre nomme le filtre actif, sans quoi un fil filtré
+ressemblerait à un fil vide.
+
+**Un seul juge par badge**, comme `estMajeur`. Et le juge « spécialiste »
+dit exactement ce que la carte montre — `specialist && !official` — sinon
+le filtre ramènerait des cartes dépourvues du badge qu'on vient de cliquer.
+
+### 3.4 — Les officiels en chronologie
+
+L'onglet Rockstar filtrait déjà sur `official` et rendait la **même liste
+de cartes**. Ils sont 77 depuis le début : ça ne se lit pas comme un fil,
+ça se lit comme une histoire. Colonne datée, séparée par année (2022 →
+2026), **sans pagination** — une histoire se lit d'un bout à l'autre.
+
+**Ce que la chronologie a révélé, et que personne n'avait vu** : 28 des 77
+« officiels » (36 %) sont des pages `store.rockstargames.com` — porte-clés,
+t-shirts — et 5 des pages de support. Les cinq premières entrées de
+l'histoire officielle sont des articles de boutique. Les écarter serait une
+**décision de contenu**, et une page boutique a déjà été gardée
+délibérément le 09/10 ; c'est signalé, pas tranché.
+
+### 3.5 — La recherche se souvient
+
+Quatre puces sous le champ. Mémorisées **après le débounce**, pas à chaque
+frappe — sinon « d », « da », « dat » auraient rempli la rangée. Moins de
+trois caractères n'est pas une recherche, c'est une frappe en cours. La
+casse ne crée pas de doublon : « lucia » et « LUCIA » ne gâchent pas deux
+des quatre places. Quatre et pas dix : au-delà, la rangée passe à la ligne
+et devient une deuxième barre d'outils.
+
+### 3.3 — Close sans travaux, parce que la fiche était fausse
+
+Elle annonçait « jusqu'à six badges » et « rien ne hiérarchise — le badge
+de langue a le même poids visuel que le badge officiel ». Mesuré :
+
+| badges affichés | cartes |
+|---|---|
+| **0** | **52,3 %** |
+| 1 | 39,6 % |
+| 2 | 5,0 % |
+| 3 | 2,9 % |
+| 4 | 0,2 % |
+
+Maximum observé : **quatre**, jamais six. Et le badge de langue n'apparaît
+que pour le français, avec `background:transparent` et `--text-dim` — il
+est **déjà** en gris muet. Toucher à la hiérarchie visuelle pour 3,1 % des
+cartes serait du risque sans bénéfice.
 
 ## Ajuster quelque chose
 

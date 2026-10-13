@@ -203,6 +203,8 @@ réalisation, alors que 3.1 est le problème plus grave.
 
 ### 3.3 — La carte porte sept informations à plat
 
+> **CLOSE SANS TRAVAUX le 13/10/2026 — la fiche était fausse.** Mesuré sur 3 511 articles : **52 % des cartes n'affichent AUCUN badge**, 40 % en affichent un, et **3,1 % seulement en portent trois ou plus** (maximum observé : quatre, jamais six). Le badge de langue, désigné comme fautif, n'apparaît que pour le français et il est **déjà** en gris muet (`.tag-lang` : fond transparent, `--text-dim`). Toucher à la hiérarchie visuelle pour 3 % des cartes serait du risque sans bénéfice.
+
 Une carte peut afficher : vignette, favicon, nom de source, **jusqu'à six
 badges** (majeur, officiel, spécialiste, fuite, vidéo, langue), titre, date,
 ligne « + N sources », et **quatre boutons** d'action.
@@ -225,6 +227,8 @@ est celui qui en comptait déjà sept.
 
 ### 3.4 — Les 51 officiels méritent une forme, pas qu'un filtre
 
+> **FAIT le 13/10/2026.** Ils sont 77 aujourd'hui. L'onglet Rockstar se rend en colonne datée, séparée par année (2022 → 2026), sans pagination : une histoire se lit d'un bout à l'autre. Aucun nouvel onglet. **Signalé au passage, non tranché** : 28 des 77 (36 %) sont des pages `store.rockstargames.com` — porte-clés, t-shirts — et 5 des pages de support. Les écarter serait une décision de contenu, et une page boutique a déjà été gardée délibérément le 09/10.
+
 L'onglet Rockstar filtre déjà sur `official`, et ça marche. Mais il rend la
 **même liste de cartes**, dans le même ordre, à la même densité. Or 51
 articles depuis le début, c'est court : ça se lit comme une **chronologie**,
@@ -232,6 +236,8 @@ pas comme un fil. Une colonne verticale datée, du premier teaser à
 aujourd'hui, serait la page qu'on montre à quelqu'un.
 
 ### 3.5 — La recherche n'a pas de mémoire
+
+> **FAIT le 13/10/2026.** Quatre puces sous le champ, remplies après le débounce (pas à chaque frappe), insensibles à la casse, chacune effaçable. Moins de trois caractères n'est pas mémorisé : c'est une frappe en cours.
 
 Champ, mot-clé, résultats. Pas d'historique, pas de recherche enregistrée.
 Surveiller « date de sortie » ou « précommande » chaque semaine veut dire
@@ -310,6 +316,8 @@ c'est-à-dire au pire moment.
 ---
 
 ### 3.8 — Trois badges affichés, aucun moyen de filtrer dessus
+
+> **FAIT le 13/10/2026.** La regex VIDÉO d'abord : **199 → 148**, les 51 écartés vérifiés un par un, aucune vraie vidéo perdue. Puis les badges deviennent cliquables — pas de nouvel onglet, la rangée en compte déjà cinq et déborde à 320 px. Un seul juge par badge, partagé par la carte et le filtre.
 
 C'est le profil exact qui a fait marcher l'onglet « Actu majeure » : un
 signal **déjà visible sur la carte**, sur lequel on ne peut pas agir.
@@ -508,6 +516,8 @@ présents dans le fil ou l'archive.
 
 ### 4.3 — `merge_feed.py` ne fusionne pas les champs cumulatifs ajoutés depuis
 
+> **FAIT le 13/10/2026.** Les quatre clés ont chacune leur règle : union par (source, début) pour le journal, maximum entrée par entrée pour le compteur, la chaîne la plus longue pour l'historique, et pour les chronomètres de silence le nôtre mais avec le `depuis` le plus ancien et `alertee` en OU.
+
 Le script de reprise après conflit de push fait `merged = dict(ours)` et ne
 traite explicitement que **trois clés** : `items`, `total_articles`,
 `attente_recap`.
@@ -531,6 +541,8 @@ pour les champs d'après.
 ---
 
 ### 4.4 — Le cache de décodage est perdu après un conflit de push
+
+> **FAIT le 13/10/2026.** Le cache est mis à l'abri avant le `git reset --hard` et remis après. Les deux asymétries sont corrigées aussi : la fusion archive avec le même `exclure=` et allège `source_link`.
 
 Dans la boucle de reprise de `update-feeds.yml` :
 
@@ -602,6 +614,8 @@ ouvert**, mais avec un argument de moins.
 
 ### 4.6 — 55 assertions portent sur du texte source
 
+> **NON FAIT, délibérément (13/10/2026).** Le constat est juste, mais convertir 38 tests verts est un gros remaniement à faible gain — la suite navigateur couvre déjà ces comportements, et réécrire des tests verts est le meilleur moyen d'en casser un sans s'en apercevoir.
+
 38 tests sur 123 inspectent du texte plutôt que du comportement. Une partie
 est légitime — le README ne citant que des constantes réelles, les workflows
 épinglant leurs dépendances, les contrastes CSS : là, **le texte EST
@@ -617,6 +631,8 @@ une régression qui préserve le texte passe.
 
 ### 4.7 — `hot_count` est publié et lu par personne
 
+> **FAIT le 13/10/2026.** Le test compare désormais `hot_count` au fichier complet, comme le README l'affirmait déjà — la phrase devient vraie au lieu d'être affaiblie.
+
 Écrit une fois (`fetch_feeds.py:4195`), **relu nulle part** : ni le robot,
 ni l'app, ni Discord, ni le push, ni l'audit, ni un test. Vestige de la
 ligne d'état, qui a fini par n'afficher que durée / nouveaux / sources.
@@ -630,6 +646,8 @@ existante.
 ---
 
 ### 4.8 — Dérive documentaire
+
+> **FAIT le 13/10/2026.** Les nombres sont RETIRÉS plutôt que corrigés : ils vivent dans `len(FEEDS)` et `sources_count`. Un test interdit qu'un compte de sources revienne dans la docstring.
 
 La docstring de `fetch_feeds.py`, les vingt premières lignes du fichier
 principal, celles qu'on lit en premier :
@@ -651,6 +669,8 @@ fichiers.
 
 ### 4.9 — 21 vignettes ne s'afficheront jamais
 
+> **FAIT le 13/10/2026** (26 au moment du correctif). `https_les_vignettes()` les repasse en https à chaque passage. On ne perd rien à essayer : l'image est déjà bloquée comme contenu mixte.
+
 21 articles portent une image en `http://`. L'app est servie en HTTPS :
 c'est du **contenu mixte**, le navigateur les bloque. `onerror` les masque
 proprement, donc ça dégrade bien — mais ce sont 21 cartes sans vignette pour
@@ -665,6 +685,8 @@ porte sur l'hôte), donc sans incidence.
 
 ### 4.10 — `.gitignore` ne couvre pas `.env`
 
+> **FAIT le 13/10/2026.**
+
 Deux lignes : `__pycache__/` et `*.pyc`. Rien n'empêche un `.env` local de
 partir dans un dépôt **public**. Rien n'a jamais fuité — vérifié sur tout
 l'historique — mais c'est la protection la moins chère du dépôt, et elle
@@ -673,6 +695,8 @@ manque.
 ---
 
 ### 4.11 — PyPI est épinglé à l'exact, les Actions au tag majeur
+
+> **FAIT le 13/10/2026.** Toutes les Actions sont épinglées au SHA de commit, avec `# v7` pour que Dependabot continue de les suivre. Un test refuse toute référence qui ne soit pas 40 caractères hexadécimaux.
 
 `requirements.txt` fige **tout le graphe**, avec trente lignes de
 commentaire expliquant pourquoi (l'incident `selectolax` du 03/10). Les
@@ -683,6 +707,8 @@ de `v7`. Seule asymétrie avec la politique affichée du dépôt.
 ---
 
 ### 4.12 — Le garde-fou de publication ne protège que les articles
+
+> **FAIT le 13/10/2026.** Deux règles grossières : un champ cumulatif ne peut pas disparaître, et le journal des incidents ne peut pas tomber de moitié d'un coup.
 
 `valide_avant_ecriture` vérifie la structure, les liens, les titres, les
 doublons et la perte massive — **sur `items` uniquement**. Un bug qui

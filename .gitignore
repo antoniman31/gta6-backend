@@ -4,3 +4,10 @@ __pycache__/
 # Captures d'écran prises pour montrer un changement : elles vivent le temps
 # d'une relecture, pas dans l'historique.
 captures/
+
+# Un secret local ne doit JAMAIS pouvoir partir dans un dépôt public. Rien
+# n'a jamais fuité — vérifié sur tout l'historique le 09/10/2026 — et c'est
+# la protection la moins chère du dépôt.
+.env
+.env.*
+!.env.example

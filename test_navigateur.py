@@ -2447,8 +2447,20 @@ def test_vignette_ouvre_larticle(nav, url):
     png = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489"
                         "0000000a49444154789c6360000002000100ffff03000006000557bfabd4000000"
                         "0049454e44ae426082")
-    page.route("**/*.{png,jpg,jpeg,webp,gif}",
-               lambda r: r.fulfill(status=200, content_type="image/png", body=png))
+    # Par TYPE DE RESSOURCE, et pas par extension. Le glob
+    # `**/*.{png,jpg,jpeg,webp,gif}` a tenu jusqu'au 13/10/2026, puis la
+    # première carte à vignette est devenue un article dont l'image porte
+    # une chaîne de requête :
+    #
+    #     …/gta-6-apercu-etendu-14-resized.jpeg?resize=1600,900&key=6ae0c341
+    #
+    # Le glob ne matchait plus, l'image partait sur le vrai réseau — bloqué
+    # ici —, `onerror` masquait la vignette, et le test cliquait sur un
+    # élément invisible. Il a échoué sur `main` sans qu'une ligne de l'app
+    # ait changé : c'est la DONNÉE qui avait bougé. Le type de ressource,
+    # lui, ne dépend ni de l'extension ni de la query.
+    page.route("**/*", lambda r: r.fulfill(status=200, content_type="image/png", body=png)
+               if r.request.resource_type == "image" else r.continue_())
     page.goto(url, wait_until="load")
     page.wait_for_selector("#feed", state="attached")
     page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
@@ -2933,6 +2945,151 @@ def test_mur_du_jour_j(nav, url):
     ctx.close()
 
 
+def test_badges_filtres_chrono_et_recherches(nav, url):
+    """3.8, 3.4 et 3.5 : les badges filtrent, les officiels se lisent, la
+    recherche se souvient."""
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("rattrapageLance = true;")
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+
+    # ---- 3.8 : LA REGEX VIDÉO RESSERRÉE. L'ancienne contenait `\bvideo\b`
+    # nu, qui attrapait « video game », « jeux vidéo » et le média *Video
+    # Games Chronicle* — 51 faux positifs sur 199 au 13/10/2026.
+    faux = page.evaluate("""() => [
+        'GTA 6 On Track To Overthrow The Best-Selling Video Game Of All-Time',
+        'Will GTA 6 make its way to Switch 2? - Video Games Chronicle',
+        'Bad Bunny, animateurs de radio du très attendu jeu vidéo GTA VI',
+        'Jeux vidéo : le mode multijoueur de GTA 6 attendu en 2027',
+    ].map(t => estVideo({title: t}))""")
+    check(not any(faux),
+          "[badges] « video game », « Video Games Chronicle » et « jeu(x) "
+          "vidéo » ne sont PAS des vidéos (%s)" % faux)
+    vrais = page.evaluate("""() => [
+        'A New 5-Minute GTA 6 Video Has Appeared Online',
+        'GTA 6 : 25 minutes de gameplay volées, ce que révèle vraiment la vidéo',
+        'Rockstar drops a new GTA 6 trailer',
+        'Leaked footage shows Vice City at night',
+    ].map(t => estVideo({title: t}))""")
+    check(all(vrais),
+          "[badges] et les vraies vidéos passent toujours (%s)" % vrais)
+
+    # Un seul juge, partagé par la carte et par le filtre. Deux expressions
+    # recopiées divergent au premier ajustement — c'est exactement ce qui
+    # est arrivé à VIDÉO.
+    extrait = page.evaluate("""() => {
+        const src = document.documentElement.outerHTML;
+        const d = src.indexOf('function renderCard');
+        return src.slice(d, d + 4000);
+    }""")
+    check("estVideo(item)" in extrait and "estFuite(item)" in extrait,
+          "[badges] la carte appelle les mêmes juges que le filtre, elle ne "
+          "recopie pas les expressions")
+
+    # Le juge « spécialiste » doit dire EXACTEMENT ce que la carte montre :
+    # le badge ne s'affiche pas sur un article officiel.
+    check(page.evaluate("estSpecialiste({specialist: true, official: true})") is False
+          and page.evaluate("estSpecialiste({specialist: true})") is True,
+          "[badges] un officiel ne compte pas comme spécialiste — sinon le "
+          "filtre ramène des cartes sans le badge cliqué")
+
+    # Cliquer filtre, recliquer annule.
+    page.evaluate("filtreBadge(null, 'video')")
+    page.wait_for_timeout(200)
+    etat = page.evaluate("""() => ({
+        barre: document.getElementById('badgeFiltre').style.display,
+        texte: document.getElementById('badgeFiltre').textContent,
+        toutes: [...document.querySelectorAll('.card')].every(c => c.querySelector('.tag-video')),
+        n: document.querySelectorAll('.card').length,
+    })""")
+    check(etat["barre"] == "flex" and "VIDÉO" in etat["texte"],
+          "[badges] une barre nomme le filtre actif — sinon un fil filtré "
+          "ressemble à un fil vide")
+    check(etat["n"] > 0 and etat["toutes"],
+          "[badges] et toutes les cartes affichées portent le badge cliqué "
+          "(%d cartes)" % etat["n"])
+    page.evaluate("filtreBadge(null, 'video')")
+    page.wait_for_timeout(200)
+    check(page.evaluate("badgeActif") is None
+          and page.evaluate("document.getElementById('badgeFiltre').style.display") == "none",
+          "[badges] recliquer le même badge annule le filtre")
+
+    # Le badge est dans une carte dont le titre et la vignette sont des
+    # liens : sans stopPropagation, le cliquer ouvrirait l'article.
+    corps = page.evaluate("String(filtreBadge)")
+    check("stopPropagation" in corps and "preventDefault" in corps,
+          "[badges] le clic ne remonte pas jusqu'au lien de la carte")
+
+    # ---- 3.5 : la recherche se souvient.
+    page.evaluate("""() => { recherchesRecentes = []; memoriseRecherche('date de sortie');
+                             memoriseRecherche('précommande'); memoriseRecherche('lucia'); }""")
+    puces = page.evaluate("[...document.querySelectorAll('.recherche-texte')].map(b => b.textContent)")
+    check(puces == ["lucia", "précommande", "date de sortie"],
+          "[recherche] les dernières d'abord (%s)" % puces)
+    page.evaluate("memoriseRecherche('ab')")
+    check(page.evaluate("recherchesRecentes.length") == 3,
+          "[recherche] deux caractères ne sont pas une recherche, c'est une "
+          "frappe en cours")
+    page.evaluate("memoriseRecherche('LUCIA')")
+    check(page.evaluate("recherchesRecentes.length") == 3
+          and page.evaluate("recherchesRecentes[0]") == "LUCIA",
+          "[recherche] la casse ne crée pas de doublon : « lucia » et "
+          "« LUCIA » ne gâchent pas deux des quatre places")
+    page.evaluate("""() => { for(const q of ['a1b','a2b','a3b','a4b','a5b']) memoriseRecherche(q); }""")
+    check(page.evaluate("recherchesRecentes.length") == 4,
+          "[recherche] jamais plus de quatre, sinon la rangée passe à la ligne")
+    page.evaluate("relanceRecherche('lucia')")
+    page.wait_for_timeout(300)
+    check(page.evaluate("document.getElementById('searchInput').value") == "lucia",
+          "[recherche] cliquer une puce relance la recherche")
+    page.evaluate("oublieRecherche(null, 'a5b')")
+    check("a5b" not in page.evaluate("recherchesRecentes"),
+          "[recherche] et la croix l'oublie")
+    page.evaluate("document.getElementById('searchInput').value = ''; applyFilters();")
+
+    # ---- 3.4 : les officiels en chronologie.
+    page.evaluate("""async () => {
+        const r = await fetch('%s/feed.json'); const d = await r.json();
+        lastItems = d.items; setTab('rockstar');
+    }""" % base)
+    page.wait_for_timeout(400)
+    chrono = page.evaluate("""() => ({
+        points: document.querySelectorAll('.chrono-point').length,
+        annees: [...document.querySelectorAll('.chrono-annee')].map(e => e.textContent),
+        cartes: document.querySelectorAll('.card').length,
+        premier: (document.querySelector('.chrono-titre') || {}).textContent,
+    })""")
+    check(chrono["points"] > 0 and chrono["cartes"] == 0,
+          "[chrono] l'onglet Rockstar se rend en chronologie, pas en cartes "
+          "(%d points, %d cartes)" % (chrono["points"], chrono["cartes"]))
+    check(len(chrono["annees"]) >= 2
+          and chrono["annees"] == sorted(chrono["annees"], reverse=True),
+          "[chrono] une année sépare les blocs, du plus récent au plus "
+          "ancien (%s)" % chrono["annees"])
+
+    # TOUT y est, sans pagination : une histoire se lit d'un bout à l'autre.
+    attendus = page.evaluate("lastItems.filter(i => i.official).length")
+    check(chrono["points"] == attendus,
+          "[chrono] les %d officiels y sont TOUS, sans « charger plus » "
+          "(%d rendus)" % (attendus, chrono["points"]))
+
+    # Les autres onglets gardent leurs cartes.
+    page.evaluate("setTab('all')")
+    page.wait_for_timeout(300)
+    check(page.evaluate("document.querySelectorAll('.card').length") > 0
+          and page.evaluate("document.querySelectorAll('.chrono-point').length") == 0,
+          "[chrono] et seul l'onglet Rockstar change de forme")
+
+    check(not erreurs, "[badges] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -2991,6 +3148,7 @@ def main():
             test_sources_disent_la_verite(nav, url)
             test_ce_que_jai_rate(nav, url)
             test_mur_du_jour_j(nav, url)
+            test_badges_filtres_chrono_et_recherches(nav, url)
             test_graphiques_detailles(nav, url)
             test_graphiques_autres_rubriques(nav, url)
             nav.close()
