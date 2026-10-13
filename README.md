@@ -7036,6 +7036,35 @@ et les 51 écartés **vérifiés un par un** — aucune vraie vidéo perdue.
 qu'on voit. Une barre nomme le filtre actif, sans quoi un fil filtré
 ressemblerait à un fil vide.
 
+### Le badge devenu un pavé, et la cinquième dérogation aux 44 px
+
+Vu par Antoni sur son téléphone, en thème sombre, l'heure suivant la mise
+en ligne : le badge LEAK rendu comme **un pavé rouge de 44 px de haut**,
+contre 17 pour un badge ordinaire, poussant toute la rangée de source de
+17 à 44.
+
+La cause : `button{}` impose `min-height:44px` à **tout** bouton — c'est la
+règle des cibles tactiles du site, posée en défaut plutôt qu'énumérée. Mon
+reset ne neutralisait que la bordure, le curseur et l'interligne. La police
+et le remplissage, eux, étaient déjà bons.
+
+**Pourquoi aucun test ne l'a vu** : le contrôle tactile vérifie qu'un
+bouton fait **au moins** 44 px. Le badge en faisait exactement 44, donc il
+passait. Un bouton trop **gros** était invisible pour lui — la règle était
+à sens unique. Un contrôle regarde maintenant l'autre sens.
+
+**Et la règle des 44 px n'est pas satisfaisable à cet endroit.** Mesuré sur
+une carte réelle à 390 px : le badge fait 18 px, il y a **zéro** pixel
+au-dessus de lui (il ouvre le corps de la carte) et **six** en dessous
+avant le titre. Une zone de 44 px mordrait donc de 13 px sur le titre —
+l'action principale de la carte — et lui volerait des appuis.
+
+C'est la **cinquième dérogation**, et la seule qui n'atteint pas la cible :
+le pseudo-élément porte la zone à ~24 px, tout ce que la place permet. Elle
+est écrite dans le CSS avec sa mesure, parce qu'une entorse tue plus
+sûrement en silence qu'en étant nommée. Deux contrôles la tiennent : le
+badge garde la taille d'une étiquette, et il ne vole aucun appui au titre.
+
 **Un seul juge par badge**, comme `estMajeur`. Et le juge « spécialiste »
 dit exactement ce que la carte montre — `specialist && !official` — sinon
 le filtre ramènerait des cartes dépourvues du badge qu'on vient de cliquer.

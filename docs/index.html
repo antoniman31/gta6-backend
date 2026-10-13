@@ -503,8 +503,34 @@
   /* Les badges de contenu sont des BOUTONS depuis le 13/10/2026 : la règle
      globale sur button leur imposerait une bordure, un fond et 10px de
      padding. On la neutralise plutôt que de dupliquer .tag-badge. */
-  button.tag-badge, button.specialist-badge{border:none; cursor:pointer; line-height:1.4;}
+  button.tag-badge, button.specialist-badge{
+    border:none; cursor:pointer; line-height:1.4;
+    /* min-height:0 — SANS LUI le badge héritait des 44 px imposés à tout
+       bouton et devenait un pavé. Mesuré le 13/10/2026 sur le téléphone
+       d'Antoni : 44 px de haut contre 17 pour un badge normal, et toute la
+       rangée source passait de 17 à 44. La police et le remplissage, eux,
+       étaient déjà bons : c'était min-height, et lui seul.
+       La zone de clic est traitée juste en dessous — un badge n'est pas
+       dispensé de la règle des 44 px, il la satisfait autrement. */
+    min-height:0;
+  }
   button.tag-badge:hover, button.specialist-badge:hover{filter:brightness(1.15);}
+  /* LA CINQUIÈME DÉROGATION AUX 44 PX, et la seule qui n'atteint pas la
+     cible. Elle est écrite ici parce qu'une entorse tue plus sûrement en
+     silence qu'en étant nommée.
+     Mesuré le 13/10/2026 sur une carte réelle à 390 px : le badge fait
+     18 px, il n'y a ZÉRO pixel au-dessus de lui (il ouvre le corps de la
+     carte) et SIX en dessous avant le titre. Une zone de 44 px mordrait
+     donc de 13 px sur le titre — l'action principale de la carte — et lui
+     volerait des appuis. Entre un badge un peu petit et un titre qui
+     n'obéit plus, le choix est fait.
+     Le pseudo-élément porte la zone à ~24 px sans jamais toucher le titre :
+     c'est tout ce que la place permet. Le badge reste un geste SECONDAIRE,
+     la carte entière mène déjà à l'article. */
+  button.tag-badge, button.specialist-badge{position:relative;}
+  button.tag-badge::after, button.specialist-badge::after{
+    content:""; position:absolute; inset:-3px -2px;
+  }
   /* La chronologie des officiels. Le trait vertical porte toute la lecture :
      c'est lui qui transforme une liste en histoire. */
   .chrono{list-style:none; margin:0; padding:0 0 0 14px; border-left:2px solid var(--line);}

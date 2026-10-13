@@ -3027,6 +3027,63 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     check("stopPropagation" in corps and "preventDefault" in corps,
           "[badges] le clic ne remonte pas jusqu'au lien de la carte")
 
+    # UN BADGE RESTE UN BADGE, MÊME DEVENU BOUTON.
+    #
+    # Le défaut, vu par Antoni sur son téléphone le 13/10/2026 : le badge
+    # LEAK est rendu comme un pavé rouge de 44 px de haut, contre 17 pour un
+    # badge ordinaire, et toute la rangée de source passait de 17 à 44.
+    # La cause : `button{}` impose min-height:44px à TOUT bouton — la règle
+    # des cibles tactiles du site — et mon reset ne neutralisait que la
+    # bordure, le curseur et l'interligne.
+    #
+    # POURQUOI AUCUN TEST NE L'A VU : le contrôle tactile vérifie qu'un
+    # bouton fait AU MOINS 44 px. Le badge en faisait exactement 44, donc il
+    # passait. Un bouton trop GROS était invisible pour lui. Celui-ci
+    # regarde l'autre sens.
+    tailles = page.evaluate("""() => {
+        const btn = document.querySelector('.card-src-row button.tag-badge');
+        const spn = document.querySelector('.card-src-row span.tag-badge');
+        if(!btn || !spn) return null;
+        const b = btn.getBoundingClientRect(), s = spn.getBoundingClientRect();
+        return {bouton: Math.round(b.height), etiquette: Math.round(s.height),
+                rangee: Math.round(btn.closest('.card-src-row').getBoundingClientRect().height)};
+    }""")
+    if tailles:
+        check(abs(tailles["bouton"] - tailles["etiquette"]) <= 2,
+              "[badges] un badge cliquable a la même taille qu'une étiquette "
+              "simple (%d px contre %d)" % (tailles["bouton"], tailles["etiquette"]))
+        check(tailles["rangee"] <= tailles["etiquette"] + 4,
+              "[badges] et il ne gonfle pas la rangée de source (%d px)"
+              % tailles["rangee"])
+
+    # La zone de clic est ÉLARGIE malgré tout — cinquième dérogation aux
+    # 44 px, assumée : il n'y a que 6 px sous le badge avant le titre, donc
+    # une zone de 44 px lui volerait des appuis. ~24 px est tout ce que la
+    # place permet.
+    zone = page.evaluate("""() => {
+        const b = document.querySelector('.card-src-row button.tag-badge');
+        if(!b) return null;
+        b.scrollIntoView({block: 'center'});
+        const r = b.getBoundingClientRect();
+        const titre = b.closest('.card-body').querySelector('.card-title a');
+        const tr = titre.getBoundingClientRect();
+        const surTitre = document.elementFromPoint(tr.left + 20, tr.top + 4);
+        return {
+            pseudo: getComputedStyle(b, '::after').content !== 'none',
+            titreIntact: !!(surTitre && surTitre.closest('.card-title')),
+            badgeAtteignable: document.elementFromPoint(r.left + r.width/2, r.top + r.height/2)
+                                === b,
+        };
+    }""")
+    if zone:
+        check(zone["pseudo"],
+              "[badges] un pseudo-élément élargit la zone de clic du badge")
+        check(zone["titreIntact"],
+              "[badges] et il ne vole AUCUN appui au titre de l'article — "
+              "c'est pour ça que la zone s'arrête à 24 px et pas 44")
+        check(zone["badgeAtteignable"],
+              "[badges] le badge lui-même reste atteignable au centre")
+
     # ---- 3.5 : la recherche se souvient.
     page.evaluate("""() => { recherchesRecentes = []; memoriseRecherche('date de sortie');
                              memoriseRecherche('précommande'); memoriseRecherche('lucia'); }""")
