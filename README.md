@@ -7047,6 +7047,17 @@ de cartes**. Ils sont 77 depuis le début : ça ne se lit pas comme un fil,
 ça se lit comme une histoire. Colonne datée, séparée par année (2022 →
 2026), **sans pagination** — une histoire se lit d'un bout à l'autre.
 
+**Les vignettes, oubliées puis remises le 13/10.** La première version
+n'affichait que la date, le titre et la source. J'avais pourtant mesuré que
+**69 des 77** officiels portent une image, puis construit une forme qui les
+jetait toutes — sans le signaler. Antoni l'a vu dans l'heure : « pourquoi
+il y a plus les images des articles ». Une chronologie d'annonces Rockstar
+sans les images, c'est précisément ce qu'elle est censée mettre en valeur.
+
+Vignette carrée de 72 px, pas pleine largeur : à 200 px par entrée on
+retrouvait la liste de cartes qu'on venait de remplacer. Un contrôle exige
+maintenant que chaque officiel qui a une image la montre.
+
 **Ce que la chronologie a révélé, et que personne n'avait vu** : 28 des 77
 « officiels » (36 %) sont des pages `store.rockstargames.com` — porte-clés,
 t-shirts — et 5 des pages de support. Les cinq premières entrées de

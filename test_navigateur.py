@@ -3079,6 +3079,23 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
           "[chrono] les %d officiels y sont TOUS, sans « charger plus » "
           "(%d rendus)" % (attendus, chrono["points"]))
 
+    # LA VIGNETTE. La première version de la chronologie n'affichait que la
+    # date, le titre et la source : j'avais mesuré que 69 des 77 officiels
+    # portent une image, puis construit une forme qui les jetait toutes sans
+    # le dire. Antoni l'a vu dans l'heure. Une chronologie d'annonces
+    # Rockstar sans les images, c'est ce qu'elle est censée mettre en valeur.
+    vignettes = page.evaluate("""() => {
+        const avec = lastItems.filter(i => i.official && i.image).length;
+        return {attendues: avec,
+                rendues: document.querySelectorAll('.chrono-vignette').length};
+    }""")
+    check(vignettes["rendues"] == vignettes["attendues"] and vignettes["rendues"] > 0,
+          "[chrono] chaque officiel qui a une image la montre (%d sur %d)"
+          % (vignettes["rendues"], vignettes["attendues"]))
+    check(page.evaluate(
+            "document.documentElement.scrollWidth <= window.innerWidth") is True,
+          "[chrono] et la vignette ne fait pas déborder la page en largeur")
+
     # Les autres onglets gardent leurs cartes.
     page.evaluate("setTab('all')")
     page.wait_for_timeout(300)
