@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-13T03:01:29.153369+00:00",
+  "generated_at": "2026-10-13T04:01:33.270654+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 25.3,
+  "duration_seconds": 26.4,
   "decode_failures": 0,
-  "total_articles": 3471,
-  "new_this_run": 2,
+  "total_articles": 3474,
+  "new_this_run": 3,
   "hot_count": 53,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -440,8 +440,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 46,
+      "new_this_run": 1,
+      "articles_exclusifs": 47,
       "last_article": "2026-10-10T07:50:31+00:00",
       "days_since_last_article": 2,
       "status": "ok"
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 947,
-      "last_article": "2026-10-12T21:45:53+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 949,
+      "last_article": "2026-10-13T03:13:37+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,7 +492,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 1299,
       "last_article": "2026-10-13T02:39:37+00:00",
       "days_since_last_article": 0,
@@ -619,14 +619,14 @@
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
       "entries_fetched": 0,
-      "http_status": 404,
+      "http_status": 500,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 50,
       "last_article": "2026-10-09T07:00:14+00:00",
       "days_since_last_article": 3,
-      "status": "cassee"
+      "status": "muette"
     },
     {
       "id": "rockstarintel",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T12:19:42+00:00",
@@ -950,13 +950,13 @@
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-10-08T03:37:14+00:00",
-      "days_since_last_article": 4,
+      "days_since_last_article": 5,
       "status": "ok"
     },
     {
       "id": "numerama",
       "name": "Numerama",
-      "entries_fetched": 100,
+      "entries_fetched": 0,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -964,7 +964,7 @@
       "articles_exclusifs": 7,
       "last_article": "2026-09-25T08:21:07+00:00",
       "days_since_last_article": 17,
-      "status": "ok"
+      "status": "muette"
     },
     {
       "id": "gamergen",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T14:16:46+00:00",
       "days_since_last_article": 4,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 5,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1224,6 +1224,11 @@
       "depuis": "2026-10-13T00:01:29.751441+00:00",
       "succes": 0,
       "alertee": false
+    },
+    "numerama": {
+      "depuis": "2026-10-13T04:01:33.269606+00:00",
+      "succes": 0,
+      "alertee": false
     }
   },
   "decodage_etat": {},
@@ -1233,7 +1238,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1250,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1271,7 +1276,7 @@
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,100,100,100,0",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1342,7 +1347,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 13 Oct 2026 02:59:31 GMT"
+      "modified": "Tue, 13 Oct 2026 03:56:27 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1356,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6acd9ec2-310b\"",
-      "modified": "Tue, 13 Oct 2026 03:00:18 GMT"
+      "etag": "W/\"6acdacd2-310b\"",
+      "modified": "Tue, 13 Oct 2026 04:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1371,8 +1376,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6acd8e8d-ba4\"",
-      "modified": "Tue, 13 Oct 2026 01:51:09 GMT"
+      "etag": "\"6acdaaaf-ba5\"",
+      "modified": "Tue, 13 Oct 2026 03:51:11 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1382,7 +1387,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 13 Oct 2026 03:01:09 GMT"
+      "modified": "Tue, 13 Oct 2026 04:01:12 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -2191,6 +2196,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Cyberleek affirme que la version de GTA 6 dépasse les 200 Go, laissant présager une taille de fichier massive sur PS5 et Xbox - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Cyberleek-affirme-que-la-version-de-GTA-6-depasse-les-200-Go-laissant-presager-une-taille-de-fichier-massive-sur-PS5-et-Xbox.1422619.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxNay1xN1pKbUVWQ3cxbEJWcGxnZFp0TWZKaGpSMkt0dHpPelBGRkRON0RtWUxtR1ZKcmQzMW8yeUVUVHJvaWdzVjAxVE04ZlY4aUY5aVBkQ19yTUw2OFF4dlBZVFkwZkJzSzg4UlFHZlZzS19ldXFBQ3JZRXphUkhOb2V4U1dXTVJ0cFlzdGhmMXlHUnhoelBpeUx5M1plM3A0aXROOTVRVXdJUFdTWkQweVBBNjlBTEhvbG1fU3pZYlRnSllucVE5Y0Fhamt2OVhfS2NMbHhqb3Z1aTEyMkFBOE8wRnQ3WWZPbnNrVE8yb1djTHp1WW52TER4NkZPZw?oc=5",
+      "date": "2026-10-13T03:13:37+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6Download.jpg",
+      "description": "Cyberleek affirme que la version de GTA 6 dépasse les 200 Go, laissant présager une taille de fichier massive sur PS5 et Xbox&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "La carte de GTA 6 pourrait être incluse avec les précommandes physiques sur PS5 et Xbox, selon une fuite de GameStop - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/La-carte-de-GTA-6-pourrait-etre-incluse-avec-les-precommandes-physiques-sur-PS5-et-Xbox-selon-une-fuite-de-GameStop.1422406.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxQblBIX1lkWnQ5US1QcEF0dUdhWVA5dVJRV3ZVM0dZVWFfeEMtdzR2MzVSY3RBSTdxdUFlSk8tY3hEUElhaW5LUFBaTHRvYzQyWjVxY1pGNFlpN3U0UVZZQXRUV2Jpd1p2Vjh0UU1MbjZlRUhhNmZWa1F6cXhWS0xURG5iTW5TdXRBbS0tREx5b0NNZzkzWkxTSUZaU3VGSzFiUjNMNHZLN2VkUnpZVVVaWW5DMWt2VjR5d1BpZ2VkYk9PZzdPeXk1enNLWEsyN09LaDlVTlRjRzBpYW9UMW5US1F6U3FZcWNaUXdiajk2UFFEZw?oc=5",
+      "date": "2026-10-13T03:13:29+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6MapBoard.jpg",
+      "description": "La carte de GTA 6 pourrait être incluse avec les précommandes physiques sur PS5 et Xbox, selon une fuite de GameStop&nbsp;&nbsp;Notebookcheck.fr"
+    },
     {
       "title": "GTA 6 CyberLeek Threatens Full Story Leak if Coin Hits $30M - ThePCEnthusiast",
       "link": "https://thepcenthusiast.com/gta-6-cyberleek-full-game-leak-crypto-threat/",
@@ -6178,32 +6209,6 @@
       "lang": "en",
       "image": "https://assets-prd.ignimgs.com/2026/10/09/gta-6-cover-art-1791589629353.jpg?width=1280&format=jpg&auto=webp&quality=80",
       "description": "GTA 6 Fan Says They Asked Rockstar to Send Them a Poster All the Way to Brazil — So They Did&nbsp;&nbsp;IGN"
-    },
-    {
-      "title": "GTA 6 : date de sortie, prix, précommande et éditions, le guide complet - INFINITY AREA",
-      "link": "https://infinity-area.com/article/gta-6-date-de-sortie-prix-precommande-et-editions",
-      "source_link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQMENDN0kxUXdDNnlVaU5sZnV4LXh2SXJxMk50S0ZVVXdOMFNVOE9DY3FMUGF1TE40d3FDQjBiVk4tcnVkakMyMVV6UjJHZ25vMjh3dUpsWGVobWR1Ri1VdnRaU3VGSl9CUUtfTTVQSmUwQnBVeXRnbmFsYXR2ZFQ2QURIVjVZTk1SNHdV?oc=5",
-      "date": "2026-10-09T23:51:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": null,
-      "description": "GTA 6 : date de sortie, prix, précommande et éditions, le guide complet&nbsp;&nbsp;INFINITY AREA"
-    },
-    {
-      "title": "Grand Theft Auto VI Performance Comparison on Xbox Series X and PlayStation 5 Consoles - GameGPU",
-      "link": "https://en.gamegpu.com/news/igry/sravnenie-proizvoditelnosti-grand-theft-auto-vi-na-konsolyakh-xbox-series-i-playstation-5",
-      "source_link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPYi1DcnA0N3BrZ2o5VGcxY29UejdabU52QmlIRnpLUWVwYU9zTXB0N3pHdlNTWXpMbFlyWko4Z2xuYjMxME1GN2tuU3ZwVFl3SHZLNWxEUVNtR3I1a1FwUzZDZG9pbF9kNDVUaEFaYlNZM1lvbVVGMkZOVjN0eDlVWXNiWHN0WDNudVQtV2ZfckRhQWVpMjVEVlBuRkxQV2FXdVdicy1Ld2VjbDBlVTNKcG9CZ3RSTzV6SGh2Z0d0NA?oc=5",
-      "date": "2026-10-09T22:21:37+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gamegpu.com/images/1_2026/NEWS/Q4/okt/10/gt6_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q4/okt/10/gt6_gpu.webp?width=1920&height=1080",
-      "description": "Grand Theft Auto VI Performance Comparison on Xbox Series X and PlayStation 5 Consoles&nbsp;&nbsp;GameGPU"
     }
   ],
   "partial": true,
