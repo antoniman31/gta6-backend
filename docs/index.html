@@ -1320,6 +1320,25 @@
      seule désormais, et la liste est passée EN DERNIER dans son onglet pour
      que rien ne soit enterré derrière elle. */
   .panneau-onglet #sourceList{padding-right:2px;}
+  /* Le repli des sources. Le <summary> doit se lire comme un bouton : c'est
+     lui qui porte l'information « ça n'agit qu'en mode de secours » quand la
+     liste est fermée, donc il ne peut pas se fondre dans le fond. */
+  /* Mêmes jetons que les boutons de famille juste en dessous (--bg-panel,
+     --line), et pas --card/--border : à la première version la bordure
+     disparaissait sur le fond du panneau, et le seul contrôle qui ouvre les
+     soixante-trois interrupteurs ne se lisait pas comme un contrôle. */
+  .src-repli > summary{
+    cursor:pointer; list-style:none; padding:10px 14px; border-radius:var(--r-sm);
+    border:1px solid var(--line); background:var(--bg-panel);
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+    color:var(--text); letter-spacing:0.02em; user-select:none;
+    transition:border-color var(--t-court) var(--courbe);
+  }
+  .src-repli > summary::-webkit-details-marker{display:none;}
+  .src-repli > summary::before{content:"▸ "; display:inline-block; width:1em;}
+  .src-repli[open] > summary::before{content:"▾ ";}
+  .src-repli > summary:hover{border-color:var(--accent);}
+  .src-repli[open] > summary{margin-bottom:10px;}
   .src-outils{margin-bottom:10px;}
   .src-count-ligne{margin-top:8px;}
   .src-actions{display:flex; gap:6px; margin-top:8px;}
@@ -1768,24 +1787,32 @@
       </div>
     </div>
 
-    <div class="setting-group">
-      <span class="setting-label">Sources actives</span>
-      <div class="src-outils">
-        <input type="text" id="sourceFilter" class="setting-input wide champ-mono"
-               aria-label="Filtrer les sources par nom" placeholder="Filtrer les sources…">
-        <div class="src-count-ligne"><span id="sourceCount" class="valeur-mono"></span></div>
-        <div class="src-actions">
-          <button class="small" onclick="toutesSources(true)">Tout activer</button>
-          <button class="small danger" onclick="toutesSources(false)">Tout désactiver</button>
+    <!-- Les soixante-trois interrupteurs sont repliés quand le robot
+         alimente le fil, parce qu'ils n'y décident de RIEN : le chemin
+         backend lit feed.json et ne consulte jamais `enabled`. Ils ne
+         servent qu'au mode de secours.
+         ATTENTION au balisage. L'étiquette et la .setting-desc[hidden]
+         restent ENFANTS DIRECTS du .setting-group : greffeAides() les
+         cherche en `:scope >`, et les enfermer dans le <details> ferait
+         disparaître le bouton « ? ». Et le titre s'écrit dans un <span>
+         dédié, jamais sur .setting-label — greffeAides() y injecte le
+         « ? », qu'un textContent effacerait. -->
+    <div class="setting-group" id="sourcesGroup">
+      <span class="setting-label"><span id="sourcesLabelTexte">Sources actives</span></span>
+      <details class="src-repli" id="sourcesRepli">
+        <summary id="sourcesResume">Sources</summary>
+        <div class="src-outils">
+          <input type="text" id="sourceFilter" class="setting-input wide champ-mono"
+                 aria-label="Filtrer les sources par nom" placeholder="Filtrer les sources…">
+          <div class="src-count-ligne"><span id="sourceCount" class="valeur-mono"></span></div>
+          <div class="src-actions">
+            <button class="small" onclick="toutesSources(true)">Tout activer</button>
+            <button class="small danger" onclick="toutesSources(false)">Tout désactiver</button>
+          </div>
         </div>
-      </div>
-      <div class="setting-desc" hidden>
-        Une source éteinte n'est plus interrogée, et ses articles déjà reçus
-        sortent de la liste. Rien n'est supprimé : la rallumer les ramène.
-        « Tout désactiver » demande confirmation — la sélection en cours, elle,
-        ne se récupère pas.
-      </div>
-      <div class="source-list" id="sourceList"></div>
+        <div class="source-list" id="sourceList"></div>
+      </details>
+      <div class="setting-desc" hidden id="sourcesDesc"></div>
     </div>
 
     </div>
@@ -2560,6 +2587,11 @@ function populateSettingsUI(){
   litMaxDisplay();
   majCompteurMots("keywordsInput", "keywordsCount", "mot-clé", "mots-clés", "aucun mot-clé");
   majCompteurMots("excludeKeywordsInput", "excludeKeywordsCount", "exclusion", "exclusions", "aucune exclusion");
+  // Ici et pas dans openSettings : populateSettingsUI est aussi rejouée
+  // après chaque vérification quand le panneau est ouvert, et c'est ce qui
+  // fait suivre la section à une bascule backend → mode direct.
+  majSectionSources();
+  updateSourcesLine();
   updateThemeButtons();
 }
 
@@ -2794,9 +2826,101 @@ function escapeXml(str){
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// UN SEUL JUGE pour « est-ce que les interrupteurs de source servent à
+// quelque chose, là, maintenant ». Trois endroits en dépendent — le repli de
+// la section, son titre, et la ligne du panneau Informations — et ils
+// doivent dire la même chose, sinon on remplace un mensonge par trois.
+//
+// Le chemin backend construit le fil depuis feed.json et ne consulte JAMAIS
+// settings.feeds[].enabled : décocher « IGN » n'y retire pas un article.
+// Les interrupteurs ne décident vraiment que dans le mode de secours, où
+// l'app va chercher les flux elle-même (activeFeeds dans checkNow).
+//
+// On lit le mode RÉELLEMENT en cours, pas l'intention : un backend
+// configuré mais injoignable fait basculer la page en mode direct, et ce
+// jour-là les interrupteurs redeviennent la vraie commande. Avant la
+// première vérification, l'indicateur ne porte encore aucun mode : c'est
+// alors l'adresse du backend qui tranche, puisque c'est ce que la page
+// s'apprête à utiliser.
+function sourcesAgissent(){
+  const mode = document.getElementById("modeIndicator");
+  if(mode && mode.classList.contains("direct")) return true;
+  if(mode && mode.classList.contains("backend")) return false;
+  return !settings.backendUrl;
+}
+
+// Combien de sources le ROBOT interroge, d'après ce qu'il publie lui-même.
+// Rien à voir avec les interrupteurs : c'est le seul chiffre vrai quand le
+// backend alimente le fil.
+function sourcesDuRobot(){
+  const d = derniereReponseBackend || {};
+  if(typeof d.sources_count === "number") return d.sources_count;
+  if(Array.isArray(d.sources)) return d.sources.length;
+  if(Array.isArray(d.sources_health)) return d.sources_health.length;
+  return null;
+}
+
 function updateSourcesLine(){
+  const el = document.getElementById("infoSourcesLine");
+  if(!el) return;
+
+  // En mode backend, lister les sources COCHÉES ici serait faux : le robot
+  // interroge les siennes quoi qu'il arrive. On affiche donc ce qu'il fait
+  // vraiment, ce qui rend la ligne utile au lieu de la retirer.
+  if(!sourcesAgissent()){
+    const n = sourcesDuRobot();
+    el.textContent = n === null
+      ? "sources : interrogées par le robot, pas par cet appareil"
+      : `sources : ${n} interrogées par le robot (les interrupteurs des réglages n'agissent qu'en mode de secours)`;
+    return;
+  }
   const active = settings.feeds.filter(f => f.enabled).map(f => f.name);
-  document.getElementById("infoSourcesLine").textContent = "sources : " + (active.length ? active.join(" · ") : "aucune");
+  el.textContent = "sources : " + (active.length ? active.join(" · ") : "aucune");
+}
+
+// Le repli et le titre de la section « Sources » des réglages. Appelé par
+// populateSettingsUI, donc rejoué à chaque ouverture du panneau ET après
+// chaque vérification — c'est ce qui le fait suivre une bascule de mode.
+function majSectionSources(){
+  const repli = document.getElementById("sourcesRepli");
+  const resume = document.getElementById("sourcesResume");
+  const titre = document.getElementById("sourcesLabelTexte");
+  const desc = document.getElementById("sourcesDesc");
+  if(!repli || !resume || !titre || !desc) return;
+
+  const n = settings.feeds.length;
+  const agissent = sourcesAgissent();
+
+  // open n'est forcé qu'au CHANGEMENT de mode : sinon, rouvrir le panneau
+  // refermerait sous le doigt une liste qu'on venait de déplier.
+  if(repli.dataset.mode !== String(agissent)){
+    repli.open = agissent;
+    repli.dataset.mode = String(agissent);
+  }
+
+  if(agissent){
+    titre.textContent = "Sources actives";
+    resume.textContent = `${n} sources interrogées par cet appareil`;
+    desc.textContent = "Mode de secours : l'app va chercher les flux "
+      + "elle-même, et ces interrupteurs décident lesquels. Une source "
+      + "éteinte n'est plus interrogée, et ses articles déjà reçus sortent "
+      + "de la liste. Rien n'est supprimé : la rallumer les ramène. "
+      + "« Tout désactiver » demande confirmation — la sélection en cours, "
+      + "elle, ne se récupère pas.";
+  }else{
+    titre.textContent = "Sources — n'agit qu'en mode de secours";
+    // Le titre juste au-dessus porte déjà l'avertissement. Le répéter ici
+    // faisait dire deux fois la même chose en deux lignes, et à 320 px les
+    // deux passaient à la ligne. Le résumé ne porte donc que le décompte.
+    resume.textContent = `${n} sources`;
+    desc.textContent = "Tant que le robot GitHub alimente le fil, ces "
+      + "interrupteurs ne retirent aucun article : il interroge ses propres "
+      + "sources, quel que soit leur état ici. Ils ne servent qu'au mode de "
+      + "secours, quand le robot est injoignable et que l'app va chercher "
+      + "les flux elle-même. Le réglage est conservé — en mémoire, dans ce "
+      + "navigateur et dans la sauvegarde — pour que ce jour-là il soit "
+      + "déjà prêt.";
+  }
 }
 
 

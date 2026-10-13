@@ -262,6 +262,8 @@ avoir ouvert `docs/index.html` assez loin.
 
 ### 3.7 — Les 63 interrupteurs de source ne font RIEN en mode backend
 
+> **FAIT le 13/10/2026.** La section est repliée et étiquetée « Sources — n'agit qu'en mode de secours » quand le robot répond, dépliée et pleinement utile en mode direct ; la ligne du panneau Informations annonce désormais les 63 sources que le ROBOT interroge, lues dans `sources_count`, au lieu des cases cochées ici. Rien n'est effacé. Un juge unique, `sourcesAgissent()`, décide pour les trois endroits. 15 contrôles de navigateur. Voir le README, « Les interrupteurs de source disent enfin la vérité ».
+
 **Trouvé le 09/10/2026. Ce n'est pas une idée, c'est une dette : l'app
 affiche une fonction qui n'existe pas.**
 
