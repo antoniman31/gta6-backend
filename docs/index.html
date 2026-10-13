@@ -605,8 +605,23 @@
     letter-spacing:0.03em; color:var(--text);
   }
   .badge-filtre-compte{font-size:11px; color:var(--text-dim); flex:1 1 auto;}
+  /* Chaque paire a été mesurée AVANT d'être écrite, avec la même formule
+     que le contrôle de contraste du site. Toutes dépassent le seuil WCAG
+     AA de 4,5:1, et toutes les sept sont au-dessus de LEAK (4,70) :
+       PC 5,93 · PRÉCOMMANDE 5,02 · PRIX 5,02 · LUCIA/JASON 6,04
+       TAKE-TWO 5,47 · RUMEUR 7,63 · DATE 7,90
+     Fixes dans les deux thèmes, comme LEAK et VIDÉO : un badge rouge reste
+     rouge. Le contrôle les mesure directement — fixe ne veut pas dire
+     dispensé. */
   .tag-leak{background:#e11d48; color:#fff;}
   .tag-video{background:#7c3aed; color:#fff;}
+  .tag-pc{background:#0369a1; color:#fff;}
+  .tag-preco{background:#15803d; color:#fff;}
+  .tag-prix{background:#b45309; color:#fff;}
+  .tag-perso{background:#be185d; color:#fff;}
+  .tag-take2{background:#0f766e; color:#fff;}
+  .tag-rumeur{background:#57534e; color:#fff;}
+  .tag-date{background:#4338ca; color:#fff;}
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
   .specialist-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
@@ -4508,8 +4523,64 @@ function estMajeur(item){
 const RE_FUITE = /\bleak(s|ed)?\b|\bfuite/i;
 const RE_VIDEO = /\btrailer\b|\bgameplay\b|\bfootage\b|\bvideo\b(?!\s*games?\b)|(?<!jeux )(?<!jeu )\bvidéo\b|\bclip\b/i;
 
+// ---------- Sept badges de plus, sondés avant d'être écrits ----------
+//
+// Antoni a demandé le 13/10/2026 quels autres badges seraient utiles. Le
+// corpus entier — 8 378 titres d'archive et de fil — a été sondé avant de
+// proposer quoi que ce soit, et les motifs ci-dessous sont la version
+// RESSERRÉE : les premières moutures attrapaient n'importe quoi.
+//
+// Ce que le sondage a écarté, et pourquoi :
+//
+//   CARTE   643 au motif large, 56 une fois resserré. « Vice City » est le
+//           décor du jeu : il attrape les maillots du Miami Heat, une ville
+//           rebaptisée pour l'occasion, les éditions collector. Zéro
+//           article la moitié des jours une fois nettoyé ;
+//   DÉMENTI 18 en trente jours, VINGT-NEUF jours sur trente et un à zéro ;
+//   BANDE-ANNONCE  35, et déjà couvert par VIDÉO ;
+//   RETARD  120, mais « report » / « reporté » est ambigu en français — un
+//           article qui RAPPORTE n'est pas un jeu REPORTÉ.
+//
+// Et ce que les motifs gardés ont dû perdre :
+//
+//   PRIX  attrapait « piracy could cost $1 billion » et la hausse des
+//         ventes de PS5 Pro. Le montant nu partait ; restent « prix »,
+//         « price tag » et « coûtera » ;
+//   DATE  attrapait « soirée de lancement à Genève » et « l'édition de
+//         lancement de Rayman ». « lancement » seul est parti.
+//
+// Volumes mesurés sur les trente derniers jours (7 215 articles) :
+//
+//     PC            471   6,5 %    2 jours à zéro sur 31
+//     PERSONNAGES   319   4,4 %    5
+//     PRÉCOMMANDE   242   3,4 %    6
+//     PRIX          233   3,2 %    7
+//     TAKE-TWO      209   2,9 %    8
+//     RUMEUR        179   2,5 %    9
+//     DATE          129   1,8 %    4
+//
+// CE QUE ÇA COÛTE À LA DENSITÉ, mesuré avant de décider : les cartes sans
+// aucun badge passent de 52,5 % à 42,2 %, celles à trois badges ou plus de
+// 3,0 % à 5,1 %. Le maximum monte à six, mais sur DEUX cartes du fil
+// entier. La fiche 3.3 annonçait « jusqu'à six badges » comme un défaut
+// général ; elle devient vraie sur deux articles sur 3 589.
+const RE_PC = /\bpc\b|\bsteam\b|epic games/i;
+const RE_PRECO = /pr[ée]commande|pre-?order/i;
+const RE_PRIX = /\bprix\b|\bprice tag\b|\bcoûtera\b/i;
+const RE_PERSO = /\blucia\b|\bjason\b/i;
+const RE_TAKE2 = /take-?two|zelnick|r[ée]sultats (financiers|trimestriels)|actionnaires/i;
+const RE_RUMEUR = /\brumeur|\brumou?r|reportedly|selon nos informations/i;
+const RE_DATE = /date de sortie|release date|launch date/i;
+
 function estFuite(item){ return RE_FUITE.test((item && item.title) || ""); }
 function estVideo(item){ return RE_VIDEO.test((item && item.title) || ""); }
+function estPC(item){ return RE_PC.test((item && item.title) || ""); }
+function estPreco(item){ return RE_PRECO.test((item && item.title) || ""); }
+function estPrix(item){ return RE_PRIX.test((item && item.title) || ""); }
+function estPerso(item){ return RE_PERSO.test((item && item.title) || ""); }
+function estTake2(item){ return RE_TAKE2.test((item && item.title) || ""); }
+function estRumeur(item){ return RE_RUMEUR.test((item && item.title) || ""); }
+function estDate(item){ return RE_DATE.test((item && item.title) || ""); }
 // `&& !official` et pas `specialist` tout court : le badge ne s'affiche
 // QUE sur une carte non officielle — un article de Rockstar porte déjà
 // « OFFICIEL », et empiler les deux n'apprend rien. Le juge doit dire
@@ -4519,8 +4590,22 @@ function estSpecialiste(item){
   return Boolean(item && item.specialist && !item.official);
 }
 
-const JUGES_BADGE = { leak: estFuite, video: estVideo, specialist: estSpecialiste };
-const NOMS_BADGE = { leak: "LEAK", video: "VIDÉO", specialist: "SPÉCIALISTE GTA 6" };
+const JUGES_BADGE = {
+  leak: estFuite, video: estVideo, specialist: estSpecialiste,
+  pc: estPC, preco: estPreco, prix: estPrix, perso: estPerso,
+  take2: estTake2, rumeur: estRumeur, date: estDate,
+};
+const NOMS_BADGE = {
+  leak: "LEAK", video: "VIDÉO", specialist: "SPÉCIALISTE GTA 6",
+  pc: "PC", preco: "PRÉCOMMANDE", prix: "PRIX", perso: "LUCIA / JASON",
+  take2: "TAKE-TWO", rumeur: "RUMEUR", date: "DATE DE SORTIE",
+};
+
+// L'ORDRE D'AFFICHAGE, et il n'est pas alphabétique. Les deux premiers
+// disent qu'il s'est passé quelque chose ; les suivants disent de quoi
+// l'article parle. Un badge SUJET ne doit jamais précéder une alerte.
+const ORDRE_BADGES = ["leak", "video", "date", "pc", "preco", "prix",
+                      "perso", "take2", "rumeur"];
 
 // Pas mémorisé entre deux sessions, à dessein : c'est un coup d'œil, pas
 // un réglage. Retrouver le fil filtré sur « fuite » trois jours plus tard
@@ -4901,15 +4986,23 @@ function renderChronologie(items){
     const heure = bon
       ? d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
 
-    // Seulement les badges qui DISENT quelque chose ici. Mesuré sur les 77
-    // officiels : « OFFICIEL ROCKSTAR » serait sur 100 % des lignes, et LEAK
-    // sur ZÉRO — deux badges morts. Restent « actu majeure » (4) et
-    // « vidéo » (10). Les mêmes juges que partout, jamais une copie.
+    // LA MÊME BOUCLE QUE LA CARTE, et c'est ce qui rend la règle vivante :
+    // un badge qui ne s'applique à aucune ligne ne se rend jamais, sans
+    // qu'on ait à tenir une liste à jour. Mesuré sur les 77 officiels au
+    // 13/10/2026 : seuls « vidéo » (10) et « précommande » (12) existent
+    // ici ; leak, pc, prix, personnages, take-two, rumeur et date sont à
+    // zéro, donc invisibles d'eux-mêmes. « OFFICIEL ROCKSTAR » est le seul
+    // exclu explicitement — il serait sur 100 % des lignes, et un badge
+    // que tout le monde porte n'informe personne.
     const badges =
       (estMajeur(item)
         ? `<span class="tag-badge tag-hot">🔥 ACTU MAJEURE · ${nombreDeRedactions(item)} SOURCES</span>` : "")
-      + (estVideo(item)
-        ? `<button type="button" class="tag-badge tag-video" onclick="filtreBadge(event,'video')" title="Ne montrer que les vidéos">VIDÉO</button>` : "");
+      + ORDRE_BADGES
+          .filter(cle => cle !== "specialist" && JUGES_BADGE[cle](item))
+          .map(cle => `<button type="button" class="tag-badge tag-${cle}" `
+             + `onclick="filtreBadge(event,'${cle}')" `
+             + `title="Ne montrer que : ${escapeAttr(NOMS_BADGE[cle].toLowerCase())}">`
+             + `${escapeHtml(NOMS_BADGE[cle])}</button>`).join("");
 
     return sep + `
       <li class="chrono-point${lu ? " lu" : ""}" id="card-${safeId}">
@@ -5184,10 +5277,17 @@ function renderCard(item, newLinks, searchQuery){
 
   // Badges de contenu — même principe qu'estMajeur : UN SEUL juge, partagé
   // par la carte et par le filtre. Voir estFuite / estVideo plus haut.
-  const leakBadge = estFuite(item)
-    ? `<button type="button" class="tag-badge tag-leak" onclick="filtreBadge(event,'leak')" title="Ne montrer que les fuites">LEAK</button>` : "";
-  const videoBadge = estVideo(item)
-    ? `<button type="button" class="tag-badge tag-video" onclick="filtreBadge(event,'video')" title="Ne montrer que les vidéos">VIDÉO</button>` : "";
+  // UNE SEULE BOUCLE, et pas neuf lignes recopiées. À deux badges la
+  // duplication passait encore ; à neuf elle garantissait qu'un ajout
+  // oublierait un endroit — c'est exactement ce qui est arrivé à VIDÉO,
+  // dont la carte et le filtre ont divergé.
+  const badgesContenu = ORDRE_BADGES
+    .filter(cle => cle !== "specialist" && JUGES_BADGE[cle](item))
+    .map(cle => `<button type="button" class="tag-badge tag-${cle}" `
+       + `onclick="filtreBadge(event,'${cle}')" `
+       + `title="Ne montrer que : ${escapeAttr(NOMS_BADGE[cle].toLowerCase())}">`
+       + `${escapeHtml(NOMS_BADGE[cle])}</button>`)
+    .join("");
   const langBadge = item.lang === "fr" ? `<span class="tag-badge tag-lang">FR</span>` : "";
 
   // Nombre de rédactions qui couvrent la même actualité. Le backend ne
@@ -5225,7 +5325,7 @@ function renderCard(item, newLinks, searchQuery){
         <div class="card-body">
           <div class="card-src-row">
             <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
-            ${hotBadge}${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
+            ${hotBadge}${officialBadge}${specialistBadge}${badgesContenu}${langBadge}
           </div>
           <h3 class="card-title">${linkUrl
             ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`

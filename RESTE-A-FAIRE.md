@@ -357,6 +357,22 @@ les filtres actifs.
 
 ---
 
+### 3.9 — Sept badges de plus
+
+> **FAIT le 13/10/2026.** Sondé sur 8 378 titres avant d'écrire une ligne. Sept retenus : PC, LUCIA / JASON, PRÉCOMMANDE, PRIX, TAKE-TWO, RUMEUR, DATE DE SORTIE. Quatre écartés à la mesure : CARTE (« Vice City » attrape les maillots des Miami Heat), DÉMENTI (29 jours à zéro sur 31), BANDE-ANNONCE (déjà couvert par vidéo), RETARD (« report » est ambigu en français). Cliquables comme les trois autres, une couleur par badge, les neuf contrastes calculés avant le CSS.
+
+**La densité, que j'avais annoncée en l'air.** J'avais dit qu'à quatre
+badges on retomberait dans le problème de 3.3. Mesuré sur 3 589 articles :
+les cartes sans badge passent de 52,5 % à 42,2 %, celles à trois ou plus de
+3,0 % à 5,1 %, maximum six sur deux cartes. 1,3 point de coût, pas un
+problème.
+
+**Une seule boucle.** La carte et la chronologie parcourent `ORDRE_BADGES`
+avec le même code. Neuf lignes recopiées auraient garanti qu'un ajout en
+oublie une — ce qui était déjà arrivé à la vidéo.
+
+---
+
 ### Ce que je recommanderais de faire en premier
 
 **3.7 d'abord** — ce n'est pas une idée mais une dette, la décision est
@@ -364,7 +380,8 @@ prise, et c'est petit. Puis **3.2**, de l'assemblage pur qui sert tous les
 jours et prépare le jour J mieux que n'importe quoi d'autre. **3.1** est le
 problème plus grave mais demande une mesure avant de choisir les seuils.
 
-3.3 à 3.5 et 3.8 sont du confort réel, sans échéance. **3.6 est annulée.**
+3.3 à 3.5, 3.8 et 3.9 sont du confort réel, sans échéance. **3.6 est
+annulée.**
 
 Dans 3.8, le resserrage de la regex VIDÉO se tient tout seul : il corrige
 45 cartes mal badgées aujourd'hui, sans attendre qu'on construise un

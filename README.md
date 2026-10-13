@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1787
+qui permet de tester tout le pipeline sans sortir de la machine. **1794
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -785,7 +785,8 @@ est la limite.
 
 **Fonctionnalités :** recherche, filtres par source/lu-non lu/nouveauté,
 mode dense, pagination progressive (30 articles à la fois, pas 500 d'un
-coup), regroupement par jour, badges (officiel, spécialiste, leak, vidéo,
+coup), regroupement par jour, badges cliquables (officiel, spécialiste, fuite, vidéo,
+PC, précommande, prix, Lucia / Jason, Take-Two, rumeur, date de sortie,
 FR), compte à rebours jusqu'au 19 novembre 2026 avec 4 paliers visuels
 d'intensité croissante (normal → teinte orangée dès 30 jours → pulsation
 orange dès 7 jours → mode urgence rouge/majuscules dernières 24h),
@@ -7269,6 +7270,78 @@ sur un autre jeu de titres. Il serait tombé le jour où Rockstar intitule
 ses annonces autrement, sans qu'aucun défaut n'existe. Le nombre est
 désormais **lu dans le message**, et c'est l'arithmétique qui est vérifiée :
 listées + annoncées non listées = le compte du titre.
+
+## Sept badges de plus, et ce que la mesure a écarté — 13/10/2026
+
+Trois badges de contenu existaient (spécialiste, vidéo, fuite) et le filtre
+venait d'être branché dessus. La question posée était : lesquels ajouter.
+Elle a été traitée en sondant le corpus — 8 378 titres, dont 7 215 sur la
+fenêtre de trente jours — avant d'écrire une ligne.
+
+### Les sept retenus
+
+| badge | sur 30 j | part du fil | jours à zéro sur 31 |
+|---|---|---|---|
+| PC | 471 | 6,5 % | 2 |
+| LUCIA / JASON | 319 | 4,4 % | 5 |
+| PRÉCOMMANDE | 242 | 3,4 % | 6 |
+| PRIX | 233 | 3,2 % | 7 |
+| TAKE-TWO | 209 | 2,9 % | 8 |
+| RUMEUR | 179 | 2,5 % | 9 |
+| DATE DE SORTIE | 129 | 1,8 % | 4 |
+
+Aucun n'est en dessous du plus rare des trois existants, et aucun ne passe
+plus d'un jour sur trois à zéro : un badge absent la moitié du mois est un
+filtre qui rend un fil vide.
+
+### Les quatre écartés, et pourquoi
+
+- **CARTE** : 643 articles avec une expression large, 56 une fois
+  resserrée. « Vice City » attrape les maillots des Miami Heat ;
+- **DÉMENTI** : 18 articles, et vingt-neuf jours à zéro sur trente et un ;
+- **BANDE-ANNONCE** : 35 articles, tous déjà pris par vidéo ;
+- **RETARD** : en français, « report » et « reporté » sont ambigus — un
+  média qui *rapporte* une information n'annonce aucun retard.
+
+Deux expressions ont aussi été resserrées avant d'être retenues : celle du
+prix a perdu les montants nus, qui lui faisaient prendre « piracy could
+cost $1 billion », et celle de la date a perdu « lancement », qui lui
+faisait prendre une soirée de lancement à Genève.
+
+### La densité, mesurée et non supposée
+
+J'avais annoncé qu'à quatre badges on retomberait dans le problème de
+l'encombrement des cartes. C'était faux, et la mesure le dit : sur
+3 589 articles, les cartes sans aucun badge passent de 52,5 % à 42,2 %,
+celles qui en portent trois ou plus de 3,0 % à 5,1 %, et le maximum observé
+est de six — sur exactement deux cartes. Le coût réel est de 1,3 point.
+
+### Une seule boucle, et neuf couleurs
+
+Les neuf badges se rendent par une boucle unique sur `ORDRE_BADGES`,
+partagée mot pour mot par la carte et par la chronologie. Neuf lignes
+recopiées garantissaient qu'un ajout en oublierait une — c'est exactement
+ce qui était arrivé à la vidéo, dont l'expression avait divergé entre la
+carte et le filtre. `JUGES_BADGE` décide, `NOMS_BADGE` nomme, et un
+contrôle exige que les deux tables aient les mêmes clés.
+
+L'ordre n'est pas alphabétique : les alertes d'abord (fuite, vidéo, date),
+les sujets ensuite. Un lecteur qui parcourt le fil voit le signal urgent en
+tête de rangée.
+
+Chaque badge a sa couleur, et **les neuf contrastes ont été calculés avant
+d'écrire le CSS** : de 4,70:1 pour le plus serré à 7,90:1, tous au-dessus
+du seuil AA. Un contrôle refuse tout badge rendu sans sa classe de couleur.
+
+### Un test qui accusait le code d'un défaut lui appartenant
+
+Quatre contrôles de la chronologie sont tombés d'un coup : cinquante
+officiels rendus sur soixante-dix-sept, les vignettes en proportion, une
+seule année au lieu de deux. Le code de la chronologie n'avait pas changé.
+La cause était dans le contrôle d'avant, qui abaisse le plafond
+d'affichage pour rendre un fil fabriqué d'un seul coup et ne le remettait
+pas. Le plafond est désormais remis explicitement, avec la raison écrite
+à côté.
 
 ## Ajuster quelque chose
 

@@ -2989,9 +2989,17 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
         const d = src.indexOf('function renderCard');
         return src.slice(d, d + 4000);
     }""")
-    check("estVideo(item)" in extrait and "estFuite(item)" in extrait,
-          "[badges] la carte appelle les mêmes juges que le filtre, elle ne "
-          "recopie pas les expressions")
+    # L'INTENTION, pas la forme. Ce contrôle exigeait d'abord la chaîne
+    # « estVideo(item) » dans renderCard. Depuis le 13/10/2026 la carte
+    # parcourt la table JUGES_BADGE en boucle — neuf badges recopiés à la
+    # main garantissaient qu'un ajout en oublierait un, ce qui est
+    # exactement ce qui était arrivé à VIDÉO. Le code satisfait mieux
+    # l'intention qu'avant ; c'est le test qui regardait la mauvaise chose.
+    check("JUGES_BADGE[" in extrait,
+          "[badges] la carte passe par la table des juges, partagée avec le "
+          "filtre")
+    check("\\bleak" not in extrait and "\\btrailer" not in extrait,
+          "[badges] et ne recopie aucune expression régulière chez elle")
 
     # Le juge « spécialiste » doit dire EXACTEMENT ce que la carte montre :
     # le badge ne s'affiche pas sur un article officiel.
@@ -2999,6 +3007,89 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
           and page.evaluate("estSpecialiste({specialist: true})") is True,
           "[badges] un officiel ne compte pas comme spécialiste — sinon le "
           "filtre ramène des cartes sans le badge cliqué")
+
+    # ---- LES SEPT BADGES SONDÉS LE 13/10/2026.
+    #
+    # Chaque motif est la version RESSERRÉE : les premières moutures
+    # attrapaient n'importe quoi, et c'est le sondage du corpus (8 378
+    # titres) qui a imposé le nettoyage. Les cas ci-dessous sont des titres
+    # RÉELS tirés de ce sondage, pas des inventions.
+    precision = page.evaluate("""() => {
+        const faux = {
+            // « prix » attrapait les montants nus : le chiffre d'affaires,
+            // le piratage, les ventes de consoles.
+            prix: ['GTA 6 effect caused PS5 Pro sales to surge by 348%',
+                   'Grand Theft Auto VI piracy could cost Rockstar up to $1 billion'],
+            // « date » attrapait « lancement » : une soirée, une édition.
+            date: ['«GTA VI» va avoir droit à une soirée de lancement à Genève',
+                   'Rayman Legends Retold : Ubisoft dévoile l édition de lancement'],
+        };
+        const vrais = {
+            prix: ['Is GTA 6 Overhyped? $79.99 Price Tag Sparks Debate',
+                   'GTA 6 : le prix de l édition collector'],
+            date: ['GTA 6 : date de sortie, prix et précommande',
+                   'GTA 6 release date confirmed by Rockstar'],
+            pc: ['The PC version of Grand Theft Auto 6 is reportedly coming',
+                 'GTA 6 sur PC dès le premier trimestre 2027 ?'],
+            preco: ['GTA 6 pre-orders are breaking records according to Xbox',
+                    'GTA VI précommande à prix cassé'],
+            perso: ['GTA 6 Lucia and Jason first look', 'Qui est Lucia dans GTA 6 ?'],
+            take2: ['Take-Two annoncera ses résultats trimestriels le 9 novembre'],
+            rumeur: ['GTA 6 is reportedly coming to Xbox Cloud'],
+        };
+        const out = {fauxPris: [], vraisRates: []};
+        for(const [cle, titres] of Object.entries(faux))
+            for(const t of titres)
+                if(JUGES_BADGE[cle]({title: t})) out.fauxPris.push(cle + ' : ' + t.slice(0, 45));
+        for(const [cle, titres] of Object.entries(vrais))
+            for(const t of titres)
+                if(!JUGES_BADGE[cle]({title: t})) out.vraisRates.push(cle + ' : ' + t.slice(0, 45));
+        return out;
+    }""")
+    check(not precision["fauxPris"],
+          "[badges] les motifs resserrés n'attrapent plus ce qu'ils "
+          "attrapaient : chiffre d'affaires, soirée de lancement (%s)"
+          % precision["fauxPris"][:1])
+    check(not precision["vraisRates"],
+          "[badges] et ils n'ont pas perdu les vrais cas au passage (%s)"
+          % precision["vraisRates"][:1])
+
+    # Les neuf juges sont dans la table, et la table EST le filtre.
+    table = page.evaluate("""() => ({
+        juges: Object.keys(JUGES_BADGE).sort(),
+        noms: Object.keys(NOMS_BADGE).sort(),
+        ordre: ORDRE_BADGES.slice(),
+    })""")
+    check(table["juges"] == table["noms"],
+          "[badges] chaque juge a son libellé, et réciproquement (%s / %s)"
+          % (len(table["juges"]), len(table["noms"])))
+    manquants = [c for c in table["juges"] if c != "specialist" and c not in table["ordre"]]
+    check(not manquants,
+          "[badges] et chacun a sa place dans l'ordre d'affichage (%s)" % manquants)
+    # L'ordre n'est pas alphabétique à dessein : une ALERTE passe devant un
+    # SUJET. Un « PRIX » avant un « LEAK » inverserait la lecture.
+    check(table["ordre"].index("leak") < table["ordre"].index("prix")
+          and table["ordre"].index("video") < table["ordre"].index("take2"),
+          "[badges] les alertes précèdent les sujets (%s)" % table["ordre"][:4])
+
+    # Chaque couleur neuve tient le contraste. Le contrôle Python le vérifie
+    # sur le CSS ; celui-ci vérifie qu'elles sont RÉELLEMENT appliquées et
+    # qu'aucun badge ne se rend sans sa classe de couleur.
+    sansCouleur = page.evaluate("""() => {
+        lastItems = Object.keys(JUGES_BADGE).filter(c => c !== 'specialist').map((c, k) => ({
+            link: 'https://b.test/' + k, source: 'T', date: new Date().toISOString(),
+            title: {leak:'GTA 6 leak', video:'GTA 6 trailer', pc:'GTA 6 sur PC',
+                    preco:'GTA 6 précommande', prix:'GTA 6 : le prix',
+                    perso:'GTA 6 Lucia', take2:'Take-Two résultats trimestriels',
+                    rumeur:'GTA 6 rumeur', date:'GTA 6 date de sortie'}[c],
+        }));
+        visibleCount = 1000; settings.maxDisplay = 1000; badgeActif = null; applyFilters();
+        return [...document.querySelectorAll('.card .tag-badge')]
+            .filter(b => !/tag-(leak|video|pc|preco|prix|perso|take2|rumeur|date|hot|lang)/.test(b.className))
+            .map(b => b.textContent);
+    }""")
+    check(not sansCouleur,
+          "[badges] aucun badge rendu sans sa classe de couleur (%s)" % sansCouleur[:2])
 
     # Cliquer filtre, recliquer annule.
     page.evaluate("filtreBadge(null, 'video')")
@@ -3112,9 +3203,17 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     page.evaluate("document.getElementById('searchInput').value = ''; applyFilters();")
 
     # ---- 3.4 : les officiels en chronologie.
+    # Le plafond est remis À DESSEIN : les contrôles précédents fabriquent
+    # un fil minuscule et abaissent `settings.maxDisplay` pour le rendre
+    # d'un coup. Sans cette ligne, la chronologie héritait du plafond du
+    # contrôle d'avant et n'affichait qu'une partie des officiels — quatre
+    # échecs qui accusaient la chronologie d'un défaut appartenant au test.
     page.evaluate("""async () => {
         const r = await fetch('%s/feed.json'); const d = await r.json();
-        lastItems = d.items; setTab('rockstar');
+        lastItems = d.items;
+        settings.maxDisplay = DEFAULT_SETTINGS.maxDisplay;
+        visibleCount = DEFAULT_SETTINGS.maxDisplay;
+        setTab('rockstar');
     }""" % base)
     page.wait_for_timeout(400)
     chrono = page.evaluate("""() => ({
