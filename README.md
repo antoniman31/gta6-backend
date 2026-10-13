@@ -232,7 +232,7 @@ d'où le planificateur externe.
    les résultats — `ratio()` n'est pas symétrique, 28 052 paires sur 33 670
    donnent un score différent selon l'ordre.
 10. **Plafonne l'historique à une PROFONDEUR** de 15 jours
-   (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 4 000 articles — au-delà, les
+   (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 12 000 articles — au-delà, les
    plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant.
 
@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1775
+qui permet de tester tout le pipeline sans sortir de la machine. **1787
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -7142,11 +7142,66 @@ raté » travailleraient sur deux jours sans le dire.
 (Le bloc d'entrée, lui, le dit déjà : il annonce « au moins N » dès que
 l'historique chargé ne couvre pas l'absence.)
 
-Relever le plafond n'est pas gratuit : 4 000 articles pèsent 2,6 Mo par
-écriture, vingt-sept fois par jour. Le tripler triplerait aussi la
-croissance du dépôt, mesurée à **1,1 Mo/jour** aujourd'hui (deux méthodes
+**Décision prise le 13/10/2026 : le plafond passe à douze mille.** Il
+couvre 13 jours à 900 articles/jour et 6,6 à 1 800 — une vraie semaine sous
+les yeux le jour où il y a le plus à lire.
+
+Ce que ça coûte, et ce que ça ne coûte pas. À 732 octets par article,
+12 000 font ~8,4 Mo bruts contre ~2,9, et la croissance du dépôt passe
+d'environ **1,1 à ~3 Mo par jour** (mesure du 13/10 par deux méthodes
 concordantes : ratio de compression global, et 34,3 Mo ÷ 896 commits × 27
-commits/jour). C'est une décision à prendre, pas un bug à corriger.
+commits/jour). En revanche **la déduplication ne paie rien** : ses deux
+passes sont bornées indépendamment de l'historique (`FENETRE_MAX`,
+`FUSION_RETRO_MAX`), et la répétition le confirme — la durée d'un passage
+suit le nombre d'articles REÇUS, pas la profondeur gardée. L'ouverture de
+l'app ne paie rien non plus : elle lit `feed-recent.json`, dont la taille
+est fixée par `RECENT_FEED_SIZE`.
+
+**La durée quadratique, elle, reste telle quelle.** Même à 3 600 articles
+dans une heure on serait autour de six minutes, très en dessous de ce
+qu'un job GitHub Actions accepte. Optimiser le cœur de la déduplication
+sans en avoir besoin, à cinq semaines de la sortie, serait du risque
+gratuit — la mesure est écrite, on saura où regarder.
+
+## La répétition des notifications — 13/10/2026
+
+Le robot et l'app avaient été éprouvés au volume du jour J ; les
+notifications, non. Or c'est le seul composant qui réveille vraiment
+quelqu'un.
+
+### Les plafonds tiennent
+
+| rafale | notifications Discord |
+|---|---|
+| 1 officiel | 1 |
+| 5 officiels | 5 |
+| 16 officiels | **11** (10 détaillées + 1 groupée) |
+| 150 officiels | **11** |
+| 900 articles ordinaires | **1** |
+
+La charge utile du push reste à ~230 octets quel que soit le volume, très
+en dessous des 4 Ko que les pousseurs acceptent.
+
+### Le défaut que la répétition a trouvé
+
+Le message groupé annonçait « **+ 140 autre(s) annonce(s) officielle(s)** »
+et n'en listait que **29** — la vingt-neuvième coupée en plein milieu d'un
+mot. L'ancienne écriture joignait tous les titres puis coupait à 3 800
+caractères : le compte du titre était juste, le corps mentait, et rien ne
+le disait.
+
+Les lignes s'empilent maintenant une par une tant que le budget tient, et
+ce qui ne rentre pas est **nommé** : « … et 111 autre(s), toutes dans
+l'app. » Un message qui s'arrête proprement en disant combien il cache vaut
+mieux qu'un message coupé net.
+
+### Un test qui aurait menti
+
+Ma première version du contrôle écrivait « 113 » en dur — un chiffre relevé
+sur un autre jeu de titres. Il serait tombé le jour où Rockstar intitule
+ses annonces autrement, sans qu'aucun défaut n'existe. Le nombre est
+désormais **lu dans le message**, et c'est l'arithmétique qui est vérifiée :
+listées + annoncées non listées = le compte du titre.
 
 ## Ajuster quelque chose
 

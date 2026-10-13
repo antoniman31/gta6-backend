@@ -44,9 +44,9 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 # sortie du jeu ramènerait exactement le problème qu'on vient de régler — à
 # 1000 articles/jour, trente jours feraient 30 000 articles et 27 Mo.
 #
-# Le plafond dur est un arbitrage sur la recherche : à 4000 articles le
-# fichier pèse ~3,7 Mo, soit une dizaine de secondes de téléchargement sur un
-# téléphone la première fois qu'on cherche.
+# Le plafond dur est un arbitrage sur la recherche : le fichier complet ne
+# se télécharge qu'à la recherche et au bouton « Tout charger », jamais à
+# l'ouverture. Voir plus bas pour la valeur et ce qu'elle coûte.
 #
 # QUINZE JOURS -> TRENTE, le 22/09/2026, quand le projet est devenu une veille
 # durable et non un compte à rebours. La mesure a dit que c'était bon marché,
@@ -70,9 +70,38 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 # et non de plafond. Chercher ce qui s'est dit d'un DLC six mois plus tôt
 # demande un découpage de l'historique en fichiers qu'on n'interroge qu'au
 # besoin, pas un fichier unique qu'on télécharge en entier. Voir le README.
+# QUATRE MILLE -> DOUZE MILLE, le 13/10/2026, et c'est la répétition
+# générale du jour J qui l'a imposé.
+#
+# Le plafond est un NOMBRE D'ARTICLES, pas un nombre de jours. Tant que le
+# fil reçoit 125 articles par jour, 4000 couvrent 32 jours et c'est
+# MAX_HISTORY_DAYS qui lie — les deux bornes étaient cohérentes. Mesuré en
+# rejouant une journée de sortie à partir des vrais titres du corpus :
+#
+#       125 articles/jour  ->  4000 couvrent  32 jours
+#       900 articles/jour  ->  4000 couvrent   4,4 jours
+#      1800 articles/jour  ->  4000 couvrent   2,2 jours
+#
+# Autrement dit, la semaine de la sortie, la rétention de trente jours
+# annoncée partout devenait une fiction : l'app n'aurait plus montré que
+# l'avant-veille, sans le dire. Rien n'aurait été PERDU — l'archive garde
+# tout et se charge mois par mois — mais le fil principal et les
+# statistiques calculées dessus auraient travaillé sur deux jours.
+#
+# Douze mille couvrent 13 jours à 900/jour et 6,6 à 1800 : une vraie semaine
+# sous les yeux le jour où il y a le plus à lire.
+#
+# CE QUE ÇA COÛTE, et ce que ça ne coûte pas. À 732 octets par article
+# (mesuré le 13/10), 12 000 articles font ~8,4 Mo bruts contre ~2,9. La
+# croissance du dépôt passe d'environ 1,1 à ~3 Mo par jour. En revanche la
+# déduplication ne paie RIEN : ses deux passes sont bornées indépendamment
+# de l'historique (FENETRE_MAX et FUSION_RETRO_MAX), et la mesure le
+# confirme — la durée d'un passage suit le nombre d'articles REÇUS, pas la
+# profondeur gardée. L'ouverture de l'app ne paie rien non plus, elle lit
+# feed-recent.json dont la taille est fixée par RECENT_FEED_SIZE.
 MAX_HISTORY_DAYS = 30
 MIN_HISTORY_SIZE = 1500
-MAX_HISTORY_SIZE = 4000
+MAX_HISTORY_SIZE = 12000
 
 # Nombre de sources distinctes à partir duquel un sujet est considéré comme
 # une actualité majeure. Un article isolé est en général une reprise ou de

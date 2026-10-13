@@ -8001,6 +8001,110 @@ def test_laudit_surveille_larchive():
             shutil.rmtree(r, ignore_errors=True)
 
 
+def test_rafale_officielle_du_jour_j():
+    print("\n[rafale] une rafale d'annonces officielles ne ment pas sur ce qu'elle cache")
+    import discord_notify as dn, push_notify as pn, feed_store
+    import contextlib, io, json
+    from datetime import datetime, timedelta, timezone
+
+    envois = []
+    url, envoi = dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry
+    dn.DISCORD_WEBHOOK_URL = "https://discord.test/webhook"
+    dn.send_discord_with_retry = lambda e, t, max_attempts=3: (envois.append((t, e)) or True)
+    base = datetime.now(timezone.utc)
+
+    def officiels(n):
+        return [{"title": "Rockstar publie une annonce officielle numero %d sur "
+                          "Grand Theft Auto VI" % k,
+                 "link": "https://www.rockstargames.com/newswire/article/a%d" % k,
+                 "source": "Rockstar Games (officiel EN)", "official": True,
+                 "date": (base - timedelta(minutes=k)).isoformat()} for k in range(n)]
+
+    def rafale(n):
+        envois.clear()
+        with contextlib.redirect_stdout(io.StringIO()):
+            dn.send_official_alerts(officiels(n))
+        return list(envois)
+
+    try:
+        # Le plafond tient, quelle que soit la rafale. Mesuré le 08/10 sur le
+        # fil réel : 16 officiels en une heure, 27 dans la journée — le
+        # plafond n'est plus théorique, il sert.
+        plafond = feed_store.NOTIFS_OFFICIELLES_MAX
+        for n in (16, 40, 150):
+            e = rafale(n)
+            check(len(e) == plafond + 1,
+                  "[rafale] %d officiels d'un coup font %d notifications, pas %d "
+                  "(plafond %d + 1 groupée)" % (n, len(e), n, plafond))
+
+        # LE DÉFAUT TROUVÉ PAR LA RÉPÉTITION DU 13/10/2026. L'ancienne
+        # écriture joignait tous les titres puis coupait à 3800 caractères :
+        # le titre annonçait « + 140 autre(s) annonce(s) » et le corps n'en
+        # listait que 29, la vingt-neuvième coupée en plein milieu d'un mot.
+        # Le compte était juste, le corps mentait, et rien ne le disait.
+        e = rafale(150)
+        groupe = [x for _, x in e if "autre(s) annonce" in x.get("title", "")][0]
+        desc = groupe["description"]
+        check(len(desc) <= 4096,
+              "[rafale] la description reste sous la limite Discord (%d)" % len(desc))
+        check(not desc.rstrip().endswith("…") and desc.rstrip().endswith("app."),
+              "[rafale] elle se termine sur une phrase entière, pas sur un "
+              "titre coupé net (« %s »)" % desc.splitlines()[-1][:50])
+        # Le nombre est LU, pas codé en dur : il dépend de la longueur des
+        # titres, donc l'écrire en dur ferait un test qui tombe le jour où
+        # Rockstar intitule ses annonces autrement — sans qu'aucun défaut
+        # n'existe. Ce qui doit tenir, c'est l'ARITHMÉTIQUE.
+        import re as _re
+        caches = _re.search(r"et (\d+) autre", desc)
+        check(caches is not None,
+              "[rafale] et elle NOMME ce qu'elle ne liste pas (« %s »)"
+              % desc.splitlines()[-1][:40])
+        listees = sum(1 for l in desc.splitlines() if l.startswith("•"))
+        annonces = 150 - plafond
+        check(listees + int(caches.group(1)) == annonces,
+              "[rafale] listées + annoncées non listées = le compte du titre "
+              "(%d + %s = %d)" % (listees, caches.group(1), annonces))
+
+        # Une petite rafale n'est pas amputée pour autant.
+        e = rafale(plafond + 2)
+        groupe = [x for _, x in e if "autre(s) annonce" in x.get("title", "")][0]
+        check(sum(1 for l in groupe["description"].splitlines() if l.startswith("•")) == 2
+              and "…" not in groupe["description"],
+              "[rafale] deux titres de reste sont listés tous les deux, sans "
+              "mention de troncature")
+    finally:
+        dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry = url, envoi
+
+    # Le récapitulatif ordinaire ne grossit pas avec le volume : une seule
+    # notification, même le jour où neuf cents articles tombent.
+    envois.clear()
+    url, envoi = dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry
+    dn.DISCORD_WEBHOOK_URL = "https://discord.test/webhook"
+    dn.send_discord_with_retry = lambda e, t, max_attempts=3: (envois.append((t, e)) or True)
+    try:
+        ordinaires = [{"title": "Dépêche %d" % k, "link": "https://m.test/%d" % k,
+                       "source": "Média %d" % (k % 30), "official": False,
+                       "date": (base - timedelta(minutes=k)).isoformat()}
+                      for k in range(900)]
+        with contextlib.redirect_stdout(io.StringIO()):
+            dn.send_discord_notification(ordinaires)
+        check(len(envois) == 1,
+              "[rafale] 900 articles ordinaires font UNE notification, pas 900 "
+              "(%d)" % len(envois))
+    finally:
+        dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry = url, envoi
+
+    # Côté push, la charge utile ne suit pas le volume non plus : les
+    # pousseurs refusent au-delà de ~4 Ko.
+    for n in (1, 40, 900):
+        charge = len(json.dumps(pn.build_payload(
+            [{"title": "Dépêche %d" % k, "link": "https://m.test/%d" % k,
+              "source": "M", "date": base.isoformat()} for k in range(n)])).encode())
+        check(charge < 4096,
+              "[rafale] %d articles font une charge push de %d octets, sous "
+              "les 4096 admis" % (n, charge))
+
+
 def test_menage_de_laudit():
     print("\n[audit] les neuf points de ménage, et les garde-fous qui les tiennent")
     import merge_feed, feed_store, fetch_feeds as ff
@@ -8997,6 +9101,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,
            test_menage_de_laudit,
+           test_rafale_officielle_du_jour_j,
            test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):
