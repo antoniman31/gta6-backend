@@ -525,12 +525,21 @@
     display:block; font-family:'JetBrains Mono',monospace; font-size:10px;
     color:var(--text-dim); text-transform:uppercase; letter-spacing:0.04em;
   }
-  .chrono-titre{
-    display:block; color:var(--text); text-decoration:none;
-    font-size:14px; line-height:1.35; margin:2px 0;
+  .chrono-lien{
+    display:flex; gap:10px; align-items:flex-start; text-decoration:none;
+    margin-top:2px;
   }
-  .chrono-titre:hover{text-decoration:underline;}
-  .chrono-source{font-size:11px; color:var(--text-dim);}
+  .chrono-vignette{
+    width:72px; height:72px; flex:0 0 72px; object-fit:cover;
+    border-radius:var(--r-xs); background:var(--line);
+  }
+  .chrono-texte{min-width:0;}
+  .chrono-titre{
+    display:block; color:var(--text);
+    font-size:14px; line-height:1.35;
+  }
+  .chrono-lien:hover .chrono-titre{text-decoration:underline;}
+  .chrono-source{display:block; font-size:11px; color:var(--text-dim); margin-top:2px;}
 
   .recherches-recentes{
     display:flex; gap:6px; flex-wrap:wrap; margin:0 0 10px;
@@ -4825,12 +4834,31 @@ function renderChronologie(items){
       ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })
       : "date inconnue";
     const lu = readSet.has(item.link);
+    // LA VIGNETTE, oubliée à la première version et signalée par Antoni dans
+    // l'heure. J'avais mesuré que 69 des 77 officiels en portent une, puis
+    // construit une forme qui les jetait toutes sans le dire. Une
+    // chronologie d'annonces Rockstar SANS les images, c'est précisément ce
+    // qu'elle est censée mettre en valeur.
+    //
+    // Petite et carrée, pas pleine largeur : une vignette de 200 px par
+    // entrée redonnerait la liste de cartes qu'on venait de remplacer.
+    // Même onerror que la carte — une image bloquée se masque au lieu de
+    // laisser un cadre vide.
+    const vignette = item.image
+      ? `<img src="${escapeHtml(item.image)}" class="chrono-vignette" alt=""
+              loading="lazy" decoding="async" onerror="this.style.display='none'">`
+      : "";
     return sep + `
       <li class="chrono-point${lu ? " lu" : ""}">
         <span class="chrono-date">${jour}</span>
-        <a class="chrono-titre" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
-           onclick="marqueLuDepuisRate('${escapeAttr(item.link)}')">${escapeHtml(item.title || "")}</a>
-        <span class="chrono-source">${escapeHtml(item.source || "")}</span>
+        <a class="chrono-lien" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
+           onclick="marqueLuDepuisRate('${escapeAttr(item.link)}')">
+          ${vignette}
+          <span class="chrono-texte">
+            <span class="chrono-titre">${escapeHtml(item.title || "")}</span>
+            <span class="chrono-source">${escapeHtml(item.source || "")}</span>
+          </span>
+        </a>
       </li>`;
   }).join("");
   return `<ol class="chrono">${lignes}</ol>`;
