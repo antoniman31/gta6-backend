@@ -5188,6 +5188,54 @@ def test_rotation_reddit():
           "le chronomètre d'une source au repos ne bouge pas d'un iota : %s"
           % apres_repos["reddit-gta6-suivi"])
 
+def test_les_constantes_citees_sont_les_bonnes():
+    """Une constante écrite « NOM = valeur » dans la doc dit la vraie valeur.
+
+    Deuxième visage de la dérive documentaire, trouvé le 14/10/2026 :
+    `RESTE-A-FAIRE.md` annonçait encore un plafond de notifications de 5,
+    au présent, dans la phrase qui décrit le risque de novembre — alors
+    que la première répétition l'avait porté à 10. Le contrôle de la
+    fenêtre d'historique, écrit le matin même, ne regardait que le README
+    et que deux grandeurs.
+
+    Celui-ci est général : partout où la documentation écrit une constante
+    AVEC sa valeur, la valeur doit être celle du code. Les mentions sans
+    valeur (« `NOTIFS_OFFICIELLES_MAX` plafonne les notifications ») ne
+    sont pas concernées — elles ne peuvent pas mentir.
+    """
+    print("\n[doc] les constantes citées avec leur valeur disent la vraie")
+    import re, importlib
+
+    valeurs = {}
+    for module in ("feed_store", "fetch_feeds", "discord_notify", "push_notify"):
+        mod = importlib.import_module(module)
+        for nom in dir(mod):
+            if re.fullmatch(r"[A-Z][A-Z0-9_]{3,}", nom):
+                v = getattr(mod, nom)
+                if isinstance(v, int) and not isinstance(v, bool):
+                    valeurs.setdefault(nom, v)
+
+    ecarts = []
+    for fichier in ("README.md", "RESTE-A-FAIRE.md"):
+        texte = open(fichier, encoding="utf-8").read()
+        for m in re.finditer(r"`([A-Z][A-Z0-9_]{3,})\s*=\s*([\d\u202f ]+)`", texte):
+            nom, dit = m.group(1), m.group(2).replace("\u202f", "").replace(" ", "")
+            if nom in valeurs and dit.isdigit() and int(dit) != valeurs[nom]:
+                ecarts.append("%s : %s dit %s, le code dit %s"
+                              % (fichier, nom, dit, valeurs[nom]))
+    check(not ecarts,
+          "aucune constante citée avec une valeur périmée (%s)"
+          % (ecarts or "aucune"))
+
+    # Le contrôle doit avoir de quoi mordre : s'il ne trouve aucune
+    # constante citée avec sa valeur, il passerait au vert sans rien lire.
+    citees = sum(len(re.findall(r"`[A-Z][A-Z0-9_]{3,}\s*=\s*[\d\u202f ]+`",
+                                open(f, encoding="utf-8").read()))
+                 for f in ("README.md", "RESTE-A-FAIRE.md"))
+    check(citees >= 5,
+          "et il en lit vraiment (%d constantes citées avec leur valeur)" % citees)
+
+
 def test_readme_dit_la_vraie_fenetre():
     """La fenêtre annoncée dans le README est celle du code.
 
@@ -9195,6 +9243,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_recap_du_matin_couvre_la_nuit,
            test_langue_et_couverture_publiees,
            test_rotation_reddit,
+           test_les_constantes_citees_sont_les_bonnes,
            test_readme_dit_la_vraie_fenetre,
            test_discord_ne_fait_jamais_echouer_le_passage,
            test_recap_discord_detaille,

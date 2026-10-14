@@ -800,9 +800,17 @@ def test_poids_de_tout_charger(nav, url):
         historyPartial = true;
         updateHistoryLine();
     }""", ["%s/feed.json" % base])
+    # Quinze secondes et non cinq : le sondage de poids part en HEAD vers
+    # le serveur de test, et sur un coureur d'intégration chargé la
+    # première requête peut traîner. Un contrôle qui dépend du temps doit
+    # laisser de la marge, sinon il rougit pour la charge de la machine et
+    # non pour un défaut. (Je n'ai PAS la preuve que c'est ce qui a fait
+    # rougir `main` le 14/10/2026 à 15h35 — les journaux ne sont pas
+    # lisibles d'ici — mais c'était le délai le plus serré que j'avais
+    # introduit ce jour-là.)
     page.wait_for_function(
         "() => (document.getElementById('historyLine').textContent || '')"
-        ".includes('(')", timeout=5000)
+        ".includes('(')", timeout=15000)
     texte = page.evaluate(
         "document.getElementById('historyLine').textContent")
     m = re.search(r"\(([\d,]+)\s*(Mo|Ko)\)", texte)
