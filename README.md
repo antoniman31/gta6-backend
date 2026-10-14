@@ -7487,17 +7487,25 @@ fil au lieu de le gonfler.
 comparaison** — ni le volume reçu, ni la profondeur gardée. Mesuré à
 volume constant (1 800 articles reçus) :
 
-| historique en place | composition des titres | durée |
-|---|---|---|
-| 3 600 | titres réels, distincts | **17,9 s** |
-| 3 600 | chaque titre a des quasi-jumeaux | 131 s |
-| 7 000 | chaque titre a des quasi-jumeaux | 275 s |
-| 11 000 | chaque titre a des quasi-jumeaux | **194 s** |
+| articles reçus | historique en place | composition des titres | durée |
+|---|---|---|---|
+| 1 800 | 3 600 | titres réels, distincts | **17,9 s** |
+| 1 800 | 3 600 | chaque titre a des quasi-jumeaux | 131 s |
+| 1 800 | 7 000 | chaque titre a des quasi-jumeaux | 275 s |
+| 1 800 | 11 000 | chaque titre a des quasi-jumeaux | **194 s** |
+| 3 600 | 7 000 | chaque titre a des quasi-jumeaux | **749 s** |
 
-La colonne de droite n'est pas monotone, et c'est ce qui tranche : la
-profondeur n'explique rien. Le cas à 194 s est le plus profond et pas le
-plus lent. **Toutes les configurations restent sous cinq minutes**, très en
-dessous de ce qu'un cron horaire tolère.
+La colonne de droite n'est pas monotone en profondeur, et c'est ce qui
+tranche : à volume reçu constant, le cas à 194 s est le plus profond et pas
+le plus lent. **La profondeur gardée n'explique rien.**
+
+Le volume reçu, lui, explique beaucoup : doubler les articles reçus à
+historique constant fait passer de 275 à **749 s**, soit 12 min 29 — 2,7
+fois le temps pour deux fois le volume. C'est le seul cas éprouvé qui
+dépasse cinq minutes, et il reste très en dessous de ce qu'un cron horaire
+tolère. Il cumule d'ailleurs deux invraisemblances : 3 600 articles en un
+jour ET des sujets presque tous distincts, alors que le corpus entier n'en
+compte que 4 816 en trois ans.
 
 ### Une mesure à moi, fausse, et ce qu'elle apprend
 
