@@ -7816,16 +7816,20 @@ le passé et le disent.
 
 Deuxième question d'Antoni, le 14/10/2026, et deuxième vérification plutôt
 que réponse de mémoire. Une seule valeur périmée, mais mal placée :
-`RESTE-A-FAIRE.md` annonçait **`NOTIFS_OFFICIELLES_MAX = 5`** au présent,
-dans la phrase même qui décrit le risque de novembre — alors que la
-première répétition générale l'a porté à **10**.
+`RESTE-A-FAIRE.md` annonçait un plafond de **cinq** notifications
+officielles au présent, dans la phrase même qui décrit le risque de
+novembre — alors que la première répétition générale l'a porté à **10**.
+(La forme fautive n'est pas recopiée ici : les deux garde-fous lisent tout
+le fichier et la reprendraient pour du texte encore faux. Même piège que
+le mot « muette » et que le badge entre accents graves, déjà rencontrés.)
 
 Le contrôle écrit le matin même ne pouvait pas le voir : il ne regardait
 que le README, et que la fenêtre d'historique. Un second contrôle est donc
 général : **partout où la documentation écrit une constante AVEC sa
 valeur**, dans l'un ou l'autre fichier, la valeur doit être celle du code.
-Il en lit onze aujourd'hui, et il a été vérifié capable d'échouer — remis
-à 5, il nomme le fichier, la constante, les deux valeurs.
+Il en lit onze aujourd'hui, et il a été vérifié capable d'échouer : remis
+à l'ancienne valeur, il nomme le fichier, la constante et les deux
+valeurs.
 
 Les mentions sans valeur (« `NOTIFS_OFFICIELLES_MAX` plafonne les
 notifications ») ne sont pas concernées : elles ne peuvent pas mentir.
