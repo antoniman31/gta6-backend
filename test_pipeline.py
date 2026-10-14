@@ -5188,6 +5188,59 @@ def test_rotation_reddit():
           "le chronomètre d'une source au repos ne bouge pas d'un iota : %s"
           % apres_repos["reddit-gta6-suivi"])
 
+def test_discord_ne_fait_jamais_echouer_le_passage():
+    """Le canal Discord ne doit pas emporter le canal push avec lui.
+
+    Les deux canaux sont réputés indépendants — c'est la raison d'être du
+    second, puisque taper une notification Discord ouvre Discord et jamais
+    l'article. Mais l'étape push est conditionnée à la réussite de l'étape
+    Discord dans le workflow : un plantage de la première emportait
+    silencieusement la seconde, le jour où elle sert le plus.
+    """
+    print("\n[discord] un plantage n'emporte pas la notification push")
+    import discord_notify, io, contextlib, os
+
+    vrai_lire = discord_notify.lire_liste
+    vrai_url = discord_notify.DISCORD_WEBHOOK_URL
+    vieux_env = os.environ.get("NEW_ITEMS_FILE")
+    secret = "https://discord.test/webhook/ultra-secret"
+    try:
+        os.environ["NEW_ITEMS_FILE"] = "/tmp/fichier-qui-nexiste-pas.json"
+        discord_notify.DISCORD_WEBHOOK_URL = secret
+
+        def explose(*a, **k):
+            raise RuntimeError("illisible, et au passage " + secret)
+        discord_notify.lire_liste = explose
+
+        sortie = io.StringIO()
+        with contextlib.redirect_stdout(sortie):
+            code = discord_notify.main()
+        texte = sortie.getvalue()
+    finally:
+        discord_notify.lire_liste = vrai_lire
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+        if vieux_env is None:
+            os.environ.pop("NEW_ITEMS_FILE", None)
+        else:
+            os.environ["NEW_ITEMS_FILE"] = vieux_env
+
+    check(code == 0,
+          "une exception imprévue ne fait pas échouer l'étape (code %s)" % code)
+    check("ÉCHEC NON PRÉVU" in texte,
+          "mais elle est annoncée dans le journal, pas avalée en silence")
+    check(secret not in texte,
+          "et l'URL du webhook n'apparaît pas dans le message d'erreur")
+
+    # Le workflow conditionne bien l'étape push à la réussite de la
+    # précédente : c'est ce qui rend l'enveloppe nécessaire.
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    bloc_push = wf[wf.index("Notifier par push"):]
+    bloc_push = bloc_push[:bloc_push.index("run:")]
+    check("if: success()" in bloc_push,
+          "la notification push dépend toujours de la réussite de l'étape "
+          "d'avant — c'est la raison de l'enveloppe")
+
+
 def test_recap_discord_detaille():
     print("\n[notif] le récapitulatif Discord montre les derniers articles")
     import io, json as _json, contextlib, tempfile, os as _os, shutil as _shutil
@@ -9101,6 +9154,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_recap_du_matin_couvre_la_nuit,
            test_langue_et_couverture_publiees,
            test_rotation_reddit,
+           test_discord_ne_fait_jamais_echouer_le_passage,
            test_recap_discord_detaille,
            test_alerte_officielle_rockstar,
            test_pause_nocturne,
