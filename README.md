@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1794
+qui permet de tester tout le pipeline sans sortir de la machine. **1799
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -7375,6 +7375,85 @@ La cause était dans le contrôle d'avant, qui abaisse le plafond
 d'affichage pour rendre un fil fabriqué d'un seul coup et ne le remettait
 pas. Le plafond est désormais remis explicitement, avec la raison écrite
 à côté.
+
+## Les deux derniers points de l'audit — 14/10/2026
+
+### 4.1 — Le filtre officiel divergeait sur LE mot qui compte
+
+Le robot donne à la chaîne YouTube de Rockstar un mot-clé de plus :
+
+```python
+"official_keywords_extra": ["trailer"],
+```
+
+Une vidéo intitulée simplement *Trailer 3* ne contient aucun des six
+mots-clés GTA 6 et serait rejetée — précisément le jour qui compte. **Le
+mode de secours de l'app n'avait pas d'équivalent** : six mots-clés en dur,
+aucune extension possible. Il perdait donc cette vidéo le jour où le
+backend est injoignable, c'est-à-dire le seul jour où ce mode sert à
+quelque chose.
+
+La source est vivante : elle répond, elle est seulement **tarie depuis
+46 jours**, ce qui est normal pour une chaîne qui publie rarement.
+
+L'app a maintenant le même mécanisme que le robot : la source déclare un
+**supplément**, jamais une liste complète — recopier les six dans une
+entrée les ferait diverger au premier ajustement, ce qui est exactement le
+défaut réparé. Et `check_sources_sync.py` compare désormais ce champ
+source par source, comme il le faisait déjà pour les domaines officiels :
+la divergence ne peut plus revenir en silence, y compris pour une source
+ajoutée en novembre. Vérifié capable d'échouer avant d'être retenu.
+
+**Le coût, mesuré plutôt que supposé** : la chaîne a cinq articles
+conservés dans tout le dépôt, tous déjà retenus par les six mots-clés de
+base. Le supplément n'en fait entrer aucun de plus aujourd'hui — il
+n'existe que pour celui qui n'est pas encore publié.
+
+**Un piège évité de justesse.** `check_sources_sync.py` retrouve la liste
+de référence en cherchant la première occurrence de `const
+officialKeywords =` dans le HTML, et attend un tableau juste derrière.
+Mon premier jet nommait pareil la variable locale de la fonction de
+filtre, déclarée plus haut dans le fichier : le garde-fou censé empêcher
+la divergence aurait lu un appel de fonction au lieu de la liste, et
+serait tombé en premier. La variable locale porte un autre nom, et un
+contrôle vérifie que la première déclaration lue est bien la liste.
+
+### 4.2 — La liste des articles lus n'avait pas de plafond
+
+`seenMap` était plafonné à 2 000 entrées, la copie locale du fil aussi,
+dans les deux cas en citant la limite de 5 Mo. **`readSet` y avait
+échappé** : la seule structure qui grandissait sans borne, et la seule
+dont le contenu ne se reconstitue pas — un article lu l'est pour toujours,
+aucun serveur ne le redira.
+
+Trois décisions, et c'est leur combinaison qui rend le plafond sûr :
+
+1. **Il ne s'applique qu'à la copie écrite sur l'appareil.** En mémoire, et
+   donc dans le fichier de sauvegarde, la liste reste entière : un fichier
+   n'a pas la limite de 5 Mo, et une sauvegarde amputée ne serait plus un
+   filet.
+2. **On ne jette que ce qu'aucun écran ne peut plus afficher** — un lien
+   absent à la fois du fil et de l'archive ne peut pas réapparaître « non
+   lu », puisqu'il ne peut pas réapparaître du tout. Sans l'historique
+   complet ET l'archive entière en mémoire, « plus affichable » n'est pas
+   calculable : on ne jette alors rien, quitte à dépasser.
+3. **Ce n'est pas une limite dure.** Si l'appareil a plus de liens lus
+   encore affichables que le plafond, ils sont tous conservés et le plafond
+   est dépassé sciemment. Faire revenir un article en « non lu » sous les
+   yeux du lecteur serait pire que d'écrire un peu plus.
+
+**Le chiffre vient d'une mesure.** Sur les 4 795 liens du dépôt : 101
+caractères en médiane, 147 au neuvième décile, soit environ 300 octets par
+lien en UTF-16 une fois les guillemets et la virgule comptés. Le plafond
+de 8 000 pèse donc 2,3 Mo ; avec le fil local et les articles déjà vus
+(environ 1 Mo à eux deux) on reste autour de 3,3 Mo sur les 5 Mo accordés.
+C'est aussi près de deux mois de lecture au rythme actuel.
+
+**Et le message qui conseillait de tout détruire.** Quand le quota
+débordait, l'app disait « vide les données du site pour repartir sur une
+base saine » — autrement dit, efface la seule chose qui ne se reconstitue
+pas. Il renvoie maintenant vers l'export de sauvegarde, qui contient
+précisément les articles lus.
 
 ## Ajuster quelque chose
 

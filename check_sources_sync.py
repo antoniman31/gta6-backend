@@ -41,6 +41,13 @@ FIELDS = {
     # divergence ici enverrait la chaîne YouTube dans le mauvais onglet en
     # mode de secours, sans que rien ne le signale.
     "official_domains": ("officialDomains", None),
+    # Décide si l'article ENTRE, et c'est plus grave que l'onglet. La chaîne
+    # YouTube de Rockstar ajoute « trailer » aux mots-clés officiels, parce
+    # qu'une vidéo intitulée simplement « Trailer 3 » ne contient aucun des
+    # six et serait rejetée. Le mode de secours n'avait pas ce supplément
+    # jusqu'au 14/10/2026 : il perdait la vidéo le jour où le backend est
+    # injoignable, donc le seul jour où ce mode sert à quelque chose.
+    "official_keywords_extra": ("officialKeywordsExtra", None),
 }
 
 
