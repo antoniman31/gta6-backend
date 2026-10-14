@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-13T23:01:35.189308+00:00",
+  "generated_at": "2026-10-14T00:01:35.905622+00:00",
   "attente_recap": {
-    "articles": 13,
+    "articles": 18,
     "officiels": 0,
-    "sommet": 1
+    "sommet": 2
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 29.3,
+  "duration_seconds": 26.4,
   "decode_failures": 0,
-  "total_articles": 3610,
+  "total_articles": 3615,
   "new_this_run": 5,
   "hot_count": 55,
   "hot_threshold": 3,
@@ -441,7 +441,7 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "articles_exclusifs": 33,
+      "articles_exclusifs": 34,
       "last_article": "2026-10-13T14:29:32+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -479,7 +479,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 1001,
       "last_article": "2026-10-13T22:03:49+00:00",
       "days_since_last_article": 0,
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 1379,
-      "last_article": "2026-10-13T22:43:34+00:00",
+      "new_this_run": 4,
+      "articles_exclusifs": 1382,
+      "last_article": "2026-10-13T23:36:13+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -761,10 +761,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-10-10T19:14:00+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-08T12:19:42+00:00",
@@ -1079,8 +1079,8 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
-      "last_article": "2026-10-12T20:00:13+00:00",
-      "days_since_last_article": 1,
+      "last_article": "2026-10-13T23:36:13+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-17T09:45:42+00:00",
@@ -1126,22 +1126,22 @@
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
       "entries_fetched": 0,
-      "http_status": null,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-13T13:43:30+00:00",
       "days_since_last_article": 0,
-      "status": "en_attente"
+      "status": "muette"
     },
     {
       "id": "destructoid",
       "name": "Destructoid",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 10,
       "last_article": "2026-10-08T22:01:57+00:00",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 6,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1224,16 +1224,21 @@
       "depuis": "2026-10-13T22:01:34.766965+00:00",
       "succes": 0,
       "alertee": false
+    },
+    "reddit-leaks": {
+      "depuis": "2026-10-14T00:01:35.904934+00:00",
+      "succes": 0,
+      "alertee": false
     }
   },
   "decodage_etat": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-announce": "0,100,100,100,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1250,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1284,7 +1289,7 @@
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg-natif": "30,30,30,30,30,30,30,30,30,30,30,30",
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "reddit-leaks": "25,25,25,0,25,25,25,25,25,25,25,25",
+    "reddit-leaks": "25,25,0,25,25,25,25,25,25,25,25,0",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
     "mgg": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1321,7 +1326,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"1cbe7-+GtNc3bB07EWXDCYtag87aW9oE8\"",
+      "etag": "W/\"1c0f0-X8IEsZJSAt9GJ1roT6YzNvAQLcg\"",
       "modified": null
     },
     "kotaku": {
@@ -1342,7 +1347,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Tue, 13 Oct 2026 23:01:09 GMT"
+      "modified": "Tue, 13 Oct 2026 23:57:33 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1356,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6aceb800-2f5a\"",
-      "modified": "Tue, 13 Oct 2026 23:00:16 GMT"
+      "etag": "W/\"6acec612-2f5a\"",
+      "modified": "Wed, 14 Oct 2026 00:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1371,8 +1376,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6acea7ce-b76\"",
-      "modified": "Tue, 13 Oct 2026 21:51:10 GMT"
+      "etag": "\"6acec3f1-b77\"",
+      "modified": "Tue, 13 Oct 2026 23:51:13 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1382,7 +1387,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Tue, 13 Oct 2026 23:01:11 GMT"
+      "modified": "Wed, 14 Oct 2026 00:01:14 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1396,8 +1401,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"a4593e2a9914a48ad30c9b9dd1f57ac7\"",
-      "modified": "Tue, 13 Oct 2026 20:05:12 GMT"
+      "etag": "W/\"84edd903944967b266532bae2a0b475e\"",
+      "modified": "Tue, 13 Oct 2026 23:05:12 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -2200,6 +2205,38 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "Report: GTA VI PC port coming Jan - Mar 2027 - TweakTown",
+      "link": "https://www.tweaktown.com/news/114065/report-gta-vi-pc-port-coming-jan-mar-2027/index.html",
+      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPdG4wMlpmcFpKYk0zSGd3R1RaRC02WExsQmQ5TlQ3dnNuTkxiTzVWWm43WWMwR2stYlZGNXdQUmJVTUFjcXNSSmZLUV9ZMXZHMmI2RkUzbzlJV3FIMmpfUmUyekFwam5QMDY3SWZuQTNSclBiY2dGRlRoQklOaUoyQzN0MXcySjhvVk51ODVrNW1DdHpv?oc=5",
+      "date": "2026-10-13T23:36:13+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static.tweaktown.com/news/1/1/114065_1_report-gta-vi-pc-port-coming-early-2027_full.png",
+      "description": "Report: GTA VI PC port coming Jan - Mar 2027&nbsp;&nbsp;TweakTown",
+      "extraSources": [
+        {
+          "source": "TweakTown",
+          "link": "https://www.tweaktown.com/rss/click/news/114065/?c=news-mf"
+        }
+      ]
+    },
+    {
+      "title": "PlayStation’s $149.99 God of War Laufey Collector Box Ships Without the Game, and Fans Call It Another GTA VI Scam - Fandom Pulse",
+      "link": "https://www.fandompulse.com/p/playstations-14999-god-of-war-laufey",
+      "source_link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE56NlZrSXhxOWotYzZpWENpckZvakdINDVnNnl5dXp3elRJU0tLWWRHZ1FmZUhua0hqUE1CZTBFRWxBdXppeWtCMTRnLTJKUjRmYVNaUkMzZkVSalRjZ0VkWndVc2l3aUJ0QWFrWWxyakxnSk9D?oc=5",
+      "date": "2026-10-13T23:01:39+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://substackcdn.com/image/fetch/$s_!ibMS!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F85a2a5b6-fea5-4850-9510-a4c2219baa48_2518x1352.png",
+      "description": "PlayStation’s $149.99 God of War Laufey Collector Box Ships Without the Game, and Fans Call It Another GTA VI Scam&nbsp;&nbsp;Fandom Pulse"
+    },
+    {
       "title": "Elon Musk Agrees: GTA VI Could Be 'Swan Song for the Big Studio Era' - Benzinga",
       "link": "https://www.benzinga.com/news/gaming/26/10/62343265/elon-musk-agrees-gta-vi-could-be-swan-song-for-the-big-studio-era",
       "source_link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNOExGQ003Y2Zkb1RHdVowMmZRSVF6T2dDOEF3aTdwT0xuZW1RcFFBbTFzQUsxdnV5TXpHNGFTOTl4bk9CUmc3VDlXYzROVU9yUmQ4QXk4ZmZodEotWWdYQWJhV05neGpGd2NsZElRQzlFcEYzX3A0c2NMZnhZWWNKQnphU0s1Yk9OM1RLRi1POFBUaHpjRXl6MmdyNlc3cHl1LWp3b19HM3ZSWGVlbmFMYTh3aTBOU0tV?oc=5",
@@ -2211,6 +2248,19 @@
       "lang": "en",
       "image": "https://cdn.benzinga.com/cdn-cgi/image/width=1200,height=800,fit=crop/files/images/story/2026/10/13/Playing-Gta-Vi-With-Playstation-5-Contro.jpg",
       "description": "Elon Musk Agrees: GTA VI Could Be 'Swan Song for the Big Studio Era'&nbsp;&nbsp;Benzinga"
+    },
+    {
+      "title": "Cyberleek Claims 200GB ‘Playable’ GTA 6 Build [2026] - shattered.io",
+      "link": "https://shattered.io/gta-6-cyberleek-200gb-playable-build-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1kdkFMMHhsd3pZRDlPZU9lQ2xGTnFTblJyOUxuakpZbVdqVmtQOWZOZktKZy0tWDlGaWFFM3B6QlZZLW1zMVk1S1pvQk51R09hOXFtTUxzWE5FUzRqQ1JSTFZ3LVVsRnhidW1OX2lkQjI?oc=5",
+      "date": "2026-10-13T22:30:32+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://shattered.io/wp-content/uploads/2026/10/gta-6-cyberleek-200gb-playable-build-2026-gen.jpg",
+      "description": "Cyberleek Claims 200GB ‘Playable’ GTA 6 Build [2026]&nbsp;&nbsp;shattered.io"
     },
     {
       "title": "GTA 6 sur PC dès début 2027, un rapport promet une attente très courte - GinjFo",
@@ -2406,6 +2456,19 @@
       "lang": "en",
       "image": "https://images.complex.com/complex/image/upload/c_crop,h_1081,w_1920,x_0,y_0/g_auto:aoi_768_433_384_216,ar_1.91,c_fill,q_auto,w_1200/sanity-new/zasusjs7idmayjp1hhqo",
       "description": "‘Grand Theft Auto VI’ Reportedly Set for Early 2027 Release on PC&nbsp;&nbsp;Complex"
+    },
+    {
+      "title": "Video games to play this fall, including Control Resonant and Grand Theft Auto VI - The Week",
+      "link": "https://theweek.com/culture-life/games/video-games-to-play-this-fall-including-control-resonant-and-grand-theft-auto-vi",
+      "source_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQc0xOTVFxZzg1cktQZFA1OHRDdldYeXZyZUVLR01McHRFT2dDMTFqYkgtRTljTG05Z2xmVS1STkJIcUgtb2tKTnk0a1ozbzM2aktnRHdWWDFlOXVqbGx4QW9HeUFnM2R3S1FyRmFiOU4xbzlaSldkelJGWGV1a0ZUZlVaaS10ZWNLXzJvYnY3MnVSLVlOZmd0M2NMMklRNTZDSVlUeUJjeUFnb21xTFZHT1UtemlMLWFtaUZR?oc=5",
+      "date": "2026-10-13T19:03:16+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://cdn.mos.cms.futurecdn.net/REVs5h4mQunxkSMSAxHtj7-2000-80.jpg",
+      "description": "Video games to play this fall, including Control Resonant and Grand Theft Auto VI&nbsp;&nbsp;The Week"
     },
     {
       "title": "«GTA VI» va avoir droit à une soirée de lancement à Genève - Watson",
@@ -3795,6 +3858,19 @@
           "link": "https://mp1st.com/news/rumor-gta-6-pc-release-planned-q1-2027"
         }
       ]
+    },
+    {
+      "title": "Creatorverse: GTA VI on Netflix Was a Big Success, But the Conversation Was Happening on YouTube - IMDb",
+      "link": "https://www.imdb.com/es/news/ni65999200/",
+      "source_link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFBqRzNfQmFlWnhVM3JpRmlvV3hKUHNaYVpmbHA4VXZFc3QySU5YLXFqeHhMX3ZQQXpvQ3lUZUt6YzVwcWdLSVBIQVltbEl5N2NNaEE?oc=5",
+      "date": "2026-10-13T13:39:18+00:00",
+      "source": "Google News (Netflix)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": true,
+      "lang": "en",
+      "image": null,
+      "description": "Creatorverse: GTA VI on Netflix Was a Big Success, But the Conversation Was Happening on YouTube&nbsp;&nbsp;IMDb"
     },
     {
       "title": "GTA 3's iconic box art was changed at the last minute because of 9/11, ex-Rockstar lead Dan Houser reveals",
@@ -6155,71 +6231,6 @@
       "lang": "en",
       "image": "https://media.gtaboom.com/variants/1920/media/images/27/68/the-official-gta-6-beach-and-banner-ads-in-miami-begin-on-october-15.jpg",
       "description": "Miami Beach chair and umbrella branding and downtown event area banners for Grand Theft Auto VI take effect October 15, running through December 31."
-    },
-    {
-      "title": "GTA 6 leaker CyberLeek returns with naked Lucia, an ATM robbery, and two very bad parachute jumps - Notebookcheck",
-      "link": "https://www.notebookcheck.net/GTA-6-leaker-CyberLeek-returns-with-naked-Lucia-an-ATM-robbery-and-two-very-bad-parachute-jumps.1421609.0.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxQaThmeExNT2JRcDV4OEpfaXFaZzY2UE95bV9Jcm8wTDlJbmprNi0wRk9JbnRneHlxY3gyMzNNT0JPRE5UNTFPZFNYamxJNXVQYjRWRHZ5YUxZclJpSnRrajRlbENRdjJtcXNSaXRhc2VyZ2IwZjdBRVNhS2lNM2twdjU0NEF2WE5Qb2kydjdheVhxZ3lDekdtQ052Q2x1SHU2ZjNHZkFnOXA0RV9QZjhvNmZxUWNLaUlfeUFraFY1WGhPM0tRZmg0a2doN21sWEZFY1JORmVvdw?oc=5",
-      "date": "2026-10-12T05:16:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/lucia-caminos-visual-source-Rockstar.jpg.jpeg",
-      "description": "GTA 6 leaker CyberLeek returns with naked Lucia, an ATM robbery, and two very bad parachute jumps&nbsp;&nbsp;Notebookcheck"
-    },
-    {
-      "title": "Chronique Journal GTA : GTA 6 est encore plus trash que GTA 5 - JeuxVideo.com",
-      "link": "https://www.jeuxvideo.com/videos/chroniques/2107844/gta-6-est-encore-plus-trash-que-gta-5.htm",
-      "source_link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOSVU3cUxTeldXTG1NUFdHSXdka1hCa0g2bV9XWktkZHpidExBSTVuY1BNZ21iVG5ja1FFcXpJcFptdWNwY0cyUURaNV9RUlpzNHk1LVhST2lxUlpRZlY0eWtnRDZvRU9jRmlzbjRXLVZmRzVrcEFLS3BtemMzUnc1MFZJTDZzckNLMEE0OFVYNlJjT2R0VVFHZQ?oc=5",
-      "date": "2026-10-12T05:00:08+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/179129/1791289898-3655-card.jpg",
-      "description": "Chronique Journal GTA : GTA 6 est encore plus trash que GTA 5&nbsp;&nbsp;JeuxVideo.com"
-    },
-    {
-      "title": "Skyrim gets a GTA 6 feature that completely changes its NPCs - GAMINGbible",
-      "link": "https://www.gamingbible.com/news/platform/pc/skyrim-gta-6-npc-mod-374910-20261008",
-      "source_link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQN1VaNFV1VTJyVkczNHE5NU9qNTdydnZPVHNUd0k0NTl1QVpnNWZkSDJxU3ZNOGg3N25FYnhIekdTOFRlR0FiWktELUpnTnV6VmZPTzI1ekFDSTdlcGx0RGdVVWtjZUdmVnB4ZG92RE9yMlRtOHZIMmZsZEg0OTdiczBkX2NZNi1W?oc=5",
-      "date": "2026-10-12T05:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://resizer.ladbiblegroup.com/ogimage/v3/assets/bltbc1876152fcd9f07/blt2add91bf4c36b439/6ac7bf79836f4a242c2867da/Skyrim_lands_GTA_6_feature_in_incredible_new_mod_that_s_boos_(1).png",
-      "description": "Skyrim gets a GTA 6 feature that completely changes its NPCs&nbsp;&nbsp;GAMINGbible"
-    },
-    {
-      "title": "Cyberleek has published a revealing video of Lucia from GTA 6 - Mezha",
-      "link": "https://mezha.ua/en/news/cyberleek-opublikuvav-vidverte-video-lyusiji-z-gta-6-316050/",
-      "source_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQQTVxVTNVMlh4NldJRGRkMnBSMFlHV1MxakZ5MFdMbEVPdENVVWRnV2I5Q1ZGcUdUY3QwWXdPcDB6Und0eG5GLWhJTk50aUVNcUFfazRVZkoyRzZ4ZEY3N3VPdU1TckpyYXJCTkRlVHFsMFhwMlJfRlZmMFdrc2FSSkhQcDRTOGZzTEg4TE930gGTAUFVX3lxTE9CNVVvTGViNFpZQnFRUlZBSjlIUzVVWmVUNkttNmJUd0VXMW1fMkFWT25iLVFHUHN4SmplMUFlcG1tVVZTZUJUUVV5RlgxZ005X2lEN18ycWNJUG5acmlQMnVydVA4TlB3UEozVjFMV1h1bEtseTUxdnZ2R1VKNklfelp5Y0dabmpWXzZrQ09tYzA0bw?oc=5",
-      "date": "2026-10-12T05:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": null,
-      "description": "Cyberleek has published a revealing video of Lucia from GTA 6&nbsp;&nbsp;Mezha"
-    },
-    {
-      "title": "GTA VI déjà moins cher depuis ce lundi matin : voici où le trouver au meilleur prix pendant une durée très limitée - BFM",
-      "link": "https://www.bfmtv.com/tech/bons-plans/gta-vi-deja-moins-cher-depuis-ce-lundi-matin-voici-ou-le-trouver-au-meilleur-prix-pendant-une-duree-tres-limitee_AB-202610120001.html",
-      "source_link": "https://news.google.com/rss/articles/CBMigAJBVV95cUxPSDZ3MWVsdVExQVZXOFJjSTlGQjhnY2xTSllydkxHajhXLWNieFZXZzZ1SG1qVmhLdDNpNndYd3kycFhXVE5UWDdzSkVRcm5ya3A1b2I2bUg0a1c2eHN0bGhUeGZKd1BwckpCOUJsMmZPUXh2MldCSmZHVFRnWHlhb1NBTmRGVS0yNTZkbzE0NC1ZUTc5cnJadDg0a1lZdEd3Y3Q4Zk9KbG1lQXMxeVJyZHR6Vmh5TVBxWTMwamN0Q1dzT1oxUlozb01wdXFpRFludV9PaEs3NzlMczNOblYtRnNBc1JNZG1EYTRjaHVMWENJU2MycUpIQTk1Tk1ETVY2?oc=5",
-      "date": "2026-10-12T04:48:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/LtIF8NkNx_8wKarWX3oq3BLdObo=/0x0:1600x900/1600x0/images/GTA-VI-deja-moins-cher-depuis-ce-lundi-matin-voici-ou-le-trouver-au-meilleur-prix-pendant-une-duree-tres-limitee-2361497.jpg",
-      "description": "GTA VI déjà moins cher depuis ce lundi matin : voici où le trouver au meilleur prix pendant une durée très limitée&nbsp;&nbsp;BFM"
     }
   ],
   "partial": true,
