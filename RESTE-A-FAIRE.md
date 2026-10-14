@@ -802,7 +802,8 @@ d'autorisation, et c'est précisément ce qui a évité la perte.
 
 **Le vrai risque est en novembre.** Rockstar publiera en huit langues, et
 chaque page localisée est `official: True`, donc une notification. Le
-`NOTIFS_OFFICIELLES_MAX = 5` plafonne les notifications, mais rien ne
+`NOTIFS_OFFICIELLES_MAX` plafonne les notifications (5 à l'écriture de
+cette fiche, **10** depuis la première répétition générale), mais rien ne
 regrouperait les huit pages dans le fil : les URL diffèrent, et la fusion
 par similarité de titre ne les attrapera que si le titre reste en anglais
 (ce qui est le cas de ces deux-là, pas forcément des suivantes).
@@ -862,6 +863,39 @@ absorbe les reprises. C'est la fenêtre de trente jours qui lie.
 contre 2,8 aujourd'hui, et fige l'interface quatre secondes. Rien n'est
 cassé, mais c'est le chiffre à connaître avant de presser le bouton en
 données mobiles le 19 novembre.
+
+---
+
+## Ce qui a été fait le 14/10/2026
+
+Six lots, et le gel décidé en cours de route.
+
+1. **4.1 et 4.2**, les deux derniers points de l'audit : le mode de secours
+   sait étendre ses mots-clés officiels, et la liste des articles lus a un
+   plafond.
+2. **La deuxième répétition générale.** Rien n'a cassé. Le plafond de douze
+   mille n'est jamais atteint : un jour de pic comprime le fil au lieu de
+   le gonfler.
+3. **Deux durcissements**, puis **gel** : garde-temps du robot à 45 min
+   (12 min 29 mesurées au pire cas), et « Tout charger » annonce son poids.
+4. **Un bouton mort pendant 8 à 23 secondes**, trouvé en chronométrant à la
+   demande d'Antoni. Trois endroits écrivaient dans la même ligne ; le
+   rendu du fil passait toujours en dernier.
+5. **La relecture à froid des chemins du jour J.** Un défaut :
+   `discord_notify` pouvait emporter la notification push, les deux canaux
+   n'étant indépendants qu'en intention.
+6. **Le README annonçait une fenêtre qui n'existe plus** — quatre chiffres
+   faux, dont trois dans « Limites connues et assumées ». Un contrôle les
+   compare désormais au code.
+
+**Rien n'est ouvert à ce jour.** Les neuf pistes d'interface (3.1 à 3.9) et
+les quatorze points de l'audit sont livrés ou clos à la mesure. Le code est
+gelé : correctifs seulement jusqu'au 19 novembre.
+
+**Ce qui reste, et qui n'est pas du code** : vérifier la portée réelle du
+jeton d'accès personnel (`gta6-backend` seul, Contents en lecture-écriture
+et rien d'autre), et une troisième répétition vers le 10 novembre, avec les
+données d'alors.
 
 ---
 

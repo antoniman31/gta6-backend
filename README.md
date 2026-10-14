@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1807
+qui permet de tester tout le pipeline sans sortir de la machine. **1809
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -7811,6 +7811,27 @@ bornes annoncées dans le README et les compare au code — vérifié capable
 d'échouer avant d'être retenu. Les occurrences historiques (« jusqu'au
 22/09 la fenêtre était de 15 jours ») restent intactes : elles décrivent
 le passé et le disent.
+
+### Et `RESTE-A-FAIRE.md` ? La même dérive, sur un chiffre du jour J
+
+Deuxième question d'Antoni, le 14/10/2026, et deuxième vérification plutôt
+que réponse de mémoire. Une seule valeur périmée, mais mal placée :
+`RESTE-A-FAIRE.md` annonçait **`NOTIFS_OFFICIELLES_MAX = 5`** au présent,
+dans la phrase même qui décrit le risque de novembre — alors que la
+première répétition générale l'a porté à **10**.
+
+Le contrôle écrit le matin même ne pouvait pas le voir : il ne regardait
+que le README, et que la fenêtre d'historique. Un second contrôle est donc
+général : **partout où la documentation écrit une constante AVEC sa
+valeur**, dans l'un ou l'autre fichier, la valeur doit être celle du code.
+Il en lit onze aujourd'hui, et il a été vérifié capable d'échouer — remis
+à 5, il nomme le fichier, la constante, les deux valeurs.
+
+Les mentions sans valeur (« `NOTIFS_OFFICIELLES_MAX` plafonne les
+notifications ») ne sont pas concernées : elles ne peuvent pas mentir.
+
+`RESTE-A-FAIRE.md` reçoit aussi l'entrée du 14/10 qui lui manquait — six
+lots en une journée, et le gel décidé en cours de route.
 
 ## Ajuster quelque chose
 
