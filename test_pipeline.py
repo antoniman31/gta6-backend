@@ -5188,6 +5188,47 @@ def test_rotation_reddit():
           "le chronomètre d'une source au repos ne bouge pas d'un iota : %s"
           % apres_repos["reddit-gta6-suivi"])
 
+def test_readme_dit_la_vraie_fenetre():
+    """La fenêtre annoncée dans le README est celle du code.
+
+    Le 14/10/2026, trois chiffres de la rubrique « Limites connues et
+    assumées » dataient d'un réglage abandonné : une profondeur de quinze
+    jours quand le code en garde trente, un plafond de quatre mille quand
+    il vaut douze mille, et un poids de fichier d'avant l'été. C'est la
+    rubrique qu'un lecteur croit le plus, et rien ne la vérifiait.
+
+    Le point 4.8 de l'audit avait déjà nommé la dérive documentaire. La
+    nommer ne suffit pas : il faut une mesure qui échoue.
+    """
+    print("\n[doc] le README annonce la vraie fenêtre d'historique")
+    import re, feed_store
+    readme = open("README.md", encoding="utf-8").read()
+    # Les nombres français s'écrivent avec une espace (fine ou normale).
+    def nombres(motif):
+        return [int(m.group(1).replace("\u202f", "").replace(" ", ""))
+                for m in re.finditer(motif, readme)]
+
+    jours = nombres(r"profondeur de ([\d\u202f ]+) jours")
+    check(jours, "le README annonce une profondeur d'historique")
+    faux = [j for j in jours if j != feed_store.MAX_HISTORY_DAYS]
+    check(not faux,
+          "et c'est celle du code (%d jours ; le README dit aussi %s)"
+          % (feed_store.MAX_HISTORY_DAYS, faux or "rien d'autre"))
+
+    bornes = [(int(a.replace("\u202f", "").replace(" ", "")),
+               int(b.replace("\u202f", "").replace(" ", "")))
+              for a, b in re.findall(
+                  r"bornée entre ([\d\u202f ]+) et ([\d\u202f ]+)\s*\n?\s*articles",
+                  readme)]
+    check(bornes, "le README annonce les bornes de l'historique")
+    mauvaises = [b for b in bornes
+                 if b != (feed_store.MIN_HISTORY_SIZE, feed_store.MAX_HISTORY_SIZE)]
+    check(not mauvaises,
+          "et ce sont celles du code (%d et %d ; le README dit aussi %s)"
+          % (feed_store.MIN_HISTORY_SIZE, feed_store.MAX_HISTORY_SIZE,
+             mauvaises or "rien d'autre"))
+
+
 def test_discord_ne_fait_jamais_echouer_le_passage():
     """Le canal Discord ne doit pas emporter le canal push avec lui.
 
@@ -9154,6 +9195,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_recap_du_matin_couvre_la_nuit,
            test_langue_et_couverture_publiees,
            test_rotation_reddit,
+           test_readme_dit_la_vraie_fenetre,
            test_discord_ne_fait_jamais_echouer_le_passage,
            test_recap_discord_detaille,
            test_alerte_officielle_rockstar,
