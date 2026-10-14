@@ -7575,6 +7575,48 @@ annonce « 3 600 articles · 77 officiels · 230 sur une fuite ». Je l'avais
 d'abord noté comme absent — c'était mon sondage qui cherchait le mauvais
 identifiant d'élément, pas le bloc qui manquait.
 
+## Deux durcissements avant la sortie — 14/10/2026
+
+Les deux viennent de la deuxième répétition, et ce sont les seuls travaux
+retenus : à partir d'ici le code est gelé, correctifs seulement.
+
+### Le garde-temps du robot passe de 20 à 45 minutes
+
+Le workflow coupait le passage à vingt minutes, avec un commentaire
+annonçant « ~1 min 35 » — la durée mesurée en septembre, en régime normal.
+La répétition a chronométré **12 min 29** au pire cas du jour J. Avec
+l'installation des dépendances et la poussée par-dessus, il ne restait que
+quelques minutes de marge.
+
+Ce que coûte un passage coupé mérite d'être dit : **tout**. Pas de fichier
+écrit, pas de notification, et l'horloge externe rappellera dans l'heure
+sur un état inchangé. Le garde-temps existe contre un site qui ne répond
+jamais, pas contre un jour chargé. Quarante-cinq minutes laissent passer le
+pire cas mesuré avec trois fois la marge, et arrêtent quand même un passage
+parti en vrille.
+
+### « Tout charger » annonce son poids
+
+Le bouton télécharge le fichier complet : **2,8 Mo aujourd'hui, 9,3 Mo** si
+le fil atteint son plafond. En données mobiles le jour de la sortie, ça se
+paie sans que rien ne l'ait dit.
+
+**Le chiffre vient du fichier, jamais d'une constante** — une valeur écrite
+en dur deviendrait fausse au premier jour chargé, et un chiffre faux est
+pire que pas de chiffre. Il est lu dans l'en-tête `Content-Length` d'une
+requête HEAD, donc la taille réellement transférée, compression du serveur
+comprise : ce que l'abonnement facture. Et si on ne sait pas — serveur
+muet, requête échouée — **le bouton reste exactement ce qu'il était**, sans
+message d'erreur : une taille inconnue est un confort manquant, pas une
+panne.
+
+**Un contrôle existant a dû être affiné, et c'est le bon sens de
+l'affinage.** Un contrôle interdit à une lecture normale de demander le
+fichier complet — c'est toute la raison d'être du fichier allégé. La
+requête HEAD le déclenchait. Mais ce contrôle porte sur ce qui se
+TÉLÉCHARGE, et un HEAD ne ramène aucun corps : il ne retient donc plus que
+les GET. C'est son intention qui est gardée, pas sa lettre.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

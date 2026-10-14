@@ -3640,11 +3640,11 @@ function pause(ms){
 // requête. Une course rendrait la main au bout du délai mais laisserait le
 // téléchargement se poursuivre en arrière-plan — sur la connexion qu'on
 // cherche précisément à ménager.
-function fetchAvecDelai(url, ms){
-  if(typeof AbortController === "undefined") return fetch(url);
+function fetchAvecDelai(url, ms, options){
+  if(typeof AbortController === "undefined") return fetch(url, options);
   const ctrl = new AbortController();
   const minuteur = setTimeout(() => ctrl.abort(), ms);
-  return fetch(url, { signal: ctrl.signal })
+  return fetch(url, Object.assign({}, options, { signal: ctrl.signal }))
     .finally(() => clearTimeout(minuteur));
 }
 
@@ -3872,6 +3872,48 @@ async function applyBackendData(data, sourceUrl){
   annonceRafraichissement();
 }
 
+// LE POIDS DE « TOUT CHARGER », annoncé AVANT l'appui.
+//
+// Le bouton télécharge le fichier complet. Mesuré le 14/10/2026 : 2,8 Mo
+// aujourd'hui, et 9,3 Mo si le fil atteint son plafond de douze mille
+// articles. Appuyer dessus en données mobiles le jour de la sortie coûte
+// donc dix méga sans que rien ne l'ait dit.
+//
+// LE CHIFFRE VIENT DU FICHIER, jamais d'une constante : une valeur écrite
+// en dur deviendrait fausse au premier jour chargé, et un chiffre faux est
+// pire que pas de chiffre. On lit l'en-tête `Content-Length` d'une requête
+// HEAD — donc la taille réellement transférée, compression du serveur
+// comprise, qui est ce que l'abonnement facture.
+//
+// Et si on ne sait pas, on ne dit rien : un serveur qui ne renvoie pas
+// l'en-tête, une requête qui échoue, et le bouton reste exactement ce
+// qu'il était.
+let poidsHistorique = null;
+let poidsHistoriqueDemande = false;
+
+function formatePoids(octets){
+  const mo = octets / 1024 / 1024;
+  if(mo >= 1) return mo.toFixed(1).replace(".", ",") + " Mo";
+  return Math.round(octets / 1024) + " Ko";
+}
+
+async function sondePoidsHistorique(){
+  if(poidsHistoriqueDemande || !settings.backendUrl) return;
+  poidsHistoriqueDemande = true;
+  try{
+    const rep = await fetchAvecDelai(avecAntiCache(settings.backendUrl),
+                                     BACKEND_TIMEOUT_MS, { method: "HEAD" });
+    const n = parseInt(rep.headers.get("content-length") || "", 10);
+    if(rep.ok && Number.isFinite(n) && n > 0){
+      poidsHistorique = n;
+      updateHistoryLine();
+    }
+  }catch(e){
+    // Silencieux À DESSEIN : on n'annonce pas de poids, c'est tout. Un
+    // journal d'erreur ici ferait passer un confort pour une panne.
+  }
+}
+
 function updateHistoryLine(){
   const el = document.getElementById("historyLine");
   if(!el) return;
@@ -3880,10 +3922,12 @@ function updateHistoryLine(){
     return;
   }
   el.style.display = "flex";
+  sondePoidsHistorique();
+  const poids = poidsHistorique ? ` (${formatePoids(poidsHistorique)})` : "";
   // Le nombre d'articles est déjà donné juste à gauche par countLine : le
   // répéter ici affichait deux fois "300" sur deux lignes qui se suivaient.
   el.innerHTML = `<span>historique partiel</span>` +
-    `<button class="small" onclick="loadFullHistory()">Tout charger</button>`;
+    `<button class="small" onclick="loadFullHistory()">Tout charger${escapeHtml(poids)}</button>`;
 }
 
 // Télécharge l'historique complet. Déclenché à la demande, ou
