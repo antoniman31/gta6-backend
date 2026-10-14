@@ -7455,6 +7455,118 @@ base saine » — autrement dit, efface la seule chose qui ne se reconstitue
 pas. Il renvoie maintenant vers l'export de sauvegarde, qui contient
 précisément les articles lus.
 
+## La deuxième répétition générale — 14/10/2026
+
+La première avait éprouvé le robot et l'app ensemble, puis les
+notifications. Depuis, presque tout ce qui touche au volume a changé : le
+plafond d'historique est passé à douze mille, celui des notifications
+officielles à dix, neuf badges se calculent sur chaque article, le fil se
+découpe en tranches adaptatives, les officiels se lisent en chronologie, et
+les articles lus ont un plafond. **Rien de tout ça n'avait été rejoué à
+l'échelle du jour J.**
+
+### Le robot tient, et le coût ne vient pas d'où je croyais
+
+Journée fabriquée à partir des vrais titres du corpus, passée dans le robot
+entier, deux passages d'affilée :
+
+| volume/jour | gardés | 1er passage | 2e passage | fil | archive |
+|---|---|---|---|---|---|
+| 300 | 3 673 | 9,4 s | 8,8 s | 1,49 Mo | 1,48 Mo |
+| 900 | 3 669 | 12,2 s | 12,1 s | 1,63 Mo | 1,68 Mo |
+| 1 800 | 3 328 | 17,9 s | 23,7 s | 1,67 Mo | 1,93 Mo |
+| 3 600 | 2 406 | 28,3 s | 53,3 s | 1,59 Mo | 2,25 Mo |
+
+**Le nombre d'articles gardés BAISSE quand le volume monte**, et ce n'est
+pas une perte : c'est la fusion rétroactive qui absorbe les reprises —
+1 570 sujets majeurs à 3 600/jour contre 27 à 300. Les articles deviennent
+des `extraSources`, l'archive garde tout. Un jour de pic **comprime** le
+fil au lieu de le gonfler.
+
+**Ce qui coûte, c'est le nombre de titres PROCHES dans la fenêtre de
+comparaison** — ni le volume reçu, ni la profondeur gardée. Mesuré à
+volume constant (1 800 articles reçus) :
+
+| historique en place | composition des titres | durée |
+|---|---|---|
+| 3 600 | titres réels, distincts | **17,9 s** |
+| 3 600 | chaque titre a des quasi-jumeaux | 131 s |
+| 7 000 | chaque titre a des quasi-jumeaux | 275 s |
+| 11 000 | chaque titre a des quasi-jumeaux | **194 s** |
+
+La colonne de droite n'est pas monotone, et c'est ce qui tranche : la
+profondeur n'explique rien. Le cas à 194 s est le plus profond et pas le
+plus lent. **Toutes les configurations restent sous cinq minutes**, très en
+dessous de ce qu'un cron horaire tolère.
+
+### Une mesure à moi, fausse, et ce qu'elle apprend
+
+Pour atteindre le plafond de douze mille il faut des titres distincts, et le
+corpus n'en compte que 4 816. J'ai donc fabriqué un socle de onze mille en
+suffixant les vrais titres — « … — dépêche 7 041 ». **Ce socle est
+pathologique** : chaque article y a deux quasi-jumeaux, ce qui donne à la
+déduplication dix fois plus de candidats qu'un fil réel. Les 131 à 275 s
+ci-dessus en viennent. C'est une borne haute utile, pas une prévision.
+
+### Le plafond de douze mille n'a jamais été atteint
+
+Socle de onze mille, journée de 1 800 : **11 390 articles gardés, 24,8
+jours couverts, 4,70 Mo**. C'est la fenêtre de trente jours qui lie, pas le
+plafond — exactement la situation d'avant la sortie, et l'inverse du défaut
+trouvé à la première répétition.
+
+### L'app
+
+| fil | dont le jour même | première peinture | « tout charger » | en-têtes |
+|---|---|---|---|---|
+| 3 589 | 135 | **21 ms** | 863 ms | 8 |
+| 6 000 | 1 800 | **91 ms** | 2 559 ms | 62 |
+| 12 000 | 3 600 | **173 ms** | 3 968 ms | 122 |
+
+L'ouverture reste rapide parce que l'app lit `feed-recent.json`, dont la
+taille ne bouge pas. **Les neuf juges de badge ne coûtent rien : 27 ms pour
+douze mille articles**, 4 646 badges posés. Le découpage adaptatif tient son
+contrat, un en-tête pour une trentaine d'articles du jour.
+
+**Le coût est sur « Tout charger »** : quatre secondes d'interface figée, et
+surtout **9,3 Mo à télécharger** au plafond, contre 2,8 aujourd'hui. Sur un
+téléphone en données mobiles le jour de la sortie, c'est le chiffre à
+connaître.
+
+### Le stockage local, pire cas honnête
+
+Fil de douze mille, **tout lu**, « déjà vus » à son plafond :
+**3,26 Mo sur les ~5 Mo** du navigateur. Ça passe, avec 1,7 Mo de marge.
+
+Mais il faut dire comment : **le plafond des huit mille lus ne sert à rien
+dans ce cas**, parce que les douze mille liens sont encore affichables et
+qu'on ne jette jamais un lien affichable. C'est le plafond du FIL qui
+protège le stockage, pas celui des lus. Dès que la moitié du fil sort de la
+fenêtre, le plafond agit : 8 000 écrits, 1,70 Mo.
+
+### Les notifications, et le défaut de la première répétition
+
+Les plafonds tiennent à toutes les rafales : **douze messages au maximum**
+— dix alertes officielles détaillées, une groupée, un récapitulatif — que
+la rafale fasse 16 officiels ou 150, avec ou sans 3 600 articles ordinaires
+derrière. Neuf cents articles ordinaires seuls : **un** message.
+
+Et le message groupé ne ment plus : il annonce 140, en liste 37, dit « et
+103 autres ». **37 + 103 = 140.** Corps de 3 679 caractères sous le budget
+de 3 800, dernière ligne entière.
+
+### Deux choses à savoir, aucune n'est un défaut
+
+**La chronologie bascule en liste de cartes au-delà de 400 officiels, sans
+rien dire.** Mesuré : 400 entrées en chronologie, 401 en cartes. C'est le
+seuil voulu, et 77 officiels se sont accumulés en trois ans d'archive, donc
+la marge est large. Le changement de forme reste silencieux.
+
+**« Ce que j'ai raté » tient le volume** : 4 ms sur 3 600 articles, et il
+annonce « 3 600 articles · 77 officiels · 230 sur une fuite ». Je l'avais
+d'abord noté comme absent — c'était mon sondage qui cherchait le mauvais
+identifiant d'élément, pas le bloc qui manquait.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
