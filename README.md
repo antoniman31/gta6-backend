@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1799
+qui permet de tester tout le pipeline sans sortir de la machine. **1803
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -7667,6 +7667,122 @@ l'app interroge le backend au démarrage — elle ne le fait pas, il faut
 TEXTE qu'elle portait, et aurait donc conclu que tout allait bien. Seul le
 quatrième, qui suit les libellés successifs horodatés sur un réseau bridé,
 a vu le défaut.
+
+## La relecture à froid des chemins du jour J — 14/10/2026
+
+Demandée après qu'une simple question — « combien de temps ce bouton
+reste-t-il visible ? » — eut trouvé un défaut vieux de plusieurs semaines
+sous 466 contrôles verts. Même méthode : chercher ce qui n'est vrai que
+pendant quelques secondes, ou que lorsque quelque chose tombe.
+
+### Un balayage mécanique plutôt qu'une lecture au jugé
+
+Le défaut du bouton mort avait une forme précise : **un élément de la page
+écrit depuis plusieurs endroits**, dont l'un passe toujours en dernier. Ça
+se cherche automatiquement. Sur les 42 éléments que l'app écrit, six le
+sont depuis deux fonctions :
+
+| élément | écrit par | verdict |
+|---|---|---|
+| `historyLine` | (corrigé le matin même) | c'était le défaut |
+| `archiveLine` | `loadArchive`, `updateArchiveLine` | **sain, vérifié en panne réelle** |
+| `lastCheck`, `proxyLine`, `modeIndicator` | `checkNow` puis `applyBackendData` | séquence voulue |
+| `feed` | `showSkeletons` puis `renderFeed` | séquence voulue |
+| `simValue` | deux endroits du panneau de réglages | sans état transitoire |
+
+`archiveLine` était le suspect sérieux : même forme, même voisinage. Éprouvé
+en faisant échouer pour de vrai les fichiers mensuels, le message
+« Archive indisponible · Réessayer » **survit** au rendu suivant. Le défaut
+était propre à l'historique.
+
+### Les chemins de panne, joués un par un
+
+Cinq pannes forcées, et ce que l'app en fait :
+
+| panne | ce que l'app fait |
+|---|---|
+| backend en erreur 500 | bascule en mode direct, montre l'archive |
+| backend qui répond du JSON cassé | pareil |
+| backend qui répond `{}` | reste en mode backend, l'archive comble |
+| archive en erreur 500 | silencieuse — décision assumée : un backend plus ancien n'a pas d'archive |
+| archive au JSON cassé | « Archive indisponible · Réessayer » |
+
+**Aucune erreur non rattrapée, dans aucun des cinq cas.**
+
+### LE DÉFAUT TROUVÉ : Discord pouvait emporter le push
+
+`discord_notify.py` porte ce commentaire depuis des semaines : « Cette
+étape ne doit JAMAIS faire échouer le workflow ». Le commentaire
+l'affirmait, le code ne le garantissait pas. Une **panne** de Discord était
+bien absorbée — l'envoi renvoie `False` — mais une **exception** ne l'était
+pas : un fichier d'articles malformé, un article d'une forme inattendue, et
+l'étape sortait en erreur.
+
+Ce que ça coûtait est caché dans le workflow : l'étape suivante, la
+notification **push**, est conditionnée à `if: success()`. Or les deux
+canaux sont réputés indépendants — c'est même la raison d'être du second,
+puisque taper une notification Discord ouvre Discord et jamais l'article.
+**Un plantage du premier emportait silencieusement le second**, le jour où
+il sert le plus.
+
+`main()` est maintenant une enveloppe qui tient la promesse : elle annonce
+l'échec dans le journal, masque l'URL du webhook au passage, et rend 0.
+Quatre contrôles le verrouillent, dont « la notification push dépend
+toujours de la réussite de l'étape d'avant » — car le jour où cette
+condition changerait, l'enveloppe deviendrait inutile et il faudrait le
+savoir.
+
+### Six sondages faux pour trois vrais résultats
+
+Consigné parce que c'est la part la plus instructive de la journée. Pour
+mesurer ces trois choses, mes sondages se sont trompés six fois :
+
+1. un `sleep` dans le gestionnaire de routes de Playwright, qui bloquait
+   **tout** le réseau de test et pas seulement le fichier visé ;
+2. la supposition que l'app interroge le backend au démarrage — elle ne le
+   fait pas, il faut « Actualiser » ;
+3. la mesure de la visibilité d'une **ligne** au lieu du **texte** qu'elle
+   portait : elle aurait conclu que tout allait bien ;
+4. la lecture du texte d'un élément **masqué**, qui garde son ancien
+   contenu — un faux « message bloqué » ;
+5. une route Playwright déclarée **avant** l'attrape-tout : la dernière
+   enregistrée gagne, la mienne ne voyait rien ;
+6. un `endswith(".json")` sur des URL qui portent un paramètre anti-cache —
+   exactement le piège déjà écrit pour les vignettes, répété.
+
+Aucune de ces six erreurs n'était dans le code du projet. Toutes auraient
+produit un verdict : quatre un faux « tout va bien », deux un faux
+« défaut ». **Un banc de mesure se vérifie avant de croire ce qu'il
+dit.**
+
+### Le contrôle qui vivait sur une mesure périmée
+
+La CI de cette relecture est tombée au rouge, sur un contrôle que la
+relecture n'avait pas touché. Reproduit en local en ramenant les données
+les plus fraîches du robot : le bloc « Ce que j'ai raté » annonçait
+« au moins 300 articles » là où le contrôle exigeait un compte exact.
+
+**L'app avait raison.** Le fichier allégé garde **un nombre d'articles**,
+pas un nombre de jours. Le contrôle écrivait 36 h en dur, « parce que la
+fenêtre chargée fait 2 j ½ » — une mesure vraie début octobre. Le rythme du
+fil est passé de ~125 à **~248 articles/jour** à l'approche de la sortie :
+les mêmes 300 articles ne couvrent plus que **29 h**. Le compte EST minoré,
+et le bloc le dit, ce qui est exactement ce pour quoi il a été écrit.
+
+Le contrôle lit désormais la couverture réelle du fil chargé et se place de
+part et d'autre : une absence que la fenêtre couvre, où le compte doit être
+exact, et une absence qu'elle ne couvre pas, où « au moins » doit
+apparaître. **La seconde moitié du contrat n'était pas éprouvée** — et
+c'est elle qui servira le 19 novembre, quand trois cents articles ne feront
+plus que quelques heures.
+
+Le même contrôle injectait un article officiel vieux de 30 h pour vérifier
+l'ordre d'affichage. Trente heures, c'était « dans » un écart de 36 h ; ce
+n'est plus dans un écart de 14. Son âge suit maintenant l'écart mesuré.
+
+**Deux valeurs écrites en dur, deux fois la même leçon** : un contrôle qui
+fige une mesure du fil meurt à la première variation du fil. Et d'ici
+novembre, le fil ne fera que varier.
 
 ## Ajuster quelque chose
 

@@ -422,6 +422,32 @@ lire_liste = feed_store.lire_liste
 
 
 def main():
+    """Enveloppe qui tient la promesse écrite plus bas : cette étape ne doit
+    JAMAIS faire échouer le workflow.
+
+    Le commentaire l'affirmait, le code ne le garantissait pas. Une panne de
+    Discord était bien absorbée — `send_discord_with_retry` renvoie False —
+    mais une EXCEPTION ne l'était pas : un fichier d'articles malformé, un
+    article sans la forme attendue, et l'étape sortait en erreur.
+
+    Ce que ça coûtait, et c'est pour ça que c'est corrigé à cinq semaines de
+    la sortie : l'étape suivante, la notification push, est conditionnée à
+    `if: success()`. Les deux canaux sont réputés indépendants — c'est
+    même la raison d'être du second, puisque taper une notification Discord
+    ouvre Discord et jamais l'article. Un plantage du premier emportait
+    silencieusement le second, le jour où il sert le plus.
+    """
+    try:
+        return _main()
+    except Exception as e:
+        propre = feed_store.masquer_urls(str(e), [DISCORD_WEBHOOK_URL])
+        print(f"[discord] ÉCHEC NON PRÉVU ({type(e).__name__}) : {propre}")
+        print("[discord] l'étape se termine quand même : les articles sont "
+              "publiés, et la notification push ne doit pas être emportée.")
+        return 0
+
+
+def _main():
     path = os.environ.get("NEW_ITEMS_FILE", "")
     if not path:
         print("[discord] NEW_ITEMS_FILE non défini — rien à notifier.")
