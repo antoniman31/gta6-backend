@@ -833,6 +833,35 @@ décision sur les pages Rockstar localisées, à mesurer avant novembre).~~
 
 ---
 
+## La deuxième répétition générale — 14/10/2026
+
+Rejouée parce que presque tout ce qui touche au volume avait changé depuis
+la première : plafond d'historique à douze mille, plafond de notifications
+à dix, neuf badges calculés par article, découpage adaptatif du fil,
+chronologie des officiels, plafond des articles lus.
+
+**Rien n'a cassé.** Aucune erreur JavaScript, aucun garde-fou franchi,
+aucune notification en trop. Les quatre chiffres à retenir :
+
+- le robot reste **sous cinq minutes** dans toutes les configurations
+  éprouvées à 1 800 articles/jour, et à 17,9 s avec un fil réaliste ;
+- l'app ouvre en **173 ms** même avec douze mille articles chargés, et les
+  neuf juges de badge coûtent **27 ms** sur tout le fil ;
+- le stockage local plafonne à **3,26 Mo sur ~5** au pire cas honnête ;
+- les notifications plafonnent à **douze messages**, quelle que soit la
+  rafale.
+
+**Ce qui n'a PAS été atteint** : le plafond de douze mille articles. Un jour
+de pic comprime le fil au lieu de le gonfler — la fusion rétroactive
+absorbe les reprises. C'est la fenêtre de trente jours qui lie.
+
+**Le seul coût notable** : « Tout charger » demande **9,3 Mo** au plafond,
+contre 2,8 aujourd'hui, et fige l'interface quatre secondes. Rien n'est
+cassé, mais c'est le chiffre à connaître avant de presser le bouton en
+données mobiles le 19 novembre.
+
+---
+
 ## Ce qui est RÉGLÉ et ne doit pas être rouvert
 
 ### Le mode hors-ligne : vérifié, il marche
