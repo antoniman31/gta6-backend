@@ -844,7 +844,10 @@ chronologie des officiels, plafond des articles lus.
 aucune notification en trop. Les quatre chiffres à retenir :
 
 - le robot reste **sous cinq minutes** dans toutes les configurations
-  éprouvées à 1 800 articles/jour, et à 17,9 s avec un fil réaliste ;
+  éprouvées à 1 800 articles/jour, et à 17,9 s avec un fil réaliste ; le
+  seul cas qui dépasse est le pire cas théorique (3 600 articles reçus,
+  sujets presque tous distincts) à **12 min 29**, toujours très en dessous
+  d'un cron horaire ;
 - l'app ouvre en **173 ms** même avec douze mille articles chargés, et les
   neuf juges de badge coûtent **27 ms** sur tout le fil ;
 - le stockage local plafonne à **3,26 Mo sur ~5** au pire cas honnête ;
