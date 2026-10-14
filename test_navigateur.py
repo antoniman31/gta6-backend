@@ -2934,6 +2934,30 @@ def test_sources_disent_la_verite(nav, url):
     ctx.close()
 
 
+def page_couverture(nav, url):
+    """Combien d'heures le fil réellement chargé couvre-t-il ?
+
+    Le fichier allégé garde un NOMBRE D'ARTICLES, pas un nombre de jours :
+    sa couverture en heures rétrécit à mesure que le rythme du fil monte.
+    Tout contrôle qui écrit cet écart en dur meurt à la première hausse.
+    """
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("rattrapageLance = true;")
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    h = page.evaluate("""() => {
+        const d = lastItems.map(i => Date.parse(i.date)).filter(Number.isFinite);
+        if(d.length < 2) return 0;
+        return (Math.max(...d) - Math.min(...d)) / 3600000;
+    }""")
+    ctx.close()
+    return int(h)
+
+
 def test_ce_que_jai_rate(nav, url):
     """Le bloc d'entrée : un bilan vrai, puis les sources suivies.
 
@@ -2986,15 +3010,44 @@ def test_ce_que_jai_rate(nav, url):
           "[raté] sans visite précédente, pas de bloc du tout")
     ctx.close()
 
-    # --- 36 h : le cas courant. Le compte est EXACT, parce que la fenêtre
-    # chargée (≈300 articles, soit 2 j 1/2 au rythme mesuré) la couvre.
-    page, ctx, etat, err = session(36)
+    # --- Une absence que la fenêtre COUVRE : le compte est exact.
+    #
+    # L'écart n'est plus écrit en dur. Il l'était — 36 h, « parce que la
+    # fenêtre chargée fait 2 j 1/2 » — et ça a fini par tomber le
+    # 14/10/2026 : le fichier allégé garde 300 articles, pas un nombre de
+    # jours, et le rythme du fil est passé de ~125 à ~248 articles/jour à
+    # l'approche de la sortie. Les mêmes 300 articles ne couvraient plus
+    # que 29 h. L'app avait raison d'écrire « au moins », c'est le contrôle
+    # qui vivait sur une mesure périmée — et il aurait replanté chaque fois
+    # que le rythme monte, c'est-à-dire tous les jours d'ici novembre.
+    #
+    # On lit donc la couverture RÉELLE du fil chargé, et on se place de
+    # part et d'autre. Les deux comportements sont vérifiés, au lieu d'un
+    # seul sur un pari.
+    couverture = page_couverture(nav, url)
+    dedans = max(1, int(couverture * 0.5))
+    dehors = int(couverture * 2) + 24
+    page, ctx, etat, err = session(dedans)
     check(etat["affiche"] == "block" and etat["plein"] == "1",
-          "[raté] après 36 h d'absence, le bloc est là")
+          "[raté] après une absence de %d h, le bloc est là" % dedans)
     check("Depuis ta dernière visite" in etat["bilan"],
           "[raté] il s'ouvre sur un bilan (« %s »)" % etat["bilan"][:60])
     check("au moins" not in etat["bilan"],
-          "[raté] et sur 36 h le compte est exact, pas minoré")
+          "[raté] dans la fenêtre chargée (%d h sur %d h couvertes), le "
+          "compte est exact, pas minoré" % (dedans, couverture))
+    ctx.close()
+
+    # --- Et une absence que la fenêtre NE couvre PAS : le bloc le DIT.
+    # C'est la moitié du contrat qui n'était pas éprouvée, et c'est celle
+    # qui servira le 19 novembre, quand 300 articles ne feront plus
+    # quelques heures.
+    page2, ctx2, etat2, _ = session(dehors)
+    check("au moins" in etat2["bilan"],
+          "[raté] au-delà (%d h), il annonce « au moins » au lieu de "
+          "minorer en silence (« %s »)" % (dehors, etat2["bilan"][:70]))
+    ctx2.close()
+
+    page, ctx, etat, err = session(dedans)
     check(0 < len(etat["lignes"]) <= 4,
           "[raté] au plus quatre lignes, et il rétrécit au lieu de se "
           "remplir (%d ici)" % len(etat["lignes"]))
@@ -3021,19 +3074,27 @@ def test_ce_que_jai_rate(nav, url):
     # accident. Il serait resté vert en laissant passer n'importe quel
     # ordre. Et l'officiel est VIEUX : s'il remontait par sa date, on ne
     # saurait pas si c'est son rang ou sa fraîcheur qui l'a placé.
-    rangs = page.evaluate("""() => {
+    # L'ÂGE DE L'OFFICIEL SUIT L'ÉCART, il n'est plus écrit en dur. Il
+    # valait 30 h, pour un écart de 36 h ; l'écart se mesure maintenant sur
+    # le fil réel et vaut moins que ça. Un officiel plus vieux que la
+    # dernière visite ne serait tout simplement pas « depuis ta dernière
+    # visite », et le contrôle cherchait une ligne qui ne pouvait pas
+    # exister. On le place juste À L'INTÉRIEUR de l'écart : dedans, donc
+    # compté, mais plus vieux que les spécialistes du fil, donc classé par
+    # son rang et non par sa fraîcheur.
+    rangs = page.evaluate("""(heures) => {
         lastItems.push({
             link: 'https://www.rockstargames.com/newswire/article/zzz-test',
             title: 'Annonce officielle de contrôle',
             source: 'Rockstar Games (officiel EN)',
             official: true,
-            date: new Date(Date.now() - 30*3600*1000).toISOString(),
+            date: new Date(Date.now() - heures*3600*1000).toISOString(),
         });
         applyFilters();
         return [...document.querySelectorAll('#rateBloc .rate-liste a')]
             .map(a => lastItems.find(x => x.link === a.getAttribute('href')))
             .map(i => i.official ? 0 : i.specialist ? 1 : 2);
-    }""")
+    }""", max(1, dedans - 1))
     check(rangs and rangs[0] == 0 and rangs == sorted(rangs) and len(set(rangs)) > 1,
           "[raté] un officiel passe DEVANT des spécialistes plus récents, "
           "et l'ordre reste officiel → spécialiste → RockstarMag (%s)" % rangs)

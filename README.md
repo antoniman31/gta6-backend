@@ -7755,6 +7755,35 @@ produit un verdict : quatre un faux « tout va bien », deux un faux
 « défaut ». **Un banc de mesure se vérifie avant de croire ce qu'il
 dit.**
 
+### Le contrôle qui vivait sur une mesure périmée
+
+La CI de cette relecture est tombée au rouge, sur un contrôle que la
+relecture n'avait pas touché. Reproduit en local en ramenant les données
+les plus fraîches du robot : le bloc « Ce que j'ai raté » annonçait
+« au moins 300 articles » là où le contrôle exigeait un compte exact.
+
+**L'app avait raison.** Le fichier allégé garde **un nombre d'articles**,
+pas un nombre de jours. Le contrôle écrivait 36 h en dur, « parce que la
+fenêtre chargée fait 2 j ½ » — une mesure vraie début octobre. Le rythme du
+fil est passé de ~125 à **~248 articles/jour** à l'approche de la sortie :
+les mêmes 300 articles ne couvrent plus que **29 h**. Le compte EST minoré,
+et le bloc le dit, ce qui est exactement ce pour quoi il a été écrit.
+
+Le contrôle lit désormais la couverture réelle du fil chargé et se place de
+part et d'autre : une absence que la fenêtre couvre, où le compte doit être
+exact, et une absence qu'elle ne couvre pas, où « au moins » doit
+apparaître. **La seconde moitié du contrat n'était pas éprouvée** — et
+c'est elle qui servira le 19 novembre, quand trois cents articles ne feront
+plus que quelques heures.
+
+Le même contrôle injectait un article officiel vieux de 30 h pour vérifier
+l'ordre d'affichage. Trente heures, c'était « dans » un écart de 36 h ; ce
+n'est plus dans un écart de 14. Son âge suit maintenant l'écart mesuré.
+
+**Deux valeurs écrites en dur, deux fois la même leçon** : un contrôle qui
+fige une mesure du fil meurt à la première variation du fil. Et d'ici
+novembre, le fil ne fera que varier.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
