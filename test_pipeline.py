@@ -4088,6 +4088,44 @@ def test_validation_avant_ecriture():
 
 
 
+def test_filtre_officiel_du_mode_de_secours():
+    """4.1 de l'audit : le mode de secours sait étendre les mots-clés.
+
+    Le garde-fou de synchronisation compare les DONNÉES des deux côtés,
+    source par source. Il ne voit pas le MÉCANISME : si la fonction de
+    filtre reprenait sa propre liste en dur, le supplément déclaré par la
+    source resterait là sans que rien ne l'applique, et les deux contrôles
+    resteraient verts. C'est ce contrôle-là qui l'interdit.
+    """
+    print("\n[app] le filtre officiel du mode de secours sait étendre ses mots-clés")
+    html = open("docs/index.html", encoding="utf-8").read()
+    fn = html[html.index("function filterFeedItems("):]
+    fn = fn[:fn.index("\n}")]
+
+    check("motsClesOfficiels(" in fn,
+          "le filtre passe par la fonction qui assemble les mots-clés")
+    check("gta vi" not in fn.lower(),
+          "et ne recopie pas sa propre liste de mots-clés chez lui")
+
+    aide = html[html.index("function motsClesOfficiels("):]
+    aide = aide[:aide.index("\n}")]
+    check("officialKeywordsExtra" in aide,
+          "la source peut déclarer un supplément de mots-clés")
+    check("concat" in aide,
+          "qui s'AJOUTE à la liste de base au lieu de la remplacer")
+
+    # La liste de référence doit rester le PREMIER « const officialKeywords »
+    # du fichier : check_sources_sync.py la retrouve par cette chaîne et
+    # attend un tableau juste derrière. Une variable locale du même nom,
+    # déclarée plus haut, lui ferait lire autre chose — et le garde-fou qui
+    # empêche la divergence tomberait sans bruit, en premier.
+    debut = html.index("const officialKeywords =")
+    suite = html[debut:debut + 120]
+    check(suite.split("=", 1)[1].lstrip().startswith("["),
+          "la première déclaration lue par le contrôle de synchronisation "
+          "est bien la liste, pas un appel de fonction")
+
+
 def test_ligne_etat_sans_double_compte():
     print("\n[app] la ligne d'état ne compte pas deux fois la même source")
     html = open("docs/index.html", encoding="utf-8").read()
@@ -9083,6 +9121,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_cibles_tactiles_du_panneau,
            test_panneau_parametres_accessible,
            test_panneau_parametres_structure,
+           test_filtre_officiel_du_mode_de_secours,
            test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,

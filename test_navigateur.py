@@ -771,6 +771,108 @@ def test_toast_annuler(nav, url):
     ctx.close()
 
 
+def test_plafond_des_lus(nav, url):
+    """4.2 de l'audit : la liste des articles lus a enfin un plafond.
+
+    C'était la seule structure qui grandissait sans borne, et la seule dont
+    le contenu ne se reconstitue pas : un article lu l'est pour toujours,
+    aucun serveur ne le redira. Le plafond ne s'applique qu'à la copie
+    écrite sur l'appareil, et il ne jette QUE ce qu'aucun écran ne peut
+    plus afficher.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    plafond = page.evaluate("MAX_LIENS_LUS_PERSISTES")
+    check(isinstance(plafond, int) and plafond > 1000,
+          "[lus] un plafond existe (%s)" % plafond)
+
+    # Le décor : un peu plus que le plafond, dont une poignée encore
+    # affichables (présents dans le fil ou l'archive).
+    montage = """(plafond) => {
+        const joignables = 50;
+        lastItems = []; readSet = new Set();
+        for(let i = 0; i < plafond + 100; i++){
+            const l = 'https://t.test/vieux/' + i;
+            readSet.add(l);
+        }
+        for(let i = 0; i < joignables; i++){
+            const l = 'https://t.test/encore/' + i;
+            readSet.add(l);
+            lastItems.push({link: l, title: 't' + i, date: new Date().toISOString()});
+        }
+        return {total: readSet.size, joignables};
+    }"""
+    etat = page.evaluate(montage, plafond)
+
+    # 1. Sans l'historique complet ni l'archive, on ne sait pas ce qui est
+    #    encore joignable : on ne jette RIEN, quitte à dépasser.
+    page.evaluate("() => { historyPartial = true; archiveChargee = false; }")
+    check(page.evaluate("lusAPersister().length") == etat["total"],
+          "[lus] historique incomplet : rien n'est jeté, même au-dessus du "
+          "plafond — on ne choisit pas à l'aveugle")
+    page.evaluate("() => { historyPartial = false; archiveChargee = false; }")
+    check(page.evaluate("lusAPersister().length") == etat["total"],
+          "[lus] archive incomplète non plus")
+
+    # 2. Avec tout en main, le surplus part — et seulement le surplus.
+    page.evaluate("() => { historyPartial = false; archiveChargee = true; }")
+    garde = page.evaluate("lusAPersister()")
+    check(len(garde) == plafond,
+          "[lus] avec le fil et l'archive en main, la copie écrite retombe "
+          "au plafond (%d pour %d en mémoire)" % (len(garde), etat["total"]))
+    restants = set(garde)
+    perdus_joignables = [i for i in range(etat["joignables"])
+                         if "https://t.test/encore/%d" % i not in restants]
+    check(not perdus_joignables,
+          "[lus] et AUCUN lien encore affichable n'est jeté (%d perdu(s))"
+          % len(perdus_joignables))
+    check("https://t.test/vieux/0" not in restants
+          and "https://t.test/vieux/%d" % (plafond + 99) in restants,
+          "[lus] ce sont les plus anciennement enregistrés qui partent, pas "
+          "les derniers lus")
+
+    # 3. Si TOUT est encore affichable, le plafond est dépassé sciemment :
+    #    faire revenir un article en « non lu » sous les yeux du lecteur
+    #    serait pire que d'écrire un peu plus.
+    page.evaluate("""(plafond) => {
+        lastItems = []; readSet = new Set();
+        for(let i = 0; i < plafond + 100; i++){
+            const l = 'https://t.test/vivant/' + i;
+            readSet.add(l);
+            lastItems.push({link: l, title: 't', date: new Date().toISOString()});
+        }
+    }""", plafond)
+    check(page.evaluate("lusAPersister().length") == plafond + 100,
+          "[lus] tout afficher l'emporte sur le plafond quand les deux "
+          "s'opposent")
+
+    # 4. La SAUVEGARDE garde tout : un fichier n'a pas la limite de 5 Mo,
+    #    et une sauvegarde amputée ne serait plus un filet.
+    page.evaluate("""(plafond) => {
+        lastItems = []; readSet = new Set();
+        for(let i = 0; i < plafond + 100; i++) readSet.add('https://t.test/x/' + i);
+        historyPartial = false; archiveChargee = true;
+    }""", plafond)
+    combien = page.evaluate("contenuSauvegarde().lus.length")
+    check(combien == plafond + 100,
+          "[lus] la sauvegarde exportée les garde TOUS (%d pour un plafond "
+          "de %d) — un fichier n'a pas la limite de 5 Mo" % (combien, plafond))
+
+    # 5. Le message de quota ne doit plus conseiller de détruire
+    #    l'irremplaçable : « vide les données du site » effaçait justement
+    #    les articles lus, que rien ne reconstitue.
+    msg = page.evaluate("String(storageSet)")
+    check("Vide les données du site" not in msg,
+          "[lus] le message de stockage plein ne conseille plus d'effacer "
+          "les données du site")
+    check("sauvegarde" in msg.lower(),
+          "[lus] il renvoie vers la sauvegarde à la place")
+    ctx.close()
+
+
 def test_sauvegarde_export_import(nav, url):
     """Sortir ses réglages de l'appareil, et les y ramener.
 
@@ -1672,6 +1774,45 @@ def test_officiel_et_filtres_etroits(nav, url):
           "ni un domaine qui ne fait que CONTENIR rockstargames.com (`includes` les acceptait)")
     check(r["yt"], "la chaîne YouTube de Rockstar garde son statut par ses domaines propres")
     check(r["rmag"] and not r["pasRmag"], "même règle stricte pour Rockstar Mag")
+
+    # LE MOT QUI COMPTE, en mode de secours (4.1 de l'audit, corrigé le
+    # 14/10/2026). Le robot ajoute « trailer » aux mots-clés officiels de la
+    # seule chaîne YouTube de Rockstar : une vidéo intitulée simplement
+    # « Trailer 3 » ne contient aucun des six mots-clés GTA 6 et serait
+    # rejetée — le jour qui compte. Le mode de secours n'avait pas ce
+    # supplément, et c'est LUI qui tourne quand le backend est injoignable.
+    yt = {"official": True, "officialDomains": ["youtube.com", "youtu.be"],
+          "officialKeywordsExtra": ["trailer"]}
+    autre = {"official": True}
+    films = [{"title": "Trailer 3"}, {"title": "Grand Theft Auto VI Trailer 3"},
+             {"title": "NBA 2K27 Launch Trailer"}, {"title": "Une annonce sans rapport"}]
+    passe = page.evaluate("""([yt, autre, films]) => ({
+        chaine: filterFeedItems(films, yt).map(i => i.title),
+        ailleurs: filterFeedItems(films, autre).map(i => i.title),
+    })""", [yt, autre, films])
+    check("Trailer 3" in passe["chaine"],
+          "[secours] « Trailer 3 », sans le moindre « GTA », passe le filtre "
+          "officiel sur la chaîne qui déclare le supplément (%s)"
+          % passe["chaine"])
+    check("Trailer 3" not in passe["ailleurs"]
+          and "NBA 2K27 Launch Trailer" not in passe["ailleurs"],
+          "[secours] mais le supplément NE FUIT PAS sur les autres sources "
+          "officielles — sinon Take-Two laisse entrer les trailers de NBA 2K "
+          "(%s)" % passe["ailleurs"])
+    check("Grand Theft Auto VI Trailer 3" in passe["ailleurs"],
+          "[secours] et les six mots-clés de base continuent de s'appliquer "
+          "partout (%s)" % passe["ailleurs"])
+    # Le supplément est un SUPPLÉMENT : la source ne redéfinit pas la liste.
+    cles = page.evaluate("""([yt]) => ({
+        avec: motsClesOfficiels(yt), sans: motsClesOfficiels({}),
+        nul: motsClesOfficiels(null),
+    })""", [yt])
+    check(all(k in cles["avec"] for k in cles["sans"]) and "trailer" in cles["avec"],
+          "[secours] le supplément s'AJOUTE aux six mots-clés, il ne les "
+          "remplace pas (%d contre %d)" % (len(cles["avec"]), len(cles["sans"])))
+    check(cles["nul"] == cles["sans"],
+          "[secours] et une source sans réglage particulier garde la liste "
+          "de base")
     ctx.close()
 
     # Les trois filtres, avec les compteurs qu'ils portent en vrai. La boîte
@@ -3420,6 +3561,7 @@ def main():
             test_recherche_sans_accents(nav, url)
             test_barre_detat_suit_le_theme(nav, url)
             test_toast_annuler(nav, url)
+            test_plafond_des_lus(nav, url)
             test_sauvegarde_export_import(nav, url)
             test_vue_statistiques(nav, url)
             test_entete_sans_vide(nav, url)

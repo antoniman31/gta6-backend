@@ -452,6 +452,8 @@ cherchaient pas — voir **4.13**. C'est exactement ce pour quoi il existe.
 
 ### 4.1 — Le filtre officiel diverge en mode de secours, sur LE mot qui compte
 
+> **FAIT le 14/10/2026.** L'app a le même mécanisme que le robot : la source déclare un SUPPLÉMENT de mots-clés officiels, jamais une liste complète. `check_sources_sync.py` compare désormais ce champ source par source — vérifié capable d'échouer. Mesuré : la chaîne a cinq articles conservés dans tout le dépôt, tous déjà retenus par les six mots-clés de base, donc le supplément n'en fait entrer aucun de plus aujourd'hui. Il n'existe que pour celui qui n'est pas encore publié.
+
 **Le constat le plus sérieux de l'audit, et le seul qui ait une échéance.**
 
 `FEEDS` donne à la chaîne YouTube de Rockstar un mot-clé supplémentaire :
@@ -488,6 +490,8 @@ sans équivalent JS, légitimement) et `official_keywords_extra`.
 ---
 
 ### 4.2 — `readSet` n'a pas de plafond, et le message d'erreur conseille de détruire l'irremplaçable
+
+> **FAIT le 14/10/2026.** Plafond à 8 000 liens, mesuré (300 octets par lien au neuvième décile, soit 2,3 Mo). Trois garde-fous : il ne s'applique qu'à la copie écrite sur l'appareil — la sauvegarde exportée garde tout ; on ne jette que les liens absents à la fois du fil et de l'archive, et seulement si les deux sont en mémoire ; et un lien encore affichable n'est jamais jeté, même au-dessus du plafond. Le message de quota ne conseille plus d'effacer les données du site, il renvoie vers l'export.
 
 `seenMap` est plafonné à 2 000 entrées, `lastItems` à 300, dans les deux cas
 avec un commentaire citant la limite de 5 Mo. **`readSet` a échappé au même
