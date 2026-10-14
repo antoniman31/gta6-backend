@@ -231,7 +231,7 @@ d'où le planificateur externe.
    l'index interne de difflib en inversant les deux séquences aurait changé
    les résultats — `ratio()` n'est pas symétrique, 28 052 paires sur 33 670
    donnent un score différent selon l'ordre.
-10. **Plafonne l'historique à une PROFONDEUR** de 15 jours
+10. **Plafonne l'historique à une PROFONDEUR** de 30 jours
    (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 12 000 articles — au-delà, les
    plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant.
@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1803
+qui permet de tester tout le pipeline sans sortir de la machine. **1807
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -1701,7 +1701,8 @@ de v4.
 ```
 
 **Deux tons.** Quand un sujet est couvert par au moins
-`HOT_SOURCE_THRESHOLD` rédactions (4), le libellé bascule en alerte :
+`HOT_SOURCE_THRESHOLD` rédactions (3 depuis le 29/08/2026), le libellé
+bascule en alerte :
 
 ```
 🚨 Actu majeure — 5 sources sur le même sujet · 3 nouveaux articles GTA 6
@@ -4312,11 +4313,11 @@ commentaire).
 
 ## Limites connues et assumées
 
-- **Historique glissant, pas permanent** — une profondeur de 15 jours
-  (`MAX_HISTORY_DAYS` dans `feed_store.py`), bornée entre 1 500 et 4 000
+- **Historique glissant, pas permanent** — une profondeur de 30 jours
+  (`MAX_HISTORY_DAYS` dans `feed_store.py`), bornée entre 1 500 et 12 000
   articles, pas un vrai historique complet depuis toujours. Les officiels
   Rockstar, RockstarMag et les actualités majeures y échappent.
-- **Poids de `feed.json`** — 1,31 Mo aujourd'hui, 3,4 Mo au plafond dur, et
+- **Poids de `feed.json`** — 2,8 Mo au 14/10/2026, 9,4 Mo au plafond dur, et
   jamais au-delà. L'ouverture de l'app n'est de toute façon pas concernée
   (elle charge `feed-recent.json`), mais toute recherche déclenche le
   téléchargement de l'historique complet.
@@ -4447,13 +4448,15 @@ pagination de l'affichage, qui existe déjà et sert tout autre chose — avait
 été écarté comme trop lourd pour un projet visant une date. Ce motif tombe.
 Un fil qui tourne pendant des années finira par rendre le plafond glissant
 insatisfaisant quel que soit son réglage : chercher ce qui s'est dit d'un DLC
-six mois plus tôt ne rentrera jamais dans quinze jours. Ce n'est pas décidé,
+six mois plus tôt ne rentrera jamais dans la fenêtre glissante. Ce n'est pas décidé,
 mais ce n'est plus « trop gros pour ce projet ».
 
 Deux conséquences à prévoir. **Les sources devront être revues** : celles qui
 couvrent une attente ne sont pas celles qui couvriront des correctifs et du
-multijoueur. Et **la profondeur de quinze jours** sera à reconsidérer, le
+multijoueur. Et **la profondeur de la fenêtre** sera à reconsidérer, le
 rythme d'une veille n'ayant rien à voir avec celui d'un compte à rebours.
+(Elle l'a été depuis : quinze jours au moment où ces lignes ont été
+écrites, trente aujourd'hui.)
 
 ### Fait le 22/09 : le filtre d'entrée est aligné sur la fenêtre gardée
 
@@ -7783,6 +7786,31 @@ n'est plus dans un écart de 14. Son âge suit maintenant l'écart mesuré.
 **Deux valeurs écrites en dur, deux fois la même leçon** : un contrôle qui
 fige une mesure du fil meurt à la première variation du fil. Et d'ici
 novembre, le fil ne fera que varier.
+
+### « Le README est à jour ? » — non, et voilà ce qui ne l'était pas
+
+Question d'Antoni, le 14/10/2026. Vérifiée plutôt que répondue de mémoire,
+en confrontant les constantes citées dans le README à celles du code.
+**Quatre chiffres étaient faux**, dont trois dans la rubrique « Limites
+connues et assumées » — celle qu'un lecteur croit le plus :
+
+| ce que le README disait | ce que le code fait |
+|---|---|
+| profondeur de **15 jours** (deux endroits) | 30 |
+| historique borné à **4 000** articles | 12 000 |
+| `feed.json` : **1,31 Mo**, 3,4 Mo au plafond | 2,8 Mo, 9,4 Mo au plafond |
+| alerte à partir de **4** rédactions | 3, depuis le 29/08/2026 |
+
+Les trois premiers dataient du réglage d'avant le 22/09 et du plafond
+relevé le 13/10 ; le quatrième traînait depuis fin août, alors qu'une
+autre page du même fichier annonçait correctement le passage de 4 à 3.
+
+**Le point 4.8 de l'audit avait déjà nommé la dérive documentaire. La
+nommer ne suffit pas.** Un contrôle lit désormais la profondeur et les
+bornes annoncées dans le README et les compare au code — vérifié capable
+d'échouer avant d'être retenu. Les occurrences historiques (« jusqu'au
+22/09 la fenêtre était de 15 jours ») restent intactes : elles décrivent
+le passé et le disent.
 
 ## Ajuster quelque chose
 
