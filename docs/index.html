@@ -3897,6 +3897,11 @@ function formatePoids(octets){
   return Math.round(octets / 1024) + " Ko";
 }
 
+function poidsAnnonce(){
+  sondePoidsHistorique();
+  return poidsHistorique ? ` (${formatePoids(poidsHistorique)})` : "";
+}
+
 async function sondePoidsHistorique(){
   if(poidsHistoriqueDemande || !settings.backendUrl) return;
   poidsHistoriqueDemande = true;
@@ -3914,6 +3919,27 @@ async function sondePoidsHistorique(){
   }
 }
 
+// UN SEUL ENDROIT DÉCIDE DE CE QUE LA LIGNE AFFICHE, et c'est le défaut
+// que ça répare — trouvé le 14/10/2026 en chronométrant, à la demande
+// d'Antoni, combien de temps le bouton reste visible.
+//
+// Trois endroits écrivaient dans cette ligne : le chargement y posait
+// « Chargement de l'historique complet… », l'échec y posait
+// « indisponible » avec un bouton « Réessayer », et updateHistoryLine y
+// reposait le bouton. Or applyFilters() appelle updateHistoryLine() à
+// chaque rendu : il passait TOUJOURS en dernier et effaçait les deux
+// autres.
+//
+// Mesuré sur un réseau bridé : le message de chargement vivait 0,01 s sur
+// une 4G et 0,26 s sur une 3G lente, puis le bouton revenait — et restait
+// 10 s en 4G, 23 s en 3G, invitant à appuyer sur un bouton qui ne fait
+// rien tant que le chargement court. Le message d'échec, lui, était
+// effacé dans la milliseconde : une panne de chargement ne se voyait nulle
+// part.
+//
+// Les deux états sont donc portés par des variables, et la ligne se rend
+// à partir d'elles. Écrire dans `innerHTML` depuis ailleurs redeviendrait
+// le même défaut.
 function updateHistoryLine(){
   const el = document.getElementById("historyLine");
   if(!el) return;
@@ -3922,8 +3948,22 @@ function updateHistoryLine(){
     return;
   }
   el.style.display = "flex";
-  sondePoidsHistorique();
-  const poids = poidsHistorique ? ` (${formatePoids(poidsHistorique)})` : "";
+  if(historyLoading){
+    el.innerHTML = `<span>Chargement de l'historique complet…</span>`;
+    return;
+  }
+  // LE POIDS EST SUR « RÉESSAYER » AUSSI, et c'est même là qu'il sert le
+  // plus : après un échec, la question « est-ce que je relance ça sur mes
+  // données mobiles ? » se pose vraiment. Sur le chemin normal, le
+  // rattrapage automatique du démarrage part tout de suite et la ligne
+  // passe directement en « Chargement… » — le poids n'y est quasiment
+  // jamais lu.
+  if(historyErreur){
+    el.innerHTML = `<span>Historique complet indisponible.</span>` +
+      `<button class="small" onclick="loadFullHistory()">Réessayer${escapeHtml(poidsAnnonce())}</button>`;
+    return;
+  }
+  const poids = poidsAnnonce();
   // Le nombre d'articles est déjà donné juste à gauche par countLine : le
   // répéter ici affichait deux fois "300" sur deux lignes qui se suivaient.
   el.innerHTML = `<span>historique partiel</span>` +
@@ -3938,16 +3978,15 @@ function updateHistoryLine(){
 async function loadFullHistory(raison){
   if(!historyPartial || historyLoading) return;
   historyLoading = true;
-  const el = document.getElementById("historyLine");
-  if(el) el.innerHTML = "<span>Chargement de l'historique complet…</span>";
+  historyErreur = false;
+  updateHistoryLine();
   addLog("info", "Chargement de l'historique complet" + (raison ? ` (${raison})` : "") + "…");
   try{
     await checkFromBackend(true);
     addLog("ok", `Historique complet chargé — ${lastItems.length} article(s).`);
   }catch(e){
     addLog("fail", `Historique complet indisponible : ${escapeHtml(e.message || "erreur inconnue")}`);
-    if(el) el.innerHTML = `<span>Historique complet indisponible.</span>` +
-      `<button class="small" onclick="loadFullHistory()">Réessayer</button>`;
+    historyErreur = true;
   }finally{
     historyLoading = false;
     // La ligne d'archive ne s'affiche qu'une fois la fenêtre complète : ce
@@ -7055,6 +7094,10 @@ async function rattrapeToutEnArrierePlan(){
 }
 let historyFullUrl = "";
 let historyLoading = false;
+// Le dernier chargement complet a échoué. Porté par une variable et non
+// écrit directement dans la ligne : voir updateHistoryLine, qui en est le
+// seul juge depuis le 14/10/2026.
+let historyErreur = false;
 
 function pushSupported(){
   return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;

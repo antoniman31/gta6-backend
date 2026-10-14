@@ -7617,6 +7617,57 @@ requête HEAD le déclenchait. Mais ce contrôle porte sur ce qui se
 TÉLÉCHARGE, et un HEAD ne ramène aucun corps : il ne retient donc plus que
 les GET. C'est son intention qui est gardée, pas sa lettre.
 
+## Un bouton mort pendant vingt-trois secondes — 14/10/2026
+
+Antoni a demandé combien de temps la ligne « Tout charger » reste visible.
+La question avait l'air anodine. Elle a trouvé un défaut que ni les tests
+ni les captures ne pouvaient voir, parce qu'il ne dure que le temps d'un
+téléchargement.
+
+**Trois endroits écrivaient dans cette ligne.** Le chargement y posait
+« Chargement de l'historique complet… », l'échec y posait « indisponible »
+avec un bouton « Réessayer », et `updateHistoryLine()` y reposait le
+bouton. Or `applyFilters()` appelle `updateHistoryLine()` à chaque rendu :
+il passait **toujours en dernier** et effaçait les deux autres.
+
+Mesuré en bridant le réseau par le protocole de débogage de Chromium :
+
+| réseau | message de chargement visible | bouton mort ensuite |
+|---|---|---|
+| sans bride | — | 8,2 s |
+| 4G (12 Mb/s) | **0,01 s** | 10,4 s |
+| 3G lente (1,6 Mb/s) | **0,26 s** | 23,4 s |
+
+Pendant ces huit à vingt-trois secondes, l'app affichait un bouton
+« Tout charger » qui **ne fait rien** : `loadFullHistory` sort tout de
+suite tant qu'un chargement court. Et le message d'échec, lui, était
+effacé dans la milliseconde — **une panne de chargement ne se voyait nulle
+part**.
+
+`updateHistoryLine()` est désormais le **seul juge** de ce que la ligne
+affiche, à partir de deux variables d'état. Écrire dans `innerHTML` depuis
+ailleurs redeviendrait le même défaut, et cinq contrôles l'interdisent, y
+compris « un rendu du fil ne l'efface plus ».
+
+**Et le poids passe aussi sur « Réessayer ».** C'est même là qu'il sert le
+plus : après un échec, la question « est-ce que je relance 2,8 Mo sur mes
+données mobiles ? » se pose vraiment. Sur le chemin normal, le rattrapage
+automatique du démarrage part immédiatement et la ligne passe directement
+en « Chargement… » : le poids annoncé le matin même n'y est quasiment
+jamais lu. Dit autrement, **la fonction livrée ce matin ne servait presque
+à rien jusqu'à cette correction**.
+
+### Trois sondages faux avant le bon
+
+Consigné parce que c'est la leçon de la journée. Le premier bloquait le
+gestionnaire de routes de Playwright avec un `sleep`, ce qui arrêtait tout
+le réseau et pas seulement le fichier visé. Le deuxième supposait que
+l'app interroge le backend au démarrage — elle ne le fait pas, il faut
+« Actualiser ». Le troisième mesurait la visibilité de la LIGNE et non le
+TEXTE qu'elle portait, et aurait donc conclu que tout allait bien. Seul le
+quatrième, qui suit les libellés successifs horodatés sur un réseau bridé,
+a vu le défaut.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
