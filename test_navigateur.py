@@ -825,6 +825,45 @@ def test_poids_de_tout_charger(nav, url):
           "[poids] redessiner la ligne ne relance pas le sondage (%d requête(s))"
           % requetes.count("HEAD"))
 
+    # TROIS ÉTATS, UN SEUL JUGE. Défaut trouvé le 14/10/2026 en
+    # chronométrant la visibilité du bouton : trois endroits écrivaient
+    # dans cette ligne, et applyFilters() passait toujours en dernier.
+    # Mesuré sur réseau bridé, le message de chargement vivait 0,01 s en
+    # 4G avant d'être remplacé par un bouton qui ne fait rien pendant les
+    # dix secondes du téléchargement ; le message d'échec, lui, était
+    # effacé dans la milliseconde — une panne ne se voyait nulle part.
+    etats = page.evaluate("""() => {
+        const el = document.getElementById('historyLine');
+        const lis = () => el.textContent.trim();
+        const out = {};
+        historyPartial = true; historyLoading = true; historyErreur = false;
+        updateHistoryLine(); out.pendant = lis();
+        // Le rendu du fil ne doit plus pouvoir écraser l'état.
+        applyFilters(); out.pendantApresRendu = lis();
+        out.boutonPendant = el.querySelectorAll('button').length;
+        historyLoading = false; historyErreur = true;
+        updateHistoryLine(); out.echec = lis();
+        applyFilters(); out.echecApresRendu = lis();
+        historyErreur = false;
+        updateHistoryLine(); out.repos = lis();
+        return out;
+    }""")
+    check("Chargement" in etats["pendant"] and etats["boutonPendant"] == 0,
+          "[poids] pendant le chargement, la ligne le DIT et n'offre aucun "
+          "bouton mort (%s)" % etats["pendant"])
+    check(etats["pendantApresRendu"] == etats["pendant"],
+          "[poids] et un rendu du fil ne l'efface plus (%s)"
+          % etats["pendantApresRendu"])
+    check("indisponible" in etats["echec"]
+          and etats["echecApresRendu"] == etats["echec"],
+          "[poids] un échec reste affiché après le rendu suivant (%s)"
+          % etats["echecApresRendu"])
+    check("Réessayer" in etats["echec"] and "(" in etats["echec"],
+          "[poids] et « Réessayer » annonce le poids lui aussi — c'est là "
+          "que la question se pose vraiment (%s)" % etats["echec"])
+    check("Tout charger" in etats["repos"],
+          "[poids] au repos, le bouton revient (%s)" % etats["repos"])
+
     # ET SI ON NE SAIT PAS, ON NE DIT RIEN. Un chiffre faux serait pire que
     # pas de chiffre : le bouton redevient exactement ce qu'il était.
     page.evaluate("""() => {
