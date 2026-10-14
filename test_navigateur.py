@@ -431,8 +431,15 @@ def test_repli_backend(nav, url):
         ctx = nav.new_context(viewport={"width": 390, "height": 850})
         page = ctx.new_page()
         demandes = []
+        # La MÉTHODE compte, depuis le 14/10/2026. Le bouton « Tout
+        # charger » annonce son poids, et il l'obtient par une requête HEAD
+        # sur le fichier complet : des en-têtes, aucun corps. Ce contrôle
+        # porte sur ce qui se TÉLÉCHARGE, donc il ne retient que les GET —
+        # compter le HEAD lui ferait interdire une requête qui ne coûte
+        # rien, et c'est son intention qu'on garde, pas sa lettre.
         page.on("request", lambda r: demandes.append(r.url.split("/")[-1].split("?")[0])
-                if ("feed.json" in r.url or "feed-recent.json" in r.url) else None)
+                if (("feed.json" in r.url or "feed-recent.json" in r.url)
+                    and r.method == "GET") else None)
         page.goto(url, wait_until="load")
         page.wait_for_selector("#feed", state="attached")
         brancher(page)
@@ -768,6 +775,78 @@ def test_toast_annuler(nav, url):
           "perdue ne se rend pas")
     page.evaluate("() => repondConfirmation(false)")
 
+    ctx.close()
+
+
+def test_poids_de_tout_charger(nav, url):
+    """Le bouton « Tout charger » annonce ce qu'il va télécharger.
+
+    Mesuré le 14/10/2026 : 2,8 Mo aujourd'hui, 9,3 Mo si le fil atteint son
+    plafond. Appuyer en données mobiles le jour de la sortie coûtait dix
+    méga sans que rien ne l'ait dit.
+    """
+    import os, re
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("rattrapageLance = true;")
+
+    reel = os.path.getsize("docs/feed.json")
+    page.evaluate("""([u]) => {
+        settings.backendUrl = u;
+        poidsHistorique = null; poidsHistoriqueDemande = false;
+        historyPartial = true;
+        updateHistoryLine();
+    }""", ["%s/feed.json" % base])
+    page.wait_for_function(
+        "() => (document.getElementById('historyLine').textContent || '')"
+        ".includes('(')", timeout=5000)
+    texte = page.evaluate(
+        "document.getElementById('historyLine').textContent")
+    m = re.search(r"\(([\d,]+)\s*(Mo|Ko)\)", texte)
+    check(bool(m), "[poids] le bouton annonce une taille (%s)" % texte.strip())
+    if m:
+        annonce = float(m.group(1).replace(",", "."))
+        attendu = reel / 1024 / 1024 if m.group(2) == "Mo" else reel / 1024
+        # LE CHIFFRE VIENT DU FICHIER, pas d'une constante : il doit suivre
+        # le fichier réellement servi, à l'arrondi d'affichage près.
+        check(abs(annonce - attendu) <= 0.1,
+              "[poids] et c'est la taille du fichier réellement servi "
+              "(%s annoncé, %.2f attendu)" % (m.group(0), attendu))
+
+    # Une seule requête : le sondage ne doit pas repartir à chaque rendu.
+    requetes = []
+    page.on("request", lambda r: requetes.append(r.method))
+    page.evaluate("updateHistoryLine(); updateHistoryLine();")
+    page.wait_for_timeout(300)
+    check(requetes.count("HEAD") == 0,
+          "[poids] redessiner la ligne ne relance pas le sondage (%d requête(s))"
+          % requetes.count("HEAD"))
+
+    # ET SI ON NE SAIT PAS, ON NE DIT RIEN. Un chiffre faux serait pire que
+    # pas de chiffre : le bouton redevient exactement ce qu'il était.
+    page.evaluate("""() => {
+        poidsHistorique = null; poidsHistoriqueDemande = true;
+        updateHistoryLine();
+    }""")
+    nu = page.evaluate("document.getElementById('historyLine').textContent")
+    check("(" not in nu,
+          "[poids] sans réponse du serveur, le bouton n'invente aucun "
+          "chiffre (%s)" % nu.strip())
+
+    # Le sondage échoué ne casse rien et ne crie pas : une taille inconnue
+    # est un confort manquant, pas une panne.
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.evaluate("""() => {
+        settings.backendUrl = 'http://127.0.0.1:1/absent.json';
+        poidsHistorique = null; poidsHistoriqueDemande = false;
+        updateHistoryLine();
+    }""")
+    page.wait_for_timeout(600)
+    check(not erreurs, "[poids] un sondage qui échoue ne jette rien (%s)" % erreurs)
     ctx.close()
 
 
@@ -3561,6 +3640,7 @@ def main():
             test_recherche_sans_accents(nav, url)
             test_barre_detat_suit_le_theme(nav, url)
             test_toast_annuler(nav, url)
+            test_poids_de_tout_charger(nav, url)
             test_plafond_des_lus(nav, url)
             test_sauvegarde_export_import(nav, url)
             test_vue_statistiques(nav, url)
