@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-14T05:01:27.987609+00:00",
+  "generated_at": "2026-10-14T05:16:52.877283+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 25.4,
+  "duration_seconds": 23.8,
   "decode_failures": 0,
-  "total_articles": 3627,
-  "new_this_run": 1,
+  "total_articles": 3629,
+  "new_this_run": 2,
   "hot_count": 55,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1005,
-      "last_article": "2026-10-14T02:30:37+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 1006,
+      "last_article": "2026-10-14T05:06:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,8 +493,8 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "articles_exclusifs": 1388,
-      "last_article": "2026-10-14T04:02:34+00:00",
+      "articles_exclusifs": 1389,
+      "last_article": "2026-10-14T05:08:45+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -761,10 +761,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-10-10T19:14:00+00:00",
@@ -774,10 +774,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-10-13T09:33:00+00:00",
@@ -1099,10 +1099,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": "2026-09-28T15:57:47+00:00",
@@ -1190,10 +1190,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1233,7 +1233,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,0,0,0,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,0,0,0,0,0,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,0,0,0,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,0,0,0,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1277,7 +1277,7 @@
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,57,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,57,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
@@ -1342,12 +1342,12 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Wed, 14 Oct 2026 04:56:40 GMT"
+      "modified": "Wed, 14 Oct 2026 05:14:19 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
       "etag": null,
-      "modified": "Tue, 13 Oct 2026 22:01:24 GMT"
+      "modified": "Wed, 14 Oct 2026 05:10:01 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Wed, 14 Oct 2026 05:00:11 GMT"
+      "modified": "Wed, 14 Oct 2026 05:15:50 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1411,8 +1411,8 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"9498a10596f4b7447ecf515b43370ad5\"",
-      "modified": "Tue, 13 Oct 2026 20:00:34 GMT"
+      "etag": "W/\"3a1b1cb83176c35acbb36d91f10d3a61\"",
+      "modified": "Wed, 14 Oct 2026 05:00:24 GMT"
     }
   },
   "sources_incidents": [
@@ -2199,6 +2199,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Release Date: PC Launch Rumors, Next Trailer & Key Dates - MMOEXP",
+      "link": "https://www.mmoexp.com/News/gta-6-release-date-pc-launch-rumors-next-trailer-key-dates.html",
+      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQb1ZYUmp6NURCUlRpVHE5eUVzMm0yZElRYjYxa0V2M2x4N0xIcWZzbHNPOGJzRGwwRnVNOG9ZUnlZdzdFdnlkektQeTZadDZHNHRoRzU3YWo4Vk1KZXEwWm9ORjhaeERBRmNra1JPd0VmakdrN0RWamdBdFp4ZW05UjBlaF96S0xIdEhKbkhWc1VPMktjdlE?oc=5",
+      "date": "2026-10-14T05:08:45+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.mmoexp.com/mmoexp-v250528/images/mmoexp_logo.png",
+      "description": "GTA 6 Release Date: PC Launch Rumors, Next Trailer & Key Dates&nbsp;&nbsp;MMOEXP"
+    },
+    {
+      "title": "GTA 6 : la sortie sur PC serait bien plus proche que prévu, une date se précise - Tom’s Hardware",
+      "link": "https://www.tomshardware.fr/gta-6-la-sortie-sur-pc-serait-bien-plus-proche-que-prevu-une-date-se-precise/",
+      "source_link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQTmFuOGNoNS1JaUNhczZJa0FWLS1wRHM2aU1TVUs2ZEhFZWFNY2JIMm54UnkzcGtIYk0tTXZ4THcxZmNJM09mVG5CYkVfZFNGeldsSHdnX2U3eURlTVlZZFVzWmlFRzVVbmY4d0ZnR3JGQ3hfekpJQ1JJaWxEQWlLb2JqWHBLVmJSWVo0SWRRRjctR1hYb2tUYkZrOEtjZ1lqbVprY21EV3Y?oc=5",
+      "date": "2026-10-14T05:06:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.tomshardware.fr/content/uploads/sites/3/2026/03/gta-6-production-scaled.jpg",
+      "description": "GTA 6 : la sortie sur PC serait bien plus proche que prévu, une date se précise&nbsp;&nbsp;Tom’s Hardware"
+    },
     {
       "title": "‘Grand Theft Auto VI’ Release May Wreak Havoc on Sports Ratings - Sportico.com",
       "link": "https://www.sportico.com/business/media/2026/grand-theft-auto-vi-sports-tv-ratings-1234952077/",
@@ -6194,38 +6220,6 @@
       "lang": "en",
       "image": "https://shattered.io/wp-content/uploads/2026/10/gta-6-switch-2-nintendo-addresses-possibility-2026.jpg",
       "description": "GTA VI Switch 2 Port: Nintendo Names 2 Companies [2026]&nbsp;&nbsp;shattered.io"
-    },
-    {
-      "title": "GTA 6 Leaker Says It Will Release a Complete Game Build If Demands Aren't Met - 80 Level",
-      "link": "https://80.lv/articles/gta-6-leaker-says-it-will-release-a-complete-game-build-if-demands-aren-t-met",
-      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOcFR3LUl0ZVdNSXMzVHlwcHZ5ZDREMXVYMXhETUU1enV3clFNTVRNSXlpY2dvVGJaZjJLUnBxbElqd0c4T0NEc0M5Tl9jd3RXWC13aVdNcktBTE1mSXhfOEg1c3JaNDVMN0k1aFItUXFXWkpxakJrV1ZjRnRLMW5pRkNDUmM1akhtalRDMEZPZ3JMVWo2V1hfaFdWREFrMlVjMFE?oc=5",
-      "date": "2026-10-12T08:00:10+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://cdn.80.lv/api/upload/meta/50596/images/6acc935ecc667/contain_1200x630.jpg",
-      "description": "GTA 6 Leaker Says It Will Release a Complete Game Build If Demands Aren't Met&nbsp;&nbsp;80 Level",
-      "extraSources": [
-        {
-          "source": "Google News (EN, 7 jours)",
-          "link": "https://80.lv/articles/gta-6-leaker-says-they-will-release-a-complete-game-build-if-demands-aren-t-met"
-        }
-      ]
-    },
-    {
-      "title": "Débrief : Ape Escape, Xbox croissance, PS5 physique, Triple-I, et radios GTA 6 - ActuGaming",
-      "link": "https://www.actugaming.net/debrief-ape-escape-xbox-croissance-ps5-physique-triple-i-et-radios-gta-6-829072/",
-      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQSVdUOUNsWkVsN0ExTHpYeFZXUmdTUUY4Qm9XZlFPWE5zWk9SQWZTMjU5NVZTbU5zeHRwZ0JHa0hEd0FibFRyNUQ2RmpsLXVaWG5PTWp2b053ODgxbjdKQnpzeXFCdTl0WHAtWHduRGY2VktETVdYeDNFMW0yemRJa2hhZ2ZDZnk2VXJLMVVianhrUFNwUklCVHIySmJWU1YtWUxRYTZkdjVoTVk?oc=5",
-      "date": "2026-10-12T07:41:18+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://static.actugaming.net/media/2026/10/debrief-11-oct.jpg",
-      "description": "Débrief : Ape Escape, Xbox croissance, PS5 physique, Triple-I, et radios GTA 6&nbsp;&nbsp;ActuGaming"
     }
   ],
   "partial": true,
