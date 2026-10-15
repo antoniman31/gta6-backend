@@ -6642,6 +6642,81 @@ def test_contraste_des_deux_themes():
         check(r >= SEUIL, "couleur fixe %s sur %s = %.2f:1" % (texte, fond, r))
 
 
+def test_le_decodeur_google_news_est_vraiment_la():
+    """L'import du décodeur doit RÉUSSIR, pas seulement être tenté.
+
+    LA PANNE DU 03/10/2026, ET POURQUOI CE CONTRÔLE MANQUAIT. selectolax
+    1.0.0 retire son ancien moteur (« Modest ») ; googlenewsdecoder importe
+    `selectolax.parser`, qui en fait partie, et déclare `selectolax>=0.4.12`
+    sans borne haute. L'import a donc levé ImportError, fetch_feeds l'a
+    attrapée, HAS_DECODER est passé à False, et le décodage Google News
+    s'est arrêté EN SILENCE. Trois jours, 394 articles pointant vers
+    news.google.com, et plus aucun article reconnu comme officiel — le
+    statut officiel se décide sur le domaine du lien DÉCODÉ.
+
+    Le repli est volontaire : sans décodeur le robot doit continuer de
+    tourner. C'est pour ça que rien ne plantait. Mais aucun contrôle ne
+    vérifiait que l'import PASSE, et les deux seules assertions existantes
+    portent sur le TEXTE de fetch_feeds.py, pas sur le comportement.
+
+    CE QUE ÇA A COÛTÉ, ET CE QUI L'A RÉVÉLÉ : la PR Dependabot qui remonte
+    selectolax à 1.0.0 (#150) est passée VERTE sur les quatre suites, le
+    décodeur cassé. Un clic de plus et la panne revenait à l'identique.
+    Avec ce contrôle, elle vire au rouge toute seule.
+    """
+    print("\n[décodeur] googlenewsdecoder s'importe vraiment")
+    import fetch_feeds
+
+    # LE CONTRÔLE QUI COMPTE. Tout le reste de ce test est du détail à côté.
+    check(fetch_feeds.HAS_DECODER is True,
+          "le décodeur Google News est importable — sinon le décodage "
+          "s'arrête en silence (%s)" % (fetch_feeds.DECODEUR_ABSENT or "ok"))
+
+    # Le module nommément supprimé par selectolax 1.0. Le citer ici donne
+    # au prochain lecteur le nom exact à chercher, au lieu d'un ImportError
+    # anonyme remonté de trois niveaux.
+    try:
+        from selectolax.parser import HTMLParser
+        moteur = HTMLParser("<b>x</b>").css_first("b") is not None
+    except Exception as e:  # pragma: no cover - c'est précisément l'échec visé
+        moteur = False
+        print("     (%s)" % e)
+    check(moteur,
+          "selectolax.parser répond — c'est CE module que la 1.0 retire, "
+          "et celui que googlenewsdecoder importe")
+
+    # Et le chemin d'analyse du décodeur, exercé sans réseau : parse_signature
+    # est une fonction pure qui passe par selectolax. La suite n'ouvre
+    # aucune connexion, c'est sa propriété de fond, donc on ne décode pas un
+    # vrai lien — on exerce l'étage qui casse.
+    #
+    # Import PROTÉGÉ : quand le décodeur est cassé, c'est exactement ici
+    # qu'un `from googlenewsdecoder import _parse` sec lèverait et
+    # emporterait les mille contrôles suivants. Un diagnostic qui plante
+    # vaut moins qu'un diagnostic qui parle.
+    try:
+        from googlenewsdecoder import _parse
+    except Exception as e:
+        _parse = None
+        print("     (%s)" % e)
+    html = ('<c-wiz><div jscontroller="abc" data-n-a-sg="SIG123" '
+            'data-n-a-ts="1760000000"></div></c-wiz>')
+    check(_parse is not None
+          and _parse.parse_signature(html) == ("SIG123", "1760000000"),
+          "il lit la signature d'une page d'article (hors ligne, HTML en dur)")
+    check(_parse is not None and _parse.article_id(
+              "https://news.google.com/rss/articles/CBMiXmh0dHBz?oc=5") == "CBMiXmh0dHBz",
+          "et il sait extraire l'identifiant d'un lien Google News")
+
+    # La borne qui manque en amont, écrite ici pour qu'on la retrouve.
+    # googlenewsdecoder demande selectolax>=0.4.12 SANS borne haute : c'est
+    # requirements.txt qui tient la laisse, et lui seul.
+    req = open("requirements.txt", encoding="utf-8").read()
+    check("selectolax==" in req,
+          "selectolax est épinglée à l'exact dans requirements.txt — le "
+          "décodeur, lui, ne pose aucune borne haute")
+
+
 def test_readme_ne_cite_que_des_constantes_reelles():
     print("\n[doc] le README ne décrit que des constantes qui existent")
     import re, glob
@@ -9552,6 +9627,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_un_seul_juge_de_lactu_majeure,
            test_icones_en_emoji,
            test_contraste_des_deux_themes,
+           test_le_decodeur_google_news_est_vraiment_la,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_les_workflows_epinglent_leurs_dependances,

@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1838
+qui permet de tester tout le pipeline sans sortir de la machine. **1843
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -6701,6 +6701,44 @@ l'ensemble. `selectolax` y reste sous la 1.0 tant que le décodeur importe
 
 Pour mettre à jour : installer dans un environnement vide, vérifier que
 `from googlenewsdecoder import gnewsdecoder` passe, puis `pip freeze`.
+
+### Le garde-fou qui manquait encore — 16/10/2026
+
+Tout ce qui précède surveille le décodage **à l'exécution**. Rien ne
+surveillait sa **mise à jour**, et ça s'est vu dix jours plus tard :
+Dependabot a ouvert une PR remontant `selectolax` à 1.0.0 — le paquet et la
+version exacts de la panne — et elle est passée **verte sur les quatre
+suites**, décodeur cassé.
+
+Logique, et c'est le piège : le repli est volontaire. Sans décodeur le robot
+doit continuer de tourner, donc rien ne plante. Les deux seules assertions
+qui parlaient du décodeur portaient sur le **texte** de `fetch_feeds.py`
+(« `HAS_DECODER` et `DECODEUR_ABSENT` existent bien »), pas sur le fait que
+l'import réussisse.
+
+`test_le_decodeur_google_news_est_vraiment_la` l'exige désormais :
+
+- `fetch_feeds.HAS_DECODER is True` — le contrôle qui compte, à lui seul
+  suffisant pour faire virer la PR au rouge ;
+- `selectolax.parser` s'importe et analyse — le module nommément retiré par
+  la 1.0, cité pour que le prochain lecteur ait le nom exact ;
+- `_parse.parse_signature()` et `_parse.article_id()`, **hors ligne** :
+  deux fonctions pures qui passent par selectolax, pour exercer l'étage qui
+  casse sans ouvrir une connexion — la suite ne fait pas de réseau, c'est sa
+  propriété de fond.
+
+Vérifié capable d'échouer en simulant selectolax 1.0 (un faux paquet qui
+n'expose que `lexbor`) : quatre contrôles passent au rouge, avec le message
+`No module named 'selectolax.parser'` — mot pour mot celui du 03/10. Et
+l'import de `_parse` est protégé : un `from googlenewsdecoder import _parse`
+sec aurait levé à cet endroit précis et emporté les mille contrôles suivants.
+
+**Les trois PR Dependabot du moment, tranchées avec ça en main** :
+`pycparser 3.11` passe (transitive de `cffi`, sans borne, quatre suites
+vertes) ; `multidict 7.1.0` est refusée — `aiohttp 3.14.4` exige
+`multidict<7.0`, l'installation échoue avant les tests ; `selectolax 1.0.0`
+est refusée tant que `googlenewsdecoder` (toujours en 0.2.1, publiée le
+20/09/2026) importe `selectolax.parser`.
 
 ### Pourquoi personne n'a rien vu pendant trois jours
 
