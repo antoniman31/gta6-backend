@@ -3283,6 +3283,76 @@ def test_ce_que_jai_rate(nav, url):
     ctx.close()
 
 
+def test_compte_a_rebours(nav, url):
+    """Le compteur avant la sortie, et APRÈS — ce qu'il ne savait pas faire.
+
+    Il affichait « GTA 6 est sorti ! » dès le 19 novembre passé, et ne
+    bougeait plus jamais. Au bout d'une semaine, une page qui répète la
+    même phrase a l'air abandonnée, et c'est le seul endroit de l'app dont
+    le texte dit explicitement quel jour on est.
+
+    L'horloge est FAUSSÉE côté navigateur (page.clock) plutôt que la date
+    de sortie déplacée côté page : GTA6_RELEASE est un `const` de module,
+    et un contrôle qui aurait besoin de le réécrire n'éprouverait pas le
+    vrai chemin. Ici c'est le temps qui bouge, comme dans la réalité.
+    """
+    print("\n[compteur] avant la sortie, et après")
+
+    def a(instant):
+        """Rend le texte et la classe du compteur à cet instant-là."""
+        ctx = nav.new_context(viewport={"width": 390, "height": 850})
+        ctx.clock.install(time=instant)
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#countdown", state="attached")
+        page.evaluate("updateCountdown()")
+        etat = page.evaluate("""() => {
+            const el = document.getElementById('countdown');
+            return {texte: el.textContent, classe: el.className};
+        }""")
+        ctx.close()
+        return etat
+
+    # La sortie : 19/11/2026 à minuit heure de New York, soit 05h00 UTC.
+    SORTIE = "2026-11-19T05:00:00Z"
+
+    avant = a("2026-11-01T12:00:00Z")
+    check("Sortie dans" in avant["texte"],
+          "[compteur] avant la sortie, il compte à rebours (« %s »)"
+          % avant["texte"])
+
+    # Les paliers d'intensité, à leurs vraies bornes.
+    check(a("2026-11-14T12:00:00Z")["classe"].endswith("urgent"),
+          "[compteur] à moins de sept jours, le palier passe à « urgent »")
+    check(a("2026-11-18T18:00:00Z")["classe"].endswith("final"),
+          "[compteur] dans les dernières heures, « final »")
+
+    # LE JOUR J. Le palier qui crie est mérité ce jour-là, et ce jour-là
+    # seulement.
+    jour0 = a("2026-11-19T08:00:00Z")
+    check(jour0["texte"] == "GTA 6 EST SORTI !" and jour0["classe"].endswith("final"),
+          "[compteur] le jour même, il l'annonce et garde le palier fort "
+          "(« %s » / %s)" % (jour0["texte"], jour0["classe"]))
+
+    # ET LE LENDEMAIN, il repart dans l'autre sens au lieu de se figer.
+    jour1 = a("2026-11-20T08:00:00Z")
+    check(jour1["texte"] == "Sorti depuis 1 jour",
+          "[compteur] le lendemain, il compte les jours écoulés, au "
+          "singulier (« %s »)" % jour1["texte"])
+    jour3 = a("2026-11-22T08:00:00Z")
+    check(jour3["texte"] == "Sorti depuis 3 jours",
+          "[compteur] et au pluriel ensuite (« %s »)" % jour3["texte"])
+    check(jour3["classe"] == "countdown",
+          "[compteur] le ton redescend passé le premier jour — un bandeau "
+          "rouge permanent n'alerte plus de rien (%s)" % jour3["classe"])
+
+    # Trois mois plus tard, il dit encore quelque chose de vrai.
+    tard = a("2027-02-19T08:00:00Z")
+    check(tard["texte"].startswith("Sorti depuis 9") and "jours" in tard["texte"],
+          "[compteur] trois mois après, il tient toujours (« %s »)"
+          % tard["texte"])
+
+
 def test_mur_du_jour_j(nav, url):
     """Une journée de pic se découpe en tranches, une journée calme non.
 
@@ -3906,6 +3976,7 @@ def main():
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_ce_que_jai_rate(nav, url)
+            test_compte_a_rebours(nav, url)
             test_mur_du_jour_j(nav, url)
             test_badges_filtres_chrono_et_recherches(nav, url)
             test_graphiques_detailles(nav, url)
