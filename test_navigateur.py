@@ -3153,6 +3153,124 @@ def test_ce_que_jai_rate(nav, url):
           "(« %s »)" % etat["bilan"][:70])
     ctx.close()
 
+    # --- L'APPARITION, PAS LA PUBLICATION. C'est l'objet du lot : un
+    # article publié AVANT ta visite mais remonté APRÈS est neuf pour toi.
+    # Mesuré le 15/10/2026 : parmi les articles arrivés dans la fenêtre que
+    # l'app charge, 25 par semaine avaient plus de 12 h de retard sur leur
+    # date, 7 plus de 24 h.
+    page, ctx, etat, err = session(dedans)
+    vu = page.evaluate("""(heures) => {
+        const avant = document.querySelectorAll('#rateBloc .rate-liste a').length;
+        // Publié bien AVANT la dernière visite, apparu APRÈS. Sur la date
+        // seule il serait invisible ; sur l'apparition il doit entrer.
+        lastItems.push({
+            link: 'https://tardif.test/retard',
+            title: 'Remonté avec dix jours de retard',
+            source: 'Rockstar Games (officiel EN)',
+            official: true,
+            date: new Date(Date.now() - (heures + 240)*3600*1000).toISOString(),
+            vu_le: new Date(Date.now() - (heures/2)*3600*1000).toISOString(),
+        });
+        applyFilters();
+        const liens = [...document.querySelectorAll('#rateBloc .rate-liste a')]
+            .map(a => a.getAttribute('href'));
+        const ligne = [...document.querySelectorAll('#rateBloc .rate-liste li')]
+            .find(li => li.querySelector('a').getAttribute('href') === 'https://tardif.test/retard');
+        return {
+            avant,
+            compte: liens.includes('https://tardif.test/retard'),
+            paru: ligne ? ligne.textContent : '',
+            bilan: document.querySelector('#rateBloc .rate-bilan').textContent,
+        };
+    }""", dedans)
+    check(vu["compte"],
+          "[raté] un article publié avant la visite mais APPARU après est "
+          "compté — c'est tout l'objet du champ vu_le")
+    check("paru le" in vu["paru"],
+          "[raté] et sa ligne dit son âge, sinon on le prend pour une "
+          "dépêche du jour (« %s »)" % vu["paru"].strip()[:60])
+    ctx.close()
+
+    # Sans vu_le, le repli sur la date de publication. Les 3 570 articles
+    # déjà publiés n'auront jamais ce champ : le robot ne peut pas inventer
+    # quand il les a vus. Si le repli lâchait, le bloc se viderait d'un
+    # coup pour tout le monde.
+    page, ctx, etat, err = session(dedans)
+    sans = page.evaluate("""() => {
+        const n = lastItems.filter(i => i.vu_le).length;
+        lastItems.forEach(i => { delete i.vu_le; });
+        applyFilters();
+        return {avecChamp: n,
+                lignes: document.querySelectorAll('#rateBloc .rate-liste a').length,
+                plein: document.getElementById('rateBloc').dataset.plein};
+    }""")
+    check(sans["plein"] == "1" and sans["lignes"] > 0,
+          "[raté] sans vu_le nulle part, le bloc tient sur les dates de "
+          "publication (%d lignes)" % sans["lignes"])
+    ctx.close()
+
+    # --- LES DEUX CHIFFRES. Le point de départ du lot : « 10 non lus »
+    # contre « 5 nouveaux » passait pour une incohérence. Les deux ont
+    # raison — l'un compte depuis toujours, l'autre une fenêtre.
+    page, ctx, etat, err = session(dedans)
+    deux = page.evaluate("""() => {
+        // Tout marquer lu SAUF les nouveaux : le cumul doit alors coller
+        // au compte de la fenêtre, et la mention disparaître.
+        const bilanAvant = document.querySelector('#rateBloc .rate-bilan').textContent;
+        const nonLus = articlesVisibles().filter(i => !readSet.has(i.link)).length;
+        return {bilan: bilanAvant, nonLus};
+    }""")
+    check("non lu" in deux["bilan"],
+          "[raté] le bilan porte aussi le cumul des non-lus (« %s »)"
+          % deux["bilan"][:90])
+    import re as _re
+    chiffres = _re.findall(r"(\d+) non lu", deux["bilan"])
+    check(chiffres and int(chiffres[0]) == deux["nonLus"],
+          "[raté] et ce cumul est bien celui des pastilles d'onglet "
+          "(%s contre %d)" % (chiffres, deux["nonLus"]))
+    ctx.close()
+
+    # --- LE BOUTON « J'AI TOUT VU ». Le repère reste posé à la fermeture ;
+    # ce bouton couvre le cas « je viens de tout lire et je reste ».
+    page, ctx, etat, err = session(dedans)
+    bouton = page.evaluate("""() => {
+        const b = document.getElementById('rateVu');
+        if(!b) return {absent: true};
+        const h = b.getBoundingClientRect().height;
+        const avant = localStorage.getItem('gta6watch:derniere-visite-v1');
+        b.click();
+        return {
+            hauteur: h,
+            vide: document.getElementById('rateBloc').style.display,
+            plein: document.getElementById('rateBloc').dataset.plein,
+            avant,
+            apres: localStorage.getItem('gta6watch:derniere-visite-v1'),
+        };
+    }""")
+    check(not bouton.get("absent") and bouton["vide"] == "none"
+          and bouton["plein"] == "0",
+          "[raté] le bouton vide le bloc sur-le-champ (%s)" % bouton)
+    check(bouton.get("apres") and bouton.get("apres") != bouton.get("avant"),
+          "[raté] et le repère est RÉELLEMENT écrit, sinon le bloc "
+          "reviendrait au rechargement")
+    check(bouton.get("hauteur", 0) >= CIBLE_MINIMALE,
+          "[raté] il fait au moins %d px de haut, comme tout ce qui se "
+          "touche ici (%.0f px)" % (CIBLE_MINIMALE, bouton.get("hauteur", 0)))
+    check(not err, "[raté] aucune erreur JavaScript au clic (%s)" % err[:1])
+    ctx.close()
+
+    # Et la fermeture continue de poser le repère : le bouton s'AJOUTE, il
+    # ne remplace rien. Sans ça, quelqu'un qui ne le presse jamais verrait
+    # le bloc grossir indéfiniment.
+    page, ctx, etat, err = session(dedans)
+    ferme = page.evaluate("""() => {
+        localStorage.removeItem('gta6watch:derniere-visite-v1');
+        window.dispatchEvent(new Event('pagehide'));
+        return localStorage.getItem('gta6watch:derniere-visite-v1');
+    }""")
+    check(ferme, "[raté] quitter l'app pose toujours le repère (%s)" % ferme)
+    ctx.close()
+
     # --- Le bloc suit le fil : il n'a aucun sens sous les statistiques.
     page, ctx, etat, err = session(36)
     page.evaluate("setTab('stats')")

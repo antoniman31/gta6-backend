@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1826
+qui permet de tester tout le pipeline sans sortir de la machine. **1838
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4756,6 +4756,98 @@ Cinq contrôles l'ont dit. Non livré.
 **Le contrôle qui verrouille ça** : à corpus figé, on balaie les 24 heures
 d'une journée et on exige une amplitude de **zéro** et aucune descente.
 Vérifié capable d'échouer — en remettant la mesure par âge, il rend 300.
+
+### « Depuis ta dernière visite » comptait la publication, pas l'arrivée — 16/10/2026
+
+Suite directe de la section précédente. Une fois l'oscillation de la
+fenêtre corrigée, il restait l'autre moitié de l'écart entre les deux
+compteurs d'Antoni : le bloc « Ce que j'ai raté » comparait la **date de
+publication** d'un article à l'heure de la dernière visite. Un article
+publié avant ta visite mais **remonté après** était donc invisible, alors
+qu'il est neuf pour toi.
+
+**La mesure, et la correction d'un chiffre que j'avais annoncé trop vite.**
+En relisant les 185 passages de la semaine (1 148 articles apparus), j'ai
+d'abord dit « 10 % des arrivées ont plus de 24 h de retard, soit ~16 par
+jour ». C'était faux : la quasi-totalité de ces 10 % sont des articles que
+l'app **ne charge jamais**.
+
+| | articles/semaine |
+|---|---|
+| arrivées totales | 1 148 |
+| **dans** la fenêtre que l'app charge | 1 039 |
+| … dont plus de 12 h de retard | **25** |
+| … dont plus de 24 h de retard | **7** |
+| hors de cette fenêtre | 109 — âge médian **849 h** |
+
+Le vrai gain est donc de **un à quatre articles par jour** selon le rythme
+de visite, pas seize. Les 109 hors-fenêtre sont des reprises tardives de
+Google News, vieilles de 35 jours en médiane : `feed-recent.json` garde les
+300 articles les **plus récents par date**, et ces articles-là n'y entrent
+pas. Les repêcher aurait demandé de changer la règle du fichier allégé pour
+~5 articles par jour, majoritairement des fiches produit du Rockstar Store.
+Écarté, mesure à l'appui.
+
+**Le champ `vu_le`, et où il ne doit surtout pas se poser.** Le robot écrit
+l'instant de découverte au seul endroit où un article est reconnu
+réellement neuf — `merge_results`, à l'ajout dans `newly_added`. Le réflexe
+naturel serait de le poser là où les articles sont construits : cette
+boucle-là tourne pour **chaque entrée de chaque flux à chaque passage**, y
+compris les articles déjà connus, et le champ serait repoussé toutes les
+heures. Un doublon est jeté et c'est l'article stocké qui reste, avec son
+`vu_le` d'origine — rien à faire de plus.
+
+Un seul horodatage pour tout le passage, pas un appel d'horloge par
+article : deux articles entrés dans la même minute doivent porter le même
+instant, sinon le tri par apparition dépendrait de l'ordre des flux.
+
+**Le piège que le correctif de la veille venait de créer.** Un *revenant* —
+article élagué puis resservi — repasse par ce chemin et aurait reçu un
+`vu_le` tout neuf : l'app l'aurait affiché comme apparu aujourd'hui et
+recompté. Le défaut corrigé la veille, revenu par une autre porte. Il prend
+donc la **date de son élagage**, que la mémoire connaît déjà : « vu au plus
+tard à ce moment-là ». La mécanique est sortie dans
+`reprend_les_revenants`, ce qui retire au passage deux assertions sur le
+texte source (point 4.6).
+
+**La fusion après conflit de push prend la plus ANCIENNE des deux
+apparitions.** C'est la seule exception à la règle « on garde notre
+version » de `merge_feed`. Le champ dit quand l'article est apparu pour la
+première fois ; garder notre horodatage le ferait passer pour plus frais
+qu'il n'est.
+
+**Coût mesuré** : +11 Ko sur `feed-recent.json` (305 → 316, +3,7 %), +133 Ko
+sur `feed.json` (+5,1 %), que seul « Tout charger » télécharge. Le champ est
+écrit **toujours**, même quand il colle à la date : l'omettre pour
+économiser rendrait son absence ambiguë — « article d'avant la bascule » ou
+« publié et vu en même temps » — et le repli de l'app ne saurait plus
+lequel des deux. Les 3 570 articles déjà publiés n'auront jamais le champ ;
+le robot ne peut pas inventer quand il les a vus, et l'app retombe sur leur
+date.
+
+**Les deux compteurs, côte à côte.** « 10 articles non lus » contre
+« 5 nouveaux depuis ta dernière visite » : les deux avaient raison — l'un
+compte depuis toujours, l'autre une fenêtre. Les faire coïncider aurait
+menti sur l'un des deux. Le bilan porte désormais les deux, sur la même
+liste que les pastilles d'onglet pour qu'un troisième chiffre n'apparaisse
+pas. Et un arrivant en retard de plus de 24 h affiche sa date — « paru le
+6 octobre » — pour qu'on ne le prenne pas pour une dépêche du jour.
+
+**Le bouton « J'ai tout vu »** s'ajoute au repère posé à la fermeture, il ne
+le remplace pas : il couvre le cas « je viens de tout lire et je reste ».
+Il n'écrit que le repère, jamais l'état de lecture — marquer les articles
+lus effacerait d'un coup le compte que la deuxième ligne du bilan sert
+justement à distinguer. Et il **relit** le repère depuis le stockage au
+lieu de le poser de mémoire : si l'écriture échoue (quota plein), le bloc
+doit rester là plutôt que de disparaître sur un état non enregistré.
+
+**Le piège attrapé au navigateur, pas à la relecture.** Le repli était
+écrit `Number.isFinite(vu) ? vu : dateValue(item.date)`. Or `dateValue`
+rend **0**, jamais `NaN`, pour une date absente — `isFinite(0)` est vrai,
+le repli ne se déclenchait donc **jamais**, et le bloc se vidait
+entièrement sur un fil sans `vu_le`, c'est-à-dire sur tout le fil publié
+aujourd'hui. Relu deux fois sans le voir ; c'est la suite navigateur qui
+l'a sorti. Septième entrée de la liste des sondes fausses.
 
 ### Les sources : la mesure a surtout confirmé l'existant
 

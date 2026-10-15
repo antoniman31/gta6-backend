@@ -52,6 +52,24 @@ def merge_feeds(remote, ours):
     items = list(ours_items)
     known_links = {item.get("link") for item in items if item.get("link")}
 
+    # `vu_le` EST LA SEULE EXCEPTION À « on garde notre version ».
+    #
+    # Le champ dit quand l'article est APPARU pour la première fois ; la
+    # bonne réponse entre deux côtés est donc la plus ANCIENNE, pas la
+    # nôtre. Le cas : les deux passages découvrent le même article avant
+    # que l'un ait poussé. Garder notre horodatage ferait passer l'article
+    # pour plus frais qu'il n'est, et l'app le recompterait dans « depuis
+    # ta dernière visite » d'un lecteur qui l'a déjà vu. Comparaison sur le
+    # texte ISO : tous sont écrits par le même code, dans le même format,
+    # avec le même décalage.
+    vu_distant = {i.get("link"): i.get("vu_le") for i in remote_items
+                  if i.get("link") and isinstance(i.get("vu_le"), str)}
+    for item in items:
+        autre = vu_distant.get(item.get("link"))
+        nous = item.get("vu_le")
+        if autre and (not isinstance(nous, str) or autre < nous):
+            item["vu_le"] = autre
+
     recovered = 0
     for item in remote_items:
         link = item.get("link")
