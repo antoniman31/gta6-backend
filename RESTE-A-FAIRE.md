@@ -936,12 +936,55 @@ résultat). Cinq contrôles l'ont dit. La correction du point 1 supprime la
 cause ; ce pas-là n'aurait été qu'une ceinture, et une ceinture qui casse
 autre chose ne se met pas.
 
-**Ce qui reste ouvert, et c'est le seul point** : le bloc « Ce que j'ai
-raté » compte les articles par leur **date de publication**, pas par le
-moment où ils sont **apparus** dans le fil. Décidé avec Antoni : compter ce
-qui est APPARU depuis la dernière visite, avec repli sur la date de
-publication quand l'appareil n'a aucune trace locale. À faire après ce
-lot-ci, qui en retirait la cause principale.
+**Ce qui restait ouvert au soir du 15/10** : le bloc « Ce que j'ai raté »
+comptait les articles par leur **date de publication**, pas par le moment
+où ils sont **apparus** dans le fil. **Livré le 16/10**, voir la section
+suivante — et par un champ publié par le robot plutôt que par une trace
+locale, la mesure ayant montré que la trace locale est vide exactement
+quand elle sert : appareil neuf, cache vidé, navigation privée.
+
+---
+
+## Ce qui a été fait le 16/10/2026
+
+**Le dernier point ouvert du dépôt est livré** : le bloc « Ce que j'ai
+raté » compte désormais ce qui est **apparu**, et non ce qui a été publié.
+
+Le robot écrit `vu_le` — l'instant où il découvre l'article — au seul
+endroit où un article est reconnu réellement neuf. Les articles déjà
+publiés n'auront jamais ce champ ; l'app retombe sur leur date et le fil se
+remplit en quelques jours.
+
+**Un chiffre que j'avais annoncé et qui était faux.** J'avais dit « 10 %
+des arrivées ont plus de 24 h de retard, soit ~16 par jour ». La
+quasi-totalité de ces 10 % sont des articles que l'app ne charge jamais :
+`feed-recent.json` garde les 300 plus récents **par date**, et ces
+arrivants tardifs ont 35 jours d'âge médian. Dans la fenêtre réellement
+chargée, le retard concerne **25 articles par semaine au-delà de 12 h et 7
+au-delà de 24 h** — un à quatre par jour selon le rythme de visite. Le lot
+reste justifié, mais pour ce gain-là, pas pour celui que j'avais annoncé.
+
+Livré avec :
+
+1. **Les deux compteurs côte à côte** dans le bilan. « 10 non lus » contre
+   « 5 nouveaux » : les deux avaient raison, et l'écart passait pour un
+   bug. Il est maintenant lisible d'un coup d'œil.
+2. **Un arrivant en retard dit son âge** — « paru le 6 octobre » — pour
+   qu'on ne le prenne pas pour une dépêche du jour.
+3. **Un bouton « J'ai tout vu »**, qui s'ajoute au repère posé à la
+   fermeture au lieu de le remplacer.
+4. **Le piège du revenant**, créé par le correctif de la veille : un
+   article resservi aurait pris un `vu_le` tout neuf. Il prend la date de
+   son élagage.
+
+**Écarté, mesure à l'appui** : repêcher dans le fichier allégé les ~5
+articles par jour qui arrivent hors fenêtre. Ce sont majoritairement des
+fiches produit du Rockstar Store et des reprises Google News d'il y a un
+mois, et il aurait fallu changer la règle du fichier que l'app charge.
+
+**Ce qui reste, et qui n'est pas du code** : vérifier la portée du jeton
+d'accès personnel, et une troisième répétition générale vers le 10
+novembre.
 
 ---
 
