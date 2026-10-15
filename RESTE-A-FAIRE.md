@@ -888,7 +888,8 @@ Six lots, et le gel décidé en cours de route.
    faux, dont trois dans « Limites connues et assumées ». Un contrôle les
    compare désormais au code.
 
-**Rien n'est ouvert à ce jour.** Les neuf pistes d'interface (3.1 à 3.9) et
+**Rien n'était ouvert au soir du 14/10** — voir plus bas le 15/10, qui a
+rouvert un point. Les neuf pistes d'interface (3.1 à 3.9) et
 les quatorze points de l'audit sont livrés ou clos à la mesure. Le code est
 gelé : correctifs seulement jusqu'au 19 novembre.
 
@@ -896,6 +897,51 @@ gelé : correctifs seulement jusqu'au 19 novembre.
 jeton d'accès personnel (`gta6-backend` seul, Contents en lecture-écriture
 et rien d'autre), et une troisième répétition vers le 10 novembre, avec les
 données d'alors.
+
+---
+
+## Ce qui a été fait le 15/10/2026
+
+**Un seul lot, parti d'une question d'Antoni** : « Pourquoi j'ai 10 articles
+non lus, ça me dit que depuis la dernière visite il y a que 5 nouveaux ? »
+
+Ni l'un ni l'autre des deux compteurs n'était faux : le fil rejouait les
+mêmes articles. Relu dans les 29 versions successives de `docs/feed.json`
+du 14/10 — les vrais commits, pas une simulation — **337 articles sont
+sortis de l'historique dans la journée et 113 sont revenus**, par paquets,
+chacun juste après une descente de la fenêtre.
+
+La cause : le débit se mesurait par **âge glissant** depuis l'instant du
+passage, donc la cible bougeait avec l'heure (3 390 → 4 830, 14 descentes
+dans la journée). Chaque descente élaguait *et* relevait le plancher
+d'entrée — même calcul — donc refusait des articles du jour même.
+
+Livré :
+
+1. **Le débit se mesure en journées civiles**, fuseau de Paris. Sur les
+   mêmes 29 passages réels : cible **4 170 partout, zéro descente**.
+2. **Une mémoire des élagués** (`elagues-recents.json`, 15 jours) : un
+   article resservi par sa source reprend sa place sans recompter comme
+   neuf. Filet, au cas où la fenêtre bouge pour une vraie raison.
+3. **Un contrôle qui verrouille l'amplitude**, vérifié capable d'échouer.
+4. Au passage : la suite navigateur plantait sur une trace de pile au lieu
+   de rendre son verdict quand le fil servi datait de la veille.
+
+**NON LIVRÉ, et c'était validé** : le troisième morceau prévu — faire
+rétrécir la fenêtre par petits pas. Écrit deux fois, retiré deux fois. Un
+pas fixe dépend de la fréquence des passages, réglée hors du dépôt (30
+jours demandés, 39 obtenus) ; un pas proportionnel casse l'équivalence qui
+porte le filtre d'entrée (le plancher et le plafond doivent donner le même
+résultat). Cinq contrôles l'ont dit. La correction du point 1 supprime la
+cause ; ce pas-là n'aurait été qu'une ceinture, et une ceinture qui casse
+autre chose ne se met pas.
+
+**Ce qui reste ouvert, et c'est le seul point** : le bloc « Ce que j'ai
+raté » compte les articles par leur **date de publication**, pas par le
+moment où ils sont **apparus** dans le fil. Décidé avec Antoni : compter ce
+qui est APPARU depuis la dernière visite, avec repli sur la date de
+publication quand l'appareil n'a aucune trace locale. À faire après ce
+lot-ci, qui en retirait la cause principale.
 
 ---
 

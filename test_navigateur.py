@@ -2943,11 +2943,21 @@ def test_sources_disent_la_verite(nav, url):
 
 
 def page_couverture(nav, url):
-    """Combien d'heures le fil réellement chargé couvre-t-il ?
+    """L'âge, en heures, du plus récent et du plus ancien article chargé.
 
     Le fichier allégé garde un NOMBRE D'ARTICLES, pas un nombre de jours :
     sa couverture en heures rétrécit à mesure que le rythme du fil monte.
     Tout contrôle qui écrit cet écart en dur meurt à la première hausse.
+
+    DEUX ÂGES, PAS UNE DURÉE. La version d'avant rendait l'écart entre le
+    plus ancien et le plus récent, et l'appelant plaçait « la dernière
+    visite » à la moitié de cet écart — mais compté depuis MAINTENANT. Les
+    deux ne coïncident que si le fil vient d'être écrit. Avec un fil vieux
+    de 24 h (robot en panne, ou simple copie locale de la veille), la
+    fenêtre choisie ne contenait plus un seul article : le bloc sortait
+    vide et le contrôle plantait sur une liste vide au lieu de dire ce
+    qu'il voyait. On rend donc les deux bornes réelles, et l'appelant se
+    place strictement entre elles.
     """
     base = url.rsplit("/", 1)[0]
     ctx = nav.new_context(viewport={"width": 390, "height": 850})
@@ -2957,13 +2967,19 @@ def page_couverture(nav, url):
     page.evaluate("rattrapageLance = true;")
     page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
     page.evaluate("async () => { await checkFromBackend(false); }")
-    h = page.evaluate("""() => {
+    bornes = page.evaluate("""() => {
         const d = lastItems.map(i => Date.parse(i.date)).filter(Number.isFinite);
-        if(d.length < 2) return 0;
-        return (Math.max(...d) - Math.min(...d)) / 3600000;
+        if(d.length < 2) return null;
+        const now = Date.now();
+        return {
+            recent: (now - Math.max(...d)) / 3600000,
+            ancien: (now - Math.min(...d)) / 3600000,
+        };
     }""")
     ctx.close()
-    return int(h)
+    if not bornes:
+        return 0.0, 0.0
+    return bornes["recent"], bornes["ancien"]
 
 
 def test_ce_que_jai_rate(nav, url):
@@ -3032,9 +3048,17 @@ def test_ce_que_jai_rate(nav, url):
     # On lit donc la couverture RÉELLE du fil chargé, et on se place de
     # part et d'autre. Les deux comportements sont vérifiés, au lieu d'un
     # seul sur un pari.
-    couverture = page_couverture(nav, url)
-    dedans = max(1, int(couverture * 0.5))
-    dehors = int(couverture * 2) + 24
+    age_recent, age_ancien = page_couverture(nav, url)
+    couverture = int(age_ancien)
+    # STRICTEMENT ENTRE LES DEUX BORNES. Au-delà du plus récent, sinon le
+    # bloc n'a rien à montrer ; en deçà du plus ancien, sinon le compte se
+    # déclare minoré. Le milieu de cet intervalle tient les deux.
+    dedans = max(1, int((age_recent + age_ancien) / 2))
+    dehors = int(age_ancien * 2) + 24
+    check(age_recent < dedans < age_ancien,
+          "[raté] le fil chargé laisse une fenêtre où le compte est exact "
+          "(plus récent %.1f h, plus ancien %.1f h, essai à %d h)"
+          % (age_recent, age_ancien, dedans))
     page, ctx, etat, err = session(dedans)
     check(etat["affiche"] == "block" and etat["plein"] == "1",
           "[raté] après une absence de %d h, le bloc est là" % dedans)
@@ -3109,9 +3133,12 @@ def test_ce_que_jai_rate(nav, url):
 
     # Cliquer une ligne la marque lue — sinon le bloc redit éternellement la
     # même chose à quelqu'un qui l'a déjà suivi.
-    lien = etat["lignes"][0]["href"]
-    page.evaluate("marqueLuDepuisRate('%s')" % lien)
-    check(page.evaluate("readSet.has('%s')" % lien),
+    # Pas d'indexation sèche : une liste vide est un ÉCHEC À DIRE, pas une
+    # trace de pile qui emporte les 300 contrôles suivants.
+    lien = etat["lignes"][0]["href"] if etat["lignes"] else None
+    if lien:
+        page.evaluate("marqueLuDepuisRate('%s')" % lien)
+    check(bool(lien) and page.evaluate("readSet.has('%s')" % lien),
           "[raté] cliquer une ligne marque l'article comme lu")
     check(not err, "[raté] aucune erreur JavaScript (%s)" % err[:1])
     ctx.close()

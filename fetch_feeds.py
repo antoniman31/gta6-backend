@@ -3949,6 +3949,7 @@ def main():
     # que le téléphone téléchargeait, pour un cache que l'app n'ouvre
     # jamais. Voir feed_store.CACHE_DECODAGE_PATH.
     decoded_cache = feed_store.lire_cache_decodage()
+    elagues_recents = feed_store.lire_elagues_recents()
     depuis_fichier = len(decoded_cache)
     # Amorce, et reprise après un conflit de push : les articles encore
     # jeunes portent leur source_link, et le fichier peut avoir été ramené
@@ -4074,10 +4075,35 @@ def main():
     # vraiment, Discord en annonçait 270, et 45 secondes partaient à
     # télécharger les miniatures d'articles déjà condamnés.
     avant = len(all_items)
+    liens_avant = {i.get("link") for i in all_items}
     all_items, dropped = feed_store.cap_items(all_items)
     if dropped:
         print(f"Historique plafonné : {avant} -> {len(all_items)} "
               f"({dropped} articles retirés, les plus anciens hors protégés)")
+
+    # LES REVENANTS. Un article élagué lors d'un passage PRÉCÉDENT, que sa
+    # source ressert ensuite, rentrait et était recompté neuf à chaque
+    # retour — 112 fois le 14/10/2026. Le garde-fou juste en dessous ne
+    # voit que les éphémères du MÊME passage ; celui-ci regarde la mémoire
+    # des élagages passés. L'article reste dans l'historique : il perd
+    # seulement son statut de nouveauté, donc son annonce et sa place dans
+    # le « N nouveaux ».
+    revenants = [i for i in newly_added if i.get("link") in elagues_recents]
+    if revenants:
+        retour = {i.get("link") for i in revenants}
+        newly_added[:] = [i for i in newly_added if i.get("link") not in retour]
+        for item in revenants:
+            fid = FEEDS_PAR_NOM.get(item.get("source"))
+            if fid and new_counts.get(fid):
+                new_counts[fid] -= 1
+        print(f"{len(revenants)} article(s) déjà élagué(s) par le passé et "
+              f"resservi(s) par leur source — repris dans l'historique, pas "
+              f"comptés neufs")
+
+    # Ce qui part maintenant rejoint la mémoire, pour le passage suivant.
+    partis = liens_avant - {i.get("link") for i in all_items}
+    if partis:
+        feed_store.note_elagues(elagues_recents, partis)
 
     # Un article qui ne survit pas au passage n'est pas une nouveauté : il
     # ne doit être ni annoncé, ni compté, ni coûter une miniature.
@@ -4310,6 +4336,8 @@ def main():
             decoded_cache.setdefault(item["source_link"], item["link"])
     avant_elagage = len(decoded_cache)
     decoded_cache = feed_store.elague_cache_decodage(decoded_cache, all_items)
+    elagues_recents = feed_store.elague_memoire_elagues(elagues_recents)
+    feed_store.ecrire_elagues_recents(elagues_recents)
     feed_store.ecrire_cache_decodage(decoded_cache)
     perimes = avant_elagage - len(decoded_cache)
     print(f"Cache de décodage écrit : {len(decoded_cache)} lien(s)"
