@@ -4849,6 +4849,51 @@ entièrement sur un fil sans `vu_le`, c'est-à-dire sur tout le fil publié
 aujourd'hui. Relu deux fois sans le voir ; c'est la suite navigateur qui
 l'a sorti. Septième entrée de la liste des sondes fausses.
 
+### Le compteur avait six heures de retard — 16/10/2026
+
+Antoni, en passant : « le jeu sort le 19/11 à 00 h 00 heure de Paris ». Le
+code disait autre chose.
+
+```js
+const GTA6_RELEASE = new Date("2026-11-19T00:00:00-05:00"); // heure de New York
+```
+
+Minuit à New York, soit **6 h du matin à Paris**. Le 19 novembre à 00 h 30,
+pendant qu'on y joue, le compteur aurait affiché **« C'EST AUJOURD'HUI —
+5h 29m »**. Sur la seule nuit où ce compteur a une raison d'exister.
+
+La justification tenait dans le commentaire : « siège Rockstar/Take-Two ».
+Une supposition sur l'endroit où se trouve l'horloge, jamais une
+information sourcée, et rien ne la vérifiait.
+
+**Et le fil que cette app collecte portait la réponse depuis le 07/09/2026.**
+Il a suffi de relire l'historique publié :
+
+| source | relevé |
+|---|---|
+| **GTA BOOM** (07/09) | « unlocks at **midnight local time** in staggered global waves on November 19, with New Zealand first and the US going live at midnight Eastern » |
+| **VGTimes** (08/09) | « midnight local time in each region […] the earliest unlock in New Zealand is listed as **11:00 UTC on 18 November** » |
+| MP1st (08/09) | « New Zealand Players Get a 19-Hour Head Start » |
+
+Le recoupement tombe juste : minuit en Nouvelle-Zélande, UTC+13 en
+novembre, **est** 11 h 00 UTC le 18. Déverrouillage à minuit heure locale,
+par vagues, et non un instant mondial unique.
+
+La constante vaut donc `2026-11-19T00:00:00+01:00`. Décalage écrit en dur
+plutôt que minuit « heure locale du visiteur » : l'app est française et son
+heure de référence est celle de Paris, ici comme dans la pause nocturne du
+robot. La France est à UTC+1 le 19 novembre, le changement d'heure étant
+passé le 25 octobre.
+
+**Le contrôle regarde maintenant la borne des deux côtés** : à 23 h 30 le
+18 il compte encore et n'annonce rien, à 00 h 30 le 19 c'est sorti. Vérifié
+capable d'échouer en remettant l'ancienne valeur — il rend « C'EST
+AUJOURD'HUI — 5h 29m 59s », le symptôme exact.
+
+La fenêtre d'exception de la pause nocturne (18 au 20 novembre, dates de
+Paris) couvrait déjà minuit heure de Paris : rien à changer de ce côté, et
+le contrôle croisé qui compare les deux endroits reste vert.
+
 ### Le compteur repart dans l'autre sens après la sortie — 16/10/2026
 
 Passé le 19 novembre, `updateCountdown` affichait « GTA 6 est sorti ! » et

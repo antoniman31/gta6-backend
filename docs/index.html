@@ -7776,7 +7776,34 @@ async function loadRecentRuns(){
 
 // ---------- Compte à rebours sortie GTA 6 ----------
 // Date officielle confirmée par Rockstar/Take-Two : 19 novembre 2026.
-const GTA6_RELEASE = new Date("2026-11-19T00:00:00-05:00"); // heure de New York (siège Rockstar/Take-Two)
+//
+// MINUIT À PARIS, ET SÛREMENT PAS MINUIT À NEW YORK.
+//
+// Cette constante a valu « 2026-11-19T00:00:00-05:00 », avec pour seule
+// justification un commentaire disant « siège Rockstar/Take-Two ». C'était
+// une supposition sur l'endroit où se trouve l'horloge, jamais une
+// information sourcée, et rien ne la vérifiait. Elle plaçait la sortie à
+// 6 h du matin heure de Paris : le 19 novembre à 00 h 30, pendant qu'on y
+// joue, le compteur aurait affiché « C'EST AUJOURD'HUI — 5h 29m ». Sur la
+// seule nuit où ce compteur a une raison d'exister.
+//
+// Le fil que cette app collecte contenait la réponse depuis le 07/09/2026 :
+//
+//   GTA BOOM — « GTA 6 unlocks at midnight local time in staggered global
+//   waves on November 19, with New Zealand first and the US going live at
+//   midnight Eastern »
+//   VGTimes  — « midnight local time in each region […] the earliest
+//   unlock in New Zealand is listed as 11:00 UTC on 18 November »
+//
+// Le recoupement tombe juste : minuit en Nouvelle-Zélande (UTC+13 en
+// novembre) = 11 h 00 UTC le 18. Déverrouillage à minuit HEURE LOCALE,
+// pas un instant mondial unique.
+//
+// Décalage écrit en dur (+01:00) plutôt que minuit « heure locale du
+// visiteur » : l'app est française et son heure de référence est celle de
+// Paris, ici comme dans la pause nocturne du robot. La France est à UTC+1
+// le 19 novembre, le changement d'heure étant passé le 25 octobre.
+const GTA6_RELEASE = new Date("2026-11-19T00:00:00+01:00"); // minuit à Paris
 
 function updateCountdown(){
   const el = document.getElementById("countdown");
