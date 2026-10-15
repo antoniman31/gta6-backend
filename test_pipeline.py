@@ -732,12 +732,18 @@ def test_fetch_parallele_identique():
 
     sources = _fausses_sources()
 
+    # MÊME INSTANT POUR LES DEUX PARCOURS. `merge_results` horodate chaque
+    # article neuf (`vu_le`), et deux appels séparés d'une microseconde
+    # produiraient deux listes différentes — l'équivalence qu'on éprouve
+    # ici est celle de la FUSION, pas celle de l'horloge.
+    instant = datetime(2026, 10, 15, 16, tzinfo=timezone.utc)
+
     def parcours(resultats):
         """Rejoue la fusion et renvoie l'état final, comparable."""
         all_items, links_index, newly = [], {}, []
         infos, counts, inchanges, _refuses = fetch_feeds.merge_results(
             sources, resultats, all_items, links_index, newly,
-            decoded_cache={}, afficher=False)
+            decoded_cache={}, afficher=False, maintenant=instant)
         return all_items, newly, infos, counts, inchanges
 
     # Référence : récupération strictement séquentielle, comme avant.
@@ -4088,6 +4094,44 @@ def test_validation_avant_ecriture():
 
 
 
+def test_filtre_officiel_du_mode_de_secours():
+    """4.1 de l'audit : le mode de secours sait étendre les mots-clés.
+
+    Le garde-fou de synchronisation compare les DONNÉES des deux côtés,
+    source par source. Il ne voit pas le MÉCANISME : si la fonction de
+    filtre reprenait sa propre liste en dur, le supplément déclaré par la
+    source resterait là sans que rien ne l'applique, et les deux contrôles
+    resteraient verts. C'est ce contrôle-là qui l'interdit.
+    """
+    print("\n[app] le filtre officiel du mode de secours sait étendre ses mots-clés")
+    html = open("docs/index.html", encoding="utf-8").read()
+    fn = html[html.index("function filterFeedItems("):]
+    fn = fn[:fn.index("\n}")]
+
+    check("motsClesOfficiels(" in fn,
+          "le filtre passe par la fonction qui assemble les mots-clés")
+    check("gta vi" not in fn.lower(),
+          "et ne recopie pas sa propre liste de mots-clés chez lui")
+
+    aide = html[html.index("function motsClesOfficiels("):]
+    aide = aide[:aide.index("\n}")]
+    check("officialKeywordsExtra" in aide,
+          "la source peut déclarer un supplément de mots-clés")
+    check("concat" in aide,
+          "qui s'AJOUTE à la liste de base au lieu de la remplacer")
+
+    # La liste de référence doit rester le PREMIER « const officialKeywords »
+    # du fichier : check_sources_sync.py la retrouve par cette chaîne et
+    # attend un tableau juste derrière. Une variable locale du même nom,
+    # déclarée plus haut, lui ferait lire autre chose — et le garde-fou qui
+    # empêche la divergence tomberait sans bruit, en premier.
+    debut = html.index("const officialKeywords =")
+    suite = html[debut:debut + 120]
+    check(suite.split("=", 1)[1].lstrip().startswith("["),
+          "la première déclaration lue par le contrôle de synchronisation "
+          "est bien la liste, pas un appel de fonction")
+
+
 def test_ligne_etat_sans_double_compte():
     print("\n[app] la ligne d'état ne compte pas deux fois la même source")
     html = open("docs/index.html", encoding="utf-8").read()
@@ -5150,6 +5194,437 @@ def test_rotation_reddit():
           "le chronomètre d'une source au repos ne bouge pas d'un iota : %s"
           % apres_repos["reddit-gta6-suivi"])
 
+def test_la_fenetre_ne_bouge_pas_dans_la_journee():
+    """À corpus figé, l'heure du passage ne doit pas changer la fenêtre visée.
+
+    LE DÉFAUT QUE CE CONTRÔLE VERROUILLE. L'ancienne mesure du débit
+    rangeait les articles par âge en jours ENTIERS depuis l'instant du
+    passage. L'heure avançant, les articles basculaient de seau en seau, la
+    médiane sautait, et la fenêtre — débit × 30 — sautait avec elle. Relevé
+    sur les 29 vrais passages du 14/10/2026, en recalculant la cible sur le
+    contenu réel de l'historique à chaque commit :
+
+        mesure par âge          3 390 → 4 830, 14 descentes, la pire de 180
+        mesure par jour civil   4 170 à chaque passage, 0 descente
+
+    Chaque descente retirait des articles ET relevait le plancher d'entrée
+    — les deux viennent du même calcul — donc elle refusait aussi ce que
+    les flux servaient encore. D'où les 113 revenants de la journée.
+
+    CE CONTRÔLE SAIT ÉCHOUER : vérifié en remettant la mesure par âge, il
+    rend une amplitude de 1 320 au lieu de 0.
+    """
+    print("\n[fenêtre] l'heure du passage ne fait pas bouger la cible")
+    import feed_store
+    from datetime import datetime, timedelta, timezone
+
+    # Un corpus FIGÉ, et IRRÉGULIER d'un jour à l'autre : avec un rythme
+    # parfaitement plat la médiane ne bougerait jamais et le contrôle
+    # serait vert sans rien prouver — y compris avec l'ancienne mesure.
+    depart = datetime(2026, 11, 10, tzinfo=feed_store.FUSEAU_MESURE)
+    corpus = []
+    for jour in range(1, 10):
+        for n in range(100 + 10 * jour):
+            quand = (depart - timedelta(days=jour)
+                     + timedelta(minutes=7 * n)).astimezone(timezone.utc)
+            corpus.append({"link": "https://x.test/%d-%d" % (jour, n),
+                           "title": "a", "date": quand.isoformat()})
+
+    cibles = [feed_store.taille_historique_visee(
+                  corpus, (depart + timedelta(hours=h)).astimezone(timezone.utc))
+              for h in range(24)]
+    amplitude = max(cibles) - min(cibles)
+    check(amplitude == 0,
+          "à corpus figé, la cible ne bouge pas de la journée "
+          "(%d → %d, amplitude %d)" % (min(cibles), max(cibles), amplitude))
+    check(all(b >= a for a, b in zip(cibles, cibles[1:])),
+          "et elle ne descend jamais en cours de journée — une descente "
+          "élague ET relève le plancher d'entrée")
+
+    # Le pas de minuit existe, lui, et c'est voulu : un jour révolu de plus
+    # entre dans la mesure. Ce qu'on refuse, c'est qu'il tombe n'importe
+    # quand dans la journée.
+    veille = feed_store.taille_historique_visee(
+        corpus, (depart - timedelta(hours=1)).astimezone(timezone.utc))
+    check(veille != cibles[0],
+          "le pas se produit bien à minuit, pas ailleurs (%d la veille au "
+          "soir, %d ensuite)" % (veille, cibles[0]))
+
+    # Et le fuseau est celui de Paris, comme la pause nocturne du robot :
+    # une journée doit vouloir dire la même chose partout dans le dépôt.
+    check(str(feed_store.FUSEAU_MESURE) in ("Europe/Paris", "UTC"),
+          "la mesure se fait sur le fuseau de Paris, avec repli sur UTC "
+          "(%s)" % feed_store.FUSEAU_MESURE)
+
+
+def test_le_champ_vu_le():
+    """Quand l'article est APPARU, et pas quand il a été publié.
+
+    LE DÉFAUT. Le bloc « Ce que j'ai raté » comptait les articles sur leur
+    date de publication. Un article publié avant ta visite mais remonté
+    après était donc invisible, alors qu'il est neuf pour toi.
+
+    COMBIEN, mesuré le 15/10/2026 sur les 185 passages de la semaine et
+    1 148 articles apparus : la médiane du décalage est à 0,8 h, mais parmi
+    les 1 039 arrivés DANS la fenêtre que l'app charge, 25 avaient plus de
+    12 h de retard et 7 plus de 24 h. Un à quatre par jour selon le rythme
+    de visite. Les 109 autres sont hors de cette fenêtre — vieux de 35
+    jours en médiane, des reprises tardives de Google News — et aucun
+    comptage ne les atteindra tant qu'ils ne sont pas chargés.
+
+    OÙ LE CHAMP SE POSE, et c'est le piège de ce lot : surtout pas là où
+    les articles sont construits. Cette boucle-là tourne pour chaque entrée
+    de chaque flux à chaque passage, y compris les articles déjà connus, et
+    `vu_le` serait réécrit toutes les heures.
+    """
+    print("\n[vu_le] l'instant où l'article apparaît")
+    import fetch_feeds, tempfile, os, json as _json
+    from datetime import datetime, timezone
+
+    sources = _fausses_sources()
+    t1 = datetime(2026, 10, 15, 8, tzinfo=timezone.utc)
+    t2 = datetime(2026, 10, 15, 9, tzinfo=timezone.utc)
+
+    all_items, links_index, newly = [], {}, []
+    fetch_feeds.merge_results(sources, {f["id"]: _fausse_collecte(f) for f in sources},
+                              all_items, links_index, newly, decoded_cache={},
+                              afficher=False, maintenant=t1)
+    check(all_items and all(i.get("vu_le") == t1.isoformat() for i in all_items),
+          "chaque article neuf porte l'instant du passage (%d articles)"
+          % len(all_items))
+    check(len({i["vu_le"] for i in all_items}) == 1,
+          "le MÊME instant pour tout le passage — sinon le tri par "
+          "apparition dépendrait de l'ordre des flux")
+
+    # LE CŒUR DU LOT : un second passage ne doit RIEN réécrire.
+    avant = len(all_items)
+    fetch_feeds.merge_results(sources, {f["id"]: _fausse_collecte(f) for f in sources},
+                              all_items, links_index, newly, decoded_cache={},
+                              afficher=False, maintenant=t2)
+    check(len(all_items) == avant,
+          "le second passage n'ajoute rien, les articles sont connus")
+    check(all(i.get("vu_le") == t1.isoformat() for i in all_items),
+          "et AUCUN vu_le n'est réécrit — un champ repoussé à chaque heure "
+          "ne vaudrait rien")
+
+    # Un article vraiment neuf au second passage prend, lui, t2.
+    vide = ([], {"raw_count": 0, "not_modified": False}, [])
+    tardif = {f["id"]: vide for f in sources}
+    tardif[sources[0]["id"]] = (
+        [_article(sources[0]["name"], "Tardif", "https://tardif.test/x")],
+        {"raw_count": 1, "not_modified": False}, [])
+    fetch_feeds.merge_results(sources, tardif, all_items, links_index, newly,
+                              decoded_cache={}, afficher=False, maintenant=t2)
+    arrive = [i for i in all_items if i["link"] == "https://tardif.test/x"]
+    check(arrive and arrive[0].get("vu_le") == t2.isoformat(),
+          "un article qui arrive plus tard porte SON instant, pas celui du "
+          "premier passage")
+
+    # FUSION APRÈS CONFLIT DE PUSH : la bonne réponse est la PLUS ANCIENNE
+    # des deux apparitions, pas la nôtre. Les deux côtés peuvent découvrir
+    # le même article avant que l'un ait poussé.
+    import merge_feed
+    a_nous = {"items": [{"link": "https://x.test/1", "date": "2026-10-15T07:00:00+00:00",
+                         "vu_le": "2026-10-15T09:00:00+00:00"}]}
+    au_loin = {"items": [{"link": "https://x.test/1", "date": "2026-10-15T07:00:00+00:00",
+                          "vu_le": "2026-10-15T08:00:00+00:00"}]}
+    fusion, _, _ = merge_feed.merge_feeds(au_loin, a_nous)
+    check(fusion["items"][0]["vu_le"] == "2026-10-15T08:00:00+00:00",
+          "après un conflit de push, c'est la plus ANCIENNE apparition qui "
+          "gagne (%s)" % fusion["items"][0]["vu_le"])
+    # Et l'inverse ne fait pas reculer une apparition déjà plus ancienne.
+    fusion, _, _ = merge_feed.merge_feeds(a_nous, au_loin)
+    check(fusion["items"][0]["vu_le"] == "2026-10-15T08:00:00+00:00",
+          "et le sens de la fusion n'y change rien")
+
+    # LE CHAMP DOIT ARRIVER JUSQU'À L'APP. Le fichier allégé est le seul
+    # que l'app charge à l'ouverture : un vu_le qui n'y serait pas ne
+    # servirait à rien.
+    rep = tempfile.mkdtemp(prefix="vule-")
+    try:
+        chemin = os.path.join(rep, "feed.json")
+        feed_store.write_feed_pair(
+            {"items": [{"link": "https://y.test/1", "title": "a",
+                        "date": "2026-10-15T07:00:00+00:00",
+                        "vu_le": "2026-10-15T08:00:00+00:00"}]}, chemin)
+        with open(feed_store.recent_path_for(chemin), encoding="utf-8") as f:
+            allege = _json.load(f)
+        check(allege["items"][0].get("vu_le") == "2026-10-15T08:00:00+00:00",
+              "le champ arrive dans le fichier allégé, celui que l'app lit")
+    finally:
+        import shutil; shutil.rmtree(rep, ignore_errors=True)
+
+    # Le repli de l'app : un article sans vu_le retombe sur sa date. Les
+    # 3 570 articles déjà publiés n'auront jamais ce champ — le robot ne
+    # peut pas inventer quand il les a vus.
+    html = open("docs/index.html", encoding="utf-8").read()
+    # Et le repli se teste SUR LE ZÉRO, pas sur NaN : dateValue rend 0 pour
+    # une date absente. Écrit avec Number.isFinite, le repli ne se
+    # déclenchait jamais et le bloc se vidait sur tout le fil publié —
+    # attrapé au navigateur, pas à la relecture.
+    check("function apparitionValue" in html
+          and "vu > 0 ? vu : dateValue" in html,
+          "l'app retombe sur la date de publication quand vu_le manque")
+
+
+def test_memoire_des_elagues():
+    """Un article élagué puis resservi n'est pas une nouveauté.
+
+    Mesuré le 14/10/2026 en relisant les 29 versions successives de
+    docs/feed.json dans Git : 337 articles sortis de l'historique dans la
+    journée, 113 revenus aux passages suivants, recomptés neufs à chaque
+    retour. La cause de fond est corrigée ailleurs (le débit se mesure en
+    journées civiles) ; cette mémoire tient même si la fenêtre bouge pour
+    une vraie raison — une semaine creuse, une grosse source qui tombe.
+    """
+    print("\n[élagués] la mémoire des articles repris par leur source")
+    import feed_store, os, tempfile, json as _json
+    from datetime import datetime, timedelta, timezone
+
+    t = datetime(2026, 10, 15, 12, tzinfo=timezone.utc)
+    memoire = feed_store.note_elagues({}, ["https://a.test/1",
+                                           "https://a.test/2"], t)
+    check(set(memoire) == {"https://a.test/1", "https://a.test/2"},
+          "les liens élagués sont retenus avec leur date")
+
+    # L'oubli : au-delà du délai, l'entrée part. Sans quoi le fichier
+    # enflerait à chaque passage.
+    memoire["https://vieux.test/x"] = (
+        t - timedelta(days=feed_store.JOURS_MEMOIRE_ELAGUES + 1)).isoformat()
+    reste = feed_store.elague_memoire_elagues(memoire, t)
+    check("https://vieux.test/x" not in reste and len(reste) == 2,
+          "ce qui dépasse le délai est oublié (%d gardés)" % len(reste))
+
+    # Une date illisible ne rend pas l'entrée immortelle.
+    memoire["https://bancal.test/x"] = "pas une date"
+    check("https://bancal.test/x" not in feed_store.elague_memoire_elagues(memoire, t),
+          "une date illisible ne fait pas vivre une entrée pour toujours")
+
+    # Le plafond, et il garde les PLUS RÉCENTS : ce sont eux qui peuvent
+    # encore revenir.
+    gros = {}
+    for n in range(feed_store.MEMOIRE_ELAGUES_MAX + 50):
+        gros["https://m.test/%d" % n] = (t - timedelta(minutes=n)).isoformat()
+    coupe = feed_store.elague_memoire_elagues(gros, t)
+    check(len(coupe) == feed_store.MEMOIRE_ELAGUES_MAX,
+          "le plafond tient (%d)" % len(coupe))
+    check("https://m.test/0" in coupe
+          and "https://m.test/%d" % (feed_store.MEMOIRE_ELAGUES_MAX + 49) not in coupe,
+          "et il garde les plus récemment élagués, pas les plus anciens")
+
+    # Aller-retour sur disque, fichier abîmé compris.
+    rep = tempfile.mkdtemp(prefix="elagues-")
+    try:
+        chemin = os.path.join(rep, "m.json")
+        feed_store.ecrire_elagues_recents({"https://a.test/1": t.isoformat()},
+                                          chemin, t)
+        check(feed_store.lire_elagues_recents(chemin) ==
+              {"https://a.test/1": t.isoformat()},
+              "la mémoire se relit telle qu'elle a été écrite")
+        with open(chemin, "w", encoding="utf-8") as f:
+            f.write("{pas du json")
+        check(feed_store.lire_elagues_recents(chemin) == {},
+              "un fichier abîmé rend une mémoire vide, jamais une erreur")
+        check(feed_store.lire_elagues_recents(os.path.join(rep, "absent.json")) == {},
+              "un fichier absent non plus")
+        # Le tri, pour que Git n'ait qu'un petit diff à chaque passage.
+        feed_store.ecrire_elagues_recents({"https://z.test/": t.isoformat(),
+                                           "https://a.test/": t.isoformat()},
+                                          chemin, t)
+        with open(chemin, encoding="utf-8") as f:
+            ecrit = list(_json.load(f)["liens"])
+        check(ecrit == sorted(ecrit),
+              "le fichier est trié — sinon chaque passage réécrit tout dans Git")
+    finally:
+        import shutil; shutil.rmtree(rep, ignore_errors=True)
+
+    # ELLE NE VIT PAS DANS docs/. Le fichier publié est lu par l'app, et
+    # cette mémoire ne la regarde pas.
+    check(not feed_store.MEMOIRE_ELAGUES_PATH.startswith("docs/"),
+          "la mémoire n'est pas servie à l'app (%s)"
+          % feed_store.MEMOIRE_ELAGUES_PATH)
+
+    # Et le robot s'en sert. Éprouvé sur le COMPORTEMENT, plus sur le texte
+    # de main() : la mécanique est sortie dans reprend_les_revenants, donc
+    # elle s'appelle. Deux assertions sur le source en moins (point 4.6).
+    import fetch_feeds
+    neuf = {"link": "https://neuf.test/a", "source": "Rockstar Games (officiel EN)",
+            "vu_le": "2026-10-15T16:00:00+00:00"}
+    revenu = {"link": "https://revenu.test/b", "source": "Rockstar Games (officiel EN)",
+              "vu_le": "2026-10-15T16:00:00+00:00"}
+    nouveautes = [neuf, revenu]
+    # L'identifiant vient de FEEDS_PAR_NOM, pas d'un nom inventé ici :
+    # c'est lui que la fonction consulte.
+    fid = fetch_feeds.FEEDS_PAR_NOM["Rockstar Games (officiel EN)"]
+    comptes = {fid: 2}
+    combien = fetch_feeds.reprend_les_revenants(
+        nouveautes, {"https://revenu.test/b": "2026-10-02T08:00:00+00:00"}, comptes)
+    check(combien == 1 and nouveautes == [neuf],
+          "un revenant perd son statut de nouveauté, pas sa place dans "
+          "l'historique")
+    check(comptes[fid] == 1,
+          "et le compte par source suit, sinon la somme contredirait le total")
+    check(revenu["vu_le"] == "2026-10-02T08:00:00+00:00",
+          "son apparition recule à la date de son élagage — sinon l'app le "
+          "croit arrivé aujourd'hui (%s)" % revenu["vu_le"])
+    check(neuf["vu_le"] == "2026-10-15T16:00:00+00:00",
+          "et l'article vraiment neuf garde la sienne")
+    # Le compte d'une source ne descend jamais sous zéro.
+    zero = {fid: 0}
+    fetch_feeds.reprend_les_revenants(
+        [dict(revenu)], {"https://revenu.test/b": "2026-10-02T08:00:00+00:00"}, zero)
+    check(zero[fid] == 0, "un compte déjà à zéro ne passe pas en négatif")
+
+    # Le fichier doit survivre au workflow : commité, et remis après un
+    # reset de conflit — même traitement que le cache de décodage.
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    check(wf.count(feed_store.MEMOIRE_ELAGUES_PATH) >= 4,
+          "le workflow le commite et le préserve après un conflit (%d mentions)"
+          % wf.count(feed_store.MEMOIRE_ELAGUES_PATH))
+
+
+def test_les_constantes_citees_sont_les_bonnes():
+    """Une constante écrite « NOM = valeur » dans la doc dit la vraie valeur.
+
+    Deuxième visage de la dérive documentaire, trouvé le 14/10/2026 :
+    `RESTE-A-FAIRE.md` annonçait encore un plafond de notifications de 5,
+    au présent, dans la phrase qui décrit le risque de novembre — alors
+    que la première répétition l'avait porté à 10. Le contrôle de la
+    fenêtre d'historique, écrit le matin même, ne regardait que le README
+    et que deux grandeurs.
+
+    Celui-ci est général : partout où la documentation écrit une constante
+    AVEC sa valeur, la valeur doit être celle du code. Les mentions sans
+    valeur (« `NOTIFS_OFFICIELLES_MAX` plafonne les notifications ») ne
+    sont pas concernées — elles ne peuvent pas mentir.
+    """
+    print("\n[doc] les constantes citées avec leur valeur disent la vraie")
+    import re, importlib
+
+    valeurs = {}
+    for module in ("feed_store", "fetch_feeds", "discord_notify", "push_notify"):
+        mod = importlib.import_module(module)
+        for nom in dir(mod):
+            if re.fullmatch(r"[A-Z][A-Z0-9_]{3,}", nom):
+                v = getattr(mod, nom)
+                if isinstance(v, int) and not isinstance(v, bool):
+                    valeurs.setdefault(nom, v)
+
+    ecarts = []
+    for fichier in ("README.md", "RESTE-A-FAIRE.md"):
+        texte = open(fichier, encoding="utf-8").read()
+        for m in re.finditer(r"`([A-Z][A-Z0-9_]{3,})\s*=\s*([\d\u202f ]+)`", texte):
+            nom, dit = m.group(1), m.group(2).replace("\u202f", "").replace(" ", "")
+            if nom in valeurs and dit.isdigit() and int(dit) != valeurs[nom]:
+                ecarts.append("%s : %s dit %s, le code dit %s"
+                              % (fichier, nom, dit, valeurs[nom]))
+    check(not ecarts,
+          "aucune constante citée avec une valeur périmée (%s)"
+          % (ecarts or "aucune"))
+
+    # Le contrôle doit avoir de quoi mordre : s'il ne trouve aucune
+    # constante citée avec sa valeur, il passerait au vert sans rien lire.
+    citees = sum(len(re.findall(r"`[A-Z][A-Z0-9_]{3,}\s*=\s*[\d\u202f ]+`",
+                                open(f, encoding="utf-8").read()))
+                 for f in ("README.md", "RESTE-A-FAIRE.md"))
+    check(citees >= 5,
+          "et il en lit vraiment (%d constantes citées avec leur valeur)" % citees)
+
+
+def test_readme_dit_la_vraie_fenetre():
+    """La fenêtre annoncée dans le README est celle du code.
+
+    Le 14/10/2026, trois chiffres de la rubrique « Limites connues et
+    assumées » dataient d'un réglage abandonné : une profondeur de quinze
+    jours quand le code en garde trente, un plafond de quatre mille quand
+    il vaut douze mille, et un poids de fichier d'avant l'été. C'est la
+    rubrique qu'un lecteur croit le plus, et rien ne la vérifiait.
+
+    Le point 4.8 de l'audit avait déjà nommé la dérive documentaire. La
+    nommer ne suffit pas : il faut une mesure qui échoue.
+    """
+    print("\n[doc] le README annonce la vraie fenêtre d'historique")
+    import re, feed_store
+    readme = open("README.md", encoding="utf-8").read()
+    # Les nombres français s'écrivent avec une espace (fine ou normale).
+    def nombres(motif):
+        return [int(m.group(1).replace("\u202f", "").replace(" ", ""))
+                for m in re.finditer(motif, readme)]
+
+    jours = nombres(r"profondeur de ([\d\u202f ]+) jours")
+    check(jours, "le README annonce une profondeur d'historique")
+    faux = [j for j in jours if j != feed_store.MAX_HISTORY_DAYS]
+    check(not faux,
+          "et c'est celle du code (%d jours ; le README dit aussi %s)"
+          % (feed_store.MAX_HISTORY_DAYS, faux or "rien d'autre"))
+
+    bornes = [(int(a.replace("\u202f", "").replace(" ", "")),
+               int(b.replace("\u202f", "").replace(" ", "")))
+              for a, b in re.findall(
+                  r"bornée entre ([\d\u202f ]+) et ([\d\u202f ]+)\s*\n?\s*articles",
+                  readme)]
+    check(bornes, "le README annonce les bornes de l'historique")
+    mauvaises = [b for b in bornes
+                 if b != (feed_store.MIN_HISTORY_SIZE, feed_store.MAX_HISTORY_SIZE)]
+    check(not mauvaises,
+          "et ce sont celles du code (%d et %d ; le README dit aussi %s)"
+          % (feed_store.MIN_HISTORY_SIZE, feed_store.MAX_HISTORY_SIZE,
+             mauvaises or "rien d'autre"))
+
+
+def test_discord_ne_fait_jamais_echouer_le_passage():
+    """Le canal Discord ne doit pas emporter le canal push avec lui.
+
+    Les deux canaux sont réputés indépendants — c'est la raison d'être du
+    second, puisque taper une notification Discord ouvre Discord et jamais
+    l'article. Mais l'étape push est conditionnée à la réussite de l'étape
+    Discord dans le workflow : un plantage de la première emportait
+    silencieusement la seconde, le jour où elle sert le plus.
+    """
+    print("\n[discord] un plantage n'emporte pas la notification push")
+    import discord_notify, io, contextlib, os
+
+    vrai_lire = discord_notify.lire_liste
+    vrai_url = discord_notify.DISCORD_WEBHOOK_URL
+    vieux_env = os.environ.get("NEW_ITEMS_FILE")
+    secret = "https://discord.test/webhook/ultra-secret"
+    try:
+        os.environ["NEW_ITEMS_FILE"] = "/tmp/fichier-qui-nexiste-pas.json"
+        discord_notify.DISCORD_WEBHOOK_URL = secret
+
+        def explose(*a, **k):
+            raise RuntimeError("illisible, et au passage " + secret)
+        discord_notify.lire_liste = explose
+
+        sortie = io.StringIO()
+        with contextlib.redirect_stdout(sortie):
+            code = discord_notify.main()
+        texte = sortie.getvalue()
+    finally:
+        discord_notify.lire_liste = vrai_lire
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+        if vieux_env is None:
+            os.environ.pop("NEW_ITEMS_FILE", None)
+        else:
+            os.environ["NEW_ITEMS_FILE"] = vieux_env
+
+    check(code == 0,
+          "une exception imprévue ne fait pas échouer l'étape (code %s)" % code)
+    check("ÉCHEC NON PRÉVU" in texte,
+          "mais elle est annoncée dans le journal, pas avalée en silence")
+    check(secret not in texte,
+          "et l'URL du webhook n'apparaît pas dans le message d'erreur")
+
+    # Le workflow conditionne bien l'étape push à la réussite de la
+    # précédente : c'est ce qui rend l'enveloppe nécessaire.
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    bloc_push = wf[wf.index("Notifier par push"):]
+    bloc_push = bloc_push[:bloc_push.index("run:")]
+    check("if: success()" in bloc_push,
+          "la notification push dépend toujours de la réussite de l'étape "
+          "d'avant — c'est la raison de l'enveloppe")
+
+
 def test_recap_discord_detaille():
     print("\n[notif] le récapitulatif Discord montre les derniers articles")
     import io, json as _json, contextlib, tempfile, os as _os, shutil as _shutil
@@ -6165,6 +6640,81 @@ def test_contraste_des_deux_themes():
     for fond, texte in fixes:
         r = _contraste(texte, fond)
         check(r >= SEUIL, "couleur fixe %s sur %s = %.2f:1" % (texte, fond, r))
+
+
+def test_le_decodeur_google_news_est_vraiment_la():
+    """L'import du décodeur doit RÉUSSIR, pas seulement être tenté.
+
+    LA PANNE DU 03/10/2026, ET POURQUOI CE CONTRÔLE MANQUAIT. selectolax
+    1.0.0 retire son ancien moteur (« Modest ») ; googlenewsdecoder importe
+    `selectolax.parser`, qui en fait partie, et déclare `selectolax>=0.4.12`
+    sans borne haute. L'import a donc levé ImportError, fetch_feeds l'a
+    attrapée, HAS_DECODER est passé à False, et le décodage Google News
+    s'est arrêté EN SILENCE. Trois jours, 394 articles pointant vers
+    news.google.com, et plus aucun article reconnu comme officiel — le
+    statut officiel se décide sur le domaine du lien DÉCODÉ.
+
+    Le repli est volontaire : sans décodeur le robot doit continuer de
+    tourner. C'est pour ça que rien ne plantait. Mais aucun contrôle ne
+    vérifiait que l'import PASSE, et les deux seules assertions existantes
+    portent sur le TEXTE de fetch_feeds.py, pas sur le comportement.
+
+    CE QUE ÇA A COÛTÉ, ET CE QUI L'A RÉVÉLÉ : la PR Dependabot qui remonte
+    selectolax à 1.0.0 (#150) est passée VERTE sur les quatre suites, le
+    décodeur cassé. Un clic de plus et la panne revenait à l'identique.
+    Avec ce contrôle, elle vire au rouge toute seule.
+    """
+    print("\n[décodeur] googlenewsdecoder s'importe vraiment")
+    import fetch_feeds
+
+    # LE CONTRÔLE QUI COMPTE. Tout le reste de ce test est du détail à côté.
+    check(fetch_feeds.HAS_DECODER is True,
+          "le décodeur Google News est importable — sinon le décodage "
+          "s'arrête en silence (%s)" % (fetch_feeds.DECODEUR_ABSENT or "ok"))
+
+    # Le module nommément supprimé par selectolax 1.0. Le citer ici donne
+    # au prochain lecteur le nom exact à chercher, au lieu d'un ImportError
+    # anonyme remonté de trois niveaux.
+    try:
+        from selectolax.parser import HTMLParser
+        moteur = HTMLParser("<b>x</b>").css_first("b") is not None
+    except Exception as e:  # pragma: no cover - c'est précisément l'échec visé
+        moteur = False
+        print("     (%s)" % e)
+    check(moteur,
+          "selectolax.parser répond — c'est CE module que la 1.0 retire, "
+          "et celui que googlenewsdecoder importe")
+
+    # Et le chemin d'analyse du décodeur, exercé sans réseau : parse_signature
+    # est une fonction pure qui passe par selectolax. La suite n'ouvre
+    # aucune connexion, c'est sa propriété de fond, donc on ne décode pas un
+    # vrai lien — on exerce l'étage qui casse.
+    #
+    # Import PROTÉGÉ : quand le décodeur est cassé, c'est exactement ici
+    # qu'un `from googlenewsdecoder import _parse` sec lèverait et
+    # emporterait les mille contrôles suivants. Un diagnostic qui plante
+    # vaut moins qu'un diagnostic qui parle.
+    try:
+        from googlenewsdecoder import _parse
+    except Exception as e:
+        _parse = None
+        print("     (%s)" % e)
+    html = ('<c-wiz><div jscontroller="abc" data-n-a-sg="SIG123" '
+            'data-n-a-ts="1760000000"></div></c-wiz>')
+    check(_parse is not None
+          and _parse.parse_signature(html) == ("SIG123", "1760000000"),
+          "il lit la signature d'une page d'article (hors ligne, HTML en dur)")
+    check(_parse is not None and _parse.article_id(
+              "https://news.google.com/rss/articles/CBMiXmh0dHBz?oc=5") == "CBMiXmh0dHBz",
+          "et il sait extraire l'identifiant d'un lien Google News")
+
+    # La borne qui manque en amont, écrite ici pour qu'on la retrouve.
+    # googlenewsdecoder demande selectolax>=0.4.12 SANS borne haute : c'est
+    # requirements.txt qui tient la laisse, et lui seul.
+    req = open("requirements.txt", encoding="utf-8").read()
+    check("selectolax==" in req,
+          "selectolax est épinglée à l'exact dans requirements.txt — le "
+          "décodeur, lui, ne pose aucune borne haute")
 
 
 def test_readme_ne_cite_que_des_constantes_reelles():
@@ -8001,6 +8551,110 @@ def test_laudit_surveille_larchive():
             shutil.rmtree(r, ignore_errors=True)
 
 
+def test_rafale_officielle_du_jour_j():
+    print("\n[rafale] une rafale d'annonces officielles ne ment pas sur ce qu'elle cache")
+    import discord_notify as dn, push_notify as pn, feed_store
+    import contextlib, io, json
+    from datetime import datetime, timedelta, timezone
+
+    envois = []
+    url, envoi = dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry
+    dn.DISCORD_WEBHOOK_URL = "https://discord.test/webhook"
+    dn.send_discord_with_retry = lambda e, t, max_attempts=3: (envois.append((t, e)) or True)
+    base = datetime.now(timezone.utc)
+
+    def officiels(n):
+        return [{"title": "Rockstar publie une annonce officielle numero %d sur "
+                          "Grand Theft Auto VI" % k,
+                 "link": "https://www.rockstargames.com/newswire/article/a%d" % k,
+                 "source": "Rockstar Games (officiel EN)", "official": True,
+                 "date": (base - timedelta(minutes=k)).isoformat()} for k in range(n)]
+
+    def rafale(n):
+        envois.clear()
+        with contextlib.redirect_stdout(io.StringIO()):
+            dn.send_official_alerts(officiels(n))
+        return list(envois)
+
+    try:
+        # Le plafond tient, quelle que soit la rafale. Mesuré le 08/10 sur le
+        # fil réel : 16 officiels en une heure, 27 dans la journée — le
+        # plafond n'est plus théorique, il sert.
+        plafond = feed_store.NOTIFS_OFFICIELLES_MAX
+        for n in (16, 40, 150):
+            e = rafale(n)
+            check(len(e) == plafond + 1,
+                  "[rafale] %d officiels d'un coup font %d notifications, pas %d "
+                  "(plafond %d + 1 groupée)" % (n, len(e), n, plafond))
+
+        # LE DÉFAUT TROUVÉ PAR LA RÉPÉTITION DU 13/10/2026. L'ancienne
+        # écriture joignait tous les titres puis coupait à 3800 caractères :
+        # le titre annonçait « + 140 autre(s) annonce(s) » et le corps n'en
+        # listait que 29, la vingt-neuvième coupée en plein milieu d'un mot.
+        # Le compte était juste, le corps mentait, et rien ne le disait.
+        e = rafale(150)
+        groupe = [x for _, x in e if "autre(s) annonce" in x.get("title", "")][0]
+        desc = groupe["description"]
+        check(len(desc) <= 4096,
+              "[rafale] la description reste sous la limite Discord (%d)" % len(desc))
+        check(not desc.rstrip().endswith("…") and desc.rstrip().endswith("app."),
+              "[rafale] elle se termine sur une phrase entière, pas sur un "
+              "titre coupé net (« %s »)" % desc.splitlines()[-1][:50])
+        # Le nombre est LU, pas codé en dur : il dépend de la longueur des
+        # titres, donc l'écrire en dur ferait un test qui tombe le jour où
+        # Rockstar intitule ses annonces autrement — sans qu'aucun défaut
+        # n'existe. Ce qui doit tenir, c'est l'ARITHMÉTIQUE.
+        import re as _re
+        caches = _re.search(r"et (\d+) autre", desc)
+        check(caches is not None,
+              "[rafale] et elle NOMME ce qu'elle ne liste pas (« %s »)"
+              % desc.splitlines()[-1][:40])
+        listees = sum(1 for l in desc.splitlines() if l.startswith("•"))
+        annonces = 150 - plafond
+        check(listees + int(caches.group(1)) == annonces,
+              "[rafale] listées + annoncées non listées = le compte du titre "
+              "(%d + %s = %d)" % (listees, caches.group(1), annonces))
+
+        # Une petite rafale n'est pas amputée pour autant.
+        e = rafale(plafond + 2)
+        groupe = [x for _, x in e if "autre(s) annonce" in x.get("title", "")][0]
+        check(sum(1 for l in groupe["description"].splitlines() if l.startswith("•")) == 2
+              and "…" not in groupe["description"],
+              "[rafale] deux titres de reste sont listés tous les deux, sans "
+              "mention de troncature")
+    finally:
+        dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry = url, envoi
+
+    # Le récapitulatif ordinaire ne grossit pas avec le volume : une seule
+    # notification, même le jour où neuf cents articles tombent.
+    envois.clear()
+    url, envoi = dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry
+    dn.DISCORD_WEBHOOK_URL = "https://discord.test/webhook"
+    dn.send_discord_with_retry = lambda e, t, max_attempts=3: (envois.append((t, e)) or True)
+    try:
+        ordinaires = [{"title": "Dépêche %d" % k, "link": "https://m.test/%d" % k,
+                       "source": "Média %d" % (k % 30), "official": False,
+                       "date": (base - timedelta(minutes=k)).isoformat()}
+                      for k in range(900)]
+        with contextlib.redirect_stdout(io.StringIO()):
+            dn.send_discord_notification(ordinaires)
+        check(len(envois) == 1,
+              "[rafale] 900 articles ordinaires font UNE notification, pas 900 "
+              "(%d)" % len(envois))
+    finally:
+        dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry = url, envoi
+
+    # Côté push, la charge utile ne suit pas le volume non plus : les
+    # pousseurs refusent au-delà de ~4 Ko.
+    for n in (1, 40, 900):
+        charge = len(json.dumps(pn.build_payload(
+            [{"title": "Dépêche %d" % k, "link": "https://m.test/%d" % k,
+              "source": "M", "date": base.isoformat()} for k in range(n)])).encode())
+        check(charge < 4096,
+              "[rafale] %d articles font une charge push de %d octets, sous "
+              "les 4096 admis" % (n, charge))
+
+
 def test_menage_de_laudit():
     print("\n[audit] les neuf points de ménage, et les garde-fous qui les tiennent")
     import merge_feed, feed_store, fetch_feeds as ff
@@ -8959,6 +9613,12 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_recap_du_matin_couvre_la_nuit,
            test_langue_et_couverture_publiees,
            test_rotation_reddit,
+           test_la_fenetre_ne_bouge_pas_dans_la_journee,
+           test_le_champ_vu_le,
+           test_memoire_des_elagues,
+           test_les_constantes_citees_sont_les_bonnes,
+           test_readme_dit_la_vraie_fenetre,
+           test_discord_ne_fait_jamais_echouer_le_passage,
            test_recap_discord_detaille,
            test_alerte_officielle_rockstar,
            test_pause_nocturne,
@@ -8967,6 +9627,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_un_seul_juge_de_lactu_majeure,
            test_icones_en_emoji,
            test_contraste_des_deux_themes,
+           test_le_decodeur_google_news_est_vraiment_la,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_les_workflows_epinglent_leurs_dependances,
@@ -8979,6 +9640,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_cibles_tactiles_du_panneau,
            test_panneau_parametres_accessible,
            test_panneau_parametres_structure,
+           test_filtre_officiel_du_mode_de_secours,
            test_ligne_etat_sans_double_compte,
            test_ligne_run_tient_sur_une_ligne,
            test_confirmation_des_actions_sans_retour,
@@ -8997,6 +9659,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,
            test_menage_de_laudit,
+           test_rafale_officielle_du_jour_j,
            test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
            test_readme_annonce_le_bon_nombre):

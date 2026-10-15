@@ -318,12 +318,35 @@ def send_official_alerts(officiels):
         if send_discord_with_retry(embed, f"officiel Rockstar — {titre[:40]}"):
             envoyees += 1
     if groupees:
+        # LA TRONCATURE SILENCIEUSE, trouvée par la répétition du 13/10/2026.
+        #
+        # L'ancienne écriture joignait TOUS les titres puis coupait à 3800
+        # caractères. Mesuré sur une rafale de 150 officiels : le titre
+        # annonçait « + 140 autre(s) annonce(s) » et le corps n'en listait
+        # que 29, la vingt-neuvième coupée en plein milieu d'un mot. Le
+        # compte était juste, le corps mentait, et rien ne le disait.
+        #
+        # On empile donc ligne par ligne tant que le budget tient, et on
+        # NOMME ce qui ne rentre pas. Un message qui s'arrête proprement en
+        # disant combien il cache vaut mieux qu'un message coupé net.
+        lignes, reste = [], 0
+        budget = 3800
+        for rang, i in enumerate(groupees):
+            ligne = (f"• [{feed_store.libelle_officiel(i)[1][:70]}]"
+                     f"({(i.get('link') or SITE_URL).strip()})")
+            # +1 pour le saut de ligne, et on garde de quoi écrire la
+            # dernière ligne « … et N autres ».
+            if budget - len(ligne) - 1 < 60:
+                reste = len(groupees) - rang
+                break
+            lignes.append(ligne)
+            budget -= len(ligne) + 1
+        if reste:
+            lignes.append(f"… et {reste} autre(s), toutes dans l'app.")
         embed = {
             "title": f"+ {len(groupees)} autre(s) annonce(s) officielle(s)"[:250],
             "url": SITE_URL,
-            "description": "\n".join(
-                f"• [{feed_store.libelle_officiel(i)[1][:70]}]({(i.get('link') or SITE_URL).strip()})"
-                for i in groupees)[:3800],
+            "description": "\n".join(lignes),
             "color": COULEUR_OFFICIEL,
         }
         if send_discord_with_retry(embed, f"{len(groupees)} officiels groupés"):
@@ -399,6 +422,32 @@ lire_liste = feed_store.lire_liste
 
 
 def main():
+    """Enveloppe qui tient la promesse écrite plus bas : cette étape ne doit
+    JAMAIS faire échouer le workflow.
+
+    Le commentaire l'affirmait, le code ne le garantissait pas. Une panne de
+    Discord était bien absorbée — `send_discord_with_retry` renvoie False —
+    mais une EXCEPTION ne l'était pas : un fichier d'articles malformé, un
+    article sans la forme attendue, et l'étape sortait en erreur.
+
+    Ce que ça coûtait, et c'est pour ça que c'est corrigé à cinq semaines de
+    la sortie : l'étape suivante, la notification push, est conditionnée à
+    `if: success()`. Les deux canaux sont réputés indépendants — c'est
+    même la raison d'être du second, puisque taper une notification Discord
+    ouvre Discord et jamais l'article. Un plantage du premier emportait
+    silencieusement le second, le jour où il sert le plus.
+    """
+    try:
+        return _main()
+    except Exception as e:
+        propre = feed_store.masquer_urls(str(e), [DISCORD_WEBHOOK_URL])
+        print(f"[discord] ÉCHEC NON PRÉVU ({type(e).__name__}) : {propre}")
+        print("[discord] l'étape se termine quand même : les articles sont "
+              "publiés, et la notification push ne doit pas être emportée.")
+        return 0
+
+
+def _main():
     path = os.environ.get("NEW_ITEMS_FILE", "")
     if not path:
         print("[discord] NEW_ITEMS_FILE non défini — rien à notifier.")

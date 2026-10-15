@@ -357,6 +357,22 @@ les filtres actifs.
 
 ---
 
+### 3.9 — Sept badges de plus
+
+> **FAIT le 13/10/2026.** Sondé sur 8 378 titres avant d'écrire une ligne. Sept retenus : PC, LUCIA / JASON, PRÉCOMMANDE, PRIX, TAKE-TWO, RUMEUR, DATE DE SORTIE. Quatre écartés à la mesure : CARTE (« Vice City » attrape les maillots des Miami Heat), DÉMENTI (29 jours à zéro sur 31), BANDE-ANNONCE (déjà couvert par vidéo), RETARD (« report » est ambigu en français). Cliquables comme les trois autres, une couleur par badge, les neuf contrastes calculés avant le CSS.
+
+**La densité, que j'avais annoncée en l'air.** J'avais dit qu'à quatre
+badges on retomberait dans le problème de 3.3. Mesuré sur 3 589 articles :
+les cartes sans badge passent de 52,5 % à 42,2 %, celles à trois ou plus de
+3,0 % à 5,1 %, maximum six sur deux cartes. 1,3 point de coût, pas un
+problème.
+
+**Une seule boucle.** La carte et la chronologie parcourent `ORDRE_BADGES`
+avec le même code. Neuf lignes recopiées auraient garanti qu'un ajout en
+oublie une — ce qui était déjà arrivé à la vidéo.
+
+---
+
 ### Ce que je recommanderais de faire en premier
 
 **3.7 d'abord** — ce n'est pas une idée mais une dette, la décision est
@@ -364,7 +380,8 @@ prise, et c'est petit. Puis **3.2**, de l'assemblage pur qui sert tous les
 jours et prépare le jour J mieux que n'importe quoi d'autre. **3.1** est le
 problème plus grave mais demande une mesure avant de choisir les seuils.
 
-3.3 à 3.5 et 3.8 sont du confort réel, sans échéance. **3.6 est annulée.**
+3.3 à 3.5, 3.8 et 3.9 sont du confort réel, sans échéance. **3.6 est
+annulée.**
 
 Dans 3.8, le resserrage de la regex VIDÉO se tient tout seul : il corrige
 45 cartes mal badgées aujourd'hui, sans attendre qu'on construise un
@@ -435,6 +452,8 @@ cherchaient pas — voir **4.13**. C'est exactement ce pour quoi il existe.
 
 ### 4.1 — Le filtre officiel diverge en mode de secours, sur LE mot qui compte
 
+> **FAIT le 14/10/2026.** L'app a le même mécanisme que le robot : la source déclare un SUPPLÉMENT de mots-clés officiels, jamais une liste complète. `check_sources_sync.py` compare désormais ce champ source par source — vérifié capable d'échouer. Mesuré : la chaîne a cinq articles conservés dans tout le dépôt, tous déjà retenus par les six mots-clés de base, donc le supplément n'en fait entrer aucun de plus aujourd'hui. Il n'existe que pour celui qui n'est pas encore publié.
+
 **Le constat le plus sérieux de l'audit, et le seul qui ait une échéance.**
 
 `FEEDS` donne à la chaîne YouTube de Rockstar un mot-clé supplémentaire :
@@ -471,6 +490,8 @@ sans équivalent JS, légitimement) et `official_keywords_extra`.
 ---
 
 ### 4.2 — `readSet` n'a pas de plafond, et le message d'erreur conseille de détruire l'irremplaçable
+
+> **FAIT le 14/10/2026.** Plafond à 8 000 liens, mesuré (300 octets par lien au neuvième décile, soit 2,3 Mo). Trois garde-fous : il ne s'applique qu'à la copie écrite sur l'appareil — la sauvegarde exportée garde tout ; on ne jette que les liens absents à la fois du fil et de l'archive, et seulement si les deux sont en mémoire ; et un lien encore affichable n'est jamais jeté, même au-dessus du plafond. Le message de quota ne conseille plus d'effacer les données du site, il renvoie vers l'export.
 
 `seenMap` est plafonné à 2 000 entrées, `lastItems` à 300, dans les deux cas
 avec un commentaire citant la limite de 5 Mo. **`readSet` a échappé au même
@@ -781,7 +802,8 @@ d'autorisation, et c'est précisément ce qui a évité la perte.
 
 **Le vrai risque est en novembre.** Rockstar publiera en huit langues, et
 chaque page localisée est `official: True`, donc une notification. Le
-`NOTIFS_OFFICIELLES_MAX = 5` plafonne les notifications, mais rien ne
+`NOTIFS_OFFICIELLES_MAX` plafonne les notifications (5 à l'écriture de
+cette fiche, **10** depuis la première répétition générale), mais rien ne
 regrouperait les huit pages dans le fil : les URL diffèrent, et la fusion
 par similarité de titre ne les attrapera que si le titre reste en anglais
 (ce qui est le cas de ces deux-là, pas forcément des suivantes).
@@ -809,6 +831,160 @@ décision sur les pages Rockstar localisées, à mesurer avant novembre).~~
 **Les deux sont faits le 13/10/2026.**
 
 4.3, 4.4, 4.6, 4.7, 4.9, 4.11 et 4.12 sont réels mais sans urgence.
+
+---
+
+## La deuxième répétition générale — 14/10/2026
+
+Rejouée parce que presque tout ce qui touche au volume avait changé depuis
+la première : plafond d'historique à douze mille, plafond de notifications
+à dix, neuf badges calculés par article, découpage adaptatif du fil,
+chronologie des officiels, plafond des articles lus.
+
+**Rien n'a cassé.** Aucune erreur JavaScript, aucun garde-fou franchi,
+aucune notification en trop. Les quatre chiffres à retenir :
+
+- le robot reste **sous cinq minutes** dans toutes les configurations
+  éprouvées à 1 800 articles/jour, et à 17,9 s avec un fil réaliste ; le
+  seul cas qui dépasse est le pire cas théorique (3 600 articles reçus,
+  sujets presque tous distincts) à **12 min 29**, toujours très en dessous
+  d'un cron horaire ;
+- l'app ouvre en **173 ms** même avec douze mille articles chargés, et les
+  neuf juges de badge coûtent **27 ms** sur tout le fil ;
+- le stockage local plafonne à **3,26 Mo sur ~5** au pire cas honnête ;
+- les notifications plafonnent à **douze messages**, quelle que soit la
+  rafale.
+
+**Ce qui n'a PAS été atteint** : le plafond de douze mille articles. Un jour
+de pic comprime le fil au lieu de le gonfler — la fusion rétroactive
+absorbe les reprises. C'est la fenêtre de trente jours qui lie.
+
+**Le seul coût notable** : « Tout charger » demande **9,3 Mo** au plafond,
+contre 2,8 aujourd'hui, et fige l'interface quatre secondes. Rien n'est
+cassé, mais c'est le chiffre à connaître avant de presser le bouton en
+données mobiles le 19 novembre.
+
+---
+
+## Ce qui a été fait le 14/10/2026
+
+Six lots, et le gel décidé en cours de route.
+
+1. **4.1 et 4.2**, les deux derniers points de l'audit : le mode de secours
+   sait étendre ses mots-clés officiels, et la liste des articles lus a un
+   plafond.
+2. **La deuxième répétition générale.** Rien n'a cassé. Le plafond de douze
+   mille n'est jamais atteint : un jour de pic comprime le fil au lieu de
+   le gonfler.
+3. **Deux durcissements**, puis **gel** : garde-temps du robot à 45 min
+   (12 min 29 mesurées au pire cas), et « Tout charger » annonce son poids.
+4. **Un bouton mort pendant 8 à 23 secondes**, trouvé en chronométrant à la
+   demande d'Antoni. Trois endroits écrivaient dans la même ligne ; le
+   rendu du fil passait toujours en dernier.
+5. **La relecture à froid des chemins du jour J.** Un défaut :
+   `discord_notify` pouvait emporter la notification push, les deux canaux
+   n'étant indépendants qu'en intention.
+6. **Le README annonçait une fenêtre qui n'existe plus** — quatre chiffres
+   faux, dont trois dans « Limites connues et assumées ». Un contrôle les
+   compare désormais au code.
+
+**Rien n'était ouvert au soir du 14/10** — voir plus bas le 15/10, qui a
+rouvert un point. Les neuf pistes d'interface (3.1 à 3.9) et
+les quatorze points de l'audit sont livrés ou clos à la mesure. Le code est
+gelé : correctifs seulement jusqu'au 19 novembre.
+
+**Ce qui reste, et qui n'est pas du code** : vérifier la portée réelle du
+jeton d'accès personnel (`gta6-backend` seul, Contents en lecture-écriture
+et rien d'autre), et une troisième répétition vers le 10 novembre, avec les
+données d'alors.
+
+---
+
+## Ce qui a été fait le 15/10/2026
+
+**Un seul lot, parti d'une question d'Antoni** : « Pourquoi j'ai 10 articles
+non lus, ça me dit que depuis la dernière visite il y a que 5 nouveaux ? »
+
+Ni l'un ni l'autre des deux compteurs n'était faux : le fil rejouait les
+mêmes articles. Relu dans les 29 versions successives de `docs/feed.json`
+du 14/10 — les vrais commits, pas une simulation — **337 articles sont
+sortis de l'historique dans la journée et 113 sont revenus**, par paquets,
+chacun juste après une descente de la fenêtre.
+
+La cause : le débit se mesurait par **âge glissant** depuis l'instant du
+passage, donc la cible bougeait avec l'heure (3 390 → 4 830, 14 descentes
+dans la journée). Chaque descente élaguait *et* relevait le plancher
+d'entrée — même calcul — donc refusait des articles du jour même.
+
+Livré :
+
+1. **Le débit se mesure en journées civiles**, fuseau de Paris. Sur les
+   mêmes 29 passages réels : cible **4 170 partout, zéro descente**.
+2. **Une mémoire des élagués** (`elagues-recents.json`, 15 jours) : un
+   article resservi par sa source reprend sa place sans recompter comme
+   neuf. Filet, au cas où la fenêtre bouge pour une vraie raison.
+3. **Un contrôle qui verrouille l'amplitude**, vérifié capable d'échouer.
+4. Au passage : la suite navigateur plantait sur une trace de pile au lieu
+   de rendre son verdict quand le fil servi datait de la veille.
+
+**NON LIVRÉ, et c'était validé** : le troisième morceau prévu — faire
+rétrécir la fenêtre par petits pas. Écrit deux fois, retiré deux fois. Un
+pas fixe dépend de la fréquence des passages, réglée hors du dépôt (30
+jours demandés, 39 obtenus) ; un pas proportionnel casse l'équivalence qui
+porte le filtre d'entrée (le plancher et le plafond doivent donner le même
+résultat). Cinq contrôles l'ont dit. La correction du point 1 supprime la
+cause ; ce pas-là n'aurait été qu'une ceinture, et une ceinture qui casse
+autre chose ne se met pas.
+
+**Ce qui restait ouvert au soir du 15/10** : le bloc « Ce que j'ai raté »
+comptait les articles par leur **date de publication**, pas par le moment
+où ils sont **apparus** dans le fil. **Livré le 16/10**, voir la section
+suivante — et par un champ publié par le robot plutôt que par une trace
+locale, la mesure ayant montré que la trace locale est vide exactement
+quand elle sert : appareil neuf, cache vidé, navigation privée.
+
+---
+
+## Ce qui a été fait le 16/10/2026
+
+**Le dernier point ouvert du dépôt est livré** : le bloc « Ce que j'ai
+raté » compte désormais ce qui est **apparu**, et non ce qui a été publié.
+
+Le robot écrit `vu_le` — l'instant où il découvre l'article — au seul
+endroit où un article est reconnu réellement neuf. Les articles déjà
+publiés n'auront jamais ce champ ; l'app retombe sur leur date et le fil se
+remplit en quelques jours.
+
+**Un chiffre que j'avais annoncé et qui était faux.** J'avais dit « 10 %
+des arrivées ont plus de 24 h de retard, soit ~16 par jour ». La
+quasi-totalité de ces 10 % sont des articles que l'app ne charge jamais :
+`feed-recent.json` garde les 300 plus récents **par date**, et ces
+arrivants tardifs ont 35 jours d'âge médian. Dans la fenêtre réellement
+chargée, le retard concerne **25 articles par semaine au-delà de 12 h et 7
+au-delà de 24 h** — un à quatre par jour selon le rythme de visite. Le lot
+reste justifié, mais pour ce gain-là, pas pour celui que j'avais annoncé.
+
+Livré avec :
+
+1. **Les deux compteurs côte à côte** dans le bilan. « 10 non lus » contre
+   « 5 nouveaux » : les deux avaient raison, et l'écart passait pour un
+   bug. Il est maintenant lisible d'un coup d'œil.
+2. **Un arrivant en retard dit son âge** — « paru le 6 octobre » — pour
+   qu'on ne le prenne pas pour une dépêche du jour.
+3. **Un bouton « J'ai tout vu »**, qui s'ajoute au repère posé à la
+   fermeture au lieu de le remplacer.
+4. **Le piège du revenant**, créé par le correctif de la veille : un
+   article resservi aurait pris un `vu_le` tout neuf. Il prend la date de
+   son élagage.
+
+**Écarté, mesure à l'appui** : repêcher dans le fichier allégé les ~5
+articles par jour qui arrivent hors fenêtre. Ce sont majoritairement des
+fiches produit du Rockstar Store et des reprises Google News d'il y a un
+mois, et il aurait fallu changer la règle du fichier que l'app charge.
+
+**Ce qui reste, et qui n'est pas du code** : vérifier la portée du jeton
+d'accès personnel, et une troisième répétition générale vers le 10
+novembre.
 
 ---
 

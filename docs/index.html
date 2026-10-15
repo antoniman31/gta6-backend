@@ -489,7 +489,7 @@
   }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:800;
-    background:#FF6B00; color:#100800; padding:2px 6px; border-radius:var(--r-xs);
+    background:#FF6B00; color:#100800; border-radius:var(--r-xs);
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -498,13 +498,67 @@
      téléphone — or « SPÉCIALISTE GTA 6 » et « VIDÉO » portent du sens. */
   .tag-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
-    padding:2px 6px; border-radius:var(--r-xs); letter-spacing:0.03em; white-space:nowrap;
+    border-radius:var(--r-xs); letter-spacing:0.03em; white-space:nowrap;
+  }
+  /* UNE SEULE GÉOMÉTRIE POUR TOUS LES BADGES DE LA RANGÉE, et deux
+     défauts qu'elle corrige, signalés par Antoni le 13/10/2026 : « le
+     texte sur les badges est mal centré en hauteur ».
+     Il avait raison, deux fois.
+
+     1. LES HAUTEURS NE SE SUIVAIENT PAS. Mesuré sur une carte réelle :
+        « SPÉCIALISTE GTA 6 » faisait 16 px, « FR » 17 et les badges de
+        couleur 18 — trois remplissages et deux bordures différents pour
+        des étiquettes posées côte à côte.
+
+     2. LE TEXTE ÉTAIT HAUT D'UN PIXEL. Une boîte se centre sur
+        ascendante + descendante de la police ; des CAPITALES n'occupent
+        jamais la descendante. Mesuré sur les neuf badges : 4,50 px
+        au-dessus du gabarit de capitale, 5,50 en dessous. L'étiquette
+        « FR », elle, tombait juste (4,50 / 4,50) parce qu'elle héritait
+        d'un interligne plus serré — le défaut venait du `line-height:1.4`
+        posé sur la forme BOUTON, pas de la couleur.
+
+     D'où un interligne explicite plutôt qu'hérité, une bordure
+     transparente pour que les pleins et les bordurés fassent la même
+     hauteur, et un remplissage asymétrique qui rend au bas du badge le
+     pixel que la descendante inoccupée lui prenait. Les valeurs sont
+     remesurées par un contrôle, pas déduites. */
+  .tag-badge, .specialist-badge, .official-badge{
+    line-height:12px;
+    padding:2.5px 6px 1.5px;
+    border:1px solid transparent;
   }
   /* Les badges de contenu sont des BOUTONS depuis le 13/10/2026 : la règle
      globale sur button leur imposerait une bordure, un fond et 10px de
      padding. On la neutralise plutôt que de dupliquer .tag-badge. */
-  button.tag-badge, button.specialist-badge{border:none; cursor:pointer; line-height:1.4;}
+  button.tag-badge, button.specialist-badge{
+    cursor:pointer;
+    /* min-height:0 — SANS LUI le badge héritait des 44 px imposés à tout
+       bouton et devenait un pavé. Mesuré le 13/10/2026 sur le téléphone
+       d'Antoni : 44 px de haut contre 17 pour un badge normal, et toute la
+       rangée source passait de 17 à 44. La police et le remplissage, eux,
+       étaient déjà bons : c'était min-height, et lui seul.
+       La zone de clic est traitée juste en dessous — un badge n'est pas
+       dispensé de la règle des 44 px, il la satisfait autrement. */
+    min-height:0;
+  }
   button.tag-badge:hover, button.specialist-badge:hover{filter:brightness(1.15);}
+  /* LA CINQUIÈME DÉROGATION AUX 44 PX, et la seule qui n'atteint pas la
+     cible. Elle est écrite ici parce qu'une entorse tue plus sûrement en
+     silence qu'en étant nommée.
+     Mesuré le 13/10/2026 sur une carte réelle à 390 px : le badge fait
+     18 px, il n'y a ZÉRO pixel au-dessus de lui (il ouvre le corps de la
+     carte) et SIX en dessous avant le titre. Une zone de 44 px mordrait
+     donc de 13 px sur le titre — l'action principale de la carte — et lui
+     volerait des appuis. Entre un badge un peu petit et un titre qui
+     n'obéit plus, le choix est fait.
+     Le pseudo-élément porte la zone à ~24 px sans jamais toucher le titre :
+     c'est tout ce que la place permet. Le badge reste un geste SECONDAIRE,
+     la carte entière mène déjà à l'article. */
+  button.tag-badge, button.specialist-badge{position:relative;}
+  button.tag-badge::after, button.specialist-badge::after{
+    content:""; position:absolute; inset:-3px -2px;
+  }
   /* La chronologie des officiels. Le trait vertical porte toute la lecture :
      c'est lui qui transforme une liste en histoire. */
   .chrono{list-style:none; margin:0; padding:0 0 0 14px; border-left:2px solid var(--line);}
@@ -525,12 +579,36 @@
     display:block; font-family:'JetBrains Mono',monospace; font-size:10px;
     color:var(--text-dim); text-transform:uppercase; letter-spacing:0.04em;
   }
-  .chrono-titre{
-    display:block; color:var(--text); text-decoration:none;
-    font-size:14px; line-height:1.35; margin:2px 0;
+  .chrono-lien{
+    display:flex; gap:10px; align-items:flex-start; text-decoration:none;
+    margin-top:2px;
   }
-  .chrono-titre:hover{text-decoration:underline;}
-  .chrono-source{font-size:11px; color:var(--text-dim);}
+  .chrono-vignette{
+    width:72px; height:72px; flex:0 0 72px; object-fit:cover;
+    border-radius:var(--r-xs); background:var(--line);
+  }
+  .chrono-texte{min-width:0;}
+  .chrono-titre{
+    display:block; color:var(--text);
+    font-size:14px; line-height:1.35;
+  }
+  .chrono-lien:hover .chrono-titre{text-decoration:underline;}
+  .chrono-source{display:block; font-size:11px; color:var(--text-dim); margin-top:2px;}
+  .chrono-badges{display:flex; gap:4px; flex-wrap:wrap; margin-top:6px;}
+  /* Les boutons sont COMPACTS ici, et pas étirés comme sur une carte. À la
+     première version ils reprenaient .card-actions tel quel — quatre
+     boutons pleine largeur par entrée — et la chronologie redevenait une
+     liste de cartes avec un trait à gauche, ce qu'elle existe pour ne pas
+     être. Ils se rangent sous le texte, alignés à gauche de la vignette. */
+  .chrono-actions{
+    display:flex; gap:6px; margin-top:6px; margin-left:82px; justify-content:flex-start;
+  }
+  .chrono-actions .card-mark{
+    flex:0 0 auto; min-width:0; width:auto; padding:4px 10px; font-size:12px;
+  }
+  @media (max-width: 400px){
+    .chrono-actions{margin-left:0;}
+  }
 
   .recherches-recentes{
     display:flex; gap:6px; flex-wrap:wrap; margin:0 0 10px;
@@ -555,12 +633,27 @@
     letter-spacing:0.03em; color:var(--text);
   }
   .badge-filtre-compte{font-size:11px; color:var(--text-dim); flex:1 1 auto;}
+  /* Chaque paire a été mesurée AVANT d'être écrite, avec la même formule
+     que le contrôle de contraste du site. Toutes dépassent le seuil WCAG
+     AA de 4,5:1, et toutes les sept sont au-dessus de LEAK (4,70) :
+       PC 5,93 · PRÉCOMMANDE 5,02 · PRIX 5,02 · LUCIA/JASON 6,04
+       TAKE-TWO 5,47 · RUMEUR 7,63 · DATE 7,90
+     Fixes dans les deux thèmes, comme LEAK et VIDÉO : un badge rouge reste
+     rouge. Le contrôle les mesure directement — fixe ne veut pas dire
+     dispensé. */
   .tag-leak{background:#e11d48; color:#fff;}
   .tag-video{background:#7c3aed; color:#fff;}
+  .tag-pc{background:#0369a1; color:#fff;}
+  .tag-preco{background:#15803d; color:#fff;}
+  .tag-prix{background:#b45309; color:#fff;}
+  .tag-perso{background:#be185d; color:#fff;}
+  .tag-take2{background:#0f766e; color:#fff;}
+  .tag-rumeur{background:#57534e; color:#fff;}
+  .tag-date{background:#4338ca; color:#fff;}
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
   .specialist-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
-    background:transparent; color:var(--accent); border:1px solid var(--accent); padding:1px 5px; border-radius:var(--r-xs);
+    background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:var(--r-xs);
     letter-spacing:0.03em; white-space:nowrap;
   }
   .card-src-row{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin-bottom:6px;}
@@ -775,6 +868,21 @@
     color:var(--text-dim); text-transform:uppercase; letter-spacing:0.04em;
   }
   .rate-neuf{color:var(--accent); font-weight:700;}
+  /* L'âge d'un arrivant tardif, sur la ligne de source. En retrait de ton
+     par rapport à elle : c'est une précision, pas une deuxième étiquette. */
+  .rate-paru{opacity:0.75;}
+  .rate-paru::before{content:" · ";}
+  /* 44 px de haut comme tout ce qui se touche ici (WCAG 2.5.5, et la règle
+     que le reste de l'app s'impose). Discret : il vide le bloc, il ne
+     réclame pas l'attention que réclament les articles au-dessus. */
+  .rate-vu{
+    margin:8px 0 0; width:100%; min-height:44px; padding:0 12px;
+    background:transparent; color:var(--text-dim);
+    border:1px solid var(--line); border-radius:var(--r-sm);
+    font-family:'JetBrains Mono',monospace; font-size:11px;
+    text-transform:uppercase; letter-spacing:0.04em; cursor:pointer;
+  }
+  .rate-vu:hover{color:var(--text); border-color:var(--accent);}
 
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
@@ -2123,7 +2231,7 @@ const DEFAULT_FEEDS = [
   { id: "rockstar-announce", name: "Google News (annonces Rockstar)", url: "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en&gl=US&ceid=US:en", enabled: true, official: true, lang: "en" },
   { id: "gta6-netflix", name: "Google News (Netflix)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+Netflix&hl=en&gl=US&ceid=US:en", enabled: true, official: false, specialist: true, lang: "en" },
   { id: "take2-ir", name: "Take-Two Investor Relations (officiel)", url: "https://ir.take2games.com/rss/news-releases.xml?items=15", enabled: true, official: true, lang: "en" },
-  { id: "rockstar-youtube", name: "Rockstar Games (YouTube)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCULwHhkI31JHAKe57LZdzcA", enabled: true, official: true, officialDomains: ["youtube.com", "youtu.be"], lang: "en" },
+  { id: "rockstar-youtube", name: "Rockstar Games (YouTube)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCULwHhkI31JHAKe57LZdzcA", enabled: true, official: true, officialDomains: ["youtube.com", "youtu.be"], officialKeywordsExtra: ["trailer"], lang: "en" },
   { id: "gnews-fr", name: "Google News (FR)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
   { id: "gnews-en", name: "Google News (EN)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false, lang: "en" },
   { id: "gnews-fr-7j", name: "Google News (FR, 7 jours)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
@@ -2346,7 +2454,7 @@ function storageSet(key, value){
     if(!quotaSignale){
       quotaSignale = true;
       try{
-        addLog("fail", "Stockage local plein — préférences et articles ne sont plus sauvegardés sur cet appareil. Vide les données du site pour repartir sur une base saine.");
+        addLog("fail", "Stockage local plein — préférences et articles ne sont plus sauvegardés sur cet appareil. Exporte d'abord une sauvegarde depuis les paramètres : elle contient tes articles lus, que rien d'autre ne peut reconstituer. Tu pourras la réimporter ensuite.");
       }catch(_){ /* addLog pas encore prêt : le console.error ci-dessus suffit */ }
     }
     return false;
@@ -2548,8 +2656,70 @@ async function saveSeen(){
   try{ storageSet("seen-items-v1", JSON.stringify(seenMap)); }
   catch(e){ console.error("Erreur sauvegarde seen", e); }
 }
+// ---------- Le plafond des articles lus ----------
+//
+// 4.2 de l'audit du 08/10/2026, corrigé le 14/10/2026. seenMap était
+// plafonné à 2 000 entrées et la copie locale du fil à MAX_PERSISTED_ITEMS,
+// dans les deux cas en citant la limite de 5 Mo du stockage local.
+// `readSet` y avait échappé : la seule structure qui grandissait sans
+// borne, et la seule dont le contenu NE SE RECONSTITUE PAS — un article lu
+// l'est pour toujours, aucun serveur ne le redira.
+//
+// LE PLAFOND NE S'APPLIQUE QU'À LA COPIE ÉCRITE SUR L'APPAREIL. En
+// mémoire, et donc dans le fichier de sauvegarde, readSet reste entier :
+// un fichier n'a pas la limite de 5 Mo, et une sauvegarde amputée ne
+// serait plus un filet.
+//
+// ON NE JETTE QUE CE QU'AUCUN ÉCRAN NE PEUT PLUS AFFICHER : un lien absent
+// à la fois du fil et de l'archive ne peut pas réapparaître « non lu »,
+// puisqu'il ne peut pas réapparaître du tout. D'où la condition stricte —
+// sans l'historique complet ET l'archive entière en mémoire, on ne sait
+// pas ce qui est encore joignable, donc on ne jette rien. Mieux vaut
+// dépasser le plafond que perdre une lecture qui comptait.
+//
+// LE CHIFFRE. Mesuré le 14/10/2026 sur les 4 795 liens du dépôt : 101
+// caractères en médiane, 147 au neuvième décile, soit environ 300 octets
+// par lien en UTF-16 une fois les guillemets et la virgule comptés. À ce
+// coût, le plafond pèse 2,3 Mo ; avec le fil local et les articles déjà vus
+// (environ 1 Mo à eux deux), on reste autour de 3,3 Mo sur les 5 Mo que le
+// navigateur accorde. C'est aussi près de deux mois de lecture au rythme
+// actuel.
+//
+// CE QUE CE PLAFOND N'EST PAS : une limite dure. Si l'appareil a plus de
+// liens lus ENCORE AFFICHABLES que le plafond, ils sont tous conservés et
+// le plafond est dépassé sciemment. Jeter un article que l'app peut encore
+// montrer le ferait revenir en « non lu » sous les yeux du lecteur, ce qui
+// est exactement le défaut qu'on évite.
+const MAX_LIENS_LUS_PERSISTES = 8000;
+let elagageLusSignale = false;
+
+function lusAPersister(){
+  if(readSet.size <= MAX_LIENS_LUS_PERSISTES) return [...readSet];
+  // Sans l'historique complet et toute l'archive, « plus affichable » n'est
+  // pas calculable : on garde tout.
+  if(historyPartial || !archiveChargee) return [...readSet];
+  const connus = new Set(lastItems.map(i => i.link));
+  const surplus = readSet.size - MAX_LIENS_LUS_PERSISTES;
+  const jetables = [...readSet].filter(l => !connus.has(l));
+  // Les plus anciennement enregistrés d'abord : un Set itère dans l'ordre
+  // d'insertion. Et seulement le surplus, pas tous les jetables.
+  const jetes = new Set(jetables.slice(0, surplus));
+  return [...readSet].filter(l => !jetes.has(l));
+}
+
 async function saveRead(){
-  try{ storageSet("read-items-v1", JSON.stringify([...readSet])); }
+  const liste = lusAPersister();
+  const ecartes = readSet.size - liste.length;
+  if(ecartes > 0 && !elagageLusSignale){
+    elagageLusSignale = true;
+    try{
+      addLog("info", `Stockage local : ${ecartes} lien(s) lu(s) ne sont plus ` +
+        `écrits sur l'appareil — ils ne figurent plus ni dans le fil ni dans ` +
+        `l'archive, donc plus rien ne peut les afficher. La sauvegarde ` +
+        `exportée, elle, les garde tous.`);
+    }catch(_){ /* addLog pas encore prêt */ }
+  }
+  try{ storageSet("read-items-v1", JSON.stringify(liste)); }
   catch(e){ console.error("Erreur sauvegarde read", e); }
 }
 
@@ -3273,7 +3443,13 @@ async function fetchFeedViaProxy(feed, proxyIdx){
 // description pour capter aussi les articles où GTA 6 n'est mentionné que
 // dans le résumé.
 function filterFeedItems(raw, feed){
-  const officialKeywords = ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6"];
+  // PAS « officialKeywords » : check_sources_sync.py retrouve la liste de
+  // référence en cherchant la première occurrence de `const
+  // officialKeywords =` dans le fichier, et attend un tableau juste après.
+  // Une variable locale du même nom, déclarée plus haut dans le fichier,
+  // lui ferait lire un appel de fonction à la place de la liste — et le
+  // garde-fou qui doit empêcher la divergence tomberait en premier.
+  const cles = motsClesOfficiels(feed);
   if(feed.official){
     // Filtre strict sur le titre uniquement : une source officielle (ex.
     // Take-Two Investor Relations) publie aussi des communiqués sur
@@ -3283,7 +3459,7 @@ function filterFeedItems(raw, feed){
     // uniquement les vraies annonces dédiées.
     return raw.filter(item => {
       const title = (item.title || "").toLowerCase();
-      return officialKeywords.some(k => title.includes(k));
+      return cles.some(k => title.includes(k));
     });
   }
   if(feed.noFilter) return raw;
@@ -3377,6 +3553,34 @@ async function fetchFeed(feed){
 // entre deux flux. Doit rester aligné sur OFFICIAL_DOMAINS et
 // ROCKSTARMAG_DOMAINS de fetch_feeds.py.
 const DOMAINES_OFFICIELS = ["rockstargames.com", "take2games.com"];
+
+// Les mots-clés du filtre officiel, et le SUPPLÉMENT que certaines sources
+// ajoutent. Doit rester aligné sur OFFICIAL_KEYWORDS et
+// mots_cles_officiels() de fetch_feeds.py — check_sources_sync.py le
+// vérifie à chaque passage de la CI, source par source.
+//
+// POURQUOI UN SUPPLÉMENT ET PAS UNE LISTE COMPLÈTE PAR SOURCE : recopier
+// les six mots-clés de base dans une entrée de DEFAULT_FEEDS les ferait
+// diverger au premier ajustement. C'est exactement le défaut que cette
+// fonction répare, il ne s'agit pas de le réintroduire d'un cran plus bas.
+//
+// LE DÉFAUT RÉPARÉ, trouvé par l'audit du 08/10/2026 et corrigé le
+// 14/10/2026. Le robot donne à la chaîne YouTube de Rockstar un mot-clé de
+// plus, « trailer », parce qu'une vidéo intitulée simplement « Trailer 3 »
+// ne contient aucun des six et serait rejetée — précisément le jour qui
+// compte. Le mode de secours, lui, avait les six en dur et aucun moyen de
+// les étendre : la vidéo qui annonce la sortie disparaissait du fil le jour
+// où le backend est injoignable, c'est-à-dire le seul jour où ce mode sert.
+//
+// Mesuré sur tout le dépôt le 14/10/2026 : la chaîne a cinq articles
+// conservés, tous retenus par les six mots-clés de base. Le supplément
+// n'en fait donc entrer aucun de plus aujourd'hui — il n'existe que pour
+// celui qui n'est pas encore publié.
+const officialKeywords = ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6"];
+
+function motsClesOfficiels(feed){
+  return officialKeywords.concat((feed && feed.officialKeywordsExtra) || []);
+}
 const DOMAINES_ROCKSTARMAG = ["rockstarmag.fr"];
 // Social Club héberge les créations des joueurs : sur le domaine de Rockstar,
 // mais pas publié par Rockstar. Aligné sur DOMAINES_NON_OFFICIELS du robot.
@@ -3451,11 +3655,11 @@ function pause(ms){
 // requête. Une course rendrait la main au bout du délai mais laisserait le
 // téléchargement se poursuivre en arrière-plan — sur la connexion qu'on
 // cherche précisément à ménager.
-function fetchAvecDelai(url, ms){
-  if(typeof AbortController === "undefined") return fetch(url);
+function fetchAvecDelai(url, ms, options){
+  if(typeof AbortController === "undefined") return fetch(url, options);
   const ctrl = new AbortController();
   const minuteur = setTimeout(() => ctrl.abort(), ms);
-  return fetch(url, { signal: ctrl.signal })
+  return fetch(url, Object.assign({}, options, { signal: ctrl.signal }))
     .finally(() => clearTimeout(minuteur));
 }
 
@@ -3683,6 +3887,74 @@ async function applyBackendData(data, sourceUrl){
   annonceRafraichissement();
 }
 
+// LE POIDS DE « TOUT CHARGER », annoncé AVANT l'appui.
+//
+// Le bouton télécharge le fichier complet. Mesuré le 14/10/2026 : 2,8 Mo
+// aujourd'hui, et 9,3 Mo si le fil atteint son plafond de douze mille
+// articles. Appuyer dessus en données mobiles le jour de la sortie coûte
+// donc dix méga sans que rien ne l'ait dit.
+//
+// LE CHIFFRE VIENT DU FICHIER, jamais d'une constante : une valeur écrite
+// en dur deviendrait fausse au premier jour chargé, et un chiffre faux est
+// pire que pas de chiffre. On lit l'en-tête `Content-Length` d'une requête
+// HEAD — donc la taille réellement transférée, compression du serveur
+// comprise, qui est ce que l'abonnement facture.
+//
+// Et si on ne sait pas, on ne dit rien : un serveur qui ne renvoie pas
+// l'en-tête, une requête qui échoue, et le bouton reste exactement ce
+// qu'il était.
+let poidsHistorique = null;
+let poidsHistoriqueDemande = false;
+
+function formatePoids(octets){
+  const mo = octets / 1024 / 1024;
+  if(mo >= 1) return mo.toFixed(1).replace(".", ",") + " Mo";
+  return Math.round(octets / 1024) + " Ko";
+}
+
+function poidsAnnonce(){
+  sondePoidsHistorique();
+  return poidsHistorique ? ` (${formatePoids(poidsHistorique)})` : "";
+}
+
+async function sondePoidsHistorique(){
+  if(poidsHistoriqueDemande || !settings.backendUrl) return;
+  poidsHistoriqueDemande = true;
+  try{
+    const rep = await fetchAvecDelai(avecAntiCache(settings.backendUrl),
+                                     BACKEND_TIMEOUT_MS, { method: "HEAD" });
+    const n = parseInt(rep.headers.get("content-length") || "", 10);
+    if(rep.ok && Number.isFinite(n) && n > 0){
+      poidsHistorique = n;
+      updateHistoryLine();
+    }
+  }catch(e){
+    // Silencieux À DESSEIN : on n'annonce pas de poids, c'est tout. Un
+    // journal d'erreur ici ferait passer un confort pour une panne.
+  }
+}
+
+// UN SEUL ENDROIT DÉCIDE DE CE QUE LA LIGNE AFFICHE, et c'est le défaut
+// que ça répare — trouvé le 14/10/2026 en chronométrant, à la demande
+// d'Antoni, combien de temps le bouton reste visible.
+//
+// Trois endroits écrivaient dans cette ligne : le chargement y posait
+// « Chargement de l'historique complet… », l'échec y posait
+// « indisponible » avec un bouton « Réessayer », et updateHistoryLine y
+// reposait le bouton. Or applyFilters() appelle updateHistoryLine() à
+// chaque rendu : il passait TOUJOURS en dernier et effaçait les deux
+// autres.
+//
+// Mesuré sur un réseau bridé : le message de chargement vivait 0,01 s sur
+// une 4G et 0,26 s sur une 3G lente, puis le bouton revenait — et restait
+// 10 s en 4G, 23 s en 3G, invitant à appuyer sur un bouton qui ne fait
+// rien tant que le chargement court. Le message d'échec, lui, était
+// effacé dans la milliseconde : une panne de chargement ne se voyait nulle
+// part.
+//
+// Les deux états sont donc portés par des variables, et la ligne se rend
+// à partir d'elles. Écrire dans `innerHTML` depuis ailleurs redeviendrait
+// le même défaut.
 function updateHistoryLine(){
   const el = document.getElementById("historyLine");
   if(!el) return;
@@ -3691,10 +3963,26 @@ function updateHistoryLine(){
     return;
   }
   el.style.display = "flex";
+  if(historyLoading){
+    el.innerHTML = `<span>Chargement de l'historique complet…</span>`;
+    return;
+  }
+  // LE POIDS EST SUR « RÉESSAYER » AUSSI, et c'est même là qu'il sert le
+  // plus : après un échec, la question « est-ce que je relance ça sur mes
+  // données mobiles ? » se pose vraiment. Sur le chemin normal, le
+  // rattrapage automatique du démarrage part tout de suite et la ligne
+  // passe directement en « Chargement… » — le poids n'y est quasiment
+  // jamais lu.
+  if(historyErreur){
+    el.innerHTML = `<span>Historique complet indisponible.</span>` +
+      `<button class="small" onclick="loadFullHistory()">Réessayer${escapeHtml(poidsAnnonce())}</button>`;
+    return;
+  }
+  const poids = poidsAnnonce();
   // Le nombre d'articles est déjà donné juste à gauche par countLine : le
   // répéter ici affichait deux fois "300" sur deux lignes qui se suivaient.
   el.innerHTML = `<span>historique partiel</span>` +
-    `<button class="small" onclick="loadFullHistory()">Tout charger</button>`;
+    `<button class="small" onclick="loadFullHistory()">Tout charger${escapeHtml(poids)}</button>`;
 }
 
 // Télécharge l'historique complet. Déclenché à la demande, ou
@@ -3705,16 +3993,15 @@ function updateHistoryLine(){
 async function loadFullHistory(raison){
   if(!historyPartial || historyLoading) return;
   historyLoading = true;
-  const el = document.getElementById("historyLine");
-  if(el) el.innerHTML = "<span>Chargement de l'historique complet…</span>";
+  historyErreur = false;
+  updateHistoryLine();
   addLog("info", "Chargement de l'historique complet" + (raison ? ` (${raison})` : "") + "…");
   try{
     await checkFromBackend(true);
     addLog("ok", `Historique complet chargé — ${lastItems.length} article(s).`);
   }catch(e){
     addLog("fail", `Historique complet indisponible : ${escapeHtml(e.message || "erreur inconnue")}`);
-    if(el) el.innerHTML = `<span>Historique complet indisponible.</span>` +
-      `<button class="small" onclick="loadFullHistory()">Réessayer</button>`;
+    historyErreur = true;
   }finally{
     historyLoading = false;
     // La ligne d'archive ne s'affiche qu'une fois la fenêtre complète : ce
@@ -4458,8 +4745,64 @@ function estMajeur(item){
 const RE_FUITE = /\bleak(s|ed)?\b|\bfuite/i;
 const RE_VIDEO = /\btrailer\b|\bgameplay\b|\bfootage\b|\bvideo\b(?!\s*games?\b)|(?<!jeux )(?<!jeu )\bvidéo\b|\bclip\b/i;
 
+// ---------- Sept badges de plus, sondés avant d'être écrits ----------
+//
+// Antoni a demandé le 13/10/2026 quels autres badges seraient utiles. Le
+// corpus entier — 8 378 titres d'archive et de fil — a été sondé avant de
+// proposer quoi que ce soit, et les motifs ci-dessous sont la version
+// RESSERRÉE : les premières moutures attrapaient n'importe quoi.
+//
+// Ce que le sondage a écarté, et pourquoi :
+//
+//   CARTE   643 au motif large, 56 une fois resserré. « Vice City » est le
+//           décor du jeu : il attrape les maillots du Miami Heat, une ville
+//           rebaptisée pour l'occasion, les éditions collector. Zéro
+//           article la moitié des jours une fois nettoyé ;
+//   DÉMENTI 18 en trente jours, VINGT-NEUF jours sur trente et un à zéro ;
+//   BANDE-ANNONCE  35, et déjà couvert par VIDÉO ;
+//   RETARD  120, mais « report » / « reporté » est ambigu en français — un
+//           article qui RAPPORTE n'est pas un jeu REPORTÉ.
+//
+// Et ce que les motifs gardés ont dû perdre :
+//
+//   PRIX  attrapait « piracy could cost $1 billion » et la hausse des
+//         ventes de PS5 Pro. Le montant nu partait ; restent « prix »,
+//         « price tag » et « coûtera » ;
+//   DATE  attrapait « soirée de lancement à Genève » et « l'édition de
+//         lancement de Rayman ». « lancement » seul est parti.
+//
+// Volumes mesurés sur les trente derniers jours (7 215 articles) :
+//
+//     PC            471   6,5 %    2 jours à zéro sur 31
+//     PERSONNAGES   319   4,4 %    5
+//     PRÉCOMMANDE   242   3,4 %    6
+//     PRIX          233   3,2 %    7
+//     TAKE-TWO      209   2,9 %    8
+//     RUMEUR        179   2,5 %    9
+//     DATE          129   1,8 %    4
+//
+// CE QUE ÇA COÛTE À LA DENSITÉ, mesuré avant de décider : les cartes sans
+// aucun badge passent de 52,5 % à 42,2 %, celles à trois badges ou plus de
+// 3,0 % à 5,1 %. Le maximum monte à six, mais sur DEUX cartes du fil
+// entier. La fiche 3.3 annonçait « jusqu'à six badges » comme un défaut
+// général ; elle devient vraie sur deux articles sur 3 589.
+const RE_PC = /\bpc\b|\bsteam\b|epic games/i;
+const RE_PRECO = /pr[ée]commande|pre-?order/i;
+const RE_PRIX = /\bprix\b|\bprice tag\b|\bcoûtera\b/i;
+const RE_PERSO = /\blucia\b|\bjason\b/i;
+const RE_TAKE2 = /take-?two|zelnick|r[ée]sultats (financiers|trimestriels)|actionnaires/i;
+const RE_RUMEUR = /\brumeur|\brumou?r|reportedly|selon nos informations/i;
+const RE_DATE = /date de sortie|release date|launch date/i;
+
 function estFuite(item){ return RE_FUITE.test((item && item.title) || ""); }
 function estVideo(item){ return RE_VIDEO.test((item && item.title) || ""); }
+function estPC(item){ return RE_PC.test((item && item.title) || ""); }
+function estPreco(item){ return RE_PRECO.test((item && item.title) || ""); }
+function estPrix(item){ return RE_PRIX.test((item && item.title) || ""); }
+function estPerso(item){ return RE_PERSO.test((item && item.title) || ""); }
+function estTake2(item){ return RE_TAKE2.test((item && item.title) || ""); }
+function estRumeur(item){ return RE_RUMEUR.test((item && item.title) || ""); }
+function estDate(item){ return RE_DATE.test((item && item.title) || ""); }
 // `&& !official` et pas `specialist` tout court : le badge ne s'affiche
 // QUE sur une carte non officielle — un article de Rockstar porte déjà
 // « OFFICIEL », et empiler les deux n'apprend rien. Le juge doit dire
@@ -4469,8 +4812,22 @@ function estSpecialiste(item){
   return Boolean(item && item.specialist && !item.official);
 }
 
-const JUGES_BADGE = { leak: estFuite, video: estVideo, specialist: estSpecialiste };
-const NOMS_BADGE = { leak: "LEAK", video: "VIDÉO", specialist: "SPÉCIALISTE GTA 6" };
+const JUGES_BADGE = {
+  leak: estFuite, video: estVideo, specialist: estSpecialiste,
+  pc: estPC, preco: estPreco, prix: estPrix, perso: estPerso,
+  take2: estTake2, rumeur: estRumeur, date: estDate,
+};
+const NOMS_BADGE = {
+  leak: "LEAK", video: "VIDÉO", specialist: "SPÉCIALISTE GTA 6",
+  pc: "PC", preco: "PRÉCOMMANDE", prix: "PRIX", perso: "LUCIA / JASON",
+  take2: "TAKE-TWO", rumeur: "RUMEUR", date: "DATE DE SORTIE",
+};
+
+// L'ORDRE D'AFFICHAGE, et il n'est pas alphabétique. Les deux premiers
+// disent qu'il s'est passé quelque chose ; les suivants disent de quoi
+// l'article parle. Un badge SUJET ne doit jamais précéder une alerte.
+const ORDRE_BADGES = ["leak", "video", "date", "pc", "preco", "prix",
+                      "perso", "take2", "rumeur"];
 
 // Pas mémorisé entre deux sessions, à dessein : c'est un coup d'œil, pas
 // un réglage. Retrouver le fil filtré sur « fuite » trois jours plus tard
@@ -4587,14 +4944,39 @@ function sourceSuivie(item){
   return Boolean(item.official || item.specialist || item.rockstarmag);
 }
 
-// Les articles parus depuis la dernière visite. Sur la DATE de l'article et
-// pas sur l'heure où l'app l'a découvert : « paru depuis ta dernière
-// visite » veut dire ça. Le revers, assumé : une dépêche publiée avant ta
-// visite mais remontée après n'y figure pas.
+// QUAND L'ARTICLE EST APPARU, et non quand il a été publié.
+//
+// Le robot écrit `vu_le` au seul passage où il découvre l'article. C'est
+// ça, « nouveau pour toi » : une dépêche publiée avant ta visite mais
+// remontée après l'est tout autant qu'une dépêche de l'heure.
+//
+// Repli sur la date de publication, pour deux cas : les articles entrés
+// dans l'historique AVANT que le robot écrive ce champ (ils n'en auront
+// jamais, le robot ne peut pas inventer quand il les a vus), et un
+// fichier servi par une version plus ancienne du backend.
+//
+// `vu > 0` ET NON Number.isFinite : dateValue rend 0, jamais NaN, pour une
+// date absente ou illisible. Le test par isFinite acceptait donc ce zéro,
+// le repli ne se déclenchait jamais, et le bloc se vidait entièrement sur
+// un fil sans vu_le — c'est-à-dire sur TOUT le fil publié aujourd'hui.
+function apparitionValue(item){
+  const vu = dateValue(item && item.vu_le);
+  return vu > 0 ? vu : dateValue(item && item.date);
+}
+
+// Les articles apparus depuis la dernière visite.
+//
+// COMBIEN ÇA CHANGE, mesuré le 15/10/2026 sur les 185 passages de la
+// semaine : parmi les 1 039 articles arrivés DANS la fenêtre que l'app
+// charge, 25 avaient plus de 12 h de retard sur leur date et 7 plus de
+// 24 h. Un à quatre par jour selon ton rythme de visite — pas une
+// avalanche, mais c'étaient des articles qu'on ne comptait pas du tout.
+// Et la fenêtre chargée rétrécit à mesure que le fil s'emballe : le 19
+// novembre, le même retard portera sur bien plus d'articles.
 function articlesDepuisLaVisite(){
   if(!derniereVisite) return [];
   return lastItems.filter(i => {
-    const d = dateValue(i.date);
+    const d = apparitionValue(i);
     return Number.isFinite(d) && d > derniereVisite;
   });
 }
@@ -4624,8 +5006,12 @@ function majBlocRate(){
   // et le compte serait tronqué SANS LE DIRE : « 300 articles » après une
   // semaine, alors qu'il y en a eu mille. On ne sait pas combien il en
   // manque, donc on ne l'invente pas : on dit « au moins ».
+  // SUR L'APPARITION, comme le comptage juste au-dessus. Mesurer la
+  // couverture sur une grandeur et compter sur une autre laisserait un
+  // écart indétectable entre « ce que je compte » et « ce que je dis
+  // couvrir ».
   const plusVieux = lastItems.reduce((m, i) => {
-    const d = dateValue(i.date);
+    const d = apparitionValue(i);
     return Number.isFinite(d) && d < m ? d : m;
   }, Infinity);
   const tronque = historyPartial && Number.isFinite(plusVieux)
@@ -4636,6 +5022,21 @@ function majBlocRate(){
   if(spe) morceaux.push(`${spe} de source${spe > 1 ? "s" : ""} spécialisée${spe > 1 ? "s" : ""}`);
   if(fuites) morceaux.push(`${fuites} sur une fuite`);
 
+  // LES DEUX CHIFFRES CÔTE À CÔTE, et c'est le point de départ de ce lot.
+  // « 10 articles non lus » contre « 5 nouveaux depuis ta dernière
+  // visite » : les deux avaient raison, et l'écart passait pour un bug.
+  // Le premier compte depuis toujours, le second une fenêtre. Les faire
+  // coïncider serait mentir sur l'un des deux ; les afficher ensemble
+  // rend la différence lisible d'un coup d'œil.
+  //
+  // Sur articlesVisibles() — la même liste que les pastilles d'onglet —
+  // et non sur l'onglet courant : le bloc ne dépend d'aucun onglet, et un
+  // troisième chiffre encore différent du leur serait pire que le mal.
+  const nonLusTotal = articlesVisibles().filter(i => !readSet.has(i.link)).length;
+  if(nonLusTotal > nouveaux.length){
+    morceaux.push(`${nonLusTotal} non lu${nonLusTotal > 1 ? "s" : ""} en tout`);
+  }
+
   // Officiels d'abord, puis spécialistes, puis RockstarMag, et du plus
   // récent au plus ancien dans chaque rang. Pas de score inventé : c'est un
   // ordre, pas un jugement.
@@ -4645,19 +5046,60 @@ function majBlocRate(){
     .slice(0, 4);
 
   const nonLu = i => readSet.has(i.link) ? "" : ' <span class="rate-neuf">•</span>';
+
+  // UN ARRIVANT TARDIF DIT SON ÂGE. Le bloc compte désormais par
+  // apparition : un article publié il y a neuf jours et remonté
+  // aujourd'hui y entre, et c'est voulu — il est neuf pour toi. Mais
+  // l'afficher comme une dépêche du jour serait un mensonge par omission.
+  // Le seuil vient de la mesure : la médiane du décalage est à 0,8 h, donc
+  // 24 h ne marque que les vrais retardataires et laisse le fil ordinaire
+  // tranquille.
+  const RETARD_A_DIRE = 24 * 3600 * 1000;
+  const paru = i => {
+    const pub = dateValue(i.date);
+    if(!Number.isFinite(pub) || apparitionValue(i) - pub < RETARD_A_DIRE) return "";
+    const d = new Date(pub);
+    if(isNaN(d)) return "";
+    const jour = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long",
+                                                 timeZone: "Europe/Paris" });
+    return ` <span class="rate-paru">paru le ${escapeHtml(jour)}</span>`;
+  };
+
   const liste = lignes.map(i => `
       <li>
         <a href="${escapeHtml(i.link)}" target="_blank" rel="noopener"
            onclick="marqueLuDepuisRate('${escapeHtml(i.link)}')">
-          <span class="rate-source">${escapeHtml(i.source || "")}</span>
+          <span class="rate-source">${escapeHtml(i.source || "")}${paru(i)}</span>
           <span class="rate-titre">${escapeHtml(i.title || "")}</span>${nonLu(i)}
         </a>
       </li>`).join("");
 
   el.innerHTML = `<p class="rate-bilan">Depuis ta dernière visite : ${morceaux.join(" · ")}.</p>`
-    + (liste ? `<ul class="rate-liste">${liste}</ul>` : "");
+    + (liste ? `<ul class="rate-liste">${liste}</ul>` : "")
+    + `<button type="button" class="rate-vu" id="rateVu" onclick="marqueToutVu()">J'ai tout vu</button>`;
   el.dataset.plein = "1";
   el.style.display = "block";
+}
+
+// Vider le bloc sans quitter l'app.
+//
+// Le repère continue d'être posé à la fermeture (visibilitychange et
+// pagehide, plus bas) : ce bouton ne remplace rien, il couvre le cas « je
+// viens de tout lire et je reste ». Sans lui, il fallait fermer l'onglet
+// pour que le bloc cesse de redire la même chose.
+//
+// Il n'écrit QUE le repère. Marquer au passage les articles comme lus
+// serait un autre geste, et il effacerait les pastilles de non-lus d'un
+// coup — précisément le compte que la deuxième ligne du bilan sert à ne
+// pas confondre avec celui-ci.
+function marqueToutVu(){
+  marqueVisite();
+  // RELU depuis le stockage plutôt que posé de mémoire : si l'écriture a
+  // échoué (quota plein), le repère n'a pas bougé et le bloc doit rester
+  // là. Un bloc qui disparaît sur un état non enregistré reviendrait au
+  // rechargement suivant, sans que rien n'ait prévenu.
+  chargeDerniereVisite();
+  majBlocRate();
 }
 
 function marqueLuDepuisRate(lien){
@@ -4825,12 +5267,68 @@ function renderChronologie(items){
       ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })
       : "date inconnue";
     const lu = readSet.has(item.link);
+    // MÊME IDENTIFIANT QUE LA CARTE, et c'est indispensable : openPreview
+    // lit itemsById, que seule renderFeed remplissait. Sans cette ligne le
+    // bouton 👁️ ne faisait RIEN, en silence — exactement le genre de bouton
+    // mort qu'on ne remarque qu'en appuyant dessus.
+    const safeId = btoa(unescape(encodeURIComponent(item.link))).replace(/[^a-zA-Z0-9]/g, "");
+    itemsById[safeId] = item;
+    // LA VIGNETTE, oubliée à la première version et signalée par Antoni dans
+    // l'heure. J'avais mesuré que 69 des 77 officiels en portent une, puis
+    // construit une forme qui les jetait toutes sans le dire. Une
+    // chronologie d'annonces Rockstar SANS les images, c'est précisément ce
+    // qu'elle est censée mettre en valeur.
+    //
+    // Petite et carrée, pas pleine largeur : une vignette de 200 px par
+    // entrée redonnerait la liste de cartes qu'on venait de remplacer.
+    // Même onerror que la carte — une image bloquée se masque au lieu de
+    // laisser un cadre vide.
+    const vignette = item.image
+      ? `<img src="${escapeHtml(item.image)}" class="chrono-vignette" alt=""
+              loading="lazy" decoding="async" onerror="this.style.display='none'">`
+      : "";
+    // L'HEURE, en plus du jour. « 8 octobre » sur douze annonces du même
+    // jour ne les ordonne pas ; c'est le seul endroit du fil où plusieurs
+    // entrées partagent une date.
+    const heure = bon
+      ? d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+
+    // LA MÊME BOUCLE QUE LA CARTE, et c'est ce qui rend la règle vivante :
+    // un badge qui ne s'applique à aucune ligne ne se rend jamais, sans
+    // qu'on ait à tenir une liste à jour. Mesuré sur les 77 officiels au
+    // 13/10/2026 : seuls « vidéo » (10) et « précommande » (12) existent
+    // ici ; leak, pc, prix, personnages, take-two, rumeur et date sont à
+    // zéro, donc invisibles d'eux-mêmes. « OFFICIEL ROCKSTAR » est le seul
+    // exclu explicitement — il serait sur 100 % des lignes, et un badge
+    // que tout le monde porte n'informe personne.
+    const badges =
+      (estMajeur(item)
+        ? `<span class="tag-badge tag-hot">🔥 ACTU MAJEURE · ${nombreDeRedactions(item)} SOURCES</span>` : "")
+      + ORDRE_BADGES
+          .filter(cle => cle !== "specialist" && JUGES_BADGE[cle](item))
+          .map(cle => `<button type="button" class="tag-badge tag-${cle}" `
+             + `onclick="filtreBadge(event,'${cle}')" `
+             + `title="Ne montrer que : ${escapeAttr(NOMS_BADGE[cle].toLowerCase())}">`
+             + `${escapeHtml(NOMS_BADGE[cle])}</button>`).join("");
+
     return sep + `
-      <li class="chrono-point${lu ? " lu" : ""}">
-        <span class="chrono-date">${jour}</span>
-        <a class="chrono-titre" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
-           onclick="marqueLuDepuisRate('${escapeAttr(item.link)}')">${escapeHtml(item.title || "")}</a>
-        <span class="chrono-source">${escapeHtml(item.source || "")}</span>
+      <li class="chrono-point${lu ? " lu" : ""}" id="card-${safeId}">
+        <span class="chrono-date">${jour}${heure ? ` · ${heure}` : ""}</span>
+        <a class="chrono-lien" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
+           onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">
+          ${vignette}
+          <span class="chrono-texte">
+            <span class="chrono-titre">${escapeHtml(item.title || "")}</span>
+            <span class="chrono-source">${escapeHtml(item.source || "")}</span>
+          </span>
+        </a>
+        ${badges ? `<div class="chrono-badges">${badges}</div>` : ""}
+        <div class="card-actions chrono-actions">
+          <button class="card-mark" data-icon-only="1" title="${lu ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${lu ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${lu ? "↩️" : "✅"}</button>
+          <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">🔗</button>
+          ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">👁️</button>` : ""}
+          ${item.lang !== "fr" ? `<button class="card-mark" data-icon-only="1" title="Traduire en français" aria-label="Traduire en français" onclick="openTranslated('${escapeAttr(item.link)}')">🇫🇷</button>` : ""}
+        </div>
       </li>`;
   }).join("");
   return `<ol class="chrono">${lignes}</ol>`;
@@ -5086,10 +5584,17 @@ function renderCard(item, newLinks, searchQuery){
 
   // Badges de contenu — même principe qu'estMajeur : UN SEUL juge, partagé
   // par la carte et par le filtre. Voir estFuite / estVideo plus haut.
-  const leakBadge = estFuite(item)
-    ? `<button type="button" class="tag-badge tag-leak" onclick="filtreBadge(event,'leak')" title="Ne montrer que les fuites">LEAK</button>` : "";
-  const videoBadge = estVideo(item)
-    ? `<button type="button" class="tag-badge tag-video" onclick="filtreBadge(event,'video')" title="Ne montrer que les vidéos">VIDÉO</button>` : "";
+  // UNE SEULE BOUCLE, et pas neuf lignes recopiées. À deux badges la
+  // duplication passait encore ; à neuf elle garantissait qu'un ajout
+  // oublierait un endroit — c'est exactement ce qui est arrivé à VIDÉO,
+  // dont la carte et le filtre ont divergé.
+  const badgesContenu = ORDRE_BADGES
+    .filter(cle => cle !== "specialist" && JUGES_BADGE[cle](item))
+    .map(cle => `<button type="button" class="tag-badge tag-${cle}" `
+       + `onclick="filtreBadge(event,'${cle}')" `
+       + `title="Ne montrer que : ${escapeAttr(NOMS_BADGE[cle].toLowerCase())}">`
+       + `${escapeHtml(NOMS_BADGE[cle])}</button>`)
+    .join("");
   const langBadge = item.lang === "fr" ? `<span class="tag-badge tag-lang">FR</span>` : "";
 
   // Nombre de rédactions qui couvrent la même actualité. Le backend ne
@@ -5127,7 +5632,7 @@ function renderCard(item, newLinks, searchQuery){
         <div class="card-body">
           <div class="card-src-row">
             <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
-            ${hotBadge}${officialBadge}${specialistBadge}${leakBadge}${videoBadge}${langBadge}
+            ${hotBadge}${officialBadge}${specialistBadge}${badgesContenu}${langBadge}
           </div>
           <h3 class="card-title">${linkUrl
             ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`
@@ -6689,6 +7194,10 @@ async function rattrapeToutEnArrierePlan(){
 }
 let historyFullUrl = "";
 let historyLoading = false;
+// Le dernier chargement complet a échoué. Porté par une variable et non
+// écrit directement dans la ligne : voir updateHistoryLine, qui en est le
+// seul juge depuis le 14/10/2026.
+let historyErreur = false;
 
 function pushSupported(){
   return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;

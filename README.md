@@ -231,8 +231,8 @@ d'où le planificateur externe.
    l'index interne de difflib en inversant les deux séquences aurait changé
    les résultats — `ratio()` n'est pas symétrique, 28 052 paires sur 33 670
    donnent un score différent selon l'ordre.
-10. **Plafonne l'historique à une PROFONDEUR** de 15 jours
-   (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 4 000 articles — au-delà, les
+10. **Plafonne l'historique à une PROFONDEUR** de 30 jours
+   (`MAX_HISTORY_DAYS`), bornée entre 1 500 et 12 000 articles — au-delà, les
    plus anciens sont retirés. Ce n'est donc pas un historique complet et
    permanent, mais un historique glissant.
 
@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1775
+qui permet de tester tout le pipeline sans sortir de la machine. **1843
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -785,7 +785,8 @@ est la limite.
 
 **Fonctionnalités :** recherche, filtres par source/lu-non lu/nouveauté,
 mode dense, pagination progressive (30 articles à la fois, pas 500 d'un
-coup), regroupement par jour, badges (officiel, spécialiste, leak, vidéo,
+coup), regroupement par jour, badges cliquables (officiel, spécialiste, fuite, vidéo,
+PC, précommande, prix, Lucia / Jason, Take-Two, rumeur, date de sortie,
 FR), compte à rebours jusqu'au 19 novembre 2026 avec 4 paliers visuels
 d'intensité croissante (normal → teinte orangée dès 30 jours → pulsation
 orange dès 7 jours → mode urgence rouge/majuscules dernières 24h),
@@ -1700,7 +1701,8 @@ de v4.
 ```
 
 **Deux tons.** Quand un sujet est couvert par au moins
-`HOT_SOURCE_THRESHOLD` rédactions (4), le libellé bascule en alerte :
+`HOT_SOURCE_THRESHOLD` rédactions (3 depuis le 29/08/2026), le libellé
+bascule en alerte :
 
 ```
 🚨 Actu majeure — 5 sources sur le même sujet · 3 nouveaux articles GTA 6
@@ -4311,11 +4313,11 @@ commentaire).
 
 ## Limites connues et assumées
 
-- **Historique glissant, pas permanent** — une profondeur de 15 jours
-  (`MAX_HISTORY_DAYS` dans `feed_store.py`), bornée entre 1 500 et 4 000
+- **Historique glissant, pas permanent** — une profondeur de 30 jours
+  (`MAX_HISTORY_DAYS` dans `feed_store.py`), bornée entre 1 500 et 12 000
   articles, pas un vrai historique complet depuis toujours. Les officiels
   Rockstar, RockstarMag et les actualités majeures y échappent.
-- **Poids de `feed.json`** — 1,31 Mo aujourd'hui, 3,4 Mo au plafond dur, et
+- **Poids de `feed.json`** — 2,8 Mo au 14/10/2026, 9,4 Mo au plafond dur, et
   jamais au-delà. L'ouverture de l'app n'est de toute façon pas concernée
   (elle charge `feed-recent.json`), mais toute recherche déclenche le
   téléchargement de l'historique complet.
@@ -4446,13 +4448,15 @@ pagination de l'affichage, qui existe déjà et sert tout autre chose — avait
 été écarté comme trop lourd pour un projet visant une date. Ce motif tombe.
 Un fil qui tourne pendant des années finira par rendre le plafond glissant
 insatisfaisant quel que soit son réglage : chercher ce qui s'est dit d'un DLC
-six mois plus tôt ne rentrera jamais dans quinze jours. Ce n'est pas décidé,
+six mois plus tôt ne rentrera jamais dans la fenêtre glissante. Ce n'est pas décidé,
 mais ce n'est plus « trop gros pour ce projet ».
 
 Deux conséquences à prévoir. **Les sources devront être revues** : celles qui
 couvrent une attente ne sont pas celles qui couvriront des correctifs et du
-multijoueur. Et **la profondeur de quinze jours** sera à reconsidérer, le
+multijoueur. Et **la profondeur de la fenêtre** sera à reconsidérer, le
 rythme d'une veille n'ayant rien à voir avec celui d'un compte à rebours.
+(Elle l'a été depuis : quinze jours au moment où ces lignes ont été
+écrites, trente aujourd'hui.)
 
 ### Fait le 22/09 : le filtre d'entrée est aligné sur la fenêtre gardée
 
@@ -4683,6 +4687,167 @@ Le test du plafond, qui n'exerçait que deux de ses trois branches, les
 exerce maintenant toutes les trois, et **calcule ses débits à partir de
 `MAX_HISTORY_DAYS`** au lieu de les coder en dur — sans quoi il aurait
 recommencé à mentir au prochain réglage.
+
+### La fenêtre respirait au rythme de l'horloge — 15/10/2026
+
+**La question d'Antoni, devant son téléphone** : « Pourquoi j'ai 10 articles
+non lus, ça me dit que depuis la dernière visite il y a que 5 nouveaux
+articles ? » Les deux compteurs ne disaient pas la même chose, et aucun des
+deux n'était cassé : le fil lui-même rejouait les mêmes articles.
+
+**Ce qu'on a mesuré.** En relisant les **29 versions successives de
+`docs/feed.json`** écrites par le robot le 14/10 — pas une simulation, les
+vrais commits :
+
+| | |
+|---|---|
+| taille de l'historique dans la journée | 3 390 → 3 650 |
+| articles sortis de l'historique | **337** |
+| articles **revenus** après être sortis | **113** |
+
+Trois retours groupés : 63 articles à 13 h 02, 45 à 15 h 02, 4 à 16 h 02 —
+chacun juste après une descente. Des articles récents, pas des vieux :
+Reddit, gta6times, rockstaractu, du jour même.
+
+**La cause.** `debit_quotidien` rangeait les articles par âge en jours
+**entiers depuis l'instant du passage**. À 11 h, un article d'avant-hier
+13 h compte dans le seau « 1 jour » ; à 14 h il bascule dans le seau
+« 2 jours ». La médiane saute, et la fenêtre visée — débit × 30 — saute avec
+elle. En recalculant la cible sur le contenu réel de l'historique à chacun
+de ces 29 passages :
+
+| mesure | cible sur la journée | descentes |
+|---|---|---|
+| par âge glissant | 3 390 → 4 830 | **14**, la pire de 180 |
+| par jour civil (Paris) | **4 170 partout** | **0** |
+
+Et une descente ne fait pas que retirer des articles : elle relève aussi le
+**plancher d'entrée**, qui sort du même calcul, donc elle refuse en prime ce
+que les flux servent encore. C'est ce qui explique que des articles *du
+jour* disparaissent puis reviennent — ils n'étaient pas vieux, ils étaient
+sous un plancher qui venait de monter.
+
+**Le correctif, en deux morceaux.**
+
+1. **Le débit se mesure en journées civiles**, sur le fuseau de Paris —
+   celui que le robot utilise déjà pour sa pause nocturne. Le pas existe
+   toujours, mais il tombe à minuit, une fois, au lieu de n'importe quand
+   dans la journée. Repli explicite sur UTC si les données de fuseaux
+   manquent : l'artefact reviendrait en partie, mais le robot ne s'arrête
+   pas pour ça.
+2. **Une mémoire des élagués** (`elagues-recents.json`, 15 jours, 5 000
+   entrées au plus) : un article déjà sorti de l'historique et resservi par
+   sa source reprend sa place, mais **ne recompte pas comme neuf** — ni dans
+   le total, ni dans le décompte par source. La cause de fond est corrigée
+   au point 1 ; cette mémoire tient même si la fenêtre bouge pour une vraie
+   raison — une semaine creuse, une grosse source qui tombe.
+
+**Ce qui a été écarté, et il faut le dire.** Un troisième morceau était
+prévu et validé : faire rétrécir la fenêtre **par petits pas** au lieu d'un
+coup. Il a été écrit deux fois et retiré deux fois. Un pas fixe par passage
+dépend de la fréquence des passages, réglée **hors du dépôt** (30 jours
+demandés donnaient 39 jours obtenus) ; un pas proportionnel casse une
+équivalence qui porte tout le filtre d'entrée — *le plancher vient du même
+calcul que le plafond, donc tout article refusé aurait été retiré à la fin
+du même passage, et les deux chemins doivent donner le MÊME résultat*. Avec
+un plafond qui descend plus lentement que le plancher, ce n'est plus vrai.
+Cinq contrôles l'ont dit. Non livré.
+
+**Le contrôle qui verrouille ça** : à corpus figé, on balaie les 24 heures
+d'une journée et on exige une amplitude de **zéro** et aucune descente.
+Vérifié capable d'échouer — en remettant la mesure par âge, il rend 300.
+
+### « Depuis ta dernière visite » comptait la publication, pas l'arrivée — 16/10/2026
+
+Suite directe de la section précédente. Une fois l'oscillation de la
+fenêtre corrigée, il restait l'autre moitié de l'écart entre les deux
+compteurs d'Antoni : le bloc « Ce que j'ai raté » comparait la **date de
+publication** d'un article à l'heure de la dernière visite. Un article
+publié avant ta visite mais **remonté après** était donc invisible, alors
+qu'il est neuf pour toi.
+
+**La mesure, et la correction d'un chiffre que j'avais annoncé trop vite.**
+En relisant les 185 passages de la semaine (1 148 articles apparus), j'ai
+d'abord dit « 10 % des arrivées ont plus de 24 h de retard, soit ~16 par
+jour ». C'était faux : la quasi-totalité de ces 10 % sont des articles que
+l'app **ne charge jamais**.
+
+| | articles/semaine |
+|---|---|
+| arrivées totales | 1 148 |
+| **dans** la fenêtre que l'app charge | 1 039 |
+| … dont plus de 12 h de retard | **25** |
+| … dont plus de 24 h de retard | **7** |
+| hors de cette fenêtre | 109 — âge médian **849 h** |
+
+Le vrai gain est donc de **un à quatre articles par jour** selon le rythme
+de visite, pas seize. Les 109 hors-fenêtre sont des reprises tardives de
+Google News, vieilles de 35 jours en médiane : `feed-recent.json` garde les
+300 articles les **plus récents par date**, et ces articles-là n'y entrent
+pas. Les repêcher aurait demandé de changer la règle du fichier allégé pour
+~5 articles par jour, majoritairement des fiches produit du Rockstar Store.
+Écarté, mesure à l'appui.
+
+**Le champ `vu_le`, et où il ne doit surtout pas se poser.** Le robot écrit
+l'instant de découverte au seul endroit où un article est reconnu
+réellement neuf — `merge_results`, à l'ajout dans `newly_added`. Le réflexe
+naturel serait de le poser là où les articles sont construits : cette
+boucle-là tourne pour **chaque entrée de chaque flux à chaque passage**, y
+compris les articles déjà connus, et le champ serait repoussé toutes les
+heures. Un doublon est jeté et c'est l'article stocké qui reste, avec son
+`vu_le` d'origine — rien à faire de plus.
+
+Un seul horodatage pour tout le passage, pas un appel d'horloge par
+article : deux articles entrés dans la même minute doivent porter le même
+instant, sinon le tri par apparition dépendrait de l'ordre des flux.
+
+**Le piège que le correctif de la veille venait de créer.** Un *revenant* —
+article élagué puis resservi — repasse par ce chemin et aurait reçu un
+`vu_le` tout neuf : l'app l'aurait affiché comme apparu aujourd'hui et
+recompté. Le défaut corrigé la veille, revenu par une autre porte. Il prend
+donc la **date de son élagage**, que la mémoire connaît déjà : « vu au plus
+tard à ce moment-là ». La mécanique est sortie dans
+`reprend_les_revenants`, ce qui retire au passage deux assertions sur le
+texte source (point 4.6).
+
+**La fusion après conflit de push prend la plus ANCIENNE des deux
+apparitions.** C'est la seule exception à la règle « on garde notre
+version » de `merge_feed`. Le champ dit quand l'article est apparu pour la
+première fois ; garder notre horodatage le ferait passer pour plus frais
+qu'il n'est.
+
+**Coût mesuré** : +11 Ko sur `feed-recent.json` (305 → 316, +3,7 %), +133 Ko
+sur `feed.json` (+5,1 %), que seul « Tout charger » télécharge. Le champ est
+écrit **toujours**, même quand il colle à la date : l'omettre pour
+économiser rendrait son absence ambiguë — « article d'avant la bascule » ou
+« publié et vu en même temps » — et le repli de l'app ne saurait plus
+lequel des deux. Les 3 570 articles déjà publiés n'auront jamais le champ ;
+le robot ne peut pas inventer quand il les a vus, et l'app retombe sur leur
+date.
+
+**Les deux compteurs, côte à côte.** « 10 articles non lus » contre
+« 5 nouveaux depuis ta dernière visite » : les deux avaient raison — l'un
+compte depuis toujours, l'autre une fenêtre. Les faire coïncider aurait
+menti sur l'un des deux. Le bilan porte désormais les deux, sur la même
+liste que les pastilles d'onglet pour qu'un troisième chiffre n'apparaisse
+pas. Et un arrivant en retard de plus de 24 h affiche sa date — « paru le
+6 octobre » — pour qu'on ne le prenne pas pour une dépêche du jour.
+
+**Le bouton « J'ai tout vu »** s'ajoute au repère posé à la fermeture, il ne
+le remplace pas : il couvre le cas « je viens de tout lire et je reste ».
+Il n'écrit que le repère, jamais l'état de lecture — marquer les articles
+lus effacerait d'un coup le compte que la deuxième ligne du bilan sert
+justement à distinguer. Et il **relit** le repère depuis le stockage au
+lieu de le poser de mémoire : si l'écriture échoue (quota plein), le bloc
+doit rester là plutôt que de disparaître sur un état non enregistré.
+
+**Le piège attrapé au navigateur, pas à la relecture.** Le repli était
+écrit `Number.isFinite(vu) ? vu : dateValue(item.date)`. Or `dateValue`
+rend **0**, jamais `NaN`, pour une date absente — `isFinite(0)` est vrai,
+le repli ne se déclenchait donc **jamais**, et le bloc se vidait
+entièrement sur un fil sans `vu_le`, c'est-à-dire sur tout le fil publié
+aujourd'hui. Relu deux fois sans le voir ; c'est la suite navigateur qui
+l'a sorti. Septième entrée de la liste des sondes fausses.
 
 ### Les sources : la mesure a surtout confirmé l'existant
 
@@ -5940,15 +6105,33 @@ La boucle d'envoi des annonces officielles n'avait pas de borne : un
 article officiel, une notification, autant de fois qu'il le faut — dans
 `push_notify` comme dans `discord_notify`.
 
-Mesuré sur tout l'historique : **jamais plus de 3 dans une même heure, 4
-par jour**. Le problème était donc théorique, et c'est dit ici plutôt que
-gonflé. Mais de 0h à 5h, seules les annonces officielles réveillent le
-téléphone : une rafale de dix y passerait en entier.
+Mesuré à l'époque sur tout l'historique : jamais plus de 3 dans une même
+heure, 4 par jour. Le problème était donc théorique, et le plafond fut posé
+à 5 — « au-dessus de tout ce qu'on a jamais observé : il ne se verra
+jamais ».
 
-`NOTIFS_OFFICIELLES_MAX = 5` — au-delà, une seule notification groupée qui
-annonce le nombre et, côté Discord, liste les titres restants. Cinq, parce
-que c'est au-dessus de tout ce qu'on a jamais observé : le plafond ne se
-verra jamais, sauf le jour où il servira.
+**Ce paragraphe est devenu faux, et la façon dont il l'est vaut d'être
+gardée.** Remesuré le 13/10/2026 sur le fil réel :
+
+| | avant (mesure d'origine) | remesuré le 13/10 |
+|---|---|---|
+| maximum par heure | 3 | **16** (08/10, 18h) |
+| maximum par jour | 4 | **27** (08/10) |
+
+Le plafond avait déjà servi, et il avait été dépassé **d'un facteur trois**,
+pendant que le commentaire continuait d'annoncer qu'il ne servirait jamais.
+Une mesure vieillit ; une mesure **datée** se rattrape — c'est pour ça
+qu'elles le sont toutes ici.
+
+`NOTIFS_OFFICIELLES_MAX = 10` depuis le 13/10/2026 — au-delà, une seule
+notification groupée qui annonce le nombre et, côté Discord, liste les
+titres restants. Dix, choisi par Antoni : le jour de la sortie, chaque
+annonce officielle compte vraiment et les regrouper ferait perdre le détail
+de celle qu'on attend.
+
+**Ce que ça coûte, dit plutôt que tu** : de 0h à 5h, seules les annonces
+officielles réveillent le téléphone. Une rafale nocturne peut donc faire
+dix vibrations d'affilée au lieu de cinq. C'est un choix assumé.
 
 ## Le journal des incidents — 06/10/2026
 
@@ -6519,6 +6702,44 @@ l'ensemble. `selectolax` y reste sous la 1.0 tant que le décodeur importe
 Pour mettre à jour : installer dans un environnement vide, vérifier que
 `from googlenewsdecoder import gnewsdecoder` passe, puis `pip freeze`.
 
+### Le garde-fou qui manquait encore — 16/10/2026
+
+Tout ce qui précède surveille le décodage **à l'exécution**. Rien ne
+surveillait sa **mise à jour**, et ça s'est vu dix jours plus tard :
+Dependabot a ouvert une PR remontant `selectolax` à 1.0.0 — le paquet et la
+version exacts de la panne — et elle est passée **verte sur les quatre
+suites**, décodeur cassé.
+
+Logique, et c'est le piège : le repli est volontaire. Sans décodeur le robot
+doit continuer de tourner, donc rien ne plante. Les deux seules assertions
+qui parlaient du décodeur portaient sur le **texte** de `fetch_feeds.py`
+(« `HAS_DECODER` et `DECODEUR_ABSENT` existent bien »), pas sur le fait que
+l'import réussisse.
+
+`test_le_decodeur_google_news_est_vraiment_la` l'exige désormais :
+
+- `fetch_feeds.HAS_DECODER is True` — le contrôle qui compte, à lui seul
+  suffisant pour faire virer la PR au rouge ;
+- `selectolax.parser` s'importe et analyse — le module nommément retiré par
+  la 1.0, cité pour que le prochain lecteur ait le nom exact ;
+- `_parse.parse_signature()` et `_parse.article_id()`, **hors ligne** :
+  deux fonctions pures qui passent par selectolax, pour exercer l'étage qui
+  casse sans ouvrir une connexion — la suite ne fait pas de réseau, c'est sa
+  propriété de fond.
+
+Vérifié capable d'échouer en simulant selectolax 1.0 (un faux paquet qui
+n'expose que `lexbor`) : quatre contrôles passent au rouge, avec le message
+`No module named 'selectolax.parser'` — mot pour mot celui du 03/10. Et
+l'import de `_parse` est protégé : un `from googlenewsdecoder import _parse`
+sec aurait levé à cet endroit précis et emporté les mille contrôles suivants.
+
+**Les trois PR Dependabot du moment, tranchées avec ça en main** :
+`pycparser 3.11` passe (transitive de `cffi`, sans borne, quatre suites
+vertes) ; `multidict 7.1.0` est refusée — `aiohttp 3.14.4` exige
+`multidict<7.0`, l'installation échoue avant les tests ; `selectolax 1.0.0`
+est refusée tant que `googlenewsdecoder` (toujours en 0.2.1, publiée le
+20/09/2026) importe `selectolax.parser`.
+
 ### Pourquoi personne n'a rien vu pendant trois jours
 
 Le robot surveille ses sources — une source muette déclenche une alerte
@@ -7018,6 +7239,35 @@ et les 51 écartés **vérifiés un par un** — aucune vraie vidéo perdue.
 qu'on voit. Une barre nomme le filtre actif, sans quoi un fil filtré
 ressemblerait à un fil vide.
 
+### Le badge devenu un pavé, et la cinquième dérogation aux 44 px
+
+Vu par Antoni sur son téléphone, en thème sombre, l'heure suivant la mise
+en ligne : le badge LEAK rendu comme **un pavé rouge de 44 px de haut**,
+contre 17 pour un badge ordinaire, poussant toute la rangée de source de
+17 à 44.
+
+La cause : `button{}` impose `min-height:44px` à **tout** bouton — c'est la
+règle des cibles tactiles du site, posée en défaut plutôt qu'énumérée. Mon
+reset ne neutralisait que la bordure, le curseur et l'interligne. La police
+et le remplissage, eux, étaient déjà bons.
+
+**Pourquoi aucun test ne l'a vu** : le contrôle tactile vérifie qu'un
+bouton fait **au moins** 44 px. Le badge en faisait exactement 44, donc il
+passait. Un bouton trop **gros** était invisible pour lui — la règle était
+à sens unique. Un contrôle regarde maintenant l'autre sens.
+
+**Et la règle des 44 px n'est pas satisfaisable à cet endroit.** Mesuré sur
+une carte réelle à 390 px : le badge fait 18 px, il y a **zéro** pixel
+au-dessus de lui (il ouvre le corps de la carte) et **six** en dessous
+avant le titre. Une zone de 44 px mordrait donc de 13 px sur le titre —
+l'action principale de la carte — et lui volerait des appuis.
+
+C'est la **cinquième dérogation**, et la seule qui n'atteint pas la cible :
+le pseudo-élément porte la zone à ~24 px, tout ce que la place permet. Elle
+est écrite dans le CSS avec sa mesure, parce qu'une entorse tue plus
+sûrement en silence qu'en étant nommée. Deux contrôles la tiennent : le
+badge garde la taille d'une étiquette, et il ne vole aucun appui au titre.
+
 **Un seul juge par badge**, comme `estMajeur`. Et le juge « spécialiste »
 dit exactement ce que la carte montre — `specialist && !official` — sinon
 le filtre ramènerait des cartes dépourvues du badge qu'on vient de cliquer.
@@ -7028,6 +7278,44 @@ L'onglet Rockstar filtrait déjà sur `official` et rendait la **même liste
 de cartes**. Ils sont 77 depuis le début : ça ne se lit pas comme un fil,
 ça se lit comme une histoire. Colonne datée, séparée par année (2022 →
 2026), **sans pagination** — une histoire se lit d'un bout à l'autre.
+
+**Les vignettes, oubliées puis remises le 13/10.** La première version
+n'affichait que la date, le titre et la source. J'avais pourtant mesuré que
+**69 des 77** officiels portent une image, puis construit une forme qui les
+jetait toutes — sans le signaler. Antoni l'a vu dans l'heure : « pourquoi
+il y a plus les images des articles ». Une chronologie d'annonces Rockstar
+sans les images, c'est précisément ce qu'elle est censée mettre en valeur.
+
+Vignette carrée de 72 px, pas pleine largeur : à 200 px par entrée on
+retrouvait la liste de cartes qu'on venait de remplacer. Un contrôle exige
+maintenant que chaque officiel qui a une image la montre.
+
+**Et les images n'étaient que la perte VISIBLE.** En cherchant pourquoi je
+ne l'avais pas vue, j'ai comparé ligne à ligne ce que porte une carte et ce
+que portait la chronologie. Elle laissait aussi tomber les quatre boutons
+d'action, les badges, la ligne « + N sources », l'heure exacte, le balayage
+et le repère « lu jusqu'ici ». Signalé à Antoni avant qu'il ne les trouve
+un par un ; il a demandé de remettre **les boutons et les badges**.
+
+Trois mesures ont décidé du détail :
+
+| badge | sur les 77 officiels | rendu ? |
+|---|---|---|
+| OFFICIEL ROCKSTAR | **77** (100 %) | non — un badge sur toutes les lignes n'informe pas |
+| LEAK | **0** | non — un badge qui n'apparaît jamais est du code mort |
+| 🔥 ACTU MAJEURE | 4 | oui |
+| VIDÉO | 10 | oui |
+
+**Un bouton qui n'aurait rien fait.** `openPreview` lit `itemsById`, que
+seule `renderFeed` remplissait — et la chronologie sort AVANT. Le bouton
+👁️ aurait été muet, en silence. La chronologie inscrit donc chaque entrée
+dans `itemsById`, et un contrôle l'exige.
+
+**Les boutons sont compacts, et c'est la deuxième version.** La première
+reprenait `.card-actions` tel quel : quatre boutons pleine largeur par
+entrée, et la chronologie redevenait une liste de cartes avec un trait à
+gauche — exactement ce qu'elle existe pour ne pas être. Mesuré : une entrée
+fait **121 px**, et un contrôle refuse qu'elle dépasse 200.
 
 **Ce que la chronologie a révélé, et que personne n'avait vu** : 28 des 77
 « officiels » (36 %) sont des pages `store.rockstargames.com` — porte-clés,
@@ -7062,6 +7350,691 @@ Maximum observé : **quatre**, jamais six. Et le badge de langue n'apparaît
 que pour le français, avec `background:transparent` et `--text-dim` — il
 est **déjà** en gris muet. Toucher à la hiérarchie visuelle pour 3,1 % des
 cartes serait du risque sans bénéfice.
+
+## La répétition générale du 19 novembre — 13/10/2026
+
+Tout ce qui a été construit en octobre est dimensionné pour le jour de la
+sortie, mais rien n'avait jamais été éprouvé **ensemble** à cette échelle.
+Une journée de sortie a donc été fabriquée à partir des **vrais titres** du
+corpus (8 258 titres de l'archive et du fil), puis passée dans le robot
+entier, plusieurs fois, à trois volumes.
+
+### Le robot tient
+
+| volume d'un jour | gardés | dédupliqués | 1er passage | 2e passage |
+|---|---|---|---|---|
+| 300 | 294 | 2,0 % | 2,5 s | 0,1 s |
+| 900 | 849 | 5,7 % | **26,4 s** | 0,8 s |
+| 1 800 | 1 500 | 16,7 % | **91,5 s** | 1,2 s |
+
+La durée est **quadratique** — six fois le volume, trente-sept fois le
+temps — ce qui est attendu d'une comparaison de similarité par paires. Pour
+un cron horaire, 91 s reste confortable, et c'est dit plutôt que découvert
+le 19 au matin.
+
+Le taux de déduplication **monte avec le volume**, et c'est le
+comportement voulu : plus il arrive d'articles dans la fenêtre, plus il y a
+de reprises à fusionner.
+
+### L'app tient aussi
+
+**1 800 cartes rendues en 265 ms**, 61 en-têtes, aucune erreur JavaScript.
+Le découpage adaptatif du jour J donne bien un en-tête pour une trentaine
+d'articles, à l'échelle où il a été conçu.
+
+### Une fausse alerte, corrigée en la mesurant
+
+Le second passage rendait 591 articles au lieu de 579 : douze de moins sans
+la moindre nouvelle entrée. J'ai d'abord annoncé une perte. **C'en est
+pas une** : c'est la déduplication rétroactive qui rattrape des reprises
+arrivées ensemble au premier passage, et l'archive garde les 591. Vérifié
+sur sept passages d'affilée : 579 puis stable. Ça converge.
+
+### LE VRAI RISQUE, et aucune fiche ne l'avait vu
+
+`MAX_HISTORY_DAYS` vaut trente jours et `MAX_HISTORY_SIZE` quatre mille
+articles. Le fil annonce une
+rétention de **trente jours** — mais le plafond est un **nombre
+d'articles**, pas un nombre de jours :
+
+| rythme | ce que 4 000 articles couvrent |
+|---|---|
+| 125/jour (octobre) | **32 jours** — la fenêtre de 30 jours est ce qui lie |
+| 900/jour | **4,4 jours** |
+| 1 800/jour | **2,2 jours** |
+
+La semaine de la sortie, la fenêtre de trente jours devient une fiction :
+l'app par défaut ne montrerait plus que l'avant-veille. **Rien n'est
+perdu** — l'archive garde tout et se charge mois par mois — mais le fil
+principal, les statistiques calculées dessus et le bloc « Ce que j'ai
+raté » travailleraient sur deux jours sans le dire.
+
+(Le bloc d'entrée, lui, le dit déjà : il annonce « au moins N » dès que
+l'historique chargé ne couvre pas l'absence.)
+
+**Décision prise le 13/10/2026 : le plafond passe à douze mille.** Il
+couvre 13 jours à 900 articles/jour et 6,6 à 1 800 — une vraie semaine sous
+les yeux le jour où il y a le plus à lire.
+
+Ce que ça coûte, et ce que ça ne coûte pas. À 732 octets par article,
+12 000 font ~8,4 Mo bruts contre ~2,9, et la croissance du dépôt passe
+d'environ **1,1 à ~3 Mo par jour** (mesure du 13/10 par deux méthodes
+concordantes : ratio de compression global, et 34,3 Mo ÷ 896 commits × 27
+commits/jour). En revanche **la déduplication ne paie rien** : ses deux
+passes sont bornées indépendamment de l'historique (`FENETRE_MAX`,
+`FUSION_RETRO_MAX`), et la répétition le confirme — la durée d'un passage
+suit le nombre d'articles REÇUS, pas la profondeur gardée. L'ouverture de
+l'app ne paie rien non plus : elle lit `feed-recent.json`, dont la taille
+est fixée par `RECENT_FEED_SIZE`.
+
+**La durée quadratique, elle, reste telle quelle.** Même à 3 600 articles
+dans une heure on serait autour de six minutes, très en dessous de ce
+qu'un job GitHub Actions accepte. Optimiser le cœur de la déduplication
+sans en avoir besoin, à cinq semaines de la sortie, serait du risque
+gratuit — la mesure est écrite, on saura où regarder.
+
+## La répétition des notifications — 13/10/2026
+
+Le robot et l'app avaient été éprouvés au volume du jour J ; les
+notifications, non. Or c'est le seul composant qui réveille vraiment
+quelqu'un.
+
+### Les plafonds tiennent
+
+| rafale | notifications Discord |
+|---|---|
+| 1 officiel | 1 |
+| 5 officiels | 5 |
+| 16 officiels | **11** (10 détaillées + 1 groupée) |
+| 150 officiels | **11** |
+| 900 articles ordinaires | **1** |
+
+La charge utile du push reste à ~230 octets quel que soit le volume, très
+en dessous des 4 Ko que les pousseurs acceptent.
+
+### Le défaut que la répétition a trouvé
+
+Le message groupé annonçait « **+ 140 autre(s) annonce(s) officielle(s)** »
+et n'en listait que **29** — la vingt-neuvième coupée en plein milieu d'un
+mot. L'ancienne écriture joignait tous les titres puis coupait à 3 800
+caractères : le compte du titre était juste, le corps mentait, et rien ne
+le disait.
+
+Les lignes s'empilent maintenant une par une tant que le budget tient, et
+ce qui ne rentre pas est **nommé** : « … et 111 autre(s), toutes dans
+l'app. » Un message qui s'arrête proprement en disant combien il cache vaut
+mieux qu'un message coupé net.
+
+### Un test qui aurait menti
+
+Ma première version du contrôle écrivait « 113 » en dur — un chiffre relevé
+sur un autre jeu de titres. Il serait tombé le jour où Rockstar intitule
+ses annonces autrement, sans qu'aucun défaut n'existe. Le nombre est
+désormais **lu dans le message**, et c'est l'arithmétique qui est vérifiée :
+listées + annoncées non listées = le compte du titre.
+
+## Sept badges de plus, et ce que la mesure a écarté — 13/10/2026
+
+Trois badges de contenu existaient (spécialiste, vidéo, fuite) et le filtre
+venait d'être branché dessus. La question posée était : lesquels ajouter.
+Elle a été traitée en sondant le corpus — 8 378 titres, dont 7 215 sur la
+fenêtre de trente jours — avant d'écrire une ligne.
+
+### Les sept retenus
+
+| badge | sur 30 j | part du fil | jours à zéro sur 31 |
+|---|---|---|---|
+| PC | 471 | 6,5 % | 2 |
+| LUCIA / JASON | 319 | 4,4 % | 5 |
+| PRÉCOMMANDE | 242 | 3,4 % | 6 |
+| PRIX | 233 | 3,2 % | 7 |
+| TAKE-TWO | 209 | 2,9 % | 8 |
+| RUMEUR | 179 | 2,5 % | 9 |
+| DATE DE SORTIE | 129 | 1,8 % | 4 |
+
+Aucun n'est en dessous du plus rare des trois existants, et aucun ne passe
+plus d'un jour sur trois à zéro : un badge absent la moitié du mois est un
+filtre qui rend un fil vide.
+
+### Les quatre écartés, et pourquoi
+
+- **CARTE** : 643 articles avec une expression large, 56 une fois
+  resserrée. « Vice City » attrape les maillots des Miami Heat ;
+- **DÉMENTI** : 18 articles, et vingt-neuf jours à zéro sur trente et un ;
+- **BANDE-ANNONCE** : 35 articles, tous déjà pris par vidéo ;
+- **RETARD** : en français, « report » et « reporté » sont ambigus — un
+  média qui *rapporte* une information n'annonce aucun retard.
+
+Deux expressions ont aussi été resserrées avant d'être retenues : celle du
+prix a perdu les montants nus, qui lui faisaient prendre « piracy could
+cost $1 billion », et celle de la date a perdu « lancement », qui lui
+faisait prendre une soirée de lancement à Genève.
+
+### La densité, mesurée et non supposée
+
+J'avais annoncé qu'à quatre badges on retomberait dans le problème de
+l'encombrement des cartes. C'était faux, et la mesure le dit : sur
+3 589 articles, les cartes sans aucun badge passent de 52,5 % à 42,2 %,
+celles qui en portent trois ou plus de 3,0 % à 5,1 %, et le maximum observé
+est de six — sur exactement deux cartes. Le coût réel est de 1,3 point.
+
+### Une seule boucle, et neuf couleurs
+
+Les neuf badges se rendent par une boucle unique sur `ORDRE_BADGES`,
+partagée mot pour mot par la carte et par la chronologie. Neuf lignes
+recopiées garantissaient qu'un ajout en oublierait une — c'est exactement
+ce qui était arrivé à la vidéo, dont l'expression avait divergé entre la
+carte et le filtre. `JUGES_BADGE` décide, `NOMS_BADGE` nomme, et un
+contrôle exige que les deux tables aient les mêmes clés.
+
+L'ordre n'est pas alphabétique : les alertes d'abord (fuite, vidéo, date),
+les sujets ensuite. Un lecteur qui parcourt le fil voit le signal urgent en
+tête de rangée.
+
+Chaque badge a sa couleur, et **les neuf contrastes ont été calculés avant
+d'écrire le CSS** : de 4,70:1 pour le plus serré à 7,90:1, tous au-dessus
+du seuil AA. Un contrôle refuse tout badge rendu sans sa classe de couleur.
+
+### « Le texte sur les badges est mal centré en hauteur »
+
+Antoni, en regardant la page. Il avait raison, et deux fois plutôt qu'une.
+
+**Les hauteurs ne se suivaient pas.** Mesuré sur une carte réelle :
+« SPÉCIALISTE GTA 6 » faisait 16 px, « FR » 17 et les badges de couleur
+18 — trois remplissages et deux bordures différents pour des étiquettes
+posées côte à côte.
+
+**Et le texte était haut d'un pixel.** Une boîte se centre sur
+ascendante + descendante de la police ; des capitales n'occupent jamais la
+descendante. Mesuré au gabarit de capitale : 4,50 px au-dessus, 5,50 en
+dessous, sur les neuf badges. L'étiquette « FR » tombait juste, elle, parce
+qu'elle héritait d'un interligne plus serré — autrement dit le défaut
+venait du `line-height` posé sur la forme bouton, pas de la couleur.
+
+Les badges partagent maintenant **une seule géométrie** : interligne
+explicite plutôt qu'hérité, bordure transparente pour que les pleins et les
+bordurés fassent la même hauteur, et un remplissage asymétrique qui rend au
+bas du badge le pixel que la descendante inoccupée lui prenait. Les douze
+badges font 18 px et affichent 5,00 px de part et d'autre des capitales.
+
+**Deux contrôles le verrouillent**, et ils mesurent le gabarit de capitale
+et non l'encre du libellé : « VIDÉO » monte plus haut que « LEAK » à cause
+de son accent, et l'œil ne juge pas là-dessus. Les métriques sont lues au
+canvas avec la police réellement résolue, donc aucune valeur de police
+n'est codée dans le test.
+
+Le contrôle qui existait ne pouvait pas voir ce défaut : il comparait la
+hauteur d'un badge-bouton à celle d'un badge-étiquette avec deux pixels de
+tolérance. Un pixel d'écart passait, et le centrage interne ne l'intéressait
+pas.
+
+### Un test qui accusait le code d'un défaut lui appartenant
+
+Quatre contrôles de la chronologie sont tombés d'un coup : cinquante
+officiels rendus sur soixante-dix-sept, les vignettes en proportion, une
+seule année au lieu de deux. Le code de la chronologie n'avait pas changé.
+La cause était dans le contrôle d'avant, qui abaisse le plafond
+d'affichage pour rendre un fil fabriqué d'un seul coup et ne le remettait
+pas. Le plafond est désormais remis explicitement, avec la raison écrite
+à côté.
+
+## Les deux derniers points de l'audit — 14/10/2026
+
+### 4.1 — Le filtre officiel divergeait sur LE mot qui compte
+
+Le robot donne à la chaîne YouTube de Rockstar un mot-clé de plus :
+
+```python
+"official_keywords_extra": ["trailer"],
+```
+
+Une vidéo intitulée simplement *Trailer 3* ne contient aucun des six
+mots-clés GTA 6 et serait rejetée — précisément le jour qui compte. **Le
+mode de secours de l'app n'avait pas d'équivalent** : six mots-clés en dur,
+aucune extension possible. Il perdait donc cette vidéo le jour où le
+backend est injoignable, c'est-à-dire le seul jour où ce mode sert à
+quelque chose.
+
+La source est vivante : elle répond, elle est seulement **tarie depuis
+46 jours**, ce qui est normal pour une chaîne qui publie rarement.
+
+L'app a maintenant le même mécanisme que le robot : la source déclare un
+**supplément**, jamais une liste complète — recopier les six dans une
+entrée les ferait diverger au premier ajustement, ce qui est exactement le
+défaut réparé. Et `check_sources_sync.py` compare désormais ce champ
+source par source, comme il le faisait déjà pour les domaines officiels :
+la divergence ne peut plus revenir en silence, y compris pour une source
+ajoutée en novembre. Vérifié capable d'échouer avant d'être retenu.
+
+**Le coût, mesuré plutôt que supposé** : la chaîne a cinq articles
+conservés dans tout le dépôt, tous déjà retenus par les six mots-clés de
+base. Le supplément n'en fait entrer aucun de plus aujourd'hui — il
+n'existe que pour celui qui n'est pas encore publié.
+
+**Un piège évité de justesse.** `check_sources_sync.py` retrouve la liste
+de référence en cherchant la première occurrence de `const
+officialKeywords =` dans le HTML, et attend un tableau juste derrière.
+Mon premier jet nommait pareil la variable locale de la fonction de
+filtre, déclarée plus haut dans le fichier : le garde-fou censé empêcher
+la divergence aurait lu un appel de fonction au lieu de la liste, et
+serait tombé en premier. La variable locale porte un autre nom, et un
+contrôle vérifie que la première déclaration lue est bien la liste.
+
+### 4.2 — La liste des articles lus n'avait pas de plafond
+
+`seenMap` était plafonné à 2 000 entrées, la copie locale du fil aussi,
+dans les deux cas en citant la limite de 5 Mo. **`readSet` y avait
+échappé** : la seule structure qui grandissait sans borne, et la seule
+dont le contenu ne se reconstitue pas — un article lu l'est pour toujours,
+aucun serveur ne le redira.
+
+Trois décisions, et c'est leur combinaison qui rend le plafond sûr :
+
+1. **Il ne s'applique qu'à la copie écrite sur l'appareil.** En mémoire, et
+   donc dans le fichier de sauvegarde, la liste reste entière : un fichier
+   n'a pas la limite de 5 Mo, et une sauvegarde amputée ne serait plus un
+   filet.
+2. **On ne jette que ce qu'aucun écran ne peut plus afficher** — un lien
+   absent à la fois du fil et de l'archive ne peut pas réapparaître « non
+   lu », puisqu'il ne peut pas réapparaître du tout. Sans l'historique
+   complet ET l'archive entière en mémoire, « plus affichable » n'est pas
+   calculable : on ne jette alors rien, quitte à dépasser.
+3. **Ce n'est pas une limite dure.** Si l'appareil a plus de liens lus
+   encore affichables que le plafond, ils sont tous conservés et le plafond
+   est dépassé sciemment. Faire revenir un article en « non lu » sous les
+   yeux du lecteur serait pire que d'écrire un peu plus.
+
+**Le chiffre vient d'une mesure.** Sur les 4 795 liens du dépôt : 101
+caractères en médiane, 147 au neuvième décile, soit environ 300 octets par
+lien en UTF-16 une fois les guillemets et la virgule comptés. Le plafond
+de 8 000 pèse donc 2,3 Mo ; avec le fil local et les articles déjà vus
+(environ 1 Mo à eux deux) on reste autour de 3,3 Mo sur les 5 Mo accordés.
+C'est aussi près de deux mois de lecture au rythme actuel.
+
+**Et le message qui conseillait de tout détruire.** Quand le quota
+débordait, l'app disait « vide les données du site pour repartir sur une
+base saine » — autrement dit, efface la seule chose qui ne se reconstitue
+pas. Il renvoie maintenant vers l'export de sauvegarde, qui contient
+précisément les articles lus.
+
+## La deuxième répétition générale — 14/10/2026
+
+La première avait éprouvé le robot et l'app ensemble, puis les
+notifications. Depuis, presque tout ce qui touche au volume a changé : le
+plafond d'historique est passé à douze mille, celui des notifications
+officielles à dix, neuf badges se calculent sur chaque article, le fil se
+découpe en tranches adaptatives, les officiels se lisent en chronologie, et
+les articles lus ont un plafond. **Rien de tout ça n'avait été rejoué à
+l'échelle du jour J.**
+
+### Le robot tient, et le coût ne vient pas d'où je croyais
+
+Journée fabriquée à partir des vrais titres du corpus, passée dans le robot
+entier, deux passages d'affilée :
+
+| volume/jour | gardés | 1er passage | 2e passage | fil | archive |
+|---|---|---|---|---|---|
+| 300 | 3 673 | 9,4 s | 8,8 s | 1,49 Mo | 1,48 Mo |
+| 900 | 3 669 | 12,2 s | 12,1 s | 1,63 Mo | 1,68 Mo |
+| 1 800 | 3 328 | 17,9 s | 23,7 s | 1,67 Mo | 1,93 Mo |
+| 3 600 | 2 406 | 28,3 s | 53,3 s | 1,59 Mo | 2,25 Mo |
+
+**Le nombre d'articles gardés BAISSE quand le volume monte**, et ce n'est
+pas une perte : c'est la fusion rétroactive qui absorbe les reprises —
+1 570 sujets majeurs à 3 600/jour contre 27 à 300. Les articles deviennent
+des `extraSources`, l'archive garde tout. Un jour de pic **comprime** le
+fil au lieu de le gonfler.
+
+**Ce qui coûte, c'est le nombre de titres PROCHES dans la fenêtre de
+comparaison** — ni le volume reçu, ni la profondeur gardée. Mesuré à
+volume constant (1 800 articles reçus) :
+
+| articles reçus | historique en place | composition des titres | durée |
+|---|---|---|---|
+| 1 800 | 3 600 | titres réels, distincts | **17,9 s** |
+| 1 800 | 3 600 | chaque titre a des quasi-jumeaux | 131 s |
+| 1 800 | 7 000 | chaque titre a des quasi-jumeaux | 275 s |
+| 1 800 | 11 000 | chaque titre a des quasi-jumeaux | **194 s** |
+| 3 600 | 7 000 | chaque titre a des quasi-jumeaux | **749 s** |
+
+La colonne de droite n'est pas monotone en profondeur, et c'est ce qui
+tranche : à volume reçu constant, le cas à 194 s est le plus profond et pas
+le plus lent. **La profondeur gardée n'explique rien.**
+
+Le volume reçu, lui, explique beaucoup : doubler les articles reçus à
+historique constant fait passer de 275 à **749 s**, soit 12 min 29 — 2,7
+fois le temps pour deux fois le volume. C'est le seul cas éprouvé qui
+dépasse cinq minutes, et il reste très en dessous de ce qu'un cron horaire
+tolère. Il cumule d'ailleurs deux invraisemblances : 3 600 articles en un
+jour ET des sujets presque tous distincts, alors que le corpus entier n'en
+compte que 4 816 en trois ans.
+
+### Une mesure à moi, fausse, et ce qu'elle apprend
+
+Pour atteindre le plafond de douze mille il faut des titres distincts, et le
+corpus n'en compte que 4 816. J'ai donc fabriqué un socle de onze mille en
+suffixant les vrais titres — « … — dépêche 7 041 ». **Ce socle est
+pathologique** : chaque article y a deux quasi-jumeaux, ce qui donne à la
+déduplication dix fois plus de candidats qu'un fil réel. Les 131 à 275 s
+ci-dessus en viennent. C'est une borne haute utile, pas une prévision.
+
+### Le plafond de douze mille n'a jamais été atteint
+
+Socle de onze mille, journée de 1 800 : **11 390 articles gardés, 24,8
+jours couverts, 4,70 Mo**. C'est la fenêtre de trente jours qui lie, pas le
+plafond — exactement la situation d'avant la sortie, et l'inverse du défaut
+trouvé à la première répétition.
+
+### L'app
+
+| fil | dont le jour même | première peinture | « tout charger » | en-têtes |
+|---|---|---|---|---|
+| 3 589 | 135 | **21 ms** | 863 ms | 8 |
+| 6 000 | 1 800 | **91 ms** | 2 559 ms | 62 |
+| 12 000 | 3 600 | **173 ms** | 3 968 ms | 122 |
+
+L'ouverture reste rapide parce que l'app lit `feed-recent.json`, dont la
+taille ne bouge pas. **Les neuf juges de badge ne coûtent rien : 27 ms pour
+douze mille articles**, 4 646 badges posés. Le découpage adaptatif tient son
+contrat, un en-tête pour une trentaine d'articles du jour.
+
+**Le coût est sur « Tout charger »** : quatre secondes d'interface figée, et
+surtout **9,3 Mo à télécharger** au plafond, contre 2,8 aujourd'hui. Sur un
+téléphone en données mobiles le jour de la sortie, c'est le chiffre à
+connaître.
+
+### Le stockage local, pire cas honnête
+
+Fil de douze mille, **tout lu**, « déjà vus » à son plafond :
+**3,26 Mo sur les ~5 Mo** du navigateur. Ça passe, avec 1,7 Mo de marge.
+
+Mais il faut dire comment : **le plafond des huit mille lus ne sert à rien
+dans ce cas**, parce que les douze mille liens sont encore affichables et
+qu'on ne jette jamais un lien affichable. C'est le plafond du FIL qui
+protège le stockage, pas celui des lus. Dès que la moitié du fil sort de la
+fenêtre, le plafond agit : 8 000 écrits, 1,70 Mo.
+
+### Les notifications, et le défaut de la première répétition
+
+Les plafonds tiennent à toutes les rafales : **douze messages au maximum**
+— dix alertes officielles détaillées, une groupée, un récapitulatif — que
+la rafale fasse 16 officiels ou 150, avec ou sans 3 600 articles ordinaires
+derrière. Neuf cents articles ordinaires seuls : **un** message.
+
+Et le message groupé ne ment plus : il annonce 140, en liste 37, dit « et
+103 autres ». **37 + 103 = 140.** Corps de 3 679 caractères sous le budget
+de 3 800, dernière ligne entière.
+
+### Deux choses à savoir, aucune n'est un défaut
+
+**La chronologie bascule en liste de cartes au-delà de 400 officiels, sans
+rien dire.** Mesuré : 400 entrées en chronologie, 401 en cartes. C'est le
+seuil voulu, et 77 officiels se sont accumulés en trois ans d'archive, donc
+la marge est large. Le changement de forme reste silencieux.
+
+**« Ce que j'ai raté » tient le volume** : 4 ms sur 3 600 articles, et il
+annonce « 3 600 articles · 77 officiels · 230 sur une fuite ». Je l'avais
+d'abord noté comme absent — c'était mon sondage qui cherchait le mauvais
+identifiant d'élément, pas le bloc qui manquait.
+
+## Deux durcissements avant la sortie — 14/10/2026
+
+Les deux viennent de la deuxième répétition, et ce sont les seuls travaux
+retenus : à partir d'ici le code est gelé, correctifs seulement.
+
+### Le garde-temps du robot passe de 20 à 45 minutes
+
+Le workflow coupait le passage à vingt minutes, avec un commentaire
+annonçant « ~1 min 35 » — la durée mesurée en septembre, en régime normal.
+La répétition a chronométré **12 min 29** au pire cas du jour J. Avec
+l'installation des dépendances et la poussée par-dessus, il ne restait que
+quelques minutes de marge.
+
+Ce que coûte un passage coupé mérite d'être dit : **tout**. Pas de fichier
+écrit, pas de notification, et l'horloge externe rappellera dans l'heure
+sur un état inchangé. Le garde-temps existe contre un site qui ne répond
+jamais, pas contre un jour chargé. Quarante-cinq minutes laissent passer le
+pire cas mesuré avec trois fois la marge, et arrêtent quand même un passage
+parti en vrille.
+
+### « Tout charger » annonce son poids
+
+Le bouton télécharge le fichier complet : **2,8 Mo aujourd'hui, 9,3 Mo** si
+le fil atteint son plafond. En données mobiles le jour de la sortie, ça se
+paie sans que rien ne l'ait dit.
+
+**Le chiffre vient du fichier, jamais d'une constante** — une valeur écrite
+en dur deviendrait fausse au premier jour chargé, et un chiffre faux est
+pire que pas de chiffre. Il est lu dans l'en-tête `Content-Length` d'une
+requête HEAD, donc la taille réellement transférée, compression du serveur
+comprise : ce que l'abonnement facture. Et si on ne sait pas — serveur
+muet, requête échouée — **le bouton reste exactement ce qu'il était**, sans
+message d'erreur : une taille inconnue est un confort manquant, pas une
+panne.
+
+**Un contrôle existant a dû être affiné, et c'est le bon sens de
+l'affinage.** Un contrôle interdit à une lecture normale de demander le
+fichier complet — c'est toute la raison d'être du fichier allégé. La
+requête HEAD le déclenchait. Mais ce contrôle porte sur ce qui se
+TÉLÉCHARGE, et un HEAD ne ramène aucun corps : il ne retient donc plus que
+les GET. C'est son intention qui est gardée, pas sa lettre.
+
+## Un bouton mort pendant vingt-trois secondes — 14/10/2026
+
+Antoni a demandé combien de temps la ligne « Tout charger » reste visible.
+La question avait l'air anodine. Elle a trouvé un défaut que ni les tests
+ni les captures ne pouvaient voir, parce qu'il ne dure que le temps d'un
+téléchargement.
+
+**Trois endroits écrivaient dans cette ligne.** Le chargement y posait
+« Chargement de l'historique complet… », l'échec y posait « indisponible »
+avec un bouton « Réessayer », et `updateHistoryLine()` y reposait le
+bouton. Or `applyFilters()` appelle `updateHistoryLine()` à chaque rendu :
+il passait **toujours en dernier** et effaçait les deux autres.
+
+Mesuré en bridant le réseau par le protocole de débogage de Chromium :
+
+| réseau | message de chargement visible | bouton mort ensuite |
+|---|---|---|
+| sans bride | — | 8,2 s |
+| 4G (12 Mb/s) | **0,01 s** | 10,4 s |
+| 3G lente (1,6 Mb/s) | **0,26 s** | 23,4 s |
+
+Pendant ces huit à vingt-trois secondes, l'app affichait un bouton
+« Tout charger » qui **ne fait rien** : `loadFullHistory` sort tout de
+suite tant qu'un chargement court. Et le message d'échec, lui, était
+effacé dans la milliseconde — **une panne de chargement ne se voyait nulle
+part**.
+
+`updateHistoryLine()` est désormais le **seul juge** de ce que la ligne
+affiche, à partir de deux variables d'état. Écrire dans `innerHTML` depuis
+ailleurs redeviendrait le même défaut, et cinq contrôles l'interdisent, y
+compris « un rendu du fil ne l'efface plus ».
+
+**Et le poids passe aussi sur « Réessayer ».** C'est même là qu'il sert le
+plus : après un échec, la question « est-ce que je relance 2,8 Mo sur mes
+données mobiles ? » se pose vraiment. Sur le chemin normal, le rattrapage
+automatique du démarrage part immédiatement et la ligne passe directement
+en « Chargement… » : le poids annoncé le matin même n'y est quasiment
+jamais lu. Dit autrement, **la fonction livrée ce matin ne servait presque
+à rien jusqu'à cette correction**.
+
+### Trois sondages faux avant le bon
+
+Consigné parce que c'est la leçon de la journée. Le premier bloquait le
+gestionnaire de routes de Playwright avec un `sleep`, ce qui arrêtait tout
+le réseau et pas seulement le fichier visé. Le deuxième supposait que
+l'app interroge le backend au démarrage — elle ne le fait pas, il faut
+« Actualiser ». Le troisième mesurait la visibilité de la LIGNE et non le
+TEXTE qu'elle portait, et aurait donc conclu que tout allait bien. Seul le
+quatrième, qui suit les libellés successifs horodatés sur un réseau bridé,
+a vu le défaut.
+
+## La relecture à froid des chemins du jour J — 14/10/2026
+
+Demandée après qu'une simple question — « combien de temps ce bouton
+reste-t-il visible ? » — eut trouvé un défaut vieux de plusieurs semaines
+sous 466 contrôles verts. Même méthode : chercher ce qui n'est vrai que
+pendant quelques secondes, ou que lorsque quelque chose tombe.
+
+### Un balayage mécanique plutôt qu'une lecture au jugé
+
+Le défaut du bouton mort avait une forme précise : **un élément de la page
+écrit depuis plusieurs endroits**, dont l'un passe toujours en dernier. Ça
+se cherche automatiquement. Sur les 42 éléments que l'app écrit, six le
+sont depuis deux fonctions :
+
+| élément | écrit par | verdict |
+|---|---|---|
+| `historyLine` | (corrigé le matin même) | c'était le défaut |
+| `archiveLine` | `loadArchive`, `updateArchiveLine` | **sain, vérifié en panne réelle** |
+| `lastCheck`, `proxyLine`, `modeIndicator` | `checkNow` puis `applyBackendData` | séquence voulue |
+| `feed` | `showSkeletons` puis `renderFeed` | séquence voulue |
+| `simValue` | deux endroits du panneau de réglages | sans état transitoire |
+
+`archiveLine` était le suspect sérieux : même forme, même voisinage. Éprouvé
+en faisant échouer pour de vrai les fichiers mensuels, le message
+« Archive indisponible · Réessayer » **survit** au rendu suivant. Le défaut
+était propre à l'historique.
+
+### Les chemins de panne, joués un par un
+
+Cinq pannes forcées, et ce que l'app en fait :
+
+| panne | ce que l'app fait |
+|---|---|
+| backend en erreur 500 | bascule en mode direct, montre l'archive |
+| backend qui répond du JSON cassé | pareil |
+| backend qui répond `{}` | reste en mode backend, l'archive comble |
+| archive en erreur 500 | silencieuse — décision assumée : un backend plus ancien n'a pas d'archive |
+| archive au JSON cassé | « Archive indisponible · Réessayer » |
+
+**Aucune erreur non rattrapée, dans aucun des cinq cas.**
+
+### LE DÉFAUT TROUVÉ : Discord pouvait emporter le push
+
+`discord_notify.py` porte ce commentaire depuis des semaines : « Cette
+étape ne doit JAMAIS faire échouer le workflow ». Le commentaire
+l'affirmait, le code ne le garantissait pas. Une **panne** de Discord était
+bien absorbée — l'envoi renvoie `False` — mais une **exception** ne l'était
+pas : un fichier d'articles malformé, un article d'une forme inattendue, et
+l'étape sortait en erreur.
+
+Ce que ça coûtait est caché dans le workflow : l'étape suivante, la
+notification **push**, est conditionnée à `if: success()`. Or les deux
+canaux sont réputés indépendants — c'est même la raison d'être du second,
+puisque taper une notification Discord ouvre Discord et jamais l'article.
+**Un plantage du premier emportait silencieusement le second**, le jour où
+il sert le plus.
+
+`main()` est maintenant une enveloppe qui tient la promesse : elle annonce
+l'échec dans le journal, masque l'URL du webhook au passage, et rend 0.
+Quatre contrôles le verrouillent, dont « la notification push dépend
+toujours de la réussite de l'étape d'avant » — car le jour où cette
+condition changerait, l'enveloppe deviendrait inutile et il faudrait le
+savoir.
+
+### Six sondages faux pour trois vrais résultats
+
+Consigné parce que c'est la part la plus instructive de la journée. Pour
+mesurer ces trois choses, mes sondages se sont trompés six fois :
+
+1. un `sleep` dans le gestionnaire de routes de Playwright, qui bloquait
+   **tout** le réseau de test et pas seulement le fichier visé ;
+2. la supposition que l'app interroge le backend au démarrage — elle ne le
+   fait pas, il faut « Actualiser » ;
+3. la mesure de la visibilité d'une **ligne** au lieu du **texte** qu'elle
+   portait : elle aurait conclu que tout allait bien ;
+4. la lecture du texte d'un élément **masqué**, qui garde son ancien
+   contenu — un faux « message bloqué » ;
+5. une route Playwright déclarée **avant** l'attrape-tout : la dernière
+   enregistrée gagne, la mienne ne voyait rien ;
+6. un `endswith(".json")` sur des URL qui portent un paramètre anti-cache —
+   exactement le piège déjà écrit pour les vignettes, répété.
+
+Aucune de ces six erreurs n'était dans le code du projet. Toutes auraient
+produit un verdict : quatre un faux « tout va bien », deux un faux
+« défaut ». **Un banc de mesure se vérifie avant de croire ce qu'il
+dit.**
+
+### Le contrôle qui vivait sur une mesure périmée
+
+La CI de cette relecture est tombée au rouge, sur un contrôle que la
+relecture n'avait pas touché. Reproduit en local en ramenant les données
+les plus fraîches du robot : le bloc « Ce que j'ai raté » annonçait
+« au moins 300 articles » là où le contrôle exigeait un compte exact.
+
+**L'app avait raison.** Le fichier allégé garde **un nombre d'articles**,
+pas un nombre de jours. Le contrôle écrivait 36 h en dur, « parce que la
+fenêtre chargée fait 2 j ½ » — une mesure vraie début octobre. Le rythme du
+fil est passé de ~125 à **~248 articles/jour** à l'approche de la sortie :
+les mêmes 300 articles ne couvrent plus que **29 h**. Le compte EST minoré,
+et le bloc le dit, ce qui est exactement ce pour quoi il a été écrit.
+
+Le contrôle lit désormais la couverture réelle du fil chargé et se place de
+part et d'autre : une absence que la fenêtre couvre, où le compte doit être
+exact, et une absence qu'elle ne couvre pas, où « au moins » doit
+apparaître. **La seconde moitié du contrat n'était pas éprouvée** — et
+c'est elle qui servira le 19 novembre, quand trois cents articles ne feront
+plus que quelques heures.
+
+Le même contrôle injectait un article officiel vieux de 30 h pour vérifier
+l'ordre d'affichage. Trente heures, c'était « dans » un écart de 36 h ; ce
+n'est plus dans un écart de 14. Son âge suit maintenant l'écart mesuré.
+
+**Deux valeurs écrites en dur, deux fois la même leçon** : un contrôle qui
+fige une mesure du fil meurt à la première variation du fil. Et d'ici
+novembre, le fil ne fera que varier.
+
+### « Le README est à jour ? » — non, et voilà ce qui ne l'était pas
+
+Question d'Antoni, le 14/10/2026. Vérifiée plutôt que répondue de mémoire,
+en confrontant les constantes citées dans le README à celles du code.
+**Quatre chiffres étaient faux**, dont trois dans la rubrique « Limites
+connues et assumées » — celle qu'un lecteur croit le plus :
+
+| ce que le README disait | ce que le code fait |
+|---|---|
+| profondeur de **15 jours** (deux endroits) | 30 |
+| historique borné à **4 000** articles | 12 000 |
+| `feed.json` : **1,31 Mo**, 3,4 Mo au plafond | 2,8 Mo, 9,4 Mo au plafond |
+| alerte à partir de **4** rédactions | 3, depuis le 29/08/2026 |
+
+Les trois premiers dataient du réglage d'avant le 22/09 et du plafond
+relevé le 13/10 ; le quatrième traînait depuis fin août, alors qu'une
+autre page du même fichier annonçait correctement le passage de 4 à 3.
+
+**Le point 4.8 de l'audit avait déjà nommé la dérive documentaire. La
+nommer ne suffit pas.** Un contrôle lit désormais la profondeur et les
+bornes annoncées dans le README et les compare au code — vérifié capable
+d'échouer avant d'être retenu. Les occurrences historiques (« jusqu'au
+22/09 la fenêtre était de 15 jours ») restent intactes : elles décrivent
+le passé et le disent.
+
+### Et `RESTE-A-FAIRE.md` ? La même dérive, sur un chiffre du jour J
+
+Deuxième question d'Antoni, le 14/10/2026, et deuxième vérification plutôt
+que réponse de mémoire. Une seule valeur périmée, mais mal placée :
+`RESTE-A-FAIRE.md` annonçait un plafond de **cinq** notifications
+officielles au présent, dans la phrase même qui décrit le risque de
+novembre — alors que la première répétition générale l'a porté à **10**.
+(La forme fautive n'est pas recopiée ici : les deux garde-fous lisent tout
+le fichier et la reprendraient pour du texte encore faux. Même piège que
+le mot « muette » et que le badge entre accents graves, déjà rencontrés.)
+
+Le contrôle écrit le matin même ne pouvait pas le voir : il ne regardait
+que le README, et que la fenêtre d'historique. Un second contrôle est donc
+général : **partout où la documentation écrit une constante AVEC sa
+valeur**, dans l'un ou l'autre fichier, la valeur doit être celle du code.
+Il en lit onze aujourd'hui, et il a été vérifié capable d'échouer : remis
+à l'ancienne valeur, il nomme le fichier, la constante et les deux
+valeurs.
+
+Les mentions sans valeur (« `NOTIFS_OFFICIELLES_MAX` plafonne les
+notifications ») ne sont pas concernées : elles ne peuvent pas mentir.
+
+`RESTE-A-FAIRE.md` reçoit aussi l'entrée du 14/10 qui lui manquait — six
+lots en une journée, et le gel décidé en cours de route.
 
 ## Ajuster quelque chose
 

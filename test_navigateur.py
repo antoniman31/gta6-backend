@@ -54,6 +54,7 @@ de lui : celui-là doit continuer de tourner partout sans navigateur.
 import http.server
 import os
 import socketserver
+import json
 import sys
 import threading
 
@@ -430,8 +431,15 @@ def test_repli_backend(nav, url):
         ctx = nav.new_context(viewport={"width": 390, "height": 850})
         page = ctx.new_page()
         demandes = []
+        # La MÉTHODE compte, depuis le 14/10/2026. Le bouton « Tout
+        # charger » annonce son poids, et il l'obtient par une requête HEAD
+        # sur le fichier complet : des en-têtes, aucun corps. Ce contrôle
+        # porte sur ce qui se TÉLÉCHARGE, donc il ne retient que les GET —
+        # compter le HEAD lui ferait interdire une requête qui ne coûte
+        # rien, et c'est son intention qu'on garde, pas sa lettre.
         page.on("request", lambda r: demandes.append(r.url.split("/")[-1].split("?")[0])
-                if ("feed.json" in r.url or "feed-recent.json" in r.url) else None)
+                if (("feed.json" in r.url or "feed-recent.json" in r.url)
+                    and r.method == "GET") else None)
         page.goto(url, wait_until="load")
         page.wait_for_selector("#feed", state="attached")
         brancher(page)
@@ -767,6 +775,227 @@ def test_toast_annuler(nav, url):
           "perdue ne se rend pas")
     page.evaluate("() => repondConfirmation(false)")
 
+    ctx.close()
+
+
+def test_poids_de_tout_charger(nav, url):
+    """Le bouton « Tout charger » annonce ce qu'il va télécharger.
+
+    Mesuré le 14/10/2026 : 2,8 Mo aujourd'hui, 9,3 Mo si le fil atteint son
+    plafond. Appuyer en données mobiles le jour de la sortie coûtait dix
+    méga sans que rien ne l'ait dit.
+    """
+    import os, re
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("rattrapageLance = true;")
+
+    reel = os.path.getsize("docs/feed.json")
+    page.evaluate("""([u]) => {
+        settings.backendUrl = u;
+        poidsHistorique = null; poidsHistoriqueDemande = false;
+        historyPartial = true;
+        updateHistoryLine();
+    }""", ["%s/feed.json" % base])
+    # Quinze secondes et non cinq : le sondage de poids part en HEAD vers
+    # le serveur de test, et sur un coureur d'intégration chargé la
+    # première requête peut traîner. Un contrôle qui dépend du temps doit
+    # laisser de la marge, sinon il rougit pour la charge de la machine et
+    # non pour un défaut. (Je n'ai PAS la preuve que c'est ce qui a fait
+    # rougir `main` le 14/10/2026 à 15h35 — les journaux ne sont pas
+    # lisibles d'ici — mais c'était le délai le plus serré que j'avais
+    # introduit ce jour-là.)
+    page.wait_for_function(
+        "() => (document.getElementById('historyLine').textContent || '')"
+        ".includes('(')", timeout=15000)
+    texte = page.evaluate(
+        "document.getElementById('historyLine').textContent")
+    m = re.search(r"\(([\d,]+)\s*(Mo|Ko)\)", texte)
+    check(bool(m), "[poids] le bouton annonce une taille (%s)" % texte.strip())
+    if m:
+        annonce = float(m.group(1).replace(",", "."))
+        attendu = reel / 1024 / 1024 if m.group(2) == "Mo" else reel / 1024
+        # LE CHIFFRE VIENT DU FICHIER, pas d'une constante : il doit suivre
+        # le fichier réellement servi, à l'arrondi d'affichage près.
+        check(abs(annonce - attendu) <= 0.1,
+              "[poids] et c'est la taille du fichier réellement servi "
+              "(%s annoncé, %.2f attendu)" % (m.group(0), attendu))
+
+    # Une seule requête : le sondage ne doit pas repartir à chaque rendu.
+    requetes = []
+    page.on("request", lambda r: requetes.append(r.method))
+    page.evaluate("updateHistoryLine(); updateHistoryLine();")
+    page.wait_for_timeout(300)
+    check(requetes.count("HEAD") == 0,
+          "[poids] redessiner la ligne ne relance pas le sondage (%d requête(s))"
+          % requetes.count("HEAD"))
+
+    # TROIS ÉTATS, UN SEUL JUGE. Défaut trouvé le 14/10/2026 en
+    # chronométrant la visibilité du bouton : trois endroits écrivaient
+    # dans cette ligne, et applyFilters() passait toujours en dernier.
+    # Mesuré sur réseau bridé, le message de chargement vivait 0,01 s en
+    # 4G avant d'être remplacé par un bouton qui ne fait rien pendant les
+    # dix secondes du téléchargement ; le message d'échec, lui, était
+    # effacé dans la milliseconde — une panne ne se voyait nulle part.
+    etats = page.evaluate("""() => {
+        const el = document.getElementById('historyLine');
+        const lis = () => el.textContent.trim();
+        const out = {};
+        historyPartial = true; historyLoading = true; historyErreur = false;
+        updateHistoryLine(); out.pendant = lis();
+        // Le rendu du fil ne doit plus pouvoir écraser l'état.
+        applyFilters(); out.pendantApresRendu = lis();
+        out.boutonPendant = el.querySelectorAll('button').length;
+        historyLoading = false; historyErreur = true;
+        updateHistoryLine(); out.echec = lis();
+        applyFilters(); out.echecApresRendu = lis();
+        historyErreur = false;
+        updateHistoryLine(); out.repos = lis();
+        return out;
+    }""")
+    check("Chargement" in etats["pendant"] and etats["boutonPendant"] == 0,
+          "[poids] pendant le chargement, la ligne le DIT et n'offre aucun "
+          "bouton mort (%s)" % etats["pendant"])
+    check(etats["pendantApresRendu"] == etats["pendant"],
+          "[poids] et un rendu du fil ne l'efface plus (%s)"
+          % etats["pendantApresRendu"])
+    check("indisponible" in etats["echec"]
+          and etats["echecApresRendu"] == etats["echec"],
+          "[poids] un échec reste affiché après le rendu suivant (%s)"
+          % etats["echecApresRendu"])
+    check("Réessayer" in etats["echec"] and "(" in etats["echec"],
+          "[poids] et « Réessayer » annonce le poids lui aussi — c'est là "
+          "que la question se pose vraiment (%s)" % etats["echec"])
+    check("Tout charger" in etats["repos"],
+          "[poids] au repos, le bouton revient (%s)" % etats["repos"])
+
+    # ET SI ON NE SAIT PAS, ON NE DIT RIEN. Un chiffre faux serait pire que
+    # pas de chiffre : le bouton redevient exactement ce qu'il était.
+    page.evaluate("""() => {
+        poidsHistorique = null; poidsHistoriqueDemande = true;
+        updateHistoryLine();
+    }""")
+    nu = page.evaluate("document.getElementById('historyLine').textContent")
+    check("(" not in nu,
+          "[poids] sans réponse du serveur, le bouton n'invente aucun "
+          "chiffre (%s)" % nu.strip())
+
+    # Le sondage échoué ne casse rien et ne crie pas : une taille inconnue
+    # est un confort manquant, pas une panne.
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.evaluate("""() => {
+        settings.backendUrl = 'http://127.0.0.1:1/absent.json';
+        poidsHistorique = null; poidsHistoriqueDemande = false;
+        updateHistoryLine();
+    }""")
+    page.wait_for_timeout(600)
+    check(not erreurs, "[poids] un sondage qui échoue ne jette rien (%s)" % erreurs)
+    ctx.close()
+
+
+def test_plafond_des_lus(nav, url):
+    """4.2 de l'audit : la liste des articles lus a enfin un plafond.
+
+    C'était la seule structure qui grandissait sans borne, et la seule dont
+    le contenu ne se reconstitue pas : un article lu l'est pour toujours,
+    aucun serveur ne le redira. Le plafond ne s'applique qu'à la copie
+    écrite sur l'appareil, et il ne jette QUE ce qu'aucun écran ne peut
+    plus afficher.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    plafond = page.evaluate("MAX_LIENS_LUS_PERSISTES")
+    check(isinstance(plafond, int) and plafond > 1000,
+          "[lus] un plafond existe (%s)" % plafond)
+
+    # Le décor : un peu plus que le plafond, dont une poignée encore
+    # affichables (présents dans le fil ou l'archive).
+    montage = """(plafond) => {
+        const joignables = 50;
+        lastItems = []; readSet = new Set();
+        for(let i = 0; i < plafond + 100; i++){
+            const l = 'https://t.test/vieux/' + i;
+            readSet.add(l);
+        }
+        for(let i = 0; i < joignables; i++){
+            const l = 'https://t.test/encore/' + i;
+            readSet.add(l);
+            lastItems.push({link: l, title: 't' + i, date: new Date().toISOString()});
+        }
+        return {total: readSet.size, joignables};
+    }"""
+    etat = page.evaluate(montage, plafond)
+
+    # 1. Sans l'historique complet ni l'archive, on ne sait pas ce qui est
+    #    encore joignable : on ne jette RIEN, quitte à dépasser.
+    page.evaluate("() => { historyPartial = true; archiveChargee = false; }")
+    check(page.evaluate("lusAPersister().length") == etat["total"],
+          "[lus] historique incomplet : rien n'est jeté, même au-dessus du "
+          "plafond — on ne choisit pas à l'aveugle")
+    page.evaluate("() => { historyPartial = false; archiveChargee = false; }")
+    check(page.evaluate("lusAPersister().length") == etat["total"],
+          "[lus] archive incomplète non plus")
+
+    # 2. Avec tout en main, le surplus part — et seulement le surplus.
+    page.evaluate("() => { historyPartial = false; archiveChargee = true; }")
+    garde = page.evaluate("lusAPersister()")
+    check(len(garde) == plafond,
+          "[lus] avec le fil et l'archive en main, la copie écrite retombe "
+          "au plafond (%d pour %d en mémoire)" % (len(garde), etat["total"]))
+    restants = set(garde)
+    perdus_joignables = [i for i in range(etat["joignables"])
+                         if "https://t.test/encore/%d" % i not in restants]
+    check(not perdus_joignables,
+          "[lus] et AUCUN lien encore affichable n'est jeté (%d perdu(s))"
+          % len(perdus_joignables))
+    check("https://t.test/vieux/0" not in restants
+          and "https://t.test/vieux/%d" % (plafond + 99) in restants,
+          "[lus] ce sont les plus anciennement enregistrés qui partent, pas "
+          "les derniers lus")
+
+    # 3. Si TOUT est encore affichable, le plafond est dépassé sciemment :
+    #    faire revenir un article en « non lu » sous les yeux du lecteur
+    #    serait pire que d'écrire un peu plus.
+    page.evaluate("""(plafond) => {
+        lastItems = []; readSet = new Set();
+        for(let i = 0; i < plafond + 100; i++){
+            const l = 'https://t.test/vivant/' + i;
+            readSet.add(l);
+            lastItems.push({link: l, title: 't', date: new Date().toISOString()});
+        }
+    }""", plafond)
+    check(page.evaluate("lusAPersister().length") == plafond + 100,
+          "[lus] tout afficher l'emporte sur le plafond quand les deux "
+          "s'opposent")
+
+    # 4. La SAUVEGARDE garde tout : un fichier n'a pas la limite de 5 Mo,
+    #    et une sauvegarde amputée ne serait plus un filet.
+    page.evaluate("""(plafond) => {
+        lastItems = []; readSet = new Set();
+        for(let i = 0; i < plafond + 100; i++) readSet.add('https://t.test/x/' + i);
+        historyPartial = false; archiveChargee = true;
+    }""", plafond)
+    combien = page.evaluate("contenuSauvegarde().lus.length")
+    check(combien == plafond + 100,
+          "[lus] la sauvegarde exportée les garde TOUS (%d pour un plafond "
+          "de %d) — un fichier n'a pas la limite de 5 Mo" % (combien, plafond))
+
+    # 5. Le message de quota ne doit plus conseiller de détruire
+    #    l'irremplaçable : « vide les données du site » effaçait justement
+    #    les articles lus, que rien ne reconstitue.
+    msg = page.evaluate("String(storageSet)")
+    check("Vide les données du site" not in msg,
+          "[lus] le message de stockage plein ne conseille plus d'effacer "
+          "les données du site")
+    check("sauvegarde" in msg.lower(),
+          "[lus] il renvoie vers la sauvegarde à la place")
     ctx.close()
 
 
@@ -1671,6 +1900,45 @@ def test_officiel_et_filtres_etroits(nav, url):
           "ni un domaine qui ne fait que CONTENIR rockstargames.com (`includes` les acceptait)")
     check(r["yt"], "la chaîne YouTube de Rockstar garde son statut par ses domaines propres")
     check(r["rmag"] and not r["pasRmag"], "même règle stricte pour Rockstar Mag")
+
+    # LE MOT QUI COMPTE, en mode de secours (4.1 de l'audit, corrigé le
+    # 14/10/2026). Le robot ajoute « trailer » aux mots-clés officiels de la
+    # seule chaîne YouTube de Rockstar : une vidéo intitulée simplement
+    # « Trailer 3 » ne contient aucun des six mots-clés GTA 6 et serait
+    # rejetée — le jour qui compte. Le mode de secours n'avait pas ce
+    # supplément, et c'est LUI qui tourne quand le backend est injoignable.
+    yt = {"official": True, "officialDomains": ["youtube.com", "youtu.be"],
+          "officialKeywordsExtra": ["trailer"]}
+    autre = {"official": True}
+    films = [{"title": "Trailer 3"}, {"title": "Grand Theft Auto VI Trailer 3"},
+             {"title": "NBA 2K27 Launch Trailer"}, {"title": "Une annonce sans rapport"}]
+    passe = page.evaluate("""([yt, autre, films]) => ({
+        chaine: filterFeedItems(films, yt).map(i => i.title),
+        ailleurs: filterFeedItems(films, autre).map(i => i.title),
+    })""", [yt, autre, films])
+    check("Trailer 3" in passe["chaine"],
+          "[secours] « Trailer 3 », sans le moindre « GTA », passe le filtre "
+          "officiel sur la chaîne qui déclare le supplément (%s)"
+          % passe["chaine"])
+    check("Trailer 3" not in passe["ailleurs"]
+          and "NBA 2K27 Launch Trailer" not in passe["ailleurs"],
+          "[secours] mais le supplément NE FUIT PAS sur les autres sources "
+          "officielles — sinon Take-Two laisse entrer les trailers de NBA 2K "
+          "(%s)" % passe["ailleurs"])
+    check("Grand Theft Auto VI Trailer 3" in passe["ailleurs"],
+          "[secours] et les six mots-clés de base continuent de s'appliquer "
+          "partout (%s)" % passe["ailleurs"])
+    # Le supplément est un SUPPLÉMENT : la source ne redéfinit pas la liste.
+    cles = page.evaluate("""([yt]) => ({
+        avec: motsClesOfficiels(yt), sans: motsClesOfficiels({}),
+        nul: motsClesOfficiels(null),
+    })""", [yt])
+    check(all(k in cles["avec"] for k in cles["sans"]) and "trailer" in cles["avec"],
+          "[secours] le supplément s'AJOUTE aux six mots-clés, il ne les "
+          "remplace pas (%d contre %d)" % (len(cles["avec"]), len(cles["sans"])))
+    check(cles["nul"] == cles["sans"],
+          "[secours] et une source sans réglage particulier garde la liste "
+          "de base")
     ctx.close()
 
     # Les trois filtres, avec les compteurs qu'ils portent en vrai. La boîte
@@ -2674,6 +2942,46 @@ def test_sources_disent_la_verite(nav, url):
     ctx.close()
 
 
+def page_couverture(nav, url):
+    """L'âge, en heures, du plus récent et du plus ancien article chargé.
+
+    Le fichier allégé garde un NOMBRE D'ARTICLES, pas un nombre de jours :
+    sa couverture en heures rétrécit à mesure que le rythme du fil monte.
+    Tout contrôle qui écrit cet écart en dur meurt à la première hausse.
+
+    DEUX ÂGES, PAS UNE DURÉE. La version d'avant rendait l'écart entre le
+    plus ancien et le plus récent, et l'appelant plaçait « la dernière
+    visite » à la moitié de cet écart — mais compté depuis MAINTENANT. Les
+    deux ne coïncident que si le fil vient d'être écrit. Avec un fil vieux
+    de 24 h (robot en panne, ou simple copie locale de la veille), la
+    fenêtre choisie ne contenait plus un seul article : le bloc sortait
+    vide et le contrôle plantait sur une liste vide au lieu de dire ce
+    qu'il voyait. On rend donc les deux bornes réelles, et l'appelant se
+    place strictement entre elles.
+    """
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("rattrapageLance = true;")
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    bornes = page.evaluate("""() => {
+        const d = lastItems.map(i => Date.parse(i.date)).filter(Number.isFinite);
+        if(d.length < 2) return null;
+        const now = Date.now();
+        return {
+            recent: (now - Math.max(...d)) / 3600000,
+            ancien: (now - Math.min(...d)) / 3600000,
+        };
+    }""")
+    ctx.close()
+    if not bornes:
+        return 0.0, 0.0
+    return bornes["recent"], bornes["ancien"]
+
+
 def test_ce_que_jai_rate(nav, url):
     """Le bloc d'entrée : un bilan vrai, puis les sources suivies.
 
@@ -2726,15 +3034,52 @@ def test_ce_que_jai_rate(nav, url):
           "[raté] sans visite précédente, pas de bloc du tout")
     ctx.close()
 
-    # --- 36 h : le cas courant. Le compte est EXACT, parce que la fenêtre
-    # chargée (≈300 articles, soit 2 j 1/2 au rythme mesuré) la couvre.
-    page, ctx, etat, err = session(36)
+    # --- Une absence que la fenêtre COUVRE : le compte est exact.
+    #
+    # L'écart n'est plus écrit en dur. Il l'était — 36 h, « parce que la
+    # fenêtre chargée fait 2 j 1/2 » — et ça a fini par tomber le
+    # 14/10/2026 : le fichier allégé garde 300 articles, pas un nombre de
+    # jours, et le rythme du fil est passé de ~125 à ~248 articles/jour à
+    # l'approche de la sortie. Les mêmes 300 articles ne couvraient plus
+    # que 29 h. L'app avait raison d'écrire « au moins », c'est le contrôle
+    # qui vivait sur une mesure périmée — et il aurait replanté chaque fois
+    # que le rythme monte, c'est-à-dire tous les jours d'ici novembre.
+    #
+    # On lit donc la couverture RÉELLE du fil chargé, et on se place de
+    # part et d'autre. Les deux comportements sont vérifiés, au lieu d'un
+    # seul sur un pari.
+    age_recent, age_ancien = page_couverture(nav, url)
+    couverture = int(age_ancien)
+    # STRICTEMENT ENTRE LES DEUX BORNES. Au-delà du plus récent, sinon le
+    # bloc n'a rien à montrer ; en deçà du plus ancien, sinon le compte se
+    # déclare minoré. Le milieu de cet intervalle tient les deux.
+    dedans = max(1, int((age_recent + age_ancien) / 2))
+    dehors = int(age_ancien * 2) + 24
+    check(age_recent < dedans < age_ancien,
+          "[raté] le fil chargé laisse une fenêtre où le compte est exact "
+          "(plus récent %.1f h, plus ancien %.1f h, essai à %d h)"
+          % (age_recent, age_ancien, dedans))
+    page, ctx, etat, err = session(dedans)
     check(etat["affiche"] == "block" and etat["plein"] == "1",
-          "[raté] après 36 h d'absence, le bloc est là")
+          "[raté] après une absence de %d h, le bloc est là" % dedans)
     check("Depuis ta dernière visite" in etat["bilan"],
           "[raté] il s'ouvre sur un bilan (« %s »)" % etat["bilan"][:60])
     check("au moins" not in etat["bilan"],
-          "[raté] et sur 36 h le compte est exact, pas minoré")
+          "[raté] dans la fenêtre chargée (%d h sur %d h couvertes), le "
+          "compte est exact, pas minoré" % (dedans, couverture))
+    ctx.close()
+
+    # --- Et une absence que la fenêtre NE couvre PAS : le bloc le DIT.
+    # C'est la moitié du contrat qui n'était pas éprouvée, et c'est celle
+    # qui servira le 19 novembre, quand 300 articles ne feront plus
+    # quelques heures.
+    page2, ctx2, etat2, _ = session(dehors)
+    check("au moins" in etat2["bilan"],
+          "[raté] au-delà (%d h), il annonce « au moins » au lieu de "
+          "minorer en silence (« %s »)" % (dehors, etat2["bilan"][:70]))
+    ctx2.close()
+
+    page, ctx, etat, err = session(dedans)
     check(0 < len(etat["lignes"]) <= 4,
           "[raté] au plus quatre lignes, et il rétrécit au lieu de se "
           "remplir (%d ici)" % len(etat["lignes"]))
@@ -2761,28 +3106,39 @@ def test_ce_que_jai_rate(nav, url):
     # accident. Il serait resté vert en laissant passer n'importe quel
     # ordre. Et l'officiel est VIEUX : s'il remontait par sa date, on ne
     # saurait pas si c'est son rang ou sa fraîcheur qui l'a placé.
-    rangs = page.evaluate("""() => {
+    # L'ÂGE DE L'OFFICIEL SUIT L'ÉCART, il n'est plus écrit en dur. Il
+    # valait 30 h, pour un écart de 36 h ; l'écart se mesure maintenant sur
+    # le fil réel et vaut moins que ça. Un officiel plus vieux que la
+    # dernière visite ne serait tout simplement pas « depuis ta dernière
+    # visite », et le contrôle cherchait une ligne qui ne pouvait pas
+    # exister. On le place juste À L'INTÉRIEUR de l'écart : dedans, donc
+    # compté, mais plus vieux que les spécialistes du fil, donc classé par
+    # son rang et non par sa fraîcheur.
+    rangs = page.evaluate("""(heures) => {
         lastItems.push({
             link: 'https://www.rockstargames.com/newswire/article/zzz-test',
             title: 'Annonce officielle de contrôle',
             source: 'Rockstar Games (officiel EN)',
             official: true,
-            date: new Date(Date.now() - 30*3600*1000).toISOString(),
+            date: new Date(Date.now() - heures*3600*1000).toISOString(),
         });
         applyFilters();
         return [...document.querySelectorAll('#rateBloc .rate-liste a')]
             .map(a => lastItems.find(x => x.link === a.getAttribute('href')))
             .map(i => i.official ? 0 : i.specialist ? 1 : 2);
-    }""")
+    }""", max(1, dedans - 1))
     check(rangs and rangs[0] == 0 and rangs == sorted(rangs) and len(set(rangs)) > 1,
           "[raté] un officiel passe DEVANT des spécialistes plus récents, "
           "et l'ordre reste officiel → spécialiste → RockstarMag (%s)" % rangs)
 
     # Cliquer une ligne la marque lue — sinon le bloc redit éternellement la
     # même chose à quelqu'un qui l'a déjà suivi.
-    lien = etat["lignes"][0]["href"]
-    page.evaluate("marqueLuDepuisRate('%s')" % lien)
-    check(page.evaluate("readSet.has('%s')" % lien),
+    # Pas d'indexation sèche : une liste vide est un ÉCHEC À DIRE, pas une
+    # trace de pile qui emporte les 300 contrôles suivants.
+    lien = etat["lignes"][0]["href"] if etat["lignes"] else None
+    if lien:
+        page.evaluate("marqueLuDepuisRate('%s')" % lien)
+    check(bool(lien) and page.evaluate("readSet.has('%s')" % lien),
           "[raté] cliquer une ligne marque l'article comme lu")
     check(not err, "[raté] aucune erreur JavaScript (%s)" % err[:1])
     ctx.close()
@@ -2795,6 +3151,124 @@ def test_ce_que_jai_rate(nav, url):
     check("au moins" in etat["bilan"],
           "[raté] au-delà de la fenêtre chargée, le compte se dit minoré "
           "(« %s »)" % etat["bilan"][:70])
+    ctx.close()
+
+    # --- L'APPARITION, PAS LA PUBLICATION. C'est l'objet du lot : un
+    # article publié AVANT ta visite mais remonté APRÈS est neuf pour toi.
+    # Mesuré le 15/10/2026 : parmi les articles arrivés dans la fenêtre que
+    # l'app charge, 25 par semaine avaient plus de 12 h de retard sur leur
+    # date, 7 plus de 24 h.
+    page, ctx, etat, err = session(dedans)
+    vu = page.evaluate("""(heures) => {
+        const avant = document.querySelectorAll('#rateBloc .rate-liste a').length;
+        // Publié bien AVANT la dernière visite, apparu APRÈS. Sur la date
+        // seule il serait invisible ; sur l'apparition il doit entrer.
+        lastItems.push({
+            link: 'https://tardif.test/retard',
+            title: 'Remonté avec dix jours de retard',
+            source: 'Rockstar Games (officiel EN)',
+            official: true,
+            date: new Date(Date.now() - (heures + 240)*3600*1000).toISOString(),
+            vu_le: new Date(Date.now() - (heures/2)*3600*1000).toISOString(),
+        });
+        applyFilters();
+        const liens = [...document.querySelectorAll('#rateBloc .rate-liste a')]
+            .map(a => a.getAttribute('href'));
+        const ligne = [...document.querySelectorAll('#rateBloc .rate-liste li')]
+            .find(li => li.querySelector('a').getAttribute('href') === 'https://tardif.test/retard');
+        return {
+            avant,
+            compte: liens.includes('https://tardif.test/retard'),
+            paru: ligne ? ligne.textContent : '',
+            bilan: document.querySelector('#rateBloc .rate-bilan').textContent,
+        };
+    }""", dedans)
+    check(vu["compte"],
+          "[raté] un article publié avant la visite mais APPARU après est "
+          "compté — c'est tout l'objet du champ vu_le")
+    check("paru le" in vu["paru"],
+          "[raté] et sa ligne dit son âge, sinon on le prend pour une "
+          "dépêche du jour (« %s »)" % vu["paru"].strip()[:60])
+    ctx.close()
+
+    # Sans vu_le, le repli sur la date de publication. Les 3 570 articles
+    # déjà publiés n'auront jamais ce champ : le robot ne peut pas inventer
+    # quand il les a vus. Si le repli lâchait, le bloc se viderait d'un
+    # coup pour tout le monde.
+    page, ctx, etat, err = session(dedans)
+    sans = page.evaluate("""() => {
+        const n = lastItems.filter(i => i.vu_le).length;
+        lastItems.forEach(i => { delete i.vu_le; });
+        applyFilters();
+        return {avecChamp: n,
+                lignes: document.querySelectorAll('#rateBloc .rate-liste a').length,
+                plein: document.getElementById('rateBloc').dataset.plein};
+    }""")
+    check(sans["plein"] == "1" and sans["lignes"] > 0,
+          "[raté] sans vu_le nulle part, le bloc tient sur les dates de "
+          "publication (%d lignes)" % sans["lignes"])
+    ctx.close()
+
+    # --- LES DEUX CHIFFRES. Le point de départ du lot : « 10 non lus »
+    # contre « 5 nouveaux » passait pour une incohérence. Les deux ont
+    # raison — l'un compte depuis toujours, l'autre une fenêtre.
+    page, ctx, etat, err = session(dedans)
+    deux = page.evaluate("""() => {
+        // Tout marquer lu SAUF les nouveaux : le cumul doit alors coller
+        // au compte de la fenêtre, et la mention disparaître.
+        const bilanAvant = document.querySelector('#rateBloc .rate-bilan').textContent;
+        const nonLus = articlesVisibles().filter(i => !readSet.has(i.link)).length;
+        return {bilan: bilanAvant, nonLus};
+    }""")
+    check("non lu" in deux["bilan"],
+          "[raté] le bilan porte aussi le cumul des non-lus (« %s »)"
+          % deux["bilan"][:90])
+    import re as _re
+    chiffres = _re.findall(r"(\d+) non lu", deux["bilan"])
+    check(chiffres and int(chiffres[0]) == deux["nonLus"],
+          "[raté] et ce cumul est bien celui des pastilles d'onglet "
+          "(%s contre %d)" % (chiffres, deux["nonLus"]))
+    ctx.close()
+
+    # --- LE BOUTON « J'AI TOUT VU ». Le repère reste posé à la fermeture ;
+    # ce bouton couvre le cas « je viens de tout lire et je reste ».
+    page, ctx, etat, err = session(dedans)
+    bouton = page.evaluate("""() => {
+        const b = document.getElementById('rateVu');
+        if(!b) return {absent: true};
+        const h = b.getBoundingClientRect().height;
+        const avant = localStorage.getItem('gta6watch:derniere-visite-v1');
+        b.click();
+        return {
+            hauteur: h,
+            vide: document.getElementById('rateBloc').style.display,
+            plein: document.getElementById('rateBloc').dataset.plein,
+            avant,
+            apres: localStorage.getItem('gta6watch:derniere-visite-v1'),
+        };
+    }""")
+    check(not bouton.get("absent") and bouton["vide"] == "none"
+          and bouton["plein"] == "0",
+          "[raté] le bouton vide le bloc sur-le-champ (%s)" % bouton)
+    check(bouton.get("apres") and bouton.get("apres") != bouton.get("avant"),
+          "[raté] et le repère est RÉELLEMENT écrit, sinon le bloc "
+          "reviendrait au rechargement")
+    check(bouton.get("hauteur", 0) >= CIBLE_MINIMALE,
+          "[raté] il fait au moins %d px de haut, comme tout ce qui se "
+          "touche ici (%.0f px)" % (CIBLE_MINIMALE, bouton.get("hauteur", 0)))
+    check(not err, "[raté] aucune erreur JavaScript au clic (%s)" % err[:1])
+    ctx.close()
+
+    # Et la fermeture continue de poser le repère : le bouton s'AJOUTE, il
+    # ne remplace rien. Sans ça, quelqu'un qui ne le presse jamais verrait
+    # le bloc grossir indéfiniment.
+    page, ctx, etat, err = session(dedans)
+    ferme = page.evaluate("""() => {
+        localStorage.removeItem('gta6watch:derniere-visite-v1');
+        window.dispatchEvent(new Event('pagehide'));
+        return localStorage.getItem('gta6watch:derniere-visite-v1');
+    }""")
+    check(ferme, "[raté] quitter l'app pose toujours le repère (%s)" % ferme)
     ctx.close()
 
     # --- Le bloc suit le fil : il n'a aucun sens sous les statistiques.
@@ -2988,9 +3462,17 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
         const d = src.indexOf('function renderCard');
         return src.slice(d, d + 4000);
     }""")
-    check("estVideo(item)" in extrait and "estFuite(item)" in extrait,
-          "[badges] la carte appelle les mêmes juges que le filtre, elle ne "
-          "recopie pas les expressions")
+    # L'INTENTION, pas la forme. Ce contrôle exigeait d'abord la chaîne
+    # « estVideo(item) » dans renderCard. Depuis le 13/10/2026 la carte
+    # parcourt la table JUGES_BADGE en boucle — neuf badges recopiés à la
+    # main garantissaient qu'un ajout en oublierait un, ce qui est
+    # exactement ce qui était arrivé à VIDÉO. Le code satisfait mieux
+    # l'intention qu'avant ; c'est le test qui regardait la mauvaise chose.
+    check("JUGES_BADGE[" in extrait,
+          "[badges] la carte passe par la table des juges, partagée avec le "
+          "filtre")
+    check("\\bleak" not in extrait and "\\btrailer" not in extrait,
+          "[badges] et ne recopie aucune expression régulière chez elle")
 
     # Le juge « spécialiste » doit dire EXACTEMENT ce que la carte montre :
     # le badge ne s'affiche pas sur un article officiel.
@@ -2998,6 +3480,89 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
           and page.evaluate("estSpecialiste({specialist: true})") is True,
           "[badges] un officiel ne compte pas comme spécialiste — sinon le "
           "filtre ramène des cartes sans le badge cliqué")
+
+    # ---- LES SEPT BADGES SONDÉS LE 13/10/2026.
+    #
+    # Chaque motif est la version RESSERRÉE : les premières moutures
+    # attrapaient n'importe quoi, et c'est le sondage du corpus (8 378
+    # titres) qui a imposé le nettoyage. Les cas ci-dessous sont des titres
+    # RÉELS tirés de ce sondage, pas des inventions.
+    precision = page.evaluate("""() => {
+        const faux = {
+            // « prix » attrapait les montants nus : le chiffre d'affaires,
+            // le piratage, les ventes de consoles.
+            prix: ['GTA 6 effect caused PS5 Pro sales to surge by 348%',
+                   'Grand Theft Auto VI piracy could cost Rockstar up to $1 billion'],
+            // « date » attrapait « lancement » : une soirée, une édition.
+            date: ['«GTA VI» va avoir droit à une soirée de lancement à Genève',
+                   'Rayman Legends Retold : Ubisoft dévoile l édition de lancement'],
+        };
+        const vrais = {
+            prix: ['Is GTA 6 Overhyped? $79.99 Price Tag Sparks Debate',
+                   'GTA 6 : le prix de l édition collector'],
+            date: ['GTA 6 : date de sortie, prix et précommande',
+                   'GTA 6 release date confirmed by Rockstar'],
+            pc: ['The PC version of Grand Theft Auto 6 is reportedly coming',
+                 'GTA 6 sur PC dès le premier trimestre 2027 ?'],
+            preco: ['GTA 6 pre-orders are breaking records according to Xbox',
+                    'GTA VI précommande à prix cassé'],
+            perso: ['GTA 6 Lucia and Jason first look', 'Qui est Lucia dans GTA 6 ?'],
+            take2: ['Take-Two annoncera ses résultats trimestriels le 9 novembre'],
+            rumeur: ['GTA 6 is reportedly coming to Xbox Cloud'],
+        };
+        const out = {fauxPris: [], vraisRates: []};
+        for(const [cle, titres] of Object.entries(faux))
+            for(const t of titres)
+                if(JUGES_BADGE[cle]({title: t})) out.fauxPris.push(cle + ' : ' + t.slice(0, 45));
+        for(const [cle, titres] of Object.entries(vrais))
+            for(const t of titres)
+                if(!JUGES_BADGE[cle]({title: t})) out.vraisRates.push(cle + ' : ' + t.slice(0, 45));
+        return out;
+    }""")
+    check(not precision["fauxPris"],
+          "[badges] les motifs resserrés n'attrapent plus ce qu'ils "
+          "attrapaient : chiffre d'affaires, soirée de lancement (%s)"
+          % precision["fauxPris"][:1])
+    check(not precision["vraisRates"],
+          "[badges] et ils n'ont pas perdu les vrais cas au passage (%s)"
+          % precision["vraisRates"][:1])
+
+    # Les neuf juges sont dans la table, et la table EST le filtre.
+    table = page.evaluate("""() => ({
+        juges: Object.keys(JUGES_BADGE).sort(),
+        noms: Object.keys(NOMS_BADGE).sort(),
+        ordre: ORDRE_BADGES.slice(),
+    })""")
+    check(table["juges"] == table["noms"],
+          "[badges] chaque juge a son libellé, et réciproquement (%s / %s)"
+          % (len(table["juges"]), len(table["noms"])))
+    manquants = [c for c in table["juges"] if c != "specialist" and c not in table["ordre"]]
+    check(not manquants,
+          "[badges] et chacun a sa place dans l'ordre d'affichage (%s)" % manquants)
+    # L'ordre n'est pas alphabétique à dessein : une ALERTE passe devant un
+    # SUJET. Un « PRIX » avant un « LEAK » inverserait la lecture.
+    check(table["ordre"].index("leak") < table["ordre"].index("prix")
+          and table["ordre"].index("video") < table["ordre"].index("take2"),
+          "[badges] les alertes précèdent les sujets (%s)" % table["ordre"][:4])
+
+    # Chaque couleur neuve tient le contraste. Le contrôle Python le vérifie
+    # sur le CSS ; celui-ci vérifie qu'elles sont RÉELLEMENT appliquées et
+    # qu'aucun badge ne se rend sans sa classe de couleur.
+    sansCouleur = page.evaluate("""() => {
+        lastItems = Object.keys(JUGES_BADGE).filter(c => c !== 'specialist').map((c, k) => ({
+            link: 'https://b.test/' + k, source: 'T', date: new Date().toISOString(),
+            title: {leak:'GTA 6 leak', video:'GTA 6 trailer', pc:'GTA 6 sur PC',
+                    preco:'GTA 6 précommande', prix:'GTA 6 : le prix',
+                    perso:'GTA 6 Lucia', take2:'Take-Two résultats trimestriels',
+                    rumeur:'GTA 6 rumeur', date:'GTA 6 date de sortie'}[c],
+        }));
+        visibleCount = 1000; settings.maxDisplay = 1000; badgeActif = null; applyFilters();
+        return [...document.querySelectorAll('.card .tag-badge')]
+            .filter(b => !/tag-(leak|video|pc|preco|prix|perso|take2|rumeur|date|hot|lang)/.test(b.className))
+            .map(b => b.textContent);
+    }""")
+    check(not sansCouleur,
+          "[badges] aucun badge rendu sans sa classe de couleur (%s)" % sansCouleur[:2])
 
     # Cliquer filtre, recliquer annule.
     page.evaluate("filtreBadge(null, 'video')")
@@ -3025,6 +3590,112 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     corps = page.evaluate("String(filtreBadge)")
     check("stopPropagation" in corps and "preventDefault" in corps,
           "[badges] le clic ne remonte pas jusqu'au lien de la carte")
+
+    # UN BADGE RESTE UN BADGE, MÊME DEVENU BOUTON.
+    #
+    # Le défaut, vu par Antoni sur son téléphone le 13/10/2026 : le badge
+    # LEAK est rendu comme un pavé rouge de 44 px de haut, contre 17 pour un
+    # badge ordinaire, et toute la rangée de source passait de 17 à 44.
+    # La cause : `button{}` impose min-height:44px à TOUT bouton — la règle
+    # des cibles tactiles du site — et mon reset ne neutralisait que la
+    # bordure, le curseur et l'interligne.
+    #
+    # POURQUOI AUCUN TEST NE L'A VU : le contrôle tactile vérifie qu'un
+    # bouton fait AU MOINS 44 px. Le badge en faisait exactement 44, donc il
+    # passait. Un bouton trop GROS était invisible pour lui. Celui-ci
+    # regarde l'autre sens.
+    tailles = page.evaluate("""() => {
+        const btn = document.querySelector('.card-src-row button.tag-badge');
+        const spn = document.querySelector('.card-src-row span.tag-badge');
+        if(!btn || !spn) return null;
+        const b = btn.getBoundingClientRect(), s = spn.getBoundingClientRect();
+        return {bouton: Math.round(b.height), etiquette: Math.round(s.height),
+                rangee: Math.round(btn.closest('.card-src-row').getBoundingClientRect().height)};
+    }""")
+    if tailles:
+        check(abs(tailles["bouton"] - tailles["etiquette"]) <= 2,
+              "[badges] un badge cliquable a la même taille qu'une étiquette "
+              "simple (%d px contre %d)" % (tailles["bouton"], tailles["etiquette"]))
+        check(tailles["rangee"] <= tailles["etiquette"] + 4,
+              "[badges] et il ne gonfle pas la rangée de source (%d px)"
+              % tailles["rangee"])
+
+    # LE TEXTE CENTRÉ DANS LE BADGE, et les badges de même hauteur.
+    #
+    # Signalé par Antoni le 13/10/2026 : « le texte sur les badges est mal
+    # centré en hauteur ». Deux défauts, tous les deux réels.
+    #
+    #   - les hauteurs ne se suivaient pas : « SPÉCIALISTE GTA 6» faisait
+    #     16 px, « FR » 17 et les badges de couleur 18 ;
+    #   - et le texte était haut d'un pixel dans les badges de couleur. Une
+    #     boîte se centre sur ascendante + descendante de la police ; des
+    #     capitales n'occupent jamais la descendante.
+    #
+    # Le contrôle mesure le GABARIT DE CAPITALE, pas l'encre du libellé :
+    # « VIDÉO » monte plus haut que « LEAK » à cause de son accent, et l'œil
+    # ne juge pas là-dessus. Les métriques viennent du canvas, avec la
+    # police réellement résolue — aucune valeur de police codée ici.
+    centrage = page.evaluate("""() => {
+        const cv = document.createElement('canvas').getContext('2d');
+        return [...document.querySelectorAll(
+                  '.card-src-row .tag-badge, .card-src-row .specialist-badge, '
+                + '.card-src-row .official-badge')].map(el => {
+            const cs = getComputedStyle(el);
+            const fs = parseFloat(cs.fontSize);
+            let lh = parseFloat(cs.lineHeight);
+            if(!isFinite(lh)) lh = fs * 1.2;
+            cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+            const m = cv.measureText('H');
+            const fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+            const base = parseFloat(cs.paddingTop) + parseFloat(cs.borderTopWidth)
+                       + (lh - (fa + fd)) / 2 + fa;
+            const h = el.getBoundingClientRect().height;
+            return {nom: el.className.split(' ').pop(),
+                    haut: h,
+                    dessus: base - m.actualBoundingBoxAscent,
+                    dessous: h - base - m.actualBoundingBoxDescent};
+        });
+    }""")
+    check(len(centrage) >= 3,
+          "[badges] la carte mesurée porte bien plusieurs badges (%d)"
+          % len(centrage))
+    pires = max(centrage, key=lambda b: abs(b["dessous"] - b["dessus"]))
+    check(abs(pires["dessous"] - pires["dessus"]) <= 0.25,
+          "[badges] les capitales sont centrées dans le badge (pire cas : "
+          "%s, %.2f px au-dessus, %.2f en dessous)"
+          % (pires["nom"], pires["dessus"], pires["dessous"]))
+    hauteurs = sorted({round(b["haut"], 2) for b in centrage})
+    check(len(hauteurs) == 1,
+          "[badges] et tous les badges de la rangée font la même hauteur "
+          "(%s)" % hauteurs)
+
+    # La zone de clic est ÉLARGIE malgré tout — cinquième dérogation aux
+    # 44 px, assumée : il n'y a que 6 px sous le badge avant le titre, donc
+    # une zone de 44 px lui volerait des appuis. ~24 px est tout ce que la
+    # place permet.
+    zone = page.evaluate("""() => {
+        const b = document.querySelector('.card-src-row button.tag-badge');
+        if(!b) return null;
+        b.scrollIntoView({block: 'center'});
+        const r = b.getBoundingClientRect();
+        const titre = b.closest('.card-body').querySelector('.card-title a');
+        const tr = titre.getBoundingClientRect();
+        const surTitre = document.elementFromPoint(tr.left + 20, tr.top + 4);
+        return {
+            pseudo: getComputedStyle(b, '::after').content !== 'none',
+            titreIntact: !!(surTitre && surTitre.closest('.card-title')),
+            badgeAtteignable: document.elementFromPoint(r.left + r.width/2, r.top + r.height/2)
+                                === b,
+        };
+    }""")
+    if zone:
+        check(zone["pseudo"],
+              "[badges] un pseudo-élément élargit la zone de clic du badge")
+        check(zone["titreIntact"],
+              "[badges] et il ne vole AUCUN appui au titre de l'article — "
+              "c'est pour ça que la zone s'arrête à 24 px et pas 44")
+        check(zone["badgeAtteignable"],
+              "[badges] le badge lui-même reste atteignable au centre")
 
     # ---- 3.5 : la recherche se souvient.
     page.evaluate("""() => { recherchesRecentes = []; memoriseRecherche('date de sortie');
@@ -3054,9 +3725,17 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     page.evaluate("document.getElementById('searchInput').value = ''; applyFilters();")
 
     # ---- 3.4 : les officiels en chronologie.
+    # Le plafond est remis À DESSEIN : les contrôles précédents fabriquent
+    # un fil minuscule et abaissent `settings.maxDisplay` pour le rendre
+    # d'un coup. Sans cette ligne, la chronologie héritait du plafond du
+    # contrôle d'avant et n'affichait qu'une partie des officiels — quatre
+    # échecs qui accusaient la chronologie d'un défaut appartenant au test.
     page.evaluate("""async () => {
         const r = await fetch('%s/feed.json'); const d = await r.json();
-        lastItems = d.items; setTab('rockstar');
+        lastItems = d.items;
+        settings.maxDisplay = DEFAULT_SETTINGS.maxDisplay;
+        visibleCount = DEFAULT_SETTINGS.maxDisplay;
+        setTab('rockstar');
     }""" % base)
     page.wait_for_timeout(400)
     chrono = page.evaluate("""() => ({
@@ -3078,6 +3757,84 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     check(chrono["points"] == attendus,
           "[chrono] les %d officiels y sont TOUS, sans « charger plus » "
           "(%d rendus)" % (attendus, chrono["points"]))
+
+    # LA VIGNETTE. La première version de la chronologie n'affichait que la
+    # date, le titre et la source : j'avais mesuré que 69 des 77 officiels
+    # portent une image, puis construit une forme qui les jetait toutes sans
+    # le dire. Antoni l'a vu dans l'heure. Une chronologie d'annonces
+    # Rockstar sans les images, c'est ce qu'elle est censée mettre en valeur.
+    vignettes = page.evaluate("""() => {
+        const avec = lastItems.filter(i => i.official && i.image).length;
+        return {attendues: avec,
+                rendues: document.querySelectorAll('.chrono-vignette').length};
+    }""")
+    check(vignettes["rendues"] == vignettes["attendues"] and vignettes["rendues"] > 0,
+          "[chrono] chaque officiel qui a une image la montre (%d sur %d)"
+          % (vignettes["rendues"], vignettes["attendues"]))
+    check(page.evaluate(
+            "document.documentElement.scrollWidth <= window.innerWidth") is True,
+          "[chrono] et la vignette ne fait pas déborder la page en largeur")
+
+    # CE QUE LA CHRONOLOGIE AVAIT AUSSI PERDU. Les vignettes n'étaient que
+    # la perte VISIBLE ; elle laissait aussi tomber les quatre boutons, les
+    # badges et l'heure. Antoni a demandé de tout remettre le 13/10/2026.
+    actions = page.evaluate("""() => ({
+        boutons: document.querySelectorAll('.chrono-actions .card-mark').length,
+        points: document.querySelectorAll('.chrono-point').length,
+        // openPreview lit itemsById, que seule renderFeed remplissait : sans
+        // ça le bouton 👁️ ne faisait RIEN, en silence.
+        connus: [...document.querySelectorAll('.chrono-point')]
+                  .every(li => itemsById[li.id.replace('card-', '')]),
+        heure: /\d\d:\d\d/.test(document.querySelector('.chrono-date').textContent),
+        hauteur: Math.round(document.querySelector('.chrono-point').getBoundingClientRect().height),
+    })""")
+    check(actions["boutons"] >= actions["points"] * 2,
+          "[chrono] chaque entrée porte ses boutons d'action (%d pour %d "
+          "entrées)" % (actions["boutons"], actions["points"]))
+    check(actions["connus"],
+          "[chrono] chaque entrée est inscrite dans itemsById — sinon le "
+          "bouton d'aperçu ne fait rien, en silence")
+    check(actions["heure"],
+          "[chrono] la date porte l'heure : douze annonces du même jour ne "
+          "s'ordonnent pas avec « 8 octobre » seul")
+    # Les boutons sont COMPACTS. À la première version ils reprenaient
+    # .card-actions tel quel — quatre boutons pleine largeur — et la
+    # chronologie redevenait une liste de cartes avec un trait à gauche.
+    check(actions["hauteur"] < 200,
+          "[chrono] une entrée reste compacte malgré les boutons (%d px)"
+          % actions["hauteur"])
+
+    # Et SEULEMENT les badges qui disent quelque chose. Mesuré sur les 77
+    # officiels : « OFFICIEL ROCKSTAR » serait sur 100 % des lignes et LEAK
+    # sur zéro. Deux badges morts, qui ne sont pas rendus.
+    badges = page.evaluate("""() => ({
+        officiel: document.querySelectorAll('.chrono-point .official-badge').length,
+        leak: document.querySelectorAll('.chrono-point .tag-leak').length,
+        majeur: document.querySelectorAll('.chrono-point .tag-hot').length,
+        video: document.querySelectorAll('.chrono-point .tag-video').length,
+        vraisMajeurs: lastItems.filter(i => i.official && estMajeur(i)).length,
+        vraiesVideos: lastItems.filter(i => i.official && estVideo(i)).length,
+    })""")
+    check(badges["officiel"] == 0 and badges["leak"] == 0,
+          "[chrono] pas de badge qui serait sur toutes les lignes ou sur "
+          "aucune (officiel %d, leak %d)" % (badges["officiel"], badges["leak"]))
+    check(badges["majeur"] == badges["vraisMajeurs"]
+          and badges["video"] == badges["vraiesVideos"],
+          "[chrono] et les badges utiles y sont tous (%d majeurs, %d vidéos)"
+          % (badges["majeur"], badges["video"]))
+
+    # Le bouton marque lu SANS ouvrir l'article — c'est la seule perte qui
+    # empêchait de FAIRE quelque chose.
+    lien = page.evaluate("""() => {
+        const li = document.querySelector('.chrono-point');
+        const id = li.id.replace('card-', '');
+        const item = itemsById[id];
+        toggleRead(id, item.link);
+        return item.link;
+    }""")
+    check(page.evaluate("readSet.has(%s)" % json.dumps(lien)),
+          "[chrono] le bouton marque lu sans ouvrir l'article")
+    page.evaluate("(l) => { readSet.delete(l); applyFilters(); }", lien)
 
     # Les autres onglets gardent leurs cartes.
     page.evaluate("setTab('all')")
@@ -3136,6 +3893,8 @@ def main():
             test_recherche_sans_accents(nav, url)
             test_barre_detat_suit_le_theme(nav, url)
             test_toast_annuler(nav, url)
+            test_poids_de_tout_charger(nav, url)
+            test_plafond_des_lus(nav, url)
             test_sauvegarde_export_import(nav, url)
             test_vue_statistiques(nav, url)
             test_entete_sans_vide(nav, url)
