@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T04:01:33.222088+00:00",
+  "generated_at": "2026-10-15T05:01:24.474279+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 27.6,
+  "duration_seconds": 24.7,
   "decode_failures": 0,
-  "total_articles": 3655,
-  "new_this_run": 5,
+  "total_articles": 3657,
+  "new_this_run": 3,
   "hot_count": 58,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 1017,
-      "last_article": "2026-10-15T02:48:00+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 1019,
+      "last_article": "2026-10-15T04:22:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,7 +493,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 1388,
       "last_article": "2026-10-15T00:32:00+00:00",
       "days_since_last_article": 0,
@@ -506,8 +506,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 44,
+      "new_this_run": 0,
+      "articles_exclusifs": 43,
       "last_article": "2026-10-14T15:23:33+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -620,14 +620,14 @@
       "id": "rockstarmag-youtube",
       "name": "RockstarMag (YouTube)",
       "entries_fetched": 0,
-      "http_status": 404,
+      "http_status": 500,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 52,
       "last_article": "2026-10-14T14:07:34+00:00",
       "days_since_last_article": 0,
-      "status": "cassee"
+      "status": "muette"
     },
     {
       "id": "rockstarintel",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-14T11:05:06+00:00",
@@ -987,7 +987,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-07T07:17:12+00:00",
       "days_since_last_article": 7,
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T12:44:47+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 7,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1234,7 +1234,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1246,7 +1246,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1264,7 +1264,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "49,49,49,49,50,50,50,50,50,50,50,50",
+    "gta6times": "49,49,49,50,50,50,50,50,50,50,50,50",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1343,7 +1343,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Thu, 15 Oct 2026 03:59:30 GMT"
+      "modified": "Thu, 15 Oct 2026 04:56:31 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1352,8 +1352,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad04fd0-311a\"",
-      "modified": "Thu, 15 Oct 2026 04:00:16 GMT"
+      "etag": "W/\"6ad05de0-311a\"",
+      "modified": "Thu, 15 Oct 2026 05:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1383,7 +1383,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Thu, 15 Oct 2026 04:01:10 GMT"
+      "modified": "Thu, 15 Oct 2026 05:00:34 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1397,8 +1397,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"dd93c8b343bf07300e29f4631503ef92\"",
-      "modified": "Thu, 15 Oct 2026 03:05:13 GMT"
+      "etag": "W/\"fb2b9158277e46b7654347f9ecd6323d\"",
+      "modified": "Thu, 15 Oct 2026 04:48:43 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -2200,6 +2200,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Cyberpunk 2077 comptait déjà un nombre impressionnant de PNJ uniques avant GTA 6, et ce mod les fait revenir - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Cyberpunk-2077-comptait-deja-un-nombre-impressionnant-de-PNJ-uniques-avant-GTA-6-et-ce-mod-les-fait-revenir.1424603.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxOWk51VEczaUNON0hpZElmQmJHeDh3X21jMWhlNks4THJXckZmc0NXTTFjX3FUVTJSb01LOVVzeF83NWQ0eGY2ZEtzMWpBWjc5X3FLNE5vUk5kX1lhNlBJWk1hdU50R0VScThwR2JVWVBFSjVOcFluNEptcEtEMWk0bldJeEpqdmJZeFVRWjVXbGdrOEFrVXBaUmNCQVBmb01DYkhXNGpLRWpGelNlU0hUTjIxREgtSXVpUVcxakFfbWVNYkxDTVU0WXJDdHVmaW1JcGZNMldaUXpFWmZ6bmQ4TmZTcnFrUDg?oc=5",
+      "date": "2026-10-15T04:22:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/cyberpunk-crowd-mod.jpg",
+      "description": "Cyberpunk 2077 comptait déjà un nombre impressionnant de PNJ uniques avant GTA 6, et ce mod les fait revenir&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "Réalisme dans GTA 6 : un responsable de Rockstar a bel et bien évoqué la bouteille qui apparaît comme par magie - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Realisme-dans-GTA-6-un-responsable-de-Rockstar-a-bel-et-bien-evoque-la-bouteille-qui-apparait-comme-par-magie.1424589.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxON3lvLXY1VTVMU0NZeGkxT2g3ZEtTbVhrUjJTRkwtVW1ITFRKdmhfaG9WWWVEWGxURlkwTmJhVkFKdFc3ZTlyZTZFX0M4SmRMQlY2MHlpX2VrcjFXdTY5VW0yOGM0cmtFUERWNnhRU1pSazgzSGh3NXRtN2UyclJZOTgzTDRMTGNJaVdvQ2E4SElhVnlGR2RPaWRfSnpWNHFXTzk1cWNFc0FUNjJBNWhXSjNJaDQ2dGdEa0otb3g3Zmp2MDFmUGFBdmdXR0p5bWJHUWw5cHBSaTJpRTRZUjMtTFBsNjk4Tld0cFE?oc=5",
+      "date": "2026-10-15T04:22:07+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/gta-6-fridge-animation.jpg",
+      "description": "Réalisme dans GTA 6 : un responsable de Rockstar a bel et bien évoqué la bouteille qui apparaît comme par magie&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "Les exemplaires de test de GTA 6 seraient envoyés plus de 3 semaines avant la date de sortie, malgré le risque de fuite - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Les-exemplaires-de-test-de-GTA-6-seraient-envoyes-plus-de-3-semaines-avant-la-date-de-sortie-malgre-le-risque-de-fuite.1424586.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxPdlJtN2NkREljZHhQQ2JKN1ozQ2JZa3EwbV9teVZyYnpPaEJBZXRlWG16OGNLZjVPcXZ3V1R2bk9Dd2dua0M1b2s5dTFGSWRnbDEybkllSU5NTzdTN085ZWlJVDkyeTJSbGtFbWRXUDFrYzRDTVpuNTRZTDZ3amItSTVGcWFacE5sZWRXUGxZUWFabDdyRHhmdDNKd1JjRTRFZGJMZ081Q2N4UW9OU2lleFFaSU9EaVRFRm53YzlWSXZMQy1vaDBoMHBWeWpKdW0xWEJKT1c2LS1YLWZsRWRURVQ0aW51N0VoaE52bFVtd3VrTEt0YkE?oc=5",
+      "date": "2026-10-15T04:22:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6MetacriticBanner.jpg",
+      "description": "Les exemplaires de test de GTA 6 seraient envoyés plus de 3 semaines avant la date de sortie, malgré le risque de fuite&nbsp;&nbsp;Notebookcheck.fr"
+    },
     {
       "title": "Rockstar veut sortir son prochain jeu plus vite après GTA VI - Achievement Industry",
       "link": "https://achievementindustry.com/fr/articles/category/actualite/nouvelles-de-l-industrie/rockstar-veut-sortir-son-prochain-jeu-plus-vite-apres-gta-vi",
@@ -17242,19 +17281,6 @@
       "description": "Cyberleek, who has previously published footage from Grand Theft Auto 6, has once again posted leaked footage from the game. This time, the leak is a roughly 367 MB video that runs for around 25 minutes. It contains new gameplay footage and cutscenes, so viewers should be aware that it may include story spoilers"
     },
     {
-      "title": "GTA 6 pour tout et partout: ne risque-t-on pas l’indigestion avant la sortie? - BFM",
-      "link": "https://www.bfmtv.com/tech/replay-emissions/multijoueurs/video-gta-6-pour-tout-et-partout-ne-risque-t-on-pas-l-indigestion-avant-la-sortie_VN-202610080502.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxNX0dIZFNyUjFFcjA2Q2FIUTRlVGVocjhTbnBySVlCTHAtRDJVeUZsRFh2b3hVSjhOMXNBU3I2Rm5UY2JScGthdEc4c3EySjZCeFRtVnlkZTlOU1VUV2szUnZSOWNIbk52QXV1cVRGVnA4R3hxeVNmdElYSW5oTWFUR2g1YXN6UEhuUE1CUk1abVBRSllLZ2dfeFAxdHB2QkhoVHEzYXFyZU1UcmRjYU92MnZUQnZNTUpKRk42X1cxazVUSnRPS2VQVmlHWF9yaWlHNlNqTGxNcEhSMVRwMFAyLVl4M05KdlpSek9tTVlrUV8?oc=5",
-      "date": "2026-10-08T11:21:41+00:00",
-      "source": "Google News (FR, 7 jours)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/J7OWDVvJOj54SjBMxzx2ypUCe5g=/0x0:1280x720/1280x0/images/GTA-6-pour-tout-et-partout-ne-risque-t-on-pas-l-indigestion-avant-la-sortie-2361654.jpg",
-      "description": "GTA 6 pour tout et partout: ne risque-t-on pas l’indigestion avant la sortie?&nbsp;&nbsp;BFM"
-    },
-    {
       "title": "The Australian Government Helps Workers Know Their Rights for Taking Time Off for GTA 6 - IGN",
       "link": "https://www.ign.com/articles/australian-government-time-off-gta-6",
       "source_link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1JS2lFS3l2REIwaTdxUS1uRWRlVnB2T3Fod0NJQTNsT0Y5OVZTVHo4TENCdUgwVmluRU1pNWEwMUduSjY1UnF2M1pyS1NZUmxUYVJTbzlXMFBsMFhwRjhuYmtOeFZBeUpZRW1RZTFiTGRyTEU?oc=5",
@@ -17349,7 +17375,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/yeTauxJIvbY-II0FmNsGb93A06Y=/0x0:14000x14000/1400x0/podcast/podcasts/principale-259_2.jpg",
-      "description": "PODCAST : GTA 6 pour tout et partout: ne risque-t-on pas l’indigestion avant la sortie?&nbsp;&nbsp;BFM"
+      "description": "PODCAST : GTA 6 pour tout et partout: ne risque-t-on pas l’indigestion avant la sortie?&nbsp;&nbsp;BFM",
+      "extraSources": [
+        {
+          "source": "Google News (FR, 7 jours)",
+          "link": "https://www.bfmtv.com/tech/replay-emissions/multijoueurs/video-gta-6-pour-tout-et-partout-ne-risque-t-on-pas-l-indigestion-avant-la-sortie_VN-202610080502.html"
+        }
+      ]
     },
     {
       "title": "GTA 6 : Rockstar révèle avoir accompagné des policiers et des membres de gangs pour créer Leonida - La Crème Du Gaming",
@@ -17692,7 +17724,6 @@
     {
       "title": "The 3 GTA 6 Crime Systems That Make Every Getaway More Complicated - GTA BOOM",
       "link": "https://www.gtaboom.com/how-the-new-car-theft-wanted-and-criminal-profile-systems-work-in-gta-6-7e83",
-      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQV3pDY0E2MS1ZcmkyRm1oVU1fa1RDOEJrR2hmV3UwdGYtaTV0aDhoWFlxNWRoOENYS3ZpRnN4c2E1akR4eU5laXN5aDFYTUtpaF9LYlRIWmNaa29jS09GcWZ6dmJXWEc0bHpyRnFEWTMxZHdCeVVwckxPUFUydzZhZDBLc2E2RkkxQlc0cFFkcF9uMmdrRmdySHZxd0gwa3NUN1E?oc=5",
       "date": "2026-10-08T04:43:26+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17705,7 +17736,6 @@
     {
       "title": "Outliers: KYGO, KSOP Get Out Front On Wallen's GTA 6 Track. - Country Insider",
       "link": "https://www.countryinsider.com/news/outliers-kygo-ksop-get-out-front-on-wallens-gta-6-track/article_0ecc7178-e9e9-490e-896a-52fa636e7cef.html",
-      "source_link": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxNWk1NNDdOaEtTVGlTNXdXVWstSDFuNjR1MEh3ZHhxMjNkdE1Mcy1HbUM1em8yVWQyeVFESFZZRG1GQkg0NWpBVmVSRHJuZ2ZkeEgxa2dNeVdOOHFBdzQ2SjJGY3dfVWk5RkwtTTNCbG5SVXRSaUVFcHliMHdsMGdCSjVHMkZ2RVV5RjN3NlJSUG9oQXI3VTFzbVdXZWp5cGUzX2hCVEtFN0s3T3g1NWxudWdUOGJwTHdRd3JwYXNVSlNyV1dtOWtXMFN0U2dMVTNUUUZELW1WSU4?oc=5",
       "date": "2026-10-08T04:43:00+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17718,7 +17748,6 @@
     {
       "title": "Rockstar Says GTA 6 Will Require Players to Earn Money to Advance Story Missions - gHacks",
       "link": "https://www.ghacks.net/2026/10/08/rockstar-says-gta-6-will-require-players-to-earn-money-to-advance-story-missions/",
-      "source_link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPSjVkc0lhMkU5bExfWGpBTEQ1dUtpLWh6X2Y5bnhTNVk2Q1lWQkNWenBKZWF6c3o0VTFGX3YtNXoteFZkMTNwNEExZ0wtMklrYUlaWHc0SDhSSndHWE5rVjRoQjdxSEdXVzI5WVBjX0NvdTRtcHNNMU9udE0wb2stQ2oyVU13Q1BfSGF6VmlxaEhJZ3hGTVA3b0l2QXBoLXVoZXNzRk9pWmEyT25YSU5qeWpuLTdpdw?oc=5",
       "date": "2026-10-08T04:41:08+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17731,7 +17760,6 @@
     {
       "title": "New GTA 6 Details You Might Have Missed - IGN",
       "link": "https://www.ign.com/shorts/new-gta-6-details-you-might-have-missed",
-      "source_link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE90SUJUbmltYS0xbF85NXZYVUdjdVVJZmk1REJNQ2FBZUdrREtxS05GNzNhOWZEMkxmZVBXZ3hFOVNwMEh6MTZrUVlYX1Z5V2M2M0ZMRndQSTEtT3c4SGdvV1RMZ3NZTGxqWWo2Vi1xZTZkalJi?oc=5",
       "date": "2026-10-08T04:40:36+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17744,7 +17772,6 @@
     {
       "title": "Is GTA 6's Jason Neurodivergent? - IGN",
       "link": "https://www.ign.com/shorts/is-gta-6s-jason-neurodivergent",
-      "source_link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5lQ2ZQZTZpZ3Jaem0xeVU3anlFTk1FZFo1emNVOVFMX3ZWVG1kTnVkU3lmbUxXS29sQjctblhBX3ZldWdDWmIxQ01WUTJ6ekxaSlNxVXIzZXNZYWVJcmlJVk1TMDlHXzJf?oc=5",
       "date": "2026-10-08T04:36:59+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17757,7 +17784,6 @@
     {
       "title": "GTA 6 Could Be On PC At Launch - IGN",
       "link": "https://www.ign.com/shorts/gta-6-could-be-on-pc-at-launch",
-      "source_link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9VS1JiQ3R6NVdNQUdaOUpGRm9MZ0hjemRhamJzOGxlY3ZxeWZkNjJMaDdVSjRjaU9yeGRFdUtiemF4Z1JIU29PU0lVTE8zQ1cwU0JlblBRR1pPSk40eVEtaFJhd0c3dE00?oc=5",
       "date": "2026-10-08T04:35:43+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17770,7 +17796,6 @@
     {
       "title": "GTA 6 Lets You Skip Jason and Lucia's Romance or Shape How It Plays Out - GTA BOOM",
       "link": "https://www.gtaboom.com/rockstar-explains-optional-and-skippable-jason-and-lucia-relationship-system-in-gta-6-8e05",
-      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxONEx6dV84OE1KTHoyd2VZdzF0SVotZ3NseEhlQndsWmlmVTlEanB5U1R4Wm5UUHVlMUlqVzN2Zng3SW5NbjQxck5sV0JKb0phZVViZmljU0g2NndWWGE1X05LUzdBaF8zRDhwQW5IVzlxdC1ad1RwX3FSaVl6bWx1c0pHbzItQmtJbUd4V2JyaXJiMHRHNmktbDQ1Y0dsODhYWk02Qmd0WGJESnNJREphalYyODE?oc=5",
       "date": "2026-10-08T04:21:03+00:00",
       "source": "Google News (EN)",
       "official": false,
