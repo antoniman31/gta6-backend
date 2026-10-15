@@ -5188,6 +5188,165 @@ def test_rotation_reddit():
           "le chronomètre d'une source au repos ne bouge pas d'un iota : %s"
           % apres_repos["reddit-gta6-suivi"])
 
+def test_la_fenetre_ne_bouge_pas_dans_la_journee():
+    """À corpus figé, l'heure du passage ne doit pas changer la fenêtre visée.
+
+    LE DÉFAUT QUE CE CONTRÔLE VERROUILLE. L'ancienne mesure du débit
+    rangeait les articles par âge en jours ENTIERS depuis l'instant du
+    passage. L'heure avançant, les articles basculaient de seau en seau, la
+    médiane sautait, et la fenêtre — débit × 30 — sautait avec elle. Relevé
+    sur les 29 vrais passages du 14/10/2026, en recalculant la cible sur le
+    contenu réel de l'historique à chaque commit :
+
+        mesure par âge          3 390 → 4 830, 14 descentes, la pire de 180
+        mesure par jour civil   4 170 à chaque passage, 0 descente
+
+    Chaque descente retirait des articles ET relevait le plancher d'entrée
+    — les deux viennent du même calcul — donc elle refusait aussi ce que
+    les flux servaient encore. D'où les 113 revenants de la journée.
+
+    CE CONTRÔLE SAIT ÉCHOUER : vérifié en remettant la mesure par âge, il
+    rend une amplitude de 1 320 au lieu de 0.
+    """
+    print("\n[fenêtre] l'heure du passage ne fait pas bouger la cible")
+    import feed_store
+    from datetime import datetime, timedelta, timezone
+
+    # Un corpus FIGÉ, et IRRÉGULIER d'un jour à l'autre : avec un rythme
+    # parfaitement plat la médiane ne bougerait jamais et le contrôle
+    # serait vert sans rien prouver — y compris avec l'ancienne mesure.
+    depart = datetime(2026, 11, 10, tzinfo=feed_store.FUSEAU_MESURE)
+    corpus = []
+    for jour in range(1, 10):
+        for n in range(100 + 10 * jour):
+            quand = (depart - timedelta(days=jour)
+                     + timedelta(minutes=7 * n)).astimezone(timezone.utc)
+            corpus.append({"link": "https://x.test/%d-%d" % (jour, n),
+                           "title": "a", "date": quand.isoformat()})
+
+    cibles = [feed_store.taille_historique_visee(
+                  corpus, (depart + timedelta(hours=h)).astimezone(timezone.utc))
+              for h in range(24)]
+    amplitude = max(cibles) - min(cibles)
+    check(amplitude == 0,
+          "à corpus figé, la cible ne bouge pas de la journée "
+          "(%d → %d, amplitude %d)" % (min(cibles), max(cibles), amplitude))
+    check(all(b >= a for a, b in zip(cibles, cibles[1:])),
+          "et elle ne descend jamais en cours de journée — une descente "
+          "élague ET relève le plancher d'entrée")
+
+    # Le pas de minuit existe, lui, et c'est voulu : un jour révolu de plus
+    # entre dans la mesure. Ce qu'on refuse, c'est qu'il tombe n'importe
+    # quand dans la journée.
+    veille = feed_store.taille_historique_visee(
+        corpus, (depart - timedelta(hours=1)).astimezone(timezone.utc))
+    check(veille != cibles[0],
+          "le pas se produit bien à minuit, pas ailleurs (%d la veille au "
+          "soir, %d ensuite)" % (veille, cibles[0]))
+
+    # Et le fuseau est celui de Paris, comme la pause nocturne du robot :
+    # une journée doit vouloir dire la même chose partout dans le dépôt.
+    check(str(feed_store.FUSEAU_MESURE) in ("Europe/Paris", "UTC"),
+          "la mesure se fait sur le fuseau de Paris, avec repli sur UTC "
+          "(%s)" % feed_store.FUSEAU_MESURE)
+
+
+def test_memoire_des_elagues():
+    """Un article élagué puis resservi n'est pas une nouveauté.
+
+    Mesuré le 14/10/2026 en relisant les 29 versions successives de
+    docs/feed.json dans Git : 337 articles sortis de l'historique dans la
+    journée, 113 revenus aux passages suivants, recomptés neufs à chaque
+    retour. La cause de fond est corrigée ailleurs (le débit se mesure en
+    journées civiles) ; cette mémoire tient même si la fenêtre bouge pour
+    une vraie raison — une semaine creuse, une grosse source qui tombe.
+    """
+    print("\n[élagués] la mémoire des articles repris par leur source")
+    import feed_store, os, tempfile, json as _json
+    from datetime import datetime, timedelta, timezone
+
+    t = datetime(2026, 10, 15, 12, tzinfo=timezone.utc)
+    memoire = feed_store.note_elagues({}, ["https://a.test/1",
+                                           "https://a.test/2"], t)
+    check(set(memoire) == {"https://a.test/1", "https://a.test/2"},
+          "les liens élagués sont retenus avec leur date")
+
+    # L'oubli : au-delà du délai, l'entrée part. Sans quoi le fichier
+    # enflerait à chaque passage.
+    memoire["https://vieux.test/x"] = (
+        t - timedelta(days=feed_store.JOURS_MEMOIRE_ELAGUES + 1)).isoformat()
+    reste = feed_store.elague_memoire_elagues(memoire, t)
+    check("https://vieux.test/x" not in reste and len(reste) == 2,
+          "ce qui dépasse le délai est oublié (%d gardés)" % len(reste))
+
+    # Une date illisible ne rend pas l'entrée immortelle.
+    memoire["https://bancal.test/x"] = "pas une date"
+    check("https://bancal.test/x" not in feed_store.elague_memoire_elagues(memoire, t),
+          "une date illisible ne fait pas vivre une entrée pour toujours")
+
+    # Le plafond, et il garde les PLUS RÉCENTS : ce sont eux qui peuvent
+    # encore revenir.
+    gros = {}
+    for n in range(feed_store.MEMOIRE_ELAGUES_MAX + 50):
+        gros["https://m.test/%d" % n] = (t - timedelta(minutes=n)).isoformat()
+    coupe = feed_store.elague_memoire_elagues(gros, t)
+    check(len(coupe) == feed_store.MEMOIRE_ELAGUES_MAX,
+          "le plafond tient (%d)" % len(coupe))
+    check("https://m.test/0" in coupe
+          and "https://m.test/%d" % (feed_store.MEMOIRE_ELAGUES_MAX + 49) not in coupe,
+          "et il garde les plus récemment élagués, pas les plus anciens")
+
+    # Aller-retour sur disque, fichier abîmé compris.
+    rep = tempfile.mkdtemp(prefix="elagues-")
+    try:
+        chemin = os.path.join(rep, "m.json")
+        feed_store.ecrire_elagues_recents({"https://a.test/1": t.isoformat()},
+                                          chemin, t)
+        check(feed_store.lire_elagues_recents(chemin) ==
+              {"https://a.test/1": t.isoformat()},
+              "la mémoire se relit telle qu'elle a été écrite")
+        with open(chemin, "w", encoding="utf-8") as f:
+            f.write("{pas du json")
+        check(feed_store.lire_elagues_recents(chemin) == {},
+              "un fichier abîmé rend une mémoire vide, jamais une erreur")
+        check(feed_store.lire_elagues_recents(os.path.join(rep, "absent.json")) == {},
+              "un fichier absent non plus")
+        # Le tri, pour que Git n'ait qu'un petit diff à chaque passage.
+        feed_store.ecrire_elagues_recents({"https://z.test/": t.isoformat(),
+                                           "https://a.test/": t.isoformat()},
+                                          chemin, t)
+        with open(chemin, encoding="utf-8") as f:
+            ecrit = list(_json.load(f)["liens"])
+        check(ecrit == sorted(ecrit),
+              "le fichier est trié — sinon chaque passage réécrit tout dans Git")
+    finally:
+        import shutil; shutil.rmtree(rep, ignore_errors=True)
+
+    # ELLE NE VIT PAS DANS docs/. Le fichier publié est lu par l'app, et
+    # cette mémoire ne la regarde pas.
+    check(not feed_store.MEMOIRE_ELAGUES_PATH.startswith("docs/"),
+          "la mémoire n'est pas servie à l'app (%s)"
+          % feed_store.MEMOIRE_ELAGUES_PATH)
+
+    # Et le robot s'en sert : les revenants sortent de newly_added, pas de
+    # l'historique.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    bloc_main = src[src.index("revenants = [i for i in newly_added"):]
+    bloc_main = bloc_main[:bloc_main.index("# Ce qui part maintenant")]
+    check("newly_added[:]" in bloc_main and "all_items" not in bloc_main,
+          "un revenant perd son statut de nouveauté, pas sa place dans "
+          "l'historique")
+    check("new_counts" in bloc_main,
+          "et le compte par source suit, sinon la somme contredirait le total")
+
+    # Le fichier doit survivre au workflow : commité, et remis après un
+    # reset de conflit — même traitement que le cache de décodage.
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    check(wf.count(feed_store.MEMOIRE_ELAGUES_PATH) >= 4,
+          "le workflow le commite et le préserve après un conflit (%d mentions)"
+          % wf.count(feed_store.MEMOIRE_ELAGUES_PATH))
+
+
 def test_les_constantes_citees_sont_les_bonnes():
     """Une constante écrite « NOM = valeur » dans la doc dit la vraie valeur.
 
@@ -9243,6 +9402,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_recap_du_matin_couvre_la_nuit,
            test_langue_et_couverture_publiees,
            test_rotation_reddit,
+           test_la_fenetre_ne_bouge_pas_dans_la_journee,
+           test_memoire_des_elagues,
            test_les_constantes_citees_sont_les_bonnes,
            test_readme_dit_la_vraie_fenetre,
            test_discord_ne_fait_jamais_echouer_le_passage,

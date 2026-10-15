@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1809
+qui permet de tester tout le pipeline sans sortir de la machine. **1826
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4687,6 +4687,75 @@ Le test du plafond, qui n'exerçait que deux de ses trois branches, les
 exerce maintenant toutes les trois, et **calcule ses débits à partir de
 `MAX_HISTORY_DAYS`** au lieu de les coder en dur — sans quoi il aurait
 recommencé à mentir au prochain réglage.
+
+### La fenêtre respirait au rythme de l'horloge — 15/10/2026
+
+**La question d'Antoni, devant son téléphone** : « Pourquoi j'ai 10 articles
+non lus, ça me dit que depuis la dernière visite il y a que 5 nouveaux
+articles ? » Les deux compteurs ne disaient pas la même chose, et aucun des
+deux n'était cassé : le fil lui-même rejouait les mêmes articles.
+
+**Ce qu'on a mesuré.** En relisant les **29 versions successives de
+`docs/feed.json`** écrites par le robot le 14/10 — pas une simulation, les
+vrais commits :
+
+| | |
+|---|---|
+| taille de l'historique dans la journée | 3 390 → 3 650 |
+| articles sortis de l'historique | **337** |
+| articles **revenus** après être sortis | **113** |
+
+Trois retours groupés : 63 articles à 13 h 02, 45 à 15 h 02, 4 à 16 h 02 —
+chacun juste après une descente. Des articles récents, pas des vieux :
+Reddit, gta6times, rockstaractu, du jour même.
+
+**La cause.** `debit_quotidien` rangeait les articles par âge en jours
+**entiers depuis l'instant du passage**. À 11 h, un article d'avant-hier
+13 h compte dans le seau « 1 jour » ; à 14 h il bascule dans le seau
+« 2 jours ». La médiane saute, et la fenêtre visée — débit × 30 — saute avec
+elle. En recalculant la cible sur le contenu réel de l'historique à chacun
+de ces 29 passages :
+
+| mesure | cible sur la journée | descentes |
+|---|---|---|
+| par âge glissant | 3 390 → 4 830 | **14**, la pire de 180 |
+| par jour civil (Paris) | **4 170 partout** | **0** |
+
+Et une descente ne fait pas que retirer des articles : elle relève aussi le
+**plancher d'entrée**, qui sort du même calcul, donc elle refuse en prime ce
+que les flux servent encore. C'est ce qui explique que des articles *du
+jour* disparaissent puis reviennent — ils n'étaient pas vieux, ils étaient
+sous un plancher qui venait de monter.
+
+**Le correctif, en deux morceaux.**
+
+1. **Le débit se mesure en journées civiles**, sur le fuseau de Paris —
+   celui que le robot utilise déjà pour sa pause nocturne. Le pas existe
+   toujours, mais il tombe à minuit, une fois, au lieu de n'importe quand
+   dans la journée. Repli explicite sur UTC si les données de fuseaux
+   manquent : l'artefact reviendrait en partie, mais le robot ne s'arrête
+   pas pour ça.
+2. **Une mémoire des élagués** (`elagues-recents.json`, 15 jours, 5 000
+   entrées au plus) : un article déjà sorti de l'historique et resservi par
+   sa source reprend sa place, mais **ne recompte pas comme neuf** — ni dans
+   le total, ni dans le décompte par source. La cause de fond est corrigée
+   au point 1 ; cette mémoire tient même si la fenêtre bouge pour une vraie
+   raison — une semaine creuse, une grosse source qui tombe.
+
+**Ce qui a été écarté, et il faut le dire.** Un troisième morceau était
+prévu et validé : faire rétrécir la fenêtre **par petits pas** au lieu d'un
+coup. Il a été écrit deux fois et retiré deux fois. Un pas fixe par passage
+dépend de la fréquence des passages, réglée **hors du dépôt** (30 jours
+demandés donnaient 39 jours obtenus) ; un pas proportionnel casse une
+équivalence qui porte tout le filtre d'entrée — *le plancher vient du même
+calcul que le plafond, donc tout article refusé aurait été retiré à la fin
+du même passage, et les deux chemins doivent donner le MÊME résultat*. Avec
+un plafond qui descend plus lentement que le plancher, ce n'est plus vrai.
+Cinq contrôles l'ont dit. Non livré.
+
+**Le contrôle qui verrouille ça** : à corpus figé, on balaie les 24 heures
+d'une journée et on exige une amplitude de **zéro** et aucune descente.
+Vérifié capable d'échouer — en remettant la mesure par âge, il rend 300.
 
 ### Les sources : la mesure a surtout confirmé l'existant
 

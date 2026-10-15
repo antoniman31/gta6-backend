@@ -211,7 +211,7 @@ jobs:
           # passage puis jetés avec le runner, sans la moindre erreur pour
           # le dire. Un répertoire qui n'existe pas encore ne fait pas
           # échouer `git add`.
-          git add docs/feed.json docs/feed-recent.json docs/archives decode-cache.json
+          git add docs/feed.json docs/feed-recent.json docs/archives decode-cache.json elagues-recents.json
           # Commit systématique, même si generated_at est la seule vraie
           # différence : Git compresse les diffs (delta), donc le coût réel
           # en espace est minime. L'alternative (ignorer generated_at dans
@@ -261,6 +261,7 @@ jobs:
             # articles), mais c'est du réseau payé deux fois, sur le
             # composant précisément tombé le 3 octobre.
             cp decode-cache.json "$RUNNER_TEMP/decode-cache.json" 2>/dev/null || true
+            cp elagues-recents.json "$RUNNER_TEMP/elagues-recents.json" 2>/dev/null || true
 
             # On repart de l'état distant, puis la fusion écrit directement
             # dans docs/ : le commit local rejeté est remplacé, jamais
@@ -268,6 +269,7 @@ jobs:
             # les deux restent cohérents.
             git reset --hard origin/main
             cp "$RUNNER_TEMP/decode-cache.json" decode-cache.json 2>/dev/null || true
+            cp "$RUNNER_TEMP/elagues-recents.json" elagues-recents.json 2>/dev/null || true
             if ! python merge_feed.py "$RUNNER_TEMP/theirs.json" "$RUNNER_TEMP/ours.json" docs/feed.json; then
               echo "Fusion impossible — abandon sans écraser le dépôt distant."
               exit 1
@@ -276,7 +278,7 @@ jobs:
             # elle compte double : le `git reset --hard` ci-dessus a effacé
             # les fichiers d'archive du passage, c'est merge_feed.py qui
             # vient de les réécrire depuis le fil fusionné.
-            git add docs/feed.json docs/feed-recent.json docs/archives decode-cache.json
+            git add docs/feed.json docs/feed-recent.json docs/archives decode-cache.json elagues-recents.json
             if git diff --quiet --cached; then
               echo "Le distant contient déjà tout — rien à republier."
               exit 0

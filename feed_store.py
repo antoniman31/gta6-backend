@@ -300,6 +300,35 @@ def item_protege(item):
 # Le jour EN COURS est exclu. Il est incomplet par construction — à midi il
 # ne porte que la moitié de ses articles — et le compter tirerait la mesure
 # vers le bas à chaque passage de la matinée.
+# LE DÉBIT SE MESURE SUR DES JOURNÉES CIVILES, et c'est une correction de
+# fond, pas un détail de présentation. L'ancienne version rangeait les
+# articles par âge en jours ENTIERS depuis l'instant du passage. À mesure
+# que l'heure avance, les articles basculent d'un seau à l'autre, la médiane
+# saute, et la fenêtre visée — débit × 30 — saute avec elle.
+#
+# Relevé sur les 29 VRAIS passages du 14/10/2026, en recalculant la cible
+# sur le contenu réel de l'historique à chaque commit de docs/feed.json :
+#
+#     mesure par âge         3 390 → 4 830, 14 descentes, la pire de 180
+#     mesure par jour civil  4 170 à chaque passage, 0 descente
+#
+# Une descente ne fait pas que retirer des articles : elle relève aussi le
+# plancher d'entrée, qui sort du MÊME calcul, donc elle refuse en prime ce
+# que les flux servent encore. Les mêmes versions de feed.json relues dans
+# Git montrent le résultat : 337 articles sortis de l'historique dans la
+# journée, 113 revenus aux passages suivants, recomptés neufs à chaque
+# retour.
+#
+# Le fuseau de Paris et non UTC : c'est déjà la convention du robot pour la
+# pause nocturne, et une journée doit vouloir dire la même chose partout.
+# Repli explicite sur UTC si les données de fuseaux manquent — l'artefact
+# reviendrait en partie, mais le robot ne doit pas s'arrêter pour ça.
+try:
+    from zoneinfo import ZoneInfo
+    FUSEAU_MESURE = ZoneInfo("Europe/Paris")
+except Exception:  # pragma: no cover - dépend de l'image, pas du code
+    FUSEAU_MESURE = timezone.utc
+
 JOURS_MESURE_DEBIT = 7
 
 
@@ -313,6 +342,7 @@ def debit_quotidien(items, maintenant=None):
     journées d'annonce au lieu de suivre le régime de fond.
     """
     maintenant = maintenant or datetime.now(timezone.utc)
+    aujourdhui = maintenant.astimezone(FUSEAU_MESURE).date()
     par_jour = {}
     for item in items:
         if item_protege(item):
@@ -320,9 +350,10 @@ def debit_quotidien(items, maintenant=None):
         quand = parse_date_key(item.get("date"))
         if quand == DATE_FLOOR:
             continue
-        age = (maintenant - quand).days
-        if 1 <= age <= JOURS_MESURE_DEBIT:
-            par_jour[age] = par_jour.get(age, 0) + 1
+        # JOURNÉES CIVILES, pas un âge en heures. Voir FUSEAU_MESURE.
+        ecart = (aujourdhui - quand.astimezone(FUSEAU_MESURE).date()).days
+        if 1 <= ecart <= JOURS_MESURE_DEBIT:
+            par_jour[ecart] = par_jour.get(ecart, 0) + 1
     if not par_jour:
         return 0.0
     comptes = sorted(par_jour.get(j, 0) for j in range(1, JOURS_MESURE_DEBIT + 1))
@@ -1004,6 +1035,95 @@ def ecrire_cache_decodage(cache, path=CACHE_DECODAGE_PATH, maintenant=None):
     write_feed({"generated_at": _horodatage(maintenant),
                 "liens": dict(sorted(cache.items()))}, path)
     return len(cache)
+
+
+# ---------------------------------------------------------------------------
+# La mémoire des élagués : un article qui revient n'est pas une nouveauté
+# ---------------------------------------------------------------------------
+#
+# Le fil accepte à l'entrée des articles plus vieux que ce que la fenêtre
+# garde. Un article élagué peut donc être reservi par sa source, rentrer,
+# repartir, rentrer encore — et il est recompté NEUF à chaque retour.
+# Mesuré le 14/10/2026 : 309 articles élagués dans la matinée, 112 revenus
+# dans les trois passages suivants, soit 40 % des « nouveaux » de la
+# journée.
+#
+# La cause de fond — une fenêtre qui oscillait avec l'heure — est corrigée
+# ailleurs (voir FUSEAU_MESURE). Cette mémoire-ci est indépendante : elle
+# tient même si la fenêtre bouge pour une vraie raison, et c'est pour ça
+# qu'elle existe plutôt que de faire confiance à l'autre correction.
+#
+# CE QU'ELLE NE FAIT PAS : empêcher l'article de rentrer. Il rejoint
+# l'historique comme avant. Elle l'empêche seulement d'être COMPTÉ neuf,
+# donc d'être annoncé et de gonfler le « N nouveaux ».
+#
+# ELLE NE VIT PAS DANS feed.json. Le fichier publié est lu par l'app, et
+# cette mémoire ne la regarde pas : un fichier à part, comme le cache de
+# décodage, écrit par le robot et jamais servi.
+MEMOIRE_ELAGUES_PATH = "elagues-recents.json"
+
+# Quinze jours : un article élagué vers trente jours d'âge peut encore
+# être reservi jusqu'à quarante-cinq (MAX_ARTICLE_AGE_DAYS côté robot),
+# donc quinze jours de mémoire couvrent toute la queue. Au-delà, l'entrée
+# le refuse d'elle-même.
+JOURS_MEMOIRE_ELAGUES = 15
+
+# Et un plafond, parce qu'un fichier réécrit à chaque passage ne doit pas
+# pouvoir enfler sans borne. Les plus récemment élagués sont gardés : ce
+# sont eux qui risquent de revenir.
+MEMOIRE_ELAGUES_MAX = 5000
+
+
+def lire_elagues_recents(path=MEMOIRE_ELAGUES_PATH):
+    """{lien élagué -> date de l'élagage}, ou {} si le fichier manque.
+
+    Comme le cache de décodage, un fichier absent ou abîmé n'est jamais une
+    erreur : au pire quelques articles seront recomptés neufs une fois.
+    """
+    try:
+        with open(path, encoding="utf-8") as f:
+            brut = json.load(f)
+    except (OSError, ValueError):
+        return {}
+    liens = brut.get("liens") if isinstance(brut, dict) else None
+    if not isinstance(liens, dict):
+        return {}
+    return {k: v for k, v in liens.items()
+            if isinstance(k, str) and isinstance(v, str) and k and v}
+
+
+def note_elagues(memoire, liens, maintenant=None):
+    """Retient que ces liens viennent d'être élagués. Rend la mémoire."""
+    quand = _horodatage(maintenant)
+    for lien in liens:
+        if lien:
+            memoire[lien] = quand
+    return memoire
+
+
+def elague_memoire_elagues(memoire, maintenant=None):
+    """Oublie ce qui est trop vieux, puis ce qui dépasse le plafond."""
+    maintenant = maintenant or datetime.now(timezone.utc)
+    limite = maintenant - timedelta(days=JOURS_MEMOIRE_ELAGUES)
+    vivants = {}
+    for lien, quand in memoire.items():
+        note = parse_date_key(quand)
+        # Une date illisible ne doit pas rendre l'entrée immortelle.
+        if note != DATE_FLOOR and note >= limite:
+            vivants[lien] = quand
+    if len(vivants) <= MEMOIRE_ELAGUES_MAX:
+        return vivants
+    recents = sorted(vivants.items(), key=lambda kv: kv[1], reverse=True)
+    return dict(recents[:MEMOIRE_ELAGUES_MAX])
+
+
+def ecrire_elagues_recents(memoire, path=MEMOIRE_ELAGUES_PATH, maintenant=None):
+    """Écrit la mémoire, TRIÉE — même raison que pour le cache de décodage :
+    un fichier réécrit vingt-huit fois par jour doit produire de petits
+    diffs, sinon chaque passage réécrit tout le fichier dans Git."""
+    write_feed({"generated_at": _horodatage(maintenant),
+                "liens": dict(sorted(memoire.items()))}, path)
+    return len(memoire)
 
 
 def elague_cache_decodage(cache, items):
