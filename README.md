@@ -4849,6 +4849,32 @@ entièrement sur un fil sans `vu_le`, c'est-à-dire sur tout le fil publié
 aujourd'hui. Relu deux fois sans le voir ; c'est la suite navigateur qui
 l'a sorti. Septième entrée de la liste des sondes fausses.
 
+### Le compteur repart dans l'autre sens après la sortie — 16/10/2026
+
+Passé le 19 novembre, `updateCountdown` affichait « GTA 6 est sorti ! » et
+ne bougeait plus jamais. Au bout d'une semaine, une page qui répète la même
+phrase a l'air abandonnée — et c'est le seul endroit de l'app dont le texte
+dit explicitement quel jour on est.
+
+Il compte maintenant les jours écoulés : **« Sorti depuis 3 jours »**. Le
+premier jour garde le palier `final`, celui qui crie — c'est LE moment, il
+le mérite ; ensuite le ton redescend, parce qu'un bandeau rouge permanent
+n'alerte plus de rien.
+
+**Écrit pendant le gel, et c'est délibéré.** Le bloc est INERTE avant le 19
+novembre : il ne change rien à ce qui tourne d'ici là, et il évite d'avoir
+à improviser une modification le 20 au matin, quand plus personne n'aura
+envie de toucher au code.
+
+Le contrôle fausse **l'horloge du navigateur** (`page.clock`) au lieu de
+déplacer la date de sortie côté page : `GTA6_RELEASE` est un `const` de
+module, et un contrôle qui aurait besoin de le réécrire n'éprouverait pas
+le vrai chemin. Huit vérifications, des paliers d'avant-sortie jusqu'à
+trois mois après. Vérifié capable d'échouer en remettant l'ancien texte
+figé : cinq passent au rouge.
+
+Le compteur n'avait, jusqu'ici, **aucun contrôle du tout**.
+
 ### Les sources : la mesure a surtout confirmé l'existant
 
 Le décompte d'abord, parce qu'il est plus dur qu'attendu :

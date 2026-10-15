@@ -1017,6 +1017,24 @@ dans `.github/dependabot.yml`. Pas fait : avec le contrôle, une telle PR
 vire au rouge toute seule — c'est du bruit, plus un danger — et l'ignorer
 ferait manquer le jour où le décodeur passera à `selectolax.lexbor`.
 
+### L'après-19-novembre, décidé
+
+Rien n'était prévu pour le lendemain de la sortie : le compteur affichait
+« GTA 6 est sorti ! » et se figeait là pour toujours. Antoni a tranché
+pour **un compteur à l'envers** — « Sorti depuis 3 jours ».
+
+Écrit tout de suite bien que le code soit gelé, et c'est délibéré : le
+bloc est inerte avant le 19 novembre, donc il ne touche à rien de ce qui
+tourne d'ici là, et il évite d'improviser une modification le 20 au matin.
+
+Trois autres décisions prises au passage, toutes dans le sens du statu
+quo : **gel strict** d'ici la sortie (correctifs seulement, plus la
+répétition du 10 novembre) ; **pause nocturne inchangée**, levée du 18 au
+20 novembre seulement — les annonces Rockstar passent de toute façon la
+nuit ; **Dependabot laissé libre** de reproposer selectolax, puisque le
+contrôle du décodeur fait virer une telle PR au rouge et que le jour où
+elle deviendra verte sera le signal que le verrou peut sauter.
+
 **Ce qui reste, et qui n'est pas du code** : vérifier la portée du jeton
 d'accès personnel, et une troisième répétition générale vers le 10
 novembre.

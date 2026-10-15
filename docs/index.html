@@ -7783,9 +7783,29 @@ function updateCountdown(){
   const now = new Date();
   const diff = GTA6_RELEASE - now;
 
+  // APRÈS LA SORTIE, LE COMPTEUR REPART DANS L'AUTRE SENS.
+  //
+  // Il affichait « GTA 6 est sorti ! » et ne bougeait plus jamais. Au bout
+  // d'une semaine, une page qui répète la même phrase a l'air abandonnée —
+  // et c'est la seule partie de l'app dont le texte dit explicitement
+  // quel jour on est.
+  //
+  // Le premier jour garde le palier « final », celui qui crie : c'est LE
+  // moment, il mérite son traitement. Ensuite on redescend au ton normal,
+  // parce qu'un bandeau rouge permanent n'alerte plus de rien.
+  //
+  // Ce bloc est INERTE avant le 19 novembre 2026 — il ne change rien à ce
+  // qui tourne pendant le gel. Écrit maintenant pour n'avoir rien à
+  // improviser le 20 au matin.
   if(diff <= 0){
-    el.textContent = "GTA 6 est sorti !";
-    el.className = "countdown final";
+    const ecoule = -diff;
+    const joursDepuis = Math.floor(ecoule / (1000 * 60 * 60 * 24));
+    const texteSorti = joursDepuis < 1
+      ? "GTA 6 EST SORTI !"
+      : `Sorti depuis ${joursDepuis} jour${joursDepuis > 1 ? "s" : ""}`;
+    const classeSortie = joursDepuis < 1 ? "countdown final" : "countdown";
+    if(el.textContent !== texteSorti) el.textContent = texteSorti;
+    if(el.className !== classeSortie) el.className = classeSortie;
     return;
   }
 
