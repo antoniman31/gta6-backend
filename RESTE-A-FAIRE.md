@@ -1017,6 +1017,20 @@ dans `.github/dependabot.yml`. Pas fait : avec le contrôle, une telle PR
 vire au rouge toute seule — c'est du bruit, plus un danger — et l'ignorer
 ferait manquer le jour où le décodeur passera à `selectolax.lexbor`.
 
+### Le compteur avait six heures de retard
+
+Antoni, en passant : « le jeu sort le 19/11 à 00 h 00 heure de Paris ». La
+constante valait minuit à **New York** — 6 h du matin à Paris — sur la foi
+d'un commentaire disant « siège Rockstar/Take-Two », supposition jamais
+sourcée et que rien ne vérifiait. Le 19 à 00 h 30, pendant qu'on y joue, le
+compteur aurait annoncé « C'EST AUJOURD'HUI — 5h 29m ».
+
+La réponse était dans le fil que l'app collecte elle-même depuis le
+07/09/2026 : déverrouillage à **minuit heure locale**, par vagues, la
+Nouvelle-Zélande à 11 h 00 UTC le 18 — chiffre qui recoupe exactement
+UTC+13. Corrigé en `2026-11-19T00:00:00+01:00`, et le contrôle regarde
+désormais la borne des deux côtés de minuit.
+
 ### L'après-19-novembre, décidé
 
 Rien n'était prévu pour le lendemain de la sortie : le compteur affichait

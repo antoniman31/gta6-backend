@@ -3299,8 +3299,15 @@ def test_compte_a_rebours(nav, url):
     print("\n[compteur] avant la sortie, et après")
 
     def a(instant):
-        """Rend le texte et la classe du compteur à cet instant-là."""
-        ctx = nav.new_context(viewport={"width": 390, "height": 850})
+        """Rend le texte et la classe du compteur à cet instant-là.
+
+        Fuseau de Paris explicite : la constante porte son propre décalage,
+        donc la comparaison n'en dépend pas — mais le contrôle doit DIRE
+        d'où il regarde, sinon il deviendrait muet le jour où quelqu'un
+        passerait la sortie en « minuit heure locale ».
+        """
+        ctx = nav.new_context(viewport={"width": 390, "height": 850},
+                              timezone_id="Europe/Paris")
         ctx.clock.install(time=instant)
         page = ctx.new_page()
         page.goto(url, wait_until="load")
@@ -3313,9 +3320,11 @@ def test_compte_a_rebours(nav, url):
         ctx.close()
         return etat
 
-    # La sortie : 19/11/2026 à minuit heure de New York, soit 05h00 UTC.
-    SORTIE = "2026-11-19T05:00:00Z"
-
+    # La sortie : 19/11/2026 à MINUIT HEURE DE PARIS, soit 23h00 UTC le 18.
+    # Le jeu se déverrouille à minuit heure locale, par vagues — minuit en
+    # Nouvelle-Zélande d'abord (11h00 UTC le 18), minuit à l'Est des
+    # États-Unis en dernier. Relevé dans le fil que l'app collecte
+    # elle-même, les 07 et 08/09/2026 (GTA BOOM, VGTimes, Eurogamer).
     avant = a("2026-11-01T12:00:00Z")
     check("Sortie dans" in avant["texte"],
           "[compteur] avant la sortie, il compte à rebours (« %s »)"
@@ -3326,6 +3335,25 @@ def test_compte_a_rebours(nav, url):
           "[compteur] à moins de sept jours, le palier passe à « urgent »")
     check(a("2026-11-18T18:00:00Z")["classe"].endswith("final"),
           "[compteur] dans les dernières heures, « final »")
+
+    # LA BORNE, DES DEUX CÔTÉS — et c'est le contrôle qui manquait.
+    #
+    # La constante a longtemps valu minuit à NEW YORK, soit 6 h du matin à
+    # Paris. À 00 h 30 le 19 novembre, pendant qu'on y joue, le compteur
+    # annonçait « C'EST AUJOURD'HUI — 5h 29m ». Aucun contrôle ne regardait
+    # cette heure-là ; celui-ci la regarde, des deux côtés de minuit.
+    veille = a("2026-11-18T22:30:00Z")   # 23 h 30 à Paris, le 18
+    check("Sortie dans" in veille["texte"] or "C'EST" in veille["texte"],
+          "[compteur] une demi-heure AVANT minuit à Paris, il compte encore "
+          "(« %s »)" % veille["texte"])
+    check("SORTI" not in veille["texte"].upper(),
+          "[compteur] et il n'annonce surtout pas la sortie en avance "
+          "(« %s »)" % veille["texte"])
+    minuit = a("2026-11-18T23:30:00Z")   # 00 h 30 à Paris, le 19
+    check(minuit["texte"] == "GTA 6 EST SORTI !",
+          "[compteur] une demi-heure APRÈS minuit à Paris, c'est sorti — "
+          "la valeur « minuit à New York » ratait exactement ça (« %s »)"
+          % minuit["texte"])
 
     # LE JOUR J. Le palier qui crie est mérité ce jour-là, et ce jour-là
     # seulement.
