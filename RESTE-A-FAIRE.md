@@ -982,6 +982,41 @@ articles par jour qui arrivent hors fenêtre. Ce sont majoritairement des
 fiches produit du Rockstar Store et des reprises Google News d'il y a un
 mois, et il aurait fallu changer la règle du fichier que l'app charge.
 
+### Et dans la foulée, les trois PR Dependabot
+
+Antoni les a sorties du lot : trois PR ouvertes, trois sorts différents.
+
+- **#157 pycparser 3.0 → 3.11** — fusionnée. Transitive de `cffi`, qui la
+  requiert sans borne, quatre suites vertes. Rebasée d'abord sur le
+  nouveau `main` pour que le garde-fou ci-dessous tourne dessus.
+- **#156 multidict 6.9.1 → 7.1.0** — fermée. `aiohttp 3.14.4` exige
+  `multidict<7.0,>=4.5` : le `pip install` échoue avant les tests. Ce
+  n'est pas le code qui refuse, c'est la résolution des dépendances.
+- **#150 selectolax 0.4.13 → 1.0.0** — fermée. C'est le paquet et la
+  version exacts de la panne du 03/10. Vérifié le jour même :
+  `googlenewsdecoder` est toujours en 0.2.1 (publiée le 20/09) et importe
+  toujours `selectolax.parser`, sans borne haute de son côté.
+
+**ET C'EST LA PR #150 QUI A RÉVÉLÉ LE VRAI DÉFAUT : elle était VERTE.**
+Les quatre suites passaient avec le décodeur cassé. Le repli est
+volontaire — sans décodeur le robot doit continuer de tourner, donc rien
+ne plante — et les deux seules assertions qui parlaient du décodeur
+portaient sur le TEXTE de `fetch_feeds.py`, pas sur le fait que l'import
+réussisse. Un clic et la panne de trois jours revenait à l'identique.
+
+`test_le_decodeur_google_news_est_vraiment_la` exige désormais
+`HAS_DECODER is True`, que `selectolax.parser` réponde, et exerce deux
+fonctions pures du décodeur **hors ligne** (la suite ne fait pas de
+réseau). Vérifié capable d'échouer en simulant selectolax 1.0 par un faux
+paquet n'exposant que `lexbor` : quatre contrôles au rouge, avec le
+message mot pour mot du 03/10.
+
+**Laissé de côté, et c'est une question ouverte pour Antoni** : Dependabot
+réouvrira une PR selectolax à la prochaine version. On pourrait l'ignorer
+dans `.github/dependabot.yml`. Pas fait : avec le contrôle, une telle PR
+vire au rouge toute seule — c'est du bruit, plus un danger — et l'ignorer
+ferait manquer le jour où le décodeur passera à `selectolax.lexbor`.
+
 **Ce qui reste, et qui n'est pas du code** : vérifier la portée du jeton
 d'accès personnel, et une troisième répétition générale vers le 10
 novembre.
