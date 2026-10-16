@@ -923,10 +923,24 @@
      · 57 secondes » — et à 320 px il se coupait entre le nombre et son
      unité : « 5 / minutes ». Une tuile ne peut pas se casser au milieu
      d'un mot. Le motif (nombre au-dessus, unité dessous) est celui de
-     .stats-chiffre, déjà en place dans le panneau Statistiques. */
+     .stats-chiffre, déjà en place dans le panneau Statistiques.
+
+     ET TOUT TIENT SUR UNE LIGNE. En trois colonnes, six unités se
+     rangeaient en 3 + 2, et la deuxième rangée se redisposait à chaque
+     fois qu'une unité tombait à zéro. Mesuré à 320 px : le panneau a
+     246 px de contenu, un nombre à deux chiffres en fait 25, et les
+     libellés abrégés 18 à 24 — six colonnes tiennent avec 56 px de
+     marge. Ce sont les libellés en toutes lettres qui forçaient le
+     retour : « secondes » fait 48 px à lui seul.
+
+     COLONNES DE LARGEUR RÉGULIÈRE, et c'est un rendu qui l'a montré :
+     collées à leur contenu, « 1 0 2 9 59 5 » se lit comme une suite de
+     chiffres. Bornées en haut pour que trois tuiles ne s'éparpillent pas
+     sur toute la largeur le dernier jour. */
   .compteur-tuiles{
-    display:grid; grid-template-columns:repeat(3, 1fr); gap:12px 8px;
-    text-align:center; margin:0 0 16px;
+    display:grid; grid-auto-flow:column;
+    grid-auto-columns:minmax(34px, 52px); justify-content:center;
+    gap:2px; text-align:center; margin:0 0 16px;
   }
   .compteur-tuiles b{
     display:block; font-family:'JetBrains Mono',monospace; font-weight:700;
@@ -936,30 +950,33 @@
     display:block; font-size:11px; color:var(--text-dim); margin-top:3px;
   }
   /* Deux tailles seulement. .precis est la disposition des dernières
-     24 heures, quand la seconde est l'information ; .second est le même
-     découpage relégué sous les dodos tant qu'il reste des nuits. */
+     24 heures, quand la seconde est l'information ; .second est la
+     disposition ordinaire. */
   .compteur-tuiles.precis b{font-size:28px; color:var(--accent);}
   .compteur-tuiles.second b{font-size:20px;}
-  /* Les équivalences : le même découpage en une seule unité à la fois.
-     Troisième taille, volontairement discrète — c'est un complément. */
+  /* LES UNITÉS À ZÉRO RESTENT AFFICHÉES, en gris. Les masquer changeait
+     le nombre de tuiles, donc la disposition de toute la ligne, à chaque
+     fois qu'une unité tombait — exactement ce qu'Antoni a signalé
+     (« c'est quand les mois partiront »). Elles sont là, discrètes, et
+     la ligne ne bouge plus jamais. */
+  .compteur-tuiles .zero b{color:var(--text-dim); opacity:.45;}
+  .compteur-tuiles .zero span{opacity:.45;}
+
+  /* Les équivalences gardent trois colonnes à elles : « 48 179 » fait
+     58 px, il ne rentrerait pas dans une tuile de 52. */
+  .compteur-tuiles.equiv{
+    grid-auto-flow:row; grid-template-columns:repeat(3, 1fr);
+    gap:0 8px;
+  }
   .compteur-tuiles.equiv b{font-size:16px;}
 
-  /* LES DODOS EN VEDETTE, tant qu'il en reste à compter. C'est la seule
-     information du panneau qui ne soit pas une mesure, et celle qu'Antoni
-     a demandée : elle a droit au plus gros chiffre de l'écran. */
-  .compteur-vedette{text-align:center; margin:4px 0 20px;}
-  .compteur-vedette .emoji{display:block; font-size:24px; line-height:1;}
-  .compteur-vedette b{
-    display:block; font-family:'JetBrains Mono',monospace;
-    font-size:40px; font-weight:700; color:var(--accent); line-height:1.1;
-    margin-top:4px;
-  }
-  .compteur-vedette span{display:block; font-size:12px; color:var(--text-dim);}
-  /* Les deux dernières nuits, « Plus qu'un dodo » n'est plus un chiffre à
-     mettre en gros : il redescend en ligne simple sous les tuiles. */
+  /* Le compte de dodos, SOUS LA BARRE : « c'est juste un truc en plus,
+     pas un truc hyper important » (Antoni, 16/10). Il a eu sa vedette à
+     40 px pendant une demi-journée ; elle lui donnait un poids qu'il n'a
+     pas. */
   .compteur-dodos{
     font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700;
-    color:var(--text); text-align:center; margin:0 0 16px;
+    color:var(--text); text-align:center; margin:0 0 14px;
   }
 
   /* LA BARRE PORTE SON POURCENTAGE. Il était en légende dessous, ce qui
@@ -7931,36 +7948,34 @@ function nombreFr(n){
   return Math.floor(n).toLocaleString("fr-FR");
 }
 
-// LE PANNEAU A DEUX VISAGES, ET LE SEUIL N'EST PAS INVENTÉ.
+// LE PANNEAU A DEUX TAILLES, ET LE SEUIL N'EST PAS INVENTÉ.
 //
-// Première version : tout en une phrase, les dodos en petit au milieu.
-// Sur un téléphone de 320 px la phrase se cassait entre le nombre et son
-// unité (« 5 / minutes »), et elle traitait de la même façon un panneau
-// ouvert à J-34 et un panneau ouvert la dernière nuit.
+// Au-delà de 24 h, le découpage est en chiffres ordinaires. En dessous,
+// la seconde devient l'information : les tuiles passent à 28 px et à
+// l'accent, en même temps que l'en-tête vire au rouge.
 //
-// Au-delà de 24 h, LES DODOS SONT LA VEDETTE : c'est le chiffre qu'on
-// vient chercher, le découpage précis passe en dessous. En dessous de
-// 24 h, la seconde devient l'information et les tuiles précises montent
-// en tête — le dodo, lui, n'a plus rien à décompter.
-//
-// 24 h et pas 48 h : c'est le palier « final » que l'en-tête utilise
+// 24 h et pas 48 : c'est le palier « final » que l'en-tête utilise
 // déjà, celui où elle se met elle-même à afficher les secondes. Les deux
-// bascules tombent donc au même instant, et il n'y a pas un cinquième
-// seuil à retenir.
-//
-// Propriété qui tombe juste, et qui est testée : passer sous 24 h, c'est
-// exactement avoir franchi le dernier minuit avant la sortie. La vedette
-// n'affiche donc JAMAIS « 0 dodo » — quand il n'en reste plus, on est
-// déjà passé à l'autre disposition.
+// bascules tombent au même instant, et il n'y a pas un cinquième seuil à
+// retenir.
 const SEUIL_COMPTEUR_PRECIS = 24 * 60 * 60 * 1000;
 
+// LIBELLÉS ABRÉGÉS, et c'est une contrainte de place mesurée, pas un
+// goût : « secondes » fait 48 px à 11 px de corps, et six colonnes de
+// 48 px ne tiennent pas dans les 246 px du panneau à 320 px. Abrégés
+// (18 à 24 px), les six tiennent avec 56 px de marge.
+//
+// Invariables, donc : « j », « h », « min », « s » sont les
+// abréviations françaises normalisées, elles ne prennent pas de s. La
+// phrase complète, elle, garde ses accords — voir phraseDecoupe, qui
+// sert d'étiquette au groupe.
 const UNITES_COMPTEUR = [
-  ["mois", "mois", "mois"],
-  ["semaines", "semaine", "semaines"],
-  ["jours", "jour", "jours"],
-  ["heures", "heure", "heures"],
-  ["minutes", "minute", "minutes"],
-  ["secondes", "seconde", "secondes"],
+  ["mois", "mois"],
+  ["semaines", "sem"],
+  ["jours", "j"],
+  ["heures", "h"],
+  ["minutes", "min"],
+  ["secondes", "s"],
 ];
 
 // Une tuile = un nombre au-dessus, son unité dessous. Le motif vient de
@@ -7968,21 +7983,26 @@ const UNITES_COMPTEUR = [
 function tuilesCompteur(liste, classe, etiquette){
   return `<div class="compteur-tuiles ${classe}" role="group" `
     + `aria-label="${escapeHtml(etiquette)}">`
-    + liste.map(([n, u]) =>
-        `<div><b>${escapeHtml(String(n))}</b><span>${escapeHtml(u)}</span></div>`).join("")
+    + liste.map(([n, u, zero]) =>
+        `<div${zero ? ' class="zero"' : ""}>`
+        + `<b>${escapeHtml(String(n))}</b><span>${escapeHtml(u)}</span></div>`).join("")
     + `</div>`;
 }
 
-// Les unités à zéro restent masquées, comme dans la phrase. Et c'est
-// phraseDecoupe qui sert d'étiquette au groupe : un lecteur d'écran
-// entend « 1 mois, 2 jours, 11 heures » au lieu d'une pile de chiffres
-// nus, et la phrase garde ainsi un usage.
+// LES SIX UNITÉS, TOUJOURS, y compris à zéro — grisées par le CSS.
+//
+// Elles étaient masquées quand elles valaient zéro, ce qui changeait le
+// nombre de tuiles et redisposait toute la ligne à chaque unité qui
+// tombait. Antoni : « c'est quand les mois partiront ». Les garder coûte
+// trois zéros gris la dernière nuit et rend la ligne immobile.
+//
+// L'étiquette du groupe reste phraseDecoupe, qui MASQUE les zéros : un
+// lecteur d'écran entend « 1 mois, 2 jours, 9 heures » et non « 1 mois,
+// 0 semaine, 2 jours ». La ligne se regarde, la phrase s'écoute, et les
+// deux n'ont pas les mêmes besoins.
 function tuilesDecoupe(d, classe){
-  const bouts = [];
-  for(const [cle, singulier, pluriel] of UNITES_COMPTEUR){
-    if(d[cle] > 0) bouts.push([d[cle], d[cle] > 1 ? pluriel : singulier]);
-  }
-  if(!bouts.length) bouts.push([0, "seconde"]);
+  const bouts = UNITES_COMPTEUR.map(([cle, abrege]) =>
+    [d[cle], abrege, d[cle] === 0]);
   return tuilesCompteur(bouts, classe, phraseDecoupe(d));
 }
 
@@ -8007,28 +8027,20 @@ function majPanneauCompteur(){
     weekday: "long", day: "numeric", month: "long", year: "numeric",
     timeZone: "Europe/Paris" });
 
-  const decoupe = tuilesDecoupe(decoupeCalendaire(debut, fin),
-                                precis ? "precis" : "second");
-  const dodos = avant ? dodosAvant(maintenant, GTA6_RELEASE) : 0;
-
   el.innerHTML =
-      (avant && !precis
-        ? `<div class="compteur-vedette">`
-          + `<span class="emoji" aria-hidden="true">😴</span>`
-          + `<b>${escapeHtml(nombreFr(dodos))}</b>`
-          + `<span>${dodos > 1 ? "dodos" : "dodo"}</span></div>`
-        : "")
-    + decoupe
-    + (avant && precis
-        ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodos))}</p>`
-        : "")
+      tuilesDecoupe(decoupeCalendaire(debut, fin), precis ? "precis" : "second")
     + `<div class="compteur-barre">`
     +   `<span style="width:${(fait * 100).toFixed(1)}%"></span>`
     +   `<i>${escapeHtml(pourcent)}</i></div>`
+    // SOUS LA BARRE, et c'est un choix d'Antoni : « c'est juste un truc
+    // en plus, pas un truc hyper important ».
+    + (avant
+        ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>`
+        : "")
     + tuilesCompteur([
-        [nombreFr(ecart / 86400000), "jours"],
-        [nombreFr(ecart / 3600000), "heures"],
-        [nombreFr(ecart / 60000), "minutes"],
+        [nombreFr(ecart / 86400000), "jours", false],
+        [nombreFr(ecart / 3600000), "heures", false],
+        [nombreFr(ecart / 60000), "minutes", false],
       ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours")
     + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le `
     +   `4 février 2022. Sortie le ${escapeHtml(jourSortie)} à 00:00, `

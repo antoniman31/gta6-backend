@@ -1080,6 +1080,25 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Le même panneau, troisième passe : une seule ligne — 16/10/2026
+
+« Tout tienne sur une ligne », et « c'est quand les mois partiront ». Les
+six unités tiennent sur une rangée dès lors que les libellés sont abrégés
+— mesuré : « secondes » fait 48 px à lui seul, et c'était ça qui forçait
+le 3 + 2, pas la place. Les unités à zéro **restent affichées**, grisées,
+pour que la ligne ne se redispose plus jamais.
+
+Trois options rendues en images avant de coder ; Antoni a choisi celle-là.
+Les rendus ont montré qu'il fallait des colonnes de largeur régulière,
+sans quoi « 1 0 2 9 59 5 » se lit comme une suite de chiffres.
+
+Le dodo passe sous la barre — « juste un truc en plus ». La bascule des
+24 h ne pilote plus que la taille des tuiles.
+
+Cinq gardes vérifiés capables d'échouer, dont un réécrit : il attendait
+une liste de tuiles grisées **devinée** au lieu d'être calculée. Remplacé
+par l'invariant « les grisées sont exactement celles qui valent zéro ».
+
 ### Le même panneau, refait en deux dispositions — 16/10/2026
 
 « Tu peux pas faire plus joli ? » Le défaut n'était pas qu'esthétique : le
