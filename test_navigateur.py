@@ -3440,7 +3440,7 @@ def test_panneau_du_compteur(nav, url):
             serre = t.textContent + ' (bord droit ' + Math.round(q.right)
                     + ' px pour ' + Math.round(boite.right) + ')';
         }
-        const r = {part: parseFloat(b.querySelector('span').style.width),
+        const r = {part: parseFloat(b.querySelector(':scope > span').style.width),
                    texte: i.textContent,
                    secondes: g.lastElementChild.querySelector('b').textContent,
                    serre: serre,
@@ -3462,6 +3462,71 @@ def test_panneau_du_compteur(nav, url):
           % vide["serre"])
     ctx.close()
 
+    # LE POURCENTAGE DOIT ÊTRE LU, PAS SEULEMENT ÊTRE LÀ.
+    #
+    # Écrit en --text, il tombait à 2,43:1 sur le remplissage en thème
+    # clair et 1,78:1 en sombre. Il était bien dans la barre depuis le
+    # début, et Antoni l'a signalé comme disparu — ce qui est le même
+    # résultat. Deux exemplaires superposés : celui du dessous en --text
+    # pour la piste, celui du dessus rogné par le remplissage, en
+    # --accent-contrast.
+    #
+    # Le contrôle calcule le VRAI rapport de contraste à partir des
+    # couleurs calculées, dans les deux thèmes. Un jeton changé sans
+    # vérifier le fait tomber.
+    for theme in ("light", "dark"):
+        ctx = nav.new_context(viewport={"width": 320, "height": 850},
+                              timezone_id="Europe/Paris")
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        lis = page.evaluate("""(theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            ouvreCompteur();
+            const b = document.querySelector('.compteur-barre');
+            const rempli = b.querySelector(':scope > span');
+            const dessous = b.querySelector(':scope > i');
+            const dessus = rempli.querySelector('i');
+            const lin = (c) => { c /= 255;
+              return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
+            const Y = (css) => { const [r,g,bb] = css.match(/\\d+/g).map(Number);
+              return 0.2126*lin(r) + 0.7152*lin(g) + 0.0722*lin(bb); };
+            const rapport = (a, c) => { const ya = Y(a), yc = Y(c);
+              return (Math.max(ya,yc) + 0.05) / (Math.min(ya,yc) + 0.05); };
+            const cs = getComputedStyle;
+            const r = {
+              haut: b.getBoundingClientRect().height,
+              corps: parseFloat(cs(dessus).fontSize),
+              surRemplissage: rapport(cs(dessus).color, cs(rempli).backgroundColor),
+              surPiste: rapport(cs(dessous).color, cs(b).backgroundColor),
+              memeTexte: dessous.textContent === dessus.textContent,
+              // Les deux exemplaires doivent se superposer AU PIXEL : le
+              // chiffre est à cheval sur la limite du remplissage entre
+              // 83 et 97 %, et un décalage s'y verrait en double.
+              ecart: Math.abs(dessus.getBoundingClientRect().right
+                              - dessous.getBoundingClientRect().right),
+            };
+            fermeCompteur();
+            return r;
+        }""", theme)
+        check(lis["haut"] >= 24,
+              "[compteur %s] la barre fait au moins 24 px de haut (%.0f)"
+              % (theme, lis["haut"]))
+        check(lis["corps"] >= 12,
+              "[compteur %s] et son chiffre au moins 12 px (%.0f)"
+              % (theme, lis["corps"]))
+        check(lis["surRemplissage"] >= 4.5,
+              "[compteur %s] le pourcentage est LISIBLE sur le remplissage "
+              "— c'est --accent-contrast qui sert, pas --text (%.2f:1)"
+              % (theme, lis["surRemplissage"]))
+        check(lis["surPiste"] >= 4.5,
+              "[compteur %s] et lisible aussi sur la piste, quand la barre "
+              "est loin du bord (%.2f:1)" % (theme, lis["surPiste"]))
+        check(lis["memeTexte"] and lis["ecart"] < 1,
+              "[compteur %s] les deux exemplaires portent le même texte et "
+              "se superposent (écart %.1f px)" % (theme, lis["ecart"]))
+        ctx.close()
+
     # APRÈS LA SORTIE, le panneau compte dans l'autre sens.
     ctx = nav.new_context(viewport={"width": 390, "height": 850},
                           timezone_id="Europe/Paris")
@@ -3477,7 +3542,7 @@ def test_panneau_du_compteur(nav, url):
                    // Dans une tuile, textContent colle le nombre à son
                    // unité : « 3jours », sans espace.
                    jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1],
-                   plein: (document.querySelector('.compteur-barre span') || {}).style.width};
+                   plein: (document.querySelector('.compteur-barre > span') || {}).style.width};
         fermeCompteur();
         return r;
     }""")
