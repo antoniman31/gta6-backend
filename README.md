@@ -5042,6 +5042,59 @@ publié et le calculer déclencherait une requête vers Google par carte, soit
 Treize contrôles de navigateur, chacun vérifié capable d'échouer en
 remettant `item.source`.
 
+### Mettre un article de côté — 16/10/2026
+
+Antoni a choisi d'avancer deux chantiers prévus pour après la sortie. Le
+premier, le **filtre de notifications**, a été **abandonné sur mesure** :
+le récapitulatif est une notification par passage et non par article, tous
+partagent le même `tag` donc le suivant remplace le précédent, et les
+annonces officielles sont à **4,3 par jour** en moyenne (zéro sur six jours
+sur neuf), déjà plafonnées à dix par passage. Le « ça va sonner sans
+arrêt » annoncé la veille était faux, et c'est la mesure qui l'a dit.
+Décision conservée au cas où : si on y revenait, le réglage vivrait dans
+une **variable de dépôt GitHub** — le service worker ne peut pas filtrer,
+`userVisibleOnly: true` fait révoquer l'abonnement si un push n'affiche
+rien.
+
+Le second est livré : une **étoile** sur la carte, un filtre « Mis de
+côté », stocké en local.
+
+**Où l'étoile ne pouvait pas aller.** La rangée du bas porte déjà quatre
+boutons qui se partagent la colonne de texte — 58 px chacun à 320 px,
+mesuré. Un cinquième les ramènerait à ~45 px : au-dessus des 44 px
+réglementaires, mais tout juste, et aucun contrôle ne surveille ces
+boutons-là. Elle va donc à droite de la ligne de source, dont le côté est
+vide, et les quatre du bas ne bougent pas d'un pixel.
+
+**Le ::after de trop.** Une zone tactile étendue avait été ajoutée par
+réflexe, comme ailleurs dans l'app. Le contrôle a montré qu'elle était
+inutile ET nuisible : l'étoile fait **44 px toute seule**, par le
+`min-height:44px` posé en défaut sur tout `button` justement pour ça, et le
+pseudo-élément portait la cible à 72 px — un rectangle invisible débordant
+de 14 px au-dessus et au-dessous, donc par-dessus le titre, à qui il aurait
+volé des clics. Retiré, et le contrôle garde désormais les deux bouts : au
+moins 44 px, pas plus de 52.
+
+**Le quatrième filtre a cassé la rangée, et rien ne l'aurait vu.** La
+feuille des filtres n'était surveillée par aucun contrôle : celui des
+cibles tactiles ne scanne que le panneau des réglages, celui des
+débordements porte sur les onglets du fil. Le contrôle ajouté ici a
+immédiatement trouvé que **« Nouveaux » débordait de 8,7 px à 390 px** —
+un mot que rien ne peut couper, là où « Mis de côté » passait grâce à ses
+espaces. La rangée se replie maintenant en deux fois deux
+(`#groupeFiltres button{min-width:116px}`), visée par l'identifiant du
+groupe pour ne pas toucher aux autres rangées de la feuille.
+
+**Le plafond est celui de `readSet`** (8 000), repris tel quel, y compris
+son refus de jeter un lien encore affichable. La dette 4.2 de l'audit était
+exactement une liste sans borne ; une seconde l'aurait ramenée par une
+autre porte. La liste est pourtant courte par nature — le plafond ne
+mordra sans doute jamais, il est là parce qu'une structure qui grandit sans
+borne finit toujours par mordre.
+
+**La sauvegarde l'emporte** (`cotes`), et une sauvegarde d'avant cette
+version s'importe sans planter.
+
 ### Les sources : la mesure a surtout confirmé l'existant
 
 Le décompte d'abord, parce qu'il est plus dur qu'attendu :

@@ -1061,7 +1061,33 @@ sources » nomme le domaine au lieu de l'agrégateur.
 
 Rien à inventer, rien côté robot, rien dans le format publié.
 
-### Deux options VALIDÉES, à faire APRÈS la sortie
+### Les deux options : une livrée, une abandonnée — 16/10/2026
+
+Antoni a décidé d'avancer ces deux chantiers plutôt que d'attendre le
+20 novembre. Résultat : **une livrée, une abandonnée sur mesure**.
+
+**Le filtre de notifications est ABANDONNÉ.** Mesuré avant de coder : le
+récapitulatif est une notification par PASSAGE et non par article, tous
+partagent le même `tag` donc le suivant remplace le précédent, et les
+officielles sont à 4,3 par jour en moyenne — zéro sur six jours sur neuf —
+déjà plafonnées à dix par passage. Mon « ça va sonner sans arrêt » de la
+veille était faux. Ne pas reproposer sans chiffres nouveaux.
+
+> Si on y revenait quand même, deux choses sont tranchées : le réglage
+> vivrait dans une **variable de dépôt GitHub** (choix d'Antoni), et le
+> filtre ne peut PAS vivre dans le service worker — `userVisibleOnly: true`
+> fait révoquer l'abonnement si un push n'affiche rien.
+
+**La mise de côté est LIVRÉE** : étoile sur la ligne de source, filtre
+« Mis de côté », plafond de `readSet` repris tel quel, emportée par la
+sauvegarde. Deux défauts trouvés en chemin par les contrôles ajoutés —
+une zone tactile de 72 px qui aurait volé les clics du titre, et
+« Nouveaux » qui débordait de son bouton depuis qu'ils sont quatre.
+
+**La tâche planifiée du 20 novembre est donc sans objet** et peut être
+supprimée.
+
+### Ce qui était prévu — pour mémoire
 
 Antoni les a choisies le 16/10 et a décidé qu'elles attendaient le
 19 novembre. Une tâche planifiée au **20 novembre** les ramènera.
