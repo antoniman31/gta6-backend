@@ -732,18 +732,12 @@ def test_fetch_parallele_identique():
 
     sources = _fausses_sources()
 
-    # MÊME INSTANT POUR LES DEUX PARCOURS. `merge_results` horodate chaque
-    # article neuf (`vu_le`), et deux appels séparés d'une microseconde
-    # produiraient deux listes différentes — l'équivalence qu'on éprouve
-    # ici est celle de la FUSION, pas celle de l'horloge.
-    instant = datetime(2026, 10, 15, 16, tzinfo=timezone.utc)
-
     def parcours(resultats):
         """Rejoue la fusion et renvoie l'état final, comparable."""
         all_items, links_index, newly = [], {}, []
         infos, counts, inchanges, _refuses = fetch_feeds.merge_results(
             sources, resultats, all_items, links_index, newly,
-            decoded_cache={}, afficher=False, maintenant=instant)
+            decoded_cache={}, afficher=False)
         return all_items, newly, infos, counts, inchanges
 
     # Référence : récupération strictement séquentielle, comme avant.
@@ -5257,116 +5251,6 @@ def test_la_fenetre_ne_bouge_pas_dans_la_journee():
           "(%s)" % feed_store.FUSEAU_MESURE)
 
 
-def test_le_champ_vu_le():
-    """Quand l'article est APPARU, et pas quand il a été publié.
-
-    LE DÉFAUT. Le bloc « Ce que j'ai raté » comptait les articles sur leur
-    date de publication. Un article publié avant ta visite mais remonté
-    après était donc invisible, alors qu'il est neuf pour toi.
-
-    COMBIEN, mesuré le 15/10/2026 sur les 185 passages de la semaine et
-    1 148 articles apparus : la médiane du décalage est à 0,8 h, mais parmi
-    les 1 039 arrivés DANS la fenêtre que l'app charge, 25 avaient plus de
-    12 h de retard et 7 plus de 24 h. Un à quatre par jour selon le rythme
-    de visite. Les 109 autres sont hors de cette fenêtre — vieux de 35
-    jours en médiane, des reprises tardives de Google News — et aucun
-    comptage ne les atteindra tant qu'ils ne sont pas chargés.
-
-    OÙ LE CHAMP SE POSE, et c'est le piège de ce lot : surtout pas là où
-    les articles sont construits. Cette boucle-là tourne pour chaque entrée
-    de chaque flux à chaque passage, y compris les articles déjà connus, et
-    `vu_le` serait réécrit toutes les heures.
-    """
-    print("\n[vu_le] l'instant où l'article apparaît")
-    import fetch_feeds, tempfile, os, json as _json
-    from datetime import datetime, timezone
-
-    sources = _fausses_sources()
-    t1 = datetime(2026, 10, 15, 8, tzinfo=timezone.utc)
-    t2 = datetime(2026, 10, 15, 9, tzinfo=timezone.utc)
-
-    all_items, links_index, newly = [], {}, []
-    fetch_feeds.merge_results(sources, {f["id"]: _fausse_collecte(f) for f in sources},
-                              all_items, links_index, newly, decoded_cache={},
-                              afficher=False, maintenant=t1)
-    check(all_items and all(i.get("vu_le") == t1.isoformat() for i in all_items),
-          "chaque article neuf porte l'instant du passage (%d articles)"
-          % len(all_items))
-    check(len({i["vu_le"] for i in all_items}) == 1,
-          "le MÊME instant pour tout le passage — sinon le tri par "
-          "apparition dépendrait de l'ordre des flux")
-
-    # LE CŒUR DU LOT : un second passage ne doit RIEN réécrire.
-    avant = len(all_items)
-    fetch_feeds.merge_results(sources, {f["id"]: _fausse_collecte(f) for f in sources},
-                              all_items, links_index, newly, decoded_cache={},
-                              afficher=False, maintenant=t2)
-    check(len(all_items) == avant,
-          "le second passage n'ajoute rien, les articles sont connus")
-    check(all(i.get("vu_le") == t1.isoformat() for i in all_items),
-          "et AUCUN vu_le n'est réécrit — un champ repoussé à chaque heure "
-          "ne vaudrait rien")
-
-    # Un article vraiment neuf au second passage prend, lui, t2.
-    vide = ([], {"raw_count": 0, "not_modified": False}, [])
-    tardif = {f["id"]: vide for f in sources}
-    tardif[sources[0]["id"]] = (
-        [_article(sources[0]["name"], "Tardif", "https://tardif.test/x")],
-        {"raw_count": 1, "not_modified": False}, [])
-    fetch_feeds.merge_results(sources, tardif, all_items, links_index, newly,
-                              decoded_cache={}, afficher=False, maintenant=t2)
-    arrive = [i for i in all_items if i["link"] == "https://tardif.test/x"]
-    check(arrive and arrive[0].get("vu_le") == t2.isoformat(),
-          "un article qui arrive plus tard porte SON instant, pas celui du "
-          "premier passage")
-
-    # FUSION APRÈS CONFLIT DE PUSH : la bonne réponse est la PLUS ANCIENNE
-    # des deux apparitions, pas la nôtre. Les deux côtés peuvent découvrir
-    # le même article avant que l'un ait poussé.
-    import merge_feed
-    a_nous = {"items": [{"link": "https://x.test/1", "date": "2026-10-15T07:00:00+00:00",
-                         "vu_le": "2026-10-15T09:00:00+00:00"}]}
-    au_loin = {"items": [{"link": "https://x.test/1", "date": "2026-10-15T07:00:00+00:00",
-                          "vu_le": "2026-10-15T08:00:00+00:00"}]}
-    fusion, _, _ = merge_feed.merge_feeds(au_loin, a_nous)
-    check(fusion["items"][0]["vu_le"] == "2026-10-15T08:00:00+00:00",
-          "après un conflit de push, c'est la plus ANCIENNE apparition qui "
-          "gagne (%s)" % fusion["items"][0]["vu_le"])
-    # Et l'inverse ne fait pas reculer une apparition déjà plus ancienne.
-    fusion, _, _ = merge_feed.merge_feeds(a_nous, au_loin)
-    check(fusion["items"][0]["vu_le"] == "2026-10-15T08:00:00+00:00",
-          "et le sens de la fusion n'y change rien")
-
-    # LE CHAMP DOIT ARRIVER JUSQU'À L'APP. Le fichier allégé est le seul
-    # que l'app charge à l'ouverture : un vu_le qui n'y serait pas ne
-    # servirait à rien.
-    rep = tempfile.mkdtemp(prefix="vule-")
-    try:
-        chemin = os.path.join(rep, "feed.json")
-        feed_store.write_feed_pair(
-            {"items": [{"link": "https://y.test/1", "title": "a",
-                        "date": "2026-10-15T07:00:00+00:00",
-                        "vu_le": "2026-10-15T08:00:00+00:00"}]}, chemin)
-        with open(feed_store.recent_path_for(chemin), encoding="utf-8") as f:
-            allege = _json.load(f)
-        check(allege["items"][0].get("vu_le") == "2026-10-15T08:00:00+00:00",
-              "le champ arrive dans le fichier allégé, celui que l'app lit")
-    finally:
-        import shutil; shutil.rmtree(rep, ignore_errors=True)
-
-    # Le repli de l'app : un article sans vu_le retombe sur sa date. Les
-    # 3 570 articles déjà publiés n'auront jamais ce champ — le robot ne
-    # peut pas inventer quand il les a vus.
-    html = open("docs/index.html", encoding="utf-8").read()
-    # Et le repli se teste SUR LE ZÉRO, pas sur NaN : dateValue rend 0 pour
-    # une date absente. Écrit avec Number.isFinite, le repli ne se
-    # déclenchait jamais et le bloc se vidait sur tout le fil publié —
-    # attrapé au navigateur, pas à la relecture.
-    check("function apparitionValue" in html
-          and "vu > 0 ? vu : dateValue" in html,
-          "l'app retombe sur la date de publication quand vu_le manque")
-
-
 def test_memoire_des_elagues():
     """Un article élagué puis resservi n'est pas une nouveauté.
 
@@ -5448,10 +5332,8 @@ def test_memoire_des_elagues():
     # de main() : la mécanique est sortie dans reprend_les_revenants, donc
     # elle s'appelle. Deux assertions sur le source en moins (point 4.6).
     import fetch_feeds
-    neuf = {"link": "https://neuf.test/a", "source": "Rockstar Games (officiel EN)",
-            "vu_le": "2026-10-15T16:00:00+00:00"}
-    revenu = {"link": "https://revenu.test/b", "source": "Rockstar Games (officiel EN)",
-              "vu_le": "2026-10-15T16:00:00+00:00"}
+    neuf = {"link": "https://neuf.test/a", "source": "Rockstar Games (officiel EN)"}
+    revenu = {"link": "https://revenu.test/b", "source": "Rockstar Games (officiel EN)"}
     nouveautes = [neuf, revenu]
     # L'identifiant vient de FEEDS_PAR_NOM, pas d'un nom inventé ici :
     # c'est lui que la fonction consulte.
@@ -5464,11 +5346,6 @@ def test_memoire_des_elagues():
           "l'historique")
     check(comptes[fid] == 1,
           "et le compte par source suit, sinon la somme contredirait le total")
-    check(revenu["vu_le"] == "2026-10-02T08:00:00+00:00",
-          "son apparition recule à la date de son élagage — sinon l'app le "
-          "croit arrivé aujourd'hui (%s)" % revenu["vu_le"])
-    check(neuf["vu_le"] == "2026-10-15T16:00:00+00:00",
-          "et l'article vraiment neuf garde la sienne")
     # Le compte d'une source ne descend jamais sous zéro.
     zero = {fid: 0}
     fetch_feeds.reprend_les_revenants(
@@ -9614,7 +9491,6 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_langue_et_couverture_publiees,
            test_rotation_reddit,
            test_la_fenetre_ne_bouge_pas_dans_la_journee,
-           test_le_champ_vu_le,
            test_memoire_des_elagues,
            test_les_constantes_citees_sont_les_bonnes,
            test_readme_dit_la_vraie_fenetre,

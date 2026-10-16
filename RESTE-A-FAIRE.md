@@ -1049,6 +1049,31 @@ nuit ; **Dependabot laissé libre** de reproposer selectolax, puisque le
 contrôle du décodeur fait virer une telle PR au rouge et que le jour où
 elle deviendra verte sera le signal que le verrou peut sauter.
 
+### Le bloc « Ce que j'ai raté » est RETIRÉ — 16/10/2026
+
+« Dégage-moi le truc de depuis ta dernière visite, ça ne sert à rien. »
+Fin d'un dossier ouvert le 13/10 et travaillé trois jours : le bandeau,
+son bilan, ses quatre lignes, le bouton « J'ai tout vu » et le repère de
+dernière visite. Environ 13 000 caractères d'app et 17 000 de contrôles.
+
+**Le champ `vu_le` part avec**, pour la raison qui l'aurait condamné de
+toute façon : ajouté la veille uniquement pour ce bloc, il coûtait +3,7 %
+sur le fichier que l'app télécharge à chaque ouverture et plus personne ne
+le lisait. C'est le reproche du point 4.7 à `hot_count`, mot pour mot.
+
+**Ce qui reste et qui sert toujours** : la mémoire des élagués et
+`reprend_les_revenants` — un article resservi par sa source n'est pas
+recompté neuf, ce qui vaut pour les notifications quel que soit
+l'affichage. Et la correction de fond du 15/10, la mesure du débit en
+journées civiles, qui n'avait jamais rien eu à voir avec ce bloc.
+
+**Ce que ça règle** : les deux compteurs qui avaient lancé tout ce travail
+ne peuvent plus se contredire, il n'en reste qu'un.
+
+**Conséquence sur la piste 3.2** de ce fichier (« Ce que j'ai raté : le
+point d'entrée qui manque ») : elle est close, par décision et non par
+mesure. Ne pas la rouvrir sans qu'Antoni le demande.
+
 ### Quatre dernières décisions, et le calendrier qui les porte
 
 Antoni a tranché quatre questions le 16/10 au soir :

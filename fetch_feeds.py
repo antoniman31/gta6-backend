@@ -2153,7 +2153,7 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
 
 def merge_results(feeds, resultats, all_items, links_index, newly_added,
                   decoded_cache=None, afficher=True, promus=None,
-                  plancher=None, maintenant=None):
+                  plancher=None):
     """Fusionne les résultats des sources dans l'historique.
 
     ORDRE CRITIQUE : on parcourt `feeds`, jamais l'ordre d'arrivée des
@@ -2196,26 +2196,6 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
     # dans la même fonction, mais le compteur est lu après, et une liste rend
     # l'intention d'accumulation explicite au relecteur.
     refuses_trop_vieux = [0]
-
-    # L'INSTANT OÙ L'ARTICLE APPARAÎT, et pourquoi il se pose ICI.
-    #
-    # Mesuré le 15/10/2026 sur 1 148 articles arrivés en une semaine :
-    # la médiane n'est qu'à 0,8 h de leur date de publication, mais
-    # 116 d'entre eux — 10,1 % — arrivent plus de 24 h après. Pour qui
-    # passe tous les jours, ces articles-là sont neufs et leur date dit
-    # le contraire : le bloc « Ce que j'ai raté » ne les voyait pas.
-    #
-    # Le champ ne peut pas être posé là où les articles sont construits :
-    # cette boucle-là tourne pour CHAQUE entrée de CHAQUE flux à chaque
-    # passage, y compris les articles déjà connus, et `vu_le` serait
-    # réécrit toutes les heures. Ici est le seul point où un article est
-    # reconnu réellement neuf. Un doublon est jeté et c'est l'article
-    # déjà stocké qui reste — avec son `vu_le` d'origine, sans rien faire.
-    #
-    # Un seul horodatage pour tout le passage, et non un appel par article :
-    # deux articles entrés dans la même minute doivent porter le même
-    # instant, sinon le tri par apparition dépendrait de l'ordre des flux.
-    vu_maintenant = (maintenant or datetime.now(timezone.utc)).isoformat()
 
     fenetre = fenetre_recente(all_items)
 
@@ -2265,7 +2245,6 @@ def merge_results(feeds, resultats, all_items, links_index, newly_added,
                 cle = normalize_title(item.get("title", ""))
                 if cle:
                     titles_index.setdefault(cle, item)
-                item["vu_le"] = vu_maintenant
                 newly_added.append(item)
                 new_counts[feed["id"]] += 1
                 if decoded_cache is not None and item.get("source_link"):
@@ -3919,12 +3898,6 @@ def reprend_les_revenants(newly_added, elagues_recents, new_counts):
     donc son annonce, sa place dans le « N nouveaux » et le compte de sa
     source — sans quoi la somme par source contredirait le total.
 
-    Et son `vu_le` recule à la date de son élagage. Sans ça le revenant
-    repartirait avec l'horodatage du passage en cours : l'app l'afficherait
-    comme apparu aujourd'hui et le compterait dans « depuis ta dernière
-    visite » — le même défaut, revenu par une autre porte. La date de
-    l'élagage est ce qu'on sait de vrai : il était là au plus tard alors.
-
     Modifie `newly_added` et `new_counts` sur place. Renvoie le nombre de
     revenants.
     """
@@ -3937,9 +3910,6 @@ def reprend_les_revenants(newly_added, elagues_recents, new_counts):
         fid = FEEDS_PAR_NOM.get(item.get("source"))
         if fid and new_counts.get(fid):
             new_counts[fid] -= 1
-        elague_le = elagues_recents.get(item.get("link"))
-        if elague_le:
-            item["vu_le"] = elague_le
     return len(revenants)
 
 

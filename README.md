@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1843
+qui permet de tester tout le pipeline sans sortir de la machine. **1832
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -4759,6 +4759,10 @@ Vérifié capable d'échouer — en remettant la mesure par âge, il rend 300.
 
 ### « Depuis ta dernière visite » comptait la publication, pas l'arrivée — 16/10/2026
 
+> **BLOC RETIRÉ le 16/10/2026**, et le champ `vu_le` avec lui. Antoni :
+> « ça ne sert à rien ». Ce qui suit raconte pourquoi le compte était
+> faux tant que le bloc existait ; la section de retrait est plus bas.
+
 Suite directe de la section précédente. Une fois l'oscillation de la
 fenêtre corrigée, il restait l'autre moitié de l'écart entre les deux
 compteurs d'Antoni : le bloc « Ce que j'ai raté » comparait la **date de
@@ -4944,6 +4948,41 @@ d'un serveur ; le fil, lui, dépend du passage du robot.
 que les workflows passent, que le décodage tourne et que la pause nocturne
 est bien levée. Elles se taisent si tout va bien et n'ont le droit de rien
 déployer. Le détail est dans `RESTE-A-FAIRE.md`.
+
+### Le bloc « Ce que j'ai raté » est retiré — 16/10/2026
+
+« Dégage-moi le truc de depuis ta dernière visite, ça ne sert à rien. »
+C'est la fin d'un dossier ouvert depuis le 13/10 et travaillé trois jours.
+
+**Ce que ça retire**, et tout est parti d'un bloc : le bandeau `#rateBloc`,
+son CSS, `majBlocRate`, `articlesDepuisLaVisite`, `apparitionValue`,
+`sourceSuivie`, le bouton « J'ai tout vu », le repère `derniere-visite-v1`
+et les deux écouteurs qui le posaient en quittant l'app. Environ **13 000
+caractères** de `docs/index.html`, et 17 000 de la suite navigateur.
+`memoriserReprise` reste : c'est un autre mécanisme, celui du trait « lu
+jusqu'ici ».
+
+**Et le champ `vu_le` part avec.** Ajouté la veille, il n'existait que pour
+ce bloc. Le garder aurait coûté **+3,7 % sur `feed-recent.json`** — le
+fichier que l'app télécharge à chaque ouverture — pour une donnée que plus
+personne ne lit. C'est exactement le reproche que l'audit du 08/10 faisait
+à `hot_count` (point 4.7, « publié et lu par personne ») ; le refaire
+vingt-quatre heures après l'avoir écrit aurait été difficile à défendre.
+
+**Ce qui reste du lot de la veille, et qui sert toujours** : la mémoire des
+élagués et `reprend_les_revenants`. Un article resservi par sa source
+continue de ne pas être recompté neuf — ça vaut pour les notifications et
+pour le compteur par source, indépendamment de tout affichage. Seule la
+ligne qui reculait son `vu_le` est partie.
+
+**Les douze articles déjà publiés avec un `vu_le`** le gardent : plus rien
+ne l'écrit, et ils sortiront de l'historique d'eux-mêmes en trente jours.
+Ajouter du code pour nettoyer un champ mort sur douze articles transitoires
+aurait coûté plus que le champ.
+
+**Ce que ça règle au passage.** Les deux compteurs qui avaient lancé tout
+ce travail — « 10 non lus » contre « 5 nouveaux » — ne peuvent plus se
+contredire : il n'en reste qu'un.
 
 ### Les sources : la mesure a surtout confirmé l'existant
 
@@ -7046,6 +7085,11 @@ la mauvaise raison**. Il ouvre donc explicitement le repli avant de mesurer,
 après avoir vérifié qu'il partait bien fermé.
 
 ## Ce que j'ai raté, et les trois idées que la mesure a tuées — 13/10/2026
+
+> **BLOC RETIRÉ le 16/10/2026.** Les trois idées tuées par la mesure
+> gardent leur intérêt — c'est le dossier le plus utile du fichier sur
+> ce qu'un signal rétrospectif ne peut pas faire. Le bloc lui-même
+> n'existe plus.
 
 Chaque ouverture posait Antoni en haut d'une liste de plus de trois mille
 articles. Le chip « Reprendre où j'en étais » restaure une *position* ; il
