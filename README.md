@@ -8415,6 +8415,71 @@ dépend plus de l'instant. Dans la foulée, les deux instants qui encadrent
 la bascule sont passés d'une minute à cinq de marge : l'horloge installée
 avance pendant que la page charge.
 
+### Tout sur une ligne, et une ligne qui ne bouge plus — 16/10/2026
+
+Deuxième retour d'Antoni sur le même panneau, capture à l'appui, et deux
+défauts dans la même phrase : « tu peux pas faire en sorte que tout tienne
+sur une ligne, c'est quand les mois partiront… ».
+
+**Six unités en trois colonnes se rangeaient en 3 + 2.** Et comme les
+unités à zéro étaient masquées, le nombre de tuiles changeait à chaque
+fois qu'une d'elles tombait — donc toute la disposition avec.
+
+#### La mesure avant la proposition
+
+Trois options ont été chiffrées avant d'en dessiner une seule, à 320 px,
+où le panneau a **246 px** de contenu :
+
+| | largeur |
+|---|---|
+| un nombre à deux chiffres, 20 px | 25 px |
+| « mois » à 11 px | 24 px |
+| « sem » · « min » · « sec » | 18–21 px |
+| « semaines » · « secondes » | **48 px** |
+
+Six colonnes à 25 px plus cinq écarts font 190 px : ça tient avec 56 px de
+marge. **La place n'était donc pas le problème — les libellés en toutes
+lettres l'étaient.** Un cassage l'a confirmé après coup : remis en toutes
+lettres, le panneau déborde, et c'est le garde géométrique qui le dit.
+
+#### Trois rendus plutôt qu'un paragraphe
+
+Les trois options ont été **rendues en images** à 320 px, en thème clair,
+avec la vraie police, chacune montrant deux moments — aujourd'hui et la
+dernière nuit, le seul endroit où elles diffèrent. Antoni a choisi la
+première : **les six unités toujours affichées**, grisées à zéro.
+
+Les rendus ont appris une chose que le texte cachait : collées à leur
+contenu, les tuiles font lire « 1 0 2 9 59 5 » comme une suite de
+chiffres. Les colonnes sont donc de largeur **régulière**, bornées entre
+34 et 52 px pour que trois tuiles ne s'éparpillent pas le dernier jour.
+
+#### Le reste
+
+Le compte de dodos passe **sous la barre** : « c'est juste un truc en
+plus, pas un truc hyper important ». Sa vedette à 40 px aura vécu une
+demi-journée. La bascule des 24 h survit, réduite à son seul effet de
+taille : 28 px en accent la dernière nuit, en même temps que l'en-tête
+vire au rouge.
+
+`phraseDecoupe` reste l'étiquette du groupe, et elle **masque** les zéros
+là où la ligne les affiche : un lecteur d'écran entend « 1 mois, 2 jours,
+9 heures », pas « 1 mois, 0 semaine, 2 jours ». La ligne se regarde, la
+phrase s'écoute, et les deux n'ont pas les mêmes besoins.
+
+#### Le contrôle que j'avais écrit sur une valeur devinée
+
+Les cinq gardes ont été vérifiés capables d'échouer. L'un d'eux attendait
+que les tuiles grisées soient « mois, sem » à T-24 h 05 : c'était faux,
+les heures y sont à zéro aussi, et je l'avais déduit au lieu de le
+calculer. Remplacé par l'invariant qui compte vraiment — **les tuiles
+grisées sont exactement celles dont le nombre affiche zéro** — qui ne
+dépend d'aucune heure et casse si la marque cesse de suivre la valeur.
+
+Le garde central est nouveau et dit littéralement la demande : **toutes
+les tuiles partagent le même haut**, donc une seule rangée. Remis à trois
+colonnes, il en compte deux.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

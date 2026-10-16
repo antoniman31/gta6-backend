@@ -3175,12 +3175,10 @@ def test_panneau_du_compteur(nav, url):
     check(ouvert["ouvert"], "[compteur] le panneau s'ouvre")
     check(ouvert["titre"] == "Avant la sortie",
           "[compteur] il s'intitule « Avant la sortie » (« %s »)" % ouvert["titre"])
-    CONNUES = {"mois", "semaine", "semaines", "jour", "jours", "heure",
-               "heures", "minute", "minutes", "seconde", "secondes"}
     unites = (ouvert["decoupe"] or {}).get("unites") or []
-    check(1 <= len(unites) <= 6 and set(unites) <= CONNUES,
-          "[compteur] il porte le découpage, une tuile par unité non nulle "
-          "(%s)" % unites)
+    check(unites == ["mois", "sem", "j", "h", "min", "s"],
+          "[compteur] il porte le découpage, les six unités abrégées (%s)"
+          % unites)
     # Sur la grille elle-même, et non sur le texte du panneau : à 34 jours
     # de la sortie le découpage porte déjà les mêmes mots, et un contrôle
     # qui cherche « heures » n'importe où passerait sans rien prouver.
@@ -3270,33 +3268,22 @@ def test_panneau_du_compteur(nav, url):
               % (largeur, g["bas"], g["plusProche"]))
         ctx.close()
 
-    # LES DEUX DISPOSITIONS, ET L'INSTANT EXACT OÙ ELLES BASCULENT.
+    # TOUT SUR UNE LIGNE, ET LA LIGNE NE BOUGE PLUS.
     #
-    # Au-delà de 24 h les dodos sont la vedette : c'est le chiffre qu'on
-    # vient chercher. En dessous, la seconde devient l'information et les
-    # tuiles précises montent en tête.
+    # Deux défauts signalés par Antoni sur la même capture : en trois
+    # colonnes, six unités se rangeaient en 3 + 2 ; et comme les unités à
+    # zéro étaient masquées, la disposition changeait à chaque fois qu'une
+    # d'elles tombait. Les six sont maintenant toujours là, grisées quand
+    # elles valent zéro, sur une seule rangée.
     #
-    # 24 h, c'est le palier « final » de l'en-tête — celui où elle se met
-    # elle-même à afficher les secondes. Les deux bascules tombent au même
-    # instant, et il n'y a pas un cinquième seuil à retenir.
-    #
-    # Paris est à UTC+1 à cette date : la sortie tombe le 18 à 23:00 UTC.
-    #
-    # Le troisième instant n'est pas là pour la bascule mais pour la
-    # GÉOMÉTRIE : aux deux autres il ne reste qu'un jour, donc deux ou
-    # trois tuiles, et une grille de trois colonnes ne risque rien. Le
-    # 10 septembre, les six unités sont non nulles d'un coup — 2 mois,
-    # 1 semaine, 1 jour, 8 heures, 25 minutes, 39 secondes — et c'est ce
-    # cas-là qui remplit la grille et peut la faire déborder.
-    #
-    # CINQ MINUTES DE MARGE de part et d'autre, pas une : l'horloge
-    # installée avance pendant que la page charge, et un runner lent
-    # ferait dériver un instant posé à une minute du seuil. La paire
-    # situe quand même la bascule à dix minutes près.
-    for utc, vedette, libelle in (
-            ("2026-11-17T22:55:00Z", True,  "T-24 h 05"),
-            ("2026-11-17T23:05:00Z", False, "T-23 h 55"),
-            ("2026-09-10T13:34:21Z", True,  "six unités"),
+    # Trois instants, dont deux encadrent la bascule de taille. Paris est
+    # à UTC+1 à cette date : la sortie tombe le 18 à 23:00 UTC. Cinq
+    # minutes de marge de part et d'autre, pas une : l'horloge installée
+    # avance pendant que la page charge.
+    for utc, precis, libelle in (
+            ("2026-11-17T22:55:00Z", False, "T-24 h 05"),
+            ("2026-11-17T23:05:00Z", True,  "T-23 h 55"),
+            ("2026-09-10T13:34:21Z", False, "six unités"),
     ):
         ctx = nav.new_context(viewport={"width": 320, "height": 850},
                               timezone_id="Europe/Paris")
@@ -3307,12 +3294,22 @@ def test_panneau_du_compteur(nav, url):
         vue = page.evaluate("""() => {
             ouvreCompteur();
             const c = document.getElementById('compteurContenu');
-            const v = c.querySelector('.compteur-vedette');
             const d = c.querySelector('.compteur-tuiles');
-            // Le DÉBORDEMENT HORIZONTAL d'abord, puis le retour à la
-            // ligne au milieu d'un libellé : une unité qui passe sur
-            // deux lignes est exactement le défaut qu'on corrige.
-            let coupe = null, large = 0;
+            const cases = [...d.children];
+            // UNE SEULE RANGÉE : toutes les tuiles partagent le même
+            // haut. C'est la traduction directe de « tout tient sur une
+            // ligne », et c'est précisément ce qui était cassé.
+            const hauts = new Set(cases.map(e => Math.round(e.getBoundingClientRect().top)));
+            // Le débordement se mesure GÉOMÉTRIQUEMENT : des colonnes
+            // 1fr se serrent jusqu'à leur contenu minimum, si bien
+            // qu'une grille trop étroite sort du conteneur SANS que son
+            // scrollWidth bouge d'un pixel.
+            const boite = c.getBoundingClientRect();
+            let sort = null, coupe = null;
+            for(const g of c.querySelectorAll('.compteur-tuiles')){
+              const q = g.getBoundingClientRect();
+              if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5) sort = g.className;
+            }
             // Seuils par rôle : le libellé est à 11 px (une ligne ~14 px,
             // deux ~28), le nombre monte à 28 px en disposition précise
             // (une ligne ~31, deux ~62).
@@ -3320,82 +3317,82 @@ def test_panneau_du_compteur(nav, url):
               const h = e.getBoundingClientRect().height;
               const max = e.tagName === 'B' ? 45 : 22;
               if(h > max) coupe = e.textContent + ' (' + Math.round(h) + ' px)';
-              if(e.scrollWidth > e.clientWidth + 1) large = large + 1;
             }
-            const barre = c.querySelector('.compteur-barre').getBoundingClientRect();
+            const barre = c.querySelector('.compteur-barre');
             // SUR LE TEXTE LUI-MÊME, par un Range, et pas sur la boîte du
             // <i> : il est en inset:0, donc sa boîte ÉPOUSE la barre par
             // construction et la comparer à la barre ne prouve rien.
-            // Mesuré : avec une barre ramenée à 6 px, la boîte restait
-            // sagement dedans pendant que les chiffres en sortaient.
-            const noeud = c.querySelector('.compteur-barre i');
+            const noeud = barre.querySelector('i');
             const trait = document.createRange();
             trait.selectNodeContents(noeud);
             const chiffre = trait.getBoundingClientRect();
-            // GÉOMÉTRIQUE, et pas scrollWidth : des colonnes 1fr se
-            // serrent jusqu'à leur contenu minimum, si bien qu'une
-            // grille trop étroite sort du conteneur SANS que son
-            // scrollWidth bouge d'un pixel. Mesuré : c'est exactement ce
-            // qui m'a fait croire que ce contrôle tenait.
-            const boite = c.getBoundingClientRect();
-            let sort = null;
-            for(const g of c.querySelectorAll('.compteur-tuiles')){
-              const q = g.getBoundingClientRect();
-              if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5) sort = g.className;
-            }
+            const rb = barre.getBoundingClientRect();
+            const dodos = c.querySelector('.compteur-dodos');
             const r = {
-              vedette: !!v,
-              tuiles: d ? d.children.length : 0,
-              dodosVedette: v ? v.querySelector('b').textContent : null,
-              premier: d ? d.className : null,
-              texte: c.textContent,
-              coupe: coupe, large: large, sort: sort,
+              tuiles: cases.length,
+              rangees: hauts.size,
+              classe: d.className,
+              zeros: cases.filter(e => e.classList.contains('zero'))
+                          .map(e => e.querySelector('span').textContent),
+              // Les tuiles dont le NOMBRE vaut zéro, lues à l'écran : la
+              // marque doit coller à la valeur, et c'est le genre de
+              // lien qui casse en silence (un `=== 0` changé en test de
+              // vérité, un nombre devenu chaîne).
+              nuls: cases.filter(e => e.querySelector('b').textContent === '0')
+                         .map(e => e.querySelector('span').textContent),
+              unites: [...d.querySelectorAll('span')].map(e => e.textContent),
+              // L'ORDRE dans le document : le dodo doit venir APRÈS la
+              // barre. DOCUMENT_POSITION_FOLLOWING vaut 4.
+              dodoApresBarre: dodos
+                ? !!(barre.compareDocumentPosition(dodos) & 4) : null,
+              coupe: coupe, sort: sort,
               deborde: c.scrollWidth > c.clientWidth + 1,
-              chiffreDedans: chiffre.right <= barre.right + 0.5
-                             && chiffre.left >= barre.left - 0.5
-                             && chiffre.top >= barre.top - 0.5
-                             && chiffre.bottom <= barre.bottom + 0.5,
+              chiffreDedans: chiffre.right <= rb.right + 0.5
+                             && chiffre.left >= rb.left - 0.5
+                             && chiffre.top >= rb.top - 0.5
+                             && chiffre.bottom <= rb.bottom + 0.5,
             };
             fermeCompteur();
             return r;
         }""")
-        check(vue["vedette"] == vedette,
-              "[compteur %s] disposition attendue : %s (vedette=%s)"
-              % (libelle, "dodos en vedette" if vedette else "tuiles précises",
-                 vue["vedette"]))
-        check(("second" if vedette else "precis") in (vue["premier"] or ""),
-              "[compteur %s] et le découpage prend la taille qui va avec "
-              "(« %s »)" % (libelle, vue["premier"]))
+        check(vue["tuiles"] == 6,
+              "[compteur %s] les six unités sont là, même à zéro — les "
+              "masquer redisposait la ligne à chaque unité qui tombe (%s)"
+              % (libelle, vue["tuiles"]))
+        check(vue["rangees"] == 1,
+              "[compteur %s] et elles tiennent toutes sur UNE rangée à "
+              "320 px (%s rangée(s))" % (libelle, vue["rangees"]))
+        check(vue["unites"] == ["mois", "sem", "j", "h", "min", "s"],
+              "[compteur %s] libellés abrégés, seule façon de faire tenir "
+              "six colonnes (%s)" % (libelle, vue["unites"]))
+        check(("precis" if precis else "second") in vue["classe"],
+              "[compteur %s] la taille suit l'échéance (« %s »)"
+              % (libelle, vue["classe"]))
         check(vue["coupe"] is None,
-              "[compteur %s] aucun libellé de tuile ne passe à la ligne — "
-              "c'est tout l'intérêt des tuiles (« %s »)"
-              % (libelle, vue["coupe"]))
-        check(vue["large"] == 0 and not vue["deborde"] and vue["sort"] is None,
-              "[compteur %s] et rien ne déborde à 320 px (%s tuiles trop "
-              "larges, panneau %s, grille sortie : %s)"
-              % (libelle, vue["large"], "débordé" if vue["deborde"] else "net",
-                 vue["sort"]))
+              "[compteur %s] aucun libellé ne passe à la ligne — c'est "
+              "tout l'intérêt des tuiles (« %s »)" % (libelle, vue["coupe"]))
+        check(not vue["deborde"] and vue["sort"] is None,
+              "[compteur %s] et rien ne déborde (panneau %s, grille "
+              "sortie : %s)" % (libelle, "débordé" if vue["deborde"] else "net",
+                                vue["sort"]))
         check(vue["chiffreDedans"],
               "[compteur %s] le pourcentage reste dans la barre" % libelle)
-        ctx.close()
-        # LA VEDETTE N'AFFICHE JAMAIS « 0 DODO ». Ce n'est pas une
-        # coïncidence : passer sous 24 h, c'est exactement avoir franchi
-        # le dernier minuit avant la sortie. Les deux instants ci-dessus
-        # encadrent ce basculement à une minute près.
+        check(vue["dodoApresBarre"] is True,
+              "[compteur %s] et le dodo est SOUS la barre — « juste un truc "
+              "en plus » (%s)" % (libelle, vue["dodoApresBarre"]))
+        # Sur l'ÉGALITÉ des deux listes, et non sur une valeur devinée :
+        # mon premier jet attendait « mois, sem » à T-24 h 05 et ignorait
+        # que les heures y sont à zéro aussi. Le vrai invariant est que la
+        # marque suit la valeur, quelle que soit l'heure.
+        check(vue["zeros"] == vue["nuls"],
+              "[compteur %s] les tuiles grisées sont exactement celles qui "
+              "valent zéro (grisées %s, nulles %s)"
+              % (libelle, vue["zeros"], vue["nuls"]))
         if libelle == "six unités":
-            check(vue["tuiles"] == 6,
-                  "[compteur %s] le pire cas de la grille est bien joué : "
-                  "six tuiles, du mois à la seconde (%s)"
-                  % (libelle, vue["tuiles"]))
-        elif vedette:
-            check(vue["dodosVedette"] == "1",
-                  "[compteur %s] la dernière nuit où la vedette existe, "
-                  "elle montre 1 dodo — jamais 0 (« %s »)"
-                  % (libelle, vue["dodosVedette"]))
-        else:
-            check("Plus de dodo" in vue["texte"],
-                  "[compteur %s] et de l'autre côté le dodo redescend en "
-                  "ligne simple" % libelle)
+            check(vue["nuls"] == [],
+                  "[compteur %s] et cet instant-là n'en a aucune : les six "
+                  "unités valent quelque chose (%s)" % (libelle, vue["nuls"]))
+        ctx.close()
 
     # LE POURCENTAGE À L'AUTRE EXTRÊME. Aligné sur la fin du remplissage
     # il sortirait de l'écran quand la barre est presque vide ; il est
