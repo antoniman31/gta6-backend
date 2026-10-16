@@ -8405,6 +8405,16 @@ grille de trois à six colonnes **ne déborde pas** à 320 px, les colonnes
 se serrant au contenu. C'est laid, pas cassé — et le contrôle avait raison
 de rester vert.
 
+**Un quatrième défaut, pris par la CI et pas par moi.** Un contrôle
+cherchait le mot « secondes » dans le texte du panneau. Il tournait à
+l'heure réelle, et la tuile des secondes est masquée quand elles valent
+zéro : une chance sur soixante d'échouer, introduite en retirant les
+secondes des équivalences. Il porte maintenant sur la STRUCTURE — une
+tuile par unité non nulle, toutes prises dans la liste connue — ce qui ne
+dépend plus de l'instant. Dans la foulée, les deux instants qui encadrent
+la bascule sont passés d'une minute à cinq de marge : l'horloge installée
+avance pendant que la page charge.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

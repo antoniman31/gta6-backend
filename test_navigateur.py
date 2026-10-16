@@ -3152,8 +3152,18 @@ def test_panneau_du_compteur(nav, url):
         return {ouvert: document.getElementById('compteurOverlay').classList.contains('open'),
                 bat: battementCompteur !== null,
                 titre: document.getElementById('titreCompteur').textContent,
-                jours: /\d+\s*jours/.test(t), secondes: /secondes/.test(t),
                 dodos: /dodo/.test(t),
+                // SUR LA STRUCTURE, pas sur les mots présents à cet
+                // instant : ce contrôle tourne à l'heure réelle, et
+                // chercher « secondes » dans le texte échouait une fois
+                // sur soixante — quand la seconde du découpage vaut zéro
+                // et que sa tuile est masquée. C'est la CI qui l'a pris.
+                decoupe: (() => {
+                  const g = document.querySelector('#compteurContenu .compteur-tuiles');
+                  if(!g) return null;
+                  return {classe: g.className,
+                          unites: [...g.querySelectorAll('span')].map(e => e.textContent)};
+                })(),
                 barre: !!document.querySelector('#compteurContenu .compteur-barre span'),
                 pourcent: (document.querySelector('.compteur-barre i') || {}).textContent,
                 tuiles: document.querySelectorAll('#compteurContenu .compteur-tuiles').length,
@@ -3165,8 +3175,12 @@ def test_panneau_du_compteur(nav, url):
     check(ouvert["ouvert"], "[compteur] le panneau s'ouvre")
     check(ouvert["titre"] == "Avant la sortie",
           "[compteur] il s'intitule « Avant la sortie » (« %s »)" % ouvert["titre"])
-    check(ouvert["jours"] and ouvert["secondes"],
-          "[compteur] il porte le découpage, secondes comprises")
+    CONNUES = {"mois", "semaine", "semaines", "jour", "jours", "heure",
+               "heures", "minute", "minutes", "seconde", "secondes"}
+    unites = (ouvert["decoupe"] or {}).get("unites") or []
+    check(1 <= len(unites) <= 6 and set(unites) <= CONNUES,
+          "[compteur] il porte le découpage, une tuile par unité non nulle "
+          "(%s)" % unites)
     # Sur la grille elle-même, et non sur le texte du panneau : à 34 jours
     # de la sortie le découpage porte déjà les mêmes mots, et un contrôle
     # qui cherche « heures » n'importe où passerait sans rien prouver.
@@ -3274,9 +3288,14 @@ def test_panneau_du_compteur(nav, url):
     # 10 septembre, les six unités sont non nulles d'un coup — 2 mois,
     # 1 semaine, 1 jour, 8 heures, 25 minutes, 39 secondes — et c'est ce
     # cas-là qui remplit la grille et peut la faire déborder.
+    #
+    # CINQ MINUTES DE MARGE de part et d'autre, pas une : l'horloge
+    # installée avance pendant que la page charge, et un runner lent
+    # ferait dériver un instant posé à une minute du seuil. La paire
+    # situe quand même la bascule à dix minutes près.
     for utc, vedette, libelle in (
-            ("2026-11-17T22:59:00Z", True,  "T-24 h 01"),
-            ("2026-11-17T23:01:00Z", False, "T-23 h 59"),
+            ("2026-11-17T22:55:00Z", True,  "T-24 h 05"),
+            ("2026-11-17T23:05:00Z", False, "T-23 h 55"),
             ("2026-09-10T13:34:21Z", True,  "six unités"),
     ):
         ctx = nav.new_context(viewport={"width": 320, "height": 850},
