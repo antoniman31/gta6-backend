@@ -984,22 +984,46 @@
 
   /* LA BARRE PORTE SON POURCENTAGE. Il était en légende dessous, ce qui
      faisait une ligne de texte de plus pour un chiffre que la barre
-     montre déjà. Elle est donc assez haute pour le contenir. */
+     montre déjà.
+
+     26 px de haut, et le chiffre à 12 px : à 18 px et 10 px il était
+     là mais personne ne le voyait. */
   .compteur-barre{
-    position:relative; height:18px; border-radius:var(--r-full);
+    position:relative; height:26px; border-radius:var(--r-full);
     background:var(--line); overflow:hidden; margin-bottom:10px;
   }
-  .compteur-barre span{
-    display:block; height:100%; background:var(--accent);
+  .compteur-barre > span{
+    position:relative; display:block; height:100%;
+    background:var(--accent); overflow:hidden;
   }
   /* Le chiffre est posé PAR-DESSUS, aligné à droite, pas à la fin du
      remplissage : à 0,1 % il sortirait de l'écran, et à 99,9 % il
-     déborderait de la barre. */
+     déborderait de la barre.
+
+     DEUX EXEMPLAIRES SUPERPOSÉS, ET C'EST UNE AFFAIRE DE CONTRASTE.
+     Écrit en --text, le chiffre tombait à 2,43:1 sur le bleu du
+     remplissage en thème clair et 1,78:1 en sombre — présent, illisible,
+     et Antoni l'a signalé comme disparu. --accent-contrast existe
+     exactement pour ce cas (6,70 et 8,74) mais ne vaut que SUR l'aplat :
+     hors du remplissage il faut --text.
+     Un seul exemplaire ne peut donc pas servir les deux fonds. Celui du
+     dessous porte --text ; celui du dessus vit DANS le remplissage, qui
+     le rogne, et porte --accent-contrast. Le chiffre reste lisible où
+     qu'en soit la barre, y compris à cheval sur la limite. */
   .compteur-barre i{
-    position:absolute; inset:0; display:flex; align-items:center;
-    justify-content:flex-end; padding-right:8px;
-    font-family:'JetBrains Mono',monospace; font-size:10px; font-style:normal;
+    position:absolute; top:0; bottom:0; right:0; left:0;
+    display:flex; align-items:center;
+    justify-content:flex-end; padding-right:10px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-style:normal;
     font-weight:700; color:var(--text);
+  }
+  /* L'exemplaire rogné. Sa largeur est celle de la BARRE, exprimée
+     relativement au remplissage qui le contient — d'où le 100/part posé
+     en ligne par le script : son bord droit coïncide alors avec celui de
+     la barre, et le chiffre se superpose au pixel près à celui du
+     dessous. */
+  .compteur-barre > span > i{
+    left:0; right:auto; color:var(--accent-contrast);
   }
   .compteur-note{
     font-family:'JetBrains Mono',monospace; font-size:10px;
@@ -8033,8 +8057,16 @@ function majPanneauCompteur(){
   el.innerHTML =
       tuilesDecoupe(decoupeCalendaire(debut, fin), precis ? "precis" : "second")
     + `<div class="compteur-barre">`
-    +   `<span style="width:${(fait * 100).toFixed(1)}%"></span>`
-    +   `<i>${escapeHtml(pourcent)}</i></div>`
+    +   `<i>${escapeHtml(pourcent)}</i>`
+    // Le second exemplaire est DANS le remplissage, donc rogné par lui.
+    // Sa largeur vaut celle de la barre : si le remplissage occupe p %,
+    // la barre fait 100/p fois le remplissage. Le plancher évite une
+    // division par presque rien quand la barre est quasi vide — à ce
+    // moment-là le chiffre est de toute façon hors du remplissage, et
+    // c'est l'exemplaire du dessous qu'on lit.
+    +   `<span style="width:${(fait * 100).toFixed(1)}%">`
+    +     `<i style="width:${(100 / Math.max(fait * 100, 0.5) * 100).toFixed(2)}%">`
+    +       `${escapeHtml(pourcent)}</i></span></div>`
     // SOUS LA BARRE, et c'est un choix d'Antoni : « c'est juste un truc
     // en plus, pas un truc hyper important ».
     + (avant

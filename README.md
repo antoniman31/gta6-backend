@@ -8523,6 +8523,43 @@ déjà utilisé pour la barre quasi vide, où le total en secondes fait onze
 caractères. Un contrôle vérifie que cet instant-là porte bien onze
 caractères, pour que le pire cas ne redevienne pas silencieusement tiède.
 
+### « On n'a plus le pourcentage » — il y était, à 2,43:1 — 16/10/2026
+
+Antoni le signale comme disparu. Il était dans la barre depuis la
+refonte du matin. Mesuré avant de toucher à quoi que ce soit, et c'est
+toute l'explication :
+
+| texte sur le remplissage | clair | sombre |
+|---|---|---|
+| `--text` (ce qui était écrit) | **2,43:1** | **1,78:1** |
+| `--accent-contrast` | 6,70:1 | 8,74:1 |
+
+Présent et illisible donne le même résultat que disparu. Le jeton
+`--accent-contrast` existe dans ce dépôt pour exactement ce cas : « ce
+qui s'écrit SUR un aplat `--accent` ». Il n'avait pas été utilisé ici.
+
+**Mais un seul exemplaire ne peut pas servir les deux fonds.** Le
+chiffre est calé à droite de la barre, donc tantôt sur le remplissage,
+tantôt sur la piste, et entre 83 et 97 % de remplissage il est à cheval
+sur la limite — ce qui fut le cas de janvier à septembre 2026. La barre
+porte donc **deux exemplaires superposés** : celui du dessous en
+`--text` pour la piste, celui du dessus vivant DANS le remplissage, qui
+le rogne, en `--accent-contrast`. Sa largeur est celle de la barre
+exprimée relativement au remplissage (100/part, posé en ligne), si bien
+que les deux coïncident au pixel.
+
+La barre passe de 18 à 26 px et le chiffre de 10 à 12 : à l'ancienne
+taille, même lisible, il restait minuscule.
+
+#### Le contrôle calcule le contraste, il ne le suppose pas
+
+Deux thèmes, le vrai rapport calculé depuis les couleurs **calculées**
+par le navigateur. Remis en `--text`, il tombe à 2,43 et 1,78 — les
+mêmes chiffres qu'à la main, ce qui vérifie le diagnostic de bout en
+bout. Deux autres gardes : la barre fait au moins 24 px et le chiffre
+12, et les deux exemplaires se superposent (une largeur fausse les
+décale de 4,7 px et le contrôle le dit).
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

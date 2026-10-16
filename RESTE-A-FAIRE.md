@@ -1080,6 +1080,21 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Le pourcentage de la barre, présent mais illisible — 16/10/2026
+
+Signalé comme disparu ; il y était. Mesuré : **2,43:1** en thème clair et
+**1,78:1** en sombre, parce qu'il était écrit en `--text` sur l'aplat
+`--accent`. Le jeton `--accent-contrast` existe pour ce cas exact (6,70
+et 8,74) et n'avait pas été utilisé.
+
+Un seul exemplaire ne peut pas servir les deux fonds — le chiffre est à
+cheval sur la limite du remplissage entre 83 et 97 %. La barre porte donc
+deux exemplaires superposés, celui du dessus rogné par le remplissage.
+Barre de 18 à 26 px, chiffre de 10 à 12.
+
+Le contrôle CALCULE le rapport de contraste dans les deux thèmes au lieu
+de le supposer.
+
 ### Le total en secondes revient — 16/10/2026
 
 Perdu quand les équivalences sont passées de quatre à trois. Mesuré :
