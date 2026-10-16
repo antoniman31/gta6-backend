@@ -3103,6 +3103,48 @@ def test_panneau_du_compteur(nav, url):
     check(phrases[3] == "2 mois · 3 semaines · 1 jour",
           "[compteur] « mois » est invariable (« %s »)" % phrases[3])
 
+    # LES DODOS. Un dodo est une NUIT à dormir, donc un minuit à traverser
+    # — jamais une division par 24 h. Et le minuit de la sortie NE COMPTE
+    # PAS : le jeu tombe à minuit pile, cette nuit-là on joue.
+    dodos = page.evaluate("""() => {
+        const S = new Date("2026-11-19T00:00:00+01:00");
+        const d = (iso) => dodosAvant(new Date(iso), S);
+        return {
+          loin:      d("2026-10-16T12:24:00+02:00"),
+          veille:    d("2026-11-18T23:00:00+01:00"),
+          avantHier: d("2026-11-17T12:00:00+01:00"),
+          minuit1:   d("2026-11-18T00:30:00+01:00"),
+          apres:     d("2026-11-20T10:00:00+01:00"),
+          // Le changement d'heure du 25/10/2026 : 24 nuits séparent le
+          // 25 octobre du 19 novembre, et une division par 24 h en
+          // trouverait une de trop ou de moins.
+          heureHiver: d("2026-10-25T12:00:00+01:00"),
+          phrases: [phraseDodos(33), phraseDodos(1), phraseDodos(0)],
+        };
+    }""")
+    check(dodos["loin"] == 33,
+          "[compteur] le 16/10 à 12 h 24 il reste 33 dodos, pas 34 jours "
+          "(%s)" % dodos["loin"])
+    check(dodos["avantHier"] == 1,
+          "[compteur] l'avant-veille au midi, plus qu'un dodo (%s)"
+          % dodos["avantHier"])
+    check(dodos["minuit1"] == 0,
+          "[compteur] le 18 au matin, ZÉRO dodo — la nuit suivante est "
+          "celle de la sortie (%s)" % dodos["minuit1"])
+    check(dodos["veille"] == 0,
+          "[compteur] et le 18 au soir toujours zéro (%s)" % dodos["veille"])
+    check(dodos["apres"] == 0,
+          "[compteur] après la sortie il n'y a plus de dodo à compter (%s)"
+          % dodos["apres"])
+    check(dodos["heureHiver"] == 24,
+          "[compteur] le changement d'heure du 25/10 ne décale pas le "
+          "compte — ce sont des minuits locaux, pas des tranches de 24 h "
+          "(%s)" % dodos["heureHiver"])
+    check(dodos["phrases"] == ["33 dodos", "Plus qu'un dodo",
+                               "Plus de dodo — c'est cette nuit"],
+          "[compteur] et le singulier comme le zéro se disent en français "
+          "(%s)" % dodos["phrases"])
+
     # L'OUVERTURE, et l'intervalle qui va avec.
     ouvert = page.evaluate("""() => {
         ouvreCompteur();
@@ -3111,6 +3153,7 @@ def test_panneau_du_compteur(nav, url):
                 bat: battementCompteur !== null,
                 titre: document.getElementById('titreCompteur').textContent,
                 jours: /\d+\s*jours/.test(t), secondes: /secondes/.test(t),
+                dodos: /dodo/.test(t),
                 barre: !!document.querySelector('#compteurContenu .compteur-barre span'),
                 date: /19 novembre 2026/.test(t), annonce: /4 f/.test(t)};
     }""")
@@ -3119,6 +3162,7 @@ def test_panneau_du_compteur(nav, url):
           "[compteur] il s'intitule « Avant la sortie » (« %s »)" % ouvert["titre"])
     check(ouvert["jours"] and ouvert["secondes"],
           "[compteur] il porte les équivalences, des jours aux secondes")
+    check(ouvert["dodos"], "[compteur] il porte le compte de dodos")
     check(ouvert["barre"], "[compteur] et la barre de progression")
     check(ouvert["annonce"],
           "[compteur] qui dit d'où elle part — une proportion sans sa "
@@ -3196,12 +3240,16 @@ def test_panneau_du_compteur(nav, url):
     apres = page.evaluate("""() => {
         ouvreCompteur();
         const t = document.getElementById('compteurContenu').textContent;
-        const r = {titre: document.getElementById('titreCompteur').textContent,
+        const r = {dodos: /dodo/.test(t),
+                   titre: document.getElementById('titreCompteur').textContent,
                    jours: (t.match(/([\d\s ]+) jours/) || [])[1],
                    plein: (document.querySelector('.compteur-barre span') || {}).style.width};
         fermeCompteur();
         return r;
     }""")
+    check(not apres["dodos"],
+          "[compteur] après la sortie, la ligne des dodos disparaît — "
+          "compter des nuits passées n'a aucun sens")
     check(apres["titre"] == "Depuis la sortie",
           "[compteur] après le 19 novembre il s'intitule « Depuis la "
           "sortie » (« %s »)" % apres["titre"])
