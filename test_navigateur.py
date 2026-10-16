@@ -3052,6 +3052,177 @@ def test_compte_a_rebours(nav, url):
           % tard["texte"])
 
 
+def test_mettre_de_cote(nav, url):
+    """Une étoile pour garder un article, et le plafond qui va avec.
+
+    OÙ ELLE EST, ET POURQUOI PAS AILLEURS. La rangée du bas porte déjà
+    quatre boutons qui se partagent la colonne de texte — 58 px chacun à
+    320 px, mesuré ici. Un cinquième les ramènerait à ~45 px : au-dessus
+    des 44 px réglementaires, mais tout juste, et le contrôle tactile
+    existant ne surveille pas ces boutons-là (il ne scanne que le panneau
+    des réglages). L'étoile va donc sur la ligne de source, dont le côté
+    droit est vide, et les quatre du bas ne bougent pas d'un pixel.
+
+    SA ZONE FAIT 44 px SANS RIEN FAIRE, et c'est le sujet du contrôle
+    ci-dessous : `button { min-height:44px }` est le défaut de l'app, posé
+    exprès pour qu'un bouton neuf soit conforme sans qu'on y pense. Un
+    ::after avait d'abord été ajouté par réflexe — il portait la cible à
+    72 px, un rectangle invisible qui débordait sur le titre et lui aurait
+    volé des clics. Retiré. Ce contrôle garde les deux bouts : au moins
+    44 px, et pas de débordement qui mange le voisin.
+    """
+    print("\n[étoile] mettre un article de côté")
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 850})
+        page = ctx.new_page()
+        err = []
+        page.on("pageerror", lambda e: err.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+
+        g = page.evaluate("""() => {
+            localStorage.removeItem('gta6watch:mis-de-cote-v1');
+            misDeCote = new Set();
+            lastItems = [1,2,3].map(n => ({
+              link: "https://x.test/" + n, source: "GTA BOOM",
+              title: "Article " + n, date: new Date().toISOString(), lang: "en",
+              description: "texte",
+            }));
+            setFilter('all');
+            applyFilters();
+            const e = document.querySelector('#feed .card .card-etoile');
+            const r = e.getBoundingClientRect();
+            const a = getComputedStyle(e, '::after');
+            const deborde = Math.abs(parseFloat(a.top) || 0);
+            const actions = [...document.querySelectorAll('#feed .card .card-actions button')]
+                .map(b => b.getBoundingClientRect().width);
+            return {etoiles: document.querySelectorAll('#feed .card-etoile').length,
+                    hauteur: r.height + 2 * deborde,
+                    actions: Math.min(...actions)};
+        }""")
+        check(g["etoiles"] == 3,
+              "[%d px] chaque carte porte son étoile (%d)" % (largeur, g["etoiles"]))
+        check(g["hauteur"] >= CIBLE_MINIMALE,
+              "[%d px] sa zone cliquable fait au moins %d px (%.0f)"
+              % (largeur, CIBLE_MINIMALE, g["hauteur"]))
+        check(g["hauteur"] <= CIBLE_MINIMALE + 8,
+              "[%d px] et elle ne déborde pas sur le titre — une cible "
+              "invisible trop grande vole les clics du lien (%.0f px)"
+              % (largeur, g["hauteur"]))
+        # LE CONTRÔLE DE NON-RÉGRESSION : les quatre boutons du bas ne
+        # doivent pas avoir rétréci. C'est tout l'intérêt d'avoir mis
+        # l'étoile ailleurs. Seuil à 50 px : ils mesurent 58 px à 320 px
+        # aujourd'hui, et un cinquième bouton les ramènerait à ~45.
+        check(g["actions"] >= 50,
+              "[%d px] les quatre boutons du bas n'ont pas rétréci (%.0f px)"
+              % (largeur, g["actions"]))
+        # LA FEUILLE DES FILTRES N'ÉTAIT SURVEILLÉE PAR RIEN. Le contrôle
+        # tactile ne scanne que #settingsOverlay, et celui des débordements
+        # porte sur les ONGLETS du fil. Ajouter un quatrième bouton dans
+        # une zone sans contrôle, avec le libellé le plus long des quatre,
+        # c'est exactement la façon dont une rangée casse en silence à
+        # 320 px. On la couvre maintenant.
+        f = page.evaluate("""() => {
+            openFiltersSheet();
+            const ids = ["filterAll","filterUnread","filterNew","filterCote"];
+            return ids.map(id => {
+              const e = document.getElementById(id), b = e.getBoundingClientRect();
+              const cs = getComputedStyle(e);
+              const r = document.createRange(); r.selectNodeContents(e);
+              const t = r.getBoundingClientRect();
+              const gauche = b.left + parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft);
+              const droite = b.right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
+              return {id, deborde: Math.max(gauche - t.left, t.right - droite),
+                      hauteur: b.height};
+            });
+        }""")
+        trop = ["%s (+%.1f px)" % (m["id"], m["deborde"]) for m in f if m["deborde"] > 0.5]
+        check(not trop,
+              "[%d px] le texte des quatre filtres tient dans son bouton (%s)"
+              % (largeur, ", ".join(trop) or "aucun débordement"))
+        petits = ["%s=%.0f" % (m["id"], m["hauteur"]) for m in f
+                  if m["hauteur"] < CIBLE_MINIMALE]
+        check(not petits,
+              "[%d px] et chacun fait ses %d px de haut (%s)"
+              % (largeur, CIBLE_MINIMALE, ", ".join(petits) or "tous conformes"))
+        page.evaluate("closeFiltersSheet()")
+
+        check(not err, "[%d px] aucune erreur JavaScript (%s)" % (largeur, err[:1]))
+        ctx.close()
+
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    etat = page.evaluate("""() => {
+        localStorage.removeItem('gta6watch:mis-de-cote-v1');
+        misDeCote = new Set();
+        lastItems = [1,2,3].map(n => ({
+          link: "https://x.test/" + n, source: "GTA BOOM",
+          title: "Article " + n, date: new Date().toISOString(), lang: "en",
+        }));
+        setFilter('all');
+        applyFilters();
+        // On met de côté le deuxième.
+        document.querySelectorAll('#feed .card .card-etoile')[1].click();
+        const apresClic = {
+          pleines: document.querySelectorAll('#feed .card-etoile.cote').length,
+          stocke: JSON.parse(localStorage.getItem('gta6watch:mis-de-cote-v1') || '[]'),
+        };
+        setFilter('cote');
+        applyFilters();
+        const filtre = [...document.querySelectorAll('#feed .card')]
+          .map(c => c.dataset.lien);
+        // Et on le retire.
+        document.querySelector('#feed .card .card-etoile').click();
+        setFilter('all');
+        applyFilters();
+        return {apresClic, filtre,
+                apresRetrait: JSON.parse(localStorage.getItem('gta6watch:mis-de-cote-v1') || '[]'),
+                memorise: ETATS_MEMORISES.includes('cote')};
+    }""")
+    check(etat["apresClic"]["pleines"] == 1,
+          "[étoile] cliquer la remplit, et une seule (%d)"
+          % etat["apresClic"]["pleines"])
+    check(etat["apresClic"]["stocke"] == ["https://x.test/2"],
+          "[étoile] le lien est écrit sur l'appareil (%s)"
+          % etat["apresClic"]["stocke"])
+    check(etat["filtre"] == ["https://x.test/2"],
+          "[étoile] le filtre ne montre que les articles mis de côté (%s)"
+          % etat["filtre"])
+    check(etat["apresRetrait"] == [],
+          "[étoile] re-cliquer le retire, et l'appareil suit (%s)"
+          % etat["apresRetrait"])
+    check(etat["memorise"],
+          "[étoile] le filtre survit à la fermeture — il est dans "
+          "ETATS_MEMORISES")
+
+    # LA SAUVEGARDE. Un changement de téléphone ne doit pas effacer la
+    # liste : readSet y est depuis toujours, celle-ci doit l'y rejoindre.
+    sauve = page.evaluate("""() => {
+        misDeCote = new Set(["https://x.test/9"]);
+        const c = contenuSauvegarde();
+        return {cotes: c.cotes, aussiLus: Array.isArray(c.lus)};
+    }""")
+    check(sauve["cotes"] == ["https://x.test/9"],
+          "[étoile] l'export emporte la liste (%s)" % sauve["cotes"])
+    check(sauve["aussiLus"], "[étoile] et il emporte toujours les lus")
+    # Une sauvegarde d'avant cette version n'a pas le champ : liste vide,
+    # pas un plantage.
+    tolerant = page.evaluate("""() => {
+        const d = {lus: [], cotes: undefined};
+        return new Set((d.cotes || []).filter(l => typeof l === "string")).size;
+    }""")
+    check(tolerant == 0,
+          "[étoile] une sauvegarde d'avant cette version s'importe sans "
+          "planter")
+    check(not err, "[étoile] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
+
+
 def test_le_vrai_editeur(nav, url):
     """La carte nomme qui a écrit l'article, pas par où il est arrivé.
 
@@ -3760,6 +3931,7 @@ def main():
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)
+            test_mettre_de_cote(nav, url)
             test_le_vrai_editeur(nav, url)
             test_mur_du_jour_j(nav, url)
             test_badges_filtres_chrono_et_recherches(nav, url)

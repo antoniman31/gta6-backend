@@ -447,6 +447,23 @@
      Autrement dit, un défaut visible partout où il y avait un défaut
      invisible nulle part. La largeur se règle maintenant dans le ::after,
      sans toucher au dessin (voir .card-mark). */
+  /* L'ÉTOILE VIT SUR LA LIGNE DE SOURCE, pas avec les quatre boutons du
+     bas, qui se partagent déjà la largeur de la colonne de texte. Le côté
+     droit de la ligne du haut, lui, est vide.
+
+     AUCUNE ZONE ÉTENDUE ICI, et c'est mesuré : elle fait 44 px toute
+     seule, par le `min-height:44px` posé en défaut sur tout `button`
+     justement pour qu'un bouton neuf soit conforme sans qu'on y pense. Un
+     ::after avait d'abord été ajouté par réflexe ; il portait la cible à
+     72 px, soit un rectangle invisible débordant de 14 px au-dessus et au-
+     dessous — donc par-dessus le titre, à qui il aurait volé des clics. */
+  .card-etoile{
+    margin-left:auto; background:none; border:none;
+    padding:0 2px; font-size:15px; cursor:pointer;
+    color:var(--text-dim); flex:0 0 auto;
+  }
+  .card-etoile.cote{color:var(--accent);}
+
   .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap;
                 gap:8px; margin-top:8px;}
   /* Bandeau pleine largeur, la vignette passe AU-DESSUS du texte.
@@ -1142,6 +1159,15 @@
   }
   .sheet-btn-group{display:flex; gap:8px; flex-wrap:wrap;}
   .sheet-btn-group button{flex:1; min-width:80px;}
+  /* QUATRE FILTRES NE TIENNENT PAS SUR UNE LIGNE. Avec min-width:80px ils
+     y entraient tous les quatre, à ~82 px chacun, et « Nouveaux » — un mot
+     qui ne peut pas se couper — débordait de 8,7 px à 390 px et de 2,4 px
+     à 320 px. « Mis de côté » passait, lui, parce qu'il a des espaces.
+     On force donc la rangée à se replier en deux fois deux, en élargissant
+     le minimum au-delà du tiers de la largeur disponible. Visé par
+     l'identifiant du groupe : les autres rangées de cette feuille n'ont
+     que deux boutons et ne doivent pas bouger. */
+  #groupeFiltres button{min-width:116px;}
   .sheet-btn-group button.active{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
 
   .settings-title{
@@ -1780,10 +1806,11 @@
 
     <div class="sheet-section">
       <span class="sheet-label">Affichage</span>
-      <div class="sheet-btn-group">
+      <div class="sheet-btn-group" id="groupeFiltres">
         <button class="active" id="filterAll" aria-pressed="true" onclick="setFilter('all')">Tout</button>
         <button id="filterUnread" aria-pressed="false" onclick="setFilter('unread')">Non lus</button>
         <button id="filterNew" aria-pressed="false" onclick="setFilter('new')">Nouveaux</button>
+        <button id="filterCote" aria-pressed="false" onclick="setFilter('cote')">Mis de côté</button>
       </div>
     </div>
 
@@ -2460,6 +2487,10 @@ async function loadState(){
     if(readRes && readRes.value) readSet = new Set(JSON.parse(readRes.value));
   }catch(e){}
   try{
+    const cotesRes = storageGet("mis-de-cote-v1");
+    if(cotesRes && cotesRes.value) misDeCote = new Set(JSON.parse(cotesRes.value));
+  }catch(e){}
+  try{
     const itemsRes = storageGet("last-items-v1");
     if(itemsRes && itemsRes.value){
       lastItems = JSON.parse(itemsRes.value) || [];
@@ -2653,6 +2684,22 @@ async function saveSeen(){
 const MAX_LIENS_LUS_PERSISTES = 8000;
 let elagageLusSignale = false;
 
+// ---------- Les articles mis de côté ----------
+//
+// MÊME PLAFOND, MÊME RAISON. La dette 4.2 de l'audit du 08/10 était
+// exactement ceci : readSet grandissait sans borne et le quota de
+// localStorage finissait par refuser une écriture sur deux, en silence.
+// Une seconde liste sans plafond ramènerait le défaut par une autre porte,
+// alors on réutilise la règle telle quelle — y compris son refus de jeter
+// un lien ENCORE AFFICHABLE, qui ferait disparaître une étoile sous les
+// yeux du lecteur.
+//
+// La liste est courte par nature : on met de côté ce qu'on veut relire, pas
+// tout ce qu'on voit. Le plafond ne mordra sans doute jamais ; il est là
+// parce qu'une structure qui grandit sans borne finit toujours par mordre.
+let misDeCote = new Set();
+let elagageCotesSignale = false;
+
 function lusAPersister(){
   if(readSet.size <= MAX_LIENS_LUS_PERSISTES) return [...readSet];
   // Sans l'historique complet et toute l'archive, « plus affichable » n'est
@@ -2681,6 +2728,39 @@ async function saveRead(){
   }
   try{ storageSet("read-items-v1", JSON.stringify(liste)); }
   catch(e){ console.error("Erreur sauvegarde read", e); }
+}
+
+function cotesAPersister(){
+  if(misDeCote.size <= MAX_LIENS_LUS_PERSISTES) return [...misDeCote];
+  if(historyPartial || !archiveChargee) return [...misDeCote];
+  const connus = new Set(lastItems.map(i => i.link));
+  const surplus = misDeCote.size - MAX_LIENS_LUS_PERSISTES;
+  const jetables = [...misDeCote].filter(l => !connus.has(l));
+  const jetes = new Set(jetables.slice(0, surplus));
+  return [...misDeCote].filter(l => !jetes.has(l));
+}
+
+function saveCotes(){
+  const liste = cotesAPersister();
+  const ecartes = misDeCote.size - liste.length;
+  if(ecartes > 0 && !elagageCotesSignale){
+    elagageCotesSignale = true;
+    try{
+      addLog("info", `Stockage local : ${ecartes} article(s) mis de côté ne ` +
+        `sont plus écrits sur l'appareil — plus rien ne peut les afficher. ` +
+        `La sauvegarde exportée, elle, les garde tous.`);
+    }catch(_){ /* addLog pas encore prêt */ }
+  }
+  try{ storageSet("mis-de-cote-v1", JSON.stringify(liste)); }
+  catch(e){ console.error("Erreur sauvegarde mis de côté", e); }
+}
+
+function basculeCote(lien){
+  if(!lien) return;
+  if(misDeCote.has(lien)) misDeCote.delete(lien);
+  else misDeCote.add(lien);
+  saveCotes();
+  applyFilters();
 }
 
 // ---------- Reprise des liens re-décodés ----------
@@ -2885,6 +2965,7 @@ function contenuSauvegarde(){
     exporte_le: new Date().toISOString(),
     settings: settings,
     lus: [...readSet],
+    cotes: [...misDeCote],
     vus: seenMap,
     // Sans lui, un téléphone restauré repartirait d'un enregistrement neuf
     // et exclurait du délai de lecture tout ce qui a été noté avant.
@@ -2986,6 +3067,10 @@ async function importerSauvegarde(champ){
   // depuis, et les laisser absents donnerait des undefined un peu partout.
   settings = Object.assign({}, DEFAULT_SETTINGS, d.settings);
   readSet = new Set(d.lus.filter(l => typeof l === "string"));
+  // Une sauvegarde d'avant cette version n'a pas `cotes` : liste vide
+  // plutôt qu'un plantage. Même tolérance que pour les réglages ajoutés
+  // après coup, juste au-dessus.
+  misDeCote = new Set((d.cotes || []).filter(l => typeof l === "string"));
   seenMap = d.vus;
   if(Number.isFinite(d.vus_depuis) && d.vus_depuis > 0){
     vusDepuis = d.vus_depuis;
@@ -2993,6 +3078,7 @@ async function importerSauvegarde(champ){
   }
   storageSet("settings-v1", JSON.stringify(settings));
   await saveRead();
+  saveCotes();
   await saveSeen();
 
   applyTheme();
@@ -4362,7 +4448,7 @@ const LANGUES_MEMORISEES = ["all", "fr", "en"];
 // est reconstruit de zéro à chaque ouverture et reste VIDE tant qu'aucun
 // rafraîchissement n'a eu lieu. Le restaurer tel quel ferait rouvrir l'app
 // sur un fil vide, sans que rien n'explique pourquoi. On retombe sur « Tout ».
-const ETATS_MEMORISES = ["all", "unread"];
+const ETATS_MEMORISES = ["all", "unread", "cote"];
 
 // L'onglet « logs » n'est pas mémorisé non plus : rouvrir l'application
 // directement sur le journal du robot plutôt que sur les actualités n'est
@@ -4491,6 +4577,7 @@ function setFilter(f, silencieux){
   marqueActif("filterAll", f === "all");
   marqueActif("filterUnread", f === "unread");
   marqueActif("filterNew", f === "new");
+  marqueActif("filterCote", f === "cote");
   updateActiveFiltersCount();
   sauvegardeFiltres();
   if(silencieux) return;
@@ -4831,6 +4918,7 @@ function articlesAffiches(){
 
   if(currentFilter === "unread") items = items.filter(i => !readSet.has(i.link));
   if(currentFilter === "new") items = items.filter(i => lastNewLinks.has(i.link));
+  if(currentFilter === "cote") items = items.filter(i => misDeCote.has(i.link));
 
   // La recherche porte aussi sur le résumé : beaucoup d'articles ne
   // mentionnent le sujet cherché que dans le corps du texte.
@@ -5295,6 +5383,7 @@ function renderCard(item, newLinks, searchQuery){
   // loading="lazy" : jusqu'à deux images par carte et 30 cartes au premier
   // rendu, soit 60 requêtes pour trois cartes visibles. decoding="async"
   // évite en plus qu'un décodage bloque le rendu.
+  const estCote = misDeCote.has(item.link);
   const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" class="card-favicon" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : "";
   const vignette = imageUrl ? `<img src="${escapeHtml(imageUrl)}" class="card-thumb" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">` : "";
   // La vignette ouvre l'article, exactement comme le titre : même cible,
@@ -5370,6 +5459,11 @@ function renderCard(item, newLinks, searchQuery){
           <div class="card-src-row">
             <span class="card-src">${favicon}${escapeHtml(mediaDe(item))}</span>
             ${hotBadge}${officialBadge}${specialistBadge}${badgesContenu}${langBadge}
+            <button class="card-etoile${estCote ? " cote" : ""}" type="button"
+                    title="${estCote ? "Retirer de la liste" : "Mettre de côté"}"
+                    aria-label="${estCote ? "Retirer de la liste" : "Mettre de côté"}"
+                    aria-pressed="${estCote ? "true" : "false"}"
+                    onclick="basculeCote('${escapeAttr(item.link)}')">${estCote ? "★" : "☆"}</button>
           </div>
           <h3 class="card-title">${linkUrl
             ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(titreSansMedia(item), searchQuery)}</a>`
