@@ -1061,6 +1061,19 @@ sources » nomme le domaine au lieu de l'agrégateur.
 
 Rien à inventer, rien côté robot, rien dans le format publié.
 
+### Le panneau du compte à rebours — 16/10/2026
+
+Demandé par Antoni : appuyer sur le compte à rebours ouvre son détail —
+décomposition en mois / semaines / jours / heures / minutes / secondes,
+équivalences, barre depuis l'annonce du jeu (04/02/2022) et heure exacte
+de sortie. La Nouvelle-Zélande a été proposée et écartée.
+
+Trois pièges nommés avant d'écrire, trois contrôles : le débordement de
+`setMonth` (31 janvier + 1 mois = 3 mars), l'intervalle de la seconde qui
+tourne et qu'il faut couper à la fermeture, et la cible tactile qui ne
+peut PAS s'étendre vers le bas — un bouton de l'en-tête commence 14 px
+plus bas.
+
 ### Les deux options : une livrée, une abandonnée — 16/10/2026
 
 Antoni a décidé d'avancer ces deux chantiers plutôt que d'attendre le

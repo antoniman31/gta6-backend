@@ -155,10 +155,29 @@
   .mode-indicator.backend{background:color-mix(in srgb, var(--ok) 15%, transparent); color:var(--ok); border:1px solid var(--ok);}
   .mode-indicator.direct{background:color-mix(in srgb, var(--accent) 12%, transparent); color:var(--accent); border:1px solid var(--accent);}
   .mode-indicator .dot{width:5px; height:5px; border-radius:50%; background:currentColor;}
+  /* LE COMPTEUR EST UN BOUTON depuis qu'il ouvre son panneau de détail,
+     et il doit donc DÉFAIRE le style de bouton par défaut — fond, bordure,
+     rembourrage, min-height:44px — sinon l'en-tête se déforme.
+     La règle des 44 px est tenue par la zone étendue ci-dessous, et non par
+     la hauteur apparente : c'est l'exception déjà prévue par le défaut, et
+     celle qu'appliquent .icon-btn, .card-mark et .aide. */
   .countdown{
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);
     margin-top:4px; font-weight:600; letter-spacing:0.02em;
     transition:color var(--t-moyen) var(--courbe);
+    background:none; border:none; padding:0; min-height:0;
+    display:block; text-align:left; cursor:pointer; position:relative;
+  }
+  /* VERS LE HAUT, et c'est mesuré. Le compteur n'a que 14 px de haut : il
+     lui en faut 30 de plus pour atteindre 44. Vers le BAS c'est interdit —
+     mesuré le 16/10/2026, un bouton de l'en-tête commence 14 px plus bas à
+     390 px et 22 px à 320 px, et une cible invisible qui le recouvrirait
+     lui volerait ses clics. Vers le HAUT il n'y a que le titre « GTA6_
+     WATCH », qui ne réagit à rien : 22 px en haut, 8 px en bas, 44 px en
+     tout, et six pixels de marge avec le voisin du dessous. Toucher le
+     titre ouvre donc le panneau, et c'est sans conséquence. */
+  .countdown::after{
+    content:""; position:absolute; top:-22px; bottom:-8px; left:-8px; right:-8px;
   }
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
@@ -896,6 +915,28 @@
   .skeleton-line.w-70{width:70%; height:14px;}
   .skeleton-line.w-20{width:20%;}
 
+  /* Le détail du compte à rebours. Volontairement sobre : c'est un panneau
+     qu'on ouvre par curiosité, pas un tableau de bord. */
+  .compteur-gros{
+    font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;
+    color:var(--accent); line-height:1.5; margin:0 0 14px;
+  }
+  .compteur-equiv{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px 12px;
+    font-family:'JetBrains Mono',monospace; font-size:11px;
+    color:var(--text-dim); margin-bottom:16px;
+  }
+  .compteur-equiv strong{color:var(--text); font-size:13px;}
+  .compteur-barre{
+    height:6px; border-radius:var(--r-full); background:var(--line);
+    overflow:hidden; margin-bottom:8px;
+  }
+  .compteur-barre span{display:block; height:100%; background:var(--accent);}
+  .compteur-note{
+    font-family:'JetBrains Mono',monospace; font-size:10px;
+    color:var(--text-dim); line-height:1.5; margin:0 0 6px;
+  }
+
   .filters-trigger{
     display:flex; align-items:center; justify-content:center; gap:6px; flex-shrink:0;
     padding:8px 14px; white-space:nowrap; min-height:44px;
@@ -1619,7 +1660,8 @@
     <div class="header-haut">
       <div>
         <h1 class="brand">GTA6<span>_WATCH</span></h1>
-        <div id="countdown" class="countdown"></div>
+        <button type="button" id="countdown" class="countdown"
+                aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
       </div>
       <div class="header-right">
         <div id="modeIndicator" class="mode-indicator"></div>
@@ -1792,6 +1834,17 @@
       <button id="confirmAnnuler" onclick="repondConfirmation(false)">Annuler</button>
       <button class="danger" id="confirmValider" onclick="repondConfirmation(true)"></button>
     </div>
+  </div>
+</div>
+
+<!-- ---------- Le détail du compte à rebours ---------- -->
+<div class="overlay" id="compteurOverlay" onclick="fermeCompteurSurFond(event)">
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="titreCompteur">
+    <div class="settings-title">
+      <span id="titreCompteur">Avant la sortie</span>
+      <button class="icon-btn" onclick="fermeCompteur()" aria-label="Fermer">✕</button>
+    </div>
+    <div id="compteurContenu"></div>
   </div>
 </div>
 
@@ -7723,6 +7776,134 @@ function updateCountdown(){
   // repeindrait quand même l'en-tête 3600 fois par heure pour rien.
   if(el.textContent !== texte) el.textContent = texte;
   if(el.className !== classe) el.className = classe;
+}
+
+// ---------- Le détail du compte à rebours ----------
+//
+// Demandé par Antoni le 16/10/2026 : « quand j'appuie sur le compte à
+// rebours, une petite pop-up avec le temps en mois, semaines, jours… ».
+
+// L'ANNONCE DU JEU, et laquelle. Le 04/02/2022, Rockstar confirme sur son
+// Newswire que le prochain GTA est en développement — sans le nommer. Le
+// nom « Grand Theft Auto VI » n'arrive qu'avec la première bande-annonce,
+// le 05/12/2023. Les deux dates donnent une barre à 98,2 % et 96,9 % : le
+// choix ne change rien à l'écran, et c'est la première qui répond
+// littéralement à « l'annonce du jeu ».
+const ANNONCE_GTA6 = new Date("2022-02-04T00:00:00+01:00");
+
+// Ajouter un mois en JavaScript déborde : le 31 janvier + 1 mois donne le
+// 3 mars, parce que setMonth garde le quantième et laisse février le
+// reporter. On ramène donc au dernier jour du mois visé.
+function ajouteUnMois(d){
+  const quantieme = d.getDate();
+  const r = new Date(d.getTime());
+  r.setDate(1);
+  r.setMonth(r.getMonth() + 1);
+  const dernier = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+  r.setDate(Math.min(quantieme, dernier));
+  return r;
+}
+
+// Des mois CIVILS, pas des blocs de 30 jours : du 16 octobre au 16
+// novembre, les gens comptent un mois, et c'est vérifiable sur un
+// calendrier. Le reste se divise ensuite normalement.
+function decoupeCalendaire(debut, fin){
+  let mois = 0;
+  let curseur = new Date(debut.getTime());
+  while(true){
+    const essai = ajouteUnMois(curseur);
+    if(essai > fin) break;
+    curseur = essai;
+    mois++;
+    if(mois > 1200) break;  // garde-fou, jamais atteint
+  }
+  let reste = fin - curseur;
+  const J = 86400000;
+  const semaines = Math.floor(reste / (7 * J)); reste -= semaines * 7 * J;
+  const jours = Math.floor(reste / J); reste -= jours * J;
+  const heures = Math.floor(reste / 3600000); reste -= heures * 3600000;
+  const minutes = Math.floor(reste / 60000); reste -= minutes * 60000;
+  return {mois, semaines, jours, heures, minutes, secondes: Math.floor(reste / 1000)};
+}
+
+// Les unités à zéro sont MASQUÉES : « 1 mois, 0 semaine, 2 jours » se lit
+// mal, « 1 mois, 2 jours » se lit tout seul. La semaine réapparaîtra quand
+// elle vaudra quelque chose.
+function phraseDecoupe(d){
+  const bouts = [];
+  const pousse = (n, singulier, pluriel) => {
+    if(n > 0) bouts.push(n + " " + (n > 1 ? (pluriel || singulier + "s") : singulier));
+  };
+  pousse(d.mois, "mois", "mois");
+  pousse(d.semaines, "semaine");
+  pousse(d.jours, "jour");
+  pousse(d.heures, "heure");
+  pousse(d.minutes, "minute");
+  pousse(d.secondes, "seconde");
+  return bouts.length ? bouts.join(" · ") : "moins d'une seconde";
+}
+
+function nombreFr(n){
+  return Math.floor(n).toLocaleString("fr-FR");
+}
+
+function majPanneauCompteur(){
+  const el = document.getElementById("compteurContenu");
+  if(!el) return;
+  const maintenant = new Date();
+  const avant = GTA6_RELEASE > maintenant;
+  const [debut, fin] = avant ? [maintenant, GTA6_RELEASE] : [GTA6_RELEASE, maintenant];
+  const ecart = fin - debut;
+
+  const titre = document.getElementById("titreCompteur");
+  if(titre) titre.textContent = avant ? "Avant la sortie" : "Depuis la sortie";
+
+  // La barre va de l'annonce à la sortie, et le panneau DIT d'où elle
+  // part : une proportion sans sa référence ne veut rien dire.
+  const total = GTA6_RELEASE - ANNONCE_GTA6;
+  const fait = Math.max(0, Math.min(1, (maintenant - ANNONCE_GTA6) / total));
+  const jourSortie = GTA6_RELEASE.toLocaleDateString("fr-FR", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+    timeZone: "Europe/Paris" });
+
+  el.innerHTML =
+      `<p class="compteur-gros">${escapeHtml(phraseDecoupe(decoupeCalendaire(debut, fin)))}</p>`
+    + `<div class="compteur-equiv">`
+    +   `<div><strong>${nombreFr(ecart / 86400000)}</strong> jours</div>`
+    +   `<div><strong>${nombreFr(ecart / 3600000)}</strong> heures</div>`
+    +   `<div><strong>${nombreFr(ecart / 60000)}</strong> minutes</div>`
+    +   `<div><strong>${nombreFr(ecart / 1000)}</strong> secondes</div>`
+    + `</div>`
+    + `<div class="compteur-barre"><span style="width:${(fait * 100).toFixed(1)}%"></span></div>`
+    + `<p class="compteur-note">${(fait * 100).toFixed(1).replace(".", ",")} % du chemin depuis `
+    +   `l'annonce du jeu, le 4 février 2022.</p>`
+    + `<p class="compteur-note">Sortie le ${escapeHtml(jourSortie)} à 00:00, `
+    +   `heure de Paris — minuit heure locale, par vagues : la `
+    +   `Nouvelle-Zélande d'abord.</p>`;
+}
+
+// UN INTERVALLE PROPRE AU PANNEAU, arrêté à la fermeture. Le compteur de
+// l'en-tête évite exprès de repeindre quand son texte n'a pas changé ;
+// celui-ci bat chaque seconde, et un intervalle laissé derrière tournerait
+// pour toujours sur un panneau fermé.
+let battementCompteur = null;
+
+function ouvreCompteur(){
+  majPanneauCompteur();
+  document.getElementById("compteurOverlay").classList.add("open");
+  debutDialogue("compteurOverlay", { fermer: fermeCompteur });
+  if(battementCompteur) clearInterval(battementCompteur);
+  battementCompteur = setInterval(majPanneauCompteur, 1000);
+}
+
+function fermeCompteur(){
+  if(battementCompteur){ clearInterval(battementCompteur); battementCompteur = null; }
+  document.getElementById("compteurOverlay").classList.remove("open");
+  finDialogue("compteurOverlay");
+}
+
+function fermeCompteurSurFond(e){
+  if(e.target.id === "compteurOverlay") fermeCompteur();
 }
 
 // ---------- Reprise de lecture ----------
