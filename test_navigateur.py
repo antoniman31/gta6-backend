@@ -3052,6 +3052,170 @@ def test_compte_a_rebours(nav, url):
           % tard["texte"])
 
 
+def test_panneau_du_compteur(nav, url):
+    """Appuyer sur le compte à rebours ouvre son détail.
+
+    Demandé par Antoni le 16/10/2026. Trois pièges nommés avant d'écrire,
+    et chacun a son contrôle ici :
+
+      - « un mois » n'a pas de longueur fixe, et setMonth DÉBORDE en
+        JavaScript : le 31 janvier + 1 mois donne le 3 mars ;
+      - le panneau bat chaque seconde, donc il laisse un intervalle
+        derrière lui s'il ne le coupe pas à la fermeture ;
+      - le compteur n'a que 14 px de haut, et le bouton de l'en-tête
+        commence 14 px plus bas : une cible étendue vers le bas lui
+        volerait ses clics.
+    """
+    print("\n[compteur] le détail derrière le compte à rebours")
+
+    # Le piège de setMonth, éprouvé sur la fonction elle-même.
+    ctx = nav.new_context(viewport={"width": 390, "height": 850},
+                          timezone_id="Europe/Paris")
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    mois = page.evaluate("""() => {
+        const d = ajouteUnMois(new Date(2026, 0, 31));   // 31 janvier
+        const n = ajouteUnMois(new Date(2026, 2, 15));   // 15 mars
+        return [d.getMonth(), d.getDate(), n.getMonth(), n.getDate()];
+    }""")
+    check(mois[0] == 1 and mois[1] == 28,
+          "[compteur] 31 janvier + 1 mois = 28 février, pas 3 mars — "
+          "setMonth déborde tout seul (mois %d, jour %d)" % (mois[0], mois[1]))
+    check(mois[2] == 3 and mois[3] == 15,
+          "[compteur] et un mois ordinaire reste ordinaire (15 avril)")
+
+    # Les unités à zéro sont masquées.
+    phrases = page.evaluate("""() => [
+        phraseDecoupe({mois:1, semaines:0, jours:2, heures:11, minutes:5, secondes:0}),
+        phraseDecoupe({mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:1}),
+        phraseDecoupe({mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:0}),
+        phraseDecoupe({mois:2, semaines:3, jours:1, heures:0, minutes:0, secondes:0}),
+    ]""")
+    check("semaine" not in phrases[0] and phrases[0] == "1 mois · 2 jours · 11 heures · 5 minutes",
+          "[compteur] les unités à zéro ne s'affichent pas (« %s »)" % phrases[0])
+    check(phrases[1] == "1 seconde", "[compteur] le singulier est respecté")
+    check(phrases[2] == "moins d'une seconde",
+          "[compteur] et tout à zéro se dit au lieu de rendre une ligne vide")
+    check(phrases[3] == "2 mois · 3 semaines · 1 jour",
+          "[compteur] « mois » est invariable (« %s »)" % phrases[3])
+
+    # L'OUVERTURE, et l'intervalle qui va avec.
+    ouvert = page.evaluate("""() => {
+        ouvreCompteur();
+        const t = document.getElementById('compteurContenu').textContent;
+        return {ouvert: document.getElementById('compteurOverlay').classList.contains('open'),
+                bat: battementCompteur !== null,
+                titre: document.getElementById('titreCompteur').textContent,
+                jours: /\d+\s*jours/.test(t), secondes: /secondes/.test(t),
+                barre: !!document.querySelector('#compteurContenu .compteur-barre span'),
+                date: /19 novembre 2026/.test(t), annonce: /4 f/.test(t)};
+    }""")
+    check(ouvert["ouvert"], "[compteur] le panneau s'ouvre")
+    check(ouvert["titre"] == "Avant la sortie",
+          "[compteur] il s'intitule « Avant la sortie » (« %s »)" % ouvert["titre"])
+    check(ouvert["jours"] and ouvert["secondes"],
+          "[compteur] il porte les équivalences, des jours aux secondes")
+    check(ouvert["barre"], "[compteur] et la barre de progression")
+    check(ouvert["annonce"],
+          "[compteur] qui dit d'où elle part — une proportion sans sa "
+          "référence ne veut rien dire")
+    check(ouvert["date"], "[compteur] la date de sortie est écrite en toutes lettres")
+
+    # L'INTERVALLE EST COUPÉ À LA FERMETURE. Sans ça il bat pour toujours
+    # sur un panneau fermé, une fois par seconde, pour rien.
+    check(ouvert["bat"], "[compteur] il bat pendant qu'il est ouvert")
+    apres = page.evaluate("""() => {
+        fermeCompteur();
+        return {ouvert: document.getElementById('compteurOverlay').classList.contains('open'),
+                bat: battementCompteur !== null};
+    }""")
+    check(not apres["ouvert"], "[compteur] il se ferme")
+    check(not apres["bat"],
+          "[compteur] et son intervalle est COUPÉ — sinon il bat pour "
+          "toujours sur un panneau fermé")
+
+    # Échap ferme, comme les cinq autres dialogues de l'app.
+    echap = page.evaluate("() => { ouvreCompteur(); return battementCompteur !== null; }")
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(60)
+    ferme = page.evaluate("""() => ({
+        ouvert: document.getElementById('compteurOverlay').classList.contains('open'),
+        bat: battementCompteur !== null})""")
+    check(echap and not ferme["ouvert"],
+          "[compteur] Échap le ferme, comme les autres dialogues")
+    check(not ferme["bat"], "[compteur] et coupe l'intervalle aussi par ce chemin")
+    check(not err, "[compteur] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
+
+    # LA CIBLE TACTILE, des deux côtés. Vers le bas, un bouton de l'en-tête
+    # commence 14 px plus bas à 390 px : la zone ne doit PAS l'atteindre.
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 850})
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        g = page.evaluate("""() => {
+            const b = document.getElementById('countdown');
+            const r = b.getBoundingClientRect();
+            const a = getComputedStyle(b, '::after');
+            const haut = Math.abs(parseFloat(a.top) || 0);
+            const bas = Math.abs(parseFloat(a.bottom) || 0);
+            let plusProche = 9999;
+            for(const e of document.querySelectorAll('button,a,input')){
+              if(e === b) continue;
+              const q = e.getBoundingClientRect();
+              if(q.width === 0) continue;
+              if(q.left < r.right + 8 && q.right > r.left - 8 && q.top >= r.bottom){
+                plusProche = Math.min(plusProche, q.top - r.bottom);
+              }
+            }
+            return {tag: b.tagName, zone: r.height + haut + bas, bas, plusProche};
+        }""")
+        check(g["tag"] == "BUTTON",
+              "[%d px] le compteur est un vrai bouton (%s)" % (largeur, g["tag"]))
+        check(g["zone"] >= CIBLE_MINIMALE,
+              "[%d px] sa zone fait au moins %d px (%.0f)"
+              % (largeur, CIBLE_MINIMALE, g["zone"]))
+        check(g["bas"] < g["plusProche"],
+              "[%d px] et elle ne mord pas sur le bouton du dessous "
+              "(%.0f px d'extension pour %.0f px d'écart)"
+              % (largeur, g["bas"], g["plusProche"]))
+        ctx.close()
+
+    # APRÈS LA SORTIE, le panneau compte dans l'autre sens.
+    ctx = nav.new_context(viewport={"width": 390, "height": 850},
+                          timezone_id="Europe/Paris")
+    ctx.clock.install(time="2026-11-22T08:00:00Z")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    apres = page.evaluate("""() => {
+        ouvreCompteur();
+        const t = document.getElementById('compteurContenu').textContent;
+        const r = {titre: document.getElementById('titreCompteur').textContent,
+                   jours: (t.match(/([\d\s ]+) jours/) || [])[1],
+                   plein: (document.querySelector('.compteur-barre span') || {}).style.width};
+        fermeCompteur();
+        return r;
+    }""")
+    check(apres["titre"] == "Depuis la sortie",
+          "[compteur] après le 19 novembre il s'intitule « Depuis la "
+          "sortie » (« %s »)" % apres["titre"])
+    check((apres["jours"] or "").strip() == "3",
+          "[compteur] et il compte à l'envers (%s jours)" % apres["jours"])
+    # Sur la VALEUR et non sur la chaîne : le navigateur normalise
+    # « 100.0% » en « 100% », et un contrôle qui compare le texte brut
+    # échoue sur une différence qui n'existe pas à l'écran.
+    plein = float((apres["plein"] or "0").rstrip("%"))
+    check(plein == 100.0,
+          "[compteur] la barre est pleine et ne déborde pas (%s)" % apres["plein"])
+    ctx.close()
+
+
 def test_mettre_de_cote(nav, url):
     """Une étoile pour garder un article, et le plafond qui va avec.
 
@@ -3931,6 +4095,7 @@ def main():
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)
+            test_panneau_du_compteur(nav, url)
             test_mettre_de_cote(nav, url)
             test_le_vrai_editeur(nav, url)
             test_mur_du_jour_j(nav, url)

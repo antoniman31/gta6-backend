@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1832
+qui permet de tester tout le pipeline sans sortir de la machine. **1836
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -5094,6 +5094,49 @@ borne finit toujours par mordre.
 
 **La sauvegarde l'emporte** (`cotes`), et une sauvegarde d'avant cette
 version s'importe sans planter.
+
+### Le détail derrière le compte à rebours — 16/10/2026
+
+« Quand j'appuie sur le compte à rebours, ça serait bien que ça m'ouvre une
+petite pop-up avec le temps en mois, semaines, jours… » Le panneau porte
+la décomposition, les équivalences, la barre de progression et l'heure
+exacte de sortie — contenu choisi par Antoni, la Nouvelle-Zélande écartée.
+
+**Des mois CIVILS, et le piège de `setMonth`.** Du 16 octobre au 16
+novembre, les gens comptent un mois : c'est ce que fait `decoupeCalendaire`,
+pas des blocs de 30 jours. Mais `setMonth` **déborde** — le 31 janvier
++ 1 mois donne le **3 mars**, parce qu'il garde le quantième et laisse
+février le reporter. `ajouteUnMois` ramène donc au dernier jour du mois
+visé, et le contrôle reproduit le défaut d'origine quand on retire la
+garde.
+
+Les unités à zéro sont masquées : « 1 mois, 0 semaine, 2 jours » se lit mal.
+
+**La barre part de l'annonce du jeu**, le 04/02/2022 — le jour où Rockstar
+confirme sur son Newswire que le prochain GTA est en développement, sans le
+nommer ; le nom n'arrive qu'avec la première bande-annonce, en décembre
+2023. Les deux dates donnent 98,2 % et 96,9 %, donc le choix ne change rien
+à l'écran. Le panneau **dit d'où elle part** : une proportion sans sa
+référence ne veut rien dire.
+
+**L'intervalle est coupé à la fermeture.** Le compteur de l'en-tête évite
+exprès de repeindre quand son texte n'a pas changé ; le panneau, lui, bat
+chaque seconde. Un intervalle laissé derrière battrait pour toujours sur un
+panneau fermé. Deux contrôles le vérifient, par le bouton et par Échap.
+
+**La cible tactile va vers le HAUT, et c'est mesuré.** Le compteur n'a que
+14 px de haut ; il lui en faut 30 de plus pour atteindre 44. Vers le bas
+c'est interdit : un bouton de l'en-tête commence **14 px plus bas à 390 px**
+et 22 px à 320 px, et une zone invisible qui le recouvrirait lui volerait
+ses clics — l'erreur commise une heure plus tôt sur l'étoile des articles
+mis de côté. Au-dessus il n'y a que le titre, qui ne réagit à rien : 22 px
+en haut, 8 px en bas, 44 px en tout, six pixels de marge avec le voisin.
+
+Le compteur devient donc un vrai `<button>`, qui doit **défaire** le style
+de bouton par défaut — fond, bordure, rembourrage, `min-height:44px` —
+sinon l'en-tête se déforme.
+
+Vingt-six contrôles, chacun vérifié capable d'échouer.
 
 ### Les sources : la mesure a surtout confirmé l'existant
 
