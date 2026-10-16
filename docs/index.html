@@ -427,7 +427,14 @@
   @media (prefers-reduced-motion: reduce){
     .card{animation:none;}
   }
-  .card.read{opacity:0.45;}
+  /* LES ARTICLES LUS S'ESTOMPENT, MAIS RESTENT LISIBLES. À 0,45, le
+     titre d'un article lu tombait à 2,80:1 en thème clair — en dessous
+     du seuil WCAG, pour la seule chose qu'on relit vraiment. À 0,70 il
+     est à 6,05:1 et la carte reste visiblement seconde.
+     Sa date et sa source restent sous le seuil (2,98 et 3,57) : décision
+     d'Antoni le 16/10/2026, c'est de l'accessoire sur un article déjà lu,
+     et le balayage de contraste porte une exception nommée pour elles. */
+  .card.read{opacity:0.70;}
   .card.new{border-color:var(--accent);}
   .card.new::before{
     content:'NOUVEAU'; position:absolute; top:0; right:0;
@@ -1419,9 +1426,13 @@
      espace déjà cette ligne des boutons. Cumuler les deux donnait 20px et
      détachait le bilan de l'action qu'il commente — même erreur que le
      « · » orphelin, un gap et une marge qui font double emploi. */
+  /* PAS D'OPACITÉ ICI. Le 0,85 qu'elle portait était invisible à l'œil
+     et suffisait à faire tomber cette ligne à 4,01:1 — elle dit la durée
+     du passage, les nouveaux et l'état des sources, autant de chiffres
+     qu'on vient lire. Sans lui : 5,53:1. */
   .run-line{
     font-family:'JetBrains Mono',monospace; font-size:10px;
-    color:var(--text-dim); opacity:0.85; line-height:1.7;
+    color:var(--text-dim); line-height:1.7;
   }
   /* La ligne du haut tient sur une ligne, toujours : elle a une forme fixe
      (durée · nouveaux · compteur de sources) dont le pire cas a été mesuré

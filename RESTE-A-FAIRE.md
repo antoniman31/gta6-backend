@@ -1080,6 +1080,28 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Un balayage du contraste sur toute l'app — 16/10/2026
+
+Dix surfaces, deux thèmes, ~2 465 éléments par thème, seuil WCAG AA.
+Coût 57 s : la suite passe de 81 à 143 s, choix d'Antoni (« un garde
+qu'on doit penser à lancer ne garde rien »).
+
+**Zéro défaut de couleur** dans toute l'app. Deux opacités en cause : la
+ligne d'état (0,85 retiré, 4,01 -> 5,53) et les articles lus (0,45 ->
+0,70, le titre passe de 2,80 à 6,05). Date et source d'un article lu
+restent sous le seuil, exception nommée, décision d'Antoni.
+
+QUATRE FOIS DANS LA JOURNÉE, un contrôle a rapporté du faux parce qu'il
+mesurait à côté : scrollWidth sur une grille qui se serre, une boîte en
+inset:0 qui épouse sa barre, une grille-bloc qui ne peut pas déborder,
+et `color(srgb ...)` lu comme du rgb() — ce dernier a produit un faux
+positif complet sur le badge vert, et une correction proposée pour rien.
+Un cinquième : des cartes mesurées en pleine animation d'entrée.
+
+Le profil de test n'ayant aucun article lu, `.card.read` n'était couvert
+par rien ; le balayage en marque douze. Plancher de 900 éléments
+examinés, et chaque exception doit encore désigner quelque chose.
+
 ### Le pourcentage de la barre, présent mais illisible — 16/10/2026
 
 Signalé comme disparu ; il y était. Mesuré : **2,43:1** en thème clair et
