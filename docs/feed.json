@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T20:01:29.936298+00:00",
+  "generated_at": "2026-10-16T21:01:41.287903+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 28.2,
+  "duration_seconds": 35.9,
   "decode_failures": 0,
-  "total_articles": 3927,
-  "new_this_run": 6,
+  "total_articles": 3937,
+  "new_this_run": 10,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -428,7 +428,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=%22Rockstar+Games%22+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(announce+OR+announces+OR+reveals+OR+confirms)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 131,
       "last_article": "2026-10-15T23:00:54+00:00",
       "days_since_last_article": 0,
@@ -481,8 +481,8 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 3,
-      "articles_exclusifs": 1121,
-      "last_article": "2026-10-16T19:58:02+00:00",
+      "articles_exclusifs": 1124,
+      "last_article": "2026-10-16T20:25:41+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
-      "articles_exclusifs": 1484,
-      "last_article": "2026-10-16T19:32:00+00:00",
+      "new_this_run": 6,
+      "articles_exclusifs": 1489,
+      "last_article": "2026-10-16T20:34:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -521,8 +521,8 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 61,
-      "last_article": "2026-10-15T18:33:00+00:00",
-      "days_since_last_article": 1,
+      "last_article": "2026-10-16T17:01:07+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -870,10 +870,10 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 4,
-      "last_article": "2026-10-09T20:00:00+00:00",
-      "days_since_last_article": 7,
+      "new_this_run": 1,
+      "articles_exclusifs": 5,
+      "last_article": "2026-10-16T21:00:00+00:00",
+      "days_since_last_article": 0,
       "status": "ok"
     },
     {
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1113,10 +1113,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-17T09:45:42+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 9,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1226,7 +1226,7 @@
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gnews-fr-7j": "100,100,100,100,100,100,0,100,100,100,100,100",
+    "gnews-fr-7j": "100,100,100,100,100,0,100,100,100,100,100,100",
     "gnews-en-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1253,13 +1253,13 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "50,50,50,50,50,50,50,50,50,23,23,23",
+    "gta6times": "50,50,50,50,50,50,50,50,23,23,23,23",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "trueach": "100,100,100,100,100,100,100,100,81,100,100,100",
+    "trueach": "100,100,100,100,100,100,100,81,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1286,13 +1286,13 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1791560951\"",
-      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
+      "etag": "\"1792068672\"",
+      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"79edab4dc4678e0789db2d7bd7851010\"",
-      "modified": "Fri, 16 Oct 2026 19:30:10 GMT"
+      "etag": "W/\"ad27fa69f0c5c83d7660e3f68663817e\"",
+      "modified": "Fri, 16 Oct 2026 20:34:56 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1311,13 +1311,13 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"229f7-kNxArmhqNWpeqGetztrZVTztuU0\"",
+      "etag": "W/\"209c4-PB/AcAEU6QheVl/ibxZKI7RFfsE\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"d9761a5958e67d196f97e62e2e1f0a90\"",
-      "modified": "Fri, 16 Oct 2026 19:45:33 GMT"
+      "etag": "W/\"2a525f217044ba7310f80da7da9ea147\"",
+      "modified": "Fri, 16 Oct 2026 20:30:50 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1332,7 +1332,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 16 Oct 2026 20:01:04 GMT"
+      "modified": "Fri, 16 Oct 2026 21:01:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1341,8 +1341,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad28251-3057\"",
-      "modified": "Fri, 16 Oct 2026 20:00:17 GMT"
+      "etag": "W/\"6ad29060-3057\"",
+      "modified": "Fri, 16 Oct 2026 21:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1351,8 +1351,8 @@
     },
     "gameinformer": {
       "url": "https://gameinformer.com/news.xml",
-      "etag": "W/\"1792179591\"",
-      "modified": "Fri, 16 Oct 2026 19:39:51 GMT"
+      "etag": "W/\"1792184404\"",
+      "modified": "Fri, 16 Oct 2026 21:00:04 GMT"
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
@@ -1372,7 +1372,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 16 Oct 2026 20:00:24 GMT"
+      "modified": "Fri, 16 Oct 2026 21:00:14 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1391,8 +1391,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"8be747983ef2198f23022e78e0d36f51\"",
-      "modified": "Fri, 16 Oct 2026 19:56:17 GMT"
+      "etag": "W/\"492e5147782c892f806787c27ed73fef\"",
+      "modified": "Fri, 16 Oct 2026 20:48:15 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -2190,6 +2190,97 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "The Video Games And More You Should Play This Weekend – October 16, 2026",
+      "link": "https://gameinformer.com/opinion/2026/10/16/the-video-games-and-more-you-should-play-this-weekend-october-16-2026",
+      "source_link": null,
+      "date": "2026-10-16T21:00:00+00:00",
+      "source": "Game Informer",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://gameinformer.com/s3/files/styles/og_image/public/2026/10/16/0ff83c7e/castlevaniabc.jpg.webp",
+      "description": "\n\n\n      Welcome to spooky month where lawns suddenly grow giant skeletons, it's cold enough for a hoodie, the remakes of Resident Evil 2, 3, and 4 released on Switch 2, and we're all prepping to hunker down for Winter. And Grand Theft Auto VI.We're still in the thick of new release season which, fun fact, used to just be the month of November. But now it starts in August and ends in March, give or take a few weeks.Before we get to our regularly scheduled weekend recommendations, though, here ar"
+    },
+    {
+      "title": "GTA VI 'Vice City' blimp to appear at NASCAR championship weekend - Motorsport.com",
+      "link": "https://www.motorsport.com/nascar-cup/news/gta-vi-vice-city-blimp-to-appear-at-nascar-championship-weekend/10865742/",
+      "source_link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNcnJ5alFZMExuVHg5REFPUm4wSkhfZmtCWXRnVG9Pam0yaVhvSEVzM2t6TkxoYUhTQ1Q1VUFid3RrVlFaUTNhajZDVVdOOW9pNjhJVklKZGpKa2c0SU1ud0tyMERtQlZIZ2REUkFPZ3VCc1d2UHpGNXI1Z3c0Y2pwUy1FNVFtd2tYOV9IYm5hY0xWcjJlN05DcXBCNk9yOTdLT1U2alluaWcxazN0S0Q4dlNCMVlqVlE?oc=5",
+      "date": "2026-10-16T20:34:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://cdn-5.motorsport.com/images/amp/2eZxnePY/s6/blimp-2.jpg",
+      "description": "GTA VI 'Vice City' blimp to appear at NASCAR championship weekend&nbsp;&nbsp;Motorsport.com"
+    },
+    {
+      "title": "All The Records GTA 6 Will Break, We Think - GameSpot",
+      "link": "https://www.gamespot.com/articles/all-the-records-gta-6-will-break-we-think/",
+      "source_link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPQkZlZTJNOXh5Q2xZdjVHb2NDVHBaUjVQcTBCZ21hckY3MW1XYmVEbmVlWTJiY0pxd3hNZjRNNEFGTkRoYW1meHgwZXQzZlVQMEIzd0NsZC1lNDZIaFF0ZzlJZXNmU0pEbmZpcmdMeVRfWXJ1VExDZkNyMGZfVzJfRU9B?oc=5",
+      "date": "2026-10-16T20:28:53+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "All The Records GTA 6 Will Break, We Think&nbsp;&nbsp;GameSpot"
+    },
+    {
+      "title": "GTA 6 : Un trailer de lancement explosif pour Lucia et Jason - Gamereactor France",
+      "link": "https://www.gamereactor.fr/gta-6-trailer-lancement-lucia-jason-date-sortie-novembre-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPLVZiY3hDeDFteUVzcHhSS1dMS3BKNk1RMXY5Zm5zVll4a0xteEc1R0JGMUo5R3VXSEVmMTRlaWR3YzJUTERLVmZ5Um5Td0Fuc3R6dmI4MnhEek5KbWNnRllyNFBrc241YXY2cXZ4cEVzVHBrNjdkR2JuNWlWMGlMSEs4aGdVUV9EbmlBdDRKTkt0V0E?oc=5",
+      "date": "2026-10-16T20:25:41+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.gamereactor.fr/wp-content/uploads/sites/10/2026/10/gta-6-trailer-lancement-lucia-jason-date-sortie-novembre-202-featured.jpg",
+      "description": "GTA 6 : Un trailer de lancement explosif pour Lucia et Jason&nbsp;&nbsp;Gamereactor France"
+    },
+    {
+      "title": "There’s No Conspiracy For GTA VI To Be In The Game Awards - Aftermath",
+      "link": "https://aftermath.site/gta-6-game-awards-eligible/",
+      "source_link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBCOUpsclcwa2tiaDhBbjZGLTFCOHZ2TjZFSUk5ZzB1UnV4bDhyT1QwQmVPc19TUEs5U3JHalhWY25Bc1BKcmtYaHJwNm5kMTNObThJRl8yNC12c21CTTNZ?oc=5",
+      "date": "2026-10-16T20:24:26+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://storage.ghost.io/c/30/f5/30f5b1bb-84ee-4c26-b446-fb9a5e512994/content/images/size/w1200/2026/10/Lucia_Caminos_10.jpg",
+      "description": "There’s No Conspiracy For GTA VI To Be In The Game Awards&nbsp;&nbsp;Aftermath"
+    },
+    {
+      "title": "GTA VI : Justice, le célèbre duo français d'électro, derrière la bande originale du jeu - dna.fr",
+      "link": "https://www.dna.fr/videos/gta-vi-justice-le-celebre-duo-francais-d-electro-derriere-la-bande-originale-du-jeu-3mmx3s3?playlist=qls5zz",
+      "source_link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQUnk2X0ZtNWFBSXBUZE4tc2FFQTdNaGE0WmlOUVI0M2pveExBYktfVDRqcVJUckJhNDZVZ0xhU1BTaWVzUEkybjQ4VGxHdHV1V2hOZ0ZzU3J5S3BQQnl0VVhCaGxWeklHaktIMUhYYV9rcVlMVHhxQ2w4ei0yZ0t2V0YwM1FudERLeWVvN2ItNmpNTDh6WnBQQjhHblJBc0h2QkJqYWtqTWtYSndIYllVRndfdFRDdXF0cmdjWjhJSGlfMXNkU2NGT25XZktHQQ?oc=5",
+      "date": "2026-10-16T20:21:39+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://medialb.ultimedia.com/multi/s3s0z/3mmx3s3-O.jpg",
+      "description": "GTA VI : Justice, le célèbre duo français d'électro, derrière la bande originale du jeu&nbsp;&nbsp;dna.fr"
+    },
+    {
+      "title": "GTA 6 fans spot mysterious detail at 0:55 in new trailer - Yahoo Finance",
+      "link": "https://finance.yahoo.com/markets/crypto/articles/gta-6-fans-spot-mysterious-200428909.html",
+      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNUmV0MElabXNZRU41VGF1Vk5BVWF2NERYR3pNVU9HM185clNlQ0YtdFRxUGxCTHRWd3ctcHFqbV9jMUVCSWpOb0ZOSWRHc2VVcXYwLVJuMHo5dlYxYk8wUzRCc2FnUzJ0S2NlUHRsd2x1RDFUMkFWeGUzWkFpUWJyTXJUSTk2ekw0ejBxRTVLeXduUmdaSUE?oc=5",
+      "date": "2026-10-16T20:04:28+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://s.yimg.com/lo/mysterio/api/55ec7b757bd141f103ec06e4a385ea686dbe9be87bae8192ebd1f3f8f88b19c0/lightyear_networkapi/resizefill_w1200%3Bquality_80%3Bformat_webp/https%3A%2F%2Fmedia.zenfs.com%2Fen%2Fthestreet_881%2F9b5f39557bac4dc9c821f276599637d0.jpg",
+      "description": "GTA 6 fans spot mysterious detail at 0:55 in new trailer&nbsp;&nbsp;Yahoo Finance"
+    },
+    {
       "title": "E.Leclerc vide ses stocks GTA 6 moins cher sans attendre la sortie : l’offre de folie ce samedi 17 octobre - Ouest-France",
       "link": "https://www.ouest-france.fr/shopping/marques/e-leclerc/e-leclerc-vide-ses-stocks-gta-6-moins-cher-sans-attendre-la-sortie-loffre-de-folie-ce-samedi-17-octobre-8d490780-c98a-11f1-ad87-e24a1a2986e9",
       "source_link": "https://news.google.com/rss/articles/CBMioAJBVV95cUxQVHhBT1p6WVdfZUdKUUlUNG02MU9Ha0NXSTN5UW5QQ1RWSGY4Wk1TRllzOE04WGl5ODg1NDNROVVkUlNxMHllUjdaTS1kWHZ2MHhvemxuNkpNandfazJ6R3F0U2s2cTMyaExpV2w5LW9VdlJEU1dOREJYNm9BM1dqVjFyZW1vbW1jcEJTbEdNcEFrdE4zNldCQkhGY0lCN0JRNU4tNWZGNDVRTWhqM204RzV4bzUtWWJDdC1nNmJnNllpdjN5NV9PNk5tLWhaVWc0TkJMTlAxSTA5R21KT3BQY3Y0WVRoSHFYNlZ2Tl9QZVk2MW9mRUtpWmZsQXJuMlNPdWd1QkxCRDNVQmE2amNvTk04QjZ1b0oxT3JRNE95R0Q?oc=5",
@@ -2242,6 +2333,19 @@
       "description": "Bloomberg a révélé de nouveaux détails sur le gameplay de GTA 6&nbsp;&nbsp;EGW News"
     },
     {
+      "title": "GTA 6 Launch Trailer Captured on PS5 Debuts New Justice Song - GodisaGeek.com",
+      "link": "https://godisageek.com/2026/10/gta-6-launch-trailer-justice-ps5/",
+      "source_link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9LVGV6cGRsOERNeWpLbHljWlFRakxXSE8za3FLYWxFV2dxd2U5Yk9uOXItMnJUY0NlSnNCRUVvcTZuYTdaQ283LXFqZWJCMnRnMWtuZ3ZzYkZwd0wzU0ljX0N1dWx2M2c0OUpyU1JCOWZfdw?oc=5",
+      "date": "2026-10-16T19:20:47+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.godisageek.com/uploads/gta-6-launch-trailer-debuts-justice-single-five-weeks-before-dc459a006e285c0c-85x85.webp",
+      "description": "GTA 6 Launch Trailer Captured on PS5 Debuts New Justice Song&nbsp;&nbsp;GodisaGeek.com"
+    },
+    {
       "title": "GTA 6 cars hit the streets of Miami - Pasquale Pillitteri",
       "link": "https://pasqualepillitteri.it/en/news/24696/gta-6-cars-hit-the-streets-of-miami",
       "source_link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQR01PYkdjejUtZU1NU0hRTVNWVFptbDhCZU5LSDg3SWFibUpKOHVnczBvdVdFRTE4U0lGVTNfTmpGSWVtRGZMbUdIaE1TbldYaW1tMEZFdnlkaTN1REZ2TXZWR3lKSEFvdXVwUWZkQU5EQW1lMTRsUjhoYTVBeTFXbEV0MWcyZw?oc=5",
@@ -2279,6 +2383,19 @@
       "lang": "fr",
       "image": "https://new-game-plus.fr/wp-content/uploads/2026/10/gta-vi-justice.webp",
       "description": "GTA VI a droit à son trailer de lancement et à une bande-son signée Justice&nbsp;&nbsp;new-game-plus.fr"
+    },
+    {
+      "title": "GTA 6 débarque dans la vraie vie : des voitures du jeu ont été aperçues dans les rues de Miami, dont une Lamborghini de police - La Crème Du Gaming",
+      "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/gta-6-debarque-dans-la-vraie-vie-des-voitures-du-jeu-ont-ete-apercues-dans-les-rues-de-miami-dont-une-lamborghini-de-police-231347.html",
+      "source_link": "https://news.google.com/rss/articles/CBMijgJBVV95cUxONTdjRzk1RTZWVXNVY25JODJqUWFnbWFaSVJjRklUZ1EwaWtQa3ZPdEEwMG53QjlrT09nSHN4dWw2QXdSeFFHNGZ4NFdhNFhBRmdQV2NMVmN4MnJJQ3hZeXAwM3hiZWNLRm83Q003WFZ3Z1dLRk9PbGVjZVBjUzF6VWNBQ3ZseHdBTVY3NnAzS2tMWEw4QlFBRUxHUGlMdFZKWkRBWktGWWU0Skp3UzZpc0lnbUhFUV91LVk0QVNtTUpWZGc2ajhHbWhpQzV4bDBGYWN3b2hrdnRnekRqOHJmSWQ5MGdfZ2J4RC0tTkRNWjlIaHdNbGlydzBqdXoxSVlJVlJiOVVWNjhiMGZISmc?oc=5",
+      "date": "2026-10-16T18:37:20+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://sf.lacremedugaming.fr/wp-content/uploads/creme-gaming/2026/10/gta-6-debarque-dans-la-vraie-vie-des-voitures-du-jeu-ont-ete-apercues-dans-les-rues-de-miami-dont-une-lamborghini-de-police-1-1200x660.jpg",
+      "description": "GTA 6 débarque dans la vraie vie : des voitures du jeu ont été aperçues dans les rues de Miami, dont une Lamborghini de police&nbsp;&nbsp;La Crème Du Gaming"
     },
     {
       "title": "Shrek 2 Remastered Appears Briefly on XBOX Store",
@@ -2434,7 +2551,13 @@
       "specialist": false,
       "lang": "en",
       "image": null,
-      "description": "Behind the Scenes of ‘Grand Theft Auto VI’&nbsp;&nbsp;Bloomberg.com"
+      "description": "Behind the Scenes of ‘Grand Theft Auto VI’&nbsp;&nbsp;Bloomberg.com",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://www.bloomberg.com/news/newsletters/2026-10-16/behind-the-scenes-of-grand-theft-auto-vi"
+        }
+      ]
     },
     {
       "title": "GTA 6 is eyeing Lucia as the next Arthur Morgan; here's why - GAMINGbible",
@@ -2539,6 +2662,19 @@
       "lang": "en",
       "image": "https://wsvn.com/wp-content/uploads/sites/2/2026/10/101626-Rockstar-Games-releases-official-launch-trailer-for-highly-anticipated-GTA-VI.png",
       "description": "Rockstar Games releases official launch trailer for highly anticipated ‘GTA VI’&nbsp;&nbsp;WSVN"
+    },
+    {
+      "title": "After 13 years: the Final Grand Theft Auto 6 trailer - Boing Boing",
+      "link": "https://boingboing.net/2026/10/16/after-13-years-the-final-grand-theft-auto-6-trailer.html",
+      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNblQxQjRNdHY1cmc5eHZrRFZhUHhYemt0cnE1UlY0Qmc1WGFfakxtaEozdWROMWJKRER2RTVQYjRITmJ3T2xWbFctOXQtdG5Rb2pZbkdoeWVPdXhHZVdLR0NUVEY2dHFRQ09YYTZPZ00zc3g4NW1OVVZQVlYxbmhKeGV5d3NJYlVWUWhKSjlma1N2ZEt00gGaAUFVX3lxTE9zUTQwdXc0OEY1Sl9oTllmR1BpMXpBYkl3T0prOWwxUTZDZ2RPZmxWNXlJcVFJSkk3Y0Ezb1hqZTh4ODNZWFZQWG0tU1kyV2x3TFktQ3VrQjh4SWkxUUdtTC1sSDBrZWdZMFc5c2dyTzBxMXh6ZnViOWl6eGVSTklpZ2xqVjZROVRBQk8zNUlQWTctZE91WDEtd2c?oc=5",
+      "date": "2026-10-16T15:19:59+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "After 13 years: the Final Grand Theft Auto 6 trailer&nbsp;&nbsp;Boing Boing"
     },
     {
       "title": "GTA 6 marketing gets a unique touch as Rockstar mods real cars into in-game vehicles and drives them through Miami - Notebookcheck",
@@ -17933,7 +18069,6 @@
     {
       "title": "Nintendo Of America President Leaves Switch 2 GTA 6 Question To Rockstar - Northeast Times",
       "link": "https://northeasttimes.com/2026/10/09/nintendo-of-america-president-leaves-switch-2-gta-6-question-to-rockstar/",
-      "source_link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOdEVpVDhISmhxZS01WDYyclV2UFZBQnNaU2pOS0FBNmNnU0ZZTmpDaWEyRklwRlFESEszeXMzTkZXdktxRDducW4zTzFTd1ZwSXFlZmJETUx5eUczNlNSNVJzb0J5TVRybnhvUUllSVBLM1dvLUJINC1WcWZBeTZ4OGxNWDhrNGU2anhsYi1JemtpOGNleS13MXJQYUhfNGJHeldQa2ZYcmZiNXFIUXlqRQ?oc=5",
       "date": "2026-10-09T20:55:39+00:00",
       "source": "Google News (EN, 7 jours)",
       "official": false,
@@ -17952,7 +18087,6 @@
     {
       "title": "Video game console sales are plummeting. Can GTA VI turn things around? - Yahoo Finance",
       "link": "https://finance.yahoo.com/video/video-game-console-sales-are-plummeting-can-gta-vi-turn-things-around-205308657.html",
-      "source_link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQa1RmWXBkTkFCakFqTUdoX2hKcVNoaVp2bHFUVHJnTkFNbVp2d2lVeTZfd0d4bkx4aUJfTzdERi02cWdnZ3FvblE0bTN1Nnd1TS14UXBoa3E2ZEppb1VLaVUxMGRORnlLeFV6WEZ3cFMyVWdGQWozSE8tQlcyZzFleXdFbW1VamFLTmV1STlnSm9iREFhLXlUTGw0bno1c25SUDZZMkNXNGpWQktKX3p5NjlTRnhxM1U?oc=5",
       "date": "2026-10-09T20:53:08+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17965,7 +18099,6 @@
     {
       "title": "5 Best PS5 controllers for GTA VI, and why that no-name bargain pad on Reddit will not last 80 hours in Vice City - Gadget Flow",
       "link": "https://thegadgetflow.com/blog/best-ps5-controllers-for-gta-vi/",
-      "source_link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9DWWc1bllJVFI4Y1BKMkN0NXhwbkt3NFdidzdaLUJzaW5YYlEwai1VR29INEZBVE5TUUs0YW1CamFGTlBCc1prakN0VXNRNGlsVFlCNDJlUlJ5Nms2NTRLQ09JZFN4ZVluN1FnMkhZNXk?oc=5",
       "date": "2026-10-09T20:42:34+00:00",
       "source": "Google News (EN, 7 jours)",
       "official": false,
@@ -17978,7 +18111,6 @@
     {
       "title": "GTA 6 : La radio et les podcasts enfin disponibles à pied - Gamereactor France",
       "link": "https://www.gamereactor.fr/gta-6-radio-podcasts-a-pied-musique-stations-devoilees/",
-      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOQU1PV1BWVTVfTWZvVkliQTZYWS1ZRlA4TEpfeEtJaXpqWGdOdzhMVS0wWlhfLXZtUkRRaE1WMWlfQndmUklENW93TUNkVXZrNjhiSXotYkU0OGxFalNYMkRSbmdvbmROc3F3dXZQMUhZcW5mcUxvdzBUVWRRR2ZCUF8tR08xVjZNWnc?oc=5",
       "date": "2026-10-09T20:24:04+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -18004,7 +18136,6 @@
     {
       "title": "E.Leclerc liquide ses stocks GTA 6 : un prix encore jamais vu ce samedi 10 octobre - Ouest-France",
       "link": "https://www.ouest-france.fr/shopping/marques/e-leclerc/e-leclerc-liquide-ses-stocks-gta-6-un-prix-encore-jamais-vu-ce-samedi-10-octobre-059d1cde-c40a-11f1-bba2-d026901fbfe4",
-      "source_link": "https://news.google.com/rss/articles/CBMiggJBVV95cUxObHdqeklkWG5mV1BKajdlMXdJOENmcEJsT0l4d3BsbjdULU5BNFpSbW5oVVFsWWFpb3g2OHJid0hocl8xbHZ3NFFxNnpjZ2FqLWpRem9ISmtFOTlSWkxtR09CNVJSZFhJUnZmYWNrdDBoaTcxZnA4d0NLWUdYUk81UEd2MjJ4ejlQNUZYbjVOQzRSaDRRYmFBUFFtUFZIa2FLRVRhb1NPeTNxUDVFS3BJWU9SWi1KVzlZNlo3eV93Wk0zTWl5dVJ4emlHS1luU0FveFNxRGxQa1B2b0N2aGJ3XzBybGdtUkRDNXVPamJYdzJnY3k2R01tZnRMN1N3bWhFclE?oc=5",
       "date": "2026-10-09T20:02:06+00:00",
       "source": "Google News (FR)",
       "official": false,
