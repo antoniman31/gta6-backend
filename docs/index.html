@@ -844,45 +844,6 @@
   .resume-marker::before, .resume-marker::after{
     content:""; flex:1; height:1px; background:var(--accent); opacity:0.35;
   }
-  /* « Ce que j'ai raté ». Il doit se distinguer des cartes sans crier : le
-     trait d'accent à gauche suffit, et il reste muet les jours creux parce
-     qu'il n'est alors pas rendu du tout. */
-  .rate-bloc{
-    margin:0 0 12px; padding:10px 12px; border-radius:var(--r-sm);
-    border:1px solid var(--line); border-left:3px solid var(--accent);
-    background:var(--bg-panel);
-  }
-  .rate-bilan{
-    margin:0; font-family:'JetBrains Mono',monospace; font-size:11px;
-    color:var(--text-dim); line-height:1.5;
-  }
-  .rate-bilan strong{color:var(--text);}
-  .rate-liste{list-style:none; margin:8px 0 0; padding:0; display:grid; gap:6px;}
-  .rate-liste a{
-    display:block; text-decoration:none; color:var(--text);
-    font-size:13px; line-height:1.35;
-  }
-  .rate-liste a:hover .rate-titre{text-decoration:underline;}
-  .rate-source{
-    display:block; font-family:'JetBrains Mono',monospace; font-size:10px;
-    color:var(--text-dim); text-transform:uppercase; letter-spacing:0.04em;
-  }
-  .rate-neuf{color:var(--accent); font-weight:700;}
-  /* L'âge d'un arrivant tardif, sur la ligne de source. En retrait de ton
-     par rapport à elle : c'est une précision, pas une deuxième étiquette. */
-  .rate-paru{opacity:0.75;}
-  .rate-paru::before{content:" · ";}
-  /* 44 px de haut comme tout ce qui se touche ici (WCAG 2.5.5, et la règle
-     que le reste de l'app s'impose). Discret : il vide le bloc, il ne
-     réclame pas l'attention que réclament les articles au-dessus. */
-  .rate-vu{
-    margin:8px 0 0; width:100%; min-height:44px; padding:0 12px;
-    background:transparent; color:var(--text-dim);
-    border:1px solid var(--line); border-radius:var(--r-sm);
-    font-family:'JetBrains Mono',monospace; font-size:11px;
-    text-transform:uppercase; letter-spacing:0.04em; cursor:pointer;
-  }
-  .rate-vu:hover{color:var(--text); border-color:var(--accent);}
 
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
@@ -1757,7 +1718,6 @@
        plus là pour montrer quel badge est actif. -->
   <div class="badge-filtre" id="badgeFiltre" style="display:none;"></div>
 
-  <div class="rate-bloc" id="rateBloc" style="display:none;"></div>
 
   <div class="feed" id="feed">
     <div class="empty">Clique sur "Actualiser" pour charger les derniers articles.</div>
@@ -4488,14 +4448,10 @@ function setTab(t, silencieux){
   const isStats = (t === "stats");
   const estVue = isLogs || isStats;
   document.getElementById("feed").style.display = estVue ? "none" : "flex";
-  // Le bloc « Ce que j'ai raté » suit le fil : il n'a pas de sens sous les
-  // statistiques. majBlocRate() décide ensuite s'il a quelque chose à dire.
   const puces = document.getElementById("recherchesRecentes");
   if(puces) puces.style.display = estVue ? "none" : (recherchesRecentes.length ? "flex" : "none");
   const barreBadge = document.getElementById("badgeFiltre");
   if(barreBadge && estVue) barreBadge.style.display = "none";
-  const blocRate = document.getElementById("rateBloc");
-  if(blocRate) blocRate.style.display = estVue ? "none" : (blocRate.dataset.plein === "1" ? "block" : "none");
   document.getElementById("logsPanel").style.display = isLogs ? "block" : "none";
   const panneauStats = document.getElementById("statsPanel");
   if(panneauStats) panneauStats.style.display = isStats ? "block" : "none";
@@ -4888,228 +4844,6 @@ function articlesAffiches(){
   return items.slice(0, settings.maxDisplay);
 }
 
-// ---------- « Ce que j'ai raté » ----------
-//
-// CE QUE CE BLOC N'EST PAS, et pourquoi. L'idée d'origine était « les cinq
-// sujets importants parus depuis la dernière visite ». Mesuré sur le fil
-// réel le 13/10/2026, elle ne tient pas :
-//
-//   - « majeur » (≥ hotThreshold rédactions) est un signal RÉTROSPECTIF : un
-//     article ne le devient que quand d'autres médias le reprennent, ce qui
-//     prend des jours. Sur les 72 dernières heures, ZÉRO article majeur, et
-//     le plafond est de 1,8 % tous âges confondus. Le bloc aurait été vide
-//     presque tous les jours ;
-//   - les articles NE SE REGROUPENT PAS en sujets. 119 articles d'une
-//     journée donnent 117 groupes : la déduplication du robot a déjà absorbé
-//     la redondance, et ce qui reste est vraiment ~120 histoires distinctes ;
-//   - un top 5 par score se répète. Le 11/10, quatre des cinq meilleures
-//     lignes étaient la même fuite, et 10 à 23 articles étaient à égalité
-//     avec la cinquième — le trait entre 5e et 6e place tiré à pile ou face.
-//     Filtrer les doublons par recouvrement de titre échoue aussi : deux
-//     dépêches sur la même fuite ne partagent que deux mots utiles.
-//
-// CE QU'IL EST DONC : un bilan chiffré toujours vrai, suivi de ce que les
-// SOURCES SUIVIES ont publié — officiels, spécialistes GTA, RockstarMag.
-// Pas de choix éditorial inventé : on ne classe pas les articles, on nomme
-// qui les a publiés. Mesuré : médiane 3 par jour, 2 jours à zéro sur 30.
-//
-// Et il RÉTRÉCIT les jours creux au lieu de se remplir. Un bandeau qui
-// montre cinq lignes quoi qu'il arrive apprend vite à être ignoré.
-const CLE_DERNIERE_VISITE = "derniere-visite-v1";
-
-// Lu au chargement AVANT d'être écrasé : c'est la visite précédente qui
-// nous intéresse, pas celle-ci. Sans cette copie, la première écriture de
-// la session effacerait la seule référence dont le bloc dispose.
-let derniereVisite = null;
-
-function chargeDerniereVisite(){
-  try{
-    const v = storageGet(CLE_DERNIERE_VISITE);
-    const n = v && v.value ? Number(v.value) : NaN;
-    derniereVisite = Number.isFinite(n) && n > 0 ? n : null;
-  }catch(e){ derniereVisite = null; }
-}
-
-function marqueVisite(){
-  try{ storageSet(CLE_DERNIERE_VISITE, String(Date.now())); }catch(e){}
-}
-
-const RE_FUITE_TITRE = /\bleak(s|ed)?\b|\bfuite/i;
-
-// Une source est « suivie » si c'est Rockstar ou Take-Two qui publie, un
-// média spécialisé GTA, ou RockstarMag. Ce sont les seules étiquettes que
-// le robot pose lui-même, et les seules disponibles DÈS l'arrivée — c'est
-// toute la différence avec « majeur », qui n'arrive que des jours plus tard.
-function sourceSuivie(item){
-  return Boolean(item.official || item.specialist || item.rockstarmag);
-}
-
-// QUAND L'ARTICLE EST APPARU, et non quand il a été publié.
-//
-// Le robot écrit `vu_le` au seul passage où il découvre l'article. C'est
-// ça, « nouveau pour toi » : une dépêche publiée avant ta visite mais
-// remontée après l'est tout autant qu'une dépêche de l'heure.
-//
-// Repli sur la date de publication, pour deux cas : les articles entrés
-// dans l'historique AVANT que le robot écrive ce champ (ils n'en auront
-// jamais, le robot ne peut pas inventer quand il les a vus), et un
-// fichier servi par une version plus ancienne du backend.
-//
-// `vu > 0` ET NON Number.isFinite : dateValue rend 0, jamais NaN, pour une
-// date absente ou illisible. Le test par isFinite acceptait donc ce zéro,
-// le repli ne se déclenchait jamais, et le bloc se vidait entièrement sur
-// un fil sans vu_le — c'est-à-dire sur TOUT le fil publié aujourd'hui.
-function apparitionValue(item){
-  const vu = dateValue(item && item.vu_le);
-  return vu > 0 ? vu : dateValue(item && item.date);
-}
-
-// Les articles apparus depuis la dernière visite.
-//
-// COMBIEN ÇA CHANGE, mesuré le 15/10/2026 sur les 185 passages de la
-// semaine : parmi les 1 039 articles arrivés DANS la fenêtre que l'app
-// charge, 25 avaient plus de 12 h de retard sur leur date et 7 plus de
-// 24 h. Un à quatre par jour selon ton rythme de visite — pas une
-// avalanche, mais c'étaient des articles qu'on ne comptait pas du tout.
-// Et la fenêtre chargée rétrécit à mesure que le fil s'emballe : le 19
-// novembre, le même retard portera sur bien plus d'articles.
-function articlesDepuisLaVisite(){
-  if(!derniereVisite) return [];
-  return lastItems.filter(i => {
-    const d = apparitionValue(i);
-    return Number.isFinite(d) && d > derniereVisite;
-  });
-}
-
-function majBlocRate(){
-  const el = document.getElementById("rateBloc");
-  if(!el) return;
-
-  const nouveaux = articlesDepuisLaVisite();
-
-  // Pas de point de référence (première visite), ou rien de neuf : pas de
-  // bloc du tout. Mieux vaut rien qu'un bandeau qui annonce zéro.
-  if(!nouveaux.length){
-    el.dataset.plein = "0";
-    el.style.display = "none";
-    el.innerHTML = "";
-    return;
-  }
-
-  const off = nouveaux.filter(i => i.official).length;
-  const spe = nouveaux.filter(i => i.specialist).length;
-  const fuites = nouveaux.filter(i => RE_FUITE_TITRE.test(i.title || "")).length;
-
-  // L'HONNÊTETÉ DU COMPTE, et ce n'est pas un détail. L'app démarre sur le
-  // fichier allégé — environ 300 articles, soit deux jours et demi au rythme
-  // mesuré de 121 par jour. Une absence plus longue déborde cette fenêtre,
-  // et le compte serait tronqué SANS LE DIRE : « 300 articles » après une
-  // semaine, alors qu'il y en a eu mille. On ne sait pas combien il en
-  // manque, donc on ne l'invente pas : on dit « au moins ».
-  // SUR L'APPARITION, comme le comptage juste au-dessus. Mesurer la
-  // couverture sur une grandeur et compter sur une autre laisserait un
-  // écart indétectable entre « ce que je compte » et « ce que je dis
-  // couvrir ».
-  const plusVieux = lastItems.reduce((m, i) => {
-    const d = apparitionValue(i);
-    return Number.isFinite(d) && d < m ? d : m;
-  }, Infinity);
-  const tronque = historyPartial && Number.isFinite(plusVieux)
-                  && plusVieux > derniereVisite;
-
-  const morceaux = [`${tronque ? "au moins " : ""}${nouveaux.length} article${nouveaux.length > 1 ? "s" : ""}`];
-  if(off) morceaux.push(`<strong>${off} officiel${off > 1 ? "s" : ""}</strong>`);
-  if(spe) morceaux.push(`${spe} de source${spe > 1 ? "s" : ""} spécialisée${spe > 1 ? "s" : ""}`);
-  if(fuites) morceaux.push(`${fuites} sur une fuite`);
-
-  // LES DEUX CHIFFRES CÔTE À CÔTE, et c'est le point de départ de ce lot.
-  // « 10 articles non lus » contre « 5 nouveaux depuis ta dernière
-  // visite » : les deux avaient raison, et l'écart passait pour un bug.
-  // Le premier compte depuis toujours, le second une fenêtre. Les faire
-  // coïncider serait mentir sur l'un des deux ; les afficher ensemble
-  // rend la différence lisible d'un coup d'œil.
-  //
-  // Sur articlesVisibles() — la même liste que les pastilles d'onglet —
-  // et non sur l'onglet courant : le bloc ne dépend d'aucun onglet, et un
-  // troisième chiffre encore différent du leur serait pire que le mal.
-  const nonLusTotal = articlesVisibles().filter(i => !readSet.has(i.link)).length;
-  if(nonLusTotal > nouveaux.length){
-    morceaux.push(`${nonLusTotal} non lu${nonLusTotal > 1 ? "s" : ""} en tout`);
-  }
-
-  // Officiels d'abord, puis spécialistes, puis RockstarMag, et du plus
-  // récent au plus ancien dans chaque rang. Pas de score inventé : c'est un
-  // ordre, pas un jugement.
-  const rang = i => (i.official ? 0 : i.specialist ? 1 : 2);
-  const lignes = nouveaux.filter(sourceSuivie)
-    .sort((a, b) => (rang(a) - rang(b)) || (dateValue(b.date) - dateValue(a.date)))
-    .slice(0, 4);
-
-  const nonLu = i => readSet.has(i.link) ? "" : ' <span class="rate-neuf">•</span>';
-
-  // UN ARRIVANT TARDIF DIT SON ÂGE. Le bloc compte désormais par
-  // apparition : un article publié il y a neuf jours et remonté
-  // aujourd'hui y entre, et c'est voulu — il est neuf pour toi. Mais
-  // l'afficher comme une dépêche du jour serait un mensonge par omission.
-  // Le seuil vient de la mesure : la médiane du décalage est à 0,8 h, donc
-  // 24 h ne marque que les vrais retardataires et laisse le fil ordinaire
-  // tranquille.
-  const RETARD_A_DIRE = 24 * 3600 * 1000;
-  const paru = i => {
-    const pub = dateValue(i.date);
-    if(!Number.isFinite(pub) || apparitionValue(i) - pub < RETARD_A_DIRE) return "";
-    const d = new Date(pub);
-    if(isNaN(d)) return "";
-    const jour = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long",
-                                                 timeZone: "Europe/Paris" });
-    return ` <span class="rate-paru">paru le ${escapeHtml(jour)}</span>`;
-  };
-
-  const liste = lignes.map(i => `
-      <li>
-        <a href="${escapeHtml(i.link)}" target="_blank" rel="noopener"
-           onclick="marqueLuDepuisRate('${escapeHtml(i.link)}')">
-          <span class="rate-source">${escapeHtml(i.source || "")}${paru(i)}</span>
-          <span class="rate-titre">${escapeHtml(i.title || "")}</span>${nonLu(i)}
-        </a>
-      </li>`).join("");
-
-  el.innerHTML = `<p class="rate-bilan">Depuis ta dernière visite : ${morceaux.join(" · ")}.</p>`
-    + (liste ? `<ul class="rate-liste">${liste}</ul>` : "")
-    + `<button type="button" class="rate-vu" id="rateVu" onclick="marqueToutVu()">J'ai tout vu</button>`;
-  el.dataset.plein = "1";
-  el.style.display = "block";
-}
-
-// Vider le bloc sans quitter l'app.
-//
-// Le repère continue d'être posé à la fermeture (visibilitychange et
-// pagehide, plus bas) : ce bouton ne remplace rien, il couvre le cas « je
-// viens de tout lire et je reste ». Sans lui, il fallait fermer l'onglet
-// pour que le bloc cesse de redire la même chose.
-//
-// Il n'écrit QUE le repère. Marquer au passage les articles comme lus
-// serait un autre geste, et il effacerait les pastilles de non-lus d'un
-// coup — précisément le compte que la deuxième ligne du bilan sert à ne
-// pas confondre avec celui-ci.
-function marqueToutVu(){
-  marqueVisite();
-  // RELU depuis le stockage plutôt que posé de mémoire : si l'écriture a
-  // échoué (quota plein), le repère n'a pas bougé et le bloc doit rester
-  // là. Un bloc qui disparaît sur un état non enregistré reviendrait au
-  // rechargement suivant, sans que rien n'ait prévenu.
-  chargeDerniereVisite();
-  majBlocRate();
-}
-
-function marqueLuDepuisRate(lien){
-  if(!readSet.has(lien)){
-    readSet.add(lien);
-    saveRead();
-    applyFilters();
-  }
-}
-
 function applyFilters(){
   const q = document.getElementById("searchInput").value.trim().toLowerCase();
 
@@ -5124,7 +4858,6 @@ function applyFilters(){
 
   renderFeed(items, lastNewLinks, q);
   majBarreBadge(items.length);
-  majBlocRate();
   updateTabBadges();
   updateDocumentTitle();
   majPastilleReprise();
@@ -8057,12 +7790,13 @@ document.addEventListener("touchmove", surTouchMove, { passive: false });
 document.addEventListener("touchend", surTouchEnd, { passive: true });
 document.addEventListener("touchcancel", surTouchEnd, { passive: true });
 
-// Le repère est posé au moment où l'on quitte l'app. pagehide couvre le cas
-// où l'onglet est fermé sans passer par visibilitychange.
+// L'article en cours de lecture est mémorisé au moment où l'on quitte
+// l'app. pagehide couvre le cas où l'onglet est fermé sans passer par
+// visibilitychange.
 document.addEventListener("visibilitychange", () => {
-  if(document.visibilityState === "hidden"){ memoriserReprise(); marqueVisite(); }
+  if(document.visibilityState === "hidden"){ memoriserReprise(); }
 });
-window.addEventListener("pagehide", () => { memoriserReprise(); marqueVisite(); });
+window.addEventListener("pagehide", () => { memoriserReprise(); });
 
 // Une seule évaluation par trame : le défilement déclenche cet événement
 // des dizaines de fois par seconde.
@@ -8500,12 +8234,6 @@ function greffeAides(){
 // Avant loadState : le premier rendu du fil doit déjà connaître le repère,
 // sinon le trait « lu jusqu'ici » n'apparaîtrait qu'au rendu suivant.
 chargerReprise();
-// AVANT loadState, et pour la même raison que chargerReprise : l'horodatage
-// lu ici est celui de la visite PRÉCÉDENTE. marqueVisite() écrase la clé
-// dès que la page passe en arrière-plan, donc toute lecture plus tardive
-// ne trouverait plus que l'heure de la visite en cours — et le bloc
-// « Ce que j'ai raté » n'aurait plus rien à comparer.
-chargeDerniereVisite();
 chargeRecherches();
 loadState();
 updateCountdown();
