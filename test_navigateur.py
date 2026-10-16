@@ -3563,6 +3563,266 @@ def test_panneau_du_compteur(nav, url):
     ctx.close()
 
 
+# Le seuil WCAG AA pour du texte ordinaire. Le « grand texte » (au moins
+# 24 px, ou 18,66 px en gras) se contente de 3:1 — la norme le dit, et un
+# contrôle plus sévère que la norme finirait par être désactivé.
+CONTRASTE_MINIMAL = 4.5
+CONTRASTE_GRAND_TEXTE = 3.0
+
+# LES EXCEPTIONS SONT NOMMÉES, UNE PAR UNE, AVEC LEUR MESURE.
+#
+# Les tuiles à zéro du panneau du compteur sont volontairement effacées :
+# opacity .45 sur --text-dim, ce qui donne 1,92:1 en clair et 2,09:1 en
+# sombre. Antoni a tranché le 16/10/2026 : « les laisser telles quelles »,
+# l'effacement EST l'effet recherché — un zéro est là pour que la ligne ne
+# se redispose pas, pas pour être lu.
+#
+# Une exception qui ne désigne plus rien est une exception pourrie : le
+# contrôle vérifie que chacune correspond encore à au moins un élément.
+EXCEPTIONS_CONTRASTE = {
+    ".compteur-tuiles .zero b": "tuiles à zéro, effacement voulu (16/10)",
+    ".compteur-tuiles .zero span": "tuiles à zéro, effacement voulu (16/10)",
+    # LES MÉTADONNÉES D'UN ARTICLE DÉJÀ LU, et elles seules. Les cartes
+    # lues sont estompées à 0,70 : leur TITRE y est à 6,05:1 et reste
+    # donc vérifié à chaque passage — c'est la seule chose qu'on relit.
+    # Sa date, sa source, son étoile et ses boutons tombent à 2,98 et
+    # 3,57 ; Antoni a tranché le 16/10/2026 que c'est de l'accessoire sur
+    # un article déjà lu. La liste vient du relevé, pas d'une intuition :
+    # elle nomme exactement ce qui dépassait, et rien de plus — un
+    # nouvel élément estompé sera donc attrapé.
+    ".card.read .card-date": "2,98:1 — accessoire d'un article lu (16/10)",
+    ".card.read .card-src": "3,57:1 — accessoire d'un article lu (16/10)",
+    ".card.read .card-etoile": "2,98:1 — accessoire d'un article lu (16/10)",
+    ".card.read .card-mark": "2,98:1 — accessoire d'un article lu (16/10)",
+    ".card.read .tag-badge": "2,98 à 3,57:1 — accessoire d'un article lu (16/10)",
+}
+
+# Le plancher d'éléments examinés, par thème. Mesuré, puis arrondi en
+# dessous. Sans lui, un balayage qui ne balaierait plus rien — un sélecteur
+# cassé, un panneau qui ne s'ouvre plus — passerait pour un sans-faute.
+PLANCHER_EXAMINES = 900
+
+SONDE_CONTRASTE = r"""(args) => {
+  const [exceptions, seuil, seuilGrand] = args;
+  const lin = (c) => { c /= 255;
+    return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
+  // DEUX ÉCRITURES, ET LA SECONDE M'A EU. Chromium rend un
+  // color-mix() sous la forme « color(srgb 0.07 0.43 0.20 / 0.15) » :
+  // des flottants de 0 à 1, pas des entiers sur 255. Lus comme du
+  // rgb(), ils donnent du presque-noir — le badge vert de l'app était
+  // ainsi rapporté à 4,38:1 sur un fond gris imaginaire, alors qu'il
+  // est à 4,96:1 sur son vrai fond vert pâle. Un faux positif, pas un
+  // défaut, et c'est la sonde qu'il fallait corriger.
+  const parse = (css) => {
+    const t = (css || '').trim();
+    const m = t.match(/[\d.]+(?:e-?\d+)?/g);
+    if(!m || m.length < 3) return null;
+    const srgb = t.startsWith('color(');
+    const e = srgb ? 255 : 1;      // 0–1 pour color(), déjà 0–255 sinon
+    const i = srgb ? 0 : 0;
+    return {r: +m[i]*e, g: +m[i+1]*e, b: +m[i+2]*e,
+            a: m.length > i+3 ? parseFloat(m[i+3]) : 1};
+  };
+  const Y = (c) => 0.2126*lin(c.r) + 0.7152*lin(c.g) + 0.0722*lin(c.b);
+  const melange = (av, ar, a) => ({
+    r: av.r*a + ar.r*(1-a), g: av.g*a + ar.g*(1-a), b: av.b*a + ar.b*(1-a), a: 1});
+
+  // LE FOND EFFECTIF : on remonte les parents jusqu'au premier fond
+  // opaque, en empilant les couches semi-transparentes au passage. Un
+  // seul niveau ne suffit pas : la plupart des textes de l'app sont sur
+  // un élément sans fond, posé sur un panneau posé sur la page.
+  const fond = (el) => {
+    const couches = [];
+    let n = el;
+    while(n && n.nodeType === 1){
+      const c = parse(getComputedStyle(n).backgroundColor);
+      if(c && c.a > 0){ couches.push(c); if(c.a >= 0.999) break; }
+      n = n.parentElement;
+    }
+    if(!couches.length || couches[couches.length-1].a < 0.999)
+      couches.push(parse(getComputedStyle(document.body).backgroundColor)
+                   || {r:255, g:255, b:255, a:1});
+    let res = couches.pop();
+    while(couches.length){ const av = couches.pop(); res = melange(av, res, av.a); }
+    return res;
+  };
+
+  // L'OPACITÉ HÉRITÉE, ET C'EST ELLE QUI M'AVAIT ÉCHAPPÉ. opacity ne
+  // change pas la couleur calculée : un libellé déclaré à 5,53:1 se rend
+  // à 1,92:1 sous opacity .45, et une sonde qui lit color sans la fondre
+  // ne voit rien. On multiplie donc les opacités de toute la chaîne.
+  const opaciteHeritee = (el) => {
+    let o = 1, n = el;
+    while(n && n.nodeType === 1){
+      const v = parseFloat(getComputedStyle(n).opacity);
+      if(!isNaN(v)) o *= v;
+      n = n.parentElement;
+    }
+    return o;
+  };
+
+  const ecarts = [];
+  let examines = 0;
+  const vus = new Set();
+  for(const el of document.querySelectorAll('body *')){
+    const propre = [...el.childNodes]
+      .filter(n => n.nodeType === 3 && n.textContent.trim())
+      .map(n => n.textContent.trim()).join(' ');
+    if(!propre) continue;
+    const st = getComputedStyle(el);
+    if(st.visibility === 'hidden' || st.display === 'none') continue;
+    const r = el.getBoundingClientRect();
+    if(r.width < 1 || r.height < 1) continue;
+    const o = opaciteHeritee(el);
+    if(o < 0.05) continue;           // invisible : rien à lire, rien à juger
+    examines++;
+    if(exceptions.some(s => el.matches(s))) continue;
+    const brut = parse(st.color);
+    if(!brut) continue;
+    const ar = fond(el);
+    const av = melange(brut, ar, brut.a * o);
+    const ya = Y(av), yb = Y(ar);
+    const ratio = (Math.max(ya, yb) + 0.05) / (Math.min(ya, yb) + 0.05);
+    const px = parseFloat(st.fontSize);
+    const gras = parseInt(st.fontWeight, 10) >= 700;
+    const exige = (px >= 24 || (gras && px >= 18.66)) ? seuilGrand : seuil;
+    if(ratio + 0.005 >= exige) continue;
+    const ou = el.tagName.toLowerCase()
+      + (el.className && typeof el.className === 'string'
+         ? '.' + el.className.trim().split(/\s+/).join('.') : '');
+    const cle = ou + '|' + propre.slice(0, 24);
+    if(vus.has(cle)) continue;
+    vus.add(cle);
+    ecarts.push({ou: ou, texte: propre.slice(0, 32),
+                 ratio: Math.round(ratio*100)/100, exige: exige, px: px,
+                 couleur: `rgb(${Math.round(av.r)},${Math.round(av.g)},${Math.round(av.b)})`,
+                 fond: `rgb(${Math.round(ar.r)},${Math.round(ar.g)},${Math.round(ar.b)})`});
+  }
+  // Les exceptions qui ne désignent plus rien sont signalées, pour
+  // qu'elles ne survivent pas au code qu'elles couvraient.
+  const mortes = exceptions.filter(s => !document.querySelector(s));
+  return {examines: examines, ecarts: ecarts, mortes: mortes};
+}"""
+
+# Les surfaces, et comment on y arrive. Une seule largeur : la largeur ne
+# change pas les couleurs, inutile de doubler la note.
+SURFACES_CONTRASTE = (
+    ("le fil",            "() => setTab('all')"),
+    ("le compteur",       "() => ouvreCompteur()"),
+    ("les filtres",       "() => openFiltersSheet()"),
+    ("les réglages",      "() => openSettings()"),
+    ("les informations",  "() => openInfo()"),
+    ("stats · le fil",    "() => { setTab('stats'); ongletStatsChoisi('fil'); }"),
+    ("stats · sources",   "() => ongletStatsChoisi('sources')"),
+    ("stats · robot",     "() => ongletStatsChoisi('robot')"),
+    ("stats · ma lecture","() => ongletStatsChoisi('moi')"),
+    ("le journal",        "() => setTab('logs')"),
+)
+
+FERME_TOUT = """() => {
+  for(const f of ['fermeCompteur', 'closeFiltersSheet', 'closeSettings',
+                  'closeInfo', 'closePreview'])
+    { try { if(typeof window[f] === 'function') window[f](); } catch(e) {} }
+}"""
+
+
+def test_contraste_partout(nav, url):
+    """Aucun texte de l'app sous le seuil WCAG, dans les deux thèmes.
+
+    POURQUOI CE CONTRÔLE EXISTE. Le 16/10/2026, le pourcentage de la barre
+    du compteur était écrit en --text sur l'aplat --accent : 2,43:1 en
+    thème clair, 1,78:1 en sombre. Il était là depuis le matin, il avait
+    passé ma relecture, et c'est Antoni qui l'a signalé — en le croyant
+    disparu, ce qui est le même résultat. Le jeton --accent-contrast
+    existait déjà pour exactement ce cas.
+
+    Écrire la correction ne suffisait pas : rien n'empêchait la suivante.
+    Le balayage parcourt donc chaque élément porteur de texte de chaque
+    surface, dans les deux thèmes, et calcule le VRAI rapport — fond
+    effectif remonté jusqu'à la première couche opaque, opacité héritée
+    fondue dans la couleur.
+
+    Ce qu'il ne voit pas, et c'est écrit plutôt que caché : les états qui
+    dépendent des données du jour (ligne d'incidents en rouge, badge
+    d'erreur, passage en échec, états vides) n'apparaissent que si le fil
+    les produit. D'où le plancher d'éléments examinés : un balayage qui
+    cesserait de balayer serait indiscernable d'un sans-faute.
+    """
+    exceptions = list(EXCEPTIONS_CONTRASTE)
+    base = url.rsplit("/", 1)[0]
+    # UN SEUL CHARGEMENT POUR LES DEUX THÈMES. Charger le fil complet
+    # (3 859 articles) est de loin le poste le plus cher du contrôle ; le
+    # thème n'est qu'un attribut sur <html>. Mesuré : 77 s avec deux
+    # contextes, et le fil chargé deux fois pour rien.
+    ctx = nav.new_context(viewport={"width": 390, "height": 900},
+                          timezone_id="Europe/Paris",
+                          reduced_motion="reduce")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    # ANIMATIONS COUPÉES, PAR LE CHEMIN DE L'APP ELLE-MÊME. Les cartes
+    # entrent avec une animation d'opacité : mesurée en vol, une carte
+    # lue était relevée à 0,71 puis 0,52 selon le thème, alors que son
+    # estompage réel est 0,45. Le contrôle lisait donc des valeurs
+    # transitoires et changeait d'avis d'une exécution à l'autre.
+    # reduced_motion déclenche le @media (prefers-reduced-motion) que la
+    # page gère déjà — on ne bricole pas le CSS depuis le test.
+    # CHARGER LE VRAI FIL D'ABORD. L'app démarre sur « Clique sur
+    # Actualiser » : sans ce chargement, le balayage n'examinait que
+    # 16 éléments — l'en-tête et un état vide — et rendait un vert qui
+    # ne prouvait rien. C'est le plancher d'éléments examinés qui l'a
+    # attrapé, le premier jour de son existence.
+    page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
+    page.evaluate("async () => { await checkFromBackend(false); }")
+    page.wait_for_selector("#feed .card-actions", state="attached",
+                           timeout=20000)
+    # DES ARTICLES LUS DANS LE LOT, sinon .card.read n'existe jamais.
+    # Un profil de test est neuf : rien n'y est lu, et l'estompage à
+    # 45 % des cartes lues n'était couvert par rien. Il a d'abord fallu
+    # s'en apercevoir : les cartes que le balayage relevait comme
+    # estompées étaient en fait des cartes en pleine animation
+    # d'entrée, pas des cartes lues.
+    page.evaluate("""() => {
+        readSet = new Set(lastItems.slice(0, 12).map(i => i.link));
+        applyFilters();
+    }""")
+    page.wait_for_selector(".card.read", state="attached", timeout=10000)
+    for theme in ("light", "dark"):
+        page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)",
+                      theme)
+        total = 0
+        tous = []
+        mortes = None
+        for nom, ouvre in SURFACES_CONTRASTE:
+            page.evaluate(FERME_TOUT)
+            try:
+                page.evaluate(ouvre)
+            except Exception as e:
+                check(False, "[contraste %s] la surface « %s » ne s'ouvre plus "
+                             "(%s)" % (theme, nom, str(e).split("\n")[0][:70]))
+                continue
+            page.wait_for_timeout(250)
+            vu = page.evaluate(SONDE_CONTRASTE,
+                               [exceptions, CONTRASTE_MINIMAL, CONTRASTE_GRAND_TEXTE])
+            total += vu["examines"]
+            mortes = vu["mortes"]
+            for e in vu["ecarts"]:
+                tous.append("%s · %s — %.2f:1 (exigé %.1f) sur %s, %s sur %s"
+                            % (nom, e["ou"][:40], e["ratio"], e["exige"],
+                               repr(e["texte"])[:30], e["couleur"], e["fond"]))
+        check(not tous,
+              "[contraste %s] %d texte(s) sous le seuil WCAG : %s"
+              % (theme, len(tous), " | ".join(tous[:4])))
+        check(total >= PLANCHER_EXAMINES,
+              "[contraste %s] le balayage a bien balayé — %d éléments "
+              "textuels examinés, plancher %d"
+              % (theme, total, PLANCHER_EXAMINES))
+        check(not mortes,
+              "[contraste %s] aucune exception ne couvre du code disparu "
+              "(%s)" % (theme, mortes))
+    ctx.close()
+
+
 def test_mettre_de_cote(nav, url):
     """Une étoile pour garder un article, et le plafond qui va avec.
 
@@ -4443,6 +4703,7 @@ def main():
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)
             test_panneau_du_compteur(nav, url)
+            test_contraste_partout(nav, url)
             test_mettre_de_cote(nav, url)
             test_le_vrai_editeur(nav, url)
             test_mur_du_jour_j(nav, url)

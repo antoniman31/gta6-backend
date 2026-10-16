@@ -8560,6 +8560,87 @@ bout. Deux autres gardes : la barre fait au moins 24 px et le chiffre
 12, et les deux exemplaires se superposent (une largeur fausse les
 décale de 4,7 px et le contrôle le dit).
 
+### Un balayage du contraste sur toute l'app — 16/10/2026
+
+Demandé par Antoni après le pourcentage illisible du matin : écrire la
+correction ne suffisait pas, rien n'empêchait la suivante.
+
+Le balayage parcourt **chaque élément porteur de texte** de dix surfaces
+— le fil, le compteur, les filtres, les réglages, les informations, les
+quatre onglets de Statistiques, le journal — dans les **deux thèmes**, et
+calcule le vrai rapport de contraste : fond effectif remonté jusqu'à la
+première couche opaque, opacité héritée fondue dans la couleur. Environ
+**2 465 éléments par thème**. Seuil WCAG AA : 4,5:1, ou 3:1 pour le grand
+texte.
+
+Coût mesuré : **57 s**, la suite passe de 81 à 143 s. Antoni a tranché :
+un garde qu'on doit penser à lancer ne garde rien. Le fil allégé a été
+essayé pour réduire la note — il ne paie pas, l'app rattrape l'historique
+complet derrière.
+
+#### QUATRE FOIS L'INSTRUMENT, PAS LE DÉFAUT
+
+C'est le vrai enseignement de la journée, et il mérite d'être écrit en
+entier : à quatre reprises, un contrôle de géométrie ou de couleur a
+rapporté quelque chose de faux, et à chaque fois parce qu'il mesurait à
+côté.
+
+1. **`scrollWidth` ne bouge pas** quand une grille `1fr` sort du
+   conteneur : les colonnes se serrent jusqu'à leur contenu minimum.
+2. **Un `<i>` en `inset:0` épouse sa barre par construction** : vérifier
+   qu'il y tient ne prouve rien. Avec la barre ramenée à 6 px pour
+   essayer, la boîte restait dedans pendant que les chiffres sortaient.
+3. **Une grille est un bloc** : sa largeur est contrainte par son parent,
+   donc elle ne déborde jamais. À quatre colonnes d'équivalences, les
+   pistes totalisaient 299 px dans une boîte de 246 — et ce sont les
+   tuiles qui sortaient, jusqu'à 321 px pour un bord à 283.
+4. **`color(srgb 0.07 0.43 0.20 / 0.15)`** — Chromium rend un
+   `color-mix()` en flottants de 0 à 1, pas en entiers sur 255. Lus comme
+   du `rgb()`, ils donnent du presque-noir : le badge vert de l'app était
+   rapporté à 4,38:1 sur un fond gris imaginaire, alors qu'il est à
+   **4,96:1** sur son vrai fond vert pâle. Un faux positif entier, et une
+   correction du CSS proposée pour rien, retirée avant d'être écrite.
+
+Et un cinquième, de la même famille : les premières cartes relevées comme
+« estompées » étaient des cartes **en pleine animation d'entrée**, lues à
+mi-course — 0,71 puis 0,52 selon le thème, jamais deux fois pareil. Les
+animations sont désormais coupées par le chemin que la page gère déjà
+(`prefers-reduced-motion`), pas par du CSS bricolé depuis le test.
+
+#### Ce que le balayage a réellement trouvé
+
+**Zéro défaut de couleur.** Toutes les teintes de l'app tiennent le
+seuil ; tout ce qui dépassait venait d'une opacité.
+
+- **La ligne d'état** sous les boutons portait `opacity:0.85`, invisible
+  à l'œil et suffisant pour la faire tomber à **4,01:1**. Elle dit la
+  durée du passage, les nouveaux, l'état des sources — des chiffres qu'on
+  vient lire. L'opacité est retirée : 5,53:1.
+- **Les articles lus** étaient estompés à 0,45, ce qui mettait leur
+  **titre** à 2,80:1 en thème clair. Ils passent à **0,70** : le titre
+  remonte à 6,05:1 et la carte reste visiblement seconde. Leur date et
+  leur source restent à 2,98 et 3,57 — décision d'Antoni, c'est de
+  l'accessoire sur un article déjà lu.
+
+#### Un angle mort qu'il a fallu créer pour voir
+
+Le profil de test est neuf : **aucun article n'y est lu**, donc
+`.card.read` n'existait jamais et son estompage n'était couvert par rien.
+Le balayage marque maintenant douze articles comme lus avant de regarder.
+
+Les exceptions sont nommées une par une, avec leur mesure, et le contrôle
+**vérifie que chacune désigne encore quelque chose** — une exception qui
+couvre du code disparu est signalée. Le titre d'un article lu n'est pas
+dans la liste : il reste vérifié à chaque passage.
+
+Enfin un plancher de 900 éléments examinés, parce qu'un balayage qui
+cesserait de balayer serait indiscernable d'un sans-faute. Il a servi dès
+le premier jour : l'app démarre sur « Clique sur Actualiser », et sans
+chargement du fil le balayage n'examinait que 16 éléments en rendant du
+vert. Les quatre gardes ont été vérifiés capables d'échouer — et le
+dernier essai, en coupant le chargement du fil, fait tomber le plancher
+ET les exceptions d'un coup.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
