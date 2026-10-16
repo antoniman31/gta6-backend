@@ -921,6 +921,12 @@
     font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;
     color:var(--accent); line-height:1.5; margin:0 0 14px;
   }
+  /* Le compte de dodos. Il a droit à sa ligne et à sa couleur : c'est la
+     seule information du panneau qui ne soit pas une mesure. */
+  .compteur-dodos{
+    font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700;
+    color:var(--text); margin:0 0 14px;
+  }
   .compteur-equiv{
     display:grid; grid-template-columns:1fr 1fr; gap:8px 12px;
     font-family:'JetBrains Mono',monospace; font-size:11px;
@@ -7843,6 +7849,41 @@ function phraseDecoupe(d){
   return bouts.length ? bouts.join(" · ") : "moins d'une seconde";
 }
 
+// LE COMPTEUR DE DODOS, et ce n'est pas un nombre de jours.
+//
+// Un dodo est une NUIT qu'il reste à dormir avant la sortie, donc un
+// minuit à traverser — pas une division par 86 400 000. Les deux ne
+// coïncident jamais : le 16/10 à 12 h 24 il reste 33 dodos et 34 jours
+// civils d'écart, et le soir du 18 novembre il restera 0 dodo alors que
+// l'écart sera encore d'un jour civil.
+//
+// LE MINUIT DE LA SORTIE NE COMPTE PAS. Le jeu tombe à minuit pile : la
+// nuit du 18 au 19, on ne dort pas, on joue. On compte donc les minuits
+// STRICTEMENT avant l'instant de sortie — le suivant est la sortie
+// elle-même.
+//
+// Minuits LOCAUX, construits par composantes de date : le 25 octobre 2026
+// la France recule d'une heure, et une division par 24 h décalerait tout
+// le compte après cette nuit-là.
+function dodosAvant(maintenant, sortie){
+  if(sortie <= maintenant) return 0;
+  let n = 0;
+  const m = new Date(maintenant.getFullYear(), maintenant.getMonth(),
+                     maintenant.getDate() + 1);
+  while(m < sortie){
+    n++;
+    m.setDate(m.getDate() + 1);
+    if(n > 4000) break;  // garde-fou, jamais atteint
+  }
+  return n;
+}
+
+function phraseDodos(n){
+  if(n === 0) return "Plus de dodo — c'est cette nuit";
+  if(n === 1) return "Plus qu'un dodo";
+  return n + " dodos";
+}
+
 function nombreFr(n){
   return Math.floor(n).toLocaleString("fr-FR");
 }
@@ -7868,6 +7909,7 @@ function majPanneauCompteur(){
 
   el.innerHTML =
       `<p class="compteur-gros">${escapeHtml(phraseDecoupe(decoupeCalendaire(debut, fin)))}</p>`
+    + (avant ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>` : "")
     + `<div class="compteur-equiv">`
     +   `<div><strong>${nombreFr(ecart / 86400000)}</strong> jours</div>`
     +   `<div><strong>${nombreFr(ecart / 3600000)}</strong> heures</div>`

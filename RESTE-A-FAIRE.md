@@ -1074,6 +1074,12 @@ tourne et qu'il faut couper à la fermeture, et la cible tactile qui ne
 peut PAS s'étendre vers le bas — un bouton de l'en-tête commence 14 px
 plus bas.
 
+Ajouté dans la foulée : un **compteur de dodos**, un délire d'Antoni avec
+un ami. Un dodo est une NUIT, donc un minuit à traverser — et celui de la
+sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
+par division se trompe sur les cinq cas éprouvés, changement d'heure
+compris.
+
 ### Les deux options : une livrée, une abandonnée — 16/10/2026
 
 Antoni a décidé d'avancer ces deux chantiers plutôt que d'attendre le

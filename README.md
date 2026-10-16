@@ -5136,7 +5136,20 @@ Le compteur devient donc un vrai `<button>`, qui doit **défaire** le style
 de bouton par défaut — fond, bordure, rembourrage, `min-height:44px` —
 sinon l'en-tête se déforme.
 
-Vingt-six contrôles, chacun vérifié capable d'échouer.
+**Et un compteur de dodos**, pour un délire d'Antoni avec un ami. Ce n'est
+pas un nombre de jours, et c'est tout l'intérêt : un dodo est une NUIT à
+dormir, donc un **minuit à traverser**. Le minuit de la sortie ne compte
+pas — le jeu tombe à minuit pile, cette nuit-là on joue. Le 16/10 à
+12 h 24 : **33 dodos** pour 34 jours civils d'écart. Les minuits sont
+construits par composantes de date, donc locaux : le 25 octobre la France
+recule d'une heure, et une division par 24 h décalerait tout le compte
+après cette nuit-là.
+
+La version naïve — `Math.ceil(écart / 86 400 000)` — se trompe sur **les
+cinq cas du contrôle** : 34 au lieu de 33, 2 au lieu de 1, 1 au lieu de 0
+l'avant-veille, et 25 au lieu de 24 en traversant le changement d'heure.
+
+Trente-trois contrôles, chacun vérifié capable d'échouer.
 
 ### Les sources : la mesure a surtout confirmé l'existant
 
