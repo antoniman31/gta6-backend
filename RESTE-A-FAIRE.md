@@ -1049,6 +1049,36 @@ nuit ; **Dependabot laissé libre** de reproposer selectolax, puisque le
 contrôle du décodeur fait virer une telle PR au rouge et que le jour où
 elle deviendra verte sera le signal que le verrou peut sauter.
 
+### La carte nomme enfin l'éditeur — 16/10/2026
+
+Antoni demandait des idées d'options. La mesure a répondu autre chose :
+**87 % des cartes chargées disaient « Google News »** (262 sur 300, et les
+dix premières toutes les dix) alors que l'app connaissait déjà le vrai
+média. `mediaDe()` existait, mesurée sur 1 437 titres, et n'était appelée
+que par les statistiques. Branchée sur la carte, l'aperçu et la
+chronologie ; le titre perd son suffixe redondant ; la ligne « + N autres
+sources » nomme le domaine au lieu de l'agrégateur.
+
+Rien à inventer, rien côté robot, rien dans le format publié.
+
+### Deux options VALIDÉES, à faire APRÈS la sortie
+
+Antoni les a choisies le 16/10 et a décidé qu'elles attendaient le
+19 novembre. Une tâche planifiée au **20 novembre** les ramènera.
+
+1. **Un filtre de notifications par importance** — trois crans : tout /
+   officiels seulement / officiels + actus majeures. Aujourd'hui c'est
+   tout ou rien par appareil. Deux implémentations possibles : le service
+   worker refuse d'afficher (côté app, sans risque backend), ou le robot
+   n'envoie pas (plus propre, mais touche la chaîne de push).
+2. **Mettre un article de côté** — une étoile sur la carte, un filtre
+   « Mis de côté », stocké en local comme `readSet` (qui a un plafond :
+   prévoir le même).
+
+Ni l'une ni l'autre n'est mesurée. Les proposer était une supposition
+d'usage, et la dernière supposition d'usage a fini supprimée trois jours
+plus tard — commencer par mesurer l'usage réel après la sortie.
+
 ### Le bloc « Ce que j'ai raté » est RETIRÉ — 16/10/2026
 
 « Dégage-moi le truc de depuis ta dernière visite, ça ne sert à rien. »

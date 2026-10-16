@@ -1758,12 +1758,24 @@ def test_stats_quatre_rubriques(nav, url):
         mediaDe({title: "Un sujet - IGN", source: "GameSpot"}),
         mediaDe({title: "Sujet - and it's finally time to book that holiday", source: "Google News (EN)"}),
         mediaDe({title: "Pas de tiret", source: "Google News (FR)"}),
+        mediaDe({title: "Pas de tiret", source: "Google News (FR)",
+                 link: "https://www.theshortcut.com/a/b"}),
+        domaineDe("https://www.numerama.com/x"),
+        domaineDe("pas une url"),
       ]""")
     check(medias[0] == "IGN", "un titre Google News rend son vrai média : %s" % medias[0])
     check(medias[1] == "GameSpot",
           "un flux natif garde sa source — la queue de titre y serait un sous-titre")
     check(medias[2] == "Google News (EN)", "une queue trop bavarde n'est pas un média")
-    check(medias[3] == "Google News (FR)", "sans tiret, la source sert de média")
+    check(medias[3] == "Google News (FR)",
+          "sans tiret NI lien exploitable, la source sert de dernier recours")
+    # LE REPLI MESURÉ : la queue de titre donne le média 260 fois sur 262
+    # (16/10/2026). Pour les deux autres, le domaine du lien décodé reste
+    # exact — sans lui, deux cartes sur trois cents diraient « Google News ».
+    check(medias[4] == "theshortcut.com",
+          "sans tiret mais AVEC un lien, le domaine prend le relais : %s" % medias[4])
+    check(medias[5] == "numerama.com", "le domaine est rendu sans « www. »")
+    check(medias[6] == "", "une URL illisible ne rend pas de domaine, elle rend vide")
 
     s4 = page.evaluate("""(m) => calculeStats([
         {title: "GTA 6 : la bande-annonce dévoilée, la bande-annonce ! - IGN", link: "1", source: "Google News (FR)", date: "2026-10-19T10:00:00Z"},
@@ -3040,6 +3052,91 @@ def test_compte_a_rebours(nav, url):
           % tard["texte"])
 
 
+def test_le_vrai_editeur(nav, url):
+    """La carte nomme qui a écrit l'article, pas par où il est arrivé.
+
+    MESURÉ le 16/10/2026 sur ce que l'app charge à l'ouverture : sur 300
+    articles, 262 sont étiquetés « Google News » — 87 %, et les dix
+    premières cartes toutes les dix. Or les liens sont décodés et la
+    fonction mediaDe() existait déjà, utilisée par les SEULES statistiques.
+    Les statistiques disaient donc « IGN » pendant que la carte, la seule
+    chose qu'on lit, disait « Google News (FR) ».
+    """
+    print("\n[éditeur] la carte nomme le média, pas l'agrégateur")
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    vu = page.evaluate("""() => {
+        lastItems = [
+          // L'agrégateur : la carte doit dire NUMERAMA, et le titre ne doit
+          // plus répéter le média juste en dessous de lui.
+          {link: "https://www.numerama.com/a", source: "Google News (FR)",
+           title: "GTA 6 repousse encore sa sortie - Numerama",
+           date: new Date().toISOString(), lang: "fr",
+           extraSources: [{source: "Google News (EN, 7 jours)",
+                           link: "https://www.cjonline.com/story/x"}]},
+          // Un flux natif : rien ne doit bouger.
+          {link: "https://www.gtaboom.com/b", source: "GTA BOOM",
+           title: "Un titre sans suffixe", date: new Date().toISOString(),
+           lang: "en", specialist: true},
+          // Agrégateur SANS queue lisible : le domaine prend le relais.
+          {link: "https://unn.ua/c", source: "Google News (EN)",
+           title: "Rockstar has revealed the final trailer",
+           date: new Date().toISOString(), lang: "en"},
+        ];
+        applyFilters();
+        const cartes = [...document.querySelectorAll('#feed .card')].map(c => ({
+          src: (c.querySelector('.card-src') || {}).textContent || "",
+          titre: (c.querySelector('.card-title') || {}).textContent || "",
+          extra: (c.querySelector('.card-extra') || {}).textContent || "",
+        }));
+        return cartes;
+    }""")
+
+    check(len(vu) == 3, "[éditeur] les trois cartes sont rendues (%d)" % len(vu))
+    check(vu and vu[0]["src"].strip() == "Numerama",
+          "[éditeur] la carte nomme le média et non l'agrégateur (« %s »)"
+          % (vu[0]["src"].strip() if vu else "—"))
+    check(vu and vu[0]["titre"].strip() == "GTA 6 repousse encore sa sortie",
+          "[éditeur] et le titre ne répète plus le média affiché au-dessus "
+          "(« %s »)" % (vu[0]["titre"].strip() if vu else "—"))
+    check(vu and "cjonline.com" in vu[0]["extra"],
+          "[éditeur] « + N autres sources » nomme le domaine, pas "
+          "l'agrégateur (« %s »)" % (vu[0]["extra"].strip() if vu else "—"))
+    check(vu and "Google News" not in vu[0]["extra"],
+          "[éditeur] et l'agrégateur n'y apparaît plus")
+    check(len(vu) > 1 and vu[1]["src"].strip() == "GTA BOOM",
+          "[éditeur] une source native est intacte (« %s »)"
+          % (vu[1]["src"].strip() if len(vu) > 1 else "—"))
+    check(len(vu) > 1 and vu[1]["titre"].strip() == "Un titre sans suffixe",
+          "[éditeur] et son titre n'est pas rogné")
+    check(len(vu) > 2 and vu[2]["src"].strip() == "unn.ua",
+          "[éditeur] sans queue de titre, le domaine du lien décodé prend le "
+          "relais (« %s »)" % (vu[2]["src"].strip() if len(vu) > 2 else "—"))
+
+    # L'aperçu 👁️ porte la même étiquette que la carte : deux endroits qui
+    # nommeraient différemment le même article seraient pires qu'un seul
+    # endroit qui le nomme mal.
+    apercu = page.evaluate("""() => {
+        lastItems = [{link: "https://www.numerama.com/a", source: "Google News (FR)",
+                      title: "Un sujet - Numerama", description: "texte",
+                      date: new Date().toISOString(), lang: "fr"}];
+        applyFilters();
+        const b = document.querySelector('#feed .card button[onclick^="openPreview"]');
+        if(!b) return null;
+        b.click();
+        return document.getElementById('previewSource').textContent;
+    }""")
+    check(apercu and apercu.strip() == "NUMERAMA",
+          "[éditeur] l'aperçu dit la même chose que la carte (« %s »)" % apercu)
+    check(not err, "[éditeur] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
+
+
 def test_mur_du_jour_j(nav, url):
     """Une journée de pic se découpe en tranches, une journée calme non.
 
@@ -3663,6 +3760,7 @@ def main():
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)
+            test_le_vrai_editeur(nav, url)
             test_mur_du_jour_j(nav, url)
             test_badges_filtres_chrono_et_recherches(nav, url)
             test_graphiques_detailles(nav, url)
