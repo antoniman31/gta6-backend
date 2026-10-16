@@ -962,11 +962,14 @@
   .compteur-tuiles .zero b{color:var(--text-dim); opacity:.45;}
   .compteur-tuiles .zero span{opacity:.45;}
 
-  /* Les équivalences gardent trois colonnes à elles : « 48 179 » fait
-     58 px, il ne rentrerait pas dans une tuile de 52. */
+  /* Les équivalences ont leur propre grille, à DEUX colonnes sur deux
+     rangées. Mesuré à 320 px : le total en secondes fait 87 px (2 888 596
+     aujourd'hui, 97 px pour une année après la sortie) et quatre colonnes
+     n'en offriraient que 55 — infaisable, y compris en réduisant le corps,
+     où il tient encore 71 px. Deux colonnes en donnent 119. */
   .compteur-tuiles.equiv{
-    grid-auto-flow:row; grid-template-columns:repeat(3, 1fr);
-    gap:0 8px;
+    grid-auto-flow:row; grid-template-columns:repeat(2, 1fr);
+    gap:12px 8px;
   }
   .compteur-tuiles.equiv b{font-size:16px;}
 
@@ -8041,6 +8044,10 @@ function majPanneauCompteur(){
         [nombreFr(ecart / 86400000), "jours", false],
         [nombreFr(ecart / 3600000), "heures", false],
         [nombreFr(ecart / 60000), "minutes", false],
+        // LE TOTAL EN SECONDES est resté dehors une demi-journée, le temps
+        // que la grille passe à trois colonnes. Antoni l'a réclamé : c'est
+        // le chiffre le plus spectaculaire des quatre.
+        [nombreFr(ecart / 1000), "secondes", false],
       ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours")
     + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le `
     +   `4 février 2022. Sortie le ${escapeHtml(jourSortie)} à 00:00, `
