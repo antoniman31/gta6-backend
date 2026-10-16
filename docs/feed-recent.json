@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-16T01:01:42.505161+00:00",
+  "generated_at": "2026-10-16T02:01:50.285344+00:00",
   "attente_recap": {
-    "articles": 8,
+    "articles": 9,
     "officiels": 0,
     "sommet": 3
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 31.2,
+  "duration_seconds": 34.1,
   "decode_failures": 0,
-  "total_articles": 3784,
+  "total_articles": 3786,
   "new_this_run": 2,
   "hot_count": 63,
   "hot_threshold": 3,
@@ -449,10 +449,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -463,14 +463,14 @@
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
       "entries_fetched": 0,
-      "http_status": 500,
+      "http_status": 404,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:11:46+00:00",
       "days_since_last_article": 0,
-      "status": "muette"
+      "status": "cassee"
     },
     {
       "id": "gnews-fr",
@@ -479,7 +479,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 1066,
       "last_article": "2026-10-16T00:13:08+00:00",
       "days_since_last_article": 0,
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1436,
-      "last_article": "2026-10-15T22:01:34+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 1437,
+      "last_article": "2026-10-16T01:36:48+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -739,7 +739,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 35,
       "last_article": "2026-10-16T00:07:56+00:00",
       "days_since_last_article": 0,
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -947,8 +947,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 10,
+      "new_this_run": 1,
+      "articles_exclusifs": 11,
       "last_article": "2026-10-14T17:02:41+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 1,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 8,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1233,7 +1233,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1269,13 +1269,13 @@
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "trueach": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "trueach": "100,100,0,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "100,69,100,100,100,100,100,100,100,100,100,100",
+    "engadget": "69,100,100,100,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 16 Oct 2026 01:01:15 GMT"
+      "modified": "Fri, 16 Oct 2026 02:01:03 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad17722-301c\"",
-      "modified": "Fri, 16 Oct 2026 01:00:18 GMT"
+      "etag": "W/\"6ad18534-301c\"",
+      "modified": "Fri, 16 Oct 2026 02:00:20 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1371,8 +1371,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ad164d8-b3d\"",
-      "modified": "Thu, 15 Oct 2026 23:42:16 GMT"
+      "etag": "\"6ad180fa-b3e\"",
+      "modified": "Fri, 16 Oct 2026 01:42:18 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 16 Oct 2026 01:01:17 GMT"
+      "modified": "Fri, 16 Oct 2026 02:01:21 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1396,8 +1396,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"3d724cedef998c0f3eb844c48fa9d4e5\"",
-      "modified": "Fri, 16 Oct 2026 00:57:38 GMT"
+      "etag": "W/\"8360371a36294cae2637d97e422af733\"",
+      "modified": "Fri, 16 Oct 2026 01:56:13 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -2199,6 +2199,20 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Development Red Dead Redemption 3 will take less time thanks to GTA 6 technology - GameGPU",
+      "link": "https://en.gamegpu.com/news/igry/razrabotka-red-dead-redemption-3-zajmet-menshe-vremeni-blagodarya-tekhnologiyam-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPeGZnWGQxVDl5blg1WFdTMF93SWZ3SjdtR3lRNjlQM01qc2Fvelludk1aX3U5Z3NSMXczNENyaklMNTloWUxHbk9BN3MtcXdiSlN0OFRxcmlyU3o5ZW85MXpfVWxCWEVscnhNRDVHSW5xU3RUbXE1YnYxS3BXZGtRd21YdFlJb2JyZ3VkcGoyWi1naGJxUkxKYloyUThwX0RxSzRzb0h4QUZqemdoajh0NjhBelhZV25YSmc?oc=5",
+      "date": "2026-10-16T01:36:48+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q4/okt/16/Red_Dead_Redemption_3_gpu.webp#joomlaImage://local-images/1_2026/NEWS/Q4/okt/16/Red_Dead_Redemption_3_gpu.webp?width=1920&height=1080",
+      "description": "Development Red Dead Redemption 3 will take less time thanks to GTA 6 technology&nbsp;&nbsp;GameGPU",
+      "vu_le": "2026-10-16T02:01:48.857926+00:00"
+    },
     {
       "title": "À Un Jour Près, GTA 6 Pourra Finalement Concourir Au Titre De Jeu De L’année 2026 - Pause Hardware",
       "link": "https://pausehardware.com/gta-6-eligible-game-awards-2026/",
@@ -6278,19 +6292,6 @@
       "lang": "en",
       "image": null,
       "description": "Cyberleek Returns, Posts More ‘GTA VI’ Footage, Promises Not to Return Again&nbsp;&nbsp;Gizmodo"
-    },
-    {
-      "title": "Rockstar says its future games won't take as long as GTA 6 to come out - Neowin",
-      "link": "https://www.neowin.net/news/rockstar-says-its-future-games-wont-take-as-long-as-gta-6-to-come-out/",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQMzJqY25uVkltRzFFQU1OYmo4U292cWU4Q1U5QkJSNFRoY0NUNTJiQkJpeFFseHRzSXV5cUplQWNKY3hFaW5QczU0S3k1dlRTNVpocmppeUtiRTdsQXZYUWUzTXlPWkhZdk9iTl9jV3JYUkptSzNURGh6dEZOenVCMzJwQThlcGkwLW5sSktoNU9iN3NHLVdWaXo2Zm9Ud0U?oc=5",
-      "date": "2026-10-14T22:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": null,
-      "description": "Rockstar says its future games won't take as long as GTA 6 to come out&nbsp;&nbsp;Neowin"
     }
   ],
   "partial": true,
