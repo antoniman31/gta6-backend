@@ -5052,7 +5052,7 @@ function renderChronologie(items){
           ${vignette}
           <span class="chrono-texte">
             <span class="chrono-titre">${escapeHtml(item.title || "")}</span>
-            <span class="chrono-source">${escapeHtml(item.source || "")}</span>
+            <span class="chrono-source">${escapeHtml(mediaDe(item))}</span>
           </span>
         </a>
         ${badges ? `<div class="chrono-badges">${badges}</div>` : ""}
@@ -5349,7 +5349,11 @@ function renderCard(item, newLinks, searchQuery){
   // du texte simple plutôt que de disparaître.
   const extraLien = s => {
     const url = safeUrl(s.link);
-    const nom = escapeHtml(s.source);
+    // Le DOMAINE et non s.source : ces entrées n'ont pas de titre, donc
+    // mediaDe ne peut rien en tirer. Sans ça la ligne disait « + 1 autre
+    // source : Google News (EN, 7 jours) », ce qui n'apprend rien — alors
+    // que le lien, lui, pointe déjà sur cjonline.com.
+    const nom = escapeHtml(domaineDe(s.link) || s.source);
     return url
       ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${nom}</a>`
       : nom;
@@ -5364,12 +5368,12 @@ function renderCard(item, newLinks, searchQuery){
         ${thumb}
         <div class="card-body">
           <div class="card-src-row">
-            <span class="card-src">${favicon}${escapeHtml(item.source)}</span>
+            <span class="card-src">${favicon}${escapeHtml(mediaDe(item))}</span>
             ${hotBadge}${officialBadge}${specialistBadge}${badgesContenu}${langBadge}
           </div>
           <h3 class="card-title">${linkUrl
-            ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(item.title, searchQuery)}</a>`
-            : highlightMatch(item.title, searchQuery)}</h3>
+            ? `<a href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener" onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">${highlightMatch(titreSansMedia(item), searchQuery)}</a>`
+            : highlightMatch(titreSansMedia(item), searchQuery)}</h3>
           <div class="card-date">${d}</div>
           ${extraSourcesLine}
           <div class="card-actions">
@@ -5471,7 +5475,7 @@ function openPreview(safeId){
   if(!item) return;
   previewSafeId = safeId;
 
-  const sourceLabel = item.official ? "OFFICIEL ROCKSTAR" : item.source.toUpperCase();
+  const sourceLabel = item.official ? "OFFICIEL ROCKSTAR" : mediaDe(item).toUpperCase();
   const faviconUrl = safeUrl(item.favicon);
   const favicon = faviconUrl ? `<img src="${escapeHtml(faviconUrl)}" alt="" style="width:16px; height:16px; border-radius:var(--r-xs); margin-right:6px; vertical-align:-3px;">` : "";
   document.getElementById("previewSource").innerHTML = favicon + escapeHtml(sourceLabel);
@@ -5795,11 +5799,28 @@ function mediaDe(item){
   if(!/google news/i.test(source)) return source;
   const t = (item.title || "").trim();
   const i = t.lastIndexOf(" - ");
-  if(i <= 0) return source;
-  const queue = t.slice(i + 3).trim();
-  if(!queue || queue.length > 32 || queue.split(/\s+/).length > 4) return source;
-  if(/[.?!,;:)"»’]$/.test(queue)) return source;
-  return queue;
+  const queue = i > 0 ? t.slice(i + 3).trim() : "";
+  if(queue && queue.length <= 32 && queue.split(/\s+/).length <= 4
+     && !/[.?!,;:)"»’]$/.test(queue)) return queue;
+  // LE REPLI, et pourquoi il existe. Mesuré le 16/10/2026 sur les 262
+  // articles d'agrégateur chargés : la queue de titre donne le média 260
+  // fois, soit 99 %. Pour les deux autres, le DOMAINE du lien reste exact —
+  // les liens Google News sont tous décodés à l'arrivée (voir la panne du
+  // 03/10 et le garde-fou qui l'empêche de revenir), donc l'information est
+  // là à 100 %. Sans ce repli, deux cartes sur trois cents continueraient
+  // d'afficher le nom de l'agrégateur.
+  return domaineDe(item.link) || source;
+}
+
+// Le domaine d'un lien, sans « www. ». Sert de repli à mediaDe et de seul
+// recours pour la ligne « + N autres sources », dont les entrées ne portent
+// QUE {source, link} — pas de titre, donc pas de queue à lire.
+function domaineDe(url){
+  try{
+    return new URL(url).hostname.replace(/^www\./, "");
+  }catch(e){
+    return "";
+  }
 }
 function titreSansMedia(item){
   const m = mediaDe(item);

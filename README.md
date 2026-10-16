@@ -4984,6 +4984,64 @@ aurait coûté plus que le champ.
 ce travail — « 10 non lus » contre « 5 nouveaux » — ne peuvent plus se
 contredire : il n'en reste qu'un.
 
+### 87 % des cartes disaient « Google News » — 16/10/2026
+
+Antoni demandait des idées d'options à ajouter. La mesure a répondu autre
+chose : il n'y avait pas d'option à ajouter, il y avait une information
+**déjà calculée et jetée à l'affichage**.
+
+Relevé sur ce que l'app charge à l'ouverture :
+
+| | |
+|---|---|
+| articles chargés | 300 |
+| étiquetés **Google News** | **262 — 87 %** |
+| les dix premières cartes | **dix sur dix** |
+| sans aucun badge | 293 — 98 % |
+
+Et les 262 liens sont **tous décodés** — zéro reste sur `news.google.com`.
+L'app sait donc que l'article vient de Numerama, IGN, GameSpot ou Kotaku,
+et affiche « Google News (FR) ».
+
+**`mediaDe()` existait déjà.** Elle lit le vrai média en queue de titre
+(« … - IGN »), avec les règles du robot mesurées sur 1 437 titres dont
+1 411 queues sont bien un média. Elle était appelée à trois endroits, **tous
+dans les statistiques**. Les statistiques disaient donc « IGN » pendant que
+la carte — la seule chose qu'on lit — disait « Google News (FR) ».
+
+Il n'y avait rien à inventer : un helper mesuré, jamais branché là où il
+sert. Il l'est maintenant sur la carte, l'aperçu et la chronologie.
+
+**Le titre perd son suffixe** (`titreSansMedia`, qui existait aussi) :
+afficher « … - Numerama » sous une ligne qui dit Numerama était une
+répétition, et 390 px de large ne les autorisent pas. Revers assumé : la
+recherche porte toujours sur le titre complet, donc chercher « Numerama »
+trouve l'article sans rien surligner dedans.
+
+**Deux méthodes, et pourquoi.** La queue de titre donne le média **260 fois
+sur 262** (99 %). Pour les deux autres, le domaine du lien décodé reste
+exact — `theshortcut.com`, `unn.ua` — et il est disponible à 100 %. Sans ce
+repli, deux cartes sur trois cents continueraient de nommer l'agrégateur.
+`domaineDe()` sert aussi de **seul** recours à la ligne « + N autres
+sources » : ces entrées ne portent que `{source, link}`, pas de titre, donc
+aucune queue à lire. Elle disait « + 1 autre source : Google News (EN,
+7 jours) » ; elle dit maintenant `cjonline.com`.
+
+**L'objection que j'avais soulevée s'est inversée.** Je craignais deux
+vocabulaires dans la même app. En lisant le code : les statistiques
+disaient *déjà* le vrai média. Après ce changement la carte et les
+statistiques **concordent enfin**, et le nom technique ne subsiste que dans
+le panneau des réglages — là où on gère les flux, donc là où il doit être.
+
+**Ce qui n'est pas touché** : le robot, le format publié, les
+notifications. De l'affichage pur, et c'est à ce titre que ça passe sous
+gel. Les favicons restent écartés : le champ n'existe pas dans le flux
+publié et le calculer déclencherait une requête vers Google par carte, soit
+300 à l'ouverture.
+
+Treize contrôles de navigateur, chacun vérifié capable d'échouer en
+remettant `item.source`.
+
 ### Les sources : la mesure a surtout confirmé l'existant
 
 Le décompte d'abord, parce qu'il est plus dur qu'attendu :
