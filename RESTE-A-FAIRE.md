@@ -1080,6 +1080,20 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Le total en secondes revient — 16/10/2026
+
+Perdu quand les équivalences sont passées de quatre à trois. Mesuré :
+87 px aujourd'hui, 106 au pire cas, pour des colonnes de 55 — les quatre
+ne tiennent pas sur une ligne. Grille à deux colonnes sur deux rangées,
+comme avant la refonte.
+
+Au passage, le garde de débordement s'est révélé faux pour la TROISIÈME
+fois dans la journée, et toujours pour la même raison : il mesurait le
+conteneur, qui ne peut pas déborder, au lieu du contenu. Il porte
+maintenant sur chaque tuile, et le contrôle des équivalences est posé sur
+l'instant qui exerce vraiment la grille — deux jours après l'annonce, où
+le total en secondes fait onze caractères.
+
 ### Le même panneau, troisième passe : une seule ligne — 16/10/2026
 
 « Tout tienne sur une ligne », et « c'est quand les mois partiront ». Les

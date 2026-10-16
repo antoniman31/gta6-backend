@@ -8480,6 +8480,49 @@ Le garde central est nouveau et dit littéralement la demande : **toutes
 les tuiles partagent le même haut**, donc une seule rangée. Remis à trois
 colonnes, il en compte deux.
 
+### Le total en secondes revient, et la géométrie qui m'avait eu trois fois — 16/10/2026
+
+Les équivalences étaient passées de quatre à trois en même temps que la
+grille, et le total en secondes avait disparu avec. Signalé par Antoni,
+remis.
+
+**Les quatre ne tiennent pas sur une ligne, et c'est mesuré :** le total
+en secondes fait 87 px aujourd'hui (2 888 596) et 106 px au pire cas
+(151 millions, deux jours après l'annonce), quand quatre colonnes n'en
+offrent que 55 à 320 px. Irrattrapable en réduisant le corps, où il tient
+encore 71 px. Grille à **deux colonnes sur deux rangées**, 119 px la case
+— exactement la disposition d'avant la refonte.
+
+#### Le même contrôle faux, trois fois de suite
+
+Trois fois dans la même journée, un garde de débordement s'est révélé
+incapable de voir ce qu'il surveillait, et trois fois pour la même
+raison : **il mesurait le conteneur, qui ne peut pas déborder, au lieu du
+contenu, qui le peut.**
+
+1. `scrollWidth` contre `clientWidth` sur le panneau : des colonnes `1fr`
+   se serrent jusqu'à leur contenu minimum, le compte ne bouge pas.
+2. La boîte du `<i>` du pourcentage, en `inset:0` : elle épouse la barre
+   par construction.
+3. La boîte de la **grille** contre celle du panneau : une grille est un
+   bloc, sa largeur est contrainte par son parent. Avec quatre colonnes
+   d'équivalences au pire cas, les pistes totalisent 299 px dans une
+   boîte qui en mesure 246 — la boîte reste à 246, et ce sont les
+   **tuiles** qui sortent, jusqu'à 321 px pour un bord à 283.
+
+Le garde porte maintenant sur chaque tuile. Cassé à quatre colonnes comme
+à trois, il nomme la tuile fautive et les deux abscisses.
+
+#### Et un pire cas qui n'était toujours pas joué
+
+Les trois instants de la boucle sont tous à moins de 70 jours de la
+sortie : quatre colonnes y tiennent encore, parce qu'une colonne `1fr`
+s'élargit à son contenu. Le contrôle des équivalences a donc été posé sur
+l'instant qui exerce vraiment la grille — **deux jours après l'annonce**,
+déjà utilisé pour la barre quasi vide, où le total en secondes fait onze
+caractères. Un contrôle vérifie que cet instant-là porte bien onze
+caractères, pour que le pire cas ne redevienne pas silencieusement tiède.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

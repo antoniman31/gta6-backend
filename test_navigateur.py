@@ -3182,8 +3182,10 @@ def test_panneau_du_compteur(nav, url):
     # Sur la grille elle-même, et non sur le texte du panneau : à 34 jours
     # de la sortie le découpage porte déjà les mêmes mots, et un contrôle
     # qui cherche « heures » n'importe où passerait sans rien prouver.
-    check(all(u in (ouvert["equiv"] or "") for u in ("jours", "heures", "minutes")),
-          "[compteur] et les équivalences, du jour à la minute (« %s »)"
+    check(all(u in (ouvert["equiv"] or "")
+              for u in ("jours", "heures", "minutes", "secondes")),
+          "[compteur] et les équivalences, du jour à la SECONDE — le total "
+          "en secondes est le plus spectaculaire des quatre (« %s »)"
           % ouvert["equiv"])
     check(ouvert["dodos"], "[compteur] il porte le compte de dodos")
     check(ouvert["barre"], "[compteur] et la barre de progression")
@@ -3304,11 +3306,20 @@ def test_panneau_du_compteur(nav, url):
             // 1fr se serrent jusqu'à leur contenu minimum, si bien
             // qu'une grille trop étroite sort du conteneur SANS que son
             // scrollWidth bouge d'un pixel.
+            // SUR CHAQUE TUILE, et c'est la troisième fois que cette
+            // géométrie me prend : la GRILLE est un bloc, sa largeur est
+            // contrainte par le conteneur et elle ne déborde jamais.
+            // Mesuré avec quatre colonnes d'équivalences : les pistes
+            // totalisent 299 px dans une boîte qui en mesure 246, et ce
+            // sont les tuiles qui sortent, pas la boîte. Son scrollWidth
+            // ne bouge pas davantage.
             const boite = c.getBoundingClientRect();
             let sort = null, coupe = null;
-            for(const g of c.querySelectorAll('.compteur-tuiles')){
-              const q = g.getBoundingClientRect();
-              if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5) sort = g.className;
+            for(const t of c.querySelectorAll('.compteur-tuiles > div')){
+              const q = t.getBoundingClientRect();
+              if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5)
+                sort = t.textContent + ' (bord droit ' + Math.round(q.right)
+                       + ' px pour ' + Math.round(boite.right) + ')';
             }
             // Seuils par rôle : le libellé est à 11 px (une ligne ~14 px,
             // deux ~28), le nombre monte à 28 px en disposition précise
@@ -3318,6 +3329,7 @@ def test_panneau_du_compteur(nav, url):
               const max = e.tagName === 'B' ? 45 : 22;
               if(h > max) coupe = e.textContent + ' (' + Math.round(h) + ' px)';
             }
+            const equiv = c.querySelectorAll('.compteur-tuiles.equiv > div').length;
             const barre = c.querySelector('.compteur-barre');
             // SUR LE TEXTE LUI-MÊME, par un Range, et pas sur la boîte du
             // <i> : il est en inset:0, donc sa boîte ÉPOUSE la barre par
@@ -3345,7 +3357,7 @@ def test_panneau_du_compteur(nav, url):
               // barre. DOCUMENT_POSITION_FOLLOWING vaut 4.
               dodoApresBarre: dodos
                 ? !!(barre.compareDocumentPosition(dodos) & 4) : null,
-              coupe: coupe, sort: sort,
+              coupe: coupe, sort: sort, equiv: equiv,
               deborde: c.scrollWidth > c.clientWidth + 1,
               chiffreDedans: chiffre.right <= rb.right + 0.5
                              && chiffre.left >= rb.left - 0.5
@@ -3377,6 +3389,10 @@ def test_panneau_du_compteur(nav, url):
                                 vue["sort"]))
         check(vue["chiffreDedans"],
               "[compteur %s] le pourcentage reste dans la barre" % libelle)
+        check(vue["equiv"] == 4,
+              "[compteur %s] quatre équivalences, secondes comprises (%s)"
+              % (libelle, vue["equiv"]))
+
         check(vue["dodoApresBarre"] is True,
               "[compteur %s] et le dodo est SOUS la barre — « juste un truc "
               "en plus » (%s)" % (libelle, vue["dodoApresBarre"]))
@@ -3394,10 +3410,16 @@ def test_panneau_du_compteur(nav, url):
                   "unités valent quelque chose (%s)" % (libelle, vue["nuls"]))
         ctx.close()
 
-    # LE POURCENTAGE À L'AUTRE EXTRÊME. Aligné sur la fin du remplissage
-    # il sortirait de l'écran quand la barre est presque vide ; il est
-    # donc posé par-dessus, calé à droite. Deux jours après l'annonce :
-    # 0,1 % de barre, et le chiffre doit rester lisible.
+    # LES DEUX EXTRÊMES, AU MÊME INSTANT. Deux jours après l'annonce, la
+    # barre est à 0,1 % — le pourcentage, aligné sur la fin du
+    # remplissage, sortirait de l'écran ; il est donc posé par-dessus,
+    # calé à droite.
+    #
+    # Et c'est AUSSI le pire cas des équivalences : 1 748 jours de la
+    # sortie, donc 151 millions de secondes, onze caractères. Les trois
+    # instants d'au-dessus sont tous à moins de 70 jours et n'exercent
+    # rien — mesuré, quatre colonnes y tiennent encore, parce qu'une
+    # colonne 1fr s'élargit à son contenu plutôt que de le rogner.
     ctx = nav.new_context(viewport={"width": 320, "height": 850},
                           timezone_id="Europe/Paris")
     ctx.clock.install(time="2022-02-06T12:00:00Z")
@@ -3408,8 +3430,20 @@ def test_panneau_du_compteur(nav, url):
         ouvreCompteur();
         const b = document.querySelector('.compteur-barre');
         const i = b.querySelector('i');
+        const c = document.getElementById('compteurContenu');
+        const g = c.querySelector('.compteur-tuiles.equiv');
+        const boite = c.getBoundingClientRect();
+        let serre = null;
+        for(const t of g.children){
+          const q = t.getBoundingClientRect();
+          if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5)
+            serre = t.textContent + ' (bord droit ' + Math.round(q.right)
+                    + ' px pour ' + Math.round(boite.right) + ')';
+        }
         const r = {part: parseFloat(b.querySelector('span').style.width),
                    texte: i.textContent,
+                   secondes: g.lastElementChild.querySelector('b').textContent,
+                   serre: serre,
                    dedans: i.getBoundingClientRect().right <= b.getBoundingClientRect().right + 0.5};
         fermeCompteur();
         return r;
@@ -3420,6 +3454,12 @@ def test_panneau_du_compteur(nav, url):
     check(vide["dedans"] and "%" in vide["texte"],
           "[compteur] et son pourcentage tient quand même dedans "
           "(« %s »)" % vide["texte"])
+    check(len(vide["secondes"]) >= 10,
+          "[compteur] cet instant exerce bien le pire cas : le total en "
+          "secondes y fait onze caractères (« %s »)" % vide["secondes"])
+    check(vide["serre"] is None,
+          "[compteur] et aucune équivalence ne sort du panneau (%s)"
+          % vide["serre"])
     ctx.close()
 
     # APRÈS LA SORTIE, le panneau compte dans l'autre sens.
