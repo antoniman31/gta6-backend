@@ -8343,6 +8343,78 @@ notifications ») ne sont pas concernées : elles ne peuvent pas mentir.
 `RESTE-A-FAIRE.md` reçoit aussi l'entrée du 14/10 qui lui manquait — six
 lots en une journée, et le gel décidé en cours de route.
 
+### Le panneau du compteur en deux dispositions — 16/10/2026
+
+« Tu peux pas faire plus joli ? », capture d'écran à l'appui. Deux défauts,
+et le premier n'était pas une question de goût.
+
+**Le découpage était une phrase.** « 1 mois · 2 jours · 11 heures · 5
+minutes · 57 secondes » rendu en texte se casse où le navigateur peut :
+entre le nombre et son unité. Sur l'écran d'Antoni, « 5 / minutes ».
+Chaque unité est maintenant une **tuile** — nombre au-dessus, unité
+dessous — et une tuile ne peut pas se couper au milieu d'un mot. Le motif
+n'est pas inventé : c'est `.stats-chiffre`, déjà en place dans le panneau
+Statistiques, que la première version avait ignoré au profit de styles
+écrits pour l'occasion.
+
+**Et le panneau traitait de la même façon J-34 et la dernière nuit.** Il a
+donc deux visages. Au-delà de 24 h, les dodos sont la vedette : 40 px, le
+plus gros chiffre de l'écran, le découpage précis en dessous. En dessous
+de 24 h, la seconde devient l'information : les tuiles précises montent en
+tête et le dodo redescend en ligne simple.
+
+**24 h, et pas un seuil inventé.** C'est le palier `final` dont l'en-tête
+se sert déjà — celui où elle se met elle-même à afficher les secondes. Les
+deux bascules tombent au même instant. Et il en découle une propriété
+vérifiée plutôt que supposée : passer sous 24 h, c'est exactement avoir
+franchi le dernier minuit avant la sortie, donc **la vedette n'affiche
+jamais « 0 dodo »**. Deux contrôles l'encadrent à une minute près, de part
+et d'autre de la bascule.
+
+Le reste du nettoyage : le pourcentage passe **dans** la barre, qui monte
+de 6 à 18 px pour le contenir, au lieu d'une légende sous elle ; les deux
+paragraphes de note deviennent une ligne ; `phraseDecoupe` ne disparaît
+pas mais devient l'**étiquette du groupe de tuiles**, pour qu'un lecteur
+d'écran entende une phrase au lieu d'une pile de chiffres nus.
+
+#### Trois contrôles qui ne prouvaient rien, et la mesure qui l'a dit
+
+Chaque contrôle a été vérifié capable d'échouer. Trois ne l'étaient pas,
+et la façon dont ils mentaient vaut d'être notée.
+
+**Le débordement mesuré au mauvais endroit.** Le garde comparait
+`scrollWidth` à `clientWidth`. Mais des colonnes `1fr` se serrent jusqu'à
+leur contenu minimum : une grille trop étroite sort du conteneur **sans
+que son `scrollWidth` bouge d'un pixel**. Remplacé par une comparaison
+géométrique des rectangles.
+
+**Le pourcentage comparé à sa propre boîte.** Le `<i>` est en `inset:0` :
+sa boîte épouse la barre par construction, et vérifier qu'elle y tient ne
+prouve rien. Avec la barre ramenée à 6 px pour essayer, la boîte restait
+sagement dedans pendant que les chiffres en sortaient. Mesuré sur le
+**texte lui-même**, par un `Range`, le contrôle tombe.
+
+**Le pire cas jamais joué.** Les deux instants de test encadrent la
+bascule, donc à un jour de la sortie : deux ou trois tuiles seulement. La
+grille ne risquait rien et le garde ne gardait rien. Un troisième instant
+a été ajouté — le 10 septembre, où les six unités sont non nulles d'un
+coup — et c'est lui qui exerce vraiment la grille.
+
+Au passage, un « cassage » s'est révélé n'en être pas un : passer la
+grille de trois à six colonnes **ne déborde pas** à 320 px, les colonnes
+se serrant au contenu. C'est laid, pas cassé — et le contrôle avait raison
+de rester vert.
+
+**Un quatrième défaut, pris par la CI et pas par moi.** Un contrôle
+cherchait le mot « secondes » dans le texte du panneau. Il tournait à
+l'heure réelle, et la tuile des secondes est masquée quand elles valent
+zéro : une chance sur soixante d'échouer, introduite en retirant les
+secondes des équivalences. Il porte maintenant sur la STRUCTURE — une
+tuile par unité non nulle, toutes prises dans la liste connue — ce qui ne
+dépend plus de l'instant. Dans la foulée, les deux instants qui encadrent
+la bascule sont passés d'une minute à cinq de marge : l'horloge installée
+avance pendant que la page charge.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

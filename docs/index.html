@@ -916,31 +916,74 @@
   .skeleton-line.w-20{width:20%;}
 
   /* Le détail du compte à rebours. Volontairement sobre : c'est un panneau
-     qu'on ouvre par curiosité, pas un tableau de bord. */
-  .compteur-gros{
-    font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;
-    color:var(--accent); line-height:1.5; margin:0 0 14px;
+     qu'on ouvre par curiosité, pas un tableau de bord.
+
+     TOUT EST EN TUILES, jamais en phrase. La première version rendait le
+     découpage comme un texte — « 1 mois · 2 jours · 11 heures · 5 minutes
+     · 57 secondes » — et à 320 px il se coupait entre le nombre et son
+     unité : « 5 / minutes ». Une tuile ne peut pas se casser au milieu
+     d'un mot. Le motif (nombre au-dessus, unité dessous) est celui de
+     .stats-chiffre, déjà en place dans le panneau Statistiques. */
+  .compteur-tuiles{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:12px 8px;
+    text-align:center; margin:0 0 16px;
   }
-  /* Le compte de dodos. Il a droit à sa ligne et à sa couleur : c'est la
-     seule information du panneau qui ne soit pas une mesure. */
+  .compteur-tuiles b{
+    display:block; font-family:'JetBrains Mono',monospace; font-weight:700;
+    color:var(--text); line-height:1.1;
+  }
+  .compteur-tuiles span{
+    display:block; font-size:11px; color:var(--text-dim); margin-top:3px;
+  }
+  /* Deux tailles seulement. .precis est la disposition des dernières
+     24 heures, quand la seconde est l'information ; .second est le même
+     découpage relégué sous les dodos tant qu'il reste des nuits. */
+  .compteur-tuiles.precis b{font-size:28px; color:var(--accent);}
+  .compteur-tuiles.second b{font-size:20px;}
+  /* Les équivalences : le même découpage en une seule unité à la fois.
+     Troisième taille, volontairement discrète — c'est un complément. */
+  .compteur-tuiles.equiv b{font-size:16px;}
+
+  /* LES DODOS EN VEDETTE, tant qu'il en reste à compter. C'est la seule
+     information du panneau qui ne soit pas une mesure, et celle qu'Antoni
+     a demandée : elle a droit au plus gros chiffre de l'écran. */
+  .compteur-vedette{text-align:center; margin:4px 0 20px;}
+  .compteur-vedette .emoji{display:block; font-size:24px; line-height:1;}
+  .compteur-vedette b{
+    display:block; font-family:'JetBrains Mono',monospace;
+    font-size:40px; font-weight:700; color:var(--accent); line-height:1.1;
+    margin-top:4px;
+  }
+  .compteur-vedette span{display:block; font-size:12px; color:var(--text-dim);}
+  /* Les deux dernières nuits, « Plus qu'un dodo » n'est plus un chiffre à
+     mettre en gros : il redescend en ligne simple sous les tuiles. */
   .compteur-dodos{
     font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700;
-    color:var(--text); margin:0 0 14px;
+    color:var(--text); text-align:center; margin:0 0 16px;
   }
-  .compteur-equiv{
-    display:grid; grid-template-columns:1fr 1fr; gap:8px 12px;
-    font-family:'JetBrains Mono',monospace; font-size:11px;
-    color:var(--text-dim); margin-bottom:16px;
-  }
-  .compteur-equiv strong{color:var(--text); font-size:13px;}
+
+  /* LA BARRE PORTE SON POURCENTAGE. Il était en légende dessous, ce qui
+     faisait une ligne de texte de plus pour un chiffre que la barre
+     montre déjà. Elle est donc assez haute pour le contenir. */
   .compteur-barre{
-    height:6px; border-radius:var(--r-full); background:var(--line);
-    overflow:hidden; margin-bottom:8px;
+    position:relative; height:18px; border-radius:var(--r-full);
+    background:var(--line); overflow:hidden; margin-bottom:10px;
   }
-  .compteur-barre span{display:block; height:100%; background:var(--accent);}
+  .compteur-barre span{
+    display:block; height:100%; background:var(--accent);
+  }
+  /* Le chiffre est posé PAR-DESSUS, aligné à droite, pas à la fin du
+     remplissage : à 0,1 % il sortirait de l'écran, et à 99,9 % il
+     déborderait de la barre. */
+  .compteur-barre i{
+    position:absolute; inset:0; display:flex; align-items:center;
+    justify-content:flex-end; padding-right:8px;
+    font-family:'JetBrains Mono',monospace; font-size:10px; font-style:normal;
+    font-weight:700; color:var(--text);
+  }
   .compteur-note{
     font-family:'JetBrains Mono',monospace; font-size:10px;
-    color:var(--text-dim); line-height:1.5; margin:0 0 6px;
+    color:var(--text-dim); line-height:1.5; margin:0;
   }
 
   .filters-trigger{
@@ -7888,6 +7931,61 @@ function nombreFr(n){
   return Math.floor(n).toLocaleString("fr-FR");
 }
 
+// LE PANNEAU A DEUX VISAGES, ET LE SEUIL N'EST PAS INVENTÉ.
+//
+// Première version : tout en une phrase, les dodos en petit au milieu.
+// Sur un téléphone de 320 px la phrase se cassait entre le nombre et son
+// unité (« 5 / minutes »), et elle traitait de la même façon un panneau
+// ouvert à J-34 et un panneau ouvert la dernière nuit.
+//
+// Au-delà de 24 h, LES DODOS SONT LA VEDETTE : c'est le chiffre qu'on
+// vient chercher, le découpage précis passe en dessous. En dessous de
+// 24 h, la seconde devient l'information et les tuiles précises montent
+// en tête — le dodo, lui, n'a plus rien à décompter.
+//
+// 24 h et pas 48 h : c'est le palier « final » que l'en-tête utilise
+// déjà, celui où elle se met elle-même à afficher les secondes. Les deux
+// bascules tombent donc au même instant, et il n'y a pas un cinquième
+// seuil à retenir.
+//
+// Propriété qui tombe juste, et qui est testée : passer sous 24 h, c'est
+// exactement avoir franchi le dernier minuit avant la sortie. La vedette
+// n'affiche donc JAMAIS « 0 dodo » — quand il n'en reste plus, on est
+// déjà passé à l'autre disposition.
+const SEUIL_COMPTEUR_PRECIS = 24 * 60 * 60 * 1000;
+
+const UNITES_COMPTEUR = [
+  ["mois", "mois", "mois"],
+  ["semaines", "semaine", "semaines"],
+  ["jours", "jour", "jours"],
+  ["heures", "heure", "heures"],
+  ["minutes", "minute", "minutes"],
+  ["secondes", "seconde", "secondes"],
+];
+
+// Une tuile = un nombre au-dessus, son unité dessous. Le motif vient de
+// .stats-chiffre, déjà en place dans le panneau Statistiques.
+function tuilesCompteur(liste, classe, etiquette){
+  return `<div class="compteur-tuiles ${classe}" role="group" `
+    + `aria-label="${escapeHtml(etiquette)}">`
+    + liste.map(([n, u]) =>
+        `<div><b>${escapeHtml(String(n))}</b><span>${escapeHtml(u)}</span></div>`).join("")
+    + `</div>`;
+}
+
+// Les unités à zéro restent masquées, comme dans la phrase. Et c'est
+// phraseDecoupe qui sert d'étiquette au groupe : un lecteur d'écran
+// entend « 1 mois, 2 jours, 11 heures » au lieu d'une pile de chiffres
+// nus, et la phrase garde ainsi un usage.
+function tuilesDecoupe(d, classe){
+  const bouts = [];
+  for(const [cle, singulier, pluriel] of UNITES_COMPTEUR){
+    if(d[cle] > 0) bouts.push([d[cle], d[cle] > 1 ? pluriel : singulier]);
+  }
+  if(!bouts.length) bouts.push([0, "seconde"]);
+  return tuilesCompteur(bouts, classe, phraseDecoupe(d));
+}
+
 function majPanneauCompteur(){
   const el = document.getElementById("compteurContenu");
   if(!el) return;
@@ -7895,6 +7993,7 @@ function majPanneauCompteur(){
   const avant = GTA6_RELEASE > maintenant;
   const [debut, fin] = avant ? [maintenant, GTA6_RELEASE] : [GTA6_RELEASE, maintenant];
   const ecart = fin - debut;
+  const precis = !avant || ecart < SEUIL_COMPTEUR_PRECIS;
 
   const titre = document.getElementById("titreCompteur");
   if(titre) titre.textContent = avant ? "Avant la sortie" : "Depuis la sortie";
@@ -7903,25 +8002,37 @@ function majPanneauCompteur(){
   // part : une proportion sans sa référence ne veut rien dire.
   const total = GTA6_RELEASE - ANNONCE_GTA6;
   const fait = Math.max(0, Math.min(1, (maintenant - ANNONCE_GTA6) / total));
+  const pourcent = (fait * 100).toFixed(1).replace(".", ",") + " %";
   const jourSortie = GTA6_RELEASE.toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
     timeZone: "Europe/Paris" });
 
+  const decoupe = tuilesDecoupe(decoupeCalendaire(debut, fin),
+                                precis ? "precis" : "second");
+  const dodos = avant ? dodosAvant(maintenant, GTA6_RELEASE) : 0;
+
   el.innerHTML =
-      `<p class="compteur-gros">${escapeHtml(phraseDecoupe(decoupeCalendaire(debut, fin)))}</p>`
-    + (avant ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>` : "")
-    + `<div class="compteur-equiv">`
-    +   `<div><strong>${nombreFr(ecart / 86400000)}</strong> jours</div>`
-    +   `<div><strong>${nombreFr(ecart / 3600000)}</strong> heures</div>`
-    +   `<div><strong>${nombreFr(ecart / 60000)}</strong> minutes</div>`
-    +   `<div><strong>${nombreFr(ecart / 1000)}</strong> secondes</div>`
-    + `</div>`
-    + `<div class="compteur-barre"><span style="width:${(fait * 100).toFixed(1)}%"></span></div>`
-    + `<p class="compteur-note">${(fait * 100).toFixed(1).replace(".", ",")} % du chemin depuis `
-    +   `l'annonce du jeu, le 4 février 2022.</p>`
-    + `<p class="compteur-note">Sortie le ${escapeHtml(jourSortie)} à 00:00, `
-    +   `heure de Paris — minuit heure locale, par vagues : la `
-    +   `Nouvelle-Zélande d'abord.</p>`;
+      (avant && !precis
+        ? `<div class="compteur-vedette">`
+          + `<span class="emoji" aria-hidden="true">😴</span>`
+          + `<b>${escapeHtml(nombreFr(dodos))}</b>`
+          + `<span>${dodos > 1 ? "dodos" : "dodo"}</span></div>`
+        : "")
+    + decoupe
+    + (avant && precis
+        ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodos))}</p>`
+        : "")
+    + `<div class="compteur-barre">`
+    +   `<span style="width:${(fait * 100).toFixed(1)}%"></span>`
+    +   `<i>${escapeHtml(pourcent)}</i></div>`
+    + tuilesCompteur([
+        [nombreFr(ecart / 86400000), "jours"],
+        [nombreFr(ecart / 3600000), "heures"],
+        [nombreFr(ecart / 60000), "minutes"],
+      ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours")
+    + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le `
+    +   `4 février 2022. Sortie le ${escapeHtml(jourSortie)} à 00:00, `
+    +   `heure de Paris.</p>`;
 }
 
 // UN INTERVALLE PROPRE AU PANNEAU, arrêté à la fermeture. Le compteur de

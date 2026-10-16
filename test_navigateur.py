@@ -3152,18 +3152,58 @@ def test_panneau_du_compteur(nav, url):
         return {ouvert: document.getElementById('compteurOverlay').classList.contains('open'),
                 bat: battementCompteur !== null,
                 titre: document.getElementById('titreCompteur').textContent,
-                jours: /\d+\s*jours/.test(t), secondes: /secondes/.test(t),
                 dodos: /dodo/.test(t),
+                // SUR LA STRUCTURE, pas sur les mots présents à cet
+                // instant : ce contrôle tourne à l'heure réelle, et
+                // chercher « secondes » dans le texte échouait une fois
+                // sur soixante — quand la seconde du découpage vaut zéro
+                // et que sa tuile est masquée. C'est la CI qui l'a pris.
+                decoupe: (() => {
+                  const g = document.querySelector('#compteurContenu .compteur-tuiles');
+                  if(!g) return null;
+                  return {classe: g.className,
+                          unites: [...g.querySelectorAll('span')].map(e => e.textContent)};
+                })(),
                 barre: !!document.querySelector('#compteurContenu .compteur-barre span'),
+                pourcent: (document.querySelector('.compteur-barre i') || {}).textContent,
+                tuiles: document.querySelectorAll('#compteurContenu .compteur-tuiles').length,
+                equiv: (document.querySelector('.compteur-tuiles.equiv') || {}).textContent,
+                phrase: (document.querySelector('.compteur-tuiles') || {})
+                          .getAttribute?.('aria-label'),
                 date: /19 novembre 2026/.test(t), annonce: /4 f/.test(t)};
     }""")
     check(ouvert["ouvert"], "[compteur] le panneau s'ouvre")
     check(ouvert["titre"] == "Avant la sortie",
           "[compteur] il s'intitule « Avant la sortie » (« %s »)" % ouvert["titre"])
-    check(ouvert["jours"] and ouvert["secondes"],
-          "[compteur] il porte les équivalences, des jours aux secondes")
+    CONNUES = {"mois", "semaine", "semaines", "jour", "jours", "heure",
+               "heures", "minute", "minutes", "seconde", "secondes"}
+    unites = (ouvert["decoupe"] or {}).get("unites") or []
+    check(1 <= len(unites) <= 6 and set(unites) <= CONNUES,
+          "[compteur] il porte le découpage, une tuile par unité non nulle "
+          "(%s)" % unites)
+    # Sur la grille elle-même, et non sur le texte du panneau : à 34 jours
+    # de la sortie le découpage porte déjà les mêmes mots, et un contrôle
+    # qui cherche « heures » n'importe où passerait sans rien prouver.
+    check(all(u in (ouvert["equiv"] or "") for u in ("jours", "heures", "minutes")),
+          "[compteur] et les équivalences, du jour à la minute (« %s »)"
+          % ouvert["equiv"])
     check(ouvert["dodos"], "[compteur] il porte le compte de dodos")
     check(ouvert["barre"], "[compteur] et la barre de progression")
+    # LE DÉCOUPAGE EST EN TUILES, PAS EN PHRASE. C'est le point de départ
+    # de cette refonte : la phrase se cassait entre le nombre et son unité
+    # (« 5 / minutes ») sur un téléphone étroit.
+    check(ouvert["tuiles"] == 2,
+          "[compteur] deux grilles de tuiles : le découpage et les "
+          "équivalences (%s)" % ouvert["tuiles"])
+    # phraseDecoupe n'est pas morte : elle est devenue l'étiquette du
+    # groupe, pour qu'un lecteur d'écran entende une phrase et non une
+    # pile de chiffres nus.
+    check(" · " in (ouvert["phrase"] or ""),
+          "[compteur] et le groupe garde la phrase en étiquette, pour les "
+          "lecteurs d'écran (« %s »)" % ouvert["phrase"])
+    check("%" in (ouvert["pourcent"] or ""),
+          "[compteur] le pourcentage est DANS la barre, plus en légende "
+          "dessous (« %s »)" % ouvert["pourcent"])
     check(ouvert["annonce"],
           "[compteur] qui dit d'où elle part — une proportion sans sa "
           "référence ne veut rien dire")
@@ -3230,6 +3270,161 @@ def test_panneau_du_compteur(nav, url):
               % (largeur, g["bas"], g["plusProche"]))
         ctx.close()
 
+    # LES DEUX DISPOSITIONS, ET L'INSTANT EXACT OÙ ELLES BASCULENT.
+    #
+    # Au-delà de 24 h les dodos sont la vedette : c'est le chiffre qu'on
+    # vient chercher. En dessous, la seconde devient l'information et les
+    # tuiles précises montent en tête.
+    #
+    # 24 h, c'est le palier « final » de l'en-tête — celui où elle se met
+    # elle-même à afficher les secondes. Les deux bascules tombent au même
+    # instant, et il n'y a pas un cinquième seuil à retenir.
+    #
+    # Paris est à UTC+1 à cette date : la sortie tombe le 18 à 23:00 UTC.
+    #
+    # Le troisième instant n'est pas là pour la bascule mais pour la
+    # GÉOMÉTRIE : aux deux autres il ne reste qu'un jour, donc deux ou
+    # trois tuiles, et une grille de trois colonnes ne risque rien. Le
+    # 10 septembre, les six unités sont non nulles d'un coup — 2 mois,
+    # 1 semaine, 1 jour, 8 heures, 25 minutes, 39 secondes — et c'est ce
+    # cas-là qui remplit la grille et peut la faire déborder.
+    #
+    # CINQ MINUTES DE MARGE de part et d'autre, pas une : l'horloge
+    # installée avance pendant que la page charge, et un runner lent
+    # ferait dériver un instant posé à une minute du seuil. La paire
+    # situe quand même la bascule à dix minutes près.
+    for utc, vedette, libelle in (
+            ("2026-11-17T22:55:00Z", True,  "T-24 h 05"),
+            ("2026-11-17T23:05:00Z", False, "T-23 h 55"),
+            ("2026-09-10T13:34:21Z", True,  "six unités"),
+    ):
+        ctx = nav.new_context(viewport={"width": 320, "height": 850},
+                              timezone_id="Europe/Paris")
+        ctx.clock.install(time=utc)
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        vue = page.evaluate("""() => {
+            ouvreCompteur();
+            const c = document.getElementById('compteurContenu');
+            const v = c.querySelector('.compteur-vedette');
+            const d = c.querySelector('.compteur-tuiles');
+            // Le DÉBORDEMENT HORIZONTAL d'abord, puis le retour à la
+            // ligne au milieu d'un libellé : une unité qui passe sur
+            // deux lignes est exactement le défaut qu'on corrige.
+            let coupe = null, large = 0;
+            // Seuils par rôle : le libellé est à 11 px (une ligne ~14 px,
+            // deux ~28), le nombre monte à 28 px en disposition précise
+            // (une ligne ~31, deux ~62).
+            for(const e of c.querySelectorAll('.compteur-tuiles span, .compteur-tuiles b')){
+              const h = e.getBoundingClientRect().height;
+              const max = e.tagName === 'B' ? 45 : 22;
+              if(h > max) coupe = e.textContent + ' (' + Math.round(h) + ' px)';
+              if(e.scrollWidth > e.clientWidth + 1) large = large + 1;
+            }
+            const barre = c.querySelector('.compteur-barre').getBoundingClientRect();
+            // SUR LE TEXTE LUI-MÊME, par un Range, et pas sur la boîte du
+            // <i> : il est en inset:0, donc sa boîte ÉPOUSE la barre par
+            // construction et la comparer à la barre ne prouve rien.
+            // Mesuré : avec une barre ramenée à 6 px, la boîte restait
+            // sagement dedans pendant que les chiffres en sortaient.
+            const noeud = c.querySelector('.compteur-barre i');
+            const trait = document.createRange();
+            trait.selectNodeContents(noeud);
+            const chiffre = trait.getBoundingClientRect();
+            // GÉOMÉTRIQUE, et pas scrollWidth : des colonnes 1fr se
+            // serrent jusqu'à leur contenu minimum, si bien qu'une
+            // grille trop étroite sort du conteneur SANS que son
+            // scrollWidth bouge d'un pixel. Mesuré : c'est exactement ce
+            // qui m'a fait croire que ce contrôle tenait.
+            const boite = c.getBoundingClientRect();
+            let sort = null;
+            for(const g of c.querySelectorAll('.compteur-tuiles')){
+              const q = g.getBoundingClientRect();
+              if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5) sort = g.className;
+            }
+            const r = {
+              vedette: !!v,
+              tuiles: d ? d.children.length : 0,
+              dodosVedette: v ? v.querySelector('b').textContent : null,
+              premier: d ? d.className : null,
+              texte: c.textContent,
+              coupe: coupe, large: large, sort: sort,
+              deborde: c.scrollWidth > c.clientWidth + 1,
+              chiffreDedans: chiffre.right <= barre.right + 0.5
+                             && chiffre.left >= barre.left - 0.5
+                             && chiffre.top >= barre.top - 0.5
+                             && chiffre.bottom <= barre.bottom + 0.5,
+            };
+            fermeCompteur();
+            return r;
+        }""")
+        check(vue["vedette"] == vedette,
+              "[compteur %s] disposition attendue : %s (vedette=%s)"
+              % (libelle, "dodos en vedette" if vedette else "tuiles précises",
+                 vue["vedette"]))
+        check(("second" if vedette else "precis") in (vue["premier"] or ""),
+              "[compteur %s] et le découpage prend la taille qui va avec "
+              "(« %s »)" % (libelle, vue["premier"]))
+        check(vue["coupe"] is None,
+              "[compteur %s] aucun libellé de tuile ne passe à la ligne — "
+              "c'est tout l'intérêt des tuiles (« %s »)"
+              % (libelle, vue["coupe"]))
+        check(vue["large"] == 0 and not vue["deborde"] and vue["sort"] is None,
+              "[compteur %s] et rien ne déborde à 320 px (%s tuiles trop "
+              "larges, panneau %s, grille sortie : %s)"
+              % (libelle, vue["large"], "débordé" if vue["deborde"] else "net",
+                 vue["sort"]))
+        check(vue["chiffreDedans"],
+              "[compteur %s] le pourcentage reste dans la barre" % libelle)
+        ctx.close()
+        # LA VEDETTE N'AFFICHE JAMAIS « 0 DODO ». Ce n'est pas une
+        # coïncidence : passer sous 24 h, c'est exactement avoir franchi
+        # le dernier minuit avant la sortie. Les deux instants ci-dessus
+        # encadrent ce basculement à une minute près.
+        if libelle == "six unités":
+            check(vue["tuiles"] == 6,
+                  "[compteur %s] le pire cas de la grille est bien joué : "
+                  "six tuiles, du mois à la seconde (%s)"
+                  % (libelle, vue["tuiles"]))
+        elif vedette:
+            check(vue["dodosVedette"] == "1",
+                  "[compteur %s] la dernière nuit où la vedette existe, "
+                  "elle montre 1 dodo — jamais 0 (« %s »)"
+                  % (libelle, vue["dodosVedette"]))
+        else:
+            check("Plus de dodo" in vue["texte"],
+                  "[compteur %s] et de l'autre côté le dodo redescend en "
+                  "ligne simple" % libelle)
+
+    # LE POURCENTAGE À L'AUTRE EXTRÊME. Aligné sur la fin du remplissage
+    # il sortirait de l'écran quand la barre est presque vide ; il est
+    # donc posé par-dessus, calé à droite. Deux jours après l'annonce :
+    # 0,1 % de barre, et le chiffre doit rester lisible.
+    ctx = nav.new_context(viewport={"width": 320, "height": 850},
+                          timezone_id="Europe/Paris")
+    ctx.clock.install(time="2022-02-06T12:00:00Z")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    vide = page.evaluate("""() => {
+        ouvreCompteur();
+        const b = document.querySelector('.compteur-barre');
+        const i = b.querySelector('i');
+        const r = {part: parseFloat(b.querySelector('span').style.width),
+                   texte: i.textContent,
+                   dedans: i.getBoundingClientRect().right <= b.getBoundingClientRect().right + 0.5};
+        fermeCompteur();
+        return r;
+    }""")
+    check(vide["part"] < 1,
+          "[compteur] deux jours après l'annonce la barre est quasi vide "
+          "(%s %%)" % vide["part"])
+    check(vide["dedans"] and "%" in vide["texte"],
+          "[compteur] et son pourcentage tient quand même dedans "
+          "(« %s »)" % vide["texte"])
+    ctx.close()
+
     # APRÈS LA SORTIE, le panneau compte dans l'autre sens.
     ctx = nav.new_context(viewport={"width": 390, "height": 850},
                           timezone_id="Europe/Paris")
@@ -3242,7 +3437,9 @@ def test_panneau_du_compteur(nav, url):
         const t = document.getElementById('compteurContenu').textContent;
         const r = {dodos: /dodo/.test(t),
                    titre: document.getElementById('titreCompteur').textContent,
-                   jours: (t.match(/([\d\s ]+) jours/) || [])[1],
+                   // Dans une tuile, textContent colle le nombre à son
+                   // unité : « 3jours », sans espace.
+                   jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1],
                    plein: (document.querySelector('.compteur-barre span') || {}).style.width};
         fermeCompteur();
         return r;

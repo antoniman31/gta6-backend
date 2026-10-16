@@ -1080,6 +1080,28 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Le même panneau, refait en deux dispositions — 16/10/2026
+
+« Tu peux pas faire plus joli ? » Le défaut n'était pas qu'esthétique : le
+découpage était rendu en **phrase**, et une phrase se casse entre le
+nombre et son unité — « 5 / minutes » sur l'écran d'Antoni. Tout est passé
+en **tuiles**, sur le motif `.stats-chiffre` déjà en place dans les
+Statistiques, que la première version avait ignoré.
+
+Et le panneau a maintenant deux visages : **dodos en vedette** au-delà de
+24 h, **tuiles précises** en dessous. Le seuil est le palier `final` de
+l'en-tête, celui où elle affiche elle-même les secondes — pas un
+cinquième seuil inventé. Il en découle que la vedette n'affiche jamais
+« 0 dodo », ce que deux contrôles encadrent à une minute près.
+
+Trois contrôles écrits pour l'occasion **ne prouvaient rien**, et c'est la
+mesure qui l'a dit : `scrollWidth` ne bouge pas quand une grille `1fr`
+sort du conteneur ; un `<i>` en `inset:0` épouse la barre par
+construction ; et les deux instants testés, à un jour de la sortie,
+n'affichaient que deux tuiles — le pire cas de la grille n'était jamais
+joué. Corrigés par une mesure géométrique, un `Range` sur le texte, et un
+troisième instant à six unités.
+
 ### Les deux options : une livrée, une abandonnée — 16/10/2026
 
 Antoni a décidé d'avancer ces deux chantiers plutôt que d'attendre le
