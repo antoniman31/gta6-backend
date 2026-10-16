@@ -1049,9 +1049,53 @@ nuit ; **Dependabot laissé libre** de reproposer selectolax, puisque le
 contrôle du décodeur fait virer une telle PR au rouge et que le jour où
 elle deviendra verte sera le signal que le verrou peut sauter.
 
+### Quatre dernières décisions, et le calendrier qui les porte
+
+Antoni a tranché quatre questions le 16/10 au soir :
+
+| question | sa réponse |
+|---|---|
+| Une notification push à minuit pile le 19 ? | **Non.** Le compteur suffit — il saura que GTA 6 est sorti sans qu'une app le lui dise. Rien de codé. |
+| Surveiller la nuit du 18 au 19 ? | **Oui**, des réveils automatiques, avec consigne de **silence si tout va bien**. |
+| Revoir la couverture des sources avant la sortie ? | **Oui**, une revue en novembre — mesure et proposition, aucun changement sans son accord. |
+| Sécuriser son état de lecture ? | **Rappel à la mi-novembre** : il exporte depuis les paramètres, dix secondes. |
+
+### LE CALENDRIER EST PLANIFIÉ, PAS PROMIS
+
+Les trois dernières réponses ci-dessus sont des rendez-vous en novembre.
+Une promesse dans un fil de conversation ne vaut rien : la session qui
+l'a faite n'existera plus. Sept **tâches planifiées** les portent donc, et
+chacune se déclenche dans une session neuve avec sa consigne complète.
+
+| quand (Paris) | ce qui se passe |
+|---|---|
+| **3 nov, 10 h** | Revue de couverture des 63 sources |
+| **10 nov, 10 h** | Troisième répétition générale |
+| **15 nov, 11 h** | Rappel : exporter la sauvegarde, vérifier la portée du jeton |
+| **18 nov, 22 h 30** | Veille : robot, workflows, décodage, pause nocturne bien levée |
+| **19 nov, 00 h 30** | Le passage de minuit — le plus chargé de la vie du projet |
+| **19 nov, 02 h 00** | Volume, durée des passages, sources tombées |
+| **19 nov, 09 h 00** | Bilan de la nuit, au réveil |
+
+Les trois de la nuit se taisent si tout va bien — une ligne, pas un
+rapport. Seul le bilan de 9 h s'écrit dans tous les cas, et il vérifiera
+au passage le compteur « GTA 6 EST SORTI ! », livré le 16/10 et jamais
+éprouvé en vrai. **Toutes ont pour instruction de ne RIEN déployer sans
+l'accord d'Antoni** : le code est gelé et la nuit de la sortie est la pire
+pour improviser.
+
+**Une limite à connaître** : ces sessions tourneront sans les connecteurs
+MCP, donc sans les outils `mcp__github__*`. Ce n'est pas bloquant —
+`gh api` suffit à tout ce qui leur est demandé — mais pour leur donner
+l'interface GitHub complète il faudrait les recréer depuis la page des
+tâches planifiées sur claude.ai.
+
+Si une tâche est supprimée par accident, ce tableau est la trace qui
+permet de la refaire.
+
 **Ce qui reste, et qui n'est pas du code** : vérifier la portée du jeton
-d'accès personnel, et une troisième répétition générale vers le 10
-novembre.
+d'accès personnel — c'est le seul point qui dépende du compte d'Antoni, et
+le rappel du 15 novembre le redira.
 
 ---
 

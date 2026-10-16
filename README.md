@@ -4920,6 +4920,31 @@ figé : cinq passent au rouge.
 
 Le compteur n'avait, jusqu'ici, **aucun contrôle du tout**.
 
+### Rien ne prévient à minuit, et c'est un choix — 16/10/2026
+
+Le compteur qui bascule sur « GTA 6 EST SORTI ! » est **purement visuel** :
+il faut que la page soit ouverte. Aucune notification ne part à
+00:00:00 — le push ne se déclenche que sur un article entrant.
+
+C'est documenté ici parce que ça ressemble à un oubli et n'en est pas un.
+Le robot aurait pu envoyer une notification dédiée au passage de minuit :
+les passages réels tombent à **:00 et ~50 secondes de chaque heure UTC**
+(23:00:49Z, 22:00:52Z, 21:00:51Z…), donc minuit à Paris le 19 novembre
+— 23:00 UTC le 18 — serait couvert à une cinquantaine de secondes près.
+Proposé à Antoni le 16/10, **refusé** : à minuit le 19 novembre il saura
+que GTA 6 est sorti sans qu'une app le lui dise. Le premier article
+déclenchera de toute façon la notification habituelle.
+
+Deux horloges, donc, et il vaut mieux savoir laquelle fait quoi :
+l'affichage bascule à la seconde près sur l'appareil, sans rien attendre
+d'un serveur ; le fil, lui, dépend du passage du robot.
+
+**La nuit du 18 au 19 est surveillée** par des tâches planifiées — 22 h 30,
+00 h 30, 02 h 00, puis un bilan à 9 h — qui vérifient que le robot publie,
+que les workflows passent, que le décodage tourne et que la pause nocturne
+est bien levée. Elles se taisent si tout va bien et n'ont le droit de rien
+déployer. Le détail est dans `RESTE-A-FAIRE.md`.
+
 ### Les sources : la mesure a surtout confirmé l'existant
 
 Le décompte d'abord, parce qu'il est plus dur qu'attendu :
