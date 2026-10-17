@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-17T02:01:30.794850+00:00",
+  "generated_at": "2026-10-17T03:01:37.898110+00:00",
   "attente_recap": {
-    "articles": 11,
+    "articles": 0,
     "officiels": 0,
-    "sommet": 1
+    "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
   "duration_seconds": 29.1,
   "decode_failures": 0,
-  "total_articles": 3951,
-  "new_this_run": 1,
+  "total_articles": 3957,
+  "new_this_run": 6,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -449,10 +449,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1125,
-      "last_article": "2026-10-16T21:55:17+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 1128,
+      "last_article": "2026-10-17T02:54:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 1494,
-      "last_article": "2026-10-17T01:11:52+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 1497,
+      "last_article": "2026-10-17T02:45:55+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -865,10 +865,10 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-16T21:00:00+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 9,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
@@ -1229,11 +1229,11 @@
   "decodage_etat": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,40,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,40,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,0,15,0,0",
+    "rockstar-youtube": "15,15,15,15,15,15,15,0,15,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1263,13 +1263,13 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "50,23,23,23,23,23,23,23,23,23,23,23",
+    "gta6times": "23,23,23,23,23,23,23,23,23,23,23,23",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "trueach": "81,100,100,100,100,100,100,100,100,100,100,100",
+    "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1296,8 +1296,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1792068672\"",
-      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
+      "etag": "\"1791560951\"",
+      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 01:59:00 GMT"
+      "modified": "Sat, 17 Oct 2026 03:00:52 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad2d6b3-3057\"",
-      "modified": "Sat, 17 Oct 2026 02:00:19 GMT"
+      "etag": "W/\"6ad2e4c0-3057\"",
+      "modified": "Sat, 17 Oct 2026 03:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 02:01:07 GMT"
+      "modified": "Sat, 17 Oct 2026 03:01:07 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -2199,6 +2199,84 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Le marketing de GTA 6 prend une tournure originale : Rockstar transforme de vraies voitures en véhicules du jeu et les fait circuler dans Miami - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/Le-marketing-de-GTA-6-prend-une-tournure-originale-Rockstar-transforme-de-vraies-voitures-en-vehicules-du-jeu-et-les-fait-circuler-dans-Miami.1426342.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMilAJBVV95cUxPUG9mZ0NVeFRCM1hRbWY1dGxwb3hjN3RQaVdCWG5CZktrcUJIVmVHX2hSTDFWSXRYTk9wRFZKWDdQajNNYXhkUjVoSjNlYThoeVh4aXZpMXRpMjByY2tBM0g3ZEd4MzhWOTE0c1AtVDJ5MUt4VFVSNVMtS1NZU1RWeGw3SEx2dkNsaDIyRmphX1N6V2gyTmpuZl9QVlVLZmlDQnpCOThsYmVKcloySklCUDhjd0w5WWY2UzVFckRqZjNBYnFMQ2N4MkptRWQwSzV1eDNiem05UE5Bc1pyYmppT3lTNHR0ZFRvVFBCWlNaaVFUQTZ1VEFTR0FqRjNJUzlNcmxzVEZuSEtEZHZmYV9Sb2Y2eWs?oc=5",
+      "date": "2026-10-17T02:54:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA-6-Launch-Trailer-Screenshot-Source-Rockstar.jpg.jpeg",
+      "description": "Le marketing de GTA 6 prend une tournure originale : Rockstar transforme de vraies voitures en véhicules du jeu et les fait circuler dans Miami&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "L’analyse de la bande-annonce de lancement de GTA 6 salue le gain de performances et réfute une baisse de résolution sur PS5 - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/L-analyse-de-la-bande-annonce-de-lancement-de-GTA-6-salue-le-gain-de-performances-et-refute-une-baisse-de-resolution-sur-PS5.1426329.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOaFY1aXJydVMxNTlORU9WVy01MVBYbXJDUHFpUzBEWVZ0TWtmWW93em5KMjZqYUFqcUJDMkRYRTFHVUZ4cWtEaW91dWFtdlQ4MGdUaENzTU1yekRzVTNZcnlsTXZHMktacEpTandOejZnSHBqTUFvNldUZGJwVlMtWGtiUUMxUTIyZjVxekhiU0NqVk9Kb2FuT0lTMm9GZ2drVExaM3JmZHJua2Y5eU55TDlKRlAtTE5sQnJtaEF5b1ZtVEM0N3dSYUZ1eEY0UXV5WHRuVlA5NHlFaUdLUWJkV3JRS19pUWRfX2M4ODY4MndlUm1feUZBYkdXNXdPQQ?oc=5",
+      "date": "2026-10-17T02:54:06+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/GTA6LuciaJasonLaunchTrailer.jpg",
+      "description": "L’analyse de la bande-annonce de lancement de GTA 6 salue le gain de performances et réfute une baisse de résolution sur PS5&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "GTA 6 on the base PS5 uses 1440p with 4K upscaling without PSSR and QSSR - GameGPU",
+      "link": "https://en.gamegpu.com/news/igry/gta-6-na-bazovoj-ps5-ispolzuet-1440p-s-masshtabirovaniem-do-4k-bez-pssr-i-xssr",
+      "source_link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOY3IzWjhaeGcxU3FkelRsTTd0NDR1UFQzMms3VE81T3IwZkwzXzB4bnZuS2JSTWxGYUpJNDItWFFFVUEtaXRILTJ2bTdkdTZ2N2ZVYzhyXy1TMUs0SGVCdVVxSUtUVGRiekZRZ1V1UU9JMXdfcmp0VGlMOGxpS19WMHRXcjlRSFF2LTBDbHVWcTNZVUVzX0lGdGw1a1RXOFV0bWVaYTE4UktEdGtfcWhURw?oc=5",
+      "date": "2026-10-17T02:45:55+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://gamegpu.com/images/1_2026/NEWS/Q4/okt/15/gta_66_gpu.webp",
+      "description": "GTA 6 on the base PS5 uses 1440p with 4K upscaling without PSSR and QSSR&nbsp;&nbsp;GameGPU"
+    },
+    {
+      "title": "GTA 6 Weapons Guide: Best Upgrades, Budget Builds & Weapon Loadout Tips - MMOEXP",
+      "link": "https://www.mmoexp.com/News/gta-6-weapons-guide-best-upgrades-budget-builds-weapon-loadout-tips.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNYTQ2dGRoNGlwUUJBUkpMbHZ4X1g5Mkk2Uk9xVjlWZW03TWM5ZVZIaEFpX1B1YUdVOEF2YzFsOVYybEwzdjdTV0FoXzRoN01DZnZLQ1ZmVW5FNXd3TnpmUGl1bTVTcFBzaTR4Q0N3MU44bHFzTkozeXVwUldDUGg4TWRJZ1pnSXMyWDdpVkI1OWFYRXRVc1g5TFJKdThXajlhU0E?oc=5",
+      "date": "2026-10-17T02:27:39+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.mmoexp.com/mmoexp-v250528/images/mmoexp_logo.png",
+      "description": "GTA 6 Weapons Guide: Best Upgrades, Budget Builds & Weapon Loadout Tips&nbsp;&nbsp;MMOEXP"
+    },
+    {
+      "title": "GTA VI n’est pas encore gold : Rockstar explique les derniers efforts avant le lancement - Notebookcheck.fr",
+      "link": "https://www.notebookcheck.biz/GTA-VI-n-est-pas-encore-gold-Rockstar-explique-les-derniers-efforts-avant-le-lancement.1426511.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxQSXNQVVNLTkF1cmlDZVFuZXB3TVVBR2VuNElxQTlyR2hWbVlYVU9nSHMwUXkyY0w0Q0pVOEU3cEJFOFRJNkJzQVFVYUhBZDBZZy02U2VnMGdhbmljbEtMSGFBOTl4dzQ4WmhOQ2FNVG9LdGtZVjVyVGVMdmpZeUtaSEhMYUNUeVhkNm41UnQ2eXh6RkJBN1p3eHBlV0lZV2NNellQenlHNjd5OGljRFhRb3FkUHMtM2NqMjAtcGVIT2VOUjFuTEI3M0FsYw?oc=5",
+      "date": "2026-10-17T02:13:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.notebookcheck.biz/fileadmin/Notebooks/News/_nc5/Grand-Theft-Auto-VI-Vice-City-Sign-Image-Source-Rockstar-Games.png",
+      "description": "GTA VI n’est pas encore gold : Rockstar explique les derniers efforts avant le lancement&nbsp;&nbsp;Notebookcheck.fr"
+    },
+    {
+      "title": "GTA VI not yet gold: Rockstar explains the final push before launch - Notebookcheck",
+      "link": "https://www.notebookcheck.net/GTA-VI-not-yet-gold-Rockstar-explains-the-final-push-before-launch.1426418.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNcXdMWjgxZllNbGFiM3l4bVhtNi1aRDRnb2ZDN1dJVTluRmNBVDNrejJtMENBdzdpNFE1NTltNTh0bC1udHFsN2ozRTN3ZWNCT2hvaEFkanFRNDl0QU95cW5TZjZrUFpteFRZMTBRMlhCbFUtQW5MUnRTWEN5U1draXQyaDNVV1FjaVlZeVdzSDdQWU93bzBxQjJtMDlNXzNHVEF4TDNxcWxaV0U2X05tbg?oc=5",
+      "date": "2026-10-17T01:55:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/Grand-Theft-Auto-VI-Vice-City-Sign-Image-Source-Rockstar-Games.png",
+      "description": "GTA VI not yet gold: Rockstar explains the final push before launch&nbsp;&nbsp;Notebookcheck"
+    },
     {
       "title": "Justice Confirmed as Composers of ‘Grand Theft Auto VI’s Original Score - V13 Media",
       "link": "https://v13.net/2026/10/justice-confirmed-as-composers-of-grand-theft-auto-vis-original-score/",
@@ -6151,90 +6229,6 @@
       "lang": "en",
       "image": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/10/SP_Screenshots__09.png?quality=90&strip=all&crop=0%2C3.4613147178592%2C100%2C93.077370564282&w=1200",
       "description": "Some great games to play before GTA VI and Zelda launch&nbsp;&nbsp;The Verge"
-    },
-    {
-      "title": "You have to watch the latest 'Grand Theft Auto 6' trailer - Culted",
-      "link": "https://culted.com/entertainment/you-have-to-watch-the-latest-grand-theft-auto-6-trailer/",
-      "source_link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNaHRKc0I4YUx6UW85dTlWN2I5SURTYmVTQU9qZTBfOGNVZV9qNEpEekM4djlhWWtMcEQwVk9SQ0x3aFlTcGFTMDRlRXB4Z21HRFFaaUtiQnFxc1A0SGRlVWJyVnlCbEktdk4zWlkteHJ5dnBmelhMQlhLbzMzNkhXWnpLVHkyWGl3UEQ4bkczbVdoV28?oc=5",
-      "date": "2026-10-15T13:59:20+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://culted.com/cdn-cgi/image/width=1200,height=630,fit=cover,format=auto/https://cms.culted.com/api/media/file/gta-crop.jpg",
-      "description": "You have to watch the latest 'Grand Theft Auto 6' trailer&nbsp;&nbsp;Culted"
-    },
-    {
-      "title": "New GTA 6 Screenshot And Launch Trailer Artwork Released",
-      "link": "https://rockstarintel.com/new-gta-6-screenshot-and-launch-trailer-artwork-released/",
-      "source_link": null,
-      "date": "2026-10-15T13:56:45+00:00",
-      "source": "RockstarINTEL",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": true,
-      "lang": "en",
-      "image": "https://rockstarintel.com/wp-content/uploads/2026/10/Jason_Lucia_Lock_And_Load_landscape-1280.webp",
-      "description": "A brand new GTA 6 screenshot and couple of pieces of artwork for the the game has been officially released. Alongside the blockbuster GTA VI Launch Trailer, Rockstar published a few new images. Firstly, the artwork is the thumbnail for the new trailer and can be found within one of the various vinyls for the [...]\nThe post New GTA 6 Screenshot And Launch Trailer Artwork Released appeared first on RockstarINTEL."
-    },
-    {
-      "title": "GTA 6 looks incredible in new launch trailer - TrueAchievements",
-      "link": "https://www.trueachievements.com/news/gta-6-launch-trailer",
-      "source_link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBCR1F3QVV0TndFTTZiVEx5NFk1cDAxZzlHaFQ2S2NOUTJmN0ZwM2tWWHZOUE13S25pTHpOWHpNQVVUVFJ0ZDhESk5kaWlDRkVDVWNsbFZ4ZHdjWV9JWUpZcno0Z1E4NTREVXc?oc=5",
-      "date": "2026-10-15T13:55:22+00:00",
-      "source": "TrueAchievements",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": null,
-      "description": "GTA 6 looks incredible in new launch trailer&nbsp;&nbsp;TrueAchievements"
-    },
-    {
-      "title": "GTA 6 : Rockstar lâche son ultime bande-annonce, et l'attente devient insoutenable ! - Clubic",
-      "link": "https://www.clubic.com/actualite-634390-gta-6-rockstar-lache-son-ultime-bande-annonce-et-l-attente-devient-insoutenable.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNTVU3bjVrTV9oeVp5WEREMjhzaTQ4Zzd6OFVnMUN5QXVGczNZNExzVXU5MWNaMlEwM0dMRkNCMlg5anIyU2xRZWowS3N1QU94Z2w5T05aNmNscEtRN3ROcDNZdm5WUTVUTXdGOWlQWk9xZXNCRHlfR3QwdmVZLW9rZ1Rfc3Rxdi13NnJnZ2NzRDVVbEhacEs1R0g5MEJMN0dGdzRsTm1YU1p6S016NThOdGdGLW53a1AyM1VTN0FHTk9uZw?oc=5",
-      "date": "2026-10-15T13:55:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://pic.clubic.com/v1/images/2441158/raw",
-      "description": "GTA 6 : Rockstar lâche son ultime bande-annonce, et l'attente devient insoutenable !&nbsp;&nbsp;Clubic"
-    },
-    {
-      "title": "GTA 6 : Justice dévoile un nouveau morceau dans la bande-annonce de lancement - PXLBBQ",
-      "link": "https://pxlbbq.com/gta-6-justice-devoile-un-nouveau-morceau-dans-la-bande-annonce-de-lancement/",
-      "source_link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOcjZmS2oySlZrdHR3RkxGVkFlQjY5YnkwU01tQ1JTd2YwM0l5eUJZM3dlNHpfR0liYW9iZjZZRXN0bkxYQ2EzMkJwYWs5RzNaUVBraWdlYWJuZ202TlRFMkdqaG1lR01iS0FHalhhV3RFUzdwUXI3Z1BkaVFhZEF1dXVXYTRGMjdEMURHTTlnX29jMGZOcGdGSDRJSQ?oc=5",
-      "date": "2026-10-15T13:54:43+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://pxlbbq.com/wp-content/uploads/2026/10/GTAVI-Launch-Trailer.jpeg",
-      "description": "GTA 6 : Justice dévoile un nouveau morceau dans la bande-annonce de lancement&nbsp;&nbsp;PXLBBQ",
-      "extraSources": [
-        {
-          "source": "Google News (FR, 7 jours)",
-          "link": "https://level-1.fr/gta-6-justice-signe-un-nouveau-morceau-pour-la-bande-annonce-de-lancement/"
-        }
-      ]
-    },
-    {
-      "title": "C'est officiel, GTA 6 sera bien éligible pour les Game Awards 2026. Le verdict est déjà plié pour le GOTY ? - Gameblog",
-      "link": "https://www.gameblog.fr/jeu-video/ed/news/gta-6-finalement-eligible-game-awards-2026-724841",
-      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQSloyekpPR0lYYUJ1UHhfWHBlZDFzd191dGpPUWZCbE03RTg4U1RNeGZHU0N4eF9raGktWno0SnhzX0NLMDg3d0hJZWpBLU9USXUtbjlBSjB6c0hzMzZXcG9McllvRUtTZmI4Mi1jMXJaamR6M0R6bzBYNEdJdzdxOWJNZkFETUJQXzNpakFRUUhpc1p4NkE?oc=5",
-      "date": "2026-10-15T13:54:07+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://cdn-uploads.gameblog.fr/img/news/720529_6a747c4390679.png",
-      "description": "C'est officiel, GTA 6 sera bien éligible pour les Game Awards 2026. Le verdict est déjà plié pour le GOTY ?&nbsp;&nbsp;Gameblog"
     }
   ],
   "partial": true,
