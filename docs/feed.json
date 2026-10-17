@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T15:52:19.500118+00:00",
+  "generated_at": "2026-10-17T16:01:36.024442+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 24.9,
+  "duration_seconds": 22.7,
   "decode_failures": 0,
   "total_articles": 3994,
-  "new_this_run": 2,
+  "new_this_run": 0,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -493,7 +493,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 2,
+      "new_this_run": 0,
       "articles_exclusifs": 1510,
       "last_article": "2026-10-17T15:00:00+00:00",
       "days_since_last_article": 0,
@@ -684,10 +684,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-16T21:30:28+00:00",
@@ -710,10 +710,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-14T14:45:00+00:00",
@@ -879,10 +879,10 @@
     {
       "id": "pcgamesn",
       "name": "PCGamesN",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 75,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-10-14T11:57:27+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1100,10 +1100,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-15T09:32:03+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 2,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1191,10 +1191,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 30,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 10,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {},
@@ -1223,7 +1223,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1235,7 +1235,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "0,15,15,15,15,15,15,15,15,15,15,15",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1253,7 +1253,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "25,25,25,25,25,25,25,25,25,26,26,26",
+    "gta6times": "25,25,25,25,25,25,25,25,26,26,26,26",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1286,8 +1286,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1791560951\"",
-      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
+      "etag": "\"1792068672\"",
+      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1322,7 +1322,7 @@
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 07:00:00 GMT"
+      "modified": "Sat, 17 Oct 2026 15:58:54 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1332,7 +1332,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 15:46:11 GMT"
+      "modified": "Sat, 17 Oct 2026 15:57:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1341,8 +1341,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad39488-2fa9\"",
-      "modified": "Sat, 17 Oct 2026 15:30:16 GMT"
+      "etag": "W/\"6ad39b90-2fa9\"",
+      "modified": "Sat, 17 Oct 2026 16:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1356,8 +1356,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"6c85f2c60da95775d5bd0441c26854df\"",
-      "modified": "Sat, 17 Oct 2026 14:24:07 GMT"
+      "etag": "W/\"abf4cff1e9b5c33563cdf5500f3aefc5\"",
+      "modified": "Sat, 17 Oct 2026 15:52:00 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1372,7 +1372,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 15:51:28 GMT"
+      "modified": "Sat, 17 Oct 2026 16:01:18 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1386,13 +1386,13 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"50be00fe16a3a30fb8bc88d1651aca49\"",
-      "modified": "Sat, 17 Oct 2026 15:35:46 GMT"
+      "etag": "W/\"0ab38c787995833e5826d0e8c99f4bda\"",
+      "modified": "Sat, 17 Oct 2026 15:54:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"4df938648b3ea1079da1c5d1fcefaf8e\"",
-      "modified": "Sat, 17 Oct 2026 15:50:39 GMT"
+      "etag": "W/\"ddba4576a7b1ac412c647b754f281546\"",
+      "modified": "Sat, 17 Oct 2026 15:56:19 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
