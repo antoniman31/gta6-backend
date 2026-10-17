@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-17T22:01:24.205055+00:00",
+  "generated_at": "2026-10-17T23:01:23.017896+00:00",
   "attente_recap": {
-    "articles": 2,
+    "articles": 6,
     "officiels": 0,
     "sommet": 1
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 20.0,
+  "duration_seconds": 23.0,
   "decode_failures": 0,
-  "total_articles": 4010,
-  "new_this_run": 2,
+  "total_articles": 4014,
+  "new_this_run": 4,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -492,8 +492,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1514,
+      "new_this_run": 2,
+      "articles_exclusifs": 1515,
       "last_article": "2026-10-17T19:51:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -518,7 +518,7 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+when:7d&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
+      "new_this_run": 1,
       "articles_exclusifs": 62,
       "last_article": "2026-10-16T17:25:01+00:00",
       "days_since_last_article": 1,
@@ -683,10 +683,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-16T21:30:28+00:00",
@@ -709,10 +709,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-14T14:45:00+00:00",
@@ -739,9 +739,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 36,
-      "last_article": "2026-10-17T17:47:30+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 37,
+      "last_article": "2026-10-17T22:24:10+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -817,7 +817,7 @@
       "http_status": 301,
       "redirect": "https://gamerant.com/feed/",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 46,
       "last_article": "2026-10-17T21:31:17+00:00",
       "days_since_last_article": 0,
@@ -856,7 +856,7 @@
       "http_status": 301,
       "redirect": "https://gta6times.com/feed.xml",
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 28,
       "last_article": "2026-10-17T21:21:17+00:00",
       "days_since_last_article": 0,
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 3,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 10,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1252,7 +1252,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "25,26,26,26,26,26,26,26,26,26,26,27",
+    "gta6times": "26,26,26,26,26,26,26,26,26,26,27,27",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1331,7 +1331,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 22:01:08 GMT"
+      "modified": "Sat, 17 Oct 2026 23:01:03 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1340,8 +1340,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad3efef-2fa9\"",
-      "modified": "Sat, 17 Oct 2026 22:00:15 GMT"
+      "etag": "W/\"6ad3fe00-2fa9\"",
+      "modified": "Sat, 17 Oct 2026 23:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1371,7 +1371,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 22:01:10 GMT"
+      "modified": "Sat, 17 Oct 2026 23:01:04 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -2189,6 +2189,19 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "GTA 6 Is Now Rated Adults-Only in Every Major Market",
+      "link": "https://www.gtaboom.com/gta-6-is-now-rated-adults-only-in-every-major-market-48c5",
+      "source_link": null,
+      "date": "2026-10-17T22:24:10+00:00",
+      "source": "GTA BOOM",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.gtaboom.com/variants/1920/media/images/90/63/gta-6-is-now-rated-adults-only-in-every-major-market.jpg",
+      "description": "With ratings boards cleared worldwide, only retail age gating remains, strict 19+ checks in South Korea and 21+ in the Gulf before GTA 6 launches."
+    },
+    {
       "title": "GTA 6 May Have Already Beaten Red Dead Redemption 2 in One Painful Way",
       "link": "https://gamerant.com/gta-6-red-dead-redemption-2-american-dream/",
       "source_link": null,
@@ -2239,6 +2252,19 @@
       "lang": "fr",
       "image": null,
       "description": "Pour Activision, GTA 6 et Modern Warfare 4 seront les rois de l’année&nbsp;&nbsp;Gamekyo.com"
+    },
+    {
+      "title": "White House Says Elon Musk's Flying Tesla Roadster Arrived Before GTA 6 - Coinpaper",
+      "link": "https://coinpaper.com/37467/white-house-says-elon-musks-flying-tesla-roadster-arrived-before-gta-6",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOcU5mSjA5SzNIaWhVYVU2LWNCbmZtXzNqamctdGZVTU9BQVR3dGlvN004THJqcVdDX2FzckpRVnRIQkJxR2Z3VmhfNEp4MzgyaFlBb0N4N1VKcC01SGVXVW5rVzZCTmUwWm1WdHpndEpTd1hxVnNQMURqUW1RbDBtbEhjRGsyRm96NnlhWVhBekRBWUV0VXZCdWRtMmFhSjQ?oc=5",
+      "date": "2026-10-17T18:50:03+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://imagecodex.com/v1/coinpaper/media/aa2f07ce-0b3e-4907-bc70-e3b0f4cc5ea8.png",
+      "description": "White House Says Elon Musk's Flying Tesla Roadster Arrived Before GTA 6&nbsp;&nbsp;Coinpaper"
     },
     {
       "title": "[GTA6] À votre avis, quel sera le score Metacritic du jeu ? - Gamekyo.com",
@@ -2564,6 +2590,19 @@
       "lang": "en",
       "image": "https://files.vgtimes.com/posts/2026-10/shrek-2-remastered-surfaces-ahead-of-its-expected-october-20-reveal-171424.webp",
       "description": "Aspyr's Shrek 2 Remastered briefly appeared in an Xbox Store listing whose trailer openly parodies the visual style and music of the first Grand Theft Auto VI trailer. The page went live before being taken down, and Aspyr has not announced a release date"
+    },
+    {
+      "title": "GTA 6 Disney World Parody Gets Official Update From Rockstar Games - ScreenRant",
+      "link": "https://screenrant.com/gta-6-disney-world-parody/",
+      "source_link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBIUEJNMFlLdy1NamJXZ3ItbzR2U2h4cUd0bEpxOFlhUXJWMTVRbER3WGZWSkNBckNtdGJmaUtrbWthTXlGdmI1OGdCUEJ5azFNMmtPdGFPNUw4d3RWd2c?oc=5",
+      "date": "2026-10-17T10:00:18+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://static0.srcdn.com/wordpress/wp-content/uploads/2026/09/gta-6-lucia.jpg?w=1600&h=900&fit=crop",
+      "description": "GTA 6 Disney World Parody Gets Official Update From Rockstar Games&nbsp;&nbsp;ScreenRant"
     },
     {
       "title": "White House Mocks GTA 6 After Tesla Flying Car Reveal - BeInCrypto",
@@ -5235,7 +5274,13 @@
       "specialist": false,
       "lang": "en",
       "image": null,
-      "description": "The music of GTA VI - score details released with official trailer&nbsp;&nbsp;Gaming Nexus"
+      "description": "The music of GTA VI - score details released with official trailer&nbsp;&nbsp;Gaming Nexus",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://www.gamingnexus.com/News/73475/The-music-of-GTA-VIe28094score-details-released-with-official-trailer/"
+        }
+      ]
     },
     {
       "title": "GTA 6 Slides In Under Game Awards 2026 Cutoff",
@@ -6143,57 +6188,6 @@
       "lang": "en",
       "image": "https://cdn.mos.cms.futurecdn.net/q9VEvTmjqXdkuDN5ZDPPxh-1920-80.jpg",
       "description": "Getting in just before the deadline"
-    },
-    {
-      "title": "Over 30 New GTA 6 Screenshots From the Launch Trailer - IGN",
-      "link": "https://www.ign.com/articles/over-30-new-gta-6-screenshots-from-the-launch-trailer",
-      "source_link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNakg5NWJYM0J5YkFudGFmSFd1cS05eTdRV2FwT2NhNDA1Ymw0WUZLamtES01qSEpFM0NEdmY1Mzl4bmhxbmM3eDJaLVBFQnFyR1lsZzBrZFNwVVdKSkZHUlJQRFFRUzltSld3V2RQZXN6X1A4TmRNWG1wN3pocjlndDRRMXhReVRjT1E?oc=5",
-      "date": "2026-10-15T15:19:08+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://assets-prd.ignimgs.com/2026/10/15/jason-and-lucia-driving-1792074147987.jpg?width=1280&format=jpg&auto=webp&quality=80",
-      "description": "Over 30 New GTA 6 Screenshots From the Launch Trailer&nbsp;&nbsp;IGN",
-      "extraSources": [
-        {
-          "source": "IGN",
-          "link": "https://www.ign.com/articles/33-new-details-from-the-gta-6-launch-trailer"
-        }
-      ]
-    },
-    {
-      "title": "Grand Theft Auto 6’s Original Score is Composed by Justice, Rockstar Confirms - GamingBolt",
-      "link": "https://gamingbolt.com/grand-theft-auto-6s-original-score-is-composed-by-justice-rockstar-confirms",
-      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxObklpVkpCTEFvME92UzNtUVJyZzBiVmt5eWlROGJiYWpGT0tSMXJpb3dtUEg4VldzeGZKT2xoYTBMOWd5QTU5RGRtYWtiT2pIem1YTWktekhvZWVhQ19HZVBNeDZ1MHJfZnZNUjZ0NzkzQ0w0SXRUS2RBZVQwM0s5UUtXbWNuM0NzMkplZEIzc19qMVg0YzZjY2tQM2s1REk?oc=5",
-      "date": "2026-10-15T15:12:47+00:00",
-      "source": "Google News (annonces Rockstar)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://gamingbolt.com/wp-content/uploads/2025/05/grand-theft-auto-6-image-7-scaled.jpg",
-      "description": "Grand Theft Auto 6’s Original Score is Composed by Justice, Rockstar Confirms&nbsp;&nbsp;GamingBolt"
-    },
-    {
-      "title": "'GTA 6' reportedly has realistic sweat. Here's how it works. - Mashable SEA",
-      "link": "https://sea.mashable.com/games/55896/gta-6-reportedly-has-realistic-sweat-heres-how-it-works",
-      "source_link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPV1o3RjFneUhhQ0dGd09jUjQySC1lSWYxQ0dieHhTc2xjdVN4U2tvdWQ4SXg4NmxQalgybGpLTXFHdnRtWXhDN1BISkNUNTZib2w4TEcwNTFpYXB2Mk9ua3VUSWVSeHk0ZUo0TkdHOXFibXF2a3k0R2Z5ZVBYVkJKaXJlWnR2VFh3Y0U5dVFNM2VoV2prdGxr?oc=5",
-      "date": "2026-10-15T15:12:20+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://sm.mashable.com/t/mashable_sea/article/g/gta-6-repo/gta-6-reportedly-has-realistic-sweat-heres-how-it-works_fvyf.1200.jpg",
-      "description": "'GTA 6' reportedly has realistic sweat. Here's how it works.&nbsp;&nbsp;Mashable SEA",
-      "extraSources": [
-        {
-          "source": "Google News (EN, 7 jours)",
-          "link": "https://mashable.com/entertainment/gta-grand-theft-auto-6-realistic-sweat-system"
-        }
-      ]
     }
   ],
   "partial": true,
