@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-17T19:01:22.323473+00:00",
+  "generated_at": "2026-10-17T20:01:21.941651+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 22.2,
+  "duration_seconds": 21.4,
   "decode_failures": 0,
-  "total_articles": 4003,
-  "new_this_run": 2,
+  "total_articles": 4007,
+  "new_this_run": 4,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 1144,
-      "last_article": "2026-10-17T17:40:20+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 1146,
+      "last_article": "2026-10-17T19:48:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,8 +493,8 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "articles_exclusifs": 1513,
-      "last_article": "2026-10-17T18:36:26+00:00",
+      "articles_exclusifs": 1514,
+      "last_article": "2026-10-17T19:51:12+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -683,10 +683,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-16T21:30:28+00:00",
@@ -709,10 +709,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 100,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-14T14:45:00+00:00",
@@ -722,10 +722,10 @@
     {
       "id": "eurogamer",
       "name": "Eurogamer",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-10-16T15:04:58+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -973,8 +973,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 24,
+      "new_this_run": 1,
+      "articles_exclusifs": 25,
       "last_article": "2026-10-16T18:00:08+00:00",
       "days_since_last_article": 1,
       "status": "ok"
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
-      "days_since_last_article": 2,
-      "status": "en_attente"
+      "days_since_last_article": 3,
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 10,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {},
@@ -1252,7 +1252,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "25,25,25,25,25,26,26,26,26,26,26,26",
+    "gta6times": "25,25,25,25,26,26,26,26,26,26,26,26",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1310,18 +1310,18 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"25396-F+lUq14LtJLuaA3cTlVeRCqkM1k\"",
+      "etag": "W/\"25bc2-5ROy9Cc3NfS3lbZNq7YNmrvSAH8\"",
       "modified": null
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"5d4f7eb03cd329d7939a17da2a16d229\"",
-      "modified": "Sat, 17 Oct 2026 17:41:23 GMT"
+      "etag": "W/\"10928e075581772f33e7c65c23e33b2e\"",
+      "modified": "Sat, 17 Oct 2026 19:55:46 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 17:04:18 GMT"
+      "modified": "Sat, 17 Oct 2026 19:07:41 GMT"
     },
     "eurogamer": {
       "url": "https://www.eurogamer.net/feed",
@@ -1331,7 +1331,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 19:00:28 GMT"
+      "modified": "Sat, 17 Oct 2026 20:00:35 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1340,8 +1340,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad3c5c0-2fa9\"",
-      "modified": "Sat, 17 Oct 2026 19:00:16 GMT"
+      "etag": "W/\"6ad3d3d0-2fa9\"",
+      "modified": "Sat, 17 Oct 2026 20:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1360,8 +1360,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ad3b372-b8d\"",
-      "modified": "Sat, 17 Oct 2026 17:42:10 GMT"
+      "etag": "\"6ad3cf91-b8c\"",
+      "modified": "Sat, 17 Oct 2026 19:42:09 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1371,7 +1371,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 19:00:26 GMT"
+      "modified": "Sat, 17 Oct 2026 20:00:08 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1390,8 +1390,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"2b9837ea016fa8ea6dcdf1fb739bf1c6\"",
-      "modified": "Sat, 17 Oct 2026 18:55:39 GMT"
+      "etag": "W/\"4e0fa51e088290cc172cedc8a9bf5f00\"",
+      "modified": "Sat, 17 Oct 2026 20:00:23 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -2188,6 +2188,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Has A Nod To The First Game That Could Hint At Jason And Lucia's Relationship - OpenCritic",
+      "link": "https://opencritic.com/news/37937/gta-6-has-a-nod-to-the-first-game-that-could-hint-at-jason-and-lucias-relationship",
+      "source_link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQSjF3OWx4TjVsNjJjVzlfX1lpN2JTQm5ZRHNQb2NVN1VqMFhscWlIeHM4cEJ4bVNFaUVrZS00WkxzWldWb1J6T0oyemJHTDNkRFZxdkVTd3Y0cHlkSTcxNk1yeF9CZUJHUFVmd3lvRlkteGtVaWFsU19NQ0JVZGR2b3dqbnh0WGdzb2w0clRCM05jUUgwbFpfd1A0UVNDamM4YmducjRnNkRNZFlVNXZKVkdjMDhiX2M?oc=5",
+      "date": "2026-10-17T19:51:12+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://img.opencritic.com/article/o/mfzDHFDaP2oRIMNcyOgQMQkR6Uvd07sS.jpg",
+      "description": "GTA 6 Has A Nod To The First Game That Could Hint At Jason And Lucia's Relationship&nbsp;&nbsp;OpenCritic"
+    },
+    {
+      "title": "Pour Activision, GTA 6 et Modern Warfare 4 seront les rois de l’année - Gamekyo.com",
+      "link": "https://www.gamekyo.com/blog_article488492.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5RNHE4NVlxUEE2dUFBeVJrNEN5SDZPRURMQ3FMNHBHSDFsX3NLbzFyLWVmWGFQYUx1cVFZRVpNQzJTSVVMMS1hWUFLWnVmSXRieDE2WkJaSmktcTQ?oc=5",
+      "date": "2026-10-17T19:48:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": null,
+      "description": "Pour Activision, GTA 6 et Modern Warfare 4 seront les rois de l’année&nbsp;&nbsp;Gamekyo.com"
+    },
+    {
+      "title": "[GTA6] À votre avis, quel sera le score Metacritic du jeu ? - Gamekyo.com",
+      "link": "https://www.gamekyo.com/blog_article488491.html",
+      "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5OTjQ2MmJkallRVTZZY0dVMkttTC1tcFlHaWpwN0ZfdHpNSjFQcFREVk1IRnA0WG16Y2dlMHg2VUNpUWZVaWJmV3JzYWQxczR1QlNqOFNtQVBfc28?oc=5",
+      "date": "2026-10-17T18:43:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "http://www.gamekyo.com/Webmasters/Images/grand-theft-auto-vi_20220730_060731_intro.jpg",
+      "description": "[GTA6] À votre avis, quel sera le score Metacritic du jeu ?&nbsp;&nbsp;Gamekyo.com"
+    },
     {
       "title": "GTA 6 to Feature “Hundreds” of Interior Spaces Players Can Exlpore; Story Closer to RDR2 Than GTA 5 - MP1st",
       "link": "https://mp1st.com/news/gta-6-feature-hundreds-interior-spaces-players-can-enter-story-closer-rdr2-than-gta5",
@@ -6167,45 +6206,6 @@
       "lang": "en",
       "image": "https://www.dexerto.com/cdn-image/wp-content/uploads/2025/12/04/modern-warfare-4-captain-price.jpg",
       "description": "Activision says GTA 6 will help Modern Warfare 4 as other games are avoiding it&nbsp;&nbsp;Dexerto"
-    },
-    {
-      "title": "\"GTA 6\" : Le groupe électro français Justice aux manettes de la bande originale du jeu vidéo le plus attendu de la décennie - franceinfo",
-      "link": "https://www.franceinfo.fr/culture/jeux-video/le-groupe-electro-justice-signe-la-musique-de-la-derniere-bande-annonce-du-jeu-gta-6-avec-tame-impala-sza-et-king-gizzard_8238919.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiiwJBVV95cUxPS2YyUTJqbGdDVlhrYmFxNEpBQzNrR3VvZjlFT1I0Y1VrdC1ZeUszZWZ3a0lxZUZrUTZhY1FpZ0EzOVp4Y0RGOHdoRDlOM2hHR29kVG5kOGtnQkxxVGVSTmJzd2o4d2I1eGI5UlpHMnJ4VUlzbXRrSGlMWWphd0NfLTBrbGNBSmlfVUFRanlVSkZxNGFwc0JnWGRyczh0b3Znc2JtVDFuYmxpeV8tTG1yUUd2VXFNS2Zyc09GMEJUTGF5N3ppSi1fTzdOWWFKRF9jbE8zMDM3VWNOSVJDa2tqVGJtbnE4QzNlLUdfdUEtSWZUM3p0VXBxZ2J4YWF5YTVDRE9pb0NRTmNva1U?oc=5",
-      "date": "2026-10-15T15:06:05+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://www.franceinfo.fr/pictures/Jx1Rvp8RXWqdqlfaXjXs26axy1Y/0x276:3000x1963/1500x843/2026/10/15/6ad0e915b27ed536679005.jpg",
-      "description": "\"GTA 6\" : Le groupe électro français Justice aux manettes de la bande originale du jeu vidéo le plus attendu de la décennie&nbsp;&nbsp;franceinfo"
-    },
-    {
-      "title": "GTA 6 Launch Trailer Is Here, Revealing New Story Details and Music - ThePCEnthusiast",
-      "link": "https://thepcenthusiast.com/gta-6-launch-trailer-story-music/",
-      "source_link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBhdllIM2ZrdGs2SDFxcnhiT0R3M0VmX2czdE40MVhQenRTc1N2cTFiTzFjWDUtU0RfSmlpbGhRXzB5WnlTNy1neUlDYU1QdUZmMk9kM0JHb09XWnVDN3ZLSjFsOW54YzFiLXkyQXd3?oc=5",
-      "date": "2026-10-15T15:06:04+00:00",
-      "source": "Google News (annonces Rockstar)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://cdn.thepcenthusiast.com/wp-content/uploads/2026/10/GTA-6-Launch-Trailer-Jason-and-Lucia-meetup.jpg",
-      "description": "GTA 6 Launch Trailer Is Here, Revealing New Story Details and Music&nbsp;&nbsp;ThePCEnthusiast"
-    },
-    {
-      "title": "Justice Recruit Tame Impala, SZA for ‘GTA 6’ Song ‘Flower in a Hurricane’ - Rolling Stone",
-      "link": "https://www.rollingstone.com/music/music-news/justice-tame-impala-sza-gta-6-song-flower-in-a-hurricane-1235643111/",
-      "source_link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQYS1mYWFlM1ZfSERVU0FQanJuWTFiSy1ZUFZYRjFoZHhDb29YYS0xM2d4RGU1MmtkMXZHSU13b3VITVU4UDVhVE9CYWx4N1ZBT2JLY184RHJzM2NNNnI1Z1BUWlctRElGUERHTkNwanNyZ1FNM1pLcTh4X0xSb2dzS2pVVUtDVjZKSGxfb00teFlmS0U2ZVluSVNCcTJDVVBqZDFzellHcVdENGFnWHljTDlqUnc?oc=5",
-      "date": "2026-10-15T15:05:04+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.rollingstone.com/wp-content/uploads/2026/10/GTAVI_JusticeIllustration_1x1_Deliv.jpg?w=1198&h=803&crop=1",
-      "description": "Justice Recruit Tame Impala, SZA for ‘GTA 6’ Song ‘Flower in a Hurricane’&nbsp;&nbsp;Rolling Stone"
     }
   ],
   "partial": true,
