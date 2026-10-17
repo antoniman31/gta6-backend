@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-17T04:01:27.543402+00:00",
+  "generated_at": "2026-10-17T04:54:28.157300+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 26.5,
+  "duration_seconds": 28.8,
   "decode_failures": 0,
-  "total_articles": 3958,
-  "new_this_run": 1,
+  "total_articles": 3961,
+  "new_this_run": 3,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -449,10 +449,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 1498,
-      "last_article": "2026-10-17T02:45:55+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 1500,
+      "last_article": "2026-10-17T04:10:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1229,11 +1229,11 @@
   "decodage_etat": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,40,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,40,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,15,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,15,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1296,8 +1296,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1791560951\"",
-      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
+      "etag": "\"1792068672\"",
+      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 03:58:12 GMT"
+      "modified": "Sat, 17 Oct 2026 04:49:02 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad2f2d1-3057\"",
-      "modified": "Sat, 17 Oct 2026 04:00:17 GMT"
+      "etag": "W/\"6ad2f9d9-3057\"",
+      "modified": "Sat, 17 Oct 2026 04:30:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 04:00:07 GMT"
+      "modified": "Sat, 17 Oct 2026 04:53:30 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -2199,6 +2199,45 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "Seller lists GTA 6 PS5 disc in physical Ultimate Edition with a major caveat - Notebookcheck",
+      "link": "https://www.notebookcheck.net/Seller-lists-GTA-6-PS5-disc-in-physical-Ultimate-Edition-with-a-major-caveat.1426493.0.html",
+      "source_link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPa3VLREZURjVsTHRMc2FrcWpKUTZudFAzX096S2dNM1lLS250X2NnWWwtY2p6NjNPellRYXNsWEdKQnVNZzl0R0U4NURlLXZIYzRsaGdBbU9pOHR2eV9MWUlNNW9xU1Bma0ZRdUVUMDJCeFU2M3BjSkszNHdjODFwc3d0X2cwNWJvS0NfaUJTWVJVS1BHR2s0TDdoR3d6aWZzNUhKZm1FazI3b3Y5N202VU94VGFvX1g1OXFnSnB3?oc=5",
+      "date": "2026-10-17T04:10:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc5/GTA6CollectorSetChina.jpg",
+      "description": "Seller lists GTA 6 PS5 disc in physical Ultimate Edition with a major caveat&nbsp;&nbsp;Notebookcheck"
+    },
+    {
+      "title": "Cars from GTA VI appeared in reality - supercars in the Vice City style were spotted on the streets of Miami - iXBT.games",
+      "link": "https://ixbt.games/en/news/2026/10/17/masiny-iz-gta-vi-poiavilis-v-realnosti-na-ulicax-maiami-zametili-superkary-v-stile-vice-city.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQWGNZeTlhN0IzM0F3R2wweUU3dWNyejJ4N1k0REZZV215bV8xNktKbnlvVEQ5X3hGaDJaeEFtYnhEUzFFVy1OTkJ0OEs5U1M0dTYzcUc3emc5b0ZxbC1wendpWUg1YVZ6YWxvMlhtaEpNMHR5bkV2aXQwRFZIR2JuNmRLeVRqOUdZRmlWMFQtQVU1TVdRelZPcy1RZkNlTE81cG9KemxUdW1QX2RvY1E1QTNFOHdPR2czRmxuR3lzVVhMb3pua3YwelU1d1R1cG9I0gHWAUFVX3lxTFA4NElBdjNESkZ1eGZuUGdXVlRRaE5Db1ktV09Dckw5RTlkcDdJenprOXdWZXBLaHlqNGhuX3lZSDI3TG1iUG9JNWdVWDIzWmx6UDh0Y3NHTWF3b2k0aTZsUGxyVFhuZWw1SmJveHZkdzZXRmc1RVRWVjQ0UFZzS3U3Z3dzMFRFZHNoMmRQS2NfbXpacDBCczRQdmdoelZsRV9kdFBoVGcwQUJYWnRJektkdGRiSHJEZU9iR2JOeWJsaDFEc3drWUhLbVplU2lRbEpyUERQNGc?oc=5",
+      "date": "2026-10-17T03:58:27+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1727004/media-422d881d7716bf499e91ca5f0a2692ed68ada925e6255dd6230b984fdead7a84.png",
+      "description": "Cars from GTA VI appeared in reality - supercars in the Vice City style were spotted on the streets of Miami&nbsp;&nbsp;iXBT.games"
+    },
+    {
+      "title": "GTA VI has 8 times fewer pre-orders than The Legend of Zelda: Ocarina of Time - players noticed Amazon statistics - iXBT.games",
+      "link": "https://ixbt.games/en/news/2026/10/17/u-gta-vi-v-8-raz-mense-predzakazov-cem-u-the-legend-of-zelda-ocarina-of-time-igroki-zametili-statistiku-amazon.html",
+      "source_link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxQZ2ZtMlU3TUNRVWtwbUNYT0c1T0VIU25UYUk1emkxanVFd1VmSDJBTHFlamYyVkd3Wjk3cXFPa1hhRzlwSzdsandoMUtGNTc4SDFudzBEM3Y4SWQ5QlF6Z2pmQkVkYjMxcTJZNXhXYm0wVVZkb05RMzB4c2lHQVdqRDEtcEYyN3RhODdOOHY5Nms0Yy1ieEZ6Z09WUHl2NzZ6SU1XSHNtS3hjbHlVaDBQYmlZWFhPdHFIcTJHZTV3V2JIa1BaR2pnQXN3MW1PYTNiV2JnT1hIanJtaUNaUWtrdnNPVFNUQjZa0gHuAUFVX3lxTE03X2VMdVR2WmVoYkJIb0k2ZDQ5c19FOTNqaExDbGtGR1VrdFcwNlhqYXMzanRnb2FHQmJjZEVZSGJ4U2Q5RHg0SEJfRk1sdUhPM1l3Zl9jcjdVR1pnZldkQk13NTNKT2M4cXFzS1BqQnlCQTdOS3ZWQnBSSXNVaHBfVElESk00dkNueUlMQnROem82M2ZMYTdXN3BtV2Q5ZGpuZXNOUmMwYURXbHZuTGZDNWpvZVZXV21GZXI2TFdwalFSV1dZVlpjcEVGM2tDUEZxNlFNWmxBWHZRdlhXLU9ZOUs3ZkgtX1pfNHhKdVE?oc=5",
+      "date": "2026-10-17T03:52:06+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://media.ixbt.games/1600x900/smart/jpeg/ixbt-data/1727003/media-d38d97aa93d86b8e21876fc9582aeff51e5eea83e2798e0b8a6741fdccc69d1a.png",
+      "description": "GTA VI has 8 times fewer pre-orders than The Legend of Zelda: Ocarina of Time - players noticed Amazon statistics&nbsp;&nbsp;iXBT.games"
+    },
     {
       "title": "Le marketing de GTA 6 prend une tournure originale : Rockstar transforme de vraies voitures en véhicules du jeu et les fait circuler dans Miami - Notebookcheck.fr",
       "link": "https://www.notebookcheck.biz/Le-marketing-de-GTA-6-prend-une-tournure-originale-Rockstar-transforme-de-vraies-voitures-en-vehicules-du-jeu-et-les-fait-circuler-dans-Miami.1426342.0.html",
@@ -4182,7 +4221,13 @@
       "lang": "en",
       "image": "https://gray-wala-prod.gtv-cdn.com/resizer/v2/DN7FDWLXPJGWXJ6PUK5XAD67YY.jpg?auth=27cfcd1e8dbff78a9c5c8fb764bfa286736ec960414048eb85890511b60746c5&width=1200&height=600&smart=true",
       "description": "GTA 6 locks in Nov. 19 release date after delays&nbsp;&nbsp;Fox 10 News",
-      "vu_le": "2026-10-16T04:01:29.027798+00:00"
+      "vu_le": "2026-10-16T04:01:29.027798+00:00",
+      "extraSources": [
+        {
+          "source": "Google News (EN, 7 jours)",
+          "link": "https://www.fox10tv.com/video/2026/10/16/gta-6-locks-nov-19-release-date-after-delays/"
+        }
+      ]
     },
     {
       "title": "GTA 6 Cyberleek Cancels Leak as Coin Falls to $1.2M [2026] - https://tech-insider.org/",
@@ -6190,45 +6235,6 @@
       "lang": "fr",
       "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/06/gta-6-po.jpg?resize=1600,900&key=671cdb8f",
       "description": "« Votre précommande de GTA VI se prépare » : E.Leclerc explique comment va se dérouler la sortie du jeu événement&nbsp;&nbsp;Frandroid"
-    },
-    {
-      "title": "GTA 6 Launch Theme Song Revealed – How to Listen Now - VICE",
-      "link": "https://www.vice.com/en/article/gta-6-launch-trailer-song-how-to-listen/",
-      "source_link": "https://news.google.com/rss/articles/CBMifEFVX3lxTFA0ZV9RdWltYnVOdHk2X0ROWWszNGxhWWtYX3NpN0xzOHdlU3Y3U0NNcVV2RnFIbmQxS0VXVlQ1UHFxRElyLUtKU0FWUC1jN2JUcUhtaE53NHhPRFdLeFpvS29HUFE4NzZrS2hHMW13U1N4ZnFkTGIzZXJ4bF8?oc=5",
-      "date": "2026-10-15T14:00:30+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.vice.com/wp-content/uploads/sites/2/2026/10/GTA-6-Theme-Song-Released-How-to-Listen-Now.jpg?w=1280",
-      "description": "GTA 6 Launch Theme Song Revealed – How to Listen Now&nbsp;&nbsp;VICE"
-    },
-    {
-      "title": "Justice a composé l'intégralité de la bande son de GTA VI - Dure Vie",
-      "link": "https://www.durevie.paris/article/justice-a-compose-lintegralite-de-la-bande-son-de-gta-vi",
-      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNdGk2bWdBUWNjdXpPczVRSUJtUlZTZUdkUUtUNTJ5OFZHU1dtS25tb18xU295M3Rfd1BOckZZM0RYMi1nMHBydVptRWZBcnI1OEJnd1BsanByRzRQVzdxVHV3a0lvb1lPSWx5ZUR0TW5WN0F0VXVIZGRSMTFoaTVzWVo5UjRXOGJJN05zXzZyNXZ4ejlV?oc=5",
-      "date": "2026-10-15T14:00:06+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://cdn.prod.website-files.com/65095effaf0180af4c951d4c/6ad0db617801f473d19d63a9_justice-aspect-ratio-1200-726-t-960x580.webp",
-      "description": "Justice a composé l'intégralité de la bande son de GTA VI&nbsp;&nbsp;Dure Vie"
-    },
-    {
-      "title": "GTA 7 Won't Suffer GTA 6's Brutally Long 8-Year Development Gap, Rockstar Vows - HotHardware",
-      "link": "https://hothardware.com/news/gta-7-wont-suffer-gta-6s-8-year-development-gap-rockstar-vows",
-      "source_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOWkRqdjJBRXZhVzQzSTdLS1pHem5FWVRHWHBrSUsta25fNmpCUVExOEdzdzBaczRmOWl4NF9yT254dEpXVTlXVTNMSjNYbk1DTXNoeFFJekk3SnR2bllINmdJQ256dENvSEVKandmWmoxZHhFNGtPYXVYNG1lM1NCMnpGUWJIV2M1bkh4NFNuZzNVNGd3?oc=5",
-      "date": "2026-10-15T14:00:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://images.hothardware.com/contentimages/newsitem/71871/content/16x9_2133x1200_highres-grand-theft-auto-vi-jason.jpg",
-      "description": "GTA 7 Won't Suffer GTA 6's Brutally Long 8-Year Development Gap, Rockstar Vows&nbsp;&nbsp;HotHardware"
     }
   ],
   "partial": true,
