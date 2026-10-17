@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T16:01:36.024442+00:00",
+  "generated_at": "2026-10-17T17:01:24.175721+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 22.7,
+  "duration_seconds": 21.1,
   "decode_failures": 0,
-  "total_articles": 3994,
-  "new_this_run": 0,
+  "total_articles": 3996,
+  "new_this_run": 2,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1139,
-      "last_article": "2026-10-17T14:00:44+00:00",
+      "new_this_run": 2,
+      "articles_exclusifs": 1141,
+      "last_article": "2026-10-17T16:45:11+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -710,10 +710,10 @@
     {
       "id": "rps",
       "name": "Rock Paper Shotgun",
-      "entries_fetched": 100,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-14T14:45:00+00:00",
@@ -808,7 +808,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-10-15T16:15:41+00:00",
-      "days_since_last_article": 1,
+      "days_since_last_article": 2,
       "status": "ok"
     },
     {
@@ -1016,7 +1016,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-10-13T16:14:14+00:00",
-      "days_since_last_article": 3,
+      "days_since_last_article": 4,
       "status": "ok"
     },
     {
@@ -1100,10 +1100,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-15T09:32:03+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 2,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1191,10 +1191,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 10,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1253,7 +1253,7 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "25,25,25,25,25,25,25,25,26,26,26,26",
+    "gta6times": "25,25,25,25,25,25,25,26,26,26,26,26",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
@@ -1286,8 +1286,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1792068672\"",
-      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
+      "etag": "\"1791560951\"",
+      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1311,7 +1311,7 @@
     },
     "ign": {
       "url": "https://feeds.ign.com/ign/games-all",
-      "etag": "W/\"24d8a-cn3plAzvSi2WPOWpH6SZP5SrsrA\"",
+      "etag": "W/\"25396-F+lUq14LtJLuaA3cTlVeRCqkM1k\"",
       "modified": null
     },
     "kotaku": {
@@ -1332,7 +1332,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 15:57:09 GMT"
+      "modified": "Sat, 17 Oct 2026 16:58:09 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1341,8 +1341,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad39b90-2fa9\"",
-      "modified": "Sat, 17 Oct 2026 16:00:16 GMT"
+      "etag": "W/\"6ad3a9a0-2fa9\"",
+      "modified": "Sat, 17 Oct 2026 17:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1356,8 +1356,8 @@
     },
     "pcgamesn": {
       "url": "https://www.pcgamesn.com/mainrss.xml",
-      "etag": "W/\"abf4cff1e9b5c33563cdf5500f3aefc5\"",
-      "modified": "Sat, 17 Oct 2026 15:52:00 GMT"
+      "etag": "W/\"8a0899723bba17206a570f7734c86364\"",
+      "modified": "Sat, 17 Oct 2026 16:47:37 GMT"
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
@@ -1372,7 +1372,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sat, 17 Oct 2026 16:01:18 GMT"
+      "modified": "Sat, 17 Oct 2026 17:00:50 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1381,18 +1381,18 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"47c5c677b85a0209a0ef0ba8f88596d6\"",
-      "modified": "Sat, 17 Oct 2026 15:02:21 GMT"
+      "etag": "W/\"91d94343f25418ee75a569a7235e4107\"",
+      "modified": "Sat, 17 Oct 2026 16:00:47 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"0ab38c787995833e5826d0e8c99f4bda\"",
-      "modified": "Sat, 17 Oct 2026 15:54:00 GMT"
+      "etag": "W/\"3ff63791a09358243121bd91b5dc40c8\"",
+      "modified": "Sat, 17 Oct 2026 17:00:16 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"ddba4576a7b1ac412c647b754f281546\"",
-      "modified": "Sat, 17 Oct 2026 15:56:19 GMT"
+      "etag": "W/\"014c33049088a0241f3db76c1e69cbe6\"",
+      "modified": "Sat, 17 Oct 2026 16:56:50 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -1401,8 +1401,8 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"47c5c677b85a0209a0ef0ba8f88596d6\"",
-      "modified": "Sat, 17 Oct 2026 15:02:21 GMT"
+      "etag": "W/\"91d94343f25418ee75a569a7235e4107\"",
+      "modified": "Sat, 17 Oct 2026 16:00:47 GMT"
     }
   },
   "sources_incidents": [
@@ -2189,6 +2189,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "À cause du succès de la Nintendo Switch 2, Sony forcé de brader sa PS5 : 310€ pour que les fans de GTA 6 puissent y jouer au Japon - JeuxVideo.com",
+      "link": "https://www.jeuxvideo.com/news/2109189/a-cause-du-succes-de-la-nintendo-switch-2-sony-force-de-brader-sa-ps5-310-pour-que-les-fans-de-gta-6-puissent-y-jouer-au-japon.htm",
+      "source_link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPeHVwU0FWOXptQi1mSzZWNEozWlVTRG5NZnowbTE1WUhrSHVNYnhQMnF2Z3dRZ3VmdGg4cWRheGhTdzdYaF9vX29BUWVfOXFKUFZOWHg3MDVieF9hNnpFak02dDNnZTBLbGJXRmV5TW5xYWdPcWxiMlZsVEJMRzJMSWd2bU5lTGJfUTNNREZmRHZaMjVCczJWOGRpa0ljZDQ2THM2dDBCYTlFSloxT25sZ2t4Yzl6SENyOUt2TzhQdWZOend5X1ZqWUxHbzEzQ2ZLMDFWU0twSXI4aFdkd3dzbnZLaEM2eTJQdXdXaFZRank5dmVCNERxMkppYV83Zw?oc=5",
+      "date": "2026-10-17T16:45:11+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://image.jeuxvideo.com/medias-crop-1200-675/179206/1792058556-8487-card.png",
+      "description": "À cause du succès de la Nintendo Switch 2, Sony forcé de brader sa PS5 : 310€ pour que les fans de GTA 6 puissent y jouer au Japon&nbsp;&nbsp;JeuxVideo.com"
+    },
+    {
+      "title": "GTA 6 pourrait battre tous les records de ventes dès son lancement - World Is Small",
+      "link": "https://worldissmall.fr/2026/10/17/gta-6-pourrait-battre-tous-les-records-de-ventes-des-son-lancement/",
+      "source_link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNTm1ZeUpHU1dkV0xldzZoZXctZmxDUlRRU0txaGdEZjZmdmJweVFSTFo3TGRYaDBLQm54bFY3Vm81akZfMkVFMEtpeWtaR000WFhZc19TYzNSeS1EM21HejFzeXIzbXdkU0NveXo1WGhTaFZUdnJ6Q2g4ZEgxeEVxWmJDVjVXNXV4enI5YWJRSjZuNnJVT3JDOE1CRGpkR2cxX21OeQ?oc=5",
+      "date": "2026-10-17T16:28:15+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://worldissmall.fr/wp-content/uploads/2026/10/gta6-scene.webp",
+      "description": "GTA 6 pourrait battre tous les records de ventes dès son lancement&nbsp;&nbsp;World Is Small"
+    },
     {
       "title": "Every Grand Theft Auto VI (GTA 6) Trailer - GameSpot",
       "link": "https://www.gamespot.com/videos/every-grand-theft-auto-vi-gta-6-trailer/",
@@ -17881,7 +17907,6 @@
     {
       "title": "GTA 6 Will Have an \"Outlaw Country\" Station… Here's the Details - Wide Open Country",
       "link": "https://www.wideopencountry.com/gta-6-will-have-an-outlaw-country-station-heres-the-details/",
-      "source_link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNUHZvNi1feFo2MGtaeU1HdERGQ3FtMm04TnJGVzRWeWJJS0lyMVhLaW4xejhrZFJKM2ExdVhmVXRzSnZKdzk4YlZ6QnM0TnJuUks3NVVSWWI2T1BEd1UwazVuMWVBWW1tUDNBRmd0N0RjdU5sb2RTclJOY3ZHdEpheFM4RklDbERiYnh5bnRNcHZ5ZEdXLTVJ?oc=5",
       "date": "2026-10-10T17:00:00+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17894,7 +17919,6 @@
     {
       "title": "GTA 6 sur Switch 2 : Nintendo renvoie à Rockstar, aux portages toujours tardifs - Martin Cid Magazine",
       "link": "https://fr.martincid.com/technologie/jeux-video/gta-6-sur-switch-2-nintendo-renvoie-a-rockstar-aux-portages-toujours-tardifs/",
-      "source_link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQMXRIOW1uRTN4bmVaUERUa1FVLTBuR2t6clA3d2lzSHljRkd3dFllRDgycDJlUkV0R0ZDWFhIYmlHd0pEZ1cycFgtZGtiekd3WmlDV2xwdEJ4TURoWlhva0h3Wk5NNVdvbkpRdDUxTGtBd1hpMXdhZEFVRy13QWplTU1yX0k0T1QxZTlLU0RKY3FqQjJrRzAxaGwwc2pZU1NTdzdYdjRBU2ZxUFJfN0pNeE9za2pZLWs3dFNuMXJ2MmM0d1k?oc=5",
       "date": "2026-10-10T16:41:28+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -17907,7 +17931,6 @@
     {
       "title": "GTA 6 on Switch 2 Is Rockstar’s Call, and Rockstar’s Nintendo Ports Come Years Late - Martin Cid Magazine",
       "link": "https://www.martincid.com/technology-sv/gaming/gta-6-switch-2-rockstar-nintendo-ports-years-late/",
-      "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNbnY2Z2M2OVNvYXNYTXhJeFBwRlBtT3o0UUNlT3FRSmNRT2dYU08xbDZJWmlwOFVKSWlUZUlZT1FBQUcwb2lOMVd0WkRrdXRySmoxMDZOSDFHMUZKSDdJWmdPd0J3UzNKMDlIcURhU1hxc0hhMGJEUjRDMzZfSTRodXZWUWVtOUhsWjZEa2w1RDNTZU5zV1FIeDFta19Wdw?oc=5",
       "date": "2026-10-10T16:41:28+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17920,7 +17943,6 @@
     {
       "title": "GTA 6 Leaker Threatens to Release Build With Full Story Mode Played to the End, Ties Lucia's Clothing to Crypto Scheme - IGN Pakistan",
       "link": "https://pk.ign.com/grand-theft-auto-vi-rumored-title/262356/gta-6-leaker-threatens-to-release-build-with-full-story-mode-played-to-the-end-ties-lucias-clothing",
-      "source_link": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxQdHRCZVM4cG1ocFpvdzIxZDJ1TWtCWU1tY3ZYdEQwdk55cldDT1J1LUNsYkZzVi1nRXJRSWdDbmN0VHMybU5nazZ1ZFU3LWY5c0dQZ1FuZU5fQnB2T0FhZzNNMEYxVWM2RkdTQmw4cUFwemhtZHQ0N19xSGltN1lEa0FmSDBIWTJCU0EzUDhudVJlMmtYMlpTZGFLQkNRZ3B5WEs3cjVraDlRdXQxRTYzWmZiSVpDVlQxeEM3bGItbzNYQmYyY1RMWkNKVE1FbHNNeTFOanRnR05rSTVhZ1ZxRGhsd1c3WWtTdWZWdDluZ3o?oc=5",
       "date": "2026-10-10T16:38:09+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17939,7 +17961,6 @@
     {
       "title": "GTA 6 Full Build Promised if Cyberleek Hits $30M Market Cap - MP1st",
       "link": "https://mp1st.com/news/gta-6-build-to-be-released-with-full-story-mode-if-cyberleek-hits-30m-marketcap-unless-take-two-release-game-on-disc",
-      "source_link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxQTGJuelY2XzBuWk4xY2dGZHBzbzlpRjZUQlZqbFNTNkdMTVIxczJIVkc2cVNpZHM3Nkh0cGg5dzdNeTZEVXZaVE9tVjZ5Uzh3MHlSZE9qUjEzYTR4Wjl6Zl90dzF3dEJCSjNMSl9hT2dYMjRKZWxERGk0c1JXYzNCVVEyeUtCdWg2NHVPNDNnZzJ5RkQyYWlyRWRidlM0ZkdodTl6clR4SHpuV1VOV3h6NFVUZVhmUlVFc3p1ZHJYQ09RQTRuVFpBMkJnVVpuUFdpbExmRFhR?oc=5",
       "date": "2026-10-10T16:36:19+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17952,7 +17973,6 @@
     {
       "title": "Le patron de GTA 6 affirme que Rockstar doit « renoncer au réalisme » pour le bien des joueurs : « le réalisme peut grandement contribuer à l'immersion, mais à l'excès, il peut devenir lassant. » - La Crème Du Gaming",
       "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/le-patron-de-gta-6-affirme-que-rockstar-doit-renoncer-au-realisme-pour-le-bien-des-joueurs-le-realisme-peut-grandement-contribuer-a-limmersion-mais-a-lexces-il-peut-devenir-230605.html",
-      "source_link": "https://news.google.com/rss/articles/CBMizwJBVV95cUxOWGxISk91aUREc0xxYmJqcXp3RlZHZjRrNUhEN2k2cXVKZUNsVWNZSTVQOURJOG5mc1luSnoyeVVycXQ5NGZiQWFiNVFyNkJzazFZakJQNDM0WEpUU3M5bG1IcEpkeWxrTmlGU2dqVzl6SWM5OEx4N2xTcmZCeWZkQ2hBeXRZS01hRlBLN3F0d3Vlc2pndzBZemZBRFpQTURZQXByVHVnelhISVdaWG5GWlZ5Y1NqWm5veVVXNUpEb1BtUmdNeXQtRG5EWDNrR2JRQlFWQmpzYlM0MktUNU5uUUlGVC1lMWZKOENzeUNzd2RGNElvTmRPcVZTNUYzQWtJQUk0SGUwX3BPUG1KRDhRMGQwTGZROTFzTnVRcXdCek4wSFRmaWVaUndDYmpoVWJRZlBURnJ4TVRwVEd0eGNOUDBxNkhQZkx5ZDFNQ2FZWQ?oc=5",
       "date": "2026-10-10T16:30:50+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -17965,7 +17985,6 @@
     {
       "title": "Avast a repéré plus de 200 sites liés à GTA 6 en 24 heures, et beaucoup sont dangereux - Clubic",
       "link": "https://www.clubic.com/actualite-633457-avast-a-repere-plus-de-200-sites-lies-a-gta-6-en-24-heures-et-beaucoup-sont-dangereux.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOTjc0VTVLTjFDcWF2a1J1ZEM1TnRnU3ZBSlE4YVl6Y2ZDanJmelIwLWhUTVphMG42ZlpXS0NDaDJkNW9sTHZHR1VxVUtpWVdmMi1zTDZQNVVQMVZEWUg5VjQ5a290ZHZvM0l6a2l4TldqMUNTcTRTclVsNDBwd1RoVUczam01YmFxX0FuYzU3Umt0aEpjb2d1ZVRTWXhUR2hHVUFLd0t4SkRTbW5KTTg1SXIxeGtGT1cyWjVyVHZKbi04dFBKNlg5OTJB?oc=5",
       "date": "2026-10-10T16:25:00+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -17978,7 +17997,6 @@
     {
       "title": "GTA 6 Leaker Threatens to Leak Playable Build of Grand Theft Auto VI From 'Beginning to End' - Insider Gaming",
       "link": "https://insider-gaming.com/gta-6-playable-leak/",
-      "source_link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBxX2ZNd09QZzhmNlZZYk5wLXZwc0xUbjZVQjNpTDZraEdkc1UtUjJJTjZUelBmdjBRdWpNb2h4RDNOZXQ3MGpwWUV2UWhkZEtzWFRLcFA4RVBXUjQ?oc=5",
       "date": "2026-10-10T16:17:59+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17991,7 +18009,6 @@
     {
       "title": "Rockstar Has Six Weeks to Stop GTA 6’s Ending From Leaking - DualShockers",
       "link": "https://www.dualshockers.com/rockstar-has-six-weeks-to-stop-gta-6-ending-from-leaking/",
-      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQaldXRGdONTVzLVRLTE9YUk1ZQ3hKUWlhTXRzZ1RiUE14SGgzem1JNVRlcTFNQUxRS1VycG8tSFpfcWJGQW1XN3hRaXNaOEZfMTZ2bHFvcVBGaExiQ3Z4eS1fWEg0N01ybW5rQXJ6aXpqN1pvSGFsSnVSSnBaUW5pZ3YxVGY3OEU0SGk5SmthOA?oc=5",
       "date": "2026-10-10T16:14:41+00:00",
       "source": "Google News (EN)",
       "official": false,
