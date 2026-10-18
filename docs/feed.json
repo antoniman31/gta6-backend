@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T05:03:13.290047+00:00",
+  "generated_at": "2026-10-18T06:01:24.102554+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 23.8,
+  "duration_seconds": 23.2,
   "decode_failures": 0,
-  "total_articles": 4028,
-  "new_this_run": 0,
+  "total_articles": 4029,
+  "new_this_run": 1,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -480,9 +480,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1151,
-      "last_article": "2026-10-18T04:54:21+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 1152,
+      "last_article": "2026-10-18T05:07:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -775,10 +775,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 13,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-14T12:26:00+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1042,7 +1042,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 3,
       "last_article": "2026-10-15T05:26:45+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -1113,10 +1113,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-17T09:45:42+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 3,
-      "status": "en_attente"
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 10,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1234,7 +1234,7 @@
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1246,7 +1246,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1264,19 +1264,19 @@
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant-gnews": "100,100,100,100,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gta6times": "26,26,27,27,27,27,27,28,28,28,28,28",
+    "gta6times": "26,27,27,27,27,27,28,28,28,28,28,28",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "trueach": "100,100,100,100,100,100,100,100,83,100,83,100",
+    "trueach": "100,100,100,100,100,100,100,83,100,83,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "engadget": "100,100,100,100,100,100,69,100,100,100,100,100",
+    "engadget": "100,100,100,100,100,69,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
@@ -1297,8 +1297,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1792068672\"",
-      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
+      "etag": "\"1791560951\"",
+      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1343,7 +1343,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 05:02:53 GMT"
+      "modified": "Sun, 18 Oct 2026 06:01:04 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1352,8 +1352,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad45260-2fa9\"",
-      "modified": "Sun, 18 Oct 2026 05:00:16 GMT"
+      "etag": "W/\"6ad46072-2fe5\"",
+      "modified": "Sun, 18 Oct 2026 06:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1372,8 +1372,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ad44011-b8d\"",
-      "modified": "Sun, 18 Oct 2026 03:42:09 GMT"
+      "etag": "\"6ad45c31-b8d\"",
+      "modified": "Sun, 18 Oct 2026 05:42:09 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1383,7 +1383,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 05:02:09 GMT"
+      "modified": "Sun, 18 Oct 2026 06:01:05 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1397,8 +1397,8 @@
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"398334ce9dbdfd10429328e1e4ed928b\"",
-      "modified": "Sun, 18 Oct 2026 01:05:14 GMT"
+      "etag": "W/\"6dc5ea9cb12f956a0f20fa590c5e5269\"",
+      "modified": "Sun, 18 Oct 2026 05:52:00 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -2200,6 +2200,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "E.Leclerc vide ses stocks GTA 6 : prix record pour le jeu star de 2026 - 20 Minutes",
+      "link": "https://www.20minutes.fr/guide-achat/4254911-20261018-e-leclerc-vide-stocks-gta-6-prix-record-jeu-star-2026",
+      "source_link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQVjNFWDlXZUZNSHdEcmIwblpmWS00dXcxR3BiT1hGSmFKbC1faTRQRURyMTc4NjkyallwMHRFYW16aWFuNjE4SU9ib2xxQjBhVUIyU0JCOEpGQV90djhNODJmZEFZQS0yYTQzUWN6MVVHczAwcUJGaWhxUnJHR2Jrei1Odm9GdklpOTV1ei1VWnVsSTNuWC1hdk4wSUtyYXpSaEFVWnFORHBaNXM?oc=5",
+      "date": "2026-10-18T05:07:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.20mn.fr/HvTjT2vgQYC6ZS93-FWkXSk/1444x920_gta-6-sur-quelle-site-et-a-quelle-heure-precommander-le-jeu-ce-jeudi",
+      "description": "E.Leclerc vide ses stocks GTA 6 : prix record pour le jeu star de 2026&nbsp;&nbsp;20 Minutes"
+    },
     {
       "title": "Un nouveau trailer pour GTA 6, des Galaxy ne redémarrent plus depuis One UI 9, c’est le récap’, de la semaine. - PhonAndroid",
       "link": "https://www.phonandroid.com/un-nouveau-trailer-pour-gta-6-des-galaxy-ne-redemarrent-plus-depuis-one-ui-9-cest-le-recap-de-la-semaine.html",
