@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T19:01:27.064596+00:00",
+  "generated_at": "2026-10-18T20:01:26.040927+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 23.3,
+  "duration_seconds": 24.9,
   "decode_failures": 0,
-  "total_articles": 4061,
-  "new_this_run": 1,
+  "total_articles": 4064,
+  "new_this_run": 3,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -450,10 +450,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -480,8 +480,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 1161,
+      "new_this_run": 0,
+      "articles_exclusifs": 1160,
       "last_article": "2026-10-18T18:58:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -493,9 +493,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1534,
-      "last_article": "2026-10-18T16:10:44+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 1537,
+      "last_article": "2026-10-18T19:42:50+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -508,7 +508,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 46,
-      "last_article": "2026-10-16T09:02:37+00:00",
+      "last_article": "2026-10-16T10:23:00+00:00",
       "days_since_last_article": 2,
       "status": "ok"
     },
@@ -684,10 +684,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-16T21:30:28+00:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
-      "days_since_last_article": 3,
-      "status": "en_attente"
+      "days_since_last_article": 4,
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 11,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1270,7 +1270,7 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,94,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,94,100,100,100",
     "engadget": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1292,8 +1292,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1791560951\"",
-      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
+      "etag": "\"1792068672\"",
+      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1322,8 +1322,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"f76a65a15ddf0c94a41d18e43cac2830\"",
-      "modified": "Sun, 18 Oct 2026 16:14:24 GMT"
+      "etag": "W/\"ade5002f94767144b20b0057c7e1623d\"",
+      "modified": "Sun, 18 Oct 2026 19:49:55 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1338,7 +1338,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 19:01:08 GMT"
+      "modified": "Sun, 18 Oct 2026 19:56:13 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1347,8 +1347,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad51743-2fb7\"",
-      "modified": "Sun, 18 Oct 2026 19:00:19 GMT"
+      "etag": "W/\"6ad52550-2fb7\"",
+      "modified": "Sun, 18 Oct 2026 20:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1367,8 +1367,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ad504f3-b7d\"",
-      "modified": "Sun, 18 Oct 2026 17:42:11 GMT"
+      "etag": "\"6ad52112-b7d\"",
+      "modified": "Sun, 18 Oct 2026 19:42:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1378,7 +1378,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 19:01:08 GMT"
+      "modified": "Sun, 18 Oct 2026 20:01:06 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1397,8 +1397,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"e404178b979ea26ac9fdc475b220ba78\"",
-      "modified": "Sun, 18 Oct 2026 18:45:40 GMT"
+      "etag": "W/\"73b464a4955804184a33fcbdeee43c42\"",
+      "modified": "Sun, 18 Oct 2026 19:57:22 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -2188,6 +2188,32 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "Should You Buy These 4 Video Game Stocks Before GTA 6 Arrives? - The Motley Fool",
+      "link": "https://www.fool.com/investing/2026/10/18/should-you-buy-these-game-stocks-before-gta-6/",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQN0Fra3F1cm0tbzhsNWVRR0RIUjc0bHhPMDhDUlc2TjhocGxtTUEyRmJlS0dKZnhFbTgwQWRSMlBEQUNfRlVMOHdRRXE4ZnV1elA4QnhDOTJTSUJ2Uk1ueS1KbENXWm1NTWtLeVFMeXlDV2xnTTV0STBCZkFzMExzZEtSX0hGWU9sS2htY25mS3FuUQ?oc=5",
+      "date": "2026-10-18T19:42:50+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://g.foolcdn.com/image/?url=https%3A%2F%2Fg.foolcdn.com%2Feditorial%2Fimages%2F890863%2Fvideo-games-gaming-image-source-getty.jpg&w=1200&op=resize",
+      "description": "Should You Buy These 4 Video Game Stocks Before GTA 6 Arrives?&nbsp;&nbsp;The Motley Fool"
+    },
+    {
+      "title": "Has Rockstar Downgraded GTA 6’s Graphics Ahead of Release Next Month? - GameFront - Mods",
+      "link": "https://www.gamefront.com/news/has-rockstar-downgraded-gta-6s-graphics-ahead-of-release-next-month",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPUlcyTERPWURpUE96M1VYa3dFZ203WlhXUm02RUM4MWpqeUVuUUFNalRkMXdSRWt1R3ByUzR2T24xb1N3SmdWVHhxZ05yYThSM00zN0k4YmhMM0tHTkhJMkZ5R20yN2ZVc2p2T29PQmdhc2FhbXNTY2JhR0stYm1HY3hyVGQ4SjFxWXRlSE5aYkVscVdfZmI3RVZJcXpBbnc?oc=5",
+      "date": "2026-10-18T19:22:43+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "Has Rockstar Downgraded GTA 6’s Graphics Ahead of Release Next Month?&nbsp;&nbsp;GameFront - Mods"
+    },
+    {
       "title": "Les stratégies d'Epic Games et de Xbox et GTA VI - Ce qu'il ne fallait pas manquer cette semaine - new-game-plus.fr",
       "link": "https://new-game-plus.fr/actualites-s42-2026/",
       "source_link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE4wcm0zN1draHBZUVhLU214azVJaUZuTnlGU3RpZ2VjUzV2WklLM1ZYMWhwenhhSk14aW9VaF93N3ZNblcwbUEwLVFndmF6QlVrNjRpY3RLRTg?oc=5",
@@ -2199,6 +2225,19 @@
       "lang": "fr",
       "image": "https://new-game-plus.fr/wp-content/uploads/2026/10/GTA-VI-1.jpg",
       "description": "Les stratégies d'Epic Games et de Xbox et GTA VI - Ce qu'il ne fallait pas manquer cette semaine&nbsp;&nbsp;new-game-plus.fr"
+    },
+    {
+      "title": "Activision Dismisses The Legend of Zelda: Ocarina of Time Remake, Claiming GTA VI and Call of Duty: Modern Warfare 4 Are the Biggest Games of 2026 - LevelUp",
+      "link": "https://www.levelup.com/en/news/activision-dismisses-the-legend-of-zelda-ocarina-of-time-remake-claiming-gta-vi-and-call-of-duty-modern-warfare-4-are-the-biggest-games-of-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMihwJBVV95cUxQNjlRRWYyUEJRQm9RR1owMXV4OXk0REJ0QlItRFg1dUlESGVWdWNqRlEtdEJfaTdsbjUxempZVVZ0dFhPNUNEYmg3cXgzYmNHaUxZQkFSdkFnVU9kWHB0UHphRzIzdUM1NUZHZGsxYnE4aklmS1B0dUUwX1l0dnZwNkpHYkY5MVg1bTFxT3ltS2VaYkxGSUJSVTNadGdfRUpZZDczTng2Q1FPSzFfa0NrWlhLVjNQRWNneWZDb3NUN2x5NFFhRGIxcFpaV3RnVnN1MkxWNGtxRUY4ZTVtVk01LWNHVjhJYXN5U2NaeGV5VFFIdEI5NldHLVM3eDFHTVAxQ3JQRnEzRQ?oc=5",
+      "date": "2026-10-18T18:36:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.levelup.com/resizer/v2/3UE2SLGGC5FTRGKKOPD4BO37LE.jpg?auth=9b3569e8f1fa446541acec748570590cbad117efe6db93a76df69caeb73df9db&height=630&width=1200&quality=70&smart=true",
+      "description": "Activision Dismisses The Legend of Zelda: Ocarina of Time Remake, Claiming GTA VI and Call of Duty: Modern Warfare 4 Are the Biggest Games of 2026&nbsp;&nbsp;LevelUp"
     },
     {
       "title": "Even Local News Is Warning Miami About GTA 6 Scams Now",
@@ -4751,7 +4790,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://www.avcesar.com/source/actualites/00/00/BE/A7/main_gta-vi-une-bande-annonce-de-lancement-magnifique_10231114.webp",
-      "description": "GTA VI : une bande-annonce de lancement magnifique !&nbsp;&nbsp;AVcesar"
+      "description": "GTA VI : une bande-annonce de lancement magnifique !&nbsp;&nbsp;AVcesar",
+      "extraSources": [
+        {
+          "source": "Google News (FR, 7 jours)",
+          "link": "https://www.bhmag.fr/actualites/gaming-retrogaming/rockstar-games-publie-la-bande-annonce-de-lancement-de-gta-6-91009"
+        }
+      ]
     },
     {
       "title": "GTA 6 Trailer Features Meme Coin—And Solana Copycat Soars 2,900% - Yahoo Finance",
@@ -17335,7 +17380,6 @@
     {
       "title": "Le récap tech de la semaine : l’IA devient agent, GTA 6 sous pression - KultureGeek",
       "link": "https://kulturegeek.fr/news-361409/recap-tech-semaine-lia-devient-agent-gta-6-pression",
-      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPcUE5Z0RRY04zMXFEdW5RVFFtSVhDYnd2dlUybkE5cHJSYUtENzBpMTkwdm94cEVmNnlXNG51VnktR3ozcERpa2pGdFpxTFRyTmpXQm5mckhJNEVpbDJUMkRVT2VNVUFxanNlRTQ5RjJETzdkUHNlbEZLZFZoVURHY2otQldzWDBFQ3U0bGx4aw?oc=5",
       "date": "2026-10-11T19:54:00+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -17348,7 +17392,6 @@
     {
       "title": "Mauvaise nouvelle : GTA 6 sera injouable pour des millions de joueurs au lancement - La Crème Du Gaming",
       "link": "https://www.lacremedugaming.fr/jeux/gta/gta-6/mauvaise-nouvelle-gta-6-injouable-pour-des-millions-joueurs-au-lancement-208525.html",
-      "source_link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNdVVXNU55Vmp2T3dIUWctWnlXMDJjYlVucXo3SXNkWklvWjNOd1lHQXlmUklmRlJydU9QYzBVS05DNkpCRTF2bm9lalFvLVFaY3JWU0h0UmRJWEdwYXBXWkFfTmZITVNVQU8yQXUwc1Y2dDJIYzA3Q0g5N0VPeDFkOFdObG1oSEc2RGNiSDhMMHJYQ3N6V05BbTg0NnliUGtsN3E0SUhPVWRXN19zNll0THZJeW1qX2JqUDBYNTZGYkFnMUdDTVVXSXlB?oc=5",
       "date": "2026-10-11T19:30:06+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -17361,7 +17404,6 @@
     {
       "title": "GTA 6 : le leaker menace de publier le jeu complet - Univers-Simu.com",
       "link": "https://www.univers-simu.com/news/gta-6-leaker-menace-publier-jeu-complet-230676/",
-      "source_link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNX2FMRHl3NGpSaC1Za3I5a3JGSzdZb3otUUFoS2hJWkdRLWFwRkFlOGR0Ulh3RVVQTWo5dENpOEl1cHNiTEZHZnZmWnVWcWJHQmZKWWNTamtaQWRjcHlUekZfcFg3VlVEMVZ3bUVWSFVZU21wblBFX0wwc2F2eS1zUjRpck5fcHBv?oc=5",
       "date": "2026-10-11T19:28:30+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -17374,7 +17416,6 @@
     {
       "title": "Why GTA 6 Can Show Nudity When Indie Games Get Delisted - eGamers.io",
       "link": "https://egamers.io/why-gta-6-can-show-nudity-when-indie-games-get-delisted/",
-      "source_link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOYUZ3bHRURFg5YnRGMGhOS2lKbGhha0dwQWtJbnZhSl92ZlBRNjQ5bGZ4Njk5OHNXQWtWSXhtbU1oVUhndzRGZFF4UnIzZVBwd2Jxc2laLWtLdk5CZmIxdm1FMlVqMExjQUZWWHNpUDdoT3pPTDZkeElWTUhEQjE1dA?oc=5",
       "date": "2026-10-11T19:27:47+00:00",
       "source": "Google News (EN)",
       "official": false,
@@ -17387,7 +17428,6 @@
     {
       "title": "Australian Government Helps Workers Take Time Off for GTA 6 Launch - OpenCritic",
       "link": "https://opencritic.com/news/37559/australian-government-helps-workers-take-time-off-for-gta-6-launch",
-      "source_link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPTjNQdFBacVgtamZ6a2dxakNnSkV5dkdORTM0bE9Ka3ZRcDliVFJvOTNfUVhoRVdDS3dUbFZrTjZCTDB0VlQ1cS0ySGtKc016OUNyQzRUVlVma2k4SFdOM09VRzVaUG5kN0FaNU1qcmJ4ZFQ4NV9DSURadE9zdEtFQVc5QUI1OE1qLVphMzJWc1dIRUlzV0dqMVNZcXh5a2JRVlE?oc=5",
       "date": "2026-10-11T19:14:55+00:00",
       "source": "Google News (EN)",
       "official": false,

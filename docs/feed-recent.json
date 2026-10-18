@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-18T19:01:27.064596+00:00",
+  "generated_at": "2026-10-18T20:01:26.040927+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
     "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 23.3,
+  "duration_seconds": 24.9,
   "decode_failures": 0,
-  "total_articles": 4061,
-  "new_this_run": 1,
+  "total_articles": 4064,
+  "new_this_run": 3,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -449,10 +449,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -479,8 +479,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
-      "articles_exclusifs": 1161,
+      "new_this_run": 0,
+      "articles_exclusifs": 1160,
       "last_article": "2026-10-18T18:58:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -492,9 +492,9 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1534,
-      "last_article": "2026-10-18T16:10:44+00:00",
+      "new_this_run": 3,
+      "articles_exclusifs": 1537,
+      "last_article": "2026-10-18T19:42:50+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -507,7 +507,7 @@
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 46,
-      "last_article": "2026-10-16T09:02:37+00:00",
+      "last_article": "2026-10-16T10:23:00+00:00",
       "days_since_last_article": 2,
       "status": "ok"
     },
@@ -683,10 +683,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 20,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-16T21:30:28+00:00",
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
-      "days_since_last_article": 3,
-      "status": "en_attente"
+      "days_since_last_article": 4,
+      "status": "ok"
     },
     {
       "id": "destructoid",
@@ -1203,15 +1203,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 11,
-      "status": "ok"
+      "status": "en_attente"
     }
   ],
   "sources_silence": {
@@ -1269,7 +1269,7 @@
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,100,100,100,100,100,94,100,100",
+    "theverge": "100,100,100,100,100,100,100,100,94,100,100,100",
     "engadget": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1291,8 +1291,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1791560951\"",
-      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
+      "etag": "\"1792068672\"",
+      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1321,8 +1321,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"f76a65a15ddf0c94a41d18e43cac2830\"",
-      "modified": "Sun, 18 Oct 2026 16:14:24 GMT"
+      "etag": "W/\"ade5002f94767144b20b0057c7e1623d\"",
+      "modified": "Sun, 18 Oct 2026 19:49:55 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1337,7 +1337,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 19:01:08 GMT"
+      "modified": "Sun, 18 Oct 2026 19:56:13 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1346,8 +1346,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad51743-2fb7\"",
-      "modified": "Sun, 18 Oct 2026 19:00:19 GMT"
+      "etag": "W/\"6ad52550-2fb7\"",
+      "modified": "Sun, 18 Oct 2026 20:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1366,8 +1366,8 @@
     },
     "vgc": {
       "url": "https://www.videogameschronicle.com/category/news/feed/",
-      "etag": "\"6ad504f3-b7d\"",
-      "modified": "Sun, 18 Oct 2026 17:42:11 GMT"
+      "etag": "\"6ad52112-b7d\"",
+      "modified": "Sun, 18 Oct 2026 19:42:10 GMT"
     },
     "rockstaractu": {
       "url": "https://rockstaractu.com/feed/",
@@ -1377,7 +1377,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 19:01:08 GMT"
+      "modified": "Sun, 18 Oct 2026 20:01:06 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1396,8 +1396,8 @@
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
-      "etag": "W/\"e404178b979ea26ac9fdc475b220ba78\"",
-      "modified": "Sun, 18 Oct 2026 18:45:40 GMT"
+      "etag": "W/\"73b464a4955804184a33fcbdeee43c42\"",
+      "modified": "Sun, 18 Oct 2026 19:57:22 GMT"
     },
     "xboxygen-natif": {
       "url": "https://www.xboxygen.com/feed",
@@ -2187,6 +2187,32 @@
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
     {
+      "title": "Should You Buy These 4 Video Game Stocks Before GTA 6 Arrives? - The Motley Fool",
+      "link": "https://www.fool.com/investing/2026/10/18/should-you-buy-these-game-stocks-before-gta-6/",
+      "source_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQN0Fra3F1cm0tbzhsNWVRR0RIUjc0bHhPMDhDUlc2TjhocGxtTUEyRmJlS0dKZnhFbTgwQWRSMlBEQUNfRlVMOHdRRXE4ZnV1elA4QnhDOTJTSUJ2Uk1ueS1KbENXWm1NTWtLeVFMeXlDV2xnTTV0STBCZkFzMExzZEtSX0hGWU9sS2htY25mS3FuUQ?oc=5",
+      "date": "2026-10-18T19:42:50+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://g.foolcdn.com/image/?url=https%3A%2F%2Fg.foolcdn.com%2Feditorial%2Fimages%2F890863%2Fvideo-games-gaming-image-source-getty.jpg&w=1200&op=resize",
+      "description": "Should You Buy These 4 Video Game Stocks Before GTA 6 Arrives?&nbsp;&nbsp;The Motley Fool"
+    },
+    {
+      "title": "Has Rockstar Downgraded GTA 6’s Graphics Ahead of Release Next Month? - GameFront - Mods",
+      "link": "https://www.gamefront.com/news/has-rockstar-downgraded-gta-6s-graphics-ahead-of-release-next-month",
+      "source_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPUlcyTERPWURpUE96M1VYa3dFZ203WlhXUm02RUM4MWpqeUVuUUFNalRkMXdSRWt1R3ByUzR2T24xb1N3SmdWVHhxZ05yYThSM00zN0k4YmhMM0tHTkhJMkZ5R20yN2ZVc2p2T29PQmdhc2FhbXNTY2JhR0stYm1HY3hyVGQ4SjFxWXRlSE5aYkVscVdfZmI3RVZJcXpBbnc?oc=5",
+      "date": "2026-10-18T19:22:43+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": null,
+      "description": "Has Rockstar Downgraded GTA 6’s Graphics Ahead of Release Next Month?&nbsp;&nbsp;GameFront - Mods"
+    },
+    {
       "title": "Les stratégies d'Epic Games et de Xbox et GTA VI - Ce qu'il ne fallait pas manquer cette semaine - new-game-plus.fr",
       "link": "https://new-game-plus.fr/actualites-s42-2026/",
       "source_link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE4wcm0zN1draHBZUVhLU214azVJaUZuTnlGU3RpZ2VjUzV2WklLM1ZYMWhwenhhSk14aW9VaF93N3ZNblcwbUEwLVFndmF6QlVrNjRpY3RLRTg?oc=5",
@@ -2198,6 +2224,19 @@
       "lang": "fr",
       "image": "https://new-game-plus.fr/wp-content/uploads/2026/10/GTA-VI-1.jpg",
       "description": "Les stratégies d'Epic Games et de Xbox et GTA VI - Ce qu'il ne fallait pas manquer cette semaine&nbsp;&nbsp;new-game-plus.fr"
+    },
+    {
+      "title": "Activision Dismisses The Legend of Zelda: Ocarina of Time Remake, Claiming GTA VI and Call of Duty: Modern Warfare 4 Are the Biggest Games of 2026 - LevelUp",
+      "link": "https://www.levelup.com/en/news/activision-dismisses-the-legend-of-zelda-ocarina-of-time-remake-claiming-gta-vi-and-call-of-duty-modern-warfare-4-are-the-biggest-games-of-2026/",
+      "source_link": "https://news.google.com/rss/articles/CBMihwJBVV95cUxQNjlRRWYyUEJRQm9RR1owMXV4OXk0REJ0QlItRFg1dUlESGVWdWNqRlEtdEJfaTdsbjUxempZVVZ0dFhPNUNEYmg3cXgzYmNHaUxZQkFSdkFnVU9kWHB0UHphRzIzdUM1NUZHZGsxYnE4aklmS1B0dUUwX1l0dnZwNkpHYkY5MVg1bTFxT3ltS2VaYkxGSUJSVTNadGdfRUpZZDczTng2Q1FPSzFfa0NrWlhLVjNQRWNneWZDb3NUN2x5NFFhRGIxcFpaV3RnVnN1MkxWNGtxRUY4ZTVtVk01LWNHVjhJYXN5U2NaeGV5VFFIdEI5NldHLVM3eDFHTVAxQ3JQRnEzRQ?oc=5",
+      "date": "2026-10-18T18:36:00+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://www.levelup.com/resizer/v2/3UE2SLGGC5FTRGKKOPD4BO37LE.jpg?auth=9b3569e8f1fa446541acec748570590cbad117efe6db93a76df69caeb73df9db&height=630&width=1200&quality=70&smart=true",
+      "description": "Activision Dismisses The Legend of Zelda: Ocarina of Time Remake, Claiming GTA VI and Call of Duty: Modern Warfare 4 Are the Biggest Games of 2026&nbsp;&nbsp;LevelUp"
     },
     {
       "title": "Even Local News Is Warning Miami About GTA 6 Scams Now",
@@ -4750,7 +4789,13 @@
       "specialist": false,
       "lang": "fr",
       "image": "https://www.avcesar.com/source/actualites/00/00/BE/A7/main_gta-vi-une-bande-annonce-de-lancement-magnifique_10231114.webp",
-      "description": "GTA VI : une bande-annonce de lancement magnifique !&nbsp;&nbsp;AVcesar"
+      "description": "GTA VI : une bande-annonce de lancement magnifique !&nbsp;&nbsp;AVcesar",
+      "extraSources": [
+        {
+          "source": "Google News (FR, 7 jours)",
+          "link": "https://www.bhmag.fr/actualites/gaming-retrogaming/rockstar-games-publie-la-bande-annonce-de-lancement-de-gta-6-91009"
+        }
+      ]
     },
     {
       "title": "GTA 6 Trailer Features Meme Coin—And Solana Copycat Soars 2,900% - Yahoo Finance",
@@ -6127,45 +6172,6 @@
       "lang": "fr",
       "image": "https://io-fsly-bfmtv.cdn.nextradiotv.com/nlUd8GZB7pULzRqO0vC2gEKcyVk=/0x106:2048x1258/2048x0/images/Un-jeune-couple-Illustration-2051974.jpg",
       "description": "\"Est-ce que jouer c’est tromper ?\": quand GTA 6 et les petites amies virtuelles par IA sèment la zizanie dans les couples&nbsp;&nbsp;RMC"
-    },
-    {
-      "title": "Découvrez 30 nouvelles images de GTA 6 tirées du trailer de lancement - IGN France",
-      "link": "https://fr.ign.com/grand-theft-auto-6/93177/decouvrez-30-nouvelles-images-de-gta-6-tirees-du-trailer-de-lancement",
-      "source_link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNZzBhc0JrRU1CSXhvVWZ1SUFranVTMnBrdGZaV1FQNXYwY000YmJ4cnhxdEI2OWF0WDFjVC11aXZacWwyTk01WVl2aGxUSzNKYjZwSkJvcHo3ZWVkeWo4Ym9FaUhGbHZSOXRrZWloQzVJSGVQWTlHa2ZRckdlTC1kVEJPUDhWLVlsR1Zzb2N3RlRWSDlpaHNXTkpLNG41dHpvaXJ6WHl1STNDenpscVlNcFBDYw?oc=5",
-      "date": "2026-10-15T16:53:00+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://sm.ign.com/t/ign_fr/news/o/over-30-ne/over-30-new-gta-6-screenshots-from-the-launch-trailer_7be8.1200.jpg",
-      "description": "Découvrez 30 nouvelles images de GTA 6 tirées du trailer de lancement&nbsp;&nbsp;IGN France"
-    },
-    {
-      "title": "Justice Composed the Score for Grand Theft Auto VI - Pitchfork",
-      "link": "https://pitchfork.com/story/justice-composed-the-score-for-grand-theft-auto-vi/",
-      "source_link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNTEJSbm9ockhTbDkxMXlDUWl6ZzFJSnVuWk1lZ2U2cFpUOEtvUzZXc2xNMWJBbThUVVdCOFE1ZC1lRmVRZ2xlcVJhUm83bU5FaVk3RUN3bHp3NDdLdmducldHVWw1ZWNyTF9jX3BtQ0JmekhYVkx3aHRkNmZ6bUVFcjVBT1RlQQ?oc=5",
-      "date": "2026-10-15T16:52:34+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://media.pitchfork.com/photos/6ad0d7e955d07c15782a269d/16:9/w_1280,c_limit/Justice.jpg",
-      "description": "Justice Composed the Score for Grand Theft Auto VI&nbsp;&nbsp;Pitchfork"
-    },
-    {
-      "title": "'GTA 6' Finally Goes Gold in Official Launch Trailer - Collider",
-      "link": "https://collider.com/gta-6-launch-trailer/",
-      "source_link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFA4WWpfUHZOSVVVb182TzFOYTctWkxBY0JocDM0UEh4S1ZZeWpiWWxBcDBxTGZNNnhtcXc4b0puVVBuX3k5YlBoZ2tGVnNDY2FGaTBMcw?oc=5",
-      "date": "2026-10-15T16:49:37+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://static0.colliderimages.com/wordpress/wp-content/uploads/2026/06/lucia_caminos_01.jpg?w=1600&h=900&fit=crop",
-      "description": "'GTA 6' Finally Goes Gold in Official Launch Trailer&nbsp;&nbsp;Collider"
     }
   ],
   "partial": true,
