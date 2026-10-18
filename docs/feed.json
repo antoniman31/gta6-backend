@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T22:01:30.610626+00:00",
+  "generated_at": "2026-10-18T23:01:22.670035+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 24.3,
+  "duration_seconds": 23.8,
   "decode_failures": 0,
-  "total_articles": 4071,
-  "new_this_run": 1,
+  "total_articles": 4073,
+  "new_this_run": 2,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -450,10 +450,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -892,10 +892,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -909,7 +909,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 12,
       "last_article": "2026-10-12T18:08:55+00:00",
       "days_since_last_article": 6,
@@ -918,7 +918,7 @@
     {
       "id": "purexbox",
       "name": "Pure Xbox",
-      "entries_fetched": 100,
+      "entries_fetched": 79,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:purexbox.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -948,8 +948,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 12,
+      "new_this_run": 1,
+      "articles_exclusifs": 13,
       "last_article": "2026-10-14T17:02:41+00:00",
       "days_since_last_article": 4,
       "status": "ok"
@@ -987,8 +987,8 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 3,
+      "new_this_run": 1,
+      "articles_exclusifs": 4,
       "last_article": "2026-10-07T07:17:12+00:00",
       "days_since_last_article": 11,
       "status": "ok"
@@ -1113,10 +1113,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-17T09:45:42+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 4,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1204,30 +1204,30 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 11,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
   "decodage_etat": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "rockstar-announce": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "rockstar-en": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "rockstar-announce": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,100,0,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
-    "gnews-fr": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-en": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gnews-en-7j": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gnews-fr": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-en": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-fr-7j": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gnews-en-7j": "100,100,100,100,100,100,100,100,0,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1251,23 +1251,23 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "gamerant-gnews": "100,100,100,100,100,100,100,100,0,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "28,28,28,28,28,28,28,28,28,28,28,28",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "purexbox": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "trueach": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "jdg": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "numerama": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "gamergen": "100,100,100,100,100,100,100,100,58,0,100,100",
-    "frandroid": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "theverge": "100,100,100,100,94,100,100,100,100,0,100,100",
-    "engadget": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "pushsquare": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "schreier": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "xboxygen": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,0,100,100,79",
+    "trueach": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "jdg": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "numerama": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "gamergen": "100,100,100,100,100,100,100,58,0,100,100,100",
+    "frandroid": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "theverge": "100,100,100,94,100,100,100,100,0,100,100,100",
+    "engadget": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "pushsquare": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "schreier": "100,100,100,100,100,100,100,100,0,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
@@ -1276,23 +1276,23 @@
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,100,100,100,100,100,0,100,100",
-    "mgg": "100,100,100,100,100,100,100,100,100,0,100,100",
+    "dexerto": "100,100,100,100,100,100,100,100,0,100,100,100",
+    "mgg": "100,100,100,100,100,100,100,100,0,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "reddit-gta6-suivi": "25,25,25,25,25,25,25,25,0,25,25,25"
+    "reddit-gta6-suivi": "25,25,25,25,25,25,25,0,25,25,25,25"
   },
   "sources_declining": {},
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1792068672\"",
-      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
+      "etag": "\"1791560951\"",
+      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
-      "etag": "W/\"7201e6b6c501ed1cbba226ba82c81ed4\"",
-      "modified": "Sun, 18 Oct 2026 21:35:34 GMT"
+      "etag": "W/\"458ba16ebc3e33c979e307732bb92ef6\"",
+      "modified": "Sun, 18 Oct 2026 22:06:25 GMT"
     },
     "ignfr": {
       "url": "https://fr.ign.com/feed.xml",
@@ -1316,8 +1316,8 @@
     },
     "kotaku": {
       "url": "https://kotaku.com/feed",
-      "etag": "W/\"66adbfd4d3559e6a40ffdda24b3aa4ee\"",
-      "modified": "Sun, 18 Oct 2026 21:38:04 GMT"
+      "etag": "W/\"d6cdf5817e94827b12421800e96e65d2\"",
+      "modified": "Sun, 18 Oct 2026 22:24:42 GMT"
     },
     "rps": {
       "url": "https://www.rockpapershotgun.com/feed",
@@ -1332,7 +1332,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 21:59:29 GMT"
+      "modified": "Sun, 18 Oct 2026 22:58:12 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1341,8 +1341,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad54171-2fb7\"",
-      "modified": "Sun, 18 Oct 2026 22:00:17 GMT"
+      "etag": "W/\"6ad54f80-2fb7\"",
+      "modified": "Sun, 18 Oct 2026 23:00:16 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1372,7 +1372,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Sun, 18 Oct 2026 22:01:11 GMT"
+      "modified": "Sun, 18 Oct 2026 23:00:34 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -17331,7 +17331,6 @@
     {
       "title": "GTA 6, Lucia nue en parachute dans une vidéo qui fait parler - INFINITY AREA",
       "link": "https://infinity-area.com/article/gta-6-lucia-nue-en-parachute-dans-une-video-qui-fait-parler",
-      "source_link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNY09va3JMTmFIeE1DbkdzZHNxeTJIT1ZudXBJSlViUnRLMjVMSUp0TDhrVTVlUVNBbS0taHMzeENaVm51dGo3NS1kNFhUeXNmLVFDam50R3AzRjBlMEtKUTNVZlpQci0ybjNRV3hmT1ZwaExHX25qZy0wclRtUUtCdTdCMi1UU3ZJZmwxSDByYnF5N2R0Uklaeg?oc=5",
       "date": "2026-10-11T22:13:00+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -53007,6 +53006,18 @@
       "description": "GTA 6 : Une date de sortie sur PC plus rapide que prévue ?&nbsp;&nbsp;MGG (Millenium)"
     },
     {
+      "title": "GTA 6 : la romance Jason/Lucia est optionnelle et Rockstar assume à fond - Journal du Geek",
+      "link": "https://www.journaldugeek.com/2026/09/09/gta-6-la-romance-jason-lucia-est-optionnelle-et-rockstar-assume-a-fond/",
+      "date": "2026-09-09T07:00:00+00:00",
+      "source": "Journal du Geek",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.journaldugeek.com/app/uploads/2026/09/Jason_and_Lucia_01-1600x900.jpg",
+      "description": "GTA 6 : la romance Jason/Lucia est optionnelle et Rockstar assume à fond&nbsp;&nbsp;Journal du Geek"
+    },
+    {
       "title": "GTA 6 : la version PC pourrait sortir plus tôt que prévu à cause du prix des consoles",
       "link": "https://www.frandroid.com/produits-android/console/3238735_gta-6-la-version-pc-pourrait-sortir-plus-tot-que-prevu-a-cause-du-prix-des-consoles",
       "source_link": null,
@@ -53166,6 +53177,18 @@
       "lang": "en",
       "image": "https://images.purexbox.com/a0178de740880/1280x720.jpg",
       "description": "GTA 6 Release Times Suggest Some Xbox Players Will Get Access Earlier Than Others&nbsp;&nbsp;Pure Xbox"
+    },
+    {
+      "title": "GTA 6 : des fans reconstituent la carte complète de Leonida grâce aux bandes-annonces et aux fuites - Frandroid",
+      "link": "https://www.frandroid.com/services/3235603_gta-6-des-fans-reconstituent-la-carte-complete-de-leonida-grace-aux-bandes-annonces-et-aux-fuites",
+      "date": "2026-09-07T07:00:00+00:00",
+      "source": "Frandroid",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://img.frandroid.com/images.frandroid.com/wp-content/uploads/2026/09/scr-20260907-hubx.png?resize=1600,900&key=3e68ab0e",
+      "description": "GTA 6 : des fans reconstituent la carte complète de Leonida grâce aux bandes-annonces et aux fuites&nbsp;&nbsp;Frandroid"
     },
     {
       "title": "Valve Vet: Moving GTA Online Players Is Rockstar's Real Test",
