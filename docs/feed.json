@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T20:41:25.035883+00:00",
+  "generated_at": "2026-10-19T21:01:27.009782+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 18.2,
+  "duration_seconds": 22.3,
   "decode_failures": 0,
-  "total_articles": 4168,
-  "new_this_run": 4,
+  "total_articles": 4167,
+  "new_this_run": 0,
   "hot_count": 65,
   "hot_threshold": 3,
   "sources_count": 63,
@@ -450,10 +450,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 10,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -493,8 +493,8 @@
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
-      "new_this_run": 4,
-      "articles_exclusifs": 1583,
+      "new_this_run": 0,
+      "articles_exclusifs": 1582,
       "last_article": "2026-10-19T20:31:40+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -541,10 +541,10 @@
     {
       "id": "insider",
       "name": "Insider Gaming",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 22,
       "last_article": "2026-10-19T00:13:57+00:00",
@@ -684,10 +684,10 @@
     {
       "id": "kotaku",
       "name": "Kotaku",
-      "entries_fetched": 20,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 11,
       "last_article": "2026-10-16T21:30:28+00:00",
@@ -754,7 +754,7 @@
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
-      "articles_exclusifs": 59,
+      "articles_exclusifs": 58,
       "last_article": "2026-10-19T14:45:47+00:00",
       "days_since_last_article": 0,
       "status": "ok"
@@ -866,14 +866,14 @@
     {
       "id": "gameinformer",
       "name": "Game Informer",
-      "entries_fetched": 50,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-16T21:00:00+00:00",
-      "days_since_last_article": 2,
+      "days_since_last_article": 3,
       "status": "ok"
     },
     {
@@ -1100,10 +1100,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-15T09:32:03+00:00",
@@ -1113,10 +1113,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-17T09:45:42+00:00",
@@ -1126,15 +1126,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 7,
       "last_article": "2026-10-19T16:37:22+00:00",
       "days_since_last_article": 0,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1191,10 +1191,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1204,15 +1204,15 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 12,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {},
@@ -1221,7 +1221,7 @@
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "rockstar-announce": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,100,100,100,100,100,100,58,100,100,100",
+    "gta6-netflix": "100,100,100,100,100,100,100,58,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
     "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1262,7 +1262,7 @@
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,100,100,100,100,0,100,100,100,100",
+    "gamergen": "100,100,100,100,100,100,0,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
     "theverge": "100,100,100,100,100,100,100,100,100,100,100,100",
     "engadget": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1286,8 +1286,8 @@
   "feed_http_state": {
     "take2-ir": {
       "url": "https://ir.take2games.com/rss/news-releases.xml?items=15",
-      "etag": "\"1792068672\"",
-      "modified": "Thu, 15 Oct 2026 12:51:12 GMT"
+      "etag": "\"1791560951\"",
+      "modified": "Fri, 09 Oct 2026 15:49:11 GMT"
     },
     "insider": {
       "url": "https://insider-gaming.com/feed/",
@@ -1332,7 +1332,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 19 Oct 2026 20:39:22 GMT"
+      "modified": "Mon, 19 Oct 2026 21:01:07 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1341,8 +1341,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad67dd8-328c\"",
-      "modified": "Mon, 19 Oct 2026 20:30:16 GMT"
+      "etag": "W/\"6ad684e1-328c\"",
+      "modified": "Mon, 19 Oct 2026 21:00:17 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1372,7 +1372,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 19 Oct 2026 20:41:11 GMT"
+      "modified": "Mon, 19 Oct 2026 21:01:01 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1381,13 +1381,13 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"c2d2120de8493035c69c6f8d84504204\"",
-      "modified": "Mon, 19 Oct 2026 18:23:21 GMT"
+      "etag": "W/\"170706b6992852728f8174a781cd7afa\"",
+      "modified": "Mon, 19 Oct 2026 20:47:29 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
-      "etag": "W/\"3de527d367928829d3a9e86316b931d3\"",
-      "modified": "Mon, 19 Oct 2026 19:18:58 GMT"
+      "etag": "W/\"41805516684e4b986143c16164b76b03\"",
+      "modified": "Mon, 19 Oct 2026 20:52:07 GMT"
     },
     "destructoid": {
       "url": "https://www.destructoid.com/feed/",
@@ -1401,8 +1401,8 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"c2d2120de8493035c69c6f8d84504204\"",
-      "modified": "Mon, 19 Oct 2026 18:23:21 GMT"
+      "etag": "W/\"170706b6992852728f8174a781cd7afa\"",
+      "modified": "Mon, 19 Oct 2026 20:47:29 GMT"
     }
   },
   "sources_incidents": [
@@ -2331,19 +2331,6 @@
       "lang": "en",
       "image": null,
       "description": "GTA 6 devs tried “a million” weapon wheel alternatives as struggles with RDR2 realism led some to quit&nbsp;&nbsp;Dexerto"
-    },
-    {
-      "title": "GTA 5 Leaves PS Plus Nov. 17, Two Days Before GTA 6 - GodisaGeek.com",
-      "link": "https://godisageek.com/2026/10/gta-5-ps-plus-november-removal/",
-      "source_link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1Rc0xWdlFrdjN5OWcxeFlRRURRWVpadDZrWWxrVjdMNnZ4VVB5V1loLTV1NmhXVndoa2hFX2Vpb3VKNHU0NDBZcXdmOUFpSWthZmxUT1ZWdThwUVh3QnVBcGNRX3FRVmdSdzZNbFR1VQ?oc=5",
-      "date": "2026-10-19T18:19:04+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://media.godisageek.com/uploads/gta-5-exits-ps-plus-extra-and-premium-nov-17-just-ahead-of-g-02ee95be6f2df960-85x85.webp",
-      "description": "GTA 5 Leaves PS Plus Nov. 17, Two Days Before GTA 6&nbsp;&nbsp;GodisaGeek.com"
     },
     {
       "title": "Release Of 'GTA VI' Will Cost American Companies A Fortune According To Professor Who Calculated Economic Impact - BroBible",
@@ -16089,7 +16076,13 @@
       "specialist": false,
       "lang": "en",
       "image": "https://files.vgtimes.com/posts/2026-10/grand-theft-auto-v-leaves-playstation-plus-two-days-before-gta-6-170939.webp",
-      "description": "With Grand Theft Auto 6 set to launch on PS5 on November 19, Sony Interactive Entertainment is preparing to remove its predecessor from PlayStation Plus two days earlier. Grand Theft Auto 5 will leave the Extra and Premium catalogs on November 17, 2026"
+      "description": "With Grand Theft Auto 6 set to launch on PS5 on November 19, Sony Interactive Entertainment is preparing to remove its predecessor from PlayStation Plus two days earlier. Grand Theft Auto 5 will leave the Extra and Premium catalogs on November 17, 2026",
+      "extraSources": [
+        {
+          "source": "Google News (EN)",
+          "link": "https://godisageek.com/2026/10/gta-5-ps-plus-november-removal/"
+        }
+      ]
     },
     {
       "title": "GTA 6 leaker Cyberleek claims full playable build exceeds 200GB - VideoCardz.com",
@@ -16954,7 +16947,6 @@
     {
       "title": "Rockstar’s next PS5 games: GTA 6, RDR2 and GTA IV in focus - Qazinform",
       "link": "https://qazinform.com/news/rockstar-may-bring-rdr2-and-gta-iv-back-to-ps5-a78e75",
-      "source_link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNQjBjM0gyTS1JdU85S1c2S0YwREI0UUNNZ21XTWdHeVlJSE9zWUZrMkhDOWdueld6OWJxYUJzM0lFbERXQ2cyXzg0d1NuZDVNMUVPRG8wYVNadTlSbHlRNFExRm5qVElKUG9JNEhWaFUxcmRVS09mZFBsbnVGc3gxZlBJcEFDclE?oc=5",
       "date": "2026-10-12T20:45:54+00:00",
       "source": "Google News (EN)",
       "official": false,
