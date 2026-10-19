@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-19T02:01:27.177687+00:00",
+  "generated_at": "2026-10-19T03:01:33.364698+00:00",
   "attente_recap": {
-    "articles": 6,
+    "articles": 0,
     "officiels": 0,
-    "sommet": 2
+    "sommet": 0
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 25.0,
+  "duration_seconds": 26.7,
   "decode_failures": 0,
-  "total_articles": 4079,
+  "total_articles": 4081,
   "new_this_run": 2,
   "hot_count": 65,
   "hot_threshold": 3,
@@ -430,7 +430,7 @@
       "new_this_run": 0,
       "articles_exclusifs": 135,
       "last_article": "2026-10-18T02:48:21+00:00",
-      "days_since_last_article": 0,
+      "days_since_last_article": 1,
       "status": "ok"
     },
     {
@@ -449,10 +449,10 @@
     {
       "id": "take2-ir",
       "name": "Take-Two Investor Relations (officiel)",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 1,
       "last_article": "2026-06-24T06:15:00-04:00",
@@ -462,15 +462,15 @@
     {
       "id": "rockstar-youtube",
       "name": "Rockstar Games (YouTube)",
-      "entries_fetched": 0,
-      "http_status": 404,
+      "entries_fetched": 15,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:11:46+00:00",
       "days_since_last_article": 3,
-      "status": "cassee"
+      "status": "ok"
     },
     {
       "id": "gnews-fr",
@@ -479,9 +479,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 1162,
-      "last_article": "2026-10-18T20:37:00+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 1163,
+      "last_article": "2026-10-19T02:07:23+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -493,8 +493,8 @@
       "redirect": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
       "new_this_run": 1,
-      "articles_exclusifs": 1543,
-      "last_article": "2026-10-19T01:53:25+00:00",
+      "articles_exclusifs": 1544,
+      "last_article": "2026-10-19T02:53:39+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -739,7 +739,7 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 1,
+      "new_this_run": 0,
       "articles_exclusifs": 39,
       "last_article": "2026-10-19T02:00:05+00:00",
       "days_since_last_article": 0,
@@ -891,10 +891,10 @@
     {
       "id": "vgc",
       "name": "VGC",
-      "entries_fetched": 10,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-15T13:44:19+00:00",
@@ -1112,10 +1112,10 @@
     {
       "id": "frandroid-natif",
       "name": "Frandroid (tag)",
-      "entries_fetched": 15,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-09-17T09:45:42+00:00",
@@ -1125,15 +1125,15 @@
     {
       "id": "reddit-leaks",
       "name": "Reddit — fuites et rumeurs",
-      "entries_fetched": 25,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 6,
       "last_article": "2026-10-14T19:52:27+00:00",
       "days_since_last_article": 4,
-      "status": "ok"
+      "status": "en_attente"
     },
     {
       "id": "destructoid",
@@ -1203,21 +1203,21 @@
     {
       "id": "reddit-gta6-suivi",
       "name": "Reddit — mises à jour et DLC",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 25,
+      "http_status": 200,
       "redirect": null,
       "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-07T14:39:12+00:00",
       "days_since_last_article": 11,
-      "status": "en_attente"
+      "status": "ok"
     }
   ],
   "sources_silence": {
     "rockstar-youtube": {
       "depuis": "2026-10-19T01:01:26.540093+00:00",
-      "succes": 0,
+      "succes": 1,
       "alertee": false
     },
     "rockstarmag-youtube": {
@@ -1228,16 +1228,16 @@
   },
   "decodage_etat": {},
   "sources_entries_history": {
-    "rockstar-en": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "rockstar-announce": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "gta6-netflix": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "rockstar-en": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "rockstar-fr": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "rockstar-announce": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gta6-netflix": "100,100,100,0,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
-    "gnews-fr": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "gnews-en": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "gnews-fr-7j": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "gnews-en-7j": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "rockstar-youtube": "15,15,15,15,15,15,15,15,15,0,0,15",
+    "gnews-fr": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gnews-en": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gnews-fr-7j": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gnews-en-7j": "100,100,100,0,100,100,100,100,100,100,100,100",
     "pcgamer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "insider": "10,10,10,10,10,10,10,10,10,10,10,10",
     "tomshw": "50,50,50,50,50,50,50,50,50,50,50,50",
@@ -1245,7 +1245,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,15,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,15,15,15,15,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1261,23 +1261,23 @@
     "jeuxactu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "actugaming": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gamerant": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "gamerant-gnews": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "gamerant-gnews": "100,100,100,0,100,100,100,100,100,100,100,100",
     "dualshockers": "10,10,10,10,10,10,10,10,10,10,10,10",
     "gta6times": "28,28,28,28,28,28,28,28,28,28,28,28",
     "gameinformer": "50,50,50,50,50,50,50,50,50,50,50,50",
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "xboxygen": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "purexbox": "100,100,100,100,0,100,100,79,100,100,100,100",
-    "trueach": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "jdg": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "numerama": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "gamergen": "100,100,100,58,0,100,100,100,100,100,100,100",
-    "frandroid": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "engadget": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "pushsquare": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "schreier": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "xboxygen": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,100,0,100,100,79,100,100,100,100,100",
+    "trueach": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "jdg": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "numerama": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "gamergen": "100,100,58,0,100,100,100,100,100,100,100,100",
+    "frandroid": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "theverge": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "engadget": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "pushsquare": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "schreier": "100,100,100,0,100,100,100,100,100,100,100,100",
     "rockstaractu": "20,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
@@ -1286,11 +1286,11 @@
     "frandroid-natif": "15,15,15,15,15,15,15,15,15,15,15,15",
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "dexerto": "100,100,100,100,0,100,100,100,100,100,100,100",
-    "mgg": "100,100,100,100,0,100,100,100,100,100,100,100",
+    "dexerto": "100,100,100,0,100,100,100,100,100,100,100,100",
+    "mgg": "100,100,100,0,100,100,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "reddit-gta6-suivi": "25,25,25,25,25,0,25,25,25,25,25,25"
+    "reddit-gta6-suivi": "25,25,25,25,0,25,25,25,25,25,25,25"
   },
   "sources_declining": {},
   "feed_http_state": {
@@ -1342,7 +1342,7 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Mon, 19 Oct 2026 02:01:06 GMT"
+      "modified": "Mon, 19 Oct 2026 03:01:10 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
@@ -1351,8 +1351,8 @@
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
-      "etag": "W/\"6ad579b5-2fb7\"",
-      "modified": "Mon, 19 Oct 2026 02:00:21 GMT"
+      "etag": "W/\"6ad587c2-2fb7\"",
+      "modified": "Mon, 19 Oct 2026 03:00:18 GMT"
     },
     "actugaming": {
       "url": "https://www.actugaming.net/feed/",
@@ -1382,7 +1382,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Mon, 19 Oct 2026 02:01:08 GMT"
+      "modified": "Mon, 19 Oct 2026 03:01:12 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -2199,6 +2199,32 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 Has “Hundreds” of Little Interiors to Explore, Says Rockstar - GamingBolt",
+      "link": "https://gamingbolt.com/gta-6-has-hundreds-of-little-interiors-to-explore-says-rockstar",
+      "source_link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPbm9nanpvRmotTzdUT1BaRVhMNVZCYVRPSWZjVU5fYmlfMXprd3lBQTFGa3cxTDhXUHplZFVldENGMS1mT0tZVmwyVFRMOFQweWpxa05fZkhTaGhMVVM1MzNpNEZyeTBuNmtHNkJqRXBrckZhVHQzQk9nc190UDlaUTJEbF9TX3JzZnRlR0thRQ?oc=5",
+      "date": "2026-10-19T02:53:39+00:00",
+      "source": "Google News (EN)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "en",
+      "image": "https://gamingbolt.com/wp-content/uploads/2023/12/grand-theft-auto-6-image-16.jpg",
+      "description": "GTA 6 Has “Hundreds” of Little Interiors to Explore, Says Rockstar&nbsp;&nbsp;GamingBolt"
+    },
+    {
+      "title": "GTA 6 : nouvelles fonctionnalités inspirées de Mafia 2 et Scarface - MMOEXP",
+      "link": "https://www.mmoexp.com/News/gta-6-nouvelles-fonctionnalit-s-inspir-es-de-mafia-2-et-scarface.html",
+      "source_link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOb3EyMUE3S1BZOU5ERXVuMFAxTTBHYUJDSGZ4QXI2RFJ6VjlkWTViWEI2MlV0RGRRWmRMaXMyWFlDOTVuN1JrUEFKS3FRSjFYUmYyZ2tZRFEtb3o0ZnplYnB1Nlp2SmRUMWpyd3BzNjRadjVzbkhHMU1zOTlycWFfeFpoUkVQYmRKYy0tWjBnUkwya3RRZmFYZVpaVjFfdw?oc=5",
+      "date": "2026-10-19T02:07:23+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://www.mmoexp.com/mmoexp-v250528/images/mmoexp_logo.png",
+      "description": "GTA 6 : nouvelles fonctionnalités inspirées de Mafia 2 et Scarface&nbsp;&nbsp;MMOEXP"
+    },
     {
       "title": "GTA 6 Fans Want a Physical Copy So Badly They Are Buying Bootlegs",
       "link": "https://www.gtaboom.com/gta-6-fans-want-a-physical-copy-so-badly-they-are-buying-bootlegs-b69f",
@@ -6155,32 +6181,6 @@
       "lang": "en",
       "image": "https://images.hothardware.com/contentimages/newsitem/71878/content/16x9_2133x1200_highres-gta-6-jason-lucia.jpg",
       "description": "GTA 6 Launch Trailer Reveals Jason's Troubled Army Past And PS5 Visuals&nbsp;&nbsp;HotHardware"
-    },
-    {
-      "title": "Le groupe français Justice prend les manettes de la bande originale de GTA VI ! Le duo électro français Justice sera aux manettes de la bande-son du prochain volet du jeu vidéo tant attendu. Un premier single, en collaboration avec Tame Impala, SZA,... - TF1 Info",
-      "link": "https://www.tf1info.fr/culture/videos/video-le-groupe-francais-justice-prend-les-manettes-de-la-bande-originale-de-gta-vi-le-duo-electro-francais-justice-sera-aux-manettes-de-la-bande-son-du-prochain-volet-du-jeu-video-tant-attendu-un-premier-single-en-collaboration-avec-tame-impala-sza-2470210.html",
-      "source_link": "https://news.google.com/rss/articles/CBMirANBVV95cUxQMG1zVnlfd0c5Z2ZqVWRuUlNjRXl1NTNEOGR1NDRTdHBNbGZoNm9VQTNLYWd2dkl0R015bmUydThwb0ZYQi1BNThVX29YaTdaU21WNTE1dlp1NFI2M3RaV3RIWVFLNDVsOVZxeFB2NS1MQjUxRFhqNi1WSTluU0xKSVJvVEZVSTdLUVZuQTN3ejFxcGxyRGtKZ1JaVkthN1I3RHlhNjA5WGZNU0VWeDMxSU5fVG5HTFpOWW5scWZkNjF3aFpBU2dnOVlPZzlwclgyV2FGUk5WSjg0MG1fYWlzV05wbHhSTXlyVHFFQmdTVER6ZkxSSG85SVZnVVpkZnlxYzA5cFhXME1LMGVZV0wzYWppTDFRbzdtN3dzdE9lV1dUMGhJZjhpbE8yTzlVS2RQUDAyZlJhSmVDNUFPRDlndlhXQVRGQzU5N1ZsNGNFQXRHOWw2b0dhMVMwZHI3eThEMzByU1R1dVdjMTRHNE52cy1VZXFvREF2ZzhhNlp5ZFgxUkNHYy1YNDV3b1Q3ektBODRIYW5tSHdQMERaSVEzRkY2MnNkZlhkVG9ZUA?oc=5",
-      "date": "2026-10-15T17:55:10+00:00",
-      "source": "Google News (FR)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "fr",
-      "image": "https://photos.tf1info.fr/images/1280/720/le-groupe-francais-justice-prend-les-manettes-de-la-bande-originale-de-gta-vi-543e6c-0@1x.jpeg?overlayImage=bG9nby10ZjFpbmZvLWRlZmF1bHQucG5n&overlayWidth=18&overlayGravity=northwest&s=78c802",
-      "description": "Le groupe français Justice prend les manettes de la bande originale de GTA VI ! Le duo électro français Justice sera aux manettes de la bande-son du prochain volet du jeu vidéo tant attendu. Un premier single, en collaboration avec Tame Impala, SZA,...&nbsp;&nbsp;TF1 Info"
-    },
-    {
-      "title": "Justice Shares ‘GTA 6’ Track ‘Flower In A Hurricane’ Featuring Tame Impala, SZA & King Gizzard - JamBase",
-      "link": "https://www.jambase.com/article/justice-tame-impala-sza-king-gizzard-gta-6-flower-hurricane",
-      "source_link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNT3pOSk8tbkpQZ1o0TnRwUmZPMXYtZ0JFUS1JVnRMOVpDbGdIT2tSYUh1OE9LU05iNTlYSHJfNFFNcDlOaV81Sm4zRVZaZ0xJYUxzMVhEMERhTHpKVVM5WDUwUk9SeDBZb3ZZSUdselRjQXdhZnlyRTluUVZYN3NTTkxlcXpLUkdyRUlrV1o4UThwYzRNU0E?oc=5",
-      "date": "2026-10-15T17:51:00+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://www.jambase.com/wp-content/uploads/2026/10/justice-flower-in-a-hurricane-1480x832.jpg",
-      "description": "Justice Shares ‘GTA 6’ Track ‘Flower In A Hurricane’ Featuring Tame Impala, SZA & King Gizzard&nbsp;&nbsp;JamBase"
     }
   ],
   "partial": true,
