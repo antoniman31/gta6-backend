@@ -3232,6 +3232,21 @@ def test_panneau_du_compteur(nav, url):
     check(echap and not ferme["ouvert"],
           "[compteur] Échap le ferme, comme les autres dialogues")
     check(not ferme["bat"], "[compteur] et coupe l'intervalle aussi par ce chemin")
+    # LE PALIER EST CALCULÉ UNE SEULE FOIS POUR L'EN-TÊTE ET LE PANNEAU.
+    # Le seuil des 24 h était écrit deux fois ; rien n'empêchait la
+    # disposition précise du panneau de basculer sans que l'en-tête vire
+    # au rouge. Les bornes sont éprouvées des deux côtés.
+    H = 3600 * 1000
+    paliers = page.evaluate("""(h) => [
+        palierCompteur(31 * 24 * h), palierCompteur(30 * 24 * h + 1),
+        palierCompteur(30 * 24 * h - 1), palierCompteur(7 * 24 * h + 1),
+        palierCompteur(7 * 24 * h - 1), palierCompteur(24 * h + 1),
+        palierCompteur(24 * h - 1), palierCompteur(0)]""", H)
+    check(paliers == ["", "", "soon", "soon", "urgent", "urgent",
+                      "final", "final"],
+          "[compteur] les quatre paliers basculent à 30 j, 7 j et 24 h, à "
+          "la milliseconde près (%s)" % paliers)
+
     check(not err, "[compteur] aucune erreur JavaScript (%s)" % err[:1])
     ctx.close()
 
@@ -3340,10 +3355,36 @@ def test_panneau_du_compteur(nav, url):
             const chiffre = trait.getBoundingClientRect();
             const rb = barre.getBoundingClientRect();
             const dodos = c.querySelector('.compteur-dodos');
+            const entete = document.getElementById('countdown');
             const r = {
               tuiles: cases.length,
               rangees: hauts.size,
               classe: d.className,
+              // LE MÊME PALIER DES DEUX CÔTÉS. C'est tout l'objet du
+              // calcul partagé : le panneau ne peut plus passer en
+              // rouge pendant que l'en-tête reste bleue.
+              palierEntete: entete ? entete.className : null,
+              // La teinte réellement rendue sur un gros chiffre vivant
+              // (pas une tuile à zéro, qui garde son gris).
+              teinte: (() => {
+                const vivant = [...cases].find(c => !c.classList.contains('zero'));
+                if(!vivant) return null;
+                const rendue = getComputedStyle(vivant.querySelector('b')).color;
+                // La teinte ATTENDUE, résolue depuis le jeton : comparer
+                // à une chaîne écrite en dur dans le test figerait la
+                // couleur en double, ici et dans la feuille de style.
+                const pal = ['soon','urgent','final']
+                              .find(x => d.classList.contains(x));
+                let attendue = null;
+                if(pal){
+                  const sonde = document.createElement('span');
+                  sonde.style.color = 'var(--compte-' + pal + ')';
+                  document.body.appendChild(sonde);
+                  attendue = getComputedStyle(sonde).color;
+                  sonde.remove();
+                }
+                return {rendue: rendue, attendue: attendue, palier: pal || ""};
+              })(),
               zeros: cases.filter(e => e.classList.contains('zero'))
                           .map(e => e.querySelector('span').textContent),
               // Les tuiles dont le NOMBRE vaut zéro, lues à l'écran : la
@@ -3380,6 +3421,20 @@ def test_panneau_du_compteur(nav, url):
         check(("precis" if precis else "second") in vue["classe"],
               "[compteur %s] la taille suit l'échéance (« %s »)"
               % (libelle, vue["classe"]))
+        # Le palier que porte le panneau doit être celui de l'en-tête.
+        pal_panneau = [m for m in ("soon", "urgent", "final")
+                       if m in (vue["classe"] or "")]
+        pal_entete = [m for m in ("soon", "urgent", "final")
+                      if m in (vue["palierEntete"] or "")]
+        check(pal_panneau == pal_entete,
+              "[compteur %s] le panneau et l'en-tête annoncent le même "
+              "palier (panneau %s, en-tête %s)"
+              % (libelle, pal_panneau or ["aucun"], pal_entete or ["aucun"]))
+        t = vue["teinte"] or {}
+        check(not t.get("palier") or t.get("rendue") == t.get("attendue"),
+              "[compteur %s] et les gros chiffres portent la teinte du "
+              "palier « %s » (rendue %s, attendue %s)"
+              % (libelle, t.get("palier"), t.get("rendue"), t.get("attendue")))
         check(vue["coupe"] is None,
               "[compteur %s] aucun libellé ne passe à la ligne — c'est "
               "tout l'intérêt des tuiles (« %s »)" % (libelle, vue["coupe"]))
@@ -3786,6 +3841,13 @@ def test_contraste_partout(nav, url):
     page.evaluate("async () => { await checkFromBackend(false); }")
     page.wait_for_selector("#feed .card-actions", state="attached",
                            timeout=20000)
+    # ATTENDRE LA FIN DU RATTRAPAGE. L'app affiche d'abord le fichier
+    # allégé, puis l'historique complet arrive seul et remplace
+    # lastItems. Marquer des articles lus pendant ce remplacement donne
+    # un readSet qui ne correspond à aucune carte affichée, et plus
+    # aucune .card.read : le contrôle tombait alors en attente, une fois
+    # sur quelques-unes. historyPartial est le signal de l'app elle-même.
+    page.wait_for_function("historyPartial === false", timeout=30000)
     # DES ARTICLES LUS DANS LE LOT, sinon .card.read n'existe jamais.
     # Un profil de test est neuf : rien n'y est lu, et l'estompage à
     # 45 % des cartes lues n'était couvert par rien. Il a d'abord fallu

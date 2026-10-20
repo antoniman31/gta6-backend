@@ -1080,6 +1080,21 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Le panneau prend les couleurs du compte à rebours — 20/10/2026
+
+Demandé par Antoni. Le panneau avait deux états quand l'en-tête en a
+quatre, et le seuil des 24 h était écrit deux fois — rien n'empêchait les
+deux de diverger. Le calcul passe dans `palierCompteur()`, partagé, et la
+disposition précise EST le palier `final`.
+
+Seuls les gros chiffres prennent la teinte : la barre garde son bleu, les
+zéros leur gris. Trois gardes éprouvés, dont un réécrit — il vérifiait
+qu'une couleur existait, pas que c'était la bonne.
+
+Au passage : le balayage marquait ses articles lus AVANT la fin du
+rattrapage de l'historique, ce qui le faisait tomber en attente une fois
+sur quelques-unes. Il attend maintenant `historyPartial === false`.
+
 ### Le balayage trouve son premier vrai défaut — 20/10/2026
 
 Le compte à rebours est passé au palier « soon » dans la nuit : sa

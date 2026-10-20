@@ -961,6 +961,19 @@
      disposition ordinaire. */
   .compteur-tuiles.precis b{font-size:28px; color:var(--accent);}
   .compteur-tuiles.second b{font-size:20px;}
+  /* LA TEINTE DU PALIER, la même que l'en-tête. Elle ne touche que les
+     gros chiffres : la barre garde son bleu et les équivalences restent
+     neutres. Les trois teintes sont déjà mesurées sur les deux fonds de
+     panneau (4,99 / 5,02 / 6,47 en clair, 8,51 / 7,93 / 5,61 en sombre),
+     et à 20 px gras elles passent même en « grand texte ». */
+  .compteur-tuiles.soon b{color:var(--compte-soon);}
+  .compteur-tuiles.urgent b{color:var(--compte-urgent);}
+  .compteur-tuiles.final b{color:var(--compte-final);}
+  /* Les unités à zéro gardent leur gris : la teinte du palier dirait
+     « regarde » sur un chiffre qui n'a rien à dire. */
+  .compteur-tuiles.soon .zero b,
+  .compteur-tuiles.urgent .zero b,
+  .compteur-tuiles.final .zero b{color:var(--text-dim);}
   /* LES UNITÉS À ZÉRO RESTENT AFFICHÉES, en gris. Les masquer changeait
      le nombre de tuiles, donc la disposition de toute la ligne, à chaque
      fois qu'une unité tombait — exactement ce qu'Antoni a signalé
@@ -7825,6 +7838,23 @@ async function loadRecentRuns(){
 // le 19 novembre, le changement d'heure étant passé le 25 octobre.
 const GTA6_RELEASE = new Date("2026-11-19T00:00:00+01:00"); // minuit à Paris
 
+// LE PALIER, CALCULÉ UNE SEULE FOIS POUR TOUT LE MONDE.
+//
+// 4 paliers d'intensité croissante à mesure que la sortie approche :
+// normal (>30j) -> soon (7-30j) -> urgent (24h-7j) -> final (<24h).
+//
+// L'en-tête et le panneau de détail s'en servent tous les deux. Le seuil
+// des 24 h était écrit DEUX FOIS — ici et dans le panneau, sous le nom
+// SEUIL_COMPTEUR_PRECIS — et rien n'empêchait les deux de diverger : la
+// disposition précise du panneau aurait pu basculer sans que l'en-tête
+// vire au rouge, ou l'inverse.
+function palierCompteur(diff){
+  if(diff < 24 * 60 * 60 * 1000) return "final";
+  if(diff < 7 * 24 * 60 * 60 * 1000) return "urgent";
+  if(diff < 30 * 24 * 60 * 60 * 1000) return "soon";
+  return "";
+}
+
 function updateCountdown(){
   const el = document.getElementById("countdown");
   const now = new Date();
@@ -7861,16 +7891,7 @@ function updateCountdown(){
   const minutes = Math.floor((diff / (1000 * 60)) % 60);
   const seconds = Math.floor((diff / 1000) % 60);
 
-  // 4 paliers d'intensité croissante à mesure que la sortie approche :
-  // normal (>30j) -> soon (7-30j) -> urgent (24h-7j) -> final (<24h).
-  let palier = "";
-  if(diff < 24 * 60 * 60 * 1000){
-    palier = "final";
-  }else if(diff < 7 * 24 * 60 * 60 * 1000){
-    palier = "urgent";
-  }else if(diff < 30 * 24 * 60 * 60 * 1000){
-    palier = "soon";
-  }
+  const palier = palierCompteur(diff);
   const classe = "countdown" + (palier ? " " + palier : "");
 
   // La précision suit l'urgence. À plus de 81 jours, des secondes qui
@@ -8001,17 +8022,20 @@ function nombreFr(n){
   return Math.floor(n).toLocaleString("fr-FR");
 }
 
-// LE PANNEAU A DEUX TAILLES, ET LE SEUIL N'EST PAS INVENTÉ.
+// LE PANNEAU SUIT LES MÊMES PALIERS QUE L'EN-TÊTE.
 //
-// Au-delà de 24 h, le découpage est en chiffres ordinaires. En dessous,
-// la seconde devient l'information : les tuiles passent à 28 px et à
-// l'accent, en même temps que l'en-tête vire au rouge.
+// Il n'en avait que deux — ordinaire, puis « précis » dans les dernières
+// 24 heures — quand l'en-tête en a quatre. Demandé par Antoni le
+// 20/10/2026 : les couleurs du compte à rebours doivent se retrouver
+// dans le panneau.
 //
-// 24 h et pas 48 : c'est le palier « final » que l'en-tête utilise
-// déjà, celui où elle se met elle-même à afficher les secondes. Les deux
-// bascules tombent au même instant, et il n'y a pas un cinquième seuil à
-// retenir.
-const SEUIL_COMPTEUR_PRECIS = 24 * 60 * 60 * 1000;
+// Le seuil des 24 h n'est donc plus une constante à part : la
+// disposition précise EST le palier « final », et palierCompteur() le
+// décide pour les deux. Un seuil de moins à garder d'aplomb.
+//
+// Seuls les gros chiffres prennent la teinte (choix d'Antoni) : la
+// barre garde son bleu, qui est la couleur de l'app, et le panneau ne
+// vire pas entièrement au rouge la dernière nuit.
 
 // LIBELLÉS ABRÉGÉS, et c'est une contrainte de place mesurée, pas un
 // goût : « secondes » fait 48 px à 11 px de corps, et six colonnes de
@@ -8066,7 +8090,11 @@ function majPanneauCompteur(){
   const avant = GTA6_RELEASE > maintenant;
   const [debut, fin] = avant ? [maintenant, GTA6_RELEASE] : [GTA6_RELEASE, maintenant];
   const ecart = fin - debut;
-  const precis = !avant || ecart < SEUIL_COMPTEUR_PRECIS;
+  // Après la sortie, le compteur repart à l'endroit : plus de palier,
+  // et la disposition précise reste, parce que la seconde est redevenue
+  // l'information intéressante.
+  const palier = avant ? palierCompteur(ecart) : "";
+  const precis = !avant || palier === "final";
 
   const titre = document.getElementById("titreCompteur");
   if(titre) titre.textContent = avant ? "Avant la sortie" : "Depuis la sortie";
@@ -8081,7 +8109,8 @@ function majPanneauCompteur(){
     timeZone: "Europe/Paris" });
 
   el.innerHTML =
-      tuilesDecoupe(decoupeCalendaire(debut, fin), precis ? "precis" : "second")
+      tuilesDecoupe(decoupeCalendaire(debut, fin),
+                    (precis ? "precis" : "second") + (palier ? " " + palier : ""))
     + `<div class="compteur-barre">`
     +   `<i>${escapeHtml(pourcent)}</i>`
     // Le second exemplaire est DANS le remplissage, donc rogné par lui.
