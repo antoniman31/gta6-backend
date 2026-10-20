@@ -3175,9 +3175,15 @@ def test_mode_sans_spoiler(nav, url):
         copie: DEFAULT_SETTINGS.spoilerKeywords !== MOTS_SPOILER,
         exemples: (DEFAULT_SETTINGS.spoilerKeywords || []).slice(0, 3),
     })""")
-    check(defaut["mode"] is False,
-          "[spoiler] éteint par défaut — avant la sortie il n'y a rien à "
-          "protéger (%s)" % defaut["mode"])
+    # ALLUMÉ par défaut depuis le 20/10/2026 au soir, et c'est un
+    # revirement du jour même : livré éteint le matin, au motif qu'avant
+    # la sortie il n'y a rien à protéger. La mesure a dit l'inverse — la
+    # liste pré-remplie voile déjà 41 articles du fil sur 4 350, dont
+    # « Cyberleek stops GTA 6 leaks after posting parts of final
+    # missions ». Les fuites racontent la fin du jeu un mois avant.
+    check(defaut["mode"] is True,
+          "[spoiler] ALLUMÉ par défaut : les fuites racontent déjà la fin "
+          "du jeu (%s)" % defaut["mode"])
     check(defaut["n"] >= 15,
           "[spoiler] mais sa liste est pré-remplie : la remplir le soir du "
           "19 serait trop tard (%s mots, %s…)" % (defaut["n"], defaut["exemples"]))

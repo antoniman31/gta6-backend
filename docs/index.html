@@ -2632,11 +2632,19 @@ const DEFAULT_SETTINGS = {
   // Liste noire, vide par défaut : c'est à l'usage qu'on découvre le bruit
   // qu'on veut écarter (arnaques crypto, mods GTA 5 déguisés en GTA 6…).
   excludeKeywords: [],
-  // Le mode sans spoiler est ÉTEINT par défaut : avant la sortie il n'y a
-  // rien à protéger, et un fil flouté sans raison ressemble à une panne.
-  // Sa liste, en revanche, est pré-remplie — la remplir le soir du 19
-  // serait déjà trop tard.
-  spoilerMode: false,
+  // ALLUMÉ PAR DÉFAUT, et c'est un revirement du jour même.
+  //
+  // Livré éteint le 20/10/2026 au motif qu'avant la sortie il n'y a rien
+  // à protéger. La mesure a dit l'inverse quelques heures plus tard : la
+  // liste pré-remplie voile DÉJÀ 41 articles du fil sur 4 350 (0,9 %), et
+  // ce ne sont pas des faux positifs — « Cyberleek stops GTA 6 leaks
+  // after posting parts of final missions », « des copies complètes du
+  // jeu vont circuler ». Les fuites racontent la fin du jeu un mois avant
+  // la sortie. Antoni a tranché : allumé.
+  //
+  // À 0,9 %, le coût est nul pour qui s'en moque : un article voilé par
+  // mois, qu'un appui révèle.
+  spoilerMode: true,
   spoilerKeywords: MOTS_SPOILER.slice(),
   maxDisplay: 500,
   similarityThreshold: 72,
