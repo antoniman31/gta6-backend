@@ -1138,7 +1138,7 @@ Trois décisions d'Antoni, prises sur propositions chiffrées.
 
 | | tranché |
 |---|---|
-| les titres vont raconter le jeu | **mode sans spoiler** : flouter, un geste révèle ; liste pré-remplie, mode éteint par défaut |
+| les titres vont raconter le jeu | **mode sans spoiler** : flouter, un geste révèle ; liste pré-remplie, **allumé par défaut** |
 | le récap dira « +180 articles » toutes les heures | après la sortie, il ne part que s'il y a un **officiel** ou une **actu majeure** ; la DATE décide, pas un interrupteur |
 | les soluces et les tests n'ont pas de source | **six requêtes** ajoutées maintenant, muettes jusqu'au 19 |
 
@@ -1146,6 +1146,11 @@ J'avais écarté `support.rockstargames.com` en affirmant que Google News
 n'indexe pas les pages d'assistance. **C'était faux** — cinq articles de
 ce domaine sont déjà dans le fil. Corrigé le soir même, la source est
 ajoutée.
+
+**Revirement du soir même sur le mode sans spoiler** : livré éteint, il
+est allumé par défaut depuis. La liste voile déjà 41 articles sur 4 350
+(0,9 %) et ce ne sont pas des faux positifs — les fuites racontent la
+fin du jeu un mois avant la sortie.
 
 Et une quatrième question, tranchée en « mesurer d'abord » : **le poids du
 fil n'est pas un problème**. J'avais annoncé 9,6 Mo au plafond, c'était la

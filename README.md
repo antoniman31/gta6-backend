@@ -9013,9 +9013,18 @@ seulement cet article-là — par une mise à jour ciblée du DOM, pas un
 
 **La liste est pré-remplie**, vingt-deux mots dans les deux langues du
 fil, et c'est la moitié de l'idée : une liste vide obligerait à deviner
-les mots le soir même, c'est-à-dire trop tard. Le mode, lui, est éteint
-par défaut — avant la sortie il n'y a rien à protéger, et un fil flouté
-sans raison ressemble à une panne.
+les mots le soir même, c'est-à-dire trop tard.
+
+**Et le mode est ALLUMÉ par défaut — revirement du jour même.** Il avait
+été livré éteint, au motif qu'avant la sortie il n'y a rien à protéger
+et qu'un fil flouté sans raison ressemble à une panne. La mesure a dit
+l'inverse quelques heures plus tard : la liste voile **déjà 41 articles
+sur 4 350 (0,9 %)**, et ce ne sont pas des faux positifs — « Cyberleek
+stops GTA 6 leaks after posting parts of **final missions** », « des
+copies complètes du jeu vont circuler dès la fin octobre ». Les fuites
+racontent la fin du jeu un mois avant la sortie. À 0,9 %, le coût est
+nul pour qui s'en moque : un article voilé par mois, qu'un appui
+révèle.
 
 Trois choses dites plutôt que tues : le compte d'articles **ne bouge
 pas** (flouter n'est pas masquer, sinon le mode ferait doublon avec les
