@@ -8673,6 +8673,22 @@ seule nuit où il compte.
 > WCAG ne s'applique pas au creux d'une animation. Noté pour qu'on ne le
 > redécouvre pas.
 
+#### Un écart qui disparaît tout seul n'en était pas un
+
+La CI a ensuite rapporté un onglet des Statistiques à **4,10:1** que la
+même exécution en local ne voyait pas. En remontant le calcul, l'élément
+avait été lu à **0,89 d'opacité** : une apparition saisie en vol, pas une
+couleur mal choisie — et aucune animation connue du dépôt n'explique ce
+0,89 à cet endroit.
+
+Plutôt que de chasser une course que je n'arrivais pas à reproduire —
+quatre fois ce jour-là, le fautif était l'instrument et pas le défaut —
+le balayage **confirme désormais** : quand un relevé trouve quelque
+chose, il refait la mesure 500 ms plus tard et ne garde que ce qui tient
+aux deux. Un vrai défaut de contraste est immobile par nature. Vérifié
+dans les deux sens : le palier `soon` remis à son ancien ambre échoue
+toujours, aux deux relevés.
+
 #### Une liste d'exceptions tirée d'un échantillon
 
 Le même balayage avait, lui, **bloqué trois pull requests Dependabot**

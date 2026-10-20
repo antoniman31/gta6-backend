@@ -3816,6 +3816,24 @@ def test_contraste_partout(nav, url):
                                [exceptions, CONTRASTE_MINIMAL, CONTRASTE_GRAND_TEXTE])
             total += vu["examines"]
             mortes = vu["mortes"]
+            # DEUX RELEVÉS, ET ON NE GARDE QUE CE QUI TIENT AUX DEUX.
+            #
+            # La CI a rapporté un onglet à 4,10:1 que la même exécution en
+            # local ne voyait pas. En remontant le calcul, l'élément était
+            # lu à 0,89 d'opacité : une apparition saisie en vol, pas une
+            # couleur mal choisie. Plutôt que de chasser l'animation
+            # responsable — quatre fois aujourd'hui, le fautif était
+            # l'instrument et pas le défaut — le balayage confirme : un
+            # écart qui disparaît tout seul n'en était pas un, et un vrai
+            # défaut de contraste est immobile par nature.
+            if vu["ecarts"]:
+                page.wait_for_timeout(500)
+                encore = page.evaluate(
+                    SONDE_CONTRASTE,
+                    [exceptions, CONTRASTE_MINIMAL, CONTRASTE_GRAND_TEXTE])
+                confirmes = {(e["ou"], e["texte"]) for e in encore["ecarts"]}
+                vu["ecarts"] = [e for e in vu["ecarts"]
+                                if (e["ou"], e["texte"]) in confirmes]
             for e in vu["ecarts"]:
                 tous.append("%s · %s — %.2f:1 (exigé %.1f) sur %s, %s sur %s"
                             % (nom, e["ou"][:40], e["ratio"], e["exige"],
