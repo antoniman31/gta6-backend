@@ -14,6 +14,7 @@ partout, sous peine de corrompre l'historique :
 """
 
 import hashlib
+import html
 import json
 import os
 import re
@@ -1746,6 +1747,110 @@ def recap_merite_notification(n, officiels, sommet, maintenant=None):
     if maintenant < SORTIE_GTA6:
         return bool(n or officiels or sommet >= HOT_SOURCE_THRESHOLD)
     return bool(officiels) or sommet >= HOT_SOURCE_THRESHOLD
+
+# ---------------------------------------------------------------------------
+# LE RÉSUMÉ D'UN ARTICLE, NETTOYÉ — ET VIDÉ QUAND IL NE DIT RIEN
+# ---------------------------------------------------------------------------
+# Signalé par Antoni le 20/10/2026 : « ya des bugs dans les descriptions ».
+# Deux défauts, mesurés sur les 4 235 articles du fil.
+#
+# 1. LES ENTITÉS HTML S'AFFICHAIENT TELLES QUELLES. La collecte retirait
+#    les balises (`re.sub("<[^<]+?>", "")`) mais ne décodait rien : 3 700
+#    articles sur 4 235 — 87,4 % — portaient un `&nbsp;`, un `&#8217;` ou
+#    un `&rsquo;` en toutes lettres, et l'aperçu les affichait ainsi
+#    (« …de GTA 6&nbsp;&nbsp;Dexerto.fr »). Le mode de secours, lui, était
+#    propre depuis toujours : son stripHtml passe par innerHTML, qui décode.
+#    Seul le chemin backend était atteint.
+#
+# 2. QUATRE RÉSUMÉS SUR CINQ N'ÉTAIENT QUE LE TITRE. Une requête Google
+#    News ne fournit pas de résumé : elle renvoie le titre, et y colle le
+#    nom du média derrière deux espaces insécables. Le bouton « aperçu »
+#    promettait un extrait et rendait le titre qu'on venait de lire.
+#    Mesuré : 3 626 articles sur 4 235, soit 85,6 %.
+#
+# CE QUI NE DIT RIEN EST VIDÉ, pas marqué. Le bouton d'aperçu ne s'affiche
+# déjà que si `description` est non vide — le vider le fait donc
+# disparaître tout seul, sans second drapeau à tenir d'aplomb. Choix
+# d'Antoni : « le cacher quand il n'apprend rien ».
+#
+# LE SEUIL DES 25 CARACTÈRES est mesuré, pas choisi. Le reste, une fois le
+# titre retiré du résumé, est le nom du média collé par Google News ; le
+# plus long du fil entier fait exactement 25 caractères
+# (« timesofindiaindiatimescom »). Et AUCUN des 609 résumés conservés ne
+# commence par son titre, donc aucun vrai résumé n'est perdu par ce seuil.
+RE_BALISE_RESUME = re.compile(r"<[^<]+?>")
+# Les espaces insécables comptent : Google News sépare le titre du nom du
+# média par deux U+00A0, qu'un \s+ ordinaire ne voit pas en Python.
+RE_ESPACES_RESUME = re.compile(r"[\s\u00a0\u2007\u202f\u200b]+")
+RE_MEDIA_RESUME = re.compile(r"\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4})$")
+RE_SQUELETTE = re.compile(r"[^0-9a-zà-ÿ]+")
+RESTE_NOM_DE_MEDIA = 25
+LONGUEUR_RESUME = 500
+
+
+def _squelette(texte):
+    """Le texte réduit à ses lettres et ses chiffres, en minuscules.
+
+    Comparer deux textes bruts échouerait sur une apostrophe courbe d'un
+    côté et droite de l'autre, ou sur un espace insécable : le titre et le
+    résumé viennent du même flux mais pas toujours du même champ.
+    """
+    return RE_SQUELETTE.sub("", (texte or "").lower())
+
+
+def nettoie_resume(description, titre="", limite=LONGUEUR_RESUME):
+    """Balises retirées, entités décodées, espaces normalisés.
+
+    Renvoie une chaîne VIDE quand le résumé ne fait que répéter le titre —
+    voir le commentaire ci-dessus. Idempotente : repasser un résumé déjà
+    nettoyé ne le change plus.
+    """
+    texte = RE_BALISE_RESUME.sub("", description or "")
+    # Deux passes au plus : un flux qui a échappé son HTML deux fois donne
+    # « &amp;nbsp; », que la première passe transforme en « &nbsp; ». La
+    # borne évite de poursuivre indéfiniment sur un texte qui contiendrait
+    # une esperluette littérale.
+    for _ in range(2):
+        decode = html.unescape(texte)
+        if decode == texte:
+            break
+        texte = decode
+    texte = RE_ESPACES_RESUME.sub(" ", texte).strip()[:limite]
+    if not texte:
+        return ""
+    sq_resume = _squelette(texte)
+    sq_titre = _squelette(RE_MEDIA_RESUME.sub("", titre or ""))
+    if sq_titre and sq_resume.startswith(sq_titre) \
+            and len(sq_resume) - len(sq_titre) <= RESTE_NOM_DE_MEDIA:
+        return ""
+    return texte
+
+
+def normalize_stored_descriptions(items):
+    """Repasse rétroactive des résumés déjà stockés.
+
+    Même raison d'être que normalize_stored_dates : l'historique est
+    rechargé tel quel à chaque exécution et ne repasse jamais par la
+    collecte, donc les 3 700 résumés engrangés avec leurs entités les
+    garderaient pour toujours. Choix d'Antoni : « au robot + rattrapage des
+    anciens ».
+
+    Idempotente. Renvoie (nettoyés, vidés).
+    """
+    nettoyes = vides = 0
+    for item in items:
+        avant = item.get("description") or ""
+        if not avant:
+            continue
+        apres = nettoie_resume(avant, item.get("title") or "")
+        if apres == avant:
+            continue
+        item["description"] = apres
+        if apres:
+            nettoyes += 1
+        else:
+            vides += 1
+    return nettoyes, vides
 
 def comptes_du_recap(new_items, promus, totaux=None):
     """Les trois nombres du récapitulatif : articles, officiels, sommet.

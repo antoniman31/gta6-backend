@@ -1113,6 +1113,25 @@ réserves au pire cas, ça donne 5,12 Mo, au-delà du quota. 4 000 tient à
 constantes et refuse qu'elles franchissent 5 Mo. Éprouvé en le cassant
 des deux côtés.
 
+### Les résumés d'articles — 20/10/2026
+
+Signalé par Antoni : « ya des bugs dans les descriptions ». Deux défauts,
+et une erreur à moi découverte en les mesurant.
+
+| | |
+|---|---|
+| entités HTML affichées telles quelles | **3 700 / 4 235 · 87,4 %** — décodées à la collecte et rétroactivement |
+| résumé = titre + nom du média | **3 626 / 4 235 · 85,6 %** — vidés, le bouton d'aperçu disparaît tout seul |
+
+Le seuil des 25 caractères est **mesuré** : le plus long nom de média
+collé du fil en fait exactement 25, et aucun des 609 résumés conservés ne
+commence par son titre.
+
+**Mon erreur** : j'avais écarté `support.rockstargames.com` le matin même
+en affirmant que Google News n'indexe pas les pages d'assistance. Cinq
+articles de ce domaine étaient déjà dans le fil. La source est ajoutée,
+et un contrôle vérifie désormais la prémisse au lieu de me croire.
+
 ### Trois préparatifs pour l'après-sortie — 20/10/2026
 
 Trois décisions d'Antoni, prises sur propositions chiffrées.
@@ -1122,6 +1141,11 @@ Trois décisions d'Antoni, prises sur propositions chiffrées.
 | les titres vont raconter le jeu | **mode sans spoiler** : flouter, un geste révèle ; liste pré-remplie, mode éteint par défaut |
 | le récap dira « +180 articles » toutes les heures | après la sortie, il ne part que s'il y a un **officiel** ou une **actu majeure** ; la DATE décide, pas un interrupteur |
 | les soluces et les tests n'ont pas de source | **six requêtes** ajoutées maintenant, muettes jusqu'au 19 |
+
+J'avais écarté `support.rockstargames.com` en affirmant que Google News
+n'indexe pas les pages d'assistance. **C'était faux** — cinq articles de
+ce domaine sont déjà dans le fil. Corrigé le soir même, la source est
+ajoutée.
 
 Et une quatrième question, tranchée en « mesurer d'abord » : **le poids du
 fil n'est pas un problème**. J'avais annoncé 9,6 Mo au plafond, c'était la
