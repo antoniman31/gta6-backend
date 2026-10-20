@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1867
+qui permet de tester tout le pipeline sans sortir de la machine. **1897
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9061,9 +9061,14 @@ plafonne chaque requête à cent entrées, si bien qu'un test publié un jour
 d'être des quinze requêtes ciblées déjà en place.
 
 Aucun domaine nouveau, donc aucune sonde à faire et aucun 429 à craindre.
-`support.rockstargames.com` a été **écarté** bien que ce soit la source
-primaire des notes de patch : Google News n'indexe pas les pages
-d'assistance, la requête aurait été vide pour toujours.
+
+> **Correction, le soir même.** J'avais écarté
+> `support.rockstargames.com` en écrivant « Google News n'indexe pas les
+> pages d'assistance, la requête aurait été vide pour toujours ».
+> **C'était faux**, et le fil le prouvait déjà : cinq articles de ce
+> domaine y sont, tous marqués officiels, dont « Grand Theft Auto VI
+> Pre-Order Details ». Je l'ai vu en mesurant tout autre chose. La source
+> a été ajoutée — voir plus bas.
 
 #### Ce que la mesure du poids a corrigé
 
@@ -9090,6 +9095,77 @@ bruts sont bien analysés en mémoire par le téléphone, compression ou pas.
 Reste ouvert, non fait : `source_link` pèse **11,5 %** du fichier (65 o
 par article) et ne sert qu'au mode de secours. Le retirer du fil rendrait
 0,27 Mo bruts sans rien perdre à l'écran.
+
+### Les résumés, deux bugs et une erreur à moi — 20/10/2026
+
+« Ya des bugs dans les descriptions » (Antoni). Il y en avait deux, et
+les mesurer en a révélé un troisième — le mien.
+
+#### Les entités HTML s'affichaient telles quelles
+
+La collecte retirait les balises (`re.sub("<[^<]+?>", "")`) mais ne
+décodait rien. **3 700 articles sur 4 235 — 87,4 %** portaient un
+`&nbsp;`, un `&#8217;` ou un `&rsquo;` en toutes lettres, et l'aperçu les
+affichait ainsi : « …de GTA 6**&nbsp;&nbsp;**Dexerto.fr ». 7 245
+occurrences de `&nbsp;` à elles seules.
+
+Le mode de secours, lui, était propre depuis toujours : son `stripHtml`
+passe par `innerHTML`, qui décode gratuitement. **Seul le chemin backend
+était atteint**, et c'est celui qu'on utilise tous les jours.
+
+#### Quatre résumés sur cinq n'étaient que le titre
+
+Une requête Google News **ne fournit pas de résumé** : elle renvoie le
+titre, et y colle le nom du média derrière deux espaces insécables. Le
+bouton « aperçu » promettait un extrait et rendait le titre qu'on venait
+de lire.
+
+| | |
+|---|---|
+| résumé = titre + nom du média | **3 626 · 85,6 %** |
+| vrai résumé, différent du titre | 609 · 14,4 % |
+
+Choix d'Antoni : **« le cacher quand il n'apprend rien »**. Ce qui ne dit
+rien est donc **vidé**, pas marqué — le bouton d'aperçu ne s'affiche déjà
+que si `description` est non vide, le vider le fait disparaître tout
+seul, sans second drapeau à tenir d'aplomb.
+
+**Le seuil des 25 caractères est mesuré, pas choisi.** Ce qui reste une
+fois le titre retiré du résumé est le nom du média ; le plus long du fil
+entier en fait exactement 25 (« timesofindiaindiatimescom »). Et **aucun**
+des 609 résumés conservés ne commence par son titre : le seuil ne coûte
+aucun vrai résumé.
+
+Nettoyé **à la collecte ET rétroactivement** (choix d'Antoni) : comme les
+dates, l'historique est rechargé tel quel et ne repasse jamais par la
+collecte, donc les 3 700 résumés déjà stockés garderaient leurs entités
+pour toujours. `normalize_stored_descriptions` est idempotente, comme sa
+voisine.
+
+Le mode de secours reçoit le même nettoyage, en miroir — il doit se
+passer du backend précisément quand le backend manque. Il réutilise
+`corpsDuTitre`, qui existait déjà pour les badges, plutôt qu'une
+troisième façon de retirer le nom d'un média.
+
+#### Et l'erreur : j'avais écarté l'assistance Rockstar pour une raison fausse
+
+Le matin même, en ajoutant les six sources de l'après-sortie, j'ai écrit
+que `support.rockstargames.com` était écarté parce que « Google News
+n'indexe pas les pages d'assistance, la requête aurait été vide pour
+toujours ».
+
+**C'était faux, et le fil le prouvait déjà** : cinq articles de ce
+domaine y sont, tous marqués officiels, dont « Grand Theft Auto VI
+Pre-Order Details ». Ils entrent par `rockstar-en`
+(`site:rockstargames.com`, qui couvre les sous-domaines). Je l'ai vu le
+soir, en mesurant tout autre chose.
+
+La source est ajoutée. Elle n'est pas redondante : la requête large est
+plafonnée à cent entrées comme toutes les autres, et le 19 novembre le
+Newswire seul peut la remplir — les notes de patch passeraient dessous.
+
+Un contrôle refuse maintenant de me croire sur parole : il compte les
+articles de ce domaine déjà présents dans `feed.json`.
 
 ## Ajuster quelque chose
 

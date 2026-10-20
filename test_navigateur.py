@@ -3065,6 +3065,84 @@ def test_compte_a_rebours(nav, url):
           % tard["texte"])
 
 
+def test_resume_du_mode_de_secours(nav, url):
+    """Le mode de secours nettoie les résumés comme le robot.
+
+    Signalé par Antoni le 20/10/2026. Le chemin backend affichait les
+    entités HTML telles quelles ; celui-ci ne l'a jamais fait, son
+    stripHtml passe par innerHTML qui décode. Ce qui lui manquait, c'est
+    la seconde moitié : vider le résumé quand il ne fait que répéter le
+    titre — 85,6 % des articles du fil.
+    """
+    print("\n[résumé] le mode de secours nettoie comme le robot")
+    ctx = nav.new_context(viewport={"width": 390, "height": 900},
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    cas = page.evaluate("""() => ({
+        // Le cas réel du fil, celui de la capture d'écran.
+        googleNews: nettoieResume(
+          "Daft Punk aurait refusé une offre colossale de Rockstar pour la "
+          + "bande-son de GTA 6&nbsp;&nbsp;Dexerto.fr",
+          "Daft Punk aurait refusé une offre colossale de Rockstar pour la "
+          + "bande-son de GTA 6 - Dexerto.fr"),
+        identique: nettoieResume("Le titre exact", "Le titre exact"),
+        // Et ce qu'il ne faut PAS vider.
+        vrai: nettoieResume("Un r&eacute;sum&eacute; bien réel et assez long",
+                            "Un titre tout autre"),
+        prolonge: nettoieResume(
+          "Le titre exact, et puis une suite qui apporte vraiment quelque chose",
+          "Le titre exact"),
+        vide: nettoieResume("", "Un titre"),
+        balises: nettoieResume("<p>Du <b>texte</b> mis en forme et bien assez long</p>",
+                               "Autre"),
+    })""")
+    check(cas["googleNews"] == "" and cas["identique"] == "",
+          "[résumé] un résumé qui ne répète que le titre est vidé (« %s » / "
+          "« %s »)" % (cas["googleNews"], cas["identique"]))
+    check(cas["vrai"] == "Un résumé bien réel et assez long",
+          "[résumé] un vrai résumé est gardé, entités décodées (« %s »)"
+          % cas["vrai"])
+    check(cas["prolonge"].startswith("Le titre exact, et puis"),
+          "[résumé] et un résumé qui prolonge le titre de plus de 25 "
+          "caractères reste (« %s »)" % cas["prolonge"][:40])
+    check(cas["vide"] == "" and cas["balises"] == "Du texte mis en forme et bien assez long",
+          "[résumé] un résumé absent ne plante pas, les balises partent "
+          "toujours (« %s »)" % cas["balises"])
+
+    # LE BOUTON D'APERÇU SUIT, SANS SECOND DRAPEAU. Il ne s'affiche que si
+    # description est non vide : vider le résumé le fait disparaître tout
+    # seul. C'est exactement ce qu'Antoni a choisi — « le cacher quand il
+    # n'apprend rien ».
+    boutons = page.evaluate("""() => {
+        lastItems = [
+          {link: "https://r.test/1", source: "T", date: new Date().toISOString(),
+           title: "Avec un vrai résumé", lang: "fr",
+           description: "Un extrait qui apporte vraiment quelque chose de neuf"},
+          {link: "https://r.test/2", source: "T", date: new Date().toISOString(),
+           title: "Sans résumé utile", lang: "fr", description: ""},
+        ];
+        visibleCount = 100; settings.maxDisplay = 100; badgeActif = null;
+        currentTab = "all"; currentFilter = "all"; currentLang = "all";
+        settings.spoilerMode = false;
+        applyFilters();
+        return [...document.querySelectorAll(".card")].map(c => ({
+          titre: c.querySelector(".card-title").textContent.trim(),
+          apercu: !!c.querySelector('[title="Aperçu de l\\'article"]'),
+        }));
+    }""")
+    check(len(boutons) == 2 and boutons[0]["apercu"] and not boutons[1]["apercu"],
+          "[résumé] le bouton d'aperçu n'apparaît que là où il y a un "
+          "extrait (%s)" % boutons)
+
+    check(not err, "[résumé] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
+
+
 def test_mode_sans_spoiler(nav, url):
     """Flouter les articles à spoiler, et les révéler d'un geste.
 
@@ -5551,6 +5629,7 @@ def main():
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)
+            test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
             test_panneau_du_compteur(nav, url)
             test_budget_du_stockage(nav, url)

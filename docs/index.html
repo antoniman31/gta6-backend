@@ -2590,6 +2590,7 @@ const DEFAULT_FEEDS = [
   { id: "gta6-guides-fr", name: "Google News (soluces FR)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(soluce+OR+guide+OR+astuce+OR+astuces)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
   { id: "gta6-guides-en", name: "Google News (guides EN)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(guide+OR+walkthrough+OR+%22how+to%22+OR+tips)&hl=en&gl=US&ceid=US:en", enabled: true, official: false, lang: "en" },
   { id: "gta6-patch-fr", name: "Google News (mises à jour)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(patch+OR+%22mise+%C3%A0+jour%22+OR+correctif+OR+hotfix)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "rockstar-support", name: "Rockstar Assistance (officiel)", url: "https://news.google.com/rss/search?q=site:support.rockstargames.com&hl=en&gl=US&ceid=US:en", enabled: true, official: true, lang: "en" },
   { id: "gta6-online-en", name: "Google News (GTA Online 6)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(online+OR+multiplayer+OR+servers+OR+%22game+mode%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false, lang: "en" }
 ];
 
@@ -3803,6 +3804,37 @@ function stripHtml(html){
   return (d.textContent || "").replace(/\s+/g, " ").trim().slice(0, 500);
 }
 
+// LE MÊME NETTOYAGE QUE LE ROBOT, pour le mode de secours.
+//
+// stripHtml décodait déjà les entités — il passe par innerHTML, qui le
+// fait gratuitement — donc ce chemin-ci n'a jamais affiché de `&nbsp;`.
+// Ce qui lui manquait, c'est la seconde moitié : VIDER le résumé quand il
+// ne fait que répéter le titre. Une requête Google News ne fournit pas de
+// résumé, elle renvoie le titre suivi du nom du média ; mesuré le
+// 20/10/2026, 85,6 % des 4 235 articles du fil. Le bouton d'aperçu ne
+// s'affiche que si description est non vide, donc le vider le fait
+// disparaître tout seul.
+//
+// Miroir de feed_store.nettoie_resume, et c'est voulu comme le reste du
+// mode de secours : il doit se passer du backend précisément quand le
+// backend manque. Le seuil des 25 caractères vient de la même mesure —
+// le plus long nom de média collé du fil entier en fait exactement 25.
+const RESTE_NOM_DE_MEDIA = 25;
+function squeletteTexte(t){
+  return String(t || "").toLowerCase().replace(/[^0-9a-zà-ÿ]+/g, "");
+}
+function nettoieResume(description, titre){
+  const texte = stripHtml(description || "");
+  if(!texte) return "";
+  const sqResume = squeletteTexte(texte);
+  // corpsDuTitre, et pas une TROISIÈME façon de retirer le nom du média :
+  // il existe déjà pour les badges, et c'est exactement la même règle.
+  const sqTitre = squeletteTexte(corpsDuTitre({ title: titre }));
+  if(sqTitre && sqResume.startsWith(sqTitre)
+     && sqResume.length - sqTitre.length <= RESTE_NOM_DE_MEDIA) return "";
+  return texte;
+}
+
 function relativeTime(date){
   const diffMs = Date.now() - date.getTime();
   const diffMin = Math.floor(diffMs / 60000);
@@ -3847,7 +3879,7 @@ async function fetchFeedViaProxy(feed, proxyIdx){
     const data = await res.json();
     const items = proxy.parse(data);
     if(!items) throw new Error("Réponse invalide (" + proxy.name + ")");
-    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.thumbnail || item.enclosure?.link || null, description: stripHtml(item.description || item.content || "") }));
+    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.thumbnail || item.enclosure?.link || null, description: nettoieResume(item.description || item.content, item.title) }));
   }else if(proxy.xmlField){
     // Proxys qui encapsulent le XML brut dans un champ JSON (ex: whateverorigin
     // renvoie { contents: "<rss>...</rss>" }) plutôt que de le servir tel quel.
@@ -3856,12 +3888,12 @@ async function fetchFeedViaProxy(feed, proxyIdx){
     if(!xml) throw new Error("Champ " + proxy.xmlField + " absent (" + proxy.name + ")");
     const items = parseRssXml(xml);
     if(!items || items.length === 0) throw new Error("XML illisible (" + proxy.name + ")");
-    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: stripHtml(item.description || "") }));
+    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: nettoieResume(item.description, item.title) }));
   }else{
     const text = await res.text();
     const items = parseRssXml(text);
     if(!items || items.length === 0) throw new Error("XML illisible (" + proxy.name + ")");
-    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: stripHtml(item.description || "") }));
+    return items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: nettoieResume(item.description, item.title) }));
   }
 }
 
@@ -3912,7 +3944,7 @@ async function fetchFeed(feed){
     const text = await res.text();
     const items = parseRssXml(text);
     if(!items || items.length === 0) throw new Error("XML illisible (direct)");
-    const raw = items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: stripHtml(item.description || "") }));
+    const raw = items.map(item => ({ title: item.title, link: item.link, date: item.pubDate, image: item.image || null, description: nettoieResume(item.description, item.title) }));
     feedErrors[feed.id] = null;
     const filtered = filterFeedItems(raw, feed);
     addLog("ok", `<span class="src">${escapeHtml(feed.name)}</span> — ${raw.length} article(s) reçu(s) en direct, ${filtered.length} après filtre mots-clés`);

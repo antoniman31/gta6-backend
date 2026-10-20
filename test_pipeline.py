@@ -6929,7 +6929,13 @@ def test_variantes_du_nom_dans_les_requetes_google_news():
     # rendent vient déjà de Rockstar. Y ajouter les écritures ne les
     # élargirait pas, ça les rétrécirait — on perdrait les articles du
     # Newswire qui ne nomment pas le jeu dans leur titre.
-    SANS_FILTRE = {"rockstar-en", "rockstar-fr"}
+    #
+    # rockstar-support a rejoint les deux le 20/10/2026, pour la même
+    # raison et sur un sous-domaine : tout ce que rend
+    # `site:support.rockstargames.com` vient de Rockstar. Les notes de
+    # patch s'intituleront « Title Update 1.02 » bien plus souvent que
+    # « GTA 6 », et c'est précisément elles qu'on veut.
+    SANS_FILTRE = {"rockstar-en", "rockstar-fr", "rockstar-support"}
 
     gnews = [f for f in fetch_feeds.FEEDS if "news.google.com" in f["url"]]
     check(len(gnews) >= 19,
@@ -6938,8 +6944,14 @@ def test_variantes_du_nom_dans_les_requetes_google_news():
     couvertes = 0
     for feed in gnews:
         if feed["id"] in SANS_FILTRE:
-            check("site:rockstargames.com" in feed["url"],
-                  "%s reste sans filtre de jeu, sur le domaine de Rockstar"
+            # Sur le DOMAINE et non sur la chaîne exacte : le contrôle
+            # exigeait « site:rockstargames.com » mot pour mot, et refusait
+            # donc un sous-domaine de Rockstar — qui est pourtant
+            # exactement ce que la dérogation couvre.
+            import re as _re
+            check(_re.search(r"site:(?:[a-z0-9-]+\.)*rockstargames\.com",
+                            feed["url"]),
+                  "%s reste sans filtre de jeu, sur un domaine de Rockstar"
                   % feed["id"])
             continue
         requete = unquote(feed["url"].split("q=")[1].split("&")[0]).replace("+", " ")
@@ -9523,6 +9535,166 @@ def test_les_sources_de_lapres_sortie():
           "et les %d identifiants de FEEDS restent uniques" % len(ids))
 
 
+def test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien():
+    """« Ya des bugs dans les descriptions » — Antoni, 20/10/2026.
+
+    Deux défauts, mesurés sur les 4 235 articles du fil : 87,4 % des
+    résumés portaient une entité HTML affichée telle quelle, et 85,6 % ne
+    faisaient que répéter le titre suivi du nom du média.
+    """
+    print("\n[résumé] nettoyé, et vidé quand il ne dit rien")
+    import feed_store as fs
+
+    # 1. LES ENTITÉS. Le cas réel du fil, celui de la capture d'écran.
+    vrai = fs.nettoie_resume(
+        "Daft Punk aurait refus\u00e9 une offre colossale de Rockstar pour la "
+        "bande-son de GTA 6&nbsp;&nbsp;Dexerto.fr",
+        "Daft Punk aurait refus\u00e9 une offre colossale de Rockstar pour la "
+        "bande-son de GTA 6 - Dexerto.fr")
+    check(vrai == "",
+          "l'article de la capture : le résumé répétait le titre, il est "
+          "vidé (« %s »)" % vrai)
+
+    propre = fs.nettoie_resume("Un r&eacute;sum&eacute;&nbsp;r&eacute;el&#8201;et long, "
+                               "qui apporte vraiment du texte",
+                               "Un titre tout autre")
+    check("&" not in propre and "\u00a0" not in propre,
+          "les entités sont décodées et les espaces insécables normalisés "
+          "(« %s »)" % propre)
+    check(propre.startswith("Un résumé réel et long"),
+          "et le texte reste lisible (« %s »)" % propre[:40])
+
+    # LE DOUBLE ÉCHAPPEMENT. Un flux qui échappe son HTML deux fois donne
+    # « &amp;nbsp; » : une seule passe le rendrait « &nbsp; », visible à
+    # l'écran. Deux passes au plus, pour ne pas boucler sur une
+    # esperluette littérale.
+    check(fs.nettoie_resume("A&amp;nbsp;B", "T") == "A B",
+          "le double échappement est défait (« %s »)"
+          % fs.nettoie_resume("A&amp;nbsp;B", "T"))
+    check("&" in fs.nettoie_resume("Rock &amp;amp; Roll, et bien d'autres choses", "T"),
+          "mais une vraie esperluette survit sans boucle infinie")
+
+    # 2. LE RÉSUMÉ QUI NE DIT RIEN. Trois formes, toutes vues dans le fil.
+    for desc, titre, pourquoi in (
+            ("Le titre exact", "Le titre exact", "identique au titre"),
+            ("Le titre exact\u00a0\u00a0Dexerto.fr", "Le titre exact - Dexerto.fr",
+             "titre + nom du média collé"),
+            ("Le titre exact  Times of India", "Le titre exact",
+             "titre + un nom de média long"),
+    ):
+        check(fs.nettoie_resume(desc, titre) == "",
+              "vidé : %s (« %s »)" % (pourquoi, fs.nettoie_resume(desc, titre)))
+
+    # ET CE QU'IL NE FAUT PAS VIDER. Le seuil des 25 caractères est mesuré :
+    # le plus long nom de média collé du fil en fait exactement 25. Un
+    # résumé qui commence par le titre mais ajoute une vraie phrase reste.
+    garde = fs.nettoie_resume(
+        "Le titre exact, et puis une suite qui apporte vraiment quelque chose",
+        "Le titre exact")
+    check(garde.startswith("Le titre exact, et puis"),
+          "gardé : un résumé qui prolonge le titre de plus de 25 caractères "
+          "(« %s »)" % garde[:50])
+    check(fs.nettoie_resume("Tout autre chose", "Le titre exact") == "Tout autre chose",
+          "gardé : un résumé sans rapport avec le titre")
+    check(fs.nettoie_resume("", "Le titre") == "" and fs.nettoie_resume(None, None) == "",
+          "un résumé absent ne plante pas")
+
+    # LES BALISES, qui étaient déjà retirées avant — on ne régresse pas.
+    check(fs.nettoie_resume("<p>Du <b>texte</b> mis en forme et bien assez long</p>",
+                            "T") == "Du texte mis en forme et bien assez long",
+          "les balises sont toujours retirées")
+
+    # IDEMPOTENTE. La repasse tourne à CHAQUE exécution du robot : si elle
+    # n'était pas stable, elle rognerait un peu plus le même résumé tous
+    # les jours.
+    une = fs.nettoie_resume("Un r&eacute;sum&eacute; r&eacute;el et suffisamment long", "T")
+    deux = fs.nettoie_resume(une, "T")
+    check(une == deux, "repasser un résumé déjà nettoyé ne le change plus "
+          "(« %s » / « %s »)" % (une[:30], deux[:30]))
+
+    # 3. LA REPASSE RÉTROACTIVE. L'historique ne repasse jamais par la
+    # collecte : sans elle, les 3 700 résumés déjà stockés gardent leurs
+    # entités pour toujours.
+    items = [
+        {"title": "Un titre - Dexerto.fr",
+         "description": "Un titre\u00a0\u00a0Dexerto.fr"},
+        {"title": "Autre titre",
+         "description": "Un vrai r&eacute;sum&eacute; qui apporte du texte"},
+        {"title": "Sans résumé", "description": ""},
+        {"title": "Déjà propre", "description": "Un résumé déjà propre et long"},
+    ]
+    nettoyes, vides = fs.normalize_stored_descriptions(items)
+    check((nettoyes, vides) == (1, 1),
+          "la repasse compte ce qu'elle a fait : %d nettoyé(s), %d vidé(s)"
+          % (nettoyes, vides))
+    check(items[0]["description"] == "",
+          "le doublon du titre est vidé (« %s »)" % items[0]["description"])
+    check(items[1]["description"] == "Un vrai résumé qui apporte du texte",
+          "le vrai résumé est décodé (« %s »)" % items[1]["description"])
+    check(items[3]["description"] == "Un résumé déjà propre et long",
+          "et celui qui était déjà propre n'est pas touché")
+    check(fs.normalize_stored_descriptions(items) == (0, 0),
+          "une seconde repasse ne corrige plus rien — idempotente")
+
+    # LE MÊME JUGE DES DEUX CÔTÉS. La collecte et la repasse doivent
+    # définir « résumé » de la même façon, sinon un article neuf et un
+    # article ancien n'obéissent pas aux mêmes règles.
+    collecte = open("fetch_feeds.py", encoding="utf-8").read()
+    check("feed_store.nettoie_resume(description, title)" in collecte,
+          "la collecte passe par le juge partagé")
+    check('re.sub("<[^<]+?>", "", description)' not in collecte,
+          "et ne garde pas son ancien nettoyage à elle")
+    check("normalize_stored_descriptions" in collecte,
+          "la repasse rétroactive est bien appelée par le robot")
+
+    # ET LE MODE DE SECOURS AUSSI. Il doit se passer du backend
+    # précisément quand le backend manque.
+    html_app = open("docs/index.html", encoding="utf-8").read()
+    check("function nettoieResume(" in html_app,
+          "le mode de secours a son miroir de nettoie_resume")
+    check("stripHtml(item.description" not in html_app,
+          "et plus aucun appel direct à stripHtml sur une description")
+    check("RESTE_NOM_DE_MEDIA = %d" % fs.RESTE_NOM_DE_MEDIA in html_app,
+          "les deux côtés partagent le seuil mesuré (%d)" % fs.RESTE_NOM_DE_MEDIA)
+
+
+def test_lassistance_rockstar_est_une_source():
+    """Ajoutée le 20/10/2026 — et c'est la correction d'une erreur à moi.
+
+    Je l'avais écartée le matin même en écrivant « Google News n'indexe
+    pas les pages d'assistance ». C'était faux : cinq articles de ce
+    domaine étaient déjà dans le fil.
+    """
+    print("\n[assistance] support.rockstargames.com est une source")
+    import fetch_feeds
+
+    par_id = {f["id"]: f for f in fetch_feeds.FEEDS}
+    check("rockstar-support" in par_id, "la source existe")
+    if "rockstar-support" not in par_id:
+        return
+    src = par_id["rockstar-support"]
+    check("site:support.rockstargames.com" in src["url"],
+          "elle interroge le bon domaine (%s)" % src["url"][:70])
+    check(src.get("official") is True,
+          "elle est officielle : tout ce que rend ce domaine vient de "
+          "Rockstar (%s)" % src.get("official"))
+
+    # LA PREUVE QUE LA REQUÊTE N'EST PAS VIDE, et c'est ce qui me manquait
+    # le matin : le fil CONTIENT déjà des articles de ce domaine, entrés
+    # par site:rockstargames.com, qui couvre les sous-domaines.
+    import json
+    with open("docs/feed.json", encoding="utf-8") as fh:
+        donnees = json.load(fh)
+    items = donnees["items"] if isinstance(donnees, dict) else donnees
+    assistance = [i for i in items
+                  if "support.rockstargames.com" in (i.get("link") or "")]
+    check(len(assistance) >= 1,
+          "le fil contient déjà %d article(s) de ce domaine — la requête ne "
+          "sera pas vide" % len(assistance))
+    check(all(i.get("official") for i in assistance),
+          "et ils sont tous marqués officiels, le domaine suffit à le dire")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -9655,6 +9827,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_epoque_unix_nest_pas_une_date,
            test_le_recap_se_tait_apres_la_sortie,
            test_les_sources_de_lapres_sortie,
+           test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien,
+           test_lassistance_rockstar_est_une_source,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,

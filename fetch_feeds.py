@@ -613,6 +613,26 @@ FEEDS = [
     {"id": "gta6-guides-fr", "name": "Google News (soluces FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(soluce+OR+guide+OR+astuce+OR+astuces)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
     {"id": "gta6-guides-en", "name": "Google News (guides EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(guide+OR+walkthrough+OR+%22how+to%22+OR+tips)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
     {"id": "gta6-patch-fr", "name": "Google News (mises à jour)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(patch+OR+%22mise+%C3%A0+jour%22+OR+correctif+OR+hotfix)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
+    # ------------------------------------------------------------------
+    # ASSISTANCE ROCKSTAR, et c'est la CORRECTION d'une erreur à moi.
+    #
+    # Le 20/10/2026 au matin, en ajoutant les six sources de l'après-sortie,
+    # j'ai écarté ce domaine en écrivant « Google News n'indexe pas les
+    # pages d'assistance, la requête aurait été vide pour toujours ».
+    # C'était faux, et le fil le prouvait déjà : cinq articles de
+    # support.rockstargames.com y sont, tous marqués officiels, dont
+    # « Grand Theft Auto VI Pre-Order Details ». Je l'ai vu le soir même en
+    # mesurant tout autre chose.
+    #
+    # Ils entrent aujourd'hui par rockstar-en (site:rockstargames.com), qui
+    # couvre les sous-domaines — mais cette requête est plafonnée à cent
+    # entrées comme toutes les autres. Le 19 novembre, le Newswire seul
+    # peut la remplir et les notes de patch passeraient dessous. D'où une
+    # requête à elle, qui garantit leur place.
+    #
+    # `official: True` durcit le filtre sur le TITRE seul : les cinq
+    # existants portent tous « Grand Theft Auto VI », donc ils passent.
+    {"id": "rockstar-support", "name": "Rockstar Assistance (officiel)", "url": "https://news.google.com/rss/search?q=site:support.rockstargames.com&hl=en&gl=US&ceid=US:en", "official": True, "max_entrees": 100, "garder_les_archives": True, "lang": "en"},
     {"id": "gta6-online-en", "name": "Google News (GTA Online 6)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(online+OR+multiplayer+OR+servers+OR+%22game+mode%22)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
 ]
 
@@ -1895,7 +1915,11 @@ def collect_feed_items(feed, decoded_cache=None, http_state=None):
             "specialist": feed.get("specialist_source", False),
             "lang": feed.get("lang"),
             "image": image,
-            "description": re.sub("<[^<]+?>", "", description)[:500],
+            # Nettoyé ET vidé quand il ne fait que répéter le titre :
+            # voir feed_store.nettoie_resume. Le même juge sert à la
+            # repasse rétroactive, sans quoi les anciens et les nouveaux
+            # auraient deux définitions du « résumé ».
+            "description": feed_store.nettoie_resume(description, title),
         })
 
     resume = f"  {raw_count} entrée(s) dans le flux, {len(items)} pertinente(s) après filtre"
@@ -3981,6 +4005,14 @@ def main():
     # déduplication par similarité de titre (elle ne compare alors plus aux
     # articles réellement récents). Idempotente.
     fixed_dates = feed_store.normalize_stored_dates(existing_items)
+    # Même endroit, même raison : les 3 700 résumés engrangés avec leurs
+    # entités HTML les garderaient pour toujours, et les 3 626 qui ne font
+    # que répéter le titre continueraient de promettre un aperçu vide.
+    resumes_propres, resumes_vides = feed_store.normalize_stored_descriptions(
+        existing_items)
+    if resumes_propres or resumes_vides:
+        print(f"  {resumes_propres} résumé(s) nettoyé(s), {resumes_vides} "
+              f"vidé(s) (ils ne répétaient que le titre)")
     # Même endroit, même raison : l'historique ne repasse jamais par la
     # collecte, donc une vignette en http y resterait bloquée pour toujours.
     vignettes_https = feed_store.https_les_vignettes(existing_items)
