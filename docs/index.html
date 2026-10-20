@@ -2518,10 +2518,35 @@ let visibleCount = PAGE_SIZE; // pagination progressive du rendu de la liste
 // temps, comparer à un article vieux de plusieurs mois n'apporte rien.
 const SEEN_COMPARE_WINDOW = 300;
 
-// Plafond du journal des articles déjà vus, aligné sur MAX_HISTORY_SIZE
-// côté backend. Sans lui, seenMap grossissait indéfiniment dans
-// localStorage, qui a une capacité limitée (~5 Mo).
-const MAX_SEEN_ENTRIES = 2000;
+// Plafond du journal des articles déjà vus. Sans lui, seenMap
+// grossissait indéfiniment dans localStorage, qui a une capacité
+// limitée (~5 Mo).
+//
+// RELEVÉ DE 2 000 À 4 000 LE 20/10/2026, sur la sauvegarde réelle
+// d'Antoni : il était EXACTEMENT à son plafond, donc déjà élagué en
+// silence, pendant que le fil comptait 4 218 articles.
+//
+// UNE ENTRÉE N'EST PAS UN HORODATAGE : elle porte tout le résumé de
+// l'article — titre, date, source, drapeaux — soit 342 octets en
+// moyenne et 414 au neuvième décile. C'est dix fois le coût d'un lien
+// lu, et c'est ce qui limite ce plafond-ci bien avant l'autre.
+//
+// Budget combiné mesuré, avec 20 000 liens lus et 300 articles en
+// cache, au cas courant puis au PIRE cas (tout au neuvième décile) :
+//
+//   vus = 2 000   2,94 Mo   3,94 Mo
+//   vus = 3 000   3,27 Mo   4,33 Mo
+//   vus = 4 000   3,60 Mo   4,73 Mo   <- ici
+//   vus = 5 000   3,92 Mo   5,12 Mo   dépasse
+//
+// 4 000 laisse 0,27 Mo de marge au pire cas : c'est serré, et Antoni l'a
+// assumé en connaissance de cause. Le pire cas suppose que les 20 000
+// liens ET les 4 000 entrées soient TOUS dans le décile le plus lourd,
+// ce qui n'arrive pas. Et si le quota saute malgré tout, storageSet le
+// signale désormais au lieu de perdre la persistance en silence.
+//
+// NE PAS MONTER PLUS HAUT sans refaire cette mesure : 5 000 dépasse.
+const MAX_SEEN_ENTRIES = 4000;
 
 // Nombre d'articles recopiés dans localStorage. Cette copie ne sert qu'à
 // afficher quelque chose à l'ouverture avant que le réseau réponde : 300

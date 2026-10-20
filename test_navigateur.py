@@ -3791,6 +3791,72 @@ FERME_TOUT = """() => {
 }"""
 
 
+# Ce que pèse UNE unité de chaque réserve, mesuré le 20/10/2026 sur la
+# sauvegarde réelle d'Antoni (7 548 liens lus, 2 000 entrées vues) et sur
+# le fil du jour. Valeurs au NEUVIÈME DÉCILE : le garde ci-dessous juge le
+# pire cas, pas le cas courant.
+#
+# La mesure d'origine du dépôt annonçait 300 octets par lien lu — un
+# comptage en UTF-16 qui ne correspond pas à ce que pèse la chaîne
+# stockée. Le vrai chiffre est 149.
+OCTETS_PAR_LIEN_LU = 149
+OCTETS_PAR_ENTREE_VUE = 414      # une entrée porte tout le résumé de l'article
+OCTETS_PAR_ARTICLE_EN_CACHE = 1145
+QUOTA_LOCALSTORAGE = 5 * 1024 * 1024
+
+
+def test_budget_du_stockage(nav, url):
+    """Les trois plafonds, ensemble, tiennent sous le quota du navigateur.
+
+    POURQUOI CE GARDE EXISTE. Le 20/10/2026, deux des trois plafonds ont
+    été relevés le même jour — les liens lus de 8 000 à 20 000, les
+    articles déjà vus de 2 000 à 4 000. Chacun pris seul semblait tenir.
+    Ensemble, au pire cas, ils arrivent à 4,73 Mo sur les 5 que le
+    navigateur accorde : 0,27 Mo de marge.
+
+    Et 5 000 entrées vues, qui avait été demandé d'abord, DÉPASSAIT —
+    5,12 Mo. Ça n'a été vu qu'en additionnant les trois réserves, pas en
+    regardant celle qu'on modifiait.
+
+    Le commentaire « ne pas monter plus haut sans refaire la mesure » ne
+    protège que celui qui le lit. Ce contrôle-ci le fait respecter.
+
+    Il ne mesure pas le stockage réel : il applique aux constantes le
+    coût unitaire mesuré sur des données réelles. Un plafond relevé sans
+    remesurer le fait donc tomber, ce qui est exactement le but.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    bornes = page.evaluate("""() => ({
+        lus: MAX_LIENS_LUS_PERSISTES,
+        vus: MAX_SEEN_ENTRIES,
+        cache: MAX_PERSISTED_ITEMS,
+    })""")
+    ctx.close()
+
+    postes = (
+        ("liens lus", bornes["lus"], OCTETS_PAR_LIEN_LU),
+        ("articles déjà vus", bornes["vus"], OCTETS_PAR_ENTREE_VUE),
+        ("fil en cache", bornes["cache"], OCTETS_PAR_ARTICLE_EN_CACHE),
+    )
+    total = sum(n * cout for _, n, cout in postes)
+    detail = " + ".join("%s %d×%d" % (nom, n, c) for nom, n, c in postes)
+    check(total < QUOTA_LOCALSTORAGE,
+          "[budget] les trois plafonds tiennent sous les 5 Mo du "
+          "navigateur, au pire cas — %.2f Mo (%s)"
+          % (total / 1048576, detail))
+
+    # Une marge nulle ne serait pas un garde : elle dirait « ça passe »
+    # le jour où ça ne passe plus qu'à un octet près.
+    marge = QUOTA_LOCALSTORAGE - total
+    check(marge > 128 * 1024,
+          "[budget] et il reste de quoi respirer — %.2f Mo de marge"
+          % (marge / 1048576))
+
+
 def test_contraste_partout(nav, url):
     """Aucun texte de l'app sous le seuil WCAG, dans les deux thèmes.
 
@@ -4828,6 +4894,7 @@ def main():
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)
             test_panneau_du_compteur(nav, url)
+            test_budget_du_stockage(nav, url)
             test_contraste_partout(nav, url)
             test_mettre_de_cote(nav, url)
             test_le_vrai_editeur(nav, url)
