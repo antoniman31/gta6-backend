@@ -1080,6 +1080,25 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Le balayage trouve son premier vrai défaut — 20/10/2026
+
+Le compte à rebours est passé au palier « soon » dans la nuit : sa
+couleur est à **2,16:1** en thème clair. Les trois paliers étaient en hex
+en dur et avaient échappé au travail sur le thème clair ; `urgent` est à
+2,32 et `final`, celui de la nuit de sortie, à 3,27. Ils deviennent des
+jetons avec une gamme chaude surchargée en clair (4,99 / 5,02 / 6,47).
+Le thème sombre était conforme et ne bouge pas.
+
+Noté sans le corriger : la pulsation de `urgent` et `final` descend
+l'opacité à 0,55, soit 2,29 et 2,82 au creux. Animation d'alerte, le
+seuil ne s'y applique pas.
+
+Au passage, le balayage avait bloqué trois PR Dependabot depuis le 19 :
+sa liste d'exceptions pour les cartes lues était tirée de l'échantillon
+du 16 octobre et ne prévoyait pas « + 1 autre source ». Elle devient
+structurelle (`.card.read *`), et le titre d'un article lu — la seule
+chose qu'on y relit — passe dans un contrôle à part.
+
 ### Un balayage du contraste sur toute l'app — 16/10/2026
 
 Dix surfaces, deux thèmes, ~2 465 éléments par thème, seuil WCAG AA.

@@ -3582,20 +3582,30 @@ CONTRASTE_GRAND_TEXTE = 3.0
 EXCEPTIONS_CONTRASTE = {
     ".compteur-tuiles .zero b": "tuiles à zéro, effacement voulu (16/10)",
     ".compteur-tuiles .zero span": "tuiles à zéro, effacement voulu (16/10)",
-    # LES MÉTADONNÉES D'UN ARTICLE DÉJÀ LU, et elles seules. Les cartes
-    # lues sont estompées à 0,70 : leur TITRE y est à 6,05:1 et reste
-    # donc vérifié à chaque passage — c'est la seule chose qu'on relit.
-    # Sa date, sa source, son étoile et ses boutons tombent à 2,98 et
-    # 3,57 ; Antoni a tranché le 16/10/2026 que c'est de l'accessoire sur
-    # un article déjà lu. La liste vient du relevé, pas d'une intuition :
-    # elle nomme exactement ce qui dépassait, et rien de plus — un
-    # nouvel élément estompé sera donc attrapé.
-    ".card.read .card-date": "2,98:1 — accessoire d'un article lu (16/10)",
-    ".card.read .card-src": "3,57:1 — accessoire d'un article lu (16/10)",
-    ".card.read .card-etoile": "2,98:1 — accessoire d'un article lu (16/10)",
-    ".card.read .card-mark": "2,98:1 — accessoire d'un article lu (16/10)",
-    ".card.read .tag-badge": "2,98 à 3,57:1 — accessoire d'un article lu (16/10)",
+    # L'INTÉRIEUR D'UNE CARTE LUE. Elles sont estompées à 0,70, ce qui
+    # met tout leur contenu entre 2,98 et 3,57:1 ; Antoni a tranché le
+    # 16/10/2026 que c'est de l'accessoire sur un article déjà lu.
+    #
+    # UNE SEULE RÈGLE STRUCTURELLE, et c'est une correction. La première
+    # version énumérait les éléments QUE LE RELEVÉ DU JOUR AVAIT
+    # MONTRÉS — date, source, étoile, boutons, badges. Le 19/10, un
+    # article lu portait pour la première fois une source supplémentaire
+    # (« + 1 autre source »), absente de la liste : le contrôle est passé
+    # au rouge et a bloqué trois pull requests Dependabot. Une liste tirée
+    # d'un échantillon n'est pas une liste de ce que la structure peut
+    # contenir.
+    #
+    # Le TITRE, lui, n'est pas couvert par cette exception : il est
+    # vérifié à part, plus bas, parce que c'est la seule chose qu'on
+    # relit dans un article déjà lu.
+    ".card.read *": "2,98 à 3,57:1 — intérieur d'un article lu (16/10)",
 }
+
+# Le titre d'un article lu, lui, DOIT rester lisible : c'est pour lui que
+# l'estompage est passé de 0,45 à 0,70 le 16/10 (2,80:1 -> 6,05:1).
+# L'exception ci-dessus couvre toute la carte, donc ce seuil-là est
+# vérifié par un contrôle à part plutôt que par le balayage.
+TITRE_LU_MINIMAL = 4.5
 
 # Le plancher d'éléments examinés, par thème. Mesuré, puis arrondi en
 # dessous. Sans lui, un balayage qui ne balaierait plus rien — un sélecteur
@@ -3820,6 +3830,41 @@ def test_contraste_partout(nav, url):
         check(not mortes,
               "[contraste %s] aucune exception ne couvre du code disparu "
               "(%s)" % (theme, mortes))
+
+        # LE TITRE D'UN ARTICLE LU, vérifié à part. L'exception
+        # ci-dessus couvre tout l'intérieur d'une carte lue, titre
+        # compris : sans ce contrôle, revenir à un estompage de 0,45 —
+        # qui mettait le titre à 2,80:1 — passerait inaperçu. C'est
+        # exactement le défaut pour lequel l'estompage a été relevé.
+        page.evaluate("() => setTab('all')")
+        titre = page.evaluate("""() => {
+            const t = document.querySelector('.card.read .card-title a')
+                   || document.querySelector('.card.read .card-title');
+            if(!t) return null;
+            const lin = (c) => { c /= 255;
+              return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
+            const p = (css) => (css.match(/[\\d.]+/g) || []).map(Number);
+            const Y = (c) => 0.2126*lin(c[0]) + 0.7152*lin(c[1]) + 0.0722*lin(c[2]);
+            let o = 1, n = t;
+            while(n && n.nodeType === 1){
+              const v = parseFloat(getComputedStyle(n).opacity);
+              if(!isNaN(v)) o *= v;
+              n = n.parentElement;
+            }
+            const av = p(getComputedStyle(t).color).slice(0, 3);
+            const ar = p(getComputedStyle(document.querySelector('.card.read'))
+                         .backgroundColor).slice(0, 3);
+            const m = av.map((c, i) => c*o + ar[i]*(1-o));
+            const ya = Y(m), yb = Y(ar);
+            return {ratio: (Math.max(ya,yb)+0.05) / (Math.min(ya,yb)+0.05),
+                    texte: t.textContent.trim().slice(0, 30), opacite: o};
+        }""")
+        detail = ("%.2f:1 à %.2f d'opacité, « %s »"
+                  % (titre["ratio"], titre["opacite"], titre["texte"])
+                  ) if titre else "aucune carte lue trouvée"
+        check(titre is not None and titre["ratio"] >= TITRE_LU_MINIMAL,
+              "[contraste %s] le titre d'un article LU reste lisible — "
+              "l'estompage ne doit pas l'emporter (%s)" % (theme, detail))
     ctx.close()
 
 
