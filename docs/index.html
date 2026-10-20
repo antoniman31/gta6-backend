@@ -38,6 +38,31 @@
     --warn: #facc15;
     --danger: #f87171;
     --grid-tint: rgba(88,185,255,0.04);
+    /* LES DOUZE TEINTES DE CATÉGORIE. Demandées par Antoni le 20/10/2026
+       — « faut faire des couleurs pour chaque badge » — après la première
+       version où les douze partageaient un même trait neutre.
+
+       DOUZE TONS À 30° L'UN DE L'AUTRE sur la roue, ce qui est le mieux
+       qu'on puisse faire à douze : plus serré, deux badges voisins ne se
+       distinguent plus à 10 px. Les deux paires les plus proches sont
+       mesurées — GAMEPLAY/MOD en sombre, TROPHÉES/VENTES en clair, une
+       cinquantaine d'unités RVB d'écart. C'est le prix de douze couleurs,
+       et c'est dit.
+
+       PAR THÈME, et pas une valeur fixe comme les neuf badges d'alerte :
+       ceux-là sont des aplats, qui portent leur propre fond. Une
+       catégorie est au TRAIT, donc sa couleur s'écrit directement sur la
+       carte — blanche en clair, #10151a en sombre. Aucun ton unique ne
+       tient 4,5:1 sur les deux.
+
+       Chaque valeur est la plus saturée qui passe 4,6:1 sur sa carte,
+       mesurée avant d'être écrite et revérifiée par le balayage. */
+    --cat-bug:#e54646;       --cat-maj:#bc6c1b;
+    --cat-trophee:#b2b319;   --cat-ventes:#66b319;
+    --cat-soluce:#19b319;    --cat-perf:#19b366;
+    --cat-online:#19b2b3;    --cat-test:#2281df;
+    --cat-gameplay:#7171eb;  --cat-mod:#a25de8;
+    --cat-speedrun:#dc1fdc;  --cat-astuce:#e33b8f;
   }
   html[data-theme="light"]{
     --bg: #f4f7fa;
@@ -62,6 +87,14 @@
                                    4,67 mais à 4,50 sur le surélevé */
     --danger: #b91c1c;          /* 6,02:1 — était #dc2626, 4,49 */
     --grid-tint: rgba(29,78,216,0.05);
+    /* Les mêmes douze teintes, assombries jusqu'à passer 4,6:1 sur une
+       carte blanche. Voir le commentaire du thème sombre. */
+    --cat-bug:#e61d1d;       --cat-maj:#af6113;
+    --cat-trophee:#79790d;   --cat-ventes:#49830f;
+    --cat-soluce:#0f880f;    --cat-perf:#0f864a;
+    --cat-online:#0e8282;    --cat-test:#1775d3;
+    --cat-gameplay:#4747eb;  --cat-mod:#9947eb;
+    --cat-speedrun:#cc17cc;  --cat-astuce:#de197b;
   }
 
   /* ── Échelle de formes et de mouvement ───────────────────────────────
@@ -706,6 +739,21 @@
     background:transparent; color:var(--text);
     border:1px solid var(--line); font-weight:700;
   }
+  /* Chaque catégorie porte SA couleur, sur le texte et sur le trait.
+     Le fond reste transparent : c'est lui qui sépare les deux familles,
+     et une couleur de plus ne doit pas effacer cette séparation. */
+  .tag-test{color:var(--cat-test); border-color:var(--cat-test);}
+  .tag-soluce{color:var(--cat-soluce); border-color:var(--cat-soluce);}
+  .tag-astuce{color:var(--cat-astuce); border-color:var(--cat-astuce);}
+  .tag-maj{color:var(--cat-maj); border-color:var(--cat-maj);}
+  .tag-bug{color:var(--cat-bug); border-color:var(--cat-bug);}
+  .tag-mod{color:var(--cat-mod); border-color:var(--cat-mod);}
+  .tag-online{color:var(--cat-online); border-color:var(--cat-online);}
+  .tag-perf{color:var(--cat-perf); border-color:var(--cat-perf);}
+  .tag-trophee{color:var(--cat-trophee); border-color:var(--cat-trophee);}
+  .tag-ventes{color:var(--cat-ventes); border-color:var(--cat-ventes);}
+  .tag-gameplay{color:var(--cat-gameplay); border-color:var(--cat-gameplay);}
+  .tag-speedrun{color:var(--cat-speedrun); border-color:var(--cat-speedrun);}
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
   .specialist-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;

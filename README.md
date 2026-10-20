@@ -8955,8 +8955,30 @@ Choix d'Antoni posé **avant** d'écrire la moindre ligne. Les badges
 d'**alerte** gardent leur aplat vif : il s'est passé quelque chose. Les
 badges de **catégorie** sont au trait, fond transparent : ils disent de
 quoi l'article parle, information de second rang. C'est la **forme** qui
-sépare les familles, pas une douzième couleur qu'on ne retiendrait pas.
-Les alertes passent toutes devant dans l'ordre d'affichage.
+sépare les familles. Les alertes passent toutes devant dans l'ordre
+d'affichage.
+
+#### Et une couleur par catégorie
+
+J'avais livré les douze avec un même trait neutre, en écrivant qu'une
+douzième couleur ne se retiendrait pas. Antoni a tranché l'inverse le
+jour même : « faut faire des couleurs pour chaque badge ».
+
+**Douze tons à 30° l'un de l'autre** sur la roue, ce qui est le mieux
+qu'on puisse faire à douze. Les deux paires les plus proches sont
+mesurées et dites plutôt que cachées — GAMEPLAY/MOD en sombre,
+TROPHÉES/VENTES en clair, une cinquantaine d'unités RVB d'écart. C'est
+le prix de douze couleurs.
+
+**Par thème, et pas une valeur fixe** comme les neuf badges d'alerte :
+ceux-là sont des aplats, qui portent leur propre fond. Une catégorie est
+au trait, donc sa couleur s'écrit directement sur la carte — blanche en
+clair, `#10151a` en sombre. Aucun ton unique ne tient 4,5:1 sur les deux.
+Chaque valeur est la plus saturée qui passe **4,6:1** sur sa carte,
+mesurée avant d'être écrite et revérifiée par le balayage.
+
+Le fond reste transparent : c'est lui qui sépare les deux familles, et
+une couleur de plus ne doit pas effacer cette séparation.
 
 Densité mesurée sur les 4 225 articles, les vingt et un badges en place :
 **67 % n'en portent aucun**, 25,5 % un seul, 5,8 % deux, 1,4 % trois,

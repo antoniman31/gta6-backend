@@ -1144,6 +1144,14 @@ Deux familles visuelles, choix d'Antoni : alerte en aplat, catégorie au
 trait. Densité mesurée avec les vingt et un badges : 67 % des cartes n'en
 portent aucun, une seule en porte cinq.
 
+**Et une couleur par catégorie**, demandée le jour même contre mon avis
+(j'avais livré un trait neutre en écrivant qu'une douzième couleur ne se
+retiendrait pas). Douze tons à 30° l'un de l'autre, déclinés PAR THÈME —
+une catégorie est au trait, sa couleur s'écrit donc sur la carte, et
+aucun ton unique ne tient 4,5:1 sur le blanc et sur le #10151a. Les deux
+paires les plus proches font une cinquantaine d'unités RVB, et le
+contrôle le dit plutôt que de le cacher.
+
 ### La répétition post-sortie, et ses trois défauts — 20/10/2026
 
 Le panneau du compteur rendu à quatre instants simulés autour du

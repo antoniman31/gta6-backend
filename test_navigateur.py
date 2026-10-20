@@ -4960,6 +4960,91 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
           "[catégories] chacune a son juge, son libellé et sa place (%s %s %s)"
           % (compte["horsOrdre"], compte["sansNom"], compte["sansJuge"]))
 
+    # ---- UNE COULEUR PAR CATÉGORIE, ET CHACUNE MESURÉE.
+    #
+    # Demandé par Antoni le 20/10/2026, après la première version où les
+    # douze partageaient un même trait neutre. Douze tons à 30° l'un de
+    # l'autre : c'est le mieux qu'on puisse faire à douze, et les deux
+    # paires les plus proches tiennent dans une cinquantaine d'unités RVB.
+    #
+    # PAR THÈME, et pas une valeur fixe comme les neuf aplats d'alerte :
+    # une catégorie est au trait, donc sa couleur s'écrit directement sur
+    # la carte — blanche en clair, #10151a en sombre. Aucun ton unique ne
+    # tient 4,5:1 sur les deux.
+    for theme, fondAttendu in (("light", "rgb(255, 255, 255)"),
+                               ("dark", "rgb(16, 21, 26)")):
+        teintes = page.evaluate("""(theme) => {
+            document.documentElement.setAttribute("data-theme", theme);
+            const sonde = document.createElement("span");
+            sonde.className = "tag-badge tag-cat";
+            const carte = document.createElement("div");
+            carte.className = "card";
+            carte.appendChild(sonde);
+            document.body.appendChild(carte);
+            const fond = getComputedStyle(carte).backgroundColor;
+            const lus = {};
+            for(const cle of BADGES_CATEGORIE){
+              sonde.className = "tag-badge tag-cat tag-" + cle;
+              const cs = getComputedStyle(sonde);
+              lus[cle] = {texte: cs.color, trait: cs.borderTopColor,
+                          corps: parseFloat(cs.fontSize)};
+            }
+            carte.remove();
+            return {fond: fond, lus: lus};
+        }""", theme)
+        check(teintes["fond"] == fondAttendu,
+              "[teintes %s] la carte est bien le fond mesuré (%s)"
+              % (theme, teintes["fond"]))
+
+        def lire(css):
+            n = [int(x) for x in re.findall(r"\d+", css)[:3]]
+            return tuple(n)
+
+        def luminance(c):
+            def f(v):
+                v /= 255.0
+                return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+            return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2])
+
+        fond = lire(teintes["fond"])
+        faibles, muets, vus = [], [], {}
+        for cle, v in teintes["lus"].items():
+            t = lire(v["texte"])
+            ya, yb = luminance(t), luminance(fond)
+            r = (max(ya, yb) + 0.05) / (min(ya, yb) + 0.05)
+            if r < 4.5:
+                faibles.append("%s %.2f:1" % (cle, r))
+            # Le trait doit porter la MÊME couleur que le texte : un badge
+            # coloré dans un cadre gris se lit comme une erreur de rendu.
+            if lire(v["trait"]) != t:
+                muets.append("%s (%s / %s)" % (cle, v["texte"], v["trait"]))
+            vus[cle] = t
+        check(not faibles,
+              "[teintes %s] les douze passent 4,5:1 sur la carte (%s)"
+              % (theme, faibles))
+        check(not muets,
+              "[teintes %s] et le trait porte la couleur du texte (%s)"
+              % (theme, muets))
+        # DOUZE COULEURS DISTINCTES, pas onze et un doublon. Une teinte
+        # recopiée par inadvertance passerait tous les contrôles
+        # ci-dessus sans que rien ne le dise.
+        doublons = [c for c in vus if list(vus.values()).count(vus[c]) > 1]
+        check(not doublons,
+              "[teintes %s] les douze sont toutes différentes (%s)"
+              % (theme, doublons))
+        # La plus proche paire, dite plutôt que cachée : à douze teintes
+        # elle est serrée par construction, et le seuil retenu (40 unités
+        # RVB) est celui sous lequel deux badges de 10 px ne se
+        # distinguent plus.
+        pires = sorted(
+            (sum((x - y) ** 2 for x, y in zip(vus[a], vus[b])) ** 0.5, a, b)
+            for i, a in enumerate(sorted(vus)) for b in sorted(vus)[i + 1:])
+        check(pires[0][0] >= 40,
+              "[teintes %s] et la paire la plus proche reste distinguable "
+              "(%s / %s, %.0f unités)"
+              % (theme, pires[0][1], pires[0][2], pires[0][0]))
+    page.evaluate("""() => document.documentElement.setAttribute("data-theme", "dark")""")
+
     # UN BADGE RESTE UN BADGE, MÊME DEVENU BOUTON.
     #
     # Le défaut, vu par Antoni sur son téléphone le 13/10/2026 : le badge
