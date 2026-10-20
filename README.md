@@ -8641,6 +8641,74 @@ vert. Les quatre gardes ont été vérifiés capables d'échouer — et le
 dernier essai, en coupant le chargement du fil, fait tomber le plancher
 ET les exceptions d'un coup.
 
+### Le balayage trouve son premier vrai défaut — 20/10/2026
+
+Quatre jours après sa mise en place, et le jour même où la condition est
+apparue : dans la nuit du 19 au 20 octobre, le compte à rebours est passé
+sous les trente jours, donc au palier `soon`. Sa couleur est à
+**2,16:1** en thème clair.
+
+| palier | quand | clair | sombre |
+|---|---|---|---|
+| `soon` | 20/10 → 12/11 | **2,16:1** | 8,51 |
+| `urgent` | 12/11 → 18/11 | **2,32:1** | 7,93 |
+| `final` | **la nuit de la sortie** | **3,27:1** | 5,61 |
+
+Les trois étaient écrits en hex dans leurs règles — `#e8a33d`, `#ff8c3d`,
+`#ff4d4d` — et ont donc échappé au travail sur le thème clair, qui avait
+précisément assombri `--warn` à 6,26:1 et `--danger` à 6,47:1 pour ce
+motif. Ils deviennent des jetons, surchargés en clair par une gamme
+chaude à trois crans : `#9a6410` ambre (4,99:1), `#b4530a` orange
+(5,02:1), puis `--danger` pour la nuit de la sortie (6,47:1). Le thème
+sombre ne bouge pas.
+
+C'est la ligne qu'on regarde à chaque ouverture, et elle serait restée
+illisible pendant les trente derniers jours — le pire palier tombant la
+seule nuit où il compte.
+
+> **Mesuré au passage, non corrigé** : la pulsation des paliers `urgent`
+> et `final` descend l'opacité à 0,55, ce qui fait tomber leur contraste
+> à 2,29 et 2,82 au creux, dans les deux thèmes. C'est une animation
+> d'alerte qui revient à pleine opacité deux fois par seconde ; le seuil
+> WCAG ne s'applique pas au creux d'une animation. Noté pour qu'on ne le
+> redécouvre pas.
+
+#### Un écart qui disparaît tout seul n'en était pas un
+
+La CI a ensuite rapporté un onglet des Statistiques à **4,10:1** que la
+même exécution en local ne voyait pas. En remontant le calcul, l'élément
+avait été lu à **0,89 d'opacité** : une apparition saisie en vol, pas une
+couleur mal choisie — et aucune animation connue du dépôt n'explique ce
+0,89 à cet endroit.
+
+Plutôt que de chasser une course que je n'arrivais pas à reproduire —
+quatre fois ce jour-là, le fautif était l'instrument et pas le défaut —
+le balayage **confirme désormais** : quand un relevé trouve quelque
+chose, il refait la mesure 500 ms plus tard et ne garde que ce qui tient
+aux deux. Un vrai défaut de contraste est immobile par nature. Vérifié
+dans les deux sens : le palier `soon` remis à son ancien ambre échoue
+toujours, aux deux relevés.
+
+#### Une liste d'exceptions tirée d'un échantillon
+
+Le même balayage avait, lui, **bloqué trois pull requests Dependabot**
+depuis le 19 octobre. Sa liste d'exceptions pour les cartes lues
+énumérait les éléments *que le relevé du 16 octobre avait montrés* :
+date, source, étoile, boutons, badges. Le 19, un article lu portait pour
+la première fois une source supplémentaire (« + 1 autre source »),
+absente de la liste — et le contrôle est passé au rouge.
+
+Une liste tirée d'un échantillon n'est pas une liste de ce que la
+structure peut contenir. L'exception devient **structurelle** :
+`.card.read *`, tout l'intérieur d'une carte lue.
+
+Mais cela couvrirait aussi le titre, qui est la seule chose qu'on relit
+dans un article déjà lu — et c'est pour lui que l'estompage était passé
+de 0,45 à 0,70 quatre jours plus tôt. Il est donc **vérifié par un
+contrôle à part**, dans les deux thèmes : remis à 0,45, celui-ci tombe à
+2,80:1 pendant que le balayage, lui, reste vert. Les deux gardes ont été
+éprouvés dans cet état.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

@@ -181,16 +181,16 @@
   }
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
-    color:#e8a33d;
+    color:var(--compte-soon);
   }
   /* Palier 24h-7 jours : couleur plus marquée + pulsation douce */
   .countdown.urgent{
-    color:#ff8c3d; font-weight:700;
+    color:var(--compte-urgent); font-weight:700;
     animation:countdown-pulse 2s ease-in-out infinite;
   }
   /* Palier dernières 24h : mode "urgence", rouge/orange vif + bordure clignotante */
   .countdown.final{
-    color:#ff4d4d; font-weight:800; font-size:13px;
+    color:var(--compte-final); font-weight:800; font-size:13px;
     text-transform:uppercase; display:inline-block;
     padding:4px 8px; margin:-4px 0 0 -8px; border-radius:var(--r-sm);
     animation:countdown-pulse 1s ease-in-out infinite, countdown-border-pulse 1s ease-in-out infinite;
@@ -1180,6 +1180,21 @@
   .stats-cles span{display:flex; align-items:center; gap:6px;}
   .stats-cles i{width:10px; height:10px; border-radius:var(--r-xs); display:inline-block;}
   .stats-cles small{color:var(--text-dim); font-size:12px;}
+  /* LES TROIS PALIERS DU COMPTE À REBOURS. Ils étaient écrits en hex
+     dans leurs règles, et ont donc échappé au travail sur le thème clair
+     qui avait assombri --warn et --danger pour exactement cette raison.
+     Mesuré le 20/10/2026, le jour où le compteur est passé au palier
+     « soon » : 2,16:1 en clair pour soon, 2,32 pour urgent, 3,27 pour
+     final — la nuit de la sortie étant la pire des trois. Le thème
+     sombre, lui, était conforme (8,51 / 7,93 / 5,61) et ne bouge pas. */
+  :root{--compte-soon:#e8a33d; --compte-urgent:#ff8c3d; --compte-final:#ff4d4d;}
+  /* Ambre, orange, rouge : la progression reste lisible d'un coup d'œil,
+     et le dernier cran est --danger, déjà mesuré pour ce thème. */
+  html[data-theme="light"]{
+    --compte-soon:#9a6410;      /* 4,99:1 sur blanc */
+    --compte-urgent:#b4530a;    /* 5,02:1 */
+    --compte-final:#b91c1c;     /* 6,47:1, c'est --danger */
+  }
   :root{--langue-fr:#3987e5; --langue-en:#d95926;}
   html[data-theme="light"]{--langue-fr:#1d4ed8; --langue-en:#eb6834;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
@@ -1728,7 +1743,7 @@
     .skeleton-thumb,
     .skeleton-line,
     .run-dot.running{animation:none;}
-    .countdown.final{box-shadow:0 0 0 2px rgba(255,77,77,0.5);}
+    .countdown.final{box-shadow:0 0 0 2px color-mix(in srgb, var(--compte-final) 50%, transparent);}
   }
 </style>
 </head>
