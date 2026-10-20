@@ -582,6 +582,38 @@ FEEDS = [
     # « cassée », donc elle revient seule sans fausse alerte.
     # ------------------------------------------------------------------
     {"id": "reddit-gta6-suivi", "name": "Reddit — mises à jour et DLC", "url": "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", "official": False, "lang": "en"},
+    # ------------------------------------------------------------------
+    # SIX SOURCES POUR L'APRÈS-SORTIE, ajoutées le 20/10/2026 — et qui ne
+    # ramèneront rien avant le 19 novembre.
+    #
+    # C'est voulu, et c'est le choix d'Antoni entre « maintenant, elles
+    # dormiront » et « le 20 novembre ». Les ajouter le soir même
+    # supposerait une session ce soir-là ; ajoutées aujourd'hui, elles se
+    # remplissent toutes seules sans que personne n'ait rien à faire.
+    #
+    # POURQUOI DES REQUÊTES ET PAS DES SITES. Les tests et les soluces de
+    # GTA 6 paraîtront chez des médias DÉJÀ présents dans cette liste —
+    # JVC, Gamekult, IGN France, GameRant y sont tous. Ce qui manque n'est
+    # pas le média, c'est l'angle : leur flux général est trié par date et
+    # Google News plafonne chaque requête à cent entrées, si bien qu'un
+    # test publié un jour à trois cents articles passe sous la ligne de
+    # flottaison. C'est exactement la raison d'être des quinze requêtes
+    # ciblées déjà en place (gamerant-gnews, schreier, numerama…).
+    #
+    # Aucun domaine nouveau, donc : aucun risque de 429, aucune sonde à
+    # faire, et rien à retirer si ça ne donne rien — une source muette est
+    # signalée comme telle par l'audit et ne casse rien.
+    #
+    # support.rockstargames.com A ÉTÉ ÉCARTÉ, bien que ce soit la source
+    # primaire des notes de patch : Google News n'indexe pas les pages
+    # d'assistance, la requête aurait donc été vide pour toujours. La
+    # couverture presse des notes de patch, elle, passe par gta6-patch-fr.
+    {"id": "gta6-tests-fr", "name": "Google News (tests FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(test+OR+critique+OR+%22notre+avis%22+OR+not%C3%A9)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
+    {"id": "gta6-tests-en", "name": "Google News (reviews EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(review+OR+reviewed+OR+verdict+OR+%22review+score%22)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
+    {"id": "gta6-guides-fr", "name": "Google News (soluces FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(soluce+OR+guide+OR+astuce+OR+astuces)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
+    {"id": "gta6-guides-en", "name": "Google News (guides EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(guide+OR+walkthrough+OR+%22how+to%22+OR+tips)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
+    {"id": "gta6-patch-fr", "name": "Google News (mises à jour)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(patch+OR+%22mise+%C3%A0+jour%22+OR+correctif+OR+hotfix)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
+    {"id": "gta6-online-en", "name": "Google News (GTA Online 6)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(online+OR+multiplayer+OR+servers+OR+%22game+mode%22)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.

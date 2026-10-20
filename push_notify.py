@@ -464,6 +464,18 @@ def main():
               f"le récapitulatif attend le matin.")
         return 0
 
+    # APRÈS LA SORTIE, LE RÉCAPITULATIF SE TAIT s'il n'a rien de notable à
+    # dire. Voir feed_store.recap_merite_notification : la date décide, pas
+    # un interrupteur, parce qu'un interrupteur à basculer le soir du 19
+    # ne sera pas basculé. Les annonces officielles sont déjà parties
+    # au-dessus, une par une — elles ne sont pas concernées.
+    n_recap, off_recap, sommet_recap = feed_store.comptes_du_recap(
+        new_items, promus, totaux)
+    if not feed_store.recap_merite_notification(n_recap, off_recap, sommet_recap):
+        print(f"[push] après la sortie — {n_recap} article(s) sans annonce "
+              f"officielle ni actu majeure, le récapitulatif se tait.")
+        return 0
+
     payload = build_payload(new_items, promus)
     # Le CORPS autant que le titre. Le 22/09/2026, après avoir mis un titre
     # d'article dans le corps, le journal ne permettait pas de vérifier ce

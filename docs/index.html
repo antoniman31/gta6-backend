@@ -739,6 +739,35 @@
     background:transparent; color:var(--text);
     border:1px solid var(--line); font-weight:700;
   }
+  /* ── LE MODE SANS SPOILER ────────────────────────────────────────────
+     Demandé par Antoni le 20/10/2026 : après le 19 novembre, les titres se
+     mettent à raconter le jeu, et il y jouera pendant des semaines. Trois
+     réponses étaient possibles — masquer, grouper à part, flouter. Il a
+     choisi flouter : masquer perd l'information, flouter la diffère.
+
+     LE VOILE EST UN BOUTON QUI COUVRE TOUTE LA CARTE, et pas seulement un
+     filtre CSS sur le titre. Un flou ne désarme pas un lien : le titre
+     resterait cliquable et un doigt l'ouvrirait, ce qui est exactement
+     l'accident que ce mode doit empêcher. Le voile intercepte le geste,
+     et le contenu en dessous porte pointer-events:none par surcroît. */
+  .card.spoiler-masque .card-top,
+  .chrono-point.spoiler-masque .chrono-lien{
+    filter:blur(6px); pointer-events:none; user-select:none;
+  }
+  .spoiler-voile{
+    position:absolute; inset:0; z-index:3; display:flex;
+    align-items:center; justify-content:center; padding:8px;
+    background:transparent; border:none; cursor:pointer;
+  }
+  /* L'étiquette porte un fond opaque : écrite à même le flou, elle
+     devenait illisible sur les cartes à vignette claire. */
+  .spoiler-voile span{
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+    color:var(--text); background:var(--bg-elevated);
+    border:1px solid var(--line); border-radius:var(--r-full);
+    padding:8px 14px; text-align:center; line-height:1.3;
+  }
+  .chrono-point.spoiler-masque{position:relative;}
   /* Chaque catégorie porte SA couleur, sur le texte et sur le trait.
      Le fond reste transparent : c'est lui qui sépare les deux familles,
      et une couleur de plus ne doit pas effacer cette séparation. */
@@ -2225,6 +2254,33 @@
       </div>
     </div>
 
+
+    <!-- LE MODE SANS SPOILER, demandé par Antoni le 20/10/2026 pour
+         l'après-sortie. Il est rangé ici, avec les mots d'exclusion, parce
+         que c'est la même matière : une liste de mots qui décide du sort
+         d'un article. Ce qu'il en fait diffère, et c'est tout l'objet —
+         l'exclusion MASQUE, le mode sans spoiler FLOUTE. -->
+    <div class="setting-group">
+      <span class="setting-label">Mode sans spoiler</span>
+      <div class="setting-row">
+        <label for="spoilerMode">Flouter les articles à spoiler</label>
+        <input type="checkbox" id="spoilerMode" onchange="appliqueReglages()">
+      </div>
+      <textarea id="spoilerKeywordsInput" class="setting-input wide champ-mono" rows="4"
+                aria-label="Mots-clés de spoiler, un par ligne" placeholder="un mot-clé par ligne"
+                onchange="appliqueReglages()"></textarea>
+      <div class="setting-desc" id="spoilerKeywordsCount"></div>
+      <div class="setting-desc" hidden>
+        Un article dont le titre ou le résumé contient l'un de ces mots est
+        flouté et ne s'ouvre plus : il faut le toucher une fois pour le
+        révéler. Rien n'est perdu, seulement différé — contrairement aux
+        mots à exclure, qui retirent l'article du fil.
+        <br><br>
+        Le floutage est visuel. Il protège d'un regard, pas d'une
+        recherche : le texte reste dans la page.
+      </div>
+    </div>
+
     <!-- Les soixante-trois interrupteurs sont repliés quand le robot
          alimente le fil, parce qu'ils n'y décident de RIEN : le chemin
          backend lit feed.json et ne consulte jamais `enabled`. Ils ne
@@ -2458,6 +2514,12 @@ window.addEventListener("error", function(e){
 // des sources, n'est pas accessible dans ce cas précis pour la fournir).
 // Si tu ajoutes/retires une source d'un côté, pense à reporter le
 // changement ici aussi.
+//
+// AUCUN COMMENTAIRE À L'INTÉRIEUR DE CE TABLEAU : check_sources_sync le lit
+// comme du JSON, et un `//` entre deux lignes le fait échouer. Les raisons
+// de chaque source vivent donc dans FEEDS, côté fetch_feeds.py, qui fait
+// foi — dont les six dernières, ajoutées le 20/10/2026 pour l'après-sortie
+// et muettes jusqu'au 19 novembre.
 const DEFAULT_FEEDS = [
   { id: "rockstar-en", name: "Rockstar Games (officiel EN)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=en&gl=US&ceid=US:en", enabled: true, official: true, lang: "en" },
   { id: "rockstar-fr", name: "Rockstar Games (officiel FR)", url: "https://news.google.com/rss/search?q=site:rockstargames.com&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: true, lang: "fr" },
@@ -2522,7 +2584,13 @@ const DEFAULT_FEEDS = [
   { id: "mgg", name: "MGG (Millenium)", url: "https://news.google.com/rss/search?q=site:millenium.org+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
   { id: "xboxygen-natif", name: "Xboxygen (flux natif)", url: "https://www.xboxygen.com/feed", enabled: true, official: false, lang: "fr" },
   { id: "jdg-site", name: "Journal du Geek (flux natif)", url: "https://www.journaldugeek.com/feed/", enabled: true, official: false, lang: "fr" },
-  { id: "reddit-gta6-suivi", name: "Reddit — mises à jour et DLC", url: "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", enabled: true, official: false, lang: "en" }
+  { id: "reddit-gta6-suivi", name: "Reddit — mises à jour et DLC", url: "https://www.reddit.com/r/GTA6/search.rss?q=update+OR+patch+OR+DLC+OR+online&restrict_sr=on", enabled: true, official: false, lang: "en" },
+  { id: "gta6-tests-fr", name: "Google News (tests FR)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(test+OR+critique+OR+%22notre+avis%22+OR+not%C3%A9)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "gta6-tests-en", name: "Google News (reviews EN)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(review+OR+reviewed+OR+verdict+OR+%22review+score%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false, lang: "en" },
+  { id: "gta6-guides-fr", name: "Google News (soluces FR)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(soluce+OR+guide+OR+astuce+OR+astuces)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "gta6-guides-en", name: "Google News (guides EN)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(guide+OR+walkthrough+OR+%22how+to%22+OR+tips)&hl=en&gl=US&ceid=US:en", enabled: true, official: false, lang: "en" },
+  { id: "gta6-patch-fr", name: "Google News (mises à jour)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(patch+OR+%22mise+%C3%A0+jour%22+OR+correctif+OR+hotfix)&hl=fr&gl=FR&ceid=FR:fr", enabled: true, official: false, lang: "fr" },
+  { id: "gta6-online-en", name: "Google News (GTA Online 6)", url: "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(online+OR+multiplayer+OR+servers+OR+%22game+mode%22)&hl=en&gl=US&ceid=US:en", enabled: true, official: false, lang: "en" }
 ];
 
 const PROXIES = [
@@ -2540,6 +2608,22 @@ const PROXIES = [
   { name: "rss2json", build: (u) => "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(u), parse: (data) => data.status === "ok" ? data.items : null }
 ];
 
+// LE MODE SANS SPOILER : sa liste de mots, posée ici parce que
+// DEFAULT_SETTINGS s'en sert quelques lignes plus bas. Le reste de la
+// mécanique vit près de estExclu, avec l'autre liste de mots.
+//
+// LA LISTE EST PRÉ-REMPLIE, et c'est la moitié de l'idée. Une liste vide
+// obligerait à deviner les mots le soir même, c'est-à-dire trop tard.
+// Les vingt-deux ci-dessous couvrent les deux langues du fil ; ils sont
+// volontairement spécifiques (« mission finale » et non « mission »).
+const MOTS_SPOILER = [
+  "spoiler", "spoilers", "ending", "endings", "true ending", "vraie fin",
+  "toutes les fins", "every ending", "fin du jeu", "la fin de gta",
+  "mission finale", "dernière mission", "final mission", "last mission",
+  "qui meurt", "who dies", "la mort de", "death of", "scène finale",
+  "post-credit", "après le générique", "plot twist",
+];
+
 const DEFAULT_SETTINGS = {
   theme: "system",
   keywords: ["gta 6", "gta vi", "gta6", "gtavi", "grand theft auto vi", "grand theft auto 6", "gtaonline6", "rockstar next game", "rockstar new game", "rockstar upcoming game", "next gta", "new gta", "future gta", "upcoming gta", "gta next", "grand theft auto next", "gta sixth game", "gta sequel", "vice city", "vicecity", "leonida", "cyberleek", "cyber leak", "cyberleak", "take-two", "take two", "rockstar games", "rockstar north", "rockstar san diego", "rockstargames", "rockstar studio", "rockstar dev", "lucia caminos", "jason duval", "gta online 2"],
@@ -2547,6 +2631,12 @@ const DEFAULT_SETTINGS = {
   // Liste noire, vide par défaut : c'est à l'usage qu'on découvre le bruit
   // qu'on veut écarter (arnaques crypto, mods GTA 5 déguisés en GTA 6…).
   excludeKeywords: [],
+  // Le mode sans spoiler est ÉTEINT par défaut : avant la sortie il n'y a
+  // rien à protéger, et un fil flouté sans raison ressemble à une panne.
+  // Sa liste, en revanche, est pré-remplie — la remplir le soir du 19
+  // serait déjà trop tard.
+  spoilerMode: false,
+  spoilerKeywords: MOTS_SPOILER.slice(),
   maxDisplay: 500,
   similarityThreshold: 72,
   denseMode: false,
@@ -2846,6 +2936,12 @@ async function saveSettings(){
   settings.backendUrl = document.getElementById("backendUrlInput").value.trim();
   settings.keywords = document.getElementById("keywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
   settings.excludeKeywords = document.getElementById("excludeKeywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
+  settings.spoilerMode = document.getElementById("spoilerMode").checked;
+  settings.spoilerKeywords = document.getElementById("spoilerKeywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
+  // Changer la liste REMET LES RÉVÉLATIONS À ZÉRO. Sans ça, un article
+  // révélé avant d'ajouter le mot qui le concerne resterait visible : le
+  // mot qu'on vient d'écrire pour s'en protéger n'aurait servi à rien.
+  spoilersReveles = new Set();
   settings.maxDisplay = litMaxDisplay();
   settings.similarityThreshold = parseInt(document.getElementById("simRange").value, 10);
 
@@ -2861,6 +2957,7 @@ async function saveSettings(){
   updateFooterNote();
   majCompteurMots("keywordsInput", "keywordsCount", "mot-clé", "mots-clés", "aucun mot-clé");
   majCompteurMots("excludeKeywordsInput", "excludeKeywordsCount", "exclusion", "exclusions", "aucune exclusion");
+  majCompteurMots("spoilerKeywordsInput", "spoilerKeywordsCount", "mot de spoiler", "mots de spoiler", "aucun mot de spoiler");
 }
 
 // Retire les entrées les plus anciennes au-delà du plafond. Sans ça le
@@ -3140,6 +3237,8 @@ function populateSettingsUI(){
   document.getElementById("backendUrlInput").value = settings.backendUrl || "";
   document.getElementById("keywordsInput").value = settings.keywords.join("\n");
   document.getElementById("excludeKeywordsInput").value = (settings.excludeKeywords || []).join("\n");
+  document.getElementById("spoilerMode").checked = !!settings.spoilerMode;
+  document.getElementById("spoilerKeywordsInput").value = (settings.spoilerKeywords || []).join("\n");
   document.getElementById("maxDisplay").value = settings.maxDisplay;
   document.getElementById("simRange").value = settings.similarityThreshold;
   document.getElementById("simValue").textContent = settings.similarityThreshold + "%";
@@ -3177,6 +3276,7 @@ function populateSettingsUI(){
   litMaxDisplay();
   majCompteurMots("keywordsInput", "keywordsCount", "mot-clé", "mots-clés", "aucun mot-clé");
   majCompteurMots("excludeKeywordsInput", "excludeKeywordsCount", "exclusion", "exclusions", "aucune exclusion");
+  majCompteurMots("spoilerKeywordsInput", "spoilerKeywordsCount", "mot de spoiler", "mots de spoiler", "aucun mot de spoiler");
   // Ici et pas dans openSettings : populateSettingsUI est aussi rejouée
   // après chaque vérification quand le panneau est ouvert, et c'est ce qui
   // fait suivre la section à une bascule backend → mode direct.
@@ -4998,6 +5098,55 @@ function clearSearch(){
   input.focus();
 }
 
+// ---------- LE MODE SANS SPOILER ----------
+//
+// Demandé par Antoni le 20/10/2026, pour l'après-sortie : le 19 au soir,
+// les titres se mettent à raconter le jeu, et il y jouera des semaines.
+//
+// FLOUTER ET NON MASQUER, c'est son choix explicite entre les trois
+// proposés. Les mots d'exclusion, eux, retirent l'article du fil : la
+// mécanique se ressemble, l'intention est l'inverse. Un spoiler flouté
+// reste compté, reste cherchable, reste là — il attend seulement qu'on
+// le touche.
+//
+
+// Les articles révélés d'un geste. En mémoire seulement, à dessein : la
+// révélation vaut pour la session en cours, et rouvrir l'app dans trois
+// jours ne doit pas rendre visibles des titres qu'on avait acceptés de
+// voir une fois. Même raisonnement que badgeActif.
+let spoilersReveles = new Set();
+
+function contientSpoiler(item){
+  if(!settings.spoilerMode) return false;
+  const mots = settings.spoilerKeywords;
+  if(!mots || mots.length === 0) return false;
+  if(spoilersReveles.has(item && item.link)) return false;
+  // Aplati des DEUX côtés, comme estExclu : les mots sont saisis à la
+  // main et peuvent porter leurs accents.
+  const foin = texteCherchable(item);
+  return mots.some(mot => foin.includes(sansAccents(mot).toLowerCase()));
+}
+
+// Le voile, posé par les deux vues. Une seule fabrique, pour la même
+// raison que boutonsBadges : deux copies divergent.
+function voileSpoiler(lien){
+  return `<button type="button" class="spoiler-voile" `
+    + `aria-label="Afficher cet article, qui peut contenir un spoiler" `
+    + `onclick="revelerSpoiler(event, '${escapeAttr(lien)}')">`
+    + `<span>👁️ Spoiler possible<br>toucher pour afficher</span></button>`;
+}
+
+// Révélation CIBLÉE, et pas un applyFilters() : rerendre tout le fil
+// ferait sauter le défilement sous le doigt, au moment précis où l'on
+// vient de toucher une carte.
+function revelerSpoiler(ev, lien){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  spoilersReveles.add(lien);
+  const voile = ev && ev.currentTarget;
+  const bloc = voile && voile.closest(".spoiler-masque");
+  if(bloc){ bloc.classList.remove("spoiler-masque"); voile.remove(); }
+}
+
 // Masquage à l'affichage et non à la collecte : lastItems garde tout, donc
 // retirer un mot de la liste noire fait réapparaître les articles aussitôt,
 // sans relancer le robot ni retélécharger le fil.
@@ -5561,8 +5710,15 @@ function renderChronologie(items){
         ? `<span class="tag-badge tag-hot">🔥 ACTU MAJEURE · ${nombreDeRedactions(item)} SOURCES</span>` : "")
       + boutonsBadges(item);
 
+    // Le voile sans spoiler vaut ici aussi. L'onglet Rockstar ne porte
+    // que des annonces officielles, qui ne racontent pas le jeu — mais
+    // un mode qui ne s'applique qu'à une vue sur deux est un mode auquel
+    // on ne peut pas se fier.
+    const masque = contientSpoiler(item);
+
     return sep + `
-      <li class="chrono-point${lu ? " lu" : ""}" id="card-${safeId}">
+      <li class="chrono-point${lu ? " lu" : ""}${masque ? " spoiler-masque" : ""}" id="card-${safeId}">
+        ${masque ? voileSpoiler(item.link) : ""}
         <span class="chrono-date">${jour}${heure ? ` · ${heure}` : ""}</span>
         <a class="chrono-lien" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
            onclick="markRead('${safeId}', '${escapeAttr(item.link)}')">
@@ -5874,8 +6030,14 @@ function renderCard(item, newLinks, searchQuery){
     ? `<div class="card-extra">+ ${item.extraSources.length} autre${item.extraSources.length>1?"s":""} source${item.extraSources.length>1?"s":""} : ${item.extraSources.map(extraLien).join(", ")}</div>`
     : "";
 
+  // LE VOILE SANS SPOILER. Il couvre toute la carte et intercepte le
+  // geste : un simple flou laisserait le titre cliquable, donc ouvrable
+  // par accident — exactement ce que ce mode doit empêcher.
+  const masque = contientSpoiler(item);
+
   return `
-    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
+    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}${masque ? ' spoiler-masque' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
+      ${masque ? voileSpoiler(item.link) : ""}
       <div class="card-top">
         ${thumb}
         <div class="card-body">

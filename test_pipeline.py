@@ -9401,6 +9401,128 @@ def test_epoque_unix_nest_pas_une_date():
           "et le repli s'applique à la construction de chaque article")
 
 
+def test_le_recap_se_tait_apres_la_sortie():
+    """Après le 19 novembre, le récapitulatif n'annonce que le notable.
+
+    Demandé par Antoni le 20/10/2026. Aujourd'hui le récapitulatif part dès
+    qu'un article est entré, et c'est ce qu'il faut. Après la sortie il
+    dirait « 180 nouveaux articles » toutes les heures — un seul message,
+    donc pas du spam, mais un message qui n'apprend plus rien.
+
+    LA DATE DÉCIDE, PAS UN INTERRUPTEUR, et c'est le point que ce contrôle
+    tient : un réglage à basculer le soir du 19 ne serait pas basculé.
+    """
+    print("\n[recap] après la sortie, le récapitulatif ne dit que le notable")
+    from datetime import timedelta
+    import feed_store as fs
+
+    S = fs.SORTIE_GTA6
+    check(S.isoformat() == "2026-11-18T23:00:00+00:00",
+          "la sortie est à minuit heure de Paris, soit 23:00 UTC la veille "
+          "(%s)" % S.isoformat())
+
+    avant = S - timedelta(seconds=1)
+    apres = S + timedelta(seconds=1)
+
+    # AVANT : rien ne change, et c'est la moitié du contrôle. Une bascule
+    # qui se déclencherait trop tôt couperait les notifications pendant le
+    # mois le plus intéressant de la veille.
+    check(fs.recap_merite_notification(180, 0, 1, avant),
+          "[avant] 180 articles ordinaires valent toujours un récapitulatif")
+    check(fs.recap_merite_notification(1, 0, 1, avant),
+          "[avant] un seul aussi")
+    check(not fs.recap_merite_notification(0, 0, 0, avant),
+          "[avant] mais pas zéro — ça, ça n'a jamais changé")
+
+    # APRÈS : seuls l'annonce officielle et l'actu majeure passent.
+    check(not fs.recap_merite_notification(180, 0, 1, apres),
+          "[après] 180 articles ordinaires ne valent plus de notification")
+    check(fs.recap_merite_notification(180, 1, 1, apres),
+          "[après] une annonce officielle, si")
+    check(fs.recap_merite_notification(0, 1, 1, apres),
+          "[après] même sans le moindre article ordinaire")
+    check(fs.recap_merite_notification(180, 0, fs.HOT_SOURCE_THRESHOLD, apres),
+          "[après] une actu majeure aussi")
+    check(not fs.recap_merite_notification(180, 0, fs.HOT_SOURCE_THRESHOLD - 1, apres),
+          "[après] et le seuil de l'actu majeure est CELUI de l'app, pas un "
+          "second écrit ici (%d)" % fs.HOT_SOURCE_THRESHOLD)
+
+    # À LA SECONDE PRÈS. Une comparaison écrite `<=` au lieu de `<` ferait
+    # taire le récapitulatif une seconde trop tôt — invisible, mais c'est
+    # le genre de borne qui se vérifie une fois pour toutes.
+    check(fs.recap_merite_notification(5, 0, 1, S - timedelta(microseconds=1)),
+          "[borne] une microseconde avant la sortie, le récap parle encore")
+    check(not fs.recap_merite_notification(5, 0, 1, S),
+          "[borne] et à l'instant même de la sortie, il se tait")
+
+    # LES TROIS NOMBRES VIENNENT D'UN SEUL ENDROIT. Sans comptes_du_recap,
+    # la décision d'envoyer aurait reparti d'un calcul à elle, à côté de
+    # celui du libellé — deux comptes du même lot qui peuvent diverger.
+    lot = [{"official": True}, {"extraSources": [1, 2]}, {}]
+    check(fs.comptes_du_recap(lot, None) == (3, 1, 3),
+          "[comptes] recomptés sur le lot : articles, officiels, sommet (%s)"
+          % (fs.comptes_du_recap(lot, None),))
+    check(fs.comptes_du_recap(lot, None, (12, 2, 5)) == (12, 2, 5),
+          "[comptes] mais les totaux reportés font foi quand ils existent — "
+          "le récapitulatif du matin n'a plus ses articles")
+    check(fs.comptes_du_recap([], None) == (0, 0, 0),
+          "[comptes] et un lot vide ne plante pas")
+
+    # LES DEUX CANAUX SE TAISENT ENSEMBLE. Un seul juge, appelé par les
+    # deux : couper l'un en laissant l'autre bavard serait pire que ne
+    # rien couper.
+    for nom in ("push_notify.py", "discord_notify.py"):
+        texte = open(nom, encoding="utf-8").read()
+        check("recap_merite_notification" in texte,
+              "%s passe par le juge partagé" % nom)
+        check("comptes_du_recap" in texte,
+              "%s prend ses trois nombres au même endroit" % nom)
+
+
+def test_les_sources_de_lapres_sortie():
+    """Six sources ajoutées le 20/10/2026, muettes jusqu'au 19 novembre.
+
+    Choix d'Antoni entre « maintenant, elles dormiront » et « le
+    20 novembre » : ajoutées aujourd'hui, elles se remplissent seules sans
+    qu'il y ait de session ce soir-là.
+    """
+    print("\n[sources] les six sources de l'après-sortie")
+    import fetch_feeds
+
+    attendues = {"gta6-tests-fr", "gta6-tests-en", "gta6-guides-fr",
+                 "gta6-guides-en", "gta6-patch-fr", "gta6-online-en"}
+    par_id = {f["id"]: f for f in fetch_feeds.FEEDS}
+    manquantes = sorted(attendues - set(par_id))
+    check(not manquantes, "les six sont dans FEEDS (%s)" % manquantes)
+
+    # AUCUN DOMAINE NOUVEAU, et c'est ce qui rend l'ajout sans risque :
+    # pas de sonde à faire, pas de 429 à craindre. Les six sont des
+    # requêtes Google News, comme les quinze déjà en place.
+    from urllib.parse import urlparse
+    hors = [i for i in attendues
+            if urlparse(par_id[i]["url"]).netloc != "news.google.com"]
+    check(not hors,
+          "toutes passent par news.google.com, aucun domaine nouveau (%s)" % hors)
+
+    # Elles cherchent bien GTA 6 : une requête qui perdrait le bloc de
+    # mots-clés ramènerait tous les tests de tous les jeux.
+    sans_cle = [i for i in attendues if "%22GTA+6%22" not in par_id[i]["url"]]
+    check(not sans_cle,
+          "et chacune garde le bloc de mots-clés GTA 6 (%s)" % sans_cle)
+
+    # Aucune n'est marquée officielle : une requête Google News n'est pas
+    # une source primaire, et `official` durcit le filtre de titres.
+    officielles = [i for i in attendues if par_id[i].get("official")]
+    check(not officielles,
+          "aucune n'est marquée officielle (%s)" % officielles)
+
+    # Des identifiants uniques : un doublon ferait silencieusement
+    # disparaître la seconde à la lecture de feed.json.
+    ids = [f["id"] for f in fetch_feeds.FEEDS]
+    check(len(ids) == len(set(ids)),
+          "et les %d identifiants de FEEDS restent uniques" % len(ids))
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -9531,6 +9653,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plancher_refuse_ce_qui_serait_elague,
            test_lecteurs_de_liaison_mutualises,
            test_epoque_unix_nest_pas_une_date,
+           test_le_recap_se_tait_apres_la_sortie,
+           test_les_sources_de_lapres_sortie,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,

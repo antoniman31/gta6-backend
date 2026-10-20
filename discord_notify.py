@@ -489,6 +489,18 @@ def _main():
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 
+    # Même décision que le push, et c'est le même juge : après la sortie,
+    # le récapitulatif ne part que s'il y a une annonce officielle ou une
+    # actu majeure. Les deux canaux disent déjà mot pour mot la même
+    # chose ; ils doivent aussi se taire au même moment, sans quoi couper
+    # l'un laisserait l'autre bavard.
+    n_recap, off_recap, sommet_recap = feed_store.comptes_du_recap(
+        new_items, promus, totaux)
+    if not feed_store.recap_merite_notification(n_recap, off_recap, sommet_recap):
+        print(f"[discord] après la sortie — {n_recap} article(s) sans annonce "
+              f"officielle ni actu majeure, le récapitulatif se tait.")
+        return 0
+
     # Déposés par le robot à côté des totaux : ils contiennent l'arriéré de
     # la nuit, que new_items ne peut plus contenir.
     # `or None` et non la liste telle quelle : une liste VIDE veut dire « le
