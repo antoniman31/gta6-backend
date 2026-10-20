@@ -4609,9 +4609,17 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     # main garantissaient qu'un ajout en oublierait un, ce qui est
     # exactement ce qui était arrivé à VIDÉO. Le code satisfait mieux
     # l'intention qu'avant ; c'est le test qui regardait la mauvaise chose.
-    check("JUGES_BADGE[" in extrait,
-          "[badges] la carte passe par la table des juges, partagée avec le "
-          "filtre")
+    # Depuis le 20/10/2026 la boucle elle-même est partie dans une
+    # fabrique unique, boutonsBadges : la carte ET la chronologie la
+    # portaient, recopiée mot pour mot. À vingt et un badges, avec une
+    # classe de famille à poser en plus, deux copies garantissaient un
+    # oubli. La carte appelle la fabrique, la fabrique passe par la table.
+    fabrique = page.evaluate("String(boutonsBadges)")
+    check("boutonsBadges(item)" in extrait,
+          "[badges] la carte passe par la fabrique unique de badges")
+    check("JUGES_BADGE[" in fabrique,
+          "[badges] et la fabrique passe par la table des juges, partagée "
+          "avec le filtre")
     check("\\bleak" not in extrait and "\\btrailer" not in extrait,
           "[badges] et ne recopie aucune expression régulière chez elle")
 
@@ -4699,7 +4707,7 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
         }));
         visibleCount = 1000; settings.maxDisplay = 1000; badgeActif = null; applyFilters();
         return [...document.querySelectorAll('.card .tag-badge')]
-            .filter(b => !/tag-(leak|video|pc|preco|prix|perso|take2|rumeur|date|hot|lang)/.test(b.className))
+            .filter(b => !/tag-(leak|video|pc|preco|prix|perso|take2|rumeur|date|hot|lang|cat)/.test(b.className))
             .map(b => b.textContent);
     }""")
     check(not sansCouleur,
@@ -4731,6 +4739,311 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     corps = page.evaluate("String(filtreBadge)")
     check("stopPropagation" in corps and "preventDefault" in corps,
           "[badges] le clic ne remonte pas jusqu'au lien de la carte")
+
+    # ---- LES DOUZE CATÉGORIES DE L'APRÈS-SORTIE, 20/10/2026.
+    #
+    # Demandées par Antoni : « test, astuces, tuto, gameplay... ». Mêmes
+    # règles que les sept d'octobre — un juge unique, un motif resserré
+    # sur le corpus réel — avec une difficulté de plus : LE FIL EST
+    # PRÉ-SORTIE. Un test de GTA 6 n'existe pas encore. Les motifs ne
+    # peuvent donc être éprouvés que sur leurs FAUX POSITIFS d'aujourd'hui
+    # et sur des titres d'après-sortie écrits à la main.
+    #
+    # Les faux ci-dessous sont des titres RÉELS du fil au 20/10/2026, pas
+    # des inventions ; chacun est passé entre les mailles d'une version
+    # précédente du motif.
+    categories = page.evaluate("""() => {
+        const faux = {
+            // « review copies », « Board Review », « best-reviewed » : sur
+            // seize titres pris par le premier motif, seize faux positifs.
+            test: ["GTA 6 First Review Details Leaked",
+                   "'GTA 6' Rated 'Adults Only' in South Korea Following Private Board Review",
+                   "GTA 6 On Track To Overthrow The Best-Selling Video Game Of All-Time",
+                   "Les exemplaires de test de GTA 6 seraient envoyés plus tôt",
+                   "Noté 19/20, le dernier jeu de Rockstar avant GTA 6 passe à 19,99€"],
+            // « how to get » attrape un congé pour la sortie.
+            soluce: ["Carer's Leave for GTA 6: How to Get Time Off for the Game",
+                     "Where to Pre-Order GTA 6 Controllers for PS5"],
+            // « cheating » : le système de drague du jeu, pas la triche.
+            astuce: ["A Surprising Number of People Think Dating in GTA 6 is Cheating",
+                     "GTA 6: Can you cheat on someone with a video game character?"],
+            // « update » nu : trois titres sur quatre ne sont pas un correctif.
+            maj: ["GTA 6 Map Update Reveals New Buildings and Size Comparisons",
+                  "Rockstar Issues Rare Official GTA 6 Development Update",
+                  "GTA 6 Gets One Final Official Release Date Update"],
+            // « crash » : la cryptomonnaie du leaker, neuf titres sur treize.
+            bug: ["CYBERLEEK Token Crashes 40% as GTA 6 Leaker Makes New Threats",
+                  "'There Is a God' — GTA 6 Fans Celebrate as Cyberleek Cryptocurrency Crashes Hard"],
+            // « vente » au singulier : la vente aux mineurs, un disque mis en vente.
+            ventes: ["GTA 6 est classé Pegi 18, un label qui n'interdit pas la vente aux mineurs",
+                     "Un vendeur met en vente un disque PS5 de GTA 6 en édition physique"],
+            // « mod » ne doit pas manger « modern » ni « model ».
+            mod: ["GTA 6 brings a modern Vice City to life",
+                  "The model behind Lucia speaks out"],
+        };
+        const vrais = {
+            test: ["GTA 6 : notre test complet après 40 heures de jeu",
+                   "Grand Theft Auto VI review: a masterpiece",
+                   "GTA 6 : le test"],
+            soluce: ["GTA 6 soluce : toutes les missions principales",
+                     "GTA 6: how to unlock the Vice City penthouse",
+                     "Comment trouver tous les colis cachés de GTA 6"],
+            astuce: ["GTA 6 : toutes les astuces et codes de triche",
+                     "GTA 6 cheat codes: the full list",
+                     "GTA 6 tips and tricks for beginners"],
+            maj: ["GTA 6 : le patch 1.02 corrige les plantages sur PS5",
+                  "Rockstar déploie un correctif pour GTA 6",
+                  "GTA 6 patch notes: what changed"],
+            bug: ["GTA 6 : un bug empêche de terminer la mission finale",
+                  "GTA 6 players report a game-breaking glitch"],
+            mod: ["Un moddeur ajoute la carte de GTA 5 dans GTA 6",
+                  "GTA 6 modding tools are already here"],
+            online: ["GTA 6 Online : le mode multijoueur arrive en 2027",
+                     "GTA Online ferme ses serveurs sur PS4"],
+            perf: ["GTA 6 tourne en 1440p à 30 FPS sur PS5",
+                   "GTA 6 : le ray-tracing réservé à la PS5 Pro"],
+            trophee: ["GTA 6 : la liste complète des trophées",
+                      "GTA 6 achievements revealed"],
+            ventes: ["Les ventes de GTA 6 ont dépassé les 6 millions d'exemplaires",
+                     "GTA 6 breaks first-day sales records"],
+            gameplay: ["GTA 6 : 25 minutes de gameplay inédit",
+                       "Our GTA 6 hands-on impressions"],
+            speedrun: ["Un speedrunner termine GTA 6 en 4 heures",
+                       "GTA 6 speedrun world record broken"],
+        };
+        const out = {fauxPris: [], vraisRates: []};
+        for(const [cle, titres] of Object.entries(faux))
+            for(const t of titres)
+                if(JUGES_BADGE[cle]({title: t, link: "https://x.test/a"}))
+                    out.fauxPris.push(cle + " : " + t.slice(0, 50));
+        for(const [cle, titres] of Object.entries(vrais))
+            for(const t of titres)
+                if(!JUGES_BADGE[cle]({title: t, link: "https://x.test/a"}))
+                    out.vraisRates.push(cle + " : " + t.slice(0, 50));
+        return out;
+    }""")
+    check(not categories["fauxPris"],
+          "[catégories] les motifs écartent les faux positifs mesurés le "
+          "20/10 : « review copies », « is Cheating », « Token Crashes », "
+          "« Map Update », « la vente aux mineurs » (%s)"
+          % categories["fauxPris"][:2])
+    check(not categories["vraisRates"],
+          "[catégories] et les vrais articles d'après-sortie passent (%s)"
+          % categories["vraisRates"][:2])
+
+    # L'ADRESSE AVANT LE TITRE pour les trois que le titre ne sait pas
+    # juger. Aucun article n'a /test/ aujourd'hui, mais 951 ont /news/ :
+    # le chemin existe et se remplira le 19 novembre.
+    url = page.evaluate("""() => ({
+        test: estTest({title: "GTA 6", link: "https://jv.test/test/gta-6-9412"}),
+        soluce: estSoluce({title: "GTA 6", link: "https://jv.test/soluce/gta-6/colis"}),
+        astuce: estAstuce({title: "GTA 6", link: "https://jv.test/astuces/gta-6"}),
+        // Et un chemin qui ne dit rien ne pose rien.
+        neutre: estTest({title: "GTA 6 arrive", link: "https://jv.test/news/gta-6"}),
+    })""")
+    check(url["test"] and url["soluce"] and url["astuce"],
+          "[catégories] le CHEMIN de l'adresse suffit : /test/, /soluce/, "
+          "/astuces/ (%s)" % url)
+    check(not url["neutre"],
+          "[catégories] et /news/ ne déclenche rien (%s)" % url["neutre"])
+
+    # ---- LE NOM DU MÉDIA N'EST PAS LE TITRE.
+    #
+    # 3 406 titres sur 4 225 finissent par « - Nom du média », et dans 302
+    # d'entre eux un mot du motif n'est QUE là. Le badge PC se posait sur
+    # 21 articles qui ne parlent pas de PC, parce que leur média s'appelle
+    # PC Gamer.
+    media = page.evaluate("""() => ({
+        corps: corpsDuTitre({title: "GTA 6 leaker threatens Take-Two - PC Gamer"}),
+        pcFaux: estPC({title: "GTA 6 leaker threatens Take-Two - PC Gamer"}),
+        pcFaux2: estPC({title: "Des hackers menacent de diffuser une version jouable - PC Astuces"}),
+        astuceFaux: estAstuce({title: "Des hackers menacent de diffuser une version - PC Astuces"}),
+        guideFaux: estSoluce({title: "3 movies I'm watching until GTA VI - Tom's Guide"}),
+        // Le vrai PC reste pris.
+        pcVrai: estPC({title: "GTA 6 sur PC dès 2027 - Gamekult"}),
+        // LA GARDE : un suffixe qui ne ressemble pas à un nom de média
+        // n'est pas rogné. Sans elle, ce titre-là perdait son badge
+        // RUMEUR, et c'était le seul du fil entier.
+        rumeur: estRumeur({title: "GTA 6 map - confirmed and rumored locations"}),
+    })""")
+    check(media["corps"] == "GTA 6 leaker threatens Take-Two",
+          "[médias] le suffixe « - Nom du média » est retiré avant de juger "
+          "(« %s »)" % media["corps"])
+    check(not media["pcFaux"] and not media["pcFaux2"],
+          "[médias] PC Gamer et PC Astuces ne posent plus le badge PC — "
+          "21 articles le portaient pour cette seule raison (%s / %s)"
+          % (media["pcFaux"], media["pcFaux2"]))
+    check(not media["astuceFaux"] and not media["guideFaux"],
+          "[médias] ni PC Astuces le badge ASTUCE, ni Tom's Guide le badge "
+          "SOLUCE (%s / %s)" % (media["astuceFaux"], media["guideFaux"]))
+    check(media["pcVrai"],
+          "[médias] et un vrai article PC garde le sien (%s)" % media["pcVrai"])
+    check(media["rumeur"],
+          "[médias] la garde tient : « - confirmed and rumored locations » "
+          "n'est pas un nom de média et n'est pas rogné (%s)" % media["rumeur"])
+
+    # GAMEPLAY ET VIDÉO NE DISENT PLUS LA MÊME CHOSE. Les 97 cartes
+    # marquées GAMEPLAY étaient TOUTES marquées VIDÉO ; `\\bgameplay\\b`
+    # est donc sorti de RE_VIDEO le même jour. Le mot ne prouve aucune
+    # vidéo.
+    gv = page.evaluate("""() => ({
+        detail: estVideo({title: "Bloomberg a révélé de nouveaux détails sur le gameplay de GTA 6"}),
+        detailCat: estGameplay({title: "Bloomberg a révélé de nouveaux détails sur le gameplay de GTA 6"}),
+        vraieVideo: estVideo({title: "25 minutes de gameplay volées, ce que révèle la vidéo"}),
+        trailer: estVideo({title: "Rockstar drops a new GTA 6 trailer"}),
+    })""")
+    check(not gv["detail"] and gv["detailCat"],
+          "[catégories] « des détails sur le gameplay » est une CATÉGORIE, "
+          "plus une vidéo (vidéo %s, gameplay %s)"
+          % (gv["detail"], gv["detailCat"]))
+    check(gv["vraieVideo"] and gv["trailer"],
+          "[catégories] et les vraies vidéos restent prises (%s / %s)"
+          % (gv["vraieVideo"], gv["trailer"]))
+
+    # ---- DEUX FAMILLES, ET ELLES NE SE RESSEMBLENT PAS.
+    #
+    # Choix d'Antoni, posé avant d'écrire : à vingt et un badges une carte
+    # peut en porter cinq. L'alerte garde son aplat, la catégorie est au
+    # trait.
+    familles = page.evaluate("""() => {
+        lastItems = [{link: "https://f.test/1", source: "T",
+                      date: new Date().toISOString(),
+                      title: "GTA 6 leak : notre test et les astuces"}];
+        visibleCount = 1000; settings.maxDisplay = 1000; badgeActif = null;
+        applyFilters();
+        const lus = [...document.querySelectorAll(".card .tag-badge")].map(b => {
+          const cs = getComputedStyle(b);
+          return {texte: b.textContent, cat: b.classList.contains("tag-cat"),
+                  fond: cs.backgroundColor, bord: cs.borderTopWidth};
+        });
+        const alerte = lus.find(b => !b.cat && b.texte === "LEAK");
+        const cat = lus.find(b => b.cat && b.texte === "TEST");
+        return {
+          n: lus.length,
+          ordre: lus.map(b => b.texte),
+          // La dernière alerte précède la première catégorie.
+          separees: lus.length > 1
+            && lus.findIndex(b => b.cat) > lus.map(b => b.cat).lastIndexOf(false),
+          alerteOpaque: alerte ? alerte.fond : null,
+          catTransparente: cat ? cat.fond : null,
+          catBordee: cat ? parseFloat(cat.bord) : 0,
+        };
+    }""")
+    check(familles["n"] >= 3,
+          "[familles] un titre peut porter alertes et catégories à la fois "
+          "(%s)" % familles["ordre"])
+    check(familles["separees"],
+          "[familles] et les alertes passent TOUTES devant les catégories — "
+          "un sujet ne précède jamais un événement (%s)" % familles["ordre"])
+    check(familles["alerteOpaque"] not in (None, "rgba(0, 0, 0, 0)"),
+          "[familles] l'alerte garde son aplat (%s)" % familles["alerteOpaque"])
+    check(familles["catTransparente"] == "rgba(0, 0, 0, 0)"
+          and familles["catBordee"] >= 1,
+          "[familles] la catégorie est au trait, fond transparent et bord "
+          "d'au moins 1 px (fond %s, bord %s px)"
+          % (familles["catTransparente"], familles["catBordee"]))
+
+    # LA TABLE EST LE FILTRE, et elle a maintenant vingt-deux entrées.
+    # Un juge ajouté sans libellé, ou sans place dans l'ordre, se rendrait
+    # « undefined » sur la carte.
+    compte = page.evaluate("""() => ({
+        juges: Object.keys(JUGES_BADGE).length,
+        cats: [...BADGES_CATEGORIE],
+        horsOrdre: [...BADGES_CATEGORIE].filter(c => !ORDRE_BADGES.includes(c)),
+        sansNom: [...BADGES_CATEGORIE].filter(c => !NOMS_BADGE[c]),
+        sansJuge: [...BADGES_CATEGORIE].filter(c => !JUGES_BADGE[c]),
+    })""")
+    check(len(compte["cats"]) == 12,
+          "[catégories] les douze demandées sont là (%s)" % len(compte["cats"]))
+    check(not compte["horsOrdre"] and not compte["sansNom"]
+          and not compte["sansJuge"],
+          "[catégories] chacune a son juge, son libellé et sa place (%s %s %s)"
+          % (compte["horsOrdre"], compte["sansNom"], compte["sansJuge"]))
+
+    # ---- UNE COULEUR PAR CATÉGORIE, ET CHACUNE MESURÉE.
+    #
+    # Demandé par Antoni le 20/10/2026, après la première version où les
+    # douze partageaient un même trait neutre. Douze tons à 30° l'un de
+    # l'autre : c'est le mieux qu'on puisse faire à douze, et les deux
+    # paires les plus proches tiennent dans une cinquantaine d'unités RVB.
+    #
+    # PAR THÈME, et pas une valeur fixe comme les neuf aplats d'alerte :
+    # une catégorie est au trait, donc sa couleur s'écrit directement sur
+    # la carte — blanche en clair, #10151a en sombre. Aucun ton unique ne
+    # tient 4,5:1 sur les deux.
+    for theme, fondAttendu in (("light", "rgb(255, 255, 255)"),
+                               ("dark", "rgb(16, 21, 26)")):
+        teintes = page.evaluate("""(theme) => {
+            document.documentElement.setAttribute("data-theme", theme);
+            const sonde = document.createElement("span");
+            sonde.className = "tag-badge tag-cat";
+            const carte = document.createElement("div");
+            carte.className = "card";
+            carte.appendChild(sonde);
+            document.body.appendChild(carte);
+            const fond = getComputedStyle(carte).backgroundColor;
+            const lus = {};
+            for(const cle of BADGES_CATEGORIE){
+              sonde.className = "tag-badge tag-cat tag-" + cle;
+              const cs = getComputedStyle(sonde);
+              lus[cle] = {texte: cs.color, trait: cs.borderTopColor,
+                          corps: parseFloat(cs.fontSize)};
+            }
+            carte.remove();
+            return {fond: fond, lus: lus};
+        }""", theme)
+        check(teintes["fond"] == fondAttendu,
+              "[teintes %s] la carte est bien le fond mesuré (%s)"
+              % (theme, teintes["fond"]))
+
+        def lire(css):
+            n = [int(x) for x in re.findall(r"\d+", css)[:3]]
+            return tuple(n)
+
+        def luminance(c):
+            def f(v):
+                v /= 255.0
+                return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+            return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2])
+
+        fond = lire(teintes["fond"])
+        faibles, muets, vus = [], [], {}
+        for cle, v in teintes["lus"].items():
+            t = lire(v["texte"])
+            ya, yb = luminance(t), luminance(fond)
+            r = (max(ya, yb) + 0.05) / (min(ya, yb) + 0.05)
+            if r < 4.5:
+                faibles.append("%s %.2f:1" % (cle, r))
+            # Le trait doit porter la MÊME couleur que le texte : un badge
+            # coloré dans un cadre gris se lit comme une erreur de rendu.
+            if lire(v["trait"]) != t:
+                muets.append("%s (%s / %s)" % (cle, v["texte"], v["trait"]))
+            vus[cle] = t
+        check(not faibles,
+              "[teintes %s] les douze passent 4,5:1 sur la carte (%s)"
+              % (theme, faibles))
+        check(not muets,
+              "[teintes %s] et le trait porte la couleur du texte (%s)"
+              % (theme, muets))
+        # DOUZE COULEURS DISTINCTES, pas onze et un doublon. Une teinte
+        # recopiée par inadvertance passerait tous les contrôles
+        # ci-dessus sans que rien ne le dise.
+        doublons = [c for c in vus if list(vus.values()).count(vus[c]) > 1]
+        check(not doublons,
+              "[teintes %s] les douze sont toutes différentes (%s)"
+              % (theme, doublons))
+        # La plus proche paire, dite plutôt que cachée : à douze teintes
+        # elle est serrée par construction, et le seuil retenu (40 unités
+        # RVB) est celui sous lequel deux badges de 10 px ne se
+        # distinguent plus.
+        pires = sorted(
+            (sum((x - y) ** 2 for x, y in zip(vus[a], vus[b])) ** 0.5, a, b)
+            for i, a in enumerate(sorted(vus)) for b in sorted(vus)[i + 1:])
+        check(pires[0][0] >= 40,
+              "[teintes %s] et la paire la plus proche reste distinguable "
+              "(%s / %s, %.0f unités)"
+              % (theme, pires[0][1], pires[0][2], pires[0][0]))
+    page.evaluate("""() => document.documentElement.setAttribute("data-theme", "dark")""")
 
     # UN BADGE RESTE UN BADGE, MÊME DEVENU BOUTON.
     #

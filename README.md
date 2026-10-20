@@ -8869,6 +8869,129 @@ vivante ne garde qu'elle, et le **zéro du milieu** reste. Plus deux
 contrôles à J+3 sur le mot de la note et sur celui de la barre, et un
 qui vérifie que les six tuiles sont bien de retour une semaine après.
 
+### Douze catégories pour l'après-sortie — 20/10/2026
+
+« Pour après la sortie faudra créer d'autres catégories d'article (test,
+astuces, tuto, gameplay...) ». Pas de nouvel onglet : les deux rangées
+sont pleines depuis le 16/10, et c'est écrit. Douze badges de plus, par
+le chemin déjà en place — un juge unique partagé par la carte et par le
+filtre.
+
+#### Ce que la mesure dit, et ce qu'elle ne peut pas dire
+
+Le fil d'aujourd'hui est **pré-sortie**. Un test de GTA 6 n'existe pas,
+une soluce non plus. Les volumes ci-dessous ne disent donc pas ce que ces
+badges pèseront en novembre ; ils disent **quels faux positifs existent
+déjà**. Antoni a tranché « tout maintenant, quitte à corriger » en le
+sachant, contre ma proposition de n'en livrer que trois et de mesurer le
+reste le 22 novembre.
+
+| | | | |
+|---|---|---|---|
+| GAMEPLAY 97 | MOD 59 | ONLINE 51 | PERFORMANCES 39 |
+| VENTES 17 | ASTUCE 8 | SOLUCE 4 | BUG 4 |
+| TROPHÉES 1 | TEST 0 | MISE À JOUR 0 | SPEEDRUN 0 |
+
+#### Le nom du média n'est pas le titre
+
+Le vrai défaut trouvé en chemin, et il touchait les badges d'octobre.
+Les titres arrivent sous la forme « Le titre - Nom du média » : **3 406
+sur 4 225**. Dans **302** d'entre eux, un mot du motif n'est QUE dans le
+nom du média. *PC Gamer*, *PC Astuces*, *Tom's Guide*, *Gadget Review*,
+*Instant Gaming News* — le badge PC se posait sur **21 articles qui ne
+parlent pas de PC**, uniquement parce que leur média s'appelle PC Gamer.
+
+Tous les juges lisent désormais le **corps** du titre, les neuf d'octobre
+compris : deux notions de « titre » dans le même fichier finiraient par
+diverger. Le suffixe n'est retiré que s'il ressemble à un nom de média —
+majuscule, chiffre ou domaine. Sans cette garde, « GTA 6 map - confirmed
+and rumored locations » perdait sa fin et son badge RUMEUR ; mesuré,
+c'était le seul du fil entier.
+
+#### L'adresse avant le titre
+
+Aujourd'hui **aucun** article n'a `/test/` ou `/soluce/` dans son
+adresse, mais **951 ont `/news/`** et 126 `/actualite/` : le chemin
+existe et se remplira. JVC, Gamekult et IGN France rangent leurs guides
+sous `/soluce/` ou `/guide/`. TEST, SOLUCE et ASTUCE regardent donc
+l'adresse d'abord — un chemin d'URL ne se trompe presque jamais là où un
+mot du titre se trompe une fois sur deux.
+
+#### Ce que les motifs ont dû perdre, un titre à la fois
+
+- **TEST** : « review copies », « Private **Board** Review », « the
+  **best-reviewed** game of the year », « noté 18/20 » (d'un autre jeu),
+  « le **verdict** du GOTY ». De 16 pris à **0** — les seize étaient des
+  faux positifs ;
+- **SOLUCE** : « guide » attrape *Tom's Guide* et *PC Guide* (réglé par
+  le corps du titre), « how to **get** » attrape « How to Get Time Off
+  for the Game ». De 38 à 4 ;
+- **ASTUCE** : « cheating » — six titres sur vingt-quatre parlent du
+  système de drague du jeu, pas de triche. Le motif exige « cheat code »
+  ou « code de triche » ;
+- **BUG** : « crash » — neuf titres sur treize parlent de la
+  cryptomonnaie du leaker qui s'effondre. Le mot nu est parti ;
+- **MISE À JOUR** : « update » — « Map Update », « development Update »,
+  « release date Update ». Trois sur quatre ne sont pas un correctif ;
+- **VENTES** : « vente » au singulier attrape « la vente aux mineurs » et
+  « met en vente un disque ». Le pluriel seul.
+
+#### GAMEPLAY était un doublon de VIDÉO, alors VIDÉO a changé
+
+Mesuré avant d'écrire : les **97** cartes que marquerait GAMEPLAY étaient
+**toutes les 97** déjà marquées VIDÉO, parce que `\bgameplay\b` était
+dans `RE_VIDEO`. Je l'avais signalé à Antoni comme la raison de ne pas
+créer ce badge ; il l'a demandé quand même.
+
+Le mot en est donc sorti, et c'est un gain de précision pour VIDÉO :
+342 → 271, et les 71 écartés relus un par un — « Bloomberg a révélé de
+nouveaux détails sur le gameplay », « GTA 6 File Size Confirmed By
+Gameplay Leaker ». Aucune vraie vidéo perdue. Les deux badges disent
+maintenant deux choses différentes.
+
+#### Deux familles, parce qu'à vingt et un badges il le fallait
+
+Choix d'Antoni posé **avant** d'écrire la moindre ligne. Les badges
+d'**alerte** gardent leur aplat vif : il s'est passé quelque chose. Les
+badges de **catégorie** sont au trait, fond transparent : ils disent de
+quoi l'article parle, information de second rang. C'est la **forme** qui
+sépare les familles. Les alertes passent toutes devant dans l'ordre
+d'affichage.
+
+#### Et une couleur par catégorie
+
+J'avais livré les douze avec un même trait neutre, en écrivant qu'une
+douzième couleur ne se retiendrait pas. Antoni a tranché l'inverse le
+jour même : « faut faire des couleurs pour chaque badge ».
+
+**Douze tons à 30° l'un de l'autre** sur la roue, ce qui est le mieux
+qu'on puisse faire à douze. Les deux paires les plus proches sont
+mesurées et dites plutôt que cachées — GAMEPLAY/MOD en sombre,
+TROPHÉES/VENTES en clair, une cinquantaine d'unités RVB d'écart. C'est
+le prix de douze couleurs.
+
+**Par thème, et pas une valeur fixe** comme les neuf badges d'alerte :
+ceux-là sont des aplats, qui portent leur propre fond. Une catégorie est
+au trait, donc sa couleur s'écrit directement sur la carte — blanche en
+clair, `#10151a` en sombre. Aucun ton unique ne tient 4,5:1 sur les deux.
+Chaque valeur est la plus saturée qui passe **4,6:1** sur sa carte,
+mesurée avant d'être écrite et revérifiée par le balayage.
+
+Le fond reste transparent : c'est lui qui sépare les deux familles, et
+une couleur de plus ne doit pas effacer cette séparation.
+
+Densité mesurée sur les 4 225 articles, les vingt et un badges en place :
+**67 % n'en portent aucun**, 25,5 % un seul, 5,8 % deux, 1,4 % trois,
+0,3 % quatre, et **une seule carte** en porte cinq.
+
+#### Une boucle qui existait en deux exemplaires
+
+La carte et la chronologie portaient la même boucle de rendu, recopiée
+mot pour mot. Le commentaire d'octobre avertissait déjà qu'à neuf badges
+la duplication garantissait un oubli ; à vingt et un, avec une classe de
+famille à poser en plus, elle le garantissait deux fois. Les deux vues
+appellent maintenant `boutonsBadges()`.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
