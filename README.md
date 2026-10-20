@@ -8709,6 +8709,48 @@ contrôle à part**, dans les deux thèmes : remis à 0,45, celui-ci tombe à
 2,80:1 pendant que le balayage, lui, reste vert. Les deux gardes ont été
 éprouvés dans cet état.
 
+### Le panneau prend les couleurs du compte à rebours — 20/10/2026
+
+Demandé par Antoni. Le panneau n'avait que deux états — chiffres
+ordinaires, puis accent dans les dernières 24 heures — quand l'en-tête en
+a quatre.
+
+**Un seuil écrit deux fois, donc un seuil de trop.** Les 24 heures
+vivaient à la fois dans SEUIL_COMPTEUR_PRECIS (supprimée) et dans
+`updateCountdown`, et rien n'empêchait les deux de diverger : la
+disposition précise du panneau aurait pu basculer sans que l'en-tête vire
+au rouge, ou l'inverse. Le calcul est désormais dans `palierCompteur()`,
+appelé par les deux, et la disposition précise EST le palier `final`.
+
+Seuls les gros chiffres prennent la teinte (choix d'Antoni) : la barre
+garde son bleu, qui est la couleur de l'app, et le panneau ne vire pas
+entièrement au rouge la dernière nuit. Les unités à zéro gardent leur
+gris — la teinte du palier dirait « regarde » sur un chiffre qui n'a rien
+à dire.
+
+Aucun risque de lisibilité : les trois teintes étaient déjà mesurées sur
+les deux fonds de panneau, et à 20 px gras elles passent en « grand
+texte », seuil 3:1. Le balayage les vérifie de toute façon.
+
+#### Les contrôles, et un qui ne prouvait rien
+
+Trois gardes, chacun éprouvé en le cassant : un panneau qui reprendrait
+un seuil à lui annonce un palier différent de l'en-tête ; un seuil de
+30 jours glissé à 29 est pris à la milliseconde ; une teinte mal branchée
+est prise en comparant la couleur RENDUE au jeton RÉSOLU — la première
+version se contentait de vérifier qu'une couleur existait, ce qu'un
+`color: red` aurait satisfait.
+
+#### Et une attente qui manquait depuis le début
+
+Le balayage de contraste marque douze articles comme lus pour couvrir les
+cartes estompées. Il le faisait trop tôt : l'app affiche d'abord le
+fichier allégé, puis l'historique complet arrive seul et remplace
+`lastItems`. Marquer pendant ce remplacement donne un `readSet` qui ne
+correspond à aucune carte affichée — et plus aucune `.card.read`. Le
+contrôle tombait en attente une fois sur quelques-unes. Il attend
+maintenant `historyPartial === false`, le signal de l'app elle-même.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
