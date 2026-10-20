@@ -8760,6 +8760,54 @@ correspond à aucune carte affichée — et plus aucune `.card.read`. Le
 contrôle tombait en attente une fois sur quelques-unes. Il attend
 maintenant `historyPartial === false`, le signal de l'app elle-même.
 
+### Les trois plafonds du stockage, et le garde qui les tient ensemble — 20/10/2026
+
+La sauvegarde d'Antoni a montré qu'il était à **94 % du plafond des liens
+lus** (7 548 sur 8 000) et **exactement à celui des articles déjà vus**
+(2 000 sur 2 000, donc déjà élagué en silence). Les deux sont relevés :
+**20 000** et **4 000**.
+
+#### La mesure d'origine était deux fois trop pessimiste
+
+Elle annonçait « environ 300 octets par lien » — un comptage en UTF-16
+qui ne correspond pas à ce que pèse la chaîne stockée. Remesuré sur ses
+7 548 liens réels : **104 octets en moyenne, 149 au neuvième décile**.
+
+#### Et une entrée « vue » n'est pas un horodatage
+
+Elle porte tout le résumé de l'article — titre, date, source, drapeaux —
+soit **342 octets en moyenne, 414 au neuvième décile**. Dix fois le coût
+d'un lien lu. C'est elle qui limite le budget, pas les liens.
+
+#### Le pire cas, qu'aucun des deux calculs séparés ne montrait
+
+Antoni avait d'abord demandé **5 000** entrées vues, sur un chiffre que
+je lui avais donné au cas moyen (3,92 Mo, « ça tient »). En additionnant
+les trois réserves **au neuvième décile**, 5 000 arrive à **5,12 Mo** :
+au-delà du quota. Il a choisi 4 000 en connaissance de cause — 4,75 Mo,
+0,25 Mo de marge.
+
+| réserve | plafond | coût unitaire (9e décile) | poids |
+|---|---|---|---|
+| liens lus | 20 000 | 149 o | 2,84 Mo |
+| articles déjà vus | 4 000 | 414 o | 1,58 Mo |
+| fil en cache | 300 | 1 145 o | 0,33 Mo |
+| | | **total** | **4,75 Mo** |
+
+#### Le garde
+
+Un commentaire « ne pas monter plus haut sans refaire la mesure » ne
+protège que celui qui le lit. `test_budget_du_stockage` lit les trois
+constantes, leur applique le coût unitaire mesuré et refuse que la somme
+franchisse 5 Mo — ou que la marge tombe sous 128 Kio. Éprouvé dans les
+deux sens : remis à 5 000 entrées vues il rend 5,14 Mo, et un fil en
+cache ramené à 1 000 articles rend 5,51 Mo.
+
+> Un chiffre de ce tableau avait été **posé au jugé** avant d'être
+> mesuré : j'avais écrit 874 octets pour un article en cache, la mesure
+> en donne 1 145. Corrigé avant d'être livré, mais c'est la deuxième
+> fois de la journée.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

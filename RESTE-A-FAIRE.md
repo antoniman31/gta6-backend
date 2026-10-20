@@ -1095,6 +1095,24 @@ sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
 
+### Les trois plafonds du stockage — 20/10/2026
+
+Liens lus **8 000 -> 20 000**, articles déjà vus **2 000 -> 4 000**. Les
+deux étaient pleins ou presque sur la sauvegarde réelle d'Antoni.
+
+Deux mesures ont corrigé des chiffres faux : un lien lu pèse 149 octets
+au neuvième décile et non 300 (comptage UTF-16), et une entrée « vue »
+pèse 414 octets parce qu'elle porte tout le résumé de l'article, pas un
+horodatage.
+
+5 000 entrées vues avait été demandé d'abord : en additionnant les trois
+réserves au pire cas, ça donne 5,12 Mo, au-delà du quota. 4 000 tient à
+4,75 Mo, 0,25 de marge, assumé.
+
+`test_budget_du_stockage` fait respecter la somme : il lit les trois
+constantes et refuse qu'elles franchissent 5 Mo. Éprouvé en le cassant
+des deux côtés.
+
 ### Le plafond des liens lus passe à 20 000 — 20/10/2026
 
 Antoni a exporté sa sauvegarde : **7 548 liens lus sur un plafond de
