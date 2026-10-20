@@ -8808,6 +8808,67 @@ cache ramené à 1 000 articles rend 5,51 Mo.
 > en donne 1 145. Corrigé avant d'être livré, mais c'est la deuxième
 > fois de la journée.
 
+### Ce que la répétition post-sortie a trouvé — 20/10/2026
+
+Le panneau du compteur a été rendu à quatre instants simulés avec
+`page.clock` — la veille à 23 h 30, une demi-heure après minuit, le
+lendemain soir, une semaine après — sans rien toucher. Aucune erreur
+JavaScript, le titre bascule, le décompte repart à l'endroit, les dodos
+disparaissent. **Trois défauts d'affichage**, aucun bloquant, tous les
+trois visibles uniquement ce soir-là. Antoni a tranché sur chacun.
+
+#### La note parlait au futur sous un titre au passé
+
+« Depuis la sortie » en titre, et dessous « Sortie le jeudi 19 novembre
+2026 à 00:00 ». Un mot s'ajoute : **« Sortie depuis le »** une fois la
+date franchie.
+
+#### La barre restait à 100,0 % pour toujours
+
+Elle mesure l'annonce (4 février 2022) → la sortie. Après le 19 novembre
+elle ne mesure plus rien, et un pourcentage figé sous un compteur qui
+bouge chaque seconde se lit comme une panne. Elle reste pleine — c'est
+vrai, l'attente est finie — mais son chiffre devient le mot **« Sorti »**.
+Les deux exemplaires superposés qui règlent le contraste sur le
+remplissage sont inchangés.
+
+#### Et cinq zéros gris la nuit de la sortie
+
+C'était la rançon des six tuiles toujours affichées, choisies le 16/10
+pour que la ligne ne se redispose plus : à T-30 min le panneau annonçait
+`0 mois 0 sem 0 j 0 h 30 min 14 s`.
+
+**Un premier jet remplaçait tout par le total en secondes**, seul, à
+44 px. Antoni l'a refusé le jour même : « 1 799 secondes », ce n'est pas
+un temps qu'on lit. Ce qui est livré est plus petit — **les unités de
+tête à zéro s'effacent**, et seulement elles. Il reste « 29 min 58 s » en
+grand, un temps lisible.
+
+Les zéros du **milieu** et de la **fin** restent, grisés : sans eux,
+« 23 h 5 s » se lirait « 23 h 5 min » d'un coup d'œil, le chiffre des
+secondes prenant la place de celui des minutes.
+
+Le seuil n'est pas écrit une deuxième fois : c'est `palierCompteur()` qui
+le tient, et son palier `final` veut dire « moins de 24 heures ». C'est
+un **écart**, pas une date, donc la coupe vaut aussi dans les 24 heures
+qui suivent minuit, où le défaut est le même en miroir.
+
+#### Les contrôles
+
+Trois instants dont deux encadrent minuit, et chacun annonce la liste
+d'unités qu'il attend : `min s` de part et d'autre de la sortie,
+les six juste au-dessus des 24 heures. Plus la première tuile qui ne vaut
+jamais zéro sous 24 h, la ligne unique, et l'étiquette parlée — qui
+masquait déjà les zéros, et que la coupe ne change pas.
+
+Trois cas limites sur la fonction elle-même, parce que les instants qui
+les produisent ne durent qu'une minute et que l'horloge installée avance
+pendant que la page charge : **tout à zéro** garde une tuile (sinon la
+ligne disparaît pendant la seconde qui enjambe minuit), une seule unité
+vivante ne garde qu'elle, et le **zéro du milieu** reste. Plus deux
+contrôles à J+3 sur le mot de la note et sur celui de la barre, et un
+qui vérifie que les six tuiles sont bien de retour une semaine après.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`

@@ -1113,6 +1113,29 @@ réserves au pire cas, ça donne 5,12 Mo, au-delà du quota. 4 000 tient à
 constantes et refuse qu'elles franchissent 5 Mo. Éprouvé en le cassant
 des deux côtés.
 
+### La répétition post-sortie, et ses trois défauts — 20/10/2026
+
+Le panneau du compteur rendu à quatre instants simulés autour du
+19 novembre. Rien ne casse. Trois défauts d'affichage, visibles seulement
+ce soir-là ; Antoni a tranché sur chacun le jour même.
+
+| ce qui n'allait pas | tranché |
+|---|---|
+| « Sortie le 19 novembre » sous un titre « Depuis la sortie » | « **Sortie depuis le** 19 novembre » |
+| la barre figée à **100,0 %** pour toujours | pleine, mais le chiffre devient le mot « Sorti » |
+| `0 mois 0 sem 0 j 0 h 30 min 14 s` la nuit de la sortie | sous 24 h, les unités de tête à zéro s'effacent |
+
+Le troisième est la rançon des six tuiles toujours affichées, choisies le
+16/10. **Un premier jet remplaçait tout par le total en secondes**, à
+44 px ; refusé le jour même — « 1 799 secondes » ne se lit pas. Ne
+s'effacent donc que les zéros **de tête** : ceux du milieu et de la fin
+restent, sinon « 23 h 5 s » se lirait « 23 h 5 min ».
+
+Le seuil est celui de `palierCompteur()`, pas un deuxième, et c'est un
+**écart** : la coupe vaut aussi dans les 24 heures qui suivent minuit.
+
+24 contrôles de navigateur de plus (627).
+
 ### Le plafond des liens lus passe à 20 000 — 20/10/2026
 
 Antoni a exporté sa sauvegarde : **7 548 liens lus sur un plafond de

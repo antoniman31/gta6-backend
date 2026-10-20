@@ -55,6 +55,7 @@ import http.server
 import os
 import socketserver
 import json
+import re
 import sys
 import threading
 
@@ -3297,10 +3298,16 @@ def test_panneau_du_compteur(nav, url):
     # à UTC+1 à cette date : la sortie tombe le 18 à 23:00 UTC. Cinq
     # minutes de marge de part et d'autre, pas une : l'horloge installée
     # avance pendant que la page charge.
-    for utc, precis, libelle in (
-            ("2026-11-17T22:55:00Z", False, "T-24 h 05"),
-            ("2026-11-17T23:05:00Z", True,  "T-23 h 55"),
-            ("2026-09-10T13:34:21Z", False, "six unités"),
+    #
+    # Le nombre de tuiles n'est plus six partout : sous 24 h, les unités
+    # de tête à zéro s'effacent (voir plus bas). L'invariant de cette
+    # boucle-ci est la LIGNE UNIQUE, pas le compte.
+    for utc, precis, libelle, attendues in (
+            ("2026-11-17T22:55:00Z", False, "T-24 h 05",
+             ["mois", "sem", "j", "h", "min", "s"]),
+            ("2026-11-17T23:05:00Z", True,  "T-23 h 55", ["h", "min", "s"]),
+            ("2026-09-10T13:34:21Z", False, "six unités",
+             ["mois", "sem", "j", "h", "min", "s"]),
     ):
         ctx = nav.new_context(viewport={"width": 320, "height": 850},
                               timezone_id="Europe/Paris")
@@ -3408,14 +3415,14 @@ def test_panneau_du_compteur(nav, url):
             fermeCompteur();
             return r;
         }""")
-        check(vue["tuiles"] == 6,
-              "[compteur %s] les six unités sont là, même à zéro — les "
-              "masquer redisposait la ligne à chaque unité qui tombe (%s)"
-              % (libelle, vue["tuiles"]))
+        check(vue["tuiles"] == len(attendues),
+              "[compteur %s] les unités attendues sont là, même à zéro — "
+              "les masquer redisposait la ligne à chaque unité qui tombe "
+              "(%s pour %s)" % (libelle, vue["tuiles"], len(attendues)))
         check(vue["rangees"] == 1,
               "[compteur %s] et elles tiennent toutes sur UNE rangée à "
               "320 px (%s rangée(s))" % (libelle, vue["rangees"]))
-        check(vue["unites"] == ["mois", "sem", "j", "h", "min", "s"],
+        check(vue["unites"] == attendues,
               "[compteur %s] libellés abrégés, seule façon de faire tenir "
               "six colonnes (%s)" % (libelle, vue["unites"]))
         check(("precis" if precis else "second") in vue["classe"],
@@ -3594,6 +3601,10 @@ def test_panneau_du_compteur(nav, url):
         const t = document.getElementById('compteurContenu').textContent;
         const r = {dodos: /dodo/.test(t),
                    titre: document.getElementById('titreCompteur').textContent,
+                   note: document.querySelector('.compteur-note').textContent,
+                   tuiles: document.querySelectorAll(
+                     '#compteurContenu .compteur-tuiles')[0].children.length,
+                   etiquetteBarre: document.querySelector('.compteur-barre i').textContent,
                    // Dans une tuile, textContent colle le nombre à son
                    // unité : « 3jours », sans espace.
                    jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1],
@@ -3615,6 +3626,149 @@ def test_panneau_du_compteur(nav, url):
     plein = float((apres["plein"] or "0").rstrip("%"))
     check(plein == 100.0,
           "[compteur] la barre est pleine et ne déborde pas (%s)" % apres["plein"])
+    # LE VERBE SUIT LA DATE. Sous un titre « Depuis la sortie », la note
+    # annonçait encore « Sortie le jeudi 19 novembre » — au futur, une
+    # semaine après. Repéré à la répétition post-sortie du 20/10/2026.
+    check("Sortie depuis le" in apres["note"],
+          "[compteur] et la note dit « Sortie DEPUIS le », plus « Sortie "
+          "le » (« %s »)" % apres["note"].strip()[-60:])
+    # La barre ne mesure plus rien : annonce -> sortie est fini. Un
+    # « 100,0 % » figé sous un compteur qui bouge se lit comme une panne.
+    check(apres["etiquetteBarre"].strip() == "Sorti",
+          "[compteur] la barre pleine dit « Sorti », pas « 100,0 %% » "
+          "(« %s »)" % apres["etiquetteBarre"])
+    # Et le découpage garde ses SIX tuiles une semaine après : la coupe
+    # des zéros de tête ne vaut que sous 24 h.
+    check(apres["tuiles"] == 6,
+          "[compteur] une semaine après, les six tuiles sont de retour — "
+          "la coupe ne vaut que sous 24 h (%s)" % apres["tuiles"])
+    ctx.close()
+
+    # LES ZÉROS DE TÊTE S'EFFACENT DANS LES DERNIÈRES 24 HEURES.
+    #
+    # C'est la rançon des six tuiles toujours affichées : à T-30 min, le
+    # panneau annonçait « 0 mois 0 sem 0 j 0 h 30 min 14 s ». Un premier
+    # jet remplaçait tout par le total en secondes, en grand ; Antoni l'a
+    # refusé — « 1 799 secondes » ne se lit pas.
+    #
+    # Trois instants. Les deux premiers encadrent minuit, parce que le
+    # seuil est un ÉCART et que le défaut est le même en miroir après la
+    # sortie. Le troisième garde un zéro AU MILIEU, qui doit rester. Le
+    # troisième est juste au-dessus des 24 h : rien ne doit y être coupé.
+    # Le zéro DU MILIEU, qui ne se coupe pas, est éprouvé plus bas sur la
+    # fonction elle-même : l'instant qui le produirait ne dure qu'une
+    # minute et l'horloge installée avance pendant que la page charge.
+    #
+    # Paris est à UTC+1 le 19 novembre : la sortie tombe le 18 à 23:00 UTC.
+    for utc, libelle, attendues in (
+            ("2026-11-18T22:30:00Z", "T-30 min", ["min", "s"]),
+            ("2026-11-18T23:30:00Z", "T+30 min", ["min", "s"]),
+            ("2026-11-17T22:55:00Z", "T-24 h 05", ["mois", "sem", "j", "h",
+                                                   "min", "s"]),
+    ):
+        ctx = nav.new_context(viewport={"width": 320, "height": 850},
+                              timezone_id="Europe/Paris")
+        ctx.clock.install(time=utc)
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        t = page.evaluate("""() => {
+            ouvreCompteur();
+            const c = document.getElementById('compteurContenu');
+            const d = c.querySelector('.compteur-tuiles');
+            const cases = [...d.children];
+            const boite = c.getBoundingClientRect();
+            let sort = null;
+            // SUR LA TUILE, pas sur la grille : la grille est un bloc,
+            // elle ne déborde jamais ; c'est son contenu qui sort. Cette
+            // géométrie m'a déjà pris cinq fois.
+            for(const e of c.querySelectorAll('.compteur-tuiles > div')){
+              const q = e.getBoundingClientRect();
+              if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5)
+                sort = e.textContent + ' (bord droit ' + Math.round(q.right)
+                       + ' px pour ' + Math.round(boite.right) + ')';
+            }
+            const hauts = new Set(cases.map(
+              e => Math.round(e.getBoundingClientRect().top)));
+            const r = {
+              unites: cases.map(e => e.querySelector('span').textContent),
+              // La PREMIÈRE tuile ne doit jamais valoir zéro sous 24 h :
+              // c'est exactement ce que la coupe promet.
+              premier: cases[0].querySelector('b').textContent,
+              rangees: hauts.size,
+              grilles: c.querySelectorAll('.compteur-tuiles').length,
+              // L'étiquette du groupe reste la phrase complète, qui
+              // masque DÉJÀ les zéros : la coupe ne la change pas.
+              phrase: d.getAttribute('aria-label'),
+              sort: sort,
+            };
+            fermeCompteur();
+            return r;
+        }""")
+        check(t["unites"] == attendues,
+              "[compteur %s] les unités de tête à zéro s'effacent, et "
+              "seulement elles (%s, attendu %s)"
+              % (libelle, t["unites"], attendues))
+        check(len(attendues) == 6 or t["premier"] != "0",
+              "[compteur %s] la première tuile n'est jamais un zéro sous "
+              "24 h (« %s »)" % (libelle, t["premier"]))
+        check(t["rangees"] == 1,
+              "[compteur %s] et la ligne tient toujours à 320 px (%s "
+              "rangée(s))" % (libelle, t["rangees"]))
+        check(t["sort"] is None,
+              "[compteur %s] rien ne sort du panneau (%s)"
+              % (libelle, t["sort"]))
+        check(t["grilles"] == 2,
+              "[compteur %s] les équivalences restent, elles (%s grille(s))"
+              % (libelle, t["grilles"]))
+        check(not re.search(r"(?:^|· )0 ", t["phrase"] or ""),
+              "[compteur %s] et l'étiquette parlée n'a jamais porté de "
+              "zéro — phraseDecoupe les masque depuis le début, la coupe "
+              "ne la change pas (« %s »)" % (libelle, t["phrase"]))
+        ctx.close()
+
+    # LE CAS LIMITE, sur la fonction elle-même : tout à zéro. La coupe
+    # garderait une ligne VIDE si elle n'était pas bornée, pendant la
+    # seconde qui enjambe minuit.
+    ctx = nav.new_context(viewport={"width": 320, "height": 850},
+                          timezone_id="Europe/Paris")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    bord = page.evaluate("""() => {
+        const zero = {mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:0};
+        const h = document.createElement('div');
+        h.innerHTML = tuilesDecoupe(zero, 'precis', true);
+        const un = document.createElement('div');
+        un.innerHTML = tuilesDecoupe(
+          {mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:7},
+          'precis', true);
+        const mil = document.createElement('div');
+        mil.innerHTML = tuilesDecoupe(
+          {mois:0, semaines:0, jours:0, heures:23, minutes:0, secondes:5},
+          'precis', true);
+        return {
+          milieu: [...mil.firstChild.children].map(
+            e => e.querySelector('b').textContent + e.querySelector('span').textContent),
+          zero: [...h.firstChild.children].map(
+            e => e.querySelector('b').textContent + e.querySelector('span').textContent),
+          un: [...un.firstChild.children].map(
+            e => e.querySelector('b').textContent + e.querySelector('span').textContent),
+        };
+    }""")
+    check(bord["zero"] == ["0s"],
+          "[compteur] tout à zéro garde UNE tuile — la seconde qui "
+          "enjambe minuit ne laisse pas une ligne vide (%s)" % bord["zero"])
+    check(bord["un"] == ["7s"],
+          "[compteur] et une seule unité vivante ne garde qu'elle (%s)"
+          % bord["un"])
+    # LE ZÉRO DU MILIEU RESTE. Sans lui, « 23 h 5 s » se lirait « 23 h
+    # 5 min » d'un coup d'œil : le chiffre des secondes prendrait la
+    # place de celui des minutes.
+    check(bord["milieu"] == ["23h", "0min", "5s"],
+          "[compteur] seuls les zéros DE TÊTE sautent : celui du milieu "
+          "reste, sinon les secondes prendraient la place des minutes "
+          "(%s)" % bord["milieu"])
     ctx.close()
 
 

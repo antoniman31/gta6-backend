@@ -8114,9 +8114,32 @@ function tuilesCompteur(liste, classe, etiquette){
 // lecteur d'écran entend « 1 mois, 2 jours, 9 heures » et non « 1 mois,
 // 0 semaine, 2 jours ». La ligne se regarde, la phrase s'écoute, et les
 // deux n'ont pas les mêmes besoins.
-function tuilesDecoupe(d, classe){
-  const bouts = UNITES_COMPTEUR.map(([cle, abrege]) =>
+//
+// SAUF LES ZÉROS DE TÊTE DANS LES DERNIÈRES 24 HEURES. C'est la rançon
+// du choix ci-dessus, vue à la répétition post-sortie du 20/10/2026 : à
+// T-30 min le panneau annonçait « 0 mois 0 sem 0 j 0 h 30 min 14 s »,
+// cinq zéros gris pour un chiffre vivant. Un premier jet remplaçait tout
+// par le total en secondes, en grand ; Antoni l'a refusé — « 1 799
+// secondes » ne se lit pas. Les unités de tête à zéro s'effacent donc,
+// et seulement elles : « 30 min 14 s » reste un temps qu'on lit.
+//
+// Les zéros du MILIEU et de la FIN restent, grisés : « 23 h 0 min 5 s »
+// garde ses trois tuiles, sans quoi le chiffre des secondes sauterait à
+// la place des minutes.
+//
+// Le seuil n'est pas écrit ici : c'est palierCompteur() qui le tient, le
+// même que l'en-tête, et « final » veut dire « moins de 24 heures ».
+// C'est un ÉCART, pas une date — la coupe vaut donc aussi dans les
+// 24 heures qui suivent minuit, où le défaut est le même en miroir.
+function tuilesDecoupe(d, classe, coupeTete){
+  let bouts = UNITES_COMPTEUR.map(([cle, abrege]) =>
     [d[cle], abrege, d[cle] === 0]);
+  if(coupeTete){
+    const premier = bouts.findIndex(b => b[0] !== 0);
+    // Tout à zéro (moins d'une seconde) : on garde la dernière tuile,
+    // sinon la ligne disparaît pendant une seconde.
+    bouts = premier === -1 ? bouts.slice(-1) : bouts.slice(premier);
+  }
   return tuilesCompteur(bouts, classe, phraseDecoupe(d));
 }
 
@@ -8132,6 +8155,10 @@ function majPanneauCompteur(){
   // l'information intéressante.
   const palier = avant ? palierCompteur(ecart) : "";
   const precis = !avant || palier === "final";
+  // palierCompteur() APPELÉ DIRECTEMENT, et non `palier` : celui-ci est
+  // vidé après la sortie pour que le panneau ne vire pas au rouge, mais
+  // la coupe des zéros de tête, elle, vaut des deux côtés de minuit.
+  const coupeTete = palierCompteur(ecart) === "final";
 
   const titre = document.getElementById("titreCompteur");
   if(titre) titre.textContent = avant ? "Avant la sortie" : "Depuis la sortie";
@@ -8140,14 +8167,21 @@ function majPanneauCompteur(){
   // part : une proportion sans sa référence ne veut rien dire.
   const total = GTA6_RELEASE - ANNONCE_GTA6;
   const fait = Math.max(0, Math.min(1, (maintenant - ANNONCE_GTA6) / total));
-  const pourcent = (fait * 100).toFixed(1).replace(".", ",") + " %";
+  // LA BARRE NE MESURE PLUS RIEN APRÈS LA SORTIE : elle va de l'annonce
+  // au 19 novembre, donc elle reste pleine pour toujours. Un « 100,0 % »
+  // figé sous un compteur qui bouge se lit comme une panne ; le mot dit
+  // la même chose sans prétendre mesurer. Choix d'Antoni le 20/10/2026.
+  const pourcent = avant
+    ? (fait * 100).toFixed(1).replace(".", ",") + " %"
+    : "Sorti";
   const jourSortie = GTA6_RELEASE.toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
     timeZone: "Europe/Paris" });
 
   el.innerHTML =
       tuilesDecoupe(decoupeCalendaire(debut, fin),
-                    (precis ? "precis" : "second") + (palier ? " " + palier : ""))
+                    (precis ? "precis" : "second") + (palier ? " " + palier : ""),
+                    coupeTete)
     + `<div class="compteur-barre">`
     +   `<i>${escapeHtml(pourcent)}</i>`
     // Le second exemplaire est DANS le remplissage, donc rogné par lui.
@@ -8173,9 +8207,12 @@ function majPanneauCompteur(){
         // le chiffre le plus spectaculaire des quatre.
         [nombreFr(ecart / 1000), "secondes", false],
       ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours")
+    // LE TEMPS DU VERBE SUIT LA DATE. Sous un titre « Depuis la sortie »,
+    // la note annonçait encore le jeu au futur. Un mot s'ajoute, rien
+    // d'autre. Signalé à la répétition générale du 20/10/2026.
     + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le `
-    +   `4 février 2022. Sortie le ${escapeHtml(jourSortie)} à 00:00, `
-    +   `heure de Paris.</p>`;
+    +   `4 février 2022. Sortie ${avant ? "" : "depuis "}le `
+    +   `${escapeHtml(jourSortie)} à 00:00, heure de Paris.</p>`;
 }
 
 // UN INTERVALLE PROPRE AU PANNEAU, arrêté à la fermeture. Le compteur de
