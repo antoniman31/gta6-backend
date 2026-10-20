@@ -1113,6 +1113,31 @@ réserves au pire cas, ça donne 5,12 Mo, au-delà du quota. 4 000 tient à
 constantes et refuse qu'elles franchissent 5 Mo. Éprouvé en le cassant
 des deux côtés.
 
+### Trois préparatifs pour l'après-sortie — 20/10/2026
+
+Trois décisions d'Antoni, prises sur propositions chiffrées.
+
+| | tranché |
+|---|---|
+| les titres vont raconter le jeu | **mode sans spoiler** : flouter, un geste révèle ; liste pré-remplie, mode éteint par défaut |
+| le récap dira « +180 articles » toutes les heures | après la sortie, il ne part que s'il y a un **officiel** ou une **actu majeure** ; la DATE décide, pas un interrupteur |
+| les soluces et les tests n'ont pas de source | **six requêtes** ajoutées maintenant, muettes jusqu'au 19 |
+
+Et une quatrième question, tranchée en « mesurer d'abord » : **le poids du
+fil n'est pas un problème**. J'avais annoncé 9,6 Mo au plafond, c'était la
+taille NON COMPRESSÉE ; servi en gzip, le fil fait 0,79 Mo aujourd'hui et
+2,24 Mo au plafond de 12 000. `MAX_HISTORY_SIZE` ne bouge pas, le fil
+n'est pas découpé par mois.
+
+**Reste ouvert, non fait** : `source_link` pèse 11,5 % du fichier et ne
+sert qu'au mode de secours — le retirer rendrait 0,27 Mo bruts. Proposé,
+pas tranché.
+
+**Toujours à remesurer après le 19** : les douze motifs de catégorie, et
+le seuil de l'onglet « Actu majeure » (0 à 1,7 % des articles aujourd'hui
+— après la sortie il peut aussi bien déborder que rester vide, et je ne
+sais pas lequel).
+
 ### Douze catégories d'article pour l'après-sortie — 20/10/2026
 
 Demandées par Antoni : « test, astuces, tuto, gameplay... ». Livrées en

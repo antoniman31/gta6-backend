@@ -1708,6 +1708,62 @@ def libelle_recap_depuis_comptes(n, officiels, sommet):
     return f"🎮 {compte}"
 
 
+# ---------------------------------------------------------------------------
+# APRÈS LA SORTIE, LE RÉCAPITULATIF SE TAIT SAUF S'IL A QUELQUE CHOSE À DIRE
+# ---------------------------------------------------------------------------
+# Demandé par Antoni le 20/10/2026. Aujourd'hui le récapitulatif part à
+# chaque passage dès qu'un article est entré, et c'est ce qu'il faut : le
+# fil fait 50 à 300 articles par jour et chacun compte. Après le
+# 19 novembre, il dira « 180 nouveaux articles » toutes les heures — un
+# seul message, donc pas du spam, mais un message qui n'apprend plus rien.
+#
+# LA DATE DÉCIDE, PAS UN INTERRUPTEUR. Un réglage à basculer le soir du 19
+# est un réglage que personne ne bascule : ce soir-là Antoni jouera. Le
+# seuil est donc l'instant de la sortie, et le changement se fait tout
+# seul.
+#
+# CE QUI PASSE ENCORE : une annonce de Rockstar, et une actu majeure.
+# C'est exactement ce que la pause nocturne laisse déjà passer, et ce que
+# le libellé du récapitulatif met déjà en tête. Les notifications par
+# annonce officielle, elles, ne sont PAS concernées — elles partent une
+# par une, avant le récapitulatif, et c'est leur raison d'être.
+#
+# 00:00 heure de Paris le 19 novembre 2026, soit 23:00 UTC la veille :
+# Paris est à UTC+1 à cette date.
+SORTIE_GTA6 = datetime(2026, 11, 18, 23, 0, 0, tzinfo=timezone.utc)
+
+
+def recap_merite_notification(n, officiels, sommet, maintenant=None):
+    """Le récapitulatif a-t-il encore quelque chose à dire ?
+
+    Avant la sortie : oui dès qu'un article est entré, comme toujours.
+    Après : seulement s'il y a une annonce officielle ou une actu majeure.
+
+    `maintenant` est injectable pour que le contrôle puisse se placer des
+    deux côtés du 19 novembre sans attendre la date.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    if maintenant < SORTIE_GTA6:
+        return bool(n or officiels or sommet >= HOT_SOURCE_THRESHOLD)
+    return bool(officiels) or sommet >= HOT_SOURCE_THRESHOLD
+
+def comptes_du_recap(new_items, promus, totaux=None):
+    """Les trois nombres du récapitulatif : articles, officiels, sommet.
+
+    Soit ils viennent des totaux reportés (récapitulatif du matin, où les
+    articles ne sont plus « nouveaux » et ont disparu de la liste), soit
+    ils se recomptent sur le lot. Exactement la source que
+    libelle_recap_depuis_comptes et libelle_recap utilisent déjà chacun de
+    leur côté ; les rassembler ici évite qu'une troisième décision — celle
+    d'envoyer ou non — reparte d'un calcul à elle.
+    """
+    if totaux:
+        return int(totaux[0]), int(totaux[1]), int(totaux[2])
+    lot = list(new_items or ())
+    return (len(lot),
+            sum(1 for i in lot if isinstance(i, dict) and i.get("official")),
+            max(nb_sources_max(lot), nb_sources_max(promus)))
+
 def articles_officiels(new_items):
     """Les articles publiés par Rockstar ou Take-Two eux-mêmes.
 

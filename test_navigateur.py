@@ -2848,7 +2848,7 @@ def test_vignette_ouvre_larticle(nav, url):
 
 
 def test_sources_disent_la_verite(nav, url):
-    """Les 63 interrupteurs de source ne font RIEN quand le robot alimente le fil.
+    """Les interrupteurs de source ne font RIEN quand le robot alimente le fil.
 
     Le chemin backend construit le fil depuis feed.json et ne consulte jamais
     settings.feeds[].enabled : décocher « IGN » n'en retire pas un article.
@@ -2878,6 +2878,13 @@ def test_sources_disent_la_verite(nav, url):
         desc: document.getElementById('sourcesDesc').textContent,
         ligne: document.getElementById('infoSourcesLine').textContent,
         nbCases: document.querySelectorAll('#sourceList input[type=checkbox]').length,
+        // LE NOMBRE ATTENDU VIENT DE LA LISTE ELLE-MÊME. Il était écrit
+        // « 63 » en dur à trois endroits de ce test : le jour où six
+        // sources ont été ajoutées pour l'après-sortie (20/10/2026), deux
+        // contrôles sont passés au rouge alors que rien n'était cassé.
+        // Un nombre recopié dans un test n'est pas un contrôle, c'est une
+        // deuxième source de vérité.
+        nbSources: DEFAULT_FEEDS.length,
         aide: !!document.querySelector('#sourcesGroup .setting-label .aide'),
     })""")
 
@@ -2890,7 +2897,7 @@ def test_sources_disent_la_verite(nav, url):
     # Le résumé ne RÉPÈTE pas l'avertissement du titre : à 320 px les deux
     # passaient à la ligne pour dire la même chose. Il ne porte que le
     # décompte, et c'est le titre qui prévient.
-    check(etat["resume"] == "63 sources",
+    check(etat["resume"] == "%d sources" % etat["nbSources"],
           "[sources] le résumé replié ne porte que le décompte, sans répéter "
           "le titre (« %s »)" % etat["resume"])
     check("ne retirent aucun article" in etat["desc"],
@@ -2909,14 +2916,19 @@ def test_sources_disent_la_verite(nav, url):
     # cochées : fausse pour exactement la même raison. Elle annonce
     # maintenant ce que le ROBOT interroge, ce qui est à la fois vrai et plus
     # utile que de la retirer.
-    check("robot" in etat["ligne"] and "63" in etat["ligne"],
+    # Sur la FORME et non sur « 63 » : cette ligne compte les sources que
+    # le robot a réellement interrogées, lu dans feed.json. Elle suit donc
+    # le dernier passage du robot, pas la liste du code — les six sources
+    # ajoutées le 20/10/2026 n'y apparaîtront qu'au passage suivant, et un
+    # test qui exigeait le nombre d'aujourd'hui serait rouge entre les deux.
+    check("robot" in etat["ligne"] and re.search(r"\d+", etat["ligne"]),
           "[sources] la ligne des Informations annonce les sources du ROBOT "
           "(« %s »)" % etat["ligne"])
 
     # ON N'EFFACE RIEN : le mode de secours doit retrouver le réglage.
-    check(etat["nbCases"] == 63,
-          "[sources] les 63 interrupteurs sont toujours là, repliés "
-          "(%d)" % etat["nbCases"])
+    check(etat["nbCases"] == etat["nbSources"],
+          "[sources] les %d interrupteurs sont toujours là, repliés "
+          "(%d)" % (etat["nbSources"], etat["nbCases"]))
 
     # --- Bascule en mode direct : ils redeviennent la vraie commande.
     page.evaluate("""() => {
@@ -3051,6 +3063,185 @@ def test_compte_a_rebours(nav, url):
     check(tard["texte"].startswith("Sorti depuis 9") and "jours" in tard["texte"],
           "[compteur] trois mois après, il tient toujours (« %s »)"
           % tard["texte"])
+
+
+def test_mode_sans_spoiler(nav, url):
+    """Flouter les articles à spoiler, et les révéler d'un geste.
+
+    Demandé par Antoni le 20/10/2026 pour l'après-sortie : le 19 au soir
+    les titres se mettent à raconter le jeu, et il y jouera des semaines.
+
+    Trois réponses étaient possibles — masquer, grouper à part, flouter.
+    Il a choisi flouter : masquer perd l'information, flouter la diffère.
+    Ce contrôle tient surtout le point qui n'est pas cosmétique : un flou
+    ne désarme pas un lien, donc le voile doit intercepter le geste.
+    """
+    print("\n[spoiler] le mode sans spoiler")
+    ctx = nav.new_context(viewport={"width": 390, "height": 900},
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # ÉTEINT PAR DÉFAUT, liste PRÉ-REMPLIE. Les deux comptent : un fil
+    # flouté sans raison avant la sortie ressemble à une panne, et une
+    # liste vide obligerait à deviner les mots le soir du 19.
+    defaut = page.evaluate("""() => ({
+        mode: DEFAULT_SETTINGS.spoilerMode,
+        n: (DEFAULT_SETTINGS.spoilerKeywords || []).length,
+        // Une COPIE et pas la constante elle-même : sans le .slice(),
+        // modifier ses mots dans les réglages modifierait la valeur par
+        // défaut, et « réinitialiser » ne rendrait plus la liste d'origine.
+        copie: DEFAULT_SETTINGS.spoilerKeywords !== MOTS_SPOILER,
+        exemples: (DEFAULT_SETTINGS.spoilerKeywords || []).slice(0, 3),
+    })""")
+    check(defaut["mode"] is False,
+          "[spoiler] éteint par défaut — avant la sortie il n'y a rien à "
+          "protéger (%s)" % defaut["mode"])
+    check(defaut["n"] >= 15,
+          "[spoiler] mais sa liste est pré-remplie : la remplir le soir du "
+          "19 serait trop tard (%s mots, %s…)" % (defaut["n"], defaut["exemples"]))
+    check(defaut["copie"],
+          "[spoiler] et c'est une COPIE de la constante — sinon changer ses "
+          "mots changerait la valeur par défaut elle-même")
+
+    # LE VOILE, et ce qu'il désarme.
+    vue = page.evaluate("""() => {
+        settings.spoilerMode = true;
+        settings.spoilerKeywords = ["mission finale", "qui meurt"];
+        spoilersReveles = new Set();
+        lastItems = [
+          {link: "https://s.test/1", source: "T", date: new Date().toISOString(),
+           title: "GTA 6 : la mission finale en vidéo", lang: "fr"},
+          {link: "https://s.test/2", source: "T", date: new Date().toISOString(),
+           title: "GTA 6 : le prix de l'édition collector", lang: "fr"},
+        ];
+        visibleCount = 100; settings.maxDisplay = 100; badgeActif = null;
+        currentTab = "all"; currentFilter = "all"; currentLang = "all";
+        applyFilters();
+        const cartes = [...document.querySelectorAll(".card")];
+        const masquee = cartes.find(c => c.classList.contains("spoiler-masque"));
+        const nette = cartes.find(c => !c.classList.contains("spoiler-masque"));
+        const voile = masquee && masquee.querySelector(".spoiler-voile");
+        const lien = masquee && masquee.querySelector(".card-title a");
+        return {
+          cartes: cartes.length,
+          masquees: cartes.filter(c => c.classList.contains("spoiler-masque")).length,
+          // LE COMPTE NE BOUGE PAS : flouter n'est pas masquer. Si le
+          // mode retirait l'article du fil, il ferait doublon avec les
+          // mots d'exclusion et perdrait sa raison d'être.
+          ligne: document.getElementById("countLine").textContent,
+          voile: !!voile,
+          etiquette: voile ? voile.textContent : null,
+          aria: voile ? voile.getAttribute("aria-label") : null,
+          // Le titre est FLOUTÉ et le lien DÉSARMÉ. Le second compte plus
+          // que le premier : un flou laisse un lien cliquable.
+          flou: masquee ? getComputedStyle(masquee.querySelector(".card-top")).filter : null,
+          clics: lien ? getComputedStyle(lien).pointerEvents : null,
+          // Et la carte voisine, qui ne contient aucun mot, est intacte.
+          netteFlou: nette ? getComputedStyle(nette.querySelector(".card-top")).filter : null,
+          netteVoile: nette ? !!nette.querySelector(".spoiler-voile") : null,
+        };
+    }""")
+    check(vue["cartes"] == 2 and vue["masquees"] == 1,
+          "[spoiler] seul l'article qui porte le mot est voilé (%s sur %s)"
+          % (vue["masquees"], vue["cartes"]))
+    check("2 affichés" in vue["ligne"],
+          "[spoiler] et le COMPTE ne bouge pas : flouter n'est pas masquer, "
+          "sans quoi ce mode ferait doublon avec les mots d'exclusion "
+          "(« %s »)" % vue["ligne"].strip())
+    check(vue["voile"] and "Spoiler" in (vue["etiquette"] or ""),
+          "[spoiler] un voile dit pourquoi et ce qu'il faut faire (« %s »)"
+          % (vue["etiquette"] or "").strip())
+    check("Afficher" in (vue["aria"] or ""),
+          "[spoiler] et il porte un nom pour les lecteurs d'écran (« %s »)"
+          % vue["aria"])
+    check("blur" in (vue["flou"] or ""),
+          "[spoiler] le contenu est flouté (%s)" % vue["flou"])
+    check(vue["clics"] == "none",
+          "[spoiler] et le lien du titre est DÉSARMÉ — un flou tout seul "
+          "laisserait l'article ouvrable d'un doigt, ce qui est exactement "
+          "l'accident à éviter (%s)" % vue["clics"])
+    check(vue["netteFlou"] == "none" and vue["netteVoile"] is False,
+          "[spoiler] la carte sans mot de spoiler est intacte (%s, voile %s)"
+          % (vue["netteFlou"], vue["netteVoile"]))
+
+    # UN GESTE RÉVÈLE, ET SEULEMENT CELUI-LÀ. Le clic ne doit pas non plus
+    # ouvrir l'article — le voile est posé par-dessus un lien.
+    page.locator(".card.spoiler-masque .spoiler-voile").first.click()
+    page.wait_for_timeout(120)
+    apres = page.evaluate("""() => ({
+        masquees: document.querySelectorAll(".card.spoiler-masque").length,
+        voiles: document.querySelectorAll(".spoiler-voile").length,
+        flou: getComputedStyle(document.querySelector(".card .card-top")).filter,
+        clics: getComputedStyle(document.querySelector(".card .card-title a")).pointerEvents,
+        onglets: 1,
+    })""")
+    check(apres["masquees"] == 0 and apres["voiles"] == 0,
+          "[spoiler] un geste révèle la carte et retire son voile (%s / %s)"
+          % (apres["masquees"], apres["voiles"]))
+    check(apres["flou"] == "none" and apres["clics"] != "none",
+          "[spoiler] le titre redevient net ET cliquable (%s, %s)"
+          % (apres["flou"], apres["clics"]))
+
+    # CHANGER LA LISTE REMET LES RÉVÉLATIONS À ZÉRO. Sans ça, l'article
+    # révélé avant d'ajouter le mot qui le concerne resterait visible : le
+    # mot qu'on vient d'écrire pour s'en protéger n'aurait servi à rien.
+    remise = page.evaluate("""() => {
+        const n = spoilersReveles.size;
+        document.getElementById("spoilerMode").checked = true;
+        document.getElementById("spoilerKeywordsInput").value = "mission finale";
+        appliqueReglages();
+        return {avant: n, apres: spoilersReveles.size,
+                masquees: document.querySelectorAll(".card.spoiler-masque").length};
+    }""")
+    check(remise["avant"] == 1 and remise["apres"] == 0,
+          "[spoiler] changer la liste remet les révélations à zéro (%s → %s)"
+          % (remise["avant"], remise["apres"]))
+    check(remise["masquees"] == 1,
+          "[spoiler] et la carte redevient voilée (%s)" % remise["masquees"])
+
+    # LE MODE ÉTEINT NE VOILE RIEN, même avec des mots dans la liste.
+    eteint = page.evaluate("""() => {
+        document.getElementById("spoilerMode").checked = false;
+        appliqueReglages();
+        return document.querySelectorAll(".card.spoiler-masque").length;
+    }""")
+    check(eteint == 0,
+          "[spoiler] éteint, il ne voile rien même avec des mots (%s)" % eteint)
+
+    # LA CHRONOLOGIE AUSSI. Un mode qui ne s'applique qu'à une vue sur deux
+    # est un mode auquel on ne peut pas se fier.
+    chrono = page.evaluate("""() => {
+        settings.spoilerMode = true;
+        settings.spoilerKeywords = ["mission finale"];
+        spoilersReveles = new Set();
+        lastItems = [{link: "https://s.test/3", source: "Rockstar",
+                      date: new Date().toISOString(), official: true,
+                      title: "GTA 6 : la mission finale dévoilée", lang: "en"}];
+        currentTab = "rockstar";
+        visibleCount = 100; settings.maxDisplay = 100;
+        applyFilters();
+        const pt = document.querySelector(".chrono-point");
+        const r = {
+          chrono: !!pt,
+          masque: pt ? pt.classList.contains("spoiler-masque") : null,
+          voile: pt ? !!pt.querySelector(".spoiler-voile") : null,
+          clics: pt ? getComputedStyle(pt.querySelector(".chrono-lien")).pointerEvents : null,
+        };
+        currentTab = "all"; settings.spoilerMode = false; applyFilters();
+        return r;
+    }""")
+    check(chrono["chrono"] and chrono["masque"] and chrono["voile"],
+          "[spoiler] la chronologie de l'onglet Rockstar est voilée aussi "
+          "(%s)" % chrono)
+    check(chrono["clics"] == "none",
+          "[spoiler] et son lien est désarmé pareillement (%s)" % chrono["clics"])
+
+    check(not err, "[spoiler] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
 
 
 def test_panneau_du_compteur(nav, url):
@@ -5360,6 +5551,7 @@ def main():
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)
+            test_mode_sans_spoiler(nav, url)
             test_panneau_du_compteur(nav, url)
             test_budget_du_stockage(nav, url)
             test_contraste_partout(nav, url)

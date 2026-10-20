@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1836
+qui permet de tester tout le pipeline sans sortir de la machine. **1867
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -8991,6 +8991,105 @@ mot pour mot. Le commentaire d'octobre avertissait déjà qu'à neuf badges
 la duplication garantissait un oubli ; à vingt et un, avec une classe de
 famille à poser en plus, elle le garantissait deux fois. Les deux vues
 appellent maintenant `boutonsBadges()`.
+
+### Trois préparatifs pour l'après-sortie — 20/10/2026
+
+Trois décisions d'Antoni, prises sur mesures, après une liste de propositions.
+
+#### Le mode sans spoiler
+
+Le 19 au soir, les titres se mettent à raconter le jeu ; il y jouera
+pendant des semaines. Trois réponses étaient possibles — masquer, grouper
+à part, flouter. Il a choisi **flouter** : masquer perd l'information,
+flouter la diffère.
+
+Le point qui n'est pas cosmétique : **un flou ne désarme pas un lien**.
+Le titre resterait cliquable et un doigt l'ouvrirait, ce qui est
+exactement l'accident que ce mode doit empêcher. Le voile est donc un
+bouton qui couvre toute la carte et intercepte le geste, et le contenu en
+dessous porte `pointer-events:none` par surcroît. Un geste révèle, et
+seulement cet article-là — par une mise à jour ciblée du DOM, pas un
+`applyFilters()` qui ferait sauter le défilement sous le doigt.
+
+**La liste est pré-remplie**, vingt-deux mots dans les deux langues du
+fil, et c'est la moitié de l'idée : une liste vide obligerait à deviner
+les mots le soir même, c'est-à-dire trop tard. Le mode, lui, est éteint
+par défaut — avant la sortie il n'y a rien à protéger, et un fil flouté
+sans raison ressemble à une panne.
+
+Trois choses dites plutôt que tues : le compte d'articles **ne bouge
+pas** (flouter n'est pas masquer, sinon le mode ferait doublon avec les
+mots d'exclusion) ; changer la liste **remet les révélations à zéro**,
+sans quoi le mot qu'on vient d'écrire pour se protéger n'aurait servi à
+rien ; et le floutage est **visuel** — il protège d'un regard, pas d'une
+recherche, le texte reste dans la page.
+
+#### Le récapitulatif se tait après la sortie
+
+Aujourd'hui il part dès qu'un article est entré, et c'est ce qu'il faut.
+Après le 19 il dirait « 180 nouveaux articles » toutes les heures : un
+seul message, donc pas du spam, mais un message qui n'apprend plus rien.
+Il ne partira plus que s'il y a une **annonce officielle** ou une **actu
+majeure** — exactement ce que la pause nocturne laisse déjà passer.
+
+**La date décide, pas un interrupteur.** Un réglage à basculer le soir du
+19 est un réglage que personne ne bascule : ce soir-là, Antoni jouera.
+
+Les deux canaux se taisent **ensemble** — un seul juge,
+`recap_merite_notification`, appelé par le push et par Discord. Couper
+l'un en laissant l'autre bavard serait pire que ne rien couper. Et les
+trois nombres de la décision viennent de `comptes_du_recap`, pour que le
+choix d'envoyer ne reparte pas d'un calcul à lui, à côté de celui du
+libellé.
+
+Les notifications par **annonce officielle** ne sont pas concernées :
+elles partent une par une, avant le récapitulatif, et c'est leur raison
+d'être.
+
+#### Six sources qui ne ramèneront rien avant le 19
+
+Choix d'Antoni entre « maintenant, elles dormiront » et « le
+20 novembre ». Ajoutées aujourd'hui, elles se remplissent seules sans
+qu'il y ait de session ce soir-là.
+
+**Des requêtes, pas des sites**, et c'est le point. Les tests et les
+soluces de GTA 6 paraîtront chez des médias **déjà présents** — JVC,
+Gamekult, IGN France, GameRant y sont tous. Ce qui manque n'est pas le
+média, c'est l'angle : leur flux général est trié par date et Google News
+plafonne chaque requête à cent entrées, si bien qu'un test publié un jour
+à trois cents articles passe sous la ligne de flottaison. C'est la raison
+d'être des quinze requêtes ciblées déjà en place.
+
+Aucun domaine nouveau, donc aucune sonde à faire et aucun 429 à craindre.
+`support.rockstargames.com` a été **écarté** bien que ce soit la source
+primaire des notes de patch : Google News n'indexe pas les pages
+d'assistance, la requête aurait été vide pour toujours.
+
+#### Ce que la mesure du poids a corrigé
+
+Antoni a demandé de mesurer avant de décider, et la mesure a **corrigé
+mon propre chiffre**. J'avais annoncé « 9,6 Mo au plafond » : c'était la
+taille non compressée.
+
+| | brut | servi (gzip) |
+|---|---|---|
+| `feed-recent.json` (300) | 0,33 Mo | **0,10 Mo** |
+| `feed.json` (4 235) | 3,23 Mo | **0,79 Mo** |
+| au plafond (12 000) | 9,15 Mo | **2,24 Mo** |
+
+194 octets par article une fois compressé, contre 798 bruts. Au plafond
+absolu : 1,8 s en 4G correcte, 6 s en 4G faible, 18 s en 3G. **Le poids
+n'est donc pas le problème que je croyais** : `MAX_HISTORY_SIZE` reste à
+12 000 et le fil n'est pas découpé par mois — c'était le plus gros
+chantier de la liste pour un problème qui n'existe pas.
+
+Deux réserves : la compression est **calculée, pas mesurée en ligne**
+(`github.io` est bloqué depuis le conteneur de travail), et les 9 Mo
+bruts sont bien analysés en mémoire par le téléphone, compression ou pas.
+
+Reste ouvert, non fait : `source_link` pèse **11,5 %** du fichier (65 o
+par article) et ne sert qu'au mode de secours. Le retirer du fil rendrait
+0,27 Mo bruts sans rien perdre à l'écran.
 
 ## Ajuster quelque chose
 
