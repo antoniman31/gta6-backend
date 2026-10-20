@@ -961,17 +961,6 @@
      disposition ordinaire. */
   .compteur-tuiles.precis b{font-size:28px; color:var(--accent);}
   .compteur-tuiles.second b{font-size:20px;}
-  /* LA DERNIÈRE HEURE, UN SEUL NOMBRE. Choix d'Antoni le 20/10/2026 :
-     sous une heure, les six tuiles affichaient cinq zéros gris pour un
-     seul chiffre vivant. Le découpage laisse la place au total en
-     secondes, en grand, qui descend.
-
-     grid-auto-columns est REMIS À auto : la colonne est bornée à 52 px
-     pour que six tuiles tiennent sur 320 px, et une seule tuile à 44 px
-     de corps y serait rognée. */
-  .compteur-tuiles.geant{grid-auto-columns:auto;}
-  .compteur-tuiles.geant b{font-size:44px; color:var(--accent);}
-  .compteur-tuiles.geant span{font-size:13px;}
   /* LA TEINTE DU PALIER, la même que l'en-tête. Elle ne touche que les
      gros chiffres : la barre garde son bleu et les équivalences restent
      neutres. Les trois teintes sont déjà mesurées sur les deux fonds de
@@ -8094,19 +8083,6 @@ function nombreFr(n){
 // abréviations françaises normalisées, elles ne prennent pas de s. La
 // phrase complète, elle, garde ses accords — voir phraseDecoupe, qui
 // sert d'étiquette au groupe.
-// SOUS UNE HEURE, PLUS DE DÉCOUPAGE : un seul nombre de secondes.
-//
-// Conséquence directe des six tuiles toujours affichées, vue à la
-// répétition générale du 20/10/2026 : à T-30 min le panneau annonçait
-// « 0 mois 0 sem 0 j 0 h 30 min 14 s », cinq zéros gris pour un chiffre
-// vivant. Antoni a tranché : la dernière heure, le total en secondes
-// passe en grand et le découpage s'efface.
-//
-// LA MÊME CHOSE DANS L'HEURE QUI SUIT MINUIT, parce que c'est la même
-// nuit et le même défaut en miroir — six tuiles dont cinq à zéro pendant
-// que les secondes montent. Le seuil est un écart, pas une date.
-const SEUIL_COMPTEUR_GEANT = 60 * 60 * 1000;
-
 const UNITES_COMPTEUR = [
   ["mois", "mois"],
   ["semaines", "sem"],
@@ -8138,9 +8114,32 @@ function tuilesCompteur(liste, classe, etiquette){
 // lecteur d'écran entend « 1 mois, 2 jours, 9 heures » et non « 1 mois,
 // 0 semaine, 2 jours ». La ligne se regarde, la phrase s'écoute, et les
 // deux n'ont pas les mêmes besoins.
-function tuilesDecoupe(d, classe){
-  const bouts = UNITES_COMPTEUR.map(([cle, abrege]) =>
+//
+// SAUF LES ZÉROS DE TÊTE DANS LES DERNIÈRES 24 HEURES. C'est la rançon
+// du choix ci-dessus, vue à la répétition post-sortie du 20/10/2026 : à
+// T-30 min le panneau annonçait « 0 mois 0 sem 0 j 0 h 30 min 14 s »,
+// cinq zéros gris pour un chiffre vivant. Un premier jet remplaçait tout
+// par le total en secondes, en grand ; Antoni l'a refusé — « 1 799
+// secondes » ne se lit pas. Les unités de tête à zéro s'effacent donc,
+// et seulement elles : « 30 min 14 s » reste un temps qu'on lit.
+//
+// Les zéros du MILIEU et de la FIN restent, grisés : « 23 h 0 min 5 s »
+// garde ses trois tuiles, sans quoi le chiffre des secondes sauterait à
+// la place des minutes.
+//
+// Le seuil n'est pas écrit ici : c'est palierCompteur() qui le tient, le
+// même que l'en-tête, et « final » veut dire « moins de 24 heures ».
+// C'est un ÉCART, pas une date — la coupe vaut donc aussi dans les
+// 24 heures qui suivent minuit, où le défaut est le même en miroir.
+function tuilesDecoupe(d, classe, coupeTete){
+  let bouts = UNITES_COMPTEUR.map(([cle, abrege]) =>
     [d[cle], abrege, d[cle] === 0]);
+  if(coupeTete){
+    const premier = bouts.findIndex(b => b[0] !== 0);
+    // Tout à zéro (moins d'une seconde) : on garde la dernière tuile,
+    // sinon la ligne disparaît pendant une seconde.
+    bouts = premier === -1 ? bouts.slice(-1) : bouts.slice(premier);
+  }
   return tuilesCompteur(bouts, classe, phraseDecoupe(d));
 }
 
@@ -8156,7 +8155,10 @@ function majPanneauCompteur(){
   // l'information intéressante.
   const palier = avant ? palierCompteur(ecart) : "";
   const precis = !avant || palier === "final";
-  const geant = ecart < SEUIL_COMPTEUR_GEANT;
+  // palierCompteur() APPELÉ DIRECTEMENT, et non `palier` : celui-ci est
+  // vidé après la sortie pour que le panneau ne vire pas au rouge, mais
+  // la coupe des zéros de tête, elle, vaut des deux côtés de minuit.
+  const coupeTete = palierCompteur(ecart) === "final";
 
   const titre = document.getElementById("titreCompteur");
   if(titre) titre.textContent = avant ? "Avant la sortie" : "Depuis la sortie";
@@ -8177,12 +8179,9 @@ function majPanneauCompteur(){
     timeZone: "Europe/Paris" });
 
   el.innerHTML =
-      (geant
-        ? tuilesCompteur([[nombreFr(ecart / 1000), "secondes", false]],
-                         "geant" + (palier ? " " + palier : ""),
-                         nombreFr(ecart / 1000) + " secondes")
-        : tuilesDecoupe(decoupeCalendaire(debut, fin),
-                        (precis ? "precis" : "second") + (palier ? " " + palier : "")))
+      tuilesDecoupe(decoupeCalendaire(debut, fin),
+                    (precis ? "precis" : "second") + (palier ? " " + palier : ""),
+                    coupeTete)
     + `<div class="compteur-barre">`
     +   `<i>${escapeHtml(pourcent)}</i>`
     // Le second exemplaire est DANS le remplissage, donc rogné par lui.
@@ -8199,10 +8198,7 @@ function majPanneauCompteur(){
     + (avant
         ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>`
         : "")
-    // LES ÉQUIVALENCES S'EFFACENT AVEC LE DÉCOUPAGE. Sous une heure
-    // elles diraient « 0 jours · 0 heures · 45 minutes » et répéteraient
-    // en petit le total en secondes qui est déjà en grand au-dessus.
-    + (geant ? "" : tuilesCompteur([
+    + tuilesCompteur([
         [nombreFr(ecart / 86400000), "jours", false],
         [nombreFr(ecart / 3600000), "heures", false],
         [nombreFr(ecart / 60000), "minutes", false],
@@ -8210,12 +8206,12 @@ function majPanneauCompteur(){
         // que la grille passe à trois colonnes. Antoni l'a réclamé : c'est
         // le chiffre le plus spectaculaire des quatre.
         [nombreFr(ecart / 1000), "secondes", false],
-      ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours"))
+      ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours")
     // LE TEMPS DU VERBE SUIT LA DATE. Sous un titre « Depuis la sortie »,
-    // la note annonçait encore le jeu au futur. Un mot change, rien
+    // la note annonçait encore le jeu au futur. Un mot s'ajoute, rien
     // d'autre. Signalé à la répétition générale du 20/10/2026.
     + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le `
-    +   `4 février 2022. ${avant ? "Sortie" : "Sorti"} le `
+    +   `4 février 2022. Sortie ${avant ? "" : "depuis "}le `
     +   `${escapeHtml(jourSortie)} à 00:00, heure de Paris.</p>`;
 }
 

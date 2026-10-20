@@ -8819,9 +8819,9 @@ trois visibles uniquement ce soir-là. Antoni a tranché sur chacun.
 
 #### La note parlait au futur sous un titre au passé
 
-« Depuis la sortie » en titre, et dessous « **Sortie** le jeudi
-19 novembre 2026 à 00:00 ». Un mot, et rien d'autre : la note dit
-maintenant « Sorti le » une fois la date franchie.
+« Depuis la sortie » en titre, et dessous « Sortie le jeudi 19 novembre
+2026 à 00:00 ». Un mot s'ajoute : **« Sortie depuis le »** une fois la
+date franchie.
 
 #### La barre restait à 100,0 % pour toujours
 
@@ -8836,27 +8836,38 @@ remplissage sont inchangés.
 
 C'était la rançon des six tuiles toujours affichées, choisies le 16/10
 pour que la ligne ne se redispose plus : à T-30 min le panneau annonçait
-`0 mois 0 sem 0 j 0 h 30 min 14 s`. **Sous une heure**, le découpage cède
-la place au total en secondes, seul, à 44 px — il garde la teinte du
-palier, donc rouge la dernière demi-heure. Les équivalences s'effacent
-avec lui : elles diraient « 0 jours · 0 heures » et répéteraient en petit
-le nombre déjà en grand au-dessus.
+`0 mois 0 sem 0 j 0 h 30 min 14 s`.
 
-Le seuil est un **écart**, pas une date, donc la même chose vaut dans
-l'heure qui suit minuit — le défaut y est le même en miroir, cinq zéros
-pendant que les secondes montent. `grid-auto-columns` est remis à `auto`
-pour cette disposition : la colonne est bornée à 52 px pour que six
-tuiles tiennent sur 320 px, et un seul nombre à 44 px y serait rogné.
+**Un premier jet remplaçait tout par le total en secondes**, seul, à
+44 px. Antoni l'a refusé le jour même : « 1 799 secondes », ce n'est pas
+un temps qu'on lit. Ce qui est livré est plus petit — **les unités de
+tête à zéro s'effacent**, et seulement elles. Il reste « 29 min 58 s » en
+grand, un temps lisible.
+
+Les zéros du **milieu** et de la **fin** restent, grisés : sans eux,
+« 23 h 5 s » se lirait « 23 h 5 min » d'un coup d'œil, le chiffre des
+secondes prenant la place de celui des minutes.
+
+Le seuil n'est pas écrit une deuxième fois : c'est `palierCompteur()` qui
+le tient, et son palier `final` veut dire « moins de 24 heures ». C'est
+un **écart**, pas une date, donc la coupe vaut aussi dans les 24 heures
+qui suivent minuit, où le défaut est le même en miroir.
 
 #### Les contrôles
 
-Deux instants encadrant minuit (T-30 min, T+30 min) : une seule grille,
-une seule tuile, zéro tuile grisée, le nombre entre 1 et 3 600, le corps
-à 44 px, une seule ligne, rien qui sorte du panneau à 320 px, et la
-teinte comparée au jeton **résolu** plutôt qu'à une couleur écrite en
-dur. Le débordement se mesure sur les tuiles, pas sur la grille — qui est
-un bloc et ne déborde jamais. Plus deux contrôles à J+3 sur le temps du
-verbe et sur le mot dans la barre. 625 contrôles de navigateur.
+Trois instants dont deux encadrent minuit, et chacun annonce la liste
+d'unités qu'il attend : `min s` de part et d'autre de la sortie,
+les six juste au-dessus des 24 heures. Plus la première tuile qui ne vaut
+jamais zéro sous 24 h, la ligne unique, et l'étiquette parlée — qui
+masquait déjà les zéros, et que la coupe ne change pas.
+
+Trois cas limites sur la fonction elle-même, parce que les instants qui
+les produisent ne durent qu'une minute et que l'horloge installée avance
+pendant que la page charge : **tout à zéro** garde une tuile (sinon la
+ligne disparaît pendant la seconde qui enjambe minuit), une seule unité
+vivante ne garde qu'elle, et le **zéro du milieu** reste. Plus deux
+contrôles à J+3 sur le mot de la note et sur celui de la barre, et un
+qui vérifie que les six tuiles sont bien de retour une semaine après.
 
 ## Ajuster quelque chose
 

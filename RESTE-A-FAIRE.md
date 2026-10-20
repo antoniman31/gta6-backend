@@ -1121,17 +1121,20 @@ ce soir-là ; Antoni a tranché sur chacun le jour même.
 
 | ce qui n'allait pas | tranché |
 |---|---|
-| « **Sortie** le 19 novembre » sous un titre « Depuis la sortie » | passé au passé : « Sorti le » |
+| « Sortie le 19 novembre » sous un titre « Depuis la sortie » | « **Sortie depuis le** 19 novembre » |
 | la barre figée à **100,0 %** pour toujours | pleine, mais le chiffre devient le mot « Sorti » |
-| `0 mois 0 sem 0 j 0 h 30 min 14 s` la nuit de la sortie | sous une heure, un seul nombre de secondes à 44 px |
+| `0 mois 0 sem 0 j 0 h 30 min 14 s` la nuit de la sortie | sous 24 h, les unités de tête à zéro s'effacent |
 
 Le troisième est la rançon des six tuiles toujours affichées, choisies le
-16/10. Le seuil est un **écart**, pas une date : la même disposition vaut
-dans l'heure qui suit minuit, où le défaut est le même en miroir. Les
-équivalences s'effacent avec le découpage — elles répéteraient en petit
-le nombre déjà en grand.
+16/10. **Un premier jet remplaçait tout par le total en secondes**, à
+44 px ; refusé le jour même — « 1 799 secondes » ne se lit pas. Ne
+s'effacent donc que les zéros **de tête** : ceux du milieu et de la fin
+restent, sinon « 23 h 5 s » se lirait « 23 h 5 min ».
 
-22 contrôles de navigateur de plus (625).
+Le seuil est celui de `palierCompteur()`, pas un deuxième, et c'est un
+**écart** : la coupe vaut aussi dans les 24 heures qui suivent minuit.
+
+24 contrôles de navigateur de plus (627).
 
 ### Le plafond des liens lus passe à 20 000 — 20/10/2026
 
