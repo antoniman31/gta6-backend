@@ -5085,7 +5085,7 @@ espaces. La rangée se replie maintenant en deux fois deux
 (`#groupeFiltres button{min-width:116px}`), visée par l'identifiant du
 groupe pour ne pas toucher aux autres rangées de la feuille.
 
-**Le plafond est celui de `readSet`** (8 000), repris tel quel, y compris
+**Le plafond est celui de `readSet`** (20 000), repris tel quel, y compris
 son refus de jeter un lien encore affichable. La dette 4.2 de l'audit était
 exactement une liste sans borne ; une seconde l'aurait ramenée par une
 autre porte. La liste est pourtant courte par nature — le plafond ne
@@ -7951,12 +7951,20 @@ Trois décisions, et c'est leur combinaison qui rend le plafond sûr :
    est dépassé sciemment. Faire revenir un article en « non lu » sous les
    yeux du lecteur serait pire que d'écrire un peu plus.
 
-**Le chiffre vient d'une mesure.** Sur les 4 795 liens du dépôt : 101
-caractères en médiane, 147 au neuvième décile, soit environ 300 octets par
-lien en UTF-16 une fois les guillemets et la virgule comptés. Le plafond
-de 8 000 pèse donc 2,3 Mo ; avec le fil local et les articles déjà vus
-(environ 1 Mo à eux deux) on reste autour de 3,3 Mo sur les 5 Mo accordés.
-C'est aussi près de deux mois de lecture au rythme actuel.
+**Le chiffre venait d'une mesure, et elle était deux fois trop
+pessimiste.** Sur les 4 795 liens du dépôt on avait compté « environ
+300 octets par lien » — un comptage en UTF-16 qui ne correspond pas à ce
+que pèse la chaîne réellement stockée. Remesuré le **20/10/2026 sur la
+sauvegarde réelle d'Antoni** (7 548 liens) : **104 octets en moyenne,
+101 en médiane, 149 au neuvième décile**.
+
+**Le plafond est donc passé de 8 000 à 20 000**, à sa demande : il en
+était à 94 % après un mois d'usage. Budget remesuré poste par poste —
+liens lus 2,04 Mo (2,90 au pire cas), fil en cache 0,25 Mo, dates de
+première vue 0,65 Mo, soit **2,94 Mo** et 3,80 au pire sur les 5 Mo
+accordés. Et c'est le plafond du FIL, à 300 articles, qui tient ce
+budget : sans lui, l'historique complet pèserait à lui seul plus que
+tout le reste.
 
 **Et le message qui conseillait de tout détruire.** Quand le quota
 débordait, l'app disait « vide les données du site pour repartir sur une
@@ -8055,11 +8063,12 @@ connaître.
 Fil de douze mille, **tout lu**, « déjà vus » à son plafond :
 **3,26 Mo sur les ~5 Mo** du navigateur. Ça passe, avec 1,7 Mo de marge.
 
-Mais il faut dire comment : **le plafond des huit mille lus ne sert à rien
-dans ce cas**, parce que les douze mille liens sont encore affichables et
-qu'on ne jette jamais un lien affichable. C'est le plafond du FIL qui
-protège le stockage, pas celui des lus. Dès que la moitié du fil sort de la
-fenêtre, le plafond agit : 8 000 écrits, 1,70 Mo.
+Mais il faut dire comment : **le plafond des lus ne sert à rien dans ce
+cas**, parce que les douze mille liens sont encore affichables et qu'on ne
+jette jamais un lien affichable. C'est le plafond du FIL qui protège le
+stockage, pas celui des lus. Dès que la moitié du fil sort de la fenêtre,
+le plafond agit — chiffres de l'époque, quand il valait 8 000 : 1,70 Mo
+écrits.
 
 ### Les notifications, et le défaut de la première répétition
 

@@ -2853,20 +2853,32 @@ async function saveSeen(){
 // pas ce qui est encore joignable, donc on ne jette rien. Mieux vaut
 // dépasser le plafond que perdre une lecture qui comptait.
 //
-// LE CHIFFRE. Mesuré le 14/10/2026 sur les 4 795 liens du dépôt : 101
-// caractères en médiane, 147 au neuvième décile, soit environ 300 octets
-// par lien en UTF-16 une fois les guillemets et la virgule comptés. À ce
-// coût, le plafond pèse 2,3 Mo ; avec le fil local et les articles déjà vus
-// (environ 1 Mo à eux deux), on reste autour de 3,3 Mo sur les 5 Mo que le
-// navigateur accorde. C'est aussi près de deux mois de lecture au rythme
-// actuel.
+// LE CHIFFRE, REMESURÉ LE 20/10/2026 SUR LA SAUVEGARDE RÉELLE D'ANTONI,
+// et il était deux fois trop pessimiste. Ses 7 548 liens font 101 octets
+// en médiane, 149 au neuvième décile, 104 en moyenne — pas 300. Les
+// 300 venaient d'un comptage en UTF-16 qui ne correspond pas à ce que
+// pèse réellement la chaîne stockée.
+//
+// Le plafond passe donc de 8 000 à 20 000, demandé par Antoni qui en
+// était à 94 % après un mois d'usage. Budget mesuré poste par poste :
+//
+//   liens lus (20 000)            2,04 Mo   (2,90 au pire cas)
+//   fil en cache (300 articles)   0,25 Mo
+//   dates de première vue (2 000) 0,65 Mo
+//   ------------------------------------
+//   total                         2,94 Mo   (3,80 au pire cas)
+//
+// Sur les 5 Mo que le navigateur accorde, il reste donc au moins 1,2 Mo
+// de marge dans le cas le plus défavorable. Et c'est le fil en cache,
+// plafonné à 300 articles, qui empêche ce budget d'exploser — pas le
+// plafond des liens lus.
 //
 // CE QUE CE PLAFOND N'EST PAS : une limite dure. Si l'appareil a plus de
 // liens lus ENCORE AFFICHABLES que le plafond, ils sont tous conservés et
 // le plafond est dépassé sciemment. Jeter un article que l'app peut encore
 // montrer le ferait revenir en « non lu » sous les yeux du lecteur, ce qui
 // est exactement le défaut qu'on évite.
-const MAX_LIENS_LUS_PERSISTES = 8000;
+const MAX_LIENS_LUS_PERSISTES = 20000;
 let elagageLusSignale = false;
 
 // ---------- Les articles mis de côté ----------

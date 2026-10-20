@@ -129,10 +129,25 @@ dans `feed.json`), `PUSH_SUBSCRIPTIONS`, `DISCORD_WEBHOOK_URL` et
 | service worker | n'intercepte que les navigations (jamais `feed.json`). La charge utile du push est chiffrée VAPID ; son `url` vient de `item.link`, mais `statut_officiel` compare le **nom d'hôte** et `urlparse("javascript:…").hostname` vaut `None` — un lien à schéma douteux ne peut donc pas devenir officiel ni atteindre une notification. |
 | ce que `feed.json` expose | 21 clés passées en revue, **rien de sensible**. `vapid_public_key` est publique par construction. `feed_http_state` publie les ETags par source : de la plomberie interne servie à tous les visiteurs, 3,3 ko, sans conséquence. |
 
-**Ce qui reste, et que je ne peux PAS vérifier d'ici** : la portée réelle du
-PAT cron-job.org. Elle se lit sur
-`github.com/settings/personal-access-tokens` — à confirmer à l'œil :
-dépôt `gta6-backend` uniquement, « Contents: Read and write » uniquement.
+**Le dernier point est CLOS le 20/10/2026.** Antoni a ouvert
+`github.com/settings/personal-access-tokens` et montré les deux jetons à
+portée fine. Les deux sont limités au seul dépôt `antoniman31/gta6-backend`,
+sans aucune permission utilisateur :
+
+| jeton | expire | permissions dépôt |
+|---|---|---|
+| `horloge-gta6` (cron-job.org) | 28/08/2027 | métadonnées en lecture + **code en lecture-écriture** |
+| `gta6watch mobile` (bouton « Relancer le robot ») | **26/11/2026** | métadonnées en lecture + **actions en lecture-écriture** |
+
+`horloge-gta6` est exactement ce que cette revue demandait. Le second
+n'était pas couvert par la revue et se révèle plus serré encore : il
+déclenche le workflow mais **ne peut pas écrire de code**, ce qui est le
+minimum pour ce qu'il fait.
+
+> **À surveiller** : `gta6watch mobile` expire le **26 novembre 2026**,
+> soit une semaine après la sortie. La nuit du 19 est couverte ; le bouton
+> « Relancer le robot » cessera de fonctionner huit jours plus tard, sans
+> avertissement.
 
 **Deux durcissements à faire** (voir 4.10 et 4.11) : `.gitignore` ne couvre
 pas `.env`, et les Actions sont épinglées au tag majeur alors que PyPI est
@@ -491,7 +506,7 @@ sans équivalent JS, légitimement) et `official_keywords_extra`.
 
 ### 4.2 — `readSet` n'a pas de plafond, et le message d'erreur conseille de détruire l'irremplaçable
 
-> **FAIT le 14/10/2026.** Plafond à 8 000 liens, mesuré (300 octets par lien au neuvième décile, soit 2,3 Mo). Trois garde-fous : il ne s'applique qu'à la copie écrite sur l'appareil — la sauvegarde exportée garde tout ; on ne jette que les liens absents à la fois du fil et de l'archive, et seulement si les deux sont en mémoire ; et un lien encore affichable n'est jamais jeté, même au-dessus du plafond. Le message de quota ne conseille plus d'effacer les données du site, il renvoie vers l'export.
+> **FAIT le 14/10/2026.** Plafond à 8 000 liens, mesuré (300 octets par lien au neuvième décile, soit 2,3 Mo) — **relevé à 20 000 le 20/10/2026**, la mesure d'origine étant deux fois trop pessimiste : 149 octets au neuvième décile sur la sauvegarde réelle. Trois garde-fous : il ne s'applique qu'à la copie écrite sur l'appareil — la sauvegarde exportée garde tout ; on ne jette que les liens absents à la fois du fil et de l'archive, et seulement si les deux sont en mémoire ; et un lien encore affichable n'est jamais jeté, même au-dessus du plafond. Le message de quota ne conseille plus d'effacer les données du site, il renvoie vers l'export.
 
 `seenMap` est plafonné à 2 000 entrées, `lastItems` à 300, dans les deux cas
 avec un commentaire citant la limite de 5 Mo. **`readSet` a échappé au même
@@ -1079,6 +1094,27 @@ un ami. Un dodo est une NUIT, donc un minuit à traverser — et celui de la
 sortie ne compte pas, puisqu'on joue au lieu de dormir. La version naïve
 par division se trompe sur les cinq cas éprouvés, changement d'heure
 compris.
+
+### Le plafond des liens lus passe à 20 000 — 20/10/2026
+
+Antoni a exporté sa sauvegarde : **7 548 liens lus sur un plafond de
+8 000**, soit 94 % après un mois d'usage. Il a demandé 20 000.
+
+Remesuré sur ses données réelles avant de toucher à la constante, et la
+mesure d'origine était **deux fois trop pessimiste** : 104 octets par lien
+en moyenne, 149 au neuvième décile — pas les 300 annoncés, qui venaient
+d'un comptage en UTF-16. Budget à 20 000 : liens lus 2,04 Mo (2,90 au pire
+cas), fil en cache 0,25 Mo, dates de première vue 0,65 Mo, soit **2,94 Mo**
+sur les 5 Mo accordés. C'est le plafond du FIL, à 300 articles, qui tient
+ce budget.
+
+La sauvegarde a aussi été passée au peigne : **aucun secret**, sous aucune
+forme — ni jeton, ni webhook, ni clé VAPID, ni URL de supervision.
+
+Au passage, les 109 articles « masqués » qui l'inquiétaient sont ses six
+mots d'exclusion (noms d'autres jeux) faisant leur travail. J'avais déduit
+de cet écran qu'il n'avait que 109 articles chargés : c'était faux, les
+comptes « affichés » et « masqués » sont indépendants.
 
 ### Le panneau prend les couleurs du compte à rebours — 20/10/2026
 
