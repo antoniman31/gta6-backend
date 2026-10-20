@@ -693,6 +693,19 @@
   .tag-take2{background:#0f766e; color:#fff;}
   .tag-rumeur{background:#57534e; color:#fff;}
   .tag-date{background:#4338ca; color:#fff;}
+  /* LA FAMILLE « CATÉGORIE », au trait plutôt qu'en aplat. Les douze
+     badges de l'après-sortie disent de quoi l'article parle ; les neuf
+     d'octobre disent qu'il s'est passé quelque chose. Un seul coup d'œil
+     doit suffire à les distinguer, et c'est la forme qui s'en charge —
+     pas une douzième couleur, qu'on ne retiendrait pas.
+
+     --text sur le fond de carte, pas --text-dim : la catégorie est plus
+     importante que la langue, qui porte déjà ce gris. Mesuré par le
+     balayage de contraste, comme tout le reste. */
+  .tag-cat{
+    background:transparent; color:var(--text);
+    border:1px solid var(--line); font-weight:700;
+  }
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
   .specialist-badge{
     font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
@@ -5008,7 +5021,13 @@ function estMajeur(item){
 // resserrage : 148, et VÉRIFIÉ UN PAR UN que les 51 écartés sont tous des
 // faux positifs, aucune vraie vidéo perdue.
 const RE_FUITE = /\bleak(s|ed)?\b|\bfuite/i;
-const RE_VIDEO = /\btrailer\b|\bgameplay\b|\bfootage\b|\bvideo\b(?!\s*games?\b)|(?<!jeux )(?<!jeu )\bvidéo\b|\bclip\b/i;
+// `\bgameplay\b` EST SORTI D'ICI le 20/10/2026, en même temps que le
+// badge GAMEPLAY est né. Les deux auraient dit la même chose sur 97
+// cartes — chevauchement total, mesuré — et le mot ne prouve aucune
+// vidéo : « Bloomberg a révélé de nouveaux détails sur le gameplay »,
+// « GTA 6 File Size Confirmed By Gameplay Leaker ». VIDÉO passe de 342 à
+// 271, et les 71 écartés ont été relus : aucune vraie vidéo perdue.
+const RE_VIDEO = /\btrailer\b|\bfootage\b|\bvideo\b(?!\s*games?\b)|(?<!jeux )(?<!jeu )\bvidéo\b|\bclip\b/i;
 
 // ---------- Sept badges de plus, sondés avant d'être écrits ----------
 //
@@ -5059,15 +5078,118 @@ const RE_TAKE2 = /take-?two|zelnick|r[ée]sultats (financiers|trimestriels)|acti
 const RE_RUMEUR = /\brumeur|\brumou?r|reportedly|selon nos informations/i;
 const RE_DATE = /date de sortie|release date|launch date/i;
 
-function estFuite(item){ return RE_FUITE.test((item && item.title) || ""); }
-function estVideo(item){ return RE_VIDEO.test((item && item.title) || ""); }
-function estPC(item){ return RE_PC.test((item && item.title) || ""); }
-function estPreco(item){ return RE_PRECO.test((item && item.title) || ""); }
-function estPrix(item){ return RE_PRIX.test((item && item.title) || ""); }
-function estPerso(item){ return RE_PERSO.test((item && item.title) || ""); }
-function estTake2(item){ return RE_TAKE2.test((item && item.title) || ""); }
-function estRumeur(item){ return RE_RUMEUR.test((item && item.title) || ""); }
-function estDate(item){ return RE_DATE.test((item && item.title) || ""); }
+// ---------- Le nom du média n'est PAS le titre ----------
+//
+// Les titres arrivent sous la forme « Le titre - Nom du média ». Mesuré
+// le 20/10/2026 sur les 4 225 articles du fil : 3 406 portent ce suffixe,
+// et dans 302 d'entre eux un mot du motif n'est QUE dans le nom du média.
+// « PC Gamer », « PC Astuces », « Tom's Guide », « Gadget Review »,
+// « Instant Gaming News » : le badge PC se posait sur 21 articles qui ne
+// parlent pas de PC, uniquement parce que leur média s'appelle PC Gamer.
+//
+// Le suffixe doit RESSEMBLER à un nom de média : commencer par une
+// majuscule ou un chiffre, ou être un domaine. Sans cette garde, « GTA 6
+// map - confirmed and rumored locations » perdait sa fin, et avec elle
+// son badge RUMEUR — mesuré, c'était le seul.
+//
+// Tous les juges lisent ce corps-là, les neuf d'octobre compris : deux
+// notions de « titre » dans le même fichier finiraient par diverger.
+const RE_SUFFIXE_MEDIA = /\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4})$/;
+function corpsDuTitre(item){
+  return String((item && item.title) || "").replace(RE_SUFFIXE_MEDIA, "");
+}
+
+// ---------- Douze catégories pour l'après-sortie ----------
+//
+// Demandées par Antoni le 20/10/2026 : « pour après la sortie faudra
+// créer d'autres catégories d'article (test, astuces, tuto, gameplay) ».
+// Pas de nouvel onglet — les deux rangées sont pleines depuis le 16/10 —
+// donc douze badges de plus, par le chemin déjà en place.
+//
+// CE QUE LA MESURE DIT, ET SA LIMITE. Le fil d'aujourd'hui est
+// PRÉ-SORTIE : un test de GTA 6 n'existe pas encore, une soluce non plus.
+// Les volumes ci-dessous ne disent donc pas ce que ces badges pèseront,
+// ils disent seulement quels faux positifs existent DÉJÀ. Antoni a
+// tranché « tout maintenant, quitte à corriger » en le sachant.
+//
+//     MOD        59   1,4 %      ONLINE     51   1,2 %
+//     PERFS      39   0,9 %      VENTES     17   0,4 %
+//     ASTUCE      8   0,2 %      SOLUCE      4   0,1 %
+//     BUG         4   0,1 %      GAMEPLAY   97   2,3 %
+//     TEST        0              MISE À JOUR 0
+//     TROPHÉE     1              SPEEDRUN    0
+//
+// L'ADRESSE AVANT LE TITRE, pour les trois que le titre ne sait pas
+// juger. Aujourd'hui aucun article n'a /test/ ou /soluce/ dans son
+// adresse, mais 951 ont /news/ et 126 /actualite/ : le chemin existe et
+// se remplira. JVC, Gamekult et IGN France rangent tous leurs guides
+// sous /soluce/ ou /guide/, et un chemin d'URL ne se trompe presque
+// jamais là où un mot du titre se trompe une fois sur deux.
+//
+// CE QUE LES MOTIFS ONT DÛ PERDRE, mesuré un titre à la fois :
+//
+//   TEST    « review copies », « Private Board Review », « best-reviewed
+//           game », « noté 18/20 » (d'un autre jeu), « le verdict du
+//           GOTY ». De 16 à 0 : tous les seize étaient des faux positifs ;
+//   SOLUCE  « guide » attrape Tom's Guide et PC Guide (réglé par le
+//           corps du titre), « how to get » attrape « How to Get Time
+//           Off for the Game ». De 38 à 4 ;
+//   ASTUCE  « cheating » : six titres sur vingt-quatre parlent du système
+//           de drague du jeu, pas de triche. Le motif exige « cheat
+//           code » ou « code de triche » ;
+//   BUG     « crash » : neuf titres sur treize parlent de la cryptomonnaie
+//           du leaker qui s'effondre. « crash » nu est parti ;
+//   MAJ     « update » : « Map Update », « development Update »,
+//           « release date Update ». Trois sur quatre ne sont pas un
+//           correctif. Restent « patch », « correctif », « hotfix » et
+//           « update » suivi d'un numéro ;
+//   VENTES  « vente » au singulier attrape « la vente aux mineurs » et
+//           « met en vente un disque ». Le pluriel seul.
+const RE_TEST_URL = /\/(tests?|reviews?|critiques?)(\/|$)/i;
+const RE_TEST = /\bnotre (test|avis|critique)\b|(?<!exemplaires de )(?<!copies de )\b(test|critique) (de|du) gta\b|gta ?(6|vi)\s*:\s*(le |notre )?(test|critique|avis)\b|(?<!board )(?<!early )\breview\b(?!\s*(copies|copy|copie|bomb|board|details?|embargo))/i;
+const RE_SOLUCE_URL = /\/(soluces?|guides?|walkthroughs?|wiki)(\/|$)/i;
+const RE_SOLUCE = /\bsoluce|\bwalkthrough\b|comment (trouver|obtenir|débloquer|terminer|battre)|\bhow to (find|unlock|beat|complete)\b|\btous les emplacements\b|\ball (collectibles?|locations?)\b|guides? hub/i;
+const RE_ASTUCE_URL = /\/astuces?(\/|$)/i;
+const RE_ASTUCE = /\bastuces?\b|\bcodes? de triche|\bcheat ?codes?\b|\btips (and|&) tricks\b|\bmeilleurs? (build|réglages|loadout)/i;
+const RE_MAJ = /\bpatch\b|\bcorrectif\b|\bhotfix\b|mise à jour \d|\bupdate \d|\bpatch notes?\b|notes? de (mise à jour|patch)/i;
+const RE_BUG = /\bbugs?\b|\bglitch|\bplantage|\bfreeze\b|\bcrashe? (au|le jeu|à)\b|\bne se lance pas\b/i;
+const RE_MOD = /\bmods?\b(?! ?(ern|el))|\bmoddeurs?\b|\bmodders?\b|\bmodding\b/i;
+const RE_ONLINE = /\bgta ?online\b|\bmultijoueur\b|\bmultiplayer\b|\bmode en ligne\b|\bco-?op\b|\bserveurs?\b/i;
+const RE_PERF = /\bfps\b|\bimages? par seconde\b|\b(1080|1440|2160)p\b|\b4k\b|\bray[- ]tracing\b|\bperformances?\b|\bframe ?rate\b/i;
+const RE_TROPHEE = /\btroph[ée]es?\b|\bachievements?\b|\bplatine\b/i;
+const RE_VENTES = /\bventes\b|\bsales\b|\bmillions? d'exemplaires\b|\bunits sold\b|\bbest-?sell/i;
+const RE_GAMEPLAY = /\bgameplay\b|\bhands[- ]on\b|\bextrait de jeu\b/i;
+const RE_SPEEDRUN = /\bspeed ?runs?\b|\bspeed ?runners?\b/i;
+
+function lienDe(item){ return String((item && item.link) || ""); }
+function estTest(item){
+  return RE_TEST_URL.test(lienDe(item)) || RE_TEST.test(corpsDuTitre(item));
+}
+function estSoluce(item){
+  return RE_SOLUCE_URL.test(lienDe(item)) || RE_SOLUCE.test(corpsDuTitre(item));
+}
+function estAstuce(item){
+  return RE_ASTUCE_URL.test(lienDe(item)) || RE_ASTUCE.test(corpsDuTitre(item));
+}
+function estMaj(item){ return RE_MAJ.test(corpsDuTitre(item)); }
+function estBug(item){ return RE_BUG.test(corpsDuTitre(item)); }
+function estMod(item){ return RE_MOD.test(corpsDuTitre(item)); }
+function estOnline(item){ return RE_ONLINE.test(corpsDuTitre(item)); }
+function estPerf(item){ return RE_PERF.test(corpsDuTitre(item)); }
+function estTrophee(item){ return RE_TROPHEE.test(corpsDuTitre(item)); }
+function estVentes(item){ return RE_VENTES.test(corpsDuTitre(item)); }
+function estGameplay(item){ return RE_GAMEPLAY.test(corpsDuTitre(item)); }
+function estSpeedrun(item){ return RE_SPEEDRUN.test(corpsDuTitre(item)); }
+
+function estFuite(item){ return RE_FUITE.test(corpsDuTitre(item)); }
+function estVideo(item){ return RE_VIDEO.test(corpsDuTitre(item)); }
+function estPC(item){ return RE_PC.test(corpsDuTitre(item)); }
+function estPreco(item){ return RE_PRECO.test(corpsDuTitre(item)); }
+function estPrix(item){ return RE_PRIX.test(corpsDuTitre(item)); }
+function estPerso(item){ return RE_PERSO.test(corpsDuTitre(item)); }
+function estTake2(item){ return RE_TAKE2.test(corpsDuTitre(item)); }
+function estRumeur(item){ return RE_RUMEUR.test(corpsDuTitre(item)); }
+function estDate(item){ return RE_DATE.test(corpsDuTitre(item)); }
 // `&& !official` et pas `specialist` tout court : le badge ne s'affiche
 // QUE sur une carte non officielle — un article de Rockstar porte déjà
 // « OFFICIEL », et empiler les deux n'apprend rien. Le juge doit dire
@@ -5081,18 +5203,60 @@ const JUGES_BADGE = {
   leak: estFuite, video: estVideo, specialist: estSpecialiste,
   pc: estPC, preco: estPreco, prix: estPrix, perso: estPerso,
   take2: estTake2, rumeur: estRumeur, date: estDate,
+  test: estTest, soluce: estSoluce, astuce: estAstuce, maj: estMaj,
+  bug: estBug, mod: estMod, online: estOnline, perf: estPerf,
+  trophee: estTrophee, ventes: estVentes, gameplay: estGameplay,
+  speedrun: estSpeedrun,
 };
 const NOMS_BADGE = {
   leak: "LEAK", video: "VIDÉO", specialist: "SPÉCIALISTE GTA 6",
   pc: "PC", preco: "PRÉCOMMANDE", prix: "PRIX", perso: "LUCIA / JASON",
   take2: "TAKE-TWO", rumeur: "RUMEUR", date: "DATE DE SORTIE",
+  test: "TEST", soluce: "SOLUCE", astuce: "ASTUCE", maj: "MISE À JOUR",
+  bug: "BUG", mod: "MOD", online: "ONLINE", perf: "PERFORMANCES",
+  trophee: "TROPHÉES", ventes: "VENTES", gameplay: "GAMEPLAY",
+  speedrun: "SPEEDRUN",
 };
+
+// DEUX FAMILLES, ET ELLES NE SE RESSEMBLENT PAS. Choix d'Antoni le
+// 20/10/2026, posé avant d'écrire la moindre ligne : à vingt et un
+// badges, une carte peut en porter cinq (mesuré : une seule sur 4 225 en
+// porte autant, et 67 % n'en portent aucun). Les badges d'ALERTE gardent
+// leur aplat vif — il s'est passé quelque chose. Les badges de
+// CATÉGORIE sont au trait, discrets : ils disent de quoi l'article
+// parle, ce qui est une information de second rang.
+const BADGES_CATEGORIE = new Set([
+  "test", "soluce", "astuce", "maj", "bug", "mod", "online", "perf",
+  "trophee", "ventes", "gameplay", "speedrun",
+]);
 
 // L'ORDRE D'AFFICHAGE, et il n'est pas alphabétique. Les deux premiers
 // disent qu'il s'est passé quelque chose ; les suivants disent de quoi
 // l'article parle. Un badge SUJET ne doit jamais précéder une alerte.
+// Les alertes d'abord, les sujets ensuite, les catégories en dernier :
+// un badge qui dit de quoi l'article parle ne doit jamais précéder un
+// badge qui dit qu'il s'est passé quelque chose.
 const ORDRE_BADGES = ["leak", "video", "date", "pc", "preco", "prix",
-                      "perso", "take2", "rumeur"];
+                      "perso", "take2", "rumeur",
+                      "test", "soluce", "astuce", "maj", "bug", "mod",
+                      "online", "perf", "gameplay", "trophee", "ventes",
+                      "speedrun"];
+
+// UNE SEULE FABRIQUE, et c'est une correction. Les deux vues — la carte
+// et la chronologie — portaient la même boucle recopiée mot pour mot.
+// Le commentaire d'octobre avertissait déjà qu'à neuf badges la
+// duplication garantissait un oubli ; à vingt et un, avec en plus une
+// classe de famille à poser, elle le garantissait deux fois.
+function boutonsBadges(item){
+  return ORDRE_BADGES
+    .filter(cle => cle !== "specialist" && JUGES_BADGE[cle](item))
+    .map(cle => `<button type="button" class="tag-badge tag-${cle}`
+       + `${BADGES_CATEGORIE.has(cle) ? " tag-cat" : ""}" `
+       + `onclick="filtreBadge(event,'${cle}')" `
+       + `title="Ne montrer que : ${escapeAttr(NOMS_BADGE[cle].toLowerCase())}">`
+       + `${escapeHtml(NOMS_BADGE[cle])}</button>`)
+    .join("");
+}
 
 // Pas mémorisé entre deux sessions, à dessein : c'est un coup d'œil, pas
 // un réglage. Retrouver le fil filtré sur « fuite » trois jours plus tard
@@ -5347,12 +5511,7 @@ function renderChronologie(items){
     const badges =
       (estMajeur(item)
         ? `<span class="tag-badge tag-hot">🔥 ACTU MAJEURE · ${nombreDeRedactions(item)} SOURCES</span>` : "")
-      + ORDRE_BADGES
-          .filter(cle => cle !== "specialist" && JUGES_BADGE[cle](item))
-          .map(cle => `<button type="button" class="tag-badge tag-${cle}" `
-             + `onclick="filtreBadge(event,'${cle}')" `
-             + `title="Ne montrer que : ${escapeAttr(NOMS_BADGE[cle].toLowerCase())}">`
-             + `${escapeHtml(NOMS_BADGE[cle])}</button>`).join("");
+      + boutonsBadges(item);
 
     return sep + `
       <li class="chrono-point${lu ? " lu" : ""}" id="card-${safeId}">
@@ -5632,13 +5791,7 @@ function renderCard(item, newLinks, searchQuery){
   // duplication passait encore ; à neuf elle garantissait qu'un ajout
   // oublierait un endroit — c'est exactement ce qui est arrivé à VIDÉO,
   // dont la carte et le filtre ont divergé.
-  const badgesContenu = ORDRE_BADGES
-    .filter(cle => cle !== "specialist" && JUGES_BADGE[cle](item))
-    .map(cle => `<button type="button" class="tag-badge tag-${cle}" `
-       + `onclick="filtreBadge(event,'${cle}')" `
-       + `title="Ne montrer que : ${escapeAttr(NOMS_BADGE[cle].toLowerCase())}">`
-       + `${escapeHtml(NOMS_BADGE[cle])}</button>`)
-    .join("");
+  const badgesContenu = boutonsBadges(item);
   const langBadge = item.lang === "fr" ? `<span class="tag-badge tag-lang">FR</span>` : "";
 
   // Nombre de rédactions qui couvrent la même actualité. Le backend ne

@@ -1113,6 +1113,37 @@ réserves au pire cas, ça donne 5,12 Mo, au-delà du quota. 4 000 tient à
 constantes et refuse qu'elles franchissent 5 Mo. Éprouvé en le cassant
 des deux côtés.
 
+### Douze catégories d'article pour l'après-sortie — 20/10/2026
+
+Demandées par Antoni : « test, astuces, tuto, gameplay... ». Livrées en
+badges, pas en onglets — les deux rangées sont pleines depuis le 16/10.
+TEST, SOLUCE, ASTUCE, MISE À JOUR, BUG, MOD, ONLINE, PERFORMANCES,
+TROPHÉES, VENTES, GAMEPLAY, SPEEDRUN.
+
+**La limite est dite** : le fil est pré-sortie, donc les motifs n'ont pu
+être éprouvés que sur leurs faux positifs d'aujourd'hui. J'avais proposé
+d'en livrer trois maintenant et de mesurer les autres le 22 novembre sur
+le corpus réel ; Antoni a tranché « tout maintenant, quitte à corriger ».
+**À remesurer vers le 22/11** — c'est la seule chose que ce lot laisse
+ouverte.
+
+Trois choses trouvées en chemin, toutes mesurées :
+
+- **le nom du média polluait les badges d'octobre** : 3 406 titres sur
+  4 225 finissent par « - Nom du média », et le badge PC se posait sur
+  21 articles à cause de *PC Gamer* et *PC Astuces*. Tous les juges
+  lisent désormais le corps du titre ;
+- **GAMEPLAY était un doublon total de VIDÉO** (97 sur 97). Je l'avais
+  dit avant ; il a été demandé quand même. `\bgameplay\b` est donc sorti
+  de VIDÉO, qui y gagne : 342 → 271, les 71 écartés relus, aucune vraie
+  vidéo perdue ;
+- **la boucle de rendu des badges existait en deux exemplaires**, carte
+  et chronologie. Une seule fabrique désormais.
+
+Deux familles visuelles, choix d'Antoni : alerte en aplat, catégorie au
+trait. Densité mesurée avec les vingt et un badges : 67 % des cartes n'en
+portent aucun, une seule en porte cinq.
+
 ### La répétition post-sortie, et ses trois défauts — 20/10/2026
 
 Le panneau du compteur rendu à quatre instants simulés autour du
