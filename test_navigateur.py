@@ -3594,6 +3594,8 @@ def test_panneau_du_compteur(nav, url):
         const t = document.getElementById('compteurContenu').textContent;
         const r = {dodos: /dodo/.test(t),
                    titre: document.getElementById('titreCompteur').textContent,
+                   note: document.querySelector('.compteur-note').textContent,
+                   etiquetteBarre: document.querySelector('.compteur-barre i').textContent,
                    // Dans une tuile, textContent colle le nombre à son
                    // unité : « 3jours », sans espace.
                    jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1],
@@ -3615,7 +3617,117 @@ def test_panneau_du_compteur(nav, url):
     plein = float((apres["plein"] or "0").rstrip("%"))
     check(plein == 100.0,
           "[compteur] la barre est pleine et ne déborde pas (%s)" % apres["plein"])
+    # LE VERBE SUIT LA DATE. Sous un titre « Depuis la sortie », la note
+    # annonçait encore « Sortie le jeudi 19 novembre » — au futur, une
+    # semaine après. Repéré à la répétition générale du 20/10/2026.
+    check("Sorti le" in apres["note"] and "Sortie le" not in apres["note"],
+          "[compteur] et la note parle au PASSÉ (« %s »)"
+          % apres["note"].strip()[-60:])
+    # La barre ne mesure plus rien : annonce -> sortie est fini. Un
+    # « 100,0 % » figé sous un compteur qui bouge se lit comme une panne.
+    check(apres["etiquetteBarre"].strip() == "Sorti",
+          "[compteur] la barre pleine dit « Sorti », pas « 100,0 %% » "
+          "(« %s »)" % apres["etiquetteBarre"])
     ctx.close()
+
+    # LA DERNIÈRE HEURE — ET LA PREMIÈRE. Le découpage laisse la place à
+    # un seul nombre de secondes.
+    #
+    # C'est la rançon des six tuiles toujours affichées : à T-30 min, le
+    # panneau annonçait « 0 mois 0 sem 0 j 0 h 30 min 14 s ». Les deux
+    # instants encadrent minuit, parce que le défaut est le même en
+    # miroir après la sortie et que le seuil est un écart, pas une date.
+    #
+    # Paris est à UTC+1 le 19 novembre : la sortie tombe le 18 à 23:00 UTC.
+    for utc, libelle, palier_attendu in (
+            ("2026-11-18T22:30:00Z", "T-30 min", "final"),
+            ("2026-11-18T23:30:00Z", "T+30 min", ""),
+    ):
+        ctx = nav.new_context(viewport={"width": 320, "height": 850},
+                              timezone_id="Europe/Paris")
+        ctx.clock.install(time=utc)
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        g = page.evaluate("""() => {
+            ouvreCompteur();
+            const c = document.getElementById('compteurContenu');
+            const d = c.querySelector('.compteur-tuiles');
+            const n = d.querySelector('b');
+            const boite = c.getBoundingClientRect();
+            let sort = null;
+            // SUR LA TUILE, pas sur la grille : la grille est un bloc,
+            // elle ne déborde jamais ; c'est son contenu qui sort. Cette
+            // géométrie m'a déjà pris cinq fois.
+            for(const t of c.querySelectorAll('.compteur-tuiles > div')){
+              const q = t.getBoundingClientRect();
+              if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5)
+                sort = t.textContent + ' (bord droit ' + Math.round(q.right)
+                       + ' px pour ' + Math.round(boite.right) + ')';
+            }
+            const r = {
+              classe: d.className,
+              grilles: c.querySelectorAll('.compteur-tuiles').length,
+              tuiles: d.children.length,
+              unite: d.querySelector('span').textContent,
+              // Le nombre lui-même, l'espace des milliers ôté.
+              valeur: parseInt(n.textContent.replace(/\D/g, ''), 10),
+              corps: parseFloat(getComputedStyle(n).fontSize),
+              hauteur: n.getBoundingClientRect().height,
+              couleur: getComputedStyle(n).color,
+              // La teinte ATTENDUE, résolue depuis le jeton plutôt
+              // qu'écrite en dur : sinon la couleur vit à deux endroits.
+              attendue: (() => {
+                const pal = ['soon','urgent','final']
+                              .find(x => d.classList.contains(x));
+                if(!pal) return null;
+                const sonde = document.createElement('span');
+                sonde.style.color = 'var(--compte-' + pal + ')';
+                document.body.appendChild(sonde);
+                const v = getComputedStyle(sonde).color;
+                sonde.remove();
+                return v;
+              })(),
+              sort: sort,
+              zeros: c.querySelectorAll('.compteur-tuiles .zero').length,
+            };
+            fermeCompteur();
+            return r;
+        }""")
+        check("geant" in g["classe"],
+              "[compteur %s] sous une heure, le découpage cède la place au "
+              "total en secondes (« %s »)" % (libelle, g["classe"]))
+        check(g["tuiles"] == 1 and g["unite"] == "secondes",
+              "[compteur %s] une seule tuile, en secondes (%s × « %s »)"
+              % (libelle, g["tuiles"], g["unite"]))
+        check(g["grilles"] == 1,
+              "[compteur %s] et les équivalences s'effacent avec lui — "
+              "elles répéteraient le même nombre en petit (%s grille(s))"
+              % (libelle, g["grilles"]))
+        check(g["zeros"] == 0,
+              "[compteur %s] plus un seul zéro gris : c'est tout l'objet "
+              "du changement (%s)" % (libelle, g["zeros"]))
+        check(0 < g["valeur"] <= 3600,
+              "[compteur %s] le nombre est bien un décompte de secondes "
+              "sous l'heure (%s)" % (libelle, g["valeur"]))
+        check(g["corps"] >= 40,
+              "[compteur %s] et il est EN GRAND (%.0f px)"
+              % (libelle, g["corps"]))
+        check(g["hauteur"] < g["corps"] * 1.6,
+              "[compteur %s] sur une seule ligne (%.0f px de haut pour "
+              "%.0f px de corps)" % (libelle, g["hauteur"], g["corps"]))
+        check(g["sort"] is None,
+              "[compteur %s] et il ne sort pas du panneau à 320 px, où la "
+              "colonne est bornée à 52 px pour six tuiles (%s)"
+              % (libelle, g["sort"]))
+        pal = [m for m in ("soon", "urgent", "final") if m in g["classe"]]
+        check(pal == ([palier_attendu] if palier_attendu else []),
+              "[compteur %s] le palier est celui attendu (%s)" % (libelle, pal))
+        check(g["attendue"] is None or g["couleur"] == g["attendue"],
+              "[compteur %s] et le gros chiffre garde la teinte du palier "
+              "(rendue %s, attendue %s)"
+              % (libelle, g["couleur"], g["attendue"]))
+        ctx.close()
 
 
 # Le seuil WCAG AA pour du texte ordinaire. Le « grand texte » (au moins

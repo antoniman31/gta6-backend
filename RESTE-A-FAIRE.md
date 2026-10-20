@@ -1113,6 +1113,26 @@ réserves au pire cas, ça donne 5,12 Mo, au-delà du quota. 4 000 tient à
 constantes et refuse qu'elles franchissent 5 Mo. Éprouvé en le cassant
 des deux côtés.
 
+### La répétition post-sortie, et ses trois défauts — 20/10/2026
+
+Le panneau du compteur rendu à quatre instants simulés autour du
+19 novembre. Rien ne casse. Trois défauts d'affichage, visibles seulement
+ce soir-là ; Antoni a tranché sur chacun le jour même.
+
+| ce qui n'allait pas | tranché |
+|---|---|
+| « **Sortie** le 19 novembre » sous un titre « Depuis la sortie » | passé au passé : « Sorti le » |
+| la barre figée à **100,0 %** pour toujours | pleine, mais le chiffre devient le mot « Sorti » |
+| `0 mois 0 sem 0 j 0 h 30 min 14 s` la nuit de la sortie | sous une heure, un seul nombre de secondes à 44 px |
+
+Le troisième est la rançon des six tuiles toujours affichées, choisies le
+16/10. Le seuil est un **écart**, pas une date : la même disposition vaut
+dans l'heure qui suit minuit, où le défaut est le même en miroir. Les
+équivalences s'effacent avec le découpage — elles répéteraient en petit
+le nombre déjà en grand.
+
+22 contrôles de navigateur de plus (625).
+
 ### Le plafond des liens lus passe à 20 000 — 20/10/2026
 
 Antoni a exporté sa sauvegarde : **7 548 liens lus sur un plafond de

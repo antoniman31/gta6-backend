@@ -8808,6 +8808,56 @@ cache ramené à 1 000 articles rend 5,51 Mo.
 > en donne 1 145. Corrigé avant d'être livré, mais c'est la deuxième
 > fois de la journée.
 
+### Ce que la répétition post-sortie a trouvé — 20/10/2026
+
+Le panneau du compteur a été rendu à quatre instants simulés avec
+`page.clock` — la veille à 23 h 30, une demi-heure après minuit, le
+lendemain soir, une semaine après — sans rien toucher. Aucune erreur
+JavaScript, le titre bascule, le décompte repart à l'endroit, les dodos
+disparaissent. **Trois défauts d'affichage**, aucun bloquant, tous les
+trois visibles uniquement ce soir-là. Antoni a tranché sur chacun.
+
+#### La note parlait au futur sous un titre au passé
+
+« Depuis la sortie » en titre, et dessous « **Sortie** le jeudi
+19 novembre 2026 à 00:00 ». Un mot, et rien d'autre : la note dit
+maintenant « Sorti le » une fois la date franchie.
+
+#### La barre restait à 100,0 % pour toujours
+
+Elle mesure l'annonce (4 février 2022) → la sortie. Après le 19 novembre
+elle ne mesure plus rien, et un pourcentage figé sous un compteur qui
+bouge chaque seconde se lit comme une panne. Elle reste pleine — c'est
+vrai, l'attente est finie — mais son chiffre devient le mot **« Sorti »**.
+Les deux exemplaires superposés qui règlent le contraste sur le
+remplissage sont inchangés.
+
+#### Et cinq zéros gris la nuit de la sortie
+
+C'était la rançon des six tuiles toujours affichées, choisies le 16/10
+pour que la ligne ne se redispose plus : à T-30 min le panneau annonçait
+`0 mois 0 sem 0 j 0 h 30 min 14 s`. **Sous une heure**, le découpage cède
+la place au total en secondes, seul, à 44 px — il garde la teinte du
+palier, donc rouge la dernière demi-heure. Les équivalences s'effacent
+avec lui : elles diraient « 0 jours · 0 heures » et répéteraient en petit
+le nombre déjà en grand au-dessus.
+
+Le seuil est un **écart**, pas une date, donc la même chose vaut dans
+l'heure qui suit minuit — le défaut y est le même en miroir, cinq zéros
+pendant que les secondes montent. `grid-auto-columns` est remis à `auto`
+pour cette disposition : la colonne est bornée à 52 px pour que six
+tuiles tiennent sur 320 px, et un seul nombre à 44 px y serait rogné.
+
+#### Les contrôles
+
+Deux instants encadrant minuit (T-30 min, T+30 min) : une seule grille,
+une seule tuile, zéro tuile grisée, le nombre entre 1 et 3 600, le corps
+à 44 px, une seule ligne, rien qui sorte du panneau à 320 px, et la
+teinte comparée au jeton **résolu** plutôt qu'à une couleur écrite en
+dur. Le débordement se mesure sur les tuiles, pas sur la grille — qui est
+un bloc et ne déborde jamais. Plus deux contrôles à J+3 sur le temps du
+verbe et sur le mot dans la barre. 625 contrôles de navigateur.
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
