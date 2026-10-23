@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T05:02:22.894508+00:00",
+  "generated_at": "2026-10-23T05:16:03.837480+00:00",
   "attente_recap": {
     "articles": 0,
     "officiels": 0,
@@ -7,10 +7,10 @@
     "apercus": []
   },
   "couverture_depuis": "2026-09-08",
-  "duration_seconds": 72.2,
+  "duration_seconds": 81.8,
   "decode_failures": 0,
   "total_articles": 3330,
-  "new_this_run": 0,
+  "new_this_run": 1,
   "hot_count": 76,
   "hot_threshold": 3,
   "sources_count": 70,
@@ -453,7 +453,7 @@
     {
       "id": "rockstar-fr",
       "name": "Rockstar Games (officiel FR)",
-      "entries_fetched": 39,
+      "entries_fetched": 100,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -522,9 +522,9 @@
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
-      "new_this_run": 0,
-      "articles_exclusifs": 916,
-      "last_article": "2026-10-22T20:20:09+00:00",
+      "new_this_run": 1,
+      "articles_exclusifs": 917,
+      "last_article": "2026-10-23T05:05:00+00:00",
       "days_since_last_article": 0,
       "status": "ok"
     },
@@ -804,10 +804,10 @@
     {
       "id": "ginjfo",
       "name": "GinjFo",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 50,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 4,
       "last_article": "2026-10-22T14:33:29+00:00",
@@ -817,10 +817,10 @@
     {
       "id": "gameblog",
       "name": "Gameblog.fr",
-      "entries_fetched": 13,
-      "http_status": 200,
+      "entries_fetched": 0,
+      "http_status": null,
       "redirect": null,
-      "not_modified": false,
+      "not_modified": true,
       "new_this_run": 0,
       "articles_exclusifs": 5,
       "last_article": "2026-10-20T09:24:47+00:00",
@@ -1038,7 +1038,7 @@
     {
       "id": "theverge",
       "name": "The Verge",
-      "entries_fetched": 100,
+      "entries_fetched": 64,
       "http_status": 302,
       "redirect": "https://news.google.com/rss/search?q=site:theverge.com+(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)&hl=en-US&gl=US&ceid=US:en",
       "not_modified": false,
@@ -1142,10 +1142,10 @@
     {
       "id": "jdg-natif",
       "name": "Journal du Geek (tag)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 2,
       "last_article": "2026-10-20T13:00:26+00:00",
@@ -1233,10 +1233,10 @@
     {
       "id": "jdg-site",
       "name": "Journal du Geek (flux natif)",
-      "entries_fetched": 0,
-      "http_status": null,
+      "entries_fetched": 30,
+      "http_status": 200,
       "redirect": null,
-      "not_modified": true,
+      "not_modified": false,
       "new_this_run": 0,
       "articles_exclusifs": 0,
       "last_article": null,
@@ -1259,7 +1259,7 @@
     {
       "id": "gta6-tests-fr",
       "name": "Google News (tests FR)",
-      "entries_fetched": 79,
+      "entries_fetched": 34,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -1311,7 +1311,7 @@
     {
       "id": "gta6-patch-fr",
       "name": "Google News (mises à jour)",
-      "entries_fetched": 79,
+      "entries_fetched": 35,
       "http_status": 200,
       "redirect": null,
       "not_modified": false,
@@ -1373,11 +1373,11 @@
   "decodage_etat": {},
   "sources_entries_history": {
     "rockstar-en": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,100,39",
-    "rockstar-announce": "100,100,71,100,73,100,69,70,100,100,100,100",
+    "rockstar-fr": "100,100,100,100,100,100,100,100,100,100,39,100",
+    "rockstar-announce": "100,71,100,73,100,69,70,100,100,100,100,100",
     "gta6-netflix": "100,100,100,100,100,100,100,100,100,100,100,100",
     "take2-ir": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstar-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstar-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "gnews-fr": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-en": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gnews-fr-7j": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1389,7 +1389,7 @@
     "gamekult": "50,50,50,50,50,50,50,50,50,50,50,50",
     "ignfr": "40,40,40,40,40,40,40,40,40,40,40,40",
     "rockstarmag": "10,10,10,10,10,10,10,10,10,10,10,10",
-    "rockstarmag-youtube": "15,15,15,15,15,15,0,0,0,0,0,0",
+    "rockstarmag-youtube": "15,15,15,15,15,0,0,0,0,0,0,0",
     "rockstarintel": "10,10,10,10,10,10,10,10,10,10,10,10",
     "ign": "20,20,20,20,20,20,20,20,20,20,20,20",
     "gamespot": "30,30,30,30,30,30,30,30,30,30,30,30",
@@ -1412,17 +1412,17 @@
     "pcgamesn": "75,75,75,75,75,75,75,75,75,75,75,75",
     "vgc": "10,10,10,10,10,10,10,10,10,10,10,10",
     "xboxygen": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "purexbox": "75,100,100,100,100,100,100,100,100,100,100,100",
+    "purexbox": "100,100,100,100,100,100,100,100,100,100,100,100",
     "trueach": "100,100,100,100,100,100,100,100,100,100,100,100",
     "jdg": "100,100,100,100,100,100,100,100,100,100,100,100",
     "numerama": "100,100,100,100,100,100,100,100,100,100,100,100",
     "gamergen": "100,100,100,100,100,100,100,100,100,100,100,100",
     "frandroid": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "theverge": "100,100,100,66,100,100,65,100,100,65,100,100",
+    "theverge": "100,100,66,100,100,65,100,100,65,100,100,64",
     "engadget": "100,100,100,100,100,100,100,100,100,100,100,100",
     "pushsquare": "100,100,100,100,100,100,100,100,100,100,100,100",
     "schreier": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "rockstaractu": "20,0,20,20,20,20,20,20,20,20,20,20",
+    "rockstaractu": "0,20,20,20,20,20,20,20,20,20,20,20",
     "dexerto-fr": "50,50,50,50,50,50,50,50,50,50,50,50",
     "tweaktown": "15,15,15,15,15,15,15,15,15,15,15,15",
     "gamesindustry": "100,100,100,100,100,100,100,100,100,100,100,100",
@@ -1431,16 +1431,16 @@
     "reddit-leaks": "25,25,25,25,25,25,25,25,25,25,25,25",
     "destructoid": "30,30,30,30,30,30,30,30,30,30,30,30",
     "dexerto": "100,100,100,100,100,100,100,100,100,100,100,100",
-    "mgg": "100,71,100,100,100,100,71,100,100,100,100,100",
+    "mgg": "71,100,100,100,100,71,100,100,100,100,100,100",
     "xboxygen-natif": "50,50,50,50,50,50,50,50,50,50,50,50",
     "jdg-site": "30,30,30,30,30,30,30,30,30,30,30,30",
-    "reddit-gta6-suivi": "25,25,25,25,25,0,25,0,25,25,25,25",
-    "gta6-tests-fr": "79,79,79,34,79,34,79,34,79,79,79,79",
-    "gta6-tests-en": "100,100,46,100,100,100,100,46,100,100,100,100",
-    "gta6-guides-fr": "100,100,100,100,53,100,100,100,100,100,100,100",
-    "gta6-guides-en": "100,100,100,56,100,100,100,100,100,100,100,100",
-    "gta6-patch-fr": "79,79,79,79,79,79,79,79,78,78,78,79",
-    "rockstar-support": "100,59,100,100,100,100,100,100,57,100,100,100",
+    "reddit-gta6-suivi": "25,25,25,25,0,25,0,25,25,25,25,25",
+    "gta6-tests-fr": "79,79,34,79,34,79,34,79,79,79,79,34",
+    "gta6-tests-en": "100,46,100,100,100,100,46,100,100,100,100,100",
+    "gta6-guides-fr": "100,100,100,53,100,100,100,100,100,100,100,100",
+    "gta6-guides-en": "100,100,56,100,100,100,100,100,100,100,100,100",
+    "gta6-patch-fr": "79,79,79,79,79,79,79,78,78,78,79,35",
+    "rockstar-support": "59,100,100,100,100,100,100,57,100,100,100,100",
     "gta6-online-en": "100,100,100,100,100,100,100,100,100,100,100,100"
   },
   "sources_declining": {},
@@ -1493,12 +1493,12 @@
     "gtaboom": {
       "url": "https://www.gtaboom.com/feed.xml",
       "etag": null,
-      "modified": "Fri, 23 Oct 2026 05:01:15 GMT"
+      "modified": "Fri, 23 Oct 2026 05:14:46 GMT"
     },
     "ginjfo": {
       "url": "https://www.ginjfo.com/feed",
       "etag": null,
-      "modified": "Thu, 22 Oct 2026 22:01:23 GMT"
+      "modified": "Fri, 23 Oct 2026 05:10:36 GMT"
     },
     "gameblog": {
       "url": "https://www.gameblog.fr/rssmap/rss_all.xml",
@@ -1533,7 +1533,7 @@
     "tweaktown": {
       "url": "https://www.tweaktown.com/feeds/news-mf.xml",
       "etag": null,
-      "modified": "Fri, 23 Oct 2026 05:01:16 GMT"
+      "modified": "Fri, 23 Oct 2026 05:14:01 GMT"
     },
     "gamesindustry": {
       "url": "https://www.gamesindustry.biz/feed",
@@ -1542,8 +1542,8 @@
     },
     "jdg-natif": {
       "url": "https://www.journaldugeek.com/tag/gta-6/feed/",
-      "etag": "W/\"2e63d93d5244370924cacd46a7ef6964\"",
-      "modified": "Fri, 23 Oct 2026 01:00:01 GMT"
+      "etag": "W/\"e19d63619d6c22ed38dcfa2906402a78\"",
+      "modified": "Fri, 23 Oct 2026 05:02:34 GMT"
     },
     "frandroid-natif": {
       "url": "https://www.frandroid.com/tag/gta-6/feed",
@@ -1562,8 +1562,8 @@
     },
     "jdg-site": {
       "url": "https://www.journaldugeek.com/feed/",
-      "etag": "W/\"2e63d93d5244370924cacd46a7ef6964\"",
-      "modified": "Fri, 23 Oct 2026 01:00:01 GMT"
+      "etag": "W/\"e19d63619d6c22ed38dcfa2906402a78\"",
+      "modified": "Fri, 23 Oct 2026 05:02:34 GMT"
     }
   },
   "sources_incidents": [
@@ -2360,6 +2360,19 @@
   },
   "vapid_public_key": "BP8t6NVNih5YjctODw7I1lVY9ioUZc-Ar7EOZHG2ntgReO9jncYRCEi9GaPIU-rTX8IL3CbsktEy5fBzFBLNdEw",
   "items": [
+    {
+      "title": "GTA 6 : les bières Pißwasser et Patriot ont leurs étiquettes validées aux États-Unis - GeeksLands",
+      "link": "https://geekslands.fr/gta-6-bieres-pisswasser-patriot/",
+      "source_link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE4xQTVSdFFqQnI5Y1dLZjkzLTVrNHFWay1Qa3lra0VMQmRTZjVjZ1VDVjVvOC1ORUZLZkRJSnVpb1NLSnBYcVdEOEdWZ0g4R2NLcXNjTTR2YzhLSWVjYlBkUk5BMDI?oc=5",
+      "date": "2026-10-23T05:05:00+00:00",
+      "source": "Google News (FR)",
+      "official": false,
+      "rockstarmag": false,
+      "specialist": false,
+      "lang": "fr",
+      "image": "https://geekslands.fr/api/og-image/api/uploads/featured/gta-rockstar-games-tourmente-948c.jpg",
+      "description": ""
+    },
     {
       "title": "“Two and a half times bigger than GTA 6”: the secrets of Assetto Corsa’s free roam mode - Top Gear",
       "link": "https://www.topgear.com/car-news/gaming/two-and-a-half-times-bigger-gta-6-secrets-assetto-corsas-free-roam-mode",
@@ -13134,7 +13147,6 @@
     {
       "title": "Le lancement de GTA 6 : un risque inédit de ralentissement de la productivité mondiale ? - JeuxVideo.com",
       "link": "https://www.jeuxvideo.com/news/2108276/le-lancement-de-gta-6-un-risque-inedit-de-ralentissement-de-la-productivite-mondiale.htm",
-      "source_link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQc0U4WnI3aS1xRk9KckhvUGo2NWlZT3lkU0FObU02RS1KaHVXQkdSaldGbXZPSHNzRTVHby00eW5SeEdwTUFva3JEeGZ0MGM3NWlnYnhGSmNJaVNzUHZtd3ZRcE5uR0lpU2NuVl9TUVU5TmVLMnVOcnI1WHMyRE9obTE4THd4WjdQS1B2cTVydUg4SHlvRUk2WkEzQmNmNFRyOUVoZ1NIRnd1YzdlWG9RUVV3M2NpdGt4eTJMc3hjVkozN3RUN1E?oc=5",
       "date": "2026-10-16T05:05:10+00:00",
       "source": "Google News (FR)",
       "official": false,
@@ -43216,24 +43228,6 @@
       "lang": "en",
       "image": null,
       "description": ""
-    },
-    {
-      "title": "Could GTA VI bring back casinos? - The Daily Gazette",
-      "link": "https://www.dailygazette.com/the_recorder/life_and_arts/entertainment/could-gta-vi-bring-back-casinos/article_a2b19f4c-94c6-5fcc-8944-e792f5e91683.html",
-      "date": "2026-10-01T15:00:04+00:00",
-      "source": "Google News (EN)",
-      "official": false,
-      "rockstarmag": false,
-      "specialist": false,
-      "lang": "en",
-      "image": "https://bloximages.chicago2.vip.townnews.com/dailygazette.com/content/tncms/assets/v3/editorial/0/7d/07d4b28b-6e76-57e7-9581-84a2dcfc5ef0/6abe7c92c5633.image.jpg?crop=1080%2C567%2C0%2C76",
-      "description": "",
-      "extraSources": [
-        {
-          "source": "Google News (EN, 7 jours)",
-          "link": "https://www.dailygazette.com/life_and_arts/entertainment/could-gta-vi-bring-back-casinos/article_a2b19f4c-94c6-5fcc-8944-e792f5e91683.html"
-        }
-      ]
     },
     {
       "title": "Mods | Rockstar durcit les règles pour les mods",
