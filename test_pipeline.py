@@ -6870,6 +6870,15 @@ def test_les_workflows_epinglent_leurs_dependances():
     check("playwright install" in controles,
           "et le navigateur qu'ils pilotent est installé avant")
 
+    # Le job doit tenir DEUX FOIS l'installation la plus lente mesurée
+    # (8 min 27 s, le 27/10/2026) : à 10 minutes, deux jobs sur trois ce
+    # jour-là ont été annulés avant d'avoir lancé un seul test.
+    import re as _re
+    delai = [int(m) for m in _re.findall(r"timeout-minutes:\s*(\d+)", controles)]
+    check(len(delai) == 1 and delai[0] >= 17,
+          "le job des contrôles tolère une installation de navigateur deux fois plus lente "
+          "que la pire mesurée (%s minute(s))" % delai)
+
 
 def test_envoi_push_reel_testable():
     print("\n[push] un vrai envoi est testable de bout en bout")
