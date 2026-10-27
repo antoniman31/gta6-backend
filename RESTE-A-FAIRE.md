@@ -1767,3 +1767,11 @@ nouvelle date avant qu'elle n'entre dans `docs/agenda.json`, et relire les
 trois existantes à mesure que la presse les confirme ou les dément (passer
 une entrée à `annonce` exige un lien officiel). Prochain lot déjà approuvé :
 « ne pas déranger » (2 h), voir `tasks/spec-silence.md`.
+
+### « Ne pas déranger » — où il en est (27/10/2026)
+
+Fait : fonction pure, `sw.js`, bouton, pastille, tests (voir le README).
+**Reste** : l'essai réel sur l'Android d'Antoni (Chrome) pendant un silence :
+notification visible, ni son ni vibration ; normale après l'échéance. Il
+passe par `test-push.yml` et **demande l'accord d'Antoni** avant l'envoi.
+Si `silent` ou `renotify` se comporte autrement qu'attendu, le dire ici.

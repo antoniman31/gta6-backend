@@ -3457,6 +3457,174 @@ def test_mode_sans_spoiler(nav, url):
     ctx.close()
 
 
+def test_ne_pas_deranger(nav, url):
+    """« Silence 2 h » : la fonction pure, le service worker, puis la page.
+
+    Trois étages, car chacun a déjà failli mentir : la fonction pure compose
+    les options, sw.js la lit APRÈS avoir lu le cache de préférences (et
+    l'activation ne doit pas l'effacer), et la page écrit ce cache.
+    """
+    print("\n[silence] ne pas déranger, 2 heures")
+    racine = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+    opts_src = open(os.path.join(racine, "notif-options.js"), encoding="utf-8").read()
+    sw_src = open(os.path.join(racine, "sw.js"), encoding="utf-8").read()
+
+    ctx = nav.new_context(viewport={"width": 320, "height": 800},
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.clock.install(time="2026-10-27T12:00:00Z")
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # --- 1. la fonction pure
+    r = page.evaluate("""(src) => {
+        const f = new Function("module", src + "; return {silenceActif, optionsNotification, SILENCE_DUREE_MS};");
+        const m = f(undefined);
+        const T = 1000000000000, H2 = m.SILENCE_DUREE_MS;
+        const routine = {title: "t", body: "b", tag: "x", url: "./i"};
+        const off = Object.assign({officiel: true}, routine);
+        const cles = (o) => Object.keys(o);
+        return {
+          h2: H2,
+          actif: m.silenceActif(T + 1000, T),
+          derniereSeconde: m.silenceActif(T + 1000, T + 999),
+          echeance: m.silenceActif(T + 1000, T + 1000),
+          absent: m.silenceActif(null, T),
+          corrompu: m.silenceActif(T + 10 * H2, T),
+          nan: m.silenceActif(NaN, T),
+          silRoutine: m.optionsNotification(routine, T + 1000, T),
+          silOff: m.optionsNotification(off, T + 1000, T),
+          normRoutine: m.optionsNotification(routine, null, T),
+          normOff: m.optionsNotification(off, T - 5, T),
+          expOff: m.optionsNotification(off, T - 1, T),
+        };
+    }""", opts_src)
+    check(r["h2"] == 7200000, "[silence] la durée est de deux heures")
+    check(r["actif"] and r["derniereSeconde"], "[silence] actif jusqu'à la dernière milliseconde")
+    check(not r["echeance"], "[silence] et inactif PILE à l'échéance")
+    check(not r["absent"] and not r["nan"], "[silence] réglage absent ou illisible : pas de silence")
+    check(not r["corrompu"], "[silence] une échéance à plus de deux heures est ignorée (corrompue)")
+    for cle in ("silRoutine", "silOff"):
+        o = r[cle]
+        check(o.get("silent") is True and "vibrate" not in o
+              and "requireInteraction" not in o and o.get("renotify") is False,
+              "[silence] %s : silent, sans vibration ni bannière persistante (%s)" % (cle, sorted(o)))
+        check(o.get("body") == "b" and o.get("tag") == "x" and o["data"]["url"] == "./i"
+              and o.get("icon") and o.get("badge"),
+              "[silence] %s : la notification reste visible, avec corps, tag, lien et badge" % cle)
+    check("silent" not in r["normRoutine"] and "vibrate" not in r["normRoutine"]
+          and r["normRoutine"]["renotify"] is True,
+          "[silence] hors silence, la routine est inchangée")
+    check(r["normOff"]["vibrate"] == [200, 100, 200] and r["normOff"]["requireInteraction"] is True
+          and "silent" not in r["normOff"] and "silent" not in r["expOff"],
+          "[silence] hors silence (ou expiré), l'officiel vibre et reste affiché")
+
+    # --- 2. le vrai sw.js, exécuté avec un faux environnement
+    sw = page.evaluate("""async ([swSrc, optsSrc]) => {
+        const T = Date.now();
+        async function lance(prefs){
+          const ecouteurs = {}, affichees = [], supprimes = [];
+          const noms = ["gta6watch-shell-v1", "gta6watch-prefs", "gta6watch-shell-v-courant"];
+          const faux = {
+            keys: async () => noms.slice(),
+            delete: async (n) => { supprimes.push(n); return true; },
+            open: async () => ({
+              match: async () => prefs === undefined ? undefined
+                : { json: async () => { if(prefs === "casse") throw new Error("x"); return prefs; } },
+              add: async () => {}, put: async () => {},
+            }),
+            match: async () => undefined,
+          };
+          const self = { addEventListener: (n, f) => { ecouteurs[n] = f; },
+            skipWaiting: () => {}, clients: { claim: async () => {}, matchAll: async () => [] },
+            registration: { showNotification: async (t, o) => { affichees.push(o); } } };
+          const importScripts = () => {};
+          new Function("self", "caches", "importScripts", "Date", "fetch", "clients",
+            optsSrc + "\\n" + swSrc.replace('importScripts("notif-options.js");', ""))(
+            self, faux, importScripts, Date, async () => ({}), self.clients);
+          return {ecouteurs, affichees, supprimes};
+        }
+        const out = {};
+        let e = await lance({jusqua: T + 600000});
+        let attente; await e.ecouteurs.activate({waitUntil: (p) => { attente = p; }}); await attente;
+        out.supprimes = e.supprimes;
+        const pousse = async (prefs, payload) => {
+          const x = await lance(prefs);
+          let p; x.ecouteurs.push({data: {json: () => payload, text: () => ""}, waitUntil: (q) => { p = q; }});
+          await p; return x.affichees;
+        };
+        out.silencieux = await pousse({jusqua: T + 600000}, {title: "t", body: "b", tag: "a", officiel: true});
+        out.expire = await pousse({jusqua: T - 1000}, {title: "t", body: "b", tag: "a", officiel: true});
+        out.sans = await pousse(undefined, {title: "t", body: "b", tag: "a"});
+        out.casse = await pousse("casse", {title: "t", body: "b", tag: "a"});
+        return out;
+    }""", [sw_src, opts_src])
+    check("gta6watch-prefs" not in sw["supprimes"],
+          "[silence] l'activation du service worker N'EFFACE PAS le cache des préférences (%s)" % sw["supprimes"])
+    check("gta6watch-shell-v1" in sw["supprimes"],
+          "[silence] mais elle supprime toujours les vieux caches du squelette")
+    check(len(sw["silencieux"]) == 1 and sw["silencieux"][0].get("silent") is True
+          and "vibrate" not in sw["silencieux"][0],
+          "[silence] pendant le silence, sw.js affiche une notification silencieuse, sans vibration")
+    check(len(sw["expire"]) == 1 and "silent" not in sw["expire"][0]
+          and sw["expire"][0].get("vibrate") == [200, 100, 200],
+          "[silence] le silence expiré, l'officiel vibre de nouveau")
+    check(len(sw["sans"]) == 1 and len(sw["casse"]) == 1,
+          "[silence] sans réglage, ou avec un réglage illisible, la notification s'affiche quand même")
+
+    # --- 3. la page
+    page.evaluate("() => { try{ document.querySelector('#pushGroup').style.display = 'block'; }catch(e){} }")
+    check(page.evaluate("() => SILENCE_MS") == r["h2"],
+          "[silence] la page et notif-options.js comptent la même durée")
+    check(page.evaluate("() => document.getElementById('silenceChip').hidden"),
+          "[silence] sans silence, la pastille est cachée")
+    page.evaluate("() => basculeSilence()")
+    page.wait_for_timeout(300)
+    etat = page.evaluate("""async () => {
+        const c = await caches.open("gta6watch-prefs");
+        const rep = await c.match("./prefs/silence");
+        const d = rep ? await rep.json() : null;
+        const puce = document.getElementById("silenceChip");
+        const r = puce.getBoundingClientRect();
+        return {jusqua: d && d.jusqua, now: Date.now(), texte: puce.textContent,
+                visible: !puce.hidden, bouton: document.getElementById("silenceBtn").textContent,
+                droite: r.right, largeur: document.documentElement.clientWidth,
+                haut: r.height, sw: document.documentElement.scrollWidth};
+    }""")
+    check(etat["jusqua"] is not None and abs(etat["jusqua"] - etat["now"] - 7200000) < 2000,
+          "[silence] l'appui écrit l'échéance à maintenant + 2 h dans le cache partagé")
+    check(etat["visible"] and "15:00" in etat["texte"],
+          "[silence] la pastille annonce l'heure de FIN à Paris (« %s »)" % etat["texte"])
+    check(etat["bouton"] == "Fin du silence", "[silence] le bouton devient « Fin du silence »")
+    check(etat["droite"] <= etat["largeur"] and etat["sw"] <= etat["largeur"],
+          "[silence] la pastille tient à 320 px (droite %.0f / %d)" % (etat["droite"], etat["largeur"]))
+    check(etat["haut"] >= CIBLE_MINIMALE, "[silence] et sa cible fait au moins %d px (%.0f)" % (CIBLE_MINIMALE, etat["haut"]))
+    # Rechargement : le réglage est relu.
+    page.reload(wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.wait_for_timeout(300)
+    check(not page.evaluate("() => document.getElementById('silenceChip').hidden"),
+          "[silence] le réglage survit à un rechargement")
+    page.click("#silenceChip")
+    page.wait_for_timeout(300)
+    reste = page.evaluate("""async () => {
+        const c = await caches.open("gta6watch-prefs");
+        return [!!(await c.match("./prefs/silence")), document.getElementById("silenceChip").hidden];
+    }""")
+    check(reste == [False, True], "[silence] un appui sur la pastille annule (%s)" % reste)
+    # L'échéance fait disparaître la pastille toute seule.
+    page.evaluate("() => basculeSilence()")
+    page.wait_for_timeout(200)
+    page.clock.fast_forward(2 * 3600 * 1000 + 1000)
+    page.wait_for_timeout(300)
+    check(page.evaluate("() => document.getElementById('silenceChip').hidden"),
+          "[silence] à l'échéance, la pastille disparaît sans intervention")
+    check(not erreurs, "[silence] aucune erreur JavaScript (%s)" % erreurs)
+    ctx.close()
+
+
 def test_agenda_jours_civils(nav, url):
     """Le « J-N » de l'agenda tient aux frontières de minuit, à Paris.
 
@@ -6001,6 +6169,7 @@ def main():
             test_compte_a_rebours(nav, url)
             test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
+            test_ne_pas_deranger(nav, url)
             test_agenda_jours_civils(nav, url)
             test_agenda_dans_le_panneau(nav, url)
             test_panneau_du_compteur(nav, url)

@@ -9339,3 +9339,36 @@ et 18/11 (levée de l'embargo des tests), toutes `presse` pour l'instant.
   ligne supprimé, opacité ajoutée et repeint oublié sont **détectés**.
 - **Règle** : aucune entrée n'est ajoutée sans validation d'Antoni
   (`CLAUDE.md`).
+
+### « Ne pas déranger », 2 heures — 27/10/2026
+
+Voulu par Antoni, **une seule durée** : un silence oublié la nuit de la
+sortie coûterait plus cher que le confort d'un choix.
+
+- **Où** : bouton « Silence 2 h » dans les réglages des notifications, et
+  pastille « 😴 silence jusqu'à HH:MM » (heure de Paris) sous le compteur de
+  l'en-tête ; un appui sur la pastille annule.
+- **Comment** : le service worker ne lisant pas `localStorage`, le réglage
+  est un cache à part, `gta6watch-prefs`, écrit par la page et lu par
+  `sw.js`. L'`activate` supprimait tous les caches sauf le sien : il
+  épargne maintenant celui-là, sans quoi chaque déploiement aurait effacé
+  le silence.
+- **Les options** vivent dans `docs/notif-options.js`
+  (`optionsNotification`, pure). En silence : `silent`, `renotify` coupé,
+  **ni `vibrate` ni `requireInteraction`** (`silent` avec `vibrate` lève une
+  `TypeError`). La notification reste **visible**, faute de quoi le
+  navigateur révoquerait l'abonnement. Une échéance à plus de deux heures
+  est jugée corrompue et ignorée.
+- **Tests** (`test_ne_pas_deranger`, 27 contrôles) : la fonction pure à la
+  milliseconde de l'échéance ; le vrai `sw.js` exécuté avec un faux
+  environnement (activation, push silencieux, expiré, sans réglage, réglage
+  illisible) ; la page (écriture, rechargement, annulation, échéance,
+  320 px, cible de 44 px). Éprouvé par cinq mutations, **cinq détectées** :
+  exemption retirée, `vibrate` ajouté, `<=` à l'échéance, garde de
+  corruption retirée, silence non lu par `sw.js`.
+- **Non vérifié** : `silent` n'a été lu que dans des extraits de recherche
+  (MDN injoignable d'ici), et l'effet de `renotify` combiné à `silent` est
+  inconnu. L'essai sur l'Android d'Antoni tranchera ; il faut son accord
+  avant d'envoyer un push de test.
+- Deux contrôles anciens lisaient le badge et la vibration dans `sw.js` ;
+  ils lisent maintenant `notif-options.js` aussi.
