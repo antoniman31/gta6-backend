@@ -46,7 +46,17 @@ concurrency:
 jobs:
   controles:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 20 minutes, et non 10. L'étape « Installer le navigateur de test » est
+    # tombée deux fois le 27/10/2026 sur un miroir apt qui ralentit (un seul
+    # paquet de police, 7 Mo, a mis plus de 2 minutes à arriver) :
+    #   - #204  : 1 min 40 s  (le cas ordinaire) ;
+    #   - #205  : 8 min 27 s, puis la suite n'a plus eu que 1 min 14 s avant
+    #             la coupure à 10 minutes — alors qu'elle dure ~1 min 30 ;
+    #   - #208  : 9 min 38 s sans finir l'installation, job annulé.
+    # Les deux jobs annulés ont réussi à la relance. Un cache du navigateur
+    # n'y change rien : le téléchargement de Chromium n'est pas ce qui
+    # ralentit, c'est `apt-get` (--with-deps), qu'on ne met pas en cache.
+    timeout-minutes: 20
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

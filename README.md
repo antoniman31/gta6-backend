@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1924
+qui permet de tester tout le pipeline sans sortir de la machine. **1925
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9441,3 +9441,20 @@ Mesuré le 27/10 sur le `feed.json` publié (3 210 articles), poids gzip selon
 la fenêtre : 7 j **530 Ko** (615 articles portent `source_link`), 3 j 450 Ko
 (204), 2 j 444 Ko (168), 1 j 429 Ko (91), aucune 410 Ko. Si le poids redevient
 un sujet, réduire la fenêtre est le levier, pas supprimer le champ.
+
+### La CI : un job de 10 minutes, trop juste — 27/10/2026
+
+Deux jobs de contrôles sur trois ont été **annulés** le 27/10 avant d'avoir
+lancé un test : #205 (installation du navigateur 8 min 27 s, puis 1 min 14 s
+pour une suite qui en demande ~1 min 30) et #208 (9 min 38 s sans finir
+l'installation). Les deux ont réussi à la relance. Pour #204 la même étape
+avait pris 1 min 40 s.
+
+**Ce n'était pas mon code**, et **ce n'est pas le téléchargement de
+Chromium** : le journal de #208 montre `apt-get` (`--with-deps`) bloqué sur
+le miroir Ubuntu, un paquet de police de 7 Mo mettant plus de 2 minutes à
+arriver. Antoni avait choisi un cache du navigateur ; je ne l'ai **pas**
+fait, parce qu'il n'aurait pas touché la cause (apt n'est pas mis en cache).
+`timeout-minutes` passe de 10 à **20**, et `test_pipeline.py` refuse un
+délai inférieur à deux fois la pire installation mesurée (17 minutes).
+Éprouvé : remis à 10, le contrôle échoue.
