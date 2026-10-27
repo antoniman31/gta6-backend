@@ -1778,6 +1778,44 @@ def test_stats_quatre_rubriques(nav, url):
     check(medias[5] == "numerama.com", "le domaine est rendu sans « www. »")
     check(medias[6] == "", "une URL illisible ne rend pas de domaine, elle rend vide")
 
+    # UNE URL EN GUISE DE NOM DE MÉDIA. Vu sur une capture le 24/10/2026 :
+    # « HTTPS://TECH-INSIDER.ORG/ » en tête de carte. 22 articles sur 2 970
+    # ont un titre qui finit par « - https://tech-insider.org/ » — l'éditeur
+    # a mis son adresse là où Google News attend un nom.
+    url = page.evaluate("""() => {
+        const a = {title: "GTA VI Survey: 10% Plan to Skip Work Launch Day [2026] - https://tech-insider.org/",
+                   source: "Google News (EN)"};
+        const b = {title: "Un sujet - https://ascendants.in/", source: "Google News (EN)"};
+        const c = {title: "Un sujet - IGN", source: "Google News (EN)"};
+        return {
+          nom: mediaDe(a), nomB: mediaDe(b),
+          // Le titre affiché ne doit PAS garder l'URL : mediaDe rend un
+          // domaine, et le titre se termine par l'URL entière.
+          titre: titreSansMedia(a), titreB: titreSansMedia(b),
+          // Et le cas ordinaire n'a pas bougé.
+          nomC: mediaDe(c), titreC: titreSansMedia(c),
+          corps: corpsDuTitre(a),
+          // L'URL ne doit pas non plus compter comme un mot du titre pour
+          // les badges : « tech-insider.org » ne parle pas de « insider ».
+          sansFaux: estPC({title: "Un titre neutre - https://pc-news.example/"}),
+        };
+    }""")
+    check(url["nom"] == "tech-insider.org" and url["nomB"] == "ascendants.in",
+          "une URL en guise de média rend son DOMAINE, plus l'adresse brute "
+          "en majuscules (« %s », « %s »)" % (url["nom"], url["nomB"]))
+    check(url["titre"] == "GTA VI Survey: 10% Plan to Skip Work Launch Day [2026]"
+          and url["titreB"] == "Un sujet",
+          "et le titre affiché ne traîne pas l'URL — la queue exacte est "
+          "retirée, pas le nom affiché (« %s »)" % url["titre"])
+    check(url["nomC"] == "IGN" and url["titreC"] == "Un sujet",
+          "un média ordinaire n'a pas bougé (« %s » / « %s »)"
+          % (url["nomC"], url["titreC"]))
+    check("tech-insider" not in url["corps"],
+          "le corps du titre, qui sert aux badges, perd l'URL aussi (« %s »)"
+          % url["corps"][-40:])
+    check(not url["sansFaux"],
+          "un nom de domaine en queue ne déclenche pas un badge (PC)")
+
     s4 = page.evaluate("""(m) => calculeStats([
         {title: "GTA 6 : la bande-annonce dévoilée, la bande-annonce ! - IGN", link: "1", source: "Google News (FR)", date: "2026-10-19T10:00:00Z"},
         {title: "Grand Theft Auto VI trailer devoile - GameSpot", link: "2", source: "Google News (EN)", date: "2026-10-19T11:00:00Z"},

@@ -5331,7 +5331,7 @@ const RE_DATE = /date de sortie|release date|launch date/i;
 //
 // Tous les juges lisent ce corps-là, les neuf d'octobre compris : deux
 // notions de « titre » dans le même fichier finiraient par diverger.
-const RE_SUFFIXE_MEDIA = /\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4})$/;
+const RE_SUFFIXE_MEDIA = /\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4}|https?:\/\/\S+)$/;
 function corpsDuTitre(item){
   return String((item && item.title) || "").replace(RE_SUFFIXE_MEDIA, "");
 }
@@ -6513,14 +6513,33 @@ function jourSemaineParis(d){
 // (1 411 queues sont bien un média) : au plus 32 caractères, 4 mots, pas de
 // ponctuation finale. Appliquée aux seuls agrégateurs : sur un flux natif,
 // la source EST le média, et une queue de titre y serait un sous-titre.
-function mediaDe(item){
-  const source = item.source || "?";
-  if(!/google news/i.test(source)) return source;
+// LA QUEUE BRUTE D'UN TITRE « Sujet - Nom du média », et seulement si elle
+// ressemble à un média. Séparée de mediaDe parce que deux fonctions en ont
+// besoin avec deux questions différentes : mediaDe veut le NOM à afficher,
+// titreSansMedia veut le texte EXACT à retirer du titre. Quand l'éditeur
+// met son adresse en guise de nom (« - https://tech-insider.org/ »), les
+// deux ne sont plus la même chaîne — l'une est un domaine, l'autre une URL.
+function queueDeTitre(item){
   const t = (item.title || "").trim();
   const i = t.lastIndexOf(" - ");
   const queue = i > 0 ? t.slice(i + 3).trim() : "";
+  // Une URL tient lieu de nom de média chez certains éditeurs : 22 articles
+  // sur 2 970 le 24/10/2026, tous de tech-insider.org sauf un. Le test
+  // générique ci-dessous la refusait déjà (elle finit par « / »), si bien
+  // que l'affichage retombait sur le repli — qui, lui, rendait l'URL telle
+  // quelle, en majuscules : « HTTPS://TECH-INSIDER.ORG/ ».
+  if(/^https?:\/\/\S+$/i.test(queue)) return queue;
   if(queue && queue.length <= 32 && queue.split(/\s+/).length <= 4
      && !/[.?!,;:)"»’]$/.test(queue)) return queue;
+  return "";
+}
+
+function mediaDe(item){
+  const source = item.source || "?";
+  if(!/google news/i.test(source)) return source;
+  const queue = queueDeTitre(item);
+  // Le NOM d'un média qui s'est donné en URL, c'est son domaine.
+  if(queue) return /^https?:\/\//i.test(queue) ? (domaineDe(queue) || queue) : queue;
   // LE REPLI, et pourquoi il existe. Mesuré le 16/10/2026 sur les 262
   // articles d'agrégateur chargés : la queue de titre donne le média 260
   // fois, soit 99 %. Pour les deux autres, le DOMAINE du lien reste exact —
@@ -6544,7 +6563,10 @@ function domaineDe(url){
 function titreSansMedia(item){
   const m = mediaDe(item);
   const t = (item.title || "").trim();
-  return (m !== item.source && t.endsWith(" - " + m)) ? t.slice(0, -(m.length + 3)) : t;
+  // La queue EXACTE du titre, pas le nom affiché : pour « - https://x.org/ »
+  // le nom affiché est « x.org », et le titre ne se termine pas par lui.
+  const coupe = (/google news/i.test(item.source || "") && queueDeTitre(item)) || m;
+  return (m !== item.source && t.endsWith(" - " + coupe)) ? t.slice(0, -(coupe.length + 3)) : t;
 }
 
 // Mots vides, et les mots que TOUT le fil contient : les compter ne dirait
