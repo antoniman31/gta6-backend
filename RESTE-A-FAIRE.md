@@ -1131,7 +1131,7 @@ Antoni a choisi de tout faire. **Fait** : `CLAUDE.md` et le nom de média qui
 3. ~~**Temps par source dans `sources_health`**~~ — **FAIT le 27/10/2026** (voir le README, « Le temps de chaque source »). Reste à LIRE les vraies durées au prochain passage du robot : : le robot a doublé de durée
    les 22 et 23/10 (36 s → 70 s) puis est revenu à 36 s le 27 ; on ne peut
    pas dire pourquoi, aucun temps n'est enregistré.
-4. **Retirer `source_link`** : 19 % du fil brut, 24,7 % servi, **zéro**
+4. ~~**Retirer `source_link`**~~ — **ABANDONNÉ le 27/10/2026** : l'app s'en sert (`migreLiensDecodes`), voir le README, « `source_link` : je proposais de le retirer, et j'avais tort ». Antoni garde les 7 jours. Ancien énoncé : : 19 % du fil brut, 24,7 % servi, **zéro**
    décodage évité (950 sur 950 sont dans `decode-cache.json`).
 
 **Non vérifié, et ça compte** : que GitHub Pages **compresse le JSON**. La

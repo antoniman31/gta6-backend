@@ -9422,3 +9422,22 @@ lentes à ce passage ».
   première** : avec deux flux sur un même hôte, `chaines_par_hote` les met
   dans deux files et personne n'attend ; il en faut quatre pour qu'un flux
   attende derrière un autre. Corrigé et rejoué.
+
+### `source_link` : je proposais de le retirer, et j'avais tort — 27/10/2026
+
+Le point 4 de la revue du 24/10 proposait de retirer `source_link` (19 % du
+fil brut, 24,7 % servi) parce que **zéro** décodage était évité (950 sur 950
+dans `decode-cache.json`). Cette mesure ne regardait que **le robot**. L'app
+lit aussi ce champ : `migreLiensDecodes` s'en sert pour déplacer « lu » et
+« vu » de l'ancien lien vers le nouveau quand le robot corrige un lien.
+Sans lui, les articles corrigés redeviendraient non lus **et** « nouveaux »
+d'un coup, comme les 453 de l'incident d'octobre.
+
+Je l'ai vu en cherchant ses lecteurs avant de coder, et j'ai posé la
+question à Antoni : **on garde les 7 jours** (`JOURS_SOURCE_LINK_PUBLIE`),
+choisis le 06/10 sur mesure. Rien n'a été modifié.
+
+Mesuré le 27/10 sur le `feed.json` publié (3 210 articles), poids gzip selon
+la fenêtre : 7 j **530 Ko** (615 articles portent `source_link`), 3 j 450 Ko
+(204), 2 j 444 Ko (168), 1 j 429 Ko (91), aucune 410 Ko. Si le poids redevient
+un sujet, réduire la fenêtre est le levier, pas supprimer le champ.
