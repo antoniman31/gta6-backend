@@ -9314,3 +9314,28 @@ Ne couvre que le code de ce dépôt. Les articles agrégés restent la propriét
 de leurs éditeurs respectifs, et « Grand Theft Auto » est une marque déposée
 de Take-Two Interactive : ce projet n'est ni affilié à Rockstar Games ni
 approuvé par eux.
+
+### L'agenda du panneau du compteur — 27/10/2026
+
+Voulu par Antoni (« je propose, tu valides ») : sous les dodos du panneau,
+jusqu'à cinq rendez-vous avec leur « J-N ». Trois entrées, validées une à
+une : 29/10 (prochaine actualité officielle), 12/11 (début de la précharge)
+et 18/11 (levée de l'embargo des tests), toutes `presse` pour l'instant.
+
+- **Données** : `docs/agenda.json`, validé par `test_agenda_est_valide`
+  (dates ISO triées et sans doublon, libellé ≤ 80 caractères, source https,
+  `annonce` réservé à un domaine officiel, `verifie_le` non futur).
+- **Jours civils à Paris** : `rendezVousAVenir` compte en jours civils, pas
+  en tranches de 24 h (le 25/10/2026 en dure 25). Le contrôle
+  `test_agenda_jours_civils` place ses vecteurs à la seconde de part et
+  d'autre de minuit, aux deux changements d'heure.
+- **Résistance** : le fichier est chargé à l'ouverture du panneau ; absent,
+  404 ou JSON corrompu, le compteur s'ouvre sans section et sans erreur.
+  Une entrée mal formée est écartée, pas fatale. Au-delà de 14 jours sans
+  vérification, la ligne dit « à revérifier ».
+- **Rendu** (`test_agenda_dans_le_panneau`) : aucune cellule ne déborde à
+  320 px (mesure par `scrollWidth` en plus des boîtes), contraste ≥ 4,5:1
+  dans les deux thèmes, aucune opacité. Éprouvé par mutation : retour à la
+  ligne supprimé, opacité ajoutée et repeint oublié sont **détectés**.
+- **Règle** : aucune entrée n'est ajoutée sans validation d'Antoni
+  (`CLAUDE.md`).

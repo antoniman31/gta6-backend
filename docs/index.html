@@ -1092,6 +1092,23 @@
     color:var(--text); text-align:center; margin:0 0 14px;
   }
 
+  /* L'AGENDA, sous les dodos : au plus cinq lignes. Chaque ligne passe à la
+     ligne plutôt que de déborder (320 px). Le passé d'un jour est grisé par
+     la couleur de texte secondaire, jamais par l'opacité : l'opacité
+     ferait tomber le contraste sous le seuil. */
+  .compteur-agenda{list-style:none; margin:0 0 14px; padding:0;}
+  .compteur-agenda li{
+    display:flex; flex-wrap:wrap; gap:2px 8px; align-items:baseline;
+    padding:6px 0; border-top:1px solid var(--line);
+    font-size:13px; color:var(--text); overflow-wrap:anywhere;
+  }
+  .compteur-agenda li.passe{color:var(--text-dim);}
+  .compteur-agenda .ag-j{
+    font-family:'JetBrains Mono',monospace; font-weight:700; min-width:4.5em;
+  }
+  .compteur-agenda .ag-t{flex:1 1 12em; min-width:0;}
+  .compteur-agenda .ag-s{font-size:11px; color:var(--text-dim);}
+
   /* LA BARRE PORTE SON POURCENTAGE. Il était en légende dessous, ce qui
      faisait une ligne de texte de plus pour un chiffre que la barre
      montre déjà.
@@ -8657,6 +8674,41 @@ function rendezVousAVenir(agenda, maintenant){
   return sortie.slice(0, AGENDA_LIGNES_MAX);
 }
 
+// ---------- Agenda du panneau ----------
+// Chargé à l'ouverture du panneau, jamais au démarrage de l'app. TOUT échec
+// (hors-ligne, 404, JSON corrompu) laisse `agendaCharge` à null : le panneau
+// s'ouvre sans la section, sans erreur ni message.
+let agendaCharge = null;
+
+function chargeAgenda(){
+  return fetch("./agenda.json", { cache: "no-cache" })
+    .then((r) => r.ok ? r.json() : null)
+    .then((d) => { agendaCharge = d; })
+    .catch(() => { agendaCharge = null; });
+}
+
+function libelleJours(r){
+  if(r.etat === "aujourdhui") return "Aujourd'hui";
+  if(r.etat === "passe") return "Hier";
+  return "J-" + r.jours;
+}
+
+function htmlAgenda(maintenant){
+  const lignes = rendezVousAVenir(agendaCharge, maintenant);
+  if(!lignes.length) return "";
+  return `<ul class="compteur-agenda" aria-label="Prochains rendez-vous">`
+    + lignes.map((r) => {
+      const jour = new Date(r.date + "T12:00:00Z").toLocaleDateString("fr-FR",
+        { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+      const statut = (r.statut === "annonce" ? "annoncé" : "selon la presse")
+        + (r.aRevoir ? " · à revérifier" : "");
+      return `<li class="${r.etat}"><span class="ag-j">${escapeHtml(libelleJours(r))}</span>`
+        + `<span class="ag-t">${escapeHtml(jour)} · ${escapeHtml(r.libelle)}</span>`
+        + `<span class="ag-s">${escapeHtml(statut)}</span></li>`;
+    }).join("")
+    + `</ul>`;
+}
+
 function majPanneauCompteur(){
   const el = document.getElementById("compteurContenu");
   if(!el) return;
@@ -8712,6 +8764,7 @@ function majPanneauCompteur(){
     + (avant
         ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>`
         : "")
+    + htmlAgenda(maintenant)
     + tuilesCompteur([
         [nombreFr(ecart / 86400000), "jours", false],
         [nombreFr(ecart / 3600000), "heures", false],
@@ -8737,6 +8790,7 @@ let battementCompteur = null;
 
 function ouvreCompteur(){
   majPanneauCompteur();
+  chargeAgenda().then(majPanneauCompteur);
   document.getElementById("compteurOverlay").classList.add("open");
   debutDialogue("compteurOverlay", { fermer: fermeCompteur });
   if(battementCompteur) clearInterval(battementCompteur);

@@ -3579,6 +3579,118 @@ def test_agenda_jours_civils(nav, url):
     ctx.close()
 
 
+def test_agenda_dans_le_panneau(nav, url):
+    """L'agenda s'affiche sous les dodos, résiste à tout, et tient à 320 px.
+
+    Le panneau repeint son contenu chaque seconde : l'agenda doit donc
+    vivre dans l'état de la page, pas dans le DOM. Un fichier absent, un
+    404 ou un JSON corrompu laissent le compteur s'ouvrir sans erreur.
+    """
+    print("\n[agenda] affichage dans le panneau du compteur")
+    bon = json.dumps({"genere_le": "2026-10-27", "entrees": [
+        {"date": "2026-10-26", "libelle": "Hier passé", "statut": "presse",
+         "verifie_le": "2026-10-27",
+         "source": {"media": "M", "titre": "T", "lien": "https://x.test/0"}},
+        {"date": "2026-10-29",
+         "libelle": "Un libellé très long pour forcer le retour à la ligne "
+                    "sur un écran de trois cent vingt pixels de large",
+         "statut": "annonce", "verifie_le": "2026-10-27",
+         "source": {"media": "M", "titre": "T", "lien": "https://x.test/1"}},
+        {"date": "2026-11-12", "libelle": "Précharge", "statut": "presse",
+         "verifie_le": "2026-09-01",
+         "source": {"media": "M", "titre": "T", "lien": "https://x.test/2"}},
+    ]})
+
+    def ouvre(largeur, corps, statut=200, theme="dark"):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 900},
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.clock.install(time="2026-10-27T12:00:00Z")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.route("**/agenda.json", lambda r: r.fulfill(
+            status=statut, content_type="application/json", body=corps))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
+        page.evaluate("() => ouvreCompteur()")
+        page.wait_for_timeout(400)
+        return ctx, page, erreurs
+
+    ctx, page, erreurs = ouvre(320, bon)
+    lignes = page.evaluate("""() => [...document.querySelectorAll('#compteurContenu .compteur-agenda li')]
+        .map(li => ({classe: li.className, texte: li.textContent}))""")
+    check(len(lignes) == 3, "[agenda] trois lignes affichées (%d)" % len(lignes))
+    if len(lignes) == 3:
+        check(lignes[0]["classe"] == "passe" and "Hier" in lignes[0]["texte"],
+              "[agenda] le passé d'un jour est marqué « Hier » et grisé")
+        check("J-2" in lignes[1]["texte"] and "annoncé" in lignes[1]["texte"],
+              "[agenda] 29/10 est à J-2 et « annoncé » (%s)" % lignes[1]["texte"])
+        check("selon la presse" in lignes[2]["texte"] and "à revérifier" in lignes[2]["texte"],
+              "[agenda] une vérification de plus de 14 jours se dit « à revérifier »")
+    page.wait_for_timeout(2200)
+    check(page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda li').length") == 3,
+          "[agenda] il survit au repeint de chaque seconde")
+    sorties = page.evaluate("""() => {
+        const p = document.querySelector('#compteurContenu').getBoundingClientRect();
+        return [...document.querySelectorAll('#compteurContenu .compteur-agenda li, '
+          + '#compteurContenu .compteur-agenda li span')].filter(e => {
+          const r = e.getBoundingClientRect();
+          return r.right > p.right + 0.5 || r.left < p.left - 0.5
+              // Le texte qui déborde de sa propre cellule ne change pas la
+              // boîte de la cellule : on lit aussi scrollWidth.
+              || e.scrollWidth > e.clientWidth + 0.5;
+        }).map(e => e.className || e.tagName);
+    }""")
+    check(not sorties, "[agenda] aucune ligne ni cellule ne sort du panneau à 320 px (%s)" % sorties)
+    check(not erreurs, "[agenda] aucune erreur JavaScript (%s)" % erreurs)
+    ctx.close()
+
+    for theme, fond_attendu in (("dark", None), ("light", None)):
+        ctx, page, _ = ouvre(390, bon, theme=theme)
+        m = page.evaluate("""() => {
+            const li = document.querySelectorAll('#compteurContenu .compteur-agenda li');
+            let fond = 'rgba(0, 0, 0, 0)', n = li[0];
+            while(n && /rgba\\(.*, 0\\)$|transparent/.test(fond)){
+              fond = getComputedStyle(n).backgroundColor; n = n.parentElement; }
+            const c = (e) => getComputedStyle(e).color;
+            // Une opacité < 1 ferait baisser le contraste sans que la couleur
+            // calculée le dise.
+            const opaque = [...li].every(l => getComputedStyle(l).opacity === '1');
+            return {opaque: opaque, fond: fond, passe: c(li[0]), normal: c(li[1]),
+                    statut: c(li[1].querySelector('.ag-s'))};
+        }""")
+
+        def lire(css):
+            return tuple(int(x) for x in re.findall(r"\d+", css)[:3])
+
+        def lum(c):
+            def f(v):
+                v /= 255.0
+                return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+            return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2])
+
+        check(m["opaque"], "[agenda %s] aucune ligne n'est rendue translucide" % theme)
+        fond = lire(m["fond"])
+        for cle in ("passe", "normal", "statut"):
+            a, b = lum(lire(m[cle])), lum(fond)
+            r = (max(a, b) + 0.05) / (min(a, b) + 0.05)
+            check(r >= 4.5, "[agenda %s] %s passe 4,5:1 sur %s (%.2f:1)"
+                  % (theme, cle, m["fond"], r))
+        ctx.close()
+
+    for libelle, corps, statut in (("un 404", "{}", 404),
+                                   ("un JSON corrompu", "{pas du json", 200),
+                                   ("un agenda sans entrées", '{"entrees": 3}', 200)):
+        ctx, page, erreurs = ouvre(390, corps, statut)
+        ouvert = page.evaluate("() => document.getElementById('compteurOverlay').classList.contains('open')")
+        vide = page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda').length") == 0
+        tuiles = page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-tuiles').length") > 0
+        check(ouvert and vide and tuiles and not erreurs,
+              "[agenda] avec %s le compteur s'ouvre, sans section ni erreur (%s)" % (libelle, erreurs))
+        ctx.close()
+
+
 def test_panneau_du_compteur(nav, url):
     """Appuyer sur le compte à rebours ouvre son détail.
 
@@ -5890,6 +6002,7 @@ def main():
             test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
             test_agenda_jours_civils(nav, url)
+            test_agenda_dans_le_panneau(nav, url)
             test_panneau_du_compteur(nav, url)
             test_budget_du_stockage(nav, url)
             test_contraste_partout(nav, url)
