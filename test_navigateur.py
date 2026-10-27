@@ -3457,6 +3457,28 @@ def test_mode_sans_spoiler(nav, url):
     ctx.close()
 
 
+def test_vecteurs_du_resume(nav, url):
+    """`nettoieResume` rend ce que dit vecteurs_resume.json, comme le robot.
+
+    Le fichier est lu aussi par test_pipeline.py contre `nettoie_resume`.
+    """
+    print("\n[résumé] les vecteurs partagés avec le robot")
+    chemin = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vecteurs_resume.json")
+    with open(chemin, encoding="utf-8") as f:
+        cas = json.load(f)["cas"]
+    ctx = nav.new_context(viewport={"width": 390, "height": 800})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    obtenus = page.evaluate("(v) => v.map(c => nettoieResume(c.description, c.titre))", cas)
+    ecarts = ["%s : %r au lieu de %r" % (c["nom"], o, c["attendu"])
+              for c, o in zip(cas, obtenus) if o != c["attendu"]]
+    check(len(cas) >= 10 and not ecarts,
+          "nettoieResume rend la sortie attendue pour les %d vecteurs%s"
+          % (len(cas), "" if not ecarts else " — " + " | ".join(ecarts)))
+    ctx.close()
+
+
 def test_ne_pas_deranger(nav, url):
     """« Silence 2 h » : la fonction pure, le service worker, puis la page.
 
@@ -6169,6 +6191,7 @@ def main():
             test_compte_a_rebours(nav, url)
             test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
+            test_vecteurs_du_resume(nav, url)
             test_ne_pas_deranger(nav, url)
             test_agenda_jours_civils(nav, url)
             test_agenda_dans_le_panneau(nav, url)

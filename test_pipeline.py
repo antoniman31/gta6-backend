@@ -9786,6 +9786,30 @@ def _valide_agenda(data, aujourdhui=None):
     return erreurs
 
 
+def test_vecteurs_du_resume():
+    """`nettoie_resume` rend ce que dit vecteurs_resume.json.
+
+    Le même fichier est lu par test_navigateur.py contre `nettoieResume`
+    (JavaScript) : les deux implémentations ne peuvent plus diverger sans
+    qu'une des deux suites le dise. Avant, seule leur PRÉSENCE était vérifiée.
+    """
+    print("\n[résumé] les vecteurs partagés avec le mode de secours")
+    with open("vecteurs_resume.json", encoding="utf-8") as f:
+        cas = json.load(f)["cas"]
+    check(len(cas) >= 10, "le fichier de vecteurs n'est pas vide (%d cas)" % len(cas))
+    check(any("tech-insider" in c["titre"] for c in cas),
+          "il garde le cas du titre qui finit par une URL")
+    check(any(c["attendu"] == "" for c in cas) and any(c["attendu"] for c in cas),
+          "et il contient des résumés vidés comme des résumés conservés")
+    ecarts = []
+    for c in cas:
+        obtenu = feed_store.nettoie_resume(c["description"], c["titre"])
+        if obtenu != c["attendu"]:
+            ecarts.append("%s : %r au lieu de %r" % (c["nom"], obtenu, c["attendu"]))
+    check(not ecarts, "nettoie_resume rend la sortie attendue pour chaque vecteur%s"
+          % ("" if not ecarts else " — " + " | ".join(ecarts)))
+
+
 def test_agenda_est_valide():
     """L'agenda est écrit à la main : rien ne garantit qu'il reste juste.
 
@@ -9996,6 +10020,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien,
            test_lassistance_rockstar_est_une_source,
            test_agenda_est_valide,
+           test_vecteurs_du_resume,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,
