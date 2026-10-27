@@ -1791,3 +1791,10 @@ Si `silent` ou `renotify` se comporte autrement qu'attendu, le dire ici.
   pas des journaux.
 - **Gel** : jusqu'au 10/11 on peut ajouter ; après la répétition, correctifs
   seulement (choix d'Antoni).
+
+### Le titre en dégradé — où il en est (27/10/2026)
+
+Fait (voir le README, « Le titre en coucher de soleil »). **Reste à regarder sur
+le téléphone** : la police réelle (Roboto Black) n'a pas été mesurée, seulement
+Liberation Sans. Si le titre paraît trop serré ou passe sur deux lignes, c'est
+la formule `clamp()` de `.brand` qu'on ajuste.
