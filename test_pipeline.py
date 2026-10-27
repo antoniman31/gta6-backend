@@ -731,6 +731,59 @@ def _fausse_collecte(feed, decoded_cache=None, http_state=None):
     return items, {"raw_count": 2, "not_modified": False}, [f"[{feed['name']}] ok"]
 
 
+def test_duree_par_source():
+    """Chaque source porte le temps de sa collecte dans `sources_health`.
+
+    Trois pièges, chacun avec son contrôle : la pause de politesse entre deux
+    flux du même hôte ne compte pas dans la source ; une reprise coûte les
+    DEUX tentatives ; et une source jamais mesurée dit `None`, pas zéro.
+    """
+    print("\n[durée] le temps de collecte de chaque source")
+    import fetch_feeds
+
+    appels = {}
+
+    def collecte(feed, decoded_cache=None, http_state=None):
+        appels[feed["id"]] = appels.get(feed["id"], 0) + 1
+        time.sleep(0.05)
+        if feed["id"] == "reprise" and appels[feed["id"]] == 1:
+            return [], {"raw_count": 0, "not_modified": False, "injoignable": True}, ["x"]
+        return [], {"raw_count": 1, "not_modified": False}, ["ok"]
+
+    sources = [{"id": "a", "name": "A", "url": "https://meme.example/a"},
+               {"id": "b", "name": "B", "url": "https://meme.example/b"},
+               # Quatre flux sur un hôte : chaines_par_hote en fait trois files,
+               # donc le quatrième attend dans la file du premier. Avec deux
+               # seulement, personne n'attendait et la pause n'était pas testée.
+               {"id": "c", "name": "C", "url": "https://meme.example/c"},
+               {"id": "d", "name": "D", "url": "https://meme.example/d"},
+               {"id": "reprise", "name": "R", "url": "https://autre.example/r"}]
+    pause, reprise = fetch_feeds.HOST_PAUSE, fetch_feeds.REPRISE_PAUSE
+    fetch_feeds.HOST_PAUSE, fetch_feeds.REPRISE_PAUSE = 0.4, 0.0
+    try:
+        res = fetch_feeds.fetch_all_feeds(sources, {}, {}, collecte=collecte)
+    finally:
+        fetch_feeds.HOST_PAUSE, fetch_feeds.REPRISE_PAUSE = pause, reprise
+    d = {k: v[1]["duree_ms"] for k, v in res.items()}
+    check(all(40 <= d[k] < 300 for k in ("a", "b", "c", "d")),
+          "une source dure ce que dure SA collecte, pas la pause de 400 ms qui la précède (%s)"
+          % {k: d[k] for k in ("a", "b", "c", "d")})
+    check(appels["reprise"] == 2 and 90 <= d["reprise"] < 400,
+          "une source reprise coûte ses deux tentatives (%d ms pour %d appels)"
+          % (d["reprise"], appels["reprise"]))
+
+    feeds_avant = fetch_feeds.FEEDS
+    fetch_feeds.FEEDS = [{"id": "m", "name": "M", "url": "", "official": False},
+                         {"id": "n", "name": "N", "url": "", "official": False}]
+    try:
+        sante = {h["id"]: h for h in fetch_feeds.build_sources_health(
+            [], {"m": {"raw_count": 1, "duree_ms": 1234}, "n": {"raw_count": 1}}, {})}
+    finally:
+        fetch_feeds.FEEDS = feeds_avant
+    check(sante["m"]["duree_ms"] == 1234 and sante["n"]["duree_ms"] is None,
+          "sources_health porte la durée, et None quand elle n'a pas été mesurée")
+
+
 def test_fetch_parallele_identique():
     print("\n== Récupération parallèle : résultat identique au séquentiel ==")
     import fetch_feeds
@@ -756,7 +809,15 @@ def test_fetch_parallele_identique():
     check(set(parallele) == set(sequentiel), "toutes les sources sont revenues, aucune perdue")
     check(obtenu[0] == attendu[0], "liste finale des articles identique (contenu ET ordre)")
     check(obtenu[1] == attendu[1], "liste des nouveautés identique")
-    check(obtenu[2] == attendu[2], "état HTTP par source identique")
+    # `duree_ms` est une MESURE (elle change à chaque passage) et non un
+    # contenu : la comparer ferait échouer ce test au hasard. Tout le reste de
+    # l'état doit rester identique, et la mesure doit exister partout.
+    def sans_duree(infos):
+        return {k: {c: v for c, v in i.items() if c != "duree_ms"} for k, i in infos.items()}
+    check(sans_duree(obtenu[2]) == sans_duree(attendu[2]), "état HTTP par source identique")
+    check(all(isinstance(i.get("duree_ms"), int) and i["duree_ms"] >= 0 for i in obtenu[2].values())
+          and not any("duree_ms" in i for i in attendu[2].values()),
+          "et le chemin parallèle mesure la durée de chaque source (le séquentiel de référence, non)")
     check(obtenu[3] == attendu[3], "compteurs de nouveautés par source identiques")
     check(obtenu[4] == attendu[4], "nombre de sources inchangées identique")
 
@@ -10021,6 +10082,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_lassistance_rockstar_est_une_source,
            test_agenda_est_valide,
            test_vecteurs_du_resume,
+           test_duree_par_source,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,

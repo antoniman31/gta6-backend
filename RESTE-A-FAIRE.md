@@ -1128,7 +1128,7 @@ Antoni a choisi de tout faire. **Fait** : `CLAUDE.md` et le nom de média qui
    n'existe que sur 14,5 % des cartes. On ne décide qu'après la mesure, et ce
    chantier veut une mini-spec (plafond de requêtes, extrait tronqué, jamais
    le texte complet).
-3. **Temps par source dans `sources_health`** : le robot a doublé de durée
+3. ~~**Temps par source dans `sources_health`**~~ — **FAIT le 27/10/2026** (voir le README, « Le temps de chaque source »). Reste à LIRE les vraies durées au prochain passage du robot : : le robot a doublé de durée
    les 22 et 23/10 (36 s → 70 s) puis est revenu à 36 s le 27 ; on ne peut
    pas dire pourquoi, aucun temps n'est enregistré.
 4. **Retirer `source_link`** : 19 % du fil brut, 24,7 % servi, **zéro**
