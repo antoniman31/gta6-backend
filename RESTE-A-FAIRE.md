@@ -1778,7 +1778,7 @@ Si `silent` ou `renotify` se comporte autrement qu'attendu, le dire ici.
 
 ### Avant la sortie — ce qui attend Antoni (27/10/2026)
 
-- **Revérifier les trois dates de l'agenda** : elles portent `verifie_le`
+- **Reconfirmer les dates de l'agenda LE 10/11** (et non « avant le 18/11 », mon énoncé était trop large : une date vérifiée le 10/11 reste valable jusqu'au 24/11, donc toute la nuit de la sortie) : elles portent `verifie_le`
   27/10 ; au-delà de 14 jours (donc dès le 11/11) la ligne dit « à revérifier »,
   et la simulation du soir du 19/11 le montre sur les trois. Antoni confirme
   chaque date, puis on met la date du jour (règle : aucune entrée sans lui).

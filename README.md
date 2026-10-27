@@ -9507,3 +9507,20 @@ portent « à revérifier » (vérifiées le 27/10, soit plus de 14 jours). C'es
 comportement voulu, mais il faut donc **revérifier les dates avant la sortie** ;
 c'est noté dans `RESTE-A-FAIRE.md`. La liste de la répétition du 10/11 est
 dans `tasks/repetition-10-11.md`.
+
+### L'agenda passe à quatre dates — 27/10/2026
+
+Antoni a confirmé les trois dates après une vérification dans le fil (12/11 :
+21 articles, 18/11 : 24, aucun démenti, **aucune source Rockstar** : elles
+restent « selon la presse ») et a validé une quatrième : le **9/11, résultats
+trimestriels de Take-Two**, la dernière publication avant la sortie. Source :
+GTA BOOM (14/10), 3 titres dans le fil dont un en français. C'est la plus
+fragile des quatre : une seule source principale est lue.
+
+- **Affichage** mesuré à 320 et 390 px : quatre lignes, aucun débordement,
+  aucune erreur JavaScript.
+- **Confirmation d'aujourd'hui** : les entrées portaient déjà `verifie_le`
+  au 27/10, donc rien ne change. **Ce qui compte, c'est la prochaine** : une
+  date vérifiée le 10/11 reste valable jusqu'au 24/11. Les reconfirmer à la
+  répétition du 10/11, sinon « à revérifier » dès le 11/11. Un rappel est
+  programmé le 10/11 à 9 h (Paris).
