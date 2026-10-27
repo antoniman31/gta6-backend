@@ -987,6 +987,94 @@ def image_du_flux(entry):
     return None
 
 
+# ---------------------------------------------------------------------------
+# MESURE (27/10/2026, spec : tasks/spec-og-description.md) : combien d'articles
+# sans résumé en trouveraient un dans la balise og:description de leur page ?
+#
+# 85,5 % des résumés sont vides (2 746 articles sur 3 210), donc le bouton
+# d'aperçu n'existe que sur 14,5 % des cartes. On ne décide RIEN avant d'avoir
+# le chiffre : cette mesure ne stocke aucun texte, ne change aucun champ de
+# feed.json, et ne laisse dans le journal que des NOMBRES par source.
+#
+# Le robot ne télécharge la page d'un article que pour lui trouver une image
+# (~15 par jour sur 113 articles entrés en 24 h). Les ~84 autres articles sans
+# résumé n'ont jamais leur page lue : un échantillon plafonné les complète.
+PLAFOND_ECHANTILLON_DESCRIPTION = 8
+_MESURES_PAGES = {}
+_VERROU_MESURES = threading.Lock()
+
+
+def mesure_description(soup):
+    """Ce que dit la page de sa description — la LONGUEUR, jamais le texte.
+
+    og:description d'abord, puis la balise `description` ordinaire, puis celle
+    de Twitter : c'est l'ordre dans lequel un site la renseigne le plus souvent.
+    """
+    for attrs in ({"property": "og:description"}, {"name": "description"},
+                  {"name": "twitter:description"}):
+        tag = soup.find("meta", attrs=attrs)
+        texte = (tag.get("content") or "").strip() if tag else ""
+        if texte:
+            return {"etat": "presente", "longueur": len(texte)}
+    return {"etat": "absente", "longueur": 0}
+
+
+def noter_mesure(url, mesure):
+    with _VERROU_MESURES:
+        _MESURES_PAGES[url] = mesure
+
+
+def mesure_page(url, timeout=8):
+    """Lit la page d'un article pour la seule mesure. Même agent, même délai."""
+    try:
+        resp = requests.get(url, timeout=timeout,
+                            headers={"User-Agent": agent_pour(url)})
+        resp.raise_for_status()
+        noter_mesure(url, mesure_description(BeautifulSoup(resp.text, "html.parser")))
+    except Exception:
+        noter_mesure(url, {"etat": "refusee", "longueur": 0})
+
+
+def echantillonne_descriptions(items, plafond=PLAFOND_ECHANTILLON_DESCRIPTION):
+    """Lit au plus `plafond` pages d'articles sans résumé, qui n'ont pas déjà
+    été lues pour leur image. Renvoie le nombre de pages lues."""
+    a_lire = [i["link"] for i in items
+              if not i.get("description") and i.get("image") and i.get("link")
+              and i["link"] not in _MESURES_PAGES][:plafond]
+    if not a_lire:
+        return 0
+    with ThreadPoolExecutor(max_workers=IMAGE_WORKERS) as executor:
+        list(executor.map(mesure_page, a_lire))
+    return len(a_lire)
+
+
+def rapport_descriptions(items):
+    """Une ligne de synthèse, puis une ligne JSON lisible dans le journal.
+
+    Seuls comptent les articles SANS résumé : c'est la question posée. Aucun
+    texte de page n'est conservé, seulement des comptes et des longueurs.
+    """
+    par_source = {}
+    for item in items:
+        mesure = _MESURES_PAGES.get(item.get("link"))
+        if not mesure or item.get("description"):
+            continue
+        r = par_source.setdefault(item.get("source") or "?",
+                                  {"presente": 0, "absente": 0, "refusee": 0, "longueurs": []})
+        r[mesure["etat"]] += 1
+        if mesure["etat"] == "presente":
+            r["longueurs"].append(mesure["longueur"])
+    if not par_source:
+        return None
+    total = {e: sum(r[e] for r in par_source.values()) for e in ("presente", "absente", "refusee")}
+    print(f"\n[og:description] mesure — {sum(total.values())} page(s) d'articles sans résumé : "
+          f"{total['presente']} avec description, {total['absente']} sans, "
+          f"{total['refusee']} refusée(s)")
+    print("[og:description] " + json.dumps(
+        {"par_source": par_source, "total": total}, ensure_ascii=False, sort_keys=True))
+    return par_source
+
+
 def fetch_og_image(url, timeout=8):
     """Récupère l'image de prévisualisation (og:image) d'une vraie page article."""
     try:
@@ -994,6 +1082,8 @@ def fetch_og_image(url, timeout=8):
                             headers={"User-Agent": agent_pour(url)})
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
+        # La page est DÉJÀ lue : la mesure ne coûte aucune requête de plus.
+        noter_mesure(url, mesure_description(soup))
         tag = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "twitter:image"})
         if tag and tag.get("content"):
             return tag["content"]
@@ -1001,6 +1091,7 @@ def fetch_og_image(url, timeout=8):
         # exploitable — vraie limite du site, pas une erreur réseau.
         print(f"  [og:image] aucune balise og:image/twitter:image sur {url[:60]}...")
     except Exception as e:
+        noter_mesure(url, {"etat": "refusee", "longueur": 0})
         print(f"  [og:image] échec pour {url[:60]}... : {e}")
     return None
 
@@ -4255,6 +4346,10 @@ def main():
     # vignette du kiosque Google. Ils n'ont plus d'image du tout, et sans
     # cette ligne rien ne viendrait leur en chercher une.
     fetch_missing_images(newly_added + vignettes_perdues)
+    # Mesure d'og:description (spec du 27/10/2026) : lecture seule, aucun
+    # champ publié. Après les miniatures, dont elle réutilise les pages lues.
+    echantillonne_descriptions(newly_added)
+    rapport_descriptions(newly_added + vignettes_perdues)
 
     # État des sources, puis cumul des passages muets. L'état seul ne dit
     # que « muette maintenant » ; c'est le cumul qui distingue une panne

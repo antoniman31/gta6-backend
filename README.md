@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1925
+qui permet de tester tout le pipeline sans sortir de la machine. **1938
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9458,3 +9458,39 @@ fait, parce qu'il n'aurait pas touché la cause (apt n'est pas mis en cache).
 `timeout-minutes` passe de 10 à **20**, et `test_pipeline.py` refuse un
 délai inférieur à deux fois la pire installation mesurée (17 minutes).
 Éprouvé : remis à 10, le contrôle échoue.
+
+### La mesure d'`og:description` — 27/10/2026
+
+Validée par Antoni (spec : `tasks/spec-og-description.md`). 85,5 % des
+résumés sont vides, donc le bouton d'aperçu n'existe que sur 14,5 % des
+cartes ; on ne décide **rien** avant d'avoir le chiffre.
+
+- **Ce que fait le robot** : (1) quand il lit déjà une page pour y chercher
+  une image, il note si elle porte une description, **sans requête de plus** ;
+  (2) il lit en plus **au plus 8 pages par passage** d'articles sans résumé
+  qui ont déjà une image (`PLAFOND_ECHANTILLON_DESCRIPTION`), avec le même
+  `User-Agent` et le même délai de 8 s. Un article dont la page a déjà été
+  lue n'est jamais relu.
+- **Ce qu'il ne fait pas** : aucun texte conservé, aucun champ ajouté à
+  `feed.json`, aucun extrait dans le journal. Seulement des comptes et des
+  longueurs, par source : présente, absente, refusée.
+- **Où lire** : le journal du passage porte une ligne
+  `[og:description] mesure — N page(s)…` puis une ligne JSON
+  `[og:description] {"par_source": …, "total": …}`. Après 24 passages, on
+  additionne ces lignes (`mcp__github__get_job_logs` sur les passages du
+  robot) : part de pages avec description, par source, et longueur médiane.
+- **Ce que la mesure ne dit pas** : combien de sites de presse refusent le
+  robot. Le proxy du conteneur bloque la plupart d'entre eux, seule la CI le
+  montrera.
+- **Tests** (`test_mesure_og_description`, 13 contrôles) : l'ordre de repli
+  des balises, zéro requête de plus pour une page déjà lue, le plafond de 8
+  sur 12 candidates, le saut des pages déjà lues, le rapport par source, un
+  extrait de page absent du journal. Éprouvé par mutation, **tout détecté** :
+  repli retiré, mesure retirée de `fetch_og_image`, note du refus retirée
+  (le test plante), plafond retiré, garde « jamais deux fois » retiré,
+  rapport qui compte aussi les articles avec résumé.
+- **Deux erreurs de ma part, corrigées** : mon premier jeu de tests laissait
+  passer trois de ces mutations (le garde « déjà lue » n'était jamais
+  atteint, aucun article avec résumé n'avait de page mesurée), et les
+  contrôles écrits sous `redirect_stdout` partaient dans le tampon au lieu
+  du terminal. Les contrôles se font maintenant après la redirection.
