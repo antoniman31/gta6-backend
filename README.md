@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1897
+qui permet de tester tout le pipeline sans sortir de la machine. **1924
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9176,6 +9176,103 @@ Newswire seul peut la remplir — les notes de patch passeraient dessous.
 Un contrôle refuse maintenant de me croire sur parole : il compte les
 articles de ce domaine déjà présents dans `feed.json`.
 
+### Revue d'améliorations, première tranche — 27/10/2026
+
+Antoni a demandé de passer le projet au crible. Les mesures ont d'abord
+servi à **défaire trois de mes affirmations**, et seulement ensuite à
+proposer.
+
+#### Trois choses que j'avais mal dites
+
+- **« Le fil perd 1 500 articles » : fausse alerte.** Il est passé de 4 470
+  à 2 970 articles entre le 21 et le 24/10, mais c'est la fenêtre de 30
+  jours qui fonctionne : les 411 articles retirés le 22/10 datent tous du 8
+  au 24 septembre, **les 411 sont dans les archives**, aucun officiel n'a
+  été touché. Zéro perdu.
+- **« Les six sources d'après-sortie ne rapporteront rien avant le 19 » :
+  faux.** Elles avaient déjà apporté **71 articles exclusifs** en quatre
+  jours (guides EN 21, online EN 19, tests EN 17, tests FR 6, guides FR 6,
+  patch FR 2).
+- **`rockstar-support` est redondante aujourd'hui** : 100 entrées lues, 0
+  exclusive. Gardée comme assurance pour le 19, à revoir le 22/11.
+
+Les tests écrits le 20/10 ont aussi été éprouvés par mutation : six
+conditions cassées volontairement côté Python, **six fois détectées**. Le
+côté JavaScript n'a pas été rejoué, trop long.
+
+#### JeuxActu : pas une panne de serveur
+
+Le robot la voit en HTTP 503 depuis le 21/10 — mais le journal du passage
+dit `undefined entity` à la ligne 65 : ce qu'il reçoit est une **page HTML
+de refus**, illisible comme du XML, cohérente avec un blocage des clients
+automatiques. Aucune URL de remplacement à chercher. Et ça ne coûte rien :
+sur 6 641 articles (fil et archives), **4** viennent de ce site, tous en
+août. Laissée telle quelle, l'alerte est déjà partie.
+
+Tom's Hardware, nouvellement « tarie », n'est pas cassée non plus : elle
+reçoit ses 50 entrées via une redirection 301 vers `/feeds.xml`, et « tarie »
+veut seulement dire zéro article exclusif.
+
+La sonde, elle, ne dit rien : elle échoue en `Tunnel connection failed: 403`
+parce que **le proxy du conteneur bloque ces hôtes** — comme `github.io`.
+C'est le journal du robot, lu par `get_job_logs`, qui renseigne.
+
+#### Le nom de média qui était une URL
+
+Une capture à 1280 px montrait « HTTPS://TECH-INSIDER.ORG/ » en tête de
+carte. **22 articles sur 2 970** ont un titre qui finit par
+« - https://tech-insider.org/ » : l'éditeur a mis son adresse là où Google
+News attend un nom. Le test générique de `mediaDe` la refusait (elle finit
+par `/`), et le repli rendait alors l'URL brute.
+
+La correction a un piège, et c'est lui que le contrôle garde : si `mediaDe`
+rend le domaine, **`titreSansMedia` ne reconnaît plus la queue** — le titre
+se termine par l'URL entière — et la laisserait affichée. La queue brute est
+donc une fonction à elle (`queueDeTitre`), que les deux appellent pour deux
+questions différentes : le NOM à afficher, le TEXTE exact à retirer.
+La même URL faussait aussi les badges (« pc-news » déclenchait PC) et la
+comparaison titre/résumé : la regex du corps de titre, copiée en JavaScript
+et en Python, la connaît maintenant des deux côtés.
+
+Éprouvé contre l'ancien code : 3 des 5 contrôles JS et le contrôle Python
+échouent sans la correction ; les deux autres sont des gardes de
+régression et passent des deux côtés, volontairement.
+
+#### Un défaut que seul le contenu du fil révélait
+
+En relançant la suite navigateur, le balayage de contraste a rendu un
+verdict que rien dans le code n'expliquait : le badge « 🔥 ACTU MAJEURE »
+tombait à **1,92:1** en thème clair (#ff8c3d sur un orange à 18 %). Le
+défaut était ancien. Il n'était visible que si le fil contenait un article à
+trois sources dans ce que le balayage rend, et le 27/10 il en a eu un pour
+la première fois.
+
+**Conséquence : la CI de toutes les pull requests est passée au rouge**,
+Dependabot compris — #201 et #202 étaient rouges pour cette seule raison.
+C'est la deuxième fois que le balayage, qui lit le vrai fil, bloque des PR
+sans que le code ait changé (la première était `.card-extra`, le 19/10).
+
+Le remède est celui du compteur : un jeton par thème (`--hot-texte`). La
+mesure se fait sur le **fond composité** et non sur le blanc — `#b4530a`,
+qui passe 5,02:1 sur blanc, ne fait que 4,15 sur ce fond teinté. `#8f4407`
+donne 5,79:1 sur la carte, 5,45 sur `--bg`, 5,28 sur `--bg-elevated`. Le
+thème sombre (6,22 et 5,76) ne bouge pas.
+
+**Un défaut qui dépend du contenu ne se garde pas avec un balayage du
+contenu.** Le nouveau contrôle fabrique lui-même l'article à trois sources,
+dans les deux thèmes. Son instrument est validé avant d'être cru : le fond
+composité sur un canevas doit retrouver exactement les (255, 228, 219) que
+le balayage avait mesurés. Éprouvé contre l'ancien CSS : il rend 1,92:1 et
+échoue ; contre le nouveau, 5,79:1.
+
+#### Un `CLAUDE.md`
+
+Il n'en existait pas, et les mêmes règles étaient recopiées dans neuf
+prompts de tâches planifiées. Il porte les quatre suites, les règles qui ont
+déjà coûté un cycle, et surtout **une que rien n'écrivait** : l'identité de
+commit. Toute adresse autre que le noreply fait refuser le push
+(« email privacy restrictions »).
+
 ## Ajuster quelque chose
 
 - **Fréquence** : dans cron-job.org, l'horloge principale. La ligne `cron`
@@ -9217,3 +9314,130 @@ Ne couvre que le code de ce dépôt. Les articles agrégés restent la propriét
 de leurs éditeurs respectifs, et « Grand Theft Auto » est une marque déposée
 de Take-Two Interactive : ce projet n'est ni affilié à Rockstar Games ni
 approuvé par eux.
+
+### L'agenda du panneau du compteur — 27/10/2026
+
+Voulu par Antoni (« je propose, tu valides ») : sous les dodos du panneau,
+jusqu'à cinq rendez-vous avec leur « J-N ». Trois entrées, validées une à
+une : 29/10 (prochaine actualité officielle), 12/11 (début de la précharge)
+et 18/11 (levée de l'embargo des tests), toutes `presse` pour l'instant.
+
+- **Données** : `docs/agenda.json`, validé par `test_agenda_est_valide`
+  (dates ISO triées et sans doublon, libellé ≤ 80 caractères, source https,
+  `annonce` réservé à un domaine officiel, `verifie_le` non futur).
+- **Jours civils à Paris** : `rendezVousAVenir` compte en jours civils, pas
+  en tranches de 24 h (le 25/10/2026 en dure 25). Le contrôle
+  `test_agenda_jours_civils` place ses vecteurs à la seconde de part et
+  d'autre de minuit, aux deux changements d'heure.
+- **Résistance** : le fichier est chargé à l'ouverture du panneau ; absent,
+  404 ou JSON corrompu, le compteur s'ouvre sans section et sans erreur.
+  Une entrée mal formée est écartée, pas fatale. Au-delà de 14 jours sans
+  vérification, la ligne dit « à revérifier ».
+- **Rendu** (`test_agenda_dans_le_panneau`) : aucune cellule ne déborde à
+  320 px (mesure par `scrollWidth` en plus des boîtes), contraste ≥ 4,5:1
+  dans les deux thèmes, aucune opacité. Éprouvé par mutation : retour à la
+  ligne supprimé, opacité ajoutée et repeint oublié sont **détectés**.
+- **Règle** : aucune entrée n'est ajoutée sans validation d'Antoni
+  (`CLAUDE.md`).
+
+### « Ne pas déranger », 2 heures — 27/10/2026
+
+Voulu par Antoni, **une seule durée** : un silence oublié la nuit de la
+sortie coûterait plus cher que le confort d'un choix.
+
+- **Où** : bouton « Silence 2 h » dans les réglages des notifications, et
+  pastille « 😴 silence jusqu'à HH:MM » (heure de Paris) sous le compteur de
+  l'en-tête ; un appui sur la pastille annule.
+- **Comment** : le service worker ne lisant pas `localStorage`, le réglage
+  est un cache à part, `gta6watch-prefs`, écrit par la page et lu par
+  `sw.js`. L'`activate` supprimait tous les caches sauf le sien : il
+  épargne maintenant celui-là, sans quoi chaque déploiement aurait effacé
+  le silence.
+- **Les options** vivent dans `docs/notif-options.js`
+  (`optionsNotification`, pure). En silence : `silent`, `renotify` coupé,
+  **ni `vibrate` ni `requireInteraction`** (`silent` avec `vibrate` lève une
+  `TypeError`). La notification reste **visible**, faute de quoi le
+  navigateur révoquerait l'abonnement. Une échéance à plus de deux heures
+  est jugée corrompue et ignorée.
+- **Tests** (`test_ne_pas_deranger`, 27 contrôles) : la fonction pure à la
+  milliseconde de l'échéance ; le vrai `sw.js` exécuté avec un faux
+  environnement (activation, push silencieux, expiré, sans réglage, réglage
+  illisible) ; la page (écriture, rechargement, annulation, échéance,
+  320 px, cible de 44 px). Éprouvé par cinq mutations, **cinq détectées** :
+  exemption retirée, `vibrate` ajouté, `<=` à l'échéance, garde de
+  corruption retirée, silence non lu par `sw.js`.
+- **Non vérifié** : `silent` n'a été lu que dans des extraits de recherche
+  (MDN injoignable d'ici), et l'effet de `renotify` combiné à `silent` est
+  inconnu. L'essai sur l'Android d'Antoni tranchera ; il faut son accord
+  avant d'envoyer un push de test.
+- Deux contrôles anciens lisaient le badge et la vibration dans `sw.js` ;
+  ils lisent maintenant `notif-options.js` aussi.
+
+### Des vecteurs partagés entre le robot et le mode de secours — 27/10/2026
+
+`nettoie_resume` (Python) et `nettoieResume` (JavaScript) existent en double
+et seule leur *présence* était vérifiée. Un fichier, `vecteurs_resume.json`
+(16 cas : entités, balises, espaces insécables, titre répété, seuil de 25
+caractères à l'unité près, suffixe de média en URL), est maintenant lu par
+**les deux suites** : `test_vecteurs_du_resume` dans `test_pipeline.py` et
+dans `test_navigateur.py`.
+
+- **Il a trouvé une divergence réelle** : un flux qui échappe son HTML deux
+  fois (`&amp;nbsp;`) était décodé deux fois par le robot et une seule par le
+  mode de secours, qui affichait `&nbsp;` en toutes lettres. Corrigé côté
+  JavaScript par une seconde passe de décodage (cache v59).
+- **Éprouvé par mutation, tout détecté** : côté Python, seuil 25→24, regex
+  du suffixe sans l'URL, une seule passe de décodage, espaces insécables non
+  reconnus ; côté JavaScript, seuil 25→26, seconde passe retirée, regex sans
+  l'URL. Deux premiers vecteurs ne distinguaient rien (le résumé portait
+  lui-même l'URL) : un cas où le résumé n'a que le titre nu l'a rendu
+  discriminant.
+
+### Le temps de chaque source dans `sources_health` — 27/10/2026
+
+Le robot a doublé de durée les 22 et 23/10 (36 s → 70 s) puis est revenu à
+36 s le 27, et **on ne pouvait pas dire pourquoi** : aucun temps par source
+n'était enregistré. Chaque entrée de `sources_health` porte maintenant
+`duree_ms`, et le journal du robot ajoute une ligne « ⏱ les sources les plus
+lentes à ce passage ».
+
+- **Ce qui est mesuré** : la requête et la lecture du flux, **sans** la pause
+  de politesse qui précède un second flux du même hôte (c'est la durée de la
+  source, pas celle de la file où elle attend). Une source reprise coûte ses
+  **deux** tentatives. Une source jamais mesurée dit `None`, pas zéro.
+- **Ce qui ne l'est pas** : le décodage des liens Google News et la
+  récupération des images, qui se font après, par lot et non par source.
+- **Poids** : simulé sur le `feed.json` publié (70 sources, durées tirées au
+  hasard entre 150 et 9 000 ms) : **+1 111 octets bruts (0,058 %), +245 octets
+  gzip (0,045 %)**. Les vraies durées seront mesurées au prochain passage.
+- **Une erreur de ma part, corrigée** : `test_fetch_parallele_identique`
+  comparait l'état HTTP de chaque source d'égal à égal, et la durée, qui
+  change à chaque passage, l'a fait échouer. Le test ignore maintenant ce
+  seul champ (c'est une mesure, pas un contenu) et vérifie à part qu'il
+  existe partout sur le chemin parallèle. Aucun seuil n'a bougé.
+- **Tests** (`test_duree_par_source`) : pause de politesse exclue, reprise
+  sommée, `None` conservé. Éprouvé par trois mutations, **trois détectées**
+  (pause incluse dans la durée, sommation de la reprise retirée, `None`
+  remplacé par zéro). **Ma première version du test ne détectait pas la
+  première** : avec deux flux sur un même hôte, `chaines_par_hote` les met
+  dans deux files et personne n'attend ; il en faut quatre pour qu'un flux
+  attende derrière un autre. Corrigé et rejoué.
+
+### `source_link` : je proposais de le retirer, et j'avais tort — 27/10/2026
+
+Le point 4 de la revue du 24/10 proposait de retirer `source_link` (19 % du
+fil brut, 24,7 % servi) parce que **zéro** décodage était évité (950 sur 950
+dans `decode-cache.json`). Cette mesure ne regardait que **le robot**. L'app
+lit aussi ce champ : `migreLiensDecodes` s'en sert pour déplacer « lu » et
+« vu » de l'ancien lien vers le nouveau quand le robot corrige un lien.
+Sans lui, les articles corrigés redeviendraient non lus **et** « nouveaux »
+d'un coup, comme les 453 de l'incident d'octobre.
+
+Je l'ai vu en cherchant ses lecteurs avant de coder, et j'ai posé la
+question à Antoni : **on garde les 7 jours** (`JOURS_SOURCE_LINK_PUBLIE`),
+choisis le 06/10 sur mesure. Rien n'a été modifié.
+
+Mesuré le 27/10 sur le `feed.json` publié (3 210 articles), poids gzip selon
+la fenêtre : 7 j **530 Ko** (615 articles portent `source_link`), 3 j 450 Ko
+(204), 2 j 444 Ko (168), 1 j 429 Ko (91), aucune 410 Ko. Si le poids redevient
+un sujet, réduire la fenêtre est le levier, pas supprimer le champ.

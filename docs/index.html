@@ -212,6 +212,13 @@
   .countdown::after{
     content:""; position:absolute; top:-22px; bottom:-8px; left:-8px; right:-8px;
   }
+  .silence-chip{
+    display:block; margin-top:6px; padding:0 10px; min-height:44px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+    color:var(--text); background:var(--bg-elevated);
+    border:1px solid var(--line); border-radius:var(--r-full); cursor:pointer;
+  }
+  .silence-chip[hidden]{display:none;}
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
     color:var(--compte-soon);
@@ -1092,6 +1099,23 @@
     color:var(--text); text-align:center; margin:0 0 14px;
   }
 
+  /* L'AGENDA, sous les dodos : au plus cinq lignes. Chaque ligne passe à la
+     ligne plutôt que de déborder (320 px). Le passé d'un jour est grisé par
+     la couleur de texte secondaire, jamais par l'opacité : l'opacité
+     ferait tomber le contraste sous le seuil. */
+  .compteur-agenda{list-style:none; margin:0 0 14px; padding:0;}
+  .compteur-agenda li{
+    display:flex; flex-wrap:wrap; gap:2px 8px; align-items:baseline;
+    padding:6px 0; border-top:1px solid var(--line);
+    font-size:13px; color:var(--text); overflow-wrap:anywhere;
+  }
+  .compteur-agenda li.passe{color:var(--text-dim);}
+  .compteur-agenda .ag-j{
+    font-family:'JetBrains Mono',monospace; font-weight:700; min-width:4.5em;
+  }
+  .compteur-agenda .ag-t{flex:1 1 12em; min-width:0;}
+  .compteur-agenda .ag-s{font-size:11px; color:var(--text-dim);}
+
   /* LA BARRE PORTE SON POURCENTAGE. Il était en légende dessous, ce qui
      faisait une ligne de texte de plus pour un chiffre que la barre
      montre déjà.
@@ -1298,6 +1322,19 @@
     --compte-urgent:#b4530a;    /* 5,02:1 */
     --compte-final:#b91c1c;     /* 6,47:1, c'est --danger */
   }
+  /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
+     Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
+     thème clair : illisible, et resté invisible tant qu'aucun article à
+     trois sources ne tombait dans ce que le balayage de contraste rend.
+     Le 27/10/2026 le fil en a eu un, et c'est la CI de toutes les PR qui
+     est passée au rouge — Dependabot compris.
+     Le fond est teinté, donc la mesure se fait sur le fond COMPOSITÉ
+     (255,228,219 sur une carte blanche), pas sur le blanc : #b4530a, qui
+     passe 5,02:1 sur blanc, ne fait que 4,15 ici. #8f4407 donne 5,79 sur
+     la carte, 5,45 sur --bg et 5,28 sur --bg-elevated, les trois fonds où
+     le badge peut se trouver. Le sombre (6,22 et 5,76) ne bouge pas. */
+  :root{--hot-texte:#ff8c3d;}
+  html[data-theme="light"]{--hot-texte:#8f4407;}
   :root{--langue-fr:#3987e5; --langue-en:#d95926;}
   html[data-theme="light"]{--langue-fr:#1d4ed8; --langue-en:#eb6834;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
@@ -1523,7 +1560,7 @@
   }
   .tag-badge.tag-hot{
     background:color-mix(in srgb, #ff6b35 18%, transparent);
-    color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
+    color:var(--hot-texte); border:1px solid var(--hot-texte); font-weight:800;
   }
   .history-line{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap;
@@ -1884,6 +1921,10 @@
         <h1 class="brand">GTA6<span>_WATCH</span></h1>
         <button type="button" id="countdown" class="countdown"
                 aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
+        <!-- La pastille du silence : visible SEULEMENT pendant un « ne pas
+             déranger », avec son heure de fin. Un appui l'annule. -->
+        <button type="button" id="silenceChip" class="silence-chip" hidden
+                onclick="finSilence()"></button>
       </div>
       <div class="header-right">
         <div id="modeIndicator" class="mode-indicator"></div>
@@ -2349,6 +2390,7 @@
       <div class="setting-buttons">
         <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer</button>
         <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Aperçu</button>
+        <button class="small" id="silenceBtn" onclick="basculeSilence()">Silence 2 h</button>
         <!-- Le bouton ci-dessus n'affiche qu'une notification LOCALE : il
              montre à quoi ça ressemble, il ne prouve RIEN sur la chaîne
              d'envoi. Celui-ci déclenche un vrai envoi signé depuis GitHub,
@@ -3832,7 +3874,17 @@ function squeletteTexte(t){
   return String(t || "").toLowerCase().replace(/[^0-9a-zà-ÿ]+/g, "");
 }
 function nettoieResume(description, titre){
-  const texte = stripHtml(description || "");
+  let texte = stripHtml(description || "");
+  // UNE DEUXIÈME PASSE DE DÉCODAGE, comme `nettoie_resume` côté robot : un
+  // flux qui a échappé son HTML deux fois donne « &amp;nbsp; », que le
+  // premier décodage (innerHTML) laisse en « &nbsp; ». Trouvé le 27/10/2026
+  // par les vecteurs partagés avec le robot (vecteurs_resume.json), qui
+  // divergeaient sur ce cas. Un <textarea> décode sans interpréter de balise.
+  if(texte.includes("&")){
+    const t = document.createElement("textarea");
+    t.innerHTML = texte;
+    texte = t.value.replace(/\s+/g, " ").trim().slice(0, 500);
+  }
   if(!texte) return "";
   const sqResume = squeletteTexte(texte);
   // corpsDuTitre, et pas une TROISIÈME façon de retirer le nom du média :
@@ -5331,7 +5383,7 @@ const RE_DATE = /date de sortie|release date|launch date/i;
 //
 // Tous les juges lisent ce corps-là, les neuf d'octobre compris : deux
 // notions de « titre » dans le même fichier finiraient par diverger.
-const RE_SUFFIXE_MEDIA = /\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4})$/;
+const RE_SUFFIXE_MEDIA = /\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4}|https?:\/\/\S+)$/;
 function corpsDuTitre(item){
   return String((item && item.title) || "").replace(RE_SUFFIXE_MEDIA, "");
 }
@@ -6513,14 +6565,33 @@ function jourSemaineParis(d){
 // (1 411 queues sont bien un média) : au plus 32 caractères, 4 mots, pas de
 // ponctuation finale. Appliquée aux seuls agrégateurs : sur un flux natif,
 // la source EST le média, et une queue de titre y serait un sous-titre.
-function mediaDe(item){
-  const source = item.source || "?";
-  if(!/google news/i.test(source)) return source;
+// LA QUEUE BRUTE D'UN TITRE « Sujet - Nom du média », et seulement si elle
+// ressemble à un média. Séparée de mediaDe parce que deux fonctions en ont
+// besoin avec deux questions différentes : mediaDe veut le NOM à afficher,
+// titreSansMedia veut le texte EXACT à retirer du titre. Quand l'éditeur
+// met son adresse en guise de nom (« - https://tech-insider.org/ »), les
+// deux ne sont plus la même chaîne — l'une est un domaine, l'autre une URL.
+function queueDeTitre(item){
   const t = (item.title || "").trim();
   const i = t.lastIndexOf(" - ");
   const queue = i > 0 ? t.slice(i + 3).trim() : "";
+  // Une URL tient lieu de nom de média chez certains éditeurs : 22 articles
+  // sur 2 970 le 24/10/2026, tous de tech-insider.org sauf un. Le test
+  // générique ci-dessous la refusait déjà (elle finit par « / »), si bien
+  // que l'affichage retombait sur le repli — qui, lui, rendait l'URL telle
+  // quelle, en majuscules : « HTTPS://TECH-INSIDER.ORG/ ».
+  if(/^https?:\/\/\S+$/i.test(queue)) return queue;
   if(queue && queue.length <= 32 && queue.split(/\s+/).length <= 4
      && !/[.?!,;:)"»’]$/.test(queue)) return queue;
+  return "";
+}
+
+function mediaDe(item){
+  const source = item.source || "?";
+  if(!/google news/i.test(source)) return source;
+  const queue = queueDeTitre(item);
+  // Le NOM d'un média qui s'est donné en URL, c'est son domaine.
+  if(queue) return /^https?:\/\//i.test(queue) ? (domaineDe(queue) || queue) : queue;
   // LE REPLI, et pourquoi il existe. Mesuré le 16/10/2026 sur les 262
   // articles d'agrégateur chargés : la queue de titre donne le média 260
   // fois, soit 99 %. Pour les deux autres, le DOMAINE du lien reste exact —
@@ -6544,7 +6615,10 @@ function domaineDe(url){
 function titreSansMedia(item){
   const m = mediaDe(item);
   const t = (item.title || "").trim();
-  return (m !== item.source && t.endsWith(" - " + m)) ? t.slice(0, -(m.length + 3)) : t;
+  // La queue EXACTE du titre, pas le nom affiché : pour « - https://x.org/ »
+  // le nom affiché est « x.org », et le titre ne se termine pas par lui.
+  const coupe = (/google news/i.test(item.source || "") && queueDeTitre(item)) || m;
+  return (m !== item.source && t.endsWith(" - " + coupe)) ? t.slice(0, -(coupe.length + 3)) : t;
 }
 
 // Mots vides, et les mots que TOUT le fil contient : les compter ne dirait
@@ -7694,6 +7768,91 @@ function setPushStatus(message, kind){
 // La section n'apparaît que si les notifications sont réellement possibles :
 // navigateur compatible ET clé publique publiée par le backend. Proposer un
 // bouton qui ne peut pas marcher serait pire que ne rien proposer.
+// ---------- Ne pas déranger (2 h) ----------
+// Le réglage vit dans le Cache API, pas dans localStorage : le service worker
+// ne lit pas localStorage, et c'est LUI qui compose la notification. Même
+// cache, même adresse que dans sw.js ; docs/notif-options.js porte la durée
+// (un test vérifie que les deux chiffres sont les mêmes).
+const PREFS_CACHE = "gta6watch-prefs";
+const SILENCE_URL = "./prefs/silence";
+const SILENCE_MS = 2 * 3600 * 1000;
+let silenceJusqua = null;
+let silenceMinuteur = null;
+
+async function lireSilencePage(){
+  try{
+    const cache = await caches.open(PREFS_CACHE);
+    const rep = await cache.match(SILENCE_URL);
+    if(!rep) return null;
+    const d = await rep.json();
+    return d && typeof d.jusqua === "number" ? d.jusqua : null;
+  }catch(e){
+    return null;
+  }
+}
+
+async function ecrireSilencePage(jusqua){
+  try{
+    const cache = await caches.open(PREFS_CACHE);
+    if(jusqua === null) await cache.delete(SILENCE_URL);
+    else await cache.put(SILENCE_URL, new Response(JSON.stringify({ jusqua: jusqua }),
+      { headers: { "Content-Type": "application/json" } }));
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+function silenceEnCours(maintenant){
+  return silenceJusqua !== null && maintenant < silenceJusqua
+      && silenceJusqua - maintenant <= SILENCE_MS;
+}
+
+function majSilenceUI(){
+  const maintenant = Date.now();
+  const actif = silenceEnCours(maintenant);
+  const puce = document.getElementById("silenceChip");
+  const bouton = document.getElementById("silenceBtn");
+  if(puce){
+    puce.hidden = !actif;
+    if(actif){
+      const fin = new Date(silenceJusqua).toLocaleTimeString("fr-FR",
+        { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
+      puce.textContent = "😴 silence jusqu'à " + fin;
+      puce.setAttribute("aria-label", "Notifications en silence jusqu'à " + fin + ". Appuyer pour annuler.");
+    }
+  }
+  if(bouton) bouton.textContent = actif ? "Fin du silence" : "Silence 2 h";
+  // Se remet à jour pile à l'échéance, app ouverte ou non réveillée.
+  if(silenceMinuteur){ clearTimeout(silenceMinuteur); silenceMinuteur = null; }
+  if(actif) silenceMinuteur = setTimeout(majSilenceUI, silenceJusqua - maintenant + 50);
+}
+
+async function chargeSilence(){
+  silenceJusqua = await lireSilencePage();
+  majSilenceUI();
+}
+
+async function debutSilence(){
+  const jusqua = Date.now() + SILENCE_MS;
+  if(!(await ecrireSilencePage(jusqua))){
+    montreToast("Silence impossible sur ce navigateur.");
+    return;
+  }
+  silenceJusqua = jusqua;
+  majSilenceUI();
+}
+
+async function finSilence(){
+  await ecrireSilencePage(null);
+  silenceJusqua = null;
+  majSilenceUI();
+}
+
+function basculeSilence(){
+  return silenceEnCours(Date.now()) ? finSilence() : debutSilence();
+}
+
 async function refreshPushUI(){
   const group = document.getElementById("pushGroup");
   if(!group) return;
@@ -8546,6 +8705,117 @@ function tuilesDecoupe(d, classe, coupeTete){
   return tuilesCompteur(bouts, classe, phraseDecoupe(d));
 }
 
+// ---------- L'AGENDA : les prochains rendez-vous datés ----------
+//
+// Demandé par Antoni le 27/10/2026. Mesuré ce jour-là sur le fil : les titres
+// des dix derniers jours citent quatre échéances à venir (le 29/10, le 12/11
+// pour la précharge, le 18/11 pour l'embargo des tests, le 19/11), et rien
+// dans l'app ne les rassemble.
+//
+// LA LISTE EST TENUE À LA MAIN (docs/agenda.json), pas extraite des titres :
+// lire une date dans un titre est trop fragile, et une date fausse affichée
+// dans le compteur se verrait. Aucune des trois entrées n'a de source
+// officielle dans le fil, d'où le statut « presse » sur chacune.
+//
+// Fonction PURE, avant tout affichage : c'est elle qui porte les pièges, et
+// les pièges se gardent mieux sur une fonction que sur un écran.
+
+// Aucune entrée vérifiée depuis plus longtemps que ça n'est présentée comme
+// sûre : une date de presse vieillit.
+const AGENDA_REVERIF_JOURS = 14;
+const AGENDA_LIGNES_MAX = 5;
+
+// Le jour civil à Paris, « 2026-11-12 ». « en-CA » parce que c'est la locale
+// qui écrit année-mois-jour ; c'est le FUSEAU, posé explicitement, qui compte.
+function jourParis(date){
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(date);
+}
+
+// Un « AAAA-MM-JJ » qui est un vrai jour : « 2026-13-45 » passe une regex
+// et déborde sur l'année suivante dès qu'on le donne à Date.UTC.
+function jourIsoValide(s){
+  if(typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toISOString().slice(0, 10) === s;
+}
+
+// Écart en JOURS CIVILS entre deux « AAAA-MM-JJ » : positif si b est après a.
+// Jamais une division de millisecondes entre deux instants : le 25/10/2026
+// dure 25 heures à Paris, et c'est le piège que le compteur de dodos a déjà
+// rencontré. Ici les deux bouts sont des dates sans heure, passées par UTC.
+function ecartJoursCivils(a, b){
+  const ms = (s) => { const [y, m, d] = s.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+  return Math.round((ms(b) - ms(a)) / 86400000);
+}
+
+// Les rendez-vous à montrer, du plus proche au plus lointain. Tout ce qui est
+// mal formé est ÉCARTÉ plutôt que de faire planter le panneau : un agenda
+// corrompu ne doit jamais empêcher le compteur de s'ouvrir.
+function rendezVousAVenir(agenda, maintenant){
+  const brutes = (agenda && Array.isArray(agenda.entrees)) ? agenda.entrees : [];
+  const aujourdhui = jourParis(maintenant);
+  const sortie = [];
+  for(const e of brutes){
+    if(!e || !jourIsoValide(e.date)) continue;
+    if(typeof e.libelle !== "string" || !e.libelle.trim()) continue;
+    const jours = ecartJoursCivils(aujourdhui, e.date);
+    // Passé d'un jour : grisé. Au-delà : disparu.
+    if(jours < -1) continue;
+    sortie.push({
+      date: e.date,
+      libelle: e.libelle.trim(),
+      jours: jours,
+      etat: jours > 0 ? "avenir" : (jours === 0 ? "aujourdhui" : "passe"),
+      // Un statut inconnu vaut « presse », jamais « annonce » : on ne
+      // promeut une date au rang d'annonce officielle que sur un mot exact.
+      statut: e.statut === "annonce" ? "annonce" : "presse",
+      source: (e.source && typeof e.source.lien === "string") ? e.source : null,
+      // Pas de date de vérification lisible = à revérifier.
+      aRevoir: !jourIsoValide(e.verifie_le)
+               || ecartJoursCivils(e.verifie_le, aujourdhui) > AGENDA_REVERIF_JOURS,
+    });
+  }
+  sortie.sort((x, y) => x.date < y.date ? -1 : (x.date > y.date ? 1 : 0));
+  return sortie.slice(0, AGENDA_LIGNES_MAX);
+}
+
+// ---------- Agenda du panneau ----------
+// Chargé à l'ouverture du panneau, jamais au démarrage de l'app. TOUT échec
+// (hors-ligne, 404, JSON corrompu) laisse `agendaCharge` à null : le panneau
+// s'ouvre sans la section, sans erreur ni message.
+let agendaCharge = null;
+
+function chargeAgenda(){
+  return fetch("./agenda.json", { cache: "no-cache" })
+    .then((r) => r.ok ? r.json() : null)
+    .then((d) => { agendaCharge = d; })
+    .catch(() => { agendaCharge = null; });
+}
+
+function libelleJours(r){
+  if(r.etat === "aujourdhui") return "Aujourd'hui";
+  if(r.etat === "passe") return "Hier";
+  return "J-" + r.jours;
+}
+
+function htmlAgenda(maintenant){
+  const lignes = rendezVousAVenir(agendaCharge, maintenant);
+  if(!lignes.length) return "";
+  return `<ul class="compteur-agenda" aria-label="Prochains rendez-vous">`
+    + lignes.map((r) => {
+      const jour = new Date(r.date + "T12:00:00Z").toLocaleDateString("fr-FR",
+        { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+      const statut = (r.statut === "annonce" ? "annoncé" : "selon la presse")
+        + (r.aRevoir ? " · à revérifier" : "");
+      return `<li class="${r.etat}"><span class="ag-j">${escapeHtml(libelleJours(r))}</span>`
+        + `<span class="ag-t">${escapeHtml(jour)} · ${escapeHtml(r.libelle)}</span>`
+        + `<span class="ag-s">${escapeHtml(statut)}</span></li>`;
+    }).join("")
+    + `</ul>`;
+}
+
 function majPanneauCompteur(){
   const el = document.getElementById("compteurContenu");
   if(!el) return;
@@ -8601,6 +8871,7 @@ function majPanneauCompteur(){
     + (avant
         ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>`
         : "")
+    + htmlAgenda(maintenant)
     + tuilesCompteur([
         [nombreFr(ecart / 86400000), "jours", false],
         [nombreFr(ecart / 3600000), "heures", false],
@@ -8626,6 +8897,7 @@ let battementCompteur = null;
 
 function ouvreCompteur(){
   majPanneauCompteur();
+  chargeAgenda().then(majPanneauCompteur);
   document.getElementById("compteurOverlay").classList.add("open");
   debutDialogue("compteurOverlay", { fermer: fermeCompteur });
   if(battementCompteur) clearInterval(battementCompteur);
@@ -9269,6 +9541,7 @@ chargerReprise();
 chargeRecherches();
 loadState();
 updateCountdown();
+chargeSilence();
 // Relève la signature de référence sans attendre : c'est celle de la
 // version en train de tourner.
 verifieVersionApp();

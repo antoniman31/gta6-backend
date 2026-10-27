@@ -1113,6 +1113,47 @@ réserves au pire cas, ça donne 5,12 Mo, au-delà du quota. 4 000 tient à
 constantes et refuse qu'elles franchissent 5 Mo. Éprouvé en le cassant
 des deux côtés.
 
+### Revue d'améliorations du 24/10 — où elle en est (27/10/2026)
+
+Antoni a choisi de tout faire. **Fait** : `CLAUDE.md` et le nom de média qui
+était une URL (voir le README, « Revue d'améliorations, première tranche »).
+**Reste, dans cet ordre** :
+
+1. ~~**Vecteurs de test partagés Python/JS**~~ — **FAIT le 27/10/2026** (voir le README, « Des vecteurs partagés ») : `nettoie_resume` ↔
+   `nettoieResume` et la regex du suffixe de média existent en double et
+   seule leur présence est vérifiée. Un fichier d'entrées/sorties lu par les
+   deux suites ferait échouer toute divergence. Reprend le cas tech-insider.
+2. **Mesurer `og:description` sur 24 h** : une ligne de journal dans
+   `fetch_og_image`. 85,5 % des résumés sont vides, donc le bouton d'aperçu
+   n'existe que sur 14,5 % des cartes. On ne décide qu'après la mesure, et ce
+   chantier veut une mini-spec (plafond de requêtes, extrait tronqué, jamais
+   le texte complet).
+3. ~~**Temps par source dans `sources_health`**~~ — **FAIT le 27/10/2026** (voir le README, « Le temps de chaque source »). Reste à LIRE les vraies durées au prochain passage du robot : : le robot a doublé de durée
+   les 22 et 23/10 (36 s → 70 s) puis est revenu à 36 s le 27 ; on ne peut
+   pas dire pourquoi, aucun temps n'est enregistré.
+4. ~~**Retirer `source_link`**~~ — **ABANDONNÉ le 27/10/2026** : l'app s'en sert (`migreLiensDecodes`), voir le README, « `source_link` : je proposais de le retirer, et j'avais tort ». Antoni garde les 7 jours. Ancien énoncé : : 19 % du fil brut, 24,7 % servi, **zéro**
+   décodage évité (950 sur 950 sont dans `decode-cache.json`).
+
+**Non vérifié, et ça compte** : que GitHub Pages **compresse le JSON**. La
+recherche n'a renvoyé que de la documentation GitLab. Sans compression le
+fil complet pèse 3,3 Mo, pas 0,8 ; le premier écran n'a de toute façon besoin
+que de `feed-recent.json` (0,33 Mo brut). Se vérifie en 30 secondes dans
+l'onglet Réseau de Chrome, colonne « Content-Encoding ».
+
+**Écartés, avec leurs chiffres** : découper `index.html` (459 Ko, 295
+fonctions, mais 27 tests Python lisent son texte, plus `check_sources_sync`
+et le précache du service worker) ; sortir les commits du robot de `main`
+(déjà tranché) ; tags et versions sémantiques (un seul utilisateur, et
+`CACHE_NAME vN` joue déjà ce rôle).
+
+**Corrigé en route** : le badge « ACTU MAJEURE » à 1,92:1 en thème clair, qui
+faisait passer la CI de toutes les PR au rouge dès que le fil contenait un
+article à trois sources. #201 et #202 (Dependabot) étaient rouges pour cette
+seule raison ; à relancer une fois cette PR fusionnée.
+
+En attente aussi : trois PR Dependabot (#200 `certifi`, #201
+`actions/setup-python`, #202 `soupsieve`).
+
 ### Les résumés d'articles — 20/10/2026
 
 Signalé par Antoni : « ya des bugs dans les descriptions ». Deux défauts,
@@ -1717,3 +1758,20 @@ pas depuis le dépôt : la portée réelle du PAT cron-job.org.
 Deux chiffres de ce fichier étaient faux et sont corrigés : la taille du
 dépôt (l'API GitHub n'est pas un thermomètre) et le nombre de contrôles
 navigateur.
+
+### L'agenda du compteur — où il en est (27/10/2026)
+
+Fait : données, calcul en jours civils, affichage, tests (voir le README,
+« L'agenda du panneau du compteur »). Reste à Antoni : valider toute
+nouvelle date avant qu'elle n'entre dans `docs/agenda.json`, et relire les
+trois existantes à mesure que la presse les confirme ou les dément (passer
+une entrée à `annonce` exige un lien officiel). Prochain lot déjà approuvé :
+« ne pas déranger » (2 h), voir `tasks/spec-silence.md`.
+
+### « Ne pas déranger » — où il en est (27/10/2026)
+
+Fait : fonction pure, `sw.js`, bouton, pastille, tests (voir le README).
+**Reste** : l'essai réel sur l'Android d'Antoni (Chrome) pendant un silence :
+notification visible, ni son ni vibration ; normale après l'échéance. Il
+passe par `test-push.yml` et **demande l'accord d'Antoni** avant l'envoi.
+Si `silent` ou `renotify` se comporte autrement qu'attendu, le dire ici.
