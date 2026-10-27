@@ -1775,3 +1775,19 @@ Fait : fonction pure, `sw.js`, bouton, pastille, tests (voir le README).
 notification visible, ni son ni vibration ; normale après l'échéance. Il
 passe par `test-push.yml` et **demande l'accord d'Antoni** avant l'envoi.
 Si `silent` ou `renotify` se comporte autrement qu'attendu, le dire ici.
+
+### Avant la sortie — ce qui attend Antoni (27/10/2026)
+
+- **Revérifier les trois dates de l'agenda** : elles portent `verifie_le`
+  27/10 ; au-delà de 14 jours (donc dès le 11/11) la ligne dit « à revérifier »,
+  et la simulation du soir du 19/11 le montre sur les trois. Antoni confirme
+  chaque date, puis on met la date du jour (règle : aucune entrée sans lui).
+- **Répétition du 10/11** : la liste à cocher est dans
+  `tasks/repetition-10-11.md`.
+- **Rappels programmés** : lecture d'`og:description` le 28/10 à 21 h 07, lecture
+  des durées par source le 2/11 à 10 h 10 (Paris). Ces sessions n'ont aucun
+  connecteur MCP : si la lecture des journaux GitHub y est impossible, le dire
+  et lire les durées dans l'historique git de `docs/feed.json`, qui ne dépend
+  pas des journaux.
+- **Gel** : jusqu'au 10/11 on peut ajouter ; après la répétition, correctifs
+  seulement (choix d'Antoni).
