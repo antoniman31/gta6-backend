@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1898
+qui permet de tester tout le pipeline sans sortir de la machine. **1924
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9314,3 +9314,130 @@ Ne couvre que le code de ce dépôt. Les articles agrégés restent la propriét
 de leurs éditeurs respectifs, et « Grand Theft Auto » est une marque déposée
 de Take-Two Interactive : ce projet n'est ni affilié à Rockstar Games ni
 approuvé par eux.
+
+### L'agenda du panneau du compteur — 27/10/2026
+
+Voulu par Antoni (« je propose, tu valides ») : sous les dodos du panneau,
+jusqu'à cinq rendez-vous avec leur « J-N ». Trois entrées, validées une à
+une : 29/10 (prochaine actualité officielle), 12/11 (début de la précharge)
+et 18/11 (levée de l'embargo des tests), toutes `presse` pour l'instant.
+
+- **Données** : `docs/agenda.json`, validé par `test_agenda_est_valide`
+  (dates ISO triées et sans doublon, libellé ≤ 80 caractères, source https,
+  `annonce` réservé à un domaine officiel, `verifie_le` non futur).
+- **Jours civils à Paris** : `rendezVousAVenir` compte en jours civils, pas
+  en tranches de 24 h (le 25/10/2026 en dure 25). Le contrôle
+  `test_agenda_jours_civils` place ses vecteurs à la seconde de part et
+  d'autre de minuit, aux deux changements d'heure.
+- **Résistance** : le fichier est chargé à l'ouverture du panneau ; absent,
+  404 ou JSON corrompu, le compteur s'ouvre sans section et sans erreur.
+  Une entrée mal formée est écartée, pas fatale. Au-delà de 14 jours sans
+  vérification, la ligne dit « à revérifier ».
+- **Rendu** (`test_agenda_dans_le_panneau`) : aucune cellule ne déborde à
+  320 px (mesure par `scrollWidth` en plus des boîtes), contraste ≥ 4,5:1
+  dans les deux thèmes, aucune opacité. Éprouvé par mutation : retour à la
+  ligne supprimé, opacité ajoutée et repeint oublié sont **détectés**.
+- **Règle** : aucune entrée n'est ajoutée sans validation d'Antoni
+  (`CLAUDE.md`).
+
+### « Ne pas déranger », 2 heures — 27/10/2026
+
+Voulu par Antoni, **une seule durée** : un silence oublié la nuit de la
+sortie coûterait plus cher que le confort d'un choix.
+
+- **Où** : bouton « Silence 2 h » dans les réglages des notifications, et
+  pastille « 😴 silence jusqu'à HH:MM » (heure de Paris) sous le compteur de
+  l'en-tête ; un appui sur la pastille annule.
+- **Comment** : le service worker ne lisant pas `localStorage`, le réglage
+  est un cache à part, `gta6watch-prefs`, écrit par la page et lu par
+  `sw.js`. L'`activate` supprimait tous les caches sauf le sien : il
+  épargne maintenant celui-là, sans quoi chaque déploiement aurait effacé
+  le silence.
+- **Les options** vivent dans `docs/notif-options.js`
+  (`optionsNotification`, pure). En silence : `silent`, `renotify` coupé,
+  **ni `vibrate` ni `requireInteraction`** (`silent` avec `vibrate` lève une
+  `TypeError`). La notification reste **visible**, faute de quoi le
+  navigateur révoquerait l'abonnement. Une échéance à plus de deux heures
+  est jugée corrompue et ignorée.
+- **Tests** (`test_ne_pas_deranger`, 27 contrôles) : la fonction pure à la
+  milliseconde de l'échéance ; le vrai `sw.js` exécuté avec un faux
+  environnement (activation, push silencieux, expiré, sans réglage, réglage
+  illisible) ; la page (écriture, rechargement, annulation, échéance,
+  320 px, cible de 44 px). Éprouvé par cinq mutations, **cinq détectées** :
+  exemption retirée, `vibrate` ajouté, `<=` à l'échéance, garde de
+  corruption retirée, silence non lu par `sw.js`.
+- **Non vérifié** : `silent` n'a été lu que dans des extraits de recherche
+  (MDN injoignable d'ici), et l'effet de `renotify` combiné à `silent` est
+  inconnu. L'essai sur l'Android d'Antoni tranchera ; il faut son accord
+  avant d'envoyer un push de test.
+- Deux contrôles anciens lisaient le badge et la vibration dans `sw.js` ;
+  ils lisent maintenant `notif-options.js` aussi.
+
+### Des vecteurs partagés entre le robot et le mode de secours — 27/10/2026
+
+`nettoie_resume` (Python) et `nettoieResume` (JavaScript) existent en double
+et seule leur *présence* était vérifiée. Un fichier, `vecteurs_resume.json`
+(16 cas : entités, balises, espaces insécables, titre répété, seuil de 25
+caractères à l'unité près, suffixe de média en URL), est maintenant lu par
+**les deux suites** : `test_vecteurs_du_resume` dans `test_pipeline.py` et
+dans `test_navigateur.py`.
+
+- **Il a trouvé une divergence réelle** : un flux qui échappe son HTML deux
+  fois (`&amp;nbsp;`) était décodé deux fois par le robot et une seule par le
+  mode de secours, qui affichait `&nbsp;` en toutes lettres. Corrigé côté
+  JavaScript par une seconde passe de décodage (cache v59).
+- **Éprouvé par mutation, tout détecté** : côté Python, seuil 25→24, regex
+  du suffixe sans l'URL, une seule passe de décodage, espaces insécables non
+  reconnus ; côté JavaScript, seuil 25→26, seconde passe retirée, regex sans
+  l'URL. Deux premiers vecteurs ne distinguaient rien (le résumé portait
+  lui-même l'URL) : un cas où le résumé n'a que le titre nu l'a rendu
+  discriminant.
+
+### Le temps de chaque source dans `sources_health` — 27/10/2026
+
+Le robot a doublé de durée les 22 et 23/10 (36 s → 70 s) puis est revenu à
+36 s le 27, et **on ne pouvait pas dire pourquoi** : aucun temps par source
+n'était enregistré. Chaque entrée de `sources_health` porte maintenant
+`duree_ms`, et le journal du robot ajoute une ligne « ⏱ les sources les plus
+lentes à ce passage ».
+
+- **Ce qui est mesuré** : la requête et la lecture du flux, **sans** la pause
+  de politesse qui précède un second flux du même hôte (c'est la durée de la
+  source, pas celle de la file où elle attend). Une source reprise coûte ses
+  **deux** tentatives. Une source jamais mesurée dit `None`, pas zéro.
+- **Ce qui ne l'est pas** : le décodage des liens Google News et la
+  récupération des images, qui se font après, par lot et non par source.
+- **Poids** : simulé sur le `feed.json` publié (70 sources, durées tirées au
+  hasard entre 150 et 9 000 ms) : **+1 111 octets bruts (0,058 %), +245 octets
+  gzip (0,045 %)**. Les vraies durées seront mesurées au prochain passage.
+- **Une erreur de ma part, corrigée** : `test_fetch_parallele_identique`
+  comparait l'état HTTP de chaque source d'égal à égal, et la durée, qui
+  change à chaque passage, l'a fait échouer. Le test ignore maintenant ce
+  seul champ (c'est une mesure, pas un contenu) et vérifie à part qu'il
+  existe partout sur le chemin parallèle. Aucun seuil n'a bougé.
+- **Tests** (`test_duree_par_source`) : pause de politesse exclue, reprise
+  sommée, `None` conservé. Éprouvé par trois mutations, **trois détectées**
+  (pause incluse dans la durée, sommation de la reprise retirée, `None`
+  remplacé par zéro). **Ma première version du test ne détectait pas la
+  première** : avec deux flux sur un même hôte, `chaines_par_hote` les met
+  dans deux files et personne n'attend ; il en faut quatre pour qu'un flux
+  attende derrière un autre. Corrigé et rejoué.
+
+### `source_link` : je proposais de le retirer, et j'avais tort — 27/10/2026
+
+Le point 4 de la revue du 24/10 proposait de retirer `source_link` (19 % du
+fil brut, 24,7 % servi) parce que **zéro** décodage était évité (950 sur 950
+dans `decode-cache.json`). Cette mesure ne regardait que **le robot**. L'app
+lit aussi ce champ : `migreLiensDecodes` s'en sert pour déplacer « lu » et
+« vu » de l'ancien lien vers le nouveau quand le robot corrige un lien.
+Sans lui, les articles corrigés redeviendraient non lus **et** « nouveaux »
+d'un coup, comme les 453 de l'incident d'octobre.
+
+Je l'ai vu en cherchant ses lecteurs avant de coder, et j'ai posé la
+question à Antoni : **on garde les 7 jours** (`JOURS_SOURCE_LINK_PUBLIE`),
+choisis le 06/10 sur mesure. Rien n'a été modifié.
+
+Mesuré le 27/10 sur le `feed.json` publié (3 210 articles), poids gzip selon
+la fenêtre : 7 j **530 Ko** (615 articles portent `source_link`), 3 j 450 Ko
+(204), 2 j 444 Ko (168), 1 j 429 Ko (91), aucune 410 Ko. Si le poids redevient
+un sujet, réduire la fenêtre est le levier, pas supprimer le champ.
