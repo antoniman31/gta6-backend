@@ -9494,3 +9494,16 @@ cartes ; on ne décide **rien** avant d'avoir le chiffre.
   atteint, aucun article avec résumé n'avait de page mesurée), et les
   contrôles écrits sous `redirect_stdout` partaient dans le tampon au lieu
   du terminal. Les contrôles se font maintenant après la redirection.
+
+### Simulation de la nuit du 19/11 — 27/10/2026
+
+Rejouée dans un navigateur à 390 px, horloge posée à 23:59:45 Paris le
+18/11, puis +20 s, +30 min et +12 h. Résultat : à 00:00:05 le panneau dit
+« Depuis la sortie » (6 s), la barre « Sorti », la ligne des dodos a disparu,
+l'agenda montre « Hier » en gris pour le 18/11, aucune erreur JavaScript.
+
+**Ce que la simulation a montré** : le 18/11, les trois entrées de l'agenda
+portent « à revérifier » (vérifiées le 27/10, soit plus de 14 jours). C'est le
+comportement voulu, mais il faut donc **revérifier les dates avant la sortie** ;
+c'est noté dans `RESTE-A-FAIRE.md`. La liste de la répétition du 10/11 est
+dans `tasks/repetition-10-11.md`.
