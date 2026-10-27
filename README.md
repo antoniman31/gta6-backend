@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1920
+qui permet de tester tout le pipeline sans sortir de la machine. **1924
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9392,3 +9392,33 @@ dans `test_navigateur.py`.
   l'URL. Deux premiers vecteurs ne distinguaient rien (le résumé portait
   lui-même l'URL) : un cas où le résumé n'a que le titre nu l'a rendu
   discriminant.
+
+### Le temps de chaque source dans `sources_health` — 27/10/2026
+
+Le robot a doublé de durée les 22 et 23/10 (36 s → 70 s) puis est revenu à
+36 s le 27, et **on ne pouvait pas dire pourquoi** : aucun temps par source
+n'était enregistré. Chaque entrée de `sources_health` porte maintenant
+`duree_ms`, et le journal du robot ajoute une ligne « ⏱ les sources les plus
+lentes à ce passage ».
+
+- **Ce qui est mesuré** : la requête et la lecture du flux, **sans** la pause
+  de politesse qui précède un second flux du même hôte (c'est la durée de la
+  source, pas celle de la file où elle attend). Une source reprise coûte ses
+  **deux** tentatives. Une source jamais mesurée dit `None`, pas zéro.
+- **Ce qui ne l'est pas** : le décodage des liens Google News et la
+  récupération des images, qui se font après, par lot et non par source.
+- **Poids** : simulé sur le `feed.json` publié (70 sources, durées tirées au
+  hasard entre 150 et 9 000 ms) : **+1 111 octets bruts (0,058 %), +245 octets
+  gzip (0,045 %)**. Les vraies durées seront mesurées au prochain passage.
+- **Une erreur de ma part, corrigée** : `test_fetch_parallele_identique`
+  comparait l'état HTTP de chaque source d'égal à égal, et la durée, qui
+  change à chaque passage, l'a fait échouer. Le test ignore maintenant ce
+  seul champ (c'est une mesure, pas un contenu) et vérifie à part qu'il
+  existe partout sur le chemin parallèle. Aucun seuil n'a bougé.
+- **Tests** (`test_duree_par_source`) : pause de politesse exclue, reprise
+  sommée, `None` conservé. Éprouvé par trois mutations, **trois détectées**
+  (pause incluse dans la durée, sommation de la reprise retirée, `None`
+  remplacé par zéro). **Ma première version du test ne détectait pas la
+  première** : avec deux flux sur un même hôte, `chaines_par_hote` les met
+  dans deux files et personne n'attend ; il en faut quatre pour qu'un flux
+  attende derrière un autre. Corrigé et rejoué.

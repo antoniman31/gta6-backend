@@ -2157,15 +2157,26 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
                 # Politesse : jamais deux requêtes consécutives vers le même
                 # domaine sans marquer une pause.
                 time.sleep(HOST_PAUSE)
+            # Le temps de la requête et de la lecture du flux, SANS la pause
+            # de politesse ci-dessus : c'est la durée de la source, pas celle
+            # de la file où elle attend derrière un autre site du même hôte.
+            # Mesurée parce que le robot a doublé de durée les 22 et 23/10
+            # (36 s → 70 s) sans qu'aucun temps par source ne permette de
+            # dire laquelle.
+            debut = time.perf_counter()
             try:
-                sortie[feed["id"]] = une(feed, decoded_cache, etat)
+                items, info, journal = une(feed, decoded_cache, etat)
             except Exception as e:
                 # Une source qui casse de façon imprévue ne doit pas emporter
                 # les 34 autres avec elle. En séquentiel, une exception non
                 # rattrapée ici arrêtait tout le passage.
-                sortie[feed["id"]] = ([], {"raw_count": 0, "not_modified": False},
-                                      [f"[{feed['name']}] récupération...",
-                                       f"  échec inattendu : {e}"])
+                items, info, journal = (
+                    [], {"raw_count": 0, "not_modified": False},
+                    [f"[{feed['name']}] récupération...",
+                     f"  échec inattendu : {e}"])
+            info = dict(info)
+            info["duree_ms"] = round((time.perf_counter() - debut) * 1000)
+            sortie[feed["id"]] = (items, info, journal)
         return sortie
 
     def passe(liste, etat):
@@ -2201,6 +2212,10 @@ def fetch_all_feeds(feeds, decoded_cache=None, http_state=None, collecte=None):
             # Le journal du premier est conservé au-dessus, sinon la reprise
             # effacerait la trace de la panne qu'elle vient de rattraper.
             entete = premier[2] if premier else []
+            # La source a coûté les DEUX tentatives.
+            info = dict(info)
+            info["duree_ms"] = (info.get("duree_ms") or 0) + (
+                (premier[1].get("duree_ms") or 0) if premier else 0)
             resultats[fid] = (items, info, entete + [
                 "  rien rapporté — seconde tentative, sans requête conditionnelle :"
             ] + journal[1:])
@@ -3899,6 +3914,9 @@ def build_sources_health(all_items, feed_infos, new_counts):
             # Code HTTP du dernier passage, pour lire un 403 sans ouvrir
             # les logs du run. None quand la requête n'a pas abouti.
             "http_status": info.get("http_status"),
+            # Durée de la collecte de cette source à ce passage (ms), tentatives
+            # comprises, pauses de politesse exclues. None si non mesurée.
+            "duree_ms": info.get("duree_ms"),
             # Adresse d'arrivée si le flux a déménagé — l'URL à recopier
             # dans FEEDS pour réparer la source.
             "redirect": info.get("redirect"),
@@ -3935,6 +3953,11 @@ def build_sources_health(all_items, feed_infos, new_counts):
         for h in taries:
             age = f"{h['days_since_last_article']} j" if h["days_since_last_article"] is not None else "jamais"
             print(f"    - {h['name']} ({age})")
+    lentes = sorted((h for h in health if h.get("duree_ms")),
+                    key=lambda h: -h["duree_ms"])[:5]
+    if lentes:
+        print("\n⏱ les sources les plus lentes à ce passage : "
+              + " · ".join(f"{h['name']} {h['duree_ms'] / 1000:.1f} s" for h in lentes))
     if not muettes and not taries:
         print(f"\nToutes les sources ont répondu et ont publié dans les {SILENT_SOURCE_DAYS} derniers jours.")
 
