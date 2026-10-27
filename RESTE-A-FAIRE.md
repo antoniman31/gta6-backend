@@ -1123,7 +1123,7 @@ Antoni a choisi de tout faire. **Fait** : `CLAUDE.md` et le nom de média qui
    `nettoieResume` et la regex du suffixe de média existent en double et
    seule leur présence est vérifiée. Un fichier d'entrées/sorties lu par les
    deux suites ferait échouer toute divergence. Reprend le cas tech-insider.
-2. **Mesurer `og:description` sur 24 h** : une ligne de journal dans
+2. **Mesurer `og:description` sur 24 h** — **CODÉ le 27/10/2026, à LIRE** (voir le README, « La mesure d'`og:description` ») : après 24 passages du robot suivant le déploiement, additionner les lignes `[og:description]` du journal et décider si on conserve un extrait. Énoncé d'origine : : une ligne de journal dans
    `fetch_og_image`. 85,5 % des résumés sont vides, donc le bouton d'aperçu
    n'existe que sur 14,5 % des cartes. On ne décide qu'après la mesure, et ce
    chantier veut une mini-spec (plafond de requêtes, extrait tronqué, jamais

@@ -731,6 +731,106 @@ def _fausse_collecte(feed, decoded_cache=None, http_state=None):
     return items, {"raw_count": 2, "not_modified": False}, [f"[{feed['name']}] ok"]
 
 
+def test_mesure_og_description():
+    """La mesure d'og:description lit des LONGUEURS, plafonnée, sans texte.
+
+    Spec : tasks/spec-og-description.md. Cinq garanties, chacune avec son
+    contrôle : la lecture de la balise (et son ordre de repli), zéro requête
+    de plus pour une page déjà lue pour son image, le plafond de l'échantillon,
+    l'état « refusée », et — surtout — aucun extrait de page dans le journal.
+    """
+    print("\n[og:description] la mesure, sans stocker de texte")
+    import contextlib, io
+    import fetch_feeds
+    from bs4 import BeautifulSoup
+
+    def soupe(html):
+        return BeautifulSoup(html, "html.parser")
+
+    m = fetch_feeds.mesure_description
+    check(m(soupe('<meta property="og:description" content="Bonjour le monde">'))
+          == {"etat": "presente", "longueur": 16}, "og:description présente : sa longueur")
+    check(m(soupe('<meta name="description" content="  abc  ">'))["longueur"] == 3,
+          "à défaut, la balise description ordinaire, espaces retirés")
+    check(m(soupe('<meta name="twitter:description" content="xy">'))["longueur"] == 2,
+          "à défaut encore, celle de Twitter")
+    check(m(soupe('<meta property="og:description" content="   "><meta name="description" content="reste">'))
+          ["longueur"] == 5, "une og:description vide ne masque pas la description suivante")
+    check(m(soupe('<html><head><title>x</title></head></html>')) == {"etat": "absente", "longueur": 0},
+          "aucune balise : absente")
+
+    class Rep:
+        def __init__(self, texte):
+            self.text = texte
+        def raise_for_status(self):
+            pass
+
+    page = ('<meta property="og:image" content="https://i.example/a.jpg">'
+            '<meta property="og:description" content="SECRET-EXTRAIT-DE-PAGE">')
+    vrai_get = fetch_feeds.requests.get
+    appels = []
+
+    def faux_get(url, **kw):
+        appels.append(url)
+        if "refuse" in url:
+            raise RuntimeError("403")
+        return Rep(page)
+
+    fetch_feeds._MESURES_PAGES.clear()
+    fetch_feeds.requests.get = faux_get
+    sortie = io.StringIO()
+    # Les contrôles se font APRÈS la redirection : dans le bloc, leurs lignes
+    # (et leurs échecs) partiraient dans le tampon au lieu du terminal.
+    try:
+        with contextlib.redirect_stdout(sortie):
+            image = fetch_feeds.fetch_og_image("https://a.example/1")
+            fetch_feeds.fetch_og_image("https://a.example/refuse")
+            appels_image = list(appels)
+            mesures = dict(fetch_feeds._MESURES_PAGES)
+
+            # L'échantillon : plafonné, sans résumé, avec image, jamais deux fois.
+            appels.clear()
+            # La page déjà lue vient EN TÊTE : sans le garde « jamais deux fois »
+            # elle prendrait une des 8 places, et le contrôle le verrait.
+            items = [{"link": "https://a.example/1", "image": "i", "description": "", "source": "S0"}]
+            items += [{"link": "https://b.example/%d" % n, "image": "i", "description": "",
+                       "source": "S%d" % (n % 2)} for n in range(12)]
+            items += [{"link": "https://c.example/avec-resume", "image": "i", "description": "déjà un résumé", "source": "S0"},
+                      {"link": "https://c.example/sans-image", "image": None, "description": "", "source": "S0"}]
+            lues = fetch_feeds.echantillonne_descriptions(items, plafond=8)
+            appels_echantillon = list(appels)
+
+            # Deux pièges pour le rapport : une page mesurée dont l'article A un
+            # résumé (hors de la question posée), et une page refusée.
+            rapport = fetch_feeds.rapport_descriptions(items + [
+                {"link": "https://a.example/1", "image": "i", "description": "un résumé", "source": "S2"},
+                {"link": "https://a.example/refuse", "image": None, "description": "", "source": "S1"}])
+    finally:
+        fetch_feeds.requests.get = vrai_get
+        fetch_feeds._MESURES_PAGES.clear()
+
+    check(image == "https://i.example/a.jpg" and appels_image == ["https://a.example/1", "https://a.example/refuse"],
+          "fetch_og_image rend toujours l'image, en UNE requête par page")
+    check(mesures.get("https://a.example/1") == {"etat": "presente", "longueur": 22}
+          and mesures.get("https://a.example/refuse", {}).get("etat") == "refusee",
+          "la page lue pour l'image fournit la mesure sans requête de plus, et un refus se note")
+    check(lues == 8 and len(appels_echantillon) == 8,
+          "l'échantillon est plafonné à 8 pages sur 12 candidates (%d lues, %d requêtes)"
+          % (lues, len(appels_echantillon)))
+    check(not any("avec-resume" in u or "sans-image" in u or u == "https://a.example/1" for u in appels_echantillon),
+          "il saute les articles qui ont un résumé, ceux sans image, et les pages déjà lues")
+    check("S2" not in rapport,
+          "une page mesurée dont l'article a un résumé n'entre pas dans le rapport")
+    check(rapport["S1"]["refusee"] == 1 and rapport["S0"]["presente"] + rapport["S1"]["presente"] == 9
+          and all(l == 22 for r in rapport.values() for l in r["longueurs"]),
+          "le rapport compte par source : présentes (8 échantillonnées + 1 lue pour son image), refusées, et les longueurs")
+    check("SECRET-EXTRAIT-DE-PAGE" not in sortie.getvalue() and "[og:description]" in sortie.getvalue(),
+          "le journal porte des nombres, et AUCUN extrait de la page")
+    with contextlib.redirect_stdout(io.StringIO()):
+        vide = fetch_feeds.rapport_descriptions([{"link": "https://z.example/", "description": ""}])
+    check(vide is None, "sans page mesurée, le rapport se tait")
+
+
 def test_duree_par_source():
     """Chaque source porte le temps de sa collecte dans `sources_health`.
 
@@ -10092,6 +10192,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_agenda_est_valide,
            test_vecteurs_du_resume,
            test_duree_par_source,
+           test_mesure_og_description,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,
