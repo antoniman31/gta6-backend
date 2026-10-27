@@ -454,7 +454,12 @@ def test_push_payload():
     check(off.get("officiel") is True and "officiel" not in un,
           "le drapeau qui déclenche vibration et bannière persistante n'est posé que sur elle")
     sw = open("docs/sw.js", encoding="utf-8").read()
-    check("vibrate: contenu.officiel" in sw and "requireInteraction: !!contenu.officiel" in sw,
+    # Les options vivent dans docs/notif-options.js depuis le « ne pas
+    # déranger » (27/10/2026) ; le service worker doit l'appeler.
+    opts = open("docs/notif-options.js", encoding="utf-8").read()
+    check("if(contenu.officiel)" in opts and "options.vibrate = [200, 100, 200]" in opts
+          and "options.requireInteraction = true" in opts
+          and "optionsNotification(contenu" in sw,
           "et le service worker s'en sert vraiment")
 
     # L'exigence de fond : Discord et le push disent MOT POUR MOT la même
@@ -7930,7 +7935,10 @@ def test_panneau_parametres_structure():
 def test_badge_de_notification_a_un_canal_alpha():
     print("\n[push] le badge de la barre d'état n'est pas un carré blanc")
     import json, re, struct
-    sw = open("docs/sw.js", encoding="utf-8").read()
+    # Le badge est déclaré dans notif-options.js, que sw.js appelle : on lit
+    # les deux comme un seul texte, l'unique showNotification étant dans sw.js.
+    sw = (open("docs/sw.js", encoding="utf-8").read()
+          + open("docs/notif-options.js", encoding="utf-8").read())
     page = open("docs/index.html", encoding="utf-8").read()
 
     # Il y a DEUX endroits qui affichent une notification, pas un : le

@@ -212,6 +212,13 @@
   .countdown::after{
     content:""; position:absolute; top:-22px; bottom:-8px; left:-8px; right:-8px;
   }
+  .silence-chip{
+    display:block; margin-top:6px; padding:0 10px; min-height:44px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+    color:var(--text); background:var(--bg-elevated);
+    border:1px solid var(--line); border-radius:var(--r-full); cursor:pointer;
+  }
+  .silence-chip[hidden]{display:none;}
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
     color:var(--compte-soon);
@@ -1914,6 +1921,10 @@
         <h1 class="brand">GTA6<span>_WATCH</span></h1>
         <button type="button" id="countdown" class="countdown"
                 aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
+        <!-- La pastille du silence : visible SEULEMENT pendant un « ne pas
+             déranger », avec son heure de fin. Un appui l'annule. -->
+        <button type="button" id="silenceChip" class="silence-chip" hidden
+                onclick="finSilence()"></button>
       </div>
       <div class="header-right">
         <div id="modeIndicator" class="mode-indicator"></div>
@@ -2379,6 +2390,7 @@
       <div class="setting-buttons">
         <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer</button>
         <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Aperçu</button>
+        <button class="small" id="silenceBtn" onclick="basculeSilence()">Silence 2 h</button>
         <!-- Le bouton ci-dessus n'affiche qu'une notification LOCALE : il
              montre à quoi ça ressemble, il ne prouve RIEN sur la chaîne
              d'envoi. Celui-ci déclenche un vrai envoi signé depuis GitHub,
@@ -7746,6 +7758,91 @@ function setPushStatus(message, kind){
 // La section n'apparaît que si les notifications sont réellement possibles :
 // navigateur compatible ET clé publique publiée par le backend. Proposer un
 // bouton qui ne peut pas marcher serait pire que ne rien proposer.
+// ---------- Ne pas déranger (2 h) ----------
+// Le réglage vit dans le Cache API, pas dans localStorage : le service worker
+// ne lit pas localStorage, et c'est LUI qui compose la notification. Même
+// cache, même adresse que dans sw.js ; docs/notif-options.js porte la durée
+// (un test vérifie que les deux chiffres sont les mêmes).
+const PREFS_CACHE = "gta6watch-prefs";
+const SILENCE_URL = "./prefs/silence";
+const SILENCE_MS = 2 * 3600 * 1000;
+let silenceJusqua = null;
+let silenceMinuteur = null;
+
+async function lireSilencePage(){
+  try{
+    const cache = await caches.open(PREFS_CACHE);
+    const rep = await cache.match(SILENCE_URL);
+    if(!rep) return null;
+    const d = await rep.json();
+    return d && typeof d.jusqua === "number" ? d.jusqua : null;
+  }catch(e){
+    return null;
+  }
+}
+
+async function ecrireSilencePage(jusqua){
+  try{
+    const cache = await caches.open(PREFS_CACHE);
+    if(jusqua === null) await cache.delete(SILENCE_URL);
+    else await cache.put(SILENCE_URL, new Response(JSON.stringify({ jusqua: jusqua }),
+      { headers: { "Content-Type": "application/json" } }));
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+function silenceEnCours(maintenant){
+  return silenceJusqua !== null && maintenant < silenceJusqua
+      && silenceJusqua - maintenant <= SILENCE_MS;
+}
+
+function majSilenceUI(){
+  const maintenant = Date.now();
+  const actif = silenceEnCours(maintenant);
+  const puce = document.getElementById("silenceChip");
+  const bouton = document.getElementById("silenceBtn");
+  if(puce){
+    puce.hidden = !actif;
+    if(actif){
+      const fin = new Date(silenceJusqua).toLocaleTimeString("fr-FR",
+        { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
+      puce.textContent = "😴 silence jusqu'à " + fin;
+      puce.setAttribute("aria-label", "Notifications en silence jusqu'à " + fin + ". Appuyer pour annuler.");
+    }
+  }
+  if(bouton) bouton.textContent = actif ? "Fin du silence" : "Silence 2 h";
+  // Se remet à jour pile à l'échéance, app ouverte ou non réveillée.
+  if(silenceMinuteur){ clearTimeout(silenceMinuteur); silenceMinuteur = null; }
+  if(actif) silenceMinuteur = setTimeout(majSilenceUI, silenceJusqua - maintenant + 50);
+}
+
+async function chargeSilence(){
+  silenceJusqua = await lireSilencePage();
+  majSilenceUI();
+}
+
+async function debutSilence(){
+  const jusqua = Date.now() + SILENCE_MS;
+  if(!(await ecrireSilencePage(jusqua))){
+    montreToast("Silence impossible sur ce navigateur.");
+    return;
+  }
+  silenceJusqua = jusqua;
+  majSilenceUI();
+}
+
+async function finSilence(){
+  await ecrireSilencePage(null);
+  silenceJusqua = null;
+  majSilenceUI();
+}
+
+function basculeSilence(){
+  return silenceEnCours(Date.now()) ? finSilence() : debutSilence();
+}
+
 async function refreshPushUI(){
   const group = document.getElementById("pushGroup");
   if(!group) return;
@@ -9434,6 +9531,7 @@ chargerReprise();
 chargeRecherches();
 loadState();
 updateCountdown();
+chargeSilence();
 // Relève la signature de référence sans attendre : c'est celle de la
 // version en train de tourner.
 verifieVersionApp();
