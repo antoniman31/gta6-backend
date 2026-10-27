@@ -8581,6 +8581,82 @@ function tuilesDecoupe(d, classe, coupeTete){
   return tuilesCompteur(bouts, classe, phraseDecoupe(d));
 }
 
+// ---------- L'AGENDA : les prochains rendez-vous datés ----------
+//
+// Demandé par Antoni le 27/10/2026. Mesuré ce jour-là sur le fil : les titres
+// des dix derniers jours citent quatre échéances à venir (le 29/10, le 12/11
+// pour la précharge, le 18/11 pour l'embargo des tests, le 19/11), et rien
+// dans l'app ne les rassemble.
+//
+// LA LISTE EST TENUE À LA MAIN (docs/agenda.json), pas extraite des titres :
+// lire une date dans un titre est trop fragile, et une date fausse affichée
+// dans le compteur se verrait. Aucune des trois entrées n'a de source
+// officielle dans le fil, d'où le statut « presse » sur chacune.
+//
+// Fonction PURE, avant tout affichage : c'est elle qui porte les pièges, et
+// les pièges se gardent mieux sur une fonction que sur un écran.
+
+// Aucune entrée vérifiée depuis plus longtemps que ça n'est présentée comme
+// sûre : une date de presse vieillit.
+const AGENDA_REVERIF_JOURS = 14;
+const AGENDA_LIGNES_MAX = 5;
+
+// Le jour civil à Paris, « 2026-11-12 ». « en-CA » parce que c'est la locale
+// qui écrit année-mois-jour ; c'est le FUSEAU, posé explicitement, qui compte.
+function jourParis(date){
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(date);
+}
+
+// Un « AAAA-MM-JJ » qui est un vrai jour : « 2026-13-45 » passe une regex
+// et déborde sur l'année suivante dès qu'on le donne à Date.UTC.
+function jourIsoValide(s){
+  if(typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toISOString().slice(0, 10) === s;
+}
+
+// Écart en JOURS CIVILS entre deux « AAAA-MM-JJ » : positif si b est après a.
+// Jamais une division de millisecondes entre deux instants : le 25/10/2026
+// dure 25 heures à Paris, et c'est le piège que le compteur de dodos a déjà
+// rencontré. Ici les deux bouts sont des dates sans heure, passées par UTC.
+function ecartJoursCivils(a, b){
+  const ms = (s) => { const [y, m, d] = s.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+  return Math.round((ms(b) - ms(a)) / 86400000);
+}
+
+// Les rendez-vous à montrer, du plus proche au plus lointain. Tout ce qui est
+// mal formé est ÉCARTÉ plutôt que de faire planter le panneau : un agenda
+// corrompu ne doit jamais empêcher le compteur de s'ouvrir.
+function rendezVousAVenir(agenda, maintenant){
+  const brutes = (agenda && Array.isArray(agenda.entrees)) ? agenda.entrees : [];
+  const aujourdhui = jourParis(maintenant);
+  const sortie = [];
+  for(const e of brutes){
+    if(!e || !jourIsoValide(e.date)) continue;
+    if(typeof e.libelle !== "string" || !e.libelle.trim()) continue;
+    const jours = ecartJoursCivils(aujourdhui, e.date);
+    // Passé d'un jour : grisé. Au-delà : disparu.
+    if(jours < -1) continue;
+    sortie.push({
+      date: e.date,
+      libelle: e.libelle.trim(),
+      jours: jours,
+      etat: jours > 0 ? "avenir" : (jours === 0 ? "aujourdhui" : "passe"),
+      // Un statut inconnu vaut « presse », jamais « annonce » : on ne
+      // promeut une date au rang d'annonce officielle que sur un mot exact.
+      statut: e.statut === "annonce" ? "annonce" : "presse",
+      source: (e.source && typeof e.source.lien === "string") ? e.source : null,
+      // Pas de date de vérification lisible = à revérifier.
+      aRevoir: !jourIsoValide(e.verifie_le)
+               || ecartJoursCivils(e.verifie_le, aujourdhui) > AGENDA_REVERIF_JOURS,
+    });
+  }
+  sortie.sort((x, y) => x.date < y.date ? -1 : (x.date > y.date ? 1 : 0));
+  return sortie.slice(0, AGENDA_LIGNES_MAX);
+}
+
 function majPanneauCompteur(){
   const el = document.getElementById("compteurContenu");
   if(!el) return;

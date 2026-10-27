@@ -3457,6 +3457,128 @@ def test_mode_sans_spoiler(nav, url):
     ctx.close()
 
 
+def test_agenda_jours_civils(nav, url):
+    """Le « J-N » de l'agenda tient aux frontières de minuit, à Paris.
+
+    Les pièges sont ceux du compteur de dodos : un jour n'est pas 24 heures
+    (le 25/10/2026 en dure 25 à Paris), et minuit à Paris n'est pas minuit
+    UTC. Les vecteurs se placent à la SECONDE de chaque côté des frontières.
+    """
+    print("\n[agenda] J-N en jours civils à Paris")
+    ctx = nav.new_context(viewport={"width": 390, "height": 900},
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    r = page.evaluate("""() => {
+        const e = (date, extra) => Object.assign({
+          date: date, libelle: "Rdv " + date, statut: "presse",
+          verifie_le: "2026-10-27",
+          source: {media: "M", titre: "T", lien: "https://x.test/a"}}, extra || {});
+        const un = (date, iso, extra) =>
+          rendezVousAVenir({entrees: [e(date, extra)]}, new Date(iso))[0] || null;
+        const J = (x) => x ? x.jours : null;
+        return {
+          // Minuit à Paris le 12/11/2026, heure d'hiver : 23:00 UTC la veille.
+          avantMinuit: J(un("2026-11-12", "2026-11-11T22:59:59Z")),
+          apresMinuit: J(un("2026-11-12", "2026-11-11T23:00:00Z")),
+          etatJour: (un("2026-11-12", "2026-11-11T23:00:00Z") || {}).etat,
+          finDuJour: J(un("2026-11-12", "2026-11-12T22:59:59Z")),
+          lendemain: J(un("2026-11-12", "2026-11-12T23:00:00Z")),
+          etatLendemain: (un("2026-11-12", "2026-11-12T23:00:00Z") || {}).etat,
+          deuxJoursApres: un("2026-11-12", "2026-11-13T23:00:00Z"),
+          // Le passage à l'heure d'hiver : le 25/10/2026, 03:00 -> 02:00.
+          // Minuit du 25 tombe à 22:00 UTC (encore UTC+2)...
+          avantDST: J(un("2026-10-25", "2026-10-24T21:59:59Z")),
+          apresDST: J(un("2026-10-25", "2026-10-24T22:00:00Z")),
+          // ... et minuit du 26 à 23:00 UTC (déjà UTC+1) : une heure plus
+          // tard dans le calendrier UTC que la veille, parce que le 25
+          // dure 25 heures.
+          avantDST26: J(un("2026-10-26", "2026-10-25T22:59:59Z")),
+          apresDST26: J(un("2026-10-26", "2026-10-25T23:00:00Z")),
+          // LE VECTEUR QUI DISCRIMINE. À 00:30 UTC le 25/10 il est 02:30 à
+          // Paris, et il reste 22,5 h avant minuit du 26 : une division par
+          // 24 h donnerait 0 jour. Le calendrier dit J-1. (Un premier vecteur
+          // — 48,5 h pour deux jours — rendait 2 des deux façons et ne
+          // prouvait rien.)
+          vingtCinqHeures: J(un("2026-10-26", "2026-10-25T00:30:00Z")),
+          // À revérifier : la 14e journée passe encore, la 15e non.
+          revoir14: un("2026-11-20", "2026-11-10T12:00:00Z").aRevoir,
+          revoir15: un("2026-11-20", "2026-11-11T12:00:00Z").aRevoir,
+          sansVerif: un("2026-11-20", "2026-10-28T12:00:00Z", {verifie_le: undefined}).aRevoir,
+          // Un statut inconnu ne devient JAMAIS une annonce.
+          statutInconnu: un("2026-11-20", "2026-10-28T12:00:00Z", {statut: "officiel"}).statut,
+          statutAnnonce: un("2026-11-20", "2026-10-28T12:00:00Z", {statut: "annonce"}).statut,
+        };
+    }""")
+    check(r["avantMinuit"] == 1 and r["apresMinuit"] == 0,
+          "minuit à Paris est la frontière du jour : J-1 à 23:59:59, J-0 à "
+          "00:00:00 (%s puis %s)" % (r["avantMinuit"], r["apresMinuit"]))
+    check(r["etatJour"] == "aujourdhui",
+          "le jour même s'annonce « aujourd'hui » (%s)" % r["etatJour"])
+    check(r["finDuJour"] == 0 and r["lendemain"] == -1
+          and r["etatLendemain"] == "passe",
+          "le lendemain, l'entrée est « passée » et grisée (%s, %s, %s)"
+          % (r["finDuJour"], r["lendemain"], r["etatLendemain"]))
+    check(r["deuxJoursApres"] is None,
+          "deux jours après, elle a disparu (%s)" % r["deuxJoursApres"])
+    check(r["avantDST"] == 1 and r["apresDST"] == 0,
+          "le changement d'heure du 25/10 ne décale pas la frontière : J-1 "
+          "puis J-0 à la seconde (%s puis %s)" % (r["avantDST"], r["apresDST"]))
+    check(r["avantDST26"] == 1 and r["apresDST26"] == 0,
+          "ni celle du lendemain, que le 25 de 25 heures repousse d'une heure "
+          "UTC (%s puis %s)" % (r["avantDST26"], r["apresDST26"]))
+    check(r["vingtCinqHeures"] == 1,
+          "le jour du changement d'heure : 22,5 h avant minuit, c'est J-1 et "
+          "pas 0 comme le rendrait une division par 24 h (%s)" % r["vingtCinqHeures"])
+    check(r["revoir14"] is False and r["revoir15"] is True,
+          "« à revérifier » au-delà de 14 jours exactement (%s puis %s)"
+          % (r["revoir14"], r["revoir15"]))
+    check(r["sansVerif"] is True,
+          "sans date de vérification lisible, l'entrée est à revérifier")
+    check(r["statutInconnu"] == "presse" and r["statutAnnonce"] == "annonce",
+          "un statut inconnu vaut « presse », seul « annonce » est une annonce "
+          "(%s, %s)" % (r["statutInconnu"], r["statutAnnonce"]))
+
+    # LA ROBUSTESSE : un agenda cassé ne doit jamais planter le panneau.
+    robuste = page.evaluate("""() => {
+        const m = new Date("2026-10-28T12:00:00Z");
+        const cas = [null, undefined, {}, {entrees: "x"}, {entrees: [null, 3, "x"]},
+          {entrees: [{date: "2026-13-45", libelle: "x"}]},
+          {entrees: [{date: "2026-02-30", libelle: "x"}]},
+          {entrees: [{date: "2026-11-12"}]},
+          {entrees: [{date: "2026-11-12", libelle: "   "}]},
+          {entrees: [{date: 20261112, libelle: "x"}]}];
+        return cas.map(c => { try { return rendezVousAVenir(c, m).length; }
+                              catch(e){ return "EXCEPTION " + e.message; } });
+    }""")
+    check(all(x == 0 for x in robuste),
+          "dix agendas cassés, aucun plante et aucun ne rend d'entrée (%s)" % robuste)
+
+    # LE TRI ET LA LIMITE.
+    tri = page.evaluate("""() => {
+        const m = new Date("2026-10-28T12:00:00Z");
+        const e = (d) => ({date: d, libelle: "L" + d, statut: "presse",
+                           verifie_le: "2026-10-27", source: {lien: "https://x.test"}});
+        const brouille = ["2026-12-05", "2026-11-02", "2026-11-30", "2026-11-12",
+                          "2026-11-19", "2026-11-05", "2026-11-25"].map(e);
+        return rendezVousAVenir({entrees: brouille}, m).map(x => x.date);
+    }""")
+    check(tri == ["2026-11-02", "2026-11-05", "2026-11-12", "2026-11-19", "2026-11-25"],
+          "sept entrées en désordre : les cinq plus proches, dans l'ordre (%s)" % tri)
+
+    check(page.evaluate("""() => [jourIsoValide("2026-02-28"), jourIsoValide("2026-02-30"),
+                                  jourIsoValide("2026-13-01"), jourIsoValide("26-11-12"),
+                                  jourIsoValide(20261112)]""")
+          == [True, False, False, False, False],
+          "un jour impossible est refusé, pas débordé sur le mois suivant")
+    check(not err, "[agenda] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
+
+
 def test_panneau_du_compteur(nav, url):
     """Appuyer sur le compte à rebours ouvre son détail.
 
@@ -5767,6 +5889,7 @@ def main():
             test_compte_a_rebours(nav, url)
             test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
+            test_agenda_jours_civils(nav, url)
             test_panneau_du_compteur(nav, url)
             test_budget_du_stockage(nav, url)
             test_contraste_partout(nav, url)
