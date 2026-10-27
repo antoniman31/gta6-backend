@@ -6,7 +6,7 @@ ligne ne se passe pas comme écrit, note laquelle et dis-le moi.
 ## 1. Le compteur (touche le compte à rebours sous le titre)
 - [ ] Le panneau s'ouvre sur « Avant la sortie ».
 - [ ] Une ligne « 😴 … dodo(s) » sous la barre de pourcentage.
-- [ ] L'agenda, sous les dodos : le **12/11** à « J-2 » et le **18/11** à « J-8 ». Le 29/10 a disparu.
+- [ ] L'agenda, sous les dodos : le **9/11** à « Hier » (en gris), le **12/11** à « J-2 » et le **18/11** à « J-8 ». Le 29/10 a disparu.
 - [ ] Rien ne déborde à droite ; le texte long passe à la ligne.
 - [ ] Le pourcentage de la barre est lisible dans le clair et le sombre (⚙️ → thème).
 
@@ -26,6 +26,6 @@ ligne ne se passe pas comme écrit, note laquelle et dis-le moi.
 la ligne des dodos disparaît, l'agenda montre « Hier » en gris pour le 18/11.
 Les captures de la simulation (23:59:45, 00:00:05, 00:30, 12:30 le 19/11) sont dans la conversation.
 
-## 5. À faire AVANT le 18/11 (c'est toi qui valides)
-- [ ] **Revérifier les trois dates de l'agenda** (29/10, 12/11, 18/11) : elles portent « vérifié le 27/10 » et la ligne affiche « à revérifier » à partir du **11/11**, donc le soir de la sortie les trois liraient « à revérifier ». Dis-moi lesquelles tu confirmes et je mets la date du jour.
+## 5. Reconfirmer l'agenda, CE JOUR-LÀ (c'est toi qui valides)
+- [ ] Quatre dates : **29/10** (passée à ce moment-là), **9/11** (résultats Take-Two), **12/11** (précharge), **18/11** (embargo des tests). Dis-moi lesquelles tu confirmes : je mets la date du jour sur `verifie_le`, valable **14 jours, soit jusqu'au 24/11**, donc toute la nuit de la sortie. Sans cette reconfirmation, les lignes affichent « à revérifier » dès le 11/11.
 - [ ] Le jeton « gta6watch mobile » expire le **26/11** (rappel prévu le 24/11).
