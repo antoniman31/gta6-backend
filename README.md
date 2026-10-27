@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1916
+qui permet de tester tout le pipeline sans sortir de la machine. **1920
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9372,3 +9372,23 @@ sortie coûterait plus cher que le confort d'un choix.
   avant d'envoyer un push de test.
 - Deux contrôles anciens lisaient le badge et la vibration dans `sw.js` ;
   ils lisent maintenant `notif-options.js` aussi.
+
+### Des vecteurs partagés entre le robot et le mode de secours — 27/10/2026
+
+`nettoie_resume` (Python) et `nettoieResume` (JavaScript) existent en double
+et seule leur *présence* était vérifiée. Un fichier, `vecteurs_resume.json`
+(16 cas : entités, balises, espaces insécables, titre répété, seuil de 25
+caractères à l'unité près, suffixe de média en URL), est maintenant lu par
+**les deux suites** : `test_vecteurs_du_resume` dans `test_pipeline.py` et
+dans `test_navigateur.py`.
+
+- **Il a trouvé une divergence réelle** : un flux qui échappe son HTML deux
+  fois (`&amp;nbsp;`) était décodé deux fois par le robot et une seule par le
+  mode de secours, qui affichait `&nbsp;` en toutes lettres. Corrigé côté
+  JavaScript par une seconde passe de décodage (cache v59).
+- **Éprouvé par mutation, tout détecté** : côté Python, seuil 25→24, regex
+  du suffixe sans l'URL, une seule passe de décodage, espaces insécables non
+  reconnus ; côté JavaScript, seuil 25→26, seconde passe retirée, regex sans
+  l'URL. Deux premiers vecteurs ne distinguaient rien (le résumé portait
+  lui-même l'URL) : un cas où le résumé n'a que le titre nu l'a rendu
+  discriminant.

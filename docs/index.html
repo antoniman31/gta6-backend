@@ -3874,7 +3874,17 @@ function squeletteTexte(t){
   return String(t || "").toLowerCase().replace(/[^0-9a-zà-ÿ]+/g, "");
 }
 function nettoieResume(description, titre){
-  const texte = stripHtml(description || "");
+  let texte = stripHtml(description || "");
+  // UNE DEUXIÈME PASSE DE DÉCODAGE, comme `nettoie_resume` côté robot : un
+  // flux qui a échappé son HTML deux fois donne « &amp;nbsp; », que le
+  // premier décodage (innerHTML) laisse en « &nbsp; ». Trouvé le 27/10/2026
+  // par les vecteurs partagés avec le robot (vecteurs_resume.json), qui
+  // divergeaient sur ce cas. Un <textarea> décode sans interpréter de balise.
+  if(texte.includes("&")){
+    const t = document.createElement("textarea");
+    t.innerHTML = texte;
+    texte = t.value.replace(/\s+/g, " ").trim().slice(0, 500);
+  }
   if(!texte) return "";
   const sqResume = squeletteTexte(texte);
   // corpsDuTitre, et pas une TROISIÈME façon de retirer le nom du média :

@@ -1119,7 +1119,7 @@ Antoni a choisi de tout faire. **Fait** : `CLAUDE.md` et le nom de média qui
 était une URL (voir le README, « Revue d'améliorations, première tranche »).
 **Reste, dans cet ordre** :
 
-1. **Vecteurs de test partagés Python/JS** : `nettoie_resume` ↔
+1. ~~**Vecteurs de test partagés Python/JS**~~ — **FAIT le 27/10/2026** (voir le README, « Des vecteurs partagés ») : `nettoie_resume` ↔
    `nettoieResume` et la regex du suffixe de média existent en double et
    seule leur présence est vérifiée. Un fichier d'entrées/sorties lu par les
    deux suites ferait échouer toute divergence. Reprend le cas tech-insider.
