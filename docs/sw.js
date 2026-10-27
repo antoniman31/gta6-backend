@@ -21,8 +21,27 @@
 // de l'ancien service worker, ce qui évite de revivre l'incident de cache
 // tenace jamais élucidé. Ici c'est indispensable : sans remplacement,
 // l'ancien service worker resterait actif et ignorerait les push.
-const CACHE_NAME = "gta6watch-shell-v55";
+const CACHE_NAME = "gta6watch-shell-v59";
 const SHELL_URL = "./index.html";
+importScripts("notif-options.js");
+
+// Le réglage « ne pas déranger » vit dans ce cache, écrit par la page et lu
+// ici (le service worker ne lit pas localStorage). Il doit SURVIVRE à
+// l'activation : sans l'exemption ci-dessous, chaque déploiement l'effacerait.
+const PREFS_CACHE = "gta6watch-prefs";
+const SILENCE_URL = "./prefs/silence";
+
+async function lireSilence(){
+  try{
+    const cache = await caches.open(PREFS_CACHE);
+    const rep = await cache.match(SILENCE_URL);
+    if(!rep) return null;
+    const d = await rep.json();
+    return d && typeof d.jusqua === "number" ? d.jusqua : null;
+  }catch(e){
+    return null;
+  }
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -34,7 +53,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((names) =>
-      Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
+      Promise.all(names.filter((n) => n !== CACHE_NAME && n !== PREFS_CACHE).map((n) => caches.delete(n)))
     ).then(() => self.clients.claim())
   );
 });
@@ -92,42 +111,9 @@ self.addEventListener("push", (event) => {
   }
 
   event.waitUntil(
-    self.registration.showNotification(contenu.title, {
-      body: contenu.body,
-      icon: "icon-192.png",
-      // Le badge est la petite icône de la barre d'état Android, et il ne
-      // se comporte PAS comme icon : Android n'en garde que le canal alpha
-      // et repeint la forme en blanc, la couleur d'origine est jetée.
-      // icon-192.png était utilisé ici, or les quatre icônes de l'app sont
-      // des PNG de type 2 — RVB, sans aucun canal alpha. Tous les pixels
-      // étant opaques, la silhouette obtenue était le carré entier : d'où
-      // le carré blanc dans la barre d'état, depuis l'ajout des push.
-      // icon-badge.png est fait pour ça : 96x96 en RGBA, un « VI » blanc
-      // sur fond entièrement transparent (16 % de pixels opaques). Un test
-      // vérifie que ce fichier garde son canal alpha.
-      badge: "icon-badge.png",
-      // Un tag identique remplace la notification précédente au lieu
-      // d'empiler douze bannières après une nuit sans regarder le téléphone.
-      tag: contenu.tag,
-      renotify: true,
-      // Une annonce de Rockstar doit se reconnaître SANS avoir à lire le
-      // texte. Les deux notifications commençaient par le même emoji et
-      // avaient le même comportement ; sur un téléphone, à la volée, elles
-      // se confondaient (Antoni, 22/09/2026).
-      //
-      // `vibrate` : une pulsation longue, double, que la routine n'a pas.
-      // `requireInteraction` : la bannière reste tant qu'on ne l'a pas
-      // écartée, au lieu de se replier au bout de quelques secondes. C'est
-      // précisément l'annonce qu'on ne veut pas manquer en reposant son
-      // téléphone — et les trois plus grosses de l'histoire du jeu sont
-      // tombées entre 2h24 et 3h48 du matin.
-      //
-      // Les deux options sont ignorées silencieusement là où elles ne sont
-      // pas gérées : aucun risque pour les autres plateformes.
-      vibrate: contenu.officiel ? [200, 100, 200] : undefined,
-      requireInteraction: !!contenu.officiel,
-      data: { url: contenu.url }
-    })
+    lireSilence().then((jusqua) =>
+      self.registration.showNotification(
+        contenu.title, optionsNotification(contenu, jusqua, Date.now())))
   );
 });
 

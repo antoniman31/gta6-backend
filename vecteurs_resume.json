@@ -1,0 +1,101 @@
+{
+ "_commentaire": "Entrées et sorties attendues de nettoie_resume (Python) ET nettoieResume (JavaScript). Les deux suites lisent ce fichier : toute divergence entre les deux implémentations fait échouer l'une des deux.",
+ "cas": [
+  {
+   "nom": "entité nbsp et apostrophe",
+   "description": "Le trailer de GTA 6&nbsp;&nbsp;Dexerto.fr et l&#8217;annonce",
+   "titre": "Autre titre",
+   "attendu": "Le trailer de GTA 6 Dexerto.fr et l’annonce"
+  },
+  {
+   "nom": "balises retirées",
+   "description": "<p>Rockstar <b>confirme</b> la date.</p>",
+   "titre": "x",
+   "attendu": "Rockstar confirme la date."
+  },
+  {
+   "nom": "espaces multiples",
+   "description": "  a \n\t b   c ",
+   "titre": "x",
+   "attendu": "a b c"
+  },
+  {
+   "nom": "résumé vide",
+   "description": "",
+   "titre": "Titre",
+   "attendu": ""
+  },
+  {
+   "nom": "titre répété + média (Google News)",
+   "description": "Rockstar annonce GTA 6  Dexerto.fr",
+   "titre": "Rockstar annonce GTA 6 - Dexerto.fr",
+   "attendu": ""
+  },
+  {
+   "nom": "titre répété sans média",
+   "description": "Rockstar annonce GTA 6",
+   "titre": "Rockstar annonce GTA 6",
+   "attendu": ""
+  },
+  {
+   "nom": "tech-insider : titre finissant par une URL",
+   "description": "Rockstar annonce GTA 6  https://tech-insider.org/",
+   "titre": "Rockstar annonce GTA 6 - https://tech-insider.org/",
+   "attendu": ""
+  },
+  {
+   "nom": "vrai résumé qui commence par le titre mais en dit plus",
+   "description": "Rockstar annonce GTA 6 et détaille en longueur le contenu de la bande-annonce, les plateformes et la date",
+   "titre": "Rockstar annonce GTA 6",
+   "attendu": "Rockstar annonce GTA 6 et détaille en longueur le contenu de la bande-annonce, les plateformes et la date"
+  },
+  {
+   "nom": "reste de 25 caractères exactement : vidé",
+   "description": "Titre testaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "titre": "Titre test",
+   "attendu": ""
+  },
+  {
+   "nom": "reste de 26 caractères : conservé",
+   "description": "Titre testaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "titre": "Titre test",
+   "attendu": "Titre testaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+   "nom": "titre sans suffixe de média reconnaissable (minuscule)",
+   "description": "Titre test sans media - minuscule en fin",
+   "titre": "Titre test sans media - minuscule en fin",
+   "attendu": ""
+  },
+  {
+   "nom": "tiret à l'intérieur du titre non coupé",
+   "description": "Un - deux - trois",
+   "titre": "Un - deux - Trois",
+   "attendu": ""
+  },
+  {
+   "nom": "accents et casse ignorés dans la comparaison",
+   "description": "ÉVÉNEMENT GTA 6  Média",
+   "titre": "Événement GTA 6 - Média",
+   "attendu": ""
+  },
+  {
+   "nom": "entité numérique hexadécimale",
+   "description": "Prix&#x20AC; 70",
+   "titre": "autre",
+   "attendu": "Prix€ 70"
+  },
+  {
+   "nom": "entité échappée deux fois",
+   "description": "Rockstar&amp;nbsp;confirme &amp;amp; détaille",
+   "titre": "autre",
+   "attendu": "Rockstar confirme & détaille"
+  },
+  {
+   "nom": "suffixe de média sous forme d'URL : le résumé n'a que le titre nu",
+   "description": "Rockstar annonce GTA 6",
+   "titre": "Rockstar annonce GTA 6 - https://tech-insider.org/",
+   "attendu": ""
+  }
+ ]
+}
