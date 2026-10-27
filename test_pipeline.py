@@ -9599,6 +9599,14 @@ def test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien():
     check(fs.nettoie_resume("", "Le titre") == "" and fs.nettoie_resume(None, None) == "",
           "un résumé absent ne plante pas")
 
+    # UNE URL EN GUISE DE NOM DE MÉDIA (24/10/2026). Le résumé, ici, est le
+    # titre SANS la queue : s'il gardait l'URL dans la comparaison, il ne
+    # commencerait plus par elle et serait pris pour un vrai résumé.
+    check(fs.nettoie_resume("GTA VI Survey: 10% Plan to Skip Work Launch Day [2026]",
+                            "GTA VI Survey: 10% Plan to Skip Work Launch Day [2026] - https://tech-insider.org/") == "",
+          "un titre qui se termine par une URL de média est retiré avant la "
+          "comparaison avec le résumé")
+
     # LES BALISES, qui étaient déjà retirées avant — on ne régresse pas.
     check(fs.nettoie_resume("<p>Du <b>texte</b> mis en forme et bien assez long</p>",
                             "T") == "Du texte mis en forme et bien assez long",

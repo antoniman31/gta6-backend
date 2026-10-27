@@ -1778,6 +1778,44 @@ def test_stats_quatre_rubriques(nav, url):
     check(medias[5] == "numerama.com", "le domaine est rendu sans « www. »")
     check(medias[6] == "", "une URL illisible ne rend pas de domaine, elle rend vide")
 
+    # UNE URL EN GUISE DE NOM DE MÉDIA. Vu sur une capture le 24/10/2026 :
+    # « HTTPS://TECH-INSIDER.ORG/ » en tête de carte. 22 articles sur 2 970
+    # ont un titre qui finit par « - https://tech-insider.org/ » — l'éditeur
+    # a mis son adresse là où Google News attend un nom.
+    url = page.evaluate("""() => {
+        const a = {title: "GTA VI Survey: 10% Plan to Skip Work Launch Day [2026] - https://tech-insider.org/",
+                   source: "Google News (EN)"};
+        const b = {title: "Un sujet - https://ascendants.in/", source: "Google News (EN)"};
+        const c = {title: "Un sujet - IGN", source: "Google News (EN)"};
+        return {
+          nom: mediaDe(a), nomB: mediaDe(b),
+          // Le titre affiché ne doit PAS garder l'URL : mediaDe rend un
+          // domaine, et le titre se termine par l'URL entière.
+          titre: titreSansMedia(a), titreB: titreSansMedia(b),
+          // Et le cas ordinaire n'a pas bougé.
+          nomC: mediaDe(c), titreC: titreSansMedia(c),
+          corps: corpsDuTitre(a),
+          // L'URL ne doit pas non plus compter comme un mot du titre pour
+          // les badges : « tech-insider.org » ne parle pas de « insider ».
+          sansFaux: estPC({title: "Un titre neutre - https://pc-news.example/"}),
+        };
+    }""")
+    check(url["nom"] == "tech-insider.org" and url["nomB"] == "ascendants.in",
+          "une URL en guise de média rend son DOMAINE, plus l'adresse brute "
+          "en majuscules (« %s », « %s »)" % (url["nom"], url["nomB"]))
+    check(url["titre"] == "GTA VI Survey: 10% Plan to Skip Work Launch Day [2026]"
+          and url["titreB"] == "Un sujet",
+          "et le titre affiché ne traîne pas l'URL — la queue exacte est "
+          "retirée, pas le nom affiché (« %s »)" % url["titre"])
+    check(url["nomC"] == "IGN" and url["titreC"] == "Un sujet",
+          "un média ordinaire n'a pas bougé (« %s » / « %s »)"
+          % (url["nomC"], url["titreC"]))
+    check("tech-insider" not in url["corps"],
+          "le corps du titre, qui sert aux badges, perd l'URL aussi (« %s »)"
+          % url["corps"][-40:])
+    check(not url["sansFaux"],
+          "un nom de domaine en queue ne déclenche pas un badge (PC)")
+
     s4 = page.evaluate("""(m) => calculeStats([
         {title: "GTA 6 : la bande-annonce dévoilée, la bande-annonce ! - IGN", link: "1", source: "Google News (FR)", date: "2026-10-19T10:00:00Z"},
         {title: "Grand Theft Auto VI trailer devoile - GameSpot", link: "2", source: "Google News (EN)", date: "2026-10-19T11:00:00Z"},
@@ -2015,6 +2053,97 @@ def test_officiel_et_filtres_etroits(nav, url):
               "« Actu majeure » est coupé et personne ne le trouve (%+d px)"
               % (largeur, haut["coupe"]))
         ctx.close()
+
+
+def test_badge_actu_majeure_lisible(nav, url):
+    """Le badge « ACTU MAJEURE » se lit, dans les deux thèmes, TOUT LE TEMPS.
+
+    Il était à 1,92:1 en thème clair (#ff8c3d sur un orange à 18 %). Le
+    balayage de contraste ne l'a vu que le 27/10/2026, quand le vrai fil a
+    eu pour la première fois un article à trois sources dans ce qu'il rend —
+    et ce jour-là la CI de TOUTES les pull requests est passée au rouge,
+    Dependabot compris.
+
+    Un défaut qui n'apparaît que selon le contenu du fil ne se garde pas
+    avec un balayage du fil. Ce contrôle fabrique lui-même l'article.
+    """
+    print("\n[badge] ACTU MAJEURE reste lisible, quel que soit le fil")
+    ctx = nav.new_context(viewport={"width": 390, "height": 900},
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    for theme in ("light", "dark"):
+        m = page.evaluate("""(theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            lastItems = [{
+              link: 'https://h.test/1', source: 'T', lang: 'fr',
+              date: new Date().toISOString(), title: 'GTA 6 : un sujet repris',
+              // deux reprises + l'article = trois rédactions = le seuil
+              extraSources: [{source: 'A', link: 'https://a.test/1'},
+                             {source: 'B', link: 'https://b.test/1'}],
+            }];
+            settings.spoilerMode = false;
+            visibleCount = 100; settings.maxDisplay = 100; badgeActif = null;
+            currentTab = 'all'; currentFilter = 'all'; currentLang = 'all';
+            applyFilters();
+            const badge = document.querySelector('.card .tag-hot');
+            if(!badge) return {absent: true};
+            const carte = badge.closest('.card');
+
+            // LE FOND EST TEINTÉ ET TRANSLUCIDE : color-mix(... 18 %,
+            // transparent). On le COMPOSITE sur la carte en le peignant
+            // réellement sur un canevas, plutôt que d'écrire un second
+            // analyseur de couleurs — Chromium rend color-mix() en
+            // color(srgb 0.07 0.43 ...) et c'est ce qui a déjà faussé un
+            // contrôle ici.
+            const cv = document.createElement('canvas');
+            cv.width = cv.height = 1;
+            const g = cv.getContext('2d', {willReadFrequently: true});
+            const lire = () => [...g.getImageData(0, 0, 1, 1).data].slice(0, 3);
+            g.fillStyle = getComputedStyle(carte).backgroundColor;
+            g.fillRect(0, 0, 1, 1);
+            g.fillStyle = getComputedStyle(badge).backgroundColor;
+            g.fillRect(0, 0, 1, 1);
+            const fond = lire();
+            g.clearRect(0, 0, 1, 1);
+            g.fillStyle = getComputedStyle(badge).color;
+            g.fillRect(0, 0, 1, 1);
+            const texte = lire();
+
+            const lin = (c) => { c /= 255;
+              return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+            const Y = (p) => 0.2126 * lin(p[0]) + 0.7152 * lin(p[1]) + 0.0722 * lin(p[2]);
+            const a = Y(fond), b = Y(texte);
+            return {absent: false, fond: fond, texte: texte,
+                    ratio: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05),
+                    libelle: badge.textContent.trim()};
+        }""", theme)
+        check(not m.get("absent"),
+              "[badge %s] un article à trois rédactions porte bien son badge "
+              "(sinon ce contrôle ne mesure rien)" % theme)
+        if m.get("absent"):
+            continue
+        check("3 SOURCES" in m["libelle"],
+              "[badge %s] il annonce trois sources (« %s »)" % (theme, m["libelle"]))
+        # L'INSTRUMENT D'ABORD. En thème clair le fond composité doit
+        # retrouver ce que le balayage avait mesuré (255, 228, 219) ; si le
+        # canevas ne comprenait pas la couleur, il rendrait du noir ou du
+        # blanc et le rapport ci-dessous serait faux dans un sens ou
+        # l'autre sans que rien ne le dise.
+        if theme == "light":
+            ecart = max(abs(x - y) for x, y in zip(m["fond"], (255, 228, 219)))
+            check(ecart <= 2,
+                  "[badge light] l'instrument est juste : le fond composité "
+                  "retrouve (255, 228, 219) mesuré par le balayage (%s)" % m["fond"])
+        check(m["ratio"] >= 4.5,
+              "[badge %s] le texte se lit : %.2f:1 sur %s (exigé 4,5)"
+              % (theme, m["ratio"], tuple(m["fond"])))
+    check(not err, "[badge] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
 
 
 def test_onglet_actu_majeure(nav, url):
@@ -5632,6 +5761,7 @@ def main():
             test_bloc_incidents(nav, url)
             test_stats_quatre_rubriques(nav, url)
             test_officiel_et_filtres_etroits(nav, url)
+            test_badge_actu_majeure_lisible(nav, url)
             test_onglet_actu_majeure(nav, url)
             test_sources_disent_la_verite(nav, url)
             test_compte_a_rebours(nav, url)

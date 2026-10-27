@@ -1298,6 +1298,19 @@
     --compte-urgent:#b4530a;    /* 5,02:1 */
     --compte-final:#b91c1c;     /* 6,47:1, c'est --danger */
   }
+  /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
+     Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
+     thème clair : illisible, et resté invisible tant qu'aucun article à
+     trois sources ne tombait dans ce que le balayage de contraste rend.
+     Le 27/10/2026 le fil en a eu un, et c'est la CI de toutes les PR qui
+     est passée au rouge — Dependabot compris.
+     Le fond est teinté, donc la mesure se fait sur le fond COMPOSITÉ
+     (255,228,219 sur une carte blanche), pas sur le blanc : #b4530a, qui
+     passe 5,02:1 sur blanc, ne fait que 4,15 ici. #8f4407 donne 5,79 sur
+     la carte, 5,45 sur --bg et 5,28 sur --bg-elevated, les trois fonds où
+     le badge peut se trouver. Le sombre (6,22 et 5,76) ne bouge pas. */
+  :root{--hot-texte:#ff8c3d;}
+  html[data-theme="light"]{--hot-texte:#8f4407;}
   :root{--langue-fr:#3987e5; --langue-en:#d95926;}
   html[data-theme="light"]{--langue-fr:#1d4ed8; --langue-en:#eb6834;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
@@ -1523,7 +1536,7 @@
   }
   .tag-badge.tag-hot{
     background:color-mix(in srgb, #ff6b35 18%, transparent);
-    color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
+    color:var(--hot-texte); border:1px solid var(--hot-texte); font-weight:800;
   }
   .history-line{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap;
@@ -5331,7 +5344,7 @@ const RE_DATE = /date de sortie|release date|launch date/i;
 //
 // Tous les juges lisent ce corps-là, les neuf d'octobre compris : deux
 // notions de « titre » dans le même fichier finiraient par diverger.
-const RE_SUFFIXE_MEDIA = /\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4})$/;
+const RE_SUFFIXE_MEDIA = /\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4}|https?:\/\/\S+)$/;
 function corpsDuTitre(item){
   return String((item && item.title) || "").replace(RE_SUFFIXE_MEDIA, "");
 }
@@ -6513,14 +6526,33 @@ function jourSemaineParis(d){
 // (1 411 queues sont bien un média) : au plus 32 caractères, 4 mots, pas de
 // ponctuation finale. Appliquée aux seuls agrégateurs : sur un flux natif,
 // la source EST le média, et une queue de titre y serait un sous-titre.
-function mediaDe(item){
-  const source = item.source || "?";
-  if(!/google news/i.test(source)) return source;
+// LA QUEUE BRUTE D'UN TITRE « Sujet - Nom du média », et seulement si elle
+// ressemble à un média. Séparée de mediaDe parce que deux fonctions en ont
+// besoin avec deux questions différentes : mediaDe veut le NOM à afficher,
+// titreSansMedia veut le texte EXACT à retirer du titre. Quand l'éditeur
+// met son adresse en guise de nom (« - https://tech-insider.org/ »), les
+// deux ne sont plus la même chaîne — l'une est un domaine, l'autre une URL.
+function queueDeTitre(item){
   const t = (item.title || "").trim();
   const i = t.lastIndexOf(" - ");
   const queue = i > 0 ? t.slice(i + 3).trim() : "";
+  // Une URL tient lieu de nom de média chez certains éditeurs : 22 articles
+  // sur 2 970 le 24/10/2026, tous de tech-insider.org sauf un. Le test
+  // générique ci-dessous la refusait déjà (elle finit par « / »), si bien
+  // que l'affichage retombait sur le repli — qui, lui, rendait l'URL telle
+  // quelle, en majuscules : « HTTPS://TECH-INSIDER.ORG/ ».
+  if(/^https?:\/\/\S+$/i.test(queue)) return queue;
   if(queue && queue.length <= 32 && queue.split(/\s+/).length <= 4
      && !/[.?!,;:)"»’]$/.test(queue)) return queue;
+  return "";
+}
+
+function mediaDe(item){
+  const source = item.source || "?";
+  if(!/google news/i.test(source)) return source;
+  const queue = queueDeTitre(item);
+  // Le NOM d'un média qui s'est donné en URL, c'est son domaine.
+  if(queue) return /^https?:\/\//i.test(queue) ? (domaineDe(queue) || queue) : queue;
   // LE REPLI, et pourquoi il existe. Mesuré le 16/10/2026 sur les 262
   // articles d'agrégateur chargés : la queue de titre donne le média 260
   // fois, soit 99 %. Pour les deux autres, le DOMAINE du lien reste exact —
@@ -6544,7 +6576,10 @@ function domaineDe(url){
 function titreSansMedia(item){
   const m = mediaDe(item);
   const t = (item.title || "").trim();
-  return (m !== item.source && t.endsWith(" - " + m)) ? t.slice(0, -(m.length + 3)) : t;
+  // La queue EXACTE du titre, pas le nom affiché : pour « - https://x.org/ »
+  // le nom affiché est « x.org », et le titre ne se termine pas par lui.
+  const coupe = (/google news/i.test(item.source || "") && queueDeTitre(item)) || m;
+  return (m !== item.source && t.endsWith(" - " + coupe)) ? t.slice(0, -(coupe.length + 3)) : t;
 }
 
 // Mots vides, et les mots que TOUT le fil contient : les compter ne dirait
