@@ -1782,7 +1782,8 @@ RE_BALISE_RESUME = re.compile(r"<[^<]+?>")
 # Les espaces insécables comptent : Google News sépare le titre du nom du
 # média par deux U+00A0, qu'un \s+ ordinaire ne voit pas en Python.
 RE_ESPACES_RESUME = re.compile(r"[\s\u00a0\u2007\u202f\u200b]+")
-RE_MEDIA_RESUME = re.compile(r"\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4})$")
+RE_MEDIA_RESUME = re.compile(
+    r"\s+-\s+(?:[A-ZÀ-Þ0-9][^-]{0,39}|[a-z0-9.]+\.[a-z]{2,4}|https?://\S+)$")
 RE_SQUELETTE = re.compile(r"[^0-9a-zà-ÿ]+")
 RESTE_NOM_DE_MEDIA = 25
 LONGUEUR_RESUME = 500
