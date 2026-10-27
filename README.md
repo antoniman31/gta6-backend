@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1897
+qui permet de tester tout le pipeline sans sortir de la machine. **1898
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9175,6 +9175,103 @@ Newswire seul peut la remplir — les notes de patch passeraient dessous.
 
 Un contrôle refuse maintenant de me croire sur parole : il compte les
 articles de ce domaine déjà présents dans `feed.json`.
+
+### Revue d'améliorations, première tranche — 27/10/2026
+
+Antoni a demandé de passer le projet au crible. Les mesures ont d'abord
+servi à **défaire trois de mes affirmations**, et seulement ensuite à
+proposer.
+
+#### Trois choses que j'avais mal dites
+
+- **« Le fil perd 1 500 articles » : fausse alerte.** Il est passé de 4 470
+  à 2 970 articles entre le 21 et le 24/10, mais c'est la fenêtre de 30
+  jours qui fonctionne : les 411 articles retirés le 22/10 datent tous du 8
+  au 24 septembre, **les 411 sont dans les archives**, aucun officiel n'a
+  été touché. Zéro perdu.
+- **« Les six sources d'après-sortie ne rapporteront rien avant le 19 » :
+  faux.** Elles avaient déjà apporté **71 articles exclusifs** en quatre
+  jours (guides EN 21, online EN 19, tests EN 17, tests FR 6, guides FR 6,
+  patch FR 2).
+- **`rockstar-support` est redondante aujourd'hui** : 100 entrées lues, 0
+  exclusive. Gardée comme assurance pour le 19, à revoir le 22/11.
+
+Les tests écrits le 20/10 ont aussi été éprouvés par mutation : six
+conditions cassées volontairement côté Python, **six fois détectées**. Le
+côté JavaScript n'a pas été rejoué, trop long.
+
+#### JeuxActu : pas une panne de serveur
+
+Le robot la voit en HTTP 503 depuis le 21/10 — mais le journal du passage
+dit `undefined entity` à la ligne 65 : ce qu'il reçoit est une **page HTML
+de refus**, illisible comme du XML, cohérente avec un blocage des clients
+automatiques. Aucune URL de remplacement à chercher. Et ça ne coûte rien :
+sur 6 641 articles (fil et archives), **4** viennent de ce site, tous en
+août. Laissée telle quelle, l'alerte est déjà partie.
+
+Tom's Hardware, nouvellement « tarie », n'est pas cassée non plus : elle
+reçoit ses 50 entrées via une redirection 301 vers `/feeds.xml`, et « tarie »
+veut seulement dire zéro article exclusif.
+
+La sonde, elle, ne dit rien : elle échoue en `Tunnel connection failed: 403`
+parce que **le proxy du conteneur bloque ces hôtes** — comme `github.io`.
+C'est le journal du robot, lu par `get_job_logs`, qui renseigne.
+
+#### Le nom de média qui était une URL
+
+Une capture à 1280 px montrait « HTTPS://TECH-INSIDER.ORG/ » en tête de
+carte. **22 articles sur 2 970** ont un titre qui finit par
+« - https://tech-insider.org/ » : l'éditeur a mis son adresse là où Google
+News attend un nom. Le test générique de `mediaDe` la refusait (elle finit
+par `/`), et le repli rendait alors l'URL brute.
+
+La correction a un piège, et c'est lui que le contrôle garde : si `mediaDe`
+rend le domaine, **`titreSansMedia` ne reconnaît plus la queue** — le titre
+se termine par l'URL entière — et la laisserait affichée. La queue brute est
+donc une fonction à elle (`queueDeTitre`), que les deux appellent pour deux
+questions différentes : le NOM à afficher, le TEXTE exact à retirer.
+La même URL faussait aussi les badges (« pc-news » déclenchait PC) et la
+comparaison titre/résumé : la regex du corps de titre, copiée en JavaScript
+et en Python, la connaît maintenant des deux côtés.
+
+Éprouvé contre l'ancien code : 3 des 5 contrôles JS et le contrôle Python
+échouent sans la correction ; les deux autres sont des gardes de
+régression et passent des deux côtés, volontairement.
+
+#### Un défaut que seul le contenu du fil révélait
+
+En relançant la suite navigateur, le balayage de contraste a rendu un
+verdict que rien dans le code n'expliquait : le badge « 🔥 ACTU MAJEURE »
+tombait à **1,92:1** en thème clair (#ff8c3d sur un orange à 18 %). Le
+défaut était ancien. Il n'était visible que si le fil contenait un article à
+trois sources dans ce que le balayage rend, et le 27/10 il en a eu un pour
+la première fois.
+
+**Conséquence : la CI de toutes les pull requests est passée au rouge**,
+Dependabot compris — #201 et #202 étaient rouges pour cette seule raison.
+C'est la deuxième fois que le balayage, qui lit le vrai fil, bloque des PR
+sans que le code ait changé (la première était `.card-extra`, le 19/10).
+
+Le remède est celui du compteur : un jeton par thème (`--hot-texte`). La
+mesure se fait sur le **fond composité** et non sur le blanc — `#b4530a`,
+qui passe 5,02:1 sur blanc, ne fait que 4,15 sur ce fond teinté. `#8f4407`
+donne 5,79:1 sur la carte, 5,45 sur `--bg`, 5,28 sur `--bg-elevated`. Le
+thème sombre (6,22 et 5,76) ne bouge pas.
+
+**Un défaut qui dépend du contenu ne se garde pas avec un balayage du
+contenu.** Le nouveau contrôle fabrique lui-même l'article à trois sources,
+dans les deux thèmes. Son instrument est validé avant d'être cru : le fond
+composité sur un canevas doit retrouver exactement les (255, 228, 219) que
+le balayage avait mesurés. Éprouvé contre l'ancien CSS : il rend 1,92:1 et
+échoue ; contre le nouveau, 5,79:1.
+
+#### Un `CLAUDE.md`
+
+Il n'en existait pas, et les mêmes règles étaient recopiées dans neuf
+prompts de tâches planifiées. Il porte les quatre suites, les règles qui ont
+déjà coûté un cycle, et surtout **une que rien n'écrivait** : l'identité de
+commit. Toute adresse autre que le noreply fait refuser le push
+(« email privacy restrictions »).
 
 ## Ajuster quelque chose
 
