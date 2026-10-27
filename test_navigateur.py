@@ -3457,6 +3457,240 @@ def test_mode_sans_spoiler(nav, url):
     ctx.close()
 
 
+def test_agenda_jours_civils(nav, url):
+    """Le « J-N » de l'agenda tient aux frontières de minuit, à Paris.
+
+    Les pièges sont ceux du compteur de dodos : un jour n'est pas 24 heures
+    (le 25/10/2026 en dure 25 à Paris), et minuit à Paris n'est pas minuit
+    UTC. Les vecteurs se placent à la SECONDE de chaque côté des frontières.
+    """
+    print("\n[agenda] J-N en jours civils à Paris")
+    ctx = nav.new_context(viewport={"width": 390, "height": 900},
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    page = ctx.new_page()
+    err = []
+    page.on("pageerror", lambda e: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    r = page.evaluate("""() => {
+        const e = (date, extra) => Object.assign({
+          date: date, libelle: "Rdv " + date, statut: "presse",
+          verifie_le: "2026-10-27",
+          source: {media: "M", titre: "T", lien: "https://x.test/a"}}, extra || {});
+        const un = (date, iso, extra) =>
+          rendezVousAVenir({entrees: [e(date, extra)]}, new Date(iso))[0] || null;
+        const J = (x) => x ? x.jours : null;
+        return {
+          // Minuit à Paris le 12/11/2026, heure d'hiver : 23:00 UTC la veille.
+          avantMinuit: J(un("2026-11-12", "2026-11-11T22:59:59Z")),
+          apresMinuit: J(un("2026-11-12", "2026-11-11T23:00:00Z")),
+          etatJour: (un("2026-11-12", "2026-11-11T23:00:00Z") || {}).etat,
+          finDuJour: J(un("2026-11-12", "2026-11-12T22:59:59Z")),
+          lendemain: J(un("2026-11-12", "2026-11-12T23:00:00Z")),
+          etatLendemain: (un("2026-11-12", "2026-11-12T23:00:00Z") || {}).etat,
+          deuxJoursApres: un("2026-11-12", "2026-11-13T23:00:00Z"),
+          // Le passage à l'heure d'hiver : le 25/10/2026, 03:00 -> 02:00.
+          // Minuit du 25 tombe à 22:00 UTC (encore UTC+2)...
+          avantDST: J(un("2026-10-25", "2026-10-24T21:59:59Z")),
+          apresDST: J(un("2026-10-25", "2026-10-24T22:00:00Z")),
+          // ... et minuit du 26 à 23:00 UTC (déjà UTC+1) : une heure plus
+          // tard dans le calendrier UTC que la veille, parce que le 25
+          // dure 25 heures.
+          avantDST26: J(un("2026-10-26", "2026-10-25T22:59:59Z")),
+          apresDST26: J(un("2026-10-26", "2026-10-25T23:00:00Z")),
+          // LE VECTEUR QUI DISCRIMINE. À 00:30 UTC le 25/10 il est 02:30 à
+          // Paris, et il reste 22,5 h avant minuit du 26 : une division par
+          // 24 h donnerait 0 jour. Le calendrier dit J-1. (Un premier vecteur
+          // — 48,5 h pour deux jours — rendait 2 des deux façons et ne
+          // prouvait rien.)
+          vingtCinqHeures: J(un("2026-10-26", "2026-10-25T00:30:00Z")),
+          // À revérifier : la 14e journée passe encore, la 15e non.
+          revoir14: un("2026-11-20", "2026-11-10T12:00:00Z").aRevoir,
+          revoir15: un("2026-11-20", "2026-11-11T12:00:00Z").aRevoir,
+          sansVerif: un("2026-11-20", "2026-10-28T12:00:00Z", {verifie_le: undefined}).aRevoir,
+          // Un statut inconnu ne devient JAMAIS une annonce.
+          statutInconnu: un("2026-11-20", "2026-10-28T12:00:00Z", {statut: "officiel"}).statut,
+          statutAnnonce: un("2026-11-20", "2026-10-28T12:00:00Z", {statut: "annonce"}).statut,
+        };
+    }""")
+    check(r["avantMinuit"] == 1 and r["apresMinuit"] == 0,
+          "minuit à Paris est la frontière du jour : J-1 à 23:59:59, J-0 à "
+          "00:00:00 (%s puis %s)" % (r["avantMinuit"], r["apresMinuit"]))
+    check(r["etatJour"] == "aujourdhui",
+          "le jour même s'annonce « aujourd'hui » (%s)" % r["etatJour"])
+    check(r["finDuJour"] == 0 and r["lendemain"] == -1
+          and r["etatLendemain"] == "passe",
+          "le lendemain, l'entrée est « passée » et grisée (%s, %s, %s)"
+          % (r["finDuJour"], r["lendemain"], r["etatLendemain"]))
+    check(r["deuxJoursApres"] is None,
+          "deux jours après, elle a disparu (%s)" % r["deuxJoursApres"])
+    check(r["avantDST"] == 1 and r["apresDST"] == 0,
+          "le changement d'heure du 25/10 ne décale pas la frontière : J-1 "
+          "puis J-0 à la seconde (%s puis %s)" % (r["avantDST"], r["apresDST"]))
+    check(r["avantDST26"] == 1 and r["apresDST26"] == 0,
+          "ni celle du lendemain, que le 25 de 25 heures repousse d'une heure "
+          "UTC (%s puis %s)" % (r["avantDST26"], r["apresDST26"]))
+    check(r["vingtCinqHeures"] == 1,
+          "le jour du changement d'heure : 22,5 h avant minuit, c'est J-1 et "
+          "pas 0 comme le rendrait une division par 24 h (%s)" % r["vingtCinqHeures"])
+    check(r["revoir14"] is False and r["revoir15"] is True,
+          "« à revérifier » au-delà de 14 jours exactement (%s puis %s)"
+          % (r["revoir14"], r["revoir15"]))
+    check(r["sansVerif"] is True,
+          "sans date de vérification lisible, l'entrée est à revérifier")
+    check(r["statutInconnu"] == "presse" and r["statutAnnonce"] == "annonce",
+          "un statut inconnu vaut « presse », seul « annonce » est une annonce "
+          "(%s, %s)" % (r["statutInconnu"], r["statutAnnonce"]))
+
+    # LA ROBUSTESSE : un agenda cassé ne doit jamais planter le panneau.
+    robuste = page.evaluate("""() => {
+        const m = new Date("2026-10-28T12:00:00Z");
+        const cas = [null, undefined, {}, {entrees: "x"}, {entrees: [null, 3, "x"]},
+          {entrees: [{date: "2026-13-45", libelle: "x"}]},
+          {entrees: [{date: "2026-02-30", libelle: "x"}]},
+          {entrees: [{date: "2026-11-12"}]},
+          {entrees: [{date: "2026-11-12", libelle: "   "}]},
+          {entrees: [{date: 20261112, libelle: "x"}]}];
+        return cas.map(c => { try { return rendezVousAVenir(c, m).length; }
+                              catch(e){ return "EXCEPTION " + e.message; } });
+    }""")
+    check(all(x == 0 for x in robuste),
+          "dix agendas cassés, aucun plante et aucun ne rend d'entrée (%s)" % robuste)
+
+    # LE TRI ET LA LIMITE.
+    tri = page.evaluate("""() => {
+        const m = new Date("2026-10-28T12:00:00Z");
+        const e = (d) => ({date: d, libelle: "L" + d, statut: "presse",
+                           verifie_le: "2026-10-27", source: {lien: "https://x.test"}});
+        const brouille = ["2026-12-05", "2026-11-02", "2026-11-30", "2026-11-12",
+                          "2026-11-19", "2026-11-05", "2026-11-25"].map(e);
+        return rendezVousAVenir({entrees: brouille}, m).map(x => x.date);
+    }""")
+    check(tri == ["2026-11-02", "2026-11-05", "2026-11-12", "2026-11-19", "2026-11-25"],
+          "sept entrées en désordre : les cinq plus proches, dans l'ordre (%s)" % tri)
+
+    check(page.evaluate("""() => [jourIsoValide("2026-02-28"), jourIsoValide("2026-02-30"),
+                                  jourIsoValide("2026-13-01"), jourIsoValide("26-11-12"),
+                                  jourIsoValide(20261112)]""")
+          == [True, False, False, False, False],
+          "un jour impossible est refusé, pas débordé sur le mois suivant")
+    check(not err, "[agenda] aucune erreur JavaScript (%s)" % err[:1])
+    ctx.close()
+
+
+def test_agenda_dans_le_panneau(nav, url):
+    """L'agenda s'affiche sous les dodos, résiste à tout, et tient à 320 px.
+
+    Le panneau repeint son contenu chaque seconde : l'agenda doit donc
+    vivre dans l'état de la page, pas dans le DOM. Un fichier absent, un
+    404 ou un JSON corrompu laissent le compteur s'ouvrir sans erreur.
+    """
+    print("\n[agenda] affichage dans le panneau du compteur")
+    bon = json.dumps({"genere_le": "2026-10-27", "entrees": [
+        {"date": "2026-10-26", "libelle": "Hier passé", "statut": "presse",
+         "verifie_le": "2026-10-27",
+         "source": {"media": "M", "titre": "T", "lien": "https://x.test/0"}},
+        {"date": "2026-10-29",
+         "libelle": "Un libellé très long pour forcer le retour à la ligne "
+                    "sur un écran de trois cent vingt pixels de large",
+         "statut": "annonce", "verifie_le": "2026-10-27",
+         "source": {"media": "M", "titre": "T", "lien": "https://x.test/1"}},
+        {"date": "2026-11-12", "libelle": "Précharge", "statut": "presse",
+         "verifie_le": "2026-09-01",
+         "source": {"media": "M", "titre": "T", "lien": "https://x.test/2"}},
+    ]})
+
+    def ouvre(largeur, corps, statut=200, theme="dark"):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 900},
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.clock.install(time="2026-10-27T12:00:00Z")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.route("**/agenda.json", lambda r: r.fulfill(
+            status=statut, content_type="application/json", body=corps))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
+        page.evaluate("() => ouvreCompteur()")
+        page.wait_for_timeout(400)
+        return ctx, page, erreurs
+
+    ctx, page, erreurs = ouvre(320, bon)
+    lignes = page.evaluate("""() => [...document.querySelectorAll('#compteurContenu .compteur-agenda li')]
+        .map(li => ({classe: li.className, texte: li.textContent}))""")
+    check(len(lignes) == 3, "[agenda] trois lignes affichées (%d)" % len(lignes))
+    if len(lignes) == 3:
+        check(lignes[0]["classe"] == "passe" and "Hier" in lignes[0]["texte"],
+              "[agenda] le passé d'un jour est marqué « Hier » et grisé")
+        check("J-2" in lignes[1]["texte"] and "annoncé" in lignes[1]["texte"],
+              "[agenda] 29/10 est à J-2 et « annoncé » (%s)" % lignes[1]["texte"])
+        check("selon la presse" in lignes[2]["texte"] and "à revérifier" in lignes[2]["texte"],
+              "[agenda] une vérification de plus de 14 jours se dit « à revérifier »")
+    page.wait_for_timeout(2200)
+    check(page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda li').length") == 3,
+          "[agenda] il survit au repeint de chaque seconde")
+    sorties = page.evaluate("""() => {
+        const p = document.querySelector('#compteurContenu').getBoundingClientRect();
+        return [...document.querySelectorAll('#compteurContenu .compteur-agenda li, '
+          + '#compteurContenu .compteur-agenda li span')].filter(e => {
+          const r = e.getBoundingClientRect();
+          return r.right > p.right + 0.5 || r.left < p.left - 0.5
+              // Le texte qui déborde de sa propre cellule ne change pas la
+              // boîte de la cellule : on lit aussi scrollWidth.
+              || e.scrollWidth > e.clientWidth + 0.5;
+        }).map(e => e.className || e.tagName);
+    }""")
+    check(not sorties, "[agenda] aucune ligne ni cellule ne sort du panneau à 320 px (%s)" % sorties)
+    check(not erreurs, "[agenda] aucune erreur JavaScript (%s)" % erreurs)
+    ctx.close()
+
+    for theme, fond_attendu in (("dark", None), ("light", None)):
+        ctx, page, _ = ouvre(390, bon, theme=theme)
+        m = page.evaluate("""() => {
+            const li = document.querySelectorAll('#compteurContenu .compteur-agenda li');
+            let fond = 'rgba(0, 0, 0, 0)', n = li[0];
+            while(n && /rgba\\(.*, 0\\)$|transparent/.test(fond)){
+              fond = getComputedStyle(n).backgroundColor; n = n.parentElement; }
+            const c = (e) => getComputedStyle(e).color;
+            // Une opacité < 1 ferait baisser le contraste sans que la couleur
+            // calculée le dise.
+            const opaque = [...li].every(l => getComputedStyle(l).opacity === '1');
+            return {opaque: opaque, fond: fond, passe: c(li[0]), normal: c(li[1]),
+                    statut: c(li[1].querySelector('.ag-s'))};
+        }""")
+
+        def lire(css):
+            return tuple(int(x) for x in re.findall(r"\d+", css)[:3])
+
+        def lum(c):
+            def f(v):
+                v /= 255.0
+                return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+            return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2])
+
+        check(m["opaque"], "[agenda %s] aucune ligne n'est rendue translucide" % theme)
+        fond = lire(m["fond"])
+        for cle in ("passe", "normal", "statut"):
+            a, b = lum(lire(m[cle])), lum(fond)
+            r = (max(a, b) + 0.05) / (min(a, b) + 0.05)
+            check(r >= 4.5, "[agenda %s] %s passe 4,5:1 sur %s (%.2f:1)"
+                  % (theme, cle, m["fond"], r))
+        ctx.close()
+
+    for libelle, corps, statut in (("un 404", "{}", 404),
+                                   ("un JSON corrompu", "{pas du json", 200),
+                                   ("un agenda sans entrées", '{"entrees": 3}', 200)):
+        ctx, page, erreurs = ouvre(390, corps, statut)
+        ouvert = page.evaluate("() => document.getElementById('compteurOverlay').classList.contains('open')")
+        vide = page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda').length") == 0
+        tuiles = page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-tuiles').length") > 0
+        check(ouvert and vide and tuiles and not erreurs,
+              "[agenda] avec %s le compteur s'ouvre, sans section ni erreur (%s)" % (libelle, erreurs))
+        ctx.close()
+
+
 def test_panneau_du_compteur(nav, url):
     """Appuyer sur le compte à rebours ouvre son détail.
 
@@ -5767,6 +6001,8 @@ def main():
             test_compte_a_rebours(nav, url)
             test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
+            test_agenda_jours_civils(nav, url)
+            test_agenda_dans_le_panneau(nav, url)
             test_panneau_du_compteur(nav, url)
             test_budget_du_stockage(nav, url)
             test_contraste_partout(nav, url)

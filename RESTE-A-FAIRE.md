@@ -1758,3 +1758,12 @@ pas depuis le dépôt : la portée réelle du PAT cron-job.org.
 Deux chiffres de ce fichier étaient faux et sont corrigés : la taille du
 dépôt (l'API GitHub n'est pas un thermomètre) et le nombre de contrôles
 navigateur.
+
+### L'agenda du compteur — où il en est (27/10/2026)
+
+Fait : données, calcul en jours civils, affichage, tests (voir le README,
+« L'agenda du panneau du compteur »). Reste à Antoni : valider toute
+nouvelle date avant qu'elle n'entre dans `docs/agenda.json`, et relire les
+trois existantes à mesure que la presse les confirme ou les dément (passer
+une entrée à `annonce` exige un lien officiel). Prochain lot déjà approuvé :
+« ne pas déranger » (2 h), voir `tasks/spec-silence.md`.

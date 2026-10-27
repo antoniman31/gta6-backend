@@ -9703,6 +9703,156 @@ def test_lassistance_rockstar_est_une_source():
           "et ils sont tous marqués officiels, le domaine suffit à le dire")
 
 
+def _valide_agenda(data, aujourdhui=None):
+    """Les erreurs d'un docs/agenda.json, dans une liste (vide = valide).
+
+    Une fonction et pas des assertions en ligne : c'est ce qui permet de
+    l'éprouver sur des fichiers FAUX. Un contrôle qui n'a jamais refusé
+    quoi que ce soit n'a jamais prouvé qu'il le pouvait.
+    """
+    import re as _re
+    from datetime import date, timedelta
+    import fetch_feeds
+
+    aujourdhui = aujourdhui or date.today()
+
+    def jour(s):
+        if not isinstance(s, str) or not _re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+            return None
+        try:
+            return date.fromisoformat(s)
+        except ValueError:
+            return None
+
+    erreurs = []
+    if not isinstance(data, dict) or not isinstance(data.get("entrees"), list):
+        return ["le fichier n'a pas de liste « entrees »"]
+    entrees = data["entrees"]
+    if len(entrees) > 8:
+        erreurs.append("plus de 8 entrées (%d)" % len(entrees))
+    vues, precedente = set(), None
+    for k, e in enumerate(entrees):
+        nom = "entrée %d" % (k + 1)
+        if not isinstance(e, dict):
+            erreurs.append("%s n'est pas un objet" % nom)
+            continue
+        d = jour(e.get("date"))
+        if d is None:
+            erreurs.append("%s : date illisible (%r)" % (nom, e.get("date")))
+        else:
+            if precedente is not None and d < precedente:
+                erreurs.append("%s : pas dans l'ordre des dates" % nom)
+            precedente = d
+        libelle = e.get("libelle")
+        if not isinstance(libelle, str) or not libelle.strip() or len(libelle) > 80:
+            erreurs.append("%s : libellé absent ou de plus de 80 caractères" % nom)
+        if (e.get("date"), libelle) in vues:
+            erreurs.append("%s : doublon" % nom)
+        vues.add((e.get("date"), libelle))
+        statut = e.get("statut")
+        if statut not in ("annonce", "presse"):
+            erreurs.append("%s : statut inconnu (%r)" % (nom, statut))
+        src = e.get("source")
+        if not isinstance(src, dict):
+            erreurs.append("%s : pas de source" % nom)
+        else:
+            for champ in ("media", "titre", "lien"):
+                if not isinstance(src.get(champ), str) or not src[champ].strip():
+                    erreurs.append("%s : source sans %s" % (nom, champ))
+            lien = src.get("lien")
+            if isinstance(lien, str) and not lien.startswith("https://"):
+                erreurs.append("%s : le lien de la source n'est pas en https" % nom)
+            # LA LIMITE « jamais annonce sans source officielle », rendue
+            # mécanique : ce n'est plus une promesse, c'est un refus.
+            if statut == "annonce" and not (isinstance(lien, str) and
+                    fetch_feeds.lien_officiel(lien, fetch_feeds.OFFICIAL_DOMAINS)):
+                erreurs.append("%s : « annonce » sans source sur un domaine officiel" % nom)
+        v = jour(e.get("verifie_le"))
+        if v is None:
+            erreurs.append("%s : date de vérification illisible" % nom)
+        elif v > aujourdhui + timedelta(days=1):
+            erreurs.append("%s : vérifiée dans le futur" % nom)
+        nb = e.get("nb_titres")
+        if nb is not None and (not isinstance(nb, int) or isinstance(nb, bool) or nb < 1):
+            erreurs.append("%s : nb_titres doit être un entier positif" % nom)
+    return erreurs
+
+
+def test_agenda_est_valide():
+    """L'agenda est écrit à la main : rien ne garantit qu'il reste juste.
+
+    Demandé par Antoni le 27/10/2026, trois entrées validées une à une. Une
+    date fausse affichée dans le compteur se verrait : ce contrôle refuse
+    mécaniquement ce qu'une relecture pourrait laisser passer.
+    """
+    print("\n[agenda] docs/agenda.json est valide, et le contrôle sait refuser")
+    import json
+    from datetime import date
+
+    avec_fichier = _valide_agenda(
+        json.load(open("docs/agenda.json", encoding="utf-8")))
+    check(not avec_fichier,
+          "le vrai fichier est valide (%s)" % (avec_fichier[:2] or "aucune erreur"))
+
+    bonne = {"entrees": [{
+        "date": "2026-11-12", "libelle": "Précharge", "statut": "presse",
+        "source": {"media": "M", "titre": "T", "lien": "https://x.test/a"},
+        "verifie_le": "2026-10-27", "nb_titres": 3}]}
+    ref = date(2026, 10, 27)
+    check(not _valide_agenda(bonne, ref),
+          "le modèle de référence que les cas faux déforment est valide")
+
+    def casse(modif):
+        d = json.loads(json.dumps(bonne))
+        modif(d)
+        return _valide_agenda(d, ref)
+
+    # LES CAS FAUX. Chacun doit être refusé, et pour la bonne raison.
+    cas = [
+        ("pas de lien", lambda d: d["entrees"][0]["source"].pop("lien"), "sans lien"),
+        ("lien en http", lambda d: d["entrees"][0]["source"].update(lien="http://x.test/a"), "https"),
+        ("pas de statut", lambda d: d["entrees"][0].pop("statut"), "statut"),
+        ("statut inventé", lambda d: d["entrees"][0].update(statut="officiel"), "statut"),
+        ("pas de date de vérification", lambda d: d["entrees"][0].pop("verifie_le"), "vérification"),
+        ("vérifiée dans le futur", lambda d: d["entrees"][0].update(verifie_le="2026-12-01"), "futur"),
+        ("date impossible", lambda d: d["entrees"][0].update(date="2026-13-45"), "date"),
+        ("libellé vide", lambda d: d["entrees"][0].update(libelle="  "), "libellé"),
+        ("nb_titres nul", lambda d: d["entrees"][0].update(nb_titres=0), "nb_titres"),
+        ("source absente", lambda d: d["entrees"][0].pop("source"), "source"),
+        ("pas de liste", lambda d: d.update(entrees="x"), "liste"),
+    ]
+    for nom, modif, mot in cas:
+        err = casse(modif)
+        check(any(mot in e for e in err),
+              "refusé : %s (%s)" % (nom, err[:1] or "ACCEPTÉ À TORT"))
+
+    # « annonce » : la limite qui compte le plus. Sur un site de presse,
+    # refusé ; sur le domaine de Rockstar, accepté.
+    err = casse(lambda d: d["entrees"][0].update(statut="annonce"))
+    check(any("annonce" in e and "officiel" in e for e in err),
+          "refusé : « annonce » sur un site de presse (%s)" % (err[:1] or "ACCEPTÉ À TORT"))
+    ok = casse(lambda d: (d["entrees"][0].update(statut="annonce"),
+                          d["entrees"][0]["source"].update(
+                              lien="https://www.rockstargames.com/newswire/article/abc")))
+    check(not ok,
+          "accepté : « annonce » sur le domaine de Rockstar (%s)" % (ok[:1] or "ok"))
+
+    # Les règles d'ensemble : l'ordre, le doublon, la taille.
+    def deux(d):
+        d["entrees"].append(dict(d["entrees"][0], date="2026-11-05"))
+    check(any("ordre" in e for e in casse(deux)),
+          "refusé : des entrées pas dans l'ordre des dates")
+    def doublon(d):
+        d["entrees"].append(dict(d["entrees"][0]))
+    check(any("doublon" in e for e in casse(doublon)),
+          "refusé : un doublon")
+    def trop(d):
+        d["entrees"] = [dict(bonne["entrees"][0], date="2026-11-%02d" % (k + 1))
+                        for k in range(9)]
+    check(any("plus de 8" in e for e in casse(trop)),
+          "refusé : plus de 8 entrées")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -9837,6 +9987,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_les_sources_de_lapres_sortie,
            test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien,
            test_lassistance_rockstar_est_une_source,
+           test_agenda_est_valide,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,
            test_laudit_surveille_larchive,

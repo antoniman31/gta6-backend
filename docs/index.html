@@ -1092,6 +1092,23 @@
     color:var(--text); text-align:center; margin:0 0 14px;
   }
 
+  /* L'AGENDA, sous les dodos : au plus cinq lignes. Chaque ligne passe à la
+     ligne plutôt que de déborder (320 px). Le passé d'un jour est grisé par
+     la couleur de texte secondaire, jamais par l'opacité : l'opacité
+     ferait tomber le contraste sous le seuil. */
+  .compteur-agenda{list-style:none; margin:0 0 14px; padding:0;}
+  .compteur-agenda li{
+    display:flex; flex-wrap:wrap; gap:2px 8px; align-items:baseline;
+    padding:6px 0; border-top:1px solid var(--line);
+    font-size:13px; color:var(--text); overflow-wrap:anywhere;
+  }
+  .compteur-agenda li.passe{color:var(--text-dim);}
+  .compteur-agenda .ag-j{
+    font-family:'JetBrains Mono',monospace; font-weight:700; min-width:4.5em;
+  }
+  .compteur-agenda .ag-t{flex:1 1 12em; min-width:0;}
+  .compteur-agenda .ag-s{font-size:11px; color:var(--text-dim);}
+
   /* LA BARRE PORTE SON POURCENTAGE. Il était en légende dessous, ce qui
      faisait une ligne de texte de plus pour un chiffre que la barre
      montre déjà.
@@ -8581,6 +8598,117 @@ function tuilesDecoupe(d, classe, coupeTete){
   return tuilesCompteur(bouts, classe, phraseDecoupe(d));
 }
 
+// ---------- L'AGENDA : les prochains rendez-vous datés ----------
+//
+// Demandé par Antoni le 27/10/2026. Mesuré ce jour-là sur le fil : les titres
+// des dix derniers jours citent quatre échéances à venir (le 29/10, le 12/11
+// pour la précharge, le 18/11 pour l'embargo des tests, le 19/11), et rien
+// dans l'app ne les rassemble.
+//
+// LA LISTE EST TENUE À LA MAIN (docs/agenda.json), pas extraite des titres :
+// lire une date dans un titre est trop fragile, et une date fausse affichée
+// dans le compteur se verrait. Aucune des trois entrées n'a de source
+// officielle dans le fil, d'où le statut « presse » sur chacune.
+//
+// Fonction PURE, avant tout affichage : c'est elle qui porte les pièges, et
+// les pièges se gardent mieux sur une fonction que sur un écran.
+
+// Aucune entrée vérifiée depuis plus longtemps que ça n'est présentée comme
+// sûre : une date de presse vieillit.
+const AGENDA_REVERIF_JOURS = 14;
+const AGENDA_LIGNES_MAX = 5;
+
+// Le jour civil à Paris, « 2026-11-12 ». « en-CA » parce que c'est la locale
+// qui écrit année-mois-jour ; c'est le FUSEAU, posé explicitement, qui compte.
+function jourParis(date){
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(date);
+}
+
+// Un « AAAA-MM-JJ » qui est un vrai jour : « 2026-13-45 » passe une regex
+// et déborde sur l'année suivante dès qu'on le donne à Date.UTC.
+function jourIsoValide(s){
+  if(typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toISOString().slice(0, 10) === s;
+}
+
+// Écart en JOURS CIVILS entre deux « AAAA-MM-JJ » : positif si b est après a.
+// Jamais une division de millisecondes entre deux instants : le 25/10/2026
+// dure 25 heures à Paris, et c'est le piège que le compteur de dodos a déjà
+// rencontré. Ici les deux bouts sont des dates sans heure, passées par UTC.
+function ecartJoursCivils(a, b){
+  const ms = (s) => { const [y, m, d] = s.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+  return Math.round((ms(b) - ms(a)) / 86400000);
+}
+
+// Les rendez-vous à montrer, du plus proche au plus lointain. Tout ce qui est
+// mal formé est ÉCARTÉ plutôt que de faire planter le panneau : un agenda
+// corrompu ne doit jamais empêcher le compteur de s'ouvrir.
+function rendezVousAVenir(agenda, maintenant){
+  const brutes = (agenda && Array.isArray(agenda.entrees)) ? agenda.entrees : [];
+  const aujourdhui = jourParis(maintenant);
+  const sortie = [];
+  for(const e of brutes){
+    if(!e || !jourIsoValide(e.date)) continue;
+    if(typeof e.libelle !== "string" || !e.libelle.trim()) continue;
+    const jours = ecartJoursCivils(aujourdhui, e.date);
+    // Passé d'un jour : grisé. Au-delà : disparu.
+    if(jours < -1) continue;
+    sortie.push({
+      date: e.date,
+      libelle: e.libelle.trim(),
+      jours: jours,
+      etat: jours > 0 ? "avenir" : (jours === 0 ? "aujourdhui" : "passe"),
+      // Un statut inconnu vaut « presse », jamais « annonce » : on ne
+      // promeut une date au rang d'annonce officielle que sur un mot exact.
+      statut: e.statut === "annonce" ? "annonce" : "presse",
+      source: (e.source && typeof e.source.lien === "string") ? e.source : null,
+      // Pas de date de vérification lisible = à revérifier.
+      aRevoir: !jourIsoValide(e.verifie_le)
+               || ecartJoursCivils(e.verifie_le, aujourdhui) > AGENDA_REVERIF_JOURS,
+    });
+  }
+  sortie.sort((x, y) => x.date < y.date ? -1 : (x.date > y.date ? 1 : 0));
+  return sortie.slice(0, AGENDA_LIGNES_MAX);
+}
+
+// ---------- Agenda du panneau ----------
+// Chargé à l'ouverture du panneau, jamais au démarrage de l'app. TOUT échec
+// (hors-ligne, 404, JSON corrompu) laisse `agendaCharge` à null : le panneau
+// s'ouvre sans la section, sans erreur ni message.
+let agendaCharge = null;
+
+function chargeAgenda(){
+  return fetch("./agenda.json", { cache: "no-cache" })
+    .then((r) => r.ok ? r.json() : null)
+    .then((d) => { agendaCharge = d; })
+    .catch(() => { agendaCharge = null; });
+}
+
+function libelleJours(r){
+  if(r.etat === "aujourdhui") return "Aujourd'hui";
+  if(r.etat === "passe") return "Hier";
+  return "J-" + r.jours;
+}
+
+function htmlAgenda(maintenant){
+  const lignes = rendezVousAVenir(agendaCharge, maintenant);
+  if(!lignes.length) return "";
+  return `<ul class="compteur-agenda" aria-label="Prochains rendez-vous">`
+    + lignes.map((r) => {
+      const jour = new Date(r.date + "T12:00:00Z").toLocaleDateString("fr-FR",
+        { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+      const statut = (r.statut === "annonce" ? "annoncé" : "selon la presse")
+        + (r.aRevoir ? " · à revérifier" : "");
+      return `<li class="${r.etat}"><span class="ag-j">${escapeHtml(libelleJours(r))}</span>`
+        + `<span class="ag-t">${escapeHtml(jour)} · ${escapeHtml(r.libelle)}</span>`
+        + `<span class="ag-s">${escapeHtml(statut)}</span></li>`;
+    }).join("")
+    + `</ul>`;
+}
+
 function majPanneauCompteur(){
   const el = document.getElementById("compteurContenu");
   if(!el) return;
@@ -8636,6 +8764,7 @@ function majPanneauCompteur(){
     + (avant
         ? `<p class="compteur-dodos">😴 ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>`
         : "")
+    + htmlAgenda(maintenant)
     + tuilesCompteur([
         [nombreFr(ecart / 86400000), "jours", false],
         [nombreFr(ecart / 3600000), "heures", false],
@@ -8661,6 +8790,7 @@ let battementCompteur = null;
 
 function ouvreCompteur(){
   majPanneauCompteur();
+  chargeAgenda().then(majPanneauCompteur);
   document.getElementById("compteurOverlay").classList.add("open");
   debutDialogue("compteurOverlay", { fermer: fermeCompteur });
   if(battementCompteur) clearInterval(battementCompteur);

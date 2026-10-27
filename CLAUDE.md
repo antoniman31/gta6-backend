@@ -31,6 +31,9 @@ ajoutes doit être **prouvé capable d'échouer** : rejoue-le contre l'ancien co
 - **Sources** : n'en ajoute ni n'en retire **jamais** sans instruction explicite.
   `FEEDS` (Python) et `DEFAULT_FEEDS` (JS) doivent rester identiques
   (`check_sources_sync.py`), et aucun commentaire ne va *dans* le tableau JS.
+- **Agenda** (`docs/agenda.json`) : aucune entrée n'y entre ni n'en sort sans la
+  validation d'Antoni. Un statut `annonce` exige un lien officiel ; tout le reste
+  est `presse`.
 - **Jamais d'URL de remplacement devinée** : elle vient de `--sonde`, d'une ligne
   « redirigé vers » du journal du robot, ou du champ `redirect` de `sources_health`.
 - **Le proxy du conteneur bloque** `github.io`, YouTube et la plupart des sites de
