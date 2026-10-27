@@ -9238,6 +9238,33 @@ et en Python, la connaît maintenant des deux côtés.
 échouent sans la correction ; les deux autres sont des gardes de
 régression et passent des deux côtés, volontairement.
 
+#### Un défaut que seul le contenu du fil révélait
+
+En relançant la suite navigateur, le balayage de contraste a rendu un
+verdict que rien dans le code n'expliquait : le badge « 🔥 ACTU MAJEURE »
+tombait à **1,92:1** en thème clair (#ff8c3d sur un orange à 18 %). Le
+défaut était ancien. Il n'était visible que si le fil contenait un article à
+trois sources dans ce que le balayage rend, et le 27/10 il en a eu un pour
+la première fois.
+
+**Conséquence : la CI de toutes les pull requests est passée au rouge**,
+Dependabot compris — #201 et #202 étaient rouges pour cette seule raison.
+C'est la deuxième fois que le balayage, qui lit le vrai fil, bloque des PR
+sans que le code ait changé (la première était `.card-extra`, le 19/10).
+
+Le remède est celui du compteur : un jeton par thème (`--hot-texte`). La
+mesure se fait sur le **fond composité** et non sur le blanc — `#b4530a`,
+qui passe 5,02:1 sur blanc, ne fait que 4,15 sur ce fond teinté. `#8f4407`
+donne 5,79:1 sur la carte, 5,45 sur `--bg`, 5,28 sur `--bg-elevated`. Le
+thème sombre (6,22 et 5,76) ne bouge pas.
+
+**Un défaut qui dépend du contenu ne se garde pas avec un balayage du
+contenu.** Le nouveau contrôle fabrique lui-même l'article à trois sources,
+dans les deux thèmes. Son instrument est validé avant d'être cru : le fond
+composité sur un canevas doit retrouver exactement les (255, 228, 219) que
+le balayage avait mesurés. Éprouvé contre l'ancien CSS : il rend 1,92:1 et
+échoue ; contre le nouveau, 5,79:1.
+
 #### Un `CLAUDE.md`
 
 Il n'en existait pas, et les mêmes règles étaient recopiées dans neuf

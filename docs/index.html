@@ -1298,6 +1298,19 @@
     --compte-urgent:#b4530a;    /* 5,02:1 */
     --compte-final:#b91c1c;     /* 6,47:1, c'est --danger */
   }
+  /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
+     Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
+     thème clair : illisible, et resté invisible tant qu'aucun article à
+     trois sources ne tombait dans ce que le balayage de contraste rend.
+     Le 27/10/2026 le fil en a eu un, et c'est la CI de toutes les PR qui
+     est passée au rouge — Dependabot compris.
+     Le fond est teinté, donc la mesure se fait sur le fond COMPOSITÉ
+     (255,228,219 sur une carte blanche), pas sur le blanc : #b4530a, qui
+     passe 5,02:1 sur blanc, ne fait que 4,15 ici. #8f4407 donne 5,79 sur
+     la carte, 5,45 sur --bg et 5,28 sur --bg-elevated, les trois fonds où
+     le badge peut se trouver. Le sombre (6,22 et 5,76) ne bouge pas. */
+  :root{--hot-texte:#ff8c3d;}
+  html[data-theme="light"]{--hot-texte:#8f4407;}
   :root{--langue-fr:#3987e5; --langue-en:#d95926;}
   html[data-theme="light"]{--langue-fr:#1d4ed8; --langue-en:#eb6834;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
@@ -1523,7 +1536,7 @@
   }
   .tag-badge.tag-hot{
     background:color-mix(in srgb, #ff6b35 18%, transparent);
-    color:#ff8c3d; border:1px solid #ff8c3d; font-weight:800;
+    color:var(--hot-texte); border:1px solid var(--hot-texte); font-weight:800;
   }
   .history-line{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap;

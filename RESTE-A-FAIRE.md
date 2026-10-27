@@ -1146,6 +1146,11 @@ et le précache du service worker) ; sortir les commits du robot de `main`
 (déjà tranché) ; tags et versions sémantiques (un seul utilisateur, et
 `CACHE_NAME vN` joue déjà ce rôle).
 
+**Corrigé en route** : le badge « ACTU MAJEURE » à 1,92:1 en thème clair, qui
+faisait passer la CI de toutes les PR au rouge dès que le fil contenait un
+article à trois sources. #201 et #202 (Dependabot) étaient rouges pour cette
+seule raison ; à relancer une fois cette PR fusionnée.
+
 En attente aussi : trois PR Dependabot (#200 `certifi`, #201
 `actions/setup-python`, #202 `soupsieve`).
 
