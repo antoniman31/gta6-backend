@@ -3479,17 +3479,14 @@ def test_vecteurs_du_resume(nav, url):
     ctx.close()
 
 
-def test_titre_en_degrade(nav, url):
-    """Le titre « coucher de soleil » est LISIBLE, tient, et ne disparaît jamais.
+def test_compte_a_rebours_flashy(nav, url):
+    """Les trois paliers du compte à rebours : vifs, lisibles, et sans casser l'entête.
 
-    Un texte transparent sur un dégradé qui n'est pas peint est INVISIBLE : le
-    risque propre à `background-clip:text`. D'où un contrôle sur les PIXELS
-    (le rose à gauche, l'orange à droite), et non seulement sur la couleur
-    calculée, qui dirait « transparent » dans les deux cas. En contraste forcé
-    le titre doit retrouver une couleur pleine.
+    Demandé par Antoni le 28/10/2026 (« pas assez flashy »). Jaune vif, orange
+    vif, rouge vif, avec un halo en thème SOMBRE seulement : en clair le halo
+    salit le texte et la teinte vive tomberait sous 4,5:1.
     """
-    print("\n[titre] le dégradé de l'entête")
-    import base64
+    print("\n[compteur] les trois paliers, vifs et lisibles")
 
     def lire(css):
         return tuple(int(x) for x in re.findall(r"\d+", css)[:3])
@@ -3504,98 +3501,50 @@ def test_titre_en_degrade(nav, url):
         x, y = lum(a), lum(b)
         return (max(x, y) + 0.05) / (min(x, y) + 0.05)
 
+    paliers = (("soon", "2026-10-28T10:00:00Z"), ("urgent", "2026-11-14T10:00:00Z"),
+               ("final", "2026-11-18T15:00:00Z"))
     for theme in ("dark", "light"):
-        for largeur in (340, 375, 412):
-            ctx = nav.new_context(viewport={"width": largeur, "height": 800}, reduced_motion="reduce")
-            page = ctx.new_page()
-            erreurs = []
-            page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
-            page.goto(url, wait_until="load")
-            page.wait_for_selector(".header-haut")
-            page.evaluate("""(t) => { document.documentElement.setAttribute('data-theme', t);
-                const m = document.getElementById('modeIndicator');
-                m.className = 'mode-indicator backend'; m.innerHTML = '● Backend GitHub'; }""", theme)
-            page.wait_for_timeout(250)
-            m = page.evaluate("""() => {
-                const b = document.querySelector('.brand');
-                const cs = getComputedStyle(b), root = getComputedStyle(document.documentElement);
-                const r = document.createRange(); r.selectNodeContents(b);
-                const box = b.getBoundingClientRect();
-                return {couleur: cs.color, taille: parseFloat(cs.fontSize), hauteur: box.height,
-                        clip: CSS.supports('background-clip', 'text') || CSS.supports('-webkit-background-clip', 'text'),
-                        texte: r.getBoundingClientRect().width,
-                        stops: ['--brand-a', '--brand-b', '--brand-c'].map(n => root.getPropertyValue(n).trim()),
-                        fond: getComputedStyle(document.querySelector('.console')).backgroundColor,
-                        haut: box.top, gauche: box.left}; }""")
-            etiq = "[%s %d px]" % (theme, largeur)
-            check(m["clip"] and m["couleur"] == "rgba(0, 0, 0, 0)",
-                  "%s le texte est transparent, et le navigateur sait peindre le dégradé dedans (%s)"
-                  % (etiq, m["couleur"]))
-            check(19 <= m["taille"] <= 24 and m["hauteur"] <= 25,
-                  "%s taille %.1f px, hauteur %.0f px : celle de l'ancien titre, le compteur ne descend pas"
-                  % (etiq, m["taille"], m["hauteur"]))
-            fond = lire(m["fond"])
-            pires = []
-            for stop in m["stops"]:
-                h = stop.lstrip("#")
-                c = tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
-                pires.append(contraste(c, fond))
-            check(min(pires) >= 4.5,
-                  "%s les trois teintes passent 4,5:1 sur la carte (%.2f:1 au plus faible)" % (etiq, min(pires)))
-
-            # LES PIXELS : l'encre existe, rose à gauche, orange à droite.
-            if largeur == 412:
-                # Un compteur plus large que le titre élargit la boîte : sans
-                # `width:fit-content` le dégradé s'étirerait sur elle, et le
-                # texte, à gauche, n'atteindrait jamais l'orange.
-                page.evaluate("() => { document.getElementById('countdown').style.minWidth = '260px'; }")
-                page.wait_for_timeout(100)
-            png = page.locator(".brand").screenshot()
-            encre = page.evaluate("""async (b64) => {
-                const img = await createImageBitmap(await (await fetch('data:image/png;base64,' + b64)).blob());
-                const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
-                const x = c.getContext('2d'); x.drawImage(img, 0, 0);
-                const d = x.getImageData(0, 0, c.width, c.height).data;
-                const f = %s;
-                const tiers = [[], [], []];
-                const aire = c.width * c.height / 3;
-                for (let i = 0; i < d.length; i += 4) {
-                  const px = (i / 4) %% c.width;
-                  const ecart = Math.abs(d[i] - f[0]) + Math.abs(d[i+1] - f[1]) + Math.abs(d[i+2] - f[2]);
-                  if (ecart > 150) tiers[Math.min(2, Math.floor(3 * px / c.width))].push([d[i], d[i+1], d[i+2]]);
-                }
-                const moy = (l, k) => l.length ? l.reduce((s, p) => s + p[k], 0) / l.length : -1;
-                let bord = 0;   // encre dans la dernière colonne : la lettre touche le bord, donc a été rognée
-                for (let y = 0; y < c.height; y++) { const i = (y * c.width + c.width - 1) * 4;
-                  if (Math.abs(d[i] - f[0]) + Math.abs(d[i+1] - f[1]) + Math.abs(d[i+2] - f[2]) > 150) bord++; }
-                return {bord: bord, n: tiers.map(t => t.length), couverture: tiers.map(t => t.length / aire), vertGauche: moy(tiers[0], 1), vertDroite: moy(tiers[2], 1)};
-            }""" % json.dumps(list(fond)), base64.b64encode(png).decode())
-            check(min(encre["n"]) > 40,
-                  "%s le titre est PEINT sur ses trois tiers, pas invisible (pixels d'encre %s)" % (etiq, encre["n"]))
-            # Un à-plat de dégradé SANS découpe dans le texte (clip retiré) passerait
-            # les deux contrôles voisins : le texte, lui, ne couvre jamais la boîte.
-            check(encre["bord"] == 0,
-                  "%s la dernière lettre n'est pas rognée à droite (encre au bord : %d px)" % (etiq, encre["bord"]))
-            check(max(encre["couverture"]) < 0.7,
-                  "%s c'est du TEXTE, pas un rectangle plein (couverture %s)"
-                  % (etiq, [round(x, 2) for x in encre["couverture"]]))
-            check(encre["vertDroite"] - encre["vertGauche"] > 25,
-                  "%s le dégradé va bien du rose (gauche) à l'orange (droite) : vert moyen %.0f → %.0f"
-                  % (etiq, encre["vertGauche"], encre["vertDroite"]))
-            check(not erreurs, "%s aucune erreur JavaScript" % etiq)
-            ctx.close()
-
-    # Contraste forcé : couleur pleine, pas de dégradé, titre lisible.
-    ctx = nav.new_context(viewport={"width": 390, "height": 800}, forced_colors="active")
-    page = ctx.new_page()
-    page.goto(url, wait_until="load")
-    page.wait_for_selector(".header-haut")
-    f = page.evaluate("""() => { const cs = getComputedStyle(document.querySelector('.brand'));
-        return {fond: cs.backgroundImage, couleur: cs.color}; }""")
-    check(f["fond"] == "none" and f["couleur"] != "rgba(0, 0, 0, 0)",
-          "[contraste forcé] pas de dégradé, le titre garde une couleur pleine (%s, %s)"
-          % (f["fond"][:30], f["couleur"]))
-    ctx.close()
+        for palier, instant in paliers:
+            for largeur in (340, 390):
+                ctx = nav.new_context(viewport={"width": largeur, "height": 800},
+                                      timezone_id="Europe/Paris", reduced_motion="reduce")
+                ctx.clock.install(time=instant)
+                page = ctx.new_page()
+                erreurs = []
+                page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+                page.goto(url, wait_until="load")
+                page.wait_for_selector(".header-haut")
+                page.evaluate("""(t) => { document.documentElement.setAttribute('data-theme', t);
+                    const m = document.getElementById('modeIndicator');
+                    m.className = 'mode-indicator backend'; m.innerHTML = '● Backend GitHub'; }""", theme)
+                page.wait_for_timeout(300)
+                m = page.evaluate("""() => {
+                    const c = document.getElementById('countdown'), cs = getComputedStyle(c);
+                    return {classe: c.className, couleur: cs.color, halo: cs.textShadow,
+                            poids: parseInt(cs.fontWeight, 10),
+                            fond: getComputedStyle(document.querySelector('.console')).backgroundColor,
+                            }; }""")
+                etiq = "[%s %s %d px]" % (theme, palier, largeur)
+                check(palier in m["classe"].split(),
+                      "%s l'horloge posée donne bien le palier « %s » (%s)" % (etiq, palier, m["classe"]))
+                r = contraste(lire(m["couleur"]), lire(m["fond"]))
+                check(r >= 4.5, "%s le compte à rebours passe 4,5:1 (%.2f:1)" % (etiq, r))
+                check(m["poids"] >= 800, "%s en gras 800 (%d)" % (etiq, m["poids"]))
+                if theme == "dark":
+                    check(m["halo"] != "none", "%s halo lumineux en thème sombre" % etiq)
+                else:
+                    check(m["halo"] == "none", "%s pas de halo en thème clair" % etiq)
+                if largeur == 390:
+                    # Le panneau reprend la MÊME teinte pour ses gros chiffres.
+                    page.evaluate("() => ouvreCompteur()")
+                    page.wait_for_timeout(300)
+                    t = page.evaluate("""() => { const b = [...document.querySelectorAll('#compteurContenu .compteur-tuiles:not(.equiv) b')]
+                        .find(x => x.textContent.trim() !== '0' && getComputedStyle(x).color !== getComputedStyle(document.body).color);
+                        return b ? getComputedStyle(b).color : null; }""")
+                    check(t == m["couleur"],
+                          "%s le panneau porte la même teinte (%s / %s)" % (etiq, t, m["couleur"]))
+                check(not erreurs, "%s aucune erreur JavaScript" % etiq)
+                ctx.close()
 
 
 def test_ne_pas_deranger(nav, url):
@@ -4845,35 +4794,10 @@ SONDE_CONTRASTE = r"""(args) => {
     if(exceptions.some(s => el.matches(s))) continue;
     const brut = parse(st.color);
     if(!brut) continue;
-    // UN TEXTE DÉCOUPÉ DANS UN DÉGRADÉ (background-clip:text) a une couleur
-    // calculée TRANSPARENTE : la sonde le lisait donc « fond sur fond »,
-    // 1,00:1, et accusait le titre de l'entête d'être invisible alors qu'il
-    // est peint. Sa vraie couleur, ce sont les teintes du dégradé : on juge
-    // la PLUS FAIBLE, seuil inchangé. (L'instrument était faux, pas le titre ;
-    // un dégradé pâle, lui, est toujours attrapé — voir la mutation du README.)
-    let teintes = [brut];
-    if(brut.a === 0){
-      // Le <span> « _WATCH » ne porte pas le dégradé : il le tient de son
-      // parent. On remonte jusqu'à l'élément qui découpe son fond dans le texte.
-      let n = el;
-      while(n && n.nodeType === 1){
-        const sn = getComputedStyle(n);
-        if(sn.webkitBackgroundClip === 'text' || sn.backgroundClip === 'text'){
-          const g = (sn.backgroundImage.match(/rgba?\([^)]*\)/g) || []).map(parse).filter(Boolean);
-          if(g.length) teintes = g;
-          break;
-        }
-        n = n.parentElement;
-      }
-    }
     const ar = fond(el);
-    let av = null, ratio = Infinity;
-    for(const t of teintes){
-      const mix = melange(t, ar, t.a * o);
-      const ya = Y(mix), yb = Y(ar);
-      const rt = (Math.max(ya, yb) + 0.05) / (Math.min(ya, yb) + 0.05);
-      if(rt < ratio){ ratio = rt; av = mix; }
-    }
+    const av = melange(brut, ar, brut.a * o);
+    const ya = Y(av), yb = Y(ar);
+    const ratio = (Math.max(ya, yb) + 0.05) / (Math.min(ya, yb) + 0.05);
     const px = parseFloat(st.fontSize);
     const gras = parseInt(st.fontWeight, 10) >= 700;
     const exige = (px >= 24 || (gras && px >= 18.66)) ? seuilGrand : seuil;
@@ -6336,7 +6260,7 @@ def main():
             test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
             test_vecteurs_du_resume(nav, url)
-            test_titre_en_degrade(nav, url)
+            test_compte_a_rebours_flashy(nav, url)
             test_ne_pas_deranger(nav, url)
             test_agenda_jours_civils(nav, url)
             test_agenda_dans_le_panneau(nav, url)

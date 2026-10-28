@@ -831,31 +831,6 @@ def test_mesure_og_description():
     check(vide is None, "sans page mesurée, le rapport se tait")
 
 
-def test_titre_en_degrade_garde():
-    """Le dégradé du titre ne peut pas le rendre INVISIBLE.
-
-    `color:transparent` sans `background-clip:text` efface le texte. La
-    couleur transparente n'a donc le droit de vivre que DANS le @supports qui
-    teste la découpe ; en dehors, le titre garde une couleur pleine.
-    """
-    print("\n[titre] le dégradé reste derrière sa garde")
-    import re as _re2
-    # Sans les commentaires : ceux du titre PARLENT de transparence et de découpe.
-    html = _re2.sub(r"/\*.*?\*/", "", open("docs/index.html", encoding="utf-8").read(), flags=_re2.S)
-    base = html[html.index("  .brand{\n"):]
-    base = base[:base.index("\n  }\n") + 5]
-    garde = html[html.index("@supports ((-webkit-background-clip:text)"):]
-    garde = garde[:garde.index("\n  }\n") + 5]
-    check("transparent" not in base and "background-clip" not in base,
-          "la règle de base du titre n'a ni couleur transparente ni découpe : sans support, il reste lisible")
-    check("color:transparent" in garde and "background-clip:text" in garde,
-          "la couleur transparente et la découpe vivent ENSEMBLE dans le @supports")
-    check(html.count("--brand-a:") == 2 and html.count("--brand-c:") == 2,
-          "un jeu de teintes par thème (sombre et clair), pas le même recopié")
-    check("fit-content" in base and "font-size:clamp(19px" in base,
-          "le titre se serre avec l'écran (clamp) : l'entête tient sur une ligne dès 340 px, badge Backend compris")
-
-
 def test_duree_par_source():
     """Chaque source porte le temps de sa collecte dans `sources_health`.
 
@@ -10217,7 +10192,6 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_agenda_est_valide,
            test_vecteurs_du_resume,
            test_duree_par_source,
-           test_titre_en_degrade_garde,
            test_mesure_og_description,
            test_archive_mensuelle,
            test_un_lien_nest_range_que_dans_un_mois,

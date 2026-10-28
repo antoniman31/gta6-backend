@@ -30,8 +30,6 @@
        jour et de la moitié des mentions secondaires. */
     --text-dim: #7e918b;
     --accent: #58b9ff;
-    /* Dégradé du titre, sur --bg-panel : 5,30:1 au plus faible (le rose). */
-    --brand-a:#ff2d95; --brand-b:#ff6a3d; --brand-c:#ffb23d;
     /* Ce qui s'écrit SUR un aplat --accent. Bascule avec le thème : le bleu
        clair du sombre demande du presque-noir (8,74:1), le bleu profond du
        clair demande du blanc (6,70:1). Aucun ton unique ne tient les deux. */
@@ -82,8 +80,6 @@
        « _WATCH » du logo, du compte à rebours, des libellés de jour et de
        vingt-cinq autres endroits : tous délavés. */
     --accent: #1d4ed8;
-    /* Sur blanc : 4,92:1 au plus faible (l'ocre). Plus foncé que le sombre. */
-    --brand-a:#c4146a; --brand-b:#c2410c; --brand-c:#a16207;
     --accent-contrast: #ffffff;
     --ok: #127034;              /* 5,76:1 — était #16a34a, 3,07 */
     --warn: #9a4a08;            /* 5,60:1 sur le plus exigeant des trois fonds
@@ -183,30 +179,7 @@
      flex-wrap de .header-haut), le bloc repartirait sinon coller à gauche —
      justify-content:space-between ne s'applique qu'aux lignes à deux items. */
   .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px; margin-left:auto;}
-  /* LE TITRE, EN COUCHER DE SOLEIL (maquette A, choisie par Antoni le
-     27/10/2026) : gras italique, dégradé rose → orange. Police SYSTÈME et non
-     JetBrains Mono : le 900 italique n'est pas dans l'@import, et une
-     nouvelle police serait une nouvelle dépendance réseau pour un titre.
-
-     Les teintes sont des jetons, un jeu par thème, MESURÉS sur --bg-panel :
-     sombre 5,30:1 au plus faible, clair 4,92:1. Le clair est plus foncé,
-     pas le même dégradé recopié (une teinte vive sur blanc tombe à 2-3:1).
-
-     `line-height:1` : à 24 px, la hauteur reste celle de l'ancien titre
-     (24 px), et le compteur dessous ne descend pas. `width:fit-content` :
-     sans lui le dégradé s'étire sur toute la boîte, et le texte, qui n'en
-     occupe que la gauche, ne l'atteindrait jamais jusqu'à l'orange. */
-  .brand{
-    font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-    font-weight:900; font-style:italic; line-height:1;
-    font-size:clamp(19px, calc((100vw - 200px) / 7.2), 24px);
-    letter-spacing:-.02em; text-transform:uppercase; white-space:nowrap;
-    width:fit-content;
-    /* Le dernier « H » penche hors de sa boîte : `background-clip:text` ne
-       peint QUE dedans, et il apparaissait rogné à droite (vu sur capture le
-       27/10/2026). */
-    padding-right:.15em;
-  }
+  .brand{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; letter-spacing:-0.02em;}
   .mode-indicator{
     display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace;
     font-size:10px; font-weight:700; padding:2px 7px; border-radius:var(--r-xs);
@@ -248,16 +221,16 @@
   .silence-chip[hidden]{display:none;}
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
-    color:var(--compte-soon);
+    color:var(--compte-soon); font-weight:800; text-shadow:var(--compte-halo-soon);
   }
   /* Palier 24h-7 jours : couleur plus marquée + pulsation douce */
   .countdown.urgent{
-    color:var(--compte-urgent); font-weight:700;
+    color:var(--compte-urgent); font-weight:800; text-shadow:var(--compte-halo-urgent);
     animation:countdown-pulse 2s ease-in-out infinite;
   }
   /* Palier dernières 24h : mode "urgence", rouge/orange vif + bordure clignotante */
   .countdown.final{
-    color:var(--compte-final); font-weight:800; font-size:13px;
+    color:var(--compte-final); font-weight:800; font-size:13px; text-shadow:var(--compte-halo-final);
     text-transform:uppercase; display:inline-block;
     padding:4px 8px; margin:-4px 0 0 -8px; border-radius:var(--r-sm);
     animation:countdown-pulse 1s ease-in-out infinite, countdown-border-pulse 1s ease-in-out infinite;
@@ -271,18 +244,6 @@
     50%{ box-shadow:0 0 0 2px rgba(255,77,77,0.5); }
   }
   .brand span{color:var(--accent);}
-  /* Le dégradé n'existe que là où `background-clip:text` est géré : ailleurs
-     le texte resterait INVISIBLE (couleur transparente sur rien). Sans
-     support, le titre garde l'ancienne écriture. En contraste forcé,
-     Chromium rend déjà une couleur pleine sans dégradé (mesuré par
-     test_titre_en_degrade) : aucune règle de plus, donc. */
-  @supports ((-webkit-background-clip:text) or (background-clip:text)){
-    .brand{
-      background:linear-gradient(95deg, var(--brand-a) 0%, var(--brand-b) 55%, var(--brand-c) 100%);
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-    }
-    .brand span{color:inherit;}
-  }
   .status-line{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); margin-top:6px;}
 
   /* Écart 10px et non 6 : chaque bouton étend sa zone de clic de 5px de
@@ -1102,9 +1063,9 @@
      neutres. Les trois teintes sont déjà mesurées sur les deux fonds de
      panneau (4,99 / 5,02 / 6,47 en clair, 8,51 / 7,93 / 5,61 en sombre),
      et à 20 px gras elles passent même en « grand texte ». */
-  .compteur-tuiles.soon b{color:var(--compte-soon);}
-  .compteur-tuiles.urgent b{color:var(--compte-urgent);}
-  .compteur-tuiles.final b{color:var(--compte-final);}
+  .compteur-tuiles.soon b{color:var(--compte-soon); text-shadow:var(--compte-halo-soon);}
+  .compteur-tuiles.urgent b{color:var(--compte-urgent); text-shadow:var(--compte-halo-urgent);}
+  .compteur-tuiles.final b{color:var(--compte-final); text-shadow:var(--compte-halo-final);}
   /* Les unités à zéro gardent leur gris : la teinte du palier dirait
      « regarde » sur un chiffre qui n'a rien à dire. */
   .compteur-tuiles.soon .zero b,
@@ -1353,13 +1314,24 @@
      « soon » : 2,16:1 en clair pour soon, 2,32 pour urgent, 3,27 pour
      final — la nuit de la sortie étant la pire des trois. Le thème
      sombre, lui, était conforme (8,51 / 7,93 / 5,61) et ne bouge pas. */
-  :root{--compte-soon:#e8a33d; --compte-urgent:#ff8c3d; --compte-final:#ff4d4d;}
-  /* Ambre, orange, rouge : la progression reste lisible d'un coup d'œil,
-     et le dernier cran est --danger, déjà mesuré pour ce thème. */
+  :root{
+    --compte-soon:#ffc400; --compte-urgent:#ff7a00; --compte-final:#ff2b2b;
+    /* LE HALO, en sombre seulement : « pas assez flashy » (Antoni, 28/10/2026).
+       Jaune vif, orange vif, rouge vif : 11,49 / 7,02 / 4,92:1 sur la carte
+       sombre (avant : ambre, orange, rouge à 8,51 / 7,93 / 5,61). */
+    --compte-halo-soon:0 0 8px rgba(255,196,0,.55);
+    --compte-halo-urgent:0 0 9px rgba(255,122,0,.6);
+    --compte-halo-final:0 0 10px rgba(255,43,43,.7);
+  }
+  /* En clair, une teinte vive sur blanc tombe sous 4,5:1 et un halo y salit le
+     texte : on garde des teintes PLUS FONCÉES, sans halo (5,93 / 5,50 / 6,32:1
+     sur blanc). Le thème clair sera donc moins éclatant : c'est la limite du
+     contraste, pas un oubli. */
   html[data-theme="light"]{
-    --compte-soon:#9a6410;      /* 4,99:1 sur blanc */
-    --compte-urgent:#b4530a;    /* 5,02:1 */
-    --compte-final:#b91c1c;     /* 6,47:1, c'est --danger */
+    --compte-soon:#8a5a00;
+    --compte-urgent:#b34700;
+    --compte-final:#c01010;
+    --compte-halo-soon:none; --compte-halo-urgent:none; --compte-halo-final:none;
   }
   /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
      Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en

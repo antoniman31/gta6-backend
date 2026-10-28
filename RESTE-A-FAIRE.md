@@ -1792,9 +1792,12 @@ Si `silent` ou `renotify` se comporte autrement qu'attendu, le dire ici.
 - **Gel** : jusqu'au 10/11 on peut ajouter ; après la répétition, correctifs
   seulement (choix d'Antoni).
 
-### Le titre en dégradé — où il en est (27/10/2026)
+### L'entête et le compte à rebours du dernier jour (28/10/2026)
 
-Fait (voir le README, « Le titre en coucher de soleil »). **Reste à regarder sur
-le téléphone** : la police réelle (Roboto Black) n'a pas été mesurée, seulement
-Liberation Sans. Si le titre paraît trop serré ou passe sur deux lignes, c'est
-la formule `clamp()` de `.brand` qu'on ajuste.
+Trouvé en mesurant les couleurs (voir le README, « Le compte à rebours, plus
+flashy ») : le texte du palier « 1 à 7 jours » fait 164 px et celui du dernier
+jour 226 px, pour 156 px (à 340 px d'écran) et 206 px (à 390 px) de disponibles
+avec le badge Backend. L'entête passe donc sur deux lignes à 340 px dès le
+11/11, et **à 390 px le jour de la sortie**. Existait avant les couleurs. Pistes
+mesurables : raccourcir le texte du dernier palier, ou le laisser sur deux lignes
+volontairement. À trancher avec Antoni avant le 18/11.
