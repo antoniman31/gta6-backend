@@ -9572,3 +9572,34 @@ disponibles), l'entête passe sur **deux lignes** (195 px de haut au lieu de
 226 px : l'entête passe sur deux lignes **même à 390 px** (198 px). Ce n'est pas
 le vide signalé le 23/09 pour le palier courant, mais c'est ce que verra
 l'écran le jour de la sortie. Aucun correctif sans l'avis d'Antoni.
+
+### Le compte à rebours en fluo — 28/10/2026
+
+Le lendemain de la palette « Feu », Antoni a préféré des **couleurs fluo**.
+Trois palettes en maquette, **« Chaud »** choisie : jaune fluo `#f7ff00`
+(7 à 30 jours), orange fluo `#ff8a00` (1 à 7 jours), rose vif `#ff2fa8` (dernier
+jour). Mêmes teintes dans les deux thèmes ; ce qui change, c'est le traitement.
+
+- **Sombre** : le texte est fluo, avec un halo. Sur la carte : 16,83 / 7,77 /
+  5,44:1.
+- **Clair** : un texte fluo sur blanc est illisible (le jaune tombe à 1,1:1), donc
+  le compteur devient un **surligneur** : fond fluo, texte foncé `#10222f`
+  (14,91 / 6,88 / 4,82:1). Contour par `outline`, qui déborde de 3 px **sans
+  rien pousser** : la largeur de l'entête ne change pas. Dans le panneau, des
+  pastilles séparées par une marge (sans contour, collées elles fusionnaient en
+  une barre sur ma première capture).
+- **Une correction faite avant d'écrire** : le rose de la maquette, `#ff1493`,
+  donnait **4,47:1** en surligneur, juste sous le seuil. Éclairci à `#ff2fa8`.
+- **Tests** (`test_compte_a_rebours_flashy`, 84 contrôles) : la teinte est fluo
+  (un canal à fond, un autre presque éteint), texte fluo et halo en sombre,
+  surligneur et contraste en clair, même teinte dans le panneau, et **même largeur
+  de compteur dans les deux thèmes**. Éprouvé par mutation, **quatre détectées** :
+  l'ancien rose, une teinte ambre non fluo, un halo retiré, un `padding` à la
+  place de l'`outline` (le compteur grossissait de 12 px).
+- **Un contrôle existant adapté, pas assoupli** : `test_panneau_du_compteur`
+  lisait la couleur du TEXTE des gros chiffres et a échoué (texte foncé) ; en
+  clair la teinte du palier est maintenant le FOND du chiffre, il lit donc le
+  fond quand il y en a un. Il garde sa comparaison au jeton, et il a bien échoué
+  tant que le fond n'était pas lu.
+- Le défaut de largeur du dernier jour, déjà noté plus haut, reste entier :
+  `RESTE-A-FAIRE.md`.

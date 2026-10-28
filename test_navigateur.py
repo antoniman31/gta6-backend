@@ -3480,13 +3480,15 @@ def test_vecteurs_du_resume(nav, url):
 
 
 def test_compte_a_rebours_flashy(nav, url):
-    """Les trois paliers du compte à rebours : vifs, lisibles, et sans casser l'entête.
+    """Les trois paliers du compte à rebours en FLUO, lisibles dans les deux thèmes.
 
-    Demandé par Antoni le 28/10/2026 (« pas assez flashy »). Jaune vif, orange
-    vif, rouge vif, avec un halo en thème SOMBRE seulement : en clair le halo
-    salit le texte et la teinte vive tomberait sous 4,5:1.
+    Demandé par Antoni le 28/10/2026 (« pas assez flashy », puis « plutôt des
+    couleurs fluo »). Sombre : le texte est fluo, avec un halo. Clair : un texte
+    fluo sur blanc est illisible, donc le compteur devient un SURLIGNEUR (fond
+    fluo, texte foncé). Le surligneur déborde par un `outline`, qui ne pousse
+    rien : l'entête garde sa largeur.
     """
-    print("\n[compteur] les trois paliers, vifs et lisibles")
+    print("\n[compteur] les trois paliers, en fluo et lisibles")
 
     def lire(css):
         return tuple(int(x) for x in re.findall(r"\d+", css)[:3])
@@ -3503,6 +3505,7 @@ def test_compte_a_rebours_flashy(nav, url):
 
     paliers = (("soon", "2026-10-28T10:00:00Z"), ("urgent", "2026-11-14T10:00:00Z"),
                ("final", "2026-11-18T15:00:00Z"))
+    largeurs = {}
     for theme in ("dark", "light"):
         for palier, instant in paliers:
             for largeur in (340, 390):
@@ -3518,33 +3521,59 @@ def test_compte_a_rebours_flashy(nav, url):
                     const m = document.getElementById('modeIndicator');
                     m.className = 'mode-indicator backend'; m.innerHTML = '● Backend GitHub'; }""", theme)
                 page.wait_for_timeout(300)
-                m = page.evaluate("""() => {
+                m = page.evaluate("""(pal) => {
                     const c = document.getElementById('countdown'), cs = getComputedStyle(c);
-                    return {classe: c.className, couleur: cs.color, halo: cs.textShadow,
-                            poids: parseInt(cs.fontWeight, 10),
-                            fond: getComputedStyle(document.querySelector('.console')).backgroundColor,
-                            }; }""")
+                    const root = getComputedStyle(document.documentElement);
+                    return {classe: c.className, couleur: cs.color, fondTexte: cs.backgroundColor,
+                            halo: cs.textShadow, poids: parseInt(cs.fontWeight, 10),
+                            contour: cs.outlineStyle + ' ' + cs.outlineWidth,
+                            largeur: c.getBoundingClientRect().width,
+                            jeton: root.getPropertyValue('--compte-' + pal).trim(),
+                            encre: root.getPropertyValue('--compte-encre').trim(),
+                            carte: getComputedStyle(document.querySelector('.console')).backgroundColor}; }""", palier)
                 etiq = "[%s %s %d px]" % (theme, palier, largeur)
+                h = m["jeton"].lstrip("#")
+                fluo = tuple(int(h[k:k + 2], 16) for k in (0, 2, 4))
                 check(palier in m["classe"].split(),
                       "%s l'horloge posée donne bien le palier « %s » (%s)" % (etiq, palier, m["classe"]))
-                r = contraste(lire(m["couleur"]), lire(m["fond"]))
-                check(r >= 4.5, "%s le compte à rebours passe 4,5:1 (%.2f:1)" % (etiq, r))
+                check(max(fluo) >= 240 and min(fluo) <= 90,
+                      "%s la teinte du jeton est FLUO (%s : un canal à fond, un autre presque éteint)"
+                      % (etiq, m["jeton"]))
                 check(m["poids"] >= 800, "%s en gras 800 (%d)" % (etiq, m["poids"]))
                 if theme == "dark":
-                    check(m["halo"] != "none", "%s halo lumineux en thème sombre" % etiq)
+                    r = contraste(lire(m["couleur"]), lire(m["carte"]))
+                    check(lire(m["couleur"]) == fluo and r >= 4.5,
+                          "%s texte fluo sur la carte, 4,5:1 (%.2f:1)" % (etiq, r))
+                    check(m["halo"] != "none", "%s halo lumineux" % etiq)
                 else:
-                    check(m["halo"] == "none", "%s pas de halo en thème clair" % etiq)
+                    r = contraste(lire(m["couleur"]), lire(m["fondTexte"]))
+                    encre = tuple(int(m["encre"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4))
+                    check(lire(m["fondTexte"]) == fluo and lire(m["couleur"]) == encre and r >= 4.5,
+                          "%s surligneur : texte foncé sur fond fluo, 4,5:1 (%.2f:1)" % (etiq, r))
+                    check(m["halo"] == "none" and m["contour"].startswith("solid"),
+                          "%s pas de halo, un contour de surligneur (%s)" % (etiq, m["contour"]))
+                largeurs[(theme, palier, largeur)] = m["largeur"]
                 if largeur == 390:
-                    # Le panneau reprend la MÊME teinte pour ses gros chiffres.
+                    # Le panneau reprend la MÊME teinte : texte fluo en sombre, fond fluo en clair.
                     page.evaluate("() => ouvreCompteur()")
                     page.wait_for_timeout(300)
-                    t = page.evaluate("""() => { const b = [...document.querySelectorAll('#compteurContenu .compteur-tuiles:not(.equiv) b')]
-                        .find(x => x.textContent.trim() !== '0' && getComputedStyle(x).color !== getComputedStyle(document.body).color);
-                        return b ? getComputedStyle(b).color : null; }""")
-                    check(t == m["couleur"],
-                          "%s le panneau porte la même teinte (%s / %s)" % (etiq, t, m["couleur"]))
+                    t = page.evaluate("""() => { const b = document.querySelector(
+                          '#compteurContenu .compteur-tuiles:not(.equiv) > div:not(.zero) > b');
+                        if(!b) return null; const cs = getComputedStyle(b);
+                        return {couleur: cs.color, fond: cs.backgroundColor}; }""")
+                    attendu = lire(m["couleur"]) if theme == "dark" else fluo
+                    obtenu = lire(t["couleur"]) if theme == "dark" else lire(t["fond"])
+                    check(t is not None and obtenu == attendu,
+                          "%s le panneau porte la même teinte (%s)" % (etiq, t))
                 check(not erreurs, "%s aucune erreur JavaScript" % etiq)
                 ctx.close()
+    # Le surligneur ne doit RIEN pousser : même largeur de compteur dans les deux thèmes.
+    for (theme, palier, largeur), w in largeurs.items():
+        if theme == "light":
+            sombre = largeurs[("dark", palier, largeur)]
+            check(abs(w - sombre) < 1.0,
+                  "[%s %d px] le surligneur ne change pas la largeur du compteur (%.0f px / %.0f px)"
+                  % (palier, largeur, w, sombre))
 
 
 def test_ne_pas_deranger(nav, url):
@@ -4272,7 +4301,11 @@ def test_panneau_du_compteur(nav, url):
               teinte: (() => {
                 const vivant = [...cases].find(c => !c.classList.contains('zero'));
                 if(!vivant) return null;
-                const rendue = getComputedStyle(vivant.querySelector('b')).color;
+                // En thème CLAIR, la teinte du palier est le FOND du chiffre
+                // (surligneur fluo, texte foncé) ; en sombre, c'est le texte.
+                const csb = getComputedStyle(vivant.querySelector('b'));
+                const rendue = csb.backgroundColor !== 'rgba(0, 0, 0, 0)'
+                               ? csb.backgroundColor : csb.color;
                 // La teinte ATTENDUE, résolue depuis le jeton : comparer
                 // à une chaîne écrite en dur dans le test figerait la
                 // couleur en double, ici et dans la feuille de style.

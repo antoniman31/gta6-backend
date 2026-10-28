@@ -1315,24 +1315,41 @@
      final — la nuit de la sortie étant la pire des trois. Le thème
      sombre, lui, était conforme (8,51 / 7,93 / 5,61) et ne bouge pas. */
   :root{
-    --compte-soon:#ffc400; --compte-urgent:#ff7a00; --compte-final:#ff2b2b;
-    /* LE HALO, en sombre seulement : « pas assez flashy » (Antoni, 28/10/2026).
-       Jaune vif, orange vif, rouge vif : 11,49 / 7,02 / 4,92:1 sur la carte
-       sombre (avant : ambre, orange, rouge à 8,51 / 7,93 / 5,61). */
-    --compte-halo-soon:0 0 8px rgba(255,196,0,.55);
-    --compte-halo-urgent:0 0 9px rgba(255,122,0,.6);
-    --compte-halo-final:0 0 10px rgba(255,43,43,.7);
+    /* FLUO (Antoni, 28/10/2026 : « plutôt des couleurs fluo »), palette « Chaud »
+       choisie sur trois maquettes : jaune fluo, orange fluo, rose vif. Les
+       mêmes teintes dans les deux thèmes ; ce qui change, c'est le TRAITEMENT. */
+    --compte-soon:#f7ff00; --compte-urgent:#ff8a00; --compte-final:#ff2fa8;
+    /* Sombre : le texte EST fluo, avec un halo. Sur la carte : 16,83 / 7,77 /
+       5,44:1. Le rose #ff1493 de la maquette, lui, tombait à 4,47:1 en
+       surligneur : éclairci à #ff2fa8 (4,82:1 en clair, 5,44 en sombre). */
+    --compte-halo-soon:0 0 8px rgba(247,255,0,.6);
+    --compte-halo-urgent:0 0 9px rgba(255,138,0,.65);
+    --compte-halo-final:0 0 10px rgba(255,47,168,.7);
+    --compte-encre:#10222f;
   }
-  /* En clair, une teinte vive sur blanc tombe sous 4,5:1 et un halo y salit le
-     texte : on garde des teintes PLUS FONCÉES, sans halo (5,93 / 5,50 / 6,32:1
-     sur blanc). Le thème clair sera donc moins éclatant : c'est la limite du
-     contraste, pas un oubli. */
+  /* Clair : un texte fluo sur blanc est illisible (le jaune fluo tombe à
+     1,1:1). Le compteur devient donc un SURLIGNEUR : fond fluo, texte foncé
+     (14,91 / 6,88 / 4,82:1), sans halo. Un `outline` plutôt qu'une bordure ou
+     un padding : il déborde de 3 px sans rien pousser, donc la largeur de
+     l'entête ne change pas, et l'animation de bordure du dernier palier
+     (box-shadow) n'y touche pas. Dans le panneau, des pastilles séparées par
+     une marge (sans contour : collées, elles fusionnaient en une barre) ; les
+     unités à zéro restent grises. */
   html[data-theme="light"]{
-    --compte-soon:#8a5a00;
-    --compte-urgent:#b34700;
-    --compte-final:#c01010;
     --compte-halo-soon:none; --compte-halo-urgent:none; --compte-halo-final:none;
   }
+  html[data-theme="light"] .countdown.soon{
+    color:var(--compte-encre); background:var(--compte-soon); outline:3px solid var(--compte-soon); border-radius:var(--r-xs);}
+  html[data-theme="light"] .compteur-tuiles.soon > div:not(.zero) > b{
+    color:var(--compte-encre); background:var(--compte-soon); border-radius:var(--r-xs); margin:0 8px;}
+  html[data-theme="light"] .countdown.urgent{
+    color:var(--compte-encre); background:var(--compte-urgent); outline:3px solid var(--compte-urgent); border-radius:var(--r-xs);}
+  html[data-theme="light"] .compteur-tuiles.urgent > div:not(.zero) > b{
+    color:var(--compte-encre); background:var(--compte-urgent); border-radius:var(--r-xs); margin:0 8px;}
+  html[data-theme="light"] .countdown.final{
+    color:var(--compte-encre); background:var(--compte-final); outline:3px solid var(--compte-final); border-radius:var(--r-xs);}
+  html[data-theme="light"] .compteur-tuiles.final > div:not(.zero) > b{
+    color:var(--compte-encre); background:var(--compte-final); border-radius:var(--r-xs); margin:0 8px;}
   /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
      Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
      thème clair : illisible, et resté invisible tant qu'aucun article à
