@@ -3479,6 +3479,74 @@ def test_vecteurs_du_resume(nav, url):
     ctx.close()
 
 
+def test_compte_a_rebours_flashy(nav, url):
+    """Les trois paliers du compte à rebours : vifs, lisibles, et sans casser l'entête.
+
+    Demandé par Antoni le 28/10/2026 (« pas assez flashy »). Jaune vif, orange
+    vif, rouge vif, avec un halo en thème SOMBRE seulement : en clair le halo
+    salit le texte et la teinte vive tomberait sous 4,5:1.
+    """
+    print("\n[compteur] les trois paliers, vifs et lisibles")
+
+    def lire(css):
+        return tuple(int(x) for x in re.findall(r"\d+", css)[:3])
+
+    def lum(c):
+        def f(v):
+            v /= 255.0
+            return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+        return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2])
+
+    def contraste(a, b):
+        x, y = lum(a), lum(b)
+        return (max(x, y) + 0.05) / (min(x, y) + 0.05)
+
+    paliers = (("soon", "2026-10-28T10:00:00Z"), ("urgent", "2026-11-14T10:00:00Z"),
+               ("final", "2026-11-18T15:00:00Z"))
+    for theme in ("dark", "light"):
+        for palier, instant in paliers:
+            for largeur in (340, 390):
+                ctx = nav.new_context(viewport={"width": largeur, "height": 800},
+                                      timezone_id="Europe/Paris", reduced_motion="reduce")
+                ctx.clock.install(time=instant)
+                page = ctx.new_page()
+                erreurs = []
+                page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+                page.goto(url, wait_until="load")
+                page.wait_for_selector(".header-haut")
+                page.evaluate("""(t) => { document.documentElement.setAttribute('data-theme', t);
+                    const m = document.getElementById('modeIndicator');
+                    m.className = 'mode-indicator backend'; m.innerHTML = '● Backend GitHub'; }""", theme)
+                page.wait_for_timeout(300)
+                m = page.evaluate("""() => {
+                    const c = document.getElementById('countdown'), cs = getComputedStyle(c);
+                    return {classe: c.className, couleur: cs.color, halo: cs.textShadow,
+                            poids: parseInt(cs.fontWeight, 10),
+                            fond: getComputedStyle(document.querySelector('.console')).backgroundColor,
+                            }; }""")
+                etiq = "[%s %s %d px]" % (theme, palier, largeur)
+                check(palier in m["classe"].split(),
+                      "%s l'horloge posée donne bien le palier « %s » (%s)" % (etiq, palier, m["classe"]))
+                r = contraste(lire(m["couleur"]), lire(m["fond"]))
+                check(r >= 4.5, "%s le compte à rebours passe 4,5:1 (%.2f:1)" % (etiq, r))
+                check(m["poids"] >= 800, "%s en gras 800 (%d)" % (etiq, m["poids"]))
+                if theme == "dark":
+                    check(m["halo"] != "none", "%s halo lumineux en thème sombre" % etiq)
+                else:
+                    check(m["halo"] == "none", "%s pas de halo en thème clair" % etiq)
+                if largeur == 390:
+                    # Le panneau reprend la MÊME teinte pour ses gros chiffres.
+                    page.evaluate("() => ouvreCompteur()")
+                    page.wait_for_timeout(300)
+                    t = page.evaluate("""() => { const b = [...document.querySelectorAll('#compteurContenu .compteur-tuiles:not(.equiv) b')]
+                        .find(x => x.textContent.trim() !== '0' && getComputedStyle(x).color !== getComputedStyle(document.body).color);
+                        return b ? getComputedStyle(b).color : null; }""")
+                    check(t == m["couleur"],
+                          "%s le panneau porte la même teinte (%s / %s)" % (etiq, t, m["couleur"]))
+                check(not erreurs, "%s aucune erreur JavaScript" % etiq)
+                ctx.close()
+
+
 def test_ne_pas_deranger(nav, url):
     """« Silence 2 h » : la fonction pure, le service worker, puis la page.
 
@@ -6192,6 +6260,7 @@ def main():
             test_resume_du_mode_de_secours(nav, url)
             test_mode_sans_spoiler(nav, url)
             test_vecteurs_du_resume(nav, url)
+            test_compte_a_rebours_flashy(nav, url)
             test_ne_pas_deranger(nav, url)
             test_agenda_jours_civils(nav, url)
             test_agenda_dans_le_panneau(nav, url)

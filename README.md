@@ -9544,3 +9544,31 @@ dans l'historique git, commit « Le titre de l'entête en coucher de soleil ») 
 - le balayage de contraste lisait ce texte à 1,00:1 : il faut juger la plus
   faible des teintes du dégradé, jamais baisser le seuil ;
 - mes mesures de taille avaient oublié le badge Backend, qui est l'état réel.
+
+### Le compte à rebours, plus flashy — 28/10/2026
+
+« Pas assez flashy » (Antoni). Trois palettes montrées en maquette, **Feu**
+choisie, avec les mêmes teintes pour les gros chiffres du panneau.
+
+- **Sombre** : jaune vif `#ffc400`, orange vif `#ff7a00`, rouge vif `#ff2b2b`
+  (contrastes 11,49 / 7,02 / 4,92:1 sur la carte, contre 8,51 / 7,93 / 5,61
+  avant), gras 800 à tous les paliers et **halo lumineux**.
+- **Clair** : teintes plus foncées, **sans halo** (`#8a5a00`, `#b34700`,
+  `#c01010` : 5,93 / 5,50 / 6,32:1 sur blanc). Une teinte vive sur blanc
+  tombe sous 4,5:1 et un halo y salit le texte : le clair sera donc moins
+  éclatant, c'est la limite du contraste.
+- **La taille ne bouge pas** : le texte fait déjà 142 px à 12 px sur 156 px
+  disponibles à 340 px, avec le badge Backend.
+- **Tests** (`test_compte_a_rebours_flashy`, 66 contrôles) : les trois paliers,
+  les deux thèmes, 340 et 390 px, avec l'horloge posée ; contraste 4,5:1 sur le
+  vrai fond, gras 800, halo en sombre et pas en clair, même teinte dans le
+  panneau. Rejoué contre l'ancien code, il **échoue 14 fois** (halo, poids).
+
+**Trouvé en mesurant, et qui existait déjà** (le même résultat avant mon
+changement, vérifié sur le code d'avant) : à **340 px**, dès le palier
+« 1 à 7 jours » (le texte « Sortie dans 4j 12h 59m » fait 164 px pour 156
+disponibles), l'entête passe sur **deux lignes** (195 px de haut au lieu de
+143). Pour le **dernier jour**, le texte « C'EST BIENTÔT — 7h 59m 59s » fait
+226 px : l'entête passe sur deux lignes **même à 390 px** (198 px). Ce n'est pas
+le vide signalé le 23/09 pour le palier courant, mais c'est ce que verra
+l'écran le jour de la sortie. Aucun correctif sans l'avis d'Antoni.
