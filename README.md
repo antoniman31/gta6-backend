@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1942
+qui permet de tester tout le pipeline sans sortir de la machine. **1938
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9525,52 +9525,22 @@ fragile des quatre : une seule source principale est lue.
   répétition du 10/11, sinon « à revérifier » dès le 11/11. Un rappel est
   programmé le 10/11 à 9 h (Paris).
 
-### Le titre en coucher de soleil — 27/10/2026
+### Retour à l'ancien titre — 28/10/2026
 
-Demandé par Antoni (« plus dans le style du logo de GTA 6 »), maquette **A**
-choisie sur cinq : gras italique, dégradé rose → orange. Ce n'est **pas** une
-copie du logo de Rockstar, seulement une teinte dans l'esprit.
+Antoni a demandé de **revenir à l'ancien style** de « GTA6_WATCH » (JetBrains
+Mono 800, 20 px, « _WATCH » en couleur d'accent) le lendemain de la mise en
+ligne du titre en dégradé (#213). Le retour est un `git revert` de ce lot : le
+titre, ses jetons `--brand-*`, ses deux contrôles (`test_titre_en_degrade` et
+son garde statique) et la lecture des dégradés dans le balayage de contraste
+disparaissent ensemble, puisque ce dernier n'existait que pour lui. Le cache du
+service worker passe à v61 pour que les téléphones rechargent la page.
 
-- **Police système** (`system-ui`, Roboto sur Android) et non JetBrains Mono :
-  le 900 italique n'est pas dans l'`@import`, et une nouvelle police serait une
-  dépendance réseau de plus pour un titre. **Non vérifié sur le téléphone
-  d'Antoni** : les mesures sont faites avec la police du conteneur
-  (Liberation Sans), et Roboto Black n'a pas exactement la même largeur.
-- **Teintes en jetons**, un jeu par thème, mesurées sur la carte : **5,30:1**
-  au plus faible en sombre, **4,92:1** en clair (plus foncées, pas recopiées).
-- **Une erreur de ma part, corrigée** : j'avais annoncé « 24 px tient à 360 et
-  390 px » après avoir mesuré **sans** le badge « Backend GitHub », qui est
-  pourtant l'état réel de l'app. Avec le badge, 24 px cassait le contrôle
-  existant de l'entête sur une ligne à 340, 360 et 368 px, et même 20 px
-  échouait à 340 px (le gras italique en capitales est plus large que l'ancien
-  titre : 150 px contre 116 à 20 px). Aucun seuil n'a été baissé : la taille est
-  maintenant **fluide**, `clamp(19px, (100vw − 200px) / 7.2, 24px)`, avec un
-  espacement de −0,02 em.
-- **Mesuré avec le badge Backend** : 19,4 px à 340 px d'écran, 22,2 px à 360,
-  24 px à partir de 375 px ; une ligne et **143 px de hauteur d'entête à tous les
-  écrans de 340 à 412 px, comme avant**. À 320 px l'entête passe sur deux
-  lignes, comme avant le changement (195 px avant, 190 après).
-- **Le piège** : `color:transparent` sans `background-clip:text` rend le titre
-  **invisible**. Le dégradé vit donc dans un `@supports` ; sans support le titre
-  garde sa couleur pleine. En contraste forcé, Chromium rend déjà une couleur
-  pleine sans dégradé (mesuré) : aucune règle de plus.
-- **Tests** : `test_titre_en_degrade` (49 contrôles) lit les PIXELS (rose à
-  gauche, orange à droite, couverture inférieure à 70 % pour distinguer du
-  texte d'un rectangle plein) à 340, 375 et 412 px dans les deux thèmes, plus un
-  garde statique dans `test_pipeline.py`. Éprouvé par mutation : découpe
-  retirée, teinte pâle, `fit-content` retiré, couleur transparente hors du
-  `@supports`, marge de droite retirée, **cinq détectées**. Mon premier contrôle
-  de pixels laissait passer la découpe retirée (un rectangle plein compte comme
-  de l'encre) : corrigé par la couverture.
-- **L'instrument de contraste était faux, pas le titre** : le balayage de
-  `test_contraste_partout` lit la couleur calculée, qui est **transparente**
-  pour un texte découpé dans un dégradé : il rapportait le titre à **1,00:1**
-  (fond sur fond) et a fait échouer la suite complète. Il juge maintenant la
-  plus faible des teintes du dégradé (en remontant jusqu'à l'ancêtre qui
-  découpe son fond, pour le `<span>` « _WATCH »). **Seuil inchangé** ; éprouvé :
-  une teinte pâle (`--brand-c` à 1,85:1) est rapportée par le balayage.
-- **Une seconde erreur, vue sur capture** : le dernier « H » penche hors de
-  sa boîte, et `background-clip:text` ne peint que dedans : il apparaissait
-  rogné à droite, et aucun contrôle ne l'avait vu. `padding-right:.15em`, et un
-  contrôle d'encre dans la dernière colonne de pixels (9 à 10 px d'encre sans
-  le correctif, 0 avec).
+**Ce que ce lot a appris, au cas où on y reviendrait** (le détail complet est
+dans l'historique git, commit « Le titre de l'entête en coucher de soleil ») :
+- le gras italique en capitales est bien plus large que l'ancien titre : même à
+  20 px il dépassait la place laissée par le badge « Backend GitHub » à 340 px ;
+- `background-clip:text` ne peint que dans la boîte (le dernier « H » penchait
+  dehors), et `color:transparent` sans lui efface le texte ;
+- le balayage de contraste lisait ce texte à 1,00:1 : il faut juger la plus
+  faible des teintes du dégradé, jamais baisser le seuil ;
+- mes mesures de taille avaient oublié le badge Backend, qui est l'état réel.
