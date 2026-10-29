@@ -1872,3 +1872,7 @@ Plus aucune image dans les notifications (29/10/2026, au soir) : Antoni retire l
 et la vignette, sur Discord comme sur le push, ce qui annule son choix de l'après-midi. Spec et
 visuels refaits sans image.
 
+Réponses d'Antoni du 29/10/2026 au soir : récapitulatif toujours à l'heure, un seul salon, une
+ligne d'aperçu avant la carte, le push avec le même vocabulaire plus tard. La spec a un tableau
+« vocabulaire commun ». À faire au premier envoi réel : regarder l'écran verrouillé.
+

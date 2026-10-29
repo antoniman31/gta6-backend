@@ -30,7 +30,11 @@ Visuels, dans `tasks/visuels-discord/` :
 | Bilan du soir | Un message par jour à 22 h, **avant et après la sortie**. |
 | Annonces officielles | **Une seule notification par passage, 5 liens au plus puis un compteur** ; type de contenu, heure de publication, pied commun ; **annonces d'abord, boutique ensuite** ; **la boutique garde la catégorie « officiel »** ; fusion EN/FR avec **titre en français** ; mesure du retard, relue après **10 alertes**. |
 | RockstarMag | **Carte séparée**, 🎬 pour les vidéos, extrait du résumé, **silence la nuit**, **reste après la sortie**, couleur de **l'accent de l'app**. Le récapitulatif **liste aussi** ses articles. |
-| Écarté | Mention `@` qui sonne ; passage plus fréquent sur les flux officiels ; toute image (vignette, grande image) ; rappel d'agenda ; plus de lignes. |
+| Rythme | **Un récapitulatif par heure, comme aujourd'hui** (environ 16 par jour de 6 h à 21 h). Pas de regroupement. |
+| Salons | **Un seul salon, comme aujourd'hui** : aucun nouveau secret. |
+| Ligne d'aperçu | **Oui** : le titre passe dans une ligne de texte au-dessus de la carte (le `content` du message), la carte n'a plus de titre, pour que l'aperçu sur l'écran verrouillé soit lisible. |
+| Push | **Même vocabulaire que Discord** quand il sera retenté (titres, marqueurs, hiérarchie) ; il reste éteint, rien n'est retenté ici. |
+| Écarté | Mention `@` qui sonne ; salons séparés ; regroupement des récapitulatifs ; passage plus fréquent sur les flux officiels ; toute image (vignette, grande image) ; rappel d'agenda ; plus de lignes. |
 
 ## État actuel, mesuré (29/10/2026)
 
@@ -164,6 +168,34 @@ l'historique (`item_protege`).
 Coût : un message de plus les jours où RockstarMag publie, troisième exception à « un seul
 message par passage » après les alertes de source et les annonces officielles.
 
+## Un vocabulaire commun (Discord, push, app)
+
+La même grammaire partout : un marqueur, une couleur, un titre écrit **une seule fois**
+(`feed_store.libelle_*`), repris mot pour mot par Discord et par le push, comme c'est déjà le
+cas du récapitulatif et des annonces officielles. Ordre d'importance, du plus fort au plus
+discret : **officiel > actu majeure > RockstarMag > récapitulatif > bilan**.
+
+| catégorie | marqueur | barre Discord | titre |
+|---|---|---|---|
+| Annonce officielle | ⭐ | orange `#FF6B00` | « ⭐ N annonce(s) officielle(s) Rockstar » |
+| Actu majeure | 🚨 (🔥 sur la ligne) | rouge `#E04F5F` | « 🚨 Actu majeure — N sources sur le même sujet » |
+| RockstarMag | 📰 site, 🎬 vidéo | accent de l'app `#58b9ff` | « 📰 RockstarMag — N nouveau(x) » |
+| Récapitulatif | 🎮 | palier du compteur (jaune, orange, rose, sinon bleu) | « 🎮 N nouveaux articles GTA 6 » |
+| Bilan du soir | 🌙 | violet `#8e5cff` | « 🌙 Bilan du JJ/MM : N articles » |
+| État des sources | ⚠️ / ✅ | rouge / vert | « ⚠️ État des sources » |
+| Push mort | 🔕 | orange `#E67E22` | existant |
+
+**La ligne d'aperçu.** Chaque message Discord commence par son titre en texte simple, au-dessus de
+la carte ; la carte porte le détail, sans titre en double. C'est le même texte que le titre du
+push. **À vérifier au premier envoi réel** : je ne peux pas savoir d'ici ce que Discord affiche
+sur l'écran verrouillé pour un message qui a du texte et une carte ; Antoni regarde et me dit.
+
+**Le push, plus tard.** Quand il sera retenté, il reprend ce tableau : même titre, même marqueur,
+et l'ordre d'importance pour choisir l'article cité dans son corps (`article_le_plus_notable`
+suit déjà : officiel, puis nombre de rédactions, puis date). L'icône et le badge de l'app
+restent. Aujourd'hui seuls le récapitulatif et l'annonce officielle y sont alignés : la carte
+RockstarMag et le bilan du soir n'existent pas côté push.
+
 ## 6 · Quand chaque message arrive
 
 ![Une journée type](visuels-discord/quand-1.png)
@@ -175,6 +207,8 @@ RockstarMag qui continuent.
 
 ## Risques et ce que je ne sais pas
 
+- **La ligne d'aperçu** : voir « Un vocabulaire commun ». Si Discord affiche déjà le titre de la carte, elle
+  sera redondante, et on la retire.
 - **Discord limite un embed à 6 000 caractères** : cinq lignes de 343 caractères, des champs et un
   pied tiennent largement.
 - **Exceptions à « un seul message par passage »** : alertes de source, annonces officielles
@@ -211,5 +245,7 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
   les lister.
 - Bilan : un seul par jour civil à Paris, même avec deux passages après 22 h ; aucun avant 22 h ;
   heures testées des deux côtés du changement d'heure.
+- Aperçu : chaque message porte une ligne de texte égale à son titre côté push ; la carte n'a pas de
+  titre ; le texte ne dépasse pas 2 000 caractères (limite Discord du `content`).
 - Dans tous les cas : aucun secret ni URL de webhook dans un journal ; `DISCORD_WEBHOOK_URL` reste
   dans les secrets GitHub ; aucun nom de modèle.
