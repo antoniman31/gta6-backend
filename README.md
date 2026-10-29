@@ -9676,7 +9676,7 @@ Deux leçons, à garder si une protection de branche revient :
 - les contrôles requis doivent porter les **vrais noms** de ce dépôt (`controles`),
   sinon plus aucune PR ne peut être fusionnée.
 
-**Premier abonnement suivi** (diagnostic de #216) : le passage de 10:29 (Paris) a
+**Premier abonnement suivi** (diagnostic de #216) : le passage de 09:29 (Paris, UTC+1) a
 envoyé « 1/1 notification » avec `empreinte 42310181 · hôte jmt17.google.com ·
 expiration aucune`. L'hôte du service de push n'est donc pas `fcm.googleapis.com`
 (celui que citent les tests) mais un hôte en `google.com` : **je n'ai pas vérifié**
@@ -9688,8 +9688,8 @@ du dernier envoi réussi donne la durée de vie de l'abonnement.
 ### L'abonnement push est mort en moins de 35 minutes : le téléphone tient un journal — 29/10/2026
 
 Le robot a confirmé la mort de l'abonnement `42310181` : envoi accepté (1/1) au
-passage de 08:27 UTC (10:27 Paris), puis **HTTP 410** au passage de 09:00 UTC
-(11:00 Paris), avec la réponse de Google « push subscription has unsubscribed or
+passage de 08:27 UTC (09:27 Paris), puis **HTTP 410** au passage de 09:00 UTC
+(10:00 Paris), avec la réponse de Google « push subscription has unsubscribed or
 expired ». Même empreinte des deux côtés, donc ce n'est pas un remplacement :
 c'est le même abonnement, fermé côté téléphone en moins de 35 minutes, alors qu'il
 avait tenu environ 33 heures la fois précédente. Antoni n'avait rien touché (réponse
@@ -9736,3 +9736,14 @@ défaut en faisait 18, mesuré). Le contrôle mesure désormais la boîte du tit
 ouverture, le texte et le bouton « Copier », à 320 px, en passant par
 `openSettings()` puis l'onglet Avancé ; rejoué contre l'ancien code (classe remise), il
 échoue (`none, 0 x 0`). Cache du service worker : `v65`.
+
+### Une erreur d'heure de ma part : Paris est à UTC+1 depuis le 25/10 — 29/10/2026
+
+Antoni l'a rappelé : on est passé à l'heure d'hiver. J'ai converti plusieurs heures
+de ce jour avec UTC+2 (heure d'été) au lieu de UTC+1, et écrit des heures fausses
+dans le README, dans RESTE-A-FAIRE et dans le message du commit de #218 (qui ne se
+corrige plus : « 10:29 → 11:02 Paris » y est faux). Les heures justes : dernier envoi
+réussi de `42310181` à **09:29** Paris, premier 410 à **10:00** Paris (passage de
+09:00 UTC). La durée de vie (moins de 35 minutes) ne change pas, c'est un écart, pas
+une erreur de mesure. Le journal du téléphone, lui, écrit ses heures avec le fuseau
+`Europe/Paris` et n'était pas concerné.

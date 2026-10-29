@@ -1813,7 +1813,7 @@ automatiser la mise à jour du secret (jeton à droit d'écriture des secrets).
 
 ### Suivre l'empreinte 42310181 (29/10/2026)
 
-Abonnement valide depuis le passage de 10:29 (Paris), hôte `jmt17.google.com`. À
+Abonnement valide depuis le passage de 09:29 (Paris, UTC+1), hôte `jmt17.google.com`. À
 chaque passage horaire, chercher la ligne `[push] abonnement #1 : empreinte …` : si
 elle disparaît au profit d'un « expiré (HTTP 410) », noter l'heure du dernier envoi
 réussi. Cette durée dit si l'abonnement meurt seul (cause : le téléphone ou Chrome)
