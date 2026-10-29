@@ -28,6 +28,7 @@ import json
 import os
 import sys
 import time
+from datetime import datetime, timezone
 
 import requests
 
@@ -38,15 +39,18 @@ SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 
 
 def send_discord_with_retry(embed, title_for_log, max_attempts=3):
-    """Envoie un embed Discord avec nouvelle tentative en cas d'erreur
+    """Envoie un embed (ou un message complet) Discord avec nouvelle tentative en cas d'erreur
     temporaire (429 rate-limit ou 5xx serveur). Un 429 renvoie généralement
     un délai précis à respecter (Retry-After) — on l'utilise si présent,
     sinon un backoff exponentiel simple (2s, 4s, 8s...). Les erreurs
     définitives (ex: 400 webhook malformé, 404 webhook supprimé) ne sont
     jamais retentées, ça ne changerait rien."""
+    # Un message complet (expéditeur, aperçu, plusieurs cartes) porte déjà sa
+    # clé `embeds` ; un embed seul est enveloppé comme avant.
+    charge = embed if "embeds" in embed else {"embeds": [embed]}
     for attempt in range(1, max_attempts + 1):
         try:
-            resp = requests.post(DISCORD_WEBHOOK_URL, json={"embeds": [embed]}, timeout=10)
+            resp = requests.post(DISCORD_WEBHOOK_URL, json=charge, timeout=10)
             if resp.status_code in (200, 204):
                 return True
             if resp.status_code == 429:
@@ -199,80 +203,161 @@ def description_recap(apercus, total=0):
     return "\n".join(lignes) + f"\n\n{pied}"
 
 
-def send_discord_notification(new_items, promus=(), apercus=None):
-    """Envoie UN SEUL message Discord récapitulatif : le nombre de nouveaux
-    articles en titre, et sous ce titre les derniers d'entre eux, cliquables.
+COULEUR_MAJEURE = 0xE04F5F
 
-    Un seul message, toujours — la règle qui interdit un message PAR article
-    tient : cinq liens dans un même embed, ce n'est pas cinq messages.
+# Discord refuse TOUT le message (400, non retenté) si la somme des cartes
+# dépasse 6 000 caractères. Quatre sections de cinq lignes de 343 caractères
+# en feraient 6 860 : on coupe donc avant, en laissant de la marge.
+CARTES_MAX_CARACTERES = 5800
+LIGNES_PAR_SECTION = 5
 
-    Discord mobile ouvre toujours l'app Discord au tap sur une notification
-    (jamais une URL externe directement), donc les liens restent cliquables
-    DANS le message une fois Discord ouvert, pas au moment du tap sur la
-    notification système elle-même.
+SECTION_OFFICIEL = "officiel"
+SECTION_MAJEURE = "majeure"
+SECTION_AUTRES = "autres"
 
-    `apercus` : les articles à citer, déposés par le robot. Ils sont passés
-    explicitement plutôt que redérivés de `new_items`, parce que le
-    récapitulatif du matin porte l'arriéré de la nuit — des articles qui ne
-    sont plus « nouveaux » à 5h et ne figurent donc dans aucune liste. None
-    (lancement à la main) fait retomber sur new_items + promus.
+# Quand il faut couper, on commence par la section la moins importante.
+# L'officiel n'est jamais coupé : c'est ce pour quoi cette veille existe.
+ORDRE_DE_COUPE = (SECTION_AUTRES, SECTION_MAJEURE)
 
-    N'échoue jamais l'étape si Discord est indisponible ou mal configuré."""
+
+def balise_temps(instant, style="R"):
+    """Une balise de temps Discord, recalculée à l'affichage."""
+    return f"<t:{int(instant.timestamp())}:{style}>"
+
+
+def nom_expediteur(avec_officiel, avec_majeure):
+    """Le nom affiché au-dessus du message : la plus forte catégorie présente."""
+    if avec_officiel:
+        return "⭐ Rockstar"
+    if avec_majeure:
+        return "🚨 Actu majeure"
+    return "🎮 GTA6_WATCH"
+
+
+def pied_du_message(maintenant=None):
+    """Le compte à rebours vivant et le lien vers l'app, en dernière ligne."""
+    maintenant = maintenant or datetime.now(timezone.utc)
+    sortie = feed_store.SORTIE_GTA6
+    if maintenant < sortie:
+        decompte = f"⏳ Sortie {balise_temps(sortie)}"
+    else:
+        decompte = f"🎮 Sorti {balise_temps(sortie)}"
+    return f"{decompte} · [Ouvrir GTA6_WATCH]({SITE_URL})"
+
+
+def nouvelle_section(nom, entete, couleur, apercus, total):
+    """Une section : au plus cinq lignes, et le compte exact de ce qu'elle cache."""
+    lignes = [l for l in (ligne_apercu(a) for a in (apercus or ())[:LIGNES_PAR_SECTION]) if l]
+    if not lignes:
+        return None
+    return {"nom": nom, "entete": entete, "couleur": couleur, "lignes": lignes,
+            "total": max(int(total or 0), len(lignes))}
+
+
+def rend_section(section, pied=""):
+    """La carte Discord d'une section, avec son « + N autres dans l'app »."""
+    lignes = list(section["lignes"])
+    cachees = section["total"] - len(lignes)
+    if cachees > 0:
+        lignes.append(f"*+ {cachees} autre{'s' if cachees > 1 else ''} dans l'app*")
+    if pied:
+        lignes += ["", pied]
+    return {"title": f"{section['entete']} · {section['total']}",
+            "description": "\n".join(lignes), "color": section["couleur"]}
+
+
+def _taille(embeds):
+    return sum(len(e.get("title", "")) + len(e.get("description", "")) for e in embeds)
+
+
+def compose_message(sections, content, pied, maximum=CARTES_MAX_CARACTERES):
+    """Assemble les cartes d'un message en restant sous la limite de Discord.
+
+    Rend (cartes, nombre de lignes coupées). La coupe retire la dernière ligne
+    de « Les autres », puis de l'actu majeure, jamais d'une annonce officielle ;
+    le total affiché dans le titre de la section reste juste, le « + N » grossit.
+    """
+    sections = [dict(s, lignes=list(s["lignes"])) for s in sections if s]
+    coupees = 0
+
+    def rendu():
+        # Le pied vit dans la dernière carte.
+        return [rend_section(s, pied if i == len(sections) - 1 else "")
+                for i, s in enumerate(sections)]
+
+    while _taille(rendu()) + len(content) > maximum:
+        for nom in ORDRE_DE_COUPE:
+            cible = next((s for s in sections if s["nom"] == nom and s["lignes"]), None)
+            if cible:
+                cible["lignes"].pop()
+                coupees += 1
+                if not cible["lignes"]:
+                    sections.remove(cible)
+                break
+        else:
+            break
+    return rendu(), coupees
+
+
+def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None,
+                 apres_sortie=False):
+    """Envoie UN SEUL message par passage : des sections colorées sous une
+    ligne d'aperçu, et un pied avec le compte à rebours.
+
+    Remplace, depuis le 29/10/2026, le récapitulatif seul et les alertes
+    officielles une par une (décision d'Antoni : « un message à sections »).
+
+    `officiels` : les annonces de CE passage, seules à entrer dans la section
+    ⭐ — celles de la nuit ont déjà été annoncées quand elles sont tombées.
+    `apercus` : les articles de l'arriéré et du passage, rangés par section.
+    `totaux` : (articles, officiels, sommet), ou None. Sert au « + N ».
+    Après la sortie, « Les autres » ne fait plus partie du message.
+    """
     if not DISCORD_WEBHOOK_URL:
         print("[discord] DISCORD_WEBHOOK_URL absent — notification désactivée.")
         return False
-    # Les totaux déposés par le robot incluent l'arriéré de la nuit ; sans
-    # eux (lancement local), on compte la liste, ce qui reste juste hors
-    # pause nocturne.
-    totaux = lire_totaux_recap()
-    # La garde vient APRÈS la lecture des totaux, et pas avant : à 5h le
-    # premier passage de la journée peut ne rien trouver de neuf alors que
-    # douze articles de la nuit attendent d'être annoncés. Placée avant,
-    # elle faisait taire Discord dans exactement le cas qui justifie tout
-    # ce mécanisme — et main() avait beau l'appeler, la fonction repartait
-    # sans rien envoyer.
-    #
-    # On teste la PRÉSENCE du fichier, pas son contenu. Décider ici « 0
-    # article, donc rien à dire » écrasait le cas où la nuit n'a apporté
-    # aucun article NEUF mais où un sujet déjà connu est devenu majeur : le
-    # robot dépose alors {articles:0, sommet:4}, et l'alerte « actu majeure »
-    # partait à la poubelle — précisément la notification qu'on ne veut pas
-    # rater, et le cas pour lequel le mécanisme `promus` avait été écrit.
-    # C'est le robot qui tranche, une seule fois, en ne déposant le fichier
-    # que s'il y a quelque chose à annoncer.
-    if not new_items and not promus and totaux is None:
-        return False
-    if totaux:
-        n, officiels, sommet = totaux
-        titre = feed_store.libelle_recap_depuis_comptes(n, officiels, sommet)
-        majeure = sommet >= feed_store.HOT_SOURCE_THRESHOLD
-    else:
-        n = len(new_items)
-        titre = feed_store.libelle_recap(new_items, promus)
-        majeure = feed_store.est_actu_majeure(new_items, promus)
+    n, off_total, sommet = totaux if totaux else (0, len(officiels), 0)
+    par_cat = {"majeur": [], "autre": []}
+    for a in apercus or ():
+        cat = feed_store.categorie_apercu(a)
+        if cat in par_cat:
+            par_cat[cat].append(a)
 
-    embed = {
-        # Texte partagé avec les notifications push : voir
-        # feed_store.libelle_recap. Les deux canaux disent mot pour mot la
-        # même chose, et ne peuvent plus diverger.
-        "title": titre,
-        "url": SITE_URL,
-        # Les derniers articles, cliquables, puis le lien vers l'app. Quand
-        # il n'y a rien à citer, description_recap rend exactement le corps
-        # d'avant — le récapitulatif ne perd rien.
-        "description": description_recap(
-            apercus if apercus is not None
-            else feed_store.apercus_recap(list(new_items or ()) + list(promus or ())),
-            n),
-        # Rouge d'alerte pour une actu majeure, bleu habituel sinon : la
-        # couleur se repère d'un coup d'œil dans un salon Discord.
-        "color": 0xE04F5F if majeure else 0x5493FF,
+    sections = []
+    if officiels:
+        sections.append(nouvelle_section(
+            SECTION_OFFICIEL, "⭐ Officiel", COULEUR_OFFICIEL,
+            feed_store.apercus_recap(officiels), len(officiels)))
+    sections.append(nouvelle_section(
+        SECTION_MAJEURE, "🚨 Actu majeure", COULEUR_MAJEURE,
+        par_cat["majeur"], majeurs))
+    if not apres_sortie:
+        autres_total = max(0, n - off_total - majeurs)
+        sections.append(nouvelle_section(
+            SECTION_AUTRES, "🎮 Les autres", feed_store.couleur_compteur(maintenant),
+            par_cat["autre"], autres_total))
+    sections = [s for s in sections if s]
+    pied = pied_du_message(maintenant)
+    if sections:
+        cartes, coupees = compose_message(sections, content, pied)
+    else:
+        # Rien à citer (récapitulatif du matin dont les aperçus manquent,
+        # lancement à la main) : le message n'en est pas moins vrai. La ligne
+        # d'aperçu donne les comptes, et une carte porte le pied — le lien
+        # vers l'app, qui était le corps d'avant.
+        cartes, coupees = [{"description": pied,
+                            "color": feed_store.couleur_compteur(maintenant)}], 0
+    charge = {
+        "username": nom_expediteur(bool(officiels),
+                                   any(s["nom"] == SECTION_MAJEURE for s in sections)
+                                   or (totaux is not None and totaux[2] >= feed_store.HOT_SOURCE_THRESHOLD)),
+        "content": content[:2000],
+        "embeds": cartes,
     }
-    detail = f"{n} nouvel(le)(s) article(s)"
-    if promus:
-        detail += f", {len(promus)} sujet(s) devenu(s) majeur(s)"
-    print(f"  [discord] envoi du récapitulatif ({detail})...")
-    return send_discord_with_retry(embed, f"récapitulatif {detail}")
+    detail = ", ".join(f"{s['entete']} {s['total']}" for s in sections) or "sans section"
+    print(f"  [discord] envoi du message ({detail}"
+          + (f", {coupees} ligne(s) coupée(s) pour tenir sous la limite" if coupees else "") + ")...")
+    return send_discord_with_retry(charge, f"message {detail}")
 
 
 def send_jalons(jalons):
@@ -351,82 +436,6 @@ def send_alertes_report(articles):
 # Orange Rockstar, celui de la pastille OFFICIEL dans l'app (#FF6B00) :
 # la même annonce se reconnaît à la même couleur d'un canal à l'autre.
 COULEUR_OFFICIEL = 0xFF6B00
-
-
-def send_official_alerts(officiels):
-    """Une alerte SÉPARÉE par article publié par Rockstar lui-même.
-
-    Deuxième exception assumée à la règle « un seul message par passage »,
-    après les alertes de source. Elle se justifie de la même façon : la
-    règle existe pour empêcher un message par ARTICLE ordinaire, et le
-    volume reste dérisoire. Mesuré sur l'historique complet du dépôt :
-    34 articles officiels sur 2 183, répartis sur 15 journées en presque
-    trois ans, au pire 4 dans la même journée.
-
-    Le récapitulatif continue de les COMPTER (« dont 1 officiel Rockstar »),
-    il n'est pas amputé : il annonce un volume, ces alertes annoncent un
-    contenu. Sur les rares passages où les deux partent, la redondance est
-    le prix d'un récapitulatif qui ne ment pas sur ses chiffres.
-    """
-    if not DISCORD_WEBHOOK_URL or not officiels:
-        return False
-
-    envoyees = 0
-    # Au-delà du plafond, une seule carte pour le reste : dix annonces
-    # d'affilée feraient dix notifications. Voir NOTIFS_OFFICIELLES_MAX.
-    detaillees = officiels[:feed_store.NOTIFS_OFFICIELLES_MAX]
-    groupees = officiels[feed_store.NOTIFS_OFFICIELLES_MAX:]
-    for item in detaillees:
-        entete, titre = feed_store.libelle_officiel(item)
-        lien = (item.get("link") or "").strip()
-        source = (item.get("source") or "Rockstar Games").strip()
-        embed = {
-            "title": f"{entete} · {titre}"[:250],
-            # Le lien pointe sur l'ARTICLE et non sur le site : c'est une
-            # annonce précise, pas une invitation à venir voir.
-            "url": lien or SITE_URL,
-            "description": f"**{source}**\n[Ouvrir dans GTA6_WATCH]({SITE_URL})",
-            "color": COULEUR_OFFICIEL,
-        }
-        if send_discord_with_retry(embed, f"officiel Rockstar — {titre[:40]}"):
-            envoyees += 1
-    if groupees:
-        # LA TRONCATURE SILENCIEUSE, trouvée par la répétition du 13/10/2026.
-        #
-        # L'ancienne écriture joignait TOUS les titres puis coupait à 3800
-        # caractères. Mesuré sur une rafale de 150 officiels : le titre
-        # annonçait « + 140 autre(s) annonce(s) » et le corps n'en listait
-        # que 29, la vingt-neuvième coupée en plein milieu d'un mot. Le
-        # compte était juste, le corps mentait, et rien ne le disait.
-        #
-        # On empile donc ligne par ligne tant que le budget tient, et on
-        # NOMME ce qui ne rentre pas. Un message qui s'arrête proprement en
-        # disant combien il cache vaut mieux qu'un message coupé net.
-        lignes, reste = [], 0
-        budget = 3800
-        for rang, i in enumerate(groupees):
-            ligne = (f"• [{feed_store.libelle_officiel(i)[1][:70]}]"
-                     f"({(i.get('link') or SITE_URL).strip()})")
-            # +1 pour le saut de ligne, et on garde de quoi écrire la
-            # dernière ligne « … et N autres ».
-            if budget - len(ligne) - 1 < 60:
-                reste = len(groupees) - rang
-                break
-            lignes.append(ligne)
-            budget -= len(ligne) + 1
-        if reste:
-            lignes.append(f"… et {reste} autre(s), toutes dans l'app.")
-        embed = {
-            "title": f"+ {len(groupees)} autre(s) annonce(s) officielle(s)"[:250],
-            "url": SITE_URL,
-            "description": "\n".join(lignes),
-            "color": COULEUR_OFFICIEL,
-        }
-        if send_discord_with_retry(embed, f"{len(groupees)} officiels groupés"):
-            envoyees += 1
-    print(f"  [discord] {envoyees} envoi(s) pour {len(officiels)} alerte(s) officielle(s)"
-          + (f", dont {len(groupees)} groupée(s)" if groupees else "") + ".")
-    return envoyees > 0
 
 
 def send_source_alerts(alertes):
@@ -547,14 +556,12 @@ def _main():
         print(ligne)
     for ligne in feed_store.lignes_mesure_majeure(list(new_items or ()) + list(promus or ())):
         print(ligne)
-    # Une alerte de report passe AVANT toute annonce : c'est la plus importante.
-    # Elle ne concerne que des articles officiels, donc `officiels` suffit.
+    # Une alerte de report passe AVANT tout : c'est la plus importante. Elle ne
+    # concerne que des articles officiels, donc `officiels` suffit.
     reports = feed_store.articles_report(officiels)
     if reports:
         print(f"  [report] {len(reports)} article(s) officiel(s) parlent d'un report.")
         send_alertes_report(reports)
-    if officiels:
-        send_official_alerts(officiels)
 
     # Les jalons du compte à rebours : décidés par fetch_feeds, annoncés ici,
     # même pendant la pause nocturne (seul « sorti » pourrait y tomber, et la
@@ -564,6 +571,9 @@ def _main():
         send_jalons(jalons)
 
     if seulement_officiels:
+        # La nuit, seule la section ⭐ part, seule dans son message.
+        if officiels:
+            send_message(officiels, [], None, 0, feed_store.libelle_officiels(len(officiels)))
         print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
               f"envoyée(s), le reste attend le matin.")
         return 0
@@ -574,35 +584,39 @@ def _main():
     if alertes:
         send_source_alerts(alertes)
 
-    # L'arriéré de la nuit justifie un récapitulatif même si CE passage
-    # n'apporte rien : à 5h le premier passage peut ne rien trouver de neuf
-    # alors que douze articles attendent d'être annoncés.
+    # L'arriéré de la nuit justifie un message même si CE passage n'apporte
+    # rien : à 5h le premier passage peut ne rien trouver de neuf alors que
+    # douze articles attendent d'être annoncés.
     totaux = lire_totaux_recap()
     if not new_items and not promus and totaux is None:
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 
-    # Même décision que le push, et c'est le même juge : après la sortie,
-    # le récapitulatif ne part que s'il y a une annonce officielle ou une
-    # actu majeure. Les deux canaux disent déjà mot pour mot la même
-    # chose ; ils doivent aussi se taire au même moment, sans quoi couper
-    # l'un laisserait l'autre bavard.
     n_recap, off_recap, sommet_recap = feed_store.comptes_du_recap(
         new_items, promus, totaux)
-    if not feed_store.recap_merite_notification(n_recap, off_recap, sommet_recap):
+    # Après la sortie, le message ne part que s'il a une annonce officielle ou
+    # une actu majeure, comme le push : les deux canaux se taisent ensemble.
+    apres_sortie = datetime.now(timezone.utc) >= feed_store.SORTIE_GTA6
+    if not feed_store.recap_merite_notification(n_recap, off_recap, sommet_recap) and not officiels:
         print(f"[discord] après la sortie — {n_recap} article(s) sans annonce "
-              f"officielle ni actu majeure, le récapitulatif se tait.")
+              f"officielle ni actu majeure, le message se tait.")
         return 0
 
-    # Déposés par le robot à côté des totaux : ils contiennent l'arriéré de
-    # la nuit, que new_items ne peut plus contenir.
-    # `or None` et non la liste telle quelle : une liste VIDE veut dire « le
-    # robot n'a rien déposé » (fichier absent, version antérieure, lancement à
-    # la main), et doit faire retomber sur new_items — pas produire un
-    # récapitulatif sans le moindre lien alors qu'on a les articles sous la
-    # main.
-    send_discord_notification(new_items, promus,
-                              feed_store.lire_apercus_recap() or None)
+    # Déposés par le robot à côté des totaux : ils contiennent l'arriéré de la
+    # nuit, que new_items ne peut plus contenir. Sans eux (lancement à la main,
+    # version antérieure du robot) on retombe sur le lot et les promus : une
+    # liste VIDE veut dire « rien déposé », pas « rien à montrer ».
+    apercus = feed_store.lire_apercus_recap() or feed_store.apercus_recap(
+        list(new_items or ()) + list(promus or ()))
+    majeurs = feed_store.lire_majeurs_recap()
+    if majeurs is None:
+        majeurs = feed_store.compte_majeurs(list(new_items or ()) + list(promus or ()))
+    if totaux:
+        contenu = feed_store.libelle_recap_depuis_comptes(n_recap, off_recap, sommet_recap)
+    else:
+        contenu = feed_store.libelle_recap(new_items, promus)
+    send_message(officiels, apercus, (n_recap, off_recap, sommet_recap), majeurs,
+                 contenu, apres_sortie=apres_sortie)
     # Cette étape ne doit JAMAIS faire échouer le workflow : les articles
     # sont déjà publiés à ce stade, une panne de Discord n'est pas une
     # panne du robot.

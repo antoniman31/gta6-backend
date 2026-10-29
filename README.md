@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2046
+qui permet de tester tout le pipeline sans sortir de la machine. **2087
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9889,3 +9889,54 @@ fonction de fusion qui n'existe pas (`merge_feeds`).
 calendrier, tolérance des deux côtés, déjà-envoyé, après-sortie, état assaini, résumé, union à la fusion,
 message, bout en bout par `discord_notify.main`, workflow, seuils et couleurs **lus dans la page** (pile
 24 h, 7 j, 30 j). **Treize mutations rejouées, treize détectées** : tolérance élargie, règle d'après-sortie retirée, « déjà annoncé » ignoré, seuil du compteur décalé, union des jalons cassée, couleur du report, état non écrit dans `feed.json`, fichier de jalons non lu, mot « delay » retiré, « repouss », « postpon », filtre « officiel » retiré, et la couleur. Une mutation était un faux test de ma part (un `sed` qui ne trouvait pas son motif : 0 échec = rien muté) ; je l'ai refaite sur le vrai motif.
+
+### Lot 3 de la notification Discord : un seul message, à sections — 29/10/2026
+
+Troisième lot de `tasks/spec-discord-notification.md`. **Ce que reçoit Antoni change** : à chaque passage,
+**un seul message** au lieu d'une alerte par annonce officielle plus un récapitulatif.
+
+- **Expéditeur** (`username`, sans avatar) : « ⭐ Rockstar » s'il y a une annonce officielle, sinon
+  « 🚨 Actu majeure » (un article majeur à citer, ou un sommet à trois flux ou plus), sinon « 🎮 GTA6_WATCH ».
+- **Ligne d'aperçu** (`content`) : le texte du titre du push (`libelle_recap_depuis_comptes`, écrit une
+  fois). La nuit : « ⭐ N annonce(s) officielle(s) Rockstar » (`libelle_officiels`).
+- **Sections**, une carte chacune, vide = absente : « ⭐ Officiel · N » (orange), « 🚨 Actu majeure · N »
+  (rouge), « 🎮 Les autres · N » (couleur du palier du compteur). **Cinq liens au plus**, puis « + N autres
+  dans l'app » : le N est juste, le titre porte le total.
+- **Pied** de la dernière carte : « ⏳ Sortie » + balise de temps Discord qui se recalcule seule, puis le lien
+  vers l'app ; après la sortie « Sorti » avec la même balise.
+- **Garde-fou des 6 000 caractères** : coupe d'abord « Les autres », puis l'actu majeure, **jamais** une annonce
+  officielle ; on s'arrête à 5 800. Le total du titre ne bouge pas, le « + N » grossit.
+- **La nuit** : seule la section ⭐ part, seule dans son message. **Après la sortie** : « Les autres » n'en fait
+  plus partie, et le message ne part que s'il a une annonce officielle ou une actu majeure.
+- **Rien à citer** (aperçus absents) : le message garde la ligne d'aperçu et une carte avec le lien, comme
+  l'ancien corps.
+
+**Ce qui change côté robot.** `apercus_recap` garde désormais **cinq aperçus par section** et non cinq en tout
+(sinon cinq articles récents auraient chassé l'actu majeure) ; mesuré le 29/10/2026 sur le fil réel : 9 aperçus
+= 2 729 octets, soit environ 300 octets pièce, donc **au plus ~4,5 Ko** à quinze, stockés seulement de 0 h à
+5 h et retirés du fichier allégé que l'app télécharge. Le compteur `majeurs` s'ajoute à `attente_recap` (fusion :
+le plus élevé l'emporte) et dans le fichier de totaux.
+
+**Écarts avec la spec, dits :**
+1. La spec voulait que `NOTIFS_OFFICIELLES_MAX` (10, choisi par Antoni le 13/10 pour le push) devienne le
+   nombre de liens de la section. Je ne l'ai **pas** touché : la section a ses cinq liens
+   (`LIGNES_PAR_SECTION`), et le push garde ses dix tant qu'il est éteint. À trancher si tu veux un seul réglage.
+2. La **ligne de détail** (🇫🇷 / 🇬🇧, nombre de médias) n'est pas écrite : elle demande des compteurs de langue
+   et de médias que le robot ne garde pas encore. Elle viendra avec le tableau du jour.
+3. Les annonces officielles ne sont plus des cartes séparées avec « Ouvrir dans GTA6_WATCH » : elles sont
+   dans la section ⭐ (type, heure, ordre annonces/boutique et fusion EN/FR : lot suivant). Les alertes de
+   source, de report et les jalons restent des messages à part, comme la spec le prévoit.
+
+**Contrôles** (`test_message_a_sections`, 37 vérifications, plus les anciens tests réécrits : rafale, plafond,
+récapitulatif détaillé, nuit entière) : forme du message, ordre et couleurs des sections, un article dans une seule
+section, cinq liens et « + N » exact pour 1, 5, 6, 11 et 32 articles, pied avant et après la sortie, coupe sous
+6 000 caractères avec officiel intact et ordre de coupe, nuit, enveloppe d'un embed seul, compteurs du robot et
+fusion.
+
+**Quinze mutations rejouées, quinze détectées** : six liens par section, garde-fou relevé, ordre de coupe
+inversé, coupe dans l'officiel, officiel non reconnu, expéditeur, balise remplacée par un nombre, « Les autres »
+après la sortie, compteur `majeurs` non cumulé ou hors fusion, embed toujours enveloppé, nuit muette, aperçu non
+borné, plafond par section levé, `APERCU_RECAP_MAX` changé. **Ma première série était fausse** : mon dossier de
+copie omettait `corpus_fusion.json`, la suite plantait sans écrire « ÉCHEC » et je lisais « 0 échec ». Je compte
+désormais aussi les plantages, et le plafond « cinq » était d'abord masqué par un test à huit articles (sous le
+seuil) : je l'ai remonté à soixante.

@@ -1054,12 +1054,225 @@ def test_alerte_report_officielle():
             else:
                 _os.environ[k] = v
     etiquettes = [l for _, l in envoyes]
-    check(code == 0 and etiquettes[0] == "alerte de report officielle" and len(etiquettes) == 3,
-          "en pause nocturne, l'alerte de report part, la PREMIÈRE, avant les deux annonces (%s)" % etiquettes)
+    check(code == 0 and etiquettes[0] == "alerte de report officielle" and len(etiquettes) == 2
+          and etiquettes[1].startswith("message ⭐ Officiel"),
+          "en pause nocturne, l'alerte de report part, la PREMIÈRE, puis UN message pour les deux annonces (%s)" % etiquettes)
     e = envoyes[0][0]
     check(e["title"].startswith("🚨 Report possible") and e["color"] == 0xE04F5F and "rockstargames.com" in e["url"]
           and "image" not in e and "thumbnail" not in e,
           "rouge, lien vers l'article officiel, aucune image")
+
+
+def test_message_a_sections():
+    """Un seul message par passage, à sections colorées (lot 3, 29/10/2026).
+
+    Décision d'Antoni : officiel, actu majeure et autres articles tiennent
+    dans UN message, sous une ligne d'aperçu, avec cinq liens au plus par
+    section, un pied à compte à rebours vivant et aucune image.
+    """
+    print("\n[message] un seul message à sections")
+    import io, contextlib, re, json as _json, os as _os
+    from datetime import timedelta
+    import discord_notify, fetch_feeds, merge_feed
+
+    envoyes = []
+    vrai_envoi, vrai_url = discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL
+    discord_notify.send_discord_with_retry = lambda charge, label, *a, **k: envoyes.append(charge) or True
+    discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+    base = datetime(2026, 11, 2, 12, 0, tzinfo=timezone.utc)
+
+    def art(n, off=False, sources=1, titre=None):
+        a = {"title": titre or f"Article {n}", "link": f"https://m.example/{n}", "source": "Média",
+             "official": off, "date": (base - timedelta(minutes=n)).isoformat()}
+        if sources > 1:
+            a["extraSources"] = [{"source": f"S{k}", "link": f"https://s{k}.example/{n}"} for k in range(sources - 1)]
+        return a
+
+    def envoie(officiels=(), autres=0, majeurs=0, totaux=None, content="🎮 test", maintenant=base, **kw):
+        lot = list(officiels) + [art(100 + k, sources=4) for k in range(majeurs)] + [art(200 + k) for k in range(autres)]
+        envoyes.clear()
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.send_message(list(officiels), feed_store.apercus_recap(lot), totaux, majeurs, content,
+                                        maintenant=maintenant, **kw)
+        return envoyes[0] if envoyes else None
+
+    try:
+        m = envoie(officiels=[art(1, off=True)], autres=3, majeurs=1, totaux=(5, 1, 4))
+        check(len(envoyes) == 1, "un seul message par passage")
+        check(set(m) == {"username", "content", "embeds"}, "forme : expéditeur, aperçu, cartes (%s)" % sorted(m))
+        titres = [e["title"] for e in m["embeds"]]
+        check(titres == ["⭐ Officiel · 1", "🚨 Actu majeure · 1", "🎮 Les autres · 3"],
+              "trois sections dans l'ordre d'importance, chacune avec son total (%s)" % titres)
+        check(m["embeds"][0]["color"] == discord_notify.COULEUR_OFFICIEL
+              and m["embeds"][1]["color"] == discord_notify.COULEUR_MAJEURE
+              and m["embeds"][2]["color"] == feed_store.couleur_compteur(base),
+              "orange officiel, rouge majeur, couleur du palier du compteur pour les autres")
+        check(all(k not in e for e in m["embeds"] for k in ("image", "thumbnail", "video")),
+              "aucune image, aucune vignette")
+        liens = [re.findall(r"\]\(<([^>]+)>\)", e["description"]) for e in m["embeds"]]
+        tous = [l for ls in liens for l in ls]
+        check(len(tous) == len(set(tous)) == 5, "un article n'apparaît que dans UNE section (%d liens, %d distincts)"
+              % (len(tous), len(set(tous))))
+        check(m["username"] == "⭐ Rockstar", "expéditeur : la plus forte catégorie présente (%s)" % m["username"])
+        check(envoie(autres=2, majeurs=1, totaux=(3, 0, 4))["username"] == "🚨 Actu majeure"
+              and envoie(autres=2, totaux=(2, 0, 1))["username"] == "🎮 GTA6_WATCH",
+              "puis l'actu majeure, puis le nom du site")
+        check(envoie(autres=2, totaux=(2, 0, 4))["username"] == "🚨 Actu majeure",
+              "un sommet majeur sans article majeur à citer garde quand même l'expéditeur 🚨")
+
+        # Une section vide n'existe pas.
+        m = envoie(autres=2, totaux=(2, 0, 1))
+        check([e["title"] for e in m["embeds"]] == ["🎮 Les autres · 2"], "sans officiel ni majeur : une seule section")
+
+        # Cinq liens au plus, et le compte exact de ce qui reste.
+        for total in (0, 1, 5, 6, 11, 32):
+            if total == 0:
+                continue
+            m = envoie(autres=total, totaux=(total, 0, 1))
+            d = m["embeds"][0]["description"]
+            listes = d.count("](<")
+            reste = re.search(r"\+ (\d+) autres? dans l'app", d)
+            check(listes == min(total, 5) and (int(reste.group(1)) if reste else 0) == max(0, total - 5)
+                  and m["embeds"][0]["title"].endswith(f"· {total}"),
+                  f"{total} articles : {listes} liens et « + {reste.group(1) if reste else 0} » (total {total})")
+        check("autres dans l'app" not in envoie(autres=5, totaux=(5, 0, 1))["embeds"][0]["description"],
+              "cinq sur cinq : pas de « + 0 autres »")
+
+        # Le plafond de la section vaut aussi quand on lui donne PLUS que cinq articles.
+        sec = discord_notify.nouvelle_section("autres", "🎮 Les autres", 1,
+                                              feed_store.apercus_assainis([feed_store.apercu_de(art(300 + k)) for k in range(9)], 9), 9)
+        check(len(sec["lignes"]) == 5 == discord_notify.LIGNES_PAR_SECTION and sec["total"] == 9,
+              "une section ne montre jamais plus de cinq lignes, même si on lui en donne neuf")
+
+        # L'aperçu est le texte du push, une seule fois écrit.
+        c = feed_store.libelle_recap_depuis_comptes(5, 1, 4)
+        check(envoie(autres=1, totaux=(5, 1, 4), content=c)["content"] == c, "la ligne d'aperçu est le titre du push")
+        check(len(envoie(autres=1, totaux=(1, 0, 1), content="x" * 5000)["content"]) <= 2000,
+              "elle ne dépasse jamais 2 000 caractères")
+
+        # Le pied : compte à rebours vivant, ou « sorti ».
+        sortie = feed_store.SORTIE_GTA6
+        balise = f"<t:{int(sortie.timestamp())}:R>"
+        avant = envoie(autres=1, totaux=(1, 0, 1), maintenant=sortie - timedelta(days=3))["embeds"][-1]["description"]
+        apres = envoie(officiels=[art(1, off=True)], totaux=(1, 1, 1), maintenant=sortie + timedelta(days=2))["embeds"][-1]["description"]
+        check(f"⏳ Sortie {balise}" in avant and "Sorti" not in avant.replace("Sortie", ""),
+              "avant la sortie : « ⏳ Sortie » et une balise de temps (pas un nombre figé)")
+        check(f"Sorti {balise}" in apres and "⏳" not in apres, "après : « Sorti » avec la même balise")
+        check(avant.rstrip().endswith(f"[Ouvrir GTA6_WATCH]({discord_notify.SITE_URL})"),
+              "le lien vers l'app termine le message")
+
+        # Après la sortie, « Les autres » ne fait plus partie du message.
+        m = envoie(officiels=[art(1, off=True)], autres=4, majeurs=1, totaux=(6, 1, 4), maintenant=sortie + timedelta(days=1),
+                   apres_sortie=True)
+        check([e["title"] for e in m["embeds"]] == ["⭐ Officiel · 1", "🚨 Actu majeure · 1"],
+              "après la sortie : plus de section « Les autres » (%s)" % [e["title"] for e in m["embeds"]])
+
+        # Rien à citer : le message reste vrai (ligne d'aperçu + lien).
+        m = envoie(totaux=(12, 0, 1), content="🎮 12 nouveaux articles GTA 6")
+        check(m["content"].startswith("🎮 12") and len(m["embeds"]) == 1 and "Ouvrir GTA6_WATCH" in m["embeds"][0]["description"],
+              "sans aperçu à citer, le message porte les comptes et le lien")
+
+        # Le garde-fou des 6 000 caractères.
+        long = "mot " * 80
+        def gros(n, off=False, sources=1):
+            a = art(n, off=off, sources=sources, titre=long)
+            a["link"] = "https://m.example/" + "x" * 330 + str(n)
+            return a
+        lot = ([gros(1000 + k, off=True) for k in range(5)] + [gros(2000 + k, sources=4) for k in range(5)]
+               + [gros(3000 + k) for k in range(5)])
+        envoyes.clear()
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.send_message(lot[:5], feed_store.apercus_recap(lot), (15, 5, 4), 5, "🎮 15 nouveaux", maintenant=base)
+        m = envoyes[0]
+        taille = sum(len(e.get("title", "")) + len(e.get("description", "")) for e in m["embeds"])
+        brut = [discord_notify.rend_section(sec) for sec in (
+            discord_notify.nouvelle_section("officiel", "⭐ Officiel", 1, feed_store.apercus_recap(lot[:5]), 5),
+            discord_notify.nouvelle_section("majeure", "🚨 Actu majeure", 1, [a for a in feed_store.apercus_recap(lot) if feed_store.categorie_apercu(a) == "majeur"], 5),
+            discord_notify.nouvelle_section("autres", "🎮 Les autres", 1, [a for a in feed_store.apercus_recap(lot) if feed_store.categorie_apercu(a) == "autre"], 5))]
+        check(sum(len(e["title"]) + len(e["description"]) for e in brut) > 6000,
+              "le cas de test dépasse bien 6 000 caractères avant la coupe (sinon il ne prouve rien)")
+        check(taille + len(m["content"]) <= discord_notify.CARTES_MAX_CARACTERES < 6000,
+              "après la coupe, les cartes restent sous la limite de Discord (%d)" % taille)
+        check(m["embeds"][0]["description"].count("](<") == 5 and m["embeds"][0]["title"].endswith("· 5"),
+              "la coupe n'enlève JAMAIS une annonce officielle")
+        par_titre = {e["title"].split(" · ")[0]: e for e in m["embeds"]}
+        autres_c, majeur_c = par_titre.get("🎮 Les autres"), par_titre.get("🚨 Actu majeure")
+        check(autres_c is None or autres_c["description"].count("](<") < 5,
+              "la coupe commence par « Les autres »")
+        check(majeur_c is None or majeur_c["description"].count("](<") == 5 or autres_c is None,
+              "et n'entame l'actu majeure qu'une fois « Les autres » épuisée")
+        check(all(e["title"].endswith("· 5") for e in m["embeds"]),
+              "le total du titre reste juste après la coupe (« + N » grossit à la place)")
+    finally:
+        discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = vrai_envoi, vrai_url
+
+    # La nuit : seule la section ⭐, seule dans son message.
+    dossier = tempfile.mkdtemp()
+    chemin = _os.path.join(dossier, "n.json")
+    _json.dump([art(1, off=True), art(2), art(3, sources=4)], open(chemin, "w", encoding="utf-8"))
+    anciens = {k: _os.environ.get(k) for k in ("NEW_ITEMS_FILE", "RECAP_TOTALS_FILE", "SEULEMENT_OFFICIELS",
+                                              "PROMOTED_ITEMS_FILE", "SOURCE_ALERTS_FILE", "JALONS_FILE")}
+    try:
+        _os.environ.update(NEW_ITEMS_FILE=chemin, SEULEMENT_OFFICIELS="1")
+        for k in ("RECAP_TOTALS_FILE", "PROMOTED_ITEMS_FILE", "SOURCE_ALERTS_FILE", "JALONS_FILE"):
+            _os.environ.pop(k, None)
+        discord_notify.send_discord_with_retry = lambda charge, label, *a, **k: envoyes.append(charge) or True
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        envoyes.clear()
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.main()
+    finally:
+        discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = vrai_envoi, vrai_url
+        for k, v in anciens.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+    check(len(envoyes) == 1 and [e["title"] for e in envoyes[0]["embeds"]] == ["⭐ Officiel · 1"]
+          and envoyes[0]["content"] == feed_store.libelle_officiels(1) and envoyes[0]["username"] == "⭐ Rockstar",
+          "la nuit : un message, la seule section ⭐, sans « Les autres » ni actu majeure")
+    check(feed_store.libelle_officiels(1) == "⭐ 1 annonce officielle Rockstar"
+          and feed_store.libelle_officiels(3) == "⭐ 3 annonces officielles Rockstar", "pluriels du titre officiel")
+
+    # Envoi réel : un embed seul est enveloppé, un message complet part tel quel.
+    vus = []
+    vrai_post = discord_notify.requests.post
+    discord_notify.requests.post = lambda url, json=None, timeout=0: (vus.append(json), types.SimpleNamespace(status_code=204, text=""))[1]
+    discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+    try:
+        discord_notify.send_discord_with_retry({"title": "t"}, "x")
+        discord_notify.send_discord_with_retry({"username": "u", "content": "c", "embeds": [{"title": "t"}]}, "y")
+    finally:
+        discord_notify.requests.post = vrai_post
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    check(vus[0] == {"embeds": [{"title": "t"}]} and vus[1].get("username") == "u" and vus[1].get("content") == "c",
+          "un embed seul est enveloppé comme avant, un message complet part tel quel")
+
+    # Les compteurs du robot : le « + N » de l'actu majeure est juste.
+    check(feed_store.compte_majeurs([art(1, sources=4), art(1, sources=4), art(2, off=True, sources=4), art(3), art(4, sources=3)]) == 2,
+          "compte_majeurs : dédoublonné sur le lien, sans les officiels ni les articles à une source")
+    deposes = []
+    with contextlib.redirect_stdout(io.StringIO()):
+        suite = fetch_feeds.reporte_ou_annonce(fetch_feeds.attente_vide(), [art(1, sources=4), art(2)], [art(1, sources=4)], 0, 4,
+                                               True, depose=deposes.append)
+        suite = fetch_feeds.reporte_ou_annonce(suite, [art(5, sources=3)], [], 0, 3, True, depose=deposes.append)
+        fetch_feeds.reporte_ou_annonce(suite, [], [], 0, 1, False, depose=deposes.append)
+    check(suite["majeurs"] == 2 and deposes and deposes[0]["majeurs"] == 2,
+          "le robot cumule le nombre d'actus majeures de la nuit et le dépose (%s)" % (suite["majeurs"],))
+    fusion, _, _ = merge_feed.merge_feeds({"items": [], "attente_recap": {"articles": 1, "majeurs": 4}},
+                                          {"items": [], "attente_recap": {"articles": 1, "majeurs": 2}})
+    check(fusion["attente_recap"].get("majeurs") == 4, "après un conflit de push, le plus élevé l'emporte")
+    _os.environ["RECAP_TOTALS_FILE"] = _os.path.join(dossier, "t.json")
+    try:
+        _json.dump({"articles": 3, "majeurs": 2}, open(_os.environ["RECAP_TOTALS_FILE"], "w"))
+        lu = feed_store.lire_majeurs_recap()
+        _json.dump({"articles": 3, "majeurs": "x"}, open(_os.environ["RECAP_TOTALS_FILE"], "w"))
+        abime = feed_store.lire_majeurs_recap()
+        _os.remove(_os.environ["RECAP_TOTALS_FILE"])
+        absent = feed_store.lire_majeurs_recap()
+    finally:
+        _os.environ.pop("RECAP_TOTALS_FILE", None)
+    check(lu == 2 and abime is None and absent is None, "lecture du compte : valeur saine, valeur abîmée et fichier absent")
 
 
 def test_push_empreinte_abonnement():
@@ -4524,24 +4737,30 @@ def test_plafond_des_annonces_officielles():
     check(envois[-1].get("tag") != envois[0].get("tag"),
           "la groupée a son propre tag : elle ne remplace pas une annonce détaillée")
 
-    # --- Discord : le même plafond, par le même réglage ---
-    cartes = []
+    # --- Discord : depuis le 29/10/2026 une SECTION de cinq liens, pas dix cartes ---
+    # Écart assumé avec la spec : elle voulait partager ce plafond avec la
+    # section, mais il a été choisi par Antoni (13/10) pour le push seul. La
+    # section suit sa propre règle (cinq liens, « + N autres »).
+    messages = []
     vrai_envoi = discord_notify.send_discord_with_retry
     vrai_url = discord_notify.DISCORD_WEBHOOK_URL
-    discord_notify.send_discord_with_retry = lambda embed, quoi="": (cartes.append(embed), True)[1]
+    discord_notify.send_discord_with_retry = lambda charge, quoi="": (messages.append(charge), True)[1]
     discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/hook"
     try:
-        discord_notify.send_official_alerts(officiels)
+        discord_notify.send_message(officiels, [], None, 0, feed_store.libelle_officiels(len(officiels)))
     finally:
         discord_notify.send_discord_with_retry = vrai_envoi
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
 
-    check(len(cartes) == N + 1,
-          "Discord suit la même règle (%d cartes)" % len(cartes))
-    check(cartes[-1]["title"].startswith("+ 4"),
-          "sa carte de groupe dit combien (« %s »)" % cartes[-1]["title"][:40])
-    check(cartes[-1]["description"].count("•") == 4,
-          "et liste les annonces restantes plutôt que de les perdre")
+    check(len(messages) == 1 and len(messages[0]["embeds"]) == 1,
+          "Discord : %d annonces tiennent dans UN message d'UNE carte" % len(officiels))
+    carte = messages[0]["embeds"][0]
+    check(carte["description"].count("](<") == discord_notify.LIGNES_PAR_SECTION == 5,
+          "cinq liens au plus dans la section (%d)" % carte["description"].count("](<"))
+    check("+ %d autres dans l'app" % (len(officiels) - 5) in carte["description"],
+          "et le compte exact du reste (« + %d autres »)" % (len(officiels) - 5))
+    check(carte["title"].endswith("· %d" % len(officiels)),
+          "le titre de la carte donne le total, pas le nombre de lignes (« %s »)" % carte["title"])
 
 
 def test_suffixe_domaine_coupe_sans_apprentissage():
@@ -5430,7 +5649,7 @@ def test_recap_du_matin_couvre_la_nuit():
     # version antérieure n'a pas le champ, et une valeur aberrante ne doit
     # pas faire annoncer n'importe quel nombre.
     import fetch_feeds
-    vide = {"articles": 0, "officiels": 0, "sommet": 0, "apercus": []}
+    vide = {"articles": 0, "officiels": 0, "sommet": 0, "majeurs": 0, "apercus": []}
     check(fetch_feeds.attente_lue({}) == vide, "un feed sans le champ repart de zéro")
     check(fetch_feeds.attente_lue({"attente_recap": "n_importe_quoi"}) == vide,
           "un champ qui n'est pas un objet aussi")
@@ -5439,7 +5658,7 @@ def test_recap_du_matin_couvre_la_nuit():
           "et toute valeur aberrante retombe à zéro")
     check(fetch_feeds.attente_lue(
               {"attente_recap": {"articles": 7, "officiels": 1, "sommet": 4}})
-          == {"articles": 7, "officiels": 1, "sommet": 4, "apercus": []},
+          == {"articles": 7, "officiels": 1, "sommet": 4, "majeurs": 0, "apercus": []},
           "un arriéré sain est lu tel quel")
 
     # La fusion après conflit de push : un MAXIMUM, jamais une somme — les
@@ -5447,10 +5666,10 @@ def test_recap_du_matin_couvre_la_nuit():
     # fois.
     import merge_feed
     fusion, _, _ = merge_feed.merge_feeds(
-        {"items": [], "attente_recap": {"articles": 9, "officiels": 1, "sommet": 4}},
-        {"items": [], "attente_recap": {"articles": 5, "officiels": 0, "sommet": 2}})
+        {"items": [], "attente_recap": {"articles": 9, "officiels": 1, "sommet": 4, "majeurs": 2}},
+        {"items": [], "attente_recap": {"articles": 5, "officiels": 0, "sommet": 2, "majeurs": 3}})
     check(fusion["attente_recap"] == {"articles": 9, "officiels": 1, "sommet": 4,
-                                      "apercus": []},
+                                      "majeurs": 3, "apercus": []},
           "à la fusion, l'arriéré le plus élevé l'emporte (jamais la somme)")
 
     # ---- La nuit entière, bout en bout ----
@@ -5504,7 +5723,7 @@ def test_recap_du_matin_couvre_la_nuit():
         # 5h : le passage ne trouve QUE 2 articles neufs, mais le robot lui a
         # déposé le total 14 — les 12 de la nuit plus ces 2.
         matin = passage([banal] * 2, {"articles": 14, "officiels": 1, "sommet": 2}, nuit=False)
-        textes = [str(e.get("title", "")) for _, e in matin]
+        textes = [str(e.get("content") or e.get("title", "")) for _, e in matin]
         check(len(matin) == 2, "le matin, un envoi par canal (%d)" % len(matin))
         check(all("14 nouveaux" in t for t in textes),
               "et il annonce les 14 de la nuit, pas les 2 de ce passage : %s" % textes)
@@ -5517,7 +5736,7 @@ def test_recap_du_matin_couvre_la_nuit():
         check(len(rien) == 2,
               "un passage sans rien de neuf annonce quand même l'arriéré (%d envoi(s))"
               % len(rien))
-        check(all("12 nouveaux" in str(e.get("title", "")) for _, e in rien),
+        check(all("12 nouveaux" in str(e.get("content") or e.get("title", "")) for _, e in rien),
               "et il annonce bien les 12")
 
         # LE cas que la première version jetait à la poubelle. La nuit
@@ -5529,7 +5748,7 @@ def test_recap_du_matin_couvre_la_nuit():
         check(len(majeure) == 2,
               "une actu devenue majeure la nuit SANS article neuf est quand même "
               "annoncée le matin (%d envoi(s))" % len(majeure))
-        check(all("majeure" in str(e.get("title", "")) for _, e in majeure),
+        check(all("majeure" in str(e.get("content") or e.get("title", "")) for _, e in majeure),
               "et elle est annoncée COMME majeure")
 
         # La règle « y a-t-il quelque chose à annoncer » vit à UN SEUL
@@ -5548,7 +5767,7 @@ def test_recap_du_matin_couvre_la_nuit():
         # Sans le fichier de totaux (lancement local), on retombe sur le
         # comptage direct de la liste.
         local = passage([banal] * 3, None, nuit=False)
-        check(all("3 nouveaux" in str(e.get("title", "")) for _, e in local),
+        check(all("3 nouveaux" in str(e.get("content") or e.get("title", "")) for _, e in local),
               "sans fichier de totaux, le comptage direct prend le relais")
     finally:
         (discord_notify.send_discord_with_retry, push_notify.send_all,
@@ -6203,8 +6422,14 @@ def test_recap_discord_detaille():
 
     lot = [art("A", 10), art("B", 14), art("C", 12), art("D", 15),
            art("E", 11), art("F", 13), art("Officiel", 9, off=True)]
-    cinq = feed_store.apercus_recap(lot)
-    check(len(cinq) == feed_store.APERCU_RECAP_MAX == 5, "on cite cinq articles au plus")
+    rendu = feed_store.apercus_recap(lot)
+    check(feed_store.APERCU_RECAP_MAX == 5 and len(rendu) == 1 + feed_store.APERCU_RECAP_MAX,
+          "on cite cinq articles au plus PAR SECTION : un officiel et cinq autres (%d)" % len(rendu))
+    check(len(feed_store.apercus_recap([art("O%d" % n, n % 28 + 1, off=True) for n in range(1, 60)])) == 5
+          and len([a for a in feed_store.apercus_recap(
+              [art("M%d" % n, n % 28 + 1, extra=3) for n in range(1, 60)] + lot) if a["sources"] >= 4]) == 5,
+          "soixante officiels : cinq cités ; soixante majeurs : cinq cités, sans chasser les autres sections")
+    cinq = rendu[:5]
     check(cinq[0]["title"] == "Officiel",
           "l'officiel Rockstar passe en tête même s'il est le plus vieux")
     check([a["title"] for a in cinq[1:]] == ["D", "B", "F", "C"],
@@ -6309,14 +6534,16 @@ def test_recap_discord_detaille():
     tmp = tempfile.mkdtemp()
     try:
         with contextlib.redirect_stdout(io.StringIO()):
-            discord_notify.send_discord_notification([art("Un vrai titre - IGN", 21)])
+            un = art("Un vrai titre - IGN", 21)
+            discord_notify.send_message([], feed_store.apercus_recap([un]), (1, 0, 1), 0,
+                                        feed_store.libelle_recap([un]))
         check(len(envoyes) == 1, "toujours UN SEUL message, pas un par article")
-        embed = envoyes[0]
-        check(embed["title"] == feed_store.libelle_recap([art("Un vrai titre - IGN", 21)]),
-              "le titre de l'embed reste MOT POUR MOT celui partagé avec le push")
-        check("Un vrai titre" in embed["description"]
-              and "ex.test/Un-vrai-titre---IGN" in embed["description"],
-              "et le corps porte le titre ET son lien : %s" % embed["description"])
+        message = envoyes[0]
+        check(message["content"] == feed_store.libelle_recap([art("Un vrai titre - IGN", 21)]),
+              "la ligne d'aperçu reste MOT POUR MOT celle partagée avec le push")
+        check("Un vrai titre" in message["embeds"][0]["description"]
+              and "ex.test/Un-vrai-titre---IGN" in message["embeds"][0]["description"],
+              "et le corps porte le titre ET son lien : %s" % message["embeds"][0]["description"])
 
         # ---- 7. La nuit, bout en bout : le récapitulatif de 5h cite ----
         #
@@ -6341,11 +6568,11 @@ def test_recap_discord_detaille():
                 if v is None: _os.environ.pop(k, None)
                 else: _os.environ[k] = v
         check(len(envoyes) == 1, "le récapitulatif du matin part (%d)" % len(envoyes))
-        check("12 nouveaux" in envoyes[0]["title"],
+        check("12 nouveaux" in envoyes[0]["content"],
               "il annonce toujours les 12 de la nuit")
-        check("Article de 2h du matin" in envoyes[0]["description"],
+        check("Article de 2h du matin" in envoyes[0]["embeds"][0]["description"],
               "et il CITE un article de la nuit, qui n'est pourtant plus « nouveau » : %s"
-              % envoyes[0]["description"])
+              % envoyes[0]["embeds"][0]["description"])
     finally:
         (discord_notify.send_discord_with_retry,
          discord_notify.DISCORD_WEBHOOK_URL) = vrais
@@ -6565,7 +6792,10 @@ def test_alerte_officielle_rockstar():
         import shutil; shutil.rmtree(tmp, ignore_errors=True)
 
     def textes(lot, canal):
-        return [(e.get("title", "") + " " + str(e.get("description", "") or e.get("body", "")))
+        # Un message Discord porte son texte dans `content` et ses cartes.
+        return [(e.get("title", "") + " " + str(e.get("content", "")) + " "
+                 + " ".join(c2.get("description", "") for c2 in e.get("embeds", ()))
+                 + str(e.get("description", "") or e.get("body", "")))
                 for c, e in lot if c == canal]
 
     check(len(nuit) == 2,
@@ -6576,9 +6806,9 @@ def test_alerte_officielle_rockstar():
     check(not any("rumeur" in t.lower() for t in textes(nuit, "discord") + textes(nuit, "push")),
           "l'article ordinaire du même lot reste muet la nuit")
 
-    check(len(jour) == 4,
-          "le jour, 4 envois : l'alerte officielle ET le récapitulatif, sur les "
-          "deux canaux (obtenu : %d)" % len(jour))
+    check(len(jour) == 3,
+          "le jour, 3 envois : UN message Discord (l'annonce et le récapitulatif "
+          "dans ses sections) et les deux notifications push (obtenu : %d)" % len(jour))
     check(any("nouv" in t for t in textes(jour, "discord")),
           "le récapitulatif part bien en journée")
 
@@ -9130,59 +9360,44 @@ def test_rafale_officielle_du_jour_j():
     def rafale(n):
         envois.clear()
         with contextlib.redirect_stdout(io.StringIO()):
-            dn.send_official_alerts(officiels(n))
+            dn.send_message(officiels(n), [], None, 0, feed_store.libelle_officiels(n))
         return list(envois)
 
     try:
-        # Le plafond tient, quelle que soit la rafale. Mesuré le 08/10 sur le
-        # fil réel : 16 officiels en une heure, 27 dans la journée — le
-        # plafond n'est plus théorique, il sert.
-        plafond = feed_store.NOTIFS_OFFICIELLES_MAX
+        # Depuis le 29/10/2026 une rafale n'est plus une suite de cartes mais
+        # UNE section de cinq liens qui dit combien elle en cache. Mesuré le
+        # 08/10 sur le fil réel : 16 officiels en une heure, 27 dans la
+        # journée — la rafale n'est pas théorique.
         for n in (16, 40, 150):
             e = rafale(n)
-            check(len(e) == plafond + 1,
-                  "[rafale] %d officiels d'un coup font %d notifications, pas %d "
-                  "(plafond %d + 1 groupée)" % (n, len(e), n, plafond))
+            check(len(e) == 1 and len(e[0][1]["embeds"]) == 1,
+                  "[rafale] %d officiels d'un coup font UN message d'une carte, pas %d"
+                  % (n, len(e)))
 
-        # LE DÉFAUT TROUVÉ PAR LA RÉPÉTITION DU 13/10/2026. L'ancienne
-        # écriture joignait tous les titres puis coupait à 3800 caractères :
-        # le titre annonçait « + 140 autre(s) annonce(s) » et le corps n'en
-        # listait que 29, la vingt-neuvième coupée en plein milieu d'un mot.
-        # Le compte était juste, le corps mentait, et rien ne le disait.
-        e = rafale(150)
-        groupe = [x for _, x in e if "autre(s) annonce" in x.get("title", "")][0]
-        desc = groupe["description"]
-        check(len(desc) <= 4096,
-              "[rafale] la description reste sous la limite Discord (%d)" % len(desc))
-        check(not desc.rstrip().endswith("…") and desc.rstrip().endswith("app."),
-              "[rafale] elle se termine sur une phrase entière, pas sur un "
-              "titre coupé net (« %s »)" % desc.splitlines()[-1][:50])
-        # Le nombre est LU, pas codé en dur : il dépend de la longueur des
-        # titres, donc l'écrire en dur ferait un test qui tombe le jour où
-        # Rockstar intitule ses annonces autrement — sans qu'aucun défaut
-        # n'existe. Ce qui doit tenir, c'est l'ARITHMÉTIQUE.
+        # LE DÉFAUT TROUVÉ PAR LA RÉPÉTITION DU 13/10/2026 : un compte juste
+        # dans le titre et un corps qui en listait moins sans le dire. Ce qui
+        # doit tenir, c'est l'ARITHMÉTIQUE : lignes listées + « + N » = le
+        # total du titre. Le nombre est lu, jamais écrit en dur.
         import re as _re
-        caches = _re.search(r"et (\d+) autre", desc)
-        check(caches is not None,
-              "[rafale] et elle NOMME ce qu'elle ne liste pas (« %s »)"
-              % desc.splitlines()[-1][:40])
-        listees = sum(1 for l in desc.splitlines() if l.startswith("•"))
-        annonces = 150 - plafond
-        check(listees + int(caches.group(1)) == annonces,
-              "[rafale] listées + annoncées non listées = le compte du titre "
-              "(%d + %s = %d)" % (listees, caches.group(1), annonces))
-
+        for n in (6, 16, 150):
+            carte = rafale(n)[0][1]["embeds"][0]
+            desc = carte["description"]
+            check(len(desc) <= 4096,
+                  "[rafale] %d officiels : la description reste sous la limite Discord (%d)" % (n, len(desc)))
+            listees = desc.count("](<")
+            cache = _re.search(r"\+ (\d+) autres? dans l'app", desc)
+            total = int(_re.search(r"· (\d+)$", carte["title"]).group(1))
+            check(cache is not None and listees + int(cache.group(1)) == total == n,
+                  "[rafale] %d officiels : listées + annoncées non listées = le total du titre "
+                  "(%d + %s = %d)" % (n, listees, cache.group(1) if cache else "?", total))
         # Une petite rafale n'est pas amputée pour autant.
-        e = rafale(plafond + 2)
-        groupe = [x for _, x in e if "autre(s) annonce" in x.get("title", "")][0]
-        check(sum(1 for l in groupe["description"].splitlines() if l.startswith("•")) == 2
-              and "…" not in groupe["description"],
-              "[rafale] deux titres de reste sont listés tous les deux, sans "
-              "mention de troncature")
+        carte = rafale(5)[0][1]["embeds"][0]
+        check(carte["description"].count("](<") == 5 and "autres" not in carte["description"],
+              "[rafale] cinq officiels sont listés tous les cinq, sans « + 0 autres »")
     finally:
         dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry = url, envoi
 
-    # Le récapitulatif ordinaire ne grossit pas avec le volume : une seule
+    # Le message ordinaire ne grossit pas avec le volume : une seule
     # notification, même le jour où neuf cents articles tombent.
     envois.clear()
     url, envoi = dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry
@@ -9194,9 +9409,10 @@ def test_rafale_officielle_du_jour_j():
                        "date": (base - timedelta(minutes=k)).isoformat()}
                       for k in range(900)]
         with contextlib.redirect_stdout(io.StringIO()):
-            dn.send_discord_notification(ordinaires)
+            dn.send_message([], feed_store.apercus_recap(ordinaires), (900, 0, 1), 0,
+                            feed_store.libelle_recap(ordinaires))
         check(len(envois) == 1,
-              "[rafale] 900 articles ordinaires font UNE notification, pas 900 "
+              "[rafale] 900 articles ordinaires font UN message, pas 900 "
               "(%d)" % len(envois))
     finally:
         dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry = url, envoi
@@ -10583,6 +10799,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_jalons_du_compte_a_rebours,
            test_couleur_du_compteur,
            test_alerte_report_officielle,
+           test_message_a_sections,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,

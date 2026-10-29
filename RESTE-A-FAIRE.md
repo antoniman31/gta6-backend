@@ -1908,3 +1908,11 @@ abandonné** (le bilan reste dans le salon principal).
   « jalon j14 »). Les suivants : J-7 12/11, J-3 16/11, J-1 18/11, H-12 18/11 12:00, H-1 18/11 23:00.
 - Pas encore fait de la spec : message à sections, détail des officiels, section RockstarMag, tableau du
   jour modifié sur place, bilan du soir, boutons-liens, puis les messages TEST.
+
+### Lot 3 de la notification Discord : à regarder au premier envoi réel (29/10/2026)
+
+- Le premier message à sections arrive au prochain passage avec des nouveautés : vérifier sur le téléphone
+  que la **ligne d'aperçu** (`content`) n'est pas redondante avec la première carte, que le nom d'expéditeur
+  s'affiche, et que l'écran verrouillé montre un texte utile.
+- Reste de la spec : détail des officiels (type, heure, ordre, fusion EN/FR), section RockstarMag, tableau du
+  jour modifié sur place, bilan du soir, boutons-liens, puis les messages TEST.
