@@ -33,14 +33,14 @@ Visuels, dans `tasks/visuels-discord/` :
 | Rythme | **Un message par heure**, comme aujourd'hui (environ 16 par jour de 6 h à 21 h). |
 | Salon | **Un seul salon.** |
 | Silence | **Rien n'est silencieux** : tout notifie normalement. |
-| Boutons | Boutons-liens sous le message, **à vérifier** (je ne sais pas si un lien d'envoi sans bot peut en porter). |
+| Boutons | Boutons-liens sous le message, **à vérifier** (je ne sais pas si un lien d'envoi sans bot peut en porter). **Vérification : trois messages marqués TEST dans ton salon principal**, déclenchés par toi (voir « Vérifier avant de coder »). |
 | Tableau du jour | Un message **modifié en place** à chaque passage, sans notification, créé à 5 h. |
-| Bilan du soir | 22 h, **avant et après la sortie**, de préférence dans un **fil de forum** (second lien d'envoi à créer par toi) ; sinon le salon principal. |
+| Bilan du soir | 22 h, **avant et après la sortie**, **dans le salon principal** (le fil de forum est abandonné, décision du 29/10). Le dimanche, une section « Cette semaine ». |
 | Actu majeure | **Inchangée** (rouge, pas de médias nommés) ; on **mesure d'abord les médias distincts**. |
 | Officiels | Type de contenu, heure de publication ; **annonces d'abord, boutique ensuite** ; la boutique garde la catégorie « officiel » ; fusion EN/FR avec **titre en français** ; retard mesuré, relu après **10 alertes**. |
 | RockstarMag | **Une section**, 🎬 pour les vidéos, extrait du résumé, silence la nuit, reste après la sortie, couleur de l'accent de l'app. |
 | Push | Même vocabulaire que Discord quand il sera retenté. Il reste éteint. |
-| Écarté | Mention `@` qui sonne ; salons séparés ; regroupement des récapitulatifs ; message silencieux ; toute image ; rappel d'agenda ; plus de lignes ; passage plus fréquent sur les flux officiels. |
+| Écarté | Fil de forum pour le bilan ; mention `@` qui sonne ; salons séparés ; regroupement des récapitulatifs ; message silencieux ; toute image ; rappel d'agenda ; plus de lignes ; passage plus fréquent sur les flux officiels. |
 
 ## État actuel, mesuré (29/10/2026)
 
@@ -174,9 +174,7 @@ médias distincts, cinq médias les plus actifs (comptés sur le **média du tit
 **Le dimanche**, le message gagne une section « 📅 Cette semaine » (total de la semaine, sujets les plus couverts, nombre d'annonces officielles) : pas de message de plus.
 
 `bilan_envoye_le` dans `feed.json` interdit un second envoi (une relance à 22 h 30 ne le renvoie pas).
-Il tient avant la pause nocturne et **continue après la sortie**. Il est publié dans un **salon « forum »**
-(un fil « Bilan du 29/10 » par jour, historique recherchable) avec un **second lien d'envoi**, secret
-GitHub que **tu** crées (`DISCORD_BILAN_WEBHOOK_URL`) ; sans lui, il va dans le salon principal.
+Il tient avant la pause nocturne et **continue après la sortie**. Il est publié dans le **salon principal** : le fil de forum est abandonné (décision d'Antoni).
 
 ## 10 · Les jalons du compte à rebours
 
@@ -242,14 +240,23 @@ Les quatre images `quand-*.png` montrent une journée type (articles par heure),
 l'autour de la sortie : pause nocturne levée du 18 au 20/11 inclus, message du passage silencieux après le
 19/11 00:00 sauf annonce officielle, actu majeure ou RockstarMag, bilan du soir qui continue.
 
+## Vérifier avant de coder
+
+Trois points sont à vérifier avec le vrai lien d'envoi : les **boutons-liens**, la **modification d'un
+message** et la **balise de temps relatif**. Décision d'Antoni : **directement dans le salon principal,
+trois messages marqués « TEST »**, déclenchés par lui. Un workflow à part (`test-discord.yml`,
+`workflow_dispatch`, `contents: read`, comme `test-push.yml`) envoie : (1) un message avec deux
+boutons-liens ; (2) un message puis sa modification ; (3) un message avec la balise de sortie. Il
+écrit dans le journal public **ce que Discord a répondu**, jamais le lien d'envoi. **Rien n'est envoyé
+sans son « go ».** Le résultat décide du repli (lien texte, nouveau message).
+
 ## Risques et ce que je ne sais pas
 
 - **Boutons-liens** : à vérifier ; repli sur le lien texte.
 - **Un compte à rebours qui dit « dans 20 jours » alors que l'app dit « J-21 »** : Discord compte une durée
   (20 j 4 h), l'app des jours civils. Les deux sont justes et ne coïncident pas ; choix d'Antoni : le
   compte vivant seul. Les jalons J-14 à J-1 sont, eux, en jours civils, comme l'app.
-- **Modification en place et fil de forum** : je connais ces fonctions de Discord mais ne les ai pas vues
-  marcher avec ce lien d'envoi : un premier envoi réel les confirmera, avec un repli prévu pour chacune.
+- **Modification en place** : je connais cette fonction de Discord mais ne l'ai pas vue marcher avec ce lien d'envoi : un envoi de test la confirmera, avec un repli prévu (un nouveau message).
 - **La ligne d'aperçu** : si Discord affiche déjà le titre de la première carte, elle sera redondante.
 - **6 000 caractères** : voir le garde-fou. **Douze messages au maximum** de Discord par minute pour un lien
   d'envoi : sans objet à notre rythme.
@@ -266,9 +273,10 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
    temps relatifs, règles de nuit et d'après-sortie.
 3. **Le détail des officiels** : type, heure, ordre, fusion EN/FR, plafond.
 4. **La section RockstarMag** : extrait, 🎬, repère des liens envoyés.
-5. **Le tableau du jour**, puis **le bilan du soir** (avec son fil).
-6. **Les jalons** (10) et **l'alerte de report** (11) : peu de code, peu de volume ; à prévoir **avant le 05/11** (J-14).
-7. **Les boutons-liens**, une fois vérifiés.
+5. **Le tableau du jour**, puis **le bilan du soir**.
+6. **Le workflow de vérification (TEST)**, avant le tableau du jour et les boutons.
+7. **Les jalons** (10) et **l'alerte de report** (11) : peu de code, peu de volume ; à prévoir **avant le 05/11** (J-14).
+8. **Les boutons-liens**, une fois vérifiés.
 
 ## Contrôles prévus (chacun prouvé capable d'échouer contre l'ancien code)
 
@@ -294,5 +302,4 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
   testées des deux côtés du changement d'heure.
 - Jalons : chaque jalon une seule fois, même relancé ; heure de Paris et passage à l'heure d'hiver ; jalon manqué de plus de 90 minutes non envoyé, sauf « sorti » ; « sorti » envoyé même tard.
 - Report : un titre officiel avec un motif part en 🚨 ; le même titre non officiel ne déclenche rien ; « reports results » ne déclenche rien ; part aussi la nuit.
-- Dans tous les cas : aucun secret ni URL de webhook dans un journal ; `DISCORD_WEBHOOK_URL` et
-  `DISCORD_BILAN_WEBHOOK_URL` restent dans les secrets GitHub ; aucun nom de modèle.
+- Dans tous les cas : aucun secret ni URL de webhook dans un journal ; `DISCORD_WEBHOOK_URL` reste dans les secrets GitHub ; aucun nom de modèle.

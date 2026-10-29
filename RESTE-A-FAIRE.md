@@ -1887,3 +1887,8 @@ seul, **jalons** (J-14, J-7, J-3, J-1, H-12, H-1, « GTA VI est sorti »), bilan
 du dimanche, **alerte de report limitée aux officiels** (0 faux positif sur 85 officiels). **À prévoir
 avant le 05/11** pour le jalon J-14 : le lot « jalons et report ». Rien n'est codé.
 
+Décisions d'Antoni du 29/10/2026 (au soir) : fusion de la spec #222 ; premier lot = **mesures, puis
+jalons et alerte de report** (J-14 tombe le 05/11) ; vérification des fonctions Discord incertaines
+par **trois messages marqués TEST dans le salon principal**, déclenchés par lui ; **fil de forum
+abandonné** (le bilan reste dans le salon principal).
+
