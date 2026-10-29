@@ -1810,3 +1810,11 @@ désormais une empreinte, l'hôte et l'expiration de chaque abonnement (voir le
 README). **À faire** : après le prochain réabonnement, relever l'empreinte du
 premier envoi réussi et suivre ce qu'elle devient. Décision pour Antoni :
 automatiser la mise à jour du secret (jeton à droit d'écriture des secrets).
+
+### Suivre l'empreinte 42310181 (29/10/2026)
+
+Abonnement valide depuis le passage de 10:29 (Paris), hôte `jmt17.google.com`. À
+chaque passage horaire, chercher la ligne `[push] abonnement #1 : empreinte …` : si
+elle disparaît au profit d'un « expiré (HTTP 410) », noter l'heure du dernier envoi
+réussi. Cette durée dit si l'abonnement meurt seul (cause : le téléphone ou Chrome)
+ou à un événement précis.
