@@ -629,6 +629,46 @@ def test_push_subscriptions():
     os.environ.pop("PUSH_SUBSCRIPTIONS", None)
 
 
+def test_journal_push_sans_secret():
+    """Le journal de diagnostic du push ne peut pas fuiter l'endpoint, et la
+    page et le service worker visent le même fichier du même cache."""
+    print("\n[journal push] même adresse des deux côtés, aucun endpoint écrit")
+    import re
+    sw = open("docs/sw.js", encoding="utf-8").read()
+    page = open("docs/index.html", encoding="utf-8").read()
+    opts = open("docs/notif-options.js", encoding="utf-8").read()
+    u_sw = re.search(r'const TRACE_URL = "([^"]+)"', sw)
+    u_page = re.search(r'const TRACE_URL = "([^"]+)"', page)
+    check(bool(u_sw) and bool(u_page) and u_sw.group(1) == u_page.group(1),
+          "sw.js et la page écrivent le journal à la même adresse")
+    n_page = re.search(r"const TRACE_MAX = (\d+)", page)
+    n_opts = re.search(r"const TRACE_MAX = (\d+)", opts)
+    check(bool(n_page) and bool(n_opts) and n_page.group(1) == n_opts.group(1),
+          "et gardent le même nombre de lignes")
+    # Tout appel qui écrit dans le journal : sw.js (noteTrace) et la page
+    # (noteTracePage). Aucun argument ne doit toucher à l'endpoint ni à
+    # l'abonnement lui-même ; la page n'y passe que l'empreinte.
+    def appels(texte, nom):
+        # Le texte de chaque appel, jusqu'au premier « ; » ou « .then( » : les
+        # arguments peuvent s'étendre sur deux lignes et contenir des parenthèses.
+        sorties = []
+        for m in re.finditer(r"(?<!function )" + nom + r"\(", texte):
+            reste = texte[m.end():m.end() + 300]
+            fin = min([i for i in (reste.find(";"), reste.find(".then(")) if i >= 0] or [len(reste)])
+            sorties.append(reste[:fin])
+        return sorties
+    appels_sw = appels(sw[sw.index('self.addEventListener("install"'):], "noteTrace")
+    appels_page = appels(page[page.index("async function empreinteAbonnementPage"):], "noteTracePage")
+    check(len(appels_sw) >= 4 and len(appels_page) >= 1,
+          "le contrôle lit bien les appels du journal (%d côté service worker, %d côté page)" % (len(appels_sw), len(appels_page)))
+    check(all(not re.search(r"endpoint|subscription|toJSON|keys|\bevent\b", a) for a in appels_sw + appels_page),
+          "aucun appel du journal ne reçoit l'endpoint, l'abonnement ou le contenu du push")
+    check("empreinte" in " ".join(appels_page),
+          "la page ne note que l'empreinte de l'abonnement")
+    check('"pushsubscriptionchange"' in sw and "noteTrace(" in sw[sw.index('"pushsubscriptionchange"'):],
+          "le service worker note aussi le signalement de changement d'abonnement")
+
+
 def test_push_empreinte_abonnement():
     """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
     print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
@@ -10145,6 +10185,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_canonical_link, test_canonicalize_stored_links,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
            test_push_empreinte_abonnement,
+           test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,
            test_real_history,

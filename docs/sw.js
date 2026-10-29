@@ -21,7 +21,7 @@
 // de l'ancien service worker, ce qui évite de revivre l'incident de cache
 // tenace jamais élucidé. Ici c'est indispensable : sans remplacement,
 // l'ancien service worker resterait actif et ignorerait les push.
-const CACHE_NAME = "gta6watch-shell-v63";
+const CACHE_NAME = "gta6watch-shell-v64";
 const SHELL_URL = "./index.html";
 importScripts("notif-options.js");
 
@@ -41,6 +41,27 @@ async function lireSilence(){
   }catch(e){
     return null;
   }
+}
+
+// Journal de diagnostic du push, dans le même cache que le silence (donc lui
+// aussi épargné par l'activation). Il ne doit JAMAIS faire échouer un push :
+// tout y est avalé.
+const TRACE_URL = "./prefs/trace";
+
+async function noteTrace(texte){
+  try{
+    const cache = await caches.open(PREFS_CACHE);
+    const rep = await cache.match(TRACE_URL);
+    let liste = [];
+    try{ liste = rep ? await rep.json() : []; }catch(e){ liste = []; }
+    const suite = ajouteTrace(liste, { t: Date.now(), e: texte });
+    await cache.put(TRACE_URL, new Response(JSON.stringify(suite),
+      { headers: { "Content-Type": "application/json" } }));
+  }catch(e){ /* le journal est un confort, pas une condition */ }
+}
+
+function permissionSW(){
+  try{ return self.Notification ? self.Notification.permission : "?"; }catch(e){ return "?"; }
 }
 
 self.addEventListener("install", (event) => {
@@ -110,11 +131,27 @@ self.addEventListener("push", (event) => {
     }
   }
 
+  // Trois traces : reçu, puis affiché ou NON affiché. Un push reçu mais pas
+  // affiché fait révoquer l'abonnement par le navigateur : c'est l'une des
+  // causes possibles de la mort de l'abonnement, et la seule que ce journal
+  // puisse prouver ou écarter.
   event.waitUntil(
-    lireSilence().then((jusqua) =>
-      self.registration.showNotification(
-        contenu.title, optionsNotification(contenu, jusqua, Date.now())))
+    noteTrace("push reçu (permission " + permissionSW() + ")")
+      .then(() => lireSilence())
+      .then((jusqua) =>
+        self.registration.showNotification(
+          contenu.title, optionsNotification(contenu, jusqua, Date.now())))
+      .then(() => noteTrace("push affiché"))
+      .catch((erreur) =>
+        noteTrace("push NON affiché : " + String(erreur && erreur.message || erreur).slice(0, 80))
+          .then(() => { throw erreur; }))
   );
+});
+
+// Le navigateur dit lui-même quand il remplace ou invalide l'abonnement.
+// Tous les navigateurs ne l'envoient pas : son absence ne prouve rien.
+self.addEventListener("pushsubscriptionchange", (event) => {
+  event.waitUntil(noteTrace("le navigateur signale un changement d'abonnement"));
 });
 
 self.addEventListener("notificationclick", (event) => {

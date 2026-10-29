@@ -46,4 +46,25 @@ function optionsNotification(contenu, jusqua, maintenant){
   return options;
 }
 
-if(typeof module !== "undefined") module.exports = { silenceActif, optionsNotification, SILENCE_DUREE_MS };
+// Le journal de diagnostic du push (29/10/2026). L'abonnement d'Antoni est mort
+// moins de 35 minutes après un envoi accepté (10:29 → 11:02 Paris), sans qu'il
+// touche à rien : le robot sait QUAND Google répond 410, pas ce que le
+// téléphone a vu. Le service worker note donc ce qu'il reçoit, et la page ce
+// qu'elle trouve à l'ouverture. Quarante lignes au plus, les plus récentes.
+const TRACE_MAX = 40;
+
+// Les constats de la page (`unique`) ne sont pas répétés d'une ouverture à la
+// suivante : trois ouvertures sans changement ne doivent pas chasser du
+// journal l'événement utile. Deux push de suite, eux, sont deux événements.
+// Un contenu illisible (autre chose qu'une liste) repart de zéro.
+function ajouteTrace(liste, entree, maximum){
+  const base = Array.isArray(liste)
+    ? liste.filter((x) => x && typeof x.t === "number" && typeof x.e === "string")
+    : [];
+  const dernier = base[base.length - 1];
+  if(entree.unique === true && dernier && dernier.e === entree.e) return base.slice(-(maximum || TRACE_MAX));
+  base.push({ t: entree.t, e: entree.e });
+  return base.slice(-(maximum || TRACE_MAX));
+}
+
+if(typeof module !== "undefined") module.exports = { silenceActif, optionsNotification, SILENCE_DUREE_MS, ajouteTrace, TRACE_MAX };

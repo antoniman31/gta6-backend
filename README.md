@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1949
+qui permet de tester tout le pipeline sans sortir de la machine. **1956
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9684,3 +9684,39 @@ que le masquage d'endpoints le traite comme les autres ; il masque le chemin que
 que soit l'hôte (voir `test_push_masquage_endpoint`), mais aucun test n'utilise cet
 hôte précis. **À suivre** : si `42310181` finit en 410, l'heure
 du dernier envoi réussi donne la durée de vie de l'abonnement.
+
+### L'abonnement push est mort en moins de 35 minutes : le téléphone tient un journal — 29/10/2026
+
+Le robot a confirmé la mort de l'abonnement `42310181` : envoi accepté (1/1) au
+passage de 08:27 UTC (10:27 Paris), puis **HTTP 410** au passage de 09:00 UTC
+(11:00 Paris), avec la réponse de Google « push subscription has unsubscribed or
+expired ». Même empreinte des deux côtés, donc ce n'est pas un remplacement :
+c'est le même abonnement, fermé côté téléphone en moins de 35 minutes, alors qu'il
+avait tenu environ 33 heures la fois précédente. Antoni n'avait rien touché (réponse
+« Rien du tout »), et ouvre l'app par l'icône de l'écran d'accueil.
+
+Le robot sait *quand* Google répond 410, pas ce que le téléphone a vu. D'où un
+**journal de diagnostic** (choisi par Antoni parmi trois suites), 40 lignes au plus,
+dans le cache `gta6watch-prefs` (adresse `./prefs/trace`), qui survit aux
+déploiements comme le réglage du silence :
+- **le service worker** note « push reçu (permission …) », puis « push affiché »
+  ou « push NON affiché : <cause> » (l'échec est relancé, jamais avalé), et le
+  signalement `pushsubscriptionchange` quand le navigateur l'envoie. Un push reçu
+  mais pas affiché fait révoquer l'abonnement par le navigateur : c'est la seule
+  cause que ce journal puisse prouver ou écarter ;
+- **la page** note à chaque ouverture si l'abonnement est présent (avec la **même
+  empreinte que le robot**, huit caractères d'un SHA-256 de l'endpoint) ou
+  « ABSENT », et la permission. Une ligne identique à la précédente n'est pas
+  répétée ;
+- le journal s'affiche dans Réglages → Notifications (« Journal de diagnostic du
+  push », avec « Copier le journal »), à l'heure de Paris.
+
+**Garde-fous éprouvés** (`test_journal_push`, `test_journal_push_sans_secret`) : un
+journal impossible à écrire n'empêche pas la notification de s'afficher ; l'endpoint
+n'est écrit nulle part ; l'empreinte de la page est égale à celle de `hashlib`.
+Le nom du cache du service worker passe à `v64`.
+
+**Ce que je ne peux pas dire** : si Chrome sur le téléphone enregistrera quelque
+chose avant la mort. Un abonnement survit à la mise à jour du service worker : il
+suffit d'**ouvrir l'app une fois après le déploiement** pour que le journal se mette
+à noter, sans rien recoller dans le secret. Ce qui précède l'ouverture n'est pas vu.

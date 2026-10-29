@@ -3744,6 +3744,154 @@ def test_ne_pas_deranger(nav, url):
     ctx.close()
 
 
+def test_journal_push(nav, url):
+    """Le journal de diagnostic du push : la fonction pure, le vrai sw.js, la page.
+
+    29/10/2026 : l'abonnement est mort moins de 35 minutes après un envoi
+    accepté. Le journal doit dire ce que le téléphone a vu — et ne JAMAIS
+    empêcher une notification de s'afficher, sans quoi l'outil de diagnostic
+    deviendrait lui-même une cause de révocation.
+    """
+    print("\n[journal push] ce que le téléphone a vu")
+    racine = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+    opts_src = open(os.path.join(racine, "notif-options.js"), encoding="utf-8").read()
+    sw_src = open(os.path.join(racine, "sw.js"), encoding="utf-8").read()
+
+    ctx = nav.new_context(viewport={"width": 320, "height": 800},
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.clock.install(time="2026-10-29T09:30:00Z")
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+
+    # --- 1. la fonction pure
+    r = page.evaluate("""(src) => {
+        const m = new Function("module", src + "; return {ajouteTrace, TRACE_MAX};")(undefined);
+        const e = (t, texte, unique) => ({t: t, e: texte, unique: unique});
+        let l = [];
+        for(let i = 0; i < m.TRACE_MAX + 10; i++) l = m.ajouteTrace(l, e(i, "ligne " + i));
+        const apresDeux = m.ajouteTrace(m.ajouteTrace([], e(1, "x")), e(2, "x"));
+        const uniqueDeux = m.ajouteTrace(m.ajouteTrace([], e(1, "x", true)), e(2, "x", true));
+        const uniqueSepare = m.ajouteTrace(m.ajouteTrace(m.ajouteTrace([], e(1, "x", true)), e(2, "y")), e(3, "x", true));
+        return {
+          max: m.TRACE_MAX, n: l.length, premiere: l[0].e, derniere: l[l.length - 1].e,
+          deuxPush: apresDeux.length, uniqueDeux: uniqueDeux.length, uniqueSepare: uniqueSepare.length,
+          corrompu: m.ajouteTrace("n'importe quoi", e(1, "a")).length,
+          filtre: m.ajouteTrace([null, {t: "x", e: 1}, {t: 5, e: "ok"}], e(6, "b")).map((x) => x.e),
+          cle: Object.keys(m.ajouteTrace([], e(1, "a", true))[0]).sort(),
+        };
+    }""", opts_src)
+    check(r["n"] == r["max"] and r["premiere"] == "ligne 10" and r["derniere"] == "ligne %d" % (r["max"] + 9),
+          "[journal push] le journal garde les %d lignes les plus RÉCENTES (%s → %s)" % (r["max"], r["premiere"], r["derniere"]))
+    check(r["deuxPush"] == 2, "[journal push] deux push identiques de suite sont deux événements")
+    check(r["uniqueDeux"] == 1 and r["uniqueSepare"] == 3,
+          "[journal push] un constat de la page n'est pas répété, sauf si autre chose s'est passé entre deux")
+    check(r["corrompu"] == 1 and r["filtre"] == ["ok", "b"],
+          "[journal push] un contenu illisible repart de zéro, les lignes mal formées sont écartées (%s)" % r["filtre"])
+    check(r["cle"] == ["e", "t"], "[journal push] une ligne ne porte que l'heure et le texte (%s)" % r["cle"])
+
+    # --- 2. le vrai sw.js, exécuté avec un faux environnement
+    sw = page.evaluate("""async ([swSrc, optsSrc]) => {
+        async function lance(opts){
+          const ecouteurs = {}, affichees = [], magasin = {};
+          const T0 = 1000;
+          const faux = {
+            keys: async () => [], delete: async () => true,
+            open: async () => ({
+              match: async (k) => magasin[k] === undefined ? undefined
+                : { json: async () => JSON.parse(magasin[k]) },
+              add: async () => {},
+              put: async (k, rep) => {
+                if(opts.putCasse) throw new Error("quota");
+                magasin[k] = await rep.text();
+              },
+            }),
+            match: async () => undefined,
+          };
+          const self = { addEventListener: (n, f) => { ecouteurs[n] = f; },
+            skipWaiting: () => {}, clients: { claim: async () => {}, matchAll: async () => [] },
+            Notification: { permission: opts.permission || "granted" },
+            registration: { showNotification: async (t, o) => {
+              if(opts.affichageCasse) throw new TypeError("options invalides");
+              affichees.push(o); } } };
+          new Function("self", "caches", "importScripts", "Date", "fetch", "clients",
+            optsSrc + "\\n" + swSrc.replace('importScripts("notif-options.js");', ""))(
+            self, faux, () => {}, Date, async () => ({}), self.clients);
+          return {ecouteurs, affichees, magasin};
+        }
+        const lignes = (x) => JSON.parse(x.magasin["./prefs/trace"] || "[]").map((l) => l.e);
+        const out = {};
+        const charge = {data: {json: () => ({title: "t", body: "b", tag: "a"}), text: () => ""}};
+
+        let x = await lance({});
+        let p; x.ecouteurs.push(Object.assign({waitUntil: (q) => { p = q; }}, charge)); await p;
+        out.normal = lignes(x); out.normalAffichees = x.affichees.length;
+
+        x = await lance({permission: "denied"});
+        x.ecouteurs.push(Object.assign({waitUntil: (q) => { p = q; }}, charge)); await p;
+        out.permission = lignes(x);
+
+        x = await lance({affichageCasse: true});
+        x.ecouteurs.push(Object.assign({waitUntil: (q) => { p = q; }}, charge));
+        out.rejete = false;
+        try{ await p; }catch(e){ out.rejete = true; }
+        out.casse = lignes(x);
+
+        x = await lance({putCasse: true});
+        x.ecouteurs.push(Object.assign({waitUntil: (q) => { p = q; }}, charge));
+        out.putRejete = false;
+        try{ await p; }catch(e){ out.putRejete = true; }
+        out.journalCasseAffichees = x.affichees.length;
+
+        x = await lance({});
+        x.ecouteurs.pushsubscriptionchange({waitUntil: (q) => { p = q; }}); await p;
+        out.changement = lignes(x);
+        return out;
+    }""", [sw_src, opts_src])
+    check(sw["normal"] == ["push reçu (permission granted)", "push affiché"] and sw["normalAffichees"] == 1,
+          "[journal push] un push normal laisse deux lignes : reçu, affiché (%s)" % sw["normal"])
+    check(sw["permission"][0] == "push reçu (permission denied)",
+          "[journal push] la permission vue par le service worker est notée (%s)" % sw["permission"])
+    check(len(sw["casse"]) == 2 and sw["casse"][1].startswith("push NON affiché : options invalides"),
+          "[journal push] un affichage qui échoue est noté « NON affiché » avec la cause (%s)" % sw["casse"])
+    check(sw["rejete"], "[journal push] et l'échec est relancé, pas avalé : le navigateur doit le savoir")
+    check(sw["journalCasseAffichees"] == 1 and not sw["putRejete"],
+          "[journal push] un journal impossible à écrire N'EMPÊCHE PAS la notification de s'afficher")
+    check(sw["changement"] == ["le navigateur signale un changement d'abonnement"],
+          "[journal push] pushsubscriptionchange est noté (%s)" % sw["changement"])
+
+    # --- 3. la page
+    check(page.evaluate("() => TRACE_MAX") == r["max"],
+          "[journal push] la page et notif-options.js gardent le même nombre de lignes")
+    etat = page.evaluate("""async () => {
+        const f = (typeof pushSupported === "function") ? pushSupported() : null;
+        backendVapidKey = "BAAAA";
+        document.getElementById("pushGroup").style.display = "block";
+        await refreshPushUI(); await refreshPushUI();
+        const liste = await lireTracePage();
+        const hex = await empreinteAbonnementPage({endpoint: "https://fcm.googleapis.com/fcm/send/abc"});
+        const rien = await empreinteAbonnementPage(null);
+        return {supporte: f, lignes: liste.map((x) => x.e), hex: hex, rien: rien,
+                zone: document.getElementById("pushTraceText").value};
+    }""")
+    if etat["supporte"]:
+        check(len(etat["lignes"]) == 1 and etat["lignes"][0].startswith("ouverture : abonnement ABSENT, permission "),
+              "[journal push] à l'ouverture sans abonnement, une seule ligne, même après deux rafraîchissements (%s)" % etat["lignes"])
+        check("ouverture : abonnement ABSENT" in etat["zone"] and "29/10" in etat["zone"],
+              "[journal push] le journal affiché porte la date à Paris (« %s »)" % etat["zone"][:60])
+    else:
+        print("  (push non géré par ce navigateur : constat d'ouverture non éprouvé ici)")
+    # La valeur attendue est celle de hashlib.sha256 : même empreinte que le robot.
+    import hashlib
+    attendu = hashlib.sha256(b"https://fcm.googleapis.com/fcm/send/abc").hexdigest()[:8]
+    check(etat["hex"] == attendu and etat["rien"] == "?",
+          "[journal push] l'empreinte de la page est celle du robot (%s = %s)" % (etat["hex"], attendu))
+    check(not erreurs, "[journal push] aucune erreur JavaScript (%s)" % erreurs)
+    ctx.close()
+
+
 def test_agenda_jours_civils(nav, url):
     """Le « J-N » de l'agenda tient aux frontières de minuit, à Paris.
 
@@ -6295,6 +6443,7 @@ def main():
             test_vecteurs_du_resume(nav, url)
             test_compte_a_rebours_flashy(nav, url)
             test_ne_pas_deranger(nav, url)
+            test_journal_push(nav, url)
             test_agenda_jours_civils(nav, url)
             test_agenda_dans_le_panneau(nav, url)
             test_panneau_du_compteur(nav, url)
