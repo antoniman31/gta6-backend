@@ -21,16 +21,16 @@ Visuels, dans `tasks/visuels-discord/` :
 
 | sujet | décision |
 |---|---|
-| Images | **Une grande image partout** : récapitulatif, annonces officielles, carte RockstarMag. Aucun filtre de spoilers. Discord n'en accepte qu'une par carte et l'affiche **sous le texte**, pas au-dessus (à vérifier en vrai, voir Risques). |
+| Images | **Aucune image, nulle part** (décision du 29/10 au soir, qui annule celle de l'après-midi) : ni grande image ni vignette, sur Discord comme sur le push. Messages plus courts, aucun risque de spoiler visuel. L'icône et le badge de l'app dans le push ne sont pas des images d'article : ils restent. |
 | Règle commune | **5 liens au plus par notification, puis un compteur pour les autres articles, quelle que soit la catégorie** (récapitulatif, annonces officielles, carte RockstarMag). |
 | Récapitulatif | Reste à **5 lignes puis un compteur**. L'idée « plus de lignes » est retirée. |
 | Compte à rebours | Pied « ⏳ J-N · sortie le 19/11/2026 à 00:00 », couleur de barre du palier du compteur. **Après la sortie : « Sorti depuis N jours ».** |
 | Ligne de chiffres | 🇫🇷 / 🇬🇧 et nombre de médias. |
 | Actu majeure | **Inchangée** : rouge, pas de médias nommés. On **mesure d'abord les médias distincts** (voir 2). |
 | Bilan du soir | Un message par jour à 22 h, **avant et après la sortie**. |
-| Annonces officielles | **Une seule notification par passage, 5 liens au plus puis un compteur** ; grande image, type de contenu, heure de publication, pied commun ; **annonces d'abord, boutique ensuite** ; **la boutique garde la catégorie « officiel »** ; fusion EN/FR avec **titre en français** ; mesure du retard, relue après **10 alertes**. |
+| Annonces officielles | **Une seule notification par passage, 5 liens au plus puis un compteur** ; type de contenu, heure de publication, pied commun ; **annonces d'abord, boutique ensuite** ; **la boutique garde la catégorie « officiel »** ; fusion EN/FR avec **titre en français** ; mesure du retard, relue après **10 alertes**. |
 | RockstarMag | **Carte séparée**, 🎬 pour les vidéos, extrait du résumé, **silence la nuit**, **reste après la sortie**, couleur de **l'accent de l'app**. Le récapitulatif **liste aussi** ses articles. |
-| Écarté | Mention `@` qui sonne ; passage plus fréquent sur les flux officiels ; vignette filtrée ; rappel d'agenda ; plus de lignes. |
+| Écarté | Mention `@` qui sonne ; passage plus fréquent sur les flux officiels ; toute image (vignette, grande image) ; rappel d'agenda ; plus de lignes. |
 
 ## État actuel, mesuré (29/10/2026)
 
@@ -38,26 +38,19 @@ Visuels, dans `tasks/visuels-discord/` :
   « + N autres dans l'app ». Les passages du jour comptaient 9 à 31 articles.
 - Une ligne du récapitulatif : 200 caractères en médiane, 343 au maximum ; les 10 plus
   longues font 3 195 caractères, sous les 3 900 gardés pour la description.
-- 3 300 articles dans le fil : **87 %** des 300 plus récents ont une image, toutes en https
-  (la plus longue URL fait 263 caractères, Discord en accepte 2 048) ; 280 articles le 29/10.
+- 280 articles le 29/10 ; 116 par jour en moyenne du 22 au 28/10.
 - Les messages arrivent vers **:03** (le robot finit à :03). Pause nocturne 00 h–05 h :
   rien ne part, sauf une annonce officielle.
 
 ## 1 · Le récapitulatif
 
-1. **Grande image** : celle de l'article de tête (l'ordre existant : un officiel d'abord,
-   sinon le plus récent). Il faut garder `image` dans l'aperçu (septième champ ;
-   `apercu_de` en garde six, pour le coût dans `feed.json` pendant la pause nocturne : une
-   URL de 263 caractères au plus sur cinq aperçus est négligeable, à mesurer avant de
-   livrer). Sans image valide (https, 2 048 caractères au plus) : rien, le message part
-   comme aujourd'hui.
-2. **Pied et couleur.** Pied « ⏳ J-N · sortie le 19/11/2026 à 00:00, heure de Paris », N en
+1. **Pied et couleur.** Pied « ⏳ J-N · sortie le 19/11/2026 à 00:00, heure de Paris », N en
    **jours civils à Paris** (même règle que l'agenda). Barre : moins de 24 h rose `#ff2fa8`,
    moins de 7 jours orange `#ff8a00`, moins de 30 jours jaune `#f7ff00`, sinon bleu
    `#5493FF` ; les seuils sont ceux de `palierCompteur` dans l'app, recopiés côté robot avec
    un test qui **les lit dans `docs/index.html`**. L'actu majeure garde son rouge. Après la
    sortie : « 🎮 Sorti depuis N jours » et la barre repasse au bleu.
-3. **Ligne de chiffres** : champs « 🇫🇷 / 🇬🇧 » et « 📰 Médias », sur les articles du passage. Le
+2. **Ligne de chiffres** : champs « 🇫🇷 / 🇬🇧 » et « 📰 Médias », sur les articles du passage. Le
    récapitulatif du matin additionne la nuit : il n'affiche que la répartition FR/EN (la langue
    se garde dans les comptes mis de côté), pas un nombre de médias qui ne serait plus un compte
    de distincts.
@@ -96,11 +89,11 @@ exception de plus à « un seul message par passage ».
 qui porte le **nom du flux**, un lien vers l'app ; plafond de 10 alertes détaillées
 (`NOTIFS_OFFICIELLES_MAX`), puis une carte qui liste les suivantes. Mesuré : 85 officiels sur
 3 300 articles, 24 jours concernés (10 avec une seule alerte, au plus 5 hors rafale), 6 flux
-officiels sur 70. 77 officiels sur 85 ont une image (91 %), 3 seulement un résumé. Le dernier,
+officiels sur 70. 3 seulement ont un résumé. Le dernier,
 « Original Score by Justice », est arrivé par **Google News (EN)** : l'alerte l'affiche comme
 source alors que son lien est sur rockstargames.com.
 
-- **O1 · Grande image** de l'annonce (pas pour la carte groupée). Mêmes règles de validité.
+- **O1 · (retirée)** Plus aucune image, décision du 29/10 au soir.
 - **O2 · Le vrai type**, tiré du **domaine du lien** (comme `statut_officiel`), jamais du nom du
   flux : rockstargames.com → 📰 Rockstar Newswire (42 articles), youtube.com → 🎬 Vidéo Rockstar
   (5), support.rockstargames.com → 🛠 Assistance Rockstar (5), ir.take2games.com → 📈
@@ -125,9 +118,8 @@ source alors que son lien est sur rockstargames.com.
   annonces d'un même passage ne sont donc **plus des messages séparés** : un message
   « ⭐ N annonces officielles Rockstar », 5 lignes (📰 / 🎬 / 🛍, titre, heure) et « + N autres
   annonces officielles, toutes dans l'app ». Une seule annonce donne un message à 1 lien,
-  avec le type, l'heure et la grande image, comme dans O1 à O3. Le 08/10 (32 officiels, dont 28
+  avec le type et l'heure, comme dans O2 et O3. Le 08/10 (32 officiels, dont 28
   produits de boutique) : **1 message au lieu de 11**.
-  - La grande image est celle de la **première ligne**.
   - **Ordre : les annonces non-boutique d'abord, puis la boutique, chacune par date** : par
     date décroissante, les 4 vraies annonces du 08/10 auraient été aux rangs 27 à 32, toutes
     cachées dans le compteur. **La boutique garde la catégorie « officiel ».**
@@ -149,14 +141,13 @@ source alors que son lien est sur rockstargames.com.
 
 Mesuré : **130 articles sur 3 300** (3,9 %), sur 54 jours, **médiane 2 par jour, au plus 14**. En
 octobre : 18 jours sur 29, et 4 le 29/10. 57 sont des vidéos YouTube (44 %), 43 viennent du flux
-du site, 30 de Google News FR. **130 sur 130 ont une image** ; 100 sur 130 un résumé (493
+du site, 30 de Google News FR. 100 sur 130 un résumé (493
 caractères en médiane), mais **3 des 4 articles du 29/10, arrivés par Google News, n'en ont
 pas**. 14 sont publiés entre minuit et 4 h. Ils sont déjà protégés de l'effacement de
 l'historique (`item_protege`).
 
 - **Une carte séparée** après le récapitulatif, « 📰 RockstarMag — N nouveau(x) », **5 liens au plus**
-  et « + N autres dans l'app », 📰 (site) ou **🎬 (vidéo, domaine youtube.com)**, **grande image** du
-  premier article, **extrait de 160 caractères** du premier article qui en a un (nettoyé par
+  et « + N autres dans l'app », 📰 (site) ou **🎬 (vidéo, domaine youtube.com)**, **extrait de 160 caractères** du premier article qui en a un (nettoyé par
   `nettoie_resume`), rien sinon, même pied « ⏳ J-N ».
 - **Couleur** : celle de **l'accent de l'app** (`--accent`, `#58b9ff`), car l'onglet RockstarMag n'a
   pas de couleur propre. Elle est **presque identique au bleu du récapitulatif** (`#5493FF`) ; à
@@ -184,20 +175,13 @@ RockstarMag qui continuent.
 
 ## Risques et ce que je ne sais pas
 
-- **L'image sous le texte.** Dans un embed, Discord affiche la grande image sous la description,
-  pas au-dessus du titre. C'est ma connaissance de Discord, pas une mesure : à vérifier avec un
-  premier envoi réel avant de généraliser.
-- **Aucun filtre de spoilers** (choix d'Antoni) : une image de fuite s'afficherait en grand. Le
-  mode « sans spoiler » de l'app, lui, floute ; le robot ne le fait pas.
-- **L'image d'un site tiers peut ne pas s'afficher** (lien direct refusé) : le message reste
-  intact, sans image.
 - **Discord limite un embed à 6 000 caractères** : cinq lignes de 343 caractères, des champs et un
   pied tiennent largement.
 - **Exceptions à « un seul message par passage »** : alertes de source, annonces officielles
   (désormais un seul message pour toutes celles du passage), carte RockstarMag, bilan du soir
   quotidien.
 - Les maquettes sont des dessins : Discord sur téléphone peut rendre un peu différemment, et les
-  images y sont des espaces réservés.
+  marqueurs et les chiffres sont des exemples.
 
 ## Ordre de réalisation proposé
 
@@ -205,14 +189,13 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
 1. **Mesures sans effet visible** : retard des officiels (O4) et médias distincts de l'actu majeure
    (2). Elles demandent du temps pour s'accumuler, donc d'abord.
 2. **Pied, couleur et « Sorti depuis N jours »** (récapitulatif, officiels, RockstarMag).
-3. **Annonces officielles** : type, heure, grande image, plafond de 5, ordre, fusion EN/FR.
-4. **Grande image du récapitulatif** et ligne de chiffres.
+3. **Annonces officielles** : type, heure, une seule notification de 5 liens, ordre, fusion EN/FR.
+4. **Ligne de chiffres** du récapitulatif.
 5. **Carte RockstarMag.**
 6. **Bilan du soir.**
 
 ## Contrôles prévus (chacun prouvé capable d'échouer contre l'ancien code)
 
-- Image : https et 2 048 caractères au plus, sinon rien ; celle de l'article de tête.
 - Pied : seuils lus dans `docs/index.html`, de chaque côté, à minuit Paris et au changement
   d'heure ; rouge conservé pour l'actu majeure ; « Sorti depuis N jours » après le 19/11 00:00.
 - Chiffres : langue comptée, y compris à travers la pause nocturne ; pas de nombre de médias le
@@ -221,7 +204,7 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
   générique ; **un seul message par passage**, 5 liens au plus et le compteur exact (0, 1, 5,
   6, 11 et 32 officiels) ; annonces avant boutique ; même identifiant d'article dans le même passage → un
   seul message, identifiants différents → jamais fusionnés ; la ligne de retard n'écrit ni titre,
-  ni lien, ni image.
+  ni lien.
 - RockstarMag : une carte par passage où un article est entré, jamais de nuit ; un seul envoi même
   relancé ; un article trouvé en retard est quand même envoyé ; 🎬 seulement pour youtube.com ;
   extrait absent quand aucun n'en a ; cinq liens et compteur exact ; le récapitulatif continue de

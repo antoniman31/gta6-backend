@@ -9804,3 +9804,8 @@ jours, médiane de 2 par jour (au plus 14), 44 % de vidéos YouTube, 130 sur 130
 avaient pas. Choix d'Antoni : une carte séparée, 🎬 pour les vidéos, un extrait, silence
 la nuit.
 
+**Plus aucune image dans les notifications** (29/10/2026, au soir, demande d'Antoni) : ni grande
+image ni vignette, sur Discord comme sur le push ; l'icône et le badge de l'app dans le push
+restent. Ce choix annule celui de l'après-midi (« une grande image partout »). Spec et visuels
+refaits sans image.
+

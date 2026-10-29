@@ -1868,3 +1868,7 @@ Correction du 29/10/2026 : « 5 liens max par notification, quelle que soit la c
 annonces officielles d'un passage tiennent désormais dans **un seul message** de 5 liens au
 plus et un compteur (j'avais compris 5 messages puis une carte). Visuels et spec mis à jour.
 
+Plus aucune image dans les notifications (29/10/2026, au soir) : Antoni retire la grande image
+et la vignette, sur Discord comme sur le push, ce qui annule son choix de l'après-midi. Spec et
+visuels refaits sans image.
+
