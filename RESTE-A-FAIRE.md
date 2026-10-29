@@ -1848,3 +1848,9 @@ l'attendent (liste dans la spec), dont une mesure à faire avant de nommer les s
 La spec couvre aussi les annonces officielles (grande image, vrai type, heure et pied,
 mesure du retard, fusion EN/FR) : trois décisions de plus, dont le sort des fiches de la
 boutique (32 officiels sur 85, 28 le seul 08/10).
+
+Mise à jour du 29/10/2026 : Antoni demande « 5 liens max plus un compteur » pour le
+récapitulatif (déjà le cas : l'idée 4, plus de lignes, est retirée) et pour les annonces
+officielles (5 alertes détaillées puis une carte de 5 liens et un compteur : 6 messages
+au lieu de 11 pour la rafale du 08/10). Décision restante : l'ordre des 5, pour qu'une
+rafale de boutique ne masque pas une annonce.

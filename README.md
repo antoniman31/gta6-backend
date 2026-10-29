@@ -9788,3 +9788,12 @@ officiels, dont **32 sont des produits de la boutique** (28 le seul 08/10) ; 77 
 image ; 30 portent un identifiant d'article du Newswire, et **10 des 14 identifiants
 existent en anglais et en français**, donc des alertes en double. Le retard réel
 (publication contre alerte) n'est pas mesuré : la spec le propose d'abord.
+
+Mise à jour du 29/10/2026 : « 5 liens max plus un compteur ». Le récapitulatif reste à 5
+lignes (idée 4 retirée). Les annonces officielles passent de 10 alertes détaillées à 5,
+puis une carte de 5 liens et un compteur : la rafale du 08/10 (32 officiels) donnerait 6
+messages au lieu de 11. Le plafond est partagé avec le push. Point d'attention mesuré :
+28 des 32 officiels de ce jour étaient des produits de la boutique ; selon l'ordre
+retenu, les 4 vraies annonces seraient visibles ou cachées dans le compteur (rangs 1, 3,
+5 et 6 contre 27, 28, 30 et 32).
+

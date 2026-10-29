@@ -2,8 +2,8 @@
 
 Statut : **proposition, rien n'est codé.** Écrite le 29/10/2026 à la demande
 d'Antoni (« Améliorer la notification Discord, propose 7 idées, ne code pas »), puis
-réduite à six idées par son choix : **1, 2, 3, 4, 5 et 7** (l'idée 6, le rappel
-d'agenda, est écartée). Visuel final : `tasks/spec-discord-notification-final.png`.
+réduite à son choix : **1, 2, 3, 5 et 7** (l'idée 6, le rappel d'agenda, est écartée ;
+l'idée 4, plus de lignes, a été retirée le même jour). Visuel final : `tasks/spec-discord-notification-final.png`.
 La section « Les annonces officielles » (plus bas) a été ajoutée le même jour, après
 son choix : grande image, vrai type, heure et pied, mesure du retard, fusion EN/FR.
 Heures de Paris (UTC+1 depuis le 25/10).
@@ -27,7 +27,7 @@ couleurs reprennent pourtant des règles de l'app (voir 2).
 - Un article d'aperçu ne garde que six champs (`apercu_de`) : titre, lien, source,
   officiel, **nombre** de sources, date.
 
-## Les six changements
+## Les changements du récapitulatif
 
 ### 1 · La vignette de l'article phare
 Un `thumbnail` (petite image à droite) sur le récapitulatif, celle de la **première
@@ -79,14 +79,11 @@ français et 180 en anglais sur 280 ; 153 médias distincts.
 - « Médias » n'est un compte de **distincts** que sur un passage ordinaire. Le
   récapitulatif du matin additionne la nuit : on n'y affiche pas ce champ.
 
-### 4 · Plus de lignes quand le passage est gros
-Au lieu de 5 fixes : 5 lignes sous 10 articles, 7 de 10 à 19, **10** à partir de 20.
-Mesuré : le pire cas de 10 lignes fait 3 195 caractères, et le titre (256 au plus),
-les champs et le pied restent loin des 6 000 caractères que Discord accepte pour
-l'ensemble d'un embed. `apercus_recap` et le stockage de nuit doivent suivre le même
-plafond.
-
-**Cela rouvre ton choix du 22/09 (« les 5 derniers »)** : à valider explicitement.
+### 4 · ~~Plus de lignes quand le passage est gros~~ — RETIRÉE
+Décision d'Antoni (29/10/2026) : **le récapitulatif reste à 5 lignes, puis le compteur**
+« + N autres dans l'app ». Rien à changer. Mesuré à titre de mémoire : les passages du
+29/10 comptaient 9 à 31 articles, donc 5 lignes en montrent 16 % à 56 % ; dix lignes au
+pire font 3 195 caractères, mais ce n'est plus l'objet.
 
 ### 5 · Un sujet majeur, ses médias nommés
 Sur une ligne 🔥, citer les médias : « — *IGN Nordic* · 3 sources : IGN Nordic, IGN ».
@@ -207,18 +204,45 @@ anglais » et les deux liens. Si l'une arrive à un passage et l'autre à un aut
 retient rien : une alerte déjà partie ne se rattrape pas. À mesurer au passage : la part
 de doublons qui tombent dans le même passage.
 
+### O6 · Au plus 5 alertes détaillées, puis une carte de 5 liens et un compteur
+Décision d'Antoni (29/10/2026) : « 5 liens max plus un compteur pour les autres
+articles », pour le récapitulatif **et** pour les annonces officielles.
+
+![Rafale du 08/10](spec-discord-rafale.png)
+
+- **Aujourd'hui** : jusqu'à 10 alertes détaillées (`NOTIFS_OFFICIELLES_MAX`), puis une
+  carte qui liste les suivantes dans la limite de 3 800 caractères. Le 08/10, 32
+  officiels = 10 messages + 1 carte.
+- **Demain** : 5 alertes détaillées, puis **une carte de 5 liens** et « + N autres
+  annonces officielles, toutes dans l'app ». Le 08/10 : 5 + 5 liens + 22 = 32, soit
+  **6 messages au lieu de 11**.
+- Le plafond `NOTIFS_OFFICIELLES_MAX` est **partagé avec le push**
+  (`push_notify.py`, ligne 478) : le passer à 5 le change aussi pour lui, ce qui est
+  voulu, le push étant désactivé depuis le 29/10. Le README cite ce plafond et un test
+  l'éprouve : les deux sont à mettre à jour avec lui.
+- **Le risque que je vois, et sur lequel j'ai besoin d'un avis.** Le 08/10, 28 des 32
+  officiels étaient des produits de la boutique et 4 de vraies annonces. Selon l'ordre
+  retenu pour les 5 premiers, les 4 annonces sont rangées 1, 3, 5 et 6 (par date
+  croissante : trois d'entre elles dans les 5 premières) ou **27, 28, 30 et 32** (par
+  date décroissante : toutes cachées dans le compteur). Je n'ai pas relevé l'ordre exact
+  dans lequel le robot les range. Règle proposée : **les annonces non-boutique d'abord,
+  puis la boutique**, chacune par date ; une rafale de marchandises ne doit jamais
+  masquer une annonce.
+- Cette carte et le plafond de 5 s'appliquent aussi à la carte groupée du push.
+
 **Décisions à prendre par Antoni (officiels).**
 6. Boutique Rockstar : alerte « officiel » complète, carte plus discrète, ou aucune ?
 7. Fusion EN/FR : la langue du titre fusionné (français comme dans l'app) ?
 8. Après combien d'alertes mesurées veut-on relire le retard (dix ?) ?
+9. Rafale : les annonces non-boutique d'abord, puis la boutique, pour choisir les 5
+   alertes détaillées (règle proposée en O6) ?
 
 ## Décisions à prendre par Antoni
 
 1. Vignette : pour tous, pour les seuls officiels, ou avec une liste de spoilers côté
    Python ? (1)
 2. Après la sortie : un pied « sorti depuis N jours », ou rien ? (2)
-3. Plafond de lignes : 5 / 7 / 10 selon le volume, contre les « 5 derniers » du
-   22/09 ? (4)
+3. ~~Plafond de lignes~~ : tranché le 29/10, le récapitulatif reste à 5 lignes + compteur.
 4. Mesurer les médias distincts derrière les « 3 sources » avant de nommer quoi que
    ce soit ? (5)
 5. Bilan du soir : un message de plus par jour, conservé après la sortie ? (7)
@@ -231,11 +255,16 @@ de doublons qui tombent dans le même passage.
   Paris et au passage à l'heure d'hiver ; rouge conservé pour l'actu majeure.
 - 3 : langue comptée, y compris à travers la pause nocturne ; « Médias » absent du
   récapitulatif du matin.
-- 4 : le plafond suit le volume ; l'embed entier reste sous 6 000 caractères avec dix
-  lignes de 343 caractères, vignette, champs et pied.
+- 4 : retirée. Un contrôle garde néanmoins le plafond du récapitulatif à 5 lignes avec
+  son compteur, et l'embed entier sous 6 000 caractères avec cinq lignes de 343
+  caractères, vignette, champs et pied.
 - 5 : aucun nom « Google News… » affiché ; noms échappés ; trois noms au plus.
 - 7 : un seul bilan par jour civil à Paris, même avec deux passages après 22 h ; aucun
   bilan avant 22 h ; heures testées des deux côtés du changement d'heure.
+- O6 : au plus 5 alertes détaillées, puis une carte de 5 liens au plus et le compteur
+  exact (détaillées + liens + compteur = total, au passage de 0, 5, 6, 11 et 32
+  officiels) ; les annonces non-boutique passent avant la boutique ; le plafond
+  vaut pour Discord et pour le push.
 - Officiels : l'embed porte l'image seulement si elle est valide ; le libellé vient du
   domaine du lien et jamais du nom du flux ; un domaine inconnu retombe sur le
   libellé générique ; deux alertes au même identifiant d'article, dans le même passage,
