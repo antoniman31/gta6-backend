@@ -9770,3 +9770,15 @@ Ce que ça n'établit pas : **la cause**. Le téléphone est un Samsung dont la 
 Chrome est en « Optimisée » ; c'est une piste, pas une preuve. Antoni a demandé
 l'automatisation du secret : voir `tasks/spec-abonnement-auto.md`, qui propose, avec ses
 risques, sans rien coder. Elle ne guérit pas la mort de l'abonnement.
+
+### Notification Discord : six améliorations proposées, rien de codé — 29/10/2026
+
+À la demande d'Antoni, sept idées ont été dessinées (maquettes à partir du vrai fil),
+puis réduites à six par son choix. La spec groupée et son visuel final sont dans
+`tasks/spec-discord-notification.md`. Mesures qui la fondent : 87 % des 300 articles
+récents ont une image, tous en https ; les lignes du récapitulatif font 200 caractères
+en médiane et dix lignes au pire 3 195 ; les passages du 29/10 en comptaient 9 à 31 pour
+cinq lignes affichées. **Constat inattendu** : les « sources » de l'actu majeure sont des
+flux, pas des médias, et 90 des 93 articles à trois sources ou plus en ont moins de trois
+hors Google News. Le seuil de l'actu majeure est donc à mesurer avant de nommer les
+sources ; la spec le pose comme question distincte.

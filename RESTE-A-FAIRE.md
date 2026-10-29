@@ -1837,3 +1837,11 @@ Antoni a choisi « Préparer l'automatisation ». La spec est dans
 spec et créé lui-même le jeton (fine-grained, ce seul dépôt, Secrets seulement). Il
 reste aussi à tester la piste batterie Samsung (Chrome en « Sans restriction ») : le
 journal dira si la durée de vie s'allonge. Code gelé sauf correctifs après le 10/11.
+
+### Notification Discord : spec en attente de validation (29/10/2026)
+
+Six améliorations choisies par Antoni (vignette, compte à rebours en pied et couleur
+du compteur, ligne de chiffres, plus de lignes, médias nommés, bilan du soir) : voir
+`tasks/spec-discord-notification.md` et son visuel. **Rien n'est codé.** Cinq décisions
+l'attendent (liste dans la spec), dont une mesure à faire avant de nommer les sources :
+90 articles « à trois sources » sur 93 en comptent moins de trois hors Google News.
