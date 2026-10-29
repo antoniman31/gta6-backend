@@ -467,6 +467,13 @@ def _main():
     seulement_officiels = os.environ.get("SEULEMENT_OFFICIELS") == "1"
 
     officiels = feed_store.articles_officiels(new_items)
+    # Deux mesures, sans effet sur ce qui part : le retard des annonces, et les
+    # médias derrière chaque actu majeure. Elles passent AVANT l'envoi : une
+    # panne de Discord ne doit pas les faire disparaître du journal.
+    for ligne in feed_store.lignes_retard(officiels):
+        print(ligne)
+    for ligne in feed_store.lignes_mesure_majeure(list(new_items or ()) + list(promus or ())):
+        print(ligne)
     if officiels:
         send_official_alerts(officiels)
 

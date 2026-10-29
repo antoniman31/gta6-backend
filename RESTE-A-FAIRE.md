@@ -1892,3 +1892,12 @@ jalons et alerte de report** (J-14 tombe le 05/11) ; vérification des fonctions
 par **trois messages marqués TEST dans le salon principal**, déclenchés par lui ; **fil de forum
 abandonné** (le bilan reste dans le salon principal).
 
+### Lire les deux mesures du lot 1 (29/10/2026)
+
+- **Retard des officiels** : chercher `[officiel] retard` dans le journal du robot ; après **dix
+  alertes** mesurées (catégorie « direct » seule, puis « via agrégateur »), décider d'un éventuel
+  second déclencheur sur les flux officiels. Avant, rien à conclure.
+- **Seuil de l'actu majeure** : `python3 mesure_actu_majeure.py` donne 39 articles sur 93 avec au moins
+  trois sites distincts (49 au mieux). Décision d'Antoni à prendre : garder trois flux, ou compter les
+  sites (le seuil compterait alors ce qu'on croit qu'il compte).
+

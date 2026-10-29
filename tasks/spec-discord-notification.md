@@ -94,13 +94,26 @@ rester sous 5 800.
   nuit : il n'affiche que la répartition FR/EN (la langue se garde dans les comptes mis de côté),
   pas un nombre de médias qui ne serait plus un compte de distincts.
 
-## 3 · L'actu majeure : une mesure d'abord
+## 3 · L'actu majeure : une mesure d'abord (faite le 29/10/2026, lot 1)
 
-Mesuré : sur **93 articles à 3 sources ou plus, 90 en ont moins de trois hors « Google News »** (0 : 20,
-1 : 48, 2 : 22, 3 : 3). Les « sources » comptent des **flux**, pas des médias. Aucun changement tant que
-ce n'est pas mesuré : un script, hors production, compte les médias distincts de chaque actu majeure
-(suffixe du titre et flux qui ne s'appellent pas « Google News »), puis une décision d'Antoni sur le
-seuil de 3.
+Les « sources » du seuil comptent des **flux**, pas des médias. Trois mesures, de la plus grossière à la
+meilleure, sur les **93 articles à 3 flux ou plus** (sur 3 300) :
+
+| ce qu'on compte | articles qui en ont au moins 3 |
+|---|---|
+| noms de flux hors « Google News » | 3 sur 93 |
+| + le suffixe du titre (« … - IGN Nordic ») | 9 sur 93 |
+| **sites distincts des liens** (le robot décode les liens Google News jusqu'à l'éditeur) | **39 sur 93, 49 au mieux** |
+
+Par sites : 30 articles n'en ont qu'un, 24 deux, 29 trois, 9 quatre, 1 six ; 15 ont un lien resté sur Google
+News (d'où l'écart de 10 entre 39 et 49). Le seuil de trois flux laisse donc passer **44 à 54 articles sur 93
+qui ne reposent pas sur trois sites**. Limite : un site qui n'est pas une rédaction (une page de jeu, un
+annonceur) compte quand même, et deux éditions régionales d'un média (sea.ign.com, pk.ign.com) sont
+ramenées à un seul site.
+
+`python3 mesure_actu_majeure.py` rejoue la mesure (lecture seule) et le robot écrit une ligne `[majeur]` par
+actu majeure à chaque passage, sans titre ni lien. **Aucun changement du message** tant qu'Antoni n'a pas
+tranché : garder trois flux, ou compter les sites.
 
 ## 4 · Les annonces officielles (une section)
 
@@ -114,11 +127,13 @@ sur rockstargames.com.
   Assistance (5), ir.take2games.com → 📈 Investisseurs Take-Two (1), store.rockstargames.com → 🛍 Boutique
   (32), autre domaine officiel → ⭐.
 - **O3 · Heure de publication** : « il y a 3 minutes » (balise de temps) et l'heure exacte en gris.
-- **O4 · Mesurer le retard réel.** Le robot passe toutes les heures : une annonce peut arriver jusqu'à
-  une heure après sa publication, plus 1 min 30 à 3 min de traitement, **non mesuré**. Une ligne de
-  journal par alerte : « retard : N min (publication hh:mm, envoi hh:mm) », sans titre ni lien ; les
-  articles arrivés par Google News ou sans date de publication se comptent à part. **On relit après 10
-  alertes**, et seulement alors on parle d'un second déclencheur plus fréquent.
+- **O4 · Mesurer le retard réel (fait au lot 1, à relire).** Le robot passe toutes les heures : une annonce
+  peut arriver jusqu'à une heure après sa publication, plus 1 min 30 à 3 min de traitement, **non mesuré**.
+  Le robot écrit désormais une ligne par annonce : `[officiel] retard : N min (publication hh:mm, envoi
+  hh:mm)`, sans titre ni lien. Sont rangés à part et **non comptés** : une date « première vue » (posée par le
+  robot, avec des microsecondes) et une date dans le futur ; les articles arrivés par Google News sont
+  **calculés mais étiquetés « via agrégateur »**. **On relit après 10 alertes**, et seulement alors on
+  parle d'un second déclencheur plus fréquent.
 - **O5 · Fusion EN/FR.** Mesuré : 30 officiels portent un identifiant d'article du Newswire, pour 14
   identifiants distincts ; **10 de ces 14 existent en anglais et en français**. Deux articles du même
   passage au **même identifiant** n'occupent qu'**une ligne**, **titre en français**, avec les deux

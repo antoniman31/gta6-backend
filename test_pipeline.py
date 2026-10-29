@@ -669,6 +669,152 @@ def test_journal_push_sans_secret():
           "le service worker note aussi le signalement de changement d'abonnement")
 
 
+def test_mesure_retard_officiel():
+    """Le retard d'une annonce, en minutes, sans titre ni lien dans le journal.
+
+    29/10/2026 : le robot passe toutes les heures et ce délai n'a jamais été
+    mesuré. La ligne doit être juste (heures de Paris des DEUX côtés du
+    changement d'heure), ranger à part ce qu'on ne peut pas mesurer, et ne
+    rien révéler d'un article : le journal d'un dépôt public est public.
+    """
+    print("\n[mesure] le retard des annonces officielles")
+    import io, contextlib, json as _json, os as _os, re, tempfile
+    from datetime import timedelta
+    import discord_notify
+
+    def item(date, source="Rockstar Games (officiel EN)"):
+        return {"date": date, "source": source, "official": True,
+                "title": "TITRE-SECRET-À-NE-JAMAIS-JOURNALISER",
+                "link": "https://secret.example.test/article-privé"}
+
+    hiver = datetime(2026, 10, 29, 14, 3, 0, tzinfo=timezone.utc)
+    r = feed_store.retard_annonce(item("2026-10-29T13:08:48+00:00"), hiver)
+    check(r["categorie"] == "direct" and r["minutes"] == 54
+          and r["publication"] == "14:08" and r["envoi"] == "15:03",
+          "annonce d'hiver : 54 min, heures de Paris UTC+1 (%s)" % r)
+    ete = datetime(2026, 7, 1, 14, 3, 0, tzinfo=timezone.utc)
+    r = feed_store.retard_annonce(item("2026-07-01T13:08:48+00:00"), ete)
+    check(r["publication"] == "15:08" and r["envoi"] == "16:03",
+          "annonce d'été : les mêmes heures UTC donnent UTC+2, pas UTC+1 (%s)" % r)
+    r = feed_store.retard_annonce(item("2026-10-29T13:08:48+00:00", "Google News (EN)"), hiver)
+    check(r["categorie"] == "agregateur" and r["minutes"] == 54,
+          "via Google News : retard calculé, mais étiqueté à part")
+    check("(via agrégateur)" in feed_store.ligne_retard(item("2026-10-29T13:08:48+00:00", "Google News (EN)"), hiver)
+          and "(via agrégateur)" not in feed_store.ligne_retard(item("2026-10-29T13:08:48+00:00"), hiver),
+          "et la ligne le dit, seulement pour l'agrégateur")
+    # Une date posée par le robot (première vue) a des microsecondes : un retard
+    # calculé dessus vaudrait toujours zéro, donc on ne le compte pas.
+    r = feed_store.retard_annonce(item("2026-10-29T14:02:11.123456+00:00"), hiver)
+    check(r["categorie"] == "sans-date", "une date « première vue » (microsecondes) n'est pas mesurée")
+    check(feed_store.retard_annonce({"source": "X"}, hiver)["categorie"] == "sans-date"
+          and feed_store.retard_annonce(item("pas une date"), hiver)["categorie"] == "sans-date",
+          "sans date, ou date illisible : non mesuré")
+    r = feed_store.retard_annonce(item("2026-10-29T14:09:30+00:00"), hiver)
+    check(r["categorie"] == "date-future", "une date à plus de cinq minutes dans le futur n'est pas mesurée")
+    r = feed_store.retard_annonce(item("2026-10-29T14:06:00+00:00"), hiver)
+    check(r["categorie"] == "direct" and r["minutes"] == 0,
+          "mais l'écart d'horloge toléré donne 0 min, pas un nombre négatif")
+    ligne = feed_store.ligne_retard(item("2026-10-08T14:04:00+00:00"), hiver)
+    # Le 08/10/2026 Paris est encore à l'heure d'été (UTC+2) : 14:04 UTC = 16:04.
+    check("publication 08/10 16:04" in ligne,
+          "au-delà d'un jour, la date de publication est dite, à l'heure de ce jour-là (%s)" % ligne.strip())
+    ligne = feed_store.ligne_retard(item("2026-10-29T13:08:48+00:00"), hiver)
+    check("TITRE-SECRET" not in ligne and "secret.example" not in ligne and "http" not in ligne,
+          "la ligne ne porte ni titre, ni lien")
+    check(len(feed_store.lignes_retard([item("2026-10-29T13:08:48+00:00"), "pas un dict", None], hiver)) == 1,
+          "une entrée qui n'est pas un article est ignorée")
+
+    # Bout en bout : discord_notify.main journalise, sans webhook, sans fuite.
+    dossier = tempfile.mkdtemp()
+    maintenant = datetime.now(timezone.utc).replace(microsecond=0)
+    chaud = {"title": "TITRE-CHAUD-SECRET", "link": "https://secret.example.test/chaud", "source": "Google News (EN)",
+             "date": (maintenant - timedelta(minutes=10)).isoformat(), "official": False,
+             "extraSources": [{"source": "TweakTown", "link": "https://www.tweaktown.com/a"},
+                              {"source": "IGN", "link": "https://sea.ign.com/b"}]}
+    chemin = _os.path.join(dossier, "nouveaux.json")
+    with open(chemin, "w", encoding="utf-8") as f:
+        _json.dump([item((maintenant - timedelta(minutes=30)).isoformat()), chaud], f)
+    anciens = {k: _os.environ.get(k) for k in ("NEW_ITEMS_FILE", "PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE",
+                                              "SOURCE_ALERTS_FILE", "SEULEMENT_OFFICIELS")}
+    vrai_url = discord_notify.DISCORD_WEBHOOK_URL
+    try:
+        _os.environ["NEW_ITEMS_FILE"] = chemin
+        for k in ("PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE", "SOURCE_ALERTS_FILE", "SEULEMENT_OFFICIELS"):
+            _os.environ.pop(k, None)
+        discord_notify.DISCORD_WEBHOOK_URL = ""
+        sortie = io.StringIO()
+        with contextlib.redirect_stdout(sortie):
+            code = discord_notify.main()
+        texte = sortie.getvalue()
+    finally:
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+        for k, v in anciens.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+    trouves = re.findall(r"\[officiel\] retard : (\d+) min", texte)
+    check(code == 0 and len(trouves) == 1 and 29 <= int(trouves[0]) <= 31,
+          "discord_notify journalise une ligne de retard par annonce, vers 30 min (%s)" % trouves)
+    check("[majeur] 3 flux : 3 site(s) distinct(s), 0 lien(s) non décodé(s)" in texte
+          or re.search(r"\[majeur\] 3 flux : \d site\(s\) distinct\(s\), \d lien", texte),
+          "et une ligne par actu majeure")
+    check("TITRE-SECRET" not in texte and "TITRE-CHAUD-SECRET" not in texte and "secret.example" not in texte,
+          "sans que le journal ne porte aucun titre ni aucun lien")
+
+
+def test_mesure_actu_majeure():
+    """Combien de sites derrière les « flux » d'une actu majeure.
+
+    29/10/2026 : sur 93 articles à trois flux ou plus, seuls 39 reposent sur au
+    moins trois sites distincts (49 au mieux) : le seuil compte des flux, dont
+    plusieurs sont des agrégateurs. La mesure ne décide rien, elle se lit.
+    """
+    print("\n[mesure] les sites derrière une actu majeure")
+    import io, contextlib, json as _json, os as _os, tempfile, hashlib
+    import mesure_actu_majeure
+
+    for url, attendu in (("https://www.ign.com/x", "ign.com"), ("https://sea.ign.com/y", "ign.com"),
+                         ("https://ign.com", "ign.com"), ("https://www.bbc.co.uk/n", "bbc.co.uk"),
+                         ("https://news.google.com/rss/articles/abc", None), ("", None),
+                         ("pas une adresse", None), (None, None)):
+        check(feed_store.site_du_lien(url) == attendu,
+              "site_du_lien(%r) -> %r" % (url, attendu))
+    plus = {"link": "https://www.ign.com/a", "source": "Google News (EN)", "title": "T",
+            "extraSources": [{"source": "IGN", "link": "https://sea.ign.com/b"},
+                             {"source": "TweakTown", "link": "https://www.tweaktown.com/c"},
+                             {"source": "Google News (FR)", "link": "https://news.google.com/rss/articles/zz"}]}
+    m = feed_store.mesure_actu_majeure(plus)
+    check(m == {"flux": 4, "sites": 2, "non_decodes": 1},
+          "deux éditions d'un même site = un site ; un lien non décodé est compté à part (%s)" % m)
+    seuil = feed_store.HOT_SOURCE_THRESHOLD
+    chaud = {"link": "https://secret.example.test/a", "title": "TITRE-SECRET", "source": "X",
+             "extraSources": [{"source": "Y", "link": "https://autre.example/b"}] * (seuil - 1)}
+    froid = {"link": "https://x.example/a", "title": "T", "source": "X",
+             "extraSources": [{"source": "Y", "link": "https://y.example/b"}] * (seuil - 2)}
+    lignes = feed_store.lignes_mesure_majeure([chaud, froid, "pas un dict"])
+    check(len(lignes) == 1, "une ligne seulement pour l'article au seuil, pas pour celui d'en dessous")
+    check("TITRE-SECRET" not in lignes[0] and "secret.example" not in lignes[0] and "http" not in lignes[0],
+          "la ligne ne porte ni titre, ni lien")
+
+    dossier = tempfile.mkdtemp()
+    chemin = _os.path.join(dossier, "feed.json")
+    with open(chemin, "w", encoding="utf-8") as f:
+        _json.dump({"items": [plus, chaud, froid]}, f)
+    avant = hashlib.sha256(open(chemin, "rb").read()).hexdigest()
+    sortie = io.StringIO()
+    with contextlib.redirect_stdout(sortie):
+        code = mesure_actu_majeure.main([chemin])
+    texte = sortie.getvalue()
+    check(code == 0 and ("%d article(s) à %d flux ou plus, sur 3." % (2, seuil)) in texte,
+          "le script compte les articles au seuil (%s)" % texte.splitlines()[0])
+    check(hashlib.sha256(open(chemin, "rb").read()).hexdigest() == avant,
+          "et ne modifie pas le fichier lu")
+    m = mesure_actu_majeure.mesure([plus, chaud, froid])
+    check(m["chauds"] == 2 and m["borne_basse_ok"] == 0 and m["borne_haute_ok"] == 1,
+          "bornes basse et haute : %s" % {k: m[k] for k in ("chauds", "borne_basse_ok", "borne_haute_ok")})
+
+
 def test_push_empreinte_abonnement():
     """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
     print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
@@ -10185,6 +10331,8 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_canonical_link, test_canonicalize_stored_links,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
            test_push_empreinte_abonnement,
+           test_mesure_retard_officiel,
+           test_mesure_actu_majeure,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,
