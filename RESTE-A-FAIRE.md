@@ -1823,7 +1823,7 @@ ou à un événement précis.
 
 Après la fusion et le déploiement, **ouvrir l'app une fois** (le service worker se
 met à jour ; l'abonnement existant n'a pas à être refait, et le journal ne voit que
-ce qui arrive après), puis, quand l'abonnement meurt, ouvrir Réglages → Notifications →
+ce qui arrive après), puis, quand l'abonnement meurt, ouvrir Réglages → Avancé →
 « Journal de diagnostic du push » et le copier. Lecture : « push reçu » sans
 « push affiché » = cause trouvée dans le code ; « push affiché » puis 410 plus tard
 = le navigateur ou Android a fermé l'abonnement ; « changement d'abonnement » =
