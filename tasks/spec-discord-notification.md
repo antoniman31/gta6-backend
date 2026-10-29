@@ -6,6 +6,8 @@ réduite à son choix : **1, 2, 3, 5 et 7** (l'idée 6, le rappel d'agenda, est 
 l'idée 4, plus de lignes, a été retirée le même jour). Visuel final : `tasks/spec-discord-notification-final.png`.
 La section « Les annonces officielles » (plus bas) a été ajoutée le même jour, après
 son choix : grande image, vrai type, heure et pied, mesure du retard, fusion EN/FR.
+La section « RockstarMag » suit : une carte séparée, avec 🎬 pour les vidéos, un extrait,
+silence la nuit.
 Heures de Paris (UTC+1 depuis le 25/10).
 
 ![Visuel final](spec-discord-notification-final.png)
@@ -237,6 +239,81 @@ articles », pour le récapitulatif **et** pour les annonces officielles.
 9. Rafale : les annonces non-boutique d'abord, puis la boutique, pour choisir les 5
    alertes détaillées (règle proposée en O6) ?
 
+## RockstarMag
+
+Demande d'Antoni (29/10/2026) : « un truc aussi pour les news de RockstarMag ». Choix :
+**une carte séparée** à chaque passage où RockstarMag publie, avec 🎬 pour les vidéos, un
+extrait du résumé quand il existe, et silence la nuit.
+
+![RockstarMag, trois variantes dessinées, la C est retenue](spec-discord-rockstarmag.png)
+
+### État actuel, mesuré
+RockstarMag (média français, 100 % Rockstar) est suivi par deux flux, le site et sa
+chaîne YouTube, et reconnu aussi par le domaine du lien (`rockstarmag.fr`). Dans Discord,
+ses articles sont des lignes ordinaires « • titre — média », sans marqueur, mêlées aux
+autres dans la limite de 5. L'app, elle, lui consacre un onglet.
+
+- **130 articles sur 3 300** (3,9 %), répartis sur 54 jours ; **médiane 2 par jour, au
+  plus 14**. En octobre : 18 jours sur 29 avec au moins un article, et 4 le 29/10.
+- 57 sont des vidéos YouTube (44 %), 43 viennent du flux du site, 30 de Google News FR.
+- **130 sur 130 ont une image.** 100 sur 130 ont un résumé (77 %, 493 caractères en
+  médiane), mais les articles arrivés par Google News n'en ont pas : le 29/10, **3 des 4**
+  n'en avaient pas. L'extrait ne sera donc pas toujours là.
+- 14 des 130 sont publiés entre minuit et 4 h.
+- Ils sont déjà protégés de l'effacement de l'historique (`item_protege`) : la spec ne
+  change rien à ce point.
+
+### R1 · La carte
+Un embed séparé, après le récapitulatif, quand au moins un article RockstarMag est entré
+depuis la dernière carte :
+- titre « 📰 RockstarMag — N nouveau(x) » ; couleur sarcelle `#2dd4bf`, distincte du bleu
+  du récapitulatif, de l'orange des officiels et du rouge de l'actu majeure (couleur à
+  confirmer) ;
+- **cinq liens au plus** (règle du 29/10), du plus récent au plus ancien, puis
+  « + N autres dans l'app » ; chaque ligne porte 📰 (site) ou **🎬 (vidéo)**, ce dernier
+  déduit du domaine du lien (youtube.com), pas du nom du flux ;
+- **un extrait** de 160 caractères au plus, celui du premier article **qui en a un**,
+  nettoyé par la même fonction que l'app (`nettoie_resume`) ; rien quand aucun n'en a ;
+- une **vignette** : l'image du premier article, mêmes règles que celle du récapitulatif
+  (https, 2 048 caractères au plus, sinon rien) ;
+- le même pied « ⏳ J-N » que les autres messages.
+
+### R2 · Ne rien perdre, ne rien répéter
+La carte réunit les articles RockstarMag de `feed.json` des **48 dernières heures dont le
+lien n'a pas déjà été envoyé** ; `feed.json` retient les **50 derniers liens envoyés**
+(`rockstarmag_envoyes`). Je n'utilise pas la date de publication comme repère : un article
+publié à 11 h et trouvé à 13 h aurait une date antérieure au dernier envoi et serait perdu.
+Trois effets :
+- **La nuit** : aucun envoi entre 0 h et 5 h, comme les articles ordinaires (RockstarMag
+  n'a pas l'exception des annonces officielles). À 5 h, la carte réunit ce qui a été
+  publié pendant la nuit, sans autre stockage ;
+- **Une relance à la main** ne renvoie rien : les liens sont déjà retenus ;
+- **Un article qui arrive deux fois** (site, puis Google News) : les liens sont comparés
+  après le nettoyage habituel des liens (`canonical_link`), sinon il serait envoyé deux fois.
+
+### R3 · Et le récapitulatif ?
+Ses articles RockstarMag y figurent déjà, et la carte les répéterait. Proposition : le
+récapitulatif **compte** ces articles (« 11 nouveaux articles (dont 4 RockstarMag) ») mais
+ne les **liste plus** dans ses 5 lignes, que d'autres articles occupent alors : chaque
+article n'est donné qu'une fois.
+
+### R4 · Après la sortie
+Le récapitulatif horaire se tait après le 19/11 sauf annonce officielle ou actu majeure.
+RockstarMag publie peu (2 par jour en médiane) : la carte peut rester après la sortie
+sans devenir du bruit. À confirmer.
+
+### Risque et coût
+- **Un message de plus** les jours où RockstarMag publie (18 jours sur 29 en octobre) : une
+  troisième exception à « un seul message par passage », après les alertes de source et les
+  annonces officielles.
+- Aucun nouveau champ dans l'aperçu : la carte se lit dans `feed.json`. Un seul nouvel état,
+  la liste des 50 derniers liens envoyés.
+
+**Décisions à prendre par Antoni (RockstarMag).**
+10. Couleur de la carte : sarcelle, ou celle de l'onglet RockstarMag de l'app ?
+11. Le récapitulatif ne liste plus les articles RockstarMag, il les compte (R3) ?
+12. La carte reste-t-elle après la sortie (R4) ?
+
 ## Décisions à prendre par Antoni
 
 1. Vignette : pour tous, pour les seuls officiels, ou avec une liste de spoilers côté
@@ -265,6 +342,11 @@ articles », pour le récapitulatif **et** pour les annonces officielles.
   exact (détaillées + liens + compteur = total, au passage de 0, 5, 6, 11 et 32
   officiels) ; les annonces non-boutique passent avant la boutique ; le plafond
   vaut pour Discord et pour le push.
+- RockstarMag : une carte par passage où un article est entré, jamais de nuit ; un seul
+  envoi même relancé à la main ; un article trouvé en retard (date antérieure au dernier
+  envoi) est quand même envoyé ; 🎬 seulement pour un lien youtube.com ; extrait absent
+  quand aucun article n'en a, nettoyé et de 160 caractères au plus sinon ; cinq liens et
+  un compteur exact ; le récapitulatif compte les articles RockstarMag sans les lister.
 - Officiels : l'embed porte l'image seulement si elle est valide ; le libellé vient du
   domaine du lien et jamais du nom du flux ; un domaine inconnu retombe sur le
   libellé générique ; deux alertes au même identifiant d'article, dans le même passage,

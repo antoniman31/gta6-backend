@@ -1854,3 +1854,8 @@ récapitulatif (déjà le cas : l'idée 4, plus de lignes, est retirée) et pour
 officielles (5 alertes détaillées puis une carte de 5 liens et un compteur : 6 messages
 au lieu de 11 pour la rafale du 08/10). Décision restante : l'ordre des 5, pour qu'une
 rafale de boutique ne masque pas une annonce.
+
+RockstarMag (29/10/2026) : Antoni a choisi une carte séparée avec 🎬 pour les vidéos, un
+extrait et le silence la nuit ; la section est dans la spec. Trois décisions restent :
+couleur de la carte, le récapitulatif compte-t-il sans lister, la carte après la sortie.
+

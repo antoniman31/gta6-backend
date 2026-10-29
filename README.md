@@ -9797,3 +9797,9 @@ messages au lieu de 11. Le plafond est partagé avec le push. Point d'attention 
 retenu, les 4 vraies annonces seraient visibles ou cachées dans le compteur (rangs 1, 3,
 5 et 6 contre 27, 28, 30 et 32).
 
+RockstarMag s'ajoute à la même spec (29/10/2026). Mesures : 130 articles sur 3 300, 54
+jours, médiane de 2 par jour (au plus 14), 44 % de vidéos YouTube, 130 sur 130 avec image,
+100 sur 130 avec résumé, mais 3 des 4 articles du 29/10 arrivés par Google News n'en
+avaient pas. Choix d'Antoni : une carte séparée, 🎬 pour les vidéos, un extrait, silence
+la nuit.
+
