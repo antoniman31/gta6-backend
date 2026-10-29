@@ -15,6 +15,7 @@ dépendances de production, et ces tests doivent pouvoir tourner partout.
 import collections
 import json
 import os
+import re
 import sys
 import tempfile
 import time
@@ -813,6 +814,252 @@ def test_mesure_actu_majeure():
     m = mesure_actu_majeure.mesure([plus, chaud, froid])
     check(m["chauds"] == 2 and m["borne_basse_ok"] == 0 and m["borne_haute_ok"] == 1,
           "bornes basse et haute : %s" % {k: m[k] for k in ("chauds", "borne_basse_ok", "borne_haute_ok")})
+
+
+def test_jalons_du_compte_a_rebours():
+    """Les jalons J-14 à « sorti » : calendrier, état, tolérance, message, bout en bout.
+
+    29/10/2026, demandé par Antoni. Chaque jalon part UNE fois ; le calendrier
+    se déduit de SORTIE_GTA6 (jamais recopié) ; un jalon manqué de plus de 90
+    minutes ne part pas, et après la sortie plus aucun jalon d'avant ne part.
+    """
+    print("\n[jalons] le compte à rebours")
+    import io, contextlib, json as _json, os as _os, re, tempfile
+    from datetime import timedelta
+    import discord_notify, fetch_feeds, merge_feed
+
+    cal = feed_store.calendrier_jalons()
+    sortie = feed_store.SORTIE_GTA6
+    attendu = [f"J-{n}" for n in feed_store.JALONS_JOURS] + [f"H-{n}" for n in feed_store.JALONS_HEURES]
+    check(len(cal) == len(attendu) + 1 and cal[-1]["id"] == "sorti" and cal[-1]["cible"] == sortie,
+          "le calendrier compte les jalons J, les jalons H et « sorti », le dernier à l'instant de la sortie")
+    check([j["cible"] for j in cal] == sorted(j["cible"] for j in cal), "dans l'ordre du temps")
+    check(sorted(j["libelle"] for j in cal if j["type"] != "sortie") == sorted(attendu),
+          "libellés : %s" % [j["libelle"] for j in cal])
+    jour_sortie = sortie.astimezone(feed_store.PARIS).date()
+    for n in feed_store.JALONS_JOURS:
+        j = next(j for j in cal if j["id"] == f"j{n}")
+        paris = j["cible"].astimezone(feed_store.PARIS)
+        check((jour_sortie - paris.date()).days == n and paris.hour == feed_store.JALON_HEURE_JOUR_PARIS and paris.minute == 0,
+              f"J-{n} tombe {n} jours civils avant la sortie, à 9 h heure de Paris ({paris:%d/%m %H:%M})")
+    for n in feed_store.JALONS_HEURES:
+        j = next(j for j in cal if j["id"] == f"h{n}")
+        check(j["cible"] == sortie - timedelta(hours=n), f"H-{n} tombe {n} h avant la sortie")
+
+    j14 = cal[0]
+    juste = j14["cible"]
+    check([j["id"] for j in feed_store.jalons_dus(juste - timedelta(minutes=1))] == [],
+          "une minute avant la cible : rien")
+    check([j["id"] for j in feed_store.jalons_dus(juste)] == [j14["id"]], "à la cible : le jalon est dû")
+    tol = timedelta(minutes=feed_store.JALON_TOLERANCE_MIN)
+    check([j["id"] for j in feed_store.jalons_dus(juste + tol)] == [j14["id"]],
+          "encore dû à la dernière minute de tolérance")
+    check([j["id"] for j in feed_store.jalons_dus(juste + tol + timedelta(minutes=1))] == [],
+          "manqué d'une minute de plus que la tolérance : il ne part pas")
+    check([j["id"] for j in feed_store.jalons_dus(juste, [j14["id"]])] == [],
+          "déjà annoncé : il ne repart pas, même relancé à la main")
+    check([j["id"] for j in feed_store.jalons_dus(sortie - timedelta(minutes=30))] == ["h1"],
+          "H-1 manqué d'une demi-heure, la sortie pas encore passée : rattrapé (tolérance)")
+    check([j["id"] for j in feed_store.jalons_dus(sortie + timedelta(minutes=3))] == ["sorti"],
+          "passé la sortie, seul « sorti » part : ni H-1 ni J-1 (%s)" %
+          [j["id"] for j in feed_store.jalons_dus(sortie + timedelta(minutes=3))])
+    check([j["id"] for j in feed_store.jalons_dus(sortie + timedelta(hours=feed_store.JALON_SORTI_TOLERANCE_H))] == ["sorti"]
+          and feed_store.jalons_dus(sortie + timedelta(hours=feed_store.JALON_SORTI_TOLERANCE_H, minutes=1)) == [],
+          "« sorti » part même en retard, jusqu'à 24 h, puis plus")
+    check(feed_store.jalons_envoyes_lus({"jalons_envoyes": ["j14", "j14", "inconnu", 3, None, "sorti"]}) == ["j14", "sorti"]
+          and feed_store.jalons_envoyes_lus({}) == [] and feed_store.jalons_envoyes_lus({"jalons_envoyes": "j14"}) == []
+          and feed_store.jalons_envoyes_lus(None) == [],
+          "l'état lu est assaini : doublons, inconnus et valeurs aberrantes disparaissent")
+
+    # Le résumé « depuis le jalon précédent ».
+    debut = datetime(2026, 11, 1, tzinfo=timezone.utc)
+    fin = datetime(2026, 11, 5, 8, 3, tzinfo=timezone.utc)
+    def art(n, jours, **extra):
+        a = {"title": f"A{n}", "link": f"https://x.example/{n}", "source": "S",
+             "date": (debut + timedelta(days=jours)).isoformat()}
+        a.update(extra)
+        return a
+    items = [art(1, 1), art(2, 2, official=True), art(3, 3, extraSources=[{"source": "B", "link": "https://b.example/3"}]),
+             art(4, 3.5, extraSources=[{"source": "B", "link": "u"}, {"source": "C", "link": "v"}]),
+             art(5, -5), art(6, 10), {"title": "sans date", "link": "z"}, "pas un dict"]
+    r = feed_store.resume_depuis(items, debut, fin)
+    check(r["articles"] == 4 and r["officiels"] == 1,
+          "le résumé compte les articles de la fenêtre et leurs officiels (%s)" % {k: r[k] for k in ("articles", "officiels")})
+    check([a["title"] for a in r["sujets"]] == ["A4", "A3"],
+          "les sujets sont les plus couverts d'abord, et seulement ceux repris par au moins deux flux (%s)" % [a["title"] for a in r["sujets"]])
+    a_annoncer, retenus = fetch_feeds.prepare_jalons({"jalons_envoyes": []}, items, j14["cible"] + timedelta(minutes=3))
+    check([x["id"] for x in a_annoncer] == ["j14"] and retenus == ["j14"] and a_annoncer[0]["depuis"]
+          and a_annoncer[0]["cible"] == j14["cible"].isoformat(),
+          "prepare_jalons rend le jalon dû et retient son identifiant (%s)" % retenus)
+    a2, retenus2 = fetch_feeds.prepare_jalons({"jalons_envoyes": ["j14"]}, items, j14["cible"] + timedelta(minutes=3))
+    check(a2 == [] and retenus2 == ["j14"], "relancé dans la même heure : rien à annoncer, l'état est conservé")
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check('"jalons_envoyes": jalons_envoyes' in src and "depose_jalons(jalons_a_annoncer)" in src,
+          "fetch_feeds écrit l'état dans feed.json et dépose les jalons pour Discord")
+    fusion, _, _ = merge_feed.merge_feeds({"items": [], "jalons_envoyes": ["j14", "j7"]},
+                                          {"items": [], "jalons_envoyes": ["j7", "j3"]})
+    check(sorted(fusion.get("jalons_envoyes", [])) == ["j14", "j3", "j7"],
+          "la fusion après conflit fait l'UNION des jalons annoncés (%s)" % fusion.get("jalons_envoyes"))
+
+    # Le message Discord.
+    envoyes = []
+    vrai_envoi = discord_notify.send_discord_with_retry
+    vrai_url = discord_notify.DISCORD_WEBHOOK_URL
+    try:
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: envoyes.append((embed, label)) or True
+        ts = int(sortie.timestamp())
+        jalon = dict(a_annoncer[0], articles=1, officiels=0, sujets=[{"title": "Sujet - Média", "link": "https://m.example/s", "source": "S", "sources": 3, "official": False}])
+        discord_notify.send_jalons([jalon, {"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie",
+                                            "depuis": "H-1", "articles": 12, "officiels": 2, "sujets": []}])
+    finally:
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    check(len(envoyes) == 2, "un message par jalon (%d)" % len(envoyes))
+    e1, e2 = envoyes[0][0], envoyes[1][0]
+    check(e1["title"] == "⏳ J-14" and f"<t:{ts}:R>" in e1["description"] and f"<t:{ts}:F>" in e1["description"],
+          "le décompte est une balise de temps Discord (vivante), pas un nombre figé")
+    check("Depuis 7 jours : 1 article." in e1["description"] and "Sujet" in e1["description"],
+          "le bilan depuis le jalon précédent et les sujets les plus couverts (%s)" % e1["description"].splitlines()[1])
+    check(e2["title"] == "🎉 GTA VI est sorti" and "2 officiels Rockstar" in e2["description"] and "12 articles" in e2["description"],
+          "« sorti » : titre dédié, pluriels justes")
+    check(all("image" not in e and "thumbnail" not in e for e in (e1, e2)), "aucune image")
+    check(e1["color"] == feed_store.couleur_compteur(), "la barre prend la couleur du palier du compteur")
+
+    # Bout en bout : JALONS_FILE lu par discord_notify.main.
+    dossier = tempfile.mkdtemp()
+    chemin_j = _os.path.join(dossier, "jalons.json")
+    chemin_n = _os.path.join(dossier, "nouveaux.json")
+    _json.dump([jalon], open(chemin_j, "w", encoding="utf-8"))
+    _json.dump([], open(chemin_n, "w", encoding="utf-8"))
+    anciens = {k: _os.environ.get(k) for k in ("NEW_ITEMS_FILE", "PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE",
+                                              "SOURCE_ALERTS_FILE", "SEULEMENT_OFFICIELS", "JALONS_FILE")}
+    envoyes.clear()
+    try:
+        _os.environ["NEW_ITEMS_FILE"] = chemin_n
+        _os.environ["JALONS_FILE"] = chemin_j
+        _os.environ["SEULEMENT_OFFICIELS"] = "1"
+        for k in ("PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE", "SOURCE_ALERTS_FILE"):
+            _os.environ.pop(k, None)
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: envoyes.append((embed, label)) or True
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = discord_notify.main()
+    finally:
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+        for k, v in anciens.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+    check(code == 0 and [l for _, l in envoyes] == ["jalon j14"],
+          "discord_notify annonce le jalon déposé, même pendant la pause nocturne (%s)" % [l for _, l in envoyes])
+
+    # Le workflow passe bien le fichier aux deux étapes.
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    robot = wf[wf.index("run: python fetch_feeds.py"):wf.index("name: Publier le résultat")]
+    discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Notifier par push")]
+    check("JALONS_FILE:" in robot and "JALONS_FILE:" in discord,
+          "le workflow transmet JALONS_FILE au robot et à Discord")
+
+
+def test_couleur_du_compteur():
+    """La couleur de barre suit les paliers du compteur de l'app, lus dans la page."""
+    print("\n[compteur] la couleur de barre suit les paliers de l'app")
+    from datetime import timedelta
+    page = open("docs/index.html", encoding="utf-8").read()
+    fn = page[page.index("function palierCompteur"):]
+    fn = fn[:fn.index("}")]
+    seuils = {}
+    for expr, nom in re.findall(r'diff < ([\d \*]+)\) return "(final|urgent|soon)"', fn):
+        valeur = 1
+        for f in expr.split("*"):
+            valeur *= int(f)
+        seuils[nom] = valeur / 1000
+    check(seuils == {"final": feed_store.COMPTEUR_SEUIL_FINAL_H * 3600,
+                     "urgent": feed_store.COMPTEUR_SEUIL_URGENT_J * 86400,
+                     "soon": feed_store.COMPTEUR_SEUIL_SOON_J * 86400},
+          "les trois seuils du robot sont ceux de palierCompteur (%s)" % seuils)
+    m = re.search(r"--compte-soon:(#\w+); --compte-urgent:(#\w+); --compte-final:(#\w+);", page)
+    check(m and (int(m.group(1)[1:], 16), int(m.group(2)[1:], 16), int(m.group(3)[1:], 16)) ==
+          (feed_store.COULEUR_COMPTEUR_SOON, feed_store.COULEUR_COMPTEUR_URGENT, feed_store.COULEUR_COMPTEUR_FINAL),
+          "et les trois couleurs sont celles de la page")
+    sortie = feed_store.SORTIE_GTA6
+    for reste, attendu, nom in (
+            (timedelta(hours=feed_store.COMPTEUR_SEUIL_FINAL_H) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_FINAL, "à une seconde des 24 h"),
+            (timedelta(hours=feed_store.COMPTEUR_SEUIL_FINAL_H), feed_store.COULEUR_COMPTEUR_URGENT, "pile 24 h : urgent, comme l'app (diff < 24 h)"),
+            (timedelta(days=feed_store.COMPTEUR_SEUIL_URGENT_J) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_URGENT, "à une seconde des 7 jours"),
+            (timedelta(days=feed_store.COMPTEUR_SEUIL_URGENT_J), feed_store.COULEUR_COMPTEUR_SOON, "pile 7 jours : soon"),
+            (timedelta(days=feed_store.COMPTEUR_SEUIL_SOON_J) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_SOON, "à une seconde des 30 jours"),
+            (timedelta(days=feed_store.COMPTEUR_SEUIL_SOON_J), feed_store.COULEUR_COMPTEUR_NEUTRE, "pile 30 jours : le bleu neutre"),
+            (timedelta(0), feed_store.COULEUR_COMPTEUR_NEUTRE, "à l'instant de la sortie"),
+            (-timedelta(days=3), feed_store.COULEUR_COMPTEUR_NEUTRE, "après la sortie")):
+        check(feed_store.couleur_compteur(sortie - reste) == attendu, nom)
+
+
+def test_alerte_report_officielle():
+    """L'alerte de report : étroite, limitée aux officiels, et prioritaire.
+
+    Mesuré le 29/10/2026 : 39 titres du fil contiennent un mot de report ou de
+    retard, presque tous des démentis, et aucun n'est officiel. Le détecteur
+    ne retient que des articles officiels et exclut l'anglais « report(s) ».
+    """
+    print("\n[report] l'alerte de report, sur les officiels seulement")
+    import io, contextlib, json as _json, os as _os, tempfile
+    import discord_notify
+
+    def off(titre, desc="", officiel=True):
+        return {"title": titre, "description": desc, "official": officiel, "source": "Rockstar Games (officiel EN)",
+                "link": "https://www.rockstargames.com/newswire/article/abc/x", "date": "2026-10-29T13:00:00+00:00"}
+    for titre in ("Grand Theft Auto VI Delayed", "Grand Theft Auto VI is delayed to 2027", "An update on the GTA VI release: postponed",
+                  "GTA VI pushed back", "GTA VI has a new release date", "Nouvelle date de sortie pour GTA VI",
+                  "GTA VI reporté à 2027", "Le report de la sortie de GTA VI", "GTA VI repoussé"):
+        check(feed_store.est_alerte_report(off(titre)), "officiel + « %s » → alerte" % titre)
+    check(feed_store.est_alerte_report(off("Une annonce", desc="The release is delayed until further notice")),
+          "le motif est cherché aussi dans le résumé")
+    for titre in ("Take-Two Interactive Reports Results for the Second Quarter", "Grand Theft Auto VI Trailer 3",
+                  "Pre-orders for Grand Theft Auto VI", "Report of the season", "GTA VI : un rapport sur la sortie"):
+        check(not feed_store.est_alerte_report(off(titre)), "officiel + « %s » → pas d'alerte" % titre)
+    check(not feed_store.est_alerte_report(off("Has GTA 6 been delayed again? No", officiel=False)),
+          "un démenti non officiel ne déclenche rien")
+    check(not feed_store.est_alerte_report(None) and not feed_store.est_alerte_report("delayed") and not feed_store.est_alerte_report({}),
+          "une entrée qui n'est pas un article ne plante pas")
+    check(len(feed_store.articles_report([off("GTA VI delayed"), off("Trailer 3"), off("delayed", officiel=False)])) == 1,
+          "articles_report ne garde que l'officiel qui matche")
+
+    envoyes = []
+    vrai_envoi = discord_notify.send_discord_with_retry
+    vrai_url = discord_notify.DISCORD_WEBHOOK_URL
+    dossier = tempfile.mkdtemp()
+    chemin = _os.path.join(dossier, "nouveaux.json")
+    _json.dump([off("Grand Theft Auto VI Delayed", officiel=True), off("Trailer 3")], open(chemin, "w", encoding="utf-8"))
+    anciens = {k: _os.environ.get(k) for k in ("NEW_ITEMS_FILE", "PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE",
+                                              "SOURCE_ALERTS_FILE", "SEULEMENT_OFFICIELS", "JALONS_FILE")}
+    try:
+        _os.environ["NEW_ITEMS_FILE"] = chemin
+        _os.environ["SEULEMENT_OFFICIELS"] = "1"
+        for k in ("PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE", "SOURCE_ALERTS_FILE", "JALONS_FILE"):
+            _os.environ.pop(k, None)
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: envoyes.append((embed, label)) or True
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = discord_notify.main()
+    finally:
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+        for k, v in anciens.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+    etiquettes = [l for _, l in envoyes]
+    check(code == 0 and etiquettes[0] == "alerte de report officielle" and len(etiquettes) == 3,
+          "en pause nocturne, l'alerte de report part, la PREMIÈRE, avant les deux annonces (%s)" % etiquettes)
+    e = envoyes[0][0]
+    check(e["title"].startswith("🚨 Report possible") and e["color"] == 0xE04F5F and "rockstargames.com" in e["url"]
+          and "image" not in e and "thumbnail" not in e,
+          "rouge, lien vers l'article officiel, aucune image")
 
 
 def test_push_empreinte_abonnement():
@@ -10333,6 +10580,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_push_empreinte_abonnement,
            test_mesure_retard_officiel,
            test_mesure_actu_majeure,
+           test_jalons_du_compte_a_rebours,
+           test_couleur_du_compteur,
+           test_alerte_report_officielle,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,

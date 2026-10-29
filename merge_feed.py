@@ -107,6 +107,15 @@ def merge_feeds(remote, ours):
 # entre-temps, donc `merged = dict(ours)` perd silencieusement sa
 # contribution. Elles n'ont pas la même forme, donc pas la même règle.
 def _fusionne_cumulatifs(merged, ours, remote):
+    # Les jalons annoncés sont un ENSEMBLE : l'union, jamais l'un des deux.
+    # Garder seulement notre côté pourrait « oublier » un jalon que le distant
+    # a déjà annoncé, et le faire repartir une seconde fois.
+    a_nous = ours.get("jalons_envoyes") or []
+    au_loin = remote.get("jalons_envoyes") or []
+    if isinstance(a_nous, list) and isinstance(au_loin, list) and (a_nous or au_loin):
+        merged["jalons_envoyes"] = list(dict.fromkeys(
+            [x for x in list(au_loin) + list(a_nous) if isinstance(x, str)]))
+
     # Le journal des incidents est une LISTE. Union par (source, début) :
     # deux côtés qui ont vu la même panne en écrivent la même entrée, et
     # celui qui en a vu une de plus ne doit pas la perdre.

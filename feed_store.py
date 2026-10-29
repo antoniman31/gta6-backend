@@ -1749,6 +1749,164 @@ def recap_merite_notification(n, officiels, sommet, maintenant=None):
     return bool(officiels) or sommet >= HOT_SOURCE_THRESHOLD
 
 # ---------------------------------------------------------------------------
+# LES JALONS DU COMPTE À REBOURS (29/10/2026)
+# ---------------------------------------------------------------------------
+# Quelques messages rares, un par jalon, demandés par Antoni : J-14, J-7, J-3,
+# J-1, H-12, H-1 et « GTA VI est sorti ». Chacun part UNE fois.
+#
+# Le calendrier se déduit de SORTIE_GTA6 et jamais d'une date recopiée : si la
+# sortie bougeait, les jalons bougeraient avec elle, et un test relit la
+# constante. Les jalons « J-N » tombent à 9 h, heure de Paris, du jour civil
+# qui précède la sortie de N jours (même règle que l'agenda et l'app) ; les
+# jalons « H-N » se comptent en heures avant la sortie.
+#
+# Le robot passe à :03 : un jalon part au PREMIER passage à ou après sa cible.
+# Un jalon manqué de plus de 90 minutes ne part pas — un « H-1 » à 23 h 50 ne
+# veut plus rien dire — sauf « sorti », qui part jusqu'à 24 h après. L'état
+# (les jalons déjà annoncés) vit dans feed.json, comme attente_recap : c'est
+# fetch_feeds qui décide, discord_notify qui annonce.
+JALON_TOLERANCE_MIN = 90
+JALON_SORTI_TOLERANCE_H = 24
+JALON_HEURE_JOUR_PARIS = 9
+JALONS_JOURS = (14, 7, 3, 1)
+JALONS_HEURES = (12, 1)
+JALON_PREMIER_DEPUIS_JOURS = 7
+
+
+def calendrier_jalons():
+    """Les jalons dans l'ordre du temps : id, libellé, cible (UTC), type."""
+    jour_sortie = SORTIE_GTA6.astimezone(PARIS).date()
+    jalons = []
+    for n in JALONS_JOURS:
+        jour = jour_sortie - timedelta(days=n)
+        cible = datetime(jour.year, jour.month, jour.day, JALON_HEURE_JOUR_PARIS,
+                         tzinfo=PARIS).astimezone(timezone.utc)
+        jalons.append({"id": f"j{n}", "libelle": f"J-{n}", "cible": cible, "type": "jour"})
+    for n in JALONS_HEURES:
+        jalons.append({"id": f"h{n}", "libelle": f"H-{n}",
+                       "cible": SORTIE_GTA6 - timedelta(hours=n), "type": "heure"})
+    jalons.append({"id": "sorti", "libelle": "GTA VI est sorti", "cible": SORTIE_GTA6, "type": "sortie"})
+    return sorted(jalons, key=lambda j: j["cible"])
+
+
+def jalons_envoyes_lus(stored):
+    """Les identifiants de jalons déjà annoncés, assainis."""
+    brut = (stored or {}).get("jalons_envoyes")
+    connus = {j["id"] for j in calendrier_jalons()}
+    if not isinstance(brut, list):
+        return []
+    return [x for x in dict.fromkeys(brut) if isinstance(x, str) and x in connus]
+
+
+def jalons_dus(maintenant, deja_envoyes=()):
+    """Les jalons à annoncer à ce passage : atteints, pas encore annoncés, pas trop vieux."""
+    envoyes = set(deja_envoyes or ())
+    dus = []
+    for j in calendrier_jalons():
+        if j["id"] in envoyes or maintenant < j["cible"]:
+            continue
+        # Passé la sortie, « H-1 » ou « J-1 » ne veulent plus rien dire : un
+        # passage manqué la veille ne les rattrape pas après minuit.
+        if maintenant >= SORTIE_GTA6 and j["type"] != "sortie":
+            continue
+        retard = maintenant - j["cible"]
+        limite = (timedelta(hours=JALON_SORTI_TOLERANCE_H) if j["type"] == "sortie"
+                  else timedelta(minutes=JALON_TOLERANCE_MIN))
+        if retard <= limite:
+            dus.append(j)
+    return dus
+
+
+def jalon_precedent(jalon):
+    """La cible du jalon d'avant, ou N jours avant pour le premier."""
+    cal = calendrier_jalons()
+    ids = [j["id"] for j in cal]
+    i = ids.index(jalon["id"])
+    if i == 0:
+        return jalon["cible"] - timedelta(days=JALON_PREMIER_DEPUIS_JOURS), f"{JALON_PREMIER_DEPUIS_JOURS} jours"
+    return cal[i - 1]["cible"], cal[i - 1]["libelle"]
+
+
+def resume_depuis(items, depuis, maintenant, nb_sujets=3):
+    """Ce qui s'est passé entre deux instants : articles, officiels, sujets les plus couverts."""
+    articles, officiels, sujets = 0, 0, []
+    for i in (items or ()):
+        if not isinstance(i, dict):
+            continue
+        quand = parse_date_key(i.get("date") or "")
+        if quand == DATE_FLOOR or not (depuis < quand <= maintenant):
+            continue
+        articles += 1
+        if i.get("official"):
+            officiels += 1
+        sujets.append((1 + len(i.get("extraSources") or []), quand, i))
+    sujets.sort(key=lambda t: (t[0], t[1]), reverse=True)
+    top = [apercu_de(i) for flux, _, i in sujets[:nb_sujets] if flux >= 2]
+    return {"articles": articles, "officiels": officiels, "sujets": top}
+
+
+# Les couleurs de barre du compteur, celles de l'app (docs/index.html,
+# palierCompteur et les variables --compte-*). Les seuils sont recopiés ici et
+# un test les relit dans la page : ils ne peuvent pas dériver sans que le test
+# casse.
+COULEUR_COMPTEUR_FINAL = 0xFF2FA8     # moins de 24 h : rose
+COULEUR_COMPTEUR_URGENT = 0xFF8A00    # moins de 7 jours : orange
+COULEUR_COMPTEUR_SOON = 0xF7FF00      # moins de 30 jours : jaune
+COULEUR_COMPTEUR_NEUTRE = 0x5493FF    # sinon : le bleu du récapitulatif
+COMPTEUR_SEUIL_FINAL_H = 24
+COMPTEUR_SEUIL_URGENT_J = 7
+COMPTEUR_SEUIL_SOON_J = 30
+
+
+def couleur_compteur(maintenant=None):
+    """La couleur de barre du palier du compteur (avant la sortie)."""
+    maintenant = maintenant or datetime.now(timezone.utc)
+    reste = SORTIE_GTA6 - maintenant
+    if reste <= timedelta(0):
+        return COULEUR_COMPTEUR_NEUTRE
+    if reste < timedelta(hours=COMPTEUR_SEUIL_FINAL_H):
+        return COULEUR_COMPTEUR_FINAL
+    if reste < timedelta(days=COMPTEUR_SEUIL_URGENT_J):
+        return COULEUR_COMPTEUR_URGENT
+    if reste < timedelta(days=COMPTEUR_SEUIL_SOON_J):
+        return COULEUR_COMPTEUR_SOON
+    return COULEUR_COMPTEUR_NEUTRE
+
+
+# ---------------------------------------------------------------------------
+# L'ALERTE DE REPORT, SUR LES SEULS ARTICLES OFFICIELS (29/10/2026)
+# ---------------------------------------------------------------------------
+# Un report de la sortie serait la nouvelle la plus importante. Mesuré le
+# 29/10/2026 : sur 3 300 titres, 39 contiennent un mot de report ou de retard,
+# presque tous des démentis (« Has GTA 6 been delayed again? No… ») ou d'autres
+# jeux, et AUCUN n'est un article officiel. Un détecteur sur tout le fil serait
+# donc un générateur de faux positifs ; limité aux articles officiels
+# (Rockstar, Take-Two), le motif restreint ci-dessous ne retient aucun des 85
+# officiels du fil — il ne se déclenchera que sur un vrai évènement.
+#
+# L'anglais « report(s) » est EXCLU exprès : il veut aussi dire « publie »
+# (« Take-Two reports results »). Limite assumée : on ne lit que le titre et le
+# résumé, pas le corps d'un communiqué.
+MOTIF_REPORT = re.compile(
+    r"\b(?:delay(?:ed|s)?|postpon\w*|push(?:ed)? back|new release date|"
+    r"nouvelle date de sortie|report[ée]e?s? (?:de|à|a|au)\b|"
+    r"report de (?:la )?(?:sortie|date)\b|repouss\w*)",
+    re.IGNORECASE)
+
+
+def est_alerte_report(item):
+    """Un article OFFICIEL dont le titre ou le résumé parle d'un report."""
+    if not isinstance(item, dict) or not item.get("official"):
+        return False
+    texte = f"{item.get('title') or ''} {item.get('description') or ''}"
+    return bool(MOTIF_REPORT.search(texte))
+
+
+def articles_report(items):
+    return [i for i in (items or ()) if est_alerte_report(i)]
+
+
+# ---------------------------------------------------------------------------
 # LE RÉSUMÉ D'UN ARTICLE, NETTOYÉ — ET VIDÉ QUAND IL NE DIT RIEN
 # ---------------------------------------------------------------------------
 # Signalé par Antoni le 20/10/2026 : « ya des bugs dans les descriptions ».
