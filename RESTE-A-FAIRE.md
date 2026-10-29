@@ -1859,3 +1859,8 @@ RockstarMag (29/10/2026) : Antoni a choisi une carte séparée avec 🎬 pour le
 extrait et le silence la nuit ; la section est dans la spec. Trois décisions restent :
 couleur de la carte, le récapitulatif compte-t-il sans lister, la carte après la sortie.
 
+Spec Discord finale (29/10/2026) : toutes les décisions sont prises, le visuel est dans
+`tasks/visuels-discord/` et la spec dans `tasks/spec-discord-notification.md` ; elle propose
+six lots, le premier étant des **mesures** (retard des officiels, médias distincts de l'actu
+majeure). Rien n'est codé : il manque l'avis d'Antoni sur les visuels, puis son « go ».
+
