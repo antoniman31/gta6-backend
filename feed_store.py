@@ -1881,6 +1881,150 @@ def articles_officiels(new_items):
             if isinstance(i, dict) and i.get("official")]
 
 
+# ---------------------------------------------------------------------------
+# MESURER LE RETARD DES ANNONCES OFFICIELLES (29/10/2026)
+# ---------------------------------------------------------------------------
+# Le robot passe toutes les heures : une annonce peut donc arriver jusqu'à une
+# heure après sa publication, plus le temps du passage. Ce délai n'a jamais
+# été mesuré, et c'est lui qui déciderait d'un second déclencheur plus
+# fréquent sur les seuls flux officiels. Une ligne de journal par annonce, en
+# minutes, SANS titre ni lien : le journal d'un dépôt public est public.
+#
+# Ce que la date d'un article vaut, à lire avec le retard :
+#   - une date de publication donnée par le flux n'a pas de microsecondes ;
+#   - `date_ou_premiere_vue` (fetch_feeds) pose l'instant de collecte quand le
+#     flux ne donne rien, et cet instant a des microsecondes. Un retard calculé
+#     là vaudrait toujours zéro : on le range à part au lieu de le compter ;
+#   - un article arrivé par Google News porte la date que l'agrégateur lui
+#     donne, pas forcément celle de l'éditeur : retard calculé mais étiqueté.
+RETARD_FUTUR_TOLERE_MIN = 5
+
+try:
+    from zoneinfo import ZoneInfo
+    PARIS = ZoneInfo("Europe/Paris")
+except Exception:  # pragma: no cover - zoneinfo absent : on retombe sur UTC
+    PARIS = timezone.utc
+
+
+def retard_annonce(item, maintenant=None):
+    """Le retard d'une annonce, ou la raison pour laquelle on ne le calcule pas.
+
+    Rend un dict : `categorie` vaut « direct », « agregateur », « sans-date »
+    ou « date-future » ; `minutes`, `publication` et `envoi` (heures de Paris)
+    n'existent que pour les deux premières.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    item = item if isinstance(item, dict) else {}
+    publie = parse_date_key(item.get("date") or "")
+    if publie == DATE_FLOOR or publie.microsecond:
+        return {"categorie": "sans-date"}
+    ecart = (maintenant - publie).total_seconds() / 60
+    if ecart < -RETARD_FUTUR_TOLERE_MIN:
+        return {"categorie": "date-future"}
+    source = (item.get("source") or "").strip()
+    paris_pub = publie.astimezone(PARIS)
+    paris_env = maintenant.astimezone(PARIS)
+    # Un retard de plus d'un jour ne se lit pas avec l'heure seule.
+    jour = "" if paris_pub.date() == paris_env.date() else paris_pub.strftime("%d/%m ")
+    return {
+        "categorie": "agregateur" if source.startswith("Google News") else "direct",
+        "minutes": max(0, int(ecart)),
+        "publication": jour + paris_pub.strftime("%H:%M"),
+        "envoi": paris_env.strftime("%H:%M"),
+    }
+
+
+def ligne_retard(item, maintenant=None):
+    """La ligne de journal d'une annonce : des minutes et des heures, rien d'autre."""
+    r = retard_annonce(item, maintenant)
+    if r["categorie"] in ("direct", "agregateur"):
+        via = " (via agrégateur)" if r["categorie"] == "agregateur" else ""
+        return (f"  [officiel] retard{via} : {r['minutes']} min "
+                f"(publication {r['publication']}, envoi {r['envoi']})")
+    raison = ("sans date de publication du flux" if r["categorie"] == "sans-date"
+              else "date de publication dans le futur")
+    return f"  [officiel] retard non mesuré : {raison}"
+
+
+def lignes_retard(items, maintenant=None):
+    """Une ligne par annonce officielle du passage."""
+    maintenant = maintenant or datetime.now(timezone.utc)
+    return [ligne_retard(i, maintenant) for i in (items or ()) if isinstance(i, dict)]
+
+
+# ---------------------------------------------------------------------------
+# COMBIEN DE SITES DERRIÈRE LES « SOURCES » D'UNE ACTU MAJEURE (29/10/2026)
+# ---------------------------------------------------------------------------
+# HOT_SOURCE_THRESHOLD compte des FLUX, pas des médias. Mesuré le 29/10/2026 sur
+# les 93 articles à trois flux ou plus du fil : en comptant les noms de flux
+# hors « Google News », seuls 3 en avaient trois ; en comptant aussi le
+# suffixe du titre, 9 sur 93. Les deux mesures sous-estiment : un flux Google
+# News porte l'article d'un vrai média, et le robot décode son lien jusqu'à
+# l'adresse de l'éditeur (57 liens principaux sur 57). Le DOMAINE du lien est
+# donc le meilleur repère disponible, avec ses défauts : deux éditions
+# régionales du même média (sea.ign.com, pk.ign.com) sont ramenées à un seul
+# site, mais un site qui n'est pas une rédaction (une page de jeu, un
+# annonceur) compte quand même.
+#
+# Cette mesure ne décide rien : elle écrit une ligne de journal par actu
+# majeure, pour qu'Antoni tranche le seuil sur des chiffres.
+_SOUS_DOMAINES_PAYS = {"co", "com", "org", "net", "gov", "ac"}
+
+
+def site_du_lien(url):
+    """Le site d'un lien : le domaine « enregistrable », sans « www. » ni région.
+
+    « sea.ign.com » et « www.ign.com » donnent « ign.com » ; « bbc.co.uk »
+    reste « bbc.co.uk ». Une adresse d'agrégateur (news.google.com) ou illisible
+    donne None : elle ne dit rien du média.
+    """
+    try:
+        hote = (urlparse((url or "").strip()).hostname or "").lower()
+    except ValueError:
+        return None
+    if not hote or hote == "news.google.com" or hote.endswith(".news.google.com"):
+        return None
+    morceaux = hote.split(".")
+    if len(morceaux) <= 2:
+        return hote
+    if len(morceaux[-1]) == 2 and morceaux[-2] in _SOUS_DOMAINES_PAYS:
+        return ".".join(morceaux[-3:])
+    return ".".join(morceaux[-2:])
+
+
+def mesure_actu_majeure(item):
+    """Les flux d'une actu majeure, et ce qu'on sait des sites derrière.
+
+    `flux` : le nombre de flux (celui que compare HOT_SOURCE_THRESHOLD).
+    `sites` : les sites distincts des liens (principal et supplémentaires).
+    `non_decodes` : les liens restés sur l'agrégateur, dont le site est
+    inconnu. Le nombre de sites réels est entre `sites` et `sites + non_decodes`.
+    """
+    item = item if isinstance(item, dict) else {}
+    extras = [e for e in (item.get("extraSources") or []) if isinstance(e, dict)]
+    liens = [item.get("link")] + [e.get("link") for e in extras]
+    sites, inconnus = set(), 0
+    for lien in liens:
+        site = site_du_lien(lien)
+        if site:
+            sites.add(site)
+        else:
+            inconnus += 1
+    return {"flux": 1 + len(extras), "sites": len(sites), "non_decodes": inconnus}
+
+
+def lignes_mesure_majeure(items):
+    """Une ligne par actu majeure du passage, sans titre ni lien."""
+    sorties = []
+    for i in (items or ()):
+        if not isinstance(i, dict) or 1 + len(i.get("extraSources") or []) < HOT_SOURCE_THRESHOLD:
+            continue
+        m = mesure_actu_majeure(i)
+        sorties.append(f"  [majeur] {m['flux']} flux : {m['sites']} site(s) distinct(s), "
+                       f"{m['non_decodes']} lien(s) non décodé(s)")
+    return sorties
+
+
 def article_le_plus_notable(items):
     """Celui qu'on cite quand on ne peut en citer qu'un.
 

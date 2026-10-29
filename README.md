@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1956
+qui permet de tester tout le pipeline sans sortir de la machine. **1984
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9824,4 +9824,38 @@ Ajouts du 29/10/2026 à la spec Discord : des jalons du compte à rebours, un bi
 alerte de report limitée aux articles officiels. **Mesure** : 39 titres sur 3 300 contiennent un mot de
 report ou de retard, presque tous des démentis ou d'autres jeux, et aucun n'est officiel ; avec le motif
 restreint (sans l'anglais « report »), 0 officiel sur 85.
+
+### Lot 1 de la notification Discord : deux mesures, sans effet sur ce qui part — 29/10/2026
+
+Premier lot de code de la spec `tasks/spec-discord-notification.md`, choisi par Antoni : **mesurer avant de
+changer quoi que ce soit.** Deux lignes de journal par passage, et un script.
+
+**Le retard des annonces officielles.** Pour chaque annonce, le journal du robot écrit
+`[officiel] retard : 54 min (publication 14:08, envoi 15:03)`, en minutes et en heures de Paris, **sans
+titre ni lien** (le journal d'un dépôt public est public). Trois cas sont rangés à part et non comptés :
+une date « première vue » (le robot en pose une quand le flux n'en donne pas, et elle porte des
+microsecondes : un retard calculé dessus vaudrait toujours zéro), une date dans le futur, et un article
+arrivé par Google News (« via agrégateur »). Écart avec la spec : j'y avais écrit « sans retard calculé »
+pour Google News ; je le **calcule** et je l'étiquette, ce qui permet de comparer les deux populations.
+**À relire après dix alertes**, pas avant.
+
+**Les sites derrière une actu majeure.** `python3 mesure_actu_majeure.py` (lecture seule) et une ligne par
+actu majeure dans le journal : `[majeur] 3 flux : 3 site(s) distinct(s), 0 lien(s) non décodé(s)`.
+**Mesuré le 29/10/2026 sur les 93 articles à trois flux ou plus** (sur 3 300) : 30 reposent sur 1 site, 24
+sur 2, 29 sur 3, 9 sur 4 et 1 sur 6 ; **39 sur 93 ont au moins trois sites distincts (42 %)**, 49 au mieux
+(53 %) si les 15 articles qui ont un lien resté sur Google News cachaient un site de plus. Le seuil de
+l'actu majeure (trois flux) laisse donc passer **de 44 à 54 articles sur 93 qui ne reposent pas sur trois
+sites**. Le compte par nom de flux sous-estimait (3 sur 93, puis 9 avec le suffixe du titre) : le robot
+décode les liens Google News jusqu'à l'adresse de l'éditeur (57 liens principaux sur 57), et c'est le
+domaine du lien qui sert de repère. Limite : un site qui n'est pas une rédaction (une page de jeu, un
+annonceur) compte quand même, et deux éditions régionales d'un média sont ramenées à un seul site.
+Rien n'est décidé : le seuil est à trancher par Antoni.
+
+**Contrôles** (`test_mesure_retard_officiel`, `test_mesure_actu_majeure`, 28 vérifications) : heures de
+Paris des deux côtés du changement d'heure, date première vue, futur toléré, étiquette agrégateur,
+absence de titre et de lien dans le journal, bout en bout par `discord_notify.main`, le script ne
+modifie pas son fichier. **Douze mutations rejouées, douze détectées** : date première vue ignorée, UTC à
+la place de Paris, titre dans la ligne, étiquette oubliée, futur sans tolérance, jour omis, journal
+absent de `discord_notify`, régions non fusionnées, seuil ignoré, titre dans la mesure majeure, script
+qui écrit.
 
