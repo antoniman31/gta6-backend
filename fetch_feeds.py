@@ -2662,7 +2662,7 @@ JALONS_FILE = os.environ.get("JALONS_FILE", "")
 
 # Trois entiers — c'est tout ce dont feed_store.libelle_recap_depuis_comptes
 # a besoin pour écrire le titre du récapitulatif.
-ATTENTE_COMPTEURS = ("articles", "officiels", "sommet")
+ATTENTE_COMPTEURS = ("articles", "officiels", "sommet", "majeurs")
 
 # ... plus, depuis le 22/09/2026, les quelques articles que le récapitulatif
 # du matin pourra CITER. Le commentaire d'origine refusait de stocker des
@@ -2686,7 +2686,7 @@ def attente_vide():
     entre tous les passages — chacun empilerait ses aperçus dans celle du
     précédent, y compris après l'avoir soi-disant effacée.
     """
-    return {"articles": 0, "officiels": 0, "sommet": 0, "apercus": []}
+    return {"articles": 0, "officiels": 0, "sommet": 0, "majeurs": 0, "apercus": []}
 
 
 
@@ -2787,6 +2787,11 @@ def reporte_ou_annonce(attente, a_notifier, promus, officiels_du_run,
         list(attente.get("apercus") or ()) + list(a_notifier or ())
         + list(promus or ()))
 
+    # Le nombre d'articles « actu majeure » de ce passage, pour que la section
+    # dise « + N autres » juste. Un promu qui est aussi dans le lot ne compte
+    # qu'une fois (dédoublonné sur le lien).
+    majeurs_du_run = feed_store.compte_majeurs(list(a_notifier or ()) + list(promus or ()))
+
     if silence:
         # On se tait : les comptes s'ajoutent à ceux déjà en attente.
         suite = {
@@ -2795,6 +2800,7 @@ def reporte_ou_annonce(attente, a_notifier, promus, officiels_du_run,
             # Un sommet est un maximum, pas une somme : trois passages à
             # quatre sources sur le même sujet, ça reste quatre sources.
             "sommet": max(attente["sommet"], sommet_du_run),
+            "majeurs": attente["majeurs"] + majeurs_du_run,
             "apercus": apercus_du_run,
         }
         print(f"  Pause nocturne — {len(a_notifier)} article(s) mis de côté, "
@@ -2808,6 +2814,7 @@ def reporte_ou_annonce(attente, a_notifier, promus, officiels_du_run,
         "articles": attente["articles"] + len(a_notifier),
         "officiels": attente["officiels"] + officiels_du_run,
         "sommet": max(attente["sommet"], sommet_du_run),
+        "majeurs": attente["majeurs"] + majeurs_du_run,
         "apercus": apercus_du_run,
     }
     if totaux["articles"] or totaux["sommet"] >= HOT_SOURCE_THRESHOLD:

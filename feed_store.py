@@ -2329,23 +2329,34 @@ def _compte_sources(valeur):
     return 1
 
 
+def categorie_apercu(apercu):
+    """La section d'un article dans le message : officiel, majeur ou autre.
+
+    Un article officiel n'est jamais « majeur » : il a déjà sa section, et un
+    article n'est donné qu'une fois.
+    """
+    if apercu.get("official"):
+        return "officiel"
+    if _compte_sources(apercu.get("sources")) >= HOT_SOURCE_THRESHOLD:
+        return "majeur"
+    return "autre"
+
+
 def apercus_recap(items, maximum=APERCU_RECAP_MAX):
-    """Les articles à citer sous le récapitulatif, au plus `maximum`.
+    """Les articles à citer dans le message, au plus `maximum` PAR SECTION.
 
-    Ordre choisi par Antoni le 22/09/2026 : les plus RÉCENTS — c'est la
-    lecture littérale de « les 5 derniers » — mais un article officiel de
-    Rockstar remonte toujours en tête. C'est la hiérarchie déjà appliquée
-    partout ailleurs : vibration dédiée, notification persistante, pastille
-    orange dans l'app.
+    Depuis le 29/10/2026 le message Discord a des sections (officiel, actu
+    majeure, autres) de cinq liens chacune : le plafond de cinq vaut donc par
+    section et non plus pour l'ensemble. Un plafond global aurait fait
+    disparaître l'actu majeure derrière cinq articles plus récents.
 
-    Le tri se fait en deux passes stables plutôt qu'avec une clé composite :
-    les dates sont des datetime, qu'on ne peut pas nier pour inverser
-    seulement ce critère-là. La stabilité garantit que les officiels gardent
-    entre eux leur ordre de date.
+    Ordre rendu : les officiels, puis les majeurs, puis les autres ; dans
+    chaque section, les plus RÉCENTS d'abord (la lecture littérale de « les 5
+    derniers », demandée par Antoni le 22/09/2026).
 
     Accepte aussi bien des articles complets que des aperçus déjà réduits :
     c'est ce qui permet d'empiler l'arriéré de la nuit passage après passage
-    sans jamais garder plus de `maximum` entrées.
+    sans jamais garder plus de `maximum` entrées par section.
     """
     lot = [apercu_de(i) for i in (items or ())
            if isinstance(i, dict) and (i.get("title") or "").strip()
@@ -2359,8 +2370,26 @@ def apercus_recap(items, maximum=APERCU_RECAP_MAX):
         vus.add(a["link"])
         uniques.append(a)
     uniques.sort(key=lambda a: parse_date_key(a.get("date")), reverse=True)
-    uniques.sort(key=lambda a: 0 if a.get("official") else 1)
-    return uniques[:maximum]
+    rendu = []
+    for nom in ("officiel", "majeur", "autre"):
+        rendu += [a for a in uniques if categorie_apercu(a) == nom][:maximum]
+    return rendu
+
+
+def compte_majeurs(items):
+    """Combien d'articles NON officiels reposent sur assez de rédactions.
+
+    Dédupliqué sur le lien : un article promu qui est aussi dans le lot du
+    passage ne compte qu'une fois.
+    """
+    vus = set()
+    for i in items or ():
+        if not isinstance(i, dict) or i.get("official"):
+            continue
+        lien = (i.get("link") or "").strip()
+        if lien and lien not in vus and categorie_apercu(apercu_de(i)) == "majeur":
+            vus.add(lien)
+    return len(vus)
 
 
 def apercus_assainis(brut, maximum=APERCU_RECAP_MAX):
@@ -2398,6 +2427,36 @@ def libelle_officiel(item):
     # Le reste de la distinction est côté service worker : vibration propre
     # et notification qui reste tant qu'on ne l'a pas écartée.
     return "⭐ Rockstar Games — officiel", titre
+
+
+def libelle_officiels(n):
+    """Le titre du message quand il ne porte que des annonces officielles.
+
+    La pause nocturne n'en laisse passer que de telles annonces : le titre
+    dit combien, comme le récapitulatif, et c'est le même texte que le push
+    reprendra.
+    """
+    return f"⭐ {n} annonce{'s' if n > 1 else ''} officielle{'s' if n > 1 else ''} Rockstar"
+
+
+def lire_majeurs_recap(variable="RECAP_TOTALS_FILE"):
+    """Le nombre d'articles « actu majeure » du récapitulatif, ou None.
+
+    Lecture à part de lire_totaux_recap, pour la raison qui a déjà fait
+    sortir les aperçus de son tuple : la notification push lit ce tuple, et
+    l'élargir l'aurait cassée pour un besoin qui ne concerne que Discord.
+    None (fichier absent, ancienne version du robot) laisse l'appelant recompter.
+    """
+    chemin = os.environ.get(variable, "")
+    if not chemin:
+        return None
+    try:
+        with open(chemin, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    v = data.get("majeurs") if isinstance(data, dict) else None
+    return v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else None
 
 
 def etiquette_officiel(item):

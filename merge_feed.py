@@ -85,7 +85,7 @@ def merge_feeds(remote, ours):
     if isinstance(a_nous, dict) and isinstance(au_loin, dict) and (a_nous or au_loin):
         fusionnee = {
             cle: max(_entier(a_nous.get(cle)), _entier(au_loin.get(cle)))
-            for cle in ("articles", "officiels", "sommet")
+            for cle in ("articles", "officiels", "sommet", "majeurs")
         }
         # Les aperçus, eux, se RÉUNISSENT au lieu de se comparer : ce ne sont
         # pas des cumuls mais des articles, et apercus_recap déduplique sur le
