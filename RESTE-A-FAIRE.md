@@ -1845,3 +1845,6 @@ du compteur, ligne de chiffres, plus de lignes, médias nommés, bilan du soir) 
 `tasks/spec-discord-notification.md` et son visuel. **Rien n'est codé.** Cinq décisions
 l'attendent (liste dans la spec), dont une mesure à faire avant de nommer les sources :
 90 articles « à trois sources » sur 93 en comptent moins de trois hors Google News.
+La spec couvre aussi les annonces officielles (grande image, vrai type, heure et pied,
+mesure du retard, fusion EN/FR) : trois décisions de plus, dont le sort des fiches de la
+boutique (32 officiels sur 85, 28 le seul 08/10).

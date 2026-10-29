@@ -9782,3 +9782,9 @@ cinq lignes affichées. **Constat inattendu** : les « sources » de l'actu maje
 flux, pas des médias, et 90 des 93 articles à trois sources ou plus en ont moins de trois
 hors Google News. Le seuil de l'actu majeure est donc à mesurer avant de nommer les
 sources ; la spec le pose comme question distincte.
+
+Les annonces officielles s'ajoutent à la même spec, par choix d'Antoni. Mesures : 85
+officiels, dont **32 sont des produits de la boutique** (28 le seul 08/10) ; 77 ont une
+image ; 30 portent un identifiant d'article du Newswire, et **10 des 14 identifiants
+existent en anglais et en français**, donc des alertes en double. Le retard réel
+(publication contre alerte) n'est pas mesuré : la spec le propose d'abord.

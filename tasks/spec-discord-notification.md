@@ -4,6 +4,8 @@ Statut : **proposition, rien n'est codé.** Écrite le 29/10/2026 à la demande
 d'Antoni (« Améliorer la notification Discord, propose 7 idées, ne code pas »), puis
 réduite à six idées par son choix : **1, 2, 3, 4, 5 et 7** (l'idée 6, le rappel
 d'agenda, est écartée). Visuel final : `tasks/spec-discord-notification-final.png`.
+La section « Les annonces officielles » (plus bas) a été ajoutée le même jour, après
+son choix : grande image, vrai type, heure et pied, mesure du retard, fusion EN/FR.
 Heures de Paris (UTC+1 depuis le 25/10).
 
 ![Visuel final](spec-discord-notification-final.png)
@@ -123,6 +125,93 @@ France 7, GamingBolt 7, Notebookcheck.fr 7, GamesRadar+ 6.
 - Les « plus actifs » se comptent sur le **média du titre**, pas sur le nom du flux :
   compter les flux donnait « Google News (EN) — 124 », qui n'apprend rien.
 
+## Les annonces officielles
+
+Choix d'Antoni (29/10/2026) : **grande image, vrai type de contenu, heure de
+publication et pied J-N, mesure du retard réel, fusion EN/FR.** Écartés pour
+l'instant : la mention `@` qui sonne (elle demande ton identifiant Discord en secret
+GitHub) et un passage plus fréquent sur les flux officiels.
+
+![Annonce officielle, avant et après](spec-discord-officiel.png)
+
+### État actuel, mesuré
+Un embed orange par article, « ⭐ Rockstar Games — officiel · <titre> », une ligne qui
+porte le **nom du flux** (`source`), un lien vers l'app. Le plafond d'alertes
+détaillées est 10 (`NOTIFS_OFFICIELLES_MAX`), le reste part en une carte groupée.
+
+- 85 articles officiels sur 3 300, répartis sur 24 jours. Les flux officiels sont 6 sur
+  70. Le dernier du 29/10, « Original Score by Justice », est arrivé par
+  **Google News (EN)** et l'alerte l'affiche donc comme source, alors que son lien est
+  sur rockstargames.com.
+- 77 des 85 ont une image (91 %). 3 seulement ont un résumé : un extrait n'apporterait
+  presque rien.
+- **Un officiel sur trois est un produit de la boutique** : 32 des 85 ont un lien sur
+  store.rockstargames.com (porte-clés, vinyles…). 28 d'entre eux viennent d'une seule
+  journée, le 08/10 (32 officiels ce jour-là, 28 boutique + 4 du site).
+- Par domaine du lien : boutique 32 ; rockstargames.com (newswire, pages FR, pages VI,
+  vidéos) 42 ; YouTube 5 ; assistance 5 ; relations investisseurs Take-Two 1.
+
+### O1 · La grande image
+Le champ `image` de l'embed (pleine largeur), celle de l'article, pour les alertes
+détaillées. Pas pour la carte groupée. Même règle de validité que la vignette du
+récapitulatif : https, 2 048 caractères au plus, sinon rien. Le volume est minuscule
+(au pire 5 par jour hors rafale), donc aucun coût.
+
+### O2 · Le vrai type de contenu
+Remplacer le nom du flux par un libellé tiré du **domaine du lien**, comme le fait
+déjà `statut_officiel` : le flux par lequel un article arrive ne dit rien de ce qu'il
+est.
+
+| lien | libellé |
+|---|---|
+| rockstargames.com/…newswire, /fr/…, /VI/… | 📰 Rockstar Newswire |
+| youtube.com | 🎬 Vidéo Rockstar |
+| support.rockstargames.com | 🛠 Assistance Rockstar |
+| ir.take2games.com | 📈 Investisseurs Take-Two |
+| store.rockstargames.com | 🛍 Boutique Rockstar |
+| autre domaine officiel | ⭐ Rockstar Games |
+
+Le tableau repose sur les 85 liens réels ci-dessus ; un domaine absent tombe sur la
+dernière ligne. **À décider** : une fiche de la boutique mérite-t-elle encore une alerte
+« officiel » avec vibration dans l'app, ou une carte plus discrète ? (Le 08/10, 28
+produits ont rempli le plafond de 10 et une carte groupée.)
+
+### O3 · L'heure de publication et le pied commun
+Le champ `timestamp` de l'embed (Discord l'affiche à l'heure de l'appareil) et le même
+pied que le récapitulatif : « ⏳ J-21 · sortie le 19/11/2026 à 00:00, heure de Paris »
+(voir 2 plus haut, mêmes règles). Après la sortie : pas de pied.
+
+### O4 · Mesurer le retard réel (rien d'autre à changer)
+Le robot passe toutes les heures : une annonce peut arriver jusqu'à une heure après sa
+publication, plus 1 min 30 à 3 min de traitement. **Ce délai n'est pas mesuré.** La
+mesure est une seule ligne de journal par alerte : « retard : N min (publication hh:mm,
+envoi hh:mm) », en minutes, sans titre ni lien.
+
+- Elle ne vaut que si la date de l'article est celle de la **publication**. Un article
+  arrivé par Google News peut porter la date de l'agrégateur ; un flux sans date
+  retombe sur l'heure de collecte. Ces cas se comptent à part, sans retard calculé.
+- On lit le résultat après une dizaine d'alertes (24 jours avec des officiels dans
+  l'historique, dont 10 avec une seule alerte, et au plus 5 hors rafale). C'est seulement alors qu'on parle d'un second
+  déclencheur plus fréquent.
+
+### O5 · Fusionner l'anglais et le français
+Mesuré : sur les 85 officiels, **30 portent l'identifiant d'un article du Newswire**
+dans leur lien (`/article/<identifiant>/`), pour **14 identifiants distincts**. **10 de
+ces 14 existent à la fois en anglais et en français** (4 seulement en anglais, 0
+seulement en français) : 10 annonces sur 14 sortent en double. Les 55 autres officiels
+(boutique, vidéos, pages) n'ont pas d'identifiant et ne sont jamais fusionnés.
+
+Règle : deux alertes du même passage qui portent le **même identifiant d'article**
+deviennent un seul embed, titre dans la langue de l'app (français), avec « aussi en
+anglais » et les deux liens. Si l'une arrive à un passage et l'autre à un autre, on ne
+retient rien : une alerte déjà partie ne se rattrape pas. À mesurer au passage : la part
+de doublons qui tombent dans le même passage.
+
+**Décisions à prendre par Antoni (officiels).**
+6. Boutique Rockstar : alerte « officiel » complète, carte plus discrète, ou aucune ?
+7. Fusion EN/FR : la langue du titre fusionné (français comme dans l'app) ?
+8. Après combien d'alertes mesurées veut-on relire le retard (dix ?) ?
+
 ## Décisions à prendre par Antoni
 
 1. Vignette : pour tous, pour les seuls officiels, ou avec une liste de spoilers côté
@@ -147,6 +236,11 @@ France 7, GamingBolt 7, Notebookcheck.fr 7, GamesRadar+ 6.
 - 5 : aucun nom « Google News… » affiché ; noms échappés ; trois noms au plus.
 - 7 : un seul bilan par jour civil à Paris, même avec deux passages après 22 h ; aucun
   bilan avant 22 h ; heures testées des deux côtés du changement d'heure.
+- Officiels : l'embed porte l'image seulement si elle est valide ; le libellé vient du
+  domaine du lien et jamais du nom du flux ; un domaine inconnu retombe sur le
+  libellé générique ; deux alertes au même identifiant d'article, dans le même passage,
+  ne donnent qu'un message avec les deux liens ; deux identifiants différents ne
+  fusionnent jamais ; la ligne de retard n'écrit ni titre, ni lien, ni image.
 - Dans tous les cas : aucun nom de modèle, aucun secret, aucune URL de webhook dans un
   journal ; `DISCORD_WEBHOOK_URL` reste dans les secrets GitHub.
 
