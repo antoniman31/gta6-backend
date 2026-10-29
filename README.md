@@ -9770,3 +9770,58 @@ Ce que ça n'établit pas : **la cause**. Le téléphone est un Samsung dont la 
 Chrome est en « Optimisée » ; c'est une piste, pas une preuve. Antoni a demandé
 l'automatisation du secret : voir `tasks/spec-abonnement-auto.md`, qui propose, avec ses
 risques, sans rien coder. Elle ne guérit pas la mort de l'abonnement.
+
+### Notification Discord : six améliorations proposées, rien de codé — 29/10/2026
+
+À la demande d'Antoni, sept idées ont été dessinées (maquettes à partir du vrai fil),
+puis réduites à six par son choix. La spec groupée et son visuel final sont dans
+`tasks/spec-discord-notification.md`. Mesures qui la fondent : 87 % des 300 articles
+récents ont une image, tous en https ; les lignes du récapitulatif font 200 caractères
+en médiane et dix lignes au pire 3 195 ; les passages du 29/10 en comptaient 9 à 31 pour
+cinq lignes affichées. **Constat inattendu** : les « sources » de l'actu majeure sont des
+flux, pas des médias, et 90 des 93 articles à trois sources ou plus en ont moins de trois
+hors Google News. Le seuil de l'actu majeure est donc à mesurer avant de nommer les
+sources ; la spec le pose comme question distincte.
+
+Les annonces officielles s'ajoutent à la même spec, par choix d'Antoni. Mesures : 85
+officiels, dont **32 sont des produits de la boutique** (28 le seul 08/10) ; 77 ont une
+image ; 30 portent un identifiant d'article du Newswire, et **10 des 14 identifiants
+existent en anglais et en français**, donc des alertes en double. Le retard réel
+(publication contre alerte) n'est pas mesuré : la spec le propose d'abord.
+
+Mise à jour du 29/10/2026 : « 5 liens max par notification, plus un compteur, quelle que
+soit la catégorie ». Le récapitulatif reste à 5 lignes (idée 4 retirée). Les annonces
+officielles d'un même passage tiennent dans **un seul message** de 5 liens au plus et d'un
+compteur, au lieu de 10 alertes séparées puis une carte : la rafale du 08/10 (32 officiels)
+donnerait 1 message au lieu de 11. **Erreur de ma part, corrigée** : j'avais d'abord compris
+« 5 messages puis une carte de 5 liens ». Point d'attention mesuré : 28 des 32 officiels de ce
+jour étaient des produits de la boutique ; l'ordre retenu (annonces d'abord) évite que les 4
+vraies annonces (rangs 27 à 32 par date décroissante) se retrouvent cachées dans le compteur.
+
+RockstarMag s'ajoute à la même spec (29/10/2026). Mesures : 130 articles sur 3 300, 54
+jours, médiane de 2 par jour (au plus 14), 44 % de vidéos YouTube, 130 sur 130 avec image,
+100 sur 130 avec résumé, mais 3 des 4 articles du 29/10 arrivés par Google News n'en
+avaient pas. Choix d'Antoni : une carte séparée, 🎬 pour les vidéos, un extrait, silence
+la nuit.
+
+**Plus aucune image dans les notifications** (29/10/2026, au soir, demande d'Antoni) : ni grande
+image ni vignette, sur Discord comme sur le push ; l'icône et le badge de l'app dans le push
+restent. Ce choix annule celui de l'après-midi (« une grande image partout »). Spec et visuels
+refaits sans image.
+
+### Notification Discord « ultime » : un message par passage, à sections — 29/10/2026
+
+Sur demande d'Antoni (« les meilleures notifications possibles avec ce que propose Discord »),
+la spec est réécrite autour d'**un seul message par passage** : une ligne d'aperçu, un nom
+d'expéditeur selon la catégorie, des sections colorées (officiel, actu majeure, RockstarMag,
+autres), des temps relatifs et un compte à rebours que Discord recalcule, un tableau du jour
+modifié en place, un bilan du soir dans un fil de forum. Choix d'Antoni : rien de silencieux, un
+seul salon, un récapitulatif à l'heure. **Garde-fou mesuré** : quatre sections de cinq lignes au
+pire font 6 860 caractères pour 6 000 permis ; la spec prévoit la coupe. Boutons, modification
+en place et fil de forum sont à vérifier par un premier envoi réel.
+
+Ajouts du 29/10/2026 à la spec Discord : des jalons du compte à rebours, un bilan de la semaine et une
+alerte de report limitée aux articles officiels. **Mesure** : 39 titres sur 3 300 contiennent un mot de
+report ou de retard, presque tous des démentis ou d'autres jeux, et aucun n'est officiel ; avec le motif
+restreint (sans l'anglais « report »), 0 officiel sur 85.
+

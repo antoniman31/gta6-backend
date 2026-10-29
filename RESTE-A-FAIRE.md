@@ -1837,3 +1837,58 @@ Antoni a choisi « Préparer l'automatisation ». La spec est dans
 spec et créé lui-même le jeton (fine-grained, ce seul dépôt, Secrets seulement). Il
 reste aussi à tester la piste batterie Samsung (Chrome en « Sans restriction ») : le
 journal dira si la durée de vie s'allonge. Code gelé sauf correctifs après le 10/11.
+
+### Notification Discord : spec en attente de validation (29/10/2026)
+
+Six améliorations choisies par Antoni (vignette, compte à rebours en pied et couleur
+du compteur, ligne de chiffres, plus de lignes, médias nommés, bilan du soir) : voir
+`tasks/spec-discord-notification.md` et son visuel. **Rien n'est codé.** Cinq décisions
+l'attendent (liste dans la spec), dont une mesure à faire avant de nommer les sources :
+90 articles « à trois sources » sur 93 en comptent moins de trois hors Google News.
+La spec couvre aussi les annonces officielles (grande image, vrai type, heure et pied,
+mesure du retard, fusion EN/FR) : trois décisions de plus, dont le sort des fiches de la
+boutique (32 officiels sur 85, 28 le seul 08/10).
+
+Mise à jour du 29/10/2026 : Antoni demande « 5 liens max plus un compteur » pour le
+récapitulatif (déjà le cas : l'idée 4, plus de lignes, est retirée) et pour les annonces
+officielles (5 alertes détaillées puis une carte de 5 liens et un compteur : 6 messages
+au lieu de 11 pour la rafale du 08/10). Décision restante : l'ordre des 5, pour qu'une
+rafale de boutique ne masque pas une annonce.
+
+RockstarMag (29/10/2026) : Antoni a choisi une carte séparée avec 🎬 pour les vidéos, un
+extrait et le silence la nuit ; la section est dans la spec. Trois décisions restent :
+couleur de la carte, le récapitulatif compte-t-il sans lister, la carte après la sortie.
+
+Spec Discord finale (29/10/2026) : toutes les décisions sont prises, le visuel est dans
+`tasks/visuels-discord/` et la spec dans `tasks/spec-discord-notification.md` ; elle propose
+six lots, le premier étant des **mesures** (retard des officiels, médias distincts de l'actu
+majeure). Rien n'est codé : il manque l'avis d'Antoni sur les visuels, puis son « go ».
+
+Correction du 29/10/2026 : « 5 liens max par notification, quelle que soit la catégorie ». Les
+annonces officielles d'un passage tiennent désormais dans **un seul message** de 5 liens au
+plus et un compteur (j'avais compris 5 messages puis une carte). Visuels et spec mis à jour.
+
+Plus aucune image dans les notifications (29/10/2026, au soir) : Antoni retire la grande image
+et la vignette, sur Discord comme sur le push, ce qui annule son choix de l'après-midi. Spec et
+visuels refaits sans image.
+
+Réponses d'Antoni du 29/10/2026 au soir : récapitulatif toujours à l'heure, un seul salon, une
+ligne d'aperçu avant la carte, le push avec le même vocabulaire plus tard. La spec a un tableau
+« vocabulaire commun ». À faire au premier envoi réel : regarder l'écran verrouillé.
+
+Spec Discord « ultime » (29/10/2026, au soir) : un seul message par passage, à sections colorées
+(officiel, actu majeure, RockstarMag, autres), expéditeur par catégorie, ligne d'aperçu, temps
+relatifs, tableau du jour modifié en place, bilan dans un fil de forum, boutons-liens à vérifier.
+Remplace la carte RockstarMag séparée et le message officiel séparé. Deux points ouverts :
+5 liens par section ou 5 au total ; « dans 20 jours » contre « J-21 ».
+
+Spec Discord, ajouts du 29/10/2026 (au soir) : 5 liens par section (confirmé), compte à rebours vivant
+seul, **jalons** (J-14, J-7, J-3, J-1, H-12, H-1, « GTA VI est sorti »), bilan de la semaine en section
+du dimanche, **alerte de report limitée aux officiels** (0 faux positif sur 85 officiels). **À prévoir
+avant le 05/11** pour le jalon J-14 : le lot « jalons et report ». Rien n'est codé.
+
+Décisions d'Antoni du 29/10/2026 (au soir) : fusion de la spec #222 ; premier lot = **mesures, puis
+jalons et alerte de report** (J-14 tombe le 05/11) ; vérification des fonctions Discord incertaines
+par **trois messages marqués TEST dans le salon principal**, déclenchés par lui ; **fil de forum
+abandonné** (le bilan reste dans le salon principal).
+
