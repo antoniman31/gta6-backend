@@ -189,6 +189,9 @@ jobs:
           # Articles déjà connus qui viennent de devenir une actu majeure
           # parce qu'une rédaction de plus les a repris.
           PROMOTED_ITEMS_FILE: ${{ runner.temp }}/promoted_items.json
+          # Les jalons du compte à rebours dus à ce passage (J-14, H-1, sorti…),
+          # écrits seulement quand il y en a un : presque jamais.
+          JALONS_FILE: ${{ runner.temp }}/jalons.json
           # Clé PUBLIQUE : recopiée dans feed.json pour que l'app puisse
           # créer un abonnement push. Aucun risque à l'exposer.
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
@@ -360,6 +363,7 @@ jobs:
           NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
           SOURCE_ALERTS_FILE: ${{ runner.temp }}/source_alerts.json
           PROMOTED_ITEMS_FILE: ${{ runner.temp }}/promoted_items.json
+          JALONS_FILE: ${{ runner.temp }}/jalons.json
 
       # Notification push native, en plus de Discord : taper une
       # notification Discord ouvre Discord, jamais l'article. Comme pour

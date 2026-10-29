@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1984
+qui permet de tester tout le pipeline sans sortir de la machine. **2046
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9859,3 +9859,33 @@ la place de Paris, titre dans la ligne, étiquette oubliée, futur sans toléran
 absent de `discord_notify`, régions non fusionnées, seuil ignoré, titre dans la mesure majeure, script
 qui écrit.
 
+
+### Lot 2 de la notification Discord : les jalons du compte à rebours et l'alerte de report — 29/10/2026
+
+Deuxième lot de la spec `tasks/spec-discord-notification.md`. Deux messages nouveaux, **sans image**, qui
+n'existaient pas.
+
+**Les jalons.** Un message par étape du compte à rebours : **J-14, J-7, J-3, J-1** (9 h, heure de Paris,
+le jour civil), **H-12, H-1**, puis « **GTA VI est sorti** » à minuit. Le calendrier se déduit de
+`SORTIE_GTA6` (rien n'est recopié). Chaque jalon part **une seule fois** : `jalons_envoyes` vit dans
+`feed.json` et `merge_feed.py` en fait l'**union** après un conflit de push (garder un seul côté ferait
+repartir un jalon). Un jalon manqué de plus de **90 minutes** ne part pas ; « sorti » est rattrapé jusqu'à
+24 h ; passé la sortie, ni H-1 ni J-1 ne repartent. Le message affiche la date en balise Discord
+(`<t:…:F>` et `<t:…:R>`) : le « dans 14 jours » **reste juste** sans nouveau message. Il résume ce qui
+s'est passé depuis le jalon précédent (7 jours pour le premier) : nombre d'articles, officiels Rockstar,
+sujets les plus repris. La barre prend la couleur du palier du compteur de l'app (rose < 24 h, orange <
+7 j, jaune < 30 j, bleu sinon). Le jalon part **même pendant la pause nocturne**.
+
+**L'alerte de report.** Rouge, **officiels seulement**, envoyée **avant** les autres annonces et en pause
+nocturne. Mesuré le 29/10/2026 : 39 titres du fil contiennent un mot de report ou de retard, presque tous
+des démentis, **aucun officiel** ; le détecteur ne regarde donc que les officiels et exclut l'anglais
+« report(s) » (« Reports Results »). Il ne remplace pas l'annonce normale, il la précède.
+
+**Mes erreurs de test, corrigées avant commit** : j'avais attendu qu'un H-1 manqué d'une demi-heure ne
+reparte pas — il est dans la tolérance de 90 minutes, donc rattrapé, c'est voulu ; et j'avais appelé une
+fonction de fusion qui n'existe pas (`merge_feeds`).
+
+**Contrôles** (`test_jalons_du_compte_a_rebours`, `test_couleur_du_compteur`, `test_alerte_report_officielle`) :
+calendrier, tolérance des deux côtés, déjà-envoyé, après-sortie, état assaini, résumé, union à la fusion,
+message, bout en bout par `discord_notify.main`, workflow, seuils et couleurs **lus dans la page** (pile
+24 h, 7 j, 30 j). **Treize mutations rejouées, treize détectées** : tolérance élargie, règle d'après-sortie retirée, « déjà annoncé » ignoré, seuil du compteur décalé, union des jalons cassée, couleur du report, état non écrit dans `feed.json`, fichier de jalons non lu, mot « delay » retiré, « repouss », « postpon », filtre « officiel » retiré, et la couleur. Une mutation était un faux test de ma part (un `sed` qui ne trouvait pas son motif : 0 échec = rien muté) ; je l'ai refaite sur le vrai motif.

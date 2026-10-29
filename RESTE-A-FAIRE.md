@@ -1901,3 +1901,10 @@ abandonné** (le bilan reste dans le salon principal).
   trois sites distincts (49 au mieux). Décision d'Antoni à prendre : garder trois flux, ou compter les
   sites (le seuil compterait alors ce qu'on croit qu'il compte).
 
+
+### Lot 2 de la notification Discord : à surveiller (29/10/2026)
+
+- **Jalon J-14 le 05/11 à 09:00 (Paris)** : doit apparaître dans le salon (ou dans le journal du robot
+  « jalon j14 »). Les suivants : J-7 12/11, J-3 16/11, J-1 18/11, H-12 18/11 12:00, H-1 18/11 23:00.
+- Pas encore fait de la spec : message à sections, détail des officiels, section RockstarMag, tableau du
+  jour modifié sur place, bilan du soir, boutons-liens, puis les messages TEST.

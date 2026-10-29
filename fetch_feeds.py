@@ -2654,6 +2654,12 @@ SILENCE_NOCTURNE = os.environ.get("SEULEMENT_OFFICIELS") == "1"
 # seulement une fois la publication confirmée.
 RECAP_TOTALS_FILE = os.environ.get("RECAP_TOTALS_FILE", "")
 
+# Les jalons du compte à rebours à annoncer à CE passage, déposés pour
+# discord_notify.py : même mécanique que RECAP_TOTALS_FILE, hors du dépôt.
+# L'état (les jalons déjà annoncés) vit, lui, dans feed.json.
+JALONS_FILE = os.environ.get("JALONS_FILE", "")
+
+
 # Trois entiers — c'est tout ce dont feed_store.libelle_recap_depuis_comptes
 # a besoin pour écrire le titre du récapitulatif.
 ATTENTE_COMPTEURS = ("articles", "officiels", "sommet")
@@ -2701,6 +2707,39 @@ def attente_lue(stored):
         propre[cle] = v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else 0
     propre["apercus"] = feed_store.apercus_assainis(brut.get("apercus"))
     return propre
+
+
+def depose_jalons(jalons):
+    """Dépose les jalons à annoncer, s'il y en a. Rien n'est écrit sinon."""
+    if not JALONS_FILE or not jalons:
+        return
+    try:
+        with open(JALONS_FILE, "w", encoding="utf-8") as f:
+            json.dump(jalons, f, ensure_ascii=False)
+        print(f"  {len(jalons)} jalon(s) du compte à rebours déposé(s) -> {JALONS_FILE} : "
+              + ", ".join(j["id"] for j in jalons))
+    except OSError as e:
+        print(f"  [notif] impossible d'écrire {JALONS_FILE} : {e}")
+
+
+def prepare_jalons(stored, items, maintenant):
+    """Les jalons dus à ce passage, avec ce qui s'est passé depuis le précédent.
+
+    Rend (à annoncer, identifiants à retenir dans feed.json). La décision est
+    prise ICI, avant la publication, comme pour le récapitulatif : un jalon est
+    retenu même si Discord est en panne, car un « H-1 » annoncé deux heures
+    plus tard ne vaudrait rien — le même raisonnement que la tolérance de 90
+    minutes.
+    """
+    deja = feed_store.jalons_envoyes_lus(stored)
+    dus = feed_store.jalons_dus(maintenant, deja)
+    a_annoncer = []
+    for j in dus:
+        depuis, depuis_libelle = feed_store.jalon_precedent(j)
+        resume = feed_store.resume_depuis(items, depuis, maintenant)
+        a_annoncer.append({"id": j["id"], "libelle": j["libelle"], "type": j["type"],
+                           "cible": j["cible"].isoformat(), "depuis": depuis_libelle, **resume})
+    return a_annoncer, deja + [j["id"] for j in dus]
 
 
 def depose_totaux_recap(totaux):
@@ -4436,11 +4475,18 @@ def main():
                                  officiels_du_run, sommet_du_run,
                                  SILENCE_NOCTURNE)
 
+    jalons_a_annoncer, jalons_envoyes = prepare_jalons(
+        stored, all_items, datetime.now(timezone.utc))
+    depose_jalons(jalons_a_annoncer)
+
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         # Comptes en attente d'être annoncés. Non nuls uniquement entre
         # minuit et 5h, heure de Paris — voir le report ci-dessus.
         "attente_recap": attente,
+        # Les jalons du compte à rebours déjà annoncés (J-14, H-1, sorti…) :
+        # chacun ne part qu'une fois, même si le robot est relancé à la main.
+        "jalons_envoyes": jalons_envoyes,
         # Depuis quand le fil, archive comprise, est complet : voir la
         # constante dans feed_store. C'est elle qui permet à l'app de
         # dessiner un graphique par jour ou par mois sans inventer.

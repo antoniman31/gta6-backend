@@ -275,6 +275,79 @@ def send_discord_notification(new_items, promus=(), apercus=None):
     return send_discord_with_retry(embed, f"récapitulatif {detail}")
 
 
+def send_jalons(jalons):
+    """Un message par jalon du compte à rebours : J-14, J-7, J-3, J-1, H-12, H-1, sorti.
+
+    Rares, et chacun ne part qu'une fois : c'est fetch_feeds qui décide et qui
+    retient l'état dans feed.json. Le décompte est une balise de temps de
+    Discord (`<t:…:R>`), recalculée à l'affichage : elle reste juste dans un
+    message ancien. Aucune image.
+    """
+    if not DISCORD_WEBHOOK_URL or not jalons:
+        return False
+    sortie = int(feed_store.SORTIE_GTA6.timestamp())
+    envoyes = 0
+    for j in jalons:
+        if not isinstance(j, dict):
+            continue
+        sorti = j.get("type") == "sortie"
+        if sorti:
+            titre = "🎉 GTA VI est sorti"
+            lignes = [f"Sortie <t:{sortie}:R>."]
+        else:
+            titre = f"⏳ {j.get('libelle')}"
+            lignes = [f"GTA VI sort <t:{sortie}:F> · <t:{sortie}:R>"]
+        n = int(j.get("articles") or 0)
+        off = int(j.get("officiels") or 0)
+        bilan = f"Depuis {j.get('depuis')} : {n} article{'s' if n > 1 else ''}"
+        bilan += f", dont {off} officiel{'s' if off > 1 else ''} Rockstar" if off else ""
+        lignes.append(bilan + ".")
+        sujets = [l for l in (ligne_apercu(a) for a in (j.get("sujets") or ())) if l]
+        if sujets:
+            lignes.append("**Les sujets les plus couverts**")
+            lignes.extend(sujets)
+        lignes.append(f"[Ouvrir GTA6_WATCH]({SITE_URL})")
+        embed = {
+            "title": titre,
+            "url": SITE_URL,
+            "description": "\n".join(lignes)[:DESCRIPTION_MAX_CARACTERES],
+            "color": feed_store.couleur_compteur(),
+        }
+        if send_discord_with_retry(embed, f"jalon {j.get('id')}"):
+            envoyes += 1
+    print(f"  [discord] {envoyes} jalon(s) du compte à rebours envoyé(s) sur {len(jalons)}.")
+    return envoyes > 0
+
+
+def send_alertes_report(articles):
+    """Une alerte rouge par article OFFICIEL qui parle d'un report de la sortie.
+
+    Voir feed_store.MOTIF_REPORT : le motif est volontairement étroit, et
+    limité aux articles officiels. Elle part aussi la nuit, comme une annonce
+    de Rockstar : un report ne se découvre pas au réveil.
+    """
+    if not DISCORD_WEBHOOK_URL or not articles:
+        return False
+    envoyes = 0
+    for item in articles[:feed_store.NOTIFS_OFFICIELLES_MAX]:
+        titre, media = feed_store.separe_titre_et_media(item.get("title"), item.get("source"))
+        lien = (item.get("link") or "").strip()
+        if any(c in lien for c in CARACTERES_INTERDITS_URL):
+            lien = ""
+        corps = f"[{echappe_markdown(coupe(titre))}](<{lien}>)" if lien else echappe_markdown(coupe(titre))
+        embed = {
+            "title": "🚨 Report possible · officiel",
+            "url": lien or SITE_URL,
+            "description": (corps + "\n\nUn article officiel de Rockstar ou de Take-Two parle d'un "
+                            "report : à vérifier à la source."),
+            "color": 0xE04F5F,
+        }
+        if send_discord_with_retry(embed, "alerte de report officielle"):
+            envoyes += 1
+    print(f"  [discord] {envoyes} alerte(s) de report envoyée(s) sur {len(articles)}.")
+    return envoyes > 0
+
+
 # Orange Rockstar, celui de la pastille OFFICIEL dans l'app (#FF6B00) :
 # la même annonce se reconnaît à la même couleur d'un canal à l'autre.
 COULEUR_OFFICIEL = 0xFF6B00
@@ -474,8 +547,21 @@ def _main():
         print(ligne)
     for ligne in feed_store.lignes_mesure_majeure(list(new_items or ()) + list(promus or ())):
         print(ligne)
+    # Une alerte de report passe AVANT toute annonce : c'est la plus importante.
+    # Elle ne concerne que des articles officiels, donc `officiels` suffit.
+    reports = feed_store.articles_report(officiels)
+    if reports:
+        print(f"  [report] {len(reports)} article(s) officiel(s) parlent d'un report.")
+        send_alertes_report(reports)
     if officiels:
         send_official_alerts(officiels)
+
+    # Les jalons du compte à rebours : décidés par fetch_feeds, annoncés ici,
+    # même pendant la pause nocturne (seul « sorti » pourrait y tomber, et la
+    # pause est levée cette nuit-là).
+    jalons = lire_liste(os.environ.get("JALONS_FILE", ""))
+    if jalons:
+        send_jalons(jalons)
 
     if seulement_officiels:
         print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
