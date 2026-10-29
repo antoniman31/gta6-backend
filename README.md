@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **1938
+qui permet de tester tout le pipeline sans sortir de la machine. **1949
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9603,3 +9603,56 @@ jour). Mêmes teintes dans les deux thèmes ; ce qui change, c'est le traitement
   tant que le fond n'était pas lu.
 - Le défaut de largeur du dernier jour, déjà noté plus haut, reste entier :
   `RESTE-A-FAIRE.md`.
+
+### L'abonnement push meurt tout seul : de quoi le diagnostiquer — 29/10/2026
+
+Antoni : « PUSH_SUBSCRIPTIONS saute tout le temps, je dois chaque fois changer
+le secret ». Ce que les journaux du robot disent (lus le 28/10) :
+
+- le **27/10 à 13 h 03** (Paris), `[push] 1/1 notification(s) envoyée(s)` ;
+- le **28/10 à 22 h 03 puis 23 h 03**, `abonnement #1 expiré (HTTP 410)`, **y
+  compris après** qu'Antoni a dit avoir réabonné : le secret lu par le robot
+  était donc encore l'ancien, ou le nouveau n'est pas arrivé dans le secret.
+
+Antoni dit n'avoir ni réinstallé l'app, ni vidé les données de Chrome entre
+les deux : l'abonnement meurt **seul**. Je n'ai **pas** pu en trouver la cause
+d'ici (le conteneur ne peut pas recevoir de vrai push : la notification n'y
+est pas affichable, ni avec le service worker actuel ni avec celui d'avant le
+silence, ce qui écarte au moins mon lot « ne pas déranger » comme coupable
+évident ; la fonction `push` de `sw.js`, exécutée en environnement simulé,
+appelle bien `showNotification`).
+
+**Ce que le robot écrit maintenant**, pour chaque abonnement à chaque envoi :
+
+```
+[push] abonnement #1 : empreinte 40c94227 · hôte fcm.googleapis.com · expiration aucune
+```
+
+- l'**empreinte** (8 caractères d'un SHA-256 de l'endpoint) reconnaît le même
+  abonnement d'un passage à l'autre **sans révéler l'endpoint** (c'est un
+  secret, et le journal d'un dépôt public est public) ;
+- l'**hôte** du service de push reste en clair, comme dans le masquage
+  existant ;
+- l'**`expirationTime`**, quand le navigateur en fournit une, est une date et
+  non un secret : si elle existe, c'est la cause de la mort ;
+- sur une 404/410, le **corps de la réponse** du service de push (« NotRegistered »,
+  « expired »…), masqué **avant** d'être tronqué à 120 caractères, car couper un
+  endpoint en deux avant le masquage en laisserait un morceau en clair.
+
+**Comment lire le résultat** : la prochaine fois qu'Antoni réabonne et met à
+jour le secret, noter l'empreinte du premier envoi réussi, puis la retrouver
+dans les passages suivants. Si la même empreinte passe en 410 au bout de N
+heures, **le navigateur ou le service de push tue l'abonnement** (la cause est
+alors le téléphone, pas le dépôt) ; si l'empreinte change sans réabonnement, le
+secret n'est pas ce qu'on croit.
+
+- **Tests** (`test_push_empreinte_abonnement`, 11 contrôles) : empreinte stable,
+  différente d'un abonnement à l'autre, sans jeton ni chemin, hôte lisible,
+  date d'expiration reproduite telle quelle, abonnement mal formé sans plantage,
+  et de bout en bout une 410 dont le corps répète l'endpoint ne le laisse jamais
+  dans le journal. Éprouvé par mutation : empreinte = endpoint, corps non masqué,
+  expiration ignorée, **détectés** ; ma première version du test ne détectait pas
+  le corps non masqué (l'endpoint tombait au-delà des 120 caractères).
+- **Ce qui reste manuel** : le secret `PUSH_SUBSCRIPTIONS`. L'automatiser demande
+  un jeton GitHub avec le droit d'écrire les secrets, rangé lui-même dans un
+  secret : proposé à Antoni, **pas fait**.

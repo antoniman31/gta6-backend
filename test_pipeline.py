@@ -629,6 +629,63 @@ def test_push_subscriptions():
     os.environ.pop("PUSH_SUBSCRIPTIONS", None)
 
 
+def test_push_empreinte_abonnement():
+    """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
+    print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
+    import io, contextlib, types
+    import push_notify
+
+    jeton = "cAAAAAAAAAAAAAAA_jeton_unique_de_l_appareil_xyz789"
+    a = {"endpoint": "https://fcm.googleapis.com/fcm/send/" + jeton, "keys": {"p256dh": "x", "auth": "y"},
+         "expirationTime": None}
+    b = {"endpoint": "https://fcm.googleapis.com/fcm/send/AUTRE_" + jeton, "keys": {}}
+    ea, eb = push_notify.empreinte_abonnement(a), push_notify.empreinte_abonnement(b)
+    check(ea == push_notify.empreinte_abonnement(dict(a)),
+          "la même empreinte d'un passage à l'autre : c'est tout son usage")
+    check(ea != eb, "deux abonnements différents n'ont pas la même empreinte")
+    check(jeton not in ea and "fcm/send" not in ea and "/" not in ea.split("hôte")[0],
+          "ni le jeton ni le chemin de l'endpoint ne figurent dans l'empreinte")
+    check("fcm.googleapis.com" in ea, "l'hôte du service de push reste lisible")
+    check("expiration aucune" in ea, "l'absence de date d'expiration est dite")
+    avec = dict(a, expirationTime=1893456000000)
+    check("expiration 1893456000000" in push_notify.empreinte_abonnement(avec),
+          "une date d'expiration fournie par le navigateur est reproduite telle quelle")
+    for bancal in (None, "x", {}, {"endpoint": None}):
+        push_notify.empreinte_abonnement(bancal)
+    check(True, "un abonnement mal formé ne fait pas planter l'empreinte")
+
+    # Bout en bout : send_all ne laisse JAMAIS l'endpoint dans le journal, même
+    # sur une 410 dont le corps le répète.
+    class Rep:
+        status_code = 410
+        # L'endpoint EN TÊTE, donc entièrement dans les 120 premiers caractères :
+        # sans masquage il apparaîtrait en clair, et le contrôle le verrait.
+        text = "NotRegistered " + a["endpoint"] + " push subscription has unsubscribed or expired"
+
+    class Boum(Exception):
+        response = Rep()
+
+    import pywebpush
+    vrai = pywebpush.webpush
+    def faux(*args, **kw):
+        e = pywebpush.WebPushException("410 Gone", response=Rep())
+        raise e
+    pywebpush.webpush = faux
+    sortie = io.StringIO()
+    try:
+        with contextlib.redirect_stdout(sortie):
+            envoyes, expires = push_notify.send_all([a], {"title": "t"}, "cle")
+    finally:
+        pywebpush.webpush = vrai
+    texte = sortie.getvalue()
+    check(expires == [0] and envoyes == 0, "la 410 est bien comptée comme expirée")
+    check(ea in texte, "le journal porte l'empreinte de l'abonnement")
+    check("NotRegistered" in texte, "et le motif donné par le service de push")
+    check(jeton not in texte and jeton[:12] not in texte,
+          "mais JAMAIS l'endpoint, même quand le corps de la réponse le répète, "
+          "ni un morceau d'endpoint coupé par la troncature")
+
+
 def test_push_masquage_endpoint():
     print("\n[push] les journaux ne doivent jamais laisser fuiter un endpoint")
     import push_notify
@@ -10087,6 +10144,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_refuses_empty_local, test_feed_store_io,
            test_canonical_link, test_canonicalize_stored_links,
            test_push_payload, test_push_subscriptions, test_push_vapid_subject,
+           test_push_empreinte_abonnement,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,
            test_real_history,

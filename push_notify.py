@@ -28,6 +28,7 @@ Décisions de notification, identiques à Discord :
   - envoyé APRÈS publication réussie, jamais avant.
 """
 
+import hashlib
 import json
 import os
 import sys
@@ -233,6 +234,32 @@ def masquer_endpoints(texte, subscriptions):
     return feed_store.masquer_urls(texte, endpoints)
 
 
+def empreinte_abonnement(sub):
+    """De quoi RECONNAÎTRE un abonnement d'un passage à l'autre, sans le révéler.
+
+    Les abonnements meurent « tout le temps » (Antoni, 28/10/2026 : le push
+    marchait à 13 h 03 le 27/10, il était mort le 28/10 à 22 h 03, sans qu'il
+    ait rien fait). Pour savoir si le MÊME abonnement meurt au bout de N
+    heures, ou s'il est remplacé, il faut pouvoir le reconnaître dans le
+    journal. L'endpoint, lui, est un secret : quiconque le possède peut
+    notifier l'appareil, et le journal d'un dépôt public est public.
+
+    Huit caractères d'un SHA-256 de l'endpoint : on ne remonte pas à l'endpoint
+    (32 bits sur un jeton d'une centaine), mais deux passages qui portent la
+    même empreinte parlent du même abonnement. L'hôte du service de push (FCM,
+    Mozilla…) reste en clair, comme dans masquer_endpoints : il n'identifie
+    personne. `expirationTime`, quand le navigateur en donne un, est une date et
+    non un secret : si elle existe, c'est la cause de la mort, à lire telle quelle.
+    """
+    if not isinstance(sub, dict):
+        return "empreinte ? · hôte ? · expiration ?"
+    endpoint = sub.get("endpoint") or ""
+    empreinte = hashlib.sha256(endpoint.encode("utf-8")).hexdigest()[:8] if endpoint else "?"
+    hote = (urlparse(endpoint).netloc or "?") if endpoint else "?"
+    expiration = sub.get("expirationTime")
+    return f"empreinte {empreinte} · hôte {hote} · expiration {expiration if expiration else 'aucune'}"
+
+
 def send_all(subscriptions, payload, private_key,
              ttl=TTL_RECAP, urgence=URGENCE_NORMALE):
     """Envoie une notification à tous les appareils abonnés.
@@ -247,6 +274,9 @@ def send_all(subscriptions, payload, private_key,
     envoyes = 0
     expires = []
     for i, sub in enumerate(subscriptions):
+        # Une ligne par abonnement et par envoi : c'est elle qui permet de dire,
+        # après coup, QUAND un abonnement donné est mort.
+        print(f"[push] abonnement #{i + 1} : {empreinte_abonnement(sub)}")
         try:
             webpush(
                 subscription_info=sub,
@@ -267,6 +297,15 @@ def send_all(subscriptions, payload, private_key,
                 expires.append(i)
                 print(f"[push] abonnement #{i + 1} expiré (HTTP {statut}) — "
                       "à retirer du secret PUSH_SUBSCRIPTIONS et à recréer depuis l'app.")
+                # Le corps de la réponse dit POURQUOI (désabonné, expiré, jamais
+                # enregistré…) : on le garde, tronqué et passé au masquage.
+                # MASQUER D'ABORD, TRONQUER ENSUITE : couper un endpoint en deux
+                # avant le masquage en laisserait un morceau en clair.
+                corps = masquer_endpoints(
+                    (getattr(e.response, "text", "") or "").strip().replace("\n", " "),
+                    subscriptions)[:120]
+                if corps:
+                    print(f"       réponse du service de push : {corps}")
             else:
                 print(f"[push] échec sur l'abonnement #{i + 1} : "
                       f"{masquer_endpoints(str(e), subscriptions)}")
