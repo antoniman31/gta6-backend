@@ -1801,3 +1801,12 @@ avec le badge Backend. L'entête passe donc sur deux lignes à 340 px dès le
 11/11, et **à 390 px le jour de la sortie**. Existait avant les couleurs. Pistes
 mesurables : raccourcir le texte du dernier palier, ou le laisser sur deux lignes
 volontairement. À trancher avec Antoni avant le 18/11.
+
+### Le push qui meurt tout seul (29/10/2026)
+
+Cause **inconnue** : l'abonnement a marché le 27/10 à 13 h 03 et était mort le
+28/10 à 22 h 03, sans réinstallation ni nettoyage de Chrome. Le robot note
+désormais une empreinte, l'hôte et l'expiration de chaque abonnement (voir le
+README). **À faire** : après le prochain réabonnement, relever l'empreinte du
+premier envoi réussi et suivre ce qu'elle devient. Décision pour Antoni :
+automatiser la mise à jour du secret (jeton à droit d'écriture des secrets).
