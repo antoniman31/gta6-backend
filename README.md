@@ -9656,3 +9656,31 @@ secret n'est pas ce qu'on croit.
 - **Ce qui reste manuel** : le secret `PUSH_SUBSCRIPTIONS`. L'automatiser demande
   un jeton GitHub avec le droit d'écrire les secrets, rangé lui-même dans un
   secret : proposé à Antoni, **pas fait**.
+
+### Un ruleset qui bloquait le robot, et le premier abonnement suivi — 29/10/2026
+
+Le 29/10 à 09:23 (Paris), une règle de dépôt « Protection de main » a été créée
+(exiger une pull request, interdire force-push et suppression, **deux contrôles
+requis nommés `test` et `e2e`**, liste de contournement **vide**). Elle est
+restée active quelques minutes, le temps d'un passage **manuel** du robot qui a
+échoué à la publication (« GH013 : Changes must be made through a pull request »,
+cinq tentatives rejetées) : le robot pousse **directement** sur `main`, c'est sa
+conception. Aucun passage horaire n'est tombé dans la fenêtre. Antoni a supprimé
+le ruleset ; le passage relancé juste après a publié (commit « Mise à jour
+automatique des flux », 08:29 UTC).
+
+Deux leçons, à garder si une protection de branche revient :
+- tant que le robot pousse sur `main`, **« exiger une pull request » le bloque**,
+  quel que soit le reste ; les protections qui lui laissent la voie sont
+  « interdire la suppression » et « interdire le force-push » ;
+- les contrôles requis doivent porter les **vrais noms** de ce dépôt (`controles`),
+  sinon plus aucune PR ne peut être fusionnée.
+
+**Premier abonnement suivi** (diagnostic de #216) : le passage de 10:29 (Paris) a
+envoyé « 1/1 notification » avec `empreinte 42310181 · hôte jmt17.google.com ·
+expiration aucune`. L'hôte du service de push n'est donc pas `fcm.googleapis.com`
+(celui que citent les tests) mais un hôte en `google.com` : **je n'ai pas vérifié**
+que le masquage d'endpoints le traite comme les autres ; il masque le chemin quel
+que soit l'hôte (voir `test_push_masquage_endpoint`), mais aucun test n'utilise cet
+hôte précis. **À suivre** : si `42310181` finit en 410, l'heure
+du dernier envoi réussi donne la durée de vie de l'abonnement.
