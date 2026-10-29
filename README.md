@@ -9820,3 +9820,8 @@ seul salon, un récapitulatif à l'heure. **Garde-fou mesuré** : quatre section
 pire font 6 860 caractères pour 6 000 permis ; la spec prévoit la coupe. Boutons, modification
 en place et fil de forum sont à vérifier par un premier envoi réel.
 
+Ajouts du 29/10/2026 à la spec Discord : des jalons du compte à rebours, un bilan de la semaine et une
+alerte de report limitée aux articles officiels. **Mesure** : 39 titres sur 3 300 contiennent un mot de
+report ou de retard, presque tous des démentis ou d'autres jeux, et aucun n'est officiel ; avec le motif
+restreint (sans l'anglais « report »), 0 officiel sur 85.
+

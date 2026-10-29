@@ -1882,3 +1882,8 @@ relatifs, tableau du jour modifié en place, bilan dans un fil de forum, boutons
 Remplace la carte RockstarMag séparée et le message officiel séparé. Deux points ouverts :
 5 liens par section ou 5 au total ; « dans 20 jours » contre « J-21 ».
 
+Spec Discord, ajouts du 29/10/2026 (au soir) : 5 liens par section (confirmé), compte à rebours vivant
+seul, **jalons** (J-14, J-7, J-3, J-1, H-12, H-1, « GTA VI est sorti »), bilan de la semaine en section
+du dimanche, **alerte de report limitée aux officiels** (0 faux positif sur 85 officiels). **À prévoir
+avant le 05/11** pour le jalon J-14 : le lot « jalons et report ». Rien n'est codé.
+

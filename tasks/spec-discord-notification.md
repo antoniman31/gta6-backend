@@ -22,11 +22,14 @@ Visuels, dans `tasks/visuels-discord/` :
 | sujet | décision |
 |---|---|
 | **Un message par passage** | Officiels, actu majeure, RockstarMag et autres articles tiennent dans **un seul message à sections colorées** (jusqu'à 10 cartes par message ; on en utilise 4 au plus). Plus de carte RockstarMag séparée, plus de message officiel séparé. |
-| Liens | **5 liens au plus par section, puis un compteur** « + N autres dans l'app » (à confirmer : 5 par section, ou 5 au total par message ?). |
+| Liens | **5 liens au plus par section, puis un compteur** « + N autres dans l'app » : jusqu'à 20 liens dans un message riche (confirmé). |
 | Images | **Aucune**, ni grande image ni vignette. L'icône et le badge de l'app dans le push restent. |
 | Expéditeur | **Un nom par catégorie, sans avatar** : « ⭐ Rockstar », « 🚨 », « 📰 RockstarMag », « 🎮 GTA6_WATCH » : la plus forte catégorie présente. |
 | Aperçu | Une **ligne de texte en tête** du message (les décomptes), qui sert d'aperçu sur l'écran verrouillé. |
-| Temps | **Temps relatif et compte à rebours vivants** : « publié il y a 3 minutes », « sortie dans 20 jours ». Discord les recalcule à l'affichage. |
+| Temps | **Temps relatif et compte à rebours vivants, seuls** : « publié il y a 3 minutes », « sortie dans 20 jours » (pas de « J-21 » à côté, confirmé). Discord les recalcule à l'affichage. |
+| Jalons | **J-14, J-7, J-3, J-1 ; H-12 et H-1 ; « GTA VI est sorti » à minuit** : quelques messages rares (voir 10). |
+| Bilan de la semaine | Une **section de plus dans le bilan du dimanche soir**, pas un message de plus. |
+| Alerte de report | **Oui, sur les articles officiels seulement** (Rockstar, Take-Two) (voir 11). |
 | Rythme | **Un message par heure**, comme aujourd'hui (environ 16 par jour de 6 h à 21 h). |
 | Salon | **Un seul salon.** |
 | Silence | **Rien n'est silencieux** : tout notifie normalement. |
@@ -168,10 +171,47 @@ médias distincts, cinq médias les plus actifs (comptés sur le **média du tit
 « Google News (EN) — 124 » n'apprend rien) et les trois sujets les plus couverts. Exemple réel à 19 h 25 :
 280 articles, 153 médias, Insider Gaming 12, IGN France 7, GamingBolt 7, Notebookcheck.fr 7, GamesRadar+ 6.
 
+**Le dimanche**, le message gagne une section « 📅 Cette semaine » (total de la semaine, sujets les plus couverts, nombre d'annonces officielles) : pas de message de plus.
+
 `bilan_envoye_le` dans `feed.json` interdit un second envoi (une relance à 22 h 30 ne le renvoie pas).
 Il tient avant la pause nocturne et **continue après la sortie**. Il est publié dans un **salon « forum »**
 (un fil « Bilan du 29/10 » par jour, historique recherchable) avec un **second lien d'envoi**, secret
 GitHub que **tu** crées (`DISCORD_BILAN_WEBHOOK_URL`) ; sans lui, il va dans le salon principal.
+
+## 10 · Les jalons du compte à rebours
+
+Quelques messages rares, un par jalon, chacun **envoyé une fois** (`jalons_envoyes` dans `feed.json`),
+au **premier passage à ou après l'heure cible**, heure de Paris :
+
+| jalon | cible | message |
+|---|---|---|
+| J-14, J-7, J-3, J-1 | 09 h le 05/11, 12/11, 16/11, 18/11 (jours civils) | « ⏳ J-7 · sortie dans 7 jours » |
+| H-12 | 12 h le 18/11 | « ⏳ H-12 » |
+| H-1 | 23 h le 18/11 | « ⏳ H-1 » |
+| sortie | 00 h le 19/11 | « 🎉 GTA VI est sorti » |
+
+Chaque jalon dit le décompte (balise de temps vivante) et ce qui s'est passé depuis le jalon précédent :
+nombre d'articles, annonces officielles, trois sujets les plus couverts. Le robot passe à :03 : un jalon
+arrive donc quelques minutes après l'heure cible (« GTA VI est sorti » vers 00 h 03, la pause nocturne
+étant levée cette nuit-là). **Un jalon manqué de plus de 90 minutes n'est pas envoyé** (un « H-1 » à 23 h 50
+ne veut plus rien dire), sauf « sorti », toujours envoyé. Le bilan du soir de ces jours continue.
+
+## 11 · L'alerte de report, sur les officiels seulement
+
+Un report de la sortie serait la nouvelle la plus importante. Mesuré : sur 3 300 titres, **39 contiennent
+un mot de report ou de retard**, presque tous en octobre, et ce sont en majorité des démentis (« Has GTA 6
+been delayed again? No… ») ou d'autres jeux. **Aucun n'est un article officiel.** Une alerte sur tout le
+fil aurait donc surtout de faux positifs.
+
+- **Périmètre** : les articles marqués officiels (Rockstar, Take-Two). Motifs : *delay, delayed, delays,
+  postpone(d), pushed back, new release date, nouvelle date de sortie, reporté(e) de/à, repoussé(e)*. Le mot
+  anglais « report(s) » est **exclu** : il veut aussi dire « publie » (« reports results »).
+- Mesure du motif restreint : **0 article officiel sur 85** ; 37 titres du fil entier (le bruit qu'on évite).
+- **Message** : section rouge « 🚨 Report possible · officiel » avec le lien, expéditeur « 🚨 Report possible »,
+  prioritaire sur toute autre catégorie ; il part aussi la nuit, comme une annonce officielle.
+- **Limite** : on ne lit que le titre et le résumé. Un report annoncé dans le corps d'un communiqué
+  (résultats de Take-Two le 09/11, par exemple) ne serait pas vu : l'annonce officielle partirait comme
+  d'habitude, sans cette alerte. À mesurer : les formulations réelles d'un report officiel passé.
 
 ## 8 · Un vocabulaire commun (Discord, push, app)
 
@@ -206,8 +246,8 @@ l'autour de la sortie : pause nocturne levée du 18 au 20/11 inclus, message du 
 
 - **Boutons-liens** : à vérifier ; repli sur le lien texte.
 - **Un compte à rebours qui dit « dans 20 jours » alors que l'app dit « J-21 »** : Discord compte une durée
-  (20 j 4 h), l'app des jours civils. Les deux sont justes et ne coïncident pas ; à trancher : garder le
-  compte vivant seul (choix retenu dans les visuels), ou ajouter « J-21 ».
+  (20 j 4 h), l'app des jours civils. Les deux sont justes et ne coïncident pas ; choix d'Antoni : le
+  compte vivant seul. Les jalons J-14 à J-1 sont, eux, en jours civils, comme l'app.
 - **Modification en place et fil de forum** : je connais ces fonctions de Discord mais ne les ai pas vues
   marcher avec ce lien d'envoi : un premier envoi réel les confirmera, avec un repli prévu pour chacune.
 - **La ligne d'aperçu** : si Discord affiche déjà le titre de la première carte, elle sera redondante.
@@ -227,7 +267,8 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
 3. **Le détail des officiels** : type, heure, ordre, fusion EN/FR, plafond.
 4. **La section RockstarMag** : extrait, 🎬, repère des liens envoyés.
 5. **Le tableau du jour**, puis **le bilan du soir** (avec son fil).
-6. **Les boutons-liens**, une fois vérifiés.
+6. **Les jalons** (10) et **l'alerte de report** (11) : peu de code, peu de volume ; à prévoir **avant le 05/11** (J-14).
+7. **Les boutons-liens**, une fois vérifiés.
 
 ## Contrôles prévus (chacun prouvé capable d'échouer contre l'ancien code)
 
@@ -251,5 +292,7 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
   échouée → création d'un nouveau ; l'identifiant retenu n'est jamais un jeton.
 - Bilan : un seul par jour civil à Paris, même avec deux passages après 22 h ; aucun avant 22 h ; heures
   testées des deux côtés du changement d'heure.
+- Jalons : chaque jalon une seule fois, même relancé ; heure de Paris et passage à l'heure d'hiver ; jalon manqué de plus de 90 minutes non envoyé, sauf « sorti » ; « sorti » envoyé même tard.
+- Report : un titre officiel avec un motif part en 🚨 ; le même titre non officiel ne déclenche rien ; « reports results » ne déclenche rien ; part aussi la nuit.
 - Dans tous les cas : aucun secret ni URL de webhook dans un journal ; `DISCORD_WEBHOOK_URL` et
   `DISCORD_BILAN_WEBHOOK_URL` restent dans les secrets GitHub ; aucun nom de modèle.
