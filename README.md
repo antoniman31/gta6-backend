@@ -9789,13 +9789,14 @@ image ; 30 portent un identifiant d'article du Newswire, et **10 des 14 identifi
 existent en anglais et en français**, donc des alertes en double. Le retard réel
 (publication contre alerte) n'est pas mesuré : la spec le propose d'abord.
 
-Mise à jour du 29/10/2026 : « 5 liens max plus un compteur ». Le récapitulatif reste à 5
-lignes (idée 4 retirée). Les annonces officielles passent de 10 alertes détaillées à 5,
-puis une carte de 5 liens et un compteur : la rafale du 08/10 (32 officiels) donnerait 6
-messages au lieu de 11. Le plafond est partagé avec le push. Point d'attention mesuré :
-28 des 32 officiels de ce jour étaient des produits de la boutique ; selon l'ordre
-retenu, les 4 vraies annonces seraient visibles ou cachées dans le compteur (rangs 1, 3,
-5 et 6 contre 27, 28, 30 et 32).
+Mise à jour du 29/10/2026 : « 5 liens max par notification, plus un compteur, quelle que
+soit la catégorie ». Le récapitulatif reste à 5 lignes (idée 4 retirée). Les annonces
+officielles d'un même passage tiennent dans **un seul message** de 5 liens au plus et d'un
+compteur, au lieu de 10 alertes séparées puis une carte : la rafale du 08/10 (32 officiels)
+donnerait 1 message au lieu de 11. **Erreur de ma part, corrigée** : j'avais d'abord compris
+« 5 messages puis une carte de 5 liens ». Point d'attention mesuré : 28 des 32 officiels de ce
+jour étaient des produits de la boutique ; l'ordre retenu (annonces d'abord) évite que les 4
+vraies annonces (rangs 27 à 32 par date décroissante) se retrouvent cachées dans le compteur.
 
 RockstarMag s'ajoute à la même spec (29/10/2026). Mesures : 130 articles sur 3 300, 54
 jours, médiane de 2 par jour (au plus 14), 44 % de vidéos YouTube, 130 sur 130 avec image,

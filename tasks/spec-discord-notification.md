@@ -22,12 +22,13 @@ Visuels, dans `tasks/visuels-discord/` :
 | sujet | décision |
 |---|---|
 | Images | **Une grande image partout** : récapitulatif, annonces officielles, carte RockstarMag. Aucun filtre de spoilers. Discord n'en accepte qu'une par carte et l'affiche **sous le texte**, pas au-dessus (à vérifier en vrai, voir Risques). |
+| Règle commune | **5 liens au plus par notification, puis un compteur pour les autres articles, quelle que soit la catégorie** (récapitulatif, annonces officielles, carte RockstarMag). |
 | Récapitulatif | Reste à **5 lignes puis un compteur**. L'idée « plus de lignes » est retirée. |
 | Compte à rebours | Pied « ⏳ J-N · sortie le 19/11/2026 à 00:00 », couleur de barre du palier du compteur. **Après la sortie : « Sorti depuis N jours ».** |
 | Ligne de chiffres | 🇫🇷 / 🇬🇧 et nombre de médias. |
 | Actu majeure | **Inchangée** : rouge, pas de médias nommés. On **mesure d'abord les médias distincts** (voir 2). |
 | Bilan du soir | Un message par jour à 22 h, **avant et après la sortie**. |
-| Annonces officielles | Grande image, type de contenu, heure de publication, pied commun ; **5 alertes détaillées puis une carte de 5 liens et un compteur** ; **annonces d'abord, boutique ensuite** ; **la boutique garde son alerte « officiel » complète** ; fusion EN/FR avec **titre en français** ; mesure du retard, relue après **10 alertes**. |
+| Annonces officielles | **Une seule notification par passage, 5 liens au plus puis un compteur** ; grande image, type de contenu, heure de publication, pied commun ; **annonces d'abord, boutique ensuite** ; **la boutique garde la catégorie « officiel »** ; fusion EN/FR avec **titre en français** ; mesure du retard, relue après **10 alertes**. |
 | RockstarMag | **Carte séparée**, 🎬 pour les vidéos, extrait du résumé, **silence la nuit**, **reste après la sortie**, couleur de **l'accent de l'app**. Le récapitulatif **liste aussi** ses articles. |
 | Écarté | Mention `@` qui sonne ; passage plus fréquent sur les flux officiels ; vignette filtrée ; rappel d'agenda ; plus de lignes. |
 
@@ -119,13 +120,28 @@ source alors que son lien est sur rockstargames.com.
   embed, **titre en français**, avec les deux liens. Les 55 officiels sans identifiant (boutique,
   vidéos, pages) ne fusionnent jamais. Une alerte déjà partie ne se rattrape pas si l'autre
   langue arrive à un passage suivant.
-- **O6 · 5 alertes détaillées, puis une carte de 5 liens et un compteur.** Le 08/10 (32 officiels,
-  dont 28 produits de boutique) : 5 + 5 liens + 22 = 32, soit **6 messages au lieu de 11**. Le
-  plafond est partagé avec le push (`push_notify.py`, ligne 478) : le passer à 5 le change aussi
-  pour lui, ce qui est sans effet tant qu'il est désactivé. Le README et un test citent ce
-  plafond. **Ordre : les annonces non-boutique d'abord, puis la boutique, chacune par date** :
-  par date décroissante, les 4 vraies annonces du 08/10 auraient été aux rangs 27 à 32, toutes
-  cachées dans le compteur. **La boutique garde son alerte « officiel » complète.**
+- **O6 · Une seule notification par passage : 5 liens au plus, puis un compteur.** Règle
+  d'Antoni : « 5 liens pour des articles par notif, peu importe sa catégorie ». Les
+  annonces d'un même passage ne sont donc **plus des messages séparés** : un message
+  « ⭐ N annonces officielles Rockstar », 5 lignes (📰 / 🎬 / 🛍, titre, heure) et « + N autres
+  annonces officielles, toutes dans l'app ». Une seule annonce donne un message à 1 lien,
+  avec le type, l'heure et la grande image, comme dans O1 à O3. Le 08/10 (32 officiels, dont 28
+  produits de boutique) : **1 message au lieu de 11**.
+  - La grande image est celle de la **première ligne**.
+  - **Ordre : les annonces non-boutique d'abord, puis la boutique, chacune par date** : par
+    date décroissante, les 4 vraies annonces du 08/10 auraient été aux rangs 27 à 32, toutes
+    cachées dans le compteur. **La boutique garde la catégorie « officiel ».**
+  - **Fusion EN/FR (O5)** : une annonce parue en deux langues dans le même passage n'occupe
+    qu'une ligne avec les deux liens, ce qui laisse de la place aux autres.
+  - `NOTIFS_OFFICIELLES_MAX` (aujourd'hui 10 alertes détaillées) devient le nombre de liens
+    d'un message ; il est **partagé avec le push** (`push_notify.py`, ligne 478), qui n'a pas de
+    liens (« titre · et N autres »). Sans effet tant que le push est désactivé ; le README et
+    un test citent ce plafond.
+  - Contrepartie : la vibration et la bannière propres à une annonce isolée (côté app) ne
+    concernent que le push. Sur Discord, un passage riche en annonces fait **une** notification,
+    pas six.
+
+![Les annonces officielles](visuels-discord/final-2.png)
 
 ## 5 · RockstarMag
 
@@ -177,8 +193,9 @@ RockstarMag qui continuent.
   intact, sans image.
 - **Discord limite un embed à 6 000 caractères** : cinq lignes de 343 caractères, des champs et un
   pied tiennent largement.
-- **Trois exceptions à « un seul message par passage »** (sources, officiels, RockstarMag) plus
-  le bilan du soir quotidien.
+- **Exceptions à « un seul message par passage »** : alertes de source, annonces officielles
+  (désormais un seul message pour toutes celles du passage), carte RockstarMag, bilan du soir
+  quotidien.
 - Les maquettes sont des dessins : Discord sur téléphone peut rendre un peu différemment, et les
   images y sont des espaces réservés.
 
@@ -201,8 +218,8 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
 - Chiffres : langue comptée, y compris à travers la pause nocturne ; pas de nombre de médias le
   matin.
 - Officiels : libellé du domaine du lien, jamais du nom du flux ; domaine inconnu → libellé
-  générique ; 5 alertes puis une carte de 5 liens et le compteur exact (0, 5, 6, 11 et 32
-  officiels) ; annonces avant boutique ; même identifiant d'article dans le même passage → un
+  générique ; **un seul message par passage**, 5 liens au plus et le compteur exact (0, 1, 5,
+  6, 11 et 32 officiels) ; annonces avant boutique ; même identifiant d'article dans le même passage → un
   seul message, identifiants différents → jamais fusionnés ; la ligne de retard n'écrit ni titre,
   ni lien, ni image.
 - RockstarMag : une carte par passage où un article est entré, jamais de nuit ; un seul envoi même

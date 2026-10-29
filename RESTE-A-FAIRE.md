@@ -1864,3 +1864,7 @@ Spec Discord finale (29/10/2026) : toutes les décisions sont prises, le visuel 
 six lots, le premier étant des **mesures** (retard des officiels, médias distincts de l'actu
 majeure). Rien n'est codé : il manque l'avis d'Antoni sur les visuels, puis son « go ».
 
+Correction du 29/10/2026 : « 5 liens max par notification, quelle que soit la catégorie ». Les
+annonces officielles d'un passage tiennent désormais dans **un seul message** de 5 liens au
+plus et un compteur (j'avais compris 5 messages puis une carte). Visuels et spec mis à jour.
+
