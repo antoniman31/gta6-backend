@@ -1829,3 +1829,11 @@ ce qui arrive après), puis, quand l'abonnement meurt, ouvrir Réglages → Avan
 = le navigateur ou Android a fermé l'abonnement ; « changement d'abonnement » =
 Chrome l'a dit lui-même ; « ABSENT » à l'ouverture suivante = il a disparu côté
 téléphone.
+
+### Automatiser le secret PUSH_SUBSCRIPTIONS : décision en attente (29/10/2026)
+
+Antoni a choisi « Préparer l'automatisation ». La spec est dans
+`tasks/spec-abonnement-auto.md` ; **rien n'est codé** tant qu'il n'a pas validé la
+spec et créé lui-même le jeton (fine-grained, ce seul dépôt, Secrets seulement). Il
+reste aussi à tester la piste batterie Samsung (Chrome en « Sans restriction ») : le
+journal dira si la durée de vie s'allonge. Code gelé sauf correctifs après le 10/11.

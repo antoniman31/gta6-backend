@@ -9747,3 +9747,26 @@ réussi de `42310181` à **09:29** Paris, premier 410 à **10:00** Paris (passag
 09:00 UTC). La durée de vie (moins de 35 minutes) ne change pas, c'est un écart, pas
 une erreur de mesure. Le journal du téléphone, lui, écrit ses heures avec le fuseau
 `Europe/Paris` et n'était pas concerné.
+
+### Le journal a parlé : l'abonnement disparaît du téléphone, sans signal — 29/10/2026
+
+Troisième abonnement, `052d3adf` (hôte `jmt17.google.com`). Journal copié par Antoni :
+présent à 10:36:40, push reçu et affiché à 11:06:00 (envoyé à 11:03:17, soit 2 min 43 s
+de délai), présent à 11:17:06, push reçu et affiché à 12:03:32-33, présent à 12:03:37,
+puis **ABSENT à 13:04:08**, permission toujours « granted ». Le robot avait reçu un
+**HTTP 410** à 13:03:43 pour le même abonnement : Google le tenait déjà pour désinscrit
+avant qu'Antoni n'ouvre l'app. Heures de Paris.
+
+Ce que ça établit, et seulement ça :
+- le service worker a reçu et **affiché** chaque push qui lui est parvenu : le défaut
+  « push reçu mais pas affiché », qui fait révoquer l'abonnement, est écarté pour ces
+  deux envois ;
+- l'abonnement a disparu entre 12:03:37 et 13:03:43, sans `pushsubscriptionchange`
+  noté par le service worker et sans que l'app (qui ne désabonne que sur « Désactiver »)
+  n'y soit pour rien ;
+- la permission de notification n'a pas bougé.
+
+Ce que ça n'établit pas : **la cause**. Le téléphone est un Samsung dont la batterie de
+Chrome est en « Optimisée » ; c'est une piste, pas une preuve. Antoni a demandé
+l'automatisation du secret : voir `tasks/spec-abonnement-auto.md`, qui propose, avec ses
+risques, sans rien coder. Elle ne guérit pas la mort de l'abonnement.
