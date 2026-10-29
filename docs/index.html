@@ -2450,6 +2450,15 @@
           <button class="small" onclick="copyPushSubscription(this)">Copier l'abonnement</button>
         </div>
       </div>
+      <details class="bloc-replie" id="pushTraceBlock">
+        <summary>Journal de diagnostic du push</summary>
+        <div class="setting-desc">Ce que le téléphone a vu : push reçus, affichés, abonnement présent ou non à l'ouverture.</div>
+        <textarea id="pushTraceText" readonly rows="6" class="setting-input wide champ-mono petit"
+                  aria-label="Journal de diagnostic du push"></textarea>
+        <div class="setting-buttons">
+          <button class="small" onclick="copyPushTrace(this)">Copier le journal</button>
+        </div>
+      </details>
       <div class="setting-desc" hidden>
         Une vraie notification système, qui ouvre l'article au lieu d'ouvrir
         Discord. Un seul message récapitulatif par passage du robot.
@@ -7881,6 +7890,70 @@ function basculeSilence(){
   return silenceEnCours(Date.now()) ? finSilence() : debutSilence();
 }
 
+// ---------- Journal de diagnostic du push ----------
+// Même cache et même adresse que dans sw.js, qui y note les push reçus et
+// affichés ; la page y ajoute ce qu'elle constate à l'ouverture. Le nombre de
+// lignes est celui de notif-options.js (un test vérifie qu'ils sont égaux).
+// 29/10/2026 : l'abonnement est mort < 35 min après un envoi accepté, sans
+// que personne n'y touche — il faut voir ce que le téléphone, lui, a vu.
+const TRACE_URL = "./prefs/trace";
+const TRACE_MAX = 40;
+
+async function lireTracePage(){
+  try{
+    const cache = await caches.open(PREFS_CACHE);
+    const rep = await cache.match(TRACE_URL);
+    const liste = rep ? await rep.json() : [];
+    return Array.isArray(liste) ? liste.filter((x) => x && typeof x.t === "number" && typeof x.e === "string") : [];
+  }catch(e){
+    return [];
+  }
+}
+
+async function noteTracePage(texte){
+  try{
+    const liste = await lireTracePage();
+    const dernier = liste[liste.length - 1];
+    if(dernier && dernier.e === texte) return;
+    liste.push({ t: Date.now(), e: texte });
+    const cache = await caches.open(PREFS_CACHE);
+    await cache.put(TRACE_URL, new Response(JSON.stringify(liste.slice(-TRACE_MAX)),
+      { headers: { "Content-Type": "application/json" } }));
+  }catch(e){ /* le journal est un confort, pas une condition */ }
+}
+
+// Huit premiers caractères du SHA-256 de l'endpoint : la MÊME empreinte que
+// celle du journal du robot (push_notify.empreinte_abonnement), pour pouvoir
+// dire « c'est le même abonnement ». L'endpoint lui-même n'est jamais écrit.
+async function empreinteAbonnementPage(subscription){
+  try{
+    const endpoint = subscription && subscription.endpoint;
+    if(!endpoint) return "?";
+    const octets = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(endpoint));
+    return Array.from(new Uint8Array(octets)).slice(0, 4)
+      .map((o) => o.toString(16).padStart(2, "0")).join("");
+  }catch(e){
+    return "?";
+  }
+}
+
+function formateTrace(liste){
+  return liste.map((x) => new Date(x.t).toLocaleString("fr-FR",
+    { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit",
+      timeZone: "Europe/Paris" }) + " · " + x.e).join("\n");
+}
+
+async function majTraceUI(){
+  const zone = document.getElementById("pushTraceText");
+  if(!zone) return;
+  const liste = await lireTracePage();
+  zone.value = liste.length ? formateTrace(liste) : "Rien noté pour l'instant.";
+}
+
+function copyPushTrace(btn){
+  copyFieldValue("pushTraceText", btn);
+}
+
 async function refreshPushUI(){
   const group = document.getElementById("pushGroup");
   if(!group) return;
@@ -7907,6 +7980,14 @@ async function refreshPushUI(){
     const reg = await navigator.serviceWorker.getRegistration();
     if(reg) subscription = await reg.pushManager.getSubscription();
   }catch(e){ /* service worker pas encore prêt */ }
+
+  // Le constat d'ouverture : abonnement présent ou non, et permission. Si
+  // l'abonnement a disparu entre deux ouvertures, la ligne précédente dit
+  // quand il existait encore.
+  const empreinte = subscription ? await empreinteAbonnementPage(subscription) : null;
+  await noteTracePage("ouverture : abonnement " + (empreinte ? empreinte : "ABSENT")
+    + ", permission " + (("Notification" in window) ? Notification.permission : "?"));
+  await majTraceUI();
 
   const enableBtn = document.getElementById("pushEnableBtn");
   const disableBtn = document.getElementById("pushDisableBtn");

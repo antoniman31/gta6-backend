@@ -1818,3 +1818,14 @@ chaque passage horaire, chercher la ligne `[push] abonnement #1 : empreinte …`
 elle disparaît au profit d'un « expiré (HTTP 410) », noter l'heure du dernier envoi
 réussi. Cette durée dit si l'abonnement meurt seul (cause : le téléphone ou Chrome)
 ou à un événement précis.
+
+### Lire le journal de diagnostic du push (29/10/2026)
+
+Après la fusion et le déploiement, **ouvrir l'app une fois** (le service worker se
+met à jour ; l'abonnement existant n'a pas à être refait, et le journal ne voit que
+ce qui arrive après), puis, quand l'abonnement meurt, ouvrir Réglages → Notifications →
+« Journal de diagnostic du push » et le copier. Lecture : « push reçu » sans
+« push affiché » = cause trouvée dans le code ; « push affiché » puis 410 plus tard
+= le navigateur ou Android a fermé l'abonnement ; « changement d'abonnement » =
+Chrome l'a dit lui-même ; « ABSENT » à l'ouverture suivante = il a disparu côté
+téléphone.
