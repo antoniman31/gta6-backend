@@ -9809,3 +9809,14 @@ image ni vignette, sur Discord comme sur le push ; l'icône et le badge de l'app
 restent. Ce choix annule celui de l'après-midi (« une grande image partout »). Spec et visuels
 refaits sans image.
 
+### Notification Discord « ultime » : un message par passage, à sections — 29/10/2026
+
+Sur demande d'Antoni (« les meilleures notifications possibles avec ce que propose Discord »),
+la spec est réécrite autour d'**un seul message par passage** : une ligne d'aperçu, un nom
+d'expéditeur selon la catégorie, des sections colorées (officiel, actu majeure, RockstarMag,
+autres), des temps relatifs et un compte à rebours que Discord recalcule, un tableau du jour
+modifié en place, un bilan du soir dans un fil de forum. Choix d'Antoni : rien de silencieux, un
+seul salon, un récapitulatif à l'heure. **Garde-fou mesuré** : quatre sections de cinq lignes au
+pire font 6 860 caractères pour 6 000 permis ; la spec prévoit la coupe. Boutons, modification
+en place et fil de forum sont à vérifier par un premier envoi réel.
+

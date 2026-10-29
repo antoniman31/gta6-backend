@@ -1876,3 +1876,9 @@ Réponses d'Antoni du 29/10/2026 au soir : récapitulatif toujours à l'heure, u
 ligne d'aperçu avant la carte, le push avec le même vocabulaire plus tard. La spec a un tableau
 « vocabulaire commun ». À faire au premier envoi réel : regarder l'écran verrouillé.
 
+Spec Discord « ultime » (29/10/2026, au soir) : un seul message par passage, à sections colorées
+(officiel, actu majeure, RockstarMag, autres), expéditeur par catégorie, ligne d'aperçu, temps
+relatifs, tableau du jour modifié en place, bilan dans un fil de forum, boutons-liens à vérifier.
+Remplace la carte RockstarMag séparée et le message officiel séparé. Deux points ouverts :
+5 liens par section ou 5 au total ; « dans 20 jours » contre « J-21 ».
+
