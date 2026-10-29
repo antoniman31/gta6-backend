@@ -3883,6 +3883,35 @@ def test_journal_push(nav, url):
               "[journal push] le journal affiché porte la date à Paris (« %s »)" % etat["zone"][:60])
     else:
         print("  (push non géré par ce navigateur : constat d'ouverture non éprouvé ici)")
+    # Le journal doit être VU : la première version portait la classe
+    # bloc-replie (display:none) et personne ne pouvait l'ouvrir, alors que
+    # le contrôle de sa valeur passait. On mesure la boîte, puis on l'ouvre.
+    if etat["supporte"]:
+        # Le chemin d'Antoni : Réglages -> onglet Avancé.
+        page.evaluate("() => { openSettings(); ongletParam('adv'); }")
+        page.wait_for_timeout(300)
+        boite = page.evaluate("""() => {
+            const d = document.getElementById("pushTraceBlock");
+            const r = d.querySelector("summary").getBoundingClientRect();
+            const L = document.documentElement.clientWidth;
+            return {affiche: getComputedStyle(d).display, w: r.width, h: r.height,
+                    droite: r.right, L: L, sw: document.documentElement.scrollWidth};
+        }""")
+        check(boite["affiche"] != "none" and boite["w"] > 0 and boite["h"] >= CIBLE_MINIMALE,
+              "[journal push] le titre du journal est visible (%s, %.0f x %.0f)" % (boite["affiche"], boite["w"], boite["h"]))
+        check(boite["droite"] <= boite["L"] and boite["sw"] <= boite["L"],
+              "[journal push] et tient à 320 px (droite %.0f / %d)" % (boite["droite"], boite["L"]))
+        page.click("#pushTraceBlock summary")
+        ouvert = page.evaluate("""() => {
+            const z = document.getElementById("pushTraceText").getBoundingClientRect();
+            const b = document.querySelector("#pushTraceBlock button").getBoundingClientRect();
+            return {zw: z.width, zh: z.height, zd: z.right, bw: b.width, bh: b.height, bd: b.right,
+                    L: document.documentElement.clientWidth, sw: document.documentElement.scrollWidth};
+        }""")
+        check(ouvert["zw"] > 0 and ouvert["zh"] > 0 and ouvert["bw"] > 0,
+              "[journal push] ouvert, le texte et le bouton « Copier » sont visibles")
+        check(ouvert["zd"] <= ouvert["L"] and ouvert["bd"] <= ouvert["L"] and ouvert["sw"] <= ouvert["L"],
+              "[journal push] et tiennent à 320 px (texte %.0f, bouton %.0f / %d)" % (ouvert["zd"], ouvert["bd"], ouvert["L"]))
     # La valeur attendue est celle de hashlib.sha256 : même empreinte que le robot.
     import hashlib
     attendu = hashlib.sha256(b"https://fcm.googleapis.com/fcm/send/abc").hexdigest()[:8]

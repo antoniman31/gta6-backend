@@ -1526,6 +1526,9 @@
   textarea.champ-mono.petit{font-size:10px;}
   .valeur-mono{font-family:'JetBrains Mono',monospace; font-size:11px;}
   .bloc-replie{display:none; margin-top:8px;}
+  /* Le titre d'un <details> est une cible tactile : 18 px de haut par défaut,
+     mesuré le 29/10/2026, sous les 44 px que tout le reste de l'app s'impose. */
+  #pushTraceBlock > summary{display:flex; align-items:center; min-height:44px; cursor:pointer;}
   .pleine-largeur{width:100%;}
   .setting-row label{font-size:13px;}
   .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
@@ -2450,7 +2453,10 @@
           <button class="small" onclick="copyPushSubscription(this)">Copier l'abonnement</button>
         </div>
       </div>
-      <details class="bloc-replie" id="pushTraceBlock">
+      <!-- Pas la classe bloc-replie : elle fait display:none, et c'est le JS qui
+           la rouvre pour les blocs qu'il pilote. Un <details> se replie seul ;
+           29/10/2026, le journal est resté invisible faute de l'avoir su. -->
+      <details id="pushTraceBlock" style="margin-top:8px;">
         <summary>Journal de diagnostic du push</summary>
         <div class="setting-desc">Ce que le téléphone a vu : push reçus, affichés, abonnement présent ou non à l'ouverture.</div>
         <textarea id="pushTraceText" readonly rows="6" class="setting-input wide champ-mono petit"

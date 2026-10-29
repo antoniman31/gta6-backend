@@ -9708,7 +9708,7 @@ déploiements comme le réglage du silence :
   empreinte que le robot**, huit caractères d'un SHA-256 de l'endpoint) ou
   « ABSENT », et la permission. Une ligne identique à la précédente n'est pas
   répétée ;
-- le journal s'affiche dans Réglages → Notifications (« Journal de diagnostic du
+- le journal s'affiche dans Réglages → onglet Avancé → Notifications (« Journal de diagnostic du
   push », avec « Copier le journal »), à l'heure de Paris.
 
 **Garde-fous éprouvés** (`test_journal_push`, `test_journal_push_sans_secret`) : un
@@ -9720,3 +9720,19 @@ Le nom du cache du service worker passe à `v64`.
 chose avant la mort. Un abonnement survit à la mise à jour du service worker : il
 suffit d'**ouvrir l'app une fois après le déploiement** pour que le journal se mette
 à noter, sans rien recoller dans le secret. Ce qui précède l'ouverture n'est pas vu.
+
+### Le journal était invisible : mon erreur — 29/10/2026
+
+Antoni a ouvert l'app après le déploiement de #218 et n'a pas trouvé le journal.
+La cause est la mienne : je l'avais posé dans un `<details>` portant la classe
+`bloc-replie`, qui fait `display:none` (c'est le JavaScript qui la rouvre pour les
+blocs qu'il pilote, et il ne pilote pas celui-là). Mon test lisait la *valeur* du
+champ, jamais sa *visibilité* : il passait sur un bloc que personne ne pouvait ouvrir.
+Je lui avais en plus donné un mauvais chemin (« Réglages → Notifications ») : le
+groupe est dans l'onglet **Avancé**.
+
+Corrigé : plus de classe `bloc-replie`, et un titre de 44 px (le `<summary>` par
+défaut en faisait 18, mesuré). Le contrôle mesure désormais la boîte du titre, son
+ouverture, le texte et le bouton « Copier », à 320 px, en passant par
+`openSettings()` puis l'onglet Avancé ; rejoué contre l'ancien code (classe remise), il
+échoue (`none, 0 x 0`). Cache du service worker : `v65`.
