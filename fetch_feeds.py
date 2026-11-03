@@ -2664,6 +2664,10 @@ JALONS_FILE = os.environ.get("JALONS_FILE", "")
 # annoncés) vit dans feed.json sous `rockstarmag_envoyes`.
 ROCKSTARMAG_FILE = os.environ.get("ROCKSTARMAG_FILE", "")
 
+# Le bilan du soir (22 h, heure de Paris) à annoncer à CE passage, déposé pour
+# discord_notify.py. L'état (`bilan_envoye_le`) vit dans feed.json.
+BILAN_FILE = os.environ.get("BILAN_FILE", "")
+
 
 # Trois entiers — c'est tout ce dont feed_store.libelle_recap_depuis_comptes
 # a besoin pour écrire le titre du récapitulatif.
@@ -2757,6 +2761,19 @@ def depose_rockstarmag(articles):
         print(f"  {len(articles)} article(s) RockstarMag déposé(s) -> {ROCKSTARMAG_FILE}")
     except OSError as e:
         print(f"  [notif] impossible d'écrire {ROCKSTARMAG_FILE} : {e}")
+
+
+def depose_bilan(bilan):
+    """Dépose le bilan du soir à annoncer, s'il y en a un."""
+    if not BILAN_FILE or not bilan:
+        return
+    try:
+        with open(BILAN_FILE, "w", encoding="utf-8") as f:
+            json.dump(bilan, f, ensure_ascii=False)
+        print(f"  bilan du soir déposé -> {BILAN_FILE} : {bilan['jj_mm']}, {bilan['total']} article(s)"
+              + (", avec la semaine" if bilan.get("semaine") else ""))
+    except OSError as e:
+        print(f"  [notif] impossible d'écrire {BILAN_FILE} : {e}")
 
 
 def depose_totaux_recap(totaux):
@@ -4507,6 +4524,10 @@ def main():
         stored, all_items, a_notifier, SILENCE_NOCTURNE)
     depose_rockstarmag(mag_a_annoncer)
 
+    bilan_a_annoncer, bilan_envoye_le = feed_store.prepare_bilan(
+        stored, all_items, datetime.now(timezone.utc))
+    depose_bilan(bilan_a_annoncer)
+
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         # Comptes en attente d'être annoncés. Non nuls uniquement entre
@@ -4519,6 +4540,8 @@ def main():
         # section RockstarMag (la date de publication perdrait un article trouvé
         # en retard).
         "rockstarmag_envoyes": mag_envoyes,
+        # Le jour (de Paris) du dernier bilan du soir annoncé : un seul par jour.
+        "bilan_envoye_le": bilan_envoye_le,
         # Depuis quand le fil, archive comprise, est complet : voir la
         # constante dans feed_store. C'est elle qui permet à l'app de
         # dessiner un graphique par jour ou par mois sans inventer.

@@ -30,49 +30,15 @@ import feed_store
 
 ETAT_PATH = "tableau-discord.json"
 COULEUR_TABLEAU = 0x4FE07A          # vert, comme le tableau de la spec
-FUTUR_TOLERE_MIN = 5
 # Un identifiant de message Discord est un « snowflake » : un entier de 17 à 20
 # chiffres. Tout le reste (un jeton, une adresse) est refusé à l'écriture.
 RE_IDENTIFIANT = re.compile(r"^\d{15,25}$")
 
 
-def jour_paris(maintenant):
-    return maintenant.astimezone(feed_store.PARIS).date()
-
-
-def bornes_du_jour(maintenant):
-    """Minuit à minuit, heure de Paris, en UTC. Le jour du changement d'heure en fait 23 ou 25."""
-    jour = jour_paris(maintenant)
-    debut = datetime(jour.year, jour.month, jour.day, tzinfo=feed_store.PARIS)
-    lendemain = jour + timedelta(days=1)
-    fin = datetime(lendemain.year, lendemain.month, lendemain.day, tzinfo=feed_store.PARIS)
-    return debut.astimezone(timezone.utc), fin.astimezone(timezone.utc)
-
-
-def stats_du_jour(items, maintenant):
-    """Ce que le tableau affiche : le total du jour, les langues, les médias, les officiels, le dernier."""
-    debut, fin = bornes_du_jour(maintenant)
-    plafond = maintenant + timedelta(minutes=FUTUR_TOLERE_MIN)
-    total = fr = en = officiels = 0
-    medias, dernier = set(), None
-    for it in items or ():
-        if not isinstance(it, dict):
-            continue
-        quand = feed_store.parse_date_key(it.get("date") or "")
-        if quand == feed_store.DATE_FLOOR or not (debut <= quand < fin) or quand > plafond:
-            continue
-        total += 1
-        fr += it.get("lang") == "fr"
-        en += it.get("lang") == "en"
-        officiels += bool(it.get("official"))
-        site = feed_store.site_du_lien(it.get("link") or "")
-        if site:
-            medias.add(site)
-        if dernier is None or quand > dernier[0]:
-            dernier = (quand, it)
-    return {"jour": jour_paris(maintenant).isoformat(), "jj_mm": jour_paris(maintenant).strftime("%d/%m"),
-            "total": total, "fr": fr, "en": en, "medias": len(medias), "officiels": officiels,
-            "dernier": dernier}
+# Le calcul de la journée est partagé avec le bilan du soir : voir feed_store.
+jour_paris = feed_store.jour_paris
+bornes_du_jour = feed_store.bornes_du_jour
+stats_du_jour = feed_store.stats_du_jour
 
 
 def pluriel(n, mot):

@@ -467,6 +467,74 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None, 
     return send_discord_with_retry(charge, f"message {detail}", repli=repli)
 
 
+COULEUR_BILAN = 0x8E5CFF
+
+
+def send_bilan(bilan):
+    """Le bilan du soir : un message, le dimanche avec une section « Cette semaine ».
+
+    Décidé par fetch_feeds (premier passage à 22 h ou plus, un par jour civil de
+    Paris, état `bilan_envoye_le`) ; Discord ne fait que le dire. Un seul message
+    par jour, dans le salon principal.
+    """
+    if not DISCORD_WEBHOOK_URL or not isinstance(bilan, dict) or not bilan.get("jj_mm"):
+        return False
+    total = int(bilan.get("total") or 0)
+    titre = f"🌙 Bilan du {bilan['jj_mm']} : {total} article{'s' if total > 1 else ''}"
+    lignes = []
+    if total:
+        lignes.append(f"🇫🇷 {bilan.get('fr', 0)} · 🇬🇧 {bilan.get('en', 0)} · "
+                      f"{bilan.get('medias', 0)} média{'s' if bilan.get('medias', 0) > 1 else ''}")
+    else:
+        lignes.append("Aucun article aujourd'hui.")
+    if bilan.get("officiels"):
+        n = bilan["officiels"]
+        lignes.append(f"⭐ {n} annonce{'s' if n > 1 else ''} officielle{'s' if n > 1 else ''} Rockstar")
+    top = [m for m in (bilan.get("top_medias") or []) if isinstance(m, (list, tuple)) and len(m) == 2]
+    if top:
+        lignes += ["", "**Les plus actifs**"]
+        lignes += [f"• {echappe_markdown(coupe(str(nom), 40))} — {n}" for nom, n in top]
+    sujets = _lignes_sujets(bilan.get("sujets"))
+    if sujets:
+        lignes += ["", "**Les plus couverts**"] + sujets
+    cartes = [{"title": titre, "description": "\n".join(lignes), "color": COULEUR_BILAN}]
+    semaine = bilan.get("semaine")
+    if isinstance(semaine, dict):
+        n_sem = int(semaine.get("total") or 0)
+        l2 = [f"{n_sem} article{'s' if n_sem > 1 else ''} depuis lundi"]
+        if semaine.get("officiels"):
+            k = semaine["officiels"]
+            l2.append(f"⭐ {k} annonce{'s' if k > 1 else ''} officielle{'s' if k > 1 else ''} Rockstar")
+        s2 = _lignes_sujets(semaine.get("sujets"))
+        if s2:
+            l2 += ["", "**Les plus couverts de la semaine**"] + s2
+        cartes.append({"title": "📅 Cette semaine", "description": "\n".join(l2), "color": COULEUR_BILAN})
+    charge = {"username": "🌙 GTA6_WATCH", "content": titre[:2000], "embeds": cartes}
+    repli = {"username": "🌙 GTA6_WATCH", "content": titre[:2000],
+             "embeds": [dict(c) for c in cartes]}
+    repli["embeds"][-1]["description"] += f"\n\n[Ouvrir GTA6_WATCH]({SITE_URL})"
+    charge["components"] = boutons_app()
+    print(f"  [discord] envoi du bilan du soir ({bilan['jj_mm']}, {total} article(s)"
+          + (", avec la semaine" if isinstance(semaine, dict) else "") + ")...")
+    return send_discord_with_retry(charge, f"bilan du soir {bilan['jj_mm']}", repli=repli)
+
+
+def _lignes_sujets(sujets):
+    """Les lignes « titre cliquable · N sources » d'une liste de sujets."""
+    lignes = []
+    for a in sujets or ():
+        if not isinstance(a, dict):
+            continue
+        titre_brut, _ = feed_store.separe_titre_et_media(a.get("title"), a.get("source"))
+        titre = echappe_markdown(coupe(titre_brut))
+        if not titre:
+            continue
+        lien = (a.get("link") or "").strip()
+        corps = f"[{titre}](<{lien}>)" if lien and not any(c in lien for c in CARACTERES_INTERDITS_URL) else titre
+        lignes.append(f"🔥 {corps} · {int(a.get('sources') or 2)} sources")
+    return lignes
+
+
 def send_jalons(jalons):
     """Un message par jalon du compte à rebours : J-14, J-7, J-3, J-1, H-12, H-1, sorti.
 
@@ -637,6 +705,21 @@ def main():
 
 
 def _main():
+    """Les annonces du passage, puis le bilan du soir s'il y en a un.
+
+    Le bilan est dit APRÈS tout le reste et quoi qu'il arrive : les sorties
+    anticipées de `_annonces` (rien de neuf, pause nocturne) ne doivent pas le
+    faire taire. Il n'existe qu'au premier passage de 22 h ou plus.
+    """
+    try:
+        return _annonces()
+    finally:
+        bilan = feed_store.lire_json_objet(os.environ.get("BILAN_FILE", ""))
+        if bilan:
+            send_bilan(bilan)
+
+
+def _annonces():
     path = os.environ.get("NEW_ITEMS_FILE", "")
     if not path:
         print("[discord] NEW_ITEMS_FILE non défini — rien à notifier.")

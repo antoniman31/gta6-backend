@@ -1926,6 +1926,190 @@ def test_tableau_du_jour():
     check("tableau-discord.json" in ci, "la CI ignore ce fichier, comme tout ce que le robot pousse")
 
 
+def test_bilan_du_soir():
+    """Le bilan de 22 h : un par jour de Paris, le dimanche avec la semaine (lot 8, 03/11/2026)."""
+    print("\n[bilan] un bilan par soir, décidé par le robot, dit par Discord")
+    import io, contextlib, json as _json, os as _os
+    import discord_notify, fetch_feeds, merge_feed
+
+    # ---- qui est le média d'un article ----
+    def a(titre, source="Google News (EN)", lien="https://exemple.test/x", date="2026-11-02T12:00:00+00:00", extra=0, **kw):
+        r = {"title": titre, "source": source, "link": lien, "date": date, "lang": "en"}
+        if extra:
+            r["extraSources"] = [{"source": "s%d" % n, "link": "https://s%d.test/" % n} for n in range(extra)]
+        r.update(kw)
+        return r
+    check(feed_store.media_du_titre(a("Un titre - IGN France")) == "IGN France", "le média est celui du TITRE, pas du flux")
+    check(feed_store.media_du_titre(a("Un titre sans suffixe", source="Kotaku")) == "Kotaku",
+          "sans suffixe, le nom du flux s'il n'est pas un agrégateur")
+    check(feed_store.media_du_titre(a("Un titre sans suffixe", lien="https://www.gamesradar.com/a")) == "gamesradar.com",
+          "sans suffixe et derrière Google News : le site du lien (jamais « Google News »)")
+    check(feed_store.media_du_titre(a("Un titre - https://tech-insider.org/")) == "tech-insider.org",
+          "un titre qui finit par une adresse donne le site, pas l'adresse")
+
+    # ---- le décompte d'un jour ----
+    soir = datetime(2026, 11, 2, 21, 30, tzinfo=timezone.utc)                       # 22:30 à Paris, un lundi
+    jour = [a("A - IGN France", lien="https://www.ign.com/1", lang=None) for _ in range(3)]
+    for k, x in enumerate(jour):
+        x["lang"] = "fr"
+        x["link"] = "https://www.ign.com/%d" % k
+    jour += [a("B - ign france", lien="https://c.test/b"),                         # même média, autre casse
+             a("C - Kotaku", lien="https://d.test/c"), a("D - Kotaku", lien="https://e.test/d"),
+             a("E - Zeta", lien="https://f.test/e"), a("F - Alpha", lien="https://g.test/f"),
+             a("G - Beta", lien="https://h.test/g"), a("H - Gamma", lien="https://i.test/h"),
+             a("Repris par trois", lien="https://j.test/i", extra=3, source="Kotaku"),
+             a("Repris par deux", lien="https://k.test/j", extra=1),
+             a("Repris par quatre", lien="https://l.test/k", extra=4),
+             a("Repris par cinq", lien="https://m.test/l", extra=5),
+             a("Officielle", lien="https://www.rockstargames.com/newswire/article/z/x", official=True),
+             a("Hier", date="2026-11-01T22:59:59+00:00"), a("Demain", date="2026-11-02T23:00:00+00:00")]
+    b = feed_store.bilan_du_soir(jour, soir)
+    check(b["jour"] == "2026-11-02" and b["jj_mm"] == "02/11" and b["total"] == 15 and b["fr"] == 3 and b["en"] == 12,
+          "total et langues du jour de Paris (la veille à 23:59:59 et demain à 00:00 exclus) : %s/%s/%s" % (b["total"], b["fr"], b["en"]))
+    check(b["officiels"] == 1, "annonces officielles du jour")
+    noms = [m for m, _ in b["top_medias"]]
+    check(len(b["top_medias"]) == feed_store.BILAN_TOP_MEDIAS == 5 and b["top_medias"][0] == ("IGN France", 4),
+          "cinq médias au plus, IGN France en tête : « ign france » et « IGN France » ne font qu'un (%s)" % b["top_medias"])
+    check(b["top_medias"][1] == ("Kotaku", 3), "puis Kotaku (deux articles plus le sujet repris par trois) : %s" % (b["top_medias"][1],))
+    egaux = [m for m, n in b["top_medias"] if n == 1]
+    check(egaux == sorted(egaux, key=str.casefold), "à égalité, l'ordre alphabétique : %s" % egaux)
+    check([x["sources"] for x in b["sujets"]] == [6, 5, 4] and b["sujets"][0]["title"] == "Repris par cinq",
+          "trois sujets au plus, le plus couvert d'abord (un article repris par cinq sources en compte six) : %s" % [x["sources"] for x in b["sujets"]])
+    seuls = feed_store.bilan_du_soir([a("X", lien="https://x1.test/a", extra=2), a("Y", lien="https://y1.test/b"), a("Z", lien="https://z1.test/c")], soir)
+    check([x["sources"] for x in seuls["sujets"]] == [3],
+          "un article à une seule source n'est JAMAIS un « sujet couvert » : un seul sujet ici, pas trois")
+    check(b["semaine"] is None, "un lundi : pas de section « Cette semaine »")
+    check(feed_store.bilan_du_soir([], soir)["total"] == 0 and feed_store.bilan_du_soir(None, soir)["top_medias"] == [],
+          "un jour sans article ne plante pas")
+
+    # ---- le dimanche ----
+    dimanche = datetime(2026, 11, 1, 21, 30, tzinfo=timezone.utc)                    # dimanche 22:30 à Paris
+    semaine = [a("Lundi - X", date="2026-10-26T08:00:00+00:00"), a("Hors semaine", date="2026-10-25T22:59:59+00:00"),
+               a("Dimanche - Y", date="2026-11-01T10:00:00+00:00", official=True),
+               a("Sujet - Z", date="2026-10-28T10:00:00+00:00", extra=2)]
+    bd = feed_store.bilan_du_soir(semaine, dimanche)
+    check(bd["semaine"] is not None and bd["semaine"]["total"] == 3 and bd["semaine"]["officiels"] == 1
+          and bd["semaine"]["sujets"][0]["title"] == "Sujet - Z",
+          "le dimanche : la semaine va du lundi 00:00 de Paris à maintenant (le 25/10 à 22:59:59 UTC est encore la semaine d'avant)")
+    check(feed_store.debut_de_semaine(dimanche) == datetime(2026, 10, 25, 23, 0, tzinfo=timezone.utc),
+          "lundi 26/10 00:00 à Paris = dimanche 25/10 23:00 UTC (retour à l'heure d'hiver déjà passé)")
+    check(feed_store.bilan_du_soir([], datetime(2026, 11, 1, 22, 30, tzinfo=timezone.utc))["semaine"] is not None
+          and feed_store.bilan_du_soir([], datetime(2026, 11, 1, 23, 30, tzinfo=timezone.utc))["semaine"] is None,
+          "dimanche 23:30 UTC est déjà lundi à Paris : pas de section semaine")
+
+    # ---- qui décide, et quand ----
+    def decide(stored, instant):
+        return feed_store.prepare_bilan(stored, jour, instant)
+    avant = datetime(2026, 11, 2, 20, 59, tzinfo=timezone.utc)      # 21:59 à Paris
+    pile = datetime(2026, 11, 2, 21, 0, tzinfo=timezone.utc)        # 22:00 à Paris
+    res, retenu = decide({}, avant)
+    check(res is None and retenu == "", "21:59 à Paris : pas de bilan")
+    res, retenu = decide({}, pile)
+    check(res is not None and retenu == "2026-11-02", "22:00 pile : le bilan part, et le jour est retenu")
+    res, retenu = decide({"bilan_envoye_le": "2026-11-02"}, pile + timedelta(minutes=30))
+    check(res is None and retenu == "2026-11-02", "une relance à 22 h 30 ne le renvoie PAS")
+    res, retenu = decide({"bilan_envoye_le": "2026-11-02"}, datetime(2026, 11, 2, 23, 30, tzinfo=timezone.utc))
+    check(res is None, "ni à 00:30 le lendemain (c'est un nouveau jour, mais il n'est pas 22 h)")
+    res, retenu = decide({"bilan_envoye_le": "2026-11-02"}, datetime(2026, 11, 3, 21, 5, tzinfo=timezone.utc))
+    check(res is not None and retenu == "2026-11-03", "le soir suivant, un nouveau bilan")
+    res, _ = decide({}, datetime(2026, 10, 24, 19, 30, tzinfo=timezone.utc))
+    check(res is None, "heure d'été : 19:30 UTC est 21:30 à Paris, pas encore 22 h")
+    res, _ = decide({}, datetime(2026, 10, 24, 20, 0, tzinfo=timezone.utc))
+    check(res is not None, "heure d'été : 20:00 UTC est 22:00 à Paris")
+    res, _ = decide({}, datetime(2026, 10, 25, 20, 30, tzinfo=timezone.utc))
+    check(res is None, "heure d'hiver : 20:30 UTC est 21:30 à Paris le 25/10, pas encore 22 h")
+    check(feed_store.bilan_envoye_lu({"bilan_envoye_le": "2026-11-02"}) == "2026-11-02"
+          and feed_store.bilan_envoye_lu({"bilan_envoye_le": "hier"}) == "" and feed_store.bilan_envoye_lu({"bilan_envoye_le": 3}) == ""
+          and feed_store.bilan_envoye_lu({}) == "" and feed_store.bilan_envoye_lu(None) == "",
+          "l'état lu est assaini")
+    f, _, _ = merge_feed.merge_feeds({"items": [], "bilan_envoye_le": "2026-11-03"}, {"items": [], "bilan_envoye_le": "2026-11-02"})
+    check(f["bilan_envoye_le"] == "2026-11-03", "la fusion après conflit garde le jour le PLUS RÉCENT")
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check('"bilan_envoye_le": bilan_envoye_le' in src and "depose_bilan(bilan_a_annoncer)" in src,
+          "le robot écrit l'état dans feed.json et dépose le bilan")
+
+    # ---- le message ----
+    envoyes = []
+    vrai_envoi, vrai_url = discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL
+    repli_vus = []
+    discord_notify.send_discord_with_retry = lambda charge, label, *x, **k: (envoyes.append(charge), repli_vus.append(k.get("repli"))) and True
+    discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.send_bilan(b)
+        m = envoyes[-1]
+        carte = m["embeds"][0]
+        check(len(envoyes) == 1 and m["username"] == "🌙 GTA6_WATCH" and m["content"] == "🌙 Bilan du 02/11 : 15 articles"
+              and carte["title"] == "🌙 Bilan du 02/11 : 15 articles" and carte["color"] == 0x8E5CFF == discord_notify.COULEUR_BILAN,
+              "un message violet, titre « 🌙 Bilan du JJ/MM : N articles » : %s" % carte["title"])
+        check(len(m["embeds"]) == 1 and "🇫🇷 3 · 🇬🇧 12 · 13 médias" in carte["description"],
+              "un lundi : une seule carte, avec les langues et les 13 sites distincts (%s)" % carte["description"].splitlines()[0])
+        check("• IGN France — 4" in carte["description"] and "**Les plus actifs**" in carte["description"]
+              and "🔥 [Repris par cinq](<https://m.test/l>) · 6 sources" in carte["description"],
+              "les médias les plus actifs et les sujets les plus couverts")
+        check("⭐ 1 annonce officielle Rockstar" in carte["description"], "les annonces officielles du jour")
+        check(m["components"][0]["components"][0]["url"] == discord_notify.SITE_URL and "components" not in repli_vus[-1]
+              and "Ouvrir GTA6_WATCH" in repli_vus[-1]["embeds"][-1]["description"],
+              "bouton « Ouvrir GTA6_WATCH » et repli avec le lien en texte")
+        check(all(k not in e for e in m["embeds"] for k in ("image", "thumbnail")) and len(carte["description"]) <= 4096,
+              "aucune image, dans les limites de Discord")
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.send_bilan(bd)
+        check([e["title"] for e in envoyes[-1]["embeds"]][-1] == "📅 Cette semaine" and len(envoyes[-1]["embeds"]) == 2
+              and "3 articles depuis lundi" in envoyes[-1]["embeds"][-1]["description"]
+              and "⭐ 1 annonce officielle Rockstar" in envoyes[-1]["embeds"][-1]["description"],
+              "le dimanche : une SECTION de plus dans le même message, pas un message de plus")
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.send_bilan(feed_store.bilan_du_soir([], soir))
+        check("Aucun article aujourd'hui." in envoyes[-1]["embeds"][0]["description"], "un jour vide reste un message honnête")
+        n = len(envoyes)
+        with contextlib.redirect_stdout(io.StringIO()):
+            check(discord_notify.send_bilan({}) is False and discord_notify.send_bilan(None) is False and len(envoyes) == n,
+                  "un bilan vide ou illisible n'envoie rien")
+    finally:
+        discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = vrai_envoi, vrai_url
+
+    # ---- main() : le bilan part même quand le passage n'a rien d'autre à dire ----
+    dossier = tempfile.mkdtemp()
+    chemin_b = _os.path.join(dossier, "bilan.json")
+    _json.dump(b, open(chemin_b, "w", encoding="utf-8"))
+    def passage(env, bilan_present=True):
+        cles = ("NEW_ITEMS_FILE", "SEULEMENT_OFFICIELS", "BILAN_FILE", "RECAP_TOTALS_FILE", "PROMOTED_ITEMS_FILE",
+                "SOURCE_ALERTS_FILE", "JALONS_FILE", "ROCKSTARMAG_FILE")
+        anciens = {k: _os.environ.get(k) for k in cles}
+        for k in cles:
+            _os.environ.pop(k, None)
+        _os.environ.update(env)
+        if bilan_present:
+            _os.environ["BILAN_FILE"] = chemin_b
+        del envoyes[:]
+        discord_notify.send_discord_with_retry = lambda charge, label, *x, **k: envoyes.append(charge) or True
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = discord_notify.main()
+        finally:
+            discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = vrai_envoi, vrai_url
+            for k, v in anciens.items():
+                if v is None:
+                    _os.environ.pop(k, None)
+                else:
+                    _os.environ[k] = v
+        return code, [c.get("username") for c in envoyes]
+    vide = _os.path.join(dossier, "vide.json")
+    _json.dump([], open(vide, "w"))
+    check(passage({"NEW_ITEMS_FILE": vide}) == (0, ["🌙 GTA6_WATCH"]), "passage sans rien de neuf : le bilan part quand même")
+    check(passage({})[1] == ["🌙 GTA6_WATCH"], "même sans fichier d'articles")
+    check(passage({"NEW_ITEMS_FILE": vide, "SEULEMENT_OFFICIELS": "1"})[1] == ["🌙 GTA6_WATCH"], "et pendant la pause nocturne")
+    check(passage({"NEW_ITEMS_FILE": vide}, bilan_present=False) == (0, []), "sans bilan déposé, rien")
+
+    # ---- le câblage ----
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    robot = wf[wf.index("run: python fetch_feeds.py"):wf.index("name: Publier le résultat")]
+    discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Tableau du jour Discord")]
+    check("BILAN_FILE:" in robot and "BILAN_FILE:" in discord, "le workflow transmet BILAN_FILE au robot et à Discord")
+
+
 def test_push_empreinte_abonnement():
     """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
     print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
@@ -11466,6 +11650,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_section_rockstarmag,
            test_envoi_discord_de_test,
            test_tableau_du_jour,
+           test_bilan_du_soir,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,
