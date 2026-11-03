@@ -318,3 +318,9 @@ Un lot par PR, chacun avec ses contrôles et sa preuve d'échec, après ton « g
 - Jalons : chaque jalon une seule fois, même relancé ; heure de Paris et passage à l'heure d'hiver ; jalon manqué de plus de 90 minutes non envoyé, sauf « sorti » ; « sorti » envoyé même tard.
 - Report : un titre officiel avec un motif part en 🚨 ; le même titre non officiel ne déclenche rien ; « reports results » ne déclenche rien ; part aussi la nuit.
 - Dans tous les cas : aucun secret ni URL de webhook dans un journal ; `DISCORD_WEBHOOK_URL` reste dans les secrets GitHub ; aucun nom de modèle.
+
+## Correction du 03/11/2026 : après la sortie, Discord garde « Les autres »
+
+Antoni : « Je veux pas perdre les messages ordinaires du Discord ». Les passages de cette spec qui disent que
+« Les autres » disparaît après la sortie, ou que le message se tait sans annonce officielle, actu majeure ou
+RockstarMag, **ne valent plus pour Discord**. Le push, éteint, garde l'ancienne règle jusqu'à nouvel ordre.

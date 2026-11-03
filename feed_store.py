@@ -1745,8 +1745,20 @@ def recap_merite_notification(n, officiels, sommet, maintenant=None):
     """
     maintenant = maintenant or datetime.now(timezone.utc)
     if maintenant < SORTIE_GTA6:
-        return bool(n or officiels or sommet >= HOT_SOURCE_THRESHOLD)
+        return recap_a_dire(n, officiels, sommet)
     return bool(officiels) or sommet >= HOT_SOURCE_THRESHOLD
+
+
+def recap_a_dire(n, officiels, sommet):
+    """Le message a-t-il quelque chose à dire, sans règle de date ?
+
+    C'est la règle d'AVANT la sortie, et c'est celle que Discord applique en
+    tout temps depuis le 03/11/2026 : Antoni ne veut pas perdre les messages
+    ordinaires après le 19 novembre (« Je veux pas perdre les messages
+    ordinaires du discord »). Le push, éteint, garde le juge à date
+    ci-dessus tant qu'il n'a rien demandé d'autre.
+    """
+    return bool(n or officiels or sommet >= HOT_SOURCE_THRESHOLD)
 
 # ---------------------------------------------------------------------------
 # LES JALONS DU COMPTE À REBOURS (29/10/2026)

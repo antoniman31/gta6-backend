@@ -9906,8 +9906,8 @@ Troisième lot de `tasks/spec-discord-notification.md`. **Ce que reçoit Antoni 
   vers l'app ; après la sortie « Sorti » avec la même balise.
 - **Garde-fou des 6 000 caractères** : coupe d'abord « Les autres », puis l'actu majeure, **jamais** une annonce
   officielle ; on s'arrête à 5 800. Le total du titre ne bouge pas, le « + N » grossit.
-- **La nuit** : seule la section ⭐ part, seule dans son message. **Après la sortie** : « Les autres » n'en fait
-  plus partie, et le message ne part que s'il a une annonce officielle ou une actu majeure.
+- **La nuit** : seule la section ⭐ part, seule dans son message. ~~**Après la sortie** : « Les autres » n'en fait
+  plus partie…~~ **Corrigé le 03/11/2026** (voir « Les messages ordinaires restent après la sortie »).
 - **Rien à citer** (aperçus absents) : le message garde la ligne d'aperçu et une carte avec le lien, comme
   l'ancien corps.
 
@@ -9984,3 +9984,22 @@ dépôt ; chaque mutation en ajoute au moins un, ou plante la suite) : boutique 
 assistance, `youtu.be`, pages `/videos/`, fusion supprimée, fusion par titre, anglais prioritaire, boutique
 mélangée aux annonces, tri par date retiré, heure écrite même sans vraie date, heure du dernier article au lieu
 du premier, heure absente de la ligne, Markdown non échappé, section comptée sur les articles bruts.
+
+### Les messages ordinaires restent après la sortie — 03/11/2026
+
+Antoni, à la lecture du lot 3 : « Je veux pas perdre les messages ordinaires du Discord ». Le lot 3 avait
+reporté dans le nouveau format la règle du 20/10/2026 (après le 19 novembre, le récapitulatif ne part que s'il y
+a une annonce officielle ou une actu majeure) et **retirait la section « Les autres »** après la sortie : c'était
+lui retirer ses articles ordinaires, et il ne l'a jamais voulu pour Discord.
+
+**Corrigé pour Discord seulement.** Le message part dès qu'un article, une annonce officielle ou une actu
+majeure est entrée (`feed_store.recap_a_dire`, la règle d'avant la sortie), en tout temps, avec « Les autres » et
+le pied « Sorti il y a… ». Le **push**, éteint, garde son juge à date (`recap_merite_notification`) : il ne sera
+changé que si Antoni le demande quand il sera rallumé. Les deux canaux ne « se taisent » donc plus ensemble ;
+le contrôle qui l'exigeait est réécrit.
+
+**Contrôles** : « Les autres » reste après la sortie, un message ordinaire part seul avec « Sorti », la règle de
+Discord est celle d'avant la sortie, `discord_notify` n'appelle plus le juge à date. Trois mutations rejouées,
+trois détectées (silence rétabli, compte des autres forcé à zéro, règle réduite aux officiels). Limite : le
+silence d'après-sortie rétabli n'est attrapé que par la lecture du code et par `send_message`, pas par un
+passage complet de `main()` à une date simulée.

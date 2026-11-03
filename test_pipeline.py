@@ -1161,11 +1161,14 @@ def test_message_a_sections():
         check(avant.rstrip().endswith(f"[Ouvrir GTA6_WATCH]({discord_notify.SITE_URL})"),
               "le lien vers l'app termine le message")
 
-        # Après la sortie, « Les autres » ne fait plus partie du message.
-        m = envoie(officiels=[art(1, off=True)], autres=4, majeurs=1, totaux=(6, 1, 4), maintenant=sortie + timedelta(days=1),
-                   apres_sortie=True)
-        check([e["title"] for e in m["embeds"]] == ["⭐ Officiel · 1", "🚨 Actu majeure · 1"],
-              "après la sortie : plus de section « Les autres » (%s)" % [e["title"] for e in m["embeds"]])
+        # Après la sortie, « Les autres » RESTE dans le message : Antoni ne veut
+        # pas perdre les messages ordinaires (03/11/2026).
+        m = envoie(officiels=[art(1, off=True)], autres=4, majeurs=1, totaux=(6, 1, 4), maintenant=sortie + timedelta(days=1))
+        check([e["title"] for e in m["embeds"]] == ["⭐ Officiel · 1", "🚨 Actu majeure · 1", "🎮 Les autres · 4"],
+              "après la sortie : la section « Les autres » est toujours là (%s)" % [e["title"] for e in m["embeds"]])
+        m = envoie(autres=4, totaux=(4, 0, 1), maintenant=sortie + timedelta(days=1))
+        check([e["title"] for e in m["embeds"]] == ["🎮 Les autres · 4"] and "Sorti" in m["embeds"][-1]["description"],
+              "et un message ordinaire part seul après la sortie, avec « Sorti » au pied")
 
         # Rien à citer : le message reste vrai (ligne d'aperçu + lien).
         m = envoie(totaux=(12, 0, 1), content="🎮 12 nouveaux articles GTA 6")
@@ -10495,15 +10498,17 @@ def test_le_recap_se_tait_apres_la_sortie():
     check(fs.comptes_du_recap([], None) == (0, 0, 0),
           "[comptes] et un lot vide ne plante pas")
 
-    # LES DEUX CANAUX SE TAISENT ENSEMBLE. Un seul juge, appelé par les
-    # deux : couper l'un en laissant l'autre bavard serait pire que ne
-    # rien couper.
-    for nom in ("push_notify.py", "discord_notify.py"):
-        texte = open(nom, encoding="utf-8").read()
-        check("recap_merite_notification" in texte,
-              "%s passe par le juge partagé" % nom)
-        check("comptes_du_recap" in texte,
-              "%s prend ses trois nombres au même endroit" % nom)
+    # DISCORD NE SE TAIT PLUS (03/11/2026). Antoni : « Je veux pas perdre les
+    # messages ordinaires du discord ». Seul le push, éteint, garde le juge à date.
+    texte = open("push_notify.py", encoding="utf-8").read()
+    check("recap_merite_notification" in texte and "comptes_du_recap" in texte,
+          "push_notify.py passe par le juge à date et prend ses trois nombres au même endroit")
+    texte = open("discord_notify.py", encoding="utf-8").read()
+    check("recap_merite_notification" not in texte and "comptes_du_recap" in texte and "recap_a_dire" in texte,
+          "discord_notify.py n'applique plus le silence d'après-sortie, et prend ses trois nombres au même endroit")
+    check(fs.recap_a_dire(180, 0, 1) and fs.recap_a_dire(0, 1, 1) and fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD)
+          and not fs.recap_a_dire(0, 0, 0) and not fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD - 1),
+          "la règle de Discord est celle d'avant la sortie, en tout temps")
 
 
 def test_les_sources_de_lapres_sortie():
