@@ -10252,3 +10252,18 @@ service worker non enregistré, `notif-options.js` ou `icon-badge.png` recréés
 (huit sur huit). **L'équivalente** : retirer le test `if(!self.registration || !self.registration.pushManager)` ne change rien, parce que
 l'appel qui suit est déjà dans un `try/catch` qui rend le même résultat. C'est une double sécurité, pas un défaut non détecté.
 
+### Agenda : le préchargement passe du 12 au 10/11 — 03/11/2026
+
+Antoni a posté la page officielle (Newswire, publiée le 03/11/2026) : le préchargement commence le **mardi 10/11**, pas le 12. **Mon erreur,
+et celle de la presse que j'avais suivie** : l'entrée du 12/11 venait de GameGPU (« selon la presse », six titres dans le fil), et aucune
+source Rockstar ne la contredisait le 27/10. Le 12/11 est en réalité la date des **boîtes avec code de téléchargement** chez les revendeurs.
+
+- **Entrées validées par Antoni** (choix « Corriger + ajouter le 12/11 »), toutes deux en `annonce` avec le lien officiel :
+  10/11 « Début de la précharge : PS5 à 00:00, Xbox à 01:00 (Paris) » ; 12/11 « Boîtes avec code de téléchargement chez les revendeurs ».
+- **Heures** lues dans l'article, converties à Paris (UTC+1 depuis le 25/10) : PS5 minuit heure locale = 00:00 ; Xbox 00:00 GMT = 01:00.
+- **Non retenu** : l'affiche et la carte de Leonida du 19/11 (Antoni a choisi de ne pas les ajouter). La taille (jusqu'à 212 Go) n'est pas dans
+  le libellé : le libellé tient sur une ligne à 320 px.
+- Les entrées portent `verifie_le` 03/11 ; à reconfirmer à la répétition du 10/11 comme les autres.
+- Aucun test ajouté : `test_agenda_est_valide` refuse déjà une « annonce » sans domaine officiel, et il passe. Le HTML ne change pas, donc
+  pas de bump de `sw.js`.
+
