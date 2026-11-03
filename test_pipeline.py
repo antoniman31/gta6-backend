@@ -1403,6 +1403,185 @@ def test_detail_des_officiels():
     check(nuit_titre == "⭐ 1 annonce officielle Rockstar", "le titre de la nuit compte aussi une paire pour une")
 
 
+def test_section_rockstarmag():
+    """La section RockstarMag du message (lot 5, 03/11/2026)."""
+    print("\n[rockstarmag] une section, un repère par liens déjà annoncés")
+    import io, contextlib, json as _json, os as _os, re
+    import discord_notify, merge_feed
+
+    maintenant = datetime(2026, 11, 3, 12, 0, tzinfo=timezone.utc)
+    def mag(n, heures=1, titre=None, desc="", lien=None, rm=True):
+        return {"title": titre or f"Article {n}", "link": lien or f"https://www.rockstarmag.fr/a{n}",
+                "description": desc, "source": "RockstarMag", "rockstarmag": rm,
+                "date": (maintenant - timedelta(hours=heures)).isoformat()}
+
+    # ---- le choix des articles ----
+    deja = ["https://www.rockstarmag.fr/a1?utm_source=x"]
+    lot = [mag(1), mag(2, 5), mag(3, 49), mag(4, rm=False), mag(5, 0.5), mag(6, -3), mag(2, 5)]
+    titres = [a["title"] for a in feed_store.articles_rockstarmag(lot, deja, maintenant)]
+    check(titres == ["Article 5", "Article 2"],
+          "récents (48 h), jamais envoyés (lien comparé après canonical_link), pas de doublon, pas de futur, "
+          "le plus récent d'abord : %s" % titres)
+    check(feed_store.articles_rockstarmag(lot, [a["link"] for a in lot], maintenant) == [],
+          "une relance à la main ne renvoie rien")
+    check(feed_store.articles_rockstarmag([{"rockstarmag": True, "title": "", "link": "x", "date": maintenant.isoformat()}], [], maintenant) == [],
+          "un article sans titre n'est pas cité")
+
+    # ---- le repère ----
+    sans_cle = {"items": []}
+    a, retenus = feed_store.prepare_rockstarmag(sans_cle, [mag(1, 30), mag(2, 20), mag(3, 0.5)], [mag(3, 0.5)], False, maintenant)
+    check([x["title"] for x in a] == ["Article 3"] and len(retenus) == 3,
+          "premier passage (clé absente) : l'existant est retenu sans être annoncé, l'article du passage est annoncé : %s"
+          % [x["title"] for x in a])
+    stocke = {"rockstarmag_envoyes": retenus}
+    a2, retenus2 = feed_store.prepare_rockstarmag(stocke, [mag(1, 30), mag(2, 20), mag(3, 0.5)], [], False, maintenant)
+    check(a2 == [] and retenus2 == retenus, "relancé : rien de nouveau, l'état est conservé")
+    # Un article PUBLIÉ avant le dernier envoi mais TROUVÉ après : il part quand même.
+    tard = mag(9, 10)
+    a3, retenus3 = feed_store.prepare_rockstarmag(stocke, [mag(3, 0.5), tard], [tard], False, maintenant)
+    check([x["title"] for x in a3] == ["Article 9"] and retenus3[-1] == tard["link"],
+          "un article trouvé en retard (publié avant le dernier envoyé) est quand même annoncé")
+    a4, retenus4 = feed_store.prepare_rockstarmag(stocke, [mag(7, 2)], [mag(7, 2)], True, maintenant)
+    check(a4 == [] and retenus4 == retenus, "la nuit : rien n'est annoncé NI retenu, tout attend 5 h")
+    a5, _ = feed_store.prepare_rockstarmag(stocke, [mag(7, 2)], [], False, maintenant)
+    check([x["title"] for x in a5] == ["Article 7"], "et à 5 h l'article de la nuit sort, même s'il n'est plus « nouveau »")
+    beaucoup = {"rockstarmag_envoyes": ["https://www.rockstarmag.fr/vieux%d" % n for n in range(60)]}
+    _, r = feed_store.prepare_rockstarmag(beaucoup, [mag(8, 1)], [mag(8, 1)], False, maintenant)
+    check(len(r) == feed_store.ROCKSTARMAG_ENVOYES_MAX == 50 and r[-1].endswith("/a8") and "vieux0" not in " ".join(r),
+          "la liste retenue est bornée à 50, les plus récents gardés")
+    check(feed_store.rockstarmag_envoyes_lus({"rockstarmag_envoyes": ["a", "a", 3, None, ""]}) == ["a"]
+          and feed_store.rockstarmag_envoyes_lus({}) is None and feed_store.rockstarmag_envoyes_lus(None) is None
+          and feed_store.rockstarmag_envoyes_lus({"rockstarmag_envoyes": "x"}) is None,
+          "l'état lu est assaini ; une clé absente se distingue d'une liste vide")
+    check(set(feed_store.apercu_rockstarmag(mag(1))) == {"title", "link", "description", "date"},
+          "ce qui est déposé pour Discord se limite à quatre champs")
+
+    # ---- fusion après conflit ----
+    f, _, _ = merge_feed.merge_feeds({"items": [], "rockstarmag_envoyes": ["a", "b"]},
+                                     {"items": [], "rockstarmag_envoyes": ["b", "c"]})
+    check(f["rockstarmag_envoyes"] == ["a", "b", "c"], "la fusion fait l'UNION des liens annoncés : %s" % f["rockstarmag_envoyes"])
+    f, _, _ = merge_feed.merge_feeds({"items": [], "rockstarmag_envoyes": [str(n) for n in range(40)]},
+                                     {"items": [], "rockstarmag_envoyes": [str(n) for n in range(40, 80)]})
+    check(len(f["rockstarmag_envoyes"]) == 50 and f["rockstarmag_envoyes"][-1] == "79", "et reste bornée à 50")
+
+    # ---- les lignes ----
+    check(feed_store.marqueur_rockstarmag("https://www.youtube.com/watch?v=x") == "🎬"
+          and feed_store.marqueur_rockstarmag("https://youtu.be/x") == "🎬"
+          and feed_store.marqueur_rockstarmag("https://www.rockstarmag.fr/a") == "📰"
+          and feed_store.marqueur_rockstarmag("https://youtube.com.exemple.test/x") == "📰"
+          and feed_store.marqueur_rockstarmag("https://notyoutube.com/x") == "📰"
+          and feed_store.marqueur_rockstarmag(None) == "📰",
+          "🎬 seulement pour YouTube, 📰 sinon")
+    lignes = discord_notify.lignes_rockstarmag([
+        mag(1, titre="Sans résumé"),
+        mag(2, titre="Avec résumé", desc="<p>Un très long résumé " + "mot " * 80 + "</p>", lien="https://www.youtube.com/watch?v=z"),
+        mag(3, titre="Autre avec résumé", desc="Un second résumé")])
+    check(lignes[0].startswith("📰 [Sans résumé](<") and "\n" not in lignes[0], "sans résumé : une ligne, pas d'extrait")
+    check(lignes[1].startswith("🎬 [Avec résumé](<") and "\n*" in lignes[1], "la vidéo a son 🎬 et l'extrait du premier article qui en a un")
+    extrait = lignes[1].split("\n*")[1].rstrip("*")
+    check(len(extrait) <= feed_store.ROCKSTARMAG_EXTRAIT_MAX + 1 and extrait.endswith("…") and "<p>" not in extrait,
+          "l'extrait est nettoyé et borné à %d (%d)" % (feed_store.ROCKSTARMAG_EXTRAIT_MAX, len(extrait)))
+    check("\n" not in lignes[2], "un seul extrait par section")
+    check(discord_notify.lignes_rockstarmag([mag(1, titre="Même titre", desc="Même titre")])[0].count("\n") == 0,
+          "un résumé qui répète le titre ne fait pas d'extrait")
+
+    # ---- dans le message ----
+    envoyes = []
+    vrai_envoi, vrai_url = discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL
+    discord_notify.send_discord_with_retry = lambda charge, label, *a, **k: envoyes.append(charge) or True
+    discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+    try:
+        def envoie(**kw):
+            envoyes.clear()
+            with contextlib.redirect_stdout(io.StringIO()):
+                discord_notify.send_message(kw.pop("officiels", []), kw.pop("apercus", []), kw.pop("totaux", None),
+                                            kw.pop("majeurs", 0), kw.pop("content", "🎮 test"), maintenant=maintenant, **kw)
+            return envoyes[0]
+        autre = feed_store.apercu_de({"title": "Ordinaire", "link": "https://m.example/o", "source": "M", "date": maintenant.isoformat()})
+        m = envoie(apercus=[autre], totaux=(3, 0, 1), rockstarmag=[mag(1), mag(2)])
+        titres = [e["title"] for e in m["embeds"]]
+        check(titres == ["📰 RockstarMag · 2", "🎮 Les autres · 1"], "section entre l'actu majeure et « Les autres » : %s" % titres)
+        check(m["embeds"][0]["color"] == feed_store.COULEUR_ROCKSTARMAG == 0x58B9FF, "couleur de l'accent de l'app")
+        check(m["username"] == "📰 RockstarMag" and m["content"].endswith("· 📰 2 RockstarMag"),
+              "expéditeur et ligne d'aperçu (%s / %s)" % (m["username"], m["content"]))
+        check(envoie(totaux=None, content="", rockstarmag=[mag(1)])["content"] == "📰 1 RockstarMag",
+              "sans autre chose à dire, la ligne d'aperçu ne porte que RockstarMag")
+        # un article n'est donné qu'une fois
+        doublon = feed_store.apercu_de(mag(1))
+        m = envoie(apercus=[doublon, autre], totaux=(2, 0, 1), rockstarmag=[mag(1)])
+        liens = re.findall(r"\]\(<([^>]+)>\)", " ".join(e["description"] for e in m["embeds"]))
+        check(len(liens) == len(set(liens)) == 2, "un article RockstarMag n'est pas répété dans « Les autres » (%s)" % liens)
+        maj = feed_store.apercu_de(dict(mag(1), extraSources=[{"source": "a"}, {"source": "b"}]))
+        m = envoie(apercus=[maj], totaux=(1, 0, 3), majeurs=1, rockstarmag=[mag(1), mag(2)])
+        check([e["title"] for e in m["embeds"]][:2] == ["🚨 Actu majeure · 1", "📰 RockstarMag · 1"],
+              "un article déjà cité dans l'actu majeure n'est pas répété dans RockstarMag : %s" % [e["title"] for e in m["embeds"]])
+        o = {"title": "Officielle", "link": "https://www.rockstarmag.fr/a1", "date": maintenant.isoformat(), "official": True}
+        m = envoie(officiels=[o], totaux=(1, 1, 1), rockstarmag=[mag(1)])
+        check(all("RockstarMag" not in e["title"] for e in m["embeds"]) and m["username"] == "⭐ Rockstar",
+              "ni répété depuis une annonce officielle, et l'expéditeur reste ⭐")
+        m = envoie(totaux=(9, 0, 1), rockstarmag=[mag(n) for n in range(8)])
+        d = m["embeds"][0]
+        check(d["title"] == "📰 RockstarMag · 8" and d["description"].count("](<") == 5 and "+ 3 autres dans l'app" in d["description"],
+              "cinq liens au plus et le compte exact du reste")
+        # Ordre de coupe sous la limite de 6 000 caractères : autres, RockstarMag, majeure, jamais l'officiel.
+        def sec(nom, k):
+            return {"nom": nom, "entete": nom, "couleur": 1, "lignes": ["x" * 400] * 5, "total": 5}
+        sections = [sec(discord_notify.SECTION_OFFICIEL, 0), sec(discord_notify.SECTION_MAJEURE, 0),
+                    sec(discord_notify.SECTION_ROCKSTARMAG, 0), sec(discord_notify.SECTION_AUTRES, 0)]
+        cartes, coupees = discord_notify.compose_message(sections, "c", "pied")
+        taille = sum(len(e["title"]) + len(e["description"]) for e in cartes)
+        lignes_par = {e["title"].split(" · ")[0]: e["description"].count("x" * 400) for e in cartes}
+        check(taille + 1 <= discord_notify.CARTES_MAX_CARACTERES and coupees > 0,
+              "quatre sections de cinq lignes de 400 caractères : coupées pour tenir sous la limite (%d)" % taille)
+        check(lignes_par.get(discord_notify.SECTION_OFFICIEL) == 5, "l'officiel n'est jamais coupé")
+        check(discord_notify.SECTION_AUTRES not in lignes_par and lignes_par.get(discord_notify.SECTION_ROCKSTARMAG) in (1, 2, 3, 4)
+              and lignes_par.get(discord_notify.SECTION_MAJEURE) == 5,
+              "« Les autres » est épuisée d'abord, puis RockstarMag est entamée, l'actu majeure intacte : %s" % lignes_par)
+    finally:
+        discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = vrai_envoi, vrai_url
+
+    # ---- de bout en bout par main() ----
+    dossier = tempfile.mkdtemp()
+    def passage(mag_liste, nuit, nouveaux=()):
+        chemin_n, chemin_m = _os.path.join(dossier, "n.json"), _os.path.join(dossier, "m.json")
+        _json.dump(list(nouveaux), open(chemin_n, "w", encoding="utf-8"))
+        _json.dump(mag_liste, open(chemin_m, "w", encoding="utf-8"))
+        anciens = {k: _os.environ.get(k) for k in ("NEW_ITEMS_FILE", "ROCKSTARMAG_FILE", "SEULEMENT_OFFICIELS", "RECAP_TOTALS_FILE",
+                                                  "PROMOTED_ITEMS_FILE", "SOURCE_ALERTS_FILE", "JALONS_FILE")}
+        envoyes.clear()
+        try:
+            _os.environ.update(NEW_ITEMS_FILE=chemin_n, ROCKSTARMAG_FILE=chemin_m, SEULEMENT_OFFICIELS="1" if nuit else "0")
+            for k in ("RECAP_TOTALS_FILE", "PROMOTED_ITEMS_FILE", "SOURCE_ALERTS_FILE", "JALONS_FILE"):
+                _os.environ.pop(k, None)
+            discord_notify.send_discord_with_retry = lambda charge, label, *a, **k: envoyes.append(charge) or True
+            discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+            with contextlib.redirect_stdout(io.StringIO()):
+                discord_notify.main()
+        finally:
+            discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = vrai_envoi, vrai_url
+            for k, v in anciens.items():
+                if v is None:
+                    _os.environ.pop(k, None)
+                else:
+                    _os.environ[k] = v
+        return list(envoyes)
+    envoi = passage([feed_store.apercu_rockstarmag(mag(1))], nuit=False)
+    check(len(envoi) == 1 and envoi[0]["embeds"][0]["title"] == "📰 RockstarMag · 1",
+          "un article RockstarMag SEUL justifie un message (rien de neuf par ailleurs)")
+    check(passage([feed_store.apercu_rockstarmag(mag(1))], nuit=True) == [],
+          "et la nuit il se tait, aucune exception à la pause")
+    check(passage([], nuit=False) == [], "sans article RockstarMag ni nouveauté : aucun message")
+
+    # ---- le câblage ----
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    robot = wf[wf.index("run: python fetch_feeds.py"):wf.index("name: Publier le résultat")]
+    discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Notifier par push")]
+    check('"rockstarmag_envoyes": mag_envoyes' in src and "depose_rockstarmag(mag_a_annoncer)" in src
+          and "ROCKSTARMAG_FILE:" in robot and "ROCKSTARMAG_FILE:" in discord,
+          "le robot écrit l'état et dépose le fichier ; le workflow le transmet aux deux étapes")
+
+
 def test_push_empreinte_abonnement():
     """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
     print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
@@ -10937,6 +11116,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_alerte_report_officielle,
            test_message_a_sections,
            test_detail_des_officiels,
+           test_section_rockstarmag,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,

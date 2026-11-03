@@ -2659,6 +2659,11 @@ RECAP_TOTALS_FILE = os.environ.get("RECAP_TOTALS_FILE", "")
 # L'état (les jalons déjà annoncés) vit, lui, dans feed.json.
 JALONS_FILE = os.environ.get("JALONS_FILE", "")
 
+# Les articles RockstarMag à citer dans la section du message, déposés pour
+# discord_notify.py. Même mécanique : hors du dépôt. L'état (les liens déjà
+# annoncés) vit dans feed.json sous `rockstarmag_envoyes`.
+ROCKSTARMAG_FILE = os.environ.get("ROCKSTARMAG_FILE", "")
+
 
 # Trois entiers — c'est tout ce dont feed_store.libelle_recap_depuis_comptes
 # a besoin pour écrire le titre du récapitulatif.
@@ -2740,6 +2745,18 @@ def prepare_jalons(stored, items, maintenant):
         a_annoncer.append({"id": j["id"], "libelle": j["libelle"], "type": j["type"],
                            "cible": j["cible"].isoformat(), "depuis": depuis_libelle, **resume})
     return a_annoncer, deja + [j["id"] for j in dus]
+
+
+def depose_rockstarmag(articles):
+    """Dépose les articles RockstarMag à annoncer, s'il y en a."""
+    if not ROCKSTARMAG_FILE or not articles:
+        return
+    try:
+        with open(ROCKSTARMAG_FILE, "w", encoding="utf-8") as f:
+            json.dump(articles, f, ensure_ascii=False)
+        print(f"  {len(articles)} article(s) RockstarMag déposé(s) -> {ROCKSTARMAG_FILE}")
+    except OSError as e:
+        print(f"  [notif] impossible d'écrire {ROCKSTARMAG_FILE} : {e}")
 
 
 def depose_totaux_recap(totaux):
@@ -4486,6 +4503,10 @@ def main():
         stored, all_items, datetime.now(timezone.utc))
     depose_jalons(jalons_a_annoncer)
 
+    mag_a_annoncer, mag_envoyes = feed_store.prepare_rockstarmag(
+        stored, all_items, a_notifier, SILENCE_NOCTURNE)
+    depose_rockstarmag(mag_a_annoncer)
+
     output = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         # Comptes en attente d'être annoncés. Non nuls uniquement entre
@@ -4494,6 +4515,10 @@ def main():
         # Les jalons du compte à rebours déjà annoncés (J-14, H-1, sorti…) :
         # chacun ne part qu'une fois, même si le robot est relancé à la main.
         "jalons_envoyes": jalons_envoyes,
+        # Les 50 derniers liens RockstarMag déjà annoncés : le repère de la
+        # section RockstarMag (la date de publication perdrait un article trouvé
+        # en retard).
+        "rockstarmag_envoyes": mag_envoyes,
         # Depuis quand le fil, archive comprise, est complet : voir la
         # constante dans feed_store. C'est elle qui permet à l'app de
         # dessiner un graphique par jour ou par mois sans inventer.

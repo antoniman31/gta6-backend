@@ -1923,3 +1923,9 @@ abandonné** (le bilan reste dans le salon principal).
   sur téléphone, et si le style gris `-#` serait rendu (à tester avec le message TEST).
 - Reste de la spec : section RockstarMag, tableau du jour modifié sur place, bilan du soir, boutons-liens, puis les
   messages TEST.
+
+### Lot 5 de la notification Discord : à regarder au premier envoi réel (03/11/2026)
+
+- Au premier passage après la fusion, le robot **amorce** `rockstarmag_envoyes` sans annoncer l'existant : la
+  première section RockstarMag n'apparaît qu'avec un article publié ensuite. Vérifier la clé dans `docs/feed.json`.
+- Reste de la spec : tableau du jour modifié sur place, bilan du soir, boutons-liens, puis les messages TEST.

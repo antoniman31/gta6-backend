@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2122
+qui permet de tester tout le pipeline sans sortir de la machine. **2156
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10003,3 +10003,40 @@ Discord est celle d'avant la sortie, `discord_notify` n'appelle plus le juge à 
 trois détectées (silence rétabli, compte des autres forcé à zéro, règle réduite aux officiels). Limite : le
 silence d'après-sortie rétabli n'est attrapé que par la lecture du code et par `send_message`, pas par un
 passage complet de `main()` à une date simulée.
+
+### Lot 5 de la notification Discord : la section RockstarMag — 03/11/2026
+
+Cinquième lot de `tasks/spec-discord-notification.md`. Le message gagne une section « 📰 RockstarMag · N »
+(couleur de l'accent de l'app, `#58b9ff`), entre l'actu majeure et « Les autres ».
+
+- **Lignes** : 🎬 pour une vidéo YouTube, 📰 pour le site ; cinq liens au plus, puis « + N autres dans l'app ».
+  L'**extrait** (160 caractères, nettoyé par `nettoie_resume`) est celui du **premier article qui en a un**, sous sa
+  ligne ; un résumé qui répète le titre ne donne rien. Mesuré le 29/10/2026 : 100 articles sur 130 ont un résumé,
+  mais 3 des 4 du jour, arrivés par Google News, n'en avaient pas : l'extrait manquera parfois.
+- **Expéditeur** « 📰 RockstarMag » quand c'est la plus forte catégorie ; la ligne d'aperçu s'allonge de
+  « · 📰 N RockstarMag ». Seule RockstarMag peut justifier un message (rien de neuf par ailleurs).
+- **Le repère n'est pas la date de publication.** Le robot garde dans `feed.json` les **50 derniers liens
+  annoncés** (`rockstarmag_envoyes`) et annonce tout article RockstarMag des **48 dernières heures** dont le lien
+  n'y est pas (comparé après `canonical_link`). Un article publié à 11 h et trouvé à 13 h part donc quand même ; une
+  relance à la main ne renvoie rien ; la fusion après conflit fait l'union (50 gardés).
+- **Premier passage après ce lot** : la clé est absente, le robot retient l'existant **sans l'annoncer** (sinon deux
+  jours d'articles d'un coup), sauf ce que ce passage vient de trouver.
+- **La nuit** : aucune exception à la pause, rien n'est annoncé **ni retenu** ; à 5 h la section réunit la nuit.
+- **Un article n'est donné qu'une fois** : officiel, puis actu majeure, puis RockstarMag, puis « Les autres ».
+  Ordre de coupe sous 6 000 caractères : « Les autres », puis RockstarMag, puis l'actu majeure, jamais l'officiel.
+
+**Limite connue** : le « + N » de « Les autres » retire les articles RockstarMag annoncés ; un article trouvé en retard
+et déjà compté dans un message précédent serait retiré deux fois (rare, le compte reste positif).
+
+**Contrôles** (`test_section_rockstarmag`, 34 vérifications) : choix des articles (fenêtre, déjà envoyés, futur, doublon),
+premier passage, relance, article trouvé en retard, nuit, borne de 50, fusion, 🎬/📰 et pièges de domaine, extrait,
+section, couleur, expéditeur, absence de doublon avec les autres sections, ordre de coupe, passage complet par `main()`
+(seul RockstarMag, nuit, rien), câblage du robot et du workflow.
+
+**Seize mutations rejouées, seize détectées** (le harnais ajoute deux échecs de base) : fenêtre de 48 h élargie,
+futur accepté, comparaison sans `canonical_link`, la nuit annonce, borne de 50 supprimée, pas d'amorçage, faux
+YouTube, extrait non nettoyé, extrait sur chaque article, doublons avec l'actu majeure et avec « Les autres »,
+ordre de coupe, RockstarMag seul qui se tait, fusion non bornée ou sans le distant, fichier non déposé. **Une
+mutation passait inaperçue** (un domaine finissant par `tube.com` valait YouTube) : j'ai ajouté `notyoutube.com` au
+contrôle, et elle est maintenant détectée.
+

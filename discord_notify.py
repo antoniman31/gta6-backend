@@ -213,11 +213,12 @@ LIGNES_PAR_SECTION = 5
 
 SECTION_OFFICIEL = "officiel"
 SECTION_MAJEURE = "majeure"
+SECTION_ROCKSTARMAG = "rockstarmag"
 SECTION_AUTRES = "autres"
 
 # Quand il faut couper, on commence par la section la moins importante.
 # L'officiel n'est jamais coupé : c'est ce pour quoi cette veille existe.
-ORDRE_DE_COUPE = (SECTION_AUTRES, SECTION_MAJEURE)
+ORDRE_DE_COUPE = (SECTION_AUTRES, SECTION_ROCKSTARMAG, SECTION_MAJEURE)
 
 
 def balise_temps(instant, style="R"):
@@ -225,12 +226,14 @@ def balise_temps(instant, style="R"):
     return f"<t:{int(instant.timestamp())}:{style}>"
 
 
-def nom_expediteur(avec_officiel, avec_majeure):
+def nom_expediteur(avec_officiel, avec_majeure, avec_rockstarmag=False):
     """Le nom affiché au-dessus du message : la plus forte catégorie présente."""
     if avec_officiel:
         return "⭐ Rockstar"
     if avec_majeure:
         return "🚨 Actu majeure"
+    if avec_rockstarmag:
+        return "📰 RockstarMag"
     return "🎮 GTA6_WATCH"
 
 
@@ -270,6 +273,34 @@ def ligne_officiel(annonce):
     if annonce.get("instant"):
         detail += [balise_temps(annonce["instant"]), annonce.get("heure") or ""]
     return ligne + "\n*" + " · ".join(d for d in detail if d) + "*"
+
+
+def lignes_rockstarmag(articles):
+    """Les lignes de la section RockstarMag : 🎬 pour une vidéo, 📰 pour le site.
+
+    L'extrait (160 caractères, nettoyé) est celui du PREMIER article qui en a
+    un, sous sa ligne ; les autres n'en ont pas, pour que la section reste
+    courte. Un résumé qui ne fait que répéter le titre est vide
+    (feed_store.nettoie_resume) : il n'y a alors rien à montrer.
+    """
+    lignes, extrait_pose = [], False
+    for a in articles or ():
+        titre = echappe_markdown(coupe(a.get("title")))
+        if not titre:
+            continue
+        lien = (a.get("link") or "").strip()
+        if any(c in lien for c in CARACTERES_INTERDITS_URL):
+            lien = ""
+        corps = f"[{titre}](<{lien}>)" if lien else titre
+        ligne = f"{feed_store.marqueur_rockstarmag(lien)} {corps}"
+        if not extrait_pose:
+            extrait = coupe(feed_store.nettoie_resume(a.get("description"), a.get("title") or ""),
+                            feed_store.ROCKSTARMAG_EXTRAIT_MAX)
+            if extrait:
+                ligne += "\n*" + echappe_markdown(extrait).replace("\n", " ") + "*"
+                extrait_pose = True
+        lignes.append(ligne)
+    return lignes
 
 
 def nouvelle_section(nom, entete, couleur, apercus, total, ligne=None):
@@ -327,7 +358,7 @@ def compose_message(sections, content, pied, maximum=CARTES_MAX_CARACTERES):
     return rendu(), coupees
 
 
-def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None):
+def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None, rockstarmag=()):
     """Envoie UN SEUL message par passage : des sections colorées sous une
     ligne d'aperçu, et un pied avec le compte à rebours.
 
@@ -351,6 +382,16 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None):
         if cat in par_cat:
             par_cat[cat].append(a)
 
+    # Un article n'est donné qu'une fois : officiel, puis actu majeure, puis
+    # RockstarMag, puis « Les autres ».
+    def cle(a):
+        return feed_store.canonical_link((a.get("link") or "").strip())
+    deja_cites = {cle(a) for a in par_cat["majeur"][:LIGNES_PAR_SECTION]}
+    deja_cites |= {cle(a) for a in feed_store.officiels_du_message(officiels, maintenant)}
+    mag = [a for a in (rockstarmag or ()) if cle(a) not in deja_cites]
+    mag_liens = {cle(a) for a in (rockstarmag or ())}
+    par_cat["autre"] = [a for a in par_cat["autre"] if cle(a) not in mag_liens]
+
     sections = []
     annonces = feed_store.officiels_du_message(officiels, maintenant)
     if annonces:
@@ -360,11 +401,21 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None):
     sections.append(nouvelle_section(
         SECTION_MAJEURE, "🚨 Actu majeure", COULEUR_MAJEURE,
         par_cat["majeur"], majeurs))
-    autres_total = max(0, n - off_total - majeurs)
+    lignes_mag = lignes_rockstarmag(mag[:LIGNES_PAR_SECTION])
+    if lignes_mag:
+        sections.append({"nom": SECTION_ROCKSTARMAG, "entete": "📰 RockstarMag",
+                         "couleur": feed_store.COULEUR_ROCKSTARMAG, "lignes": lignes_mag,
+                         "total": max(len(mag), len(lignes_mag))})
+    # Les articles RockstarMag arrivés dans CE passage sont déjà dans `n` : on
+    # les retire des « autres ». Un article trouvé en retard et déjà compté plus
+    # tôt serait retiré deux fois (rare, et le compte reste positif).
+    autres_total = max(0, n - off_total - majeurs - len(mag))
     sections.append(nouvelle_section(
         SECTION_AUTRES, "🎮 Les autres", feed_store.couleur_compteur(maintenant),
         par_cat["autre"], autres_total))
     sections = [s for s in sections if s]
+    if lignes_mag:
+        content = (content + " · " if content else "") + f"📰 {len(mag)} RockstarMag"
     pied = pied_du_message(maintenant)
     if sections:
         cartes, coupees = compose_message(sections, content, pied)
@@ -378,7 +429,8 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None):
     charge = {
         "username": nom_expediteur(bool(officiels),
                                    any(s["nom"] == SECTION_MAJEURE for s in sections)
-                                   or (totaux is not None and totaux[2] >= feed_store.HOT_SOURCE_THRESHOLD)),
+                                   or (totaux is not None and totaux[2] >= feed_store.HOT_SOURCE_THRESHOLD),
+                                   bool(lignes_mag)),
         "content": content[:2000],
         "embeds": cartes,
     }
@@ -617,7 +669,10 @@ def _main():
     # rien : à 5h le premier passage peut ne rien trouver de neuf alors que
     # douze articles attendent d'être annoncés.
     totaux = lire_totaux_recap()
-    if not new_items and not promus and totaux is None:
+    # La section RockstarMag : choisie par le robot (liens pas encore annoncés),
+    # jamais la nuit. Elle peut à elle seule justifier un message.
+    rockstarmag = lire_liste(os.environ.get("ROCKSTARMAG_FILE", ""))
+    if not new_items and not promus and totaux is None and not rockstarmag:
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 
@@ -625,7 +680,7 @@ def _main():
         new_items, promus, totaux)
     # Pas de silence après la sortie : Antoni a demandé le 03/11/2026 de ne pas
     # perdre les messages ordinaires. Le push, éteint, garde son juge à date.
-    if not feed_store.recap_a_dire(n_recap, off_recap, sommet_recap) and not officiels:
+    if not feed_store.recap_a_dire(n_recap, off_recap, sommet_recap) and not officiels and not rockstarmag:
         print("[discord] aucun nouvel article à annoncer.")
         return 0
 
@@ -638,12 +693,14 @@ def _main():
     majeurs = feed_store.lire_majeurs_recap()
     if majeurs is None:
         majeurs = feed_store.compte_majeurs(list(new_items or ()) + list(promus or ()))
-    if totaux:
+    if not feed_store.recap_a_dire(n_recap, off_recap, sommet_recap):
+        contenu = ""      # seul RockstarMag a quelque chose à dire
+    elif totaux:
         contenu = feed_store.libelle_recap_depuis_comptes(n_recap, off_recap, sommet_recap)
     else:
         contenu = feed_store.libelle_recap(new_items, promus)
     send_message(officiels, apercus, (n_recap, off_recap, sommet_recap), majeurs,
-                 contenu)
+                 contenu, rockstarmag=rockstarmag)
     # Cette étape ne doit JAMAIS faire échouer le workflow : les articles
     # sont déjà publiés à ce stade, une panne de Discord n'est pas une
     # panne du robot.
