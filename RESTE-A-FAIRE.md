@@ -1961,3 +1961,10 @@ abandonné** (le bilan reste dans le salon principal).
   « 📅 Cette semaine ».
 - **La spec de notification Discord est entièrement codée.** Restent à lire : le retard des officiels (après dix alertes) et le seuil
   de l'actu majeure (39 articles sur 93 avec trois sites distincts), voir le lot 1.
+
+### Retrait du push : le lot B reste à faire (03/11/2026)
+
+- **Lot A (robot) fait.** Reste le **lot B (l'app)** : le panneau Notifications, le journal de diagnostic, le bouton de test local, le
+  réglage « ne pas déranger » et les gestionnaires push de `docs/sw.js`, plus une désinscription finale de l'ancien abonnement au
+  premier démarrage du nouveau service worker. À faire **avant le gel du 10/11**, avec vérification à 320 et 390 px.
+- Les secrets `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY` et `VAPID_SUBJECT` sont gardés par Antoni mais ne servent plus à rien.

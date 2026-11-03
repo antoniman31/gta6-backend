@@ -96,11 +96,9 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3, repli=None):
 # Antoni, le 22/09/2026 : « faut aussi que tu détailles les notif discord avec
 # des liens pour les 5 derniers article ».
 #
-# Le TITRE de l'embed ne bouge pas d'un caractère : c'est le texte partagé
-# mot pour mot avec les notifications push (feed_store.libelle_recap), et
-# l'invariant « les deux canaux disent la même chose » tient toujours. Ce qui
-# s'ajoute, c'est le corps du message — propre à Discord, qui est le seul des
-# deux à savoir afficher cinq liens cliquables.
+# La ligne d'aperçu reste le texte de feed_store.libelle_recap. Les notifications
+# push, qui le partageaient, ont été retirées le 03/11/2026 : Discord est
+# désormais le seul canal.
 
 # Discord tolère 4096 caractères de description. On est loin du compte avec
 # cinq lignes, mais un titre du fil monte déjà à 137 caractères et rien ne
@@ -687,12 +685,9 @@ def main():
     mais une EXCEPTION ne l'était pas : un fichier d'articles malformé, un
     article sans la forme attendue, et l'étape sortait en erreur.
 
-    Ce que ça coûtait, et c'est pour ça que c'est corrigé à cinq semaines de
-    la sortie : l'étape suivante, la notification push, est conditionnée à
-    `if: success()`. Les deux canaux sont réputés indépendants — c'est
-    même la raison d'être du second, puisque taper une notification Discord
-    ouvre Discord et jamais l'article. Un plantage du premier emportait
-    silencieusement le second, le jour où il sert le plus.
+    Ce que ça coûtait : les étapes suivantes (le tableau du jour, le signal de
+    vie) sont conditionnées à `if: success()`. Une étape Discord qui plante ne
+    doit pas les emporter, le jour où elles servent le plus.
     """
     try:
         return _main()
@@ -700,7 +695,7 @@ def main():
         propre = feed_store.masquer_urls(str(e), [DISCORD_WEBHOOK_URL])
         print(f"[discord] ÉCHEC NON PRÉVU ({type(e).__name__}) : {propre}")
         print("[discord] l'étape se termine quand même : les articles sont "
-              "publiés, et la notification push ne doit pas être emportée.")
+              "publiés, et les étapes suivantes ne doivent pas être emportées.")
         return 0
 
 
@@ -789,7 +784,7 @@ def _annonces():
     n_recap, off_recap, sommet_recap = feed_store.comptes_du_recap(
         new_items, promus, totaux)
     # Pas de silence après la sortie : Antoni a demandé le 03/11/2026 de ne pas
-    # perdre les messages ordinaires. Le push, éteint, garde son juge à date.
+    # perdre les messages ordinaires.
     if not feed_store.recap_a_dire(n_recap, off_recap, sommet_recap) and not officiels and not rockstarmag:
         print("[discord] aucun nouvel article à annoncer.")
         return 0

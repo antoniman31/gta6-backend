@@ -2649,9 +2649,9 @@ NEW_ITEMS_FILE = os.environ.get("NEW_ITEMS_FILE", "")
 # ressortis au premier passage de la journée.
 SILENCE_NOCTURNE = os.environ.get("SEULEMENT_OFFICIELS") == "1"
 
-# Ce que le récapitulatif doit annoncer, déposé pour discord_notify.py et
-# push_notify.py. Même mécanique que NEW_ITEMS_FILE : hors du dépôt, et lu
-# seulement une fois la publication confirmée.
+# Ce que le récapitulatif doit annoncer, déposé pour discord_notify.py. Même
+# mécanique que NEW_ITEMS_FILE : hors du dépôt, et lu seulement une fois la
+# publication confirmée.
 RECAP_TOTALS_FILE = os.environ.get("RECAP_TOTALS_FILE", "")
 
 # Les jalons du compte à rebours à annoncer à CE passage, déposés pour
@@ -2857,13 +2857,6 @@ def reporte_ou_annonce(attente, a_notifier, promus, officiels_du_run,
         print(f"  Récapitulatif du matin : {len(a_notifier)} de ce passage "
               f"+ {attente['articles']} mis de côté cette nuit.")
     return attente_vide()
-
-
-# Clé publique VAPID, publiée dans feed.json pour que l'app puisse créer un
-# abonnement aux notifications push. Elle est publique par nature — c'est
-# la clé PRIVÉE, gardée en secret GitHub, qui autorise l'envoi. Absente,
-# l'app masque simplement l'option.
-VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
 
 
 # "muette" et "cassee" décrivent la même conséquence — la source ne
@@ -4598,10 +4591,6 @@ def main():
         # Et le décompte complet, par mois et par source, hoquets compris.
         # Deux mois gardés, quelques centaines d'octets.
         "sources_incidents_compte": compteur_incidents,
-        # Permet à l'app de proposer les notifications push sans que la clé
-        # soit codée en dur dans index.html : elle suit la configuration du
-        # dépôt, et disparaît si le secret est retiré.
-        "vapid_public_key": VAPID_PUBLIC_KEY,
         "items": all_items,
     }
 

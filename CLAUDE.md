@@ -1,8 +1,8 @@
 # GTA6_WATCH
 
 Une PWA d'un seul fichier (`docs/index.html`, GitHub Pages, **aucun build**) et un
-robot Python (`fetch_feeds.py`, `feed_store.py`, `merge_feed.py`, `push_notify.py`,
-`discord_notify.py`) lancé toutes les heures par GitHub Actions. GTA VI sort le
+robot Python (`fetch_feeds.py`, `feed_store.py`, `merge_feed.py`, `discord_notify.py`,
+`tableau_discord.py`) lancé toutes les heures par GitHub Actions. GTA VI sort le
 **19 novembre 2026 à 00:00, heure de Paris**.
 
 **Réponds en français, et toujours en heure de Paris.** Antoni est seul utilisateur,
@@ -39,8 +39,8 @@ ajoutes doit être **prouvé capable d'échouer** : rejoue-le contre l'ancien co
 - **Le proxy du conteneur bloque** `github.io`, YouTube et la plupart des sites de
   presse. Une sonde ou un `curl` qui échoue ne prouve rien sur le site : lis plutôt le
   journal du robot (`mcp__github__get_job_logs`, sur le dernier passage).
-- **Secrets** : clé VAPID privée, `PUSH_SUBSCRIPTIONS`, `DISCORD_WEBHOOK_URL`,
-  `HEALTHCHECK_URL` vivent dans les secrets GitHub, jamais dans le dépôt ni dans la
+- **Secrets** : `DISCORD_WEBHOOK_URL`, `HEALTHCHECK_URL` (et les anciens secrets VAPID,
+  gardés par Antoni mais inutilisés depuis le retrait du push, le 03/11/2026) vivent dans les secrets GitHub, jamais dans le dépôt ni dans la
   page. Aucun jeton dans l'export de sauvegarde.
 - **Rien de payant** (pas de résumé par IA). Le User-Agent Reddit ne porte aucun pseudo.
 - **Jamais faire passer un contrôle en baissant un seuil** sans dire pourquoi.

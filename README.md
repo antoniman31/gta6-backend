@@ -2,7 +2,7 @@
 
 Veille automatisée de l'actualité GTA 6 : un robot interroge 60 sources en
 parallèle toutes les heures, décode les vrais liens Google News, récupère
-de vraies miniatures, notifie sur Discord et par notification push, et publie
+de vraies miniatures, notifie sur Discord, et publie
 tout dans une app installable sur Android.
 
 Un passage complet dure **environ une minute**.
@@ -29,7 +29,7 @@ GitHub Actions  ◄── cron GitHub "37 */3"  ← filet de secours, best-effor
         │                    ▲
         │                    │ merge_feed.py (fusion si push concurrent)
         ▼
-  discord_notify.py + push_notify.py (APRÈS publication réussie)
+  discord_notify.py + tableau_discord.py (APRÈS publication réussie)
         │
         ▼
   healthchecks.io (signal de vie ; l'absence de signal déclenche l'alerte)
@@ -474,10 +474,9 @@ en deçà du parallélisme gagné.
 
   Il existe parce que chacune de ces vérifications avait déjà été écrite à
   la main un jour de panne, utilisée une fois, puis perdue.
-- **`push_notify.py`** — les notifications push natives, appelées au même
-  moment. N'importe pas `pywebpush` au niveau du module : la construction
-  du message et la lecture des abonnements restent testables sans la
-  dépendance.
+- **`tableau_discord.py`** — le tableau du jour, un message Discord créé à 5 h
+  puis modifié à chaque passage. (Les notifications push, `push_notify.py`, ont
+  été retirées le 03/11/2026 : voir le journal.)
 
 ### Tests et contrôles
 
@@ -523,7 +522,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2270
+qui permet de tester tout le pipeline sans sortir de la machine. **2163
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -1890,9 +1889,9 @@ avait rien à rattraper — il n'existait plus.
 
 **Deux durées, pas une.** Un récapitulatif est périmé au passage suivant :
 au-delà d'une heure il annoncerait un compte que le passage d'après a déjà
-corrigé, d'où `TTL_RECAP = 3600`. Une annonce de Rockstar ne se périme pas de
+corrigé, d'où TTL_RECAP = 3600 (constante retirée avec le push le 03/11/2026). Une annonce de Rockstar ne se périme pas de
 la même façon et mérite d'arriver en retard plutôt que jamais, d'où
-`TTL_OFFICIEL = 86400`.
+TTL_OFFICIEL = 86400 (idem).
 
 **`Urgency` seulement pour Rockstar.** L'en-tête `Urgency` (RFC 8030 §5.3)
 dit au service de push si le message vaut la peine de réveiller un appareil
@@ -10182,4 +10181,38 @@ articles ont plusieurs sources ne prouve pas qu'un article à une seule source e
 sujet), et mon premier `sed` visant l'adresse ne trouvait pas son motif (rien muté). **La seizième est équivalente** : trier à
 égalité sur la clé en minuscules ou sur le nom en minuscules donne le même ordre ; ce n'est pas un défaut non détecté, c'est
 un code différent au comportement identique.
+
+### Les notifications push sont retirées du robot (lot A) — 03/11/2026
+
+Antoni, le 03/11 : « on ne la réactivera jamais, on la dégage du code » (le push était éteint depuis la mort de l'abonnement,
+le 29/10 : trois abonnements morts en 33 h au plus, moins de 35 min et 2 h 27, sans cause trouvée, et Discord porte désormais les
+mêmes liens par un bouton). Il a choisi : lots A puis B, retrait aussi du bouton de test local et de « ne pas déranger »,
+désinscription finale de l'ancien abonnement, **secrets VAPID gardés** (inutilisés).
+
+**Ce lot A est le côté robot, sans effet visible** :
+- supprimés : `push_notify.py` (541 lignes), `test-push.yml`, l'étape « Notifier par push » du workflow, la clé `vapid_public_key`
+  de `feed.json` (l'app masque alors sa section Notifications) et l'alerte Discord « push mort » ;
+- `requirements.txt` : `pywebpush` et tout son graphe (`cryptography`, `aiohttp`, `py-vapid`, `http_ece`, `cffi`… 14 paquets) sont
+  retirés. Les pins restants sont ceux d'avant ; **vérifié dans un environnement neuf** : `pip install -r requirements.txt` passe,
+  `pip check` ne trouve rien de cassé, la liste installée est exactement la liste épinglée, et les imports du robot fonctionnent ;
+- code devenu mort retiré de `feed_store` : `recap_merite_notification` (le silence d'après-sortie, qui ne valait que pour le push),
+  `libelle_officiel`, `etiquette_officiel`, `corps_recap`, `article_le_plus_notable`, `est_actu_majeure`. `NOTIFS_OFFICIELLES_MAX`
+  reste : il plafonne les alertes de report de Discord ;
+- tests : sept fonctions de test entièrement push retirées ; les tests mixtes (récapitulatif du matin, alerte officielle, plafond,
+  rafale, liaison des lecteurs, workflow) ne gardent que la partie Discord. **Le total passe de 2 270 à 2 157 vérifications** : ce
+  sont celles du code retiré, pas un seuil abaissé ;
+- le silence d'après-sortie n'existe plus nulle part : le test qui le tenait devient « Discord continue de parler après la sortie ».
+
+**Un dégât de mon retrait, rattrapé** : en retirant les tests du push, j'ai aussi retiré trois fonctions utilitaires
+(`_fausses_sources`, `_article`, `_fausse_collecte`) rangées entre deux tests, ce qui a fait planter des tests de récupération
+parallèle sans rapport. Retrouvées dans l'ancien fichier et remises.
+
+**Deux mentions du README** (TTL_RECAP et TTL_OFFICIEL, constantes du push) ne sont plus entre apostrophes inversées : le contrôle
+« toute constante citée existe » les aurait fait échouer, et le journal garde le récit tel quel.
+
+**Contrôle du retrait** (`test_le_push_est_retire`, 6 vérifications) : ni `push_notify.py` ni `test-push.yml`, aucune étape push ni
+secret VAPID dans le workflow, `requirements.txt` sans `pywebpush` ni son graphe, `fetch_feeds` sans clé VAPID, le code mort retiré.
+
+**Six mutations rejouées, six détectées** : `push_notify.py` recréé, `test-push.yml` recréé, une étape push remise dans le workflow,
+`pywebpush` réépinglé, la clé VAPID republiée dans `feed.json`, le juge d'après-sortie recréé.
 
