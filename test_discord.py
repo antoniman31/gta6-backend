@@ -134,6 +134,11 @@ def etape_balise(webhook, maintenant):
 
 def messages_d_exemple(maintenant):
     """Les vrais messages du robot, construits par le vrai code, sur des articles fictifs."""
+    # Des dates SANS microsecondes, comme celles des flux : le robot prend une
+    # date qui en porte pour une date « première vue » et n'affiche alors pas
+    # l'heure de publication (constaté sur l'envoi TEST du 03/11/2026).
+    maintenant = maintenant.replace(microsecond=0)
+
     def art(n, **extra):
         a = {"title": f"Article d'exemple {n} - Média {n}", "link": f"https://exemple.test/{n}", "source": "Exemple",
              "date": (maintenant - timedelta(minutes=10 * n)).isoformat()}
@@ -167,7 +172,8 @@ def etape_exemples(webhook, maintenant):
     envoyes = []
 
     def envoi_marque(charge, label, **k):
-        ok = vrai(marque(charge), label)
+        repli = k.get("repli")
+        ok = vrai(marque(charge), label, repli=marque(repli) if repli else None)
         envoyes.append(ok)
         time.sleep(PAUSE_S)
         return ok
