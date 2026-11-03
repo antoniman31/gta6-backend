@@ -10258,11 +10258,12 @@ Antoni a posté la page officielle (Newswire, publiée le 03/11/2026) : le préc
 et celle de la presse que j'avais suivie** : l'entrée du 12/11 venait de GameGPU (« selon la presse », six titres dans le fil), et aucune
 source Rockstar ne la contredisait le 27/10. Le 12/11 est en réalité la date des **boîtes avec code de téléchargement** chez les revendeurs.
 
-- **Entrées validées par Antoni** (choix « Corriger + ajouter le 12/11 »), toutes deux en `annonce` avec le lien officiel :
-  10/11 « Début de la précharge : PS5 à 00:00, Xbox à 01:00 (Paris) » ; 12/11 « Boîtes avec code de téléchargement chez les revendeurs ».
+- **Entrées validées par Antoni** (réponses « 2 et 3 » puis « J'ai une xbox »), toutes en `annonce` avec le lien officiel : 10/11
+  « Précharge (jusqu'à 212 Go) : Xbox à 01:00, PS5 à 00:00 (Paris) » (la Xbox d'abord, puisqu'Antoni joue sur Xbox) ; 12/11 « Boîtes avec code
+  de téléchargement chez les revendeurs » ; 19/11 « Affiche et carte de Leonida, en téléchargement gratuit ».
 - **Heures** lues dans l'article, converties à Paris (UTC+1 depuis le 25/10) : PS5 minuit heure locale = 00:00 ; Xbox 00:00 GMT = 01:00.
-- **Non retenu** : l'affiche et la carte de Leonida du 19/11 (Antoni a choisi de ne pas les ajouter). La taille (jusqu'à 212 Go) n'est pas dans
-  le libellé : le libellé tient sur une ligne à 320 px.
+- **Mesuré avec le vrai `agenda.json`**, horloge au 03/11 et au 10/11, à 320 et 390 px : cinq lignes, aucune ligne ni cellule hors du panneau,
+  aucune erreur JavaScript. Le 03/11 le panneau montre J-6, J-7, J-9, J-15, J-16 ; le 10/11, « Hier », « Aujourd'hui », J-2, J-8, J-9.
 - Les entrées portent `verifie_le` 03/11 ; à reconfirmer à la répétition du 10/11 comme les autres.
 - Aucun test ajouté : `test_agenda_est_valide` refuse déjà une « annonce » sans domaine officiel, et il passe. Le HTML ne change pas, donc
   pas de bump de `sw.js`.
