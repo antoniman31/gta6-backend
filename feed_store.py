@@ -668,6 +668,18 @@ def lire_liste(path):
         return []
 
 
+def lire_json_objet(path):
+    """Lit un fichier JSON contenant un objet, ou renvoie {} (même tolérance que lire_liste)."""
+    if not path:
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}
+
+
 def lire_totaux_recap(variable="RECAP_TOTALS_FILE"):
     """Ce que le récapitulatif doit annoncer, déposé par fetch_feeds.py.
 
@@ -2334,6 +2346,160 @@ def marqueur_rockstarmag(lien):
     except Exception:
         return "📰"
     return "🎬" if hote in ("youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be") else "📰"
+
+
+# ---------------------------------------------------------------------------
+# LE JOUR DE PARIS, ET LE BILAN DU SOIR (lots 7 et 8, 03/11/2026)
+# ---------------------------------------------------------------------------
+# Les statistiques d'une journée servent à deux messages : le tableau du jour
+# (modifié à chaque passage) et le bilan de 22 h. Elles vivent donc ici, une fois.
+#
+# UN JOUR EST UN JOUR DE PARIS, de minuit à minuit : 25 h le 25/10/2026 (retour à
+# l'heure d'hiver), 23 h le 29/03/2026. Un article daté de plus de cinq minutes
+# dans le futur n'est pas compté (RETARD_FUTUR_TOLERE_MIN).
+BILAN_HEURE_PARIS = 22
+BILAN_TOP_MEDIAS = 5
+BILAN_TOP_SUJETS = 3
+
+
+def jour_paris(maintenant):
+    return maintenant.astimezone(PARIS).date()
+
+
+def bornes_du_jour(maintenant):
+    """Minuit à minuit, heure de Paris, en UTC."""
+    jour = jour_paris(maintenant)
+    debut = datetime(jour.year, jour.month, jour.day, tzinfo=PARIS)
+    lendemain = jour + timedelta(days=1)
+    fin = datetime(lendemain.year, lendemain.month, lendemain.day, tzinfo=PARIS)
+    return debut.astimezone(timezone.utc), fin.astimezone(timezone.utc)
+
+
+def debut_de_semaine(maintenant):
+    """Lundi 00:00, heure de Paris, en UTC : la semaine du bilan du dimanche."""
+    jour = jour_paris(maintenant)
+    lundi = jour - timedelta(days=jour.weekday())
+    return datetime(lundi.year, lundi.month, lundi.day, tzinfo=PARIS).astimezone(timezone.utc)
+
+
+def articles_entre(items, debut, fin, maintenant):
+    """[(date, article)] des articles dont la vraie date tombe dans [debut, fin)."""
+    plafond = maintenant + timedelta(minutes=RETARD_FUTUR_TOLERE_MIN)
+    sortie = []
+    for it in items or ():
+        if not isinstance(it, dict):
+            continue
+        quand = parse_date_key(it.get("date") or "")
+        if quand == DATE_FLOOR or not (debut <= quand < fin) or quand > plafond:
+            continue
+        sortie.append((quand, it))
+    return sortie
+
+
+def stats_du_jour(items, maintenant):
+    """Le total du jour, les langues, les médias distincts, les officiels, le dernier article."""
+    debut, fin = bornes_du_jour(maintenant)
+    total = fr = en = officiels = 0
+    medias, dernier = set(), None
+    for quand, it in articles_entre(items, debut, fin, maintenant):
+        total += 1
+        fr += it.get("lang") == "fr"
+        en += it.get("lang") == "en"
+        officiels += bool(it.get("official"))
+        site = site_du_lien(it.get("link") or "")
+        if site:
+            medias.add(site)
+        if dernier is None or quand > dernier[0]:
+            dernier = (quand, it)
+    return {"jour": jour_paris(maintenant).isoformat(), "jj_mm": jour_paris(maintenant).strftime("%d/%m"),
+            "total": total, "fr": fr, "en": en, "medias": len(medias), "officiels": officiels,
+            "dernier": dernier}
+
+
+def media_du_titre(item):
+    """Le média d'un article : celui du TITRE, pas le nom du flux.
+
+    « Google News (EN) — 124 » n'apprend rien : ce flux porte des centaines de
+    rédactions. Le titre dit « … - IGN France » ; à défaut, le nom du flux s'il
+    n'est pas un agrégateur, sinon le site du lien.
+    """
+    _, media = separe_titre_et_media(item.get("title"), "")
+    if media:
+        # Un titre qui finit par une ADRESSE (« … - https://tech-insider.org/ »,
+        # vu le 01/11/2026) : le média est son site, pas l'adresse entière.
+        if "://" in media:
+            return site_du_lien(media) or media
+        return media
+    source = (item.get("source") or "").strip()
+    if source and not source.startswith("Google News"):
+        return source
+    return site_du_lien(item.get("link") or "")
+
+
+def medias_les_plus_actifs(lignes, nombre=BILAN_TOP_MEDIAS):
+    """[(média, nombre d'articles)] des médias les plus actifs, sur le média du TITRE."""
+    compte, nom = {}, {}
+    for _, it in lignes:
+        media = media_du_titre(it)
+        if not media:
+            continue
+        cle = media.casefold()
+        compte[cle] = compte.get(cle, 0) + 1
+        nom.setdefault(cle, media)
+    classes = sorted(compte, key=lambda c: (-compte[c], nom[c].casefold()))
+    return [(nom[c], compte[c]) for c in classes[:nombre]]
+
+
+def sujets_les_plus_couverts(lignes, nombre=BILAN_TOP_SUJETS):
+    """Les articles repris par le plus de rédactions (deux au moins), le plus couvert d'abord."""
+    candidats = []
+    for quand, it in lignes:
+        extra = it.get("extraSources")
+        sources = 1 + len(extra) if isinstance(extra, list) else 1
+        if sources >= 2:
+            candidats.append((sources, quand, it))
+    candidats.sort(key=lambda c: (-c[0], -c[1].timestamp()))
+    return [{"title": it.get("title") or "", "link": (it.get("link") or "").strip(),
+             "source": it.get("source") or "", "sources": sources}
+            for sources, _, it in candidats[:nombre]]
+
+
+def bilan_du_soir(items, maintenant):
+    """Le bilan d'une journée de Paris ; le dimanche, il porte aussi la semaine."""
+    debut, fin = bornes_du_jour(maintenant)
+    jour = articles_entre(items, debut, fin, maintenant)
+    st = stats_du_jour(items, maintenant)
+    bilan = {"jour": st["jour"], "jj_mm": st["jj_mm"], "total": st["total"], "fr": st["fr"], "en": st["en"],
+             "medias": st["medias"], "officiels": st["officiels"],
+             "top_medias": medias_les_plus_actifs(jour), "sujets": sujets_les_plus_couverts(jour),
+             "semaine": None}
+    if maintenant.astimezone(PARIS).weekday() == 6:
+        semaine = articles_entre(items, debut_de_semaine(maintenant), fin, maintenant)
+        bilan["semaine"] = {"total": len(semaine),
+                            "officiels": sum(1 for _, it in semaine if it.get("official")),
+                            "sujets": sujets_les_plus_couverts(semaine)}
+    return bilan
+
+
+def bilan_envoye_lu(stored):
+    """Le jour (AAAA-MM-JJ) du dernier bilan annoncé, ou "" si la clé manque ou est abîmée."""
+    v = (stored or {}).get("bilan_envoye_le") if isinstance(stored, dict) else None
+    return v if isinstance(v, str) and re.match(r"^\d{4}-\d{2}-\d{2}$", v) else ""
+
+
+def prepare_bilan(stored, items, maintenant):
+    """(bilan à annoncer ou None, valeur de `bilan_envoye_le` à retenir).
+
+    Au PREMIER passage dont l'heure de Paris est 22 h ou plus, un seul bilan par
+    jour civil : la date retenue interdit un second envoi, même relancé à la main.
+    Décidé ICI, avant la publication, comme les jalons : un bilan est retenu même
+    si Discord est en panne, car un bilan du soir annoncé le lendemain ne vaut rien.
+    """
+    deja = bilan_envoye_lu(stored)
+    jour = jour_paris(maintenant).isoformat()
+    if maintenant.astimezone(PARIS).hour < BILAN_HEURE_PARIS or deja == jour:
+        return None, deja
+    return bilan_du_soir(items, maintenant), jour
 
 
 # ---------------------------------------------------------------------------

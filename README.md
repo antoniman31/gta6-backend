@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2229
+qui permet de tester tout le pipeline sans sortir de la machine. **2270
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10138,4 +10138,48 @@ site, la nuit aussi, exception non rattrapée, dernier article = le plus ancien,
 étape de commit bloquante. **Une mutation passait inaperçue** : mon jeu de test écartait l'un des deux liens du même
 site (il était dans le futur), donc « 92 sites » et « 92 liens » ne se distinguaient pas. J'ai ajouté un article du même
 site dans la journée, et elle est maintenant détectée.
+
+### Lot 8 de la notification Discord : le bilan du soir de 22 h — 03/11/2026
+
+Dernier lot de contenu de `tasks/spec-discord-notification.md` (§7). Au **premier passage dont l'heure de Paris est 22 h
+ou plus**, un seul message par jour civil, dans le salon principal : « 🌙 Bilan du 02/11 : 15 articles », en violet, avec
+le bouton « Ouvrir GTA6_WATCH » (et le repli avec le lien texte).
+
+- **Contenu** : total du jour de Paris, 🇫🇷/🇬🇧, médias distincts (domaine du lien), annonces officielles du jour, les
+  **cinq médias les plus actifs** et les **trois sujets les plus couverts** (articles repris par deux rédactions ou plus,
+  « 🔥 titre · N sources », une source principale comptée avec ses reprises).
+- **Le média est celui du TITRE**, pas du flux : « Google News (EN) — 124 » n'apprend rien. À défaut de suffixe, le nom du
+  flux s'il n'est pas un agrégateur, sinon le site du lien. Deux orthographes d'une même casse (« IGN France », « ign france »)
+  ne font qu'un média ; à égalité, l'ordre alphabétique. Un titre qui finit par une adresse (« … - https://tech-insider.org/ »,
+  trouvé en rejouant le code sur le fil du 01/11) donne le site, pas l'adresse.
+- **Le dimanche**, le message gagne une **section « 📅 Cette semaine »** (total depuis lundi 00:00 de Paris, annonces
+  officielles, sujets les plus couverts de la semaine) : une carte de plus, **pas un message de plus**. « Dimanche » se lit à
+  Paris : le dimanche à 23:30 UTC est déjà lundi.
+- **Qui décide.** Le robot, comme pour les jalons : `prepare_bilan` ne rend un bilan que s'il est 22 h ou plus à Paris et que
+  `bilan_envoye_le` (dans `feed.json`) n'est pas déjà le jour même. Une relance à 22 h 30 ne le renvoie pas ; le jour est retenu
+  même si Discord est en panne (un bilan du soir annoncé le lendemain ne vaut rien) ; la fusion après un conflit de push garde
+  le jour le plus récent. Discord ne fait que le dire, **après tout le reste et quoi qu'il arrive** : un passage sans rien de
+  neuf, sans fichier d'articles ou en pause nocturne n'étouffe pas le bilan.
+- **Limite** : si aucun passage ne tombe entre 22 h et minuit (GitHub a déjà retardé des exécutions de plusieurs heures), ce
+  soir-là n'a pas de bilan. Je ne le rattrape pas le lendemain.
+
+**Refactor nécessaire** : le calcul de la journée de Paris (bornes de 23, 24 ou 25 h, tolérance du futur, langues, médias) vivait
+dans `tableau_discord.py` ; il est maintenant dans `feed_store` et partagé par le tableau du jour et le bilan.
+
+Mesuré en rejouant le code sur le fil réel du dimanche 01/11 à 22 h 30 : 82 articles (39 FR, 43 EN) sur 52 sites ; la semaine
+en compte 1 169, dont 1 annonce officielle.
+
+**Contrôles** (`test_bilan_du_soir`, 40 vérifications) : média du titre et ses repli, total et langues d'un jour de Paris,
+fusion de casse, tri, sujets, semaine du dimanche et sa borne du lundi, heure de décision des deux côtés des changements d'heure,
+un seul bilan par jour, état assaini, fusion, forme du message, bouton et repli, section de la semaine, jour vide, passages
+complets par `main()` (rien de neuf, sans fichier, pause nocturne, sans bilan), câblage du workflow.
+
+**Seize mutations rejouées, quinze détectées, une équivalente** : heure de décision à 21 h ou lue en UTC, plusieurs bilans
+par jour, jour non retenu, section « semaine » tous les jours ou le dimanche lu en UTC, semaine réduite à aujourd'hui, média
+pris sur le flux, casse non fusionnée, sujets à une seule source, adresse gardée en guise de média, fusion qui garde le jour le
+plus ancien, bilan jamais dit, section semaine absente. **Deux mutations passaient inaperçues** : un jeu de test où trois
+articles ont plusieurs sources ne prouve pas qu'un article à une seule source est écarté (j'ai ajouté un jour avec un seul
+sujet), et mon premier `sed` visant l'adresse ne trouvait pas son motif (rien muté). **La seizième est équivalente** : trier à
+égalité sur la clé en minuscules ou sur le nom en minuscules donne le même ordre ; ce n'est pas un défaut non détecté, c'est
+un code différent au comportement identique.
 

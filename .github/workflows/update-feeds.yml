@@ -193,6 +193,7 @@ jobs:
           # écrits seulement quand il y en a un : presque jamais.
           JALONS_FILE: ${{ runner.temp }}/jalons.json
           ROCKSTARMAG_FILE: ${{ runner.temp }}/rockstarmag.json
+          BILAN_FILE: ${{ runner.temp }}/bilan.json
           # Clé PUBLIQUE : recopiée dans feed.json pour que l'app puisse
           # créer un abonnement push. Aucun risque à l'exposer.
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
@@ -366,6 +367,7 @@ jobs:
           PROMOTED_ITEMS_FILE: ${{ runner.temp }}/promoted_items.json
           JALONS_FILE: ${{ runner.temp }}/jalons.json
           ROCKSTARMAG_FILE: ${{ runner.temp }}/rockstarmag.json
+          BILAN_FILE: ${{ runner.temp }}/bilan.json
 
       # Le tableau du jour : UN message Discord, créé au premier passage de
       # 5 h puis MODIFIÉ à chaque passage (spec tasks/spec-discord-notification.md,

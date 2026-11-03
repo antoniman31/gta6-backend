@@ -125,6 +125,13 @@ def _fusionne_cumulatifs(merged, ours, remote):
                  + list(a_nous if isinstance(a_nous, list) else []) if isinstance(x, str)]
         merged["rockstarmag_envoyes"] = list(dict.fromkeys(union))[-feed_store.ROCKSTARMAG_ENVOYES_MAX:]
 
+    # Le jour du dernier bilan annoncé : le plus récent des deux. Garder le plus
+    # ancien ferait renvoyer un bilan déjà annoncé par l'autre côté.
+    jours = [v for v in (ours.get("bilan_envoye_le"), remote.get("bilan_envoye_le"))
+             if isinstance(v, str) and v]
+    if jours:
+        merged["bilan_envoye_le"] = max(jours)
+
     # Le journal des incidents est une LISTE. Union par (source, début) :
     # deux côtés qui ont vu la même panne en écrivent la même entrée, et
     # celui qui en a vu une de plus ne doit pas la perdre.

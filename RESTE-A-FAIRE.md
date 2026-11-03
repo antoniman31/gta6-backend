@@ -1953,3 +1953,11 @@ abandonné** (le bilan reste dans le salon principal).
   modifient le message sans nouveau commit. Si un second message apparaît dans la journée, lire le journal de l'étape
   « Tableau du jour Discord » (« modifié », « créé », « échec transitoire »).
 - Reste de la spec : le bilan du soir de 22 h (et la section « Cette semaine » le dimanche).
+
+### Lot 8 de la notification Discord : à regarder au premier soir réel (03/11/2026)
+
+- Le premier bilan arrive au premier passage de 22 h ou plus, heure de Paris. Vérifier `bilan_envoye_le` dans `docs/feed.json`
+  (la date du jour) et qu'un seul message « 🌙 Bilan du JJ/MM » est parti. Le premier dimanche (08/11), il porte la carte
+  « 📅 Cette semaine ».
+- **La spec de notification Discord est entièrement codée.** Restent à lire : le retard des officiels (après dix alertes) et le seuil
+  de l'actu majeure (39 articles sur 93 avec trois sites distincts), voir le lot 1.
