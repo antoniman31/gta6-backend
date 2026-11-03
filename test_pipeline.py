@@ -10591,6 +10591,46 @@ def test_les_sources_de_lapres_sortie():
           "et les %d identifiants de FEEDS restent uniques" % len(ids))
 
 
+def test_les_requetes_patchs_serveurs_streamers():
+    """Quatre requêtes Google News ajoutées le 03/11/2026, sur choix d'Antoni.
+
+    Mesurées avant l'ajout (14 jours, titres comparés au fil) : patchs EN
+    10 articles dont 4 sans équivalent, serveurs EN 1, serveurs FR 1,
+    streamers 3 dont 1. Peu, et surtout du bruit : elles sont un filet pour
+    le jour J, pas un gain d'aujourd'hui.
+    """
+    print("\n[sources] patchs EN, serveurs EN et FR, streamers")
+    import fetch_feeds
+    from urllib.parse import urlparse, unquote
+
+    voulues = {
+        "gta6-patch-en": ("patch", "en"),
+        "gta6-serveurs-en": ("outage", "en"),
+        "gta6-serveurs-fr": ("panne", "fr"),
+        "gta6-streamers-en": ("Twitch", "en"),
+    }
+    par_id = {f["id"]: f for f in fetch_feeds.FEEDS}
+    manquantes = sorted(set(voulues) - set(par_id))
+    check(not manquantes, "les quatre sont dans FEEDS (%s)" % manquantes)
+    for ident, (mot, langue) in voulues.items():
+        src = par_id.get(ident)
+        if not src:
+            continue
+        requete = unquote(src["url"].split("q=")[1].split("&")[0]).replace("+", " ")
+        check(urlparse(src["url"]).netloc == "news.google.com",
+              "%s passe par news.google.com, aucun domaine nouveau" % ident)
+        check(all('"%s"' % v in requete for v in
+                  ("GTA 6", "GTA6", "GTA VI", "GTAVI",
+                   "Grand Theft Auto 6", "Grand Theft Auto VI")),
+              "%s porte les six écritures du jeu" % ident)
+        check(mot in requete, "%s cherche bien son sujet (« %s »)" % (ident, mot))
+        check(src.get("official") is False and src.get("lang") == langue,
+              "%s : non officielle, langue %s (%s, %s)"
+              % (ident, langue, src.get("official"), src.get("lang")))
+    ids = [f["id"] for f in fetch_feeds.FEEDS]
+    check(len(ids) == len(set(ids)), "les identifiants de FEEDS restent uniques")
+
+
 def test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien():
     """« Ya des bugs dans les descriptions » — Antoni, 20/10/2026.
 
@@ -11094,6 +11134,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien,
            test_lassistance_rockstar_est_une_source,
            test_agenda_est_valide,
+           test_les_requetes_patchs_serveurs_streamers,
            test_vecteurs_du_resume,
            test_duree_par_source,
            test_mesure_og_description,
