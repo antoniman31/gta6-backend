@@ -2111,6 +2111,121 @@ def lignes_retard(items, maintenant=None):
 
 
 # ---------------------------------------------------------------------------
+# LE DÉTAIL D'UNE ANNONCE OFFICIELLE DANS LE MESSAGE (lot 4, 03/11/2026)
+# ---------------------------------------------------------------------------
+# Mesuré le 03/11/2026 sur les 86 officiels du fil : 23 produits de boutique
+# (store.rockstargames.com/merchandise), 16 Newswire en anglais et 15 en
+# français, 8 pages /VI, 7 boutique en français, 5 YouTube, 4 articles
+# d'assistance, 3 vidéos du site, 2 + 1 pages de boutique, 1 communiqué
+# Take-Two. Le TYPE se lit sur le domaine du LIEN, jamais sur le nom du flux :
+# le dernier « Original Score by Justice » est arrivé par Google News (EN)
+# alors que son lien est sur rockstargames.com.
+TYPE_OFFICIEL_GENERIQUE = ("⭐", "Officiel", False)
+
+
+def type_officiel(lien):
+    """(marqueur, libellé, est_boutique) d'une annonce, d'après son lien."""
+    try:
+        u = urlparse((lien or "").strip())
+    except Exception:
+        return TYPE_OFFICIEL_GENERIQUE
+    hote = (u.hostname or "").lower()
+    chemin = u.path.lower()
+    if hote == "store.rockstargames.com":
+        return ("🛍", "Boutique", True)
+    if hote == "support.rockstargames.com":
+        return ("🛠", "Assistance", False)
+    if hote == "ir.take2games.com":
+        return ("📈", "Investisseurs Take-Two", False)
+    if hote in ("youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"):
+        return ("🎬", "Vidéo", False)
+    if hote in ("rockstargames.com", "www.rockstargames.com"):
+        if "/newswire/" in chemin:
+            return ("📰", "Newswire", False)
+        # Les pages /videos/ du site sont des vidéos : 3 sur 86, mesuré.
+        if chemin.startswith("/videos/") or chemin.startswith("/fr/videos/"):
+            return ("🎬", "Vidéo", False)
+    return TYPE_OFFICIEL_GENERIQUE
+
+
+_ID_NEWSWIRE = re.compile(r"/newswire/article/([^/?#]+)")
+
+
+def id_newswire(lien):
+    """L'identifiant d'un article du Newswire, ou None.
+
+    Le même article existe en anglais et en français sous le MÊME identifiant :
+    mesuré le 29/10/2026, 10 des 14 identifiants distincts existaient dans les
+    deux langues.
+    """
+    try:
+        chemin = urlparse((lien or "").strip()).path
+    except Exception:
+        return None
+    m = _ID_NEWSWIRE.search(chemin)
+    return m.group(1) if m else None
+
+
+def _lien_francais(lien):
+    try:
+        return "/fr/" in urlparse((lien or "").strip()).path.lower() + "/"
+    except Exception:
+        return False
+
+
+def officiels_du_message(items, maintenant=None):
+    """Les annonces d'un passage, prêtes à être citées : fusionnées, ordonnées.
+
+    - Deux articles du même passage au MÊME identifiant du Newswire n'occupent
+      qu'une ligne, au titre français, avec le lien de l'autre langue en plus.
+      Les articles sans identifiant ne fusionnent jamais.
+    - Les annonces d'abord, la boutique ensuite, chacune par date décroissante :
+      le 08/10, 28 produits de boutique sur 32 officiels auraient sinon caché
+      les 4 vraies annonces. La boutique garde la catégorie « officiel ».
+    - `instant` n'existe que si la date est une vraie date de publication
+      (retard_annonce écarte la date « première vue » et le futur).
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    groupes, ordre = {}, []
+    for i, it in enumerate(x for x in (items or ()) if isinstance(x, dict)):
+        lien = (it.get("link") or "").strip()
+        cle = id_newswire(lien) or f"#{i}"
+        if cle not in groupes:
+            groupes[cle] = []
+            ordre.append(cle)
+        groupes[cle].append(it)
+
+    sortie = []
+    for cle in ordre:
+        membres = groupes[cle]
+        # Le titre français d'abord quand les deux langues sont là.
+        membres = sorted(membres, key=lambda m: 0 if _lien_francais(m.get("link")) else 1)
+        principal = membres[0]
+        lien = (principal.get("link") or "").strip()
+        autre = next((m for m in membres[1:]
+                      if (m.get("link") or "").strip() and _lien_francais(m.get("link")) != _lien_francais(lien)), None)
+        marqueur, libelle, boutique = type_officiel(lien)
+        instants = []
+        for m in membres:
+            r = retard_annonce(m, maintenant)
+            if r["categorie"] in ("direct", "agregateur"):
+                instants.append((parse_date_key(m.get("date") or ""), r["publication"]))
+        instant, heure = min(instants, key=lambda x: x[0]) if instants else (None, "")
+        sortie.append({
+            "title": (principal.get("title") or "").strip(),
+            "link": lien,
+            "source": (principal.get("source") or "").strip(),
+            "marqueur": marqueur, "libelle": libelle, "boutique": boutique,
+            "autre_lien": (autre.get("link") or "").strip() if autre else "",
+            "autre_langue": ("EN" if _lien_francais(lien) else "FR") if autre else "",
+            "instant": instant, "heure": heure,
+        })
+    sortie.sort(key=lambda a: a["instant"] or DATE_FLOOR, reverse=True)
+    sortie.sort(key=lambda a: 1 if a["boutique"] else 0)
+    return sortie
+
+
+# ---------------------------------------------------------------------------
 # COMBIEN DE SITES DERRIÈRE LES « SOURCES » D'UNE ACTU MAJEURE (29/10/2026)
 # ---------------------------------------------------------------------------
 # HOT_SOURCE_THRESHOLD compte des FLUX, pas des médias. Mesuré le 29/10/2026 sur

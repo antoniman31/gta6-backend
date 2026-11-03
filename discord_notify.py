@@ -245,9 +245,37 @@ def pied_du_message(maintenant=None):
     return f"{decompte} · [Ouvrir GTA6_WATCH]({SITE_URL})"
 
 
-def nouvelle_section(nom, entete, couleur, apercus, total):
+def ligne_officiel(annonce):
+    """Une annonce officielle sur deux lignes : le titre cliquable, puis son type,
+    « il y a N minutes » (balise vivante) et l'heure exacte de publication.
+
+    Le type vient du domaine du lien (feed_store.type_officiel), jamais du nom
+    du flux. Quand la date n'est pas une vraie date de publication, la seconde
+    ligne ne dit que le type : une heure inventée serait pire que pas d'heure.
+    Les deux versions d'un même article (FR et EN) tiennent sur la même ligne.
+    """
+    titre_brut, _ = feed_store.separe_titre_et_media(annonce.get("title"), annonce.get("source"))
+    titre = echappe_markdown(coupe(titre_brut))
+    if not titre:
+        return ""
+    lien = (annonce.get("link") or "").strip()
+    if any(c in lien for c in CARACTERES_INTERDITS_URL):
+        lien = ""
+    corps = f"[{titre}](<{lien}>)" if lien else titre
+    ligne = f"{annonce.get('marqueur') or '⭐'} {corps}"
+    autre = (annonce.get("autre_lien") or "").strip()
+    if autre and not any(c in autre for c in CARACTERES_INTERDITS_URL):
+        ligne += f" · [{annonce.get('autre_langue') or 'EN'}](<{autre}>)"
+    detail = [annonce.get("libelle") or "Officiel"]
+    if annonce.get("instant"):
+        detail += [balise_temps(annonce["instant"]), annonce.get("heure") or ""]
+    return ligne + "\n*" + " · ".join(d for d in detail if d) + "*"
+
+
+def nouvelle_section(nom, entete, couleur, apercus, total, ligne=None):
     """Une section : au plus cinq lignes, et le compte exact de ce qu'elle cache."""
-    lignes = [l for l in (ligne_apercu(a) for a in (apercus or ())[:LIGNES_PAR_SECTION]) if l]
+    ligne = ligne or ligne_apercu
+    lignes = [l for l in (ligne(a) for a in (apercus or ())[:LIGNES_PAR_SECTION]) if l]
     if not lignes:
         return None
     return {"nom": nom, "entete": entete, "couleur": couleur, "lignes": lignes,
@@ -324,10 +352,11 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None,
             par_cat[cat].append(a)
 
     sections = []
-    if officiels:
+    annonces = feed_store.officiels_du_message(officiels, maintenant)
+    if annonces:
         sections.append(nouvelle_section(
             SECTION_OFFICIEL, "⭐ Officiel", COULEUR_OFFICIEL,
-            feed_store.apercus_recap(officiels), len(officiels)))
+            annonces, len(annonces), ligne=ligne_officiel))
     sections.append(nouvelle_section(
         SECTION_MAJEURE, "🚨 Actu majeure", COULEUR_MAJEURE,
         par_cat["majeur"], majeurs))
@@ -573,7 +602,8 @@ def _main():
     if seulement_officiels:
         # La nuit, seule la section ⭐ part, seule dans son message.
         if officiels:
-            send_message(officiels, [], None, 0, feed_store.libelle_officiels(len(officiels)))
+            send_message(officiels, [], None, 0, feed_store.libelle_officiels(
+                len(feed_store.officiels_du_message(officiels))))
         print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
               f"envoyée(s), le reste attend le matin.")
         return 0
