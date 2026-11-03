@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2087
+qui permet de tester tout le pipeline sans sortir de la machine. **2122
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -9906,8 +9906,8 @@ Troisième lot de `tasks/spec-discord-notification.md`. **Ce que reçoit Antoni 
   vers l'app ; après la sortie « Sorti » avec la même balise.
 - **Garde-fou des 6 000 caractères** : coupe d'abord « Les autres », puis l'actu majeure, **jamais** une annonce
   officielle ; on s'arrête à 5 800. Le total du titre ne bouge pas, le « + N » grossit.
-- **La nuit** : seule la section ⭐ part, seule dans son message. **Après la sortie** : « Les autres » n'en fait
-  plus partie, et le message ne part que s'il a une annonce officielle ou une actu majeure.
+- **La nuit** : seule la section ⭐ part, seule dans son message. ~~**Après la sortie** : « Les autres » n'en fait
+  plus partie…~~ **Corrigé le 03/11/2026** (voir « Les messages ordinaires restent après la sortie »).
 - **Rien à citer** (aperçus absents) : le message garde la ligne d'aperçu et une carte avec le lien, comme
   l'ancien corps.
 
@@ -9940,3 +9940,66 @@ borné, plafond par section levé, `APERCU_RECAP_MAX` changé. **Ma première s�
 copie omettait `corpus_fusion.json`, la suite plantait sans écrire « ÉCHEC » et je lisais « 0 échec ». Je compte
 désormais aussi les plantages, et le plafond « cinq » était d'abord masqué par un test à huit articles (sous le
 seuil) : je l'ai remonté à soixante.
+
+### Lot 4 de la notification Discord : le détail des annonces officielles — 03/11/2026
+
+Quatrième lot de `tasks/spec-discord-notification.md`. La section « ⭐ Officiel » du message ne cite plus
+seulement un titre : chaque annonce tient sur **deux lignes**.
+
+```
+📰 [L'album arrive](<lien FR>) · [EN](<lien EN>)
+*Newswire · <il y a 12 minutes> · 12:50*
+```
+
+- **Le type** se lit sur le **domaine du lien**, jamais sur le nom du flux : 📰 Newswire, 🎬 Vidéo (YouTube et
+  les pages `/videos/` du site), 🛠 Assistance, 📈 Investisseurs Take-Two, 🛍 Boutique, ⭐ pour tout autre
+  domaine ou un lien illisible. Mesuré le 03/11/2026 sur les 86 officiels du fil : 23 produits de boutique
+  (+ 7 en français, + 3 pages de boutique), 16 Newswire en anglais, 15 en français, 8 pages `/VI`, 5 YouTube,
+  4 + 1 pages d'assistance, 3 vidéos du site, 1 communiqué Take-Two.
+  *Écart avec la spec* : elle ne citait que YouTube pour 🎬 ; j'y ai ajouté les 3 pages `/videos/` de
+  rockstargames.com, qui sont des vidéos.
+- **L'heure** : balise de temps Discord (« il y a 12 minutes », recalculée à l'affichage) et heure exacte de
+  Paris. Elle n'est écrite **que si la date est une vraie date de publication** (pas la date « première vue »
+  posée par le robot, pas le futur) : une heure inventée serait pire que pas d'heure. L'heure est en italique et
+  non en « texte gris » (`-#`) : je ne sais pas si Discord rend ce style dans une carte, l'envoi TEST le dira.
+- **L'ordre** : les annonces d'abord, la boutique ensuite, chacune par date décroissante. La boutique garde la
+  catégorie « officiel ».
+- **La fusion EN/FR** : deux articles du même passage qui portent le **même identifiant du Newswire** n'occupent
+  qu'une ligne, au **titre français**, avec le lien de l'autre langue. Sans identifiant, jamais de fusion. La
+  section et le titre de la nuit comptent les **annonces** : une paire FR/EN en fait une. Sur tout le fil
+  (pas sur un passage), mesuré le 03/11/2026 : 86 officiels donnent 70 annonces une fois fusionnés.
+
+**Un contrôle fragile trouvé en route.** À la reprise du 03/11, `test_un_passage_complet_du_robot` était déjà
+rouge sur `main` sans qu'aucune ligne n'ait changé : il semait un incident de source daté du 01/10/2026 et le
+robot élague le journal à 30 jours (`INCIDENTS_JOURS`) avec l'horloge réelle. Il a donc cessé de passer le
+31/10. Je l'ai corrigé en datant l'incident de deux jours avant l'horloge réelle, sans toucher au seuil.
+
+**Contrôles** (`test_detail_des_officiels`, 35 vérifications) : un type par famille de lien et les pièges
+(domaine qui commence comme la boutique, lien absent), identifiant FR/EN, fusion dans les deux ordres d'arrivée,
+non-fusion, tri annonces/boutique, heure absente (première vue, futur), heures de Paris des deux côtés du
+changement d'heure, forme des deux lignes, Markdown échappé, compte de la section et du titre de nuit.
+
+**Quatorze mutations rejouées, quatorze détectées** (le harnais ajoute deux échecs de base, dus à la copie hors
+dépôt ; chaque mutation en ajoute au moins un, ou plante la suite) : boutique reconnue par suffixe de domaine,
+assistance, `youtu.be`, pages `/videos/`, fusion supprimée, fusion par titre, anglais prioritaire, boutique
+mélangée aux annonces, tri par date retiré, heure écrite même sans vraie date, heure du dernier article au lieu
+du premier, heure absente de la ligne, Markdown non échappé, section comptée sur les articles bruts.
+
+### Les messages ordinaires restent après la sortie — 03/11/2026
+
+Antoni, à la lecture du lot 3 : « Je veux pas perdre les messages ordinaires du Discord ». Le lot 3 avait
+reporté dans le nouveau format la règle du 20/10/2026 (après le 19 novembre, le récapitulatif ne part que s'il y
+a une annonce officielle ou une actu majeure) et **retirait la section « Les autres »** après la sortie : c'était
+lui retirer ses articles ordinaires, et il ne l'a jamais voulu pour Discord.
+
+**Corrigé pour Discord seulement.** Le message part dès qu'un article, une annonce officielle ou une actu
+majeure est entrée (`feed_store.recap_a_dire`, la règle d'avant la sortie), en tout temps, avec « Les autres » et
+le pied « Sorti il y a… ». Le **push**, éteint, garde son juge à date (`recap_merite_notification`) : il ne sera
+changé que si Antoni le demande quand il sera rallumé. Les deux canaux ne « se taisent » donc plus ensemble ;
+le contrôle qui l'exigeait est réécrit.
+
+**Contrôles** : « Les autres » reste après la sortie, un message ordinaire part seul avec « Sorti », la règle de
+Discord est celle d'avant la sortie, `discord_notify` n'appelle plus le juge à date. Trois mutations rejouées,
+trois détectées (silence rétabli, compte des autres forcé à zéro, règle réduite aux officiels). Limite : le
+silence d'après-sortie rétabli n'est attrapé que par la lecture du code et par `send_message`, pas par un
+passage complet de `main()` à une date simulée.

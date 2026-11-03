@@ -245,9 +245,37 @@ def pied_du_message(maintenant=None):
     return f"{decompte} · [Ouvrir GTA6_WATCH]({SITE_URL})"
 
 
-def nouvelle_section(nom, entete, couleur, apercus, total):
+def ligne_officiel(annonce):
+    """Une annonce officielle sur deux lignes : le titre cliquable, puis son type,
+    « il y a N minutes » (balise vivante) et l'heure exacte de publication.
+
+    Le type vient du domaine du lien (feed_store.type_officiel), jamais du nom
+    du flux. Quand la date n'est pas une vraie date de publication, la seconde
+    ligne ne dit que le type : une heure inventée serait pire que pas d'heure.
+    Les deux versions d'un même article (FR et EN) tiennent sur la même ligne.
+    """
+    titre_brut, _ = feed_store.separe_titre_et_media(annonce.get("title"), annonce.get("source"))
+    titre = echappe_markdown(coupe(titre_brut))
+    if not titre:
+        return ""
+    lien = (annonce.get("link") or "").strip()
+    if any(c in lien for c in CARACTERES_INTERDITS_URL):
+        lien = ""
+    corps = f"[{titre}](<{lien}>)" if lien else titre
+    ligne = f"{annonce.get('marqueur') or '⭐'} {corps}"
+    autre = (annonce.get("autre_lien") or "").strip()
+    if autre and not any(c in autre for c in CARACTERES_INTERDITS_URL):
+        ligne += f" · [{annonce.get('autre_langue') or 'EN'}](<{autre}>)"
+    detail = [annonce.get("libelle") or "Officiel"]
+    if annonce.get("instant"):
+        detail += [balise_temps(annonce["instant"]), annonce.get("heure") or ""]
+    return ligne + "\n*" + " · ".join(d for d in detail if d) + "*"
+
+
+def nouvelle_section(nom, entete, couleur, apercus, total, ligne=None):
     """Une section : au plus cinq lignes, et le compte exact de ce qu'elle cache."""
-    lignes = [l for l in (ligne_apercu(a) for a in (apercus or ())[:LIGNES_PAR_SECTION]) if l]
+    ligne = ligne or ligne_apercu
+    lignes = [l for l in (ligne(a) for a in (apercus or ())[:LIGNES_PAR_SECTION]) if l]
     if not lignes:
         return None
     return {"nom": nom, "entete": entete, "couleur": couleur, "lignes": lignes,
@@ -299,8 +327,7 @@ def compose_message(sections, content, pied, maximum=CARTES_MAX_CARACTERES):
     return rendu(), coupees
 
 
-def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None,
-                 apres_sortie=False):
+def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None):
     """Envoie UN SEUL message par passage : des sections colorées sous une
     ligne d'aperçu, et un pied avec le compte à rebours.
 
@@ -311,7 +338,8 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None,
     ⭐ — celles de la nuit ont déjà été annoncées quand elles sont tombées.
     `apercus` : les articles de l'arriéré et du passage, rangés par section.
     `totaux` : (articles, officiels, sommet), ou None. Sert au « + N ».
-    Après la sortie, « Les autres » ne fait plus partie du message.
+    « Les autres » reste dans le message après la sortie : Antoni ne veut pas
+    perdre les messages ordinaires (03/11/2026).
     """
     if not DISCORD_WEBHOOK_URL:
         print("[discord] DISCORD_WEBHOOK_URL absent — notification désactivée.")
@@ -324,18 +352,18 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None,
             par_cat[cat].append(a)
 
     sections = []
-    if officiels:
+    annonces = feed_store.officiels_du_message(officiels, maintenant)
+    if annonces:
         sections.append(nouvelle_section(
             SECTION_OFFICIEL, "⭐ Officiel", COULEUR_OFFICIEL,
-            feed_store.apercus_recap(officiels), len(officiels)))
+            annonces, len(annonces), ligne=ligne_officiel))
     sections.append(nouvelle_section(
         SECTION_MAJEURE, "🚨 Actu majeure", COULEUR_MAJEURE,
         par_cat["majeur"], majeurs))
-    if not apres_sortie:
-        autres_total = max(0, n - off_total - majeurs)
-        sections.append(nouvelle_section(
-            SECTION_AUTRES, "🎮 Les autres", feed_store.couleur_compteur(maintenant),
-            par_cat["autre"], autres_total))
+    autres_total = max(0, n - off_total - majeurs)
+    sections.append(nouvelle_section(
+        SECTION_AUTRES, "🎮 Les autres", feed_store.couleur_compteur(maintenant),
+        par_cat["autre"], autres_total))
     sections = [s for s in sections if s]
     pied = pied_du_message(maintenant)
     if sections:
@@ -573,7 +601,8 @@ def _main():
     if seulement_officiels:
         # La nuit, seule la section ⭐ part, seule dans son message.
         if officiels:
-            send_message(officiels, [], None, 0, feed_store.libelle_officiels(len(officiels)))
+            send_message(officiels, [], None, 0, feed_store.libelle_officiels(
+                len(feed_store.officiels_du_message(officiels))))
         print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
               f"envoyée(s), le reste attend le matin.")
         return 0
@@ -594,12 +623,10 @@ def _main():
 
     n_recap, off_recap, sommet_recap = feed_store.comptes_du_recap(
         new_items, promus, totaux)
-    # Après la sortie, le message ne part que s'il a une annonce officielle ou
-    # une actu majeure, comme le push : les deux canaux se taisent ensemble.
-    apres_sortie = datetime.now(timezone.utc) >= feed_store.SORTIE_GTA6
-    if not feed_store.recap_merite_notification(n_recap, off_recap, sommet_recap) and not officiels:
-        print(f"[discord] après la sortie — {n_recap} article(s) sans annonce "
-              f"officielle ni actu majeure, le message se tait.")
+    # Pas de silence après la sortie : Antoni a demandé le 03/11/2026 de ne pas
+    # perdre les messages ordinaires. Le push, éteint, garde son juge à date.
+    if not feed_store.recap_a_dire(n_recap, off_recap, sommet_recap) and not officiels:
+        print("[discord] aucun nouvel article à annoncer.")
         return 0
 
     # Déposés par le robot à côté des totaux : ils contiennent l'arriéré de la
@@ -616,7 +643,7 @@ def _main():
     else:
         contenu = feed_store.libelle_recap(new_items, promus)
     send_message(officiels, apercus, (n_recap, off_recap, sommet_recap), majeurs,
-                 contenu, apres_sortie=apres_sortie)
+                 contenu)
     # Cette étape ne doit JAMAIS faire échouer le workflow : les articles
     # sont déjà publiés à ce stade, une panne de Discord n'est pas une
     # panne du robot.

@@ -20,7 +20,7 @@ import sys
 import tempfile
 import time
 import types
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import feed_store
 import merge_feed
@@ -1161,11 +1161,14 @@ def test_message_a_sections():
         check(avant.rstrip().endswith(f"[Ouvrir GTA6_WATCH]({discord_notify.SITE_URL})"),
               "le lien vers l'app termine le message")
 
-        # Après la sortie, « Les autres » ne fait plus partie du message.
-        m = envoie(officiels=[art(1, off=True)], autres=4, majeurs=1, totaux=(6, 1, 4), maintenant=sortie + timedelta(days=1),
-                   apres_sortie=True)
-        check([e["title"] for e in m["embeds"]] == ["⭐ Officiel · 1", "🚨 Actu majeure · 1"],
-              "après la sortie : plus de section « Les autres » (%s)" % [e["title"] for e in m["embeds"]])
+        # Après la sortie, « Les autres » RESTE dans le message : Antoni ne veut
+        # pas perdre les messages ordinaires (03/11/2026).
+        m = envoie(officiels=[art(1, off=True)], autres=4, majeurs=1, totaux=(6, 1, 4), maintenant=sortie + timedelta(days=1))
+        check([e["title"] for e in m["embeds"]] == ["⭐ Officiel · 1", "🚨 Actu majeure · 1", "🎮 Les autres · 4"],
+              "après la sortie : la section « Les autres » est toujours là (%s)" % [e["title"] for e in m["embeds"]])
+        m = envoie(autres=4, totaux=(4, 0, 1), maintenant=sortie + timedelta(days=1))
+        check([e["title"] for e in m["embeds"]] == ["🎮 Les autres · 4"] and "Sorti" in m["embeds"][-1]["description"],
+              "et un message ordinaire part seul après la sortie, avec « Sorti » au pied")
 
         # Rien à citer : le message reste vrai (ligne d'aperçu + lien).
         m = envoie(totaux=(12, 0, 1), content="🎮 12 nouveaux articles GTA 6")
@@ -1273,6 +1276,131 @@ def test_message_a_sections():
     finally:
         _os.environ.pop("RECAP_TOTALS_FILE", None)
     check(lu == 2 and abime is None and absent is None, "lecture du compte : valeur saine, valeur abîmée et fichier absent")
+
+
+def test_detail_des_officiels():
+    """Le détail d'une annonce officielle dans le message (lot 4, 03/11/2026).
+
+    Type lu sur le domaine du lien, heure de publication, annonces avant
+    boutique, fusion des deux langues d'un même article du Newswire.
+    """
+    print("\n[officiel] type, heure, ordre et fusion FR/EN")
+    import io, contextlib
+    import discord_notify
+
+    # ---- le type vient du domaine du lien, jamais du nom du flux ----
+    attendu = {
+        "https://www.rockstargames.com/newswire/article/abc123/x": ("📰", "Newswire", False),
+        "https://www.rockstargames.com/fr/newswire/article/abc123/x": ("📰", "Newswire", False),
+        "https://www.youtube.com/watch?v=tJbzMqJGH4k": ("🎬", "Vidéo", False),
+        "https://youtu.be/tJbzMqJGH4k": ("🎬", "Vidéo", False),
+        "https://www.rockstargames.com/videos/rk721912": ("🎬", "Vidéo", False),
+        "https://support.rockstargames.com/articles/4Qf/x": ("🛠", "Assistance", False),
+        "https://ir.take2games.com/news-releases/x": ("📈", "Investisseurs Take-Two", False),
+        "https://store.rockstargames.com/merchandise/buy-x": ("🛍", "Boutique", True),
+        "http://store.rockstargames.com/fr/merchandise/buy-x": ("🛍", "Boutique", True),
+        "https://www.rockstargames.com/VI/music": ("⭐", "Officiel", False),
+        "https://exemple.test/inconnu": ("⭐", "Officiel", False),
+        "": ("⭐", "Officiel", False),
+        "pas un lien": ("⭐", "Officiel", False),
+    }
+    for lien, voulu in attendu.items():
+        check(feed_store.type_officiel(lien) == voulu, "type de %r → %s" % (lien, voulu[1]))
+    check(feed_store.type_officiel(None) == ("⭐", "Officiel", False), "un lien absent ne plante pas")
+    check(feed_store.type_officiel("https://store.rockstargames.com.pirate.test/x")[1] == "Officiel",
+          "un domaine qui COMMENCE comme la boutique n'est pas la boutique")
+    check(feed_store.id_newswire("https://www.rockstargames.com/fr/newswire/article/759875393o5253/x") == "759875393o5253"
+          and feed_store.id_newswire("https://www.rockstargames.com/newswire/article/759875393o5253/y") == "759875393o5253"
+          and feed_store.id_newswire("https://www.rockstargames.com/VI/music") is None
+          and feed_store.id_newswire(None) is None,
+          "l'identifiant du Newswire est le même en FR et en EN, absent ailleurs")
+
+    maintenant = datetime(2026, 11, 2, 12, 5, tzinfo=timezone.utc)
+    def off(titre, lien, date="2026-11-02T12:00:00+00:00", source="Rockstar Games (officiel EN)"):
+        return {"title": titre, "link": lien, "date": date, "source": source, "official": True}
+    en = off("The Album arrives - Rockstar Games", "https://www.rockstargames.com/newswire/article/id1/the-album",
+             "2026-11-02T11:50:00+00:00")
+    fr = off("L'album arrive - Rockstar Games", "https://www.rockstargames.com/fr/newswire/article/id1/l-album",
+             "2026-11-02T11:55:00+00:00", "Rockstar Games (officiel FR)")
+
+    # ---- fusion EN/FR ----
+    r = feed_store.officiels_du_message([en, fr], maintenant)
+    check(len(r) == 1 and r[0]["title"].startswith("L'album") and "/fr/" in r[0]["link"]
+          and r[0]["autre_lien"] == en["link"] and r[0]["autre_langue"] == "EN",
+          "le même identifiant dans le même passage : UNE ligne, au titre français, avec le lien anglais")
+    check(feed_store.officiels_du_message([fr, en], maintenant)[0]["title"].startswith("L'album"),
+          "l'ordre d'arrivée n'y change rien")
+    check(r[0]["instant"] == datetime(2026, 11, 2, 11, 50, tzinfo=timezone.utc),
+          "l'heure est celle de la PREMIÈRE publication des deux")
+    autre = off("Autre", "https://www.rockstargames.com/newswire/article/id2/autre")
+    check(len(feed_store.officiels_du_message([en, autre], maintenant)) == 2,
+          "des identifiants différents ne fusionnent jamais")
+    sans_id_a = off("Même titre", "https://www.rockstargames.com/VI/a")
+    sans_id_b = off("Même titre", "https://www.rockstargames.com/VI/b")
+    check(len(feed_store.officiels_du_message([sans_id_a, sans_id_b], maintenant)) == 2,
+          "sans identifiant, jamais de fusion, même titre")
+    en2 = dict(en, source="Google News (EN)")
+    check(len(feed_store.officiels_du_message([en, en2], maintenant)) == 1
+          and feed_store.officiels_du_message([en, en2], maintenant)[0]["autre_lien"] == "",
+          "deux copies de la même langue : une ligne, pas de second lien")
+
+    # ---- ordre : les annonces avant la boutique, chacune par date décroissante ----
+    def boutique(n):
+        return off("Produit %d" % n, "https://store.rockstargames.com/merchandise/p%d" % n,
+                   "2026-11-02T11:%02d:00+00:00" % (50 - n))
+    vieille = off("Vieille annonce", "https://www.rockstargames.com/newswire/article/idv/v", "2026-10-01T10:00:00+00:00")
+    recente = off("Annonce récente", "https://www.rockstargames.com/newswire/article/idr/r", "2026-11-02T10:00:00+00:00")
+    lot = [boutique(1), boutique(2), vieille, boutique(3), recente]
+    titres = [a["title"] for a in feed_store.officiels_du_message(lot, maintenant)]
+    check(titres == ["Annonce récente", "Vieille annonce", "Produit 1", "Produit 2", "Produit 3"],
+          "annonces d'abord, boutique ensuite, par date décroissante : %s" % titres)
+
+    # ---- heure : seulement une vraie date de publication ----
+    premiere_vue = off("Sans date", "https://www.rockstargames.com/VI/x", "2026-11-02T12:04:00.123456+00:00")
+    futur = off("Futur", "https://www.rockstargames.com/VI/y", "2026-11-03T12:00:00+00:00")
+    rr = {a["title"]: a for a in feed_store.officiels_du_message([premiere_vue, futur, recente], maintenant)}
+    check(rr["Sans date"]["instant"] is None and rr["Futur"]["instant"] is None and rr["Annonce récente"]["instant"],
+          "pas d'heure quand la date est une « première vue » ou dans le futur")
+    check(rr["Annonce récente"]["heure"] == "11:00",
+          "10:00 UTC le 02/11 = 11:00 à Paris (UTC+1 depuis le 25/10) : %s" % rr["Annonce récente"]["heure"])
+    ete = feed_store.officiels_du_message([off("Été", "https://www.rockstargames.com/VI/e", "2026-10-20T12:00:00+00:00")],
+                                          datetime(2026, 10, 20, 12, 30, tzinfo=timezone.utc))
+    check(ete[0]["heure"] == "14:00", "et 12:00 UTC le 20/10 = 14:00 (UTC+2 avant le changement d'heure)")
+
+    # ---- la ligne ----
+    ligne = discord_notify.ligne_officiel(r[0])
+    haut, bas = ligne.split("\n")
+    check(haut.startswith("📰 [L'album arrive](<https://www.rockstargames.com/fr/newswire/")
+          and haut.endswith("· [EN](<%s>)" % en["link"]),
+          "première ligne : marqueur, titre français cliquable (média retiré), lien anglais : %s" % haut)
+    ts = int(r[0]["instant"].timestamp())
+    check(bas == "*Newswire · <t:%d:R> · 12:50*" % ts,
+          "seconde ligne : type, balise de temps vivante, heure exacte (%s)" % bas)
+    sans = discord_notify.ligne_officiel(feed_store.officiels_du_message([premiere_vue], maintenant)[0])
+    check("<t:" not in sans and sans.endswith("*Officiel*"), "sans vraie date : le type seul, pas d'heure inventée")
+    dur = discord_notify.ligne_officiel({"title": "GTA *VI* [teaser]", "link": "https://x.test/(a b)", "marqueur": "⭐",
+                                         "libelle": "Officiel"})
+    check("\\*VI\\*" in dur and "](<" not in dur, "Markdown échappé, lien impossible à écrire retiré")
+    check(discord_notify.ligne_officiel({"title": "", "link": "https://x.test/"}) == "", "un titre vide ne donne aucune ligne")
+
+    # ---- dans le message ----
+    envoyes = []
+    vrai_envoi, vrai_url = discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL
+    discord_notify.send_discord_with_retry = lambda charge, label, *a, **k: envoyes.append(charge) or True
+    discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            discord_notify.send_message([en, fr] + [boutique(n) for n in range(1, 9)], [], None, 0, "x", maintenant=maintenant)
+    finally:
+        discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = vrai_envoi, vrai_url
+    carte = envoyes[0]["embeds"][0]
+    check(carte["title"] == "⭐ Officiel · 9", "la section compte les ANNONCES (une paire FR/EN = une) : %s" % carte["title"])
+    check(carte["description"].count("](<") == 5 + 1 and "+ 4 autres dans l'app" in carte["description"],
+          "cinq annonces listées (la paire a deux liens) et « + 4 »")
+    check(carte["description"].index("L'album arrive") < carte["description"].index("Produit 1"),
+          "l'annonce passe devant la boutique")
+    nuit_titre = feed_store.libelle_officiels(len(feed_store.officiels_du_message([en, fr])))
+    check(nuit_titre == "⭐ 1 annonce officielle Rockstar", "le titre de la nuit compte aussi une paire pour une")
 
 
 def test_push_empreinte_abonnement():
@@ -7089,6 +7217,8 @@ def test_un_passage_complet_du_robot():
     # écriture du fil, de l'allégé, de l'archive et du cache — s'exécute.
 
     QUAND = "2026-10-09T10:00:00+00:00"
+    INCIDENT_DEBUT = datetime.now(timezone.utc).replace(microsecond=0) - timedelta(days=2)
+    MOIS_INCIDENT = (INCIDENT_DEBUT + timedelta(hours=6)).strftime("%Y-%m")
     GARDE = "https://www.videogameschronicle.com/news/gta-6-bout-en-bout"
     REPRISE = "https://www.ign.com/articles/gta-6-bout-en-bout-repris"
     HORS_LANGUE = "https://www.rockstargames.com/es/newswire/article/zz/essai"
@@ -7122,12 +7252,16 @@ def test_un_passage_complet_du_robot():
                    "date": "2026-10-08T10:00:00+00:00", "source": "Kotaku",
                    "official": False, "rockstarmag": False, "specialist": False,
                    "lang": "en", "image": None, "description": ""}],
+        # Daté d'APRÈS l'horloge réelle : le robot élague le journal à 30 jours
+        # (INCIDENTS_JOURS) avec datetime.now. L'incident figé au 01/10 a
+        # disparu du fil le 03/11/2026, et ce contrôle est tombé sans que rien
+        # n'ait changé dans le code (constaté à la reprise du 03/11).
         "sources_incidents": [{"source": "vgc", "nom": "VGC",
-                               "debut": "2026-10-01T00:00:00+00:00",
-                               "fin": "2026-10-01T06:00:00+00:00",
+                               "debut": INCIDENT_DEBUT.isoformat(),
+                               "fin": (INCIDENT_DEBUT + timedelta(hours=6)).isoformat(),
                                "heures": 6.0, "alertee": True}],
-        "sources_incidents_compte": {"2026-10": {"vgc": {"nom": "VGC", "n": 1,
-                                                         "heures": 6.0}}},
+        "sources_incidents_compte": {MOIS_INCIDENT: {"vgc": {"nom": "VGC", "n": 1,
+                                                             "heures": 6.0}}},
     }
 
     def passage(rep, etat_initial=None):
@@ -7180,7 +7314,7 @@ def test_un_passage_complet_du_robot():
         check(len(fil["sources_incidents"]) == 1
               and fil["sources_incidents"][0]["source"] == "vgc",
               "le journal des incidents lu dans `stored` est republié")
-        check(fil["sources_incidents_compte"]["2026-10"]["vgc"]["n"] == 1,
+        check(fil["sources_incidents_compte"][MOIS_INCIDENT]["vgc"]["n"] == 1,
               "le compteur par source aussi — il est cumulatif, le perdre le "
               "remettrait à zéro à chaque passage")
 
@@ -10364,15 +10498,17 @@ def test_le_recap_se_tait_apres_la_sortie():
     check(fs.comptes_du_recap([], None) == (0, 0, 0),
           "[comptes] et un lot vide ne plante pas")
 
-    # LES DEUX CANAUX SE TAISENT ENSEMBLE. Un seul juge, appelé par les
-    # deux : couper l'un en laissant l'autre bavard serait pire que ne
-    # rien couper.
-    for nom in ("push_notify.py", "discord_notify.py"):
-        texte = open(nom, encoding="utf-8").read()
-        check("recap_merite_notification" in texte,
-              "%s passe par le juge partagé" % nom)
-        check("comptes_du_recap" in texte,
-              "%s prend ses trois nombres au même endroit" % nom)
+    # DISCORD NE SE TAIT PLUS (03/11/2026). Antoni : « Je veux pas perdre les
+    # messages ordinaires du discord ». Seul le push, éteint, garde le juge à date.
+    texte = open("push_notify.py", encoding="utf-8").read()
+    check("recap_merite_notification" in texte and "comptes_du_recap" in texte,
+          "push_notify.py passe par le juge à date et prend ses trois nombres au même endroit")
+    texte = open("discord_notify.py", encoding="utf-8").read()
+    check("recap_merite_notification" not in texte and "comptes_du_recap" in texte and "recap_a_dire" in texte,
+          "discord_notify.py n'applique plus le silence d'après-sortie, et prend ses trois nombres au même endroit")
+    check(fs.recap_a_dire(180, 0, 1) and fs.recap_a_dire(0, 1, 1) and fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD)
+          and not fs.recap_a_dire(0, 0, 0) and not fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD - 1),
+          "la règle de Discord est celle d'avant la sortie, en tout temps")
 
 
 def test_les_sources_de_lapres_sortie():
@@ -10800,6 +10936,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_couleur_du_compteur,
            test_alerte_report_officielle,
            test_message_a_sections,
+           test_detail_des_officiels,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,

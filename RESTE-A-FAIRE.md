@@ -1916,3 +1916,10 @@ abandonné** (le bilan reste dans le salon principal).
   s'affiche, et que l'écran verrouillé montre un texte utile.
 - Reste de la spec : détail des officiels (type, heure, ordre, fusion EN/FR), section RockstarMag, tableau du
   jour modifié sur place, bilan du soir, boutons-liens, puis les messages TEST.
+
+### Lot 4 de la notification Discord : à regarder au premier envoi réel (03/11/2026)
+
+- Les annonces officielles s'affichent sur deux lignes : vérifier que l'italique de la seconde ligne se lit bien
+  sur téléphone, et si le style gris `-#` serait rendu (à tester avec le message TEST).
+- Reste de la spec : section RockstarMag, tableau du jour modifié sur place, bilan du soir, boutons-liens, puis les
+  messages TEST.
