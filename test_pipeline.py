@@ -1582,6 +1582,103 @@ def test_section_rockstarmag():
           "le robot écrit l'état et dépose le fichier ; le workflow le transmet aux deux étapes")
 
 
+def test_envoi_discord_de_test():
+    """Les messages de TEST Discord : marqués, secrets protégés, échec quand rien ne part."""
+    print("\n[test-discord] des messages de test marqués, sans jamais écrire le lien d'envoi")
+    import io, contextlib, types
+    import discord_notify, test_discord
+
+    wf = open(".github/workflows/test-discord.yml", encoding="utf-8").read()
+    check("workflow_dispatch" in wf and "schedule" not in wf and "repository_dispatch" not in wf and "push:" not in wf,
+          "le test s'appelle à la demande et ne part jamais tout seul")
+    check("contents: read" in wf, "il est en lecture seule")
+    check("python test_discord.py" in wf, "il lance le programme de test")
+    secrets = sorted(set(re.findall(r"secrets\.(\w+)", wf)))
+    check(secrets == ["DISCORD_WEBHOOK_URL"], "il ne reçoit que le lien d'envoi : %s" % secrets)
+    check("requirements-dev" not in wf and "echo" not in wf, "il n'installe pas de navigateur et n'écrit pas le secret")
+
+    # ---- marquage ----
+    m = test_discord.marque({"username": "⭐ Rockstar", "content": "ligne d'aperçu", "embeds": []})
+    check(m["username"] == "TEST · ⭐ Rockstar" and m["content"].startswith("🧪 TEST — ligne d'aperçu"),
+          "chaque message porte TEST dans l'expéditeur et dans le texte")
+    check(len(test_discord.marque({"username": "x" * 200, "content": "y" * 5000})["username"]) <= 80
+          and len(test_discord.marque({"username": "x", "content": "y" * 5000})["content"]) <= 2000,
+          "le marquage respecte les limites de Discord (80 et 2 000 caractères)")
+    check(test_discord.url_message("https://d.test/api/webhooks/1/TOK?wait=true", "99") == "https://d.test/api/webhooks/1/TOK/messages/99",
+          "l'adresse d'un message à modifier se déduit du lien d'envoi")
+
+    # ---- déroulé complet, réseau simulé ----
+    jeton = "JETON_SECRET_xyz"
+    webhook = "https://d.test/api/webhooks/1/" + jeton
+    vus = []
+    def reponse(code, corps=None):
+        import json as _j
+        return types.SimpleNamespace(status_code=code, text=_j.dumps(corps) if corps is not None else "",
+                                     json=lambda: corps if corps is not None else {})
+    def joue(code_requete, code_post, plante=False):
+        del vus[:]
+        def requete(methode, url, params=None, json=None, timeout=0):
+            vus.append((methode, url, params, json))
+            if plante:
+                raise RuntimeError("connexion refusée vers " + url)
+            return reponse(code_requete, {"id": "777"} if code_requete == 200 else {"code": 50035, "message": "Invalid Form Body"})
+        def poste(url, json=None, timeout=0):
+            vus.append(("POST", url, None, json))
+            if plante:
+                raise RuntimeError("connexion refusée vers " + url)
+            return reponse(code_post)
+        vrais = (test_discord.requests.request, test_discord.requests.post, test_discord.PAUSE_S, os.environ.get("DISCORD_WEBHOOK_URL"))
+        test_discord.requests.request, test_discord.requests.post, test_discord.PAUSE_S = requete, poste, 0
+        os.environ["DISCORD_WEBHOOK_URL"] = webhook
+        tampon = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(tampon):
+                code = test_discord.main()
+        finally:
+            (test_discord.requests.request, test_discord.requests.post, test_discord.PAUSE_S, ancien) = vrais
+            discord_notify.DISCORD_WEBHOOK_URL = ""
+            if ancien is None:
+                os.environ.pop("DISCORD_WEBHOOK_URL", None)
+            else:
+                os.environ["DISCORD_WEBHOOK_URL"] = ancien
+        return code, tampon.getvalue()
+
+    code, sortie = joue(200, 204)
+    check(code == 0, "tout accepté : code 0")
+    check(all((c[3] or {}).get("username", "").startswith("TEST · ") and (c[3] or {}).get("content", "").startswith("🧪 TEST")
+              for c in vus), "AUCUN message ne part sans le marquage TEST (%d envois)" % len(vus))
+    boutons = next(c for c in vus if c[3] and c[3].get("components"))
+    ligne = boutons[3]["components"][0]["components"]
+    check(boutons[2].get("with_components") == "true" and len(ligne) == 2
+          and all(b["type"] == 2 and b["style"] == 5 and b["url"].startswith("https://") and "custom_id" not in b for b in ligne),
+          "deux boutons-LIENS (style 5, sans identifiant interactif) avec le paramètre with_components")
+    patch = [c for c in vus if c[0] == "PATCH"]
+    check(len(patch) == 1 and patch[0][1] == webhook + "/messages/777",
+          "la modification vise le message créé, par l'identifiant que Discord a rendu")
+    check(any("<t:" in e.get("description", "") for c in vus for e in ((c[3] or {}).get("embeds") or [])),
+          "un message porte la balise de temps")
+    check(any("-# " in e.get("description", "") for c in vus for e in ((c[3] or {}).get("embeds") or [])),
+          "un message teste le style gris")
+    check(jeton not in sortie, "le journal n'écrit jamais le lien d'envoi")
+
+    code, sortie = joue(400, 400)
+    check(code == 1 and "REFUSÉ" in sortie and "50035" in sortie and jeton not in sortie,
+          "rien d'accepté : le programme ÉCHOUE (code 1), dit ce que Discord a répondu, sans le lien")
+    code, sortie = joue(200, 400)
+    check(code == 0, "un envoi du vrai robot refusé n'empêche pas les autres étapes de compter")
+    code, sortie = joue(200, 204, plante=True)
+    check(code == 1 and jeton not in sortie and "connexion refusée" in sortie,
+          "une panne réseau dont le texte contient le lien n'écrit PAS le lien dans le journal")
+    del vus[:]
+    ancien = os.environ.pop("DISCORD_WEBHOOK_URL", None)
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            check(test_discord.main() == 1 and not vus, "sans lien d'envoi : code 1 et rien d'envoyé")
+    finally:
+        if ancien is not None:
+            os.environ["DISCORD_WEBHOOK_URL"] = ancien
+
+
 def test_push_empreinte_abonnement():
     """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
     print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
@@ -7990,7 +8087,7 @@ def test_les_workflows_epinglent_leurs_dependances():
     controles = open(".github/workflows/checks.yml", encoding="utf-8").read()
     check("requirements-dev.txt" in controles,
           "les contrôles installent bien leurs propres dépendances")
-    for autre in ("update-feeds.yml", "sonde.yml", "test-push.yml"):
+    for autre in ("update-feeds.yml", "sonde.yml", "test-push.yml", "test-discord.yml"):
         contenu = open(".github/workflows/" + autre, encoding="utf-8").read()
         check("requirements-dev.txt" not in contenu,
               "%s ne les installe pas, lui" % autre)
@@ -11117,6 +11214,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_message_a_sections,
            test_detail_des_officiels,
            test_section_rockstarmag,
+           test_envoi_discord_de_test,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,

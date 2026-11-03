@@ -1929,3 +1929,12 @@ abandonné** (le bilan reste dans le salon principal).
 - Au premier passage après la fusion, le robot **amorce** `rockstarmag_envoyes` sans annoncer l'existant : la
   première section RockstarMag n'apparaît qu'avec un article publié ensuite. Vérifier la clé dans `docs/feed.json`.
 - Reste de la spec : tableau du jour modifié sur place, bilan du soir, boutons-liens, puis les messages TEST.
+
+### Lancer les messages de TEST Discord, puis lire le résultat (03/11/2026)
+
+- Actions → « Tester les notifications Discord » → Run workflow, ou je le lance avec ton accord. Sept messages
+  marqués TEST arrivent dans le salon.
+- À me dire en retour : les deux boutons sont-ils là ? un seul message « version 2 » pour la modification ? « il y a
+  quelques secondes » s'affiche-t-il ? la ligne `-#` est-elle petite et grise ? les messages du robot sont-ils
+  lisibles sur le téléphone (écran verrouillé compris) ?
+- Selon le résultat : tableau du jour modifié sur place ou repli en nouveau message, boutons-liens ou lien texte.
