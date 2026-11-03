@@ -522,7 +522,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2158
+qui permet de tester tout le pipeline sans sortir de la machine. **2180
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10285,4 +10285,21 @@ jamais le filtre de TITRE. Mesuré avec la vraie `passe_le_filtre` : « GTAVI Ti
   valeur, donc le nom du cache passe à `gta6watch-shell-v67`.- **Un test que j'avais rendu fragile** : `test_le_service_worker_sans_push` (lot B du 03/11) recopiait « gta6watch-shell-v66 » comme cache courant ;
   le bump à v67 l'a fait échouer sur « sans toucher au cache courant ». Ce n'était pas un défaut du service worker : le test lit maintenant le nom
   du cache courant dans `docs/sw.js`, et l'ancien cache est un nom qui ne change plus.
+
+### Lot B : quatre requêtes patchs, serveurs, streamers — 03/11/2026
+
+Choix d'Antoni après la revue de couverture : « les quatre, tel quel ». Quatre requêtes Google News, chacune avec les six écritures du jeu, une requête
+par heure, aucun domaine nouveau : `gta6-patch-en` (patch, patch notes, title update, hotfix), `gta6-serveurs-en` (outage, servers down, server status,
+maintenance, server issues), `gta6-serveurs-fr` (panne, serveurs, maintenance, serveurs HS), `gta6-streamers-en` (Twitch, Kick, streamer, streamers).
+
+- **Mesuré avant l'ajout** (14 jours, titre comparé au fil par similarité > 0,8) : patchs EN 10 articles, dont 4 sans équivalent, un seul utile (le
+  patch du jour J et les 210 Go) ; serveurs EN 1 sans équivalent, hors sujet (EA FC) ; serveurs FR 1, hors sujet (« panne moteur ») ; streamers 3, dont
+  1 utile (le marathon GTA de Kai Cenat dès le 5/11). **Deux articles utiles en quatorze jours** : c'est un filet pour le jour J, pas un gain
+  d'aujourd'hui. Le filtre du robot (mots-clés GTA) écarte une partie du bruit, pas les articles sur le firmware PS5 qui citent « GTA 6 ».
+- **Aucun test copié** : le contrôle lit `FEEDS` ; `check_sources_sync.py` a d'abord refusé (virgule manquante dans `DEFAULT_FEEDS`, corrigée).
+  Le nom du cache passe à `gta6watch-shell-v68`.
+- **Contrôle ajouté** `test_les_requetes_patchs_serveurs_streamers` : présence, news.google.com seulement, six écritures, mot du sujet, non officielle,
+  langue, identifiants uniques. **Rejoué contre l'ancien code** : il échoue sur les quatre sources manquantes.
+- **À remesurer le 22/11** (tâche planifiée) : combien d'articles exclusifs chacune a apportés. Si l'une reste stérile, on le dit ; on n'en retire aucune
+  sans ton instruction.
 

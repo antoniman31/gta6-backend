@@ -639,6 +639,10 @@ FEEDS = [
      # titre officiel déclenche une notification Discord.
      "official_keywords_extra": ["service status"]},
     {"id": "gta6-online-en", "name": "Google News (GTA Online 6)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(online+OR+multiplayer+OR+servers+OR+%22game+mode%22)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
+    {"id": "gta6-patch-en", "name": "Google News (patchs EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(patch+OR+%22patch+notes%22+OR+%22title+update%22+OR+hotfix)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
+    {"id": "gta6-serveurs-en", "name": "Google News (serveurs EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(outage+OR+%22servers+down%22+OR+%22server+status%22+OR+maintenance+OR+%22server+issues%22)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
+    {"id": "gta6-serveurs-fr", "name": "Google News (serveurs FR)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(panne+OR+%22serveurs%22+OR+maintenance+OR+%22serveurs+HS%22)&hl=fr&gl=FR&ceid=FR:fr", "official": False, "lang": "fr", "max_entrees": 100},
+    {"id": "gta6-streamers-en", "name": "Google News (streamers EN)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(Twitch+OR+Kick+OR+streamer+OR+streamers)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
 ]
 
 # Vidéos trop anciennes pour le flux de leur chaîne.
