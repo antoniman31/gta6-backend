@@ -522,7 +522,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2163
+qui permet de tester tout le pipeline sans sortir de la machine. **2157
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10215,4 +10215,40 @@ secret VAPID dans le workflow, `requirements.txt` sans `pywebpush` ni son graphe
 
 **Six mutations rejouées, six détectées** : `push_notify.py` recréé, `test-push.yml` recréé, une étape push remise dans le workflow,
 `pywebpush` réépinglé, la clé VAPID republiée dans `feed.json`, le juge d'après-sortie recréé.
+
+### Retrait du push, lot B : l'app — 03/11/2026
+
+Suite du lot A. Antoni, le 03/11 : « On oublie le gel et go » : le **gel de l'app est abandonné** (il devait tomber le 10/11) et
+le lot B est fait maintenant. Il retire de `docs/index.html`, de `docs/sw.js` et des fichiers de l'app tout ce que le push touchait :
+
+- **L'écran de réglages** perd sa section « Notifications » : la configuration des clés VAPID, « Activer », « Aperçu » (le bouton de
+  test local), « Silence 2 h » (le « ne pas déranger »), « Envoi réel », « Désactiver », la zone de l'abonnement et le **journal de
+  diagnostic du push**. « Avancé » passe de trois sujets à deux (la connexion à GitHub et l'entretien de l'app).
+- **L'en-tête** perd la pastille du silence ; le script perd environ 570 lignes (`index.html` : 9 675 → 9 103 lignes), dont toute la
+  gestion de l'abonnement, du silence, du journal et la lecture de `vapid_public_key`.
+- **`docs/sw.js`** ne sait plus recevoir un push ni cliquer une notification : il ne garde que son rôle de coque hors-ligne (ce qui
+  rend l'app installable) et passe à `gta6watch-shell-v66`. **`docs/notif-options.js`** et **`docs/icon-badge.png`** sont supprimés.
+- **Le nettoyage du téléphone d'Antoni.** À l'activation du nouveau service worker, il **ferme l'ancien abonnement** s'il en reste un
+  (le dernier était mort côté Google mais encore présent dans le navigateur), supprime **tous les anciens caches, celui des
+  réglages d'avant compris** (`gta6watch-prefs`, où vivaient le silence et le journal), puis reprend le contrôle. Une panne en
+  cherchant l'abonnement, ou un navigateur sans gestionnaire de push, n'empêche jamais l'activation. Ce code peut être supprimé
+  quand tous les appareils ont reçu cette version ; il ne coûte rien d'ici là.
+
+**Tests** : retirés `test_journal_push_sans_secret`, `test_badge_de_notification_a_un_canal_alpha` (pytest) et, dans la suite
+navigateur, `test_ne_pas_deranger` et `test_journal_push`. Les contrôles du panneau n'attendent plus ses anciens éléments, et « Avancé »
+doit avoir deux sujets sans les notifications. Nouveaux : `test_le_push_est_retire_de_lapp` (aucun jeton du push dans la page ni dans
+`sw.js`, fichiers supprimés, service worker toujours enregistré) et `test_le_service_worker_sans_push`, qui **joue le vrai
+`docs/sw.js` dans un navigateur** avec un `self` et des `caches` factices : il n'écoute plus que `install`, `activate` et `fetch` ;
+l'ancien abonnement est fermé **avant** la reprise du contrôle ; les anciens caches partent mais pas le courant ; sans abonnement, en
+cas de panne ou sans gestionnaire de push, l'activation aboutit quand même.
+
+**À faire par Antoni** : ouvrir l'app une fois pour que le nouveau service worker s'installe (sinon l'ancien reste actif jusqu'à la
+prochaine ouverture), et vérifier que Réglages → Avancé n'a plus de section « Notifications » ni de pastille de silence dans l'en-tête.
+
+**Quinze mutations rejouées, quatorze détectées, une équivalente.** Sur le service worker, joué dans le navigateur : un écouteur `push`
+remis, l'ancien abonnement jamais fermé, fermé APRÈS la reprise du contrôle, le cache des réglages gardé, une panne qui n'est pas
+avalée, le cache courant supprimé (six sur sept). Sur les fichiers : « pushManager » ou « Notifications » réintroduit dans la page, le
+service worker non enregistré, `notif-options.js` ou `icon-badge.png` recréés, un écouteur `push` ou `importScripts` remis dans `sw.js`
+(huit sur huit). **L'équivalente** : retirer le test `if(!self.registration || !self.registration.pushManager)` ne change rien, parce que
+l'appel qui suit est déjà dans un `try/catch` qui rend le même résultat. C'est une double sécurité, pas un défaut non détecté.
 

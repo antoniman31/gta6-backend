@@ -377,46 +377,6 @@ def test_canonicalize_stored_links():
     check(m2 == 0 and d2 == 0, "idempotente : le second passage ne change rien")
 
 
-def test_journal_push_sans_secret():
-    """Le journal de diagnostic du push ne peut pas fuiter l'endpoint, et la
-    page et le service worker visent le même fichier du même cache."""
-    print("\n[journal push] même adresse des deux côtés, aucun endpoint écrit")
-    import re
-    sw = open("docs/sw.js", encoding="utf-8").read()
-    page = open("docs/index.html", encoding="utf-8").read()
-    opts = open("docs/notif-options.js", encoding="utf-8").read()
-    u_sw = re.search(r'const TRACE_URL = "([^"]+)"', sw)
-    u_page = re.search(r'const TRACE_URL = "([^"]+)"', page)
-    check(bool(u_sw) and bool(u_page) and u_sw.group(1) == u_page.group(1),
-          "sw.js et la page écrivent le journal à la même adresse")
-    n_page = re.search(r"const TRACE_MAX = (\d+)", page)
-    n_opts = re.search(r"const TRACE_MAX = (\d+)", opts)
-    check(bool(n_page) and bool(n_opts) and n_page.group(1) == n_opts.group(1),
-          "et gardent le même nombre de lignes")
-    # Tout appel qui écrit dans le journal : sw.js (noteTrace) et la page
-    # (noteTracePage). Aucun argument ne doit toucher à l'endpoint ni à
-    # l'abonnement lui-même ; la page n'y passe que l'empreinte.
-    def appels(texte, nom):
-        # Le texte de chaque appel, jusqu'au premier « ; » ou « .then( » : les
-        # arguments peuvent s'étendre sur deux lignes et contenir des parenthèses.
-        sorties = []
-        for m in re.finditer(r"(?<!function )" + nom + r"\(", texte):
-            reste = texte[m.end():m.end() + 300]
-            fin = min([i for i in (reste.find(";"), reste.find(".then(")) if i >= 0] or [len(reste)])
-            sorties.append(reste[:fin])
-        return sorties
-    appels_sw = appels(sw[sw.index('self.addEventListener("install"'):], "noteTrace")
-    appels_page = appels(page[page.index("async function empreinteAbonnementPage"):], "noteTracePage")
-    check(len(appels_sw) >= 4 and len(appels_page) >= 1,
-          "le contrôle lit bien les appels du journal (%d côté service worker, %d côté page)" % (len(appels_sw), len(appels_page)))
-    check(all(not re.search(r"endpoint|subscription|toJSON|keys|\bevent\b", a) for a in appels_sw + appels_page),
-          "aucun appel du journal ne reçoit l'endpoint, l'abonnement ou le contenu du push")
-    check("empreinte" in " ".join(appels_page),
-          "la page ne note que l'empreinte de l'abonnement")
-    check('"pushsubscriptionchange"' in sw and "noteTrace(" in sw[sw.index('"pushsubscriptionchange"'):],
-          "le service worker note aussi le signalement de changement d'abonnement")
-
-
 def test_mesure_retard_officiel():
     """Le retard d'une annonce, en minutes, sans titre ni lien dans le journal.
 
@@ -1384,6 +1344,29 @@ def test_le_push_est_retire():
     mort = [n for n in ("libelle_officiel", "etiquette_officiel", "corps_recap", "article_le_plus_notable",
                         "est_actu_majeure", "recap_merite_notification") if hasattr(feed_store, n)]
     check(not mort, "le code que seul le push utilisait n'existe plus (%s)" % mort)
+
+
+def test_le_push_est_retire_de_lapp():
+    """Les notifications push sont retirées de l'app (lot B, 03/11/2026) : rien n'en revient en silence."""
+    print("\n[app] plus de push, plus de « ne pas déranger », plus de journal")
+    import os as _os
+    page = open("docs/index.html", encoding="utf-8").read()
+    sw = open("docs/sw.js", encoding="utf-8").read()
+    for jeton in ("pushManager", "requestPermission", "showNotification", "applicationServerKey", "vapid",
+                  "pushGroup", "pushEnableBtn", "silenceChip", "silence-chip", "basculeSilence", "enablePush",
+                  "disablePush", "testPushReel", "refreshPushUI", "PREFS_CACHE", "pushTraceBlock", "notif-options",
+                  "test-push.yml", "backendVapidKey"):
+        check(jeton not in page, "index.html ne contient plus « %s »" % jeton)
+    for jeton in ('addEventListener("push"', 'addEventListener("notificationclick"', "pushsubscriptionchange",
+                  "importScripts", "showNotification", "lireSilence", "noteTrace"):
+        check(jeton not in sw, "sw.js ne contient plus « %s »" % jeton)
+    check("getSubscription" in sw and "unsubscribe" in sw,
+          "mais sw.js ferme l'ancien abonnement une dernière fois")
+    check(not _os.path.exists("docs/notif-options.js") and not _os.path.exists("docs/icon-badge.png"),
+          "notif-options.js et icon-badge.png n'existent plus")
+    check("Notifications</h3>" not in page, "le panneau de réglages n'a plus de section « Notifications »")
+    # Le service worker reste enregistré : c'est lui qui rend l'app installable.
+    check('navigator.serviceWorker.register("sw.js")' in page, "le service worker reste enregistré (installation de l'app)")
 
 
 def test_envoi_discord_de_test():
@@ -8514,12 +8497,13 @@ def test_confirmation_des_actions_sans_retour():
     # markAllRead a quitté cette liste le 22/09/2026. Le garde-fou suit
     # désormais la réversibilité du geste : marquer des articles comme lus
     # est un état local qui se rétablit à l'identique, donc il part sans
-    # question et se reprend au toast. Les quatre qui restent touchent des
+    # question et se reprend au toast. Celles qui restent touchent des
     # valeurs qui n'existent nulle part ailleurs — un jeton que GitHub ne
     # réaffiche pas, une paire de clés, une sélection de sources, des
-    # réglages. Voir le contrôle du toast juste en dessous.
-    for nom in ("forgetGithubToken", "resetSettings",
-                "generateVapidKeys", "disablePush"):
+    # réglages. Voir le contrôle du toast juste en dessous. (Les deux autres,
+    # la paire de clés VAPID et la désactivation du push, sont parties avec le
+    # push, le 03/11/2026.)
+    for nom in ("forgetGithubToken", "resetSettings"):
         debut = html.index(f"function {nom}(")
         corps = html[debut:html.index("\n}", debut)]
         check("demandeConfirmation(" in corps,
@@ -8688,16 +8672,13 @@ def test_panneau_parametres_intact():
     panneau = html[deb:fin]
     js = html[html.index("<script>"):]
 
-    # 23 des 24 éléments du panneau sont adressés par getElementById depuis le
+    # Les éléments du panneau sont adressés par getElementById depuis le
     # JS. Déplacer les blocs entre onglets est exactement le geste qui en fait
     # disparaître un en silence : l'app continue de se charger, et le réglage
     # concerné ne répond simplement plus.
     ATTENDUS = [
         "settingsOverlay", "themeSystemBtn", "themeLightBtn", "themeDarkBtn",
-        "backendUrlInput", "vapidSetupGroup", "vapidKeysBlock", "vapidPublicOut",
-        "vapidPrivateOut", "pushGroup", "pushEnableBtn", "pushTestBtn",
-        "pushDisableBtn", "pushStatusLine", "pushSubscriptionBlock",
-        "pushSubscriptionText", "githubTokenInput", "tokenStatusLine",
+        "backendUrlInput", "githubTokenInput", "tokenStatusLine",
         "keywordsInput", "excludeKeywordsInput", "sourceList", "maxDisplay",
         "simRange", "simValue",
     ]
@@ -9039,8 +9020,8 @@ def test_panneau_parametres_accessible():
 
     # Le « ? » se greffe sur la PREMIÈRE explication repliée du groupe. Si
     # celle-ci vit dans un bloc lui-même masqué, le bouton ne révèle rien :
-    # c'était le cas du groupe des notifications, dont le « ? » ouvrait un
-    # texte enfermé dans .bloc-replie.
+    # c'était le cas du groupe des notifications (retiré le 03/11/2026), dont le
+    # « ? » ouvrait un texte enfermé dans .bloc-replie.
     def dans_un_bloc_replie(fragment, pos):
         """Vrai si pos tombe À L'INTÉRIEUR d'un <div class="bloc-replie">.
         L'ordre d'apparition ne suffit pas : une explication peut très bien
@@ -9059,18 +9040,6 @@ def test_panneau_parametres_accessible():
                 profondeur += 1
         return replie is not None
 
-    for gid in ("pushGroup", "vapidSetupGroup"):
-        groupe = panneau[panneau.index('id="%s"' % gid):]
-        suivant = groupe.find('<div class="setting-group"', 10)
-        if suivant != -1:
-            groupe = groupe[:suivant]
-        premiere = groupe.find('class="setting-desc" hidden')
-        check(premiere != -1,
-              "%s a bien une explication repliée à révéler" % gid)
-        check(premiere != -1 and not dans_un_bloc_replie(groupe, premiere),
-              "%s : le « ? » ouvre une explication visible, pas un texte "
-              "enfermé dans un bloc lui-même masqué" % gid)
-
     # La cause de fond, prise à la racine plutôt qu'au cas par cas : le « ? »
     # ne vise qu'un enfant DIRECT du groupe. Sans cela il se greffait sur
     # n'importe quelle explication repliée, bloc annexe compris.
@@ -9085,21 +9054,6 @@ def test_panneau_parametres_accessible():
         check(not dans_un_bloc_replie(panneau, m.start()),
               "aucune explication repliée n'est enfermée dans un bloc annexe, "
               "où plus rien ne pourrait l'ouvrir")
-
-    # Le bloc de l'abonnement s'affiche EN PERMANENCE dès que l'appareil est
-    # abonné. Le mode d'emploi complet y tenait quatre lignes : les
-    # instructions d'une étape faite une fois restaient à l'écran pour
-    # toujours. Une ligne, et le détail derrière le « ? ».
-    bloc = panneau[panneau.index('id="pushSubscriptionBlock"'):]
-    bloc = bloc[:bloc.index("<textarea")]
-    visibles = re.findall(r'<div class="setting-desc">(.*?)</div>', bloc, re.S)
-    for texte in visibles:
-        nu = re.sub(r"<[^>]+>|\s+", " ", texte).strip()
-        check(len(nu) <= 120,
-              "le texte permanent du bloc d'abonnement tient en une ligne "
-              "(%d caractères)" % len(nu))
-    check("Dernière étape" not in panneau,
-          "le pavé d'instructions ne campe plus dans le panneau")
 
 
 def test_panneau_parametres_structure():
@@ -9140,9 +9094,12 @@ def test_panneau_parametres_structure():
           "les mots-clés viennent avant les cinquante-neuf bascules")
 
     # « Avancé » empilait six sujets sans rapport sans rien pour les séparer.
+    # Trois depuis le 16/10/2026 ; deux depuis que les notifications push sont
+    # retirées (03/11/2026) : la connexion à GitHub et l'entretien de l'app.
     onglet = panneau[panneau.index('data-onglet="adv"'):]
-    check(onglet.count('class="panneau-section"') == 3,
-          "« Avancé » est découpé en trois sujets nommés")
+    check(onglet.count('class="panneau-section"') == 2
+          and 'Notifications</h3>' not in onglet,
+          "« Avancé » est découpé en deux sujets nommés, sans les notifications")
 
     # Un onglet « Affichage » qui contenait un groupe « Affichage » : le même
     # mot à deux niveaux de hiérarchie ne dit plus rien.
@@ -9180,120 +9137,6 @@ def test_panneau_parametres_structure():
           "le compteur reçoit ses formes en toutes lettres")
     check('"aucun mot-clé"' in html and '"aucune exclusion"' in html,
           "singulier, pluriel et négation sont donnés par l'appelant")
-
-
-def test_badge_de_notification_a_un_canal_alpha():
-    print("\n[push] le badge de la barre d'état n'est pas un carré blanc")
-    import json, re, struct
-    # Le badge est déclaré dans notif-options.js, que sw.js appelle : on lit
-    # les deux comme un seul texte, l'unique showNotification étant dans sw.js.
-    sw = (open("docs/sw.js", encoding="utf-8").read()
-          + open("docs/notif-options.js", encoding="utf-8").read())
-    page = open("docs/index.html", encoding="utf-8").read()
-
-    # Il y a DEUX endroits qui affichent une notification, pas un : le
-    # service worker pour les vraies, et le bouton « tester » des réglages.
-    # La première version de ce test ne lisait que sw.js. Résultat : le badge
-    # y a été corrigé, le bouton de test est resté sur icon-192.png, et c'est
-    # précisément ce bouton qu'on presse pour vérifier la correction — le
-    # carré blanc a donc survécu trois jours à son propre correctif, suite
-    # verte. Le test balaie maintenant tout appel, où qu'il soit.
-    declares = []
-    for nom_source, texte in (("docs/sw.js", sw), ("docs/index.html", page)):
-        appels = len(re.findall(r"\.showNotification\(", texte))
-        badges = re.findall(r'badge:\s*"([^"]+)"', texte)
-        check(appels > 0 and len(badges) == appels,
-              "%s : les %d appel(s) à showNotification déclarent tous un badge "
-              "(%d déclaré(s))" % (nom_source, appels, len(badges)))
-        declares += [(nom_source, n) for n in badges]
-
-    check(len(declares) >= 2,
-          "les deux chemins d'affichage déclarent un badge (%d trouvé(s))"
-          % len(declares))
-
-    # Et ils doivent déclarer LE MÊME : sinon le bouton de test montre autre
-    # chose que ce que le robot enverra, ce qui est pire qu'inutile.
-    noms = {n for _, n in declares}
-    check(len(noms) == 1,
-          "tous les appels utilisent le même badge (%s)"
-          % ", ".join(sorted(noms)))
-
-    # Le piège, nommé. Les icônes du manifeste sont opaques par obligation
-    # (test_icones_de_lapp le verrouille) ; en utiliser une comme badge donne
-    # donc toujours un carré blanc. C'est l'erreur commise deux fois.
-    icones = {e["src"] for e in json.load(
-        open("docs/manifest.json", encoding="utf-8"))["icons"]}
-    for nom_source, n in declares:
-        check(n.lstrip("./") not in icones,
-              "%s : le badge (%s) n'est pas une icône du manifeste — celles-ci "
-              "sont opaques, donc carrées et blanches une fois réduites à leur "
-              "alpha" % (nom_source, n))
-
-    nom = sorted(noms)[0]
-    chemin = "docs/" + nom.lstrip("./")
-    check(os.path.exists(chemin), f"le fichier du badge existe ({nom})")
-    if not os.path.exists(chemin):
-        return
-
-    # Le cœur du défaut. Android ne garde QUE le canal alpha du badge et
-    # repeint la forme en blanc. Un PNG sans alpha (type 2 = RVB) a tous ses
-    # pixels opaques : la silhouette est le carré entier, et l'utilisateur
-    # voit un carré blanc dans sa barre d'état. C'est exactement ce qui se
-    # passait avec badge:"icon-192.png" depuis l'ajout des push.
-    donnees = open(chemin, "rb").read()
-    check(donnees[:8] == b"\x89PNG\r\n\x1a\n", "le badge est bien un PNG")
-    largeur, hauteur, _, type_couleur = struct.unpack(">IIBB", donnees[16:26])
-    AVEC_ALPHA = (4, 6)   # 4 = gris+alpha, 6 = RVB+alpha
-    check(type_couleur in AVEC_ALPHA,
-          "le badge a un canal alpha (type PNG %d) — sans lui Android affiche "
-          "un carré blanc" % type_couleur)
-    check(largeur == hauteur,
-          "le badge est carré (%dx%d)" % (largeur, hauteur))
-
-    # Avoir un canal alpha ne suffit pas : encore faut-il qu'il serve. Un PNG
-    # RGBA entièrement opaque redonnerait le même carré blanc.
-    if type_couleur == 6:
-        import zlib
-        morceaux = b""
-        i = 8
-        while i < len(donnees):
-            taille = struct.unpack(">I", donnees[i:i + 4])[0]
-            if donnees[i + 4:i + 8] == b"IDAT":
-                morceaux += donnees[i + 8:i + 8 + taille]
-            i += 12 + taille
-        brut = zlib.decompress(morceaux)
-        bpp, pas = 4, largeur * 4
-        transparents = 0
-        precedente = bytearray(pas)
-        position = 0
-        for _ in range(hauteur):
-            filtre = brut[position]; position += 1
-            ligne = bytearray(brut[position:position + pas]); position += pas
-            for x in range(pas):
-                a = ligne[x - bpp] if x >= bpp else 0
-                b = precedente[x]
-                c = precedente[x - bpp] if x >= bpp else 0
-                if filtre == 1: ligne[x] = (ligne[x] + a) & 255
-                elif filtre == 2: ligne[x] = (ligne[x] + b) & 255
-                elif filtre == 3: ligne[x] = (ligne[x] + (a + b) // 2) & 255
-                elif filtre == 4:
-                    pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
-                    pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
-                    ligne[x] = (ligne[x] + pr) & 255
-            transparents += sum(1 for x in range(3, pas, bpp) if ligne[x] < 50)
-            precedente = ligne
-        part = 100 * transparents / (largeur * hauteur)
-        check(part > 50,
-              "le fond du badge est réellement transparent (%.0f %% des pixels) "
-              "— un RGBA tout opaque redonnerait le carré blanc" % part)
-
-    # Le service worker doit être remplacé, sinon la correction ne parvient
-    # jamais aux téléphones déjà installés : c'est le nom du cache qui force
-    # ce remplacement, et le fichier le documente lui-même.
-    version = re.search(r'CACHE_NAME\s*=\s*"gta6watch-shell-v(\d+)"', sw)
-    check(version is not None and int(version.group(1)) >= 4,
-          "le nom du cache a été bumpé (v%s) pour remplacer l'ancien service "
-          "worker" % (version.group(1) if version else "?"))
 
 
 def _pixels_png(chemin):
@@ -11126,9 +10969,9 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_section_rockstarmag,
            test_envoi_discord_de_test,
            test_le_push_est_retire,
+           test_le_push_est_retire_de_lapp,
            test_tableau_du_jour,
            test_bilan_du_soir,
-           test_journal_push_sans_secret,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
            test_officiel_strict_et_langues_rockstar,
@@ -11215,7 +11058,6 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_confirmation_des_actions_sans_retour,
            test_haut_de_page_une_seule_carte,
            test_validation_avant_ecriture,
-           test_badge_de_notification_a_un_canal_alpha,
            test_lecture_backend_ne_gonfle_pas_sur_une_coupure,
            test_elagage_declare_au_garde_fou,
            test_un_article_elague_nest_pas_annonce,
