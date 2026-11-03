@@ -367,6 +367,46 @@ jobs:
           JALONS_FILE: ${{ runner.temp }}/jalons.json
           ROCKSTARMAG_FILE: ${{ runner.temp }}/rockstarmag.json
 
+      # Le tableau du jour : UN message Discord, créé au premier passage de
+      # 5 h puis MODIFIÉ à chaque passage (spec tasks/spec-discord-notification.md,
+      # §6 ; modification vérifiée par l'envoi TEST du 03/11/2026). Il lit le
+      # docs/feed.json qui vient d'être publié. L'étape ne fait jamais échouer le
+      # workflow : voir tableau_discord.py.
+      - name: Tableau du jour Discord
+        if: success()
+        run: python tableau_discord.py
+        env:
+          SEULEMENT_OFFICIELS: ${{ steps.veille.outputs.silence == 'true' && '1' || '0' }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      # L'identifiant du message est la seule chose à retenir d'un passage à
+      # l'autre : tableau_discord.py le range dans tableau-discord.json, que
+      # cette étape commite UNIQUEMENT quand il change (une fois par jour, à la
+      # création). Rien de secret dedans : un jour et un nombre. Jamais bloquant :
+      # le tableau du jour est un confort, et au pire un second message est créé.
+      - name: Retenir le tableau du jour
+        if: success()
+        continue-on-error: true
+        run: |
+          git config --global user.name "GTA6 Watch Bot"
+          git config --global user.email "actions@github.com"
+          git add tableau-discord.json
+          if git diff --quiet --cached; then
+            echo "Identifiant du tableau inchangé — rien à publier."
+            exit 0
+          fi
+          git commit -m "Tableau du jour Discord : message du jour"
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main || { git rebase --abort 2>/dev/null; sleep $((attempt * 3)); continue; }
+            if git push origin HEAD:main; then
+              echo "Identifiant retenu (tentative $attempt)."
+              exit 0
+            fi
+            sleep $((attempt * 3))
+          done
+          echo "Identifiant non publié après 5 tentatives (le prochain passage recréera le tableau)."
+          exit 1
+
       # Notification push native, en plus de Discord : taper une
       # notification Discord ouvre Discord, jamais l'article. Comme pour
       # Discord, l'envoi n'a lieu qu'APRÈS une publication réussie.
