@@ -116,6 +116,15 @@ def _fusionne_cumulatifs(merged, ours, remote):
         merged["jalons_envoyes"] = list(dict.fromkeys(
             [x for x in list(au_loin) + list(a_nous) if isinstance(x, str)]))
 
+    # Les liens RockstarMag annoncés : l'union, les plus récents gardés. Garder
+    # un seul côté ferait renvoyer un article déjà annoncé par l'autre.
+    a_nous = ours.get("rockstarmag_envoyes")
+    au_loin = remote.get("rockstarmag_envoyes")
+    if isinstance(a_nous, list) or isinstance(au_loin, list):
+        union = [x for x in list(au_loin if isinstance(au_loin, list) else [])
+                 + list(a_nous if isinstance(a_nous, list) else []) if isinstance(x, str)]
+        merged["rockstarmag_envoyes"] = list(dict.fromkeys(union))[-feed_store.ROCKSTARMAG_ENVOYES_MAX:]
+
     # Le journal des incidents est une LISTE. Union par (source, début) :
     # deux côtés qui ont vu la même panne en écrivent la même entrée, et
     # celui qui en a vu une de plus ne doit pas la perdre.

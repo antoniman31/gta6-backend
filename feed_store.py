@@ -2238,6 +2238,105 @@ def officiels_du_message(items, maintenant=None):
 
 
 # ---------------------------------------------------------------------------
+# LA SECTION ROCKSTARMAG DU MESSAGE (lot 5, 03/11/2026)
+# ---------------------------------------------------------------------------
+# Mesuré le 29/10/2026 : 130 articles RockstarMag sur 3 300 (3,9 %), sur 54
+# jours, médiane de 2 par jour, au plus 14. 57 sont des vidéos YouTube (44 %).
+# 100 sur 130 ont un résumé, mais 3 des 4 articles du 29/10, arrivés par Google
+# News, n'en ont pas : l'extrait ne sera pas toujours là.
+#
+# LE REPÈRE N'EST PAS LA DATE DE PUBLICATION. Un article publié à 11 h et
+# trouvé à 13 h serait perdu si l'on ne gardait que « ce qui est paru depuis le
+# dernier message ». On garde donc les liens DÉJÀ ENVOYÉS (rockstarmag_envoyes
+# dans feed.json, les 50 derniers) et l'on annonce tout article RockstarMag des
+# 48 dernières heures dont le lien n'y figure pas. Conséquences voulues : une
+# relance à la main ne renvoie rien ; un article de la nuit sort à 5 h ; un
+# article qui arrive deux fois est comparé après canonical_link.
+ROCKSTARMAG_FENETRE_H = 48
+ROCKSTARMAG_ENVOYES_MAX = 50
+ROCKSTARMAG_EXTRAIT_MAX = 160
+COULEUR_ROCKSTARMAG = 0x58B9FF    # --accent de l'app : l'onglet n'a pas de couleur propre
+
+
+def rockstarmag_envoyes_lus(stored):
+    """Les liens RockstarMag déjà annoncés lus dans feed.json, ou None si la clé manque.
+
+    None et non [] : un feed.json d'avant ce lot n'a pas la clé, et le robot
+    doit alors AMORCER la liste avec l'existant au lieu d'annoncer d'un coup
+    deux jours d'articles.
+    """
+    brut = (stored or {}).get("rockstarmag_envoyes") if isinstance(stored, dict) else None
+    if not isinstance(brut, list):
+        return None
+    return [x for x in dict.fromkeys(brut) if isinstance(x, str) and x]
+
+
+def est_rockstarmag(item):
+    return isinstance(item, dict) and bool(item.get("rockstarmag"))
+
+
+def articles_rockstarmag(items, deja, maintenant=None):
+    """Les articles RockstarMag à annoncer : récents (48 h), jamais envoyés, le plus récent d'abord."""
+    maintenant = maintenant or datetime.now(timezone.utc)
+    limite = maintenant - timedelta(hours=ROCKSTARMAG_FENETRE_H)
+    envoyes = {canonical_link(x) for x in (deja or ())}
+    vus, sortie = set(), []
+    for it in items or ():
+        if not est_rockstarmag(it):
+            continue
+        lien = canonical_link((it.get("link") or "").strip())
+        if not lien or lien in envoyes or lien in vus or not (it.get("title") or "").strip():
+            continue
+        quand = parse_date_key(it.get("date") or "")
+        if quand < limite or quand > maintenant + timedelta(minutes=RETARD_FUTUR_TOLERE_MIN):
+            continue
+        vus.add(lien)
+        sortie.append(it)
+    sortie.sort(key=lambda a: parse_date_key(a.get("date") or ""), reverse=True)
+    return sortie
+
+
+def apercu_rockstarmag(item):
+    """Ce que Discord a besoin de savoir d'un article RockstarMag : rien de plus."""
+    return {"title": (item.get("title") or "").strip(), "link": (item.get("link") or "").strip(),
+            "description": (item.get("description") or "")[:LONGUEUR_RESUME],
+            "date": item.get("date") or ""}
+
+
+def prepare_rockstarmag(stored, items, a_notifier, silence, maintenant=None):
+    """(à annoncer, liens à retenir dans feed.json).
+
+    Premier passage après ce lot (clé absente) : on retient tout l'existant SAUF
+    ce que CE passage vient de trouver, pour ne pas annoncer deux jours d'un coup
+    et ne pas perdre pour autant l'article du jour. La nuit, rien n'est annoncé
+    ni retenu : à 5 h la section réunit ce qui s'est accumulé.
+    """
+    maintenant = maintenant or datetime.now(timezone.utc)
+    deja = rockstarmag_envoyes_lus(stored)
+    mag = [i for i in (items or ()) if est_rockstarmag(i)]
+    if deja is None:
+        neufs = {canonical_link((i.get("link") or "").strip()) for i in (a_notifier or ())}
+        mag_tries = sorted(mag, key=lambda a: parse_date_key(a.get("date") or ""))
+        deja = [(i.get("link") or "").strip() for i in mag_tries
+                if canonical_link((i.get("link") or "").strip()) not in neufs
+                and (i.get("link") or "").strip()]
+    if silence:
+        return [], deja[-ROCKSTARMAG_ENVOYES_MAX:]
+    a_annoncer = articles_rockstarmag(mag, deja, maintenant)
+    retenus = (deja + [(i.get("link") or "").strip() for i in reversed(a_annoncer)])[-ROCKSTARMAG_ENVOYES_MAX:]
+    return [apercu_rockstarmag(i) for i in a_annoncer], retenus
+
+
+def marqueur_rockstarmag(lien):
+    """🎬 pour une vidéo YouTube, 📰 pour le reste (le site)."""
+    try:
+        hote = (urlparse((lien or "").strip()).hostname or "").lower()
+    except Exception:
+        return "📰"
+    return "🎬" if hote in ("youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be") else "📰"
+
+
+# ---------------------------------------------------------------------------
 # COMBIEN DE SITES DERRIÈRE LES « SOURCES » D'UNE ACTU MAJEURE (29/10/2026)
 # ---------------------------------------------------------------------------
 # HOT_SOURCE_THRESHOLD compte des FLUX, pas des médias. Mesuré le 29/10/2026 sur
