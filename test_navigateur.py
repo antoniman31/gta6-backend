@@ -4784,14 +4784,19 @@ def test_le_service_worker_sans_push(nav, url):
     print("\n[sw] plus de push, et le vieil abonnement est fermé")
     racine = os.path.dirname(os.path.abspath(__file__))
     source = open(os.path.join(racine, "docs", "sw.js"), encoding="utf-8").read()
+    # Le nom du cache COURANT est lu dans sw.js : le recopier ici (« v66 ») a
+    # fait échouer ce contrôle le 03/11/2026, quand le bump à v67 a fait de
+    # l'ancien nom un cache à supprimer. Ce n'était pas un défaut du service worker.
+    import re as _re
+    courant = _re.search(r'CACHE_NAME\s*=\s*"([^"]+)"', source).group(1)
     ctx = nav.new_context()
     page = ctx.new_page()
     page.goto("about:blank")
 
     def joue(mode):
-        return page.evaluate("""async ([src, mode]) => {
+        return page.evaluate("""async ([src, mode, courant]) => {
             const ecouteurs = {}, journal = [], supprimes = [];
-            const noms = ["gta6watch-shell-v65", "gta6watch-prefs", "gta6watch-shell-v66"];
+            const noms = ["gta6watch-shell-v0", "gta6watch-prefs", courant];
             const fauxCaches = {
               keys: async () => noms.slice(),
               delete: async (n) => { supprimes.push(n); return true; },
@@ -4816,14 +4821,14 @@ def test_le_service_worker_sans_push(nav, url):
             ecouteurs.activate({ waitUntil: (p) => { attente = p; } });
             await attente;
             return { ecouteurs: Object.keys(ecouteurs).sort(), journal, supprimes };
-        }""", [source, mode])
+        }""", [source, mode, courant])
 
     abo = joue("abonne")
     check(abo["ecouteurs"] == ["activate", "fetch", "install"],
           "le service worker n'écoute plus que install, activate et fetch (%s)" % abo["ecouteurs"])
     check("désinscrit" in abo["journal"] and abo["journal"][-1] == "claim",
           "à l'activation, l'ancien abonnement est fermé, PUIS le contrôle est repris (%s)" % abo["journal"])
-    check(sorted(abo["supprimes"]) == ["gta6watch-prefs", "gta6watch-shell-v65"],
+    check(sorted(abo["supprimes"]) == ["gta6watch-prefs", "gta6watch-shell-v0"],
           "les anciens caches partent, celui des réglages d'avant compris, sans toucher au cache courant (%s)" % abo["supprimes"])
     check("désinscrit" not in joue("aucun")["journal"] and joue("aucun")["journal"] == ["claim"],
           "sans abonnement, rien à fermer et l'activation aboutit")

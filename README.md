@@ -522,7 +522,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2157
+qui permet de tester tout le pipeline sans sortir de la machine. **2158
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10267,4 +10267,22 @@ source Rockstar ne la contredisait le 27/10. Le 12/11 est en réalité la date d
 - Les entrées portent `verifie_le` 03/11 ; à reconfirmer à la répétition du 10/11 comme les autres.
 - Aucun test ajouté : `test_agenda_est_valide` refuse déjà une « annonce » sans domaine officiel, et il passe. Le HTML ne change pas, donc
   pas de bump de `sw.js`.
+
+### Lot C : le filtre de titre de rockstar-support — 03/11/2026
+
+La revue de couverture des sources (routine du 03/11) a relevé que `rockstar-support` jette des titres officiels. **Mon erreur du 20/10** : le
+commentaire de `test_pipeline.py` disait que « Title Update 1.02 » passerait le filtre, et le test ne regardait que la REQUÊTE Google News,
+jamais le filtre de TITRE. Mesuré avec la vraie `passe_le_filtre` : « GTAVI Title Update 1.01 Notes » passe ; « Title Update 1.02 Notes »,
+« GTAV Title Update 1.73 Notes » et « Rockstar Games Service Status » étaient jetés.
+
+- **Choix d'Antoni** : « service status » seul. `official_keywords_extra: ["service status"]` sur `rockstar-support`, aucune autre source touchée.
+- **Pas « title update »** : un titre officiel part en notification Discord, et les notes de GTA V (« GTAV Title Update 1.73 Notes ») auraient
+  alerté pour un autre jeu. Pour les patchs de GTA VI on compte sur le nom du jeu dans le titre, ce que je ne peux pas vérifier avant la sortie.
+- **Contrôle ajouté** (dans `test_lassistance_rockstar_est_une_source`) : la vraie `passe_le_filtre` sur six titres, dont « GTAV Title Update »
+  et « Red Dead Online Update Notes » qui doivent rester refusés. **Rejoué contre l'ancien code** (`git archive HEAD` plus le test) : il échoue
+  sur « Rockstar Games Service Status -> False ». Le commentaire faux est corrigé.
+- **Même réglage côté page** : `check_sources_sync.py` a refusé (`officialKeywordsExtra` absent du JS) ; `DEFAULT_FEEDS` porte maintenant la même
+  valeur, donc le nom du cache passe à `gta6watch-shell-v67`.- **Un test que j'avais rendu fragile** : `test_le_service_worker_sans_push` (lot B du 03/11) recopiait « gta6watch-shell-v66 » comme cache courant ;
+  le bump à v67 l'a fait échouer sur « sans toucher au cache courant ». Ce n'était pas un défaut du service worker : le test lit maintenant le nom
+  du cache courant dans `docs/sw.js`, et l'ancien cache est un nom qui ne change plus.
 
