@@ -2265,9 +2265,8 @@
         <button id="themeDarkBtn" aria-pressed="false" onclick="setTheme('dark')">Sombre</button>
       </div>
       <div class="setting-desc" hidden>
-        « Système » suit le réglage clair/sombre du téléphone, bascule
-        automatique du soir comprise. Les deux autres forcent un thème quelle
-        que soit l'heure.
+        « Système » suit le réglage clair/sombre du téléphone. Les deux autres
+        forcent un thème.
       </div>
     </div>
 
@@ -2298,15 +2297,13 @@
         <span id="simValue" class="valeur-mono">75%</span>
       </div>
       <div class="setting-desc" hidden>
-        <strong>Articles affichés max</strong> plafonne la liste, entre 5 et
-        20000. Au-delà du nombre d'articles réellement disponibles, il ne fait
-        plus rien — le nombre disponible est rappelé sous le champ.
+        <strong>Articles affichés max</strong> plafonne la liste (5 à 20000).
+        Sans effet au-delà du nombre d'articles disponibles, rappelé sous le
+        champ.
         <br><br>
         <strong>Seuil anti-doublon</strong> : deux articles dont les titres se
-        ressemblent au moins autant que ce pourcentage sont fondus en un seul.
-        Plus bas, on regroupe large et on risque de masquer deux articles
-        vraiment différents ; plus haut, on laisse passer des reprises du même
-        sujet.
+        ressemblent au moins à ce pourcentage sont fusionnés. Plus bas : risque
+        de masquer deux articles différents. Plus haut : des reprises passent.
       </div>
     </div>
 
@@ -2323,10 +2320,8 @@
       <div class="setting-desc" id="keywordsCount"></div>
       <div class="setting-desc" hidden>
         Un article n'entre que si son titre ou son résumé contient l'un de ces
-        mots. La casse est ignorée, et le mot est cherché n'importe où dans le
-        texte : « gta 6 » attrape donc aussi « gta 6 : la date ». C'est
-        pourquoi un mot qui en contient déjà un autre ne sert à rien —
-        « gta 6 trailer » n'ajoute rien à « gta 6 ».
+        mots (casse ignorée, n'importe où). Inutile d'ajouter « gta 6 trailer » :
+        « gta 6 » le couvre déjà.
       </div>
     </div>
 
@@ -2337,9 +2332,8 @@
                 onchange="appliqueReglages()"></textarea>
       <div class="setting-desc" id="excludeKeywordsCount"></div>
       <div class="setting-desc" hidden>
-        Un article dont le titre ou le résumé contient l'un de ces mots est
-        masqué. Le masquage est réversible et immédiat : retire le mot,
-        l'article revient sans qu'il faille relancer le robot.
+        Un article contenant l'un de ces mots est masqué. Retire le mot : il
+        revient aussitôt.
       </div>
     </div>
 
@@ -2360,10 +2354,8 @@
                 onchange="appliqueReglages()"></textarea>
       <div class="setting-desc" id="spoilerKeywordsCount"></div>
       <div class="setting-desc" hidden>
-        Un article dont le titre ou le résumé contient l'un de ces mots est
-        flouté et ne s'ouvre plus : il faut le toucher une fois pour le
-        révéler. Rien n'est perdu, seulement différé — contrairement aux
-        mots à exclure, qui retirent l'article du fil.
+        Un article contenant l'un de ces mots est flouté : touche-le pour le
+        révéler. Contrairement aux mots à exclure, rien n'est retiré du fil.
         <br><br>
         Le floutage est visuel. Il protège d'un regard, pas d'une
         recherche : le texte reste dans la page.
@@ -2410,7 +2402,7 @@
              aria-label="Adresse du fichier de flux publié par le robot"
              placeholder="https://tonpseudo.github.io/gta6-backend/feed.json"
              onchange="saveSettings()">
-      <div class="setting-desc" hidden>Si rempli, l'app lit directement ce fichier au lieu de contacter chaque source une par une — plus rapide, avec de vraies miniatures partout. Laisse vide pour rester en mode direct (comme actuellement).</div>
+      <div class="setting-desc" hidden>Si rempli, l'app lit ce fichier au lieu de contacter chaque source : plus rapide, avec de vraies miniatures. Vide : mode direct.</div>
     </div>
 
     <!-- « jeton » partout. Le bouton employait le mot anglais tandis que la
@@ -2428,12 +2420,11 @@
       </div>
       <div class="token-status dim" id="tokenStatusLine"></div>
       <div class="setting-desc" hidden>
-        Permet de lancer le robot depuis le téléphone sans passer par l'onglet Actions.
-        Utilise un jeton <strong>fine-grained</strong> limité à ce seul dépôt, avec la
-        permission <strong>Actions : Read and write</strong> et une date d'expiration —
-        rien d'autre. Il est stocké uniquement dans ce navigateur, séparément des autres
-        réglages, et n'est jamais inclus dans l'export OPML ni effacé par
-        « Réinitialiser ». Il ne peut pas modifier le code du dépôt.
+        Lance le robot depuis le téléphone, sans passer par l'onglet Actions.
+        Jeton <strong>fine-grained</strong> limité à ce dépôt, permission
+        <strong>Actions : Read and write</strong>, avec date d'expiration. Il reste
+        dans ce navigateur, hors export OPML et hors « Réinitialiser », et ne peut
+        pas modifier le code.
       </div>
     </div>
 
@@ -2442,11 +2433,8 @@
     <div class="setting-group">
       <span class="setting-label">Version de l'app</span>
       <button onclick="rechargerApp()" class="pleine-largeur">Recharger l'app</button>
-      <div class="setting-desc" hidden>Installée sur l'écran d'accueil, l'app ne recharge
-        jamais son propre code : une fois lancée, plus aucune navigation n'a lieu
-        et le fichier HTML servi reste celui du démarrage. Ce bouton force le
-        rechargement sans avoir à fermer l'app. Rien n'est perdu — réglages,
-        articles, lu/non-lu et position de lecture sont conservés.</div>
+      <div class="setting-desc" hidden>Force le rechargement de l'app, sans la
+        fermer. Réglages, articles, lus et position de lecture sont conservés.</div>
     </div>
 
     <div class="setting-group">
@@ -2824,7 +2812,7 @@ function storageSet(key, value){
     if(!quotaSignale){
       quotaSignale = true;
       try{
-        addLog("fail", "Stockage local plein — préférences et articles ne sont plus sauvegardés sur cet appareil. Exporte d'abord une sauvegarde depuis les paramètres : elle contient tes articles lus, que rien d'autre ne peut reconstituer. Tu pourras la réimporter ensuite.");
+        addLog("fail", "Stockage plein : plus rien n'est sauvegardé. Exporte d'abord une sauvegarde (Réglages) : elle seule contient tes articles lus. Tu pourras la réimporter.");
       }catch(_){ /* addLog pas encore prêt : le console.error ci-dessus suffit */ }
     }
     return false;
@@ -3122,10 +3110,8 @@ async function saveRead(){
   if(ecartes > 0 && !elagageLusSignale){
     elagageLusSignale = true;
     try{
-      addLog("info", `Stockage local : ${ecartes} lien(s) lu(s) ne sont plus ` +
-        `écrits sur l'appareil — ils ne figurent plus ni dans le fil ni dans ` +
-        `l'archive, donc plus rien ne peut les afficher. La sauvegarde ` +
-        `exportée, elle, les garde tous.`);
+      addLog("info", `${ecartes} lien(s) lu(s) ne sont plus gardés sur l'appareil ` +
+        `(plafond de stockage). Ils restent dans l'export.`);
     }catch(_){ /* addLog pas encore prêt */ }
   }
   try{ storageSet("read-items-v1", JSON.stringify(liste)); }
@@ -3148,9 +3134,8 @@ function saveCotes(){
   if(ecartes > 0 && !elagageCotesSignale){
     elagageCotesSignale = true;
     try{
-      addLog("info", `Stockage local : ${ecartes} article(s) mis de côté ne ` +
-        `sont plus écrits sur l'appareil — plus rien ne peut les afficher. ` +
-        `La sauvegarde exportée, elle, les garde tous.`);
+      addLog("info", `${ecartes} article(s) mis de côté ne sont plus gardés sur ` +
+        `l'appareil (plafond de stockage). Ils restent dans l'export.`);
     }catch(_){ /* addLog pas encore prêt */ }
   }
   try{ storageSet("mis-de-cote-v1", JSON.stringify(liste)); }
@@ -3588,7 +3573,7 @@ function updateSourcesLine(){
     const n = sourcesDuRobot();
     el.textContent = n === null
       ? "sources : interrogées par le robot, pas par cet appareil"
-      : `sources : ${n} interrogées par le robot (les interrupteurs des réglages n'agissent qu'en mode de secours)`;
+      : `sources : ${n} interrogées par le robot`;
     return;
   }
   const active = settings.feeds.filter(f => f.enabled).map(f => f.name);
@@ -3618,25 +3603,21 @@ function majSectionSources(){
   if(agissent){
     titre.textContent = "Sources actives";
     resume.textContent = `${n} sources interrogées par cet appareil`;
-    desc.textContent = "Mode de secours : l'app va chercher les flux "
+    desc.textContent = "Mode de secours : l'app interroge les flux "
       + "elle-même, et ces interrupteurs décident lesquels. Une source "
-      + "éteinte n'est plus interrogée, et ses articles déjà reçus sortent "
-      + "de la liste. Rien n'est supprimé : la rallumer les ramène. "
-      + "« Tout désactiver » demande confirmation — la sélection en cours, "
-      + "elle, ne se récupère pas.";
+      + "éteinte n'est plus interrogée et ses articles déjà reçus sortent "
+      + "de la liste ; la rallumer les ramène. « Tout désactiver » demande "
+      + "confirmation.";
   }else{
     titre.textContent = "Sources — n'agit qu'en mode de secours";
     // Le titre juste au-dessus porte déjà l'avertissement. Le répéter ici
     // faisait dire deux fois la même chose en deux lignes, et à 320 px les
     // deux passaient à la ligne. Le résumé ne porte donc que le décompte.
     resume.textContent = `${n} sources`;
-    desc.textContent = "Tant que le robot GitHub alimente le fil, ces "
-      + "interrupteurs ne retirent aucun article : il interroge ses propres "
-      + "sources, quel que soit leur état ici. Ils ne servent qu'au mode de "
-      + "secours, quand le robot est injoignable et que l'app va chercher "
-      + "les flux elle-même. Le réglage est conservé — en mémoire, dans ce "
-      + "navigateur et dans la sauvegarde — pour que ce jour-là il soit "
-      + "déjà prêt.";
+    desc.textContent = "Tant que le robot alimente le fil, ces interrupteurs "
+      + "ne retirent aucun article : il interroge ses propres sources. Ils ne "
+      + "servent qu'au mode de secours (robot injoignable) ; le réglage est "
+      + "conservé pour ce jour-là.";
   }
 }
 
@@ -7257,7 +7238,7 @@ const LIBELLES_HTTP = {
 };
 function renderStatsSources(s){
   const src = s.sources;
-  if(!src.total) return `<p class="stats-attente">L'état des sources vient de la réponse du robot : touche « Actualiser » pour la lire.</p>`;
+  if(!src.total) return `<p class="stats-attente">L'état du robot vient de sa réponse : touche « Actualiser » pour la lire.</p>`;
   const blocs = [];
   const libelles = { ok: "répondent", tarie: "taries", muette: "muettes", cassee: "cassées", en_attente: "au repos (tour de rôle)" };
   // Couleurs d'état, réservées à l'état : vert, gris, ambre, rouge — et
@@ -7922,7 +7903,7 @@ function watchTriggeredRun(){
         setTriggerStatus("Terminé — rechargement des articles.", "ok");
         checkNow(true);
       }else{
-        setTriggerStatus(`Exécution terminée en échec (${run.conclusion}) — vois l'onglet Actions.`, "warn");
+        setTriggerStatus(`Le robot a terminé en échec (${run.conclusion}) — vois l'onglet Actions.`, "warn");
         addLog("fail", `Le robot a terminé en échec : ${escapeHtml(run.conclusion || "inconnu")}`);
       }
       loadRecentRuns();

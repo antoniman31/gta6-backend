@@ -10319,3 +10319,19 @@ Avant : date, libellé et statut collés dans une phrase de trois ou quatre lign
 - **Contrôle ajouté** dans `test_agenda_dans_le_panneau` : jour et mois de chaque ligne, un rail par ligne, `data-statut`, libellé sans la date.
   **Rejoué contre l'ancien code** (`git archive HEAD` plus le test) : il échoue sur ses trois contrôles.
 
+### Textes de l'app raccourcis — 03/11/2026
+
+Antoni a demandé de vérifier si les textes de l'app étaient trop verbeux, puis validé un tableau avant/après (« Go »). **Texte seul**, aucune logique touchée.
+
+- **Mesuré** : sur 28 textes statiques de plus de 25 caractères, neuf dépassaient 150 caractères (24 à 71 mots), tous des aides de Réglages. Une même
+  explication (« les interrupteurs de sources n'agissent qu'en mode de secours ») était écrite à quatre endroits.
+- **Fait** : les neuf aides, la section Sources (deux textes), la ligne « sources » de l'en-tête, deux textes d'état des statistiques fondus en un
+  seul, le texte d'échec du robot, deux lignes de journal du stockage et l'alerte de stockage plein. Sur ces 17 lignes : environ 690 mots avant,
+  387 après (-44 %), comptés sur le tableau.
+- **Écart avec le tableau, dit** : pour le journal du stockage, j'avais écrit « n'ont pas pu être sauvegardés ». C'est faux : ces liens sont
+  écartés par un PLAFOND, pas par une erreur. Le texte dit « ne sont plus gardés sur l'appareil (plafond de stockage). Ils restent dans l'export. »
+- **Pas touchés** : les légendes des statistiques (j'avais proposé de les laisser de côté), les messages d'erreur du jeton et du réseau (une ligne,
+  la cause et la marche à suivre), les libellés de moins de 28 caractères.
+- Le nom du cache passe à `gta6watch-shell-v70`. Aucun contrôle ajouté : aucun test ne cite ces phrases (cherché dans `test_pipeline.py` et
+  `test_navigateur.py` avant de modifier), donc rien à prouver capable d'échouer.
+
