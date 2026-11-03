@@ -9,59 +9,39 @@
 // afficherait silencieusement une actu périmée en la faisant passer pour
 // à jour.
 
-// v4 : bumpé à la correction du badge de notification (carré blanc dans
-// la barre d'état Android). Indispensable ici pour la même raison qu'en v3 :
-// sans remplacement, l'ancien service worker resterait actif sur les
-// téléphones déjà installés et continuerait d'envoyer l'ancien badge — la
-// correction ne se verrait jamais.
+// v66 : les notifications push sont retirées (03/11/2026, décision d'Antoni :
+// trois abonnements morts en 33 h au plus, sans cause trouvée, et Discord porte
+// les mêmes liens). Changer le nom du cache force le remplacement de l'ancien
+// service worker sur les téléphones déjà installés : sans cela il resterait
+// actif avec ses gestionnaires push, son « ne pas déranger » et son journal.
 //
-// v3 : bumpé à l'ajout des notifications push (lot H). Le service worker
-// sert le squelette en réseau-d'abord, donc l'app se met déjà à jour dès
-// qu'il y a du réseau — mais changer le nom du cache force le remplacement
-// de l'ancien service worker, ce qui évite de revivre l'incident de cache
-// tenace jamais élucidé. Ici c'est indispensable : sans remplacement,
-// l'ancien service worker resterait actif et ignorerait les push.
-const CACHE_NAME = "gta6watch-shell-v65";
+// Historique : v4 a corrigé le badge de notification (carré blanc dans la barre
+// d'état Android) ; v3 a ajouté le push. Le nom change à chaque modification de
+// docs/index.html (règle du dépôt) : le service worker sert le squelette en
+// réseau-d'abord, donc l'app se met déjà à jour dès qu'il y a du réseau, mais un
+// nouveau nom évite de revivre l'incident de cache tenace jamais élucidé.
+const CACHE_NAME = "gta6watch-shell-v66";
 const SHELL_URL = "./index.html";
-importScripts("notif-options.js");
 
-// Le réglage « ne pas déranger » vit dans ce cache, écrit par la page et lu
-// ici (le service worker ne lit pas localStorage). Il doit SURVIVRE à
-// l'activation : sans l'exemption ci-dessous, chaque déploiement l'effacerait.
-const PREFS_CACHE = "gta6watch-prefs";
-const SILENCE_URL = "./prefs/silence";
+// Le cache des réglages d'avant le 03/11/2026 (« ne pas déranger » et journal de
+// diagnostic du push) : il n'a plus de lecteur. L'activation le supprime, comme
+// tout cache dont le nom n'est pas CACHE_NAME.
 
-async function lireSilence(){
+// Ferme l'ancien abonnement push s'il en reste un. Antoni en avait un, mort côté
+// Google (HTTP 410) mais encore présent dans le navigateur : sans cela le
+// téléphone garderait pour toujours une inscription que plus rien n'écoute.
+// Sans effet quand il n'y en a pas, et jamais bloquant : une erreur est avalée.
+// Ce nettoyage ne sert qu'une fois ; il peut être supprimé quand tous les
+// appareils ont reçu cette version.
+function retireAncienAbonnementPush(){
   try{
-    const cache = await caches.open(PREFS_CACHE);
-    const rep = await cache.match(SILENCE_URL);
-    if(!rep) return null;
-    const d = await rep.json();
-    return d && typeof d.jusqua === "number" ? d.jusqua : null;
+    if(!self.registration || !self.registration.pushManager) return Promise.resolve(false);
+    return self.registration.pushManager.getSubscription()
+      .then((abonnement) => (abonnement ? abonnement.unsubscribe() : false))
+      .catch(() => false);
   }catch(e){
-    return null;
+    return Promise.resolve(false);
   }
-}
-
-// Journal de diagnostic du push, dans le même cache que le silence (donc lui
-// aussi épargné par l'activation). Il ne doit JAMAIS faire échouer un push :
-// tout y est avalé.
-const TRACE_URL = "./prefs/trace";
-
-async function noteTrace(texte){
-  try{
-    const cache = await caches.open(PREFS_CACHE);
-    const rep = await cache.match(TRACE_URL);
-    let liste = [];
-    try{ liste = rep ? await rep.json() : []; }catch(e){ liste = []; }
-    const suite = ajouteTrace(liste, { t: Date.now(), e: texte });
-    await cache.put(TRACE_URL, new Response(JSON.stringify(suite),
-      { headers: { "Content-Type": "application/json" } }));
-  }catch(e){ /* le journal est un confort, pas une condition */ }
-}
-
-function permissionSW(){
-  try{ return self.Notification ? self.Notification.permission : "?"; }catch(e){ return "?"; }
 }
 
 self.addEventListener("install", (event) => {
@@ -74,8 +54,9 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((names) =>
-      Promise.all(names.filter((n) => n !== CACHE_NAME && n !== PREFS_CACHE).map((n) => caches.delete(n)))
-    ).then(() => self.clients.claim())
+      Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
+    ).then(() => retireAncienAbonnementPush())
+     .then(() => self.clients.claim())
   );
 });
 
@@ -101,73 +82,4 @@ self.addEventListener("fetch", (event) => {
   // Toutes les autres requêtes (feed.json, favicons, etc.) passent
   // normalement, sans interception ni mise en cache de notre part — les
   // données d'actualité ne doivent jamais être servies depuis un cache.
-});
-
-// ---------------------------------------------------------------------------
-// Notifications push
-// ---------------------------------------------------------------------------
-// Envoyées par le workflow GitHub Actions après chaque publication réussie
-// (voir push_notify.py). Le service worker est le seul endroit où le
-// navigateur accepte de les recevoir — y compris quand l'app est fermée.
-
-self.addEventListener("push", (event) => {
-  // Contenu par défaut si le message arrive vide ou illisible : le
-  // navigateur EXIGE qu'un push affiche une notification visible, sous
-  // peine de révoquer l'abonnement. Mieux vaut une notification vague
-  // qu'aucune.
-  let contenu = {
-    title: "GTA6_WATCH",
-    body: "De nouveaux articles sont disponibles.",
-    url: "./index.html",
-    tag: "gta6watch-nouveaux"
-  };
-
-  if (event.data) {
-    try {
-      contenu = Object.assign(contenu, event.data.json());
-    } catch (e) {
-      const texte = event.data.text();
-      if (texte) contenu.body = texte;
-    }
-  }
-
-  // Trois traces : reçu, puis affiché ou NON affiché. Un push reçu mais pas
-  // affiché fait révoquer l'abonnement par le navigateur : c'est l'une des
-  // causes possibles de la mort de l'abonnement, et la seule que ce journal
-  // puisse prouver ou écarter.
-  event.waitUntil(
-    noteTrace("push reçu (permission " + permissionSW() + ")")
-      .then(() => lireSilence())
-      .then((jusqua) =>
-        self.registration.showNotification(
-          contenu.title, optionsNotification(contenu, jusqua, Date.now())))
-      .then(() => noteTrace("push affiché"))
-      .catch((erreur) =>
-        noteTrace("push NON affiché : " + String(erreur && erreur.message || erreur).slice(0, 80))
-          .then(() => { throw erreur; }))
-  );
-});
-
-// Le navigateur dit lui-même quand il remplace ou invalide l'abonnement.
-// Tous les navigateurs ne l'envoient pas : son absence ne prouve rien.
-self.addEventListener("pushsubscriptionchange", (event) => {
-  event.waitUntil(noteTrace("le navigateur signale un changement d'abonnement"));
-});
-
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-  const cible = (event.notification.data && event.notification.data.url) || "./index.html";
-
-  // Si l'app est déjà ouverte quelque part, on la ramène au premier plan
-  // plutôt que d'ouvrir un second onglet.
-  event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
-      for (const client of clients) {
-        if (client.url.includes("index.html") && "focus" in client) {
-          return client.focus();
-        }
-      }
-      return self.clients.openWindow(cible);
-    })
-  );
 });

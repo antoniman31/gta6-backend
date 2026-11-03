@@ -212,13 +212,6 @@
   .countdown::after{
     content:""; position:absolute; top:-22px; bottom:-8px; left:-8px; right:-8px;
   }
-  .silence-chip{
-    display:block; margin-top:6px; padding:0 10px; min-height:44px;
-    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
-    color:var(--text); background:var(--bg-elevated);
-    border:1px solid var(--line); border-radius:var(--r-full); cursor:pointer;
-  }
-  .silence-chip[hidden]{display:none;}
   /* Palier 7-30 jours : accent légèrement réchauffé, discret */
   .countdown.soon{
     color:var(--compte-soon); font-weight:800; text-shadow:var(--compte-halo-soon);
@@ -1526,9 +1519,6 @@
   textarea.champ-mono.petit{font-size:10px;}
   .valeur-mono{font-family:'JetBrains Mono',monospace; font-size:11px;}
   .bloc-replie{display:none; margin-top:8px;}
-  /* Le titre d'un <details> est une cible tactile : 18 px de haut par défaut,
-     mesuré le 29/10/2026, sous les 44 px que tout le reste de l'app s'impose. */
-  #pushTraceBlock > summary{display:flex; align-items:center; min-height:44px; cursor:pointer;}
   .pleine-largeur{width:100%;}
   .setting-row label{font-size:13px;}
   .setting-desc{font-size:11px; color:var(--text-dim); margin-top:2px;}
@@ -1537,10 +1527,8 @@
   .setting-desc:empty{display:none;}
   /* Un groupe d'actions tient sur UNE rangée, à largeurs égales. Avec des
      boutons dimensionnés par leur texte, la rangée débordait et le dernier
-     partait à la ligne : le groupe push se lisait « deux tests » puis
-     « Désactiver » tout seul, celui du jeton « Enregistrer, Tester » puis
-     « Oublier » — deux mises en page différentes pour deux groupes de trois
-     boutons. flex:1 1 0 les met tous à la même largeur, et l'air autour du
+     partait à la ligne : le groupe du jeton se lisait « Enregistrer, Tester »
+     puis « Oublier » tout seul. flex:1 1 0 les met tous à la même largeur, et l'air autour du
      libellé vient alors de l'étirement, pas du rembourrage.
      Le rembourrage latéral n'est plus qu'un plancher : à 14 px il empêchait
      « Enregistrer » d'entrer dans son tiers de rangée. */
@@ -1773,7 +1761,7 @@
      repousser vingt pixels plus bas que sa place tandis que le contenu, lui,
      restait disposé comme si l'entête était remontée. Les quatre premiers
      pixels de chaque onglet passaient sous la barre — le haut des lettres de
-     « Notifications » et de « Mots-clés » était coupé. */
+     « Sources » et de « Mots-clés » était coupé. */
   #settingsOverlay .settings-panel{padding-top:0;}
   #settingsOverlay .panneau-entete{
     position:sticky; top:0; z-index:2;
@@ -1795,10 +1783,10 @@
   }
   .settings-actions .setting-desc{margin-top:0; flex:1 1 140px;}
 
-  /* Trois sujets sans rapport vivaient dans « Avancé » sans rien pour les
-     séparer : les notifications, la connexion à GitHub, l'entretien de
-     l'app. Un intertitre par sujet, au lieu d'un quatrième onglet que la
-     largeur d'un téléphone ne permet pas. */
+  /* Des sujets sans rapport vivent dans « Avancé » : la connexion à GitHub,
+     l'entretien de l'app (et, jusqu'au 03/11/2026, les notifications push).
+     Un intertitre par sujet, au lieu d'un quatrième onglet que la largeur
+     d'un téléphone ne permet pas. */
   .panneau-section{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
     letter-spacing:0.04em; color:var(--text);
@@ -1952,10 +1940,6 @@
         <h1 class="brand">GTA6<span>_WATCH</span></h1>
         <button type="button" id="countdown" class="countdown"
                 aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
-        <!-- La pastille du silence : visible SEULEMENT pendant un « ne pas
-             déranger », avec son heure de fin. Un appui l'annule. -->
-        <button type="button" id="silenceChip" class="silence-chip" hidden
-                onclick="finSilence()"></button>
       </div>
       <div class="header-right">
         <div id="modeIndicator" class="mode-indicator"></div>
@@ -2384,99 +2368,6 @@
     </div>
 
     <div class="panneau-onglet" data-onglet="adv" hidden>
-
-    <h3 class="panneau-section">Notifications</h3>
-
-    <div class="setting-group" id="vapidSetupGroup" style="display:none;">
-      <span class="setting-label">Configuration initiale</span>
-      <div class="setting-desc" hidden>
-        Le dépôt n'a pas encore de clés de notification. Génère-les ici (elles sont
-        créées dans ce navigateur et ne partent nulle part), puis crée les deux
-        secrets GitHub correspondants.
-      </div>
-      <div class="setting-buttons">
-        <button class="small" onclick="generateVapidKeys()">Générer une paire de clés</button>
-      </div>
-      <div id="vapidKeysBlock" class="bloc-replie">
-        <div class="setting-desc"><strong>VAPID_PUBLIC_KEY</strong> — secret GitHub</div>
-        <textarea id="vapidPublicOut" readonly rows="2" class="setting-input wide champ-mono petit"
-                  aria-label="Clé publique VAPID"></textarea>
-        <div class="setting-desc"><strong>VAPID_PRIVATE_KEY</strong> — secret GitHub, à ne jamais partager</div>
-        <textarea id="vapidPrivateOut" readonly rows="2" class="setting-input wide champ-mono petit"
-                  aria-label="Clé privée VAPID"></textarea>
-        <div class="setting-buttons">
-          <button class="small" onclick="copyFieldValue('vapidPublicOut', this)">Copier la publique</button>
-          <button class="small" onclick="copyFieldValue('vapidPrivateOut', this)">Copier la privée</button>
-        </div>
-        <div class="setting-desc">
-          Crée les deux secrets dans Settings → Secrets and variables → Actions, puis
-          relance le robot. Cette section disparaîtra et l'abonnement deviendra possible.
-          Ne garde pas de capture d'écran de la clé privée.
-        </div>
-      </div>
-    </div>
-
-    <div class="setting-group" id="pushGroup" style="display:none;">
-      <span class="setting-label">Notifications sur cet appareil</span>
-      <div class="setting-buttons">
-        <button class="small" id="pushEnableBtn" onclick="enablePush()">Activer</button>
-        <button class="small" id="pushTestBtn" onclick="testPushDisplay()">Aperçu</button>
-        <button class="small" id="silenceBtn" onclick="basculeSilence()">Silence 2 h</button>
-        <!-- Le bouton ci-dessus n'affiche qu'une notification LOCALE : il
-             montre à quoi ça ressemble, il ne prouve RIEN sur la chaîne
-             d'envoi. Celui-ci déclenche un vrai envoi signé depuis GitHub,
-             qui traverse le service de push comme une vraie notification.
-             Masqué sans jeton : sans lui, l'API GitHub refuserait. -->
-        <!-- « Aperçu » et « Envoi réel » plutôt que « Tester l'affichage »
-             et « Tester un envoi réel » : à trois boutons par rangée de
-             390 px, chacun dispose de 101 px, et les libellés longs n'y
-             entraient pas. Le raccourci dit d'ailleurs mieux la différence
-             que les anciens, qui commençaient tous deux par « Tester » —
-             l'un ne fait que MONTRER une notification fabriquée sur place,
-             l'autre en fait PARTIR une vraie, signée depuis GitHub. -->
-        <button class="small" id="pushTestRealBtn" onclick="testPushReel()" style="display:none;">Envoi réel</button>
-        <!-- En dernier et cerné de rouge : il était le troisième bouton d'une
-             rangée de trois identiques, indiscernable de deux boutons de test
-             inoffensifs. -->
-        <button class="small danger" id="pushDisableBtn" onclick="disablePush()" style="display:none;">Désactiver</button>
-      </div>
-      <div class="token-status dim" id="pushStatusLine"></div>
-      <!-- Une ligne, pas quatre. Ce bloc s'affiche en PERMANENCE dès que
-           l'appareil est abonné : y laisser le mode d'emploi complet, c'est
-           garder à l'écran pour toujours les instructions d'une étape faite
-           une fois. Le détail vit derrière le « ? » du groupe. -->
-      <div id="pushSubscriptionBlock" class="bloc-replie">
-        <div class="setting-desc">À coller dans le secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong>.</div>
-        <textarea id="pushSubscriptionText" readonly rows="4" class="setting-input wide champ-mono petit"
-                  aria-label="Abonnement push de cet appareil"></textarea>
-        <div class="setting-buttons">
-          <button class="small" onclick="copyPushSubscription(this)">Copier l'abonnement</button>
-        </div>
-      </div>
-      <!-- Pas la classe bloc-replie : elle fait display:none, et c'est le JS qui
-           la rouvre pour les blocs qu'il pilote. Un <details> se replie seul ;
-           29/10/2026, le journal est resté invisible faute de l'avoir su. -->
-      <details id="pushTraceBlock" style="margin-top:8px;">
-        <summary>Journal de diagnostic du push</summary>
-        <div class="setting-desc">Ce que le téléphone a vu : push reçus, affichés, abonnement présent ou non à l'ouverture.</div>
-        <textarea id="pushTraceText" readonly rows="6" class="setting-input wide champ-mono petit"
-                  aria-label="Journal de diagnostic du push"></textarea>
-        <div class="setting-buttons">
-          <button class="small" onclick="copyPushTrace(this)">Copier le journal</button>
-        </div>
-      </details>
-      <div class="setting-desc" hidden>
-        Une vraie notification système, qui ouvre l'article au lieu d'ouvrir
-        Discord. Un seul message récapitulatif par passage du robot.
-        <br><br>
-        <strong>Après chaque abonnement</strong>, il faut copier le bloc
-        ci-dessus dans le secret GitHub <strong>PUSH_SUBSCRIPTIONS</strong>
-        (Settings → Secrets and variables → Actions) : l'app n'a pas le droit
-        d'écrire un secret elle-même. Tant que ce n'est pas fait, le robot ne
-        sait pas où envoyer les notifications. C'est à refaire si l'app est
-        réinstallée — l'abonnement change avec elle.
-      </div>
-    </div>
 
     <h3 class="panneau-section">Connexion GitHub</h3>
 
@@ -3386,7 +3277,6 @@ function onSimChange(v){
 function openSettings(){
   populateSettingsUI();
   refreshTokenUI();
-  refreshPushUI();
   // populateSettingsUI reconstruit la liste des sources à chaque ouverture :
   // les greffes doivent donc être rejouées ici, pas une fois au démarrage.
   greffeAides();
@@ -4302,16 +4192,6 @@ async function applyBackendData(data, sourceUrl){
   // retarder d'une milliseconde l'affichage des articles. La ligne
   // apparaîtra quand il arrivera, ou jamais s'il n'y a pas d'archive.
   chargeIndexArchive().then(updateArchiveLine);
-
-  // Clé publique VAPID publiée par le backend : conditionne l'affichage de
-  // la section « Notifications » dans les paramètres.
-  if(data.vapid_public_key !== undefined){
-    const nouvelle = data.vapid_public_key || "";
-    if(nouvelle !== backendVapidKey){
-      backendVapidKey = nouvelle;
-      refreshPushUI();
-    }
-  }
 
   // AVANT la projection, qui ne garde pas `source_link`, et avant
   // findNewItems, qui déclarerait « nouveaux » les articles re-décodés.
@@ -7738,19 +7618,6 @@ async function markAllRead(makeRead){
     });
 }
 
-// ---------- Notifications push natives ----------
-// Le protocole Web Push ne demande pas de serveur permanent : il faut une
-// paire de clés VAPID et, par appareil, un abonnement créé par le
-// navigateur. C'est le workflow GitHub Actions qui envoie, quelques
-// secondes par passage. La clé publique arrive dans feed.json ; la clé
-// privée reste un secret GitHub.
-//
-// Contrainte assumée : sans backend, l'abonnement créé ici ne peut pas
-// être transmis automatiquement au robot. L'app l'affiche donc pour que tu
-// le colles une fois dans un secret GitHub. C'est le seul geste manuel, et
-// il n'est à faire qu'une fois par appareil.
-let backendVapidKey = "";
-
 // Seuil de « grosse actu », fourni par le backend (hot_threshold) pour que
 // les deux restent cohérents sans le coder en dur des deux côtés. La valeur
 // ici n'est qu'un repli, le temps que feed.json réponde et pour le mode de
@@ -7789,437 +7656,6 @@ let historyLoading = false;
 // seul juge depuis le 14/10/2026.
 let historyErreur = false;
 
-function pushSupported(){
-  return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
-}
-
-// La clé VAPID transite en base64url ; l'API PushManager veut un Uint8Array.
-function vapidKeyToBytes(base64url){
-  const padding = "=".repeat((4 - (base64url.length % 4)) % 4);
-  const base64 = (base64url + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(base64);
-  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-}
-
-function setPushStatus(message, kind){
-  const el = document.getElementById("pushStatusLine");
-  if(!el) return;
-  el.textContent = message;
-  el.className = "token-status " + (kind || "dim");
-}
-
-// La section n'apparaît que si les notifications sont réellement possibles :
-// navigateur compatible ET clé publique publiée par le backend. Proposer un
-// bouton qui ne peut pas marcher serait pire que ne rien proposer.
-// ---------- Ne pas déranger (2 h) ----------
-// Le réglage vit dans le Cache API, pas dans localStorage : le service worker
-// ne lit pas localStorage, et c'est LUI qui compose la notification. Même
-// cache, même adresse que dans sw.js ; docs/notif-options.js porte la durée
-// (un test vérifie que les deux chiffres sont les mêmes).
-const PREFS_CACHE = "gta6watch-prefs";
-const SILENCE_URL = "./prefs/silence";
-const SILENCE_MS = 2 * 3600 * 1000;
-let silenceJusqua = null;
-let silenceMinuteur = null;
-
-async function lireSilencePage(){
-  try{
-    const cache = await caches.open(PREFS_CACHE);
-    const rep = await cache.match(SILENCE_URL);
-    if(!rep) return null;
-    const d = await rep.json();
-    return d && typeof d.jusqua === "number" ? d.jusqua : null;
-  }catch(e){
-    return null;
-  }
-}
-
-async function ecrireSilencePage(jusqua){
-  try{
-    const cache = await caches.open(PREFS_CACHE);
-    if(jusqua === null) await cache.delete(SILENCE_URL);
-    else await cache.put(SILENCE_URL, new Response(JSON.stringify({ jusqua: jusqua }),
-      { headers: { "Content-Type": "application/json" } }));
-    return true;
-  }catch(e){
-    return false;
-  }
-}
-
-function silenceEnCours(maintenant){
-  return silenceJusqua !== null && maintenant < silenceJusqua
-      && silenceJusqua - maintenant <= SILENCE_MS;
-}
-
-function majSilenceUI(){
-  const maintenant = Date.now();
-  const actif = silenceEnCours(maintenant);
-  const puce = document.getElementById("silenceChip");
-  const bouton = document.getElementById("silenceBtn");
-  if(puce){
-    puce.hidden = !actif;
-    if(actif){
-      const fin = new Date(silenceJusqua).toLocaleTimeString("fr-FR",
-        { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
-      puce.textContent = "😴 silence jusqu'à " + fin;
-      puce.setAttribute("aria-label", "Notifications en silence jusqu'à " + fin + ". Appuyer pour annuler.");
-    }
-  }
-  if(bouton) bouton.textContent = actif ? "Fin du silence" : "Silence 2 h";
-  // Se remet à jour pile à l'échéance, app ouverte ou non réveillée.
-  if(silenceMinuteur){ clearTimeout(silenceMinuteur); silenceMinuteur = null; }
-  if(actif) silenceMinuteur = setTimeout(majSilenceUI, silenceJusqua - maintenant + 50);
-}
-
-async function chargeSilence(){
-  silenceJusqua = await lireSilencePage();
-  majSilenceUI();
-}
-
-async function debutSilence(){
-  const jusqua = Date.now() + SILENCE_MS;
-  if(!(await ecrireSilencePage(jusqua))){
-    montreToast("Silence impossible sur ce navigateur.");
-    return;
-  }
-  silenceJusqua = jusqua;
-  majSilenceUI();
-}
-
-async function finSilence(){
-  await ecrireSilencePage(null);
-  silenceJusqua = null;
-  majSilenceUI();
-}
-
-function basculeSilence(){
-  return silenceEnCours(Date.now()) ? finSilence() : debutSilence();
-}
-
-// ---------- Journal de diagnostic du push ----------
-// Même cache et même adresse que dans sw.js, qui y note les push reçus et
-// affichés ; la page y ajoute ce qu'elle constate à l'ouverture. Le nombre de
-// lignes est celui de notif-options.js (un test vérifie qu'ils sont égaux).
-// 29/10/2026 : l'abonnement est mort < 35 min après un envoi accepté, sans
-// que personne n'y touche — il faut voir ce que le téléphone, lui, a vu.
-const TRACE_URL = "./prefs/trace";
-const TRACE_MAX = 40;
-
-async function lireTracePage(){
-  try{
-    const cache = await caches.open(PREFS_CACHE);
-    const rep = await cache.match(TRACE_URL);
-    const liste = rep ? await rep.json() : [];
-    return Array.isArray(liste) ? liste.filter((x) => x && typeof x.t === "number" && typeof x.e === "string") : [];
-  }catch(e){
-    return [];
-  }
-}
-
-async function noteTracePage(texte){
-  try{
-    const liste = await lireTracePage();
-    const dernier = liste[liste.length - 1];
-    if(dernier && dernier.e === texte) return;
-    liste.push({ t: Date.now(), e: texte });
-    const cache = await caches.open(PREFS_CACHE);
-    await cache.put(TRACE_URL, new Response(JSON.stringify(liste.slice(-TRACE_MAX)),
-      { headers: { "Content-Type": "application/json" } }));
-  }catch(e){ /* le journal est un confort, pas une condition */ }
-}
-
-// Huit premiers caractères du SHA-256 de l'endpoint : la MÊME empreinte que
-// celle du journal du robot (push_notify.empreinte_abonnement), pour pouvoir
-// dire « c'est le même abonnement ». L'endpoint lui-même n'est jamais écrit.
-async function empreinteAbonnementPage(subscription){
-  try{
-    const endpoint = subscription && subscription.endpoint;
-    if(!endpoint) return "?";
-    const octets = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(endpoint));
-    return Array.from(new Uint8Array(octets)).slice(0, 4)
-      .map((o) => o.toString(16).padStart(2, "0")).join("");
-  }catch(e){
-    return "?";
-  }
-}
-
-function formateTrace(liste){
-  return liste.map((x) => new Date(x.t).toLocaleString("fr-FR",
-    { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit",
-      timeZone: "Europe/Paris" }) + " · " + x.e).join("\n");
-}
-
-async function majTraceUI(){
-  const zone = document.getElementById("pushTraceText");
-  if(!zone) return;
-  const liste = await lireTracePage();
-  zone.value = liste.length ? formateTrace(liste) : "Rien noté pour l'instant.";
-}
-
-function copyPushTrace(btn){
-  copyFieldValue("pushTraceText", btn);
-}
-
-async function refreshPushUI(){
-  const group = document.getElementById("pushGroup");
-  if(!group) return;
-
-  const setup = document.getElementById("vapidSetupGroup");
-
-  if(!pushSupported()){
-    group.style.display = "none";
-    if(setup) setup.style.display = "none";
-    return;
-  }
-  if(!backendVapidKey){
-    // Navigateur capable, mais le dépôt n'a pas encore de clés : on propose
-    // de les générer plutôt que de masquer la fonctionnalité sans explication.
-    group.style.display = "none";
-    if(setup) setup.style.display = "block";
-    return;
-  }
-  if(setup) setup.style.display = "none";
-  group.style.display = "block";
-
-  let subscription = null;
-  try{
-    const reg = await navigator.serviceWorker.getRegistration();
-    if(reg) subscription = await reg.pushManager.getSubscription();
-  }catch(e){ /* service worker pas encore prêt */ }
-
-  // Le constat d'ouverture : abonnement présent ou non, et permission. Si
-  // l'abonnement a disparu entre deux ouvertures, la ligne précédente dit
-  // quand il existait encore.
-  const empreinte = subscription ? await empreinteAbonnementPage(subscription) : null;
-  await noteTracePage("ouverture : abonnement " + (empreinte ? empreinte : "ABSENT")
-    + ", permission " + (("Notification" in window) ? Notification.permission : "?"));
-  await majTraceUI();
-
-  const enableBtn = document.getElementById("pushEnableBtn");
-  const disableBtn = document.getElementById("pushDisableBtn");
-  const block = document.getElementById("pushSubscriptionBlock");
-
-  if(subscription){
-    enableBtn.style.display = "none";
-    // Chaîne vide et non "inline-flex", pour la raison déjà rencontrée sur
-    // triggerRunBtn : un display posé en style inline l'emporte sur la
-    // feuille de style et fait du bouton un conteneur flex, dont le libellé
-    // remonte en haut de la boîte au lieu d'y être centré. Le correctif
-    // avait été appliqué là-bas et jamais reporté ici — ces deux boutons
-    // sont les seuls du panneau dont le texte était décentré de 8,5 px.
-    disableBtn.style.display = "";
-    block.style.display = "block";
-    document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
-    setPushStatus("Cet appareil est abonné.", "ok");
-  }else{
-    enableBtn.style.display = "";
-    disableBtn.style.display = "none";
-    block.style.display = "none";
-    if(Notification.permission === "denied"){
-      setPushStatus("Notifications bloquées pour ce site — à réautoriser dans les réglages du navigateur.", "warn");
-      enableBtn.disabled = true;
-    }else{
-      setPushStatus("Notifications non activées sur cet appareil.", "dim");
-      enableBtn.disabled = false;
-    }
-  }
-}
-
-async function enablePush(){
-  if(!pushSupported()){
-    setPushStatus("Ce navigateur ne gère pas les notifications push.", "warn");
-    return;
-  }
-  if(!backendVapidKey){
-    setPushStatus("Le backend ne publie pas de clé VAPID — secret VAPID_PUBLIC_KEY manquant côté dépôt.", "warn");
-    return;
-  }
-
-  setPushStatus("Demande d'autorisation…", "dim");
-  let permission;
-  try{
-    permission = await Notification.requestPermission();
-  }catch(e){
-    setPushStatus("Autorisation impossible sur ce navigateur.", "warn");
-    return;
-  }
-  if(permission !== "granted"){
-    setPushStatus("Autorisation refusée — rien n'a été activé.", "warn");
-    await refreshPushUI();
-    return;
-  }
-
-  try{
-    const reg = await navigator.serviceWorker.ready;
-    const subscription = await reg.pushManager.subscribe({
-      // Obligatoire : le navigateur exige que chaque push produise une
-      // notification visible, sinon il révoque l'abonnement.
-      userVisibleOnly: true,
-      applicationServerKey: vapidKeyToBytes(backendVapidKey)
-    });
-    document.getElementById("pushSubscriptionText").value = JSON.stringify(subscription.toJSON());
-    addLog("ok", "Abonnement aux notifications push créé sur cet appareil.");
-    await refreshPushUI();
-    setPushStatus("Abonné. Il reste à coller le bloc ci-dessous dans le secret GitHub.", "ok");
-  }catch(e){
-    setPushStatus("Échec de l'abonnement : " + (e.message || "erreur inconnue"), "warn");
-    addLog("fail", `Abonnement push — ${escapeHtml(e.message || "erreur inconnue")}`);
-  }
-}
-
-async function disablePush(){
-  const ok = await demandeConfirmation(
-    "Ne plus recevoir de notifications sur cet appareil ?",
-    "Tu pourras te réabonner, mais il faudra remettre le nouvel abonnement dans le secret PUSH_SUBSCRIPTIONS.",
-    "Se désabonner");
-  if(!ok) return;
-  try{
-    const reg = await navigator.serviceWorker.getRegistration();
-    const subscription = reg && await reg.pushManager.getSubscription();
-    if(subscription) await subscription.unsubscribe();
-    addLog("info", "Abonnement aux notifications push retiré de cet appareil.");
-  }catch(e){ /* déjà désabonné */ }
-  await refreshPushUI();
-  setPushStatus("Désabonné. Pense à retirer l'ancien abonnement du secret PUSH_SUBSCRIPTIONS.", "dim");
-}
-
-// Affiche une notification locale, sans passer par le serveur : vérifie que
-// l'appareil sait bien les afficher (mode silencieux, ne pas déranger,
-// autorisation système…) avant de chercher pourquoi le robot n'envoie rien.
-// Envoi RÉEL, de bout en bout : app -> GitHub -> push_notify.py -> service
-// de push -> téléphone.
-//
-// Pourquoi passer par GitHub plutôt que d'envoyer d'ici : une vraie push
-// doit être signée avec la clé privée VAPID. Cette clé est dans un secret
-// GitHub et doit y rester — dans cette page, n'importe qui pourrait envoyer
-// des notifications sur l'appareil. Le navigateur ne peut donc structurellement
-// pas faire ce test lui-même, et c'est pour ça que testPushDisplay se contente
-// d'un affichage local.
-//
-// Le workflow échoue quand rien ne part : un abonnement expiré rend le run
-// ROUGE au lieu de laisser croire que tout va bien.
-async function testPushReel(){
-  const token = getGithubToken();
-  if(!token){
-    setPushStatus("Aucun jeton GitHub enregistré — ajoute-le plus haut pour lancer un envoi réel.", "warn");
-    return;
-  }
-  const btn = document.getElementById("pushTestRealBtn");
-  if(btn) btn.disabled = true;
-  setPushStatus("Envoi demandé à GitHub…", "dim");
-  try{
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${GITHUB_WORKFLOW_TEST_PUSH}/dispatches`, {
-      method: "POST",
-      headers: Object.assign({ "Content-Type": "application/json" }, githubHeaders()),
-      body: JSON.stringify({ ref: GITHUB_BRANCH })
-    });
-    if(res.status !== 204){
-      const message = githubErrorMessage(res.status);
-      setPushStatus("Échec : " + message, "warn");
-      addLog("fail", `Test push réel — ${escapeHtml(message)}`);
-      return;
-    }
-    // On ne peut pas savoir ici si la notification est ARRIVÉE — c'est le
-    // téléphone qui le dira. Le message le dit franchement plutôt que
-    // d'annoncer un succès qu'on n'a pas constaté.
-    setPushStatus("Envoi lancé. Si rien n'arrive d'ici une minute, l'abonnement est expiré : réactive les notifications et remplace le secret PUSH_SUBSCRIPTIONS.", "ok");
-    addLog("ok", "Test d'envoi push réel déclenché.");
-  }catch(e){
-    setPushStatus("Échec réseau : " + (e && e.message ? e.message : e), "warn");
-  }finally{
-    if(btn) btn.disabled = false;
-  }
-}
-
-async function testPushDisplay(){
-  if(!pushSupported()){
-    setPushStatus("Ce navigateur ne gère pas les notifications.", "warn");
-    return;
-  }
-  if(Notification.permission !== "granted"){
-    const p = await Notification.requestPermission();
-    if(p !== "granted"){
-      setPushStatus("Autorisation refusée — impossible de tester.", "warn");
-      return;
-    }
-  }
-  try{
-    const reg = await navigator.serviceWorker.ready;
-    await reg.showNotification("GTA6_WATCH — test", {
-      body: "Si tu vois ceci, l'affichage des notifications fonctionne sur cet appareil.",
-      icon: "icon-192.png",
-      // Le MÊME badge que les vraies notifications (voir sw.js) — sinon ce
-      // bouton, dont le seul rôle est de montrer à quoi ressemble une
-      // notification, en montre une DIFFÉRENTE de celles du robot. Il a
-      // gardé icon-192.png trois jours après la correction du carré blanc :
-      // la correction était faite dans sw.js, et c'est ce bouton-ci qu'on
-      // presse pour la vérifier. Android ne garde que le canal alpha, et
-      // icon-192.png est opaque — carré blanc.
-      badge: "icon-badge.png",
-      tag: "gta6watch-test"
-    });
-    setPushStatus("Notification de test envoyée. Ceci ne teste que l'affichage, pas l'envoi par le robot.", "ok");
-  }catch(e){
-    setPushStatus("Affichage impossible : " + (e.message || "erreur inconnue"), "warn");
-  }
-}
-
-// Génère une paire de clés VAPID directement dans le navigateur, via Web
-// Crypto. Évite d'imposer une installation Python locale pour une opération
-// à faire une seule fois. Les clés ne quittent pas l'appareil : c'est
-// l'utilisateur qui les recopie dans les secrets GitHub.
-//
-// Formats produits :
-//   - publique : point EC non compressé en base64url (ce qu'attend
-//     applicationServerKey côté navigateur) ;
-//   - privée   : le scalaire brut de 32 octets en base64url (le champ "d"
-//     du JWK), format accepté par py_vapid côté robot.
-async function generateVapidKeys(){
-  const ok = await demandeConfirmation(
-    "Générer une nouvelle paire de clés ?",
-    "Si tu recopies la nouvelle clé dans les secrets GitHub, tous les appareils déjà abonnés cesseront de recevoir les notifications et devront se réabonner.",
-    "Générer");
-  if(!ok) return;
-  const bloc = document.getElementById("vapidKeysBlock");
-  try{
-    const paire = await crypto.subtle.generateKey(
-      { name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
-
-    const brutPublic = new Uint8Array(await crypto.subtle.exportKey("raw", paire.publicKey));
-    const jwkPrivee = await crypto.subtle.exportKey("jwk", paire.privateKey);
-
-    document.getElementById("vapidPublicOut").value = bytesToBase64Url(brutPublic);
-    document.getElementById("vapidPrivateOut").value = jwkPrivee.d;
-    bloc.style.display = "block";
-    addLog("ok", "Paire de clés VAPID générée localement.");
-  }catch(e){
-    bloc.style.display = "none";
-    addLog("fail", `Génération des clés VAPID impossible : ${escapeHtml(e.message || "erreur inconnue")}`);
-    alert("Génération impossible sur ce navigateur : " + (e.message || "erreur inconnue"));
-  }
-}
-
-function bytesToBase64Url(bytes){
-  let binaire = "";
-  for(const o of bytes) binaire += String.fromCharCode(o);
-  return btoa(binaire).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-function copyFieldValue(id, btn){
-  const texte = document.getElementById(id).value;
-  navigator.clipboard.writeText(texte).then(() => {
-    if(btn){
-      const original = btn.textContent;
-      btn.textContent = "copié";
-      setTimeout(() => { btn.textContent = original; }, 1500);
-    }
-  }).catch(() => prompt("Copie la valeur :", texte));
-}
-
-function copyPushSubscription(btn){
-  copyFieldValue("pushSubscriptionText", btn);
-}
-
 // ---------- Déclenchement à distance du robot ----------
 // Permet de relancer le workflow GitHub Actions depuis le téléphone, sans
 // passer par l'onglet Actions. Utile parce que le déclencheur planifié de
@@ -8238,7 +7674,6 @@ function copyPushSubscription(btn){
 // dans un navigateur.
 const GITHUB_REPO = "antoniman31/gta6-backend";
 const GITHUB_WORKFLOW = "update-feeds.yml";
-const GITHUB_WORKFLOW_TEST_PUSH = "test-push.yml";
 const GITHUB_BRANCH = "main";
 const TOKEN_STORAGE_KEY = "github-token-v1";
 
@@ -8301,11 +7736,6 @@ function refreshTokenUI(){
   // text-align:center. En rendant la main à la CSS, le bouton retrouve le
   // centrage en flex qu'il partage avec les onglets.
   if(btn) btn.style.display = token ? "" : "none";
-  // Même règle pour l'envoi push réel : il passe par la même API GitHub,
-  // donc il a besoin du même jeton. Proposer un bouton qui ne peut pas
-  // marcher, c'est promettre un test et rendre une erreur.
-  const btnPush = document.getElementById("pushTestRealBtn");
-  if(btnPush) btnPush.style.display = token ? "" : "none";
   const input = document.getElementById("githubTokenInput");
   if(input && token && !input.value) input.placeholder = "•••••••••••••• (jeton enregistré)";
   if(!token){
@@ -9626,10 +9056,10 @@ function greffeAides(){
     // Sans ce filtre, le « ? » masquait l'étiquette et laissait la vraie
     // explication inatteignable.
     //
-    // :scope > et non un descendant quelconque : le groupe des notifications
-    // contient un bloc replié qui a ses propres explications. Le « ? » s'y
-    // greffait, si bien qu'il ouvrait le mode d'emploi de l'abonnement au
-    // lieu de l'explication du réglage — et que celle-ci était inatteignable.
+    // :scope > et non un descendant quelconque : un groupe peut contenir un
+    // bloc replié qui a ses propres explications. Le « ? » s'y greffait, si
+    // bien qu'il ouvrait celles du bloc au lieu de l'explication du réglage —
+    // et que celle-ci était inatteignable.
     const desc = g.querySelector(":scope > .setting-desc[hidden]");
     const lab = g.querySelector(".setting-label");
     if(!desc || !lab || lab.querySelector(".aide")) return;
@@ -9656,7 +9086,6 @@ chargerReprise();
 chargeRecherches();
 loadState();
 updateCountdown();
-chargeSilence();
 // Relève la signature de référence sans attendre : c'est celle de la
 // version en train de tourner.
 verifieVersionApp();

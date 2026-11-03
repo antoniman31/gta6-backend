@@ -1968,3 +1968,11 @@ abandonné** (le bilan reste dans le salon principal).
   réglage « ne pas déranger » et les gestionnaires push de `docs/sw.js`, plus une désinscription finale de l'ancien abonnement au
   premier démarrage du nouveau service worker. À faire **avant le gel du 10/11**, avec vérification à 320 et 390 px.
 - Les secrets `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY` et `VAPID_SUBJECT` sont gardés par Antoni mais ne servent plus à rien.
+
+### Retrait du push : lot B fait, gel abandonné (03/11/2026)
+
+- **Lot B fait** (l'app et le service worker) ; le retrait du push est terminé. Reste à **ouvrir l'app une fois** sur le téléphone, puis
+  regarder Réglages → Avancé (plus de section « Notifications ») et l'en-tête (plus de pastille de silence).
+- **Le gel de l'app est abandonné** (Antoni, 03/11/2026 : « On oublie le gel »). Les mentions de « gel après le 10/11 » plus haut dans
+  ce fichier ne valent plus ; la répétition du 10/11 et la reconfirmation des dates de l'agenda restent à faire.
+- Les secrets `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY` et `VAPID_SUBJECT` restent chez GitHub, inutilisés.
