@@ -10303,3 +10303,19 @@ maintenance, server issues), `gta6-serveurs-fr` (panne, serveurs, maintenance, s
 - **À remesurer le 22/11** (tâche planifiée) : combien d'articles exclusifs chacune a apportés. Si l'une reste stérile, on le dit ; on n'en retire aucune
   sans ton instruction.
 
+### L'agenda du compteur en frise — 03/11/2026
+
+Demandé par Antoni (« propose 4 design »), puis choix de la maquette **A2** parmi quatre variantes de la frise, les quatre totaux du bas gardés.
+Avant : date, libellé et statut collés dans une phrase de trois ou quatre lignes ; à 320 px, « annoncé » tombait seul sur sa ligne, en petit gris.
+
+- **Rendu** : le jour en gros à gauche, le mois en petit dessous (« 10 NOV », choix d'Antoni), un rail avec un point par rendez-vous, puis
+  « J-7 · mar. · annoncé » au-dessus du libellé. Le libellé ne répète plus la date.
+- **Marque « annoncé »** (choix d'Antoni : point, sans emoji) : point plein couleur d'accent, point creux pour « selon la presse ». **Écart avec la
+  maquette** : elle utilisait un orange ; j'ai pris l'accent de l'app, qui a déjà ses deux thèmes mesurés, plutôt qu'une couleur de plus. Le mot reste
+  écrit : la couleur seule ne porte jamais l'information.
+- **Statut dans `data-statut`**, pas dans la classe : le contrôle existant lit `className` à l'identique (« passe »). Les classes `ag-j`, `ag-t`,
+  `ag-s` restent, donc les contrôles de contraste et de débordement continuent de mesurer les mêmes éléments. Le nom du cache passe à
+  `gta6watch-shell-v69`.
+- **Contrôle ajouté** dans `test_agenda_dans_le_panneau` : jour et mois de chaque ligne, un rail par ligne, `data-statut`, libellé sans la date.
+  **Rejoué contre l'ancien code** (`git archive HEAD` plus le test) : il échoue sur ses trois contrôles.
+

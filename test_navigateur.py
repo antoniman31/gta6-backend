@@ -3747,6 +3747,24 @@ def test_agenda_dans_le_panneau(nav, url):
               "[agenda] 29/10 est à J-2 et « annoncé » (%s)" % lignes[1]["texte"])
         check("selon la presse" in lignes[2]["texte"] and "à revérifier" in lignes[2]["texte"],
               "[agenda] une vérification de plus de 14 jours se dit « à revérifier »")
+        # LA FRISE (choisie le 03/11/2026) : le jour en gros dans sa colonne, le
+        # mois en petit dessous, un rail, et le statut dans `data-statut` — pas
+        # dans la classe, que le contrôle ci-dessus lit à l'identique.
+        frise = page.evaluate("""() => [...document.querySelectorAll('#compteurContenu .compteur-agenda li')]
+            .map(li => ({jour: (li.querySelector('.ag-d b') || {}).textContent,
+                         mois: (li.querySelector('.ag-d small') || {}).textContent,
+                         rail: !!li.querySelector('.ag-rail'),
+                         statut: li.getAttribute('data-statut'),
+                         libelle: (li.querySelector('.ag-t') || {}).textContent}))""")
+        check([f["jour"] for f in frise] == ["26", "29", "12"]
+              and [f["mois"] for f in frise] == ["OCT", "OCT", "NOV"],
+              "[agenda] la frise donne le jour et le mois de chaque rendez-vous (%s)" % frise)
+        check(all(f["rail"] for f in frise)
+              and [f["statut"] for f in frise] == ["presse", "annonce", "presse"],
+              "[agenda] un rail par ligne, et le statut dans data-statut (%s)" % frise)
+        check(frise[1]["libelle"].startswith("Un libellé très long")
+              and "29" not in frise[1]["libelle"],
+              "[agenda] le libellé ne répète plus la date")
     page.wait_for_timeout(2200)
     check(page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda li').length") == 3,
           "[agenda] il survit au repeint de chaque seconde")

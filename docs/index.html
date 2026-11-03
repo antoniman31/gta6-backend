@@ -1097,17 +1097,50 @@
      la couleur de texte secondaire, jamais par l'opacité : l'opacité
      ferait tomber le contraste sous le seuil. */
   .compteur-agenda{list-style:none; margin:0 0 14px; padding:0;}
+  /* FRISE, choisie par Antoni le 03/11/2026 (maquette « A2 ») : le jour en gros
+     à gauche, un rail avec un point par rendez-vous, puis « J-7 · mar. ·
+     annoncé » au-dessus du libellé. Avant, date, libellé et statut étaient
+     collés dans une phrase de trois ou quatre lignes, et à 320 px le statut
+     tombait seul sur sa ligne. Le point plein (accent) dit « annoncé », le
+     point creux « selon la presse » : le MOT reste écrit, la couleur seule ne
+     porte jamais l'information. */
   .compteur-agenda li{
-    display:flex; flex-wrap:wrap; gap:2px 8px; align-items:baseline;
-    padding:6px 0; border-top:1px solid var(--line);
-    font-size:13px; color:var(--text); overflow-wrap:anywhere;
+    display:grid; grid-template-columns:3em 14px minmax(0,1fr); column-gap:8px;
+    padding:0; font-size:14px; color:var(--text); overflow-wrap:anywhere;
   }
   .compteur-agenda li.passe{color:var(--text-dim);}
-  .compteur-agenda .ag-j{
-    font-family:'JetBrains Mono',monospace; font-weight:700; min-width:4.5em;
+  .compteur-agenda .ag-d{text-align:right; padding-top:1px; line-height:1;}
+  .compteur-agenda .ag-d b{
+    display:block; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px;
   }
-  .compteur-agenda .ag-t{flex:1 1 12em; min-width:0;}
-  .compteur-agenda .ag-s{font-size:11px; color:var(--text-dim);}
+  .compteur-agenda .ag-d small{
+    display:block; margin-top:3px; font-family:'JetBrains Mono',monospace;
+    font-size:10px; font-weight:700; letter-spacing:.05em; color:var(--text-dim);
+  }
+  .compteur-agenda .ag-rail{position:relative;}
+  .compteur-agenda .ag-rail::before{
+    content:""; position:absolute; left:6px; top:0; bottom:0; width:2px;
+    background:color-mix(in srgb, var(--text-dim) 45%, transparent);
+  }
+  .compteur-agenda li:first-child .ag-rail::before{top:9px;}
+  .compteur-agenda li:last-child .ag-rail::before{bottom:calc(100% - 9px);}
+  .compteur-agenda .ag-rail::after{
+    content:""; position:absolute; left:2px; top:4px; width:6px; height:6px;
+    border-radius:50%; border:2px solid var(--text-dim); background:var(--bg-panel);
+  }
+  .compteur-agenda li[data-statut="annonce"] .ag-rail::after{
+    border-color:var(--accent); background:var(--accent);
+  }
+  .compteur-agenda .ag-c{padding:0 0 14px;}
+  .compteur-agenda li:last-child .ag-c{padding-bottom:0;}
+  .compteur-agenda .ag-m{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+    color:var(--text-dim);
+  }
+  .compteur-agenda .ag-j{color:var(--text);}
+  .compteur-agenda li.passe .ag-j{color:var(--text-dim);}
+  .compteur-agenda .ag-t{display:block; margin-top:1px;}
+  .compteur-agenda .ag-s{font-weight:700; color:var(--text-dim);}
 
   /* LA BARRE PORTE SON POURCENTAGE. Il était en légende dessous, ce qui
      faisait une ligne de texte de plus pour un chiffre que la barre
@@ -8354,13 +8387,18 @@ function htmlAgenda(maintenant){
   if(!lignes.length) return "";
   return `<ul class="compteur-agenda" aria-label="Prochains rendez-vous">`
     + lignes.map((r) => {
-      const jour = new Date(r.date + "T12:00:00Z").toLocaleDateString("fr-FR",
-        { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+      const d = new Date(r.date + "T12:00:00Z");
+      const fr = (opts) => d.toLocaleDateString("fr-FR", Object.assign({ timeZone: "UTC" }, opts));
+      const jourSemaine = fr({ weekday: "short" });
+      const mois = fr({ month: "short" }).replace(".", "").toUpperCase();
       const statut = (r.statut === "annonce" ? "annoncé" : "selon la presse")
         + (r.aRevoir ? " · à revérifier" : "");
-      return `<li class="${r.etat}"><span class="ag-j">${escapeHtml(libelleJours(r))}</span>`
-        + `<span class="ag-t">${escapeHtml(jour)} · ${escapeHtml(r.libelle)}</span>`
-        + `<span class="ag-s">${escapeHtml(statut)}</span></li>`;
+      return `<li class="${r.etat}" data-statut="${r.statut}">`
+        + `<span class="ag-d"><b>${escapeHtml(fr({ day: "numeric" }))}</b><small>${escapeHtml(mois)}</small></span>`
+        + `<span class="ag-rail" aria-hidden="true"></span>`
+        + `<span class="ag-c"><span class="ag-m"><span class="ag-j">${escapeHtml(libelleJours(r))}</span>`
+        + ` · ${escapeHtml(jourSemaine)} · <span class="ag-s">${escapeHtml(statut)}</span></span>`
+        + `<span class="ag-t">${escapeHtml(r.libelle)}</span></span></li>`;
     }).join("")
     + `</ul>`;
 }
