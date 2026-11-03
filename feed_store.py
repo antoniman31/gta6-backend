@@ -139,12 +139,10 @@ HOT_SOURCE_THRESHOLD = 3
 # trois, pendant que le commentaire continuait d'annoncer qu'il ne servirait
 # jamais. Une mesure vieillit ; une mesure DATÉE se rattrape.
 #
-# DIX, choisi par Antoni le 13/10/2026. Le jour de la sortie, chaque annonce
-# officielle compte vraiment, et les regrouper ferait perdre le détail de
-# celle qu'on attend. Ce que ça coûte, dit plutôt que tu : de 0h à 5h, SEULS
-# les officiels réveillent le téléphone, donc une rafale nocturne peut faire
-# dix vibrations d'affilée au lieu de cinq. C'est un choix assumé, pas un
-# oubli.
+# DIX, choisi par Antoni le 13/10/2026 pour les notifications push, retirées
+# du dépôt le 03/11/2026. Il ne plafonne plus que les alertes de report de
+# Discord (send_alertes_report) : dix messages rouges d'affilée suffisent à
+# réveiller, et une rafale de plus ne dirait rien de plus.
 NOTIFS_OFFICIELLES_MAX = 10
 
 FEED_PATH = "docs/feed.json"
@@ -1722,53 +1720,26 @@ def libelle_recap_depuis_comptes(n, officiels, sommet):
 
 
 # ---------------------------------------------------------------------------
-# APRÈS LA SORTIE, LE RÉCAPITULATIF SE TAIT SAUF S'IL A QUELQUE CHOSE À DIRE
+# L'INSTANT DE LA SORTIE
 # ---------------------------------------------------------------------------
-# Demandé par Antoni le 20/10/2026. Aujourd'hui le récapitulatif part à
-# chaque passage dès qu'un article est entré, et c'est ce qu'il faut : le
-# fil fait 50 à 300 articles par jour et chacun compte. Après le
-# 19 novembre, il dira « 180 nouveaux articles » toutes les heures — un
-# seul message, donc pas du spam, mais un message qui n'apprend plus rien.
+# Les jalons du compte à rebours, le pied des messages Discord (« Sortie dans… »
+# puis « Sorti il y a… ») et l'arrêt des jalons H-1 et J-1 se déduisent tous de
+# cette constante : la DATE décide, jamais un interrupteur. Un réglage à basculer
+# le soir du 19 est un réglage que personne ne bascule : ce soir-là Antoni jouera.
 #
-# LA DATE DÉCIDE, PAS UN INTERRUPTEUR. Un réglage à basculer le soir du 19
-# est un réglage que personne ne bascule : ce soir-là Antoni jouera. Le
-# seuil est donc l'instant de la sortie, et le changement se fait tout
-# seul.
-#
-# CE QUI PASSE ENCORE : une annonce de Rockstar, et une actu majeure.
-# C'est exactement ce que la pause nocturne laisse déjà passer, et ce que
-# le libellé du récapitulatif met déjà en tête. Les notifications par
-# annonce officielle, elles, ne sont PAS concernées — elles partent une
-# par une, avant le récapitulatif, et c'est leur raison d'être.
+# Le silence du récapitulatif après la sortie (demandé le 20/10/2026) a existé
+# pour les notifications push ; Antoni a demandé le 03/11/2026 de ne pas perdre
+# les messages ordinaires de Discord, puis de retirer le push : la règle a disparu.
 #
 # 00:00 heure de Paris le 19 novembre 2026, soit 23:00 UTC la veille :
 # Paris est à UTC+1 à cette date.
 SORTIE_GTA6 = datetime(2026, 11, 18, 23, 0, 0, tzinfo=timezone.utc)
 
 
-def recap_merite_notification(n, officiels, sommet, maintenant=None):
-    """Le récapitulatif a-t-il encore quelque chose à dire ?
-
-    Avant la sortie : oui dès qu'un article est entré, comme toujours.
-    Après : seulement s'il y a une annonce officielle ou une actu majeure.
-
-    `maintenant` est injectable pour que le contrôle puisse se placer des
-    deux côtés du 19 novembre sans attendre la date.
-    """
-    maintenant = maintenant or datetime.now(timezone.utc)
-    if maintenant < SORTIE_GTA6:
-        return recap_a_dire(n, officiels, sommet)
-    return bool(officiels) or sommet >= HOT_SOURCE_THRESHOLD
-
-
 def recap_a_dire(n, officiels, sommet):
-    """Le message a-t-il quelque chose à dire, sans règle de date ?
-
-    C'est la règle d'AVANT la sortie, et c'est celle que Discord applique en
-    tout temps depuis le 03/11/2026 : Antoni ne veut pas perdre les messages
-    ordinaires après le 19 novembre (« Je veux pas perdre les messages
-    ordinaires du discord »). Le push, éteint, garde le juge à date
-    ci-dessus tant qu'il n'a rien demandé d'autre.
+    """Le message a-t-il quelque chose à dire ? Oui dès qu'un article, une annonce
+    officielle ou une actu majeure est entré, en tout temps : Antoni ne veut pas
+    perdre les messages ordinaires, même après la sortie (03/11/2026).
     """
     return bool(n or officiels or sommet >= HOT_SOURCE_THRESHOLD)
 
@@ -2575,56 +2546,6 @@ def lignes_mesure_majeure(items):
     return sorties
 
 
-def article_le_plus_notable(items):
-    """Celui qu'on cite quand on ne peut en citer qu'un.
-
-    Le récapitulatif n'affichait AUCUN titre, et le commentaire d'origine
-    disait pourquoi : « premier » ne veut rien dire, c'est l'ordre de FEEDS
-    et pas une importance, donc un titre pris là donne une idée fausse du
-    lot. L'argument était juste, et il ne visait que le choix « le premier
-    de la liste ».
-
-    Antoni, le 22/09/2026 : les notifications « ne disent pas assez ». Il y
-    a donc un titre à montrer — reste à ne pas le tirer au sort. L'ordre
-    ci-dessous n'est pas inventé pour l'occasion, c'est celui que l'app
-    utilise déjà pour décider ce qui est important :
-
-      1. un article OFFICIEL de Rockstar passe avant tout le reste ;
-      2. puis le nombre de RÉDACTIONS sur le même sujet — c'est ce qui
-         pilote le badge « actu majeure » et le seuil HOT_SOURCE_THRESHOLD ;
-      3. puis la date, le plus récent gagnant.
-
-    À égalité parfaite, le tri reste stable : deux passages identiques
-    citent le même article, ce qui évite qu'une notification remplacée par
-    une autre change de titre sans raison.
-    """
-    candidats = [i for i in (items or ()) if isinstance(i, dict) and i.get("title")]
-    if not candidats:
-        return None
-    return max(candidats, key=lambda i: (
-        1 if i.get("official") else 0,
-        1 + len(i.get("extraSources") or []),
-        parse_date_key(i.get("date")),
-    ))
-
-
-def corps_recap(items):
-    """Ce que la notification met sous son titre : un vrai titre d'article.
-
-    Rend une chaîne vide s'il n'y a rien à citer — le récapitulatif du matin
-    travaille sur des COMPTES reportés d'un passage à l'autre, sans garder
-    les articles, et inventer un titre dans ce cas serait mentir.
-    """
-    notable = article_le_plus_notable(items)
-    if not notable:
-        return ""
-    titre = (notable.get("title") or "").strip()
-    autres = len([i for i in (items or ()) if isinstance(i, dict) and i.get("title")]) - 1
-    if autres > 0:
-        return f"{titre} · et {autres} autre{'s' if autres > 1 else ''}"
-    return titre
-
-
 # ---------------------------------------------------------------------------
 # Aperçus : les quelques articles qu'un récapitulatif peut CITER
 # ---------------------------------------------------------------------------
@@ -2798,29 +2719,6 @@ def apercus_assainis(brut, maximum=APERCU_RECAP_MAX):
     return apercus_recap([a for a in brut if isinstance(a, dict)], maximum)
 
 
-def libelle_officiel(item):
-    """Le texte d'une alerte « officiel Rockstar », écrit UNE seule fois.
-
-    Même principe que libelle_recap : Discord et les notifications push
-    disent mot pour mot la même chose, et ne peuvent pas diverger au
-    premier ajustement.
-
-    Ici, CONTRAIREMENT au récapitulatif, le titre de l'article apparaît. Le
-    récapitulatif annonce un nombre parce qu'un lot de dix articles n'a pas
-    de titre représentatif ; une annonce de Rockstar, elle, est un
-    évènement unique et c'est justement son contenu qu'on veut lire sans
-    ouvrir quoi que ce soit.
-    """
-    titre = (item.get("title") or "").strip() or "Nouvelle publication"
-    # ⭐ et non 🎮. Les deux notifications commençaient par le MÊME emoji, et
-    # sur un téléphone c'est la première chose qu'on voit : « 🎮 Rockstar
-    # Games — officiel » et « 🎮 5 nouveaux articles GTA 6 » se ressemblaient
-    # au point qu'Antoni ne les distinguait pas d'un coup d'œil (22/09/2026).
-    # Le reste de la distinction est côté service worker : vibration propre
-    # et notification qui reste tant qu'on ne l'a pas écartée.
-    return "⭐ Rockstar Games — officiel", titre
-
-
 def libelle_officiels(n):
     """Le titre du message quand il ne porte que des annonces officielles.
 
@@ -2851,20 +2749,6 @@ def lire_majeurs_recap(variable="RECAP_TOTALS_FILE"):
     return v if isinstance(v, int) and not isinstance(v, bool) and v >= 0 else None
 
 
-def etiquette_officiel(item):
-    """Identifiant stable d'une alerte officielle, dérivé du lien.
-
-    Sert de `tag` à la notification push. Un tag PROPRE À CHAQUE ARTICLE est
-    indispensable ici : le tag commun du récapitulatif remplace la
-    notification précédente, ce qui effacerait en silence l'annonce d'un
-    trailer une demi-heure plus tard — précisément celle qu'on ne veut pas
-    rater. Deux annonces officielles du même passage ne doivent pas non
-    plus s'écraser l'une l'autre.
-    """
-    lien = (item.get("link") or "").strip()
-    return "gta6watch-officiel-" + hashlib.sha1(lien.encode("utf-8")).hexdigest()[:12]
-
-
 def nb_sources_max(new_items):
     """Nombre de rédactions couvrant le sujet le plus repris du lot.
 
@@ -2874,8 +2758,3 @@ def nb_sources_max(new_items):
     return max((1 + len(i.get("extraSources") or [])
                 for i in (new_items or ()) if isinstance(i, dict)), default=0)
 
-
-def est_actu_majeure(new_items, promus=()):
-    """Le lot contient-il un sujet couvert par assez de rédactions ?"""
-    return max(nb_sources_max(new_items),
-               nb_sources_max(promus)) >= HOT_SOURCE_THRESHOLD

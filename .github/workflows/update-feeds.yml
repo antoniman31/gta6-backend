@@ -194,9 +194,6 @@ jobs:
           JALONS_FILE: ${{ runner.temp }}/jalons.json
           ROCKSTARMAG_FILE: ${{ runner.temp }}/rockstarmag.json
           BILAN_FILE: ${{ runner.temp }}/bilan.json
-          # Clé PUBLIQUE : recopiée dans feed.json pour que l'app puisse
-          # créer un abonnement push. Aucun risque à l'exposer.
-          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
 
       - name: Publier le résultat
         env:
@@ -408,27 +405,6 @@ jobs:
           done
           echo "Identifiant non publié après 5 tentatives (le prochain passage recréera le tableau)."
           exit 1
-
-      # Notification push native, en plus de Discord : taper une
-      # notification Discord ouvre Discord, jamais l'article. Comme pour
-      # Discord, l'envoi n'a lieu qu'APRÈS une publication réussie.
-      # Sans les secrets VAPID_PRIVATE_KEY et PUSH_SUBSCRIPTIONS, l'étape
-      # ne fait rien.
-      - name: Notifier par push
-        if: success()
-        run: python push_notify.py
-        env:
-          SEULEMENT_OFFICIELS: ${{ steps.veille.outputs.silence == 'true' && '1' || '0' }}
-          RECAP_TOTALS_FILE: ${{ runner.temp }}/recap_totals.json
-          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
-          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
-          PUSH_SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
-          NEW_ITEMS_FILE: ${{ runner.temp }}/new_items.json
-          PROMOTED_ITEMS_FILE: ${{ runner.temp }}/promoted_items.json
-          # Pour alerter sur Discord si TOUS les abonnements sont expirés :
-          # le push meurt en silence, Discord non. Voir
-          # alerte_discord_push_mort dans push_notify.py.
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       # Signal de vie ("dead man's switch"). C'est l'ABSENCE de ce signal
       # qui déclenche l'alerte, pas sa présence : un robot qui ne tourne

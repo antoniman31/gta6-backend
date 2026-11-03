@@ -377,259 +377,6 @@ def test_canonicalize_stored_links():
     check(m2 == 0 and d2 == 0, "idempotente : le second passage ne change rien")
 
 
-def test_push_payload():
-    print("\n[push] contenu de la notification")
-    import push_notify
-
-    un = push_notify.build_payload([{"title": "Rockstar annonce la date de sortie",
-                                     "official": True}])
-    check("1 nouvel article" in un["title"], "singulier correct pour un seul article")
-    check("officiel" in un["title"], "les articles officiels sont signalés")
-
-    # LE TITRE reste un COMPTE — c'est la règle du 29/08 et elle tient : un
-    # lot de dix articles n'a pas de titre représentatif.
-    check("Rockstar annonce" not in un["title"],
-          "le TITRE de la notification annonce combien, jamais quoi")
-
-    # LE CORPS, lui, porte un titre d'article depuis le 22/09/2026, à la
-    # demande d'Antoni (« elles ne disent pas assez »). L'objection d'alors
-    # ne visait que le choix « le premier de la liste » ; celui-ci est
-    # classé, pas tiré au sort.
-    check(un["body"] == "Rockstar annonce la date de sortie",
-          "le CORPS cite l'article, au lieu de « Ouvrir GTA6_WATCH »")
-
-    trois = push_notify.build_payload([
-        {"title": "Un trailer inattendu", "official": False},
-        {"title": "Repris partout", "official": False, "extraSources": [{}, {}]},
-        {"title": "Encore autre chose", "official": False}])
-    check("3 nouveaux articles" in trois["title"], "pluriel correct")
-    check("officiel" not in trois["title"], "rien d'officiel : pas de mention parasite")
-
-    # CE QUI EST CITÉ N'EST PAS LE PREMIER, c'est le plus notable — ici
-    # l'article que trois rédactions couvrent. C'est toute la différence
-    # avec la version rejetée en août.
-    check(trois["body"].startswith("Repris partout"),
-          "parmi trois, c'est le plus couvert qui est cité (« %s »)" % trois["body"])
-    check("et 2 autres" in trois["body"],
-          "et le reste est annoncé comme un nombre, pas énuméré")
-    check(trois["tag"] == "gta6watch-majeur",
-          "trois rédactions sur un sujet : c'est une actu majeure, tag à part")
-
-    # L'étiquette commune se vérifie entre deux lots de ROUTINE. Le lot
-    # ci-dessus n'en est pas un — trois rédactions sur le même sujet en font
-    # une actu majeure, qui reçoit exprès son propre tag pour ne pas être
-    # effacée par le récapitulatif suivant. Les comparer revenait à tester
-    # deux choses différentes sous un seul nom.
-    routine = push_notify.build_payload([
-        {"title": "Un trailer inattendu"}, {"title": "Autre chose"}])
-    check(routine["tag"] == un["tag"],
-          "deux récapitulatifs de routine partagent leur tag : le second "
-          "remplace le premier au lieu d'empiler")
-
-    # Un officiel passe devant un sujet plus couvert : c'est l'émetteur qui
-    # prime, pas le volume de reprises.
-    melange = push_notify.build_payload([
-        {"title": "Repris par quatre sites", "extraSources": [{}, {}, {}]},
-        {"title": "Le Newswire a parlé", "official": True}])
-    check(melange["body"].startswith("Le Newswire a parlé"),
-          "l'officiel est cité avant un sujet pourtant plus repris")
-
-    # Sans rien à citer — le récapitulatif du matin ne travaille que sur des
-    # comptes reportés — on ne doit pas inventer un titre.
-    import os as _os
-    _garde = _os.environ.pop("RECAP_TOTALS_FILE", None)
-    try:
-        vide = push_notify.build_payload([])
-        check(vide["body"] == "Ouvrir GTA6_WATCH",
-              "sans article à citer, le corps retombe sur le texte neutre")
-    finally:
-        if _garde is not None:
-            _os.environ["RECAP_TOTALS_FILE"] = _garde
-
-    # L'officiel doit se reconnaître SANS lire : autre emoji, vibration
-    # propre, bannière qui ne s'efface pas seule. Les deux commençaient par
-    # 🎮 et se confondaient sur un téléphone.
-    off = push_notify.build_payload_officiel({"title": "Trailer 3", "link": "https://r/1"})
-    check(off["title"].startswith("⭐") and not un["title"].startswith("⭐"),
-          "l'annonce officielle ne porte pas le même emoji que la routine")
-    check(off.get("officiel") is True and "officiel" not in un,
-          "le drapeau qui déclenche vibration et bannière persistante n'est posé que sur elle")
-    sw = open("docs/sw.js", encoding="utf-8").read()
-    # Les options vivent dans docs/notif-options.js depuis le « ne pas
-    # déranger » (27/10/2026) ; le service worker doit l'appeler.
-    opts = open("docs/notif-options.js", encoding="utf-8").read()
-    check("if(contenu.officiel)" in opts and "options.vibrate = [200, 100, 200]" in opts
-          and "options.requireInteraction = true" in opts
-          and "optionsNotification(contenu" in sw,
-          "et le service worker s'en sert vraiment")
-
-    # L'exigence de fond : Discord et le push disent MOT POUR MOT la même
-    # chose. Garanti par construction (un seul libellé), vérifié ici pour
-    # que la garantie ne saute pas en silence si quelqu'un la contourne.
-    for lot in ([{"title": "a", "official": True}],
-                [{"title": "a", "official": False}, {"title": "b", "official": True}],
-                [{"title": str(i), "official": False} for i in range(7)]):
-        check(push_notify.build_payload(lot)["title"] == feed_store.libelle_recap(lot),
-              f"push et Discord annoncent le même texte ({len(lot)} article(s))")
-
-    check(feed_store.libelle_recap([]) .startswith("🎮 0 nouvel"),
-          "un lot vide ne fait pas planter le libellé (jamais envoyé, mais jamais d'exception)")
-    check("Rockstar" in feed_store.libelle_recap([{"official": True}]),
-          "un article sans clé 'title' ne fait pas planter le libellé")
-
-
-
-def test_push_survit_a_un_telephone_verrouille():
-    print("\n[push] une notification doit survivre à un téléphone endormi")
-    import sys as _sys, types, re, inspect
-    import push_notify
-
-    # Le défaut d'origine : send_all n'indiquait ni durée de vie ni urgence.
-    # pywebpush envoie alors TTL: 0, et sa propre documentation dit ce que
-    # ça veut dire — « discards the message immediately if the recipient is
-    # unavailable ». Téléphone verrouillé, connexion suspendue par Android :
-    # le message est jeté, définitivement. Rien n'arrivait au déverrouillage
-    # parce qu'il n'existait plus.
-    check(push_notify.TTL_RECAP > 0 and push_notify.TTL_OFFICIEL > 0,
-          "les deux durées de vie sont non nulles (TTL: 0 = message jeté)")
-    check(push_notify.TTL_OFFICIEL > push_notify.TTL_RECAP,
-          "une annonce Rockstar survit plus longtemps qu'un récapitulatif")
-    # Un récapitulatif périmé annoncerait un compte que le passage suivant a
-    # déjà corrigé : sa durée de vie ne doit pas dépasser la cadence du robot.
-    check(push_notify.TTL_RECAP <= 3600,
-          "le récapitulatif ne survit pas au-delà du passage suivant")
-
-    # Ce que send_all transmet VRAIMENT à pywebpush. Un faux module suffit :
-    # il n'est importé qu'au moment de l'appel, jamais au chargement.
-    appels = []
-
-    faux = types.ModuleType("pywebpush")
-    faux.WebPushException = type("WebPushException", (Exception,), {})
-    faux.webpush = lambda **kw: appels.append(kw)
-    ancien = _sys.modules.get("pywebpush")
-    _sys.modules["pywebpush"] = faux
-    try:
-        abo = [{"endpoint": "https://exemple.test/x"}]
-        push_notify.send_all(abo, {"title": "t"}, "cle",
-                             ttl=push_notify.TTL_OFFICIEL,
-                             urgence=push_notify.URGENCE_HAUTE)
-        push_notify.send_all(abo, {"title": "t"}, "cle")
-    finally:
-        if ancien is None:
-            _sys.modules.pop("pywebpush", None)
-        else:
-            _sys.modules["pywebpush"] = ancien
-
-    check(len(appels) == 2, "les deux envois ont bien atteint pywebpush")
-    officiel, defaut = appels
-    check(officiel.get("ttl") == push_notify.TTL_OFFICIEL,
-          "la durée de vie demandée est transmise telle quelle")
-    check(officiel.get("headers", {}).get("Urgency") == "high",
-          "une annonce Rockstar part en Urgency: high")
-    check(defaut.get("ttl") == push_notify.TTL_RECAP,
-          "sans précision, on retombe sur la durée du récapitulatif")
-    check(defaut.get("headers", {}).get("Urgency") == "normal",
-          "et sur l'urgence normale — tout marquer urgent est un abus que "
-          "les services de push finissent par sanctionner")
-
-    # Le piège qui reviendra : ajouter un appel à send_all en oubliant ces
-    # deux arguments. Les valeurs par défaut le rendraient silencieux — donc
-    # chaque appel doit les écrire, y compris le mode test.
-    corps = inspect.getsource(push_notify)
-    corps = re.sub(r"^\s*#.*$", "", corps, flags=re.M)
-    corps = re.sub(r'"""(?:.|\n)*?"""', "", corps)
-    # (?<!def ) écarte la définition : elle s'écrit exactement comme l'appel
-    # du récapitulatif, au mot « def » près.
-    appels_ecrits = re.findall(r"(?<!def )send_all\((?:[^()]|\([^()]*\))*\)", corps)
-    check(len(appels_ecrits) >= 3,
-          "les appels à send_all sont bien repérés (%d)" % len(appels_ecrits))
-    for a in appels_ecrits:
-        court = " ".join(a.split())[:60]
-        check("ttl=" in a and "urgence=" in a,
-              "cet appel dit sa durée de vie et son urgence : %s" % court)
-
-    # Le mode test doit emprunter le MÊME chemin que le récapitulatif. Un
-    # test plus favorable que la vraie notification ne teste rien : c'est ce
-    # qui a masqué le TTL: 0 pendant des semaines, le bouton restant vert
-    # parce qu'on teste toujours écran allumé.
-    source_test = inspect.getsource(push_notify.mode_test)
-    check("ttl=TTL_RECAP" in source_test and "urgence=URGENCE_NORMALE" in source_test,
-          "le bouton « tester » envoie exactement comme le récapitulatif")
-
-def test_push_vapid_subject():
-    print("\n[push] identifiant de contact VAPID (le champ 'sub')")
-    import importlib
-    import os
-    import push_notify
-
-    def avec(valeur):
-        if valeur is None:
-            os.environ.pop("VAPID_SUBJECT", None)
-        else:
-            os.environ["VAPID_SUBJECT"] = valeur
-        importlib.reload(push_notify)
-        return push_notify.VAPID_SUBJECT
-
-    # Le cas qui a réellement échoué en production : un secret GitHub non
-    # configuré n'est pas absent, il est défini À VIDE. La valeur par
-    # défaut de os.environ.get ne s'applique alors pas, et le champ
-    # obligatoire "sub" partait vide — le service de push rejetait l'envoi
-    # avec « Missing 'sub' from claims ».
-    check(avec("") != "", "un secret VIDE ne laisse pas 'sub' vide (le bug du 28/08)")
-    check(avec("   ") != "", "un secret composé d'espaces non plus")
-    check(avec(None) != "", "une variable absente donne aussi une valeur")
-    check(avec("mailto:moi@exemple.fr") == "mailto:moi@exemple.fr",
-          "un secret rempli est respecté")
-
-    # LE test qui manquait. La première correction produisait un repli
-    # syntaxiquement plausible mais refusé par la bibliothèque : elle
-    # n'accepte qu'un schéma et un hôte, pas de chemin. Et son message
-    # d'erreur est le même que pour un champ absent (« Missing 'sub' from
-    # claims »), donc rien ne le distinguait dans les logs.
-    #
-    # Se fier à sa propre lecture de la spécification ne suffit pas : on
-    # confronte la valeur au validateur réel.
-    defaut = avec("")
-    try:
-        from py_vapid import _check_sub
-    except ImportError:
-        print("    (py_vapid absent — validation réelle non exécutée ici, "
-              "elle tourne en CI où pywebpush est installé)")
-    else:
-        check(bool(_check_sub(defaut)),
-              f"le repli est accepté par le validateur de py_vapid ({defaut})")
-        check(not _check_sub("https://exemple.github.io/projet/"),
-              "reproduction du bug : une URL AVEC chemin est bien refusée")
-        check(bool(_check_sub("mailto:moi@exemple.fr")),
-              "une adresse mailto: reste acceptée")
-
-    check(push_notify.check_subject(defaut), "check_subject accepte le repli")
-    check(not push_notify.check_subject("https://exemple.com/avec/chemin"),
-          "check_subject refuse une URL avec chemin, avec un message clair")
-
-    os.environ.pop("VAPID_SUBJECT", None)
-    importlib.reload(push_notify)
-
-
-def test_push_subscriptions():
-    print("\n[push] lecture du secret d'abonnements")
-    import os
-    import push_notify
-
-    def avec(valeur):
-        os.environ["PUSH_SUBSCRIPTIONS"] = valeur
-        return push_notify.load_subscriptions()
-
-    valide = '{"endpoint":"https://fcm.example/abc","keys":{"p256dh":"x","auth":"y"}}'
-    check(len(avec("[" + valide + "]")) == 1, "tableau JSON accepté")
-    check(len(avec(valide)) == 1, "abonnement seul accepté (collé à la main depuis l'app)")
-    check(len(avec("[" + valide + "," + valide + "]")) == 2, "plusieurs appareils acceptés")
-    check(avec("") == [], "secret vide -> aucun abonnement, pas d'erreur")
-    check(avec("pas du json") == [], "secret illisible -> aucun abonnement, pas de plantage")
-    check(avec('[{"endpoint":"https://x"}]') == [], "abonnement sans clés rejeté")
-    os.environ.pop("PUSH_SUBSCRIPTIONS", None)
-
-
 def test_journal_push_sans_secret():
     """Le journal de diagnostic du push ne peut pas fuiter l'endpoint, et la
     page et le service worker visent le même fichier du même cache."""
@@ -959,7 +706,7 @@ def test_jalons_du_compte_a_rebours():
     # Le workflow passe bien le fichier aux deux étapes.
     wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
     robot = wf[wf.index("run: python fetch_feeds.py"):wf.index("name: Publier le résultat")]
-    discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Notifier par push")]
+    discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Tableau du jour Discord")]
     check("JALONS_FILE:" in robot and "JALONS_FILE:" in discord,
           "le workflow transmet JALONS_FILE au robot et à Discord")
 
@@ -1609,10 +1356,34 @@ def test_section_rockstarmag():
     src = open("fetch_feeds.py", encoding="utf-8").read()
     wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
     robot = wf[wf.index("run: python fetch_feeds.py"):wf.index("name: Publier le résultat")]
-    discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Notifier par push")]
+    discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Tableau du jour Discord")]
     check('"rockstarmag_envoyes": mag_envoyes' in src and "depose_rockstarmag(mag_a_annoncer)" in src
           and "ROCKSTARMAG_FILE:" in robot and "ROCKSTARMAG_FILE:" in discord,
           "le robot écrit l'état et dépose le fichier ; le workflow le transmet aux deux étapes")
+
+
+def test_le_push_est_retire():
+    """Les notifications push sont retirées du robot (lot A, 03/11/2026) : rien n'en revient en silence."""
+    print("\n[push] retiré du robot, sans reste")
+    import os as _os, re
+    check(not _os.path.exists("push_notify.py") and not _os.path.exists(".github/workflows/test-push.yml"),
+          "ni push_notify.py ni test-push.yml n'existent plus")
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    actif = "\n".join(l for l in wf.split("\n") if not l.strip().startswith("#"))
+    check("push_notify" not in actif and "VAPID" not in actif and "PUSH_SUBSCRIPTIONS" not in actif,
+          "le workflow du robot ne lance plus de push et ne lit plus aucun secret VAPID")
+    req = open("requirements.txt", encoding="utf-8").read().lower()
+    pins = [l.split("==")[0] for l in req.split("\n") if re.match(r"^[a-z0-9_.\-]+==", l)]
+    check(not ({"pywebpush", "cryptography", "py-vapid", "http_ece"} & set(pins)),
+          "requirements.txt n'épingle plus pywebpush ni son graphe (%d paquets restent)" % len(pins))
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    check("VAPID" not in src and "vapid_public_key" not in src,
+          "fetch_feeds ne publie plus de clé VAPID dans feed.json")
+    import fetch_feeds
+    check(not hasattr(fetch_feeds, "VAPID_PUBLIC_KEY"), "et n'expose plus VAPID_PUBLIC_KEY")
+    mort = [n for n in ("libelle_officiel", "etiquette_officiel", "corps_recap", "article_le_plus_notable",
+                        "est_actu_majeure", "recap_merite_notification") if hasattr(feed_store, n)]
+    check(not mort, "le code que seul le push utilisait n'existe plus (%s)" % mort)
 
 
 def test_envoi_discord_de_test():
@@ -1913,7 +1684,7 @@ def test_tableau_du_jour():
     wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
     i = wf.index("- name: Tableau du jour Discord")
     bloc = wf[i:wf.index("- name: Retenir le tableau du jour")]
-    suite = wf[wf.index("- name: Retenir le tableau du jour"):wf.index("- name: Notifier par push")]
+    suite = wf[wf.index("- name: Retenir le tableau du jour"):wf.index("- name: Signaler que le robot est vivant")]
     check(wf.index("- name: Notifier Discord") < i < wf.index("- name: Retenir le tableau du jour"),
           "le tableau vient APRÈS la publication et le message du passage")
     check("python tableau_discord.py" in bloc and "DISCORD_WEBHOOK_URL" in bloc and "SEULEMENT_OFFICIELS" in bloc,
@@ -2109,112 +1880,6 @@ def test_bilan_du_soir():
     discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Tableau du jour Discord")]
     check("BILAN_FILE:" in robot and "BILAN_FILE:" in discord, "le workflow transmet BILAN_FILE au robot et à Discord")
 
-
-def test_push_empreinte_abonnement():
-    """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
-    print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
-    import io, contextlib, types
-    import push_notify
-
-    jeton = "cAAAAAAAAAAAAAAA_jeton_unique_de_l_appareil_xyz789"
-    a = {"endpoint": "https://fcm.googleapis.com/fcm/send/" + jeton, "keys": {"p256dh": "x", "auth": "y"},
-         "expirationTime": None}
-    b = {"endpoint": "https://fcm.googleapis.com/fcm/send/AUTRE_" + jeton, "keys": {}}
-    ea, eb = push_notify.empreinte_abonnement(a), push_notify.empreinte_abonnement(b)
-    check(ea == push_notify.empreinte_abonnement(dict(a)),
-          "la même empreinte d'un passage à l'autre : c'est tout son usage")
-    check(ea != eb, "deux abonnements différents n'ont pas la même empreinte")
-    check(jeton not in ea and "fcm/send" not in ea and "/" not in ea.split("hôte")[0],
-          "ni le jeton ni le chemin de l'endpoint ne figurent dans l'empreinte")
-    check("fcm.googleapis.com" in ea, "l'hôte du service de push reste lisible")
-    check("expiration aucune" in ea, "l'absence de date d'expiration est dite")
-    avec = dict(a, expirationTime=1893456000000)
-    check("expiration 1893456000000" in push_notify.empreinte_abonnement(avec),
-          "une date d'expiration fournie par le navigateur est reproduite telle quelle")
-    for bancal in (None, "x", {}, {"endpoint": None}):
-        push_notify.empreinte_abonnement(bancal)
-    check(True, "un abonnement mal formé ne fait pas planter l'empreinte")
-
-    # Bout en bout : send_all ne laisse JAMAIS l'endpoint dans le journal, même
-    # sur une 410 dont le corps le répète.
-    class Rep:
-        status_code = 410
-        # L'endpoint EN TÊTE, donc entièrement dans les 120 premiers caractères :
-        # sans masquage il apparaîtrait en clair, et le contrôle le verrait.
-        text = "NotRegistered " + a["endpoint"] + " push subscription has unsubscribed or expired"
-
-    class Boum(Exception):
-        response = Rep()
-
-    import pywebpush
-    vrai = pywebpush.webpush
-    def faux(*args, **kw):
-        e = pywebpush.WebPushException("410 Gone", response=Rep())
-        raise e
-    pywebpush.webpush = faux
-    sortie = io.StringIO()
-    try:
-        with contextlib.redirect_stdout(sortie):
-            envoyes, expires = push_notify.send_all([a], {"title": "t"}, "cle")
-    finally:
-        pywebpush.webpush = vrai
-    texte = sortie.getvalue()
-    check(expires == [0] and envoyes == 0, "la 410 est bien comptée comme expirée")
-    check(ea in texte, "le journal porte l'empreinte de l'abonnement")
-    check("NotRegistered" in texte, "et le motif donné par le service de push")
-    check(jeton not in texte and jeton[:12] not in texte,
-          "mais JAMAIS l'endpoint, même quand le corps de la réponse le répète, "
-          "ni un morceau d'endpoint coupé par la troncature")
-
-
-def test_push_masquage_endpoint():
-    print("\n[push] les journaux ne doivent jamais laisser fuiter un endpoint")
-    import push_notify
-
-    jeton = "cAAAAAAAAAAAAAAA_jeton_unique_de_l_appareil_xyz789"
-    endpoint = "https://fcm.googleapis.com/fcm/send/" + jeton
-    abonnements = [{"endpoint": endpoint, "keys": {"p256dh": "x", "auth": "y"}}]
-
-    # Message réellement produit par urllib3 : l'hôte en préfixe, et le
-    # CHEMIN SEUL après "with url:". C'est cette forme-là qui fuitait —
-    # masquer uniquement l'URL complète ne l'aurait pas attrapée.
-    reel = ("HTTPSConnectionPool(host='fcm.googleapis.com', port=443): "
-            "Max retries exceeded with url: /fcm/send/" + jeton +
-            " (Caused by ConnectTimeoutError(...))")
-    propre = push_notify.masquer_endpoints(reel, abonnements)
-    check(jeton not in propre, "le jeton de l'appareil disparaît du message urllib3")
-    check("chemin masqué" in propre, "le chemin est remplacé par un marqueur explicite")
-    check("fcm.googleapis.com" in propre,
-          "l'hôte reste visible : il aide au diagnostic et n'identifie personne")
-
-    complet = "Push failed for " + endpoint + " : 500"
-    check(jeton not in push_notify.masquer_endpoints(complet, abonnements),
-          "l'URL complète est masquée aussi")
-
-    # Robustesse : le masquage tourne dans un gestionnaire d'exception, il ne
-    # doit jamais devenir lui-même la cause d'un plantage.
-    for bancal in ([None], [{}], ["pas un dict"], [{"endpoint": None}],
-                   [{"endpoint": ""}], [{"endpoint": "https://x"}]):
-        push_notify.masquer_endpoints("un message", bancal)
-    check(True, "un abonnement mal formé ne fait pas planter le masquage")
-
-    intact = push_notify.masquer_endpoints("erreur sans URL", abonnements)
-    check(intact == "erreur sans URL", "un message sans URL n'est pas abîmé")
-
-    # Même défaut, même correctif : le webhook Discord est un secret de la
-    # même nature (qui l'a peut publier sur le salon).
-    webhook = "https://discord.com/api/webhooks/123456789/cLE_JETON_SECRET_DU_SALON"
-    reel_discord = ("HTTPSConnectionPool(host='discord.com', port=443): "
-                    "Max retries exceeded with url: /api/webhooks/123456789/"
-                    "cLE_JETON_SECRET_DU_SALON (Caused by ...)")
-    propre_d = feed_store.masquer_urls(reel_discord, [webhook])
-    check("cLE_JETON_SECRET_DU_SALON" not in propre_d,
-          "le jeton du webhook Discord disparaît lui aussi")
-    check("discord.com" in propre_d, "l'hôte Discord reste visible")
-    check(feed_store.masquer_urls("rien", [None, "", 42]) == "rien",
-          "des URL absentes ou mal typées ne font pas planter le masquage")
-    check(feed_store.masquer_urls("a/b", ["https://h/"]) == "a/b",
-          "un chemin réduit à « / » n'est pas remplacé (illisibilité pour rien)")
 
 
 # ---------------------------------------------------------------------------
@@ -2472,7 +2137,6 @@ def test_fetch_parallele_identique():
 
 def test_libelle_actu_majeure():
     print("\n[notif] le ton change quand plusieurs rédactions couvrent le même sujet")
-    import push_notify
 
     def art(sources, officiel=False):
         return {"title": "peu importe", "official": officiel,
@@ -2482,10 +2146,6 @@ def test_libelle_actu_majeure():
     sous = feed_store.libelle_recap([art(seuil - 1), art(1)])
     sur = feed_store.libelle_recap([art(seuil), art(1)])
 
-    check(not feed_store.est_actu_majeure([art(seuil - 1)]),
-          f"{seuil - 1} sources : ce n'est pas encore une actu majeure")
-    check(feed_store.est_actu_majeure([art(seuil)]),
-          f"{seuil} sources : c'en est une")
     check("Actu majeure" not in sous, "sous le seuil, le libellé reste celui de routine")
     check("Actu majeure" in sur and str(seuil) in sur,
           "au seuil, le libellé annonce l'alerte et le nombre de rédactions")
@@ -2495,18 +2155,14 @@ def test_libelle_actu_majeure():
     # Aucun titre d'article, y compris en alerte — la règle posée le 29/08.
     check("peu importe" not in sur, "toujours aucun titre d'article, même en alerte")
 
-    # Push et Discord doivent rester mot pour mot identiques (règle du 29/08).
+    # Le libellé calculé sur les articles et celui calculé sur trois nombres sont
+    # le même texte : la ligne d'aperçu du message Discord en dépend.
     for lot in ([art(1)], [art(seuil)], [art(seuil + 3), art(1, True)]):
-        check(push_notify.build_payload(lot)["title"] == feed_store.libelle_recap(lot),
-              f"push et Discord annoncent le même texte ({feed_store.nb_sources_max(lot)} sources)")
-
-    # Le tag distingue l'alerte : sinon le récapitulatif de routine du
-    # passage suivant l'effacerait en silence une demi-heure plus tard.
-    routine = push_notify.build_payload([art(1)])["tag"]
-    alerte = push_notify.build_payload([art(seuil)])["tag"]
-    check(routine != alerte, "une actu majeure a son propre tag de notification")
-    check(push_notify.build_payload([art(seuil)])["tag"] == alerte,
-          "deux alertes partagent le même tag : la seconde remplace la première")
+        n = len(lot)
+        off = sum(1 for i in lot if i.get("official"))
+        check(feed_store.libelle_recap(lot)
+              == feed_store.libelle_recap_depuis_comptes(n, off, feed_store.nb_sources_max(lot)),
+              f"les deux écritures du libellé sont identiques ({feed_store.nb_sources_max(lot)} sources)")
 
     check(feed_store.nb_sources_max([]) == 0, "un lot vide ne fait pas planter le comptage")
     check(feed_store.nb_sources_max([{"title": "x"}]) == 1,
@@ -2554,16 +2210,15 @@ def test_promotion_entre_passages():
 
     # Sans promotion, il n'y aurait rien à dire. Avec, l'alerte part quand
     # même — c'est tout l'intérêt.
-    check(feed_store.est_actu_majeure([], promus),
+    check(feed_store.nb_sources_max(promus) >= feed_store.HOT_SOURCE_THRESHOLD,
           "l'alerte se déclenche sur la seule promotion, sans article nouveau")
     libelle = feed_store.libelle_recap([], promus)
     check("Actu majeure" in libelle, "le libellé annonce bien l'alerte")
     check("0 nouvel" not in libelle,
           "sans article nouveau, on n'annonce pas « 0 nouvel article »")
 
-    import push_notify
-    check(push_notify.build_payload([], promus)["title"] == libelle,
-          "push et Discord restent identiques sur une promotion seule")
+    check(feed_store.libelle_recap_depuis_comptes(0, 0, feed_store.nb_sources_max(promus)) == libelle,
+          "les deux écritures du libellé restent identiques sur une promotion seule")
 
     # Une reprise DE PLUS ne doit pas réalerter : le sujet est déjà majeur.
     resultats2 = {"z": ([art("Kotaku", "https://kotaku.com/a")],
@@ -5527,13 +5182,13 @@ def test_fusions_du_corpus_fige():
 
 def test_plafond_des_annonces_officielles():
     print("\n[notifications] une rafale d'annonces ne fait pas une rafale de réveils")
-    import feed_store, push_notify, discord_notify
+    import feed_store, discord_notify
 
-    # La boucle d'envoi n'avait pas de borne : un officiel, une
-    # notification. Mesuré sur tout l'historique, le maximum est de 3 par
-    # heure et 4 par jour — donc rien ne s'est jamais vu. Mais de 0h à 5h,
-    # SEULES les annonces officielles réveillent le téléphone : une rafale
-    # de dix y passerait en entier.
+    # La boucle d'envoi n'avait pas de borne : un officiel, une notification.
+    # Mesuré sur tout l'historique, le maximum est de 3 par heure et 4 par jour.
+    # Depuis le 29/10/2026 Discord les range dans UNE section de cinq liens, et
+    # les notifications push (dix détaillées plus une groupée) ont été retirées
+    # le 03/11/2026 : seul reste le plafond des alertes de report.
     N = feed_store.NOTIFS_OFFICIELLES_MAX
     check(N >= 4, "le plafond est au-dessus du maximum jamais observé (4/jour)")
 
@@ -5541,41 +5196,7 @@ def test_plafond_des_annonces_officielles():
                   "source": "Rockstar Games", "official": True,
                   "date": "2026-11-19T0%d:00:00+00:00" % (k % 10)} for k in range(N + 4)]
 
-    # --- push ---
-    envois = []
-    vrai_send = push_notify.send_all
-    vrai_subs = push_notify.load_subscriptions
-    vrai_key = os.environ.get("VAPID_PRIVATE_KEY")
-    push_notify.send_all = lambda subs, charge, cle, **kw: (envois.append(charge), (1, []))[1]
-    push_notify.load_subscriptions = lambda: [{"endpoint": "https://x.test/1"}]
-    try:
-        os.environ["VAPID_PRIVATE_KEY"] = "test"
-        os.environ["SEULEMENT_OFFICIELS"] = "1"       # pause nocturne : le pire cas
-        chemin = os.path.join(tempfile.mkdtemp(), "neufs.json")
-        json.dump(officiels, open(chemin, "w"))
-        os.environ["NEW_ITEMS_FILE"] = chemin
-        push_notify.main()
-    finally:
-        push_notify.send_all = vrai_send
-        push_notify.load_subscriptions = vrai_subs
-        os.environ.pop("SEULEMENT_OFFICIELS", None)
-        if vrai_key is None: os.environ.pop("VAPID_PRIVATE_KEY", None)
-
-    check(len(envois) == N + 1,
-          "%d annonces donnent %d notifications : %d détaillées plus une groupée "
-          "(obtenu %d)" % (len(officiels), N + 1, N, len(envois)))
-    check(all("Annonce" in (e.get("body") or "") for e in envois[:N]),
-          "les premières gardent leur titre : une annonce de Rockstar se lit "
-          "sans rien ouvrir")
-    check("4" in (envois[-1].get("body") or ""),
-          "et la dernière annonce le nombre restant (« %s »)" % envois[-1].get("body", "")[:60])
-    check(envois[-1].get("tag") != envois[0].get("tag"),
-          "la groupée a son propre tag : elle ne remplace pas une annonce détaillée")
-
-    # --- Discord : depuis le 29/10/2026 une SECTION de cinq liens, pas dix cartes ---
-    # Écart assumé avec la spec : elle voulait partager ce plafond avec la
-    # section, mais il a été choisi par Antoni (13/10) pour le push seul. La
-    # section suit sa propre règle (cinq liens, « + N autres »).
+    # --- Discord : une SECTION de cinq liens (« + N autres »), pas dix cartes ---
     messages = []
     vrai_envoi = discord_notify.send_discord_with_retry
     vrai_url = discord_notify.DISCORD_WEBHOOK_URL
@@ -6468,7 +6089,7 @@ def test_panneaux_sont_de_vrais_dialogues():
 def test_recap_du_matin_couvre_la_nuit():
     print("\n[notif] le récapitulatif du matin annonce toute la nuit")
     import io, json as _json, contextlib, tempfile, os as _os, shutil
-    import discord_notify, push_notify
+    import discord_notify
 
     # Le libellé doit être LE MÊME par les deux chemins, sinon le
     # récapitulatif du matin ne ressemblerait pas à celui de la journée.
@@ -6509,19 +6130,14 @@ def test_recap_du_matin_couvre_la_nuit():
 
     # ---- La nuit entière, bout en bout ----
     envoyes = []
-    vrais = (discord_notify.send_discord_with_retry, push_notify.send_all,
-             push_notify.check_subject, push_notify.load_subscriptions,
-             discord_notify.DISCORD_WEBHOOK_URL)
+    vrais = (discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL)
     discord_notify.send_discord_with_retry = lambda e, t, **k: envoyes.append(("discord", e)) or True
-    push_notify.send_all = lambda s_, c, k, **kw: (envoyes.append(("push", c)), ([], []))[1]
-    push_notify.check_subject = lambda s_: True
-    push_notify.load_subscriptions = lambda: [{"endpoint": "https://exemple.test/x"}]
     discord_notify.DISCORD_WEBHOOK_URL = "https://exemple.test/webhook"
 
     tmp = tempfile.mkdtemp()
     try:
         def passage(nouveaux, totaux, nuit):
-            """Rejoue un passage : le robot a déposé ses fichiers, on notifie."""
+            """Rejoue un passage : le robot a déposé ses fichiers, Discord notifie."""
             envoyes.clear()
             chemin = _os.path.join(tmp, "new.json")
             with open(chemin, "w", encoding="utf-8") as f:
@@ -6534,14 +6150,12 @@ def test_recap_du_matin_couvre_la_nuit():
                 with open(ctot, "w", encoding="utf-8") as f:
                     _json.dump(totaux, f)
             env = dict(NEW_ITEMS_FILE=chemin, RECAP_TOTALS_FILE=ctot,
-                       SEULEMENT_OFFICIELS="1" if nuit else "0",
-                       VAPID_PRIVATE_KEY="factice")
+                       SEULEMENT_OFFICIELS="1" if nuit else "0")
             anciens = {k: _os.environ.get(k) for k in env}
             _os.environ.update(env)
             try:
                 with contextlib.redirect_stdout(io.StringIO()):
                     discord_notify.main()
-                    push_notify.main()
             finally:
                 for k, v in anciens.items():
                     if v is None: _os.environ.pop(k, None)
@@ -6559,7 +6173,7 @@ def test_recap_du_matin_couvre_la_nuit():
         # déposé le total 14 — les 12 de la nuit plus ces 2.
         matin = passage([banal] * 2, {"articles": 14, "officiels": 1, "sommet": 2}, nuit=False)
         textes = [str(e.get("content") or e.get("title", "")) for _, e in matin]
-        check(len(matin) == 2, "le matin, un envoi par canal (%d)" % len(matin))
+        check(len(matin) == 1, "le matin, UN message (%d)" % len(matin))
         check(all("14 nouveaux" in t for t in textes),
               "et il annonce les 14 de la nuit, pas les 2 de ce passage : %s" % textes)
         check(all("officiel" in t for t in textes),
@@ -6568,7 +6182,7 @@ def test_recap_du_matin_couvre_la_nuit():
         # Le cas qui justifie tout : à 5h, le passage ne trouve RIEN de neuf,
         # mais douze articles attendent d'être annoncés.
         rien = passage([], {"articles": 12, "officiels": 0, "sommet": 1}, nuit=False)
-        check(len(rien) == 2,
+        check(len(rien) == 1,
               "un passage sans rien de neuf annonce quand même l'arriéré (%d envoi(s))"
               % len(rien))
         check(all("12 nouveaux" in str(e.get("content") or e.get("title", "")) for _, e in rien),
@@ -6580,20 +6194,18 @@ def test_recap_du_matin_couvre_la_nuit():
         # {articles:0, sommet:4} et l'alerte doit partir — c'est exactement
         # ce pour quoi le mécanisme `promus` avait été écrit.
         majeure = passage([], {"articles": 0, "officiels": 0, "sommet": 4}, nuit=False)
-        check(len(majeure) == 2,
+        check(len(majeure) == 1,
               "une actu devenue majeure la nuit SANS article neuf est quand même "
               "annoncée le matin (%d envoi(s))" % len(majeure))
         check(all("majeure" in str(e.get("content") or e.get("title", "")) for _, e in majeure),
               "et elle est annoncée COMME majeure")
 
         # La règle « y a-t-il quelque chose à annoncer » vit à UN SEUL
-        # endroit : le robot, qui ne dépose le fichier que dans ce cas. Les
-        # notificateurs ne la rejouent pas — la rejouer à moitié est
-        # exactement ce qui avait fait disparaître l'alerte ci-dessus.
-        for fichier in ("discord_notify.py", "push_notify.py"):
-            src = open(fichier, encoding="utf-8").read()
-            check("totaux[0]" not in src,
-                  "%s ne réinterprète pas le contenu des totaux" % fichier)
+        # endroit : le robot, qui ne dépose le fichier que dans ce cas. Discord
+        # ne la rejoue pas — la rejouer à moitié est exactement ce qui avait
+        # fait disparaître l'alerte ci-dessus.
+        src = open("discord_notify.py", encoding="utf-8").read()
+        check("totaux[0]" not in src, "discord_notify.py ne réinterprète pas le contenu des totaux")
 
         # Sans fichier de totaux du tout, et sans rien de neuf : on se tait.
         check(len(passage([], None, nuit=False)) == 0,
@@ -6605,8 +6217,7 @@ def test_recap_du_matin_couvre_la_nuit():
         check(all("3 nouveaux" in str(e.get("content") or e.get("title", "")) for _, e in local),
               "sans fichier de totaux, le comptage direct prend le relais")
     finally:
-        (discord_notify.send_discord_with_retry, push_notify.send_all,
-         push_notify.check_subject, push_notify.load_subscriptions,
+        (discord_notify.send_discord_with_retry,
          discord_notify.DISCORD_WEBHOOK_URL) = vrais
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -7089,7 +6700,7 @@ def test_les_constantes_citees_sont_les_bonnes():
     import re, importlib
 
     valeurs = {}
-    for module in ("feed_store", "fetch_feeds", "discord_notify", "push_notify"):
+    for module in ("feed_store", "fetch_feeds", "discord_notify"):
         mod = importlib.import_module(module)
         for nom in dir(mod):
             if re.fullmatch(r"[A-Z][A-Z0-9_]{3,}", nom):
@@ -7202,13 +6813,13 @@ def test_discord_ne_fait_jamais_echouer_le_passage():
     check(secret not in texte,
           "et l'URL du webhook n'apparaît pas dans le message d'erreur")
 
-    # Le workflow conditionne bien l'étape push à la réussite de la
+    # Le workflow conditionne bien les étapes suivantes à la réussite de la
     # précédente : c'est ce qui rend l'enveloppe nécessaire.
     wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
-    bloc_push = wf[wf.index("Notifier par push"):]
-    bloc_push = bloc_push[:bloc_push.index("run:")]
-    check("if: success()" in bloc_push,
-          "la notification push dépend toujours de la réussite de l'étape "
+    bloc_suivant = wf[wf.index("- name: Tableau du jour Discord"):]
+    bloc_suivant = bloc_suivant[:bloc_suivant.index("run:")]
+    check("if: success()" in bloc_suivant,
+          "l'étape du tableau du jour dépend toujours de la réussite de l'étape "
           "d'avant — c'est la raison de l'enveloppe")
 
 
@@ -7531,9 +7142,9 @@ def test_recap_discord_detaille():
           "et les compteurs prennent toujours le maximum")
 
 def test_alerte_officielle_rockstar():
-    print("\n[notif] une annonce de Rockstar a son alerte à elle")
+    print("\n[notif] une annonce de Rockstar a sa section à elle")
     import re, io, json as _json, contextlib, tempfile, os as _os
-    import discord_notify, push_notify
+    import discord_notify
 
     officiel = {"title": "Grand Theft Auto VI: An Extended Look",
                 "link": "https://www.rockstargames.com/newswire/extended-look",
@@ -7548,51 +7159,17 @@ def test_alerte_officielle_rockstar():
     check(feed_store.articles_officiels([]) == [], "un lot vide ne retient rien")
     check(feed_store.articles_officiels(None) == [], "et un lot absent non plus")
 
-    # Le texte est écrit UNE fois et partagé, comme le récapitulatif : les
-    # deux canaux ne peuvent pas diverger au premier ajustement.
-    entete, titre = feed_store.libelle_officiel(officiel)
-    check("Rockstar" in entete, "l'entête nomme Rockstar")
-    check(titre == officiel["title"],
-          "et le TITRE de l'article apparaît — contrairement au récapitulatif, "
-          "qui n'annonce qu'un nombre")
-    charge = push_notify.build_payload_officiel(officiel)
-    check(charge["title"] == entete and charge["body"] == titre,
-          "la notification push reprend exactement ce texte partagé")
-    check(charge["url"] == officiel["link"],
-          "et mène à l'ARTICLE, pas à l'accueil du site")
-
-    # LE point qui rend l'alerte utile. Le récapitulatif utilise un tag
-    # commun qui REMPLACE la notification précédente ; sans tag propre,
-    # l'annonce d'un trailer serait effacée en silence par le récapitulatif
-    # du passage suivant, une demi-heure plus tard.
-    banal_charge = push_notify.build_payload([officiel, banal])
-    check(charge["tag"] != banal_charge["tag"],
-          "son tag diffère de celui du récapitulatif — sinon le récapitulatif "
-          "suivant l'effacerait")
-    autre = dict(officiel, link="https://www.rockstargames.com/newswire/autre")
-    check(charge["tag"] != push_notify.build_payload_officiel(autre)["tag"],
-          "et deux annonces du même passage ne s'écrasent pas l'une l'autre")
-    check(charge["tag"] == push_notify.build_payload_officiel(dict(officiel))["tag"],
-          "le tag est stable pour un même article")
-
-    # Le récapitulatif continue de les COMPTER : il annonce un volume, les
-    # alertes annoncent un contenu. L'amputer le ferait mentir.
+    # Le récapitulatif continue de les COMPTER : il annonce un volume, la
+    # section annonce un contenu. L'amputer le ferait mentir.
     libelle = feed_store.libelle_recap([officiel, banal])
     check("officiel" in libelle,
           "le récapitulatif mentionne toujours les officiels (%s)" % libelle)
 
-    # Le mode nuit, bout en bout : on capture ce que chaque script DÉCIDE
-    # d'envoyer, sans réseau — les deux envoient via des fonctions qu'on
-    # remplace le temps du test.
+    # Le mode nuit, bout en bout : on capture ce que Discord DÉCIDE d'envoyer,
+    # sans réseau — la fonction d'envoi est remplacée le temps du test.
     envoyes = []
     vrai_discord = discord_notify.send_discord_with_retry
-    vrai_push = push_notify.send_all
-    vrai_check = push_notify.check_subject
-    vraie_charge = push_notify.load_subscriptions
     discord_notify.send_discord_with_retry = lambda e, t, **k: envoyes.append(("discord", e)) or True
-    push_notify.send_all = lambda subs, charge, cle, **kw: (envoyes.append(("push", charge)), ([], []))[1]
-    push_notify.check_subject = lambda s_: True
-    push_notify.load_subscriptions = lambda: [{"endpoint": "https://exemple.test/x"}]
     discord_notify.DISCORD_WEBHOOK_URL = "https://exemple.test/webhook"
 
     tmp = tempfile.mkdtemp()
@@ -7602,14 +7179,12 @@ def test_alerte_officielle_rockstar():
 
     def rejoue(nuit):
         envoyes.clear()
-        env = dict(NEW_ITEMS_FILE=chemin, SEULEMENT_OFFICIELS="1" if nuit else "0",
-                   VAPID_PRIVATE_KEY="factice")
+        env = dict(NEW_ITEMS_FILE=chemin, SEULEMENT_OFFICIELS="1" if nuit else "0")
         anciens = {k: _os.environ.get(k) for k in env}
         _os.environ.update(env)
         try:
             with contextlib.redirect_stdout(io.StringIO()):
                 discord_notify.main()
-                push_notify.main()
         finally:
             for k, v in anciens.items():
                 if v is None: _os.environ.pop(k, None)
@@ -7621,31 +7196,26 @@ def test_alerte_officielle_rockstar():
         jour = rejoue(False)
     finally:
         discord_notify.send_discord_with_retry = vrai_discord
-        push_notify.send_all = vrai_push
-        push_notify.check_subject = vrai_check
-        push_notify.load_subscriptions = vraie_charge
         import shutil; shutil.rmtree(tmp, ignore_errors=True)
 
-    def textes(lot, canal):
+    def textes(lot):
         # Un message Discord porte son texte dans `content` et ses cartes.
         return [(e.get("title", "") + " " + str(e.get("content", "")) + " "
                  + " ".join(c2.get("description", "") for c2 in e.get("embeds", ()))
-                 + str(e.get("description", "") or e.get("body", "")))
-                for c, e in lot if c == canal]
+                 + str(e.get("description", "")))
+                for c, e in lot]
 
-    check(len(nuit) == 2,
-          "la nuit, exactement 2 envois — un Discord, un push — et rien d'autre "
-          "(obtenu : %d)" % len(nuit))
-    check(all("Extended Look" in t for t in textes(nuit, "discord") + textes(nuit, "push")),
-          "et les deux portent le titre de l'annonce Rockstar")
-    check(not any("rumeur" in t.lower() for t in textes(nuit, "discord") + textes(nuit, "push")),
+    check(len(nuit) == 1,
+          "la nuit, exactement 1 envoi — l'annonce — et rien d'autre (obtenu : %d)" % len(nuit))
+    check(all("Extended Look" in t for t in textes(nuit)), "et il porte le titre de l'annonce Rockstar")
+    check(not any("rumeur" in t.lower() for t in textes(nuit)),
           "l'article ordinaire du même lot reste muet la nuit")
 
-    check(len(jour) == 3,
-          "le jour, 3 envois : UN message Discord (l'annonce et le récapitulatif "
-          "dans ses sections) et les deux notifications push (obtenu : %d)" % len(jour))
-    check(any("nouv" in t for t in textes(jour, "discord")),
-          "le récapitulatif part bien en journée")
+    check(len(jour) == 1,
+          "le jour, UN message Discord : l'annonce et le récapitulatif dans ses "
+          "sections (obtenu : %d)" % len(jour))
+    check(any("nouv" in t for t in textes(jour)), "le récapitulatif part bien en journée")
+    check(all("Extended Look" in t for t in textes(jour)), "et l'annonce y figure aussi")
 
 
 def test_pause_nocturne():
@@ -7686,27 +7256,27 @@ def test_pause_nocturne():
     check(parNom.get("Signaler que le robot est vivant") == "always()",
           "le signal de vie part quoi qu'il arrive")
 
-    # Les deux notifications tournent toujours, et reçoivent le drapeau qui
-    # les fait taire — sauf pour Rockstar.
-    for nom in ("Notifier Discord", "Notifier par push"):
+    # Discord tourne toujours, et reçoit le drapeau qui le fait taire — sauf
+    # pour Rockstar. (Les notifications push ont été retirées le 03/11/2026.)
+    for nom in ("Notifier Discord",):
         check(parNom.get(nom, "") == "success()",
               "« %s » ne notifie qu'après une publication réussie" % nom)
-    for nom in ("Notifier Discord", "Notifier par push"):
+    check("Notifier par push" not in parNom, "plus aucune étape push dans le workflow")
+    for nom in ("Notifier Discord",):
         bloc = blocParNom.get(nom, "")
         check("SEULEMENT_OFFICIELS" in bloc and "steps.veille.outputs.silence" in bloc,
               "« %s » reçoit le drapeau de silence nocturne" % nom)
 
-    # L'attente de mise en ligne s'intercale entre la publication et les
-    # notifications. L'ordre est tout : après le push, sinon on attend une
-    # version qu'on n'a pas encore poussée ; avant les notifications, sinon
+    # L'attente de mise en ligne s'intercale entre la publication et la
+    # notification. L'ordre est tout : après le push, sinon on attend une
+    # version qu'on n'a pas encore poussée ; avant la notification, sinon
     # elle ne sert à rien.
     noms = [n for n, _ in etapes]
     attente = "Attendre que la page soit réellement en ligne"
     check(attente in noms, "l'attente de mise en ligne existe")
     if attente in noms:
-        check(noms.index("Publier le résultat") < noms.index(attente) < noms.index("Notifier Discord")
-              and noms.index(attente) < noms.index("Notifier par push"),
-              "elle s'intercale entre la publication et les deux notifications")
+        check(noms.index("Publier le résultat") < noms.index(attente) < noms.index("Notifier Discord"),
+              "elle s'intercale entre la publication et la notification")
         bloc = blocParNom[attente]
         check("feed-recent.json" in bloc,
               "elle interroge l'extrait que l'app charge en premier")
@@ -8518,7 +8088,7 @@ def test_les_workflows_epinglent_leurs_dependances():
     controles = open(".github/workflows/checks.yml", encoding="utf-8").read()
     check("requirements-dev.txt" in controles,
           "les contrôles installent bien leurs propres dépendances")
-    for autre in ("update-feeds.yml", "sonde.yml", "test-push.yml", "test-discord.yml"):
+    for autre in ("update-feeds.yml", "sonde.yml", "test-discord.yml"):
         contenu = open(".github/workflows/" + autre, encoding="utf-8").read()
         check("requirements-dev.txt" not in contenu,
               "%s ne les installe pas, lui" % autre)
@@ -8539,57 +8109,6 @@ def test_les_workflows_epinglent_leurs_dependances():
     check(len(delai) == 1 and delai[0] >= 17,
           "le job des contrôles tolère une installation de navigateur deux fois plus lente "
           "que la pire mesurée (%s minute(s))" % delai)
-
-
-def test_envoi_push_reel_testable():
-    print("\n[push] un vrai envoi est testable de bout en bout")
-    import push_notify
-
-    wf = open(".github/workflows/test-push.yml", encoding="utf-8").read()
-
-    # Séparé du robot, et déclenché à la main seulement : tester ne doit
-    # jamais publier, ni partir tout seul.
-    check("workflow_dispatch" in wf, "le test s'appelle à la demande")
-    check("schedule" not in wf and "repository_dispatch" not in wf,
-          "il ne part jamais tout seul")
-    check("contents: read" in wf,
-          "il est en lecture seule — un test n'écrit rien dans docs/")
-    check("push_notify.py --test" in wf,
-          "il passe par le vrai chemin d'envoi, pas par un double")
-
-    # Les trois secrets sans lesquels rien ne peut être signé ni adressé.
-    for secret in ("VAPID_PRIVATE_KEY", "VAPID_SUBJECT", "PUSH_SUBSCRIPTIONS"):
-        check(secret in wf, "le test reçoit %s" % secret)
-
-    # LE point du test. Un run qui reste vert alors qu'aucune notification
-    # n'arrive ne teste rien — c'est exactement ce qui s'est produit le
-    # 15/09/2026 : « 0/1 notification(s) envoyée(s) », job vert, défaut
-    # invisible pendant trois heures. mode_test rend donc un code d'erreur.
-    check(hasattr(push_notify, "mode_test"), "le mode test existe")
-    src = open("push_notify.py", encoding="utf-8").read()
-    debut = src.index("def mode_test():")
-    corps = src[debut:src.index("\ndef ", debut + 10)]
-    check("return 1" in corps,
-          "le mode test ÉCHOUE quand rien ne part (sinon il ne teste rien)")
-    check("envoyes == 0" in corps,
-          "l'échec est décidé sur le nombre réellement envoyé")
-
-    # L'alerte de dernier recours : quand plus personne n'est joignable, le
-    # dire sur un canal qui, lui, fonctionne encore.
-    check(hasattr(push_notify, "alerte_discord_push_mort"),
-          "une alerte existe quand tous les abonnements sont expirés")
-    prod = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
-    bloc_push = prod[prod.index("- name: Notifier par push"):]
-    check("DISCORD_WEBHOOK_URL" in bloc_push.split("- name:")[1],
-          "le robot peut alerter sur Discord quand le push est mort")
-
-    # Côté app : un bouton qui déclenche CE workflow, et pas le robot.
-    html = open("docs/index.html", encoding="utf-8").read()
-    check("testPushReel" in html, "l'app propose un envoi réel")
-    check('GITHUB_WORKFLOW_TEST_PUSH = "test-push.yml"' in html,
-          "elle vise le workflow de test, pas celui du robot")
-    check("pushTestRealBtn" in html and 'btnPush.style.display = token ? "" : "none"' in html,
-          "le bouton n'apparaît que si un jeton peut le faire marcher")
 
 
 def test_aucun_mot_cle_nen_contient_un_autre():
@@ -10181,7 +9700,7 @@ def test_laudit_surveille_larchive():
 
 def test_rafale_officielle_du_jour_j():
     print("\n[rafale] une rafale d'annonces officielles ne ment pas sur ce qu'elle cache")
-    import discord_notify as dn, push_notify as pn, feed_store
+    import discord_notify as dn, feed_store
     import contextlib, io, json
     from datetime import datetime, timedelta, timezone
 
@@ -10257,16 +9776,6 @@ def test_rafale_officielle_du_jour_j():
               "(%d)" % len(envois))
     finally:
         dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry = url, envoi
-
-    # Côté push, la charge utile ne suit pas le volume non plus : les
-    # pousseurs refusent au-delà de ~4 Ko.
-    for n in (1, 40, 900):
-        charge = len(json.dumps(pn.build_payload(
-            [{"title": "Dépêche %d" % k, "link": "https://m.test/%d" % k,
-              "source": "M", "date": base.isoformat()} for k in range(n)])).encode())
-        check(charge < 4096,
-              "[rafale] %d articles font une charge push de %d octets, sous "
-              "les 4096 admis" % (n, charge))
 
 
 def test_menage_de_laudit():
@@ -10995,11 +10504,11 @@ def test_plancher_refuse_ce_qui_serait_elague():
 
 
 def test_lecteurs_de_liaison_mutualises():
-    print("\n[notif] les deux canaux lisent exactement la même chose")
-    import feed_store, discord_notify, push_notify, json as _json, os as _os, tempfile
+    print("\n[notif] Discord lit exactement ce que le robot dépose")
+    import feed_store, discord_notify, json as _json, os as _os, tempfile
 
     # Ces deux lecteurs vivaient en double, à l'identique, dans
-    # discord_notify et push_notify — et c'était la zone la moins testée du
+    # discord_notify et l'ancien push_notify — et c'était la zone la moins testée du
     # dépôt (audit du 22/09). La duplication exacte est précisément ce qui
     # avait dérivé en silence sur la liste des sources fin août : trois
     # sources marquées « sans filtre » d'un côté et filtrées de l'autre.
@@ -11007,12 +10516,10 @@ def test_lecteurs_de_liaison_mutualises():
     # Ici l'enjeu est direct : deux copies qui divergeraient feraient
     # annoncer deux nombres DIFFÉRENTS pour le même passage, l'un sur
     # Discord et l'autre en notification push.
-    check(discord_notify.lire_liste is feed_store.lire_liste
-          and push_notify.lire_liste is feed_store.lire_liste,
-          "les deux canaux partagent la même lire_liste")
-    check(discord_notify.lire_totaux_recap is feed_store.lire_totaux_recap
-          and push_notify.lire_totaux_recap is feed_store.lire_totaux_recap,
-          "et la même lire_totaux_recap")
+    check(discord_notify.lire_liste is feed_store.lire_liste,
+          "Discord utilise la lire_liste de feed_store, pas une copie")
+    check(discord_notify.lire_totaux_recap is feed_store.lire_totaux_recap,
+          "et sa lire_totaux_recap")
 
     # --- lire_liste : tolérante par construction ---
     #
@@ -11072,10 +10579,9 @@ def test_lecteurs_de_liaison_mutualises():
 
     # Les copies ne doivent pas revenir : c'est le seul moyen d'empêcher la
     # divergence de se réinstaller au prochain ajustement.
-    for f in ("discord_notify.py", "push_notify.py"):
-        src = open(f, encoding="utf-8").read()
-        check("def lire_liste(" not in src and "def lire_totaux_recap(" not in src,
-              "%s ne redéfinit aucun des deux lecteurs" % f)
+    src = open("discord_notify.py", encoding="utf-8").read()
+    check("def lire_liste(" not in src and "def lire_totaux_recap(" not in src,
+          "discord_notify.py ne redéfinit aucun des deux lecteurs")
 
 
 
@@ -11141,18 +10647,17 @@ def test_epoque_unix_nest_pas_une_date():
           "et le repli s'applique à la construction de chaque article")
 
 
-def test_le_recap_se_tait_apres_la_sortie():
-    """Après le 19 novembre, le récapitulatif n'annonce que le notable.
+def test_le_message_ne_se_tait_pas_apres_la_sortie():
+    """Après le 19 novembre, Discord continue de dire les articles ordinaires.
 
-    Demandé par Antoni le 20/10/2026. Aujourd'hui le récapitulatif part dès
-    qu'un article est entré, et c'est ce qu'il faut. Après la sortie il
-    dirait « 180 nouveaux articles » toutes les heures — un seul message,
-    donc pas du spam, mais un message qui n'apprend plus rien.
-
-    LA DATE DÉCIDE, PAS UN INTERRUPTEUR, et c'est le point que ce contrôle
-    tient : un réglage à basculer le soir du 19 ne serait pas basculé.
+    Le silence d'après-sortie (demandé le 20/10/2026 : seuls l'annonce officielle
+    et l'actu majeure passent) valait pour les notifications push, retirées le
+    03/11/2026. Pour Discord, Antoni a dit le même jour : « Je veux pas perdre les
+    messages ordinaires du discord ». Ce contrôle tient les deux : l'instant de
+    la sortie est la bonne constante, et rien ne dépend plus de la date pour
+    décider d'envoyer.
     """
-    print("\n[recap] après la sortie, le récapitulatif ne dit que le notable")
+    print("\n[recap] après la sortie, Discord continue de parler")
     from datetime import timedelta
     import feed_store as fs
 
@@ -11161,39 +10666,20 @@ def test_le_recap_se_tait_apres_la_sortie():
           "la sortie est à minuit heure de Paris, soit 23:00 UTC la veille "
           "(%s)" % S.isoformat())
 
-    avant = S - timedelta(seconds=1)
-    apres = S + timedelta(seconds=1)
-
-    # AVANT : rien ne change, et c'est la moitié du contrôle. Une bascule
-    # qui se déclencherait trop tôt couperait les notifications pendant le
-    # mois le plus intéressant de la veille.
-    check(fs.recap_merite_notification(180, 0, 1, avant),
-          "[avant] 180 articles ordinaires valent toujours un récapitulatif")
-    check(fs.recap_merite_notification(1, 0, 1, avant),
-          "[avant] un seul aussi")
-    check(not fs.recap_merite_notification(0, 0, 0, avant),
-          "[avant] mais pas zéro — ça, ça n'a jamais changé")
-
-    # APRÈS : seuls l'annonce officielle et l'actu majeure passent.
-    check(not fs.recap_merite_notification(180, 0, 1, apres),
-          "[après] 180 articles ordinaires ne valent plus de notification")
-    check(fs.recap_merite_notification(180, 1, 1, apres),
-          "[après] une annonce officielle, si")
-    check(fs.recap_merite_notification(0, 1, 1, apres),
-          "[après] même sans le moindre article ordinaire")
-    check(fs.recap_merite_notification(180, 0, fs.HOT_SOURCE_THRESHOLD, apres),
-          "[après] une actu majeure aussi")
-    check(not fs.recap_merite_notification(180, 0, fs.HOT_SOURCE_THRESHOLD - 1, apres),
-          "[après] et le seuil de l'actu majeure est CELUI de l'app, pas un "
-          "second écrit ici (%d)" % fs.HOT_SOURCE_THRESHOLD)
-
-    # À LA SECONDE PRÈS. Une comparaison écrite `<=` au lieu de `<` ferait
-    # taire le récapitulatif une seconde trop tôt — invisible, mais c'est
-    # le genre de borne qui se vérifie une fois pour toutes.
-    check(fs.recap_merite_notification(5, 0, 1, S - timedelta(microseconds=1)),
-          "[borne] une microseconde avant la sortie, le récap parle encore")
-    check(not fs.recap_merite_notification(5, 0, 1, S),
-          "[borne] et à l'instant même de la sortie, il se tait")
+    # La règle ne lit AUCUNE horloge : trois nombres, un verdict, avant comme après.
+    check(fs.recap_a_dire(180, 0, 1), "180 articles ordinaires valent un message")
+    check(fs.recap_a_dire(1, 0, 1), "un seul aussi")
+    check(not fs.recap_a_dire(0, 0, 0), "mais pas zéro")
+    check(fs.recap_a_dire(0, 1, 1), "une annonce officielle seule, si")
+    check(fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD)
+          and not fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD - 1),
+          "et le seuil de l'actu majeure est CELUI de l'app, pas un second écrit ici (%d)"
+          % fs.HOT_SOURCE_THRESHOLD)
+    import inspect
+    check("SORTIE_GTA6" not in inspect.getsource(fs.recap_a_dire) and "now(" not in inspect.getsource(fs.recap_a_dire),
+          "recap_a_dire ne lit ni la date de sortie ni l'horloge")
+    check(not hasattr(fs, "recap_merite_notification"),
+          "le juge à date des notifications push n'existe plus")
 
     # LES TROIS NOMBRES VIENNENT D'UN SEUL ENDROIT. Sans comptes_du_recap,
     # la décision d'envoyer aurait reparti d'un calcul à elle, à côté de
@@ -11208,17 +10694,9 @@ def test_le_recap_se_tait_apres_la_sortie():
     check(fs.comptes_du_recap([], None) == (0, 0, 0),
           "[comptes] et un lot vide ne plante pas")
 
-    # DISCORD NE SE TAIT PLUS (03/11/2026). Antoni : « Je veux pas perdre les
-    # messages ordinaires du discord ». Seul le push, éteint, garde le juge à date.
-    texte = open("push_notify.py", encoding="utf-8").read()
-    check("recap_merite_notification" in texte and "comptes_du_recap" in texte,
-          "push_notify.py passe par le juge à date et prend ses trois nombres au même endroit")
     texte = open("discord_notify.py", encoding="utf-8").read()
-    check("recap_merite_notification" not in texte and "comptes_du_recap" in texte and "recap_a_dire" in texte,
-          "discord_notify.py n'applique plus le silence d'après-sortie, et prend ses trois nombres au même endroit")
-    check(fs.recap_a_dire(180, 0, 1) and fs.recap_a_dire(0, 1, 1) and fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD)
-          and not fs.recap_a_dire(0, 0, 0) and not fs.recap_a_dire(0, 0, fs.HOT_SOURCE_THRESHOLD - 1),
-          "la règle de Discord est celle d'avant la sortie, en tout temps")
+    check("comptes_du_recap" in texte and "recap_a_dire" in texte and "recap_merite_notification" not in texte,
+          "discord_notify.py prend ses trois nombres au même endroit et n'applique aucun silence d'après-sortie")
 
 
 def test_les_sources_de_lapres_sortie():
@@ -11638,8 +11116,6 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_merge_no_loss, test_merge_keeps_our_version, test_merge_normalizes_and_caps,
            test_merge_refuses_empty_local, test_feed_store_io,
            test_canonical_link, test_canonicalize_stored_links,
-           test_push_payload, test_push_subscriptions, test_push_vapid_subject,
-           test_push_empreinte_abonnement,
            test_mesure_retard_officiel,
            test_mesure_actu_majeure,
            test_jalons_du_compte_a_rebours,
@@ -11649,11 +11125,10 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_detail_des_officiels,
            test_section_rockstarmag,
            test_envoi_discord_de_test,
+           test_le_push_est_retire,
            test_tableau_du_jour,
            test_bilan_du_soir,
            test_journal_push_sans_secret,
-           test_push_masquage_endpoint,
-           test_push_survit_a_un_telephone_verrouille,
            test_real_history,
            test_fetch_parallele_identique, test_chaine_youtube_rockstar,
            test_officiel_strict_et_langues_rockstar,
@@ -11726,7 +11201,6 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_readme_ne_cite_que_des_constantes_reelles,
            test_panne_serveur_nest_pas_une_source_cassee,
            test_les_workflows_epinglent_leurs_dependances,
-           test_envoi_push_reel_testable,
            test_aucun_mot_cle_nen_contient_un_autre,
            test_variantes_du_nom_dans_les_requetes_google_news,
            test_panneau_parametres_intact,
@@ -11750,7 +11224,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_plancher_refuse_ce_qui_serait_elague,
            test_lecteurs_de_liaison_mutualises,
            test_epoque_unix_nest_pas_une_date,
-           test_le_recap_se_tait_apres_la_sortie,
+           test_le_message_ne_se_tait_pas_apres_la_sortie,
            test_les_sources_de_lapres_sortie,
            test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien,
            test_lassistance_rockstar_est_une_source,
