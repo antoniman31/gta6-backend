@@ -8168,11 +8168,16 @@ def test_variantes_du_nom_dans_les_requetes_google_news():
     # élargirait pas, ça les rétrécirait — on perdrait les articles du
     # Newswire qui ne nomment pas le jeu dans leur titre.
     #
-    # rockstar-support a rejoint les deux le 20/10/2026, pour la même
-    # raison et sur un sous-domaine : tout ce que rend
-    # `site:support.rockstargames.com` vient de Rockstar. Les notes de
-    # patch s'intituleront « Title Update 1.02 » bien plus souvent que
-    # « GTA 6 », et c'est précisément elles qu'on veut.
+    # rockstar-support a rejoint les deux le 20/10/2026 : sa REQUÊTE Google
+    # News n'a pas de filtre de jeu (tout ce que rend
+    # `site:support.rockstargames.com` vient de Rockstar). ERREUR À MOI,
+    # corrigée le 03/11/2026 : j'avais écrit que « Title Update 1.02 »
+    # passerait. Faux : le filtre de TITRE des sources officielles, lui,
+    # exige un nom de jeu, et ce test ne regardait que la requête. Mesuré
+    # avec la vraie `passe_le_filtre` : « Title Update 1.02 Notes » et
+    # « GTAV Title Update 1.73 Notes » sont jetés, « GTAVI Title Update
+    # 1.01 Notes » passe. C'est voulu pour GTA V (un titre officiel part en
+    # notification) ; test_lassistance_rockstar_est_une_source le fixe.
     SANS_FILTRE = {"rockstar-en", "rockstar-fr", "rockstar-support"}
 
     gnews = [f for f in fetch_feeds.FEEDS if "news.google.com" in f["url"]]
@@ -10752,6 +10757,24 @@ def test_lassistance_rockstar_est_une_source():
           "sera pas vide" % len(assistance))
     check(all(i.get("official") for i in assistance),
           "et ils sont tous marqués officiels, le domaine suffit à le dire")
+
+    # LE FILTRE DE TITRE, rejoué avec la vraie fonction (03/11/2026). Un
+    # titre officiel déclenche une notification : « service status » passe,
+    # les notes de patch de GTA V ne doivent PAS passer.
+    attendus = [
+        ("Rockstar Games Service Status", True),
+        ("Grand Theft Auto VI Title Update 1.01 Notes", True),
+        ("GTAVI Title Update 1.01 Notes", True),
+        ("GTAV Title Update 1.73 Notes", False),
+        ("Title Update 1.02 Notes", False),
+        ("Red Dead Online Update Notes", False),
+    ]
+    ecarts = ["%s -> %s" % (t_, fetch_feeds.passe_le_filtre(src, t_, ""))
+              for t_, voulu in attendus
+              if fetch_feeds.passe_le_filtre(src, t_, "") != voulu]
+    check(not ecarts,
+          "le filtre de titre : « service status » passe, GTA V reste refusé%s"
+          % ("" if not ecarts else " — " + " | ".join(ecarts)))
 
 
 def _valide_agenda(data, aujourdhui=None):

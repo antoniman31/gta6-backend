@@ -632,7 +632,12 @@ FEEDS = [
     #
     # `official: True` durcit le filtre sur le TITRE seul : les cinq
     # existants portent tous « Grand Theft Auto VI », donc ils passent.
-    {"id": "rockstar-support", "name": "Rockstar Assistance (officiel)", "url": "https://news.google.com/rss/search?q=site:support.rockstargames.com&hl=en&gl=US&ceid=US:en", "official": True, "max_entrees": 100, "garder_les_archives": True, "lang": "en"},
+    {"id": "rockstar-support", "name": "Rockstar Assistance (officiel)", "url": "https://news.google.com/rss/search?q=site:support.rockstargames.com&hl=en&gl=US&ceid=US:en", "official": True, "max_entrees": 100, "garder_les_archives": True, "lang": "en",
+     # 03/11/2026 : une page « Rockstar Games Service Status » ne nomme aucun jeu et
+     # était jetée par le filtre de titre. « service status » SEUL : « title update »
+     # laisserait passer les notes de GTA V (« GTAV Title Update 1.73 Notes »), et un
+     # titre officiel déclenche une notification Discord.
+     "official_keywords_extra": ["service status"]},
     {"id": "gta6-online-en", "name": "Google News (GTA Online 6)", "url": "https://news.google.com/rss/search?q=(%22GTA+6%22+OR+%22GTA6%22+OR+%22GTA+VI%22+OR+%22GTAVI%22+OR+%22Grand+Theft+Auto+6%22+OR+%22Grand+Theft+Auto+VI%22)+(online+OR+multiplayer+OR+servers+OR+%22game+mode%22)&hl=en&gl=US&ceid=US:en", "official": False, "lang": "en", "max_entrees": 100},
 ]
 
