@@ -1945,3 +1945,11 @@ abandonné** (le bilan reste dans le salon principal).
   jour, le journal du robot dit « nouvel essai sans les boutons ».
 - Reste de la spec : tableau du jour modifié sur place (la modification est vérifiée, reste à persister l'identifiant
   du message), bilan du soir de 22 h.
+
+### Lot 7 de la notification Discord : à regarder au premier envoi réel (03/11/2026)
+
+- Au premier passage de jour après la fusion, un message « 📊 JJ/MM · N articles » est créé (une notification), et un
+  commit « Tableau du jour Discord : message du jour » ajoute `tableau-discord.json` à la racine. Les passages suivants
+  modifient le message sans nouveau commit. Si un second message apparaît dans la journée, lire le journal de l'étape
+  « Tableau du jour Discord » (« modifié », « créé », « échec transitoire »).
+- Reste de la spec : le bilan du soir de 22 h (et la section « Cette semaine » le dimanche).

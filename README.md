@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2185
+qui permet de tester tout le pipeline sans sortir de la machine. **2229
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10098,4 +10098,44 @@ repli essayé après un refus et pas sans repli, seconde ligne en `-#`, données
 **Sept mutations rejouées, sept détectées** : bouton absent, repli non transmis ou jamais essayé, paramètre
 `with_components` absent, lien texte en plus du bouton, italique à la place du gris, données d'exemple avec
 microsecondes.
+
+### Lot 7 de la notification Discord : le tableau du jour, un message modifié sur place — 03/11/2026
+
+Septième lot de `tasks/spec-discord-notification.md` (§6). Un message « 📊 02/11 · 141 articles » est **créé au premier
+passage de 5 h** (sa création notifie, une fois par jour), puis **modifié à chaque passage** : une modification ne
+notifie pas, et le message affiche « (modifié) ». La modification avait été **vérifiée par l'envoi TEST** de ce jour.
+
+**Le contenu**, sur le fil publié (`tableau_discord.py` lit le `docs/feed.json` qui vient d'être poussé) :
+le total du jour de Paris, 🇫🇷/🇬🇧, le nombre de **médias distincts** (domaine du lien, comme la mesure de l'actu majeure),
+les annonces officielles du jour, le dernier article avec « il y a N minutes » (balise vivante) et le compte à rebours.
+Mesuré en rejouant le code sur le fil réel pour le 02/11 à 20 h : 141 articles, 44 FR et 97 EN, 92 sites distincts.
+Le jour est borné à **minuit de Paris** : 25 h le 25/10/2026 (retour à l'heure d'hiver), 23 h le 29/03/2026, et un
+article daté de plus de cinq minutes dans le futur n'est pas compté.
+
+**Où vit l'identifiant du message.** La spec le rangeait dans `feed.json`, mais le message est créé APRÈS la publication
+(l'étape Discord suit le push, pour que les liens soient en ligne) : le robot ne peut donc pas connaître l'identifiant
+avant de publier. Il vit dans **`tableau-discord.json`**, un fichier de la racine (un jour et un nombre, rien de secret),
+que l'étape « Retenir le tableau du jour » commite **seulement quand il change** : une fois par jour. Cette étape ne
+commite que ce fichier, ne voit aucun secret et n'est jamais bloquante ; la CI l'ignore (`paths-ignore`). Écart assumé avec
+la spec, donc.
+
+**Les pannes.** Message supprimé (404) : le robot en recrée un. Panne passagère (5xx, 429, réseau) à la modification :
+**aucun second message** (il dupliquerait le tableau et sonnerait), le passage suivant réessaie. Création refusée : rien
+n'est retenu, la réponse de Discord est dans le journal, jamais le lien d'envoi. L'identifiant n'est retenu que s'il est
+**un nombre** : un jeton ou une adresse est refusé à l'écriture.
+
+**La nuit** : rien n'est envoyé ni retenu ; le tableau du jour naît à 5 h. Il continue après la sortie.
+
+**Contrôles** (`test_tableau_du_jour`, 44 vérifications) : bornes du jour de Paris des deux côtés de minuit et aux deux
+changements d'heure, langues, médias distincts, tolérance du futur, pluriels, état illisible ou incohérent, refus d'un
+jeton, modification ou création selon le jour, 404, 5xx, 429, création refusée, journal sans le lien, passages complets par
+`main()` (création, modification, nuit, sans lien, erreur imprévue), câblage du workflow. J'ai aussi dû limiter le contrôle
+des `git add` du robot à l'étape de publication, que la nouvelle étape faussait.
+
+**Treize mutations rejouées, treize détectées** : toujours recréer, toute erreur qui recrée, panne passagère qui
+recrée, `?wait=true` absent, identifiant non validé, tolérance du futur retirée, médias comptés par lien au lieu du
+site, la nuit aussi, exception non rattrapée, dernier article = le plus ancien, jour borné en UTC, `git add -A`,
+étape de commit bloquante. **Une mutation passait inaperçue** : mon jeu de test écartait l'un des deux liens du même
+site (il était dans le futur), donc « 92 sites » et « 92 liens » ne se distinguaient pas. J'ai ajouté un article du même
+site dans la journée, et elle est maintenant détectée.
 

@@ -1717,6 +1717,215 @@ def test_envoi_discord_de_test():
             os.environ["DISCORD_WEBHOOK_URL"] = ancien
 
 
+def test_tableau_du_jour():
+    """Le tableau du jour : un message créé une fois par jour, puis modifié (lot 7, 03/11/2026)."""
+    print("\n[tableau] un message créé une fois par jour, modifié à chaque passage")
+    import io, contextlib, json as _json, os as _os, re, types
+    import discord_notify, tableau_discord as td
+
+    # ---- les statistiques du jour ----
+    maintenant = datetime(2026, 11, 2, 19, 0, tzinfo=timezone.utc)      # 20:00 à Paris
+    def it(date, lang="en", official=False, lien="https://a.example/x", titre="Titre"):
+        return {"title": titre, "link": lien, "date": date, "lang": lang, "official": official, "source": "S"}
+    items = [
+        it("2026-11-01T23:00:00+00:00", "fr", lien="https://www.ign.com/a"),                   # 00:00 Paris : dedans
+        it("2026-11-01T22:59:59+00:00", "fr", lien="https://b.example/hier"),                  # la veille à 23:59:59
+        it("2026-11-02T22:59:59+00:00", "en", lien="https://sea.ign.com/b"),                   # dans le futur proche : écarté
+        it("2026-11-02T18:00:00+00:00", "en", lien="https://c.example/c"),
+        it("2026-11-02T18:10:00+00:00", "en", lien="https://sea.ign.com/b2"),                  # même site qu'un autre : un seul média
+        it("2026-11-02T18:30:00+00:00", "fr", official=True, lien="https://www.rockstargames.com/newswire/article/z/x", titre="Dernier titre - Média"),
+        it("2026-11-02T19:03:00+00:00", "en", lien="https://d.example/d"),                     # 3 min dans le futur : toléré
+        it("2026-11-02T19:10:00+00:00", "en", lien="https://e.example/e"),                     # 10 min dans le futur : écarté
+        it("2026-11-03T00:30:00+00:00", "en", lien="https://f.example/f"),                     # demain
+        {"title": "sans date", "link": "https://g.example/g", "lang": "en"},
+        "pas un article", None,
+    ]
+    st = td.stats_du_jour(items, maintenant)
+    check(st["jour"] == "2026-11-02" and st["jj_mm"] == "02/11", "le jour est celui de Paris : %s" % st["jour"])
+    check(st["total"] == 5 and st["fr"] == 2 and st["en"] == 3,
+          "total et langues : minuit de Paris inclus, la veille à 23:59:59 exclue, futur au-delà de 5 min exclu (%s/%s/%s)"
+          % (st["total"], st["fr"], st["en"]))
+    check(st["medias"] == 4 and st["officiels"] == 1, "médias DISTINCTS par site du lien (www.ign.com et sea.ign.com ne comptent qu'une fois) : %s" % st["medias"])
+    check(st["dernier"][1]["link"] == "https://d.example/d", "le dernier article est le plus récent des articles comptés")
+    check(td.stats_du_jour([], maintenant)["total"] == 0 and td.stats_du_jour(None, maintenant)["dernier"] is None,
+          "un fil vide ne plante pas")
+    debut, fin = td.bornes_du_jour(datetime(2026, 10, 25, 12, 0, tzinfo=timezone.utc))
+    check(fin - debut == timedelta(hours=25), "le jour du retour à l'heure d'hiver (25/10/2026) dure 25 h : %s" % (fin - debut))
+    debut, fin = td.bornes_du_jour(datetime(2026, 3, 29, 12, 0, tzinfo=timezone.utc))
+    check(fin - debut == timedelta(hours=23), "et celui du passage à l'heure d'été (29/03/2026) 23 h")
+
+    # ---- le message ----
+    m = td.message_tableau(st, maintenant)
+    carte = m["embeds"][0]
+    check(carte["title"] == "📊 02/11 · 5 articles" and carte["color"] == td.COULEUR_TABLEAU and m["content"] == "📊 Tableau du jour — 02/11",
+          "titre, couleur verte et ligne d'aperçu (%s)" % carte["title"])
+    check("🇫🇷 2 · 🇬🇧 3 · 4 médias" in carte["description"] and "⭐ 1 annonce officielle Rockstar" in carte["description"],
+          "langues, médias et annonces officielles du jour")
+    ts = int(st["dernier"][0].timestamp())
+    check(f"Dernier : [Titre](<https://d.example/d>) — <t:{ts}:R>" in carte["description"],
+          "le dernier article porte une balise de temps vivante (« il y a N minutes »)")
+    check(carte["description"].rstrip().endswith(f"<t:{int(feed_store.SORTIE_GTA6.timestamp())}:R>"), "et le compte à rebours termine la carte")
+    check("image" not in carte and "thumbnail" not in carte and len(carte["title"]) <= 256 and len(carte["description"]) <= 4096,
+          "aucune image, dans les limites de Discord")
+    un = td.message_tableau(td.stats_du_jour([items[0]], maintenant), maintenant)["embeds"][0]
+    check(un["title"] == "📊 02/11 · 1 article" and "1 média" in un["description"] and "médias" not in un["description"],
+          "les pluriels : « 1 article », « 1 média »")
+    zero = td.message_tableau(td.stats_du_jour([], maintenant), maintenant)["embeds"][0]
+    check(zero["title"] == "📊 02/11 · 0 article" and "Rien de neuf" in zero["description"] and "Dernier" not in zero["description"],
+          "sans article : une phrase honnête, pas de « Dernier »")
+
+    # ---- l'état retenu ----
+    dossier = tempfile.mkdtemp()
+    chemin = _os.path.join(dossier, "tableau.json")
+    check(td.etat_lu(chemin) == {}, "pas de fichier : état vide")
+    for brut in ("{tronqué", "[]", '{"jour": "2026-11-02"}', '{"jour": "2026-11-02", "id": "abc"}',
+                 '{"jour": "demain", "id": "123456789012345678"}', '{"jour": "2026-11-02", "id": 123456789012345678}'):
+        open(chemin, "w", encoding="utf-8").write(brut)
+        check(td.etat_lu(chemin) == {}, "état illisible ou incohérent → vide : %s" % brut[:34])
+    td.etat_ecrit({"jour": "2026-11-02", "id": "123456789012345678"}, chemin)
+    check(td.etat_lu(chemin) == {"jour": "2026-11-02", "id": "123456789012345678"}
+          and set(_json.load(open(chemin))) == {"jour", "id"}, "aller-retour : un jour et un identifiant, rien d'autre")
+    try:
+        td.etat_ecrit({"jour": "2026-11-02", "id": "https://d.test/api/webhooks/1/JETON"}, chemin)
+        refuse = False
+    except ValueError:
+        refuse = True
+    check(refuse and "JETON" not in open(chemin, encoding="utf-8").read(),
+          "un jeton ou une adresse n'est JAMAIS écrit à la place de l'identifiant")
+
+    # ---- créer ou modifier ----
+    jeton = "JETON_SECRET_abc"
+    webhook = "https://d.test/api/webhooks/42/" + jeton
+    appels = []
+    def reponse(code, corps=None):
+        return types.SimpleNamespace(status_code=code, text=_json.dumps(corps) if corps is not None else "",
+                                     json=lambda: corps if corps is not None else {})
+    def joue(etat, patch=(200, None), post=(200, {"id": "999888777666555444"}), plante=False):
+        del appels[:]
+        def pat(url, json=None, timeout=0):
+            appels.append(("PATCH", url, None, json))
+            if plante:
+                raise RuntimeError("connexion refusée vers " + url)
+            return reponse(patch[0], patch[1])
+        def poste(url, params=None, json=None, timeout=0):
+            appels.append(("POST", url, params, json))
+            if plante:
+                raise RuntimeError("connexion refusée vers " + url)
+            return reponse(post[0], post[1])
+        vrais = (td.requests.patch, td.requests.post)
+        td.requests.patch, td.requests.post = pat, poste
+        tampon = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(tampon):
+                r = td.met_a_jour(webhook, etat, st, maintenant)
+        finally:
+            td.requests.patch, td.requests.post = vrais
+        return r, tampon.getvalue()
+
+    aujourdhui = {"jour": "2026-11-02", "id": "111222333444555666"}
+    (etat, action), _ = joue(aujourdhui)
+    check(action == "modifié" and etat == aujourdhui and [a[0] for a in appels] == ["PATCH"]
+          and appels[0][1] == webhook + "/messages/111222333444555666",
+          "même jour : le message est MODIFIÉ, aucun nouveau message, état inchangé")
+    check("username" not in appels[0][3] and appels[0][3]["embeds"][0]["title"] == "📊 02/11 · 5 articles",
+          "la modification porte la carte à jour")
+    (etat, action), _ = joue({"jour": "2026-11-01", "id": "111222333444555666"})
+    check(action == "créé" and etat == {"jour": "2026-11-02", "id": "999888777666555444"} and [a[0] for a in appels] == ["POST"]
+          and appels[0][2] == {"wait": "true"} and appels[0][3]["username"] == "📊 GTA6_WATCH",
+          "un nouveau jour : un NOUVEAU message, avec ?wait=true pour recevoir son identifiant")
+    (etat, action), _ = joue({})
+    check(action == "créé" and etat["id"] == "999888777666555444", "sans état : création")
+    (etat, action), _ = joue(aujourdhui, patch=(404, {"code": 10008, "message": "Unknown Message"}))
+    check(action == "créé" and [a[0] for a in appels] == ["PATCH", "POST"] and etat["id"] == "999888777666555444",
+          "message supprimé (404) : le robot en recrée un")
+    (etat, action), _ = joue(aujourdhui, patch=(500, None))
+    check(action == "échec transitoire" and etat == aujourdhui and [a[0] for a in appels] == ["PATCH"],
+          "panne passagère à la modification : PAS de second message (il dupliquerait et sonnerait)")
+    (etat, action), _ = joue(aujourdhui, patch=(429, None))
+    check(action == "échec transitoire" and [a[0] for a in appels] == ["PATCH"], "limite de débit (429) : idem")
+    (etat, action), sortie = joue({}, post=(400, {"code": 50035, "message": "Invalid Form Body"}))
+    check(action == "échec" and etat == {} and "50035" in sortie, "création refusée : état inchangé, réponse de Discord dans le journal")
+    (etat, action), sortie = joue({}, post=(200, {"id": "https://d.test/JETON"}))
+    check(action == "échec" and etat == {}, "une réponse sans identifiant numérique n'est pas retenue")
+    (etat, action), sortie = joue(aujourdhui, plante=True)
+    check(action == "échec transitoire" and jeton not in sortie and "connexion refusée" in sortie,
+          "panne réseau dont le texte contient le lien : le journal ne l'écrit pas")
+    (etat, action), sortie = joue({}, plante=True)
+    check(action == "échec" and jeton not in sortie, "idem à la création")
+
+    # ---- main : bout en bout ----
+    def passage(nuit=False, webhook_present=True, feed=None, plante_met_a_jour=False, etat_fichier=None):
+        ancien = {k: _os.environ.get(k) for k in ("DISCORD_WEBHOOK_URL", "SEULEMENT_OFFICIELS", "TABLEAU_ETAT")}
+        chemin_etat = _os.path.join(dossier, "etat-main.json")
+        if etat_fichier is None:
+            if _os.path.exists(chemin_etat):
+                _os.remove(chemin_etat)
+        else:
+            td.etat_ecrit(etat_fichier, chemin_etat)
+        _os.environ["TABLEAU_ETAT"] = chemin_etat
+        _os.environ["SEULEMENT_OFFICIELS"] = "1" if nuit else "0"
+        if webhook_present:
+            _os.environ["DISCORD_WEBHOOK_URL"] = webhook
+        else:
+            _os.environ.pop("DISCORD_WEBHOOK_URL", None)
+        maintenant_reel = datetime.now(timezone.utc)
+        faux_fil = feed if feed is not None else [it((maintenant_reel - timedelta(minutes=10)).replace(microsecond=0).isoformat(), "fr")]
+        vrais = (feed_store.load_feed, td.met_a_jour)
+        feed_store.load_feed = lambda *a, **k: {"items": faux_fil}
+        if plante_met_a_jour:
+            def casse(*a, **k):
+                raise RuntimeError("explosion " + webhook)
+            td.met_a_jour = casse
+        del appels[:]
+        tampon = io.StringIO()
+        vrais_req = (td.requests.patch, td.requests.post)
+        td.requests.patch = lambda url, json=None, timeout=0: (appels.append(("PATCH", url)), reponse(200))[1]
+        td.requests.post = lambda url, params=None, json=None, timeout=0: (appels.append(("POST", url)), reponse(200, {"id": "555666777888999000"}))[1]
+        try:
+            with contextlib.redirect_stdout(tampon):
+                code = td.main()
+        finally:
+            feed_store.load_feed, td.met_a_jour = vrais
+            td.requests.patch, td.requests.post = vrais_req
+            for k, v in ancien.items():
+                if v is None:
+                    _os.environ.pop(k, None)
+                else:
+                    _os.environ[k] = v
+        return code, tampon.getvalue(), td.etat_lu(chemin_etat)
+
+    code, sortie, etat = passage()
+    check(code == 0 and [a[0] for a in appels] == ["POST"] and etat.get("id") == "555666777888999000",
+          "premier passage du jour : le message est créé et son identifiant retenu dans le fichier")
+    jour_reel = jour_reel = td.jour_paris(datetime.now(timezone.utc)).isoformat()
+    code, sortie, etat = passage(etat_fichier={"jour": jour_reel, "id": "555666777888999000"})
+    check(code == 0 and [a[0] for a in appels] == ["PATCH"] and etat["id"] == "555666777888999000",
+          "passage suivant : une modification, le fichier ne bouge pas")
+    code, sortie, etat = passage(nuit=True)
+    check(code == 0 and appels == [] and etat == {}, "la nuit : rien n'est envoyé ni retenu")
+    code, sortie, etat = passage(webhook_present=False)
+    check(code == 0 and appels == [], "sans lien d'envoi : rien, sans échec")
+    code, sortie, etat = passage(plante_met_a_jour=True)
+    check(code == 0 and jeton not in sortie and "ÉCHEC NON PRÉVU" in sortie,
+          "une erreur imprévue ne fait JAMAIS échouer l'étape et n'écrit pas le lien")
+
+    # ---- le câblage du workflow ----
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    i = wf.index("- name: Tableau du jour Discord")
+    bloc = wf[i:wf.index("- name: Retenir le tableau du jour")]
+    suite = wf[wf.index("- name: Retenir le tableau du jour"):wf.index("- name: Notifier par push")]
+    check(wf.index("- name: Notifier Discord") < i < wf.index("- name: Retenir le tableau du jour"),
+          "le tableau vient APRÈS la publication et le message du passage")
+    check("python tableau_discord.py" in bloc and "DISCORD_WEBHOOK_URL" in bloc and "SEULEMENT_OFFICIELS" in bloc,
+          "il reçoit le lien d'envoi et la pause nocturne")
+    check("git add tableau-discord.json" in suite and "git add ." not in suite and "git add -A" not in suite
+          and "continue-on-error: true" in suite and "secrets." not in suite,
+          "l'étape suivante ne commite QUE tableau-discord.json, n'est jamais bloquante et ne voit aucun secret")
+    check("git diff --quiet --cached" in suite, "et ne commite que si l'identifiant a changé")
+    ci = open(".github/workflows/checks.yml", encoding="utf-8").read().split("paths-ignore:")[1].split("permissions:")[0]
+    check("tableau-discord.json" in ci, "la CI ignore ce fichier, comme tout ce que le robot pousse")
+
+
 def test_push_empreinte_abonnement():
     """Reconnaître un abonnement dans le journal sans jamais écrire son endpoint."""
     print("\n[push] l'empreinte d'un abonnement : reconnaissable, jamais réversible")
@@ -10036,7 +10245,10 @@ def test_ce_que_le_robot_publie_est_bien_commite():
     # une commande : le test trouvait trois `git add` au lieu de deux et
     # annonçait le mauvais bloc sous le mauvais nom. Un test qui compte des
     # commandes ne doit pas compter des phrases.
-    adds = re.findall(r"^\s*git add ([^\n]+)", wf, re.M)
+    # Seule l'étape « Publier le résultat » est visée : l'étape « Retenir le
+    # tableau du jour » (03/11/2026) commite à part son propre fichier, et son
+    # `git add` n'a rien à faire dans cette liste.
+    adds = re.findall(r"^\s*git add ([^\n]+)", wf.split("- name: Attendre que la page")[0], re.M)
     check(len(adds) >= 2,
           "le workflow du robot a bien ses deux `git add` (%d trouvés)" % len(adds))
     # enumerate, et pas adds.index(ligne) : les deux lignes sont le MÊME
@@ -11253,6 +11465,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_detail_des_officiels,
            test_section_rockstarmag,
            test_envoi_discord_de_test,
+           test_tableau_du_jour,
            test_journal_push_sans_secret,
            test_push_masquage_endpoint,
            test_push_survit_a_un_telephone_verrouille,
