@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2156
+qui permet de tester tout le pipeline sans sortir de la machine. **2178
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10039,4 +10039,32 @@ YouTube, extrait non nettoyé, extrait sur chaque article, doublons avec l'actu 
 ordre de coupe, RockstarMag seul qui se tait, fusion non bornée ou sans le distant, fichier non déposé. **Une
 mutation passait inaperçue** (un domaine finissant par `tube.com` valait YouTube) : j'ai ajouté `notyoutube.com` au
 contrôle, et elle est maintenant détectée.
+
+### Les messages de TEST Discord : un workflow à lancer à la main — 03/11/2026
+
+Antoni, le 29/10 : « Envoi les notif de test ». La spec veut vérifier avec le **vrai lien d'envoi** ce que Discord
+accepte avant de coder le tableau du jour (message modifié sur place) et les boutons-liens. Le workflow
+`.github/workflows/test-discord.yml` (`workflow_dispatch` seulement, `contents: read`, un seul secret :
+`DISCORD_WEBHOOK_URL`) lance `test_discord.py`, qui envoie **sept messages au plus**, chacun marqué
+« TEST · » dans le nom de l'expéditeur et « 🧪 TEST — » dans le texte :
+
+- **A. Boutons-liens** : deux boutons de style « lien » (pas d'identifiant interactif), d'abord avec
+  `with_components=true`, puis sans le paramètre si Discord refuse.
+- **B. Modification** : un message avec `?wait=true`, puis une requête PATCH sur son identifiant. On doit voir **un seul**
+  message, à sa version 2, sans nouvelle notification.
+- **C. Balise de temps** : « Sortie dans N jours », la date complète, et « écrit il y a quelques secondes ».
+- **D. Les vrais messages du robot** (articles fictifs, construits par le vrai code) : le message de jour complet
+  (officiel en paire FR/EN plus boutique, actu majeure, RockstarMag avec 🎬 et extrait, « Les autres »), le message de
+  nuit (section ⭐ seule) et un message ordinaire d'après la sortie.
+- **E. Style gris `-#`** dans une carte (la seconde ligne des annonces est en italique faute de savoir).
+
+Le journal, public, ne reçoit que **ce que Discord a répondu** (code HTTP, code d'erreur, message), jamais le lien. Le
+programme **échoue quand aucun message n'est accepté** (même leçon que `test-push.yml`) ; une fonction refusée est un
+résultat, pas une panne.
+
+**Contrôles** (`test_envoi_discord_de_test`, 18 vérifications) : déclenchement manuel et lecture seule, un seul
+secret, marquage de **chaque** envoi, limites de Discord, adresse de modification, boutons de style lien, code de
+sortie dans les trois cas (tout accepté, tout refusé, panne réseau), journal sans le lien même quand l'exception le
+contient. **Sept mutations rejouées, sept détectées** : marquage retiré, lien écrit dans le journal, sortie toujours
+verte, boutons non-liens, mauvaise adresse de modification, déclenchement planifié, droit d'écriture.
 

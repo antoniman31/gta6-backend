@@ -1,0 +1,37 @@
+# Envoyer quelques messages de TEST dans le salon Discord, à la demande.
+#
+# Demandé par Antoni le 29/10/2026 (« Envoi les notif de test ») pour vérifier,
+# avec le VRAI lien d'envoi, ce que Discord accepte : boutons-liens, modification
+# d'un message, balise de temps relative, style gris, et le rendu des messages
+# à sections sur son téléphone. Voir tasks/spec-discord-notification.md.
+#
+# Workflow SÉPARÉ du robot, déclenché à la main seulement : il ne publie rien et
+# n'écrit rien dans le dépôt. Chaque message porte « TEST » dans le nom de
+# l'expéditeur et dans son texte.
+#
+# Le lien d'envoi est un secret : le programme n'écrit dans le journal, public,
+# que ce que Discord a répondu. Il ÉCHOUE quand aucun message n'est accepté.
+name: Tester les notifications Discord
+
+on:
+  workflow_dispatch:
+
+# Lecture seule : ce workflow n'écrit rien, nulle part.
+permissions:
+  contents: read
+
+jobs:
+  test-discord:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+
+      - name: Envoyer les messages de test
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python test_discord.py
