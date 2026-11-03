@@ -1077,7 +1077,8 @@ def test_message_a_sections():
 
     envoyes = []
     vrai_envoi, vrai_url = discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL
-    discord_notify.send_discord_with_retry = lambda charge, label, *a, **k: envoyes.append(charge) or True
+    repli_vus = []
+    discord_notify.send_discord_with_retry = lambda charge, label, *a, **k: (envoyes.append(charge), repli_vus.append(k.get("repli"))) and True
     discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
     base = datetime(2026, 11, 2, 12, 0, tzinfo=timezone.utc)
 
@@ -1099,7 +1100,7 @@ def test_message_a_sections():
     try:
         m = envoie(officiels=[art(1, off=True)], autres=3, majeurs=1, totaux=(5, 1, 4))
         check(len(envoyes) == 1, "un seul message par passage")
-        check(set(m) == {"username", "content", "embeds"}, "forme : expéditeur, aperçu, cartes (%s)" % sorted(m))
+        check(set(m) == {"username", "content", "embeds", "components"}, "forme : expéditeur, aperçu, cartes, bouton (%s)" % sorted(m))
         titres = [e["title"] for e in m["embeds"]]
         check(titres == ["⭐ Officiel · 1", "🚨 Actu majeure · 1", "🎮 Les autres · 3"],
               "trois sections dans l'ordre d'importance, chacune avec son total (%s)" % titres)
@@ -1158,8 +1159,17 @@ def test_message_a_sections():
         check(f"⏳ Sortie {balise}" in avant and "Sorti" not in avant.replace("Sortie", ""),
               "avant la sortie : « ⏳ Sortie » et une balise de temps (pas un nombre figé)")
         check(f"Sorti {balise}" in apres and "⏳" not in apres, "après : « Sorti » avec la même balise")
-        check(avant.rstrip().endswith(f"[Ouvrir GTA6_WATCH]({discord_notify.SITE_URL})"),
-              "le lien vers l'app termine le message")
+        check("Ouvrir GTA6_WATCH" not in avant and avant.rstrip().endswith(balise),
+              "le pied ne porte que le compte à rebours : le lien est un BOUTON")
+        m = envoie(autres=1, totaux=(1, 0, 1))
+        bouton = m["components"][0]["components"]
+        check(len(m["components"]) == 1 and len(bouton) == 1 and bouton[0]["type"] == 2 and bouton[0]["style"] == 5
+              and bouton[0]["url"] == discord_notify.SITE_URL and "custom_id" not in bouton[0],
+              "un bouton de style lien « Ouvrir GTA6_WATCH » sous le message")
+        repli = repli_vus[-1]
+        check(repli is not None and "components" not in repli and repli["content"] == m["content"]
+              and repli["embeds"][-1]["description"].rstrip().endswith(f"[Ouvrir GTA6_WATCH]({discord_notify.SITE_URL})"),
+              "le repli est le même message, sans bouton, avec le lien en texte")
 
         # Après la sortie, « Les autres » RESTE dans le message : Antoni ne veut
         # pas perdre les messages ordinaires (03/11/2026).
@@ -1172,8 +1182,9 @@ def test_message_a_sections():
 
         # Rien à citer : le message reste vrai (ligne d'aperçu + lien).
         m = envoie(totaux=(12, 0, 1), content="🎮 12 nouveaux articles GTA 6")
-        check(m["content"].startswith("🎮 12") and len(m["embeds"]) == 1 and "Ouvrir GTA6_WATCH" in m["embeds"][0]["description"],
-              "sans aperçu à citer, le message porte les comptes et le lien")
+        check(m["content"].startswith("🎮 12") and len(m["embeds"]) == 1 and "<t:" in m["embeds"][0]["description"]
+              and m["components"][0]["components"][0]["url"] == discord_notify.SITE_URL,
+              "sans aperçu à citer, le message porte les comptes, le compte à rebours et le bouton")
 
         # Le garde-fou des 6 000 caractères.
         long = "mot " * 80
@@ -1240,16 +1251,38 @@ def test_message_a_sections():
     # Envoi réel : un embed seul est enveloppé, un message complet part tel quel.
     vus = []
     vrai_post = discord_notify.requests.post
-    discord_notify.requests.post = lambda url, json=None, timeout=0: (vus.append(json), types.SimpleNamespace(status_code=204, text=""))[1]
+    parametres = []
+    discord_notify.requests.post = lambda url, json=None, params=None, timeout=0: (vus.append(json), parametres.append(params), types.SimpleNamespace(status_code=204, text=""))[2]
     discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
     try:
         discord_notify.send_discord_with_retry({"title": "t"}, "x")
         discord_notify.send_discord_with_retry({"username": "u", "content": "c", "embeds": [{"title": "t"}]}, "y")
+        discord_notify.send_discord_with_retry({"content": "b", "embeds": [], "components": discord_notify.boutons_app()}, "z")
     finally:
         discord_notify.requests.post = vrai_post
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
     check(vus[0] == {"embeds": [{"title": "t"}]} and vus[1].get("username") == "u" and vus[1].get("content") == "c",
           "un embed seul est enveloppé comme avant, un message complet part tel quel")
+    check(parametres == [None, None, {"with_components": "true"}],
+          "le paramètre with_components n'est demandé que pour un message à boutons (%s)" % parametres)
+
+    # Le repli : un refus définitif des boutons renvoie le même message sans eux.
+    reponses = [types.SimpleNamespace(status_code=400, text='{"code": 50035}'), types.SimpleNamespace(status_code=204, text="")]
+    envois = []
+    discord_notify.requests.post = lambda url, json=None, params=None, timeout=0: (envois.append((json, params)), reponses[len(envois) - 1])[1]
+    discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            ok = discord_notify.send_discord_with_retry({"content": "c", "embeds": [], "components": discord_notify.boutons_app()}, "bouton",
+                                                        repli={"content": "c", "embeds": [{"description": "lien texte"}]})
+            del envois[:]
+            reponses[:] = [types.SimpleNamespace(status_code=400, text="")]
+            sans_repli = discord_notify.send_discord_with_retry({"content": "c", "embeds": []}, "sans repli")
+    finally:
+        discord_notify.requests.post = vrai_post
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    check(ok is True, "après un refus des boutons, le message part quand même")
+    check(sans_repli is False and len(envois) == 1, "sans repli, un refus définitif reste un échec, sans nouvel essai")
 
     # Les compteurs du robot : le « + N » de l'actu majeure est juste.
     check(feed_store.compte_majeurs([art(1, sources=4), art(1, sources=4), art(2, off=True, sources=4), art(3), art(4, sources=3)]) == 2,
@@ -1374,10 +1407,10 @@ def test_detail_des_officiels():
           and haut.endswith("· [EN](<%s>)" % en["link"]),
           "première ligne : marqueur, titre français cliquable (média retiré), lien anglais : %s" % haut)
     ts = int(r[0]["instant"].timestamp())
-    check(bas == "*Newswire · <t:%d:R> · 12:50*" % ts,
-          "seconde ligne : type, balise de temps vivante, heure exacte (%s)" % bas)
+    check(bas == "-# Newswire · <t:%d:R> · 12:50" % ts,
+          "seconde ligne en petit texte gris : type, balise de temps vivante, heure exacte (%s)" % bas)
     sans = discord_notify.ligne_officiel(feed_store.officiels_du_message([premiere_vue], maintenant)[0])
-    check("<t:" not in sans and sans.endswith("*Officiel*"), "sans vraie date : le type seul, pas d'heure inventée")
+    check("<t:" not in sans and sans.endswith("\n-# Officiel"), "sans vraie date : le type seul, pas d'heure inventée")
     dur = discord_notify.ligne_officiel({"title": "GTA *VI* [teaser]", "link": "https://x.test/(a b)", "marqueur": "⭐",
                                          "libelle": "Officiel"})
     check("\\*VI\\*" in dur and "](<" not in dur, "Markdown échappé, lien impossible à écrire retiré")
@@ -1622,8 +1655,8 @@ def test_envoi_discord_de_test():
             if plante:
                 raise RuntimeError("connexion refusée vers " + url)
             return reponse(code_requete, {"id": "777"} if code_requete == 200 else {"code": 50035, "message": "Invalid Form Body"})
-        def poste(url, json=None, timeout=0):
-            vus.append(("POST", url, None, json))
+        def poste(url, json=None, params=None, timeout=0):
+            vus.append(("POST", url, params, json))
             if plante:
                 raise RuntimeError("connexion refusée vers " + url)
             return reponse(code_post)
@@ -1659,6 +1692,11 @@ def test_envoi_discord_de_test():
           "un message porte la balise de temps")
     check(any("-# " in e.get("description", "") for c in vus for e in ((c[3] or {}).get("embeds") or [])),
           "un message teste le style gris")
+    check(any("-# Newswire · <t:" in e.get("description", "") for c in vus for e in ((c[3] or {}).get("embeds") or [])),
+          "et les annonces d'exemple portent bien leur heure de publication (dates sans microsecondes)")
+    check(any((c[3] or {}).get("components") and (c[2] or {}).get("with_components") == "true"
+              for c in vus if c[0] == "POST"),
+          "le message du robot part avec ses boutons et le paramètre with_components")
     check(jeton not in sortie, "le journal n'écrit jamais le lien d'envoi")
 
     code, sortie = joue(400, 400)
@@ -5148,7 +5186,7 @@ def test_plafond_des_annonces_officielles():
     messages = []
     vrai_envoi = discord_notify.send_discord_with_retry
     vrai_url = discord_notify.DISCORD_WEBHOOK_URL
-    discord_notify.send_discord_with_retry = lambda charge, quoi="": (messages.append(charge), True)[1]
+    discord_notify.send_discord_with_retry = lambda charge, quoi="", repli=None: (messages.append(charge), True)[1]
     discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/hook"
     try:
         discord_notify.send_message(officiels, [], None, 0, feed_store.libelle_officiels(len(officiels)))
@@ -9757,7 +9795,7 @@ def test_rafale_officielle_du_jour_j():
     envois = []
     url, envoi = dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry
     dn.DISCORD_WEBHOOK_URL = "https://discord.test/webhook"
-    dn.send_discord_with_retry = lambda e, t, max_attempts=3: (envois.append((t, e)) or True)
+    dn.send_discord_with_retry = lambda e, t, max_attempts=3, repli=None: (envois.append((t, e)) or True)
     base = datetime.now(timezone.utc)
 
     def officiels(n):
@@ -9812,7 +9850,7 @@ def test_rafale_officielle_du_jour_j():
     envois.clear()
     url, envoi = dn.DISCORD_WEBHOOK_URL, dn.send_discord_with_retry
     dn.DISCORD_WEBHOOK_URL = "https://discord.test/webhook"
-    dn.send_discord_with_retry = lambda e, t, max_attempts=3: (envois.append((t, e)) or True)
+    dn.send_discord_with_retry = lambda e, t, max_attempts=3, repli=None: (envois.append((t, e)) or True)
     try:
         ordinaires = [{"title": "Dépêche %d" % k, "link": "https://m.test/%d" % k,
                        "source": "Média %d" % (k % 30), "official": False,

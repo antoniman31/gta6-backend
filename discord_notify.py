@@ -38,7 +38,7 @@ DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "")
 SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 
 
-def send_discord_with_retry(embed, title_for_log, max_attempts=3):
+def send_discord_with_retry(embed, title_for_log, max_attempts=3, repli=None):
     """Envoie un embed (ou un message complet) Discord avec nouvelle tentative en cas d'erreur
     temporaire (429 rate-limit ou 5xx serveur). Un 429 renvoie généralement
     un délai précis à respecter (Retry-After) — on l'utilise si présent,
@@ -48,9 +48,13 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3):
     # Un message complet (expéditeur, aperçu, plusieurs cartes) porte déjà sa
     # clé `embeds` ; un embed seul est enveloppé comme avant.
     charge = embed if "embeds" in embed else {"embeds": [embed]}
+    # Des boutons-liens demandent ce paramètre sur un lien d'envoi sans bot.
+    # Vérifié le 03/11/2026 par l'envoi TEST : deux boutons de style « lien »
+    # s'affichent et ouvrent leur adresse.
+    params = {"with_components": "true"} if charge.get("components") else None
     for attempt in range(1, max_attempts + 1):
         try:
-            resp = requests.post(DISCORD_WEBHOOK_URL, json=charge, timeout=10)
+            resp = requests.post(DISCORD_WEBHOOK_URL, json=charge, params=params, timeout=10)
             if resp.status_code in (200, 204):
                 return True
             if resp.status_code == 429:
@@ -63,8 +67,14 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3):
                 print(f"  [discord] erreur serveur {resp.status_code} (tentative {attempt}/{max_attempts}), attente {wait}s...")
                 time.sleep(wait)
                 continue
-            # Erreur définitive (4xx hors 429) : inutile de retenter.
+            # Erreur définitive (4xx hors 429) : inutile de retenter... sauf avec un
+            # repli. Si Discord refuse les boutons un jour, le message part sans
+            # eux, avec le lien en texte : un message sans bouton vaut mieux
+            # qu'un message perdu.
             print(f"  [discord] échec envoi ({resp.status_code}), non temporaire : {title_for_log[:50]}")
+            if repli is not None:
+                print("  [discord] nouvel essai sans les boutons, avec le lien en texte.")
+                return send_discord_with_retry(repli, title_for_log, max_attempts)
             return False
         except Exception as e:
             # Le message brut contiendrait l'URL du webhook — donc le secret
@@ -237,15 +247,26 @@ def nom_expediteur(avec_officiel, avec_majeure, avec_rockstarmag=False):
     return "🎮 GTA6_WATCH"
 
 
-def pied_du_message(maintenant=None):
-    """Le compte à rebours vivant et le lien vers l'app, en dernière ligne."""
+def pied_du_message(maintenant=None, avec_lien=False):
+    """Le compte à rebours vivant, en dernière ligne.
+
+    Le lien vers l'app est un BOUTON sous le message (boutons_app) ; le texte
+    « Ouvrir GTA6_WATCH » n'est écrit qu'avec `avec_lien`, pour le repli quand
+    Discord refuserait les boutons.
+    """
     maintenant = maintenant or datetime.now(timezone.utc)
     sortie = feed_store.SORTIE_GTA6
     if maintenant < sortie:
         decompte = f"⏳ Sortie {balise_temps(sortie)}"
     else:
         decompte = f"🎮 Sorti {balise_temps(sortie)}"
-    return f"{decompte} · [Ouvrir GTA6_WATCH]({SITE_URL})"
+    return f"{decompte} · [Ouvrir GTA6_WATCH]({SITE_URL})" if avec_lien else decompte
+
+
+def boutons_app():
+    """Un bouton-lien « Ouvrir GTA6_WATCH » sous le message (style 5 : lien)."""
+    return [{"type": 1, "components": [
+        {"type": 2, "style": 5, "label": "Ouvrir GTA6_WATCH", "url": SITE_URL}]}]
 
 
 def ligne_officiel(annonce):
@@ -272,7 +293,8 @@ def ligne_officiel(annonce):
     detail = [annonce.get("libelle") or "Officiel"]
     if annonce.get("instant"):
         detail += [balise_temps(annonce["instant"]), annonce.get("heure") or ""]
-    return ligne + "\n*" + " · ".join(d for d in detail if d) + "*"
+    # « -# » : petit texte gris, vérifié le 03/11/2026 sur le téléphone d'Antoni.
+    return ligne + "\n-# " + " · ".join(d for d in detail if d)
 
 
 def lignes_rockstarmag(articles):
@@ -416,28 +438,33 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None, 
     sections = [s for s in sections if s]
     if lignes_mag:
         content = (content + " · " if content else "") + f"📰 {len(mag)} RockstarMag"
-    pied = pied_du_message(maintenant)
-    if sections:
-        cartes, coupees = compose_message(sections, content, pied)
-    else:
-        # Rien à citer (récapitulatif du matin dont les aperçus manquent,
-        # lancement à la main) : le message n'en est pas moins vrai. La ligne
-        # d'aperçu donne les comptes, et une carte porte le pied — le lien
-        # vers l'app, qui était le corps d'avant.
-        cartes, coupees = [{"description": pied,
-                            "color": feed_store.couleur_compteur(maintenant)}], 0
-    charge = {
-        "username": nom_expediteur(bool(officiels),
-                                   any(s["nom"] == SECTION_MAJEURE for s in sections)
-                                   or (totaux is not None and totaux[2] >= feed_store.HOT_SOURCE_THRESHOLD),
-                                   bool(lignes_mag)),
-        "content": content[:2000],
-        "embeds": cartes,
-    }
+    nom = nom_expediteur(bool(officiels),
+                         any(s["nom"] == SECTION_MAJEURE for s in sections)
+                         or (totaux is not None and totaux[2] >= feed_store.HOT_SOURCE_THRESHOLD),
+                         bool(lignes_mag))
+
+    def construit(avec_lien):
+        """Le message, avec le lien en texte (repli) ou sans (le bouton le porte)."""
+        pied = pied_du_message(maintenant, avec_lien=avec_lien)
+        if sections:
+            cartes, coupees = compose_message(sections, content, pied)
+        else:
+            # Rien à citer (récapitulatif du matin dont les aperçus manquent,
+            # lancement à la main) : le message n'en est pas moins vrai. La
+            # ligne d'aperçu donne les comptes, et une carte porte le pied.
+            cartes, coupees = [{"description": pied,
+                                "color": feed_store.couleur_compteur(maintenant)}], 0
+        return {"username": nom, "content": content[:2000], "embeds": cartes}, coupees
+
+    charge, coupees = construit(avec_lien=False)
+    charge["components"] = boutons_app()
+    # Le repli : si Discord refusait les boutons, le même message part avec le
+    # lien en texte (send_discord_with_retry l'essaie après un refus définitif).
+    repli, _ = construit(avec_lien=True)
     detail = ", ".join(f"{s['entete']} {s['total']}" for s in sections) or "sans section"
     print(f"  [discord] envoi du message ({detail}"
           + (f", {coupees} ligne(s) coupée(s) pour tenir sous la limite" if coupees else "") + ")...")
-    return send_discord_with_retry(charge, f"message {detail}")
+    return send_discord_with_retry(charge, f"message {detail}", repli=repli)
 
 
 def send_jalons(jalons):

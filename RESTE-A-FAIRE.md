@@ -1938,3 +1938,10 @@ abandonné** (le bilan reste dans le salon principal).
   quelques secondes » s'affiche-t-il ? la ligne `-#` est-elle petite et grise ? les messages du robot sont-ils
   lisibles sur le téléphone (écran verrouillé compris) ?
 - Selon le résultat : tableau du jour modifié sur place ou repli en nouveau message, boutons-liens ou lien texte.
+
+### Lot 6 de la notification Discord : à regarder au premier envoi réel (03/11/2026)
+
+- Le message du robot porte un bouton « Ouvrir GTA6_WATCH » et plus de lien texte dans le pied. Si le bouton manque un
+  jour, le journal du robot dit « nouvel essai sans les boutons ».
+- Reste de la spec : tableau du jour modifié sur place (la modification est vérifiée, reste à persister l'identifiant
+  du message), bilan du soir de 22 h.

@@ -523,7 +523,7 @@ un rappel que la documentation d'un défaut doit mourir avec lui.
 
 `test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la
 récupération est injectable (paramètre `collecte` de `fetch_all_feeds`), ce
-qui permet de tester tout le pipeline sans sortir de la machine. **2178
+qui permet de tester tout le pipeline sans sortir de la machine. **2185
 vérifications** couvrant les dates (les trois formats présents dans
 l'historique, et le refus de l'époque Unix), le tri, le plafonnement
 adaptatif, le plancher de rétention et les familles qu'il épargne,
@@ -10067,4 +10067,35 @@ secret, marquage de **chaque** envoi, limites de Discord, adresse de modificatio
 sortie dans les trois cas (tout accepté, tout refusé, panne réseau), journal sans le lien même quand l'exception le
 contient. **Sept mutations rejouées, sept détectées** : marquage retiré, lien écrit dans le journal, sortie toujours
 verte, boutons non-liens, mauvaise adresse de modification, déclenchement planifié, droit d'écriture.
+
+### Lot 6 de la notification Discord : le bouton « Ouvrir GTA6_WATCH » et le petit texte gris — 03/11/2026
+
+L'envoi TEST du 03/11/2026 a répondu à ce que la spec ne savait pas, et Antoni a confirmé sur son téléphone :
+- **Boutons-liens : oui.** Deux boutons de style « lien » s'affichent sous le message et ouvrent leur adresse. Un lien
+  d'envoi sans bot les accepte avec `with_components=true`.
+- **Modification d'un message : oui.** Un seul message, marqué « (modifié) », à sa version 2, sans nouvelle notification.
+- **Balise de temps : oui.** « Sortie dans 16 jours » et « il y a 2 heures » se recalculent à l'affichage.
+- **Petit texte gris `-#` : oui**, la capture d'Antoni le montre en petit et gris. Je m'étais trompé en le croyant incertain
+  (ses réponses n'avaient coché ni l'un ni l'autre) : c'est la capture qui tranche.
+- **Lisibilité sur le téléphone, écran verrouillé compris : « oui, c'est bien ».**
+
+**Ce que ce lot change.** Le message à sections porte désormais un **bouton « Ouvrir GTA6_WATCH »** au lieu du lien texte
+dans le pied ; le pied ne garde que le compte à rebours vivant. **Repli** : si Discord refusait un jour les boutons
+(refus définitif, code 4xx), `send_discord_with_retry` renvoie le même message **sans bouton, avec le lien en texte**
+plutôt que de le perdre. Les annonces officielles passent leur seconde ligne (type, « il y a N minutes », heure) en
+`-# …`, petit texte gris, au lieu de l'italique. Les jalons, alertes de source et alertes de report ne changent pas.
+
+**Deux effets de l'envoi TEST, pas des défauts.** (1) La seconde ligne des annonces d'exemple n'avait pas de
+« il y a 12 minutes » : mes dates fictives portaient des microsecondes, que le code prend pour une date « première vue »
+et n'affiche pas (voir le lot 4). Les vraies dates n'en ont pas ; j'ai corrigé les données d'exemple. (2) « 🎮 Sorti dans
+16 jours » : j'avais simulé une date d'après la sortie, mais Discord calcule « dans / il y a » avec l'heure réelle ; après
+le 19/11 il dira « il y a N jours ».
+
+**Contrôles** : un bouton de style lien (sans identifiant interactif) sous le message, pied sans lien texte, repli sans
+bouton avec le lien texte et le même contenu, paramètre `with_components` demandé seulement pour un message à boutons,
+repli essayé après un refus et pas sans repli, seconde ligne en `-#`, données d'exemple sans microsecondes.
+
+**Sept mutations rejouées, sept détectées** : bouton absent, repli non transmis ou jamais essayé, paramètre
+`with_components` absent, lien texte en plus du bouton, italique à la place du gris, données d'exemple avec
+microsecondes.
 
