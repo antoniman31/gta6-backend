@@ -25,9 +25,10 @@ ajoutes doit être **prouvé capable d'échouer** : rejoue-le contre l'ancien co
 ## Règles qui ont déjà coûté un cycle
 
 - **`docs/sw.js`** : bumpe `CACHE_NAME` dès que `docs/index.html` change.
-- **README** : l'en-tête annonce « **N vérifications** » et `test_pipeline.py` refuse
-  qu'il soit faux. Le README et `RESTE-A-FAIRE.md` se mettent à jour à chaque lot,
-  avec la date au format `### Titre — jj/mm/aaaa`.
+- **README** : décrit l'**état actuel** et son en-tête annonce « **N vérifications** » (`test_pipeline.py`
+  refuse qu'il soit faux). L'**histoire** vit dans `JOURNAL.md` : chaque lot s'y ajoute en fin de fichier,
+  sous `### Titre — jj/mm/aaaa`. Le README ne change que si l'état change (architecture, règle, commande).
+  `RESTE-A-FAIRE.md` se met à jour à chaque lot.
 - **Sources** : n'en ajoute ni n'en retire **jamais** sans instruction explicite.
   `FEEDS` (Python) et `DEFAULT_FEEDS` (JS) doivent rester identiques
   (`check_sources_sync.py`), et aucun commentaire ne va *dans* le tableau JS.
@@ -78,7 +79,7 @@ ajoutes doit être **prouvé capable d'échouer** : rejoue-le contre l'ancien co
 - « **Propose, ne code pas** » : propose avec des chiffres mesurés et attends.
 - « **Pose tes questions** » : `AskUserQuestion`, des choix concrets, un recommandé.
 - Les commentaires du code disent *pourquoi*, avec la mesure et la date : garde cette
-  densité. Une erreur de ta part se dit, se corrige et s'écrit dans le README.
-- Où chercher : `README.md` (journal, cherche le titre d'un lot), `RESTE-A-FAIRE.md`
+  densité. Une erreur de ta part se dit, se corrige et s'écrit dans `JOURNAL.md`.
+- Où chercher : `README.md` (l'état), `JOURNAL.md` (l'histoire, cherche le titre d'un lot), `RESTE-A-FAIRE.md`
   (ce qui reste), `PLAN-journal-incidents.md`. Les tâches planifiées de novembre vivent
   dans le compte (`list_triggers`), pas dans le dépôt.

@@ -6692,7 +6692,7 @@ def test_les_constantes_citees_sont_les_bonnes():
                     valeurs.setdefault(nom, v)
 
     ecarts = []
-    for fichier in ("README.md", "RESTE-A-FAIRE.md"):
+    for fichier in ("README.md", "JOURNAL.md", "RESTE-A-FAIRE.md"):
         texte = open(fichier, encoding="utf-8").read()
         for m in re.finditer(r"`([A-Z][A-Z0-9_]{3,})\s*=\s*([\d\u202f ]+)`", texte):
             nom, dit = m.group(1), m.group(2).replace("\u202f", "").replace(" ", "")
@@ -6707,7 +6707,7 @@ def test_les_constantes_citees_sont_les_bonnes():
     # constante citée avec sa valeur, il passerait au vert sans rien lire.
     citees = sum(len(re.findall(r"`[A-Z][A-Z0-9_]{3,}\s*=\s*[\d\u202f ]+`",
                                 open(f, encoding="utf-8").read()))
-                 for f in ("README.md", "RESTE-A-FAIRE.md"))
+                 for f in ("README.md", "JOURNAL.md", "RESTE-A-FAIRE.md"))
     check(citees >= 5,
           "et il en lit vraiment (%d constantes citées avec leur valeur)" % citees)
 
@@ -7944,8 +7944,12 @@ def test_readme_ne_cite_que_des_constantes_reelles():
         "GITHUB_TOKEN", "RUNNER_TEMP",
     }
 
+    # Le README décrit l'état, JOURNAL.md garde l'histoire (déplacé le
+    # 04/11/2026) : les deux citent des constantes, les deux sont lus.
     readme = open("README.md", encoding="utf-8").read()
-    cites = set(re.findall(r"`([A-Z][A-Z0-9_]{2,})(?:\s*=\s*([^`]+))?`", readme))
+    journal = open("JOURNAL.md", encoding="utf-8").read()
+    cites = set(re.findall(r"`([A-Z][A-Z0-9_]{2,})(?:\s*=\s*([^`]+))?`", readme + "\n" + journal))
+    cites_readme = set(re.findall(r"`([A-Z][A-Z0-9_]{2,})(?:\s*=\s*([^`]+))?`", readme))
 
     inconnues = sorted(n for n, _ in cites if n not in code and n not in hors_sujet)
     check(not inconnues,
@@ -7976,8 +7980,11 @@ def test_readme_ne_cite_que_des_constantes_reelles():
           "et pas les variables locales d'une fonction, qui ne sont pas des constantes")
     check("GTA6_RELEASE" in code and "STORAGE_PREFIX" in code,
           "et celles du JavaScript de l'app")
-    check(len([n for n, _ in cites if n in code]) >= 10,
+    check(len([n for n, _ in cites_readme if n in code]) >= 10,
           "et il en trouve au moins dix citées dans le README")
+    check(len(journal) > len(readme) and len([n for n, _ in cites if n in code]) > len([n for n, _ in cites_readme if n in code]),
+          "et il lit aussi JOURNAL.md, où vit l'histoire (%d constantes de plus que le README)"
+          % (len([n for n, _ in cites if n in code]) - len([n for n, _ in cites_readme if n in code])))
 
 
 def test_panne_serveur_nest_pas_une_source_cassee():
@@ -9689,7 +9696,8 @@ def test_menage_de_laudit():
 
     # ---- 4.7 : hot_count. Le README affirme que le test compare les DEUX
     # champs au fichier complet ; il n'en couvrait qu'un.
-    readme = open("README.md", encoding="utf-8").read()
+    readme = (open("README.md", encoding="utf-8").read()
+              + open("JOURNAL.md", encoding="utf-8").read())
     if "`total_articles` et `hot_count`" in readme:
         corps = s_source = open("test_pipeline.py", encoding="utf-8").read()
         check('allege.get("hot_count") == fil.get("hot_count")' in corps,
