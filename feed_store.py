@@ -70,7 +70,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 # Trente jours et non quatre-vingt-dix : au-delà, c'est un problème d'ARCHIVE
 # et non de plafond. Chercher ce qui s'est dit d'un DLC six mois plus tôt
 # demande un découpage de l'historique en fichiers qu'on n'interroge qu'au
-# besoin, pas un fichier unique qu'on télécharge en entier. Voir le README.
+# besoin, pas un fichier unique qu'on télécharge en entier. Voir JOURNAL.md.
 # QUATRE MILLE -> DOUZE MILLE, le 13/10/2026, et c'est la répétition
 # générale du jour J qui l'a imposé.
 #
@@ -944,8 +944,8 @@ def incident_notable(incident):
     - sa source est déclarée `tombe_la_nuit`. Les deux flux YouTube
       descendent chaque nuit entre 4 h et 8 h — 43 épisodes sur 21 jours,
       soit 61 par mois à eux deux, les deux plus gros « fautifs » du
-      classement. Ce n'est pas une panne, c'est un horaire, et le README le
-      documente depuis le 16/09/2026.
+      classement. Ce n'est pas une panne, c'est un horaire, et le journal
+      (JOURNAL.md) le documente depuis le 16/09/2026.
 
     Rien n'est caché pour autant : l'un comme l'autre comptent au compteur
     par source. Une source non déclarée qui se mettrait à tomber toutes les
