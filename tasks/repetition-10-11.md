@@ -6,15 +6,14 @@ ligne ne se passe pas comme écrit, note laquelle et dis-le moi.
 ## 1. Le compteur (touche le compte à rebours sous le titre)
 - [ ] Le panneau s'ouvre sur « Avant la sortie ».
 - [ ] Une ligne « 😴 … dodo(s) » sous la barre de pourcentage.
-- [ ] L'agenda, sous les dodos : le **9/11** à « Hier » (en gris), le **12/11** à « J-2 » et le **18/11** à « J-8 ». Le 29/10 a disparu.
+- [ ] L'agenda, sous les dodos, en frise (le jour en gros à gauche, un rail avec un point par rendez-vous) : le **9/11** à « Hier » (en gris), le **10/11** à « Aujourd'hui »
+  (précharge, Xbox 01:00, PS5 00:00, « annoncé »), le **12/11** à « J-2 », le **18/11** à « J-8 » et le **19/11** à « J-9 ». Le point plein dit « annoncé », le point creux « selon la presse ».
 - [ ] Rien ne déborde à droite ; le texte long passe à la ligne.
 - [ ] Le pourcentage de la barre est lisible dans le clair et le sombre (⚙️ → thème).
 
-## 2. Le silence 2 h (⚙️ → Notifications sur cet appareil)
-- [ ] « Silence 2 h » est là. Appuie : la pastille « 😴 silence jusqu'à HH:MM » apparaît sous le compteur, avec l'heure de fin **à Paris**, 2 h plus tard.
-- [ ] Ferme et rouvre l'app : la pastille est toujours là.
-- [ ] Appuie sur la pastille : elle disparaît, le bouton redevient « Silence 2 h ».
-- [ ] Note : **aucun essai réel de push n'a été fait** (ton choix du 27/10). Si tu en reçois un pendant un silence, dis-moi s'il fait du bruit ou vibre.
+## 2. Les notifications (retirées le 03/11)
+- [ ] ⚙️ → Avancé : **plus de section « Notifications »**, et dans l'en-tête **plus de pastille de silence**. Les messages arrivent seulement sur Discord.
+- [ ] Les textes d'aide de Réglages (touche les « ? ») sont courts : mots-clés, seuil anti-doublon, jeton, sources. Dis-moi lesquels sont trop secs.
 
 ## 3. Le fil
 - [ ] Les badges de catégorie ont chacun leur couleur et restent lisibles dans les deux thèmes.
@@ -27,5 +26,13 @@ la ligne des dodos disparaît, l'agenda montre « Hier » en gris pour le 18/11.
 Les captures de la simulation (23:59:45, 00:00:05, 00:30, 12:30 le 19/11) sont dans la conversation.
 
 ## 5. Reconfirmer l'agenda, CE JOUR-LÀ (c'est toi qui valides)
-- [ ] Quatre dates : **29/10** (passée à ce moment-là), **9/11** (résultats Take-Two), **12/11** (précharge), **18/11** (embargo des tests). Dis-moi lesquelles tu confirmes : je mets la date du jour sur `verifie_le`, valable **14 jours, soit jusqu'au 24/11**, donc toute la nuit de la sortie. Sans cette reconfirmation, les lignes affichent « à revérifier » dès le 11/11.
+- [ ] Cinq dates : **9/11** (résultats Take-Two, « presse »), **10/11** (précharge, « annoncé » : article officiel Rockstar du 03/11), **12/11** (boîtes avec code, « annoncé »),
+  **18/11** (embargo des tests, « presse ») et **19/11** (affiche et carte de Leonida, « annoncé »). Dis-moi lesquelles tu confirmes : je mets la date du jour sur `verifie_le`,
+  valable **14 jours, soit jusqu'au 24/11**, donc toute la nuit de la sortie. Sans cette reconfirmation, les lignes affichent « à revérifier » : dès le 11/11 pour le 9/11 et le 18/11,
+  dès le 18/11 pour les trois autres.
 - [ ] Le jeton « gta6watch mobile » expire le **26/11** (rappel prévu le 24/11).
+
+## 6. Discord
+- [ ] Le jalon **J-14** (05/11, 09:00) est arrivé dans le salon, et le **J-7** arrive le 12/11 à 09:00.
+- [ ] Un seul message « 📊 JJ/MM · N articles » par jour, modifié sur place ; un seul « 🌙 Bilan du JJ/MM » le soir, après 22 h.
+- [ ] Sur l'écran verrouillé, la ligne d'aperçu est utile et le bouton « Ouvrir GTA6_WATCH » est là.
