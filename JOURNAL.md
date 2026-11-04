@@ -10346,3 +10346,14 @@ README court plus journal plus réécriture des chapitres), il a choisi **README
 - **Reste à voir** : des commentaires du code (« voir le README, La dérive documentaire ») et les consignes des tâches planifiées du 10/11 et du 19/11 renvoient
   au README ; ces sections sont maintenant dans `JOURNAL.md`.
 
+### Les renvois au README du code et des tâches planifiées corrigés — 04/11/2026
+
+Suite du lot précédent (« Le README remanié, le journal à part »), qui avait laissé ce point ouvert.
+
+- **Commentaires du code** : huit renvois à une section du README (« La dérive documentaire », « le README le documente depuis le 16/09/2026 »…) visent maintenant
+  `JOURNAL.md`, où ces sections ont été déplacées. Un seul garde `README.md` : le renvoi de `update-feeds.yml` à l'architecture, qui dit aussi où lire l'histoire.
+  Commentaires et docstrings seulement, aucune logique touchée.
+- **Tâches planifiées** (texte seul, heures inchangées) : « Reconfirmer l'agenda » (dates actuelles, officielles ou presse), « troisième répétition générale »
+  (comptes rendus dans `JOURNAL.md`, canal Discord seul), « minuit passé » et « bilan du 19/11 » (plus de push, `JOURNAL.md`), « remesure des catégories » (les quatre requêtes du 03/11).
+  Non modifiées : la veille du 18/11 à 22 h 30, qui ne citait ni le README ni le push, et la tâche de 02 h du 19/11, à relire.
+

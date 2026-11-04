@@ -191,4 +191,4 @@ python3 test_navigateur.py      # l'app dans un vrai navigateur, 320 et 390 px
 - **`PLAN-journal-incidents.md`** : le plan du journal des incidents de sources.
 - **`tasks/`** : les spécifications (notifications Discord, agenda, silence…) et la liste de la répétition générale du 10/11.
 - **`captures/`** : les captures d'écran mesurées (320, 360, 390 px).
-- Les commentaires du code qui renvoient à une section du README (« La dérive documentaire », etc.) pointent désormais vers `JOURNAL.md`.
+- Quand le code cite une décision datée (« La dérive documentaire », « Planificateur externe »…), il renvoie à `JOURNAL.md`.

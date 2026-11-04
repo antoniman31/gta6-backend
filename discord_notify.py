@@ -673,7 +673,7 @@ lire_liste = feed_store.lire_liste
 # Note : une tentative de notification via ntfy.sh a été faite puis
 # abandonnée — le serveur confirmait l'envoi (200 OK) sans jamais relayer
 # les messages, probablement à cause d'un fail2ban/rate-limit silencieux
-# sur les IP partagées des runners GitHub Actions. Détails dans README.md.
+# sur les IP partagées des runners GitHub Actions. Détails dans JOURNAL.md.
 
 
 def main():

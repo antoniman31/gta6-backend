@@ -35,7 +35,8 @@ on:
   # best-effort par conception : GitHub documente que les exécutions
   # planifiées peuvent être retardées et purement abandonnées en période de
   # charge. Un planificateur externe, lui, appelle à l'heure dite et
-  # l'exécution part immédiatement. Voir README.
+  # l'exécution part immédiatement. Voir README.md (architecture) et
+  # JOURNAL.md (« Planificateur externe »).
   repository_dispatch:
     types: [run-feeds]
 

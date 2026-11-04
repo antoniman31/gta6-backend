@@ -22,7 +22,7 @@ vérification.
 
 Aucun compte de sources n'est écrit ici, à dessein : il vit dans le code
 (len(FEEDS)) et dans feed.json (sources_count). Un nombre recopié dans une
-docstring dérive tout seul — voir le README, « La dérive documentaire ».
+docstring dérive tout seul — voir JOURNAL.md, « La dérive documentaire ».
 """
 
 import json
@@ -887,8 +887,8 @@ def statut_rockstarmag(url, feed=None):
 # proches, toutes la même actualité, étaient groupées entre 0,743 et 0,747.
 # Pas une dispersion : un mur, juste sous le seuil.
 #
-# L'ABAISSEMENT A ÉTÉ VÉRIFIÉ PAR REJEU, pas par raisonnement — le README
-# le demandait déjà. La passe de fusion a été rejouée sur le fil (3 248
+# L'ABAISSEMENT A ÉTÉ VÉRIFIÉ PAR REJEU, pas par raisonnement — le journal
+# (JOURNAL.md) le demandait déjà. La passe de fusion a été rejouée sur le fil (3 248
 # articles) et sur l'archive entière (3 637) à chaque seuil, et les
 # fusions SUPPLÉMENTAIRES ont été lues une par une :
 #
@@ -3135,8 +3135,8 @@ def source_nocturne(sid):
     """Cette source est-elle déclarée `tombe_la_nuit` dans FEEDS ?
 
     Les deux flux YouTube ne répondent plus entre 4 h et 8 h du matin — 17
-    nuits sur les 19 observées depuis le 1er septembre. Le README le
-    documente depuis le 16/09/2026 et personne n'a jamais eu à agir : c'est
+    nuits sur les 19 observées depuis le 1er septembre. Le journal
+    (JOURNAL.md) le documente depuis le 16/09/2026 et personne n'a jamais eu à agir : c'est
     un horaire, pas une panne.
 
     Lu dans FEEDS à chaque appel plutôt que figé en constante : un test qui
