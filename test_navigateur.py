@@ -1623,18 +1623,18 @@ def test_barre_du_bas(nav, url):
         ctx, page, erreurs = ouvre(390, "light", quand)
         page.evaluate("updateCountdown()")
         lu = page.evaluate("""() => ({t: document.getElementById('cbCompteur').textContent,
-            s: document.getElementById('compteurSous').textContent,
+            s: document.querySelector('.tuile-compteur .compteur-sous').textContent,
             n: document.getElementById('countdown').getAttribute('aria-label'),
             cases: [...document.querySelectorAll('#countdown .cd-t')].map(e => e.querySelector('b').textContent),
             libelles: [...document.querySelectorAll('#countdown .cd-t i')].map(e => e.textContent),
-            grises: [...document.querySelectorAll('#countdown .cd-t.zero')].map(e => e.id),
+            grises: [...document.querySelectorAll('#countdown .cd-t.zero')].map(e => e.dataset.u),
             taille: parseFloat(getComputedStyle(document.querySelector('#countdown .cd-t b')).fontSize)})""")
         check(_re.match(motif, lu["t"]) is not None and lu["s"] == sous,
               "%s : ligne réduite « %s », libellé « %s »" % (nom, lu["t"], lu["s"]))
         check(len(lu["cases"]) == 4 and all(_re.match(r"^\d\d+$", c) for c in lu["cases"])
               and lu["libelles"] == ["jours", "heures", "min", "sec"],
               "%s : quatre tuiles jours, heures, min, sec, deux chiffres au moins (%s)" % (nom, lu["cases"]))
-        check((lu["grises"] == ["cdJ"]) == zero and (zero or lu["grises"] == []),
+        check((lu["grises"] == ["j"]) == zero and (zero or lu["grises"] == []),
               "%s : la tuile des jours n'est grisée que quand elle vaut 00 (%s)" % (nom, lu["grises"]))
         check(lu["taille"] >= 24 and lu["t"] in (lu["n"] or ""),
               "%s : chiffres de %.0f px, bouton nommé pour les lecteurs d'écran" % (nom, lu["taille"]))
@@ -1766,7 +1766,7 @@ def test_entete_tuiles_et_ligne_reduite(nav, url):
             const haut = [...document.querySelector('.header-haut').children].filter(e => e.offsetParent !== null);
             const carte = r(document.querySelector('header.console'));
             const centre = e => (r(e).top + r(e).bottom) / 2;
-            const sous = r(document.getElementById('compteurSous')), cd = r(document.getElementById('countdown'));
+            const sous = r(document.querySelector('.tuile-compteur .compteur-sous')), cd = r(document.getElementById('countdown'));
             const mot = document.querySelector('#modeIndicator .mi-mot');
             return {centres: haut.map(centre), n: haut.length,
                     sortent: haut.filter(e => r(e).right > carte.right - 14 + 0.5 || r(e).left < carte.left + 14 - 0.5).length,
@@ -1819,6 +1819,172 @@ def test_entete_tuiles_et_ligne_reduite(nav, url):
         check(abs(top - 52) <= 1.5, "%s dans les Réglages, les rubriques se collent sous la ligne (top %.0f)" % (etiq, top))
         check(not erreurs, "%s aucune erreur JavaScript" % etiq)
         ctx.close()
+
+
+def test_fenetre_du_compteur(nav, url):
+    """La fenêtre du compteur : centrée, quatre coins arrondis, barre rectangulaire.
+
+    Demandé par Antoni le 07/11/2026, capture à l'appui : la fenêtre était collée en haut,
+    arrondie seulement au-dessus, et la barre de progression était une pastille dont les
+    bouts arrondis cachaient les derniers pourcents. Mesuré à 320 et 390 px, en clair et en
+    sombre : le centre de la fenêtre est celui de l'écran (à 1 px), les quatre rayons sont
+    arrondis et égaux, la barre a des coins vifs, et la part restante se distingue.
+    """
+    print("\\n[fenêtre du compteur] centrée, arrondie, barre rectangulaire")
+    for largeur, hauteur, schema in ((320, 640, "dark"), (390, 844, "light"), (390, 700, "dark")):
+        etiq = "[%dx%d, %s]" % (largeur, hauteur, schema)
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, color_scheme=schema,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#countdown")
+        page.click("#countdown")
+        page.wait_for_selector("#compteurOverlay .sheet-panel", state="visible")
+        page.wait_for_timeout(300)
+        m = page.evaluate("""() => {
+            const p = document.querySelector('#compteurOverlay .sheet-panel'), r = p.getBoundingClientRect(), cs = getComputedStyle(p);
+            const bar = document.querySelector('.compteur-barre'), bs = getComputedStyle(bar), fill = bar.querySelector(':scope > span');
+            return {dx: Math.abs((r.left + r.right) / 2 - innerWidth / 2), dy: Math.abs((r.top + r.bottom) / 2 - innerHeight / 2),
+                    haut: r.top, bas: innerHeight - r.bottom, gauche: r.left, droite: innerWidth - r.right,
+                    rayons: [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomLeftRadius, cs.borderBottomRightRadius],
+                    bordBas: cs.borderBottomWidth,
+                    barre: [bs.borderTopLeftRadius, bs.borderTopRightRadius, bs.borderBottomLeftRadius, bs.borderBottomRightRadius],
+                    reste: bar.getBoundingClientRect().right - fill.getBoundingClientRect().right,
+                    deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(m["dx"] <= 1.0 and m["dy"] <= 1.0,
+              "%s la fenêtre est centrée sur l'écran (écarts %.1f px en largeur, %.1f px en hauteur)" % (etiq, m["dx"], m["dy"]))
+        check(m["haut"] >= 0 and m["bas"] >= 0 and m["gauche"] >= 0 and m["droite"] >= 0,
+              "%s elle tient entière dans l'écran" % etiq)
+        check(len(set(m["rayons"])) == 1 and m["rayons"][0] != "0px" and m["bordBas"] != "0px",
+              "%s les quatre coins sont arrondis, et le bas a son bord (%s)" % (etiq, m["rayons"]))
+        check(set(m["barre"]) == {"0px"},
+              "%s la barre de progression est rectangulaire (%s)" % (etiq, m["barre"]))
+        check(m["reste"] > 0.5, "%s la part restante de la barre se voit (%.1f px)" % (etiq, m["reste"]))
+        check(not m["deborde"] and not erreurs, "%s rien ne déborde, aucune erreur JavaScript" % etiq)
+        ctx.close()
+
+    # LES ÉQUIVALENCES en cartes à icônes : le pire total (151 millions de secondes, à 320 px) tient dans sa carte.
+    ctx = nav.new_context(viewport={"width": 320, "height": 700}, timezone_id="Europe/Paris",
+                          reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+    ctx.clock.install(time="2022-02-06T12:00:00Z")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#countdown")
+    page.click("#countdown")
+    page.wait_for_selector("#compteurContenu .compteur-tuiles.equiv", state="visible")
+    eq = page.evaluate("""() => { const g = document.querySelector('#compteurContenu .compteur-tuiles.equiv');
+        const cartes = [...g.children]; let dehors = null;
+        for(const d of cartes){ const b = d.querySelector('b'), r = document.createRange(); r.selectNodeContents(b);
+          const q = r.getBoundingClientRect(), dq = d.getBoundingClientRect();
+          if(q.right > dq.right + 0.5 || q.left < dq.left - 0.5) dehors = b.textContent + ' sort de sa carte'; }
+        return {n: cartes.length, icones: cartes.filter(d => d.querySelector('svg.ic')).length,
+                libelles: cartes.map(d => d.querySelector('span').textContent.trim()), dehors: dehors,
+                longs: cartes.filter(d => d.querySelector('b.long')).length}; }""")
+    check(eq["n"] == 4 and eq["icones"] == 4 and eq["libelles"] == ["jours", "heures", "minutes", "secondes"],
+          "[320 px] quatre cartes d'équivalence, chacune avec son icône (%s)" % eq["libelles"])
+    check(eq["dehors"] is None and eq["longs"] >= 1,
+          "[320 px] même 151 millions de secondes tiennent dans leur carte (corps réduit sur %d carte(s), %s)"
+          % (eq["longs"], eq["dehors"]))
+    ctx.close()
+
+    # APRÈS LA SORTIE, des mois puis des années s'ajoutent : cinq puis six tuiles dans l'en-tête, qui
+    # doivent tenir (chiffre et libellé) à 320 px.
+    for utc, n_attendu in (("2026-12-24T08:30:00Z", 5), ("2028-02-02T17:45:00Z", 6)):
+        ctx = nav.new_context(viewport={"width": 320, "height": 700}, timezone_id="Europe/Paris",
+                              reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        ctx.clock.install(time=utc)
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#countdown")
+        page.evaluate("updateCountdown()")
+        r = page.evaluate("""() => { let dehors = null; const tuiles = [...document.querySelectorAll('#countdown .cd-t')];
+            for(const t of tuiles){ for(const n of [t.querySelector('b'), t.querySelector('i')]){
+              const g = document.createRange(); g.selectNodeContents(n);
+              const q = g.getBoundingClientRect(), tq = t.getBoundingClientRect();
+              if(q.right > tq.right + 0.5 || q.left < tq.left - 0.5) dehors = n.textContent + ' sort de sa tuile'; } }
+            const c = document.querySelector('.tuile-compteur').getBoundingClientRect();
+            const sortent = tuiles.filter(t => t.getBoundingClientRect().right > c.right + 0.5).length;
+            return {n: tuiles.length, dehors: dehors, sortent: sortent, ligne: document.getElementById('cbCompteur').textContent}; }""")
+        check(r["n"] == n_attendu and r["dehors"] is None and r["sortent"] == 0,
+              "[320 px] %d tuiles dans l'en-tête après la sortie, rien ne sort (%s, %s ; ligne réduite « %s »)"
+              % (n_attendu, r["dehors"], r["sortent"], r["ligne"]))
+        ctx.close()
+
+def test_compteurs_jumeaux(nav, url):
+    """Le compteur de l'en-tête et celui de la fenêtre sont de VRAIS JUMEAUX (Antoni, 07/11/2026).
+
+    « Le compteur principal et celui en haut de la carte doivent toujours être pareils. » Ce
+    contrôle ouvre la fenêtre et compare, tuile par tuile, ce que l'œil voit : mêmes chiffres,
+    même tuile grisée, même libellé, mêmes classes de palier, et un rendu identique (corps,
+    graisse, couleur, halo, trait, fond, bord, rayon, libellé). Il le fait à plusieurs
+    échéances (un palier chacune, le jour J, 111 jours après), dans les deux thèmes, à 320 et
+    390 px, et encore une seconde plus tard : les deux se mettent à jour au MÊME instant.
+    """
+    print("\n[jumeaux] l'en-tête et la fenêtre du compteur sont identiques")
+    LIT = """() => {
+        const lire = g => [...g.querySelectorAll('.cd-t')].map(t => {
+            const b = t.querySelector('b'), i = t.querySelector('i');
+            const cb = getComputedStyle(b), ci = getComputedStyle(i), ct = getComputedStyle(t);
+            return {txt: b.textContent, lib: i.textContent, zero: t.classList.contains('zero'), long: b.classList.contains('long'),
+                    corps: cb.fontSize, graisse: cb.fontWeight, couleur: cb.color, halo: cb.textShadow,
+                    trait: cb.webkitTextStrokeWidth + ' ' + cb.webkitTextStrokeColor,
+                    fond: ct.backgroundColor, bord: ct.borderTopWidth + ' ' + ct.borderTopStyle + ' ' + ct.borderTopColor,
+                    rayon: ct.borderTopLeftRadius, libCorps: ci.fontSize, libCouleur: ci.color, libCasse: ci.textTransform};
+        });
+        const h = document.getElementById('countdown'), p = document.querySelector('#compteurContenu .tuile-panneau .countdown');
+        const sous = g => g.parentElement.querySelector('.compteur-sous').textContent;
+        const nom = g => (g.getAttribute('aria-label') || '').replace(/ — ouvrir le détail$/, '');
+        return {h: lire(h), p: lire(p), ch: h.className, cp: p.className, sh: sous(h), sp: sous(p), nh: nom(h), np: nom(p),
+                ecart: Math.abs((h.querySelector('.cd-t').getBoundingClientRect().height) - (p.querySelector('.cd-t').getBoundingClientRect().height)),
+                cadre: [getComputedStyle(h.parentElement).backgroundColor === getComputedStyle(p.parentElement).backgroundColor,
+                        getComputedStyle(h.parentElement).borderTopLeftRadius === getComputedStyle(p.parentElement).borderTopLeftRadius]}; }"""
+    for utc, nom in (("2026-09-10T13:34:21Z", "loin (palier ordinaire)"),
+                     ("2026-10-28T10:00:07Z", "palier soon"),
+                     ("2026-11-14T10:00:07Z", "palier urgent"),
+                     ("2026-11-18T15:00:07Z", "palier final"),
+                     ("2026-11-18T23:30:07Z", "le jour J, 00 h 30"),
+                     ("2026-11-22T10:00:07Z", "3 jours après la sortie"),
+                     ("2026-12-24T08:30:07Z", "1 mois après la sortie (5 tuiles)"),
+                     ("2028-02-02T17:45:07Z", "1 an 2 mois après la sortie (6 tuiles)")):
+        for largeur, schema in ((320, "dark"), (390, "light")):
+            etiq = "[%s, %d px, %s]" % (nom, largeur, schema)
+            ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=schema,
+                                  timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+            ctx.clock.install(time=utc)
+            page = ctx.new_page()
+            erreurs = []
+            page.on("pageerror", lambda e: erreurs.append(str(e)))
+            page.goto(url, wait_until="load")
+            page.wait_for_selector("#countdown .cd-t")
+            page.click("#countdown")
+            page.wait_for_selector("#compteurOverlay .tuile-panneau .cd-t", state="visible")
+            page.wait_for_timeout(250)
+            for tour in (0, 1):
+                if tour:
+                    page.clock.run_for(1000)
+                    page.wait_for_timeout(250)
+                v = page.evaluate(LIT)
+                check(len(v["h"]) in (4, 5, 6) and v["h"] == v["p"],
+                      "%s les %d tuiles sont identiques, chiffre par chiffre et style par style%s"
+                      % (etiq, len(v["h"]), " (une seconde plus tard)" if tour else ""))
+                if v["h"] != v["p"]:
+                    for a, b in zip(v["h"], v["p"]):
+                        if a != b:
+                            print("      écart :", {k: (a[k], b[k]) for k in a if a[k] != b[k]})
+                check(v["ch"] == v["cp"] and v["sh"] == v["sp"] and v["nh"] == v["np"],
+                      "%s même palier (%s), même libellé (« %s »), même nom accessible"
+                      % (etiq, v["ch"], v["sh"]))
+                if not tour:
+                    check(all(v["cadre"]) and v["ecart"] <= 1.5,
+                          "%s même contenant, et tuiles de même hauteur (écart %.1f px)" % (etiq, v["ecart"]))
+            check(not erreurs, "%s aucune erreur JavaScript" % etiq)
+            ctx.close()
 
 
 def test_entete_sans_vide(nav, url):
@@ -3639,7 +3805,7 @@ def test_compte_a_rebours(nav, url):
 
     # Trois mois plus tard, il dit encore quelque chose de vrai.
     tard = a("2027-02-19T08:00:00Z")
-    check(tard["texte"].startswith("+9") and tard["texte"].endswith(" j"),
+    check(tard["texte"] == "+3 mois",
           "[compteur] trois mois après, il tient toujours (« %s »)"
           % tard["texte"])
 
@@ -4015,7 +4181,7 @@ def test_compte_a_rebours_flashy(nav, url):
                     page.evaluate("() => ouvreCompteur()")
                     page.wait_for_timeout(300)
                     t = page.evaluate("""() => { const b = document.querySelector(
-                          '#compteurContenu .compteur-tuiles:not(.equiv) > div:not(.zero) > b');
+                          '#compteurContenu .tuile-panneau .countdown .cd-t:not(.zero) b');
                         if(!b) return null; const cs = getComputedStyle(b);
                         return {couleur: cs.color, fond: cs.backgroundColor}; }""")
                     attendu = lire(m["couleur"])
@@ -4279,7 +4445,7 @@ def test_agenda_dans_le_panneau(nav, url):
         ctx, page, erreurs = ouvre(390, corps, statut)
         ouvert = page.evaluate("() => document.getElementById('compteurOverlay').classList.contains('open')")
         vide = page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda').length") == 0
-        tuiles = page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-tuiles').length") > 0
+        tuiles = page.evaluate("() => document.querySelectorAll('#compteurContenu .tuile-panneau .countdown, #compteurContenu .compteur-tuiles').length") > 0
         check(ouvert and vide and tuiles and not erreurs,
               "[agenda] avec %s le compteur s'ouvre, sans section ni erreur (%s)" % (libelle, erreurs))
         ctx.close()
@@ -4301,7 +4467,6 @@ def test_panneau_du_compteur(nav, url):
     """
     print("\n[compteur] le détail derrière le compte à rebours")
 
-    # Le piège de setMonth, éprouvé sur la fonction elle-même.
     ctx = nav.new_context(viewport={"width": 390, "height": 850},
                           timezone_id="Europe/Paris")
     page = ctx.new_page()
@@ -4310,31 +4475,34 @@ def test_panneau_du_compteur(nav, url):
     page.goto(url, wait_until="load")
     page.wait_for_selector("#feed", state="attached")
 
+    # (Le piège de setMonth n'est plus éprouvé : le découpage en mois civils a été retiré le
+    # 07/11/2026, à la demande d'Antoni — le panneau n'a plus que quatre unités.)
+    # Le piège de setMonth, éprouvé sur la fonction elle-même : les mois civils servent APRÈS la sortie.
     mois = page.evaluate("""() => {
         const d = ajouteUnMois(new Date(2026, 0, 31));   // 31 janvier
         const n = ajouteUnMois(new Date(2026, 2, 15));   // 15 mars
         return [d.getMonth(), d.getDate(), n.getMonth(), n.getDate()];
     }""")
     check(mois[0] == 1 and mois[1] == 28,
-          "[compteur] 31 janvier + 1 mois = 28 février, pas 3 mars — "
-          "setMonth déborde tout seul (mois %d, jour %d)" % (mois[0], mois[1]))
-    check(mois[2] == 3 and mois[3] == 15,
-          "[compteur] et un mois ordinaire reste ordinaire (15 avril)")
-
-    # Les unités à zéro sont masquées.
-    phrases = page.evaluate("""() => [
-        phraseDecoupe({mois:1, semaines:0, jours:2, heures:11, minutes:5, secondes:0}),
-        phraseDecoupe({mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:1}),
-        phraseDecoupe({mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:0}),
-        phraseDecoupe({mois:2, semaines:3, jours:1, heures:0, minutes:0, secondes:0}),
+          "[compteur] 31 janvier + 1 mois = 28 février, pas 3 mars — setMonth déborde tout seul (mois %d, jour %d)"
+          % (mois[0], mois[1]))
+    check(mois[2] == 3 and mois[3] == 15, "[compteur] et un mois ordinaire reste ordinaire (15 avril)")
+    d_ap = page.evaluate("""() => [
+        decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2026-11-22T14:00:00+01:00')).unites.join(''),
+        decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2026-12-24T09:30:00+01:00')).unites.join(''),
+        decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2028-02-02T18:45:00+01:00')).unites.join(''),
+        compactApres(decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2026-12-24T09:30:00+01:00'))),
+        compactApres(decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2028-02-02T18:45:00+01:00'))),
+        compactApres(decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2027-11-19T00:00:00+01:00'))),
     ]""")
-    check("semaine" not in phrases[0] and phrases[0] == "1 mois · 2 jours · 11 heures · 5 minutes",
-          "[compteur] les unités à zéro ne s'affichent pas (« %s »)" % phrases[0])
-    check(phrases[1] == "1 seconde", "[compteur] le singulier est respecté")
-    check(phrases[2] == "moins d'une seconde",
-          "[compteur] et tout à zéro se dit au lieu de rendre une ligne vide")
-    check(phrases[3] == "2 mois · 3 semaines · 1 jour",
-          "[compteur] « mois » est invariable (« %s »)" % phrases[3])
+    check(d_ap == ["jhms", "Mjhms", "aMjhms", "+1 mois 5 j", "+1 an 2 mois", "+1 an"],
+          "[compteur] après la sortie, mois puis années seulement quand il y en a besoin (%s)" % d_ap)
+
+    # (phraseDecoupe, la phrase parlée « 2 jours · 11 heures », a été retirée le 07/11/2026 : le nom
+    # accessible des tuiles est maintenant écrit par la même fonction pour l'en-tête et la
+    # fenêtre — « avant la sortie : 11j 09h ».)
+    check(page.evaluate("() => typeof phraseDecoupe === 'undefined' && typeof tuilesDecoupe === 'undefined'"),
+          "[compteur] plus de seconde implémentation des tuiles du panneau")
 
     # LES DODOS. Un dodo est une NUIT à dormir, donc un minuit à traverser
     # — jamais une division par 24 h. Et le minuit de la sortie NE COMPTE
@@ -4392,25 +4560,26 @@ def test_panneau_du_compteur(nav, url):
                 // sur soixante — quand la seconde du découpage vaut zéro
                 // et que sa tuile est masquée. C'est la CI qui l'a pris.
                 decoupe: (() => {
-                  const g = document.querySelector('#compteurContenu .compteur-tuiles');
+                  const g = document.querySelector('#compteurContenu .tuile-panneau .countdown');
                   if(!g) return null;
                   return {classe: g.className,
-                          unites: [...g.querySelectorAll('span')].map(e => e.textContent)};
+                          unites: [...g.querySelectorAll('i')].map(e => e.textContent)};
                 })(),
                 barre: !!document.querySelector('#compteurContenu .compteur-barre span'),
                 pourcent: (document.querySelector('.compteur-barre i') || {}).textContent,
-                tuiles: document.querySelectorAll('#compteurContenu .compteur-tuiles').length,
+                tuiles: document.querySelectorAll('#compteurContenu .tuile-panneau .countdown, #compteurContenu .compteur-tuiles').length,
                 equiv: (document.querySelector('.compteur-tuiles.equiv') || {}).textContent,
-                phrase: (document.querySelector('.compteur-tuiles') || {})
+                phrase: (document.querySelector('#compteurContenu .tuile-panneau .countdown') || {})
                           .getAttribute?.('aria-label'),
-                date: /19 novembre 2026/.test(t), annonce: /4 f/.test(t)};
+                date: /19 novembre/.test(t), annonce: /4\/02\/22/.test(t),
+                note: document.querySelector('.compteur-note').textContent};
     }""")
     check(ouvert["ouvert"], "[compteur] le panneau s'ouvre")
     check(ouvert["titre"] == "Avant la sortie",
           "[compteur] il s'intitule « Avant la sortie » (« %s »)" % ouvert["titre"])
     unites = (ouvert["decoupe"] or {}).get("unites") or []
-    check(unites == ["mois", "sem", "j", "h", "min", "s"],
-          "[compteur] il porte le découpage, les six unités abrégées (%s)"
+    check(unites == ["jours", "heures", "min", "sec"],
+          "[compteur] il porte les quatre mêmes tuiles que l'en-tête (%s)"
           % unites)
     # Sur la grille elle-même, et non sur le texte du panneau : à 34 jours
     # de la sortie le découpage porte déjà les mêmes mots, et un contrôle
@@ -4431,16 +4600,17 @@ def test_panneau_du_compteur(nav, url):
     # phraseDecoupe n'est pas morte : elle est devenue l'étiquette du
     # groupe, pour qu'un lecteur d'écran entende une phrase et non une
     # pile de chiffres nus.
-    check(" · " in (ouvert["phrase"] or ""),
-          "[compteur] et le groupe garde la phrase en étiquette, pour les "
-          "lecteurs d'écran (« %s »)" % ouvert["phrase"])
+    check("avant la sortie" in (ouvert["phrase"] or ""),
+          "[compteur] et le groupe de tuiles a un nom pour les lecteurs d'écran "
+          "(« %s »)" % ouvert["phrase"])
     check("%" in (ouvert["pourcent"] or ""),
           "[compteur] le pourcentage est DANS la barre, plus en légende "
           "dessous (« %s »)" % ouvert["pourcent"])
     check(ouvert["annonce"],
           "[compteur] qui dit d'où elle part — une proportion sans sa "
           "référence ne veut rien dire")
-    check(ouvert["date"], "[compteur] la date de sortie est écrite en toutes lettres")
+    check(not ouvert["date"] and ouvert["note"].strip() == "Barre remplie depuis l'annonce du jeu, le 4/02/22",
+          "[compteur] la note se réduit à d'où part la barre, sans date de sortie (« %s »)" % ouvert["note"].strip())
 
     # L'INTERVALLE EST COUPÉ À LA FERMETURE. Sans ça il bat pour toujours
     # sur un panneau fermé, une fois par seconde, pour rien.
@@ -4537,12 +4707,11 @@ def test_panneau_du_compteur(nav, url):
     # Le nombre de tuiles n'est plus six partout : sous 24 h, les unités
     # de tête à zéro s'effacent (voir plus bas). L'invariant de cette
     # boucle-ci est la LIGNE UNIQUE, pas le compte.
+    QUATRE = ["jours", "heures", "min", "sec"]
     for utc, precis, libelle, attendues in (
-            ("2026-11-17T22:55:00Z", False, "T-24 h 05",
-             ["mois", "sem", "j", "h", "min", "s"]),
-            ("2026-11-17T23:05:00Z", True,  "T-23 h 55", ["h", "min", "s"]),
-            ("2026-09-10T13:34:21Z", False, "six unités",
-             ["mois", "sem", "j", "h", "min", "s"]),
+            ("2026-11-17T22:55:00Z", False, "T-24 h 05", QUATRE),
+            ("2026-11-17T23:05:00Z", True,  "T-23 h 55", QUATRE),
+            ("2026-09-10T13:34:21Z", False, "quatre unités", QUATRE),
     ):
         ctx = nav.new_context(viewport={"width": 320, "height": 850},
                               timezone_id="Europe/Paris")
@@ -4553,7 +4722,7 @@ def test_panneau_du_compteur(nav, url):
         vue = page.evaluate("""() => {
             ouvreCompteur();
             const c = document.getElementById('compteurContenu');
-            const d = c.querySelector('.compteur-tuiles');
+            const d = c.querySelector('.tuile-panneau .countdown');
             const cases = [...d.children];
             // UNE SEULE RANGÉE : toutes les tuiles partagent le même
             // haut. C'est la traduction directe de « tout tient sur une
@@ -4572,7 +4741,7 @@ def test_panneau_du_compteur(nav, url):
             // ne bouge pas davantage.
             const boite = c.getBoundingClientRect();
             let sort = null, coupe = null;
-            for(const t of c.querySelectorAll('.compteur-tuiles > div')){
+            for(const t of c.querySelectorAll('.tuile-panneau .cd-t, .compteur-tuiles > div')){
               const q = t.getBoundingClientRect();
               if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5)
                 sort = t.textContent + ' (bord droit ' + Math.round(q.right)
@@ -4581,7 +4750,7 @@ def test_panneau_du_compteur(nav, url):
             // Seuils par rôle : le libellé est à 11 px (une ligne ~14 px,
             // deux ~28), le nombre monte à 28 px en disposition précise
             // (une ligne ~31, deux ~62).
-            for(const e of c.querySelectorAll('.compteur-tuiles span, .compteur-tuiles b')){
+            for(const e of c.querySelectorAll('.tuile-panneau .cd-t i, .tuile-panneau .cd-t b, .compteur-tuiles span, .compteur-tuiles b')){
               const h = e.getBoundingClientRect().height;
               const max = e.tagName === 'B' ? 45 : 22;
               if(h > max) coupe = e.textContent + ' (' + Math.round(h) + ' px)';
@@ -4631,14 +4800,14 @@ def test_panneau_du_compteur(nav, url):
                 return {rendue: rendue, attendue: attendue, palier: pal || ""};
               })(),
               zeros: cases.filter(e => e.classList.contains('zero'))
-                          .map(e => e.querySelector('span').textContent),
+                          .map(e => e.querySelector('i').textContent),
               // Les tuiles dont le NOMBRE vaut zéro, lues à l'écran : la
               // marque doit coller à la valeur, et c'est le genre de
               // lien qui casse en silence (un `=== 0` changé en test de
               // vérité, un nombre devenu chaîne).
-              nuls: cases.filter(e => e.querySelector('b').textContent === '0')
-                         .map(e => e.querySelector('span').textContent),
-              unites: [...d.querySelectorAll('span')].map(e => e.textContent),
+              nuls: cases.filter(e => e.querySelector('b').textContent === '00')
+                         .map(e => e.querySelector('i').textContent),
+              unites: [...d.querySelectorAll('i')].map(e => e.textContent),
               // L'ORDRE dans le document : le dodo doit venir APRÈS la
               // barre. DOCUMENT_POSITION_FOLLOWING vaut 4.
               dodoApresBarre: dodos
@@ -4661,11 +4830,8 @@ def test_panneau_du_compteur(nav, url):
               "[compteur %s] et elles tiennent toutes sur UNE rangée à "
               "320 px (%s rangée(s))" % (libelle, vue["rangees"]))
         check(vue["unites"] == attendues,
-              "[compteur %s] libellés abrégés, seule façon de faire tenir "
-              "six colonnes (%s)" % (libelle, vue["unites"]))
-        check(("precis" if precis else "second") in vue["classe"],
-              "[compteur %s] la taille suit l'échéance (« %s »)"
-              % (libelle, vue["classe"]))
+              "[compteur %s] les libellés de l'en-tête, jours, heures, min, sec (%s)"
+              % (libelle, vue["unites"]))
         # Le palier que porte le panneau doit être celui de l'en-tête.
         pal_panneau = [m for m in ("soon", "urgent", "final")
                        if m in (vue["classe"] or "")]
@@ -4700,13 +4866,15 @@ def test_panneau_du_compteur(nav, url):
         # mon premier jet attendait « mois, sem » à T-24 h 05 et ignorait
         # que les heures y sont à zéro aussi. Le vrai invariant est que la
         # marque suit la valeur, quelle que soit l'heure.
-        check(vue["zeros"] == vue["nuls"],
-              "[compteur %s] les tuiles grisées sont exactement celles qui "
-              "valent zéro (grisées %s, nulles %s)"
+        # Seule la tuile des JOURS se grise (comme dans l'en-tête) : un 00 d'heures ou de
+        # minutes reste un chiffre vivant, pas un zéro de tête.
+        check(vue["zeros"] == [u for u in vue["nuls"] if u == "jours"],
+              "[compteur %s] la tuile des jours est grisée exactement quand elle vaut zéro "
+              "(grisées %s, nulles %s)"
               % (libelle, vue["zeros"], vue["nuls"]))
-        if libelle == "six unités":
+        if libelle == "quatre unités":
             check(vue["nuls"] == [],
-                  "[compteur %s] et cet instant-là n'en a aucune : les six "
+                  "[compteur %s] et cet instant-là n'en a aucune : les quatre "
                   "unités valent quelque chose (%s)" % (libelle, vue["nuls"]))
         ctx.close()
 
@@ -4841,12 +5009,11 @@ def test_panneau_du_compteur(nav, url):
                    titre: document.getElementById('titreCompteur').textContent,
                    note: document.querySelector('.compteur-note').textContent,
                    tuiles: document.querySelectorAll(
-                     '#compteurContenu .compteur-tuiles')[0].children.length,
-                   etiquetteBarre: document.querySelector('.compteur-barre i').textContent,
+                     '#compteurContenu .tuile-panneau .cd-t').length,
+                   barres: document.querySelectorAll('#compteurContenu .compteur-barre').length,
                    // Dans une tuile, textContent colle le nombre à son
                    // unité : « 3jours », sans espace.
-                   jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1],
-                   plein: (document.querySelector('.compteur-barre > span') || {}).style.width};
+                   jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1]};
         fermeCompteur();
         return r;
     }""")
@@ -4856,53 +5023,32 @@ def test_panneau_du_compteur(nav, url):
     check(apres["titre"] == "Depuis la sortie",
           "[compteur] après le 19 novembre il s'intitule « Depuis la "
           "sortie » (« %s »)" % apres["titre"])
-    check((apres["jours"] or "").strip() == "3",
+    check(int((apres["jours"] or "-1").strip()) == 3,
           "[compteur] et il compte à l'envers (%s jours)" % apres["jours"])
-    # Sur la VALEUR et non sur la chaîne : le navigateur normalise
-    # « 100.0% » en « 100% », et un contrôle qui compare le texte brut
-    # échoue sur une différence qui n'existe pas à l'écran.
-    plein = float((apres["plein"] or "0").rstrip("%"))
-    check(plein == 100.0,
-          "[compteur] la barre est pleine et ne déborde pas (%s)" % apres["plein"])
-    # LE VERBE SUIT LA DATE. Sous un titre « Depuis la sortie », la note
-    # annonçait encore « Sortie le jeudi 19 novembre » — au futur, une
-    # semaine après. Repéré à la répétition post-sortie du 20/10/2026.
-    check("Sortie depuis le" in apres["note"],
-          "[compteur] et la note dit « Sortie DEPUIS le », plus « Sortie "
-          "le » (« %s »)" % apres["note"].strip()[-60:])
-    # La barre ne mesure plus rien : annonce -> sortie est fini. Un
-    # « 100,0 % » figé sous un compteur qui bouge se lit comme une panne.
-    check(apres["etiquetteBarre"].strip() == "Sorti",
-          "[compteur] la barre pleine dit « Sorti », pas « 100,0 %% » "
-          "(« %s »)" % apres["etiquetteBarre"])
-    # Et le découpage garde ses SIX tuiles une semaine après : la coupe
-    # des zéros de tête ne vaut que sous 24 h.
-    check(apres["tuiles"] == 6,
-          "[compteur] une semaine après, les six tuiles sont de retour — "
-          "la coupe ne vaut que sous 24 h (%s)" % apres["tuiles"])
+    # PLUS DE BARRE après la sortie (Antoni, 07/11/2026) : elle allait de l'annonce à la sortie,
+    # donc elle restait pleine pour toujours.
+    check(apres["barres"] == 0,
+          "[compteur] après la sortie, la barre de progression a disparu (%s)" % apres["barres"])
+    # Et la note dit ce que compte le compteur, en une ligne.
+    check(apres["note"].strip() == "Temps écoulé depuis la sortie du jeu, le 19/11/26",
+          "[compteur] la note explique le compteur : « %s »" % apres["note"].strip())
+    # Et le découpage garde ses QUATRE tuiles une semaine après, comme l'en-tête.
+    check(apres["tuiles"] == 4,
+          "[compteur] une semaine après, les quatre tuiles sont là (%s)" % apres["tuiles"])
     ctx.close()
 
-    # LES ZÉROS DE TÊTE S'EFFACENT DANS LES DERNIÈRES 24 HEURES.
-    #
-    # C'est la rançon des six tuiles toujours affichées : à T-30 min, le
-    # panneau annonçait « 0 mois 0 sem 0 j 0 h 30 min 14 s ». Un premier
-    # jet remplaçait tout par le total en secondes, en grand ; Antoni l'a
-    # refusé — « 1 799 secondes » ne se lit pas.
-    #
-    # Trois instants. Les deux premiers encadrent minuit, parce que le
-    # seuil est un ÉCART et que le défaut est le même en miroir après la
-    # sortie. Le troisième garde un zéro AU MILIEU, qui doit rester. Le
-    # troisième est juste au-dessus des 24 h : rien ne doit y être coupé.
-    # Le zéro DU MILIEU, qui ne se coupe pas, est éprouvé plus bas sur la
-    # fonction elle-même : l'instant qui le produirait ne dure qu'une
-    # minute et l'horloge installée avance pendant que la page charge.
-    #
-    # Paris est à UTC+1 le 19 novembre : la sortie tombe le 18 à 23:00 UTC.
-    for utc, libelle, attendues in (
-            ("2026-11-18T22:30:00Z", "T-30 min", ["min", "s"]),
-            ("2026-11-18T23:30:00Z", "T+30 min", ["min", "s"]),
-            ("2026-11-17T22:55:00Z", "T-24 h 05", ["mois", "sem", "j", "h",
-                                                   "min", "s"]),
+    # LES QUATRE TUILES, MÊME DANS LES DERNIÈRES 24 HEURES (07/11/2026). Il n'y a plus de coupe
+    # des zéros de tête : comme l'en-tête, le panneau garde jours, heures, min, sec, et grise la
+    # tuile des jours quand elle vaut 00. Trois instants autour de minuit (la coupe valait des
+    # deux côtés) et, après la sortie, un nombre de jours à TROIS chiffres.
+    QUATRE_LIB = ["jours", "heures", "min", "sec"]
+    for utc, libelle, grises, jours, libelles in (
+            ("2026-11-18T22:30:00Z", "T-30 min", ["jours"], "00", QUATRE_LIB),
+            ("2026-11-18T23:30:00Z", "T+30 min", ["jours"], "00", QUATRE_LIB),
+            ("2026-11-17T22:55:00Z", "T-24 h 05", [], "01", QUATRE_LIB),
+            ("2026-12-24T08:30:00Z", "+1 mois (5 tuiles)", [], "01", ["mois", "j", "h", "min", "s"]),
+            ("2027-03-10T12:00:00Z", "+3 mois (5 tuiles)", [], "03", ["mois", "j", "h", "min", "s"]),
+            ("2028-02-02T17:45:00Z", "+1 an 2 mois (6 tuiles)", [], "01", ["an", "mois", "j", "h", "min", "s"]),
     ):
         ctx = nav.new_context(viewport={"width": 320, "height": 850},
                               timezone_id="Europe/Paris")
@@ -4910,104 +5056,52 @@ def test_panneau_du_compteur(nav, url):
         page = ctx.new_page()
         page.goto(url, wait_until="load")
         page.wait_for_selector("#feed", state="attached")
-        t = page.evaluate("""() => {
+        t_ = page.evaluate("""() => {
             ouvreCompteur();
             const c = document.getElementById('compteurContenu');
-            const d = c.querySelector('.compteur-tuiles');
+            const d = c.querySelector('.tuile-panneau .countdown');
             const cases = [...d.children];
             const boite = c.getBoundingClientRect();
             let sort = null;
-            // SUR LA TUILE, pas sur la grille : la grille est un bloc,
-            // elle ne déborde jamais ; c'est son contenu qui sort. Cette
-            // géométrie m'a déjà pris cinq fois.
-            for(const e of c.querySelectorAll('.compteur-tuiles > div')){
+            for(const e of c.querySelectorAll('.tuile-panneau .cd-t, .compteur-tuiles > div')){
               const q = e.getBoundingClientRect();
               if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5)
-                sort = e.textContent + ' (bord droit ' + Math.round(q.right)
-                       + ' px pour ' + Math.round(boite.right) + ')';
+                sort = e.textContent + ' (bord droit ' + Math.round(q.right) + ' px pour ' + Math.round(boite.right) + ')';
             }
-            const hauts = new Set(cases.map(
-              e => Math.round(e.getBoundingClientRect().top)));
+            // Le chiffre ET le libellé doivent tenir DANS leur tuile, même à six tuiles sur 320 px.
+            let dehors = null;
+            for(const e of cases){
+              for(const noeud of [e.querySelector('b'), e.querySelector('i')]){
+                const r = document.createRange(); r.selectNodeContents(noeud);
+                const q = r.getBoundingClientRect(), tq = e.getBoundingClientRect();
+                if(q.right > tq.right + 0.5 || q.left < tq.left - 0.5) dehors = noeud.textContent + ' sort de sa tuile';
+              }
+            }
             const r = {
-              unites: cases.map(e => e.querySelector('span').textContent),
-              // La PREMIÈRE tuile ne doit jamais valoir zéro sous 24 h :
-              // c'est exactement ce que la coupe promet.
+              unites: cases.map(e => e.querySelector('i').textContent),
               premier: cases[0].querySelector('b').textContent,
-              rangees: hauts.size,
-              grilles: c.querySelectorAll('.compteur-tuiles').length,
-              // L'étiquette du groupe reste la phrase complète, qui
-              // masque DÉJÀ les zéros : la coupe ne la change pas.
+              grises: cases.filter(e => e.classList.contains('zero')).map(e => e.querySelector('i').textContent),
+              rangees: new Set(cases.map(e => Math.round(e.getBoundingClientRect().top))).size,
+              grilles: c.querySelectorAll('.tuile-panneau .countdown, .compteur-tuiles').length,
               phrase: d.getAttribute('aria-label'),
-              sort: sort,
+              sort: sort, dehors: dehors,
             };
             fermeCompteur();
             return r;
         }""")
-        check(t["unites"] == attendues,
-              "[compteur %s] les unités de tête à zéro s'effacent, et "
-              "seulement elles (%s, attendu %s)"
-              % (libelle, t["unites"], attendues))
-        check(len(attendues) == 6 or t["premier"] != "0",
-              "[compteur %s] la première tuile n'est jamais un zéro sous "
-              "24 h (« %s »)" % (libelle, t["premier"]))
-        check(t["rangees"] == 1,
-              "[compteur %s] et la ligne tient toujours à 320 px (%s "
-              "rangée(s))" % (libelle, t["rangees"]))
-        check(t["sort"] is None,
-              "[compteur %s] rien ne sort du panneau (%s)"
-              % (libelle, t["sort"]))
-        check(t["grilles"] == 2,
-              "[compteur %s] les équivalences restent, elles (%s grille(s))"
-              % (libelle, t["grilles"]))
-        check(not re.search(r"(?:^|· )0 ", t["phrase"] or ""),
-              "[compteur %s] et l'étiquette parlée n'a jamais porté de "
-              "zéro — phraseDecoupe les masque depuis le début, la coupe "
-              "ne la change pas (« %s »)" % (libelle, t["phrase"]))
+        check(t_["unites"] == libelles,
+              "[compteur %s] les tuiles attendues sont là (%s)" % (libelle, t_["unites"]))
+        check(t_["premier"] == jours and t_["grises"] == grises,
+              "[compteur %s] la première tuile vaut « %s » et n'est grisée que si elle vaut 00 (%s)"
+              % (libelle, jours, t_["grises"]))
+        check(t_["rangees"] == 1 and t_["sort"] is None and t_["dehors"] is None,
+              "[compteur %s] une rangée à 320 px, rien ne sort (%s, %s)" % (libelle, t_["sort"], t_["dehors"]))
+        check(t_["grilles"] == 2,
+              "[compteur %s] les équivalences restent, elles (%s grille(s))" % (libelle, t_["grilles"]))
+        check(not re.search(r"(?:^|· )0 ", t_["phrase"] or ""),
+              "[compteur %s] et l'étiquette parlée n'a jamais porté de zéro (« %s »)" % (libelle, t_["phrase"]))
         ctx.close()
 
-    # LE CAS LIMITE, sur la fonction elle-même : tout à zéro. La coupe
-    # garderait une ligne VIDE si elle n'était pas bornée, pendant la
-    # seconde qui enjambe minuit.
-    ctx = nav.new_context(viewport={"width": 320, "height": 850},
-                          timezone_id="Europe/Paris")
-    page = ctx.new_page()
-    page.goto(url, wait_until="load")
-    page.wait_for_selector("#feed", state="attached")
-    bord = page.evaluate("""() => {
-        const zero = {mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:0};
-        const h = document.createElement('div');
-        h.innerHTML = tuilesDecoupe(zero, 'precis', true);
-        const un = document.createElement('div');
-        un.innerHTML = tuilesDecoupe(
-          {mois:0, semaines:0, jours:0, heures:0, minutes:0, secondes:7},
-          'precis', true);
-        const mil = document.createElement('div');
-        mil.innerHTML = tuilesDecoupe(
-          {mois:0, semaines:0, jours:0, heures:23, minutes:0, secondes:5},
-          'precis', true);
-        return {
-          milieu: [...mil.firstChild.children].map(
-            e => e.querySelector('b').textContent + e.querySelector('span').textContent),
-          zero: [...h.firstChild.children].map(
-            e => e.querySelector('b').textContent + e.querySelector('span').textContent),
-          un: [...un.firstChild.children].map(
-            e => e.querySelector('b').textContent + e.querySelector('span').textContent),
-        };
-    }""")
-    check(bord["zero"] == ["0s"],
-          "[compteur] tout à zéro garde UNE tuile — la seconde qui "
-          "enjambe minuit ne laisse pas une ligne vide (%s)" % bord["zero"])
-    check(bord["un"] == ["7s"],
-          "[compteur] et une seule unité vivante ne garde qu'elle (%s)"
-          % bord["un"])
-    # LE ZÉRO DU MILIEU RESTE. Sans lui, « 23 h 5 s » se lirait « 23 h
-    # 5 min » d'un coup d'œil : le chiffre des secondes prendrait la
-    # place de celui des minutes.
-    check(bord["milieu"] == ["23h", "0min", "5s"],
-          "[compteur] seuls les zéros DE TÊTE sautent : celui du milieu "
-          "reste, sinon les secondes prendraient la place des minutes "
-          "(%s)" % bord["milieu"])
-    ctx.close()
 
 
 # Le seuil WCAG AA pour du texte ordinaire. Le « grand texte » (au moins
@@ -5018,17 +5112,13 @@ CONTRASTE_GRAND_TEXTE = 3.0
 
 # LES EXCEPTIONS SONT NOMMÉES, UNE PAR UNE, AVEC LEUR MESURE.
 #
-# Les tuiles à zéro du panneau du compteur sont volontairement effacées :
-# opacity .45 sur --text-dim, ce qui donne 1,92:1 en clair et 2,09:1 en
-# sombre. Antoni a tranché le 16/10/2026 : « les laisser telles quelles »,
-# l'effacement EST l'effet recherché — un zéro est là pour que la ligne ne
-# se redispose pas, pas pour être lu.
+# (Les tuiles à zéro du panneau du compteur, effacées à 0,45 d'opacité, ont été
+# retirées de cette liste le 07/11/2026 : la tuile des jours à 00 est maintenant grisée
+# sans opacité, au contraste de --text-dim, comme dans l'en-tête.)
 #
 # Une exception qui ne désigne plus rien est une exception pourrie : le
 # contrôle vérifie que chacune correspond encore à au moins un élément.
 EXCEPTIONS_CONTRASTE = {
-    ".compteur-tuiles .zero b": "tuiles à zéro, effacement voulu (16/10)",
-    ".compteur-tuiles .zero span": "tuiles à zéro, effacement voulu (16/10)",
     # L'INTÉRIEUR D'UNE CARTE LUE. Elles sont estompées à 0,70, ce qui
     # met tout leur contenu entre 2,98 et 3,57:1 ; Antoni a tranché le
     # 16/10/2026 que c'est de l'accessoire sur un article déjà lu.
@@ -6668,6 +6758,8 @@ def main():
             test_barre_du_bas(nav, url)
             test_page_reglages(nav, url)
             test_entete_tuiles_et_ligne_reduite(nav, url)
+            test_fenetre_du_compteur(nav, url)
+            test_compteurs_jumeaux(nav, url)
             test_toast_annuler(nav, url)
             test_poids_de_tout_charger(nav, url)
             test_plafond_des_lus(nav, url)

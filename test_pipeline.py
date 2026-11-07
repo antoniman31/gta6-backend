@@ -7781,7 +7781,7 @@ def test_barre_du_bas_et_entete():
     ids = re.findall(r'<button[^>]*id="([a-zA-Z]+)"', barre.group(1))
     check(ids == ["navFil", "statsBtn", "navReglages"],
           "elle a trois entrées dans l'ordre Fil, Stats, Réglages (%s)" % ids)
-    check("navCompteur" not in code and "i-timer" not in code,
+    check("navCompteur" not in code and "i-timer" not in barre.group(1),
           "le compteur n'est plus dans la barre : on l'ouvre en touchant la tuile de l'entête")
     check('id="countdown"' in code and 'onclick="ouvreCompteur()"' in code,
           "et cette tuile ouvre toujours le détail du compteur")
@@ -7796,9 +7796,8 @@ def test_barre_du_bas_et_entete():
     tuile = entete[entete.index('class="tuile-compteur"'):]
     check('id="modeIndicator"' in haut and 'id="triggerRunBtn"' in haut and 'id="refreshBtn"' in haut,
           "la rangée du haut porte la pastille « Backend », « Relancer le robot » et le ↻")
-    check([h for h in ('cdJ', 'cdH', 'cdM', 'cdS') if 'id="%s"' % h in tuile] == ["cdJ", "cdH", "cdM", "cdS"]
-          and 'id="countdown"' in tuile and 'id="compteurSous"' in tuile,
-          "la tuile porte les quatre cases jours, heures, minutes, secondes et son libellé")
+    check('id="countdown"' in tuile and 'class="compteur-sous"' in tuile and 'class="cd-t"' not in tuile,
+          "la tuile de l'en-tête porte le bouton des tuiles et son libellé (les cases viennent de la fonction commune)")
     check("compteurGros" not in code and "compteur-gros" not in code,
           "le gros chiffre unique de la version précédente a disparu")
     check("Relancer le robot</button>" not in haut and 'aria-label="Relancer le robot"' in haut,
@@ -7808,6 +7807,27 @@ def test_barre_du_bas_et_entete():
           and 'min-width:360px' in html and 'body:not(.a-jeton)' in html and 'min-width:430px' in html,
           "la pastille « Backend » est un point seul sur petit écran (mot dès 360 px sans jeton, 430 px avec)")
     check('classList.toggle("a-jeton"' in html, "et la présence d'un jeton est lue par la mise en page")
+
+    # La fenêtre du compteur (07/11/2026) : centrée, quatre coins arrondis, barre rectangulaire.
+    regle = re.search(r"#compteurOverlay\{([^}]*)\}", html).group(1)
+    check("align-items:center" in regle, "la fenêtre du compteur est centrée en hauteur")
+    regle = re.search(r"#compteurOverlay \.sheet-panel\{([^}]*)\}", html).group(1)
+    check("border-radius:var(--r-md)" in regle and "border:1px solid" in regle,
+          "et arrondie sur ses quatre coins, avec un bord en bas")
+    regle = re.search(r"\.compteur-barre\{([^}]*)\}", html).group(1)
+    check("border-radius:0" in regle and "border:1px solid" in regle,
+          "la barre de progression est rectangulaire, avec un contour qui montre la part restante")
+
+    # Les quatre équivalences du bas de la fenêtre : cartes à icônes Material (choix d'Antoni, sur cinq maquettes).
+    ie = html[html.index("const ICONES_EQUIV = {"):]
+    ie = ie[:ie.index("};")]
+    check(all('ic("%s")' % n in ie for n in ("calendar_today", "schedule", "hourglass_top", "timer")),
+          "les équivalences ont leurs quatre icônes Material : jours, heures, minutes, secondes")
+    regle = re.search(r"\.compteur-tuiles\.equiv > div\{([^}]*)\}", html).group(1)
+    check("border-left:3px solid var(--accent)" in regle and "border-radius:var(--r-sm)" in regle,
+          "chaque équivalence est une carte à filet d'accent")
+    check(re.search(r"\.compteur-tuiles\.equiv b\.long\{font-size:15px;\}", html) is not None,
+          "et un total de neuf signes ou plus passe en corps réduit")
 
     # La LIGNE RÉDUITE (choix d'Antoni, 07/11/2026).
     bh = re.search(r'<div class="barre-haut" id="barreHaut">(.*?)\n</div>', code, re.S)
@@ -7855,13 +7875,51 @@ def test_barre_du_bas_et_entete():
     check('palier === "final") compact = `${p2(t.h)}:${p2(t.m)}:${p2(t.s)}`' in fn
           and '`${t.j}j ${p2(t.h)}h ${p2(t.m)}m`' in fn and '`${t.j}j ${p2(t.h)}h`' in fn,
           "la ligne réduite compte en HH:MM:SS le dernier jour, en j-h-min sous sept jours, en j-h au-delà")
-    check('"SORTI !"' in fn and '"+" + t.j + " j"' in fn
-          and '"avant la sortie"' in fn and '"depuis la sortie"' in fn,
-          "elle dit « +n j » après la sortie, et le libellé sous les tuiles change avec")
+    ca = html[html.index("function compactApres("):]
+    ca = ca[:ca.index("\n}")]
+    check('"SORTI !"' in ca and '"+" + d.j + " j"' in ca and '" mois"' in ca and '" ans"' in ca
+          and '"avant la sortie"' in fn and '"depuis la sortie"' in fn and "decoupeApres(GTA6_RELEASE, now)" in fn,
+          "après la sortie : « +3 j », « +1 mois 3 j », « +1 an 2 mois », et le libellé sous les tuiles change avec")
+    da = html[html.index("function decoupeApres("):]
+    da = da[:da.index("\n}")]
+    check('["a", "M", "j", "h", "m", "s"]' in da and '["M", "j", "h", "m", "s"]' in da and '["j", "h", "m", "s"]' in da,
+          "les mois puis les années s'ajoutent aux tuiles seulement quand il y en a besoin")
+    check("function ajouteUnMois(" in html and "Math.min(quantieme, dernier)" in html,
+          "les mois sont civils, et le 31 janvier + 1 mois ne déborde pas sur mars")
+    check('(avant ? htmlAgenda(maintenant) : "")' in html,
+          "l'agenda est caché après la sortie : son code reste, il n'est plus affiché")
+    check('Barre remplie depuis l\'annonce du jeu, le 4/02/22</p>' in html and "Sortie ${avant" not in html
+          and 'Temps écoulé depuis la sortie du jeu, le 19/11/26</p>' in html,
+          "la note du panneau est courte : d'où part la barre avant la sortie, ce que compte le compteur après")
+    pc = html[html.index("function majPanneauCompteur("):]
+    check("const barre = avant" in pc and "+ barre" in pc and ": \"\";" in pc,
+          "après la sortie, il n'y a plus de barre de progression dans la fenêtre")
     ec = html[html.index("function ecritCompteur("):]
     ec = ec[:ec.index("\n}")]
-    check('"cdJ"' in ec and '"cdS"' in ec and 'classList.toggle("zero", t.j === 0)' in ec,
-          "les quatre tuiles sont écrites, celle des jours est grisée à 00")
+    check('for(const u of cles)' in ec and 'htmlTuilesCompteur(cles)' in ec
+          and 'tuile.classList.toggle("zero", t[u] === 0)' in ec,
+          "les tuiles sont écrites depuis le jeu choisi, celle des jours (et des mois) est grisée à 00")
+
+    # LES JUMEAUX (Antoni, 07/11/2026) : le compteur de l'en-tête et celui de la fenêtre ne
+    # peuvent pas diverger, parce qu'ils partagent TOUT : balisage, écriture, instant, style.
+    check("function htmlTuilesCompteur(" in html and "function htmlBlocCompteur(" in html,
+          "une seule fonction de balisage fournit les tuiles")
+    check(html.count('<span class="cd-t"') == 1,
+          "et le balisage d'une tuile n'est écrit qu'à UN endroit")
+    hb = html[html.index("function htmlBlocCompteur("):]
+    hb = hb[:hb.index("\n}")]
+    check("htmlTuilesCompteur()" in hb and 'class="countdown"' in hb,
+          "la fenêtre du compteur reprend ce balisage et la classe « countdown » de l'en-tête")
+    check('document.getElementById("countdown").innerHTML = htmlTuilesCompteur();' in html,
+          "l'en-tête reçoit ses tuiles de la même fonction")
+    check('document.querySelectorAll(".tuile-compteur .countdown")' in ec,
+          "l'écriture vise TOUS les compteurs d'un coup, avec le même instant")
+    pc = html[html.index("function majPanneauCompteur("):]
+    pc = pc[:pc.index("\n}\n")]
+    check("htmlBlocCompteur()" in pc and pc.rstrip().endswith("updateCountdown();"),
+          "le panneau pose ses tuiles vides puis les remplit par le MÊME appel que l'en-tête")
+    check("UNITES_COMPTEUR" not in html and "function tuilesDecoupe(" not in html and "function phraseDecoupe(" not in html,
+          "plus de seconde implémentation du découpage en tuiles")
     # Plus de surligneur en thème clair (07/11/2026) : le texte reste fluo, cerné d'un trait sombre.
     for pal in ("soon", "urgent", "final"):
         regle = re.search(r'html\[data-theme="light"\] \.countdown\.%s\{([^}]*)\}' % pal, html).group(1)
@@ -7870,7 +7928,7 @@ def test_barre_du_bas_et_entete():
     trait = re.search(r'html\[data-theme="light"\] \.countdown\.soon, [^{]*\{([^}]*)\}', html).group(1)
     check("-webkit-text-stroke:" in trait and "var(--compte-encre)" in trait and "paint-order:stroke fill" in trait,
           "le trait sombre (--compte-encre) cerne le fluo, derrière le remplissage")
-    check('el.setAttribute("aria-label", nom)' in ec,
+    check('g.setAttribute("aria-label", n)' in ec,
           "le bouton, dont le contenu est fait de chiffres nus, a un nom accessible qui dit ce qu'il compte")
 
 

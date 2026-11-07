@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2216 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2234 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -124,7 +124,7 @@ Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 
 - **Statistiques et journal** : volume par jour et par heure, sources actives et en baisse, médias, délais, incidents du robot ; journal des événements de l'app.
 - **Archive** chargée mois par mois ; **sauvegarde** exportable et importable (réglages, sources, articles lus) ; export OPML des sources.
 - **Mode de secours** : si `feed.json` est injoignable, l'app interroge elle-même les flux (`DEFAULT_FEEDS`) via des proxys, avec sa propre déduplication.
-- **Navigation** : barre flottante en bas — Fil, Stats, Réglages. Le détail du compteur s'ouvre en touchant la tuile de l'entête. L'entête : une rangée (titre, pastille « Backend », ▶ « Relancer le robot » avec un jeton, ↻) puis QUATRE TUILES jours / heures / minutes / secondes avec le libellé « avant la sortie » (« depuis la sortie » après) ; en défilant, une ligne réduite de 52 px se colle en haut (titre, point vert en mode backend, compteur à précision croissante). Le Journal des passages s'ouvre depuis Statistiques › Robot.
+- **Navigation** : barre flottante en bas — Fil, Stats, Réglages. Le détail du compteur s'ouvre en touchant la tuile de l'entête. L'entête : une rangée (titre, pastille « Backend », ▶ « Relancer le robot » avec un jeton, ↻) puis QUATRE TUILES jours / heures / minutes / secondes avec le libellé « avant la sortie » (« depuis la sortie » après) ; en défilant, une ligne réduite de 52 px se colle en haut (titre, point vert en mode backend, compteur à précision croissante). La fenêtre du compteur (centrée, quatre coins arrondis, barre de progression rectangulaire) reprend les MÊMES quatre tuiles que l'en-tête : un seul balisage, une seule fonction d'écriture, un seul style, au même instant, donc jamais de divergence. Le Journal des passages s'ouvre depuis Statistiques › Robot.
 - **Réglages** : une PAGE (plus un pop-up) sous l'entête de l'app, ouverte par « Réglages » dans la barre du bas, qui reste visible ; les quatre rubriques sont collées en haut de la page, en cartes groupées — Apparence (thème, écran de chargement, liste des articles), Filtres (mots-clés, exclusions, mode sans spoiler), Sources, Données (backend, jeton, export, sauvegarde, « Zone sensible » avec Réinitialiser). Détail : thème, mots-clés, seuil de doublon, nombre d'articles, sources (les interrupteurs n'agissent qu'en mode de secours), adresse du backend, déclenchement du robot depuis le téléphone
   (jeton GitHub à portée minimale, gardé dans ce navigateur seulement).
 - **Écran de chargement** : blanc en thème clair, noir en thème sombre (« système » suit le téléphone), avec le logo et le décompte du jour (« J-12 »). Il reste `SPLASH_DUREE_MIN_MS` après le premier

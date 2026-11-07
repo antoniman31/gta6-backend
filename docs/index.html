@@ -341,7 +341,7 @@
      tuile des jours est grisée (pointillés, sans opacité) le dernier jour : 00. */
   .tuile-compteur .countdown{
     position:static; margin:0; padding:0; display:grid; width:100%;
-    grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;
+    grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); gap:8px;
     font-size:26px; font-weight:800; line-height:1.1; text-align:center; white-space:nowrap;
     background:none; border:0; letter-spacing:0;
   }
@@ -357,8 +357,15 @@
   .cd-t b{font-weight:800; font-size:26px; line-height:1.1; font-variant-numeric:tabular-nums;}
   .cd-t i{
     font-style:normal; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600;
-    color:var(--text-dim); text-shadow:none; -webkit-text-stroke:0;
+    color:var(--text-dim); text-shadow:none; -webkit-text-stroke:0; text-transform:none;
   }
+  /* Cinq tuiles (un mois et plus après la sortie) puis six (un an et plus) : écart et corps réduits,
+     libellés abrégés par le balisage, pour tenir à 320 px. */
+  .tuile-compteur .countdown[data-n="5"]{gap:6px;}
+  .tuile-compteur .countdown[data-n="6"]{gap:4px;}
+  .tuile-compteur .countdown[data-n="5"] .cd-t b{font-size:22px;}
+  .tuile-compteur .countdown[data-n="6"] .cd-t b{font-size:18px;}
+  .tuile-compteur .countdown[data-n="5"] .cd-t, .tuile-compteur .countdown[data-n="6"] .cd-t{padding:8px 2px;}
   .cd-t.zero{background:transparent; border-style:dashed;}
   .cd-t.zero b{color:var(--text-dim); text-shadow:none; -webkit-text-stroke:0;}
   .compteur-sous{
@@ -1192,31 +1199,12 @@
   .compteur-tuiles span{
     display:block; font-size:11px; color:var(--text-dim); margin-top:3px;
   }
-  /* Deux tailles seulement. .precis est la disposition des dernières
-     24 heures, quand la seconde est l'information ; .second est la
-     disposition ordinaire. */
-  .compteur-tuiles.precis b{font-size:28px; color:var(--accent);}
-  .compteur-tuiles.second b{font-size:20px;}
-  /* LA TEINTE DU PALIER, la même que l'en-tête. Elle ne touche que les
-     gros chiffres : la barre garde son bleu et les équivalences restent
-     neutres. Les trois teintes sont déjà mesurées sur les deux fonds de
-     panneau (4,99 / 5,02 / 6,47 en clair, 8,51 / 7,93 / 5,61 en sombre),
-     et à 20 px gras elles passent même en « grand texte ». */
-  .compteur-tuiles.soon b{color:var(--compte-soon); text-shadow:var(--compte-halo-soon);}
-  .compteur-tuiles.urgent b{color:var(--compte-urgent); text-shadow:var(--compte-halo-urgent);}
-  .compteur-tuiles.final b{color:var(--compte-final); text-shadow:var(--compte-halo-final);}
-  /* Les unités à zéro gardent leur gris : la teinte du palier dirait
-     « regarde » sur un chiffre qui n'a rien à dire. */
-  .compteur-tuiles.soon .zero b,
-  .compteur-tuiles.urgent .zero b,
-  .compteur-tuiles.final .zero b{color:var(--text-dim);}
-  /* LES UNITÉS À ZÉRO RESTENT AFFICHÉES, en gris. Les masquer changeait
-     le nombre de tuiles, donc la disposition de toute la ligne, à chaque
-     fois qu'une unité tombait — exactement ce qu'Antoni a signalé
-     (« c'est quand les mois partiront »). Elles sont là, discrètes, et
-     la ligne ne bouge plus jamais. */
-  .compteur-tuiles .zero b{color:var(--text-dim); opacity:.45;}
-  .compteur-tuiles .zero span{opacity:.45;}
+  /* (Les tuiles du haut de la fenêtre sont les JUMELLES de celles de l'en-tête : même balisage,
+     même feuille de style — voir .tuile-compteur .countdown. Il ne reste ici que les
+     équivalences.) */
+  .tuile-panneau{margin:0 0 16px;}
+  .tuile-panneau .countdown{cursor:default;}
+  .tuile-panneau .countdown::after{display:none;}
 
   /* Les équivalences ont leur propre grille, à DEUX colonnes sur deux
      rangées. Mesuré à 320 px : le total en secondes fait 87 px (2 888 596
@@ -1224,10 +1212,23 @@
      n'en offriraient que 55 — infaisable, y compris en réduisant le corps,
      où il tient encore 71 px. Deux colonnes en donnent 119. */
   .compteur-tuiles.equiv{
-    grid-auto-flow:row; grid-template-columns:repeat(2, 1fr);
-    gap:12px 8px;
+    grid-auto-flow:row; grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px; justify-content:stretch;
   }
-  .compteur-tuiles.equiv b{font-size:16px;}
+  .compteur-tuiles.equiv > div{
+    background:var(--bg-elevated); border:1px solid var(--line); border-left:3px solid var(--accent);
+    border-radius:var(--r-sm); padding:10px 8px 10px 12px; text-align:left; min-width:0;
+  }
+  .compteur-tuiles.equiv span{
+    display:flex; align-items:center; gap:6px; margin:0; font-size:12px; color:var(--text-dim);
+  }
+  .compteur-tuiles.equiv span .ic{width:18px; height:18px; flex:none;}
+  .compteur-tuiles.equiv b{
+    display:block; margin-top:4px; font-size:20px; font-variant-numeric:tabular-nums; white-space:nowrap;
+  }
+  /* Neuf signes ou plus (un total en secondes à plus de 31 millions) : un corps plus petit,
+     sinon le nombre dépasse de sa carte à 320 px. */
+  .compteur-tuiles.equiv b.long{font-size:15px;}
 
   /* Le compte de dodos, SOUS LA BARRE : « c'est juste un truc en plus,
      pas un truc hyper important » (Antoni, 16/10). Il a eu sa vedette à
@@ -1294,9 +1295,12 @@
 
      26 px de haut, et le chiffre à 12 px : à 18 px et 10 px il était
      là mais personne ne le voyait. */
+  /* RECTANGULAIRE (07/11/2026, « pour mieux voir le pourcentage complété ») : les bouts
+     arrondis de la pastille mangeaient les derniers pourcents, et à 99,4 % la barre
+     paraissait pleine. Un contour et un fond de piste distincts montrent la part restante. */
   .compteur-barre{
-    position:relative; height:26px; border-radius:var(--r-full);
-    background:var(--line); overflow:hidden; margin-bottom:10px;
+    position:relative; height:28px; border-radius:0;
+    background:var(--bg-elevated); border:1px solid var(--text-dim); overflow:hidden; margin-bottom:10px;
   }
   .compteur-barre > span{
     position:relative; display:block; height:100%;
@@ -1512,15 +1516,9 @@
   html[data-theme="light"] .countdown.urgent{color:var(--compte-urgent);}
   html[data-theme="light"] .countdown.final{color:var(--compte-final);}
   html[data-theme="light"] .countdown.soon, html[data-theme="light"] .countdown.urgent, html[data-theme="light"] .countdown.final,
-  html[data-theme="light"] .bh-compteur.soon, html[data-theme="light"] .bh-compteur.urgent, html[data-theme="light"] .bh-compteur.final,
-  html[data-theme="light"] .compteur-tuiles.soon > div:not(.zero) > b,
-  html[data-theme="light"] .compteur-tuiles.urgent > div:not(.zero) > b,
-  html[data-theme="light"] .compteur-tuiles.final > div:not(.zero) > b{
+  html[data-theme="light"] .bh-compteur.soon, html[data-theme="light"] .bh-compteur.urgent, html[data-theme="light"] .bh-compteur.final{
     -webkit-text-stroke:1.5px var(--compte-encre); paint-order:stroke fill;
   }
-  html[data-theme="light"] .compteur-tuiles.soon > div:not(.zero) > b{color:var(--compte-soon);}
-  html[data-theme="light"] .compteur-tuiles.urgent > div:not(.zero) > b{color:var(--compte-urgent);}
-  html[data-theme="light"] .compteur-tuiles.final > div:not(.zero) > b{color:var(--compte-final);}
   /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
      Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
      thème clair : illisible, et resté invisible tant qu'aucun article à
@@ -1641,6 +1639,14 @@
     background:var(--bg-panel); border:1px solid var(--line); border-bottom:none;
     border-radius:var(--r-md) var(--r-md) 0 0; width:100%; max-width:520px;
     padding:8px 20px 24px; max-height:80vh; overflow-y:auto;
+  }
+  /* LA FENÊTRE DU COMPTEUR (demande d'Antoni, 07/11/2026, capture à l'appui) : centrée en
+     hauteur ET en largeur sur l'écran, et arrondie sur ses QUATRE coins — elle avait le
+     style d'une feuille ancrée en haut, arrondie seulement au-dessus, sans bord en bas. */
+  #compteurOverlay{align-items:center;}
+  #compteurOverlay .sheet-panel{
+    border:1px solid var(--line); border-radius:var(--r-md); padding:20px;
+    max-height:calc(100vh - 32px);
   }
   .sheet-handle{
     width:36px; height:4px; border-radius:var(--r-xs); background:var(--line);
@@ -2146,6 +2152,10 @@
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A5.99 5.99 0 0 1 12 18a6 6 0 1 1 0-12c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></symbol>
 <symbol id="i-play_circle" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM10 8v8l6-4z"/></symbol>
 <symbol id="i-article" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/><path d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></symbol>
+<symbol id="i-calendar_today" viewBox="0 0 24 24"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zm0-13H4V5h16v3z"/></symbol>
+<symbol id="i-schedule" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></symbol>
+<symbol id="i-hourglass_top" viewBox="0 0 24 24"><path d="m6 2 .01 6L10 12l-3.99 4.01L6 22h12v-6l-4-4 4-3.99V2H6zm10 14.5V20H8v-3.5l4-4 4 4z"/></symbol>
+<symbol id="i-timer" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></symbol>
 <symbol id="i-warning" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
 <symbol id="i-bedtime" viewBox="0 0 24 24"><path d="M9.27 4.49c-1.63 7.54 3.75 12.41 7.66 13.8A7.993 7.993 0 0 1 12 20c-4.41 0-8-3.59-8-8 0-3.45 2.2-6.4 5.27-7.51m2.72-2.48C6.4 2.01 2 6.54 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.97h-.35z"/></symbol>
 </svg>
@@ -2200,12 +2210,8 @@
     <div class="tuile-compteur">
       <button type="button" id="countdown" class="countdown"
               aria-haspopup="dialog" onclick="ouvreCompteur()">
-        <span class="cd-t" id="cdJ"><b>--</b><i>jours</i></span>
-        <span class="cd-t" id="cdH"><b>--</b><i>heures</i></span>
-        <span class="cd-t" id="cdM"><b>--</b><i>min</i></span>
-        <span class="cd-t" id="cdS"><b>--</b><i>sec</i></span>
       </button>
-      <span id="compteurSous" class="compteur-sous"></span>
+      <span class="compteur-sous"></span>
     </div>
     <!-- Ce que le robot a fait à son dernier passage. Placé SOUS la tuile
          du compteur : au-dessus, il séparait le nombre d'articles des actions
@@ -8293,7 +8299,6 @@ function palierCompteur(diff){
 }
 
 function updateCountdown(){
-  const el = document.getElementById("countdown");
   const now = new Date();
   const diff = GTA6_RELEASE - now;
 
@@ -8311,9 +8316,11 @@ function updateCountdown(){
   // Ce bloc est INERTE avant le 19 novembre 2026. Écrit à l'avance pour n'avoir
   // rien à improviser le 20 au matin.
   if(diff <= 0){
-    const t = decoupe(-diff);
-    ecritCompteur(el, t, t.j < 1 ? "countdown final" : "countdown", "depuis la sortie",
-      t.j < 1 ? "SORTI !" : "+" + t.j + " j", t.j < 1 ? "final" : "");
+    const t = decoupeApres(GTA6_RELEASE, now);
+    // Le palier « final » (celui qui crie) ne vaut que le premier jour.
+    const premierJour = t.mois === 0 && t.j < 1;
+    ecritCompteur(t, premierJour ? "countdown final" : "countdown", "depuis la sortie",
+      compactApres(t), premierJour ? "final" : "");
     return;
   }
 
@@ -8330,7 +8337,50 @@ function updateCountdown(){
   if(palier === "final") compact = `${p2(t.h)}:${p2(t.m)}:${p2(t.s)}`;
   else if(palier === "urgent") compact = `${t.j}j ${p2(t.h)}h ${p2(t.m)}m`;
   else compact = `${t.j}j ${p2(t.h)}h`;
-  ecritCompteur(el, t, "countdown" + (palier ? " " + palier : ""), "avant la sortie", compact, palier);
+  ecritCompteur(t, "countdown" + (palier ? " " + palier : ""), "avant la sortie", compact, palier);
+}
+
+// Ajouter un mois en JavaScript déborde : le 31 janvier + 1 mois donne le 3 mars, parce que
+// setMonth garde le quantième et laisse février le reporter. On ramène donc au dernier jour du
+// mois visé.
+function ajouteUnMois(d){
+  const quantieme = d.getDate();
+  const r = new Date(d.getTime());
+  r.setDate(1);
+  r.setMonth(r.getMonth() + 1);
+  const dernier = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+  r.setDate(Math.min(quantieme, dernier));
+  return r;
+}
+
+// LE TEMPS ÉCOULÉ DEPUIS LA SORTIE, avec des mois et des années quand il y en a (demande
+// d'Antoni, 07/11/2026 : « après la sortie, sur tous les compteurs, ajouter les mois et les
+// années quand il y en aura besoin »). Des mois CIVILS, comptés depuis le 19 du mois : du 19
+// novembre au 19 décembre, un mois. Le reste se divise ensuite en jours, heures, minutes,
+// secondes. `unites` dit quelles tuiles afficher : jamais de mois à zéro avant le premier, jamais
+// d'année avant la première.
+function decoupeApres(debut, fin){
+  let mois = 0, curseur = new Date(debut.getTime());
+  while(mois < 1200){
+    const essai = ajouteUnMois(curseur);
+    if(essai > fin) break;
+    curseur = essai; mois++;
+  }
+  const d = decoupe(fin - curseur);
+  d.a = Math.floor(mois / 12);
+  d.M = mois % 12;
+  d.mois = mois;
+  d.unites = d.a > 0 ? ["a", "M", "j", "h", "m", "s"]
+           : d.M > 0 ? ["M", "j", "h", "m", "s"]
+           : ["j", "h", "m", "s"];
+  return d;
+}
+
+// La phrase courte de la ligne réduite après la sortie : « +3 j », « +1 mois 3 j », « +1 an 2 mois ».
+function compactApres(d){
+  if(d.a > 0) return "+" + d.a + (d.a > 1 ? " ans" : " an") + (d.M ? " " + d.M + " mois" : "");
+  if(d.M > 0) return "+" + d.M + " mois" + (d.j ? " " + d.j + " j" : "");
+  return d.j < 1 ? "SORTI !" : "+" + d.j + " j";
 }
 
 // Une durée en millisecondes -> jours, heures, minutes, secondes entiers.
@@ -8347,30 +8397,69 @@ function decoupe(ms){
 // l'autre soit immédiat, mais on n'écrit dans le DOM que si une valeur a
 // vraiment changé : sans ce garde-fou, afficher l'heure sans les secondes
 // repeindrait quand même l'en-tête 3600 fois par heure pour rien.
-function ecritCompteur(el, t, classe, sous, compact, palier){
+// LES JUMEAUX (demande d'Antoni, 07/11/2026 : « le compteur principal et celui en haut de la
+// carte doivent toujours être pareils, de vrais jumeaux »). Les tuiles de l'en-tête et celles
+// de la fenêtre du compteur viennent de UNE SEULE fonction de balisage (htmlTuilesCompteur),
+// sont écrites par UNE SEULE fonction (celle-ci), au MÊME instant (un seul « now » par appel
+// d'updateCountdown) et rendues par UNE SEULE feuille de style (.tuile-compteur .countdown).
+// Rien ne peut donc diverger : ni les chiffres, ni la tuile grisée, ni la teinte du palier.
+// Les libellés complets avec quatre tuiles ; ABRÉGÉS (j, h, min, s) dès cinq, quand les mois ou
+// les années s'ajoutent : « heures » à 10 px ne tient pas dans une tuile de 34 px à 320 px.
+const LIBELLES_TUILES = {a: "ans", M: "mois", j: "jours", h: "heures", m: "min", s: "sec"};
+const LIBELLES_COURTS = {a: "ans", M: "mois", j: "j", h: "h", m: "min", s: "s"};
+function htmlTuilesCompteur(cles){
+  cles = cles || ["j", "h", "m", "s"];
+  const lib = cles.length > 4 ? LIBELLES_COURTS : LIBELLES_TUILES;
+  return cles.map(u =>
+    `<span class="cd-t" data-u="${u}"><b>--</b><i>${lib[u]}</i></span>`).join("");
+}
+
+// Le bloc de la fenêtre du compteur : même contenant, mêmes tuiles, même libellé que l'en-tête.
+function htmlBlocCompteur(){
+  return `<div class="tuile-compteur tuile-panneau">`
+    + `<div class="countdown" role="group">${htmlTuilesCompteur()}</div>`
+    + `<span class="compteur-sous"></span></div>`;
+}
+
+function ecritCompteur(t, classe, sous, compact, palier){
   const p2 = n => String(n).padStart(2, "0");
-  for(const [id, v] of [["cdJ", t.j], ["cdH", t.h], ["cdM", t.m], ["cdS", t.s]]){
-    const tuile = document.getElementById(id);
-    if(!tuile) continue;
-    const chiffre = tuile.firstElementChild, txt = p2(v);
-    if(chiffre.textContent !== txt) chiffre.textContent = txt;
+  const cles = t.unites || ["j", "h", "m", "s"];
+  // Les tuiles sont un texte nu pour un lecteur d'écran : le groupe dit ce qu'il compte.
+  const nom = sous + " : " + compact;
+  for(const g of document.querySelectorAll(".tuile-compteur .countdown")){
+    // Le jeu de tuiles change après la sortie (mois, puis années, quand il y en a) : on le
+    // refait, pour TOUS les compteurs d'un coup, depuis la même fonction de balisage.
+    const jeu = cles.join("");
+    if(g.dataset.jeu !== jeu){
+      g.innerHTML = htmlTuilesCompteur(cles);
+      g.dataset.jeu = jeu;
+      g.dataset.n = String(cles.length);
+    }
+    for(const u of cles){
+      const tuile = g.querySelector(`.cd-t[data-u="${u}"]`);
+      if(!tuile) continue;
+      const chiffre = tuile.firstElementChild, txt = p2(t[u]);
+      if(chiffre.textContent !== txt) chiffre.textContent = txt;
+      // Les jours (le dernier jour, le jour de la sortie) et les mois (au-delà de la première
+      // année, quand ils retombent à 0) se grisent à 00.
+      if(u === "j" || u === "M") tuile.classList.toggle("zero", t[u] === 0);
+      // « 1 an », « 2 ans » : le libellé suit le nombre.
+      if(u === "a"){ const lib = tuile.lastElementChild, mot = t.a === 1 ? "an" : "ans"; if(lib.textContent !== mot) lib.textContent = mot; }
+    }
+    if(g.className !== classe) g.className = classe;
+    const n = g.tagName === "BUTTON" ? nom + " — ouvrir le détail" : nom;
+    if(g.getAttribute("aria-label") !== n) g.setAttribute("aria-label", n);
   }
-  // La tuile des jours est grisée quand elle vaut 00 (le dernier jour, le jour de la sortie).
-  const tj = document.getElementById("cdJ");
-  if(tj) tj.classList.toggle("zero", t.j === 0);
-  if(el.className !== classe) el.className = classe;
-  // Les tuiles sont un texte nu pour un lecteur d'écran : le bouton dit ce qu'il compte.
-  const nom = sous + " : " + compact + " — ouvrir le détail";
-  if(el.getAttribute("aria-label") !== nom) el.setAttribute("aria-label", nom);
-  const s = document.getElementById("compteurSous");
-  if(s && s.textContent !== sous) s.textContent = sous;
+  for(const s of document.querySelectorAll(".compteur-sous"))
+    if(s.textContent !== sous) s.textContent = sous;
   // La ligne réduite, avec la même couleur de palier.
   const cb = document.getElementById("cbCompteur");
   if(cb){
     if(cb.textContent !== compact) cb.textContent = compact;
     const cc = "bh-compteur" + (palier ? " " + palier : "");
     if(cb.className !== cc) cb.className = cc;
-    if(cb.getAttribute("aria-label") !== nom) cb.setAttribute("aria-label", nom);
+    const nb = nom + " — ouvrir le détail";
+    if(cb.getAttribute("aria-label") !== nb) cb.setAttribute("aria-label", nb);
   }
 }
 
@@ -8402,57 +8491,9 @@ function brancheBarreHaute(){
 // littéralement à « l'annonce du jeu ».
 const ANNONCE_GTA6 = new Date("2022-02-04T00:00:00+01:00");
 
-// Ajouter un mois en JavaScript déborde : le 31 janvier + 1 mois donne le
-// 3 mars, parce que setMonth garde le quantième et laisse février le
-// reporter. On ramène donc au dernier jour du mois visé.
-function ajouteUnMois(d){
-  const quantieme = d.getDate();
-  const r = new Date(d.getTime());
-  r.setDate(1);
-  r.setMonth(r.getMonth() + 1);
-  const dernier = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
-  r.setDate(Math.min(quantieme, dernier));
-  return r;
-}
-
-// Des mois CIVILS, pas des blocs de 30 jours : du 16 octobre au 16
-// novembre, les gens comptent un mois, et c'est vérifiable sur un
-// calendrier. Le reste se divise ensuite normalement.
-function decoupeCalendaire(debut, fin){
-  let mois = 0;
-  let curseur = new Date(debut.getTime());
-  while(true){
-    const essai = ajouteUnMois(curseur);
-    if(essai > fin) break;
-    curseur = essai;
-    mois++;
-    if(mois > 1200) break;  // garde-fou, jamais atteint
-  }
-  let reste = fin - curseur;
-  const J = 86400000;
-  const semaines = Math.floor(reste / (7 * J)); reste -= semaines * 7 * J;
-  const jours = Math.floor(reste / J); reste -= jours * J;
-  const heures = Math.floor(reste / 3600000); reste -= heures * 3600000;
-  const minutes = Math.floor(reste / 60000); reste -= minutes * 60000;
-  return {mois, semaines, jours, heures, minutes, secondes: Math.floor(reste / 1000)};
-}
-
-// Les unités à zéro sont MASQUÉES : « 1 mois, 0 semaine, 2 jours » se lit
-// mal, « 1 mois, 2 jours » se lit tout seul. La semaine réapparaîtra quand
-// elle vaudra quelque chose.
-function phraseDecoupe(d){
-  const bouts = [];
-  const pousse = (n, singulier, pluriel) => {
-    if(n > 0) bouts.push(n + " " + (n > 1 ? (pluriel || singulier + "s") : singulier));
-  };
-  pousse(d.mois, "mois", "mois");
-  pousse(d.semaines, "semaine");
-  pousse(d.jours, "jour");
-  pousse(d.heures, "heure");
-  pousse(d.minutes, "minute");
-  pousse(d.secondes, "seconde");
-  return bouts.length ? bouts.join(" · ") : "moins d'une seconde";
-}
+// (Le découpage en mois civils et en semaines a été retiré le 07/11/2026 : le panneau
+// montre maintenant les mêmes QUATRE tuiles que l'en-tête — jours, heures, minutes,
+// secondes — comme l'a demandé Antoni, « dégage les mois ».)
 
 // LE COMPTEUR DE DODOS, et ce n'est pas un nombre de jours.
 //
@@ -8508,23 +8549,12 @@ function nombreFr(n){
 // barre garde son bleu, qui est la couleur de l'app, et le panneau ne
 // vire pas entièrement au rouge la dernière nuit.
 
-// LIBELLÉS ABRÉGÉS, et c'est une contrainte de place mesurée, pas un
-// goût : « secondes » fait 48 px à 11 px de corps, et six colonnes de
-// 48 px ne tiennent pas dans les 246 px du panneau à 320 px. Abrégés
-// (18 à 24 px), les six tiennent avec 56 px de marge.
-//
-// Invariables, donc : « j », « h », « min », « s » sont les
-// abréviations françaises normalisées, elles ne prennent pas de s. La
-// phrase complète, elle, garde ses accords — voir phraseDecoupe, qui
-// sert d'étiquette au groupe.
-const UNITES_COMPTEUR = [
-  ["mois", "mois"],
-  ["semaines", "sem"],
-  ["jours", "j"],
-  ["heures", "h"],
-  ["minutes", "min"],
-  ["secondes", "s"],
-];
+// LES QUATRE ÉQUIVALENCES, EN CARTES À ICÔNES (choix d'Antoni, 07/11/2026, sur cinq maquettes) :
+// une icône Material et le nom de l'unité au-dessus, le nombre en gros dessous.
+const ICONES_EQUIV = {
+  jours: ic("calendar_today"), heures: ic("schedule"),
+  minutes: ic("hourglass_top"), secondes: ic("timer"),
+};
 
 // Une tuile = un nombre au-dessus, son unité dessous. Le motif vient de
 // .stats-chiffre, déjà en place dans le panneau Statistiques.
@@ -8533,48 +8563,9 @@ function tuilesCompteur(liste, classe, etiquette){
     + `aria-label="${escapeHtml(etiquette)}">`
     + liste.map(([n, u, zero]) =>
         `<div${zero ? ' class="zero"' : ""}>`
-        + `<b>${escapeHtml(String(n))}</b><span>${escapeHtml(u)}</span></div>`).join("")
+        + `<span>${ICONES_EQUIV[u] || ""}${escapeHtml(u)}</span>`
+        + `<b${String(n).length > 8 ? ' class="long"' : ""}>${escapeHtml(String(n))}</b></div>`).join("")
     + `</div>`;
-}
-
-// LES SIX UNITÉS, TOUJOURS, y compris à zéro — grisées par le CSS.
-//
-// Elles étaient masquées quand elles valaient zéro, ce qui changeait le
-// nombre de tuiles et redisposait toute la ligne à chaque unité qui
-// tombait. Antoni : « c'est quand les mois partiront ». Les garder coûte
-// trois zéros gris la dernière nuit et rend la ligne immobile.
-//
-// L'étiquette du groupe reste phraseDecoupe, qui MASQUE les zéros : un
-// lecteur d'écran entend « 1 mois, 2 jours, 9 heures » et non « 1 mois,
-// 0 semaine, 2 jours ». La ligne se regarde, la phrase s'écoute, et les
-// deux n'ont pas les mêmes besoins.
-//
-// SAUF LES ZÉROS DE TÊTE DANS LES DERNIÈRES 24 HEURES. C'est la rançon
-// du choix ci-dessus, vue à la répétition post-sortie du 20/10/2026 : à
-// T-30 min le panneau annonçait « 0 mois 0 sem 0 j 0 h 30 min 14 s »,
-// cinq zéros gris pour un chiffre vivant. Un premier jet remplaçait tout
-// par le total en secondes, en grand ; Antoni l'a refusé — « 1 799
-// secondes » ne se lit pas. Les unités de tête à zéro s'effacent donc,
-// et seulement elles : « 30 min 14 s » reste un temps qu'on lit.
-//
-// Les zéros du MILIEU et de la FIN restent, grisés : « 23 h 0 min 5 s »
-// garde ses trois tuiles, sans quoi le chiffre des secondes sauterait à
-// la place des minutes.
-//
-// Le seuil n'est pas écrit ici : c'est palierCompteur() qui le tient, le
-// même que l'en-tête, et « final » veut dire « moins de 24 heures ».
-// C'est un ÉCART, pas une date — la coupe vaut donc aussi dans les
-// 24 heures qui suivent minuit, où le défaut est le même en miroir.
-function tuilesDecoupe(d, classe, coupeTete){
-  let bouts = UNITES_COMPTEUR.map(([cle, abrege]) =>
-    [d[cle], abrege, d[cle] === 0]);
-  if(coupeTete){
-    const premier = bouts.findIndex(b => b[0] !== 0);
-    // Tout à zéro (moins d'une seconde) : on garde la dernière tuile,
-    // sinon la ligne disparaît pendant une seconde.
-    bouts = premier === -1 ? bouts.slice(-1) : bouts.slice(premier);
-  }
-  return tuilesCompteur(bouts, classe, phraseDecoupe(d));
 }
 
 // ---------- L'AGENDA : les prochains rendez-vous datés ----------
@@ -8700,15 +8691,6 @@ function majPanneauCompteur(){
   const avant = GTA6_RELEASE > maintenant;
   const [debut, fin] = avant ? [maintenant, GTA6_RELEASE] : [GTA6_RELEASE, maintenant];
   const ecart = fin - debut;
-  // Après la sortie, le compteur repart à l'endroit : plus de palier,
-  // et la disposition précise reste, parce que la seconde est redevenue
-  // l'information intéressante.
-  const palier = avant ? palierCompteur(ecart) : "";
-  const precis = !avant || palier === "final";
-  // palierCompteur() APPELÉ DIRECTEMENT, et non `palier` : celui-ci est
-  // vidé après la sortie pour que le panneau ne vire pas au rouge, mais
-  // la coupe des zéros de tête, elle, vaut des deux côtés de minuit.
-  const coupeTete = palierCompteur(ecart) === "final";
 
   const titre = document.getElementById("titreCompteur");
   if(titre) titre.textContent = avant ? "Avant la sortie" : "Depuis la sortie";
@@ -8721,18 +8703,13 @@ function majPanneauCompteur(){
   // au 19 novembre, donc elle reste pleine pour toujours. Un « 100,0 % »
   // figé sous un compteur qui bouge se lit comme une panne ; le mot dit
   // la même chose sans prétendre mesurer. Choix d'Antoni le 20/10/2026.
-  const pourcent = avant
-    ? (fait * 100).toFixed(1).replace(".", ",") + " %"
-    : "Sorti";
-  const jourSortie = GTA6_RELEASE.toLocaleDateString("fr-FR", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-    timeZone: "Europe/Paris" });
+  const pourcent = (fait * 100).toFixed(1).replace(".", ",") + " %";
 
-  el.innerHTML =
-      tuilesDecoupe(decoupeCalendaire(debut, fin),
-                    (precis ? "precis" : "second") + (palier ? " " + palier : ""),
-                    coupeTete)
-    + `<div class="compteur-barre">`
+  // APRÈS LA SORTIE, PLUS DE BARRE (Antoni, 07/11/2026). Elle allait de l'annonce à la sortie, donc
+  // elle restait pleine pour toujours : d'abord un « Sorti » à la place du pourcentage (20/10),
+  // maintenant plus de barre du tout. Le compteur, lui, repart à l'endroit, et la note le dit.
+  const barre = avant
+    ? `<div class="compteur-barre">`
     +   `<i>${escapeHtml(pourcent)}</i>`
     // Le second exemplaire est DANS le remplissage, donc rogné par lui.
     // Sa largeur vaut celle de la barre : si le remplissage occupe p %,
@@ -8743,12 +8720,19 @@ function majPanneauCompteur(){
     +   `<span style="width:${(fait * 100).toFixed(1)}%">`
     +     `<i style="width:${(100 / Math.max(fait * 100, 0.5) * 100).toFixed(2)}%">`
     +       `${escapeHtml(pourcent)}</i></span></div>`
+    : "";
+
+  el.innerHTML =
+      htmlBlocCompteur()
+    + barre
     // SOUS LA BARRE, et c'est un choix d'Antoni : « c'est juste un truc
     // en plus, pas un truc hyper important ».
     + (avant
         ? `<p class="compteur-dodos">${ic("bedtime")} ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>`
         : "")
-    + htmlAgenda(maintenant)
+    // L'AGENDA EST CACHÉ APRÈS LA SORTIE (Antoni, 07/11/2026) : on ne le rouvrira que pour de futurs
+    // DLC ou mises à jour, quand on aura des dates officielles. Son code et son fichier restent.
+    + (avant ? htmlAgenda(maintenant) : "")
     + tuilesCompteur([
         [nombreFr(ecart / 86400000), "jours", false],
         [nombreFr(ecart / 3600000), "heures", false],
@@ -8758,12 +8742,14 @@ function majPanneauCompteur(){
         // le chiffre le plus spectaculaire des quatre.
         [nombreFr(ecart / 1000), "secondes", false],
       ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours")
-    // LE TEMPS DU VERBE SUIT LA DATE. Sous un titre « Depuis la sortie »,
-    // la note annonçait encore le jeu au futur. Un mot s'ajoute, rien
-    // d'autre. Signalé à la répétition générale du 20/10/2026.
-    + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le `
-    +   `4 février 2022. Sortie ${avant ? "" : "depuis "}le `
-    +   `${escapeHtml(jourSortie)} à 00:00, heure de Paris.</p>`;
+    // LA NOTE, réduite à l'essentiel (Antoni, 07/11/2026) : avant la sortie, d'où part la barre ;
+    // après, ce que compte le compteur — sans phrase de plus.
+    + (avant
+        ? `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le 4/02/22</p>`
+        : `<p class="compteur-note">Temps écoulé depuis la sortie du jeu, le 19/11/26</p>`);
+  // Les tuiles du panneau viennent d'être posées vides : les remplir par le MÊME appel que
+  // l'en-tête, au même instant.
+  updateCountdown();
 }
 
 // UN INTERVALLE PROPRE AU PANNEAU, arrêté à la fermeture. Le compteur de
@@ -9473,6 +9459,7 @@ programmeSplash();
 // sinon le trait « lu jusqu'ici » n'apparaîtrait qu'au rendu suivant.
 chargerReprise();
 chargeRecherches();
+document.getElementById("countdown").innerHTML = htmlTuilesCompteur();
 loadState();
 updateCountdown();
 brancheBarreHaute();
