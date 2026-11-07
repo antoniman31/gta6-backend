@@ -3751,9 +3751,10 @@ def test_compte_a_rebours_flashy(nav, url):
 
     Demandé par Antoni le 28/10/2026 (« pas assez flashy », puis « plutôt des
     couleurs fluo »). Sombre : le texte est fluo, avec un halo. Clair : un texte
-    fluo sur blanc est illisible, donc le compteur devient un SURLIGNEUR (fond
-    fluo, texte foncé). Le surligneur déborde par un `outline`, qui ne pousse
-    rien : l'entête garde sa largeur.
+    fluo sur blanc est illisible ; le compteur y fut un surligneur jusqu'au
+    07/11/2026, où Antoni l'a fait retirer (« supprime le surlignage et colore
+    plutôt ») : c'est maintenant un texte coloré, version assombrie de la même
+    teinte, sans fond ni contour, à 4,5:1 sur la tuile qui le porte.
     """
     print("\n[compteur] les trois paliers, en fluo et lisibles")
 
@@ -3796,7 +3797,10 @@ def test_compte_a_rebours_flashy(nav, url):
                             contour: cs.outlineStyle + ' ' + cs.outlineWidth,
                             largeur: c.getBoundingClientRect().width,
                             jeton: root.getPropertyValue('--compte-' + pal).trim(),
-                            encre: root.getPropertyValue('--compte-encre').trim(),
+                            clair: (() => { const s = document.createElement('span');
+                              s.style.color = 'var(--compte-' + pal + '-clair)'; document.body.appendChild(s);
+                              const v = getComputedStyle(s).color; s.remove(); return v; })(),
+                            tuile: getComputedStyle(document.querySelector('.tuile-compteur')).backgroundColor,
                             carte: getComputedStyle(document.querySelector('.console')).backgroundColor}; }""", palier)
                 etiq = "[%s %s %d px]" % (theme, palier, largeur)
                 h = m["jeton"].lstrip("#")
@@ -3813,23 +3817,24 @@ def test_compte_a_rebours_flashy(nav, url):
                           "%s texte fluo sur la carte, 4,5:1 (%.2f:1)" % (etiq, r))
                     check(m["halo"] != "none", "%s halo lumineux" % etiq)
                 else:
-                    r = contraste(lire(m["couleur"]), lire(m["fondTexte"]))
-                    encre = tuple(int(m["encre"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4))
-                    check(lire(m["fondTexte"]) == fluo and lire(m["couleur"]) == encre and r >= 4.5,
-                          "%s surligneur : texte foncé sur fond fluo, 4,5:1 (%.2f:1)" % (etiq, r))
-                    check(m["halo"] == "none" and m["contour"].startswith("solid"),
-                          "%s pas de halo, un contour de surligneur (%s)" % (etiq, m["contour"]))
+                    r = contraste(lire(m["couleur"]), lire(m["tuile"]))
+                    check(lire(m["couleur"]) == lire(m["clair"]) and r >= 4.5,
+                          "%s texte coloré sur la tuile, 4,5:1 (%.2f:1)" % (etiq, r))
+                    check(m["fondTexte"] == "rgba(0, 0, 0, 0)" and m["contour"].startswith("none")
+                          and m["halo"] == "none",
+                          "%s plus de surlignage : ni fond, ni contour, ni halo (fond %s, contour %s)"
+                          % (etiq, m["fondTexte"], m["contour"]))
                 largeurs[(theme, palier, largeur)] = m["largeur"]
                 if largeur == 390:
-                    # Le panneau reprend la MÊME teinte : texte fluo en sombre, fond fluo en clair.
+                    # Le panneau reprend la MÊME teinte : celle du texte du compteur, dans les deux thèmes.
                     page.evaluate("() => ouvreCompteur()")
                     page.wait_for_timeout(300)
                     t = page.evaluate("""() => { const b = document.querySelector(
                           '#compteurContenu .compteur-tuiles:not(.equiv) > div:not(.zero) > b');
                         if(!b) return null; const cs = getComputedStyle(b);
                         return {couleur: cs.color, fond: cs.backgroundColor}; }""")
-                    attendu = lire(m["couleur"]) if theme == "dark" else fluo
-                    obtenu = lire(t["couleur"]) if theme == "dark" else lire(t["fond"])
+                    attendu = lire(m["couleur"])
+                    obtenu = lire(t["couleur"])
                     check(t is not None and obtenu == attendu,
                           "%s le panneau porte la même teinte (%s)" % (etiq, t))
                 check(not erreurs, "%s aucune erreur JavaScript" % etiq)
@@ -3839,7 +3844,7 @@ def test_compte_a_rebours_flashy(nav, url):
         if theme == "light":
             sombre = largeurs[("dark", palier, largeur)]
             check(abs(w - sombre) < 1.0,
-                  "[%s %d px] le surligneur ne change pas la largeur du compteur (%.0f px / %.0f px)"
+                  "[%s %d px] la couleur ne change pas la largeur du compteur (%.0f px / %.0f px)"
                   % (palier, largeur, w, sombre))
 
 
@@ -4424,8 +4429,7 @@ def test_panneau_du_compteur(nav, url):
                 // En thème CLAIR, la teinte du palier est le FOND du chiffre
                 // (surligneur fluo, texte foncé) ; en sombre, c'est le texte.
                 const csb = getComputedStyle(vivant.querySelector('b'));
-                const rendue = csb.backgroundColor !== 'rgba(0, 0, 0, 0)'
-                               ? csb.backgroundColor : csb.color;
+                const rendue = csb.color;
                 // La teinte ATTENDUE, résolue depuis le jeton : comparer
                 // à une chaîne écrite en dur dans le test figerait la
                 // couleur en double, ici et dans la feuille de style.
@@ -4434,7 +4438,8 @@ def test_panneau_du_compteur(nav, url):
                 let attendue = null;
                 if(pal){
                   const sonde = document.createElement('span');
-                  sonde.style.color = 'var(--compte-' + pal + ')';
+                  const clair = document.documentElement.getAttribute('data-theme') === 'light';
+                  sonde.style.color = 'var(--compte-' + pal + (clair ? '-clair' : '') + ')';
                   document.body.appendChild(sonde);
                   attendue = getComputedStyle(sonde).color;
                   sonde.remove();

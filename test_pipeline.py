@@ -7814,6 +7814,12 @@ def test_barre_du_bas_et_entete():
     check('"SORTI !"' in fn and '"+" + joursDepuis + " j"' in fn
           and '"avant la sortie"' in fn and '"depuis la sortie"' in fn,
           "il dit « +n j » après la sortie, avec son sous-titre fixe")
+    # Plus de surligneur en thème clair (demandé le 07/11/2026) : du texte coloré.
+    for pal in ("soon", "urgent", "final"):
+        regle = re.search(r'html\[data-theme="light"\] \.countdown\.%s\{([^}]*)\}' % pal, html).group(1)
+        check("background" not in regle and "outline" not in regle
+              and "compte-%s-clair" % pal in regle,
+              "en clair, le palier « %s » est un texte coloré, sans fond ni contour" % pal)
     check('setAttribute("aria-label"' in html[html.index("function ecritCompteur("):][:400],
           "le bouton, dont le texte est un chiffre nu, a un nom accessible qui dit ce qu'il compte")
 
