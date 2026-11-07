@@ -1604,15 +1604,24 @@ def test_barre_du_bas(nav, url):
           "« Réglages » ouvre les réglages")
     ctx.close()
 
-    # Le gros chiffre suit le calendrier.
-    for quand, attendu, nom in (("2026-11-07T10:00:00+01:00", "J-11", "11 jours entiers restants (11j 14h), comme le texte"),
-                                ("2026-11-18T23:30:00+01:00", "H-1", "dernière heure : en heures"),
-                                ("2026-11-19T10:00:00+01:00", "SORTI !", "le jour de la sortie"),
-                                ("2026-11-22T10:00:00+01:00", "+3 j", "trois jours après")):
+    # UN SEUL compteur, gros, dont la précision suit l'urgence.
+    import re as _re
+    for quand, motif, sous, nom in (
+            ("2026-11-07T10:00:00+01:00", r"^11j 1[34]h$", "avant la sortie", "loin : jours et heures"),
+            ("2026-11-16T10:00:00+01:00", r"^2j 1[34]h \d\dm$", "avant la sortie", "sous sept jours : avec les minutes"),
+            ("2026-11-18T23:30:00+01:00", r"^00:\d\d:\d\d$", "avant la sortie", "dernier jour : HH:MM:SS"),
+            ("2026-11-19T10:00:00+01:00", r"^SORTI !$", "GTA VI", "le jour de la sortie"),
+            ("2026-11-22T10:00:00+01:00", r"^\+3 j$", "depuis la sortie", "trois jours après")):
         ctx, page, erreurs = ouvre(390, "light", quand)
         page.evaluate("updateCountdown()")
-        gros = page.evaluate("() => document.getElementById('compteurGros').textContent")
-        check(gros == attendu, "%s : « %s » (obtenu « %s »)" % (nom, attendu, gros))
+        lu = page.evaluate("() => ({t: document.getElementById('countdown').textContent, s: document.getElementById('compteurSous').textContent, "
+                           "n: document.getElementById('countdown').getAttribute('aria-label'), "
+                           "taille: parseFloat(getComputedStyle(document.getElementById('countdown')).fontSize), "
+                           "deux: document.querySelectorAll('.tuile-compteur .countdown, .compteur-gros').length})")
+        check(_re.match(motif, lu["t"]) is not None and lu["s"] == sous,
+              "%s : « %s » / « %s »" % (nom, lu["t"], lu["s"]))
+        check(lu["taille"] >= 30 and lu["deux"] == 1 and lu["t"] in (lu["n"] or ""),
+              "%s : un seul compteur, en gros (%.0f px), nommé pour les lecteurs d'écran" % (nom, lu["taille"]))
         ctx.close()
 
     # L'icône ▶ n'apparaît qu'avec un jeton, et fait au moins 44 px une fois visible.
@@ -3398,7 +3407,7 @@ def test_compte_a_rebours(nav, url):
     # États-Unis en dernier. Relevé dans le fil que l'app collecte
     # elle-même, les 07 et 08/09/2026 (GTA BOOM, VGTimes, Eurogamer).
     avant = a("2026-11-01T12:00:00Z")
-    check("Sortie dans" in avant["texte"],
+    check(__import__("re").match(r"^\d+j \d\dh$", avant["texte"]) is not None,
           "[compteur] avant la sortie, il compte à rebours (« %s »)"
           % avant["texte"])
 
@@ -3415,14 +3424,14 @@ def test_compte_a_rebours(nav, url):
     # annonçait « C'EST AUJOURD'HUI — 5h 29m ». Aucun contrôle ne regardait
     # cette heure-là ; celui-ci la regarde, des deux côtés de minuit.
     veille = a("2026-11-18T22:30:00Z")   # 23 h 30 à Paris, le 18
-    check("Sortie dans" in veille["texte"] or "C'EST" in veille["texte"],
+    check(__import__("re").match(r"^\d\d:\d\d:\d\d$", veille["texte"]) is not None,
           "[compteur] une demi-heure AVANT minuit à Paris, il compte encore "
           "(« %s »)" % veille["texte"])
     check("SORTI" not in veille["texte"].upper(),
           "[compteur] et il n'annonce surtout pas la sortie en avance "
           "(« %s »)" % veille["texte"])
     minuit = a("2026-11-18T23:30:00Z")   # 00 h 30 à Paris, le 19
-    check(minuit["texte"] == "GTA 6 EST SORTI !",
+    check(minuit["texte"] == "SORTI !",
           "[compteur] une demi-heure APRÈS minuit à Paris, c'est sorti — "
           "la valeur « minuit à New York » ratait exactement ça (« %s »)"
           % minuit["texte"])
@@ -3430,25 +3439,24 @@ def test_compte_a_rebours(nav, url):
     # LE JOUR J. Le palier qui crie est mérité ce jour-là, et ce jour-là
     # seulement.
     jour0 = a("2026-11-19T08:00:00Z")
-    check(jour0["texte"] == "GTA 6 EST SORTI !" and jour0["classe"].endswith("final"),
+    check(jour0["texte"] == "SORTI !" and jour0["classe"].endswith("final"),
           "[compteur] le jour même, il l'annonce et garde le palier fort "
           "(« %s » / %s)" % (jour0["texte"], jour0["classe"]))
 
     # ET LE LENDEMAIN, il repart dans l'autre sens au lieu de se figer.
     jour1 = a("2026-11-20T08:00:00Z")
-    check(jour1["texte"] == "Sorti depuis 1 jour",
-          "[compteur] le lendemain, il compte les jours écoulés, au "
-          "singulier (« %s »)" % jour1["texte"])
+    check(jour1["texte"] == "+1 j",
+          "[compteur] le lendemain, il compte les jours écoulés (« %s »)" % jour1["texte"])
     jour3 = a("2026-11-22T08:00:00Z")
-    check(jour3["texte"] == "Sorti depuis 3 jours",
-          "[compteur] et au pluriel ensuite (« %s »)" % jour3["texte"])
+    check(jour3["texte"] == "+3 j",
+          "[compteur] et continue ensuite (« %s »)" % jour3["texte"])
     check(jour3["classe"] == "countdown",
           "[compteur] le ton redescend passé le premier jour — un bandeau "
           "rouge permanent n'alerte plus de rien (%s)" % jour3["classe"])
 
     # Trois mois plus tard, il dit encore quelque chose de vrai.
     tard = a("2027-02-19T08:00:00Z")
-    check(tard["texte"].startswith("Sorti depuis 9") and "jours" in tard["texte"],
+    check(tard["texte"].startswith("+9") and tard["texte"].endswith(" j"),
           "[compteur] trois mois après, il tient toujours (« %s »)"
           % tard["texte"])
 

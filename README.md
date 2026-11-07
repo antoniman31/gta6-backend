@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2198 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2202 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -124,7 +124,7 @@ Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 
 - **Statistiques et journal** : volume par jour et par heure, sources actives et en baisse, médias, délais, incidents du robot ; journal des événements de l'app.
 - **Archive** chargée mois par mois ; **sauvegarde** exportable et importable (réglages, sources, articles lus) ; export OPML des sources.
 - **Mode de secours** : si `feed.json` est injoignable, l'app interroge elle-même les flux (`DEFAULT_FEEDS`) via des proxys, avec sa propre déduplication.
-- **Navigation** : barre flottante en bas — Fil, Compteur (une fenêtre), Stats, Réglages. L'entête porte le titre, l'icône ↻ d'actualisation et une tuile de compteur (« J-11 » en grand ; « H-n » le dernier jour ; « +n j » après la sortie), avec une petite icône ▶ « Relancer le robot » visible seulement avec un jeton. Le Journal des passages s'ouvre depuis Statistiques › Robot.
+- **Navigation** : barre flottante en bas — Fil, Compteur (une fenêtre), Stats, Réglages. L'entête porte le titre, l'icône ↻ d'actualisation et une tuile à UN SEUL compteur, en grand, dont la précision croît avec l'urgence (« 11j 11h », puis « 3j 04h 12m » sous sept jours, « 11:59:56 » le dernier jour, « +3 j » après la sortie), sous-titre fixe « avant la sortie », avec une petite icône ▶ « Relancer le robot » visible seulement avec un jeton. Le Journal des passages s'ouvre depuis Statistiques › Robot.
 - **Réglages** : barre d'onglets en bas, quatre rubriques en cartes groupées — Apparence (thème, écran de chargement, liste des articles), Filtres (mots-clés, exclusions, mode sans spoiler), Sources, Données (backend, jeton, export, sauvegarde, « Zone sensible » avec Réinitialiser). Détail : thème, mots-clés, seuil de doublon, nombre d'articles, sources (les interrupteurs n'agissent qu'en mode de secours), adresse du backend, déclenchement du robot depuis le téléphone
   (jeton GitHub à portée minimale, gardé dans ce navigateur seulement).
 - **Écran de chargement** : blanc en thème clair, noir en thème sombre (« système » suit le téléphone), avec le logo et le décompte du jour (« J-12 »). Il reste `SPLASH_DUREE_MIN_MS` après le premier

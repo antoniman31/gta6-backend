@@ -335,19 +335,22 @@
     position:relative; background:var(--bg-elevated); border:1px solid var(--line);
     border-radius:var(--r-md); padding:12px 14px; display:flex; flex-direction:column; gap:2px;
   }
-  .compteur-gros{
-    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:32px; line-height:1.15;
-    color:var(--accent); padding-right:44px; white-space:nowrap;
+  /* UN SEUL COMPTEUR (choix d'Antoni, 07/11/2026 : « pourquoi il y a 2 fois le
+     compteur ? fusionne, on garde que le gros »). #countdown est le gros
+     chiffre : sa précision croît avec l'urgence (voir updateCountdown), sa
+     couleur suit le palier, avec le halo fluo du thème sombre et le surligneur du
+     thème clair (palette du 28/10, éprouvée par un contrôle de halo). */
+  .tuile-compteur .countdown{
+    position:static; margin:0; padding:0; display:block; width:fit-content; max-width:calc(100% - 44px);
+    font-size:32px; font-weight:800; line-height:1.15; letter-spacing:-0.01em;
+    white-space:nowrap; text-align:left;
   }
-  .countdown.soon ~ .compteur-gros{color:var(--compte-soon);}
-  .countdown.urgent ~ .compteur-gros{color:var(--compte-urgent);}
-  .countdown.final ~ .compteur-gros{color:var(--compte-final);}
-  .tuile-compteur .countdown{margin-top:0; position:static; order:2; width:fit-content; max-width:calc(100% - 44px);}
-  .tuile-compteur .countdown::after{inset:0; border-radius:var(--r-md); z-index:0;}
   .tuile-compteur .countdown.final{
-    display:block; padding:2px 6px; margin:0; font-size:12px; animation:countdown-pulse 1s ease-in-out infinite, countdown-border-pulse 1s ease-in-out infinite;
+    padding:0; margin:0; font-size:32px; animation:countdown-pulse 1s ease-in-out infinite;
   }
-  .tuile-compteur .mode-indicator{order:3; margin-top:6px; position:relative; z-index:1;}
+  .tuile-compteur .countdown::after{inset:0; border-radius:var(--r-md); z-index:0;}
+  .compteur-sous{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:var(--text-dim);}
+  .tuile-compteur .mode-indicator{margin-top:6px; position:relative; z-index:1;}
   .tuile-compteur .mode-indicator:empty{display:none;}
   /* La pastille posait sa teinte sur --bg-panel avant la tuile ; sur le fond plus
      clair de la tuile (--bg-elevated), le vert tombait à 4,48:1 (mesuré le
@@ -2126,9 +2129,9 @@
               title="Actualiser" aria-label="Actualiser"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-refresh"/></svg></button>
     </div>
     <div class="tuile-compteur">
-      <b id="compteurGros" class="compteur-gros" aria-hidden="true"></b>
       <button type="button" id="countdown" class="countdown"
               aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
+      <span id="compteurSous" class="compteur-sous" aria-hidden="true"></span>
       <div id="modeIndicator" class="mode-indicator"></div>
       <button type="button" id="triggerRunBtn" class="relance" onclick="triggerBackendRun()"
               title="Relancer le robot" aria-label="Relancer le robot" style="display:none;"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-play_circle"/></svg></button>
@@ -8205,21 +8208,13 @@ function updateCountdown(){
   // moment, il mérite son traitement. Ensuite on redescend au ton normal,
   // parce qu'un bandeau rouge permanent n'alerte plus de rien.
   //
-  // Ce bloc est INERTE avant le 19 novembre 2026 — il ne change rien à ce
-  // qui tourne pendant le gel. Écrit maintenant pour n'avoir rien à
-  // improviser le 20 au matin.
+  // Ce bloc est INERTE avant le 19 novembre 2026. Écrit à l'avance pour n'avoir
+  // rien à improviser le 20 au matin.
   if(diff <= 0){
-    const ecoule = -diff;
-    const joursDepuis = Math.floor(ecoule / (1000 * 60 * 60 * 24));
-    const texteSorti = joursDepuis < 1
-      ? "GTA 6 EST SORTI !"
-      : `Sorti depuis ${joursDepuis} jour${joursDepuis > 1 ? "s" : ""}`;
-    const classeSortie = joursDepuis < 1 ? "countdown final" : "countdown";
-    if(el.textContent !== texteSorti) el.textContent = texteSorti;
-    if(el.className !== classeSortie) el.className = classeSortie;
-    // Le gros chiffre de la tuile : les jours ENTIERS écoulés, comme le texte
-    // (« Sorti depuis N jours »), et « SORTI ! » le premier jour.
-    majGrosCompteur(joursDepuis < 1 ? "SORTI !" : "+" + joursDepuis + " j");
+    const joursDepuis = Math.floor(-diff / (1000 * 60 * 60 * 24));
+    ecritCompteur(el, joursDepuis < 1 ? "SORTI !" : "+" + joursDepuis + " j",
+      joursDepuis < 1 ? "countdown final" : "countdown",
+      joursDepuis < 1 ? "GTA VI" : "depuis la sortie");
     return;
   }
 
@@ -8227,42 +8222,36 @@ function updateCountdown(){
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((diff / (1000 * 60)) % 60);
   const seconds = Math.floor((diff / 1000) % 60);
+  const p2 = n => String(n).padStart(2, "0");
 
   const palier = palierCompteur(diff);
   const classe = "countdown" + (palier ? " " + palier : "");
 
-  // La précision suit l'urgence. À plus de 81 jours, des secondes qui
-  // défilent en permanence attirent l'œil sans rien apprendre ; dans les
-  // dernières heures, elles sont tout l'intérêt du compteur.
+  // UN SEUL COMPTEUR, GROS (07/11/2026). La précision suit l'urgence. À plus de
+  // sept jours, des minutes qui défilent attirent l'œil sans rien apprendre ;
+  // dans les dernières heures, les secondes sont tout l'intérêt du compteur.
+  // La phrase « C'EST BIENTÔT » est partie avec le texte : la couleur et la
+  // pulsation du palier final suffisent.
   let texte;
-  if(palier === "final"){
-    // "C'est demain" n'a vraiment de sens que dans les toutes dernières
-    // heures — à 23h restantes, ce n'est pas "demain", c'est encore
-    // aujourd'hui. Message plus honnête selon le temps réellement restant.
-    const label = hours < 6 ? "C'EST AUJOURD'HUI" : "C'EST BIENTÔT";
-    texte = `${label} — ${hours}h ${String(minutes).padStart(2,"0")}m ${String(seconds).padStart(2,"0")}s`;
-  }else if(palier === "urgent"){
-    texte = `Sortie dans ${days}j ${String(hours).padStart(2,"0")}h ${String(minutes).padStart(2,"0")}m`;
-  }else{
-    texte = `Sortie dans ${days}j ${String(hours).padStart(2,"0")}h`;
-  }
-
-  // La fonction reste appelée chaque seconde pour que le passage d'un palier
-  // à l'autre soit immédiat, mais on n'écrit dans le DOM que si le texte a
-  // vraiment changé : sans ce garde-fou, afficher l'heure sans les secondes
-  // repeindrait quand même l'en-tête 3600 fois par heure pour rien.
-  if(el.textContent !== texte) el.textContent = texte;
-  if(el.className !== classe) el.className = classe;
-  // Les jours ENTIERS restants, comme le texte (« Sortie dans 11j 13h » → « J-11 »).
-  // Dans les dernières 24 h on compte en heures (« H-12 ») : « J-0 » ne dirait rien.
-  majGrosCompteur(diff < 24 * 60 * 60 * 1000
-    ? "H-" + Math.ceil(diff / (60 * 60 * 1000))
-    : "J-" + days);
+  if(palier === "final") texte = `${p2(hours)}:${p2(minutes)}:${p2(seconds)}`;
+  else if(palier === "urgent") texte = `${days}j ${p2(hours)}h ${p2(minutes)}m`;
+  else texte = `${days}j ${p2(hours)}h`;
+  ecritCompteur(el, texte, classe, "avant la sortie");
 }
 
-function majGrosCompteur(texte){
-  const g = document.getElementById("compteurGros");
-  if(g && g.textContent !== texte) g.textContent = texte;
+// La fonction reste appelée chaque seconde pour que le passage d'un palier à
+// l'autre soit immédiat, mais on n'écrit dans le DOM que si une valeur a
+// vraiment changé : sans ce garde-fou, afficher l'heure sans les secondes
+// repeindrait quand même l'en-tête 3600 fois par heure pour rien.
+function ecritCompteur(el, texte, classe, sous){
+  if(el.textContent !== texte){
+    el.textContent = texte;
+    // Le texte du bouton est un chiffre nu : son nom accessible dit ce qu'il compte.
+    el.setAttribute("aria-label", sous + " : " + texte + " — ouvrir le détail");
+  }
+  if(el.className !== classe) el.className = classe;
+  const s = document.getElementById("compteurSous");
+  if(s && s.textContent !== sous) s.textContent = sous;
 }
 
 // ---------- Le détail du compte à rebours ----------
