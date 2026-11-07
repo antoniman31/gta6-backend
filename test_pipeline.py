@@ -6028,8 +6028,16 @@ def test_panneaux_sont_de_vrais_dialogues():
                 "libereLeFond", "_toucheDialogue", "focusablesDe"):
         check("function %s(" % nom in html, "la mécanique commune fournit %s" % nom)
 
-    for ouvre, ferme, idFond in (("openSettings", "closeSettings", "settingsOverlay"),
-                                 ("openInfo", "closeInfo", "infoOverlay"),
+    # Les Réglages ne sont plus un dialogue (07/11/2026) : une page, sans piège du focus.
+    corps = html[html.index("function openSettings("):]
+    corps = corps[:corps.index("\n}")]
+    check('debutDialogue("settingsOverlay"' not in corps and 'classList.add("vue-reglages")' in corps,
+          "openSettings ouvre une page : plus de dialogue, le fil se masque")
+    corps = html[html.index("function closeSettings("):]
+    corps = corps[:corps.index("\n}")]
+    check('finDialogue(' not in corps and 'classList.remove("vue-reglages")' in corps,
+          "closeSettings la referme sans toucher à la mécanique des dialogues")
+    for ouvre, ferme, idFond in (("openInfo", "closeInfo", "infoOverlay"),
                                  ("openFiltersSheet", "closeFiltersSheet", "filtersOverlay"),
                                  ("openPreview", "closePreview", "previewOverlay")):
         corps = html[html.index("function %s(" % ouvre):]
@@ -7733,7 +7741,7 @@ def test_icones_material():
              "translate": "traduire", "check_circle": "marquer lu", "undo": "marquer non lu",
              "star": "mis de côté", "star_border": "mis de côté (vide)", "close": "fermer",
              "check": "copié", "arrow_downward": "reprendre la lecture", "warning": "alerte",
-             "bedtime": "dodos", "timer": "compteur", "article": "fil", "refresh": "actualiser",
+             "bedtime": "dodos", "article": "fil", "refresh": "actualiser",
              "play_circle": "relancer le robot"}
     absents = [r for n, r in roles.items() if n not in utilises]
     check(not absents, "chaque rôle a son icône Material (absents : %s)" % (absents or "aucun"))
@@ -7771,8 +7779,12 @@ def test_barre_du_bas_et_entete():
     barre = re.search(r'<nav class="barre-bas"[^>]*>(.*?)</nav>', code, re.S)
     check(barre is not None, "une barre de navigation du bas existe")
     ids = re.findall(r'<button[^>]*id="([a-zA-Z]+)"', barre.group(1))
-    check(ids == ["navFil", "navCompteur", "statsBtn", "navReglages"],
-          "elle a quatre entrées dans l'ordre Fil, Compteur, Stats, Réglages (%s)" % ids)
+    check(ids == ["navFil", "statsBtn", "navReglages"],
+          "elle a trois entrées dans l'ordre Fil, Stats, Réglages (%s)" % ids)
+    check("navCompteur" not in code and "i-timer" not in code,
+          "le compteur n'est plus dans la barre : on l'ouvre en touchant la tuile de l'entête")
+    check('id="countdown"' in code and 'onclick="ouvreCompteur()"' in code,
+          "et cette tuile ouvre toujours le détail du compteur")
     entete = code[code.index('<header class="console">'):code.index("</header>")]
     check("openSettings()" not in entete and "setTab('stats')" not in entete
           and "setTab('logs')" not in entete,
@@ -9166,21 +9178,22 @@ def test_panneau_parametres_structure():
     deb = html.index("<!-- ---------- Panneau Paramètres")
     panneau = html[deb:html.index("<!-- ---------- Modale Aperçu article")]
 
-    # Le titre et les onglets défilaient avec le reste : sur l'onglet Contenu,
-    # « Fermer » se retrouvait deux mille pixels plus haut.
-    check('class="panneau-entete"' in panneau,
-          "le titre et « Fermer » sont réunis dans une entête")
-    bloc = re.search(r"#settingsOverlay \.panneau-entete\{([^}]*)\}", html).group(1)
+    # Les Réglages sont une PAGE (07/11/2026), plus un pop-up : une section sous
+    # l'entête de l'app, sans rôle de dialogue, sans fond figé. Les rubriques
+    # restent collées EN HAUT pour rester atteignables tout en défilant.
+    check('class="panneau-entete"' in panneau and '<section class="page-reglages" id="settingsOverlay"' in panneau,
+          "le titre est dans une page (section), pas dans un pop-up")
+    check('role="dialog"' not in panneau.split('<div class="panneau-onglet"')[0]
+          and 'aria-modal' not in panneau.split('<div class="panneau-onglet"')[0],
+          "elle ne déclare plus de rôle de dialogue ni de modalité")
+    bloc = re.search(r"\.panneau-tabs\{([^}]*)\}", html).group(1)
     check("position:sticky" in bloc and "top:0" in bloc,
-          "et cette entête reste collée en haut")
-    # Un élément collant ne peut pas remonter au-dessus du bloc qui le
-    # contient : avec un margin-top négatif pour manger le rembourrage du
-    # panneau, il était repoussé plus bas que sa place et recouvrait les
-    # premiers pixels de chaque onglet.
-    check("margin:0 -20px" in bloc,
-          "sans marge négative en haut, qui la ferait recouvrir le contenu")
-    check(re.search(r"#settingsOverlay \.settings-panel\{[^}]*padding-top:0", html) is not None,
-          "le rembourrage du haut est confié à l'entête, pas repris deux fois")
+          "et les rubriques restent collées en haut de l'écran")
+    check(re.search(r"#settingsOverlay \.settings-panel\{[^}]*padding:\s*0", html) is not None
+          and "body.vue-reglages main" in html,
+          "la page n'a plus de cadre de pop-up, et masque le fil tant qu'elle est ouverte")
+    check(panneau.index('<div class="panneau-tabs">') < panneau.index('data-onglet="aff"'),
+          "les rubriques sont AU-DESSUS des cartes")
 
     # Deux zones de défilement imbriquées : on ne sait jamais laquelle on
     # pousse. La liste défilait chez elle pour garder les boutons du bas
@@ -9198,17 +9211,17 @@ def test_panneau_parametres_structure():
           "les mots-clés et le mode sans spoiler sont dans Filtres, la liste dans Sources")
 
     # Les quatre rubriques de la barre du bas, avec leur icône Material.
-    barre = panneau[panneau.index('<div class="panneau-tabs">'):]
+    barre = panneau[panneau.index('<div class="panneau-tabs">'):panneau.index('data-onglet="aff"')]
     check([x for x in re.findall(r'data-cible="([a-z]+)"', barre)] == ["aff", "flt", "src", "adv"]
           and all(("#i-" + n) in barre for n in ("palette", "filter_alt", "rss_feed", "save")),
-          "la barre du bas porte Apparence, Filtres, Sources et Données, chacune avec son icône")
+          "la barre des rubriques porte Apparence, Filtres, Sources et Données, chacune avec son icône")
     bloc = re.search(r"\.panneau-tabs\{([^}]*)\}", html).group(1)
-    check("position:sticky" in bloc and "bottom:0" in bloc,
-          "et cette barre reste collée en bas du panneau, sous le pouce")
+    check("position:sticky" in bloc and "top:0" in bloc,
+          "et cette barre reste collée en haut de la page")
 
     # Plus d'intertitres : un seul style de titre (l'étiquette de carte), et
     # « Réinitialiser » seul dans sa carte « Zone sensible », en bas des Données.
-    onglet = panneau[panneau.index('data-onglet="adv"'):panneau.index('<div class="panneau-tabs">')]
+    onglet = panneau[panneau.index('data-onglet="adv"'):panneau.index('</section>')]
     check('class="panneau-section"' not in panneau and 'Notifications</h3>' not in onglet,
           "plus d'intertitre h3 : un seul style de titre dans tout le panneau")
     check('class="setting-group zone-sensible"' in onglet
