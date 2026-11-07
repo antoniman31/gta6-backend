@@ -7875,13 +7875,26 @@ def test_barre_du_bas_et_entete():
     check('palier === "final") compact = `${p2(t.h)}:${p2(t.m)}:${p2(t.s)}`' in fn
           and '`${t.j}j ${p2(t.h)}h ${p2(t.m)}m`' in fn and '`${t.j}j ${p2(t.h)}h`' in fn,
           "la ligne réduite compte en HH:MM:SS le dernier jour, en j-h-min sous sept jours, en j-h au-delà")
-    check('"SORTI !"' in fn and '"+" + t.j + " j"' in fn
-          and '"avant la sortie"' in fn and '"depuis la sortie"' in fn,
-          "elle dit « +n j » après la sortie, et le libellé sous les tuiles change avec")
+    ca = html[html.index("function compactApres("):]
+    ca = ca[:ca.index("\n}")]
+    check('"SORTI !"' in ca and '"+" + d.j + " j"' in ca and '" mois"' in ca and '" ans"' in ca
+          and '"avant la sortie"' in fn and '"depuis la sortie"' in fn and "decoupeApres(GTA6_RELEASE, now)" in fn,
+          "après la sortie : « +3 j », « +1 mois 3 j », « +1 an 2 mois », et le libellé sous les tuiles change avec")
+    da = html[html.index("function decoupeApres("):]
+    da = da[:da.index("\n}")]
+    check('["a", "M", "j", "h", "m", "s"]' in da and '["M", "j", "h", "m", "s"]' in da and '["j", "h", "m", "s"]' in da,
+          "les mois puis les années s'ajoutent aux tuiles seulement quand il y en a besoin")
+    check("function ajouteUnMois(" in html and "Math.min(quantieme, dernier)" in html,
+          "les mois sont civils, et le 31 janvier + 1 mois ne déborde pas sur mars")
+    check('(avant ? htmlAgenda(maintenant) : "")' in html,
+          "l'agenda est caché après la sortie : son code reste, il n'est plus affiché")
+    check('Barre remplie depuis l\'annonce du jeu, le 4/02/22</p>' in html and "Sortie ${avant" not in html,
+          "la note du panneau ne dit plus que d'où part la barre")
     ec = html[html.index("function ecritCompteur("):]
     ec = ec[:ec.index("\n}")]
-    check('[["j", t.j], ["h", t.h], ["m", t.m], ["s", t.s]]' in ec and 'tuile.classList.toggle("zero", v === 0)' in ec,
-          "les quatre tuiles sont écrites, celle des jours est grisée à 00")
+    check('for(const u of cles)' in ec and 'htmlTuilesCompteur(cles)' in ec
+          and 'tuile.classList.toggle("zero", t[u] === 0)' in ec,
+          "les tuiles sont écrites depuis le jeu choisi, celle des jours (et des mois) est grisée à 00")
 
     # LES JUMEAUX (Antoni, 07/11/2026) : le compteur de l'en-tête et celui de la fenêtre ne
     # peuvent pas diverger, parce qu'ils partagent TOUT : balisage, écriture, instant, style.

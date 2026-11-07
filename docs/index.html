@@ -341,7 +341,7 @@
      tuile des jours est grisée (pointillés, sans opacité) le dernier jour : 00. */
   .tuile-compteur .countdown{
     position:static; margin:0; padding:0; display:grid; width:100%;
-    grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;
+    grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); gap:8px;
     font-size:26px; font-weight:800; line-height:1.1; text-align:center; white-space:nowrap;
     background:none; border:0; letter-spacing:0;
   }
@@ -359,6 +359,13 @@
     font-style:normal; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600;
     color:var(--text-dim); text-shadow:none; -webkit-text-stroke:0; text-transform:none;
   }
+  /* Cinq tuiles (un mois et plus après la sortie) puis six (un an et plus) : écart et corps réduits,
+     libellés abrégés par le balisage, pour tenir à 320 px. */
+  .tuile-compteur .countdown[data-n="5"]{gap:6px;}
+  .tuile-compteur .countdown[data-n="6"]{gap:4px;}
+  .tuile-compteur .countdown[data-n="5"] .cd-t b{font-size:22px;}
+  .tuile-compteur .countdown[data-n="6"] .cd-t b{font-size:18px;}
+  .tuile-compteur .countdown[data-n="5"] .cd-t, .tuile-compteur .countdown[data-n="6"] .cd-t{padding:8px 2px;}
   .cd-t.zero{background:transparent; border-style:dashed;}
   .cd-t.zero b{color:var(--text-dim); text-shadow:none; -webkit-text-stroke:0;}
   .compteur-sous{
@@ -8309,9 +8316,11 @@ function updateCountdown(){
   // Ce bloc est INERTE avant le 19 novembre 2026. Écrit à l'avance pour n'avoir
   // rien à improviser le 20 au matin.
   if(diff <= 0){
-    const t = decoupe(-diff);
-    ecritCompteur(t, t.j < 1 ? "countdown final" : "countdown", "depuis la sortie",
-      t.j < 1 ? "SORTI !" : "+" + t.j + " j", t.j < 1 ? "final" : "");
+    const t = decoupeApres(GTA6_RELEASE, now);
+    // Le palier « final » (celui qui crie) ne vaut que le premier jour.
+    const premierJour = t.mois === 0 && t.j < 1;
+    ecritCompteur(t, premierJour ? "countdown final" : "countdown", "depuis la sortie",
+      compactApres(t), premierJour ? "final" : "");
     return;
   }
 
@@ -8329,6 +8338,49 @@ function updateCountdown(){
   else if(palier === "urgent") compact = `${t.j}j ${p2(t.h)}h ${p2(t.m)}m`;
   else compact = `${t.j}j ${p2(t.h)}h`;
   ecritCompteur(t, "countdown" + (palier ? " " + palier : ""), "avant la sortie", compact, palier);
+}
+
+// Ajouter un mois en JavaScript déborde : le 31 janvier + 1 mois donne le 3 mars, parce que
+// setMonth garde le quantième et laisse février le reporter. On ramène donc au dernier jour du
+// mois visé.
+function ajouteUnMois(d){
+  const quantieme = d.getDate();
+  const r = new Date(d.getTime());
+  r.setDate(1);
+  r.setMonth(r.getMonth() + 1);
+  const dernier = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+  r.setDate(Math.min(quantieme, dernier));
+  return r;
+}
+
+// LE TEMPS ÉCOULÉ DEPUIS LA SORTIE, avec des mois et des années quand il y en a (demande
+// d'Antoni, 07/11/2026 : « après la sortie, sur tous les compteurs, ajouter les mois et les
+// années quand il y en aura besoin »). Des mois CIVILS, comptés depuis le 19 du mois : du 19
+// novembre au 19 décembre, un mois. Le reste se divise ensuite en jours, heures, minutes,
+// secondes. `unites` dit quelles tuiles afficher : jamais de mois à zéro avant le premier, jamais
+// d'année avant la première.
+function decoupeApres(debut, fin){
+  let mois = 0, curseur = new Date(debut.getTime());
+  while(mois < 1200){
+    const essai = ajouteUnMois(curseur);
+    if(essai > fin) break;
+    curseur = essai; mois++;
+  }
+  const d = decoupe(fin - curseur);
+  d.a = Math.floor(mois / 12);
+  d.M = mois % 12;
+  d.mois = mois;
+  d.unites = d.a > 0 ? ["a", "M", "j", "h", "m", "s"]
+           : d.M > 0 ? ["M", "j", "h", "m", "s"]
+           : ["j", "h", "m", "s"];
+  return d;
+}
+
+// La phrase courte de la ligne réduite après la sortie : « +3 j », « +1 mois 3 j », « +1 an 2 mois ».
+function compactApres(d){
+  if(d.a > 0) return "+" + d.a + (d.a > 1 ? " ans" : " an") + (d.M ? " " + d.M + " mois" : "");
+  if(d.M > 0) return "+" + d.M + " mois" + (d.j ? " " + d.j + " j" : "");
+  return d.j < 1 ? "SORTI !" : "+" + d.j + " j";
 }
 
 // Une durée en millisecondes -> jours, heures, minutes, secondes entiers.
@@ -8351,9 +8403,15 @@ function decoupe(ms){
 // sont écrites par UNE SEULE fonction (celle-ci), au MÊME instant (un seul « now » par appel
 // d'updateCountdown) et rendues par UNE SEULE feuille de style (.tuile-compteur .countdown).
 // Rien ne peut donc diverger : ni les chiffres, ni la tuile grisée, ni la teinte du palier.
-function htmlTuilesCompteur(){
-  return [["j", "jours"], ["h", "heures"], ["m", "min"], ["s", "sec"]].map(([u, l]) =>
-    `<span class="cd-t" data-u="${u}"><b>--</b><i>${l}</i></span>`).join("");
+// Les libellés complets avec quatre tuiles ; ABRÉGÉS (j, h, min, s) dès cinq, quand les mois ou
+// les années s'ajoutent : « heures » à 10 px ne tient pas dans une tuile de 34 px à 320 px.
+const LIBELLES_TUILES = {a: "ans", M: "mois", j: "jours", h: "heures", m: "min", s: "sec"};
+const LIBELLES_COURTS = {a: "ans", M: "mois", j: "j", h: "h", m: "min", s: "s"};
+function htmlTuilesCompteur(cles){
+  cles = cles || ["j", "h", "m", "s"];
+  const lib = cles.length > 4 ? LIBELLES_COURTS : LIBELLES_TUILES;
+  return cles.map(u =>
+    `<span class="cd-t" data-u="${u}"><b>--</b><i>${lib[u]}</i></span>`).join("");
 }
 
 // Le bloc de la fenêtre du compteur : même contenant, mêmes tuiles, même libellé que l'en-tête.
@@ -8365,19 +8423,28 @@ function htmlBlocCompteur(){
 
 function ecritCompteur(t, classe, sous, compact, palier){
   const p2 = n => String(n).padStart(2, "0");
+  const cles = t.unites || ["j", "h", "m", "s"];
   // Les tuiles sont un texte nu pour un lecteur d'écran : le groupe dit ce qu'il compte.
   const nom = sous + " : " + compact;
   for(const g of document.querySelectorAll(".tuile-compteur .countdown")){
-    for(const [u, v] of [["j", t.j], ["h", t.h], ["m", t.m], ["s", t.s]]){
+    // Le jeu de tuiles change après la sortie (mois, puis années, quand il y en a) : on le
+    // refait, pour TOUS les compteurs d'un coup, depuis la même fonction de balisage.
+    const jeu = cles.join("");
+    if(g.dataset.jeu !== jeu){
+      g.innerHTML = htmlTuilesCompteur(cles);
+      g.dataset.jeu = jeu;
+      g.dataset.n = String(cles.length);
+    }
+    for(const u of cles){
       const tuile = g.querySelector(`.cd-t[data-u="${u}"]`);
       if(!tuile) continue;
-      const chiffre = tuile.firstElementChild, txt = p2(v);
+      const chiffre = tuile.firstElementChild, txt = p2(t[u]);
       if(chiffre.textContent !== txt) chiffre.textContent = txt;
-      // Trois chiffres (au-delà de 99 jours après la sortie) : un corps plus petit, sinon ils
-      // débordent de la tuile à 320 px.
-      chiffre.classList.toggle("long", txt.length > 2);
-      // La tuile des jours est grisée quand elle vaut 00 (le dernier jour, le jour de la sortie).
-      if(u === "j") tuile.classList.toggle("zero", v === 0);
+      // Les jours (le dernier jour, le jour de la sortie) et les mois (au-delà de la première
+      // année, quand ils retombent à 0) se grisent à 00.
+      if(u === "j" || u === "M") tuile.classList.toggle("zero", t[u] === 0);
+      // « 1 an », « 2 ans » : le libellé suit le nombre.
+      if(u === "a"){ const lib = tuile.lastElementChild, mot = t.a === 1 ? "an" : "ans"; if(lib.textContent !== mot) lib.textContent = mot; }
     }
     if(g.className !== classe) g.className = classe;
     const n = g.tagName === "BUTTON" ? nom + " — ouvrir le détail" : nom;
@@ -8639,9 +8706,6 @@ function majPanneauCompteur(){
   const pourcent = avant
     ? (fait * 100).toFixed(1).replace(".", ",") + " %"
     : "Sorti";
-  const jourSortie = GTA6_RELEASE.toLocaleDateString("fr-FR", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-    timeZone: "Europe/Paris" });
 
   el.innerHTML =
       htmlBlocCompteur()
@@ -8661,7 +8725,9 @@ function majPanneauCompteur(){
     + (avant
         ? `<p class="compteur-dodos">${ic("bedtime")} ${escapeHtml(phraseDodos(dodosAvant(maintenant, GTA6_RELEASE)))}</p>`
         : "")
-    + htmlAgenda(maintenant)
+    // L'AGENDA EST CACHÉ APRÈS LA SORTIE (Antoni, 07/11/2026) : on ne le rouvrira que pour de futurs
+    // DLC ou mises à jour, quand on aura des dates officielles. Son code et son fichier restent.
+    + (avant ? htmlAgenda(maintenant) : "")
     + tuilesCompteur([
         [nombreFr(ecart / 86400000), "jours", false],
         [nombreFr(ecart / 3600000), "heures", false],
@@ -8674,9 +8740,9 @@ function majPanneauCompteur(){
     // LE TEMPS DU VERBE SUIT LA DATE. Sous un titre « Depuis la sortie »,
     // la note annonçait encore le jeu au futur. Un mot s'ajoute, rien
     // d'autre. Signalé à la répétition générale du 20/10/2026.
-    + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le `
-    +   `4 février 2022. Sortie ${avant ? "" : "depuis "}le `
-    +   `${escapeHtml(jourSortie)} à 00:00, heure de Paris.</p>`;
+    // LA NOTE, réduite à l'essentiel (Antoni, 07/11/2026) : d'où part la barre. La date de sortie
+    // n'y est plus écrite : le titre et le compteur la disent déjà.
+    + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le 4/02/22</p>`;
   // Les tuiles du panneau viennent d'être posées vides : les remplir par le MÊME appel que
   // l'en-tête, au même instant.
   updateCountdown();

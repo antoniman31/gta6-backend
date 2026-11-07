@@ -1891,27 +1891,29 @@ def test_fenetre_du_compteur(nav, url):
           % (eq["longs"], eq["dehors"]))
     ctx.close()
 
-    # Les mêmes quatre tuiles dans l'en-tête, avec un nombre de jours à TROIS chiffres (après la
-    # sortie) : le chiffre doit tenir dans sa tuile à 320 px.
-    ctx = nav.new_context(viewport={"width": 320, "height": 700}, timezone_id="Europe/Paris",
-                          reduced_motion="reduce")
-    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
-    ctx.clock.install(time="2027-03-10T12:00:00Z")
-    page = ctx.new_page()
-    page.goto(url, wait_until="load")
-    page.wait_for_selector("#countdown")
-    page.evaluate("updateCountdown()")
-    dehors = page.evaluate("""() => { let r = null;
-        for(const t of document.querySelectorAll('#countdown .cd-t')){
-          const b = t.querySelector('b'), g = document.createRange(); g.selectNodeContents(b);
-          const q = g.getBoundingClientRect(), tq = t.getBoundingClientRect();
-          if(q.right > tq.right + 0.5 || q.left < tq.left - 0.5) r = b.textContent + ' sort de sa tuile'; }
-        return r; }""")
-    chiffres = page.evaluate("() => [...document.querySelectorAll('#countdown .cd-t b')].map(b => b.textContent)")
-    check(dehors is None and len(chiffres[0]) == 3,
-          "[320 px] l'en-tête à trois chiffres de jours (%s) tient dans ses tuiles (%s)" % (chiffres, dehors))
-    ctx.close()
-
+    # APRÈS LA SORTIE, des mois puis des années s'ajoutent : cinq puis six tuiles dans l'en-tête, qui
+    # doivent tenir (chiffre et libellé) à 320 px.
+    for utc, n_attendu in (("2026-12-24T08:30:00Z", 5), ("2028-02-02T17:45:00Z", 6)):
+        ctx = nav.new_context(viewport={"width": 320, "height": 700}, timezone_id="Europe/Paris",
+                              reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        ctx.clock.install(time=utc)
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#countdown")
+        page.evaluate("updateCountdown()")
+        r = page.evaluate("""() => { let dehors = null; const tuiles = [...document.querySelectorAll('#countdown .cd-t')];
+            for(const t of tuiles){ for(const n of [t.querySelector('b'), t.querySelector('i')]){
+              const g = document.createRange(); g.selectNodeContents(n);
+              const q = g.getBoundingClientRect(), tq = t.getBoundingClientRect();
+              if(q.right > tq.right + 0.5 || q.left < tq.left - 0.5) dehors = n.textContent + ' sort de sa tuile'; } }
+            const c = document.querySelector('.tuile-compteur').getBoundingClientRect();
+            const sortent = tuiles.filter(t => t.getBoundingClientRect().right > c.right + 0.5).length;
+            return {n: tuiles.length, dehors: dehors, sortent: sortent, ligne: document.getElementById('cbCompteur').textContent}; }""")
+        check(r["n"] == n_attendu and r["dehors"] is None and r["sortent"] == 0,
+              "[320 px] %d tuiles dans l'en-tête après la sortie, rien ne sort (%s, %s ; ligne réduite « %s »)"
+              % (n_attendu, r["dehors"], r["sortent"], r["ligne"]))
+        ctx.close()
 
 def test_compteurs_jumeaux(nav, url):
     """Le compteur de l'en-tête et celui de la fenêtre sont de VRAIS JUMEAUX (Antoni, 07/11/2026).
@@ -1946,7 +1948,9 @@ def test_compteurs_jumeaux(nav, url):
                      ("2026-11-14T10:00:07Z", "palier urgent"),
                      ("2026-11-18T15:00:07Z", "palier final"),
                      ("2026-11-18T23:30:07Z", "le jour J, 00 h 30"),
-                     ("2027-03-10T12:00:07Z", "111 jours après la sortie")):
+                     ("2026-11-22T10:00:07Z", "3 jours après la sortie"),
+                     ("2026-12-24T08:30:07Z", "1 mois après la sortie (5 tuiles)"),
+                     ("2028-02-02T17:45:07Z", "1 an 2 mois après la sortie (6 tuiles)")):
         for largeur, schema in ((320, "dark"), (390, "light")):
             etiq = "[%s, %d px, %s]" % (nom, largeur, schema)
             ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=schema,
@@ -1966,9 +1970,9 @@ def test_compteurs_jumeaux(nav, url):
                     page.clock.run_for(1000)
                     page.wait_for_timeout(250)
                 v = page.evaluate(LIT)
-                check(len(v["h"]) == 4 and v["h"] == v["p"],
-                      "%s les quatre tuiles sont identiques, chiffre par chiffre et style par style%s"
-                      % (etiq, " (une seconde plus tard)" if tour else ""))
+                check(len(v["h"]) in (4, 5, 6) and v["h"] == v["p"],
+                      "%s les %d tuiles sont identiques, chiffre par chiffre et style par style%s"
+                      % (etiq, len(v["h"]), " (une seconde plus tard)" if tour else ""))
                 if v["h"] != v["p"]:
                     for a, b in zip(v["h"], v["p"]):
                         if a != b:
@@ -3801,7 +3805,7 @@ def test_compte_a_rebours(nav, url):
 
     # Trois mois plus tard, il dit encore quelque chose de vrai.
     tard = a("2027-02-19T08:00:00Z")
-    check(tard["texte"].startswith("+9") and tard["texte"].endswith(" j"),
+    check(tard["texte"] == "+3 mois",
           "[compteur] trois mois après, il tient toujours (« %s »)"
           % tard["texte"])
 
@@ -4473,8 +4477,26 @@ def test_panneau_du_compteur(nav, url):
 
     # (Le piège de setMonth n'est plus éprouvé : le découpage en mois civils a été retiré le
     # 07/11/2026, à la demande d'Antoni — le panneau n'a plus que quatre unités.)
-    check(page.evaluate("() => typeof ajouteUnMois === 'undefined' && typeof decoupeCalendaire === 'undefined'"),
-          "[compteur] le découpage en mois civils a disparu, avec son piège")
+    # Le piège de setMonth, éprouvé sur la fonction elle-même : les mois civils servent APRÈS la sortie.
+    mois = page.evaluate("""() => {
+        const d = ajouteUnMois(new Date(2026, 0, 31));   // 31 janvier
+        const n = ajouteUnMois(new Date(2026, 2, 15));   // 15 mars
+        return [d.getMonth(), d.getDate(), n.getMonth(), n.getDate()];
+    }""")
+    check(mois[0] == 1 and mois[1] == 28,
+          "[compteur] 31 janvier + 1 mois = 28 février, pas 3 mars — setMonth déborde tout seul (mois %d, jour %d)"
+          % (mois[0], mois[1]))
+    check(mois[2] == 3 and mois[3] == 15, "[compteur] et un mois ordinaire reste ordinaire (15 avril)")
+    d_ap = page.evaluate("""() => [
+        decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2026-11-22T14:00:00+01:00')).unites.join(''),
+        decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2026-12-24T09:30:00+01:00')).unites.join(''),
+        decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2028-02-02T18:45:00+01:00')).unites.join(''),
+        compactApres(decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2026-12-24T09:30:00+01:00'))),
+        compactApres(decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2028-02-02T18:45:00+01:00'))),
+        compactApres(decoupeApres(new Date('2026-11-19T00:00:00+01:00'), new Date('2027-11-19T00:00:00+01:00'))),
+    ]""")
+    check(d_ap == ["jhms", "Mjhms", "aMjhms", "+1 mois 5 j", "+1 an 2 mois", "+1 an"],
+          "[compteur] après la sortie, mois puis années seulement quand il y en a besoin (%s)" % d_ap)
 
     # (phraseDecoupe, la phrase parlée « 2 jours · 11 heures », a été retirée le 07/11/2026 : le nom
     # accessible des tuiles est maintenant écrit par la même fonction pour l'en-tête et la
@@ -4549,7 +4571,8 @@ def test_panneau_du_compteur(nav, url):
                 equiv: (document.querySelector('.compteur-tuiles.equiv') || {}).textContent,
                 phrase: (document.querySelector('#compteurContenu .tuile-panneau .countdown') || {})
                           .getAttribute?.('aria-label'),
-                date: /19 novembre 2026/.test(t), annonce: /4 f/.test(t)};
+                date: /19 novembre/.test(t), annonce: /4\/02\/22/.test(t),
+                note: document.querySelector('.compteur-note').textContent};
     }""")
     check(ouvert["ouvert"], "[compteur] le panneau s'ouvre")
     check(ouvert["titre"] == "Avant la sortie",
@@ -4586,7 +4609,8 @@ def test_panneau_du_compteur(nav, url):
     check(ouvert["annonce"],
           "[compteur] qui dit d'où elle part — une proportion sans sa "
           "référence ne veut rien dire")
-    check(ouvert["date"], "[compteur] la date de sortie est écrite en toutes lettres")
+    check(not ouvert["date"] and ouvert["note"].strip() == "Barre remplie depuis l'annonce du jeu, le 4/02/22",
+          "[compteur] la note se réduit à d'où part la barre, sans date de sortie (« %s »)" % ouvert["note"].strip())
 
     # L'INTERVALLE EST COUPÉ À LA FERMETURE. Sans ça il bat pour toujours
     # sur un panneau fermé, une fois par seconde, pour rien.
@@ -5011,9 +5035,8 @@ def test_panneau_du_compteur(nav, url):
     # LE VERBE SUIT LA DATE. Sous un titre « Depuis la sortie », la note
     # annonçait encore « Sortie le jeudi 19 novembre » — au futur, une
     # semaine après. Repéré à la répétition post-sortie du 20/10/2026.
-    check("Sortie depuis le" in apres["note"],
-          "[compteur] et la note dit « Sortie DEPUIS le », plus « Sortie "
-          "le » (« %s »)" % apres["note"].strip()[-60:])
+    check(apres["note"].strip() == "Barre remplie depuis l'annonce du jeu, le 4/02/22",
+          "[compteur] et la note ne change pas après la sortie (« %s »)" % apres["note"].strip())
     # La barre ne mesure plus rien : annonce -> sortie est fini. Un
     # « 100,0 % » figé sous un compteur qui bouge se lit comme une panne.
     check(apres["etiquetteBarre"].strip() == "Sorti",
@@ -5028,11 +5051,14 @@ def test_panneau_du_compteur(nav, url):
     # des zéros de tête : comme l'en-tête, le panneau garde jours, heures, min, sec, et grise la
     # tuile des jours quand elle vaut 00. Trois instants autour de minuit (la coupe valait des
     # deux côtés) et, après la sortie, un nombre de jours à TROIS chiffres.
-    for utc, libelle, grises, jours in (
-            ("2026-11-18T22:30:00Z", "T-30 min", ["jours"], "00"),
-            ("2026-11-18T23:30:00Z", "T+30 min", ["jours"], "00"),
-            ("2026-11-17T22:55:00Z", "T-24 h 05", [], "01"),
-            ("2027-03-10T12:00:00Z", "T+111 jours", [], "111"),
+    QUATRE_LIB = ["jours", "heures", "min", "sec"]
+    for utc, libelle, grises, jours, libelles in (
+            ("2026-11-18T22:30:00Z", "T-30 min", ["jours"], "00", QUATRE_LIB),
+            ("2026-11-18T23:30:00Z", "T+30 min", ["jours"], "00", QUATRE_LIB),
+            ("2026-11-17T22:55:00Z", "T-24 h 05", [], "01", QUATRE_LIB),
+            ("2026-12-24T08:30:00Z", "+1 mois (5 tuiles)", [], "01", ["mois", "j", "h", "min", "s"]),
+            ("2027-03-10T12:00:00Z", "+3 mois (5 tuiles)", [], "03", ["mois", "j", "h", "min", "s"]),
+            ("2028-02-02T17:45:00Z", "+1 an 2 mois (6 tuiles)", [], "01", ["an", "mois", "j", "h", "min", "s"]),
     ):
         ctx = nav.new_context(viewport={"width": 320, "height": 850},
                               timezone_id="Europe/Paris")
@@ -5052,12 +5078,14 @@ def test_panneau_du_compteur(nav, url):
               if(q.right > boite.right + 0.5 || q.left < boite.left - 0.5)
                 sort = e.textContent + ' (bord droit ' + Math.round(q.right) + ' px pour ' + Math.round(boite.right) + ')';
             }
-            // Le chiffre doit tenir DANS sa tuile : un nombre à trois chiffres ne doit pas la déborder.
+            // Le chiffre ET le libellé doivent tenir DANS leur tuile, même à six tuiles sur 320 px.
             let dehors = null;
             for(const e of cases){
-              const b = e.querySelector('b'), r = document.createRange(); r.selectNodeContents(b);
-              const q = r.getBoundingClientRect(), tq = e.getBoundingClientRect();
-              if(q.right > tq.right + 0.5 || q.left < tq.left - 0.5) dehors = b.textContent + ' sort de sa tuile';
+              for(const noeud of [e.querySelector('b'), e.querySelector('i')]){
+                const r = document.createRange(); r.selectNodeContents(noeud);
+                const q = r.getBoundingClientRect(), tq = e.getBoundingClientRect();
+                if(q.right > tq.right + 0.5 || q.left < tq.left - 0.5) dehors = noeud.textContent + ' sort de sa tuile';
+              }
             }
             const r = {
               unites: cases.map(e => e.querySelector('i').textContent),
@@ -5071,10 +5099,10 @@ def test_panneau_du_compteur(nav, url):
             fermeCompteur();
             return r;
         }""")
-        check(t_["unites"] == ["jours", "heures", "min", "sec"],
-              "[compteur %s] les quatre tuiles sont toujours là (%s)" % (libelle, t_["unites"]))
+        check(t_["unites"] == libelles,
+              "[compteur %s] les tuiles attendues sont là (%s)" % (libelle, t_["unites"]))
         check(t_["premier"] == jours and t_["grises"] == grises,
-              "[compteur %s] la tuile des jours vaut « %s » et n'est grisée que si elle vaut 00 (%s)"
+              "[compteur %s] la première tuile vaut « %s » et n'est grisée que si elle vaut 00 (%s)"
               % (libelle, jours, t_["grises"]))
         check(t_["rangees"] == 1 and t_["sort"] is None and t_["dehors"] is None,
               "[compteur %s] une rangée à 320 px, rien ne sort (%s, %s)" % (libelle, t_["sort"], t_["dehors"]))
