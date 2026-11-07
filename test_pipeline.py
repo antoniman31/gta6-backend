@@ -7693,64 +7693,70 @@ def test_un_seul_juge_de_lactu_majeure():
           "le badge de la carte et l'onglet portent le même nom")
 
 
-def test_icones_en_emoji():
-    print("\n[app] les icônes sont des emojis, sauf là où la couleur porte du sens")
-    import re
+def test_icones_material():
+    """Les icônes sont des Material Design Icons en SVG, plus aucun emoji.
+
+    Demandé par Antoni le 07/11/2026 (« supprime-moi les émoticônes et mets-moi
+    les icônes Material Design de Google »), ce qui renverse le choix d'emojis
+    du 14/09/2026. Ce contrôle remplace celui qui EXIGEAIT les emojis : il lit
+    la page et vérifie qu'aucun pictogramme n'est resté, que chaque icône
+    référencée existe dans le sprite, et que la coche de copie se teinte.
+    """
+    print("\n[app] les icônes sont des Material Design Icons en SVG, sans emoji")
+    import re, os
     html = open("docs/index.html", encoding="utf-8").read()
-    sans_commentaires = re.sub(r"<!--.*?-->", "", html, flags=re.S)
 
-    # Les glyphes Unicode d'origine ne doivent plus rien étiqueter. ◐/◑ pour le
-    # thème, ⚙ nu (sans sélecteur de variante) pour les paramètres, ▤ pour le
-    # journal, ⓘ pour les informations, ⧉ pour la copie.
-    for glyphe, role in (("◐", "thème clair"), ("◑", "thème sombre"),
-                         ("▤", "journal"), ("ⓘ", "informations"),
-                         ("⧉", "copie du lien")):
-        check(glyphe not in sans_commentaires,
-              "plus de « %s » pour %s" % (glyphe, role))
+    # Sans les commentaires : ils racontent l'histoire, et citent des emojis.
+    code = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+    code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)
+    code = "\n".join(re.sub(r"(^|(?<=\s))//.*$", "", ligne) for ligne in code.split("\n"))
 
-    # ⚙ et ℹ doivent porter le sélecteur de variante U+FE0F, sans lequel
-    # certains systèmes les rendent en glyphe texte noir et blanc au lieu de
-    # l'emoji — c'est justement ce qu'on cherchait à quitter.
-    for base, nom in (("\u2699", "l'engrenage des paramètres"),
-                      ("\u2139", "le i d'informations")):
-        nus = len(re.findall(base + r"(?!\uFE0F)", sans_commentaires))
-        check(nus == 0,
-              "%s force la présentation emoji (U+FE0F) — %d occurrence(s) nue(s)"
-              % (nom, nus))
+    pictos = re.findall(
+        "[\U0001F300-\U0001FAFF\u2699\u2139\u26A0\u2705\u21A9\u2605\u2606\u2715\u2713\u25B8\u25BE\u2193\u2B50]\ufe0f?",
+        code)
+    check(not pictos,
+          "plus aucun emoji ni pictogramme dans la page, hors commentaires (%s)"
+          % (sorted(set(pictos)) or "aucun"))
 
-    # 🌙 et ☀️ ont quitté la liste le 23/09/2026 avec le bouton de thème de
-    # l'entête : Antoni l'a sorti, avec ℹ️, pour que l'entête tienne sur une
-    # ligne. Le thème se règle désormais dans ⚙️ par un sélecteur à trois
-    # libellés texte — plus d'icône à vérifier. Les deux contrôles ci-dessous
-    # disent pourquoi ils ont disparu, pour que personne ne les remette « par
-    # cohérence » en réintroduisant le vide qu'ils causaient.
+    symboles = set(re.findall(r'<symbol id="i-([a-z_]+)"', html))
+    utilises = set(re.findall(r'href="#i-([a-z_]+)"', code)) | set(re.findall(r'\bic\("([a-z_]+)"\)', code))
+    check(symboles and not (utilises - symboles),
+          "chaque icône utilisée existe dans le sprite (%d symboles ; manquantes : %s)"
+          % (len(symboles), sorted(utilises - symboles) or "aucune"))
+    check(not (symboles - utilises),
+          "et le sprite ne porte aucune icône inutilisée (%s)" % (sorted(symboles - utilises) or "aucune"))
+
+    roles = {"settings": "réglages", "bar_chart": "statistiques", "assignment": "journal",
+             "local_fire_department": "actu majeure", "info": "informations",
+             "visibility": "aperçu", "visibility_off": "spoiler", "link": "copier le lien",
+             "translate": "traduire", "check_circle": "marquer lu", "undo": "marquer non lu",
+             "star": "mis de côté", "star_border": "mis de côté (vide)", "close": "fermer",
+             "check": "copié", "arrow_downward": "reprendre la lecture", "warning": "alerte",
+             "bedtime": "dodos"}
+    absents = [r for n, r in roles.items() if n not in utilises]
+    check(not absents, "chaque rôle a son icône Material (absents : %s)" % (absents or "aucun"))
+
+    check(re.search(r"\.ic\{[^}]*fill:currentColor", html) is not None
+          and re.search(r"\.chevron[^{]*\{[^}]*mask:", html, re.S) is not None,
+          "les icônes et la flèche des repliables prennent la couleur du texte")
+
+    bloc = re.search(r"function copyLink\([^)]*\)\{(.*?)\n\}", html, re.S).group(1)
+    check('ic("check")' in bloc and 'classList.add("done")' in bloc,
+          "la confirmation de copie est la coche Material, teintée par la classe done")
+    regle = re.search(r"\.card-mark\.done\{([^}]*)\}", html).group(1)
+    check("color:" in regle,
+          "et la règle .card-mark.done la teinte en vert, ce qu'un emoji ne permettait pas")
+
+    check(os.path.exists("LICENSE-material-icons") and "Apache-2.0" in html,
+          "la licence Apache-2.0 des icônes est dans le dépôt et citée dans la page")
+
+    # Ce qui n'a rien à voir avec les emojis et reste vrai : le thème.
     entete = html[html.index('<header class="console">'):html.index("</header>")]
     check("toggleTheme" not in entete and 'id="themeBtn"' not in entete,
-          "l'entête ne porte plus de bouton de thème — choix du 23/09/2026")
+          "l'entête ne porte pas de bouton de thème — choix du 23/09/2026")
     check('id="themeSystemBtn"' in html and 'id="themeLightBtn"' in html
           and 'id="themeDarkBtn"' in html,
           "et le thème reste réglable : son sélecteur à trois modes est dans ⚙️")
-
-    for emoji, role in (("\U0001F4CB", "le journal"),
-                        ("\U0001F517", "copier le lien"),
-                        ("\u2705", "marquer lu"),
-                        ("\u21A9\uFE0F", "marquer non lu")):
-        check(emoji in sans_commentaires, "« %s » : %s" % (emoji, role))
-
-    # LE point subtil. La confirmation de copie est la seule des trois icônes
-    # de carte qui soit TEINTÉE par CSS (.card-mark.done la passe en vert), et
-    # la couleur d'un emoji ne se pilote pas. En emoji, cette confirmation
-    # deviendrait le sosie exact du bouton « marquer lu » juste à côté —
-    # précisément ce que ce vert sert à éviter. Elle doit rester un glyphe
-    # texte, et ce test est là pour empêcher qu'on l'« harmonise » un jour.
-    bloc = re.search(r"function copyLink\([^)]*\)\{(.*?)\n\}", html, re.S).group(1)
-    check('btn.dataset.iconOnly ? "\u2713"' in bloc,
-          "la confirmation de copie reste la coche TEXTE ✓, pas l'emoji ✅")
-    check('classList.add("done")' in bloc,
-          "et elle est bien teintée en vert par la classe done")
-    regle = re.search(r"\.card-mark\.done\{([^}]*)\}", html).group(1)
-    check("color:" in regle,
-          "la règle .card-mark.done teinte bien le texte (ce qu'un emoji ignorerait)")
 
 
 def test_contraste_des_deux_themes():
@@ -11159,7 +11165,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_filtres_persistants,
            test_un_passage_complet_du_robot,
            test_un_seul_juge_de_lactu_majeure,
-           test_icones_en_emoji,
+           test_icones_material,
            test_contraste_des_deux_themes,
            test_le_decodeur_google_news_est_vraiment_la,
            test_readme_ne_cite_que_des_constantes_reelles,

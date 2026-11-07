@@ -12391,3 +12391,10 @@ Antoni : « il disparaît trop vite, on pourrait pas le laisser afficher une ou 
 - **Contrôles** : le test de l'écran vérifie maintenant qu'il est encore là une seconde après le chargement, qu'il bloque les touches (le point central est atteint par lui), qu'un appui et une touche le ferment, que le réglage coupé n'affiche rien dès le premier affichage, que piloté sans réglage il est coupé, que sur un téléphone réel sans réglage il est
   allumé, et que l'interrupteur écrit le réglage.
   **Rejoué contre l'ancien code** (`git archive HEAD` plus le nouveau test) : douze échecs.
+
+### Icônes Material Design — 07/11/2026
+
+- **Demande d'Antoni** : supprimer toutes les émoticônes de l'application et mettre les icônes Material Design de Google. Choix : style Outlined, SVG embarqués dans la page.
+- **Fait** : sprite de symboles SVG (paquet npm des icônes Material, Apache-2.0, licence copiée dans le dépôt) juste après l'ouverture du corps de la page, aide `ic()`, classe `.ic` qui prend la couleur du texte. La flèche des repliables est un masque CSS qui pivote à l'ouverture. Le drapeau devient l'icône « traduire ». Les flèches « → » du texte et les emojis des messages Discord ne changent pas.
+- **Contrôle** : `test_icones_material` remplace le contrôle qui exigeait les emojis (choix du 14/09, renversé par cette demande) : aucun emoji hors commentaires, chaque icône utilisée est dans le sprite, aucune icône inutilisée, la coche de copie se teinte. Premier passage rouge : un symbole inutilisé et deux emojis cités dans des commentaires de ligne ; le filtre de commentaires était trop étroit, corrigé.
+- Le cache de l'app passe à la version 73.
