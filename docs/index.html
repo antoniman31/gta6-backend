@@ -2077,7 +2077,6 @@
 <symbol id="i-save" viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></symbol>
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A5.99 5.99 0 0 1 12 18a6 6 0 1 1 0-12c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></symbol>
 <symbol id="i-play_circle" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM10 8v8l6-4z"/></symbol>
-<symbol id="i-timer" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></symbol>
 <symbol id="i-article" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/><path d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></symbol>
 <symbol id="i-warning" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
 <symbol id="i-bedtime" viewBox="0 0 24 24"><path d="M9.27 4.49c-1.63 7.54 3.75 12.41 7.66 13.8A7.993 7.993 0 0 1 12 20c-4.41 0-8-3.59-8-8 0-3.45 2.2-6.4 5.27-7.51m2.72-2.48C6.4 2.01 2 6.54 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.97h-.35z"/></symbol>
@@ -2635,13 +2634,13 @@
   </div>
 </div>
 
-<!-- Barre du bas, flottante (choix C d'Antoni, 07/11/2026). Quatre entrées : le fil,
-     le compteur (une fenêtre, pas une page), les statistiques (le Journal du
-     robot est dans Statistiques › Robot) et les réglages. Les pastilles
+<!-- Barre du bas, flottante (choix C d'Antoni, 07/11/2026). Trois entrées : le fil, les statistiques
+     (le Journal du robot est dans Statistiques › Robot) et les réglages. Le
+     compteur n'y est plus (07/11/2026, à la demande d'Antoni) : on l'ouvre en
+     touchant la tuile de l'entête. Les pastilles
      d'erreur de l'ancien entête sont passées sur Statistiques et Réglages. -->
 <nav class="barre-bas" aria-label="Navigation">
   <button type="button" id="navFil" class="active" aria-pressed="true" onclick="retourFil()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-article"/></svg><span>Fil</span></button>
-  <button type="button" id="navCompteur" onclick="ouvreCompteur()" aria-haspopup="dialog"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-timer"/></svg><span>Compteur</span></button>
   <button type="button" id="statsBtn" aria-pressed="false" onclick="setTab('stats')" title="Statistiques" aria-label="Statistiques du fil"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-bar_chart"/></svg><span>Stats</span><span id="badgeLogs" class="logs-error-badge"></span></button>
   <button type="button" id="navReglages" onclick="openSettings()" title="Paramètres" aria-label="Paramètres"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-settings"/></svg><span>Réglages</span><span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
 </nav>

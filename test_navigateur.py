@@ -1595,9 +1595,9 @@ def test_barre_du_bas(nav, url):
     page.click("#navFil")
     check(page.is_visible("#feed") and not page.is_visible("#logsPanel"),
           "« Fil » referme le Journal")
-    page.click("#navCompteur")
+    page.click("#countdown")
     check(page.evaluate("() => document.getElementById('compteurOverlay').classList.contains('open')"),
-          "« Compteur » ouvre la fenêtre du détail")
+          "toucher la tuile de l'entête ouvre la fenêtre du compteur")
     page.keyboard.press("Escape")
     page.click("#navReglages")
     check(page.evaluate("() => document.getElementById('settingsOverlay').classList.contains('open')"),
@@ -1681,8 +1681,8 @@ def test_entete_sans_vide(nav, url):
     page.wait_for_selector(".barre-bas")
     boutons = page.evaluate("""() => [...document.querySelectorAll('.barre-bas button')]
                                        .map(b => b.textContent.trim())""")
-    check(boutons == ["Fil", "Compteur", "Stats", "Réglages"],
-          "quatre entrées dans la barre du bas : %s" % boutons)
+    check(boutons == ["Fil", "Stats", "Réglages"],
+          "trois entrées dans la barre du bas : %s" % boutons)
     check(page.locator("header .icon-btn").count() == 1,
           "l'entête ne garde qu'un bouton, l'actualisation")
     check(page.locator("#themeBtn").count() == 0, "plus de bouton de thème dans l'entête")

@@ -7733,7 +7733,7 @@ def test_icones_material():
              "translate": "traduire", "check_circle": "marquer lu", "undo": "marquer non lu",
              "star": "mis de côté", "star_border": "mis de côté (vide)", "close": "fermer",
              "check": "copié", "arrow_downward": "reprendre la lecture", "warning": "alerte",
-             "bedtime": "dodos", "timer": "compteur", "article": "fil", "refresh": "actualiser",
+             "bedtime": "dodos", "article": "fil", "refresh": "actualiser",
              "play_circle": "relancer le robot"}
     absents = [r for n, r in roles.items() if n not in utilises]
     check(not absents, "chaque rôle a son icône Material (absents : %s)" % (absents or "aucun"))
@@ -7771,8 +7771,12 @@ def test_barre_du_bas_et_entete():
     barre = re.search(r'<nav class="barre-bas"[^>]*>(.*?)</nav>', code, re.S)
     check(barre is not None, "une barre de navigation du bas existe")
     ids = re.findall(r'<button[^>]*id="([a-zA-Z]+)"', barre.group(1))
-    check(ids == ["navFil", "navCompteur", "statsBtn", "navReglages"],
-          "elle a quatre entrées dans l'ordre Fil, Compteur, Stats, Réglages (%s)" % ids)
+    check(ids == ["navFil", "statsBtn", "navReglages"],
+          "elle a trois entrées dans l'ordre Fil, Stats, Réglages (%s)" % ids)
+    check("navCompteur" not in code and "i-timer" not in code,
+          "le compteur n'est plus dans la barre : on l'ouvre en touchant la tuile de l'entête")
+    check('id="countdown"' in code and 'onclick="ouvreCompteur()"' in code,
+          "et cette tuile ouvre toujours le détail du compteur")
     entete = code[code.index('<header class="console">'):code.index("</header>")]
     check("openSettings()" not in entete and "setTab('stats')" not in entete
           and "setTab('logs')" not in entete,
