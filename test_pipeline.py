@@ -7814,12 +7814,14 @@ def test_barre_du_bas_et_entete():
     check('"SORTI !"' in fn and '"+" + joursDepuis + " j"' in fn
           and '"avant la sortie"' in fn and '"depuis la sortie"' in fn,
           "il dit « +n j » après la sortie, avec son sous-titre fixe")
-    # Plus de surligneur en thème clair (demandé le 07/11/2026) : du texte coloré.
+    # Plus de surligneur en thème clair (07/11/2026) : le texte reste fluo, cerné d'un trait sombre.
     for pal in ("soon", "urgent", "final"):
         regle = re.search(r'html\[data-theme="light"\] \.countdown\.%s\{([^}]*)\}' % pal, html).group(1)
-        check("background" not in regle and "outline" not in regle
-              and "compte-%s-clair" % pal in regle,
-              "en clair, le palier « %s » est un texte coloré, sans fond ni contour" % pal)
+        check("background" not in regle and "outline" not in regle and "var(--compte-%s)" % pal in regle,
+              "en clair, le palier « %s » est le texte fluo, sans fond ni contour" % pal)
+    trait = re.search(r'html\[data-theme="light"\] \.countdown\.soon, [^{]*\{([^}]*)\}', html).group(1)
+    check("-webkit-text-stroke:" in trait and "var(--compte-encre)" in trait and "paint-order:stroke fill" in trait,
+          "le trait sombre (--compte-encre) cerne le fluo, derrière le remplissage")
     check('setAttribute("aria-label"' in html[html.index("function ecritCompteur("):][:400],
           "le bouton, dont le texte est un chiffre nu, a un nom accessible qui dit ce qu'il compte")
 

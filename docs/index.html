@@ -1438,27 +1438,29 @@
     --compte-halo-soon:0 0 8px rgba(247,255,0,.6);
     --compte-halo-urgent:0 0 9px rgba(255,138,0,.65);
     --compte-halo-final:0 0 10px rgba(255,47,168,.7);
-    /* Thème clair : le texte coloré (4,9 / 4,9 / 5,4:1 sur la tuile) — voir plus bas. */
-    --compte-soon-clair:#806600; --compte-urgent-clair:#b34700; --compte-final-clair:#be1766;
+    --compte-encre:#10222f;
   }
   /* Clair : un texte fluo sur blanc est illisible (le jaune fluo tombe à
-     1,1:1). Du 28/10 au 07/11/2026 le compteur y était un SURLIGNEUR (fond
-     fluo, texte foncé) ; Antoni l'a fait retirer. Il est maintenant un texte
-     coloré, sans halo. Les unités à zéro du panneau restent grises. */
+     1,1:1). Du 28/10 au 07/11/2026 le compteur y était un SURLIGNEUR ; Antoni
+     l'a fait retirer et a voulu le FLUO tout le temps (07/11/2026, planche A/B/C,
+     choix B) : le texte reste fluo, cerné d'un trait sombre (--compte-encre) qui
+     porte la lisibilité, 16,8 / 7,8 / 5,4:1 entre le fluo et le trait. Pas de
+     halo, pas de fond. Les unités à zéro du panneau restent grises. */
   html[data-theme="light"]{
     --compte-halo-soon:none; --compte-halo-urgent:none; --compte-halo-final:none;
   }
-  /* Supprimé le 07/11/2026 sur demande d'Antoni (« supprime le surlignage et
-     colore plutôt ») : en thème clair le compteur n'est plus un surligneur mais
-     un texte COLORÉ. Le fluo ne passe pas sur blanc (le jaune tombe à 1,1:1) :
-     chaque palier garde sa famille de teinte en version assombrie, éprouvée à
-     4,5:1 sur le fond le plus clair qui la porte, la tuile (--bg-elevated). */
-  html[data-theme="light"] .countdown.soon{color:var(--compte-soon-clair);}
-  html[data-theme="light"] .countdown.urgent{color:var(--compte-urgent-clair);}
-  html[data-theme="light"] .countdown.final{color:var(--compte-final-clair);}
-  html[data-theme="light"] .compteur-tuiles.soon > div:not(.zero) > b{color:var(--compte-soon-clair);}
-  html[data-theme="light"] .compteur-tuiles.urgent > div:not(.zero) > b{color:var(--compte-urgent-clair);}
-  html[data-theme="light"] .compteur-tuiles.final > div:not(.zero) > b{color:var(--compte-final-clair);}
+  html[data-theme="light"] .countdown.soon{color:var(--compte-soon);}
+  html[data-theme="light"] .countdown.urgent{color:var(--compte-urgent);}
+  html[data-theme="light"] .countdown.final{color:var(--compte-final);}
+  html[data-theme="light"] .countdown.soon, html[data-theme="light"] .countdown.urgent, html[data-theme="light"] .countdown.final,
+  html[data-theme="light"] .compteur-tuiles.soon > div:not(.zero) > b,
+  html[data-theme="light"] .compteur-tuiles.urgent > div:not(.zero) > b,
+  html[data-theme="light"] .compteur-tuiles.final > div:not(.zero) > b{
+    -webkit-text-stroke:1.5px var(--compte-encre); paint-order:stroke fill;
+  }
+  html[data-theme="light"] .compteur-tuiles.soon > div:not(.zero) > b{color:var(--compte-soon);}
+  html[data-theme="light"] .compteur-tuiles.urgent > div:not(.zero) > b{color:var(--compte-urgent);}
+  html[data-theme="light"] .compteur-tuiles.final > div:not(.zero) > b{color:var(--compte-final);}
   /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
      Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
      thème clair : illisible, et resté invisible tant qu'aucun article à

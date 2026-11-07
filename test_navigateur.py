@@ -3753,8 +3753,9 @@ def test_compte_a_rebours_flashy(nav, url):
     couleurs fluo »). Sombre : le texte est fluo, avec un halo. Clair : un texte
     fluo sur blanc est illisible ; le compteur y fut un surligneur jusqu'au
     07/11/2026, où Antoni l'a fait retirer (« supprime le surlignage et colore
-    plutôt ») : c'est maintenant un texte coloré, version assombrie de la même
-    teinte, sans fond ni contour, à 4,5:1 sur la tuile qui le porte.
+    plutôt »), puis a voulu le FLUO tout le temps : le texte reste fluo, cerné
+    d'un trait sombre qui porte la lisibilité (4,5:1 entre le fluo et le trait),
+    sans fond, sans contour ni halo.
     """
     print("\n[compteur] les trois paliers, en fluo et lisibles")
 
@@ -3797,10 +3798,9 @@ def test_compte_a_rebours_flashy(nav, url):
                             contour: cs.outlineStyle + ' ' + cs.outlineWidth,
                             largeur: c.getBoundingClientRect().width,
                             jeton: root.getPropertyValue('--compte-' + pal).trim(),
-                            clair: (() => { const s = document.createElement('span');
-                              s.style.color = 'var(--compte-' + pal + '-clair)'; document.body.appendChild(s);
-                              const v = getComputedStyle(s).color; s.remove(); return v; })(),
-                            tuile: getComputedStyle(document.querySelector('.tuile-compteur')).backgroundColor,
+                            encre: root.getPropertyValue('--compte-encre').trim(),
+                            traitLargeur: parseFloat(cs.webkitTextStrokeWidth) || 0,
+                            traitCouleur: cs.webkitTextStrokeColor,
                             carte: getComputedStyle(document.querySelector('.console')).backgroundColor}; }""", palier)
                 etiq = "[%s %s %d px]" % (theme, palier, largeur)
                 h = m["jeton"].lstrip("#")
@@ -3817,9 +3817,11 @@ def test_compte_a_rebours_flashy(nav, url):
                           "%s texte fluo sur la carte, 4,5:1 (%.2f:1)" % (etiq, r))
                     check(m["halo"] != "none", "%s halo lumineux" % etiq)
                 else:
-                    r = contraste(lire(m["couleur"]), lire(m["tuile"]))
-                    check(lire(m["couleur"]) == lire(m["clair"]) and r >= 4.5,
-                          "%s texte coloré sur la tuile, 4,5:1 (%.2f:1)" % (etiq, r))
+                    encre = tuple(int(m["encre"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4))
+                    r = contraste(fluo, encre)
+                    check(lire(m["couleur"]) == fluo and lire(m["traitCouleur"]) == encre
+                          and m["traitLargeur"] >= 1 and r >= 4.5,
+                          "%s texte fluo cerné d'un trait sombre, 4,5:1 fluo/trait (%.2f:1)" % (etiq, r))
                     check(m["fondTexte"] == "rgba(0, 0, 0, 0)" and m["contour"].startswith("none")
                           and m["halo"] == "none",
                           "%s plus de surlignage : ni fond, ni contour, ni halo (fond %s, contour %s)"
@@ -4438,8 +4440,7 @@ def test_panneau_du_compteur(nav, url):
                 let attendue = null;
                 if(pal){
                   const sonde = document.createElement('span');
-                  const clair = document.documentElement.getAttribute('data-theme') === 'light';
-                  sonde.style.color = 'var(--compte-' + pal + (clair ? '-clair' : '') + ')';
+                  sonde.style.color = 'var(--compte-' + pal + ')';
                   document.body.appendChild(sonde);
                   attendue = getComputedStyle(sonde).color;
                   sonde.remove();
@@ -4955,7 +4956,20 @@ SONDE_CONTRASTE = r"""(args) => {
     const ar = fond(el);
     const av = melange(brut, ar, brut.a * o);
     const ya = Y(av), yb = Y(ar);
-    const ratio = (Math.max(ya, yb) + 0.05) / (Math.min(ya, yb) + 0.05);
+    let ratio = (Math.max(ya, yb) + 0.05) / (Math.min(ya, yb) + 0.05);
+    // UN TRAIT DE CONTOUR PORTE LA LISIBILITÉ (07/11/2026, compteur fluo en thème
+    // clair : le jaune fluo fait 1,02:1 sur la tuile, mais il est cerné d'un trait
+    // sombre de 1,5 px). Avec un trait opaque d'au moins 1 px, le texte se lit si le
+    // remplissage tranche sur le trait ET si le trait tranche sur le fond : on retient
+    // le plus faible de ces deux rapports, jamais le meilleur, et SEULEMENT s'il
+    // dépasse celui du remplissage nu. Le seuil, lui, ne bouge pas.
+    const lt = parseFloat(st.webkitTextStrokeWidth) || 0;
+    const tc = lt >= 1 ? parse(st.webkitTextStrokeColor) : null;
+    if(tc && tc.a >= 0.99){
+      const yt = Y(tc);
+      const c = (p, q) => (Math.max(p, q) + 0.05) / (Math.min(p, q) + 0.05);
+      ratio = Math.max(ratio, Math.min(c(ya, yt), c(yt, yb)));
+    }
     const px = parseFloat(st.fontSize);
     const gras = parseInt(st.fontWeight, 10) >= 700;
     const exige = (px >= 24 || (gras && px >= 18.66)) ? seuilGrand : seuil;
