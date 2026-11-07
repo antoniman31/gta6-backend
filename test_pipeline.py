@@ -7781,9 +7781,11 @@ def test_barre_du_bas_et_entete():
           and ">Actualiser</button>" not in entete,
           "« Actualiser » est l'icône ↻ de l'entête, plus un grand bouton")
     tuile = entete[entete.index('class="tuile-compteur"'):]
-    check('id="compteurGros"' in tuile and 'id="countdown"' in tuile
+    check('id="countdown"' in tuile and 'id="compteurSous"' in tuile
           and 'id="triggerRunBtn"' in tuile and 'id="modeIndicator"' in tuile,
-          "la tuile porte le gros chiffre, le texte, le mode et « Relancer le robot »")
+          "la tuile porte le compteur, son sous-titre, le mode et « Relancer le robot »")
+    check("compteurGros" not in code and "compteur-gros" not in code,
+          "et un seul compteur : le second (gros chiffre à côté du texte) a disparu")
     check("Relancer le robot</button>" not in tuile and 'aria-label="Relancer le robot"' in tuile,
           "« Relancer le robot » est une icône nommée, pas un bouton à libellé")
 
@@ -7800,11 +7802,28 @@ def test_barre_du_bas_et_entete():
     fn = fn[:fn.index("\n}")]
     check("setTab(dernierOngletFil" in fn, "« Fil » revient au dernier onglet de filtre choisi")
 
-    # Le gros chiffre : jours entiers comme le texte, heures dans les 24 dernières heures.
+    # UN SEUL COMPTEUR, gros (07/11/2026) : la précision suit l'urgence.
     fn = html[html.index("function updateCountdown("):]
-    fn = fn[:fn.index("\nfunction majGrosCompteur")]
-    check('"H-"' in fn and '"J-" + days' in fn and '"+" + joursDepuis' in fn,
-          "le gros chiffre dit les jours entiers restants (J-n), des heures (H-n) puis les jours écoulés (+n j), comme le texte")
+    fn = fn[:fn.index("\nfunction ecritCompteur")]
+    sans_commentaires = re.sub(r"^\s*//.*$", "", fn, flags=re.M)
+    check("Sortie dans" not in sans_commentaires and "C'EST BIENT" not in sans_commentaires,
+          "l'ancien texte « Sortie dans … » et la phrase « C'EST BIENTÔT » ont disparu")
+    check('palier === "final") texte = `${p2(hours)}:${p2(minutes)}:${p2(seconds)}`' in fn
+          and '`${days}j ${p2(hours)}h ${p2(minutes)}m`' in fn and '`${days}j ${p2(hours)}h`' in fn,
+          "il compte en HH:MM:SS le dernier jour, en jours-heures-minutes sous sept jours, en jours-heures au-delà")
+    check('"SORTI !"' in fn and '"+" + joursDepuis + " j"' in fn
+          and '"avant la sortie"' in fn and '"depuis la sortie"' in fn,
+          "il dit « +n j » après la sortie, avec son sous-titre fixe")
+    # Plus de surligneur en thème clair (07/11/2026) : le texte reste fluo, cerné d'un trait sombre.
+    for pal in ("soon", "urgent", "final"):
+        regle = re.search(r'html\[data-theme="light"\] \.countdown\.%s\{([^}]*)\}' % pal, html).group(1)
+        check("background" not in regle and "outline" not in regle and "var(--compte-%s)" % pal in regle,
+              "en clair, le palier « %s » est le texte fluo, sans fond ni contour" % pal)
+    trait = re.search(r'html\[data-theme="light"\] \.countdown\.soon, [^{]*\{([^}]*)\}', html).group(1)
+    check("-webkit-text-stroke:" in trait and "var(--compte-encre)" in trait and "paint-order:stroke fill" in trait,
+          "le trait sombre (--compte-encre) cerne le fluo, derrière le remplissage")
+    check('setAttribute("aria-label"' in html[html.index("function ecritCompteur("):][:400],
+          "le bouton, dont le texte est un chiffre nu, a un nom accessible qui dit ce qu'il compte")
 
 
 def test_contraste_des_deux_themes():

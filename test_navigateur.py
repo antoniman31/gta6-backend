@@ -1604,15 +1604,24 @@ def test_barre_du_bas(nav, url):
           "« Réglages » ouvre les réglages")
     ctx.close()
 
-    # Le gros chiffre suit le calendrier.
-    for quand, attendu, nom in (("2026-11-07T10:00:00+01:00", "J-11", "11 jours entiers restants (11j 14h), comme le texte"),
-                                ("2026-11-18T23:30:00+01:00", "H-1", "dernière heure : en heures"),
-                                ("2026-11-19T10:00:00+01:00", "SORTI !", "le jour de la sortie"),
-                                ("2026-11-22T10:00:00+01:00", "+3 j", "trois jours après")):
+    # UN SEUL compteur, gros, dont la précision suit l'urgence.
+    import re as _re
+    for quand, motif, sous, nom in (
+            ("2026-11-07T10:00:00+01:00", r"^11j 1[34]h$", "avant la sortie", "loin : jours et heures"),
+            ("2026-11-16T10:00:00+01:00", r"^2j 1[34]h \d\dm$", "avant la sortie", "sous sept jours : avec les minutes"),
+            ("2026-11-18T23:30:00+01:00", r"^00:\d\d:\d\d$", "avant la sortie", "dernier jour : HH:MM:SS"),
+            ("2026-11-19T10:00:00+01:00", r"^SORTI !$", "GTA VI", "le jour de la sortie"),
+            ("2026-11-22T10:00:00+01:00", r"^\+3 j$", "depuis la sortie", "trois jours après")):
         ctx, page, erreurs = ouvre(390, "light", quand)
         page.evaluate("updateCountdown()")
-        gros = page.evaluate("() => document.getElementById('compteurGros').textContent")
-        check(gros == attendu, "%s : « %s » (obtenu « %s »)" % (nom, attendu, gros))
+        lu = page.evaluate("() => ({t: document.getElementById('countdown').textContent, s: document.getElementById('compteurSous').textContent, "
+                           "n: document.getElementById('countdown').getAttribute('aria-label'), "
+                           "taille: parseFloat(getComputedStyle(document.getElementById('countdown')).fontSize), "
+                           "deux: document.querySelectorAll('.tuile-compteur .countdown, .compteur-gros').length})")
+        check(_re.match(motif, lu["t"]) is not None and lu["s"] == sous,
+              "%s : « %s » / « %s »" % (nom, lu["t"], lu["s"]))
+        check(lu["taille"] >= 30 and lu["deux"] == 1 and lu["t"] in (lu["n"] or ""),
+              "%s : un seul compteur, en gros (%.0f px), nommé pour les lecteurs d'écran" % (nom, lu["taille"]))
         ctx.close()
 
     # L'icône ▶ n'apparaît qu'avec un jeton, et fait au moins 44 px une fois visible.
@@ -3398,7 +3407,7 @@ def test_compte_a_rebours(nav, url):
     # États-Unis en dernier. Relevé dans le fil que l'app collecte
     # elle-même, les 07 et 08/09/2026 (GTA BOOM, VGTimes, Eurogamer).
     avant = a("2026-11-01T12:00:00Z")
-    check("Sortie dans" in avant["texte"],
+    check(__import__("re").match(r"^\d+j \d\dh$", avant["texte"]) is not None,
           "[compteur] avant la sortie, il compte à rebours (« %s »)"
           % avant["texte"])
 
@@ -3415,14 +3424,14 @@ def test_compte_a_rebours(nav, url):
     # annonçait « C'EST AUJOURD'HUI — 5h 29m ». Aucun contrôle ne regardait
     # cette heure-là ; celui-ci la regarde, des deux côtés de minuit.
     veille = a("2026-11-18T22:30:00Z")   # 23 h 30 à Paris, le 18
-    check("Sortie dans" in veille["texte"] or "C'EST" in veille["texte"],
+    check(__import__("re").match(r"^\d\d:\d\d:\d\d$", veille["texte"]) is not None,
           "[compteur] une demi-heure AVANT minuit à Paris, il compte encore "
           "(« %s »)" % veille["texte"])
     check("SORTI" not in veille["texte"].upper(),
           "[compteur] et il n'annonce surtout pas la sortie en avance "
           "(« %s »)" % veille["texte"])
     minuit = a("2026-11-18T23:30:00Z")   # 00 h 30 à Paris, le 19
-    check(minuit["texte"] == "GTA 6 EST SORTI !",
+    check(minuit["texte"] == "SORTI !",
           "[compteur] une demi-heure APRÈS minuit à Paris, c'est sorti — "
           "la valeur « minuit à New York » ratait exactement ça (« %s »)"
           % minuit["texte"])
@@ -3430,25 +3439,24 @@ def test_compte_a_rebours(nav, url):
     # LE JOUR J. Le palier qui crie est mérité ce jour-là, et ce jour-là
     # seulement.
     jour0 = a("2026-11-19T08:00:00Z")
-    check(jour0["texte"] == "GTA 6 EST SORTI !" and jour0["classe"].endswith("final"),
+    check(jour0["texte"] == "SORTI !" and jour0["classe"].endswith("final"),
           "[compteur] le jour même, il l'annonce et garde le palier fort "
           "(« %s » / %s)" % (jour0["texte"], jour0["classe"]))
 
     # ET LE LENDEMAIN, il repart dans l'autre sens au lieu de se figer.
     jour1 = a("2026-11-20T08:00:00Z")
-    check(jour1["texte"] == "Sorti depuis 1 jour",
-          "[compteur] le lendemain, il compte les jours écoulés, au "
-          "singulier (« %s »)" % jour1["texte"])
+    check(jour1["texte"] == "+1 j",
+          "[compteur] le lendemain, il compte les jours écoulés (« %s »)" % jour1["texte"])
     jour3 = a("2026-11-22T08:00:00Z")
-    check(jour3["texte"] == "Sorti depuis 3 jours",
-          "[compteur] et au pluriel ensuite (« %s »)" % jour3["texte"])
+    check(jour3["texte"] == "+3 j",
+          "[compteur] et continue ensuite (« %s »)" % jour3["texte"])
     check(jour3["classe"] == "countdown",
           "[compteur] le ton redescend passé le premier jour — un bandeau "
           "rouge permanent n'alerte plus de rien (%s)" % jour3["classe"])
 
     # Trois mois plus tard, il dit encore quelque chose de vrai.
     tard = a("2027-02-19T08:00:00Z")
-    check(tard["texte"].startswith("Sorti depuis 9") and "jours" in tard["texte"],
+    check(tard["texte"].startswith("+9") and tard["texte"].endswith(" j"),
           "[compteur] trois mois après, il tient toujours (« %s »)"
           % tard["texte"])
 
@@ -3743,9 +3751,11 @@ def test_compte_a_rebours_flashy(nav, url):
 
     Demandé par Antoni le 28/10/2026 (« pas assez flashy », puis « plutôt des
     couleurs fluo »). Sombre : le texte est fluo, avec un halo. Clair : un texte
-    fluo sur blanc est illisible, donc le compteur devient un SURLIGNEUR (fond
-    fluo, texte foncé). Le surligneur déborde par un `outline`, qui ne pousse
-    rien : l'entête garde sa largeur.
+    fluo sur blanc est illisible ; le compteur y fut un surligneur jusqu'au
+    07/11/2026, où Antoni l'a fait retirer (« supprime le surlignage et colore
+    plutôt »), puis a voulu le FLUO tout le temps : le texte reste fluo, cerné
+    d'un trait sombre qui porte la lisibilité (4,5:1 entre le fluo et le trait),
+    sans fond, sans contour ni halo.
     """
     print("\n[compteur] les trois paliers, en fluo et lisibles")
 
@@ -3789,6 +3799,8 @@ def test_compte_a_rebours_flashy(nav, url):
                             largeur: c.getBoundingClientRect().width,
                             jeton: root.getPropertyValue('--compte-' + pal).trim(),
                             encre: root.getPropertyValue('--compte-encre').trim(),
+                            traitLargeur: parseFloat(cs.webkitTextStrokeWidth) || 0,
+                            traitCouleur: cs.webkitTextStrokeColor,
                             carte: getComputedStyle(document.querySelector('.console')).backgroundColor}; }""", palier)
                 etiq = "[%s %s %d px]" % (theme, palier, largeur)
                 h = m["jeton"].lstrip("#")
@@ -3805,23 +3817,26 @@ def test_compte_a_rebours_flashy(nav, url):
                           "%s texte fluo sur la carte, 4,5:1 (%.2f:1)" % (etiq, r))
                     check(m["halo"] != "none", "%s halo lumineux" % etiq)
                 else:
-                    r = contraste(lire(m["couleur"]), lire(m["fondTexte"]))
                     encre = tuple(int(m["encre"].lstrip("#")[k:k + 2], 16) for k in (0, 2, 4))
-                    check(lire(m["fondTexte"]) == fluo and lire(m["couleur"]) == encre and r >= 4.5,
-                          "%s surligneur : texte foncé sur fond fluo, 4,5:1 (%.2f:1)" % (etiq, r))
-                    check(m["halo"] == "none" and m["contour"].startswith("solid"),
-                          "%s pas de halo, un contour de surligneur (%s)" % (etiq, m["contour"]))
+                    r = contraste(fluo, encre)
+                    check(lire(m["couleur"]) == fluo and lire(m["traitCouleur"]) == encre
+                          and m["traitLargeur"] >= 1 and r >= 4.5,
+                          "%s texte fluo cerné d'un trait sombre, 4,5:1 fluo/trait (%.2f:1)" % (etiq, r))
+                    check(m["fondTexte"] == "rgba(0, 0, 0, 0)" and m["contour"].startswith("none")
+                          and m["halo"] == "none",
+                          "%s plus de surlignage : ni fond, ni contour, ni halo (fond %s, contour %s)"
+                          % (etiq, m["fondTexte"], m["contour"]))
                 largeurs[(theme, palier, largeur)] = m["largeur"]
                 if largeur == 390:
-                    # Le panneau reprend la MÊME teinte : texte fluo en sombre, fond fluo en clair.
+                    # Le panneau reprend la MÊME teinte : celle du texte du compteur, dans les deux thèmes.
                     page.evaluate("() => ouvreCompteur()")
                     page.wait_for_timeout(300)
                     t = page.evaluate("""() => { const b = document.querySelector(
                           '#compteurContenu .compteur-tuiles:not(.equiv) > div:not(.zero) > b');
                         if(!b) return null; const cs = getComputedStyle(b);
                         return {couleur: cs.color, fond: cs.backgroundColor}; }""")
-                    attendu = lire(m["couleur"]) if theme == "dark" else fluo
-                    obtenu = lire(t["couleur"]) if theme == "dark" else lire(t["fond"])
+                    attendu = lire(m["couleur"])
+                    obtenu = lire(t["couleur"])
                     check(t is not None and obtenu == attendu,
                           "%s le panneau porte la même teinte (%s)" % (etiq, t))
                 check(not erreurs, "%s aucune erreur JavaScript" % etiq)
@@ -3831,7 +3846,7 @@ def test_compte_a_rebours_flashy(nav, url):
         if theme == "light":
             sombre = largeurs[("dark", palier, largeur)]
             check(abs(w - sombre) < 1.0,
-                  "[%s %d px] le surligneur ne change pas la largeur du compteur (%.0f px / %.0f px)"
+                  "[%s %d px] la couleur ne change pas la largeur du compteur (%.0f px / %.0f px)"
                   % (palier, largeur, w, sombre))
 
 
@@ -4416,8 +4431,7 @@ def test_panneau_du_compteur(nav, url):
                 // En thème CLAIR, la teinte du palier est le FOND du chiffre
                 // (surligneur fluo, texte foncé) ; en sombre, c'est le texte.
                 const csb = getComputedStyle(vivant.querySelector('b'));
-                const rendue = csb.backgroundColor !== 'rgba(0, 0, 0, 0)'
-                               ? csb.backgroundColor : csb.color;
+                const rendue = csb.color;
                 // La teinte ATTENDUE, résolue depuis le jeton : comparer
                 // à une chaîne écrite en dur dans le test figerait la
                 // couleur en double, ici et dans la feuille de style.
@@ -4942,7 +4956,20 @@ SONDE_CONTRASTE = r"""(args) => {
     const ar = fond(el);
     const av = melange(brut, ar, brut.a * o);
     const ya = Y(av), yb = Y(ar);
-    const ratio = (Math.max(ya, yb) + 0.05) / (Math.min(ya, yb) + 0.05);
+    let ratio = (Math.max(ya, yb) + 0.05) / (Math.min(ya, yb) + 0.05);
+    // UN TRAIT DE CONTOUR PORTE LA LISIBILITÉ (07/11/2026, compteur fluo en thème
+    // clair : le jaune fluo fait 1,02:1 sur la tuile, mais il est cerné d'un trait
+    // sombre de 1,5 px). Avec un trait opaque d'au moins 1 px, le texte se lit si le
+    // remplissage tranche sur le trait ET si le trait tranche sur le fond : on retient
+    // le plus faible de ces deux rapports, jamais le meilleur, et SEULEMENT s'il
+    // dépasse celui du remplissage nu. Le seuil, lui, ne bouge pas.
+    const lt = parseFloat(st.webkitTextStrokeWidth) || 0;
+    const tc = lt >= 1 ? parse(st.webkitTextStrokeColor) : null;
+    if(tc && tc.a >= 0.99){
+      const yt = Y(tc);
+      const c = (p, q) => (Math.max(p, q) + 0.05) / (Math.min(p, q) + 0.05);
+      ratio = Math.max(ratio, Math.min(c(ya, yt), c(yt, yb)));
+    }
     const px = parseFloat(st.fontSize);
     const gras = parseInt(st.fontWeight, 10) >= 700;
     const exige = (px >= 24 || (gras && px >= 18.66)) ? seuilGrand : seuil;
