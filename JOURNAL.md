@@ -12480,3 +12480,9 @@ Antoni : « il disparaît trop vite, on pourrait pas le laisser afficher une ou 
 - **Constat, dit** : après le retrait de l'entrée du 9 novembre de l'agenda et le masquage de l'agenda après la sortie, RESTE-A-FAIRE.md et la liste de la répétition du 10/11 (tasks/repetition-10-11.md) parlaient encore de cinq dates et du 9/11. CLAUDE.md demande de tenir RESTE-A-FAIRE.md à jour à chaque lot : je ne l'avais pas fait pour ces lots.
 - **Fait** : quatre dates à reconfirmer au lieu de cinq ; la ligne du 11/11 ne cite plus que l'entrée du 18/11 ; une rubrique « À trancher » note que l'agenda, les dodos et la barre disparaissent à la sortie.
 - **Pas fait** : les tâches planifiées du compte (list_triggers) ne sont pas dans le dépôt ; leurs messages peuvent encore citer le 9/11.
+
+### Chemin du navigateur de test et rappels du compte remis d'aplomb — 07/11/2026
+
+- **Constat** : `CLAUDE.md` et `README.md` citaient `chromium_headless_shell-1194/chrome-linux/headless_shell`. Ce dossier n'existe plus dans le conteneur : `ls /opt/pw-browsers` donne `chromium_headless_shell-1243`, et le binaire s'appelle `chrome-headless-shell` (lancé avec Playwright : Chromium 153.0.8010.12).
+- **Fait** : les deux fichiers cherchent désormais le dossier (`$(ls /opt/pw-browsers/chromium_headless_shell-*/*/chrome-headless-shell)`) au lieu de le figer. Les quatre rappels du compte qui étaient périmés ont été réécrits (10/11 ×2, 19/11 09h00, 22/11) : quatre dates d'agenda, compteur « Depuis la sortie », même recherche du dossier.
+- **Pas rejoué** : la suite navigateur complète n'a pas été relancée avec la nouvelle commande ; seul le lancement du binaire a été vérifié. La CI, elle, la lance de son côté.
