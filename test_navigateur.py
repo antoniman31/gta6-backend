@@ -693,6 +693,86 @@ def test_barre_detat_suit_le_theme(nav, url):
     ctx.close()
 
 
+def test_ecran_de_chargement(nav, url):
+    """Un écran blanc en thème clair, noir en thème sombre, avec le décompte.
+
+    Demandé par Antoni le 07/11/2026. Mesuré avant : l'app peint déjà son
+    premier affichage dans le bon thème, mais n'avait aucun écran propre — et
+    l'écran de lancement d'Android, lui, est fixe. Ce contrôle regarde le VRAI
+    écran dans un vrai navigateur, quelques dizaines de millisecondes après le
+    chargement, dans les quatre cas de thème, puis vérifie qu'il s'efface.
+    """
+    print("\n[chargement] l'écran suit le thème, dit le décompte et s'efface")
+
+    def lum(css):
+        import re as _re
+        r, g, b = [int(x) for x in _re.findall(r"\d+", css)[:3]]
+        def f(v):
+            v /= 255.0
+            return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+
+    cas = [("light", "light", "clair"), ("dark", "dark", "sombre"),
+           ("system", "light", "clair"), ("system", "dark", "sombre")]
+    for reglage, schema, attendu in cas:
+        ctx = nav.new_context(viewport={"width": 320, "height": 780},
+                              color_scheme=schema, timezone_id="Europe/Paris")
+        ctx.add_init_script(
+            "try{localStorage.setItem('gta6watch:settings-v1', "
+            "JSON.stringify({theme:'%s'}));}catch(e){}" % reglage)
+        page = ctx.new_page()
+        page.clock.install(time="2026-11-07T12:00:00+01:00")
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="domcontentloaded")
+        page.wait_for_timeout(100)
+        etat = page.evaluate("""() => {
+            const e = document.getElementById('splash');
+            if(!e) return null;
+            const cs = getComputedStyle(e);
+            return {fond: cs.backgroundColor, couleur: cs.color,
+                    pointeur: cs.pointerEvents, cache: e.getAttribute('aria-hidden'),
+                    theme: document.documentElement.getAttribute('data-theme'),
+                    j: document.getElementById('splashJ').textContent,
+                    l: document.getElementById('splashL').textContent,
+                    logo: (document.querySelector('#splash img') || {}).naturalWidth}
+        }""")
+        nom = "%s, téléphone %s" % (reglage, schema)
+        check(etat is not None, "[%s] l'écran est là juste après le chargement" % nom)
+        if etat:
+            clair = lum(etat["fond"]) > 0.5
+            check(clair == (attendu == "clair") and etat["theme"] == ("light" if attendu == "clair" else "dark"),
+                  "[%s] fond %s, thème %s : l'écran est %s" % (nom, etat["fond"], etat["theme"], attendu))
+            check(abs(lum(etat["fond"]) - lum(etat["couleur"])) > 0.5,
+                  "[%s] le texte (%s) se lit sur le fond (%s)" % (nom, etat["couleur"], etat["fond"]))
+            check(etat["j"] == "J-12" and etat["l"] == "AVANT LA SORTIE",
+                  "[%s] il dit le décompte en jours civils à Paris (%s, %s)" % (nom, etat["j"], etat["l"]))
+            check(etat["pointeur"] == "none" and etat["cache"] == "true" and etat["logo"] == 192,
+                  "[%s] il laisse passer les doigts, se cache des lecteurs d'écran et affiche le logo (%s)" % (nom, etat))
+        page.wait_for_timeout(1300)
+        gone = page.evaluate("() => !document.getElementById('splash')")
+        check(gone, "[%s] il s'est effacé, l'app est à découvert" % nom)
+        check(page.evaluate("() => document.documentElement.getAttribute('data-theme')") == ("light" if attendu == "clair" else "dark"),
+              "[%s] et applyTheme() retombe sur le même thème que le petit script d'avant l'affichage" % nom)
+        check(not erreurs, "[%s] aucune erreur JavaScript (%s)" % (nom, erreurs[:1]))
+        ctx.close()
+
+    # Le texte du décompte aux frontières : la veille, le jour J, après.
+    for quand, grand, petit in (("2026-11-18T23:30:00+01:00", "J-1", "AVANT LA SORTIE"),
+                                ("2026-11-19T09:00:00+01:00", "SORTI !", "GTA VI"),
+                                ("2026-11-20T09:00:00+01:00", "SORTI", "DEPUIS 1 JOUR"),
+                                ("2026-11-22T09:00:00+01:00", "SORTI", "DEPUIS 3 JOURS")):
+        ctx = nav.new_context(viewport={"width": 390, "height": 780}, timezone_id="Europe/Paris")
+        page = ctx.new_page()
+        page.clock.install(time=quand)
+        page.goto(url, wait_until="domcontentloaded")
+        page.wait_for_timeout(100)
+        textes = page.evaluate("""() => { const j = document.getElementById('splashJ'),
+            l = document.getElementById('splashL'); return j ? [j.textContent, l.textContent] : null; }""")
+        check(textes == [grand, petit], "[%s] l'écran dit %s / %s (%s)" % (quand[:16], grand, petit, textes))
+        ctx.close()
+
+
 def test_toast_annuler(nav, url):
     """Ce qui se défait tout seul part sans question, et se reprend.
 
@@ -6192,6 +6272,7 @@ def main():
             test_actualiser_ne_jette_plus_rien(nav, url)
             test_recherche_sans_accents(nav, url)
             test_barre_detat_suit_le_theme(nav, url)
+            test_ecran_de_chargement(nav, url)
             test_toast_annuler(nav, url)
             test_poids_de_tout_charger(nav, url)
             test_plafond_des_lus(nav, url)

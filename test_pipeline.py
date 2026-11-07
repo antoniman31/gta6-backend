@@ -5026,12 +5026,30 @@ def test_les_incidents_passes_sont_dans_le_fil():
     fil = json.load(open("docs/feed.json", encoding="utf-8"))
     journal = fil.get("sources_incidents") or []
     decodeur = [i for i in journal if i.get("source") == "__decodage__"]
-    check(len(decodeur) == 1,
-          "la panne du décodeur est au journal (%d entrée(s))" % len(decodeur))
-    check(decodeur and decodeur[0]["heures"] > 48,
+    # LE JOURNAL EST GLISSANT : il ne garde que INCIDENTS_JOURS jours après la
+    # clôture d'un incident. Celui du décodeur s'est refermé le 06/10/2026 : à
+    # partir du 05/11 il en sort PAR CONSTRUCTION, et ce contrôle, écrit le
+    # 06/10, est tombé en échec le 06/11 sans que rien ne soit cassé (mesuré le
+    # 07/11/2026 : les 55 incidents du fil commencent tous au 10/10). On exige
+    # donc sa présence TANT QU'IL DOIT Y ÊTRE — une marge d'un jour avant la
+    # sortie de la fenêtre —, et plus rien après : le seuil de 48 heures, lui,
+    # n'a pas bougé.
+    import feed_store
+    from datetime import datetime, timedelta, timezone
+    fin_au_plus_tot = datetime(2026, 10, 6, 0, 0, tzinfo=timezone.utc)
+    doit_y_etre = (datetime.now(timezone.utc)
+                   < fin_au_plus_tot + timedelta(days=feed_store.INCIDENTS_JOURS - 1))
+    # Toujours DEUX contrôles, quelle que soit la date : le nombre annoncé au
+    # README est celui de la suite, et un nombre qui change avec l'horloge le
+    # ferait mentir le jour où l'incident sort de la fenêtre.
+    check(len(decodeur) == 1 if doit_y_etre else len(decodeur) <= 1,
+          "la panne du décodeur est au journal tant qu'il doit y être, et "
+          "jamais en double (%d entrée(s), fenêtre glissante de %d jours)"
+          % (len(decodeur), feed_store.INCIDENTS_JOURS))
+    check(not decodeur or decodeur[0]["heures"] > 48,
           "avec ses %s heures, mesurées sur decode_failures : 0 échec au "
           "passage de 15h02 le 03/10, 126 à celui de 16h01, et retour à 0 "
-          "le 06/10 à 05h36" % (decodeur[0]["heures"] if decodeur else "?"))
+          "le 06/10 à 05h36" % (decodeur[0]["heures"] if decodeur else "(sortie de la fenêtre)"))
 
     compte = fil.get("sources_incidents_compte") or {}
     check(len(compte) <= 2, "le compteur ne garde que deux mois (%s)"
@@ -10999,6 +11017,38 @@ def test_agenda_est_valide():
           "refusé : plus de 8 entrées")
 
 
+def test_ecran_de_chargement_et_manifeste():
+    """Le manifeste et l'écran de chargement disent les mêmes couleurs et le même logo.
+
+    L'écran de lancement d'Android vient du manifeste : `background_color` valait
+    #0a0e14 et `theme_color` le bleu d'accent #5493ff, alors que le fond sombre de
+    l'app est #0a0d0f (mesuré le 07/11/2026). Le logo de l'écran de chargement est
+    embarqué dans la page en base64 : un test compare ses octets au fichier.
+    """
+    print("\n[chargement] manifeste et logo embarqué")
+    import re, base64, json
+
+    html = open("docs/index.html", encoding="utf-8").read()
+    manifeste = json.load(open("docs/manifest.json", encoding="utf-8"))
+    racine = re.search(r":root\{[^}]*?--bg:\s*(#[0-9a-fA-F]{6})", html, re.S)
+    check(racine is not None, "le fond sombre se lit dans la feuille de style")
+    fond = racine.group(1).lower() if racine else "?"
+    check(manifeste.get("background_color", "").lower() == fond,
+          "background_color du manifeste (%s) est le fond sombre de l'app (%s)"
+          % (manifeste.get("background_color"), fond))
+    check(manifeste.get("theme_color", "").lower() == fond,
+          "theme_color du manifeste (%s) aussi : le bleu d'accent n'était le fond d'aucun thème"
+          % manifeste.get("theme_color"))
+
+    m = re.search(r'<img class="splash-logo" src="data:image/png;base64,([A-Za-z0-9+/=]+)"', html)
+    check(m is not None, "l'écran de chargement porte un logo embarqué")
+    if m:
+        check(base64.b64decode(m.group(1)) == open("docs/icon-192.png", "rb").read(),
+              "et ce sont exactement les octets de icon-192.png")
+    check('id="splash"' in html and "SPLASH_DUREE_MIN_MS" in html,
+          "la page porte l'écran et sa durée minimale")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -11142,6 +11192,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_le_resume_est_nettoye_et_vide_sil_ne_dit_rien,
            test_lassistance_rockstar_est_une_source,
            test_agenda_est_valide,
+           test_ecran_de_chargement_et_manifeste,
            test_les_requetes_patchs_serveurs_streamers,
            test_vecteurs_du_resume,
            test_duree_par_source,
