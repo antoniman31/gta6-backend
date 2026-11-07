@@ -154,7 +154,7 @@ python3 test_pipeline.py        # le pipeline, la fusion, les notifications, la 
 python3 check_sources_sync.py   # FEEDS (Python) contre DEFAULT_FEEDS (JS)
 python3 audit_donnees.py        # cohérence des données publiées
 PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers \
-CHROMIUM_PATH=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell \
+CHROMIUM_PATH="$(ls /opt/pw-browsers/chromium_headless_shell-*/*/chrome-headless-shell)" \
 python3 test_navigateur.py      # l'app dans un vrai navigateur, 320 et 390 px
 ```
 

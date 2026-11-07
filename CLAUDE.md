@@ -14,10 +14,10 @@ sur téléphone : le rendu à 320 et 390 px passe avant tout autre.
 python3 test_pipeline.py
 python3 check_sources_sync.py
 python3 audit_donnees.py
-PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers CHROMIUM_PATH=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell python3 test_navigateur.py
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers CHROMIUM_PATH="$(ls /opt/pw-browsers/chromium_headless_shell-*/*/chrome-headless-shell)" python3 test_navigateur.py
 ```
 
-La dernière dure plusieurs minutes : lance-la en arrière-plan et attends sa fin
+Le dossier du navigateur change avec l'image du conteneur (`-1194` puis `-1243` : mesuré le 07/11/2026) : la commande le cherche au lieu de le figer. La dernière dure plusieurs minutes : lance-la en arrière-plan et attends sa fin
 avec un moniteur, sans enchaîner de `sleep`. Un contrôle que tu
 ajoutes doit être **prouvé capable d'échouer** : rejoue-le contre l'ancien code
 (`git archive HEAD` dans un dossier à part, plus tes tests) avant de l'annoncer vert.
