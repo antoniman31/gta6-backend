@@ -207,7 +207,6 @@
   /* margin-left:auto : une fois passé sur sa propre ligne (voir le
      flex-wrap de .header-haut), le bloc repartirait sinon coller à gauche —
      justify-content:space-between ne s'applique qu'aux lignes à deux items. */
-  .header-right{display:flex; flex-direction:column; align-items:flex-end; gap:8px; margin-left:auto;}
   .brand{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; letter-spacing:-0.02em;}
   .mode-indicator{
     display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace;
@@ -274,7 +273,6 @@
      entre deux icônes partirait sur la mauvaise. La rangée passe de 154 à
      166px, ce qui tient encore dans les 172px disponibles à côté du logo
      sur un écran de 320px (mesuré). */
-  .header-actions{display:flex; gap:10px; flex-shrink:0;}
   .icon-btn{
     background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
     width:34px; height:34px; border-radius:var(--r-sm); cursor:pointer;
@@ -325,6 +323,64 @@
     font-size:11px; font-weight:700; cursor:pointer; height:30px;
   }
 
+  /* ---------- Tuile du compteur et barre du bas (07/11/2026) ----------
+     Choix d'Antoni sur planche : tuile « J-11 » en grand, bouton ↻ dans la
+     première rangée, barre du bas flottante. Le texte du compteur reste dans
+     #countdown (un bouton, qui ouvre le détail) : toute la tuile est sa zone
+     de clic, grâce au ::after qui épouse la tuile. */
+  .icon-btn-grand{width:44px; height:44px; min-height:44px; color:var(--accent); flex-shrink:0;}
+  .icon-btn-grand .ic{width:24px; height:24px;}
+  .icon-btn-grand::after{inset:0;}
+  .tuile-compteur{
+    position:relative; background:var(--bg-elevated); border:1px solid var(--line);
+    border-radius:var(--r-md); padding:12px 14px; display:flex; flex-direction:column; gap:2px;
+  }
+  .compteur-gros{
+    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:32px; line-height:1.15;
+    color:var(--accent); padding-right:44px; white-space:nowrap;
+  }
+  .countdown.soon ~ .compteur-gros{color:var(--compte-soon);}
+  .countdown.urgent ~ .compteur-gros{color:var(--compte-urgent);}
+  .countdown.final ~ .compteur-gros{color:var(--compte-final);}
+  .tuile-compteur .countdown{margin-top:0; position:static; order:2; width:fit-content; max-width:calc(100% - 44px);}
+  .tuile-compteur .countdown::after{inset:0; border-radius:var(--r-md); z-index:0;}
+  .tuile-compteur .countdown.final{
+    display:block; padding:2px 6px; margin:0; font-size:12px; animation:countdown-pulse 1s ease-in-out infinite, countdown-border-pulse 1s ease-in-out infinite;
+  }
+  .tuile-compteur .mode-indicator{order:3; margin-top:6px; position:relative; z-index:1;}
+  .tuile-compteur .mode-indicator:empty{display:none;}
+  /* La pastille posait sa teinte sur --bg-panel avant la tuile ; sur le fond plus
+     clair de la tuile (--bg-elevated), le vert tombait à 4,48:1 (mesuré le
+     07/11/2026, seuil 4,5). Elle garde donc le fond sur lequel elle a été conçue. */
+  .tuile-compteur .mode-indicator.backend{background:color-mix(in srgb, var(--ok) 15%, var(--bg-panel));}
+  .tuile-compteur .mode-indicator.direct{background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));}
+  .relance{
+    position:absolute; top:6px; right:6px; z-index:1; width:40px; height:40px; min-height:0;
+    padding:0; border:0; background:transparent; color:var(--text-dim);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .relance::after{content:""; position:absolute; inset:-2px;}
+  .relance .ic{width:22px; height:22px;}
+  .relance:hover{color:var(--accent);}
+  .relance:disabled{opacity:.5;}
+  .barre-bas{
+    position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:60;
+    max-width:496px; margin:0 auto; display:flex; gap:2px; padding:6px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-full);
+    box-shadow:0 6px 24px rgba(0,0,0,.28);
+  }
+  .barre-bas button{
+    flex:1 1 0; min-width:0; min-height:50px; padding:0; border:0; background:none;
+    border-radius:var(--r-full); display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:2px; font-size:10px; letter-spacing:0; color:var(--text-dim); position:relative;
+    transition:background var(--t-court) var(--courbe), color var(--t-court) var(--courbe);
+  }
+  .barre-bas button .ic{width:22px; height:22px;}
+  .barre-bas button.active, .barre-bas button[aria-pressed="true"]{background:var(--accent); color:var(--accent-contrast);}
+  .barre-bas .logs-error-badge, .barre-bas .settings-error-badge{top:4px; right:calc(50% - 22px);}
+  /* La barre flotte au-dessus du fil : le dernier article ne doit pas passer dessous. */
+  body{padding-bottom:calc(88px + env(safe-area-inset-bottom, 0px));}
+
   /* ---------- Bloc de contrôle ---------- */
   .console{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
@@ -339,8 +395,6 @@
      "Relancer le robot" est masqué faute de jeton, "Actualiser" s'étale sur
      toute la largeur au lieu de laisser une demi-colonne vide.
      L'apparence, elle, est déclarée avec celle des onglets plus bas. */
-  .controls{display:flex; gap:8px;}
-  .controls button{flex:1; min-width:0; white-space:normal; line-height:1.3;}
   button{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
@@ -430,7 +484,7 @@
      deux qui se ressemblent : c'est ce qui garantit qu'ils ne divergeront
      pas à la prochaine retouche. Le centrage passe par flex et non par
      text-align, qui reste sans effet sur un conteneur flex. */
-  .tab, .controls button{
+  .tab{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-sm); color:var(--text-dim);
     padding:8px 14px; cursor:pointer; letter-spacing:0.02em;
@@ -441,10 +495,10 @@
     min-height:44px;
   }
   .tab{white-space:nowrap; flex-shrink:0;}
-  .tab:active, .controls button:active{background:var(--bg-elevated);}
+  .tab:active{background:var(--bg-elevated);}
   /* L'onglet actif et le bouton principal sont le même état : celui vers
      lequel on veut être conduit. */
-  .tab.active, .controls button.primary{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
+  .tab.active{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
   .tab-badge{
     font-size:10px; font-weight:700; background:var(--bg-elevated); color:var(--text-dim);
     padding:1px 5px; border-radius:var(--r-full); margin-left:2px;
@@ -2002,7 +2056,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
 <symbol id="i-settings" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1a.566.566 0 0 0-.18-.03c-.17 0-.34.09-.43.25l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.06.02.12.03.18.03.17 0 .34-.09.43-.25l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zm-1.98-1.71c.04.31.05.52.05.73 0 .21-.02.43-.05.73l-.14 1.13.89.7 1.08.84-.7 1.21-1.27-.51-1.04-.42-.9.68c-.43.32-.84.56-1.25.73l-1.06.43-.16 1.13-.2 1.35h-1.4l-.19-1.35-.16-1.13-1.06-.43c-.43-.18-.83-.41-1.23-.71l-.91-.7-1.06.43-1.27.51-.7-1.21 1.08-.84.89-.7-.14-1.13c-.03-.31-.05-.54-.05-.74s.02-.43.05-.73l.14-1.13-.89-.7-1.08-.84.7-1.21 1.27.51 1.04.42.9-.68c.43-.32.84-.56 1.25-.73l1.06-.43.16-1.13.2-1.35h1.39l.19 1.35.16 1.13 1.06.43c.43.18.83.41 1.23.71l.91.7 1.06-.43 1.27-.51.7 1.21-1.07.85-.89.7.14 1.13zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></symbol>
 <symbol id="i-bar_chart" viewBox="0 0 24 24"><path d="M4 9h4v11H4zm12 4h4v7h-4zm-6-9h4v16h-4z"/></symbol>
-<symbol id="i-assignment" viewBox="0 0 24 24"><path d="M7 15h7v2H7zm0-4h10v2H7zm0-4h10v2H7zm12-4h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-.14 0-.27.01-.4.04a2.008 2.008 0 0 0-1.44 1.19c-.1.23-.16.49-.16.77v14c0 .27.06.54.16.78s.25.45.43.64c.27.27.62.47 1.01.55.13.02.26.03.4.03h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7-.25c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zM19 19H5V5h14v14z"/></symbol>
 <symbol id="i-local_fire_department" viewBox="0 0 24 24"><path d="m16 6-.44.55c-.42.52-.98.75-1.54.75C13 7.3 12 6.52 12 5.3V2S4 6 4 13c0 4.42 3.58 8 8 8s8-3.58 8-8c0-2.96-1.61-5.62-4-7zm-4 13c-1.1 0-2-.87-2-1.94 0-.51.2-.99.58-1.36L12 14.3l1.43 1.4c.37.37.57.85.57 1.36 0 1.07-.9 1.94-2 1.94zm3.96-1.5c.04-.36.22-1.89-1.13-3.22L12 11.5l-2.83 2.78C7.81 15.62 8 17.16 8.04 17.5A5.982 5.982 0 0 1 6 13c0-3.16 2.13-5.65 4.03-7.25a4.024 4.024 0 0 0 3.99 3.55c.78 0 1.54-.23 2.18-.66A6.175 6.175 0 0 1 18 13c0 1.79-.79 3.4-2.04 4.5z"/></symbol>
 <symbol id="i-info" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></symbol>
 <symbol id="i-visibility" viewBox="0 0 24 24"><path d="M12 6a9.77 9.77 0 0 1 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/></symbol>
@@ -2020,6 +2073,10 @@
 <symbol id="i-filter_alt" viewBox="0 0 24 24"><path d="M7 6h10l-5.01 6.3L7 6zm-2.75-.39C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04c-.83 0-1.3.95-.79 1.61z"/></symbol>
 <symbol id="i-rss_feed" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></symbol>
 <symbol id="i-save" viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A5.99 5.99 0 0 1 12 18a6 6 0 1 1 0-12c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></symbol>
+<symbol id="i-play_circle" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM10 8v8l6-4z"/></symbol>
+<symbol id="i-timer" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></symbol>
+<symbol id="i-article" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/><path d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></symbol>
 <symbol id="i-warning" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
 <symbol id="i-bedtime" viewBox="0 0 24 24"><path d="M9.27 4.49c-1.63 7.54 3.75 12.41 7.66 13.8A7.993 7.993 0 0 1 12 20c-4.41 0-8-3.59-8-8 0-3.45 2.2-6.4 5.27-7.51m2.72-2.48C6.4 2.01 2 6.54 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.97h-.35z"/></symbol>
 </svg>
@@ -2058,43 +2115,26 @@
        annonce. Le compteur d'articles, lui, est descendu sous les onglets :
        il décrit la liste, sa place est contre elle. -->
   <header class="console">
+    <!-- Entête refait le 07/11/2026 (choix d'Antoni sur planche) : le titre et
+         un bouton ↻, puis une TUILE de compteur. Les trois boutons Paramètres,
+         Statistiques et Journal sont partis dans la barre du bas ; « Actualiser »
+         est devenu l'icône ↻ ; « Relancer le robot » est une petite icône ▶ dans
+         la tuile, visible seulement avec un jeton. -->
     <div class="header-haut">
-      <div>
-        <h1 class="brand">GTA6<span>_WATCH</span></h1>
-        <button type="button" id="countdown" class="countdown"
-                aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
-      </div>
-      <div class="header-right">
-        <div id="modeIndicator" class="mode-indicator"></div>
-        <!-- Trois boutons, et pas cinq. Avec le thème et les informations en
-             plus, l'entête ne tenait plus sur une ligne en dessous de 390 px :
-             le bloc de droite passait dessous et laissait un grand vide à
-             gauche (signalé par Antoni le 23/09/2026, capture à l'appui). Il
-             a choisi de les sortir d'ici : le thème a déjà son sélecteur à
-             trois modes dans ⚙️, et les informations ont un bouton dans ⚙️ et
-             un autre en bas du fil. Mesuré dans un navigateur : l'entête
-             tient désormais sur une ligne de 360 à 412 px. -->
-        <div class="header-actions">
-          <button class="icon-btn" onclick="openSettings()" title="Paramètres" aria-label="Paramètres" style="position:relative;"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-settings"/></svg><span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
-          <!-- Les statistiques sont une VUE, pas un filtre : elles vivent donc
-               ici, à côté du Journal qui en est une aussi, et non dans la
-               rangée d'onglets — qui ne porte que des filtres sur le fil. -->
-          <button class="icon-btn" id="statsBtn" onclick="setTab('stats')" title="Statistiques" aria-label="Statistiques du fil" aria-pressed="false"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-bar_chart"/></svg></button>
-          <button class="icon-btn" onclick="setTab('logs')" title="Logs" aria-label="Journal des passages" style="position:relative;"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-assignment"/></svg><span id="badgeLogs" class="logs-error-badge"></span></button>
-        </div>
-      </div>
+      <h1 class="brand">GTA6<span>_WATCH</span></h1>
+      <button type="button" id="refreshBtn" class="icon-btn icon-btn-grand" onclick="checkNow(true)"
+              title="Actualiser" aria-label="Actualiser"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-refresh"/></svg></button>
     </div>
-    <div class="controls">
-      <button class="primary" onclick="checkNow(true)">Actualiser</button>
-      <!-- Masqué tant qu'aucun token n'est enregistré : sans token, l'API
-           GitHub refuserait le déclenchement. Le bouton n'apparaît donc que
-           s'il peut réellement fonctionner. Les boutons sont en flex et non
-           en grille : seul, "Actualiser" prend toute la largeur au lieu de
-           laisser une colonne vide. -->
-      <button id="triggerRunBtn" onclick="triggerBackendRun()" style="display:none;">Relancer le robot</button>
+    <div class="tuile-compteur">
+      <b id="compteurGros" class="compteur-gros" aria-hidden="true"></b>
+      <button type="button" id="countdown" class="countdown"
+              aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
+      <div id="modeIndicator" class="mode-indicator"></div>
+      <button type="button" id="triggerRunBtn" class="relance" onclick="triggerBackendRun()"
+              title="Relancer le robot" aria-label="Relancer le robot" style="display:none;"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-play_circle"/></svg></button>
     </div>
-    <!-- Ce que le robot a fait à son dernier passage. Placé SOUS les deux
-         boutons : au-dessus, il séparait le nombre d'articles des actions
+    <!-- Ce que le robot a fait à son dernier passage. Placé SOUS la tuile
+         du compteur : au-dessus, il séparait le nombre d'articles des actions
          qui le modifient, alors que ce bloc existe justement pour les tenir
          ensemble. C'est aussi un bilan, donc sa place est après l'action.
          Masqué en mode direct, où aucun robot ne tourne. -->
@@ -2592,6 +2632,17 @@
     </div>
   </div>
 </div>
+
+<!-- Barre du bas, flottante (choix C d'Antoni, 07/11/2026). Quatre entrées : le fil,
+     le compteur (une fenêtre, pas une page), les statistiques (le Journal du
+     robot est dans Statistiques › Robot) et les réglages. Les pastilles
+     d'erreur de l'ancien entête sont passées sur Statistiques et Réglages. -->
+<nav class="barre-bas" aria-label="Navigation">
+  <button type="button" id="navFil" class="active" aria-pressed="true" onclick="retourFil()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-article"/></svg><span>Fil</span></button>
+  <button type="button" id="navCompteur" onclick="ouvreCompteur()" aria-haspopup="dialog"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-timer"/></svg><span>Compteur</span></button>
+  <button type="button" id="statsBtn" aria-pressed="false" onclick="setTab('stats')" title="Statistiques" aria-label="Statistiques du fil"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-bar_chart"/></svg><span>Stats</span><span id="badgeLogs" class="logs-error-badge"></span></button>
+  <button type="button" id="navReglages" onclick="openSettings()" title="Paramètres" aria-label="Paramètres"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-settings"/></svg><span>Réglages</span><span id="settingsErrorBadge" class="settings-error-badge" style="display:none;"></span></button>
+</nav>
 
 <script>
 // ---------- Diagnostic ----------
@@ -5036,6 +5087,14 @@ function marqueActif(id, actif){
   b.setAttribute("aria-pressed", String(actif));
 }
 
+// Le dernier onglet de FILTRE choisi : « Fil », dans la barre du bas, y revient
+// depuis les statistiques ou le journal.
+let dernierOngletFil = "all";
+function retourFil(){
+  setTab(dernierOngletFil || "all");
+  window.scrollTo(0, 0);
+}
+
 function setTab(t, silencieux){
   currentTab = t;
   visibleCount = PAGE_SIZE;
@@ -5064,6 +5123,8 @@ function setTab(t, silencieux){
   if(panneauStats) panneauStats.style.display = isStats ? "block" : "none";
   document.querySelector(".search-row").style.display = estVue ? "none" : "flex";
   marqueActif("statsBtn", isStats);
+  marqueActif("navFil", !estVue);
+  if(!estVue) dernierOngletFil = t;
 
   sauvegardeFiltres();
   if(silencieux) return;
@@ -7521,8 +7582,11 @@ function passagesGraphe(runs){
 
 function renderStatsRobot(s){
   const r = s.robot;
-  if(!r.genere) return `<p class="stats-attente">L'état du robot vient de sa réponse : touche « Actualiser » pour la lire.</p>`;
-  const blocs = [];
+  // Le Journal des passages a perdu son bouton d'entête (07/11/2026) : il est ici.
+  const journal = blocStats("Journal des passages", "Chaque passage du robot, ligne par ligne.",
+    `<button type="button" class="pleine-largeur" id="ouvreJournal" onclick="setTab('logs')">Ouvrir le journal</button>`);
+  if(!r.genere) return journal + `<p class="stats-attente">L'état du robot vient de sa réponse : touche « Actualiser » pour la lire.</p>`;
+  const blocs = [journal];
   const quand = new Date(r.genere).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
   blocs.push(blocStats("Dernier passage",
     `À ${quand}, heure de Paris — il y a ${dureeLisible(r.ilYaMin)}.`,
@@ -8153,6 +8217,10 @@ function updateCountdown(){
     const classeSortie = joursDepuis < 1 ? "countdown final" : "countdown";
     if(el.textContent !== texteSorti) el.textContent = texteSorti;
     if(el.className !== classeSortie) el.className = classeSortie;
+    // Le gros chiffre de la tuile : le temps ÉCOULÉ, en jours civils à Paris
+    // (comme l'écran de chargement), et « SORTI ! » le jour même.
+    const depuisCivil = ecartJoursCivils(jourParis(GTA6_RELEASE), jourParis(now));
+    majGrosCompteur(depuisCivil < 1 ? "SORTI !" : "+" + depuisCivil + " j");
     return;
   }
 
@@ -8186,6 +8254,15 @@ function updateCountdown(){
   // repeindrait quand même l'en-tête 3600 fois par heure pour rien.
   if(el.textContent !== texte) el.textContent = texte;
   if(el.className !== classe) el.className = classe;
+  // Dans les dernières 24 h on compte en heures (« H-12 ») : « J-0 » ne dirait rien.
+  majGrosCompteur(diff < 24 * 60 * 60 * 1000
+    ? "H-" + Math.ceil(diff / (60 * 60 * 1000))
+    : "J-" + ecartJoursCivils(jourParis(now), jourParis(GTA6_RELEASE)));
+}
+
+function majGrosCompteur(texte){
+  const g = document.getElementById("compteurGros");
+  if(g && g.textContent !== texte) g.textContent = texte;
 }
 
 // ---------- Le détail du compte à rebours ----------

@@ -5503,7 +5503,7 @@ def test_ligne_etat_sans_double_compte():
     # nombre d'articles des actions qui le modifient.
     carte = html[html.index('<header class="console">'):]
     carte = carte[:carte.index("</header>")]
-    check(carte.index('id="runLine"') > carte.index('class="controls"'),
+    check(carte.index('id="runLine"') > carte.index('class="tuile-compteur"'),
           "la ligne d'état est placée après le bloc des boutons")
 
 
@@ -5718,7 +5718,9 @@ def test_ergonomie_tactile():
     # cartes. La passe précédente n'avait traité que l'intérieur des cartes :
     # « Actualiser », l'action principale, mesurait encore 34 px de haut, et
     # « Charger N de plus » 27, le plus petit élément de toute l'interface.
-    for regle, nom in ((r"\.tab, \.controls button\{([^}]*)\}", "« Actualiser » et les onglets"),
+    for regle, nom in ((r"\n  \.tab\{\n([^}]*)\}", "les onglets"),
+                       (r"\.barre-bas button\{([^}]*)\}", "les boutons de la barre du bas"),
+                       (r"\.icon-btn-grand\{([^}]*)\}", "le bouton ↻ d'actualisation"),
                        (r"\.filters-trigger\{([^}]*)\}", "le bouton « Filtres »"),
                        (r"\.search-row input\{([^}]*)\}", "le champ de recherche"),
                        (r"button\.small\{([^}]*)\}", "« Charger N de plus »"),
@@ -5744,20 +5746,20 @@ def test_ergonomie_tactile():
         marge = int(inset.group(1))
         check(cote + 2 * marge >= 44,
               "boutons d'entête : zone de %d px de côté (44 visé)" % (cote + 2 * marge))
-        ecart = int(re.search(r"\.header-actions\{[^}]*gap:\s*(\d+)px", html).group(1))
-        check(ecart >= 2 * marge,
-              "écart de %d px entre les boutons d'entête pour %d px d'extension "
-              "de chaque côté — pas de chevauchement" % (ecart, marge))
 
-    # Le retour à la ligne de l'entête. Sans lui, .header-actions porte
-    # flex-shrink:0, refuse de se comprimer, et le badge de mode comme le
-    # dernier bouton se font trancher par le bord de la carte à 320 px.
+    # Entête refait le 07/11/2026 : plus de rangée de trois icônes, donc plus
+    # d'écart à tenir entre elles. Restent un bouton ↻ de 44 px et une icône ▶
+    # de 40 px étendue à 44 par son ::after.
+    bloc = re.search(r"\.relance\{([^}]*)\}", html).group(1)
+    ext = re.search(r"\.relance::after\{[^}]*inset:\s*-(\d+)px", html)
+    check(ext is not None and 40 + 2 * int(ext.group(1)) >= 44,
+          "l'icône « Relancer le robot » atteint 44 px de zone de clic")
     bloc = re.search(r"\.header-haut\{([^}]*)\}", html).group(1)
     check("flex-wrap:wrap" in bloc,
           "l'entête passe à la ligne au lieu de déborder sur écran étroit")
-    bloc = re.search(r"\.header-right\{([^}]*)\}", html).group(1)
-    check("margin-left:auto" in bloc,
-          "et le bloc de droite reste à droite une fois passé à la ligne")
+    bloc = re.search(r"\.barre-bas\{([^}]*)\}", html).group(1)
+    check("position:fixed" in bloc and "env(safe-area-inset-bottom" in bloc,
+          "la barre du bas est fixe et respecte la zone sûre des téléphones")
 
     # Anti-patterns qui se lisent dans le balisage.
     viewport = re.search(r'<meta name="viewport"[^>]*>', html).group(0)
@@ -7726,13 +7728,13 @@ def test_icones_material():
     check(not (symboles - utilises),
           "et le sprite ne porte aucune icône inutilisée (%s)" % (sorted(symboles - utilises) or "aucune"))
 
-    roles = {"settings": "réglages", "bar_chart": "statistiques", "assignment": "journal",
-             "local_fire_department": "actu majeure", "info": "informations",
+    roles = {"settings": "réglages", "bar_chart": "statistiques", "local_fire_department": "actu majeure", "info": "informations",
              "visibility": "aperçu", "visibility_off": "spoiler", "link": "copier le lien",
              "translate": "traduire", "check_circle": "marquer lu", "undo": "marquer non lu",
              "star": "mis de côté", "star_border": "mis de côté (vide)", "close": "fermer",
              "check": "copié", "arrow_downward": "reprendre la lecture", "warning": "alerte",
-             "bedtime": "dodos"}
+             "bedtime": "dodos", "timer": "compteur", "article": "fil", "refresh": "actualiser",
+             "play_circle": "relancer le robot"}
     absents = [r for n, r in roles.items() if n not in utilises]
     check(not absents, "chaque rôle a son icône Material (absents : %s)" % (absents or "aucun"))
 
@@ -7757,6 +7759,52 @@ def test_icones_material():
     check('id="themeSystemBtn"' in html and 'id="themeLightBtn"' in html
           and 'id="themeDarkBtn"' in html,
           "et le thème reste réglable : son sélecteur à trois modes est dans ⚙️")
+
+
+def test_barre_du_bas_et_entete():
+    """Barre du bas (choix C) et entête à tuile de compteur (choix H2), 07/11/2026."""
+    print("\n[app] barre du bas, tuile du compteur, Journal dans Statistiques")
+    import re
+    html = open("docs/index.html", encoding="utf-8").read()
+    code = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+
+    barre = re.search(r'<nav class="barre-bas"[^>]*>(.*?)</nav>', code, re.S)
+    check(barre is not None, "une barre de navigation du bas existe")
+    ids = re.findall(r'<button[^>]*id="([a-zA-Z]+)"', barre.group(1))
+    check(ids == ["navFil", "navCompteur", "statsBtn", "navReglages"],
+          "elle a quatre entrées dans l'ordre Fil, Compteur, Stats, Réglages (%s)" % ids)
+    entete = code[code.index('<header class="console">'):code.index("</header>")]
+    check("openSettings()" not in entete and "setTab('stats')" not in entete
+          and "setTab('logs')" not in entete,
+          "l'entête ne porte plus ni Paramètres, ni Statistiques, ni Journal")
+    check('id="refreshBtn"' in entete and 'onclick="checkNow(true)"' in entete
+          and ">Actualiser</button>" not in entete,
+          "« Actualiser » est l'icône ↻ de l'entête, plus un grand bouton")
+    tuile = entete[entete.index('class="tuile-compteur"'):]
+    check('id="compteurGros"' in tuile and 'id="countdown"' in tuile
+          and 'id="triggerRunBtn"' in tuile and 'id="modeIndicator"' in tuile,
+          "la tuile porte le gros chiffre, le texte, le mode et « Relancer le robot »")
+    check("Relancer le robot</button>" not in tuile and 'aria-label="Relancer le robot"' in tuile,
+          "« Relancer le robot » est une icône nommée, pas un bouton à libellé")
+
+    # Les pastilles d'erreur ont suivi leurs boutons.
+    check(barre.group(1).count("badgeLogs") == 1 and barre.group(1).count("settingsErrorBadge") == 1,
+          "les pastilles d'erreur sont sur Statistiques et sur Réglages")
+
+    # Le Journal n'a plus de bouton d'entête : il est dans Statistiques › Robot.
+    corps = html[html.index("function renderStatsRobot("):]
+    corps = corps[:corps.index("\n}")]
+    check('onclick="setTab(\'logs\')"' in corps,
+          "Statistiques › Robot ouvre le Journal des passages")
+    fn = html[html.index("function retourFil("):]
+    fn = fn[:fn.index("\n}")]
+    check("setTab(dernierOngletFil" in fn, "« Fil » revient au dernier onglet de filtre choisi")
+
+    # Le gros chiffre : jours civils à Paris, heures dans les 24 dernières heures.
+    fn = html[html.index("function updateCountdown("):]
+    fn = fn[:fn.index("\nfunction majGrosCompteur")]
+    check('"H-"' in fn and '"J-"' in fn and '"+"' in fn and "ecartJoursCivils(" in fn,
+          "le gros chiffre compte en jours civils (J-n), en heures (H-n) puis en jours écoulés (+n j)")
 
 
 def test_contraste_des_deux_themes():
@@ -8659,7 +8707,7 @@ def test_haut_de_page_une_seule_carte():
     check(corps.count('class="console"') == 1,
           "et il n'y a bien qu'une seule carte en haut de page")
     for quoi in ('class="brand"', 'id="countdown"', 'id="modeIndicator"',
-                 'class="controls"', 'id="runLine"', 'id="progressBar"'):
+                 'class="tuile-compteur"', 'id="runLine"', 'id="progressBar"'):
         check(corps.index(quoi) < corps.index("</header>"),
               f"{quoi} est dans la carte fusionnée")
 
@@ -11179,6 +11227,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_un_passage_complet_du_robot,
            test_un_seul_juge_de_lactu_majeure,
            test_icones_material,
+           test_barre_du_bas_et_entete,
            test_contraste_des_deux_themes,
            test_le_decodeur_google_news_est_vraiment_la,
            test_readme_ne_cite_que_des_constantes_reelles,
