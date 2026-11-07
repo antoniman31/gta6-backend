@@ -7810,6 +7810,13 @@ def test_barre_du_bas_et_entete():
     corps = corps[:corps.index("\n}")]
     check('onclick="setTab(\'logs\')"' in corps,
           "Statistiques › Robot ouvre le Journal des passages")
+    # Dans Statistiques et le Journal, plus d'onglets du fil ni de ligne de comptage.
+    regle = re.search(r"body\.vue-detail \.tab-row, body\.vue-detail \.feed-count\{([^}]*)\}", html)
+    corps_tab = html[html.index("function setTab("):]
+    corps_tab = corps_tab[:corps_tab.index("\n}")]
+    check(regle is not None and "display:none" in regle.group(1)
+          and 'classList.toggle("vue-detail", estVue)' in corps_tab,
+          "dans Statistiques et le Journal, les onglets du fil et la ligne de comptage sont masqués")
     fn = html[html.index("function retourFil("):]
     fn = fn[:fn.index("\n}")]
     check("setTab(dernierOngletFil" in fn, "« Fil » revient au dernier onglet de filtre choisi")
