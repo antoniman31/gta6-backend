@@ -1885,6 +1885,11 @@
   .page-reglages{display:none; max-width:640px; margin:0 auto;}
   .page-reglages.open{display:block;}
   body.vue-reglages main, body.vue-reglages .info-btn{display:none;}
+  /* Dans Statistiques et le Journal, les onglets du fil (Tous, Actu majeure,
+     Non Rockstar…) et la ligne « n affichés · n non lus » ne servent à rien :
+     ils filtrent et décrivent le fil, qui est masqué (Antoni, 07/11/2026,
+     capture à l'appui : « dans la page stats y a pas besoin de ça »). */
+  body.vue-detail .tab-row, body.vue-detail .feed-count{display:none;}
   #settingsOverlay .settings-panel{
     background:none; border:0; border-radius:0; padding:0; margin:0; max-width:none;
     max-height:none; overflow:visible;
@@ -5141,6 +5146,7 @@ function setTab(t, silencieux){
   const panneauStats = document.getElementById("statsPanel");
   if(panneauStats) panneauStats.style.display = isStats ? "block" : "none";
   document.querySelector(".search-row").style.display = estVue ? "none" : "flex";
+  document.body.classList.toggle("vue-detail", estVue);
   if(!estVue) dernierOngletFil = t;
   // Choisir une autre vue depuis la page Réglages la referme.
   if(document.body.classList.contains("vue-reglages")) closeSettings();

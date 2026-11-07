@@ -1583,6 +1583,10 @@ def test_barre_du_bas(nav, url):
     check(page.get_attribute("#navFil", "aria-pressed") == "false"
           and page.get_attribute("#statsBtn", "aria-pressed") == "true",
           "Stats s'allume et Fil s'éteint")
+    visibles = page.evaluate("""() => ['#tabAll', '#tabMajeur', '#tabNonRockstar', '#tabRockstar', '#tabRockstarmag', '#countLine']
+        .filter(s => document.querySelector(s).offsetParent !== null)""")
+    check(visibles == [],
+          "dans Statistiques, plus d'onglets du fil ni de ligne de comptage (encore visibles : %s)" % visibles)
     page.click("#navFil")
     check(page.evaluate("() => currentTab") == "rockstar"
           and page.get_attribute("#navFil", "aria-pressed") == "true",
@@ -1592,9 +1596,13 @@ def test_barre_du_bas(nav, url):
     page.click("#ouvreJournal")
     check(page.is_visible("#logsPanel") and not page.is_visible("#statsPanel"),
           "Statistiques › Robot ouvre le Journal des passages")
+    check(not page.is_visible("#tabAll") and not page.is_visible("#countLine"),
+          "et le Journal non plus n'a pas les onglets du fil")
     page.click("#navFil")
     check(page.is_visible("#feed") and not page.is_visible("#logsPanel"),
           "« Fil » referme le Journal")
+    check(page.is_visible("#tabAll") and page.is_visible("#countLine"),
+          "et rend au fil ses onglets et sa ligne de comptage")
     page.click("#countdown")
     check(page.evaluate("() => document.getElementById('compteurOverlay').classList.contains('open')"),
           "toucher la tuile de l'entête ouvre la fenêtre du compteur")
