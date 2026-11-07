@@ -8731,25 +8731,25 @@ def test_panneau_parametres_intact():
     # Chaque élément doit vivre dans exactement un onglet, sinon il serait
     # masqué en permanence ou affiché dans deux onglets à la fois.
     onglets = re.findall(r'data-onglet="([a-z]+)"', panneau)
-    check(len(onglets) == 3, f"trois onglets déclarés (obtenu {len(onglets)})")
-    check(len(set(onglets)) == 3, "leurs clés sont distinctes")
+    check(len(onglets) == 4, f"quatre rubriques déclarées (obtenu {len(onglets)})")
+    check(len(set(onglets)) == 4, "leurs clés sont distinctes")
     cibles = set(re.findall(r'data-cible="([a-z]+)"', panneau))
     check(cibles == set(onglets),
           "chaque bouton d'onglet pointe vers un panneau existant, et réciproquement")
 
     # Un seul onglet visible au chargement, sinon deux se superposent.
     caches = len(re.findall(r'data-onglet="[a-z]+" hidden', panneau))
-    check(caches == 2, f"deux onglets masqués au départ, un visible (obtenu {caches})")
+    check(caches == 3, f"trois rubriques masquées au départ, une visible (obtenu {caches})")
 
     # La barre réutilise .tab : c'est ce qui garantit l'harmonie avec les
     # onglets d'articles. Une classe propre au panneau dériverait avec le temps.
     barre = re.search(r'<div class="panneau-tabs">(.*?)</div>', panneau, re.S).group(1)
-    check(barre.count('class="tab') == 3,
-          "les trois boutons utilisent la classe .tab du site")
+    check(barre.count('class="tab') == 4,
+          "les quatre boutons utilisent la classe .tab du site")
     # Sur les boutons eux-mêmes, et non sur le conteneur .panneau-tabs qui,
     # lui, ne porte que la mise en page.
     boutons = re.findall(r'<button[^>]*>', barre)
-    check(len(boutons) == 3, f"trois boutons dans la barre (obtenu {len(boutons)})")
+    check(len(boutons) == 4, f"quatre boutons dans la barre (obtenu {len(boutons)})")
     reinventes = [b for b in boutons
                   if not re.search(r'class="tab(?: active)?"', b)]
     check(not reinventes,
@@ -9006,7 +9006,7 @@ def test_panneau_parametres_accessible():
 
     # La sélection ne vivait que dans une classe CSS : un lecteur d'écran
     # annonçait trois boutons identiques, pour les onglets comme pour le thème.
-    for barre, combien in (("panneau-tabs", 3), ("theme-toggle", 3)):
+    for barre, combien in (("panneau-tabs", 4), ("theme-toggle", 3)):
         bloc = panneau[panneau.index(barre):]
         bloc = bloc[:bloc.index("</div>")]
         check(bloc.count('aria-pressed=') == combien,
@@ -9102,7 +9102,7 @@ def test_panneau_parametres_structure():
     # Le titre et les onglets défilaient avec le reste : sur l'onglet Contenu,
     # « Fermer » se retrouvait deux mille pixels plus haut.
     check('class="panneau-entete"' in panneau,
-          "le titre et les onglets sont réunis dans une entête")
+          "le titre et « Fermer » sont réunis dans une entête")
     bloc = re.search(r"#settingsOverlay \.panneau-entete\{([^}]*)\}", html).group(1)
     check("position:sticky" in bloc and "top:0" in bloc,
           "et cette entête reste collée en haut")
@@ -9122,20 +9122,33 @@ def test_panneau_parametres_structure():
     check("overflow-y" not in bloc and "max-height" not in bloc,
           "la liste des sources ne défile plus dans son coin")
 
-    # Et comme elle est longue, elle passe en DERNIER dans son onglet :
-    # sinon les deux zones de mots-clés seraient enterrées derrière.
-    onglet = panneau[panneau.index('data-onglet="src"'):]
-    onglet = onglet[:onglet.index('data-onglet="adv"')]
-    check(onglet.index('id="keywordsInput"') < onglet.index('id="sourceList"'),
-          "les mots-clés viennent avant les cinquante-neuf bascules")
+    # Les mots-clés ont leur rubrique (07/11/2026) : cinquante-neuf bascules
+    # les enterraient dans la même page que les sources.
+    flt = panneau[panneau.index('data-onglet="flt"'):panneau.index('data-onglet="src"')]
+    src = panneau[panneau.index('data-onglet="src"'):panneau.index('data-onglet="adv"')]
+    check('id="keywordsInput"' in flt and 'id="spoilerMode"' in flt
+          and 'id="keywordsInput"' not in src and 'id="sourceList"' in src,
+          "les mots-clés et le mode sans spoiler sont dans Filtres, la liste dans Sources")
 
-    # « Avancé » empilait six sujets sans rapport sans rien pour les séparer.
-    # Trois depuis le 16/10/2026 ; deux depuis que les notifications push sont
-    # retirées (03/11/2026) : la connexion à GitHub et l'entretien de l'app.
-    onglet = panneau[panneau.index('data-onglet="adv"'):]
-    check(onglet.count('class="panneau-section"') == 2
-          and 'Notifications</h3>' not in onglet,
-          "« Avancé » est découpé en deux sujets nommés, sans les notifications")
+    # Les quatre rubriques de la barre du bas, avec leur icône Material.
+    barre = panneau[panneau.index('<div class="panneau-tabs">'):]
+    check([x for x in re.findall(r'data-cible="([a-z]+)"', barre)] == ["aff", "flt", "src", "adv"]
+          and all(("#i-" + n) in barre for n in ("palette", "filter_alt", "rss_feed", "save")),
+          "la barre du bas porte Apparence, Filtres, Sources et Données, chacune avec son icône")
+    bloc = re.search(r"\.panneau-tabs\{([^}]*)\}", html).group(1)
+    check("position:sticky" in bloc and "bottom:0" in bloc,
+          "et cette barre reste collée en bas du panneau, sous le pouce")
+
+    # Plus d'intertitres : un seul style de titre (l'étiquette de carte), et
+    # « Réinitialiser » seul dans sa carte « Zone sensible », en bas des Données.
+    onglet = panneau[panneau.index('data-onglet="adv"'):panneau.index('<div class="panneau-tabs">')]
+    check('class="panneau-section"' not in panneau and 'Notifications</h3>' not in onglet,
+          "plus d'intertitre h3 : un seul style de titre dans tout le panneau")
+    check('class="setting-group zone-sensible"' in onglet
+          and onglet.rindex("resetSettings()") > onglet.index("zone-sensible")
+          and panneau.count("resetSettings()") == 1,
+          "« Réinitialiser » est seul, dans la carte « Zone sensible »")
+    check("settings-actions" not in html, "l'ancienne barre d'actions du bas a disparu")
 
     # Un onglet « Affichage » qui contenait un groupe « Affichage » : le même
     # mot à deux niveaux de hiérarchie ne dit plus rien.

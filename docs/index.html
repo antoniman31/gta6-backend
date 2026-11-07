@@ -1824,50 +1824,38 @@
      restait disposé comme si l'entête était remontée. Les quatre premiers
      pixels de chaque onglet passaient sous la barre — le haut des lettres de
      « Sources » et de « Mots-clés » était coupé. */
-  #settingsOverlay .settings-panel{padding-top:0;}
+  #settingsOverlay .settings-panel{padding-top:0; padding-bottom:0;}
   #settingsOverlay .panneau-entete{
     position:sticky; top:0; z-index:2;
     margin:0 -20px 16px; padding:20px 20px 0;
     background:var(--bg-panel); border-bottom:1px solid var(--line);
   }
   #settingsOverlay .panneau-entete .settings-title{margin-bottom:14px;}
-  #settingsOverlay .panneau-entete .panneau-tabs{
-    margin-bottom:0; border-bottom:none; padding-bottom:12px;
+  /* ---------- Réglages V3 (07/11/2026) ----------
+     Une barre d'onglets EN BAS (au pouce), des cartes groupées, UN seul style
+     de titre : l'ancien panneau en avait trois (étiquette, intertitre, titre
+     d'onglet) et se lisait « irrégulier ». La barre réutilise .tab : seule la
+     mise en page est ajoutée. Entête et barre sont collées ; le contenu défile
+     entre les deux. */
+  .setting-group{
+    background:var(--bg-elevated); border:1px solid var(--line);
+    border-radius:var(--r-md); padding:14px; margin-bottom:12px;
   }
-  /* Volontairement PAS collée, contrairement à l'entête : elle ne contient
-     plus qu'une action destructive, et la coller reviendrait à en faire
-     l'élément le plus visible du panneau. C'est l'entête qui porte la sortie
-     et les onglets, donc ce qu'on cherche vraiment en permanence. */
-  .settings-actions{
-    display:flex; gap:12px; justify-content:space-between; align-items:center;
-    flex-wrap:wrap; margin-top:28px; padding-top:16px;
-    border-top:1px solid var(--line);
-  }
-  .settings-actions .setting-desc{margin-top:0; flex:1 1 140px;}
-
-  /* Des sujets sans rapport vivent dans « Avancé » : la connexion à GitHub,
-     l'entretien de l'app (et, jusqu'au 03/11/2026, les notifications push).
-     Un intertitre par sujet, au lieu d'un quatrième onglet que la largeur
-     d'un téléphone ne permet pas. */
-  .panneau-section{
-    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
-    letter-spacing:0.04em; color:var(--text);
-    margin:26px 0 14px; padding-top:18px; border-top:1px solid var(--line);
-  }
-  .panneau-onglet > .panneau-section:first-child{
-    margin-top:0; padding-top:0; border-top:none;
-  }
-
-  /* ---------- Onglets du panneau Paramètres ---------- */
-  /* La barre réutilise .tab et .tab.active : la classe du site, pas une
-     copie. Elle n'ajoute donc que la mise en page, jamais l'apparence —
-     c'est ce qui garantit que le panneau suivra toute évolution des
-     onglets d'articles sans qu'on y pense. */
+  .setting-group .setting-desc:last-child{margin-bottom:0;}
+  .zone-sensible{border-color:var(--danger);}
+  .entete-note{margin:-6px 0 12px;}
   .panneau-tabs{
-    display:flex; gap:4px; margin-bottom:16px;
-    border-bottom:1px solid var(--line); padding-bottom:12px;
+    display:flex; gap:4px; position:sticky; bottom:0; z-index:2;
+    margin:16px -20px 0; padding:8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    background:var(--bg-panel); border-top:1px solid var(--line);
   }
-  .panneau-tabs .tab{flex:1 1 0; padding:8px 6px; min-width:0;}
+  .panneau-tabs .tab{
+    flex:1 1 0; min-width:0; padding:6px 0; min-height:48px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    font-size:10px; letter-spacing:0;
+  }
+  .panneau-tabs .tab .ic{width:22px; height:22px;}
+  .panneau-tabs .tab span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
 
   /* Le mur de bascules défilait chez lui pour garder les boutons du bas
      atteignables. La barre d'action étant collée en bas du panneau, ce
@@ -2028,6 +2016,10 @@
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></symbol>
 <symbol id="i-arrow_downward" viewBox="0 0 24 24"><path d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5 0 .12.05.23.13.33.41.47.64 1.06.64 1.67A2.5 2.5 0 0 1 12 22zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5a.54.54 0 0 0-.14-.35c-.41-.46-.63-1.05-.63-1.65a2.5 2.5 0 0 1 2.5-2.5H16c2.21 0 4-1.79 4-4 0-3.86-3.59-7-8-7z"/><circle cx="6.5" cy="11.5" r="1.5"/><circle cx="9.5" cy="7.5" r="1.5"/><circle cx="14.5" cy="7.5" r="1.5"/><circle cx="17.5" cy="11.5" r="1.5"/></symbol>
+<symbol id="i-filter_alt" viewBox="0 0 24 24"><path d="M7 6h10l-5.01 6.3L7 6zm-2.75-.39C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04c-.83 0-1.3.95-.79 1.61z"/></symbol>
+<symbol id="i-rss_feed" viewBox="0 0 24 24"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></symbol>
 <symbol id="i-warning" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
 <symbol id="i-bedtime" viewBox="0 0 24 24"><path d="M9.27 4.49c-1.63 7.54 3.75 12.41 7.66 13.8A7.993 7.993 0 0 1 12 20c-4.41 0-8-3.59-8-8 0-3.45 2.2-6.4 5.27-7.51m2.72-2.48C6.4 2.01 2 6.54 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.97h-.35z"/></symbol>
 </svg>
@@ -2340,18 +2332,7 @@
         <h2 id="titreParametres">PARAMÈTRES</h2>
         <button onclick="closeSettings()">Fermer</button>
       </div>
-
-      <!-- aria-pressed et non role="tab" : de vrais onglets ARIA exigent la
-           navigation aux flèches et le retrait des boutons du parcours de
-           tabulation. Trois boutons bascules dont un seul est enfoncé disent
-           la même chose, se comportent comme ce qu'ils sont, et n'ont plus
-           besoin de la couleur pour annoncer le choix — ce qui était le cas
-           avant : la sélection ne vivait QUE dans la classe .active. -->
-      <div class="panneau-tabs">
-        <button class="tab active" data-cible="aff" aria-pressed="true" onclick="ongletParam('aff')">Affichage</button>
-        <button class="tab" data-cible="src" aria-pressed="false" onclick="ongletParam('src')">Contenu</button>
-        <button class="tab" data-cible="adv" aria-pressed="false" onclick="ongletParam('adv')">Avancé</button>
-      </div>
+      <div class="setting-desc entete-note">Les changements s'appliquent immédiatement.</div>
     </div>
 
     <div class="panneau-onglet" data-onglet="aff">
@@ -2379,15 +2360,6 @@
         une seconde et demie. Un appui le ferme. Coupé, l'app s'ouvre sans
         attendre, dès le prochain lancement.
       </div>
-    </div>
-
-    <!-- Arrivé ici le 23/09/2026 avec le thème : les deux ont quitté l'entête
-         pour qu'il tienne sur une ligne. Le panneau se FERME avant d'ouvrir
-         les informations : deux dialogues empilés se disputeraient le piège
-         du focus et la touche Échap. -->
-    <div class="setting-group">
-      <span class="setting-label">À propos</span>
-      <button class="pleine-largeur" onclick="closeSettings(); openInfo();"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"/></svg> Informations et derniers passages du robot</button>
     </div>
 
     <!-- « Liste des articles » et non « Affichage » : l'onglet qui contient
@@ -2420,12 +2392,12 @@
 
     </div>
 
-    <!-- Les mots-clés passent AVANT les sources : cinquante-neuf lignes de
-         bascules les enterraient, et la liste ne défile plus chez elle. -->
-    <div class="panneau-onglet" data-onglet="src" hidden>
+    <!-- Les mots-clés ont leur propre rubrique depuis le 07/11/2026 : cinquante-neuf
+         lignes de bascules les enterraient dans la même page que les sources. -->
+    <div class="panneau-onglet" data-onglet="flt" hidden>
     <div class="setting-group">
       <span class="setting-label">Mots-clés</span>
-      <textarea id="keywordsInput" class="setting-input wide champ-mono" rows="6"
+      <textarea id="keywordsInput" class="setting-input wide champ-mono" rows="4"
                 aria-label="Mots-clés, un par ligne" placeholder="un mot-clé par ligne"
                 onchange="appliqueReglages()"></textarea>
       <div class="setting-desc" id="keywordsCount"></div>
@@ -2473,6 +2445,9 @@
       </div>
     </div>
 
+    </div>
+
+    <div class="panneau-onglet" data-onglet="src" hidden>
     <!-- Les soixante-trois interrupteurs sont repliés quand le robot
          alimente le fil, parce qu'ils n'y décident de RIEN : le chemin
          backend lit feed.json et ne consulte jamais `enabled`. Ils ne
@@ -2505,7 +2480,6 @@
 
     <div class="panneau-onglet" data-onglet="adv" hidden>
 
-    <h3 class="panneau-section">Connexion GitHub</h3>
 
     <div class="setting-group">
       <span class="setting-label">Backend GitHub (optionnel)</span>
@@ -2539,7 +2513,6 @@
       </div>
     </div>
 
-    <h3 class="panneau-section">Entretien</h3>
 
     <div class="setting-group">
       <span class="setting-label">Version de l'app</span>
@@ -2571,14 +2544,32 @@
       <div class="setting-desc">Réglages, sources, mots-clés, articles lus et déjà vus. <strong>Le jeton GitHub n'y est jamais</strong> : une sauvegarde doit pouvoir traîner dans tes téléchargements sans rien exposer.</div>
     </div>
 
+    <!-- Arrivé ici le 23/09/2026 avec le thème : les deux ont quitté l'entête
+         pour qu'il tienne sur une ligne. Le panneau se FERME avant d'ouvrir
+         les informations : deux dialogues empilés se disputeraient le piège
+         du focus et la touche Échap. -->
+    <div class="setting-group">
+      <span class="setting-label">À propos</span>
+      <button class="pleine-largeur" onclick="closeSettings(); openInfo();"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"/></svg> Informations et derniers passages du robot</button>
     </div>
 
-    <!-- Une action rare et destructive, à sa place : en bas, cernée de rouge,
-         seule. Elle partageait la barre avec « Appliquer », même taille et
-         même poids, à huit pixels l'une de l'autre. -->
-    <div class="settings-actions">
-      <span class="setting-desc">Les changements s'appliquent immédiatement.</span>
-      <button class="danger" onclick="resetSettings()">Réinitialiser</button>
+    <!-- Une action rare et destructive, seule dans sa carte, en bas des
+         Données. Elle partageait une barre avec la note des changements. -->
+    <div class="setting-group zone-sensible">
+      <span class="setting-label">Zone sensible</span>
+      <button class="danger pleine-largeur" onclick="resetSettings()">Réinitialiser</button>
+      <div class="setting-desc">Remet tous les réglages d'origine. Le jeton GitHub est conservé.</div>
+    </div>
+
+    </div>
+
+    <!-- Barre d'onglets EN BAS, au pouce : quatre rubriques. Elle réutilise
+         .tab (la classe du site) ; la mise en page seule est ajoutée. -->
+    <div class="panneau-tabs">
+      <button class="tab active" data-cible="aff" aria-pressed="true" onclick="ongletParam('aff')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-palette"/></svg><span>Apparence</span></button>
+      <button class="tab" data-cible="flt" aria-pressed="false" onclick="ongletParam('flt')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-filter_alt"/></svg><span>Filtres</span></button>
+      <button class="tab" data-cible="src" aria-pressed="false" onclick="ongletParam('src')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-rss_feed"/></svg><span>Sources</span></button>
+      <button class="tab" data-cible="adv" aria-pressed="false" onclick="ongletParam('adv')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-save"/></svg><span>Données</span></button>
     </div>
   </div>
 </div>

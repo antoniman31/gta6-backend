@@ -20,7 +20,7 @@
 // docs/index.html (règle du dépôt) : le service worker sert le squelette en
 // réseau-d'abord, donc l'app se met déjà à jour dès qu'il y a du réseau, mais un
 // nouveau nom évite de revivre l'incident de cache tenace jamais élucidé.
-const CACHE_NAME = "gta6watch-shell-v73";
+const CACHE_NAME = "gta6watch-shell-v74";
 const SHELL_URL = "./index.html";
 
 // Le cache des réglages d'avant le 03/11/2026 (« ne pas déranger » et journal de

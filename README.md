@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2182 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2186 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -124,10 +124,10 @@ Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 
 - **Statistiques et journal** : volume par jour et par heure, sources actives et en baisse, médias, délais, incidents du robot ; journal des événements de l'app.
 - **Archive** chargée mois par mois ; **sauvegarde** exportable et importable (réglages, sources, articles lus) ; export OPML des sources.
 - **Mode de secours** : si `feed.json` est injoignable, l'app interroge elle-même les flux (`DEFAULT_FEEDS`) via des proxys, avec sa propre déduplication.
-- **Réglages** : thème, mots-clés, seuil de doublon, nombre d'articles, sources (les interrupteurs n'agissent qu'en mode de secours), adresse du backend, déclenchement du robot depuis le téléphone
+- **Réglages** : barre d'onglets en bas, quatre rubriques en cartes groupées — Apparence (thème, écran de chargement, liste des articles), Filtres (mots-clés, exclusions, mode sans spoiler), Sources, Données (backend, jeton, export, sauvegarde, « Zone sensible » avec Réinitialiser). Détail : thème, mots-clés, seuil de doublon, nombre d'articles, sources (les interrupteurs n'agissent qu'en mode de secours), adresse du backend, déclenchement du robot depuis le téléphone
   (jeton GitHub à portée minimale, gardé dans ce navigateur seulement).
 - **Écran de chargement** : blanc en thème clair, noir en thème sombre (« système » suit le téléphone), avec le logo et le décompte du jour (« J-12 »). Il reste `SPLASH_DUREE_MIN_MS` après le premier
-  affichage (1,5 s), bloque les touches, et un appui ou une touche le ferme. Le réglage « Écran de chargement » (Réglages › Affichage) le coupe ; piloté par un test, il est coupé tant que le réglage n'est pas allumé. Le petit script d'avant l'affichage, dans l'en-tête de la page, pose le thème pour que cet écran ne passe jamais par le sombre en thème clair.
+  affichage (1,5 s), bloque les touches, et un appui ou une touche le ferme. Le réglage « Écran de chargement » (Réglages › Apparence) le coupe ; piloté par un test, il est coupé tant que le réglage n'est pas allumé. Le petit script d'avant l'affichage, dans l'en-tête de la page, pose le thème pour que cet écran ne passe jamais par le sombre en thème clair.
 - **Icônes** : Material Design Icons de Google (style Outlined, licence Apache-2.0, texte dans `LICENSE-material-icons`), en SVG embarqués dans la page (sprite après `<body>`, aide `ic()`), plus aucun emoji dans l'interface.
 - **PWA** : installable, utilisable hors ligne pour la coque ; `docs/sw.js` ne gère que l'installation, l'activation et le cache. **Le nom du cache de `docs/sw.js` se bumpe à chaque changement de `docs/index.html`.**
 

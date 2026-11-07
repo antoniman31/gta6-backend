@@ -12398,3 +12398,10 @@ Antoni : « il disparaît trop vite, on pourrait pas le laisser afficher une ou 
 - **Fait** : sprite de symboles SVG (paquet npm des icônes Material, Apache-2.0, licence copiée dans le dépôt) juste après l'ouverture du corps de la page, aide `ic()`, classe `.ic` qui prend la couleur du texte. La flèche des repliables est un masque CSS qui pivote à l'ouverture. Le drapeau devient l'icône « traduire ». Les flèches « → » du texte et les emojis des messages Discord ne changent pas.
 - **Contrôle** : `test_icones_material` remplace le contrôle qui exigeait les emojis (choix du 14/09, renversé par cette demande) : aucun emoji hors commentaires, chaque icône utilisée est dans le sprite, aucune icône inutilisée, la coche de copie se teinte. Premier passage rouge : un symbole inutilisé et deux emojis cités dans des commentaires de ligne ; le filtre de commentaires était trop étroit, corrigé.
 - Le cache de l'app passe à la version 73.
+
+### Réglages refaits (direction V3) — 07/11/2026
+
+- **Demande d'Antoni** : tout le panneau, « le foutoir ». Gênes nommées : aspect irrégulier, trop long à faire défiler. Direction choisie sur planche : barre d'onglets en bas, cartes groupées.
+- **Fait** : quatre rubriques au lieu de trois — Apparence, Filtres, Sources, Données — dans une barre collée en bas du panneau, avec une icône Material chacune. Chaque réglage est une carte ; un seul style de titre (les intertitres h3 disparaissent). « Réinitialiser » quitte la barre du bas et vit seul dans la carte « Zone sensible » des Données ; « À propos » rejoint les Données. Les mots-clés et le mode sans spoiler ont leur rubrique, séparés des cinquante-neuf sources.
+- **Mesuré** (clair à 390 px, sombre à 320 px) : aucun débordement horizontal, barre collée en bas, aucune erreur JavaScript. À 320 px le libellé « Apparence » était tronqué : police de la barre à 10 px, rembourrage réduit.
+- **Contrôles** : les contrôles de structure du panneau passent à quatre rubriques, plus la barre du bas et la carte « Zone sensible ».

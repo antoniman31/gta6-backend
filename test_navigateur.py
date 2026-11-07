@@ -1571,6 +1571,7 @@ def test_entete_sans_vide(nav, url):
 
     # Les informations aussi : le panneau se FERME avant, deux dialogues
     # empilés se disputeraient le focus et la touche Échap.
+    page.click(".panneau-tabs button[data-cible=\"adv\"]")
     page.click("text=Informations et derniers passages du robot")
     page.wait_for_timeout(200)
     check(page.evaluate("() => document.getElementById('infoOverlay').classList.contains('open')"),
