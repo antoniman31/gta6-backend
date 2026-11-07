@@ -1205,10 +1205,23 @@
      n'en offriraient que 55 — infaisable, y compris en réduisant le corps,
      où il tient encore 71 px. Deux colonnes en donnent 119. */
   .compteur-tuiles.equiv{
-    grid-auto-flow:row; grid-template-columns:repeat(2, 1fr);
-    gap:12px 8px;
+    grid-auto-flow:row; grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px; justify-content:stretch;
   }
-  .compteur-tuiles.equiv b{font-size:16px;}
+  .compteur-tuiles.equiv > div{
+    background:var(--bg-elevated); border:1px solid var(--line); border-left:3px solid var(--accent);
+    border-radius:var(--r-sm); padding:10px 8px 10px 12px; text-align:left; min-width:0;
+  }
+  .compteur-tuiles.equiv span{
+    display:flex; align-items:center; gap:6px; margin:0; font-size:12px; color:var(--text-dim);
+  }
+  .compteur-tuiles.equiv span .ic{width:18px; height:18px; flex:none;}
+  .compteur-tuiles.equiv b{
+    display:block; margin-top:4px; font-size:20px; font-variant-numeric:tabular-nums; white-space:nowrap;
+  }
+  /* Neuf signes ou plus (un total en secondes à plus de 31 millions) : un corps plus petit,
+     sinon le nombre dépasse de sa carte à 320 px. */
+  .compteur-tuiles.equiv b.long{font-size:15px;}
 
   /* Le compte de dodos, SOUS LA BARRE : « c'est juste un truc en plus,
      pas un truc hyper important » (Antoni, 16/10). Il a eu sa vedette à
@@ -2132,6 +2145,10 @@
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A5.99 5.99 0 0 1 12 18a6 6 0 1 1 0-12c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></symbol>
 <symbol id="i-play_circle" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM10 8v8l6-4z"/></symbol>
 <symbol id="i-article" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/><path d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></symbol>
+<symbol id="i-calendar_today" viewBox="0 0 24 24"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V10h16v11zm0-13H4V5h16v3z"/></symbol>
+<symbol id="i-schedule" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></symbol>
+<symbol id="i-hourglass_top" viewBox="0 0 24 24"><path d="m6 2 .01 6L10 12l-3.99 4.01L6 22h12v-6l-4-4 4-3.99V2H6zm10 14.5V20H8v-3.5l4-4 4 4z"/></symbol>
+<symbol id="i-timer" viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></symbol>
 <symbol id="i-warning" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
 <symbol id="i-bedtime" viewBox="0 0 24 24"><path d="M9.27 4.49c-1.63 7.54 3.75 12.41 7.66 13.8A7.993 7.993 0 0 1 12 20c-4.41 0-8-3.59-8-8 0-3.45 2.2-6.4 5.27-7.51m2.72-2.48C6.4 2.01 2 6.54 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.97h-.35z"/></symbol>
 </svg>
@@ -8465,6 +8482,13 @@ function nombreFr(n){
 // barre garde son bleu, qui est la couleur de l'app, et le panneau ne
 // vire pas entièrement au rouge la dernière nuit.
 
+// LES QUATRE ÉQUIVALENCES, EN CARTES À ICÔNES (choix d'Antoni, 07/11/2026, sur cinq maquettes) :
+// une icône Material et le nom de l'unité au-dessus, le nombre en gros dessous.
+const ICONES_EQUIV = {
+  jours: ic("calendar_today"), heures: ic("schedule"),
+  minutes: ic("hourglass_top"), secondes: ic("timer"),
+};
+
 // Une tuile = un nombre au-dessus, son unité dessous. Le motif vient de
 // .stats-chiffre, déjà en place dans le panneau Statistiques.
 function tuilesCompteur(liste, classe, etiquette){
@@ -8472,8 +8496,8 @@ function tuilesCompteur(liste, classe, etiquette){
     + `aria-label="${escapeHtml(etiquette)}">`
     + liste.map(([n, u, zero]) =>
         `<div${zero ? ' class="zero"' : ""}>`
-        + `<b>${escapeHtml(String(n))}</b>`
-        + `<span>${escapeHtml(u)}</span></div>`).join("")
+        + `<span>${ICONES_EQUIV[u] || ""}${escapeHtml(u)}</span>`
+        + `<b${String(n).length > 8 ? ' class="long"' : ""}>${escapeHtml(String(n))}</b></div>`).join("")
     + `</div>`;
 }
 

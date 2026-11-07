@@ -1866,6 +1866,31 @@ def test_fenetre_du_compteur(nav, url):
         check(not m["deborde"] and not erreurs, "%s rien ne déborde, aucune erreur JavaScript" % etiq)
         ctx.close()
 
+    # LES ÉQUIVALENCES en cartes à icônes : le pire total (151 millions de secondes, à 320 px) tient dans sa carte.
+    ctx = nav.new_context(viewport={"width": 320, "height": 700}, timezone_id="Europe/Paris",
+                          reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+    ctx.clock.install(time="2022-02-06T12:00:00Z")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#countdown")
+    page.click("#countdown")
+    page.wait_for_selector("#compteurContenu .compteur-tuiles.equiv", state="visible")
+    eq = page.evaluate("""() => { const g = document.querySelector('#compteurContenu .compteur-tuiles.equiv');
+        const cartes = [...g.children]; let dehors = null;
+        for(const d of cartes){ const b = d.querySelector('b'), r = document.createRange(); r.selectNodeContents(b);
+          const q = r.getBoundingClientRect(), dq = d.getBoundingClientRect();
+          if(q.right > dq.right + 0.5 || q.left < dq.left - 0.5) dehors = b.textContent + ' sort de sa carte'; }
+        return {n: cartes.length, icones: cartes.filter(d => d.querySelector('svg.ic')).length,
+                libelles: cartes.map(d => d.querySelector('span').textContent.trim()), dehors: dehors,
+                longs: cartes.filter(d => d.querySelector('b.long')).length}; }""")
+    check(eq["n"] == 4 and eq["icones"] == 4 and eq["libelles"] == ["jours", "heures", "minutes", "secondes"],
+          "[320 px] quatre cartes d'équivalence, chacune avec son icône (%s)" % eq["libelles"])
+    check(eq["dehors"] is None and eq["longs"] >= 1,
+          "[320 px] même 151 millions de secondes tiennent dans leur carte (corps réduit sur %d carte(s), %s)"
+          % (eq["longs"], eq["dehors"]))
+    ctx.close()
+
     # Les mêmes quatre tuiles dans l'en-tête, avec un nombre de jours à TROIS chiffres (après la
     # sortie) : le chiffre doit tenir dans sa tuile à 320 px.
     ctx = nav.new_context(viewport={"width": 320, "height": 700}, timezone_id="Europe/Paris",

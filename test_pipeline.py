@@ -7781,7 +7781,7 @@ def test_barre_du_bas_et_entete():
     ids = re.findall(r'<button[^>]*id="([a-zA-Z]+)"', barre.group(1))
     check(ids == ["navFil", "statsBtn", "navReglages"],
           "elle a trois entrées dans l'ordre Fil, Stats, Réglages (%s)" % ids)
-    check("navCompteur" not in code and "i-timer" not in code,
+    check("navCompteur" not in code and "i-timer" not in barre.group(1),
           "le compteur n'est plus dans la barre : on l'ouvre en touchant la tuile de l'entête")
     check('id="countdown"' in code and 'onclick="ouvreCompteur()"' in code,
           "et cette tuile ouvre toujours le détail du compteur")
@@ -7817,6 +7817,17 @@ def test_barre_du_bas_et_entete():
     regle = re.search(r"\.compteur-barre\{([^}]*)\}", html).group(1)
     check("border-radius:0" in regle and "border:1px solid" in regle,
           "la barre de progression est rectangulaire, avec un contour qui montre la part restante")
+
+    # Les quatre équivalences du bas de la fenêtre : cartes à icônes Material (choix d'Antoni, sur cinq maquettes).
+    ie = html[html.index("const ICONES_EQUIV = {"):]
+    ie = ie[:ie.index("};")]
+    check(all('ic("%s")' % n in ie for n in ("calendar_today", "schedule", "hourglass_top", "timer")),
+          "les équivalences ont leurs quatre icônes Material : jours, heures, minutes, secondes")
+    regle = re.search(r"\.compteur-tuiles\.equiv > div\{([^}]*)\}", html).group(1)
+    check("border-left:3px solid var(--accent)" in regle and "border-radius:var(--r-sm)" in regle,
+          "chaque équivalence est une carte à filet d'accent")
+    check(re.search(r"\.compteur-tuiles\.equiv b\.long\{font-size:15px;\}", html) is not None,
+          "et un total de neuf signes ou plus passe en corps réduit")
 
     # La LIGNE RÉDUITE (choix d'Antoni, 07/11/2026).
     bh = re.search(r'<div class="barre-haut" id="barreHaut">(.*?)\n</div>', code, re.S)
