@@ -7796,9 +7796,8 @@ def test_barre_du_bas_et_entete():
     tuile = entete[entete.index('class="tuile-compteur"'):]
     check('id="modeIndicator"' in haut and 'id="triggerRunBtn"' in haut and 'id="refreshBtn"' in haut,
           "la rangée du haut porte la pastille « Backend », « Relancer le robot » et le ↻")
-    check([h for h in ('cdJ', 'cdH', 'cdM', 'cdS') if 'id="%s"' % h in tuile] == ["cdJ", "cdH", "cdM", "cdS"]
-          and 'id="countdown"' in tuile and 'id="compteurSous"' in tuile,
-          "la tuile porte les quatre cases jours, heures, minutes, secondes et son libellé")
+    check('id="countdown"' in tuile and 'class="compteur-sous"' in tuile and 'class="cd-t"' not in tuile,
+          "la tuile de l'en-tête porte le bouton des tuiles et son libellé (les cases viennent de la fonction commune)")
     check("compteurGros" not in code and "compteur-gros" not in code,
           "le gros chiffre unique de la version précédente a disparu")
     check("Relancer le robot</button>" not in haut and 'aria-label="Relancer le robot"' in haut,
@@ -7870,8 +7869,29 @@ def test_barre_du_bas_et_entete():
           "elle dit « +n j » après la sortie, et le libellé sous les tuiles change avec")
     ec = html[html.index("function ecritCompteur("):]
     ec = ec[:ec.index("\n}")]
-    check('"cdJ"' in ec and '"cdS"' in ec and 'classList.toggle("zero", t.j === 0)' in ec,
+    check('[["j", t.j], ["h", t.h], ["m", t.m], ["s", t.s]]' in ec and 'tuile.classList.toggle("zero", v === 0)' in ec,
           "les quatre tuiles sont écrites, celle des jours est grisée à 00")
+
+    # LES JUMEAUX (Antoni, 07/11/2026) : le compteur de l'en-tête et celui de la fenêtre ne
+    # peuvent pas diverger, parce qu'ils partagent TOUT : balisage, écriture, instant, style.
+    check("function htmlTuilesCompteur(" in html and "function htmlBlocCompteur(" in html,
+          "une seule fonction de balisage fournit les tuiles")
+    check(html.count('<span class="cd-t"') == 1,
+          "et le balisage d'une tuile n'est écrit qu'à UN endroit")
+    hb = html[html.index("function htmlBlocCompteur("):]
+    hb = hb[:hb.index("\n}")]
+    check("htmlTuilesCompteur()" in hb and 'class="countdown"' in hb,
+          "la fenêtre du compteur reprend ce balisage et la classe « countdown » de l'en-tête")
+    check('document.getElementById("countdown").innerHTML = htmlTuilesCompteur();' in html,
+          "l'en-tête reçoit ses tuiles de la même fonction")
+    check('document.querySelectorAll(".tuile-compteur .countdown")' in ec,
+          "l'écriture vise TOUS les compteurs d'un coup, avec le même instant")
+    pc = html[html.index("function majPanneauCompteur("):]
+    pc = pc[:pc.index("\n}\n")]
+    check("htmlBlocCompteur()" in pc and pc.rstrip().endswith("updateCountdown();"),
+          "le panneau pose ses tuiles vides puis les remplit par le MÊME appel que l'en-tête")
+    check("UNITES_COMPTEUR" not in html and "function tuilesDecoupe(" not in html and "function phraseDecoupe(" not in html,
+          "plus de seconde implémentation du découpage en tuiles")
     # Plus de surligneur en thème clair (07/11/2026) : le texte reste fluo, cerné d'un trait sombre.
     for pal in ("soon", "urgent", "final"):
         regle = re.search(r'html\[data-theme="light"\] \.countdown\.%s\{([^}]*)\}' % pal, html).group(1)
@@ -7880,7 +7900,7 @@ def test_barre_du_bas_et_entete():
     trait = re.search(r'html\[data-theme="light"\] \.countdown\.soon, [^{]*\{([^}]*)\}', html).group(1)
     check("-webkit-text-stroke:" in trait and "var(--compte-encre)" in trait and "paint-order:stroke fill" in trait,
           "le trait sombre (--compte-encre) cerne le fluo, derrière le remplissage")
-    check('el.setAttribute("aria-label", nom)' in ec,
+    check('g.setAttribute("aria-label", n)' in ec,
           "le bouton, dont le contenu est fait de chiffres nus, a un nom accessible qui dit ce qu'il compte")
 
 
