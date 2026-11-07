@@ -1,6 +1,6 @@
 # Ce qu'il reste à faire
 
-Mis à jour le 07/11/2026. **Rien n'est cassé.** Ce fichier ne garde que ce qui reste ; l'historique (audits, lots faits, anciennes notes) est dans `JOURNAL.md`,
+Mis à jour le 07/11/2026 (soir). **Rien n'est cassé.** Ce fichier ne garde que ce qui reste ; l'historique (audits, lots faits, anciennes notes) est dans `JOURNAL.md`,
 sous « Ancien RESTE-A-FAIRE.md ». GTA VI sort le **19/11/2026 à 00:00, heure de Paris**. Tous les chiffres ci-dessous ont été mesurés le 04/11/2026.
 
 ## 1. Le calendrier jusqu'au 24/11
@@ -10,7 +10,7 @@ sous « Ancien RESTE-A-FAIRE.md ». GTA VI sort le **19/11/2026 à 00:00, heure 
 | 05/11, 09:00 | Jalon J-14 dans le salon Discord (journal du robot : « jalon j14 »). `jalons_envoyes` est vide aujourd'hui. | à regarder |
 | 08/11 | Premier dimanche : le bilan du soir porte la carte « 📅 Cette semaine ». | à regarder |
 | 10/11, 09:00 | **Répétition générale** (tâche planifiée) et **reconfirmation de l'agenda**. Liste à cocher : `tasks/repetition-10-11.md`. Antoni confirme chaque date, puis on met la date du jour sur `verifie_le`. | Antoni |
-| 11/11 | Les entrées du 9/11 et du 18/11 (vérifiées le 27/10) passent « à revérifier » si elles ne sont pas reconfirmées. Celles du 10/11, 12/11 et 19/11 (vérifiées le 03/11) : dès le 18/11. | |
+| 11/11 | L'entrée du 18/11 (vérifiée le 27/10) passe « à revérifier » si elle n'est pas reconfirmée. Celles du 10/11, 12/11 et 19/11 (vérifiées le 03/11) : dès le 18/11. L'entrée du 9/11 a été retirée le 07/11 sur instruction d'Antoni. | |
 | 12/11, 16/11, 18/11 | Jalons J-7 (09:00), J-3 (09:00), J-1 (09:00). Le 18/11 aussi : H-12 (12:00) et H-1 (23:00). | à regarder |
 | 15/11, 10:00 | Rappel : exporter une sauvegarde depuis l'app. | Antoni |
 | 18/11, 22:30 | Veille de la sortie (tâche planifiée). La pause nocturne est levée du 18 au 20/11. | |
@@ -21,6 +21,8 @@ sous « Ancien RESTE-A-FAIRE.md ». GTA VI sort le **19/11/2026 à 00:00, heure 
 Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_triggers`.
 
 ## 2. À trancher
+
+- **Après la sortie, l'agenda est caché** (07/11/2026, choix d'Antoni) : son code et `docs/agenda.json` restent pour de futurs DLC ou mises à jour, quand on aura des dates officielles. À la sortie, c'est aussi la fin des dodos et de la barre de progression de la fenêtre du compteur ; les compteurs repartent à l'endroit (mois, puis années quand il y en a besoin). Rien à faire, à vérifier le 19/11 à 00:00.
 
 - **Retirer `source_link`.** Antoni l'a choisi le 27/10 ; ce n'est pas fait : 1 205 articles sur 4 389 portent encore le champ, que le cache de décodage rend inutile.
 - **Le mode sans spoiler** après la sortie : lui demander s'il veut l'éteindre.
