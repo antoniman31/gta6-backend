@@ -12474,3 +12474,9 @@ Antoni : « il disparaît trop vite, on pourrait pas le laisser afficher une ou 
 - **Agenda** : l'entrée du 9 novembre (résultats trimestriels de Take-Two) est retirée de docs/agenda.json sur instruction explicite d'Antoni ; il reste cinq entrées. Après la sortie la fenêtre n'affiche plus l'agenda ni les dodos ; le code de l'agenda et son fichier restent.
 - **Note** : elle ne dit plus que d'où part la barre ; la date de sortie en toutes lettres et sa variante « depuis » sont retirées.
 - **Retiré avec la refonte, pour mémoire** : la tuile de trois chiffres de jours (plus possible : les jours repartent à zéro chaque mois). Cache v86.- **Après la sortie : plus de barre, une note qui explique le compteur (07/11/2026)** : la barre de progression allait de l'annonce à la sortie, donc elle restait pleine pour toujours ; elle disparaît de la fenêtre dès la sortie (elle avait déjà perdu son pourcentage au profit d'un « Sorti » le 20/10). La note devient « Temps écoulé depuis la sortie du jeu, le 19/11/26 », sans phrase de plus. Avant la sortie, rien ne change. Cache v87.
+
+### Documents de suivi remis d'aplomb — 07/11/2026
+
+- **Constat, dit** : après le retrait de l'entrée du 9 novembre de l'agenda et le masquage de l'agenda après la sortie, RESTE-A-FAIRE.md et la liste de la répétition du 10/11 (tasks/repetition-10-11.md) parlaient encore de cinq dates et du 9/11. CLAUDE.md demande de tenir RESTE-A-FAIRE.md à jour à chaque lot : je ne l'avais pas fait pour ces lots.
+- **Fait** : quatre dates à reconfirmer au lieu de cinq ; la ligne du 11/11 ne cite plus que l'entrée du 18/11 ; une rubrique « À trancher » note que l'agenda, les dodos et la barre disparaissent à la sortie.
+- **Pas fait** : les tâches planifiées du compte (list_triggers) ne sont pas dans le dépôt ; leurs messages peuvent encore citer le 9/11.

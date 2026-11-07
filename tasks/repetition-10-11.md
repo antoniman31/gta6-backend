@@ -6,8 +6,8 @@ ligne ne se passe pas comme écrit, note laquelle et dis-le moi.
 ## 1. Le compteur (touche le compte à rebours sous le titre)
 - [ ] Le panneau s'ouvre sur « Avant la sortie ».
 - [ ] Une ligne « 😴 … dodo(s) » sous la barre de pourcentage.
-- [ ] L'agenda, sous les dodos, en frise (le jour en gros à gauche, un rail avec un point par rendez-vous) : le **9/11** à « Hier » (en gris), le **10/11** à « Aujourd'hui »
-  (précharge, Xbox 01:00, PS5 00:00, « annoncé »), le **12/11** à « J-2 », le **18/11** à « J-8 » et le **19/11** à « J-9 ». Le point plein dit « annoncé », le point creux « selon la presse ».
+- [ ] L'agenda, sous les dodos, en frise (le jour en gros à gauche, un rail avec un point par rendez-vous) : le **10/11** à « Aujourd'hui »
+  (précharge, Xbox 01:00, PS5 00:00, « annoncé »), le **12/11** à « J-2 », le **18/11** à « J-8 » et le **19/11** à « J-9 » (le 9/11 n'y est plus : retiré le 07/11). Le point plein dit « annoncé », le point creux « selon la presse ».
 - [ ] Rien ne déborde à droite ; le texte long passe à la ligne.
 - [ ] Le pourcentage de la barre est lisible dans le clair et le sombre (⚙️ → thème).
 
@@ -26,10 +26,10 @@ la ligne des dodos disparaît, l'agenda montre « Hier » en gris pour le 18/11.
 Les captures de la simulation (23:59:45, 00:00:05, 00:30, 12:30 le 19/11) sont dans la conversation.
 
 ## 5. Reconfirmer l'agenda, CE JOUR-LÀ (c'est toi qui valides)
-- [ ] Cinq dates : **9/11** (résultats Take-Two, « presse »), **10/11** (précharge, « annoncé » : article officiel Rockstar du 03/11), **12/11** (boîtes avec code, « annoncé »),
+- [ ] Quatre dates : **10/11** (précharge, « annoncé » : article officiel Rockstar du 03/11), **12/11** (boîtes avec code, « annoncé »),
   **18/11** (embargo des tests, « presse ») et **19/11** (affiche et carte de Leonida, « annoncé »). Dis-moi lesquelles tu confirmes : je mets la date du jour sur `verifie_le`,
-  valable **14 jours, soit jusqu'au 24/11**, donc toute la nuit de la sortie. Sans cette reconfirmation, les lignes affichent « à revérifier » : dès le 11/11 pour le 9/11 et le 18/11,
-  dès le 18/11 pour les trois autres.
+  valable **14 jours, soit jusqu'au 24/11**, donc toute la nuit de la sortie. Sans cette reconfirmation, les lignes affichent « à revérifier » : dès le 11/11 pour le 18/11,
+  dès le 18/11 pour les deux autres.
 - [ ] Le jeton « gta6watch mobile » expire le **26/11** (rappel prévu le 24/11).
 
 ## 6. Discord
