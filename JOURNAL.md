@@ -12433,3 +12433,9 @@ Antoni : « il disparaît trop vite, on pourrait pas le laisser afficher une ou 
 - **Demande d'Antoni** : « supprime compteur de la barre des onglets, j'y accède directement en appuyant sur les jours dans l'entête ». La tuile ouvrait déjà le détail : l'entrée de la barre était un doublon.
 - **Fait** : la barre garde trois entrées, Fil, Stats, Réglages ; le bouton et l'icône « timer », devenue inutilisée, sont retirés (le contrôle des icônes refuse un symbole sans usage). Le test navigateur ouvre maintenant le détail en touchant la tuile.
 - Cache v79.
+
+### Réglages en page, plus en pop-up — 07/11/2026
+
+- **Demande d'Antoni** : « quand j'appuie sur réglages, il faut ouvrir une nouvelle page plutôt qu'un pop-up ». Choix : vue dans l'app (pas de changement d'adresse, comme Stats), barre du bas visible avec « Réglages » allumé, entête visible.
+- **Fait** : #settingsOverlay devient une section de page, sous l'entête, qui masque le fil tant qu'elle est ouverte (classe vue-reglages sur le corps). Plus de voile, de cadre, de fond figé ni de piège du focus : le titre reçoit simplement le focus à l'ouverture. Le bouton « Fermer » disparaît : « Fil » ou « Stats » dans la barre referment la page. Les quatre rubriques, qui étaient collées en bas du pop-up, passent EN HAUT de la page (collées en défilant), puisque le bas est pris par la barre de l'app. Une fonction unique allume l'entrée de la barre du bas (Fil, Stats ou Réglages, jamais deux).
+- **Contrôles** : le contrôle des dialogues ne compte plus les Réglages parmi les pop-ups ; la structure de la page est vérifiée ; un test navigateur à 320 et 390 px (clair et sombre) mesure l'ouverture sous l'entête, la barre allumée, le focus, les rubriques collées, le dernier réglage au-dessus de la barre et la fermeture par Stats et Fil.

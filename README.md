@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2208 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2206 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -125,7 +125,7 @@ Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 
 - **Archive** chargée mois par mois ; **sauvegarde** exportable et importable (réglages, sources, articles lus) ; export OPML des sources.
 - **Mode de secours** : si `feed.json` est injoignable, l'app interroge elle-même les flux (`DEFAULT_FEEDS`) via des proxys, avec sa propre déduplication.
 - **Navigation** : barre flottante en bas — Fil, Stats, Réglages. Le détail du compteur s'ouvre en touchant la tuile de l'entête. L'entête porte le titre, l'icône ↻ d'actualisation et une tuile à UN SEUL compteur, en grand, dont la précision croît avec l'urgence (« 11j 11h », puis « 3j 04h 12m » sous sept jours, « 11:59:56 » le dernier jour, « +3 j » après la sortie), sous-titre fixe « avant la sortie », avec une petite icône ▶ « Relancer le robot » visible seulement avec un jeton. Le Journal des passages s'ouvre depuis Statistiques › Robot.
-- **Réglages** : barre d'onglets en bas, quatre rubriques en cartes groupées — Apparence (thème, écran de chargement, liste des articles), Filtres (mots-clés, exclusions, mode sans spoiler), Sources, Données (backend, jeton, export, sauvegarde, « Zone sensible » avec Réinitialiser). Détail : thème, mots-clés, seuil de doublon, nombre d'articles, sources (les interrupteurs n'agissent qu'en mode de secours), adresse du backend, déclenchement du robot depuis le téléphone
+- **Réglages** : une PAGE (plus un pop-up) sous l'entête de l'app, ouverte par « Réglages » dans la barre du bas, qui reste visible ; les quatre rubriques sont collées en haut de la page, en cartes groupées — Apparence (thème, écran de chargement, liste des articles), Filtres (mots-clés, exclusions, mode sans spoiler), Sources, Données (backend, jeton, export, sauvegarde, « Zone sensible » avec Réinitialiser). Détail : thème, mots-clés, seuil de doublon, nombre d'articles, sources (les interrupteurs n'agissent qu'en mode de secours), adresse du backend, déclenchement du robot depuis le téléphone
   (jeton GitHub à portée minimale, gardé dans ce navigateur seulement).
 - **Écran de chargement** : blanc en thème clair, noir en thème sombre (« système » suit le téléphone), avec le logo et le décompte du jour (« J-12 »). Il reste `SPLASH_DUREE_MIN_MS` après le premier
   affichage (1,5 s), bloque les touches, et un appui ou une touche le ferme. Le réglage « Écran de chargement » (Réglages › Apparence) le coupe ; piloté par un test, il est coupé tant que le réglage n'est pas allumé. Le petit script d'avant l'affichage, dans l'en-tête de la page, pose le thème pour que cet écran ne passe jamais par le sombre en thème clair.

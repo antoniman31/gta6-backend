@@ -1638,6 +1638,82 @@ def test_barre_du_bas(nav, url):
     ctx.close()
 
 
+def test_page_reglages(nav, url):
+    """Les Réglages sont une PAGE, plus un pop-up (demande d'Antoni, 07/11/2026).
+
+    Mesuré dans un vrai navigateur : la page s'ouvre sous l'entête de l'app, le fil
+    se masque, la barre du bas allume « Réglages » (et eux seuls), les rubriques
+    restent collées en haut pendant le défilement, le dernier réglage se lit
+    au-dessus de la barre, rien ne déborde, et « Fil » comme « Stats » la referment.
+    """
+    print("\n[réglages] une page sous l'entête, plus un pop-up")
+    for largeur, schema in ((320, "dark"), (390, "light")):
+        etiq = "[%d px, %s]" % (largeur, schema)
+        ctx = nav.new_context(viewport={"width": largeur, "height": 740}, color_scheme=schema,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector(".barre-bas")
+        page.click("#navReglages")
+        etat = page.evaluate("""() => {
+            const vis = s => { const e = document.querySelector(s); return !!e && e.offsetParent !== null
+              && getComputedStyle(e).visibility !== 'hidden'; };
+            const sp = document.querySelector('#settingsOverlay .settings-panel');
+            return {page: vis('#settingsOverlay'), fil: vis('#feed'), entete: vis('#countdown'),
+                    pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed')),
+                    corps: getComputedStyle(document.body).position,
+                    fond: getComputedStyle(document.getElementById('settingsOverlay')).position,
+                    cadre: sp ? getComputedStyle(sp).borderTopWidth : null,
+                    dialogue: !!document.querySelector('#settingsOverlay [aria-modal]'),
+                    focus: document.activeElement.id,
+                    deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(etat["page"] and not etat["fil"] and etat["entete"],
+              "%s la page s'ouvre sous l'entête, le fil se masque" % etiq)
+        check(etat["pressed"] == ["false", "false", "true"],
+              "%s la barre du bas allume « Réglages » seul (%s)" % (etiq, etat["pressed"]))
+        check(etat["corps"] != "fixed" and etat["fond"] != "fixed" and not etat["dialogue"]
+              and etat["cadre"] == "0px",
+              "%s ni voile, ni fond figé, ni cadre de pop-up" % etiq)
+        check(etat["focus"] == "titreParametres", "%s le titre reçoit le focus" % etiq)
+        check(not etat["deborde"] and not erreurs, "%s rien ne déborde, aucune erreur JavaScript" % etiq)
+
+        # Les rubriques restent collées en haut quand on défile.
+        page.click('.panneau-tabs button[data-cible="adv"]')
+        page.evaluate("window.scrollTo(0, 500)")
+        page.wait_for_timeout(150)
+        haut = page.evaluate("() => document.querySelector('.panneau-tabs').getBoundingClientRect().top")
+        check(abs(haut) <= 1, "%s les rubriques restent collées en haut en défilant (%.0f px)" % (etiq, haut))
+
+        # Le dernier réglage se lit entièrement, au-dessus de la barre flottante.
+        page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+        page.wait_for_timeout(150)
+        bas = page.evaluate("""() => { const c = [...document.querySelectorAll('#settingsOverlay .setting-group')]
+            .filter(e => e.offsetParent !== null).pop();
+            return {contenu: c.getBoundingClientRect().bottom,
+                    barre: document.querySelector('.barre-bas').getBoundingClientRect().top}; }""")
+        check(bas["contenu"] <= bas["barre"] + 1,
+              "%s le dernier réglage (%.0f) reste au-dessus de la barre (%.0f)" % (etiq, bas["contenu"], bas["barre"]))
+
+        # « Stats » et « Fil » la referment.
+        page.click("#statsBtn")
+        etat = page.evaluate("""() => ({page: document.getElementById('settingsOverlay').classList.contains('open'),
+            stats: document.getElementById('statsPanel').offsetParent !== null,
+            pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed'))})""")
+        check(not etat["page"] and etat["stats"] and etat["pressed"] == ["false", "true", "false"],
+              "%s « Stats » referme la page et ouvre les statistiques (%s)" % (etiq, etat["pressed"]))
+        page.click("#navReglages")
+        page.click("#navFil")
+        etat = page.evaluate("""() => ({page: document.getElementById('settingsOverlay').classList.contains('open'),
+            fil: document.getElementById('feed').offsetParent !== null,
+            pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed'))})""")
+        check(not etat["page"] and etat["fil"] and etat["pressed"] == ["true", "false", "false"],
+              "%s « Fil » referme la page et rend le fil (%s)" % (etiq, etat["pressed"]))
+        ctx.close()
+
+
 def test_entete_sans_vide(nav, url):
     """L'entête tient sur une ligne, et ce qui en est sorti reste accessible.
 
@@ -6483,6 +6559,7 @@ def main():
             test_barre_detat_suit_le_theme(nav, url)
             test_ecran_de_chargement(nav, url)
             test_barre_du_bas(nav, url)
+            test_page_reglages(nav, url)
             test_toast_annuler(nav, url)
             test_poids_de_tout_charger(nav, url)
             test_plafond_des_lus(nav, url)
