@@ -696,13 +696,17 @@ def test_barre_detat_suit_le_theme(nav, url):
 def test_ecran_de_chargement(nav, url):
     """Un écran blanc en thème clair, noir en thème sombre, avec le décompte.
 
-    Demandé par Antoni le 07/11/2026. Mesuré avant : l'app peint déjà son
-    premier affichage dans le bon thème, mais n'avait aucun écran propre — et
-    l'écran de lancement d'Android, lui, est fixe. Ce contrôle regarde le VRAI
-    écran dans un vrai navigateur, quelques dizaines de millisecondes après le
-    chargement, dans les quatre cas de thème, puis vérifie qu'il s'efface.
+    Demandé par Antoni le 07/11/2026, puis allongé à 1,5 s (« il disparaît trop
+    vite »). Ce contrôle regarde le VRAI écran dans un vrai navigateur, dans les
+    quatre cas de thème, vérifie qu'il bloque les touches, qu'un appui ou une touche
+    le ferme, qu'il s'efface seul, et que le réglage « Écran de chargement » le coupe.
+
+    Piloté par un test, le navigateur annonce `navigator.webdriver` : l'écran est
+    alors coupé tant que le réglage n'est pas explicitement allumé — sans quoi chaque
+    clic de la suite attendrait qu'il s'efface. Ce contrôle l'allume donc, ou retire
+    `webdriver` pour jouer le téléphone réel.
     """
-    print("\n[chargement] l'écran suit le thème, dit le décompte et s'efface")
+    print("\n[chargement] l'écran suit le thème, dit le décompte, bloque, se ferme et se coupe")
 
     def lum(css):
         import re as _re
@@ -712,30 +716,42 @@ def test_ecran_de_chargement(nav, url):
             return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
         return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
 
-    cas = [("light", "light", "clair"), ("dark", "dark", "sombre"),
-           ("system", "light", "clair"), ("system", "dark", "sombre")]
-    for reglage, schema, attendu in cas:
-        ctx = nav.new_context(viewport={"width": 320, "height": 780},
+    def ouvre(theme="system", schema="light", reglages=None, quand="2026-11-07T12:00:00+01:00",
+              largeur=320, webdriver=True):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 780},
                               color_scheme=schema, timezone_id="Europe/Paris")
+        corps = dict(theme=theme)
+        corps.update(reglages if reglages is not None else {"splashActif": True})
         ctx.add_init_script(
-            "try{localStorage.setItem('gta6watch:settings-v1', "
-            "JSON.stringify({theme:'%s'}));}catch(e){}" % reglage)
+            "try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify(%s));}catch(e){}"
+            % json.dumps(corps))
+        if not webdriver:
+            ctx.add_init_script("Object.defineProperty(navigator,'webdriver',{get:()=>false});")
         page = ctx.new_page()
-        page.clock.install(time="2026-11-07T12:00:00+01:00")
+        page.clock.install(time=quand)
         erreurs = []
         page.on("pageerror", lambda e: erreurs.append(str(e)))
         page.goto(url, wait_until="domcontentloaded")
         page.wait_for_timeout(100)
+        return ctx, page, erreurs
+
+    cas = [("light", "light", "clair"), ("dark", "dark", "sombre"),
+           ("system", "light", "clair"), ("system", "dark", "sombre")]
+    for reglage, schema, attendu in cas:
+        ctx, page, erreurs = ouvre(reglage, schema)
         etat = page.evaluate("""() => {
             const e = document.getElementById('splash');
             if(!e) return null;
             const cs = getComputedStyle(e);
+            const r = e.getBoundingClientRect();
+            const dessus = document.elementFromPoint(r.width / 2, r.height / 2);
             return {fond: cs.backgroundColor, couleur: cs.color,
                     pointeur: cs.pointerEvents, cache: e.getAttribute('aria-hidden'),
                     theme: document.documentElement.getAttribute('data-theme'),
                     j: document.getElementById('splashJ').textContent,
                     l: document.getElementById('splashL').textContent,
-                    logo: (document.querySelector('#splash img') || {}).naturalWidth}
+                    logo: (document.querySelector('#splash img') || {}).naturalWidth,
+                    bloque: !!(dessus && dessus.closest('#splash'))}
         }""")
         nom = "%s, téléphone %s" % (reglage, schema)
         check(etat is not None, "[%s] l'écran est là juste après le chargement" % nom)
@@ -747,26 +763,70 @@ def test_ecran_de_chargement(nav, url):
                   "[%s] le texte (%s) se lit sur le fond (%s)" % (nom, etat["couleur"], etat["fond"]))
             check(etat["j"] == "J-12" and etat["l"] == "AVANT LA SORTIE",
                   "[%s] il dit le décompte en jours civils à Paris (%s, %s)" % (nom, etat["j"], etat["l"]))
-            check(etat["pointeur"] == "none" and etat["cache"] == "true" and etat["logo"] == 192,
-                  "[%s] il laisse passer les doigts, se cache des lecteurs d'écran et affiche le logo (%s)" % (nom, etat))
-        page.wait_for_timeout(1300)
+            check(etat["pointeur"] == "auto" and etat["bloque"] and etat["cache"] == "true" and etat["logo"] == 192,
+                  "[%s] il BLOQUE les touches, se cache des lecteurs d'écran et affiche le logo (%s)" % (nom, etat))
+        # Encore là à une seconde : c'est tout l'objet de la demande d'Antoni.
+        page.wait_for_timeout(900)
+        encore = page.evaluate("() => !!document.getElementById('splash') && !document.getElementById('splash').classList.contains('fini')")
+        check(encore, "[%s] il est encore affiché une seconde après le chargement" % nom)
+        page.wait_for_timeout(1700)
         gone = page.evaluate("() => !document.getElementById('splash')")
-        check(gone, "[%s] il s'est effacé, l'app est à découvert" % nom)
+        check(gone, "[%s] puis il s'est effacé seul, l'app est à découvert" % nom)
         check(page.evaluate("() => document.documentElement.getAttribute('data-theme')") == ("light" if attendu == "clair" else "dark"),
               "[%s] et applyTheme() retombe sur le même thème que le petit script d'avant l'affichage" % nom)
         check(not erreurs, "[%s] aucune erreur JavaScript (%s)" % (nom, erreurs[:1]))
         ctx.close()
+
+    # Un appui le ferme tout de suite ; une touche aussi.
+    ctx, page, _ = ouvre()
+    page.mouse.click(160, 300)
+    page.wait_for_timeout(500)
+    check(page.evaluate("() => !document.getElementById('splash')"),
+          "un appui sur l'écran le ferme tout de suite (moins de 0,5 s)")
+    ctx.close()
+    ctx, page, _ = ouvre()
+    page.keyboard.press("Space")
+    page.wait_for_timeout(500)
+    check(page.evaluate("() => !document.getElementById('splash')"),
+          "une touche du clavier le ferme aussi")
+    ctx.close()
+
+    # Le réglage : coupé, pas même peint ; piloté sans réglage, coupé ; téléphone réel, allumé.
+    ctx, page, _ = ouvre(reglages={"splashActif": False})
+    etat = page.evaluate("""() => { const e = document.getElementById('splash');
+        return {coupe: document.documentElement.getAttribute('data-splash'),
+                affiche: !!e && getComputedStyle(e).display !== 'none'} }""")
+    check(etat["coupe"] == "off" and not etat["affiche"],
+          "le réglage coupé : l'écran n'est pas affiché, dès le premier affichage (%s)" % etat)
+    ctx.close()
+    ctx, page, _ = ouvre(reglages={})
+    check(page.evaluate("() => document.documentElement.getAttribute('data-splash')") == "off",
+          "piloté par un test et sans réglage enregistré : coupé, pour ne pas allonger la suite")
+    ctx.close()
+    ctx, page, _ = ouvre(reglages={}, webdriver=False)
+    check(page.evaluate("() => !!document.getElementById('splash') && document.documentElement.getAttribute('data-splash') === null"),
+          "sur un vrai téléphone sans réglage enregistré : allumé par défaut")
+    ctx.close()
+
+    # L'interrupteur des Réglages écrit dans le réglage enregistré, et la page le relit.
+    ctx, page, _ = ouvre(webdriver=False)
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("() => openSettings()")
+    page.wait_for_timeout(300)
+    avant = page.evaluate("() => document.getElementById('splashActif').checked")
+    page.evaluate("() => { const c = document.getElementById('splashActif'); c.checked = false; c.dispatchEvent(new Event('change')); }")
+    page.wait_for_timeout(300)
+    enregistre = page.evaluate("() => JSON.parse(localStorage.getItem('gta6watch:settings-v1')).splashActif")
+    check(avant is True and enregistre is False,
+          "l'interrupteur « Écran de chargement » est allumé par défaut et écrit le réglage (%s, %s)" % (avant, enregistre))
+    ctx.close()
 
     # Le texte du décompte aux frontières : la veille, le jour J, après.
     for quand, grand, petit in (("2026-11-18T23:30:00+01:00", "J-1", "AVANT LA SORTIE"),
                                 ("2026-11-19T09:00:00+01:00", "SORTI !", "GTA VI"),
                                 ("2026-11-20T09:00:00+01:00", "SORTI", "DEPUIS 1 JOUR"),
                                 ("2026-11-22T09:00:00+01:00", "SORTI", "DEPUIS 3 JOURS")):
-        ctx = nav.new_context(viewport={"width": 390, "height": 780}, timezone_id="Europe/Paris")
-        page = ctx.new_page()
-        page.clock.install(time=quand)
-        page.goto(url, wait_until="domcontentloaded")
-        page.wait_for_timeout(100)
+        ctx, page, _ = ouvre(quand=quand, largeur=390)
         textes = page.evaluate("""() => { const j = document.getElementById('splashJ'),
             l = document.getElementById('splashL'); return j ? [j.textContent, l.textContent] : null; }""")
         check(textes == [grand, petit], "[%s] l'écran dit %s / %s (%s)" % (quand[:16], grand, petit, textes))
@@ -1511,6 +1571,7 @@ def test_entete_sans_vide(nav, url):
 
     # Les informations aussi : le panneau se FERME avant, deux dialogues
     # empilés se disputeraient le focus et la touche Échap.
+    page.click(".panneau-tabs button[data-cible=\"adv\"]")
     page.click("text=Informations et derniers passages du robot")
     page.wait_for_timeout(200)
     check(page.evaluate("() => document.getElementById('infoOverlay').classList.contains('open')"),
