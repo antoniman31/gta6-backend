@@ -8217,10 +8217,9 @@ function updateCountdown(){
     const classeSortie = joursDepuis < 1 ? "countdown final" : "countdown";
     if(el.textContent !== texteSorti) el.textContent = texteSorti;
     if(el.className !== classeSortie) el.className = classeSortie;
-    // Le gros chiffre de la tuile : le temps ÉCOULÉ, en jours civils à Paris
-    // (comme l'écran de chargement), et « SORTI ! » le jour même.
-    const depuisCivil = ecartJoursCivils(jourParis(GTA6_RELEASE), jourParis(now));
-    majGrosCompteur(depuisCivil < 1 ? "SORTI !" : "+" + depuisCivil + " j");
+    // Le gros chiffre de la tuile : les jours ENTIERS écoulés, comme le texte
+    // (« Sorti depuis N jours »), et « SORTI ! » le premier jour.
+    majGrosCompteur(joursDepuis < 1 ? "SORTI !" : "+" + joursDepuis + " j");
     return;
   }
 
@@ -8254,10 +8253,11 @@ function updateCountdown(){
   // repeindrait quand même l'en-tête 3600 fois par heure pour rien.
   if(el.textContent !== texte) el.textContent = texte;
   if(el.className !== classe) el.className = classe;
+  // Les jours ENTIERS restants, comme le texte (« Sortie dans 11j 13h » → « J-11 »).
   // Dans les dernières 24 h on compte en heures (« H-12 ») : « J-0 » ne dirait rien.
   majGrosCompteur(diff < 24 * 60 * 60 * 1000
     ? "H-" + Math.ceil(diff / (60 * 60 * 1000))
-    : "J-" + ecartJoursCivils(jourParis(now), jourParis(GTA6_RELEASE)));
+    : "J-" + days);
 }
 
 function majGrosCompteur(texte){

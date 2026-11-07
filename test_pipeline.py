@@ -7800,11 +7800,11 @@ def test_barre_du_bas_et_entete():
     fn = fn[:fn.index("\n}")]
     check("setTab(dernierOngletFil" in fn, "« Fil » revient au dernier onglet de filtre choisi")
 
-    # Le gros chiffre : jours civils à Paris, heures dans les 24 dernières heures.
+    # Le gros chiffre : jours entiers comme le texte, heures dans les 24 dernières heures.
     fn = html[html.index("function updateCountdown("):]
     fn = fn[:fn.index("\nfunction majGrosCompteur")]
-    check('"H-"' in fn and '"J-"' in fn and '"+"' in fn and "ecartJoursCivils(" in fn,
-          "le gros chiffre compte en jours civils (J-n), en heures (H-n) puis en jours écoulés (+n j)")
+    check('"H-"' in fn and '"J-" + days' in fn and '"+" + joursDepuis' in fn,
+          "le gros chiffre dit les jours entiers restants (J-n), des heures (H-n) puis les jours écoulés (+n j), comme le texte")
 
 
 def test_contraste_des_deux_themes():

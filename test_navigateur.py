@@ -1605,7 +1605,7 @@ def test_barre_du_bas(nav, url):
     ctx.close()
 
     # Le gros chiffre suit le calendrier.
-    for quand, attendu, nom in (("2026-11-07T10:00:00+01:00", "J-12", "12 jours civils avant le 19/11"),
+    for quand, attendu, nom in (("2026-11-07T10:00:00+01:00", "J-11", "11 jours entiers restants (11j 14h), comme le texte"),
                                 ("2026-11-18T23:30:00+01:00", "H-1", "dernière heure : en heures"),
                                 ("2026-11-19T10:00:00+01:00", "SORTI !", "le jour de la sortie"),
                                 ("2026-11-22T10:00:00+01:00", "+3 j", "trois jours après")):
