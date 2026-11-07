@@ -7792,14 +7792,39 @@ def test_barre_du_bas_et_entete():
     check('id="refreshBtn"' in entete and 'onclick="checkNow(true)"' in entete
           and ">Actualiser</button>" not in entete,
           "« Actualiser » est l'icône ↻ de l'entête, plus un grand bouton")
+    haut = entete[entete.index('class="header-haut"'):entete.index('class="tuile-compteur"')]
     tuile = entete[entete.index('class="tuile-compteur"'):]
-    check('id="countdown"' in tuile and 'id="compteurSous"' in tuile
-          and 'id="triggerRunBtn"' in tuile and 'id="modeIndicator"' in tuile,
-          "la tuile porte le compteur, son sous-titre, le mode et « Relancer le robot »")
+    check('id="modeIndicator"' in haut and 'id="triggerRunBtn"' in haut and 'id="refreshBtn"' in haut,
+          "la rangée du haut porte la pastille « Backend », « Relancer le robot » et le ↻")
+    check([h for h in ('cdJ', 'cdH', 'cdM', 'cdS') if 'id="%s"' % h in tuile] == ["cdJ", "cdH", "cdM", "cdS"]
+          and 'id="countdown"' in tuile and 'id="compteurSous"' in tuile,
+          "la tuile porte les quatre cases jours, heures, minutes, secondes et son libellé")
     check("compteurGros" not in code and "compteur-gros" not in code,
-          "et un seul compteur : le second (gros chiffre à côté du texte) a disparu")
-    check("Relancer le robot</button>" not in tuile and 'aria-label="Relancer le robot"' in tuile,
+          "le gros chiffre unique de la version précédente a disparu")
+    check("Relancer le robot</button>" not in haut and 'aria-label="Relancer le robot"' in haut,
           "« Relancer le robot » est une icône nommée, pas un bouton à libellé")
+    # La pastille perd son mot sur petit écran, et reste un point.
+    check('.header-haut .mode-indicator .mi-mot{display:none;}' in html
+          and 'min-width:360px' in html and 'body:not(.a-jeton)' in html and 'min-width:430px' in html,
+          "la pastille « Backend » est un point seul sur petit écran (mot dès 360 px sans jeton, 430 px avec)")
+    check('classList.toggle("a-jeton"' in html, "et la présence d'un jeton est lue par la mise en page")
+
+    # La LIGNE RÉDUITE (choix d'Antoni, 07/11/2026).
+    bh = re.search(r'<div class="barre-haut" id="barreHaut">(.*?)\n</div>', code, re.S)
+    check(bh is not None and 'id="cbCompteur"' in bh.group(1) and "bh-point" in bh.group(1),
+          "une ligne réduite porte le titre, un point et le compteur")
+    regle = re.search(r"\.barre-haut\{([^}]*)\}", html).group(1)
+    check("position:fixed" in regle and "top:0" in regle and "height:52px" in regle
+          and "visibility:hidden" in regle,
+          "elle est fixe en haut, haute de 52 px, et cachée (visibility) tant que l'entête est en vue")
+    check("body:has(#modeIndicator.backend) .bh-point{display:inline-block;}" in html,
+          "son point vert n'apparaît qu'en mode backend GitHub")
+    check("body.bh-visible .day-label{top:52px;}" in html and "body.bh-visible .panneau-tabs{top:52px;}" in html,
+          "le jour et les rubriques des Réglages se collent sous la ligne")
+    corps = html[html.index("function brancheBarreHaute("):]
+    corps = corps[:corps.index("\n}")]
+    check("IntersectionObserver" in corps and '"-52px 0px 0px 0px"' in corps,
+          "elle apparaît par un observateur : dès que l'entête passe sous les 52 px")
 
     # Les pastilles d'erreur ont suivi leurs boutons.
     check(barre.group(1).count("badgeLogs") == 1 and barre.group(1).count("settingsErrorBadge") == 1,
@@ -7821,18 +7846,22 @@ def test_barre_du_bas_et_entete():
     fn = fn[:fn.index("\n}")]
     check("setTab(dernierOngletFil" in fn, "« Fil » revient au dernier onglet de filtre choisi")
 
-    # UN SEUL COMPTEUR, gros (07/11/2026) : la précision suit l'urgence.
+    # QUATRE TUILES (07/11/2026), et une ligne réduite à précision croissante.
     fn = html[html.index("function updateCountdown("):]
-    fn = fn[:fn.index("\nfunction ecritCompteur")]
+    fn = fn[:fn.index("\n// Une durée en millisecondes")]
     sans_commentaires = re.sub(r"^\s*//.*$", "", fn, flags=re.M)
     check("Sortie dans" not in sans_commentaires and "C'EST BIENT" not in sans_commentaires,
           "l'ancien texte « Sortie dans … » et la phrase « C'EST BIENTÔT » ont disparu")
-    check('palier === "final") texte = `${p2(hours)}:${p2(minutes)}:${p2(seconds)}`' in fn
-          and '`${days}j ${p2(hours)}h ${p2(minutes)}m`' in fn and '`${days}j ${p2(hours)}h`' in fn,
-          "il compte en HH:MM:SS le dernier jour, en jours-heures-minutes sous sept jours, en jours-heures au-delà")
-    check('"SORTI !"' in fn and '"+" + joursDepuis + " j"' in fn
+    check('palier === "final") compact = `${p2(t.h)}:${p2(t.m)}:${p2(t.s)}`' in fn
+          and '`${t.j}j ${p2(t.h)}h ${p2(t.m)}m`' in fn and '`${t.j}j ${p2(t.h)}h`' in fn,
+          "la ligne réduite compte en HH:MM:SS le dernier jour, en j-h-min sous sept jours, en j-h au-delà")
+    check('"SORTI !"' in fn and '"+" + t.j + " j"' in fn
           and '"avant la sortie"' in fn and '"depuis la sortie"' in fn,
-          "il dit « +n j » après la sortie, avec son sous-titre fixe")
+          "elle dit « +n j » après la sortie, et le libellé sous les tuiles change avec")
+    ec = html[html.index("function ecritCompteur("):]
+    ec = ec[:ec.index("\n}")]
+    check('"cdJ"' in ec and '"cdS"' in ec and 'classList.toggle("zero", t.j === 0)' in ec,
+          "les quatre tuiles sont écrites, celle des jours est grisée à 00")
     # Plus de surligneur en thème clair (07/11/2026) : le texte reste fluo, cerné d'un trait sombre.
     for pal in ("soon", "urgent", "final"):
         regle = re.search(r'html\[data-theme="light"\] \.countdown\.%s\{([^}]*)\}' % pal, html).group(1)
@@ -7841,8 +7870,8 @@ def test_barre_du_bas_et_entete():
     trait = re.search(r'html\[data-theme="light"\] \.countdown\.soon, [^{]*\{([^}]*)\}', html).group(1)
     check("-webkit-text-stroke:" in trait and "var(--compte-encre)" in trait and "paint-order:stroke fill" in trait,
           "le trait sombre (--compte-encre) cerne le fluo, derrière le remplissage")
-    check('setAttribute("aria-label"' in html[html.index("function ecritCompteur("):][:400],
-          "le bouton, dont le texte est un chiffre nu, a un nom accessible qui dit ce qu'il compte")
+    check('el.setAttribute("aria-label", nom)' in ec,
+          "le bouton, dont le contenu est fait de chiffres nus, a un nom accessible qui dit ce qu'il compte")
 
 
 def test_contraste_des_deux_themes():
@@ -9193,7 +9222,7 @@ def test_panneau_parametres_structure():
     check('role="dialog"' not in panneau.split('<div class="panneau-onglet"')[0]
           and 'aria-modal' not in panneau.split('<div class="panneau-onglet"')[0],
           "elle ne déclare plus de rôle de dialogue ni de modalité")
-    bloc = re.search(r"\.panneau-tabs\{([^}]*)\}", html).group(1)
+    bloc = re.search(r"\n  \.panneau-tabs\{([^}]*)\}", html).group(1)
     check("position:sticky" in bloc and "top:0" in bloc,
           "et les rubriques restent collées en haut de l'écran")
     check(re.search(r"#settingsOverlay \.settings-panel\{[^}]*padding:\s*0", html) is not None
@@ -9222,7 +9251,7 @@ def test_panneau_parametres_structure():
     check([x for x in re.findall(r'data-cible="([a-z]+)"', barre)] == ["aff", "flt", "src", "adv"]
           and all(("#i-" + n) in barre for n in ("palette", "filter_alt", "rss_feed", "save")),
           "la barre des rubriques porte Apparence, Filtres, Sources et Données, chacune avec son icône")
-    bloc = re.search(r"\.panneau-tabs\{([^}]*)\}", html).group(1)
+    bloc = re.search(r"\n  \.panneau-tabs\{([^}]*)\}", html).group(1)
     check("position:sticky" in bloc and "top:0" in bloc,
           "et cette barre reste collée en haut de la page")
 

@@ -1612,24 +1612,32 @@ def test_barre_du_bas(nav, url):
           "« Réglages » ouvre les réglages")
     ctx.close()
 
-    # UN SEUL compteur, gros, dont la précision suit l'urgence.
+    # QUATRE TUILES vivantes, et une ligne réduite dont la précision suit l'urgence.
     import re as _re
-    for quand, motif, sous, nom in (
-            ("2026-11-07T10:00:00+01:00", r"^11j 1[34]h$", "avant la sortie", "loin : jours et heures"),
-            ("2026-11-16T10:00:00+01:00", r"^2j 1[34]h \d\dm$", "avant la sortie", "sous sept jours : avec les minutes"),
-            ("2026-11-18T23:30:00+01:00", r"^00:\d\d:\d\d$", "avant la sortie", "dernier jour : HH:MM:SS"),
-            ("2026-11-19T10:00:00+01:00", r"^SORTI !$", "GTA VI", "le jour de la sortie"),
-            ("2026-11-22T10:00:00+01:00", r"^\+3 j$", "depuis la sortie", "trois jours après")):
+    for quand, motif, sous, zero, nom in (
+            ("2026-11-07T10:00:00+01:00", r"^11j 1[34]h$", "avant la sortie", False, "loin : jours et heures"),
+            ("2026-11-16T10:00:00+01:00", r"^2j 1[34]h \d\dm$", "avant la sortie", False, "sous sept jours : avec les minutes"),
+            ("2026-11-18T23:30:00+01:00", r"^00:\d\d:\d\d$", "avant la sortie", True, "dernier jour : HH:MM:SS"),
+            ("2026-11-19T10:00:00+01:00", r"^SORTI !$", "depuis la sortie", True, "le jour de la sortie"),
+            ("2026-11-22T10:00:00+01:00", r"^\+3 j$", "depuis la sortie", False, "trois jours après")):
         ctx, page, erreurs = ouvre(390, "light", quand)
         page.evaluate("updateCountdown()")
-        lu = page.evaluate("() => ({t: document.getElementById('countdown').textContent, s: document.getElementById('compteurSous').textContent, "
-                           "n: document.getElementById('countdown').getAttribute('aria-label'), "
-                           "taille: parseFloat(getComputedStyle(document.getElementById('countdown')).fontSize), "
-                           "deux: document.querySelectorAll('.tuile-compteur .countdown, .compteur-gros').length})")
+        lu = page.evaluate("""() => ({t: document.getElementById('cbCompteur').textContent,
+            s: document.getElementById('compteurSous').textContent,
+            n: document.getElementById('countdown').getAttribute('aria-label'),
+            cases: [...document.querySelectorAll('#countdown .cd-t')].map(e => e.querySelector('b').textContent),
+            libelles: [...document.querySelectorAll('#countdown .cd-t i')].map(e => e.textContent),
+            grises: [...document.querySelectorAll('#countdown .cd-t.zero')].map(e => e.id),
+            taille: parseFloat(getComputedStyle(document.querySelector('#countdown .cd-t b')).fontSize)})""")
         check(_re.match(motif, lu["t"]) is not None and lu["s"] == sous,
-              "%s : « %s » / « %s »" % (nom, lu["t"], lu["s"]))
-        check(lu["taille"] >= 30 and lu["deux"] == 1 and lu["t"] in (lu["n"] or ""),
-              "%s : un seul compteur, en gros (%.0f px), nommé pour les lecteurs d'écran" % (nom, lu["taille"]))
+              "%s : ligne réduite « %s », libellé « %s »" % (nom, lu["t"], lu["s"]))
+        check(len(lu["cases"]) == 4 and all(_re.match(r"^\d\d+$", c) for c in lu["cases"])
+              and lu["libelles"] == ["jours", "heures", "min", "sec"],
+              "%s : quatre tuiles jours, heures, min, sec, deux chiffres au moins (%s)" % (nom, lu["cases"]))
+        check((lu["grises"] == ["cdJ"]) == zero and (zero or lu["grises"] == []),
+              "%s : la tuile des jours n'est grisée que quand elle vaut 00 (%s)" % (nom, lu["grises"]))
+        check(lu["taille"] >= 24 and lu["t"] in (lu["n"] or ""),
+              "%s : chiffres de %.0f px, bouton nommé pour les lecteurs d'écran" % (nom, lu["taille"]))
         ctx.close()
 
     # L'icône ▶ n'apparaît qu'avec un jeton, et fait au moins 44 px une fois visible.
@@ -1693,7 +1701,8 @@ def test_page_reglages(nav, url):
         page.evaluate("window.scrollTo(0, 500)")
         page.wait_for_timeout(150)
         haut = page.evaluate("() => document.querySelector('.panneau-tabs').getBoundingClientRect().top")
-        check(abs(haut) <= 1, "%s les rubriques restent collées en haut en défilant (%.0f px)" % (etiq, haut))
+        # Collées SOUS la ligne réduite de 52 px (07/11/2026) : en défilant, elle est apparue.
+        check(abs(haut - 52) <= 1, "%s les rubriques restent collées sous la ligne réduite en défilant (%.0f px)" % (etiq, haut))
 
         # Le dernier réglage se lit entièrement, au-dessus de la barre flottante.
         page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
@@ -1722,6 +1731,96 @@ def test_page_reglages(nav, url):
         ctx.close()
 
 
+def test_entete_tuiles_et_ligne_reduite(nav, url):
+    """En-tête final (07/11/2026) : rangée centrée, quatre tuiles, ligne réduite en défilant.
+
+    Mesuré dans un vrai navigateur, à 320 et 390 px, avec et sans jeton : titre, pastille
+    « Backend », ▶ et ↻ ont le MÊME centre vertical (la maquette avait posé la pastille 6 px
+    plus bas), rien ne sort de la carte (avec un jeton à 390 px, la rangée entière dépassait
+    de 30 px), le libellé est centré sous les tuiles, et la ligne réduite apparaît quand
+    l'entête quitte le haut, avec le point vert seulement en mode backend, le jour
+    « AUJOURD'HUI » et les rubriques des Réglages se collant dessous.
+    """
+    print("\n[entête] rangée centrée, tuiles, ligne réduite")
+    for largeur, schema, jeton in ((390, "light", False), (390, "light", True),
+                                   (320, "dark", False), (320, "dark", True)):
+        etiq = "[%d px, %s, %s]" % (largeur, schema, "jeton" if jeton else "sans jeton")
+        ctx = nav.new_context(viewport={"width": largeur, "height": 700}, color_scheme=schema,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));%s}catch(e){}"
+                            % ("localStorage.setItem('gta6watch:github-token-v1','x');" if jeton else ""))
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector(".barre-bas")
+        page.evaluate("""() => { const m = document.getElementById('modeIndicator');
+            m.className = 'mode-indicator backend';
+            m.innerHTML = '<span class="dot"></span><span class="mi-mot">Backend GitHub</span>';
+            lastItems = Array.from({length: 14}, (_, i) => ({title: 'Article de test numéro ' + (i + 1) + ' — un titre assez long pour passer sur deux lignes',
+              link: 'https://ex.test/' + i, description: 'Résumé.', date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3)}));
+            lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30; applyFilters(); }""")
+        page.wait_for_timeout(300)
+        m = page.evaluate("""() => {
+            const r = e => e.getBoundingClientRect();
+            const haut = [...document.querySelector('.header-haut').children].filter(e => e.offsetParent !== null);
+            const carte = r(document.querySelector('header.console'));
+            const centre = e => (r(e).top + r(e).bottom) / 2;
+            const sous = r(document.getElementById('compteurSous')), cd = r(document.getElementById('countdown'));
+            const mot = document.querySelector('#modeIndicator .mi-mot');
+            return {centres: haut.map(centre), n: haut.length,
+                    sortent: haut.filter(e => r(e).right > carte.right - 14 + 0.5 || r(e).left < carte.left + 14 - 0.5).length,
+                    ecartLibelle: Math.abs((sous.left + sous.right) / 2 - (cd.left + cd.right) / 2),
+                    mot: getComputedStyle(mot).display !== 'none',
+                    deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(max(m["centres"]) - min(m["centres"]) <= 1.0,
+              "%s titre, pastille, ▶ et ↻ ont le même centre vertical (%s)" % (etiq, [round(c) for c in m["centres"]]))
+        check(m["sortent"] == 0 and not m["deborde"],
+              "%s rien ne sort de la carte ni de l'écran (%d sortent)" % (etiq, m["sortent"]))
+        check(m["ecartLibelle"] <= 1.0, "%s le libellé est centré sous les tuiles (écart %.1f px)" % (etiq, m["ecartLibelle"]))
+        attendu = (largeur >= 430) or (largeur >= 360 and not jeton)
+        check(m["mot"] == attendu,
+              "%s le mot « Backend GitHub » est %s (%s)" % (etiq, "affiché" if attendu else "remplacé par un point", m["mot"]))
+
+        # La ligne réduite : cachée en haut, visible en défilant.
+        etat = page.evaluate("""() => { const b = document.getElementById('barreHaut'); const cs = getComputedStyle(b);
+            return {visible: b.classList.contains('visible'), vis: cs.visibility}; }""")
+        check(not etat["visible"] and etat["vis"] == "hidden",
+              "%s tout en haut, la ligne réduite est cachée (%s)" % (etiq, etat["vis"]))
+        page.evaluate("window.scrollTo(0, 500)")
+        page.wait_for_timeout(700)
+        r2 = page.evaluate("""() => { const b = document.getElementById('barreHaut'); const q = b.getBoundingClientRect();
+            const jour = [...document.querySelectorAll('.day-label')].find(e => e.getBoundingClientRect().bottom > 0);
+            return {visible: b.classList.contains('visible'), top: q.top, h: q.height,
+                    point: getComputedStyle(document.querySelector('.bh-point')).display,
+                    cpt: document.getElementById('cbCompteur').textContent,
+                    jourTop: jour ? jour.getBoundingClientRect().top : null,
+                    ghost: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(r2["visible"] and abs(r2["top"]) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
+              "%s en défilant, la ligne réduite de 52 px se colle en haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
+        check(r2["point"] != "none", "%s son point vert est là en mode backend" % etiq)
+        check(r2["jourTop"] is not None and abs(r2["jourTop"] - 52) <= 1.5,
+              "%s le jour « AUJOURD'HUI » se colle juste dessous (top %s)" % (etiq, r2["jourTop"]))
+        page.evaluate("() => { const m = document.getElementById('modeIndicator'); m.className = 'mode-indicator direct'; }")
+        pt = page.evaluate("() => getComputedStyle(document.querySelector('.bh-point')).display")
+        check(pt == "none", "%s hors mode backend (mode direct), le point disparaît" % etiq)
+        page.evaluate("window.scrollTo(0, 0)")
+        page.wait_for_timeout(700)
+        check(not page.evaluate("() => document.getElementById('barreHaut').classList.contains('visible')"),
+              "%s remonté tout en haut, la ligne réduite repart" % etiq)
+
+        # Dans les Réglages, les rubriques se collent sous la ligne.
+        page.evaluate("() => { const m = document.getElementById('modeIndicator'); m.className = 'mode-indicator backend'; }")
+        page.click("#navReglages")
+        page.click('.panneau-tabs button[data-cible="adv"]')   # la rubrique la plus longue : la page défile
+        page.evaluate("window.scrollTo(0, 900)")
+        page.wait_for_timeout(700)
+        top = page.evaluate("() => document.querySelector('.panneau-tabs').getBoundingClientRect().top")
+        check(abs(top - 52) <= 1.5, "%s dans les Réglages, les rubriques se collent sous la ligne (top %.0f)" % (etiq, top))
+        check(not erreurs, "%s aucune erreur JavaScript" % etiq)
+        ctx.close()
+
+
 def test_entete_sans_vide(nav, url):
     """L'entête tient sur une ligne, et ce qui en est sorti reste accessible.
 
@@ -1745,7 +1844,7 @@ def test_entete_sans_vide(nav, url):
         page.wait_for_selector(".header-haut")
         page.evaluate("""() => { const m = document.getElementById('modeIndicator');
                                  m.className = 'mode-indicator backend';
-                                 m.innerHTML = '● Backend GitHub'; }""")
+                                 m.innerHTML = '<span class="dot"></span><span class="mi-mot">Backend GitHub</span>'; }""")
         une_ligne = page.evaluate("""() => {
           const t = document.querySelector('.brand').getBoundingClientRect();
           const d = document.getElementById('refreshBtn').getBoundingClientRect();
@@ -3480,7 +3579,7 @@ def test_compte_a_rebours(nav, url):
         page.evaluate("updateCountdown()")
         etat = page.evaluate("""() => {
             const el = document.getElementById('countdown');
-            return {texte: el.textContent, classe: el.className};
+            return {texte: document.getElementById('cbCompteur').textContent, classe: el.className};
         }""")
         ctx.close()
         return etat
@@ -3872,7 +3971,7 @@ def test_compte_a_rebours_flashy(nav, url):
                 page.wait_for_selector(".header-haut")
                 page.evaluate("""(t) => { document.documentElement.setAttribute('data-theme', t);
                     const m = document.getElementById('modeIndicator');
-                    m.className = 'mode-indicator backend'; m.innerHTML = '● Backend GitHub'; }""", theme)
+                    m.className = 'mode-indicator backend'; m.innerHTML = '<span class="dot"></span><span class="mi-mot">Backend GitHub</span>'; }""", theme)
                 page.wait_for_timeout(300)
                 m = page.evaluate("""(pal) => {
                     const c = document.getElementById('countdown'), cs = getComputedStyle(c);
@@ -6568,6 +6667,7 @@ def main():
             test_ecran_de_chargement(nav, url)
             test_barre_du_bas(nav, url)
             test_page_reglages(nav, url)
+            test_entete_tuiles_et_ligne_reduite(nav, url)
             test_toast_annuler(nav, url)
             test_poids_de_tout_charger(nav, url)
             test_plafond_des_lus(nav, url)

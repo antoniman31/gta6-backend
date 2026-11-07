@@ -323,50 +323,109 @@
     font-size:11px; font-weight:700; cursor:pointer; height:30px;
   }
 
-  /* ---------- Tuile du compteur et barre du bas (07/11/2026) ----------
-     Choix d'Antoni sur planche : tuile « J-11 » en grand, bouton ↻ dans la
-     première rangée, barre du bas flottante. Le texte du compteur reste dans
-     #countdown (un bouton, qui ouvre le détail) : toute la tuile est sa zone
-     de clic, grâce au ::after qui épouse la tuile. */
+  /* ---------- En-tête : rangée du haut, tuiles, ligne réduite (07/11/2026) ---------- */
   .icon-btn-grand{width:44px; height:44px; min-height:44px; color:var(--accent); flex-shrink:0;}
   .icon-btn-grand .ic{width:24px; height:24px;}
   .icon-btn-grand::after{inset:0;}
+  /* La rangée du haut : tout est CENTRÉ sur la même ligne (la maquette avait posé la
+     pastille 6 px plus bas ; un contrôle mesure maintenant les centres). */
+  .header-haut{align-items:center; gap:8px;}
+  .header-haut .brand{margin-right:auto;}
   .tuile-compteur{
     position:relative; background:var(--bg-elevated); border:1px solid var(--line);
-    border-radius:var(--r-md); padding:12px 14px; display:flex; flex-direction:column; gap:2px;
+    border-radius:var(--r-md); padding:10px; display:flex; flex-direction:column; gap:8px;
   }
-  /* UN SEUL COMPTEUR (choix d'Antoni, 07/11/2026 : « pourquoi il y a 2 fois le
-     compteur ? fusionne, on garde que le gros »). #countdown est le gros
-     chiffre : sa précision croît avec l'urgence (voir updateCountdown), sa
-     couleur suit le palier, avec le halo fluo du thème sombre et le surligneur du
-     thème clair (palette du 28/10, éprouvée par un contrôle de halo). */
+  /* LES QUATRE TUILES. #countdown est le bouton qui les porte (toute la tuile ouvre le
+     détail grâce au ::after) ; sa classe de palier (soon, urgent, final) colore les
+     chiffres par héritage : fluo + halo en sombre, fluo + trait sombre en clair. La
+     tuile des jours est grisée (pointillés, sans opacité) le dernier jour : 00. */
   .tuile-compteur .countdown{
-    position:static; margin:0; padding:0; display:block; width:fit-content; max-width:calc(100% - 44px);
-    font-size:32px; font-weight:800; line-height:1.15; letter-spacing:-0.01em;
-    white-space:nowrap; text-align:left;
+    position:static; margin:0; padding:0; display:grid; width:100%;
+    grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;
+    font-size:26px; font-weight:800; line-height:1.1; text-align:center; white-space:nowrap;
+    background:none; border:0; letter-spacing:0;
   }
   .tuile-compteur .countdown.final{
-    padding:0; margin:0; font-size:32px; animation:countdown-pulse 1s ease-in-out infinite;
+    padding:0; margin:0; animation:countdown-pulse 1s ease-in-out infinite;
     box-shadow:none; /* ni anneau, ni contour : plus de surlignage (07/11/2026) */
   }
   .tuile-compteur .countdown::after{inset:0; border-radius:var(--r-md); z-index:0;}
-  .compteur-sous{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:var(--text-dim);}
-  .tuile-compteur .mode-indicator{margin-top:6px; position:relative; z-index:1;}
-  .tuile-compteur .mode-indicator:empty{display:none;}
-  /* La pastille posait sa teinte sur --bg-panel avant la tuile ; sur le fond plus
-     clair de la tuile (--bg-elevated), le vert tombait à 4,48:1 (mesuré le
-     07/11/2026, seuil 4,5). Elle garde donc le fond sur lequel elle a été conçue. */
-  .tuile-compteur .mode-indicator.backend{background:color-mix(in srgb, var(--ok) 15%, var(--bg-panel));}
-  .tuile-compteur .mode-indicator.direct{background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));}
+  .cd-t{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-sm);
+    padding:8px 4px; display:flex; flex-direction:column; align-items:center; min-width:0;
+  }
+  .cd-t b{font-weight:800; font-size:26px; line-height:1.1; font-variant-numeric:tabular-nums;}
+  .cd-t i{
+    font-style:normal; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600;
+    color:var(--text-dim); text-shadow:none; -webkit-text-stroke:0;
+  }
+  .cd-t.zero{background:transparent; border-style:dashed;}
+  .cd-t.zero b{color:var(--text-dim); text-shadow:none; -webkit-text-stroke:0;}
+  .compteur-sous{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:var(--text-dim);
+    text-align:center; position:relative; z-index:1;
+  }
+  /* LA PASTILLE « BACKEND », à côté du ↻. Par défaut : un POINT seul. Avec le mot quand
+     il tient : sans jeton dès 360 px, avec un jeton (le ▶ prend la place) dès 430 px. */
+  .header-haut .mode-indicator{border:0; background:none; padding:0; margin:0; flex:none;}
+  .header-haut .mode-indicator .dot{width:12px; height:12px;}
+  .header-haut .mode-indicator .mi-mot{display:none;}
+  .header-haut .mode-indicator:empty{display:none;}
+  @media (min-width:360px){
+    body:not(.a-jeton) .header-haut .mode-indicator .mi-mot{display:inline;}
+    body:not(.a-jeton) .header-haut .mode-indicator{padding:3px 7px;}
+    body:not(.a-jeton) .header-haut .mode-indicator.backend{border:1px solid var(--ok); background:color-mix(in srgb, var(--ok) 15%, var(--bg-panel));}
+    body:not(.a-jeton) .header-haut .mode-indicator.direct{border:1px solid var(--accent); background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));}
+    body:not(.a-jeton) .header-haut .mode-indicator .dot{width:5px; height:5px;}
+  }
+  @media (min-width:430px){
+    .header-haut .mode-indicator .mi-mot{display:inline;}
+    .header-haut .mode-indicator{padding:3px 7px;}
+    .header-haut .mode-indicator.backend{border:1px solid var(--ok); background:color-mix(in srgb, var(--ok) 15%, var(--bg-panel));}
+    .header-haut .mode-indicator.direct{border:1px solid var(--accent); background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));}
+    .header-haut .mode-indicator .dot{width:5px; height:5px;}
+  }
   .relance{
-    position:absolute; top:6px; right:6px; z-index:1; width:40px; height:40px; min-height:0;
+    position:relative; width:40px; height:40px; min-height:0; flex:none;
     padding:0; border:0; background:transparent; color:var(--text-dim);
     display:flex; align-items:center; justify-content:center;
   }
   .relance::after{content:""; position:absolute; inset:-2px;}
-  .relance .ic{width:22px; height:22px;}
+  .relance .ic{width:24px; height:24px;}
   .relance:hover{color:var(--accent);}
   .relance:disabled{opacity:.5;}
+  /* LA LIGNE RÉDUITE. Elle apparaît quand l'entête complète a quitté le haut (voir
+     brancheBarreHaute) ; le jour « AUJOURD'HUI » et les rubriques des Réglages se
+     collent alors dessous (body.bh-visible). */
+  .barre-haut{
+    position:fixed; top:0; left:0; right:0; z-index:55; height:52px;
+    display:flex; align-items:center; gap:10px;
+    padding:0 max(16px, calc((100% - 640px) / 2 + 16px));
+    background:var(--bg-panel); border-bottom:1px solid var(--line);
+    visibility:hidden; transform:translateY(-100%);
+    transition:transform var(--t-moyen) var(--courbe);
+  }
+  .barre-haut.visible{visibility:visible; transform:none;}
+  .bh-titre{
+    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:16px; white-space:nowrap;
+    display:inline-flex; align-items:center;
+  }
+  .bh-titre > span:not(.bh-point){color:var(--accent);}
+  .bh-point{
+    display:none; width:9px; height:9px; margin-left:8px; border-radius:50%; background:var(--ok);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent);
+  }
+  body:has(#modeIndicator.backend) .bh-point{display:inline-block;}
+  .bh-compteur{
+    margin-left:auto; background:none; border:0; padding:0; min-height:44px;
+    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:18px; color:var(--accent);
+    white-space:nowrap; letter-spacing:0;
+  }
+  .bh-compteur.soon{color:var(--compte-soon); text-shadow:var(--compte-halo-soon);}
+  .bh-compteur.urgent{color:var(--compte-urgent); text-shadow:var(--compte-halo-urgent);}
+  .bh-compteur.final{color:var(--compte-final); text-shadow:var(--compte-halo-final);}
+  body.bh-visible .day-label{top:52px;}
+  body.bh-visible .panneau-tabs{top:52px;}
   .barre-bas{
     position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:60;
     max-width:496px; margin:0 auto; display:flex; gap:2px; padding:6px;
@@ -1453,6 +1512,7 @@
   html[data-theme="light"] .countdown.urgent{color:var(--compte-urgent);}
   html[data-theme="light"] .countdown.final{color:var(--compte-final);}
   html[data-theme="light"] .countdown.soon, html[data-theme="light"] .countdown.urgent, html[data-theme="light"] .countdown.final,
+  html[data-theme="light"] .bh-compteur.soon, html[data-theme="light"] .bh-compteur.urgent, html[data-theme="light"] .bh-compteur.final,
   html[data-theme="light"] .compteur-tuiles.soon > div:not(.zero) > b,
   html[data-theme="light"] .compteur-tuiles.urgent > div:not(.zero) > b,
   html[data-theme="light"] .compteur-tuiles.final > div:not(.zero) > b{
@@ -2124,23 +2184,28 @@
        annonce. Le compteur d'articles, lui, est descendu sous les onglets :
        il décrit la liste, sa place est contre elle. -->
   <header class="console">
-    <!-- Entête refait le 07/11/2026 (choix d'Antoni sur planche) : le titre et
-         un bouton ↻, puis une TUILE de compteur. Les trois boutons Paramètres,
-         Statistiques et Journal sont partis dans la barre du bas ; « Actualiser »
-         est devenu l'icône ↻ ; « Relancer le robot » est une petite icône ▶ dans
-         la tuile, visible seulement avec un jeton. -->
+    <!-- Entête refait le 07/11/2026 (version finale choisie sur planche) : UNE rangée
+         — titre, pastille « Backend », petite icône ▶ (avec un jeton), bouton ↻, tous
+         centrés sur la même ligne — puis QUATRE TUILES jours / heures / minutes /
+         secondes, avec leur libellé centré dessous (« avant la sortie », puis « depuis
+         la sortie »). Toucher les tuiles ouvre le détail du compteur. -->
     <div class="header-haut">
       <h1 class="brand">GTA6<span>_WATCH</span></h1>
+      <div id="modeIndicator" class="mode-indicator"></div>
+      <button type="button" id="triggerRunBtn" class="relance" onclick="triggerBackendRun()"
+              title="Relancer le robot" aria-label="Relancer le robot" style="display:none;"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-play_circle"/></svg></button>
       <button type="button" id="refreshBtn" class="icon-btn icon-btn-grand" onclick="checkNow(true)"
               title="Actualiser" aria-label="Actualiser"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-refresh"/></svg></button>
     </div>
     <div class="tuile-compteur">
       <button type="button" id="countdown" class="countdown"
-              aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
-      <span id="compteurSous" class="compteur-sous" aria-hidden="true"></span>
-      <div id="modeIndicator" class="mode-indicator"></div>
-      <button type="button" id="triggerRunBtn" class="relance" onclick="triggerBackendRun()"
-              title="Relancer le robot" aria-label="Relancer le robot" style="display:none;"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-play_circle"/></svg></button>
+              aria-haspopup="dialog" onclick="ouvreCompteur()">
+        <span class="cd-t" id="cdJ"><b>--</b><i>jours</i></span>
+        <span class="cd-t" id="cdH"><b>--</b><i>heures</i></span>
+        <span class="cd-t" id="cdM"><b>--</b><i>min</i></span>
+        <span class="cd-t" id="cdS"><b>--</b><i>sec</i></span>
+      </button>
+      <span id="compteurSous" class="compteur-sous"></span>
     </div>
     <!-- Ce que le robot a fait à son dernier passage. Placé SOUS la tuile
          du compteur : au-dessus, il séparait le nombre d'articles des actions
@@ -2640,6 +2705,16 @@
       <button id="previewTranslateBtn" style="display:none;" onclick="openTranslated(document.getElementById('previewLink').href)"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-translate"/></svg> traduire</button>
     </div>
   </div>
+</div>
+
+<!-- LIGNE RÉDUITE (choix d'Antoni, 07/11/2026) : dès que l'entête complète a quitté le
+     haut de l'écran, une ligne de 52 px se colle en haut et y reste, comme le mot
+     « AUJOURD'HUI » : le titre, un point vert (seulement en mode backend GitHub) et le
+     compteur. Cachée par visibility tant que l'entête est en vue : elle sort alors du
+     parcours de tabulation et de l'arbre d'accessibilité. -->
+<div class="barre-haut" id="barreHaut">
+  <span class="bh-titre">GTA6<span>_WATCH</span><span class="bh-point" aria-hidden="true"></span></span>
+  <button type="button" id="cbCompteur" class="bh-compteur" aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
 </div>
 
 <!-- Barre du bas, flottante (choix C d'Antoni, 07/11/2026). Trois entrées : le fil, les statistiques
@@ -4517,7 +4592,7 @@ async function applyBackendData(data, sourceUrl){
 
   const modeEl = document.getElementById("modeIndicator");
   modeEl.className = "mode-indicator backend";
-  modeEl.innerHTML = '<span class="dot"></span>Backend GitHub';
+  modeEl.innerHTML = '<span class="dot"></span><span class="mi-mot">Backend GitHub</span>';
 
   document.getElementById("settingsErrorBadge").style.display = "none";
   addLog("info", `Backend — ${all.length} article(s) au total.`);
@@ -5014,7 +5089,7 @@ async function checkNow(force){
 
   const modeEl = document.getElementById("modeIndicator");
   modeEl.className = "mode-indicator direct";
-  modeEl.innerHTML = '<span class="dot"></span>Mode direct';
+  modeEl.innerHTML = '<span class="dot"></span><span class="mi-mot">Mode direct</span>';
 
   document.getElementById("settingsErrorBadge").style.display = failCount > 0 ? "block" : "none";
   addLog("info", `Vérification terminée — ${all.length} article(s) trouvés cette fois, ${lastItems.length} au total conservés.`);
@@ -7952,6 +8027,8 @@ function refreshTokenUI(){
   // text-align:center. En rendant la main à la CSS, le bouton retrouve le
   // centrage en flex qu'il partage avec les onglets.
   if(btn) btn.style.display = token ? "" : "none";
+  // Avec un jeton, le ▶ prend la place du mot de la pastille « Backend » à 390 px.
+  document.body.classList.toggle("a-jeton", !!token);
   const input = document.getElementById("githubTokenInput");
   if(input && token && !input.value) input.placeholder = "•••••••••••••• (jeton enregistré)";
   if(!token){
@@ -8234,47 +8311,82 @@ function updateCountdown(){
   // Ce bloc est INERTE avant le 19 novembre 2026. Écrit à l'avance pour n'avoir
   // rien à improviser le 20 au matin.
   if(diff <= 0){
-    const joursDepuis = Math.floor(-diff / (1000 * 60 * 60 * 24));
-    ecritCompteur(el, joursDepuis < 1 ? "SORTI !" : "+" + joursDepuis + " j",
-      joursDepuis < 1 ? "countdown final" : "countdown",
-      joursDepuis < 1 ? "GTA VI" : "depuis la sortie");
+    const t = decoupe(-diff);
+    ecritCompteur(el, t, t.j < 1 ? "countdown final" : "countdown", "depuis la sortie",
+      t.j < 1 ? "SORTI !" : "+" + t.j + " j", t.j < 1 ? "final" : "");
     return;
   }
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
+  const t = decoupe(diff);
+  const palier = palierCompteur(diff);
   const p2 = n => String(n).padStart(2, "0");
 
-  const palier = palierCompteur(diff);
-  const classe = "countdown" + (palier ? " " + palier : "");
+  // QUATRE TUILES (jours, heures, minutes, secondes), toutes vivantes. La ligne
+  // RÉDUITE (une seule ligne, 52 px) garde, elle, la précision qui croît avec
+  // l'urgence : jours-heures, puis minutes sous sept jours, puis HH:MM:SS le dernier
+  // jour. À plus de sept jours, des minutes qui défilent dans un si petit espace
+  // attirent l'œil sans rien apprendre.
+  let compact;
+  if(palier === "final") compact = `${p2(t.h)}:${p2(t.m)}:${p2(t.s)}`;
+  else if(palier === "urgent") compact = `${t.j}j ${p2(t.h)}h ${p2(t.m)}m`;
+  else compact = `${t.j}j ${p2(t.h)}h`;
+  ecritCompteur(el, t, "countdown" + (palier ? " " + palier : ""), "avant la sortie", compact, palier);
+}
 
-  // UN SEUL COMPTEUR, GROS (07/11/2026). La précision suit l'urgence. À plus de
-  // sept jours, des minutes qui défilent attirent l'œil sans rien apprendre ;
-  // dans les dernières heures, les secondes sont tout l'intérêt du compteur.
-  // La phrase « C'EST BIENTÔT » est partie avec le texte : la couleur et la
-  // pulsation du palier final suffisent.
-  let texte;
-  if(palier === "final") texte = `${p2(hours)}:${p2(minutes)}:${p2(seconds)}`;
-  else if(palier === "urgent") texte = `${days}j ${p2(hours)}h ${p2(minutes)}m`;
-  else texte = `${days}j ${p2(hours)}h`;
-  ecritCompteur(el, texte, classe, "avant la sortie");
+// Une durée en millisecondes -> jours, heures, minutes, secondes entiers.
+function decoupe(ms){
+  return {
+    j: Math.floor(ms / 86400000),
+    h: Math.floor((ms / 3600000) % 24),
+    m: Math.floor((ms / 60000) % 60),
+    s: Math.floor((ms / 1000) % 60),
+  };
 }
 
 // La fonction reste appelée chaque seconde pour que le passage d'un palier à
 // l'autre soit immédiat, mais on n'écrit dans le DOM que si une valeur a
 // vraiment changé : sans ce garde-fou, afficher l'heure sans les secondes
 // repeindrait quand même l'en-tête 3600 fois par heure pour rien.
-function ecritCompteur(el, texte, classe, sous){
-  if(el.textContent !== texte){
-    el.textContent = texte;
-    // Le texte du bouton est un chiffre nu : son nom accessible dit ce qu'il compte.
-    el.setAttribute("aria-label", sous + " : " + texte + " — ouvrir le détail");
+function ecritCompteur(el, t, classe, sous, compact, palier){
+  const p2 = n => String(n).padStart(2, "0");
+  for(const [id, v] of [["cdJ", t.j], ["cdH", t.h], ["cdM", t.m], ["cdS", t.s]]){
+    const tuile = document.getElementById(id);
+    if(!tuile) continue;
+    const chiffre = tuile.firstElementChild, txt = p2(v);
+    if(chiffre.textContent !== txt) chiffre.textContent = txt;
   }
+  // La tuile des jours est grisée quand elle vaut 00 (le dernier jour, le jour de la sortie).
+  const tj = document.getElementById("cdJ");
+  if(tj) tj.classList.toggle("zero", t.j === 0);
   if(el.className !== classe) el.className = classe;
+  // Les tuiles sont un texte nu pour un lecteur d'écran : le bouton dit ce qu'il compte.
+  const nom = sous + " : " + compact + " — ouvrir le détail";
+  if(el.getAttribute("aria-label") !== nom) el.setAttribute("aria-label", nom);
   const s = document.getElementById("compteurSous");
   if(s && s.textContent !== sous) s.textContent = sous;
+  // La ligne réduite, avec la même couleur de palier.
+  const cb = document.getElementById("cbCompteur");
+  if(cb){
+    if(cb.textContent !== compact) cb.textContent = compact;
+    const cc = "bh-compteur" + (palier ? " " + palier : "");
+    if(cb.className !== cc) cb.className = cc;
+    if(cb.getAttribute("aria-label") !== nom) cb.setAttribute("aria-label", nom);
+  }
+}
+
+// La ligne réduite apparaît dès que l'entête complète a quitté le haut de l'écran
+// (sa partie basse passe sous les 52 px que la ligne occupera), et reste tant que
+// l'entête n'est pas revenue. Un observateur plutôt qu'un écouteur de défilement :
+// pas de calcul à chaque pixel.
+function brancheBarreHaute(){
+  const entete = document.querySelector("header.console");
+  const barre = document.getElementById("barreHaut");
+  if(!entete || !barre || !("IntersectionObserver" in window)) return;
+  new IntersectionObserver(entrees => {
+    const visible = !entrees[entrees.length - 1].isIntersecting;
+    barre.classList.toggle("visible", visible);
+    document.body.classList.toggle("bh-visible", visible);
+  }, { rootMargin: "-52px 0px 0px 0px", threshold: 0 }).observe(entete);
 }
 
 // ---------- Le détail du compte à rebours ----------
@@ -9363,6 +9475,7 @@ chargerReprise();
 chargeRecherches();
 loadState();
 updateCountdown();
+brancheBarreHaute();
 // Relève la signature de référence sans attendre : c'est celle de la
 // version en train de tourner.
 verifieVersionApp();
