@@ -1821,6 +1821,52 @@ def test_entete_tuiles_et_ligne_reduite(nav, url):
         ctx.close()
 
 
+def test_fenetre_du_compteur(nav, url):
+    """La fenêtre du compteur : centrée, quatre coins arrondis, barre rectangulaire.
+
+    Demandé par Antoni le 07/11/2026, capture à l'appui : la fenêtre était collée en haut,
+    arrondie seulement au-dessus, et la barre de progression était une pastille dont les
+    bouts arrondis cachaient les derniers pourcents. Mesuré à 320 et 390 px, en clair et en
+    sombre : le centre de la fenêtre est celui de l'écran (à 1 px), les quatre rayons sont
+    arrondis et égaux, la barre a des coins vifs, et la part restante se distingue.
+    """
+    print("\\n[fenêtre du compteur] centrée, arrondie, barre rectangulaire")
+    for largeur, hauteur, schema in ((320, 640, "dark"), (390, 844, "light"), (390, 700, "dark")):
+        etiq = "[%dx%d, %s]" % (largeur, hauteur, schema)
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, color_scheme=schema,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#countdown")
+        page.click("#countdown")
+        page.wait_for_selector("#compteurOverlay .sheet-panel", state="visible")
+        page.wait_for_timeout(300)
+        m = page.evaluate("""() => {
+            const p = document.querySelector('#compteurOverlay .sheet-panel'), r = p.getBoundingClientRect(), cs = getComputedStyle(p);
+            const bar = document.querySelector('.compteur-barre'), bs = getComputedStyle(bar), fill = bar.querySelector(':scope > span');
+            return {dx: Math.abs((r.left + r.right) / 2 - innerWidth / 2), dy: Math.abs((r.top + r.bottom) / 2 - innerHeight / 2),
+                    haut: r.top, bas: innerHeight - r.bottom, gauche: r.left, droite: innerWidth - r.right,
+                    rayons: [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomLeftRadius, cs.borderBottomRightRadius],
+                    bordBas: cs.borderBottomWidth,
+                    barre: [bs.borderTopLeftRadius, bs.borderTopRightRadius, bs.borderBottomLeftRadius, bs.borderBottomRightRadius],
+                    reste: bar.getBoundingClientRect().right - fill.getBoundingClientRect().right,
+                    deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(m["dx"] <= 1.0 and m["dy"] <= 1.0,
+              "%s la fenêtre est centrée sur l'écran (écarts %.1f px en largeur, %.1f px en hauteur)" % (etiq, m["dx"], m["dy"]))
+        check(m["haut"] >= 0 and m["bas"] >= 0 and m["gauche"] >= 0 and m["droite"] >= 0,
+              "%s elle tient entière dans l'écran" % etiq)
+        check(len(set(m["rayons"])) == 1 and m["rayons"][0] != "0px" and m["bordBas"] != "0px",
+              "%s les quatre coins sont arrondis, et le bas a son bord (%s)" % (etiq, m["rayons"]))
+        check(set(m["barre"]) == {"0px"},
+              "%s la barre de progression est rectangulaire (%s)" % (etiq, m["barre"]))
+        check(m["reste"] > 0.5, "%s la part restante de la barre se voit (%.1f px)" % (etiq, m["reste"]))
+        check(not m["deborde"] and not erreurs, "%s rien ne déborde, aucune erreur JavaScript" % etiq)
+        ctx.close()
+
+
 def test_entete_sans_vide(nav, url):
     """L'entête tient sur une ligne, et ce qui en est sorti reste accessible.
 
@@ -6668,6 +6714,7 @@ def main():
             test_barre_du_bas(nav, url)
             test_page_reglages(nav, url)
             test_entete_tuiles_et_ligne_reduite(nav, url)
+            test_fenetre_du_compteur(nav, url)
             test_toast_annuler(nav, url)
             test_poids_de_tout_charger(nav, url)
             test_plafond_des_lus(nav, url)

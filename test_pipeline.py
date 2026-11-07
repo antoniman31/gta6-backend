@@ -7809,6 +7809,16 @@ def test_barre_du_bas_et_entete():
           "la pastille « Backend » est un point seul sur petit écran (mot dès 360 px sans jeton, 430 px avec)")
     check('classList.toggle("a-jeton"' in html, "et la présence d'un jeton est lue par la mise en page")
 
+    # La fenêtre du compteur (07/11/2026) : centrée, quatre coins arrondis, barre rectangulaire.
+    regle = re.search(r"#compteurOverlay\{([^}]*)\}", html).group(1)
+    check("align-items:center" in regle, "la fenêtre du compteur est centrée en hauteur")
+    regle = re.search(r"#compteurOverlay \.sheet-panel\{([^}]*)\}", html).group(1)
+    check("border-radius:var(--r-md)" in regle and "border:1px solid" in regle,
+          "et arrondie sur ses quatre coins, avec un bord en bas")
+    regle = re.search(r"\.compteur-barre\{([^}]*)\}", html).group(1)
+    check("border-radius:0" in regle and "border:1px solid" in regle,
+          "la barre de progression est rectangulaire, avec un contour qui montre la part restante")
+
     # La LIGNE RÉDUITE (choix d'Antoni, 07/11/2026).
     bh = re.search(r'<div class="barre-haut" id="barreHaut">(.*?)\n</div>', code, re.S)
     check(bh is not None and 'id="cbCompteur"' in bh.group(1) and "bh-point" in bh.group(1),

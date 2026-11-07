@@ -1294,9 +1294,12 @@
 
      26 px de haut, et le chiffre à 12 px : à 18 px et 10 px il était
      là mais personne ne le voyait. */
+  /* RECTANGULAIRE (07/11/2026, « pour mieux voir le pourcentage complété ») : les bouts
+     arrondis de la pastille mangeaient les derniers pourcents, et à 99,4 % la barre
+     paraissait pleine. Un contour et un fond de piste distincts montrent la part restante. */
   .compteur-barre{
-    position:relative; height:26px; border-radius:var(--r-full);
-    background:var(--line); overflow:hidden; margin-bottom:10px;
+    position:relative; height:28px; border-radius:0;
+    background:var(--bg-elevated); border:1px solid var(--text-dim); overflow:hidden; margin-bottom:10px;
   }
   .compteur-barre > span{
     position:relative; display:block; height:100%;
@@ -1641,6 +1644,14 @@
     background:var(--bg-panel); border:1px solid var(--line); border-bottom:none;
     border-radius:var(--r-md) var(--r-md) 0 0; width:100%; max-width:520px;
     padding:8px 20px 24px; max-height:80vh; overflow-y:auto;
+  }
+  /* LA FENÊTRE DU COMPTEUR (demande d'Antoni, 07/11/2026, capture à l'appui) : centrée en
+     hauteur ET en largeur sur l'écran, et arrondie sur ses QUATRE coins — elle avait le
+     style d'une feuille ancrée en haut, arrondie seulement au-dessus, sans bord en bas. */
+  #compteurOverlay{align-items:center;}
+  #compteurOverlay .sheet-panel{
+    border:1px solid var(--line); border-radius:var(--r-md); padding:20px;
+    max-height:calc(100vh - 32px);
   }
   .sheet-handle{
     width:36px; height:4px; border-radius:var(--r-xs); background:var(--line);
