@@ -7888,8 +7888,12 @@ def test_barre_du_bas_et_entete():
           "les mois sont civils, et le 31 janvier + 1 mois ne déborde pas sur mars")
     check('(avant ? htmlAgenda(maintenant) : "")' in html,
           "l'agenda est caché après la sortie : son code reste, il n'est plus affiché")
-    check('Barre remplie depuis l\'annonce du jeu, le 4/02/22</p>' in html and "Sortie ${avant" not in html,
-          "la note du panneau ne dit plus que d'où part la barre")
+    check('Barre remplie depuis l\'annonce du jeu, le 4/02/22</p>' in html and "Sortie ${avant" not in html
+          and 'Temps écoulé depuis la sortie du jeu, le 19/11/26</p>' in html,
+          "la note du panneau est courte : d'où part la barre avant la sortie, ce que compte le compteur après")
+    pc = html[html.index("function majPanneauCompteur("):]
+    check("const barre = avant" in pc and "+ barre" in pc and ": \"\";" in pc,
+          "après la sortie, il n'y a plus de barre de progression dans la fenêtre")
     ec = html[html.index("function ecritCompteur("):]
     ec = ec[:ec.index("\n}")]
     check('for(const u of cles)' in ec and 'htmlTuilesCompteur(cles)' in ec

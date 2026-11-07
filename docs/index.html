@@ -8703,13 +8703,13 @@ function majPanneauCompteur(){
   // au 19 novembre, donc elle reste pleine pour toujours. Un « 100,0 % »
   // figé sous un compteur qui bouge se lit comme une panne ; le mot dit
   // la même chose sans prétendre mesurer. Choix d'Antoni le 20/10/2026.
-  const pourcent = avant
-    ? (fait * 100).toFixed(1).replace(".", ",") + " %"
-    : "Sorti";
+  const pourcent = (fait * 100).toFixed(1).replace(".", ",") + " %";
 
-  el.innerHTML =
-      htmlBlocCompteur()
-    + `<div class="compteur-barre">`
+  // APRÈS LA SORTIE, PLUS DE BARRE (Antoni, 07/11/2026). Elle allait de l'annonce à la sortie, donc
+  // elle restait pleine pour toujours : d'abord un « Sorti » à la place du pourcentage (20/10),
+  // maintenant plus de barre du tout. Le compteur, lui, repart à l'endroit, et la note le dit.
+  const barre = avant
+    ? `<div class="compteur-barre">`
     +   `<i>${escapeHtml(pourcent)}</i>`
     // Le second exemplaire est DANS le remplissage, donc rogné par lui.
     // Sa largeur vaut celle de la barre : si le remplissage occupe p %,
@@ -8720,6 +8720,11 @@ function majPanneauCompteur(){
     +   `<span style="width:${(fait * 100).toFixed(1)}%">`
     +     `<i style="width:${(100 / Math.max(fait * 100, 0.5) * 100).toFixed(2)}%">`
     +       `${escapeHtml(pourcent)}</i></span></div>`
+    : "";
+
+  el.innerHTML =
+      htmlBlocCompteur()
+    + barre
     // SOUS LA BARRE, et c'est un choix d'Antoni : « c'est juste un truc
     // en plus, pas un truc hyper important ».
     + (avant
@@ -8737,12 +8742,11 @@ function majPanneauCompteur(){
         // le chiffre le plus spectaculaire des quatre.
         [nombreFr(ecart / 1000), "secondes", false],
       ], "equiv", "soit " + nombreFr(ecart / 86400000) + " jours")
-    // LE TEMPS DU VERBE SUIT LA DATE. Sous un titre « Depuis la sortie »,
-    // la note annonçait encore le jeu au futur. Un mot s'ajoute, rien
-    // d'autre. Signalé à la répétition générale du 20/10/2026.
-    // LA NOTE, réduite à l'essentiel (Antoni, 07/11/2026) : d'où part la barre. La date de sortie
-    // n'y est plus écrite : le titre et le compteur la disent déjà.
-    + `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le 4/02/22</p>`;
+    // LA NOTE, réduite à l'essentiel (Antoni, 07/11/2026) : avant la sortie, d'où part la barre ;
+    // après, ce que compte le compteur — sans phrase de plus.
+    + (avant
+        ? `<p class="compteur-note">Barre remplie depuis l'annonce du jeu, le 4/02/22</p>`
+        : `<p class="compteur-note">Temps écoulé depuis la sortie du jeu, le 19/11/26</p>`);
   // Les tuiles du panneau viennent d'être posées vides : les remplir par le MÊME appel que
   // l'en-tête, au même instant.
   updateCountdown();

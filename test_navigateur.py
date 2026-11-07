@@ -5010,11 +5010,10 @@ def test_panneau_du_compteur(nav, url):
                    note: document.querySelector('.compteur-note').textContent,
                    tuiles: document.querySelectorAll(
                      '#compteurContenu .tuile-panneau .cd-t').length,
-                   etiquetteBarre: document.querySelector('.compteur-barre i').textContent,
+                   barres: document.querySelectorAll('#compteurContenu .compteur-barre').length,
                    // Dans une tuile, textContent colle le nombre à son
                    // unité : « 3jours », sans espace.
-                   jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1],
-                   plein: (document.querySelector('.compteur-barre > span') || {}).style.width};
+                   jours: (t.match(/(\d[\d\s ]*)jours/) || [])[1]};
         fermeCompteur();
         return r;
     }""")
@@ -5026,22 +5025,13 @@ def test_panneau_du_compteur(nav, url):
           "sortie » (« %s »)" % apres["titre"])
     check(int((apres["jours"] or "-1").strip()) == 3,
           "[compteur] et il compte à l'envers (%s jours)" % apres["jours"])
-    # Sur la VALEUR et non sur la chaîne : le navigateur normalise
-    # « 100.0% » en « 100% », et un contrôle qui compare le texte brut
-    # échoue sur une différence qui n'existe pas à l'écran.
-    plein = float((apres["plein"] or "0").rstrip("%"))
-    check(plein == 100.0,
-          "[compteur] la barre est pleine et ne déborde pas (%s)" % apres["plein"])
-    # LE VERBE SUIT LA DATE. Sous un titre « Depuis la sortie », la note
-    # annonçait encore « Sortie le jeudi 19 novembre » — au futur, une
-    # semaine après. Repéré à la répétition post-sortie du 20/10/2026.
-    check(apres["note"].strip() == "Barre remplie depuis l'annonce du jeu, le 4/02/22",
-          "[compteur] et la note ne change pas après la sortie (« %s »)" % apres["note"].strip())
-    # La barre ne mesure plus rien : annonce -> sortie est fini. Un
-    # « 100,0 % » figé sous un compteur qui bouge se lit comme une panne.
-    check(apres["etiquetteBarre"].strip() == "Sorti",
-          "[compteur] la barre pleine dit « Sorti », pas « 100,0 %% » "
-          "(« %s »)" % apres["etiquetteBarre"])
+    # PLUS DE BARRE après la sortie (Antoni, 07/11/2026) : elle allait de l'annonce à la sortie,
+    # donc elle restait pleine pour toujours.
+    check(apres["barres"] == 0,
+          "[compteur] après la sortie, la barre de progression a disparu (%s)" % apres["barres"])
+    # Et la note dit ce que compte le compteur, en une ligne.
+    check(apres["note"].strip() == "Temps écoulé depuis la sortie du jeu, le 19/11/26",
+          "[compteur] la note explique le compteur : « %s »" % apres["note"].strip())
     # Et le découpage garde ses QUATRE tuiles une semaine après, comme l'en-tête.
     check(apres["tuiles"] == 4,
           "[compteur] une semaine après, les quatre tuiles sont là (%s)" % apres["tuiles"])
