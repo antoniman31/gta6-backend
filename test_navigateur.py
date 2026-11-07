@@ -1518,6 +1518,117 @@ def test_vue_statistiques(nav, url):
     ctx.close()
 
 
+def test_barre_du_bas(nav, url):
+    """Barre flottante du bas et entête à tuile (choix d'Antoni, 07/11/2026).
+
+    Mesuré dans un vrai navigateur, à 320 et 390 px, en clair et en sombre :
+    aucune tuile ne déborde, la barre ne recouvre pas le dernier article, chaque
+    entrée fait au moins 44 px, « Fil » revient au dernier filtre, le Journal
+    s'ouvre depuis Statistiques › Robot, et le gros chiffre suit le calendrier
+    (J-n en jours civils à Paris, H-n le dernier jour, +n j après la sortie).
+    """
+    print("\n[barre] navigation du bas, tuile du compteur, Journal dans Statistiques")
+
+    def ouvre(largeur, schema, quand, jeton=False):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 740}, color_scheme=schema,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        page.clock.install(time=quand)
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector(".barre-bas")
+        page.clock.run_for(1500)
+        return ctx, page, erreurs
+
+    for largeur, schema in ((320, "dark"), (390, "light"), (320, "light"), (390, "dark")):
+        ctx, page, erreurs = ouvre(largeur, schema, "2026-11-07T10:00:00+01:00")
+        etiquette = "[%d px, %s]" % (largeur, schema)
+        mesures = page.evaluate("""() => {
+            const r = e => e.getBoundingClientRect();
+            const barre = r(document.querySelector('.barre-bas'));
+            const b = [...document.querySelectorAll('.barre-bas button')].map(x => r(x));
+            const tuile = r(document.querySelector('.tuile-compteur'));
+            const hors = [...document.querySelectorAll('.tuile-compteur > *, header.console > *')]
+              .filter(e => e.offsetParent !== null && (r(e).right > innerWidth + 0.5 || r(e).left < -0.5)).length;
+            return {bas: barre.bottom, haut: barre.top, larg: barre.width, vh: innerHeight, vw: innerWidth,
+                    hauteurs: b.map(x => x.height), largeurs: b.map(x => x.width),
+                    hors, debordement: document.documentElement.scrollWidth > innerWidth,
+                    tuileDroite: tuile.right};
+        }""")
+        check(not mesures["debordement"] and mesures["hors"] == 0,
+              "%s aucune tuile ni page qui déborde sur le côté" % etiquette)
+        check(all(h >= 44 for h in mesures["hauteurs"]) and all(w >= 44 for w in mesures["largeurs"]),
+              "%s chaque entrée de la barre fait au moins 44 px (%s × %s)"
+              % (etiquette, [round(w) for w in mesures["largeurs"]], [round(h) for h in mesures["hauteurs"]]))
+        check(mesures["bas"] <= mesures["vh"] and mesures["haut"] > 0,
+              "%s la barre est entière dans l'écran" % etiquette)
+        # Le dernier article ne doit pas finir sous la barre : on défile tout en bas.
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        bas_contenu = page.evaluate("""() => {
+            const f = document.querySelector('#feed') || document.body;
+            const dernier = [...document.querySelectorAll('#feed > *, .info-btn')].filter(e => e.offsetParent !== null).pop();
+            return dernier ? dernier.getBoundingClientRect().bottom : 0;
+        }""")
+        check(bas_contenu <= mesures["haut"] + 1,
+              "%s le bas du contenu (%.0f) reste au-dessus de la barre (%.0f)" % (etiquette, bas_contenu, mesures["haut"]))
+        check(not erreurs, "%s aucune erreur JavaScript" % etiquette)
+        ctx.close()
+
+    # Les gestes, à 390 px.
+    ctx, page, erreurs = ouvre(390, "light", "2026-11-07T10:00:00+01:00")
+    page.click("#tabRockstar")
+    page.click("#statsBtn")
+    check(page.get_attribute("#navFil", "aria-pressed") == "false"
+          and page.get_attribute("#statsBtn", "aria-pressed") == "true",
+          "Stats s'allume et Fil s'éteint")
+    page.click("#navFil")
+    check(page.evaluate("() => currentTab") == "rockstar"
+          and page.get_attribute("#navFil", "aria-pressed") == "true",
+          "« Fil » revient au dernier filtre choisi (Rockstar), pas à « Tous »")
+    page.click("#statsBtn")
+    page.evaluate("() => ongletStatsChoisi('robot')")
+    page.click("#ouvreJournal")
+    check(page.is_visible("#logsPanel") and not page.is_visible("#statsPanel"),
+          "Statistiques › Robot ouvre le Journal des passages")
+    page.click("#navFil")
+    check(page.is_visible("#feed") and not page.is_visible("#logsPanel"),
+          "« Fil » referme le Journal")
+    page.click("#navCompteur")
+    check(page.evaluate("() => document.getElementById('compteurOverlay').classList.contains('open')"),
+          "« Compteur » ouvre la fenêtre du détail")
+    page.keyboard.press("Escape")
+    page.click("#navReglages")
+    check(page.evaluate("() => document.getElementById('settingsOverlay').classList.contains('open')"),
+          "« Réglages » ouvre les réglages")
+    ctx.close()
+
+    # Le gros chiffre suit le calendrier.
+    for quand, attendu, nom in (("2026-11-07T10:00:00+01:00", "J-11", "11 jours entiers restants (11j 14h), comme le texte"),
+                                ("2026-11-18T23:30:00+01:00", "H-1", "dernière heure : en heures"),
+                                ("2026-11-19T10:00:00+01:00", "SORTI !", "le jour de la sortie"),
+                                ("2026-11-22T10:00:00+01:00", "+3 j", "trois jours après")):
+        ctx, page, erreurs = ouvre(390, "light", quand)
+        page.evaluate("updateCountdown()")
+        gros = page.evaluate("() => document.getElementById('compteurGros').textContent")
+        check(gros == attendu, "%s : « %s » (obtenu « %s »)" % (nom, attendu, gros))
+        ctx.close()
+
+    # L'icône ▶ n'apparaît qu'avec un jeton, et fait au moins 44 px une fois visible.
+    ctx, page, erreurs = ouvre(390, "light", "2026-11-07T10:00:00+01:00")
+    check(not page.is_visible("#triggerRunBtn"), "sans jeton, « Relancer le robot » est caché")
+    page.evaluate("() => { storageSet(TOKEN_STORAGE_KEY, 'x'); refreshTokenUI(); }")
+    page.wait_for_selector("#triggerRunBtn", state="visible")
+    boite = page.evaluate("""() => { const r = document.getElementById('triggerRunBtn').getBoundingClientRect();
+        const apres = getComputedStyle(document.getElementById('triggerRunBtn'), '::after');
+        return {w: r.width, h: r.height, ext: parseFloat(apres.top) }; }""")
+    check(boite["w"] + 2 * abs(boite["ext"]) >= 44 and boite["h"] + 2 * abs(boite["ext"]) >= 44,
+          "avec un jeton, l'icône ▶ a au moins 44 px de zone de clic (%.0f × %.0f + %.0f)"
+          % (boite["w"], boite["h"], abs(boite["ext"])))
+    ctx.close()
+
+
 def test_entete_sans_vide(nav, url):
     """L'entête tient sur une ligne, et ce qui en est sorti reste accessible.
 
@@ -1544,9 +1655,13 @@ def test_entete_sans_vide(nav, url):
                                  m.innerHTML = '● Backend GitHub'; }""")
         une_ligne = page.evaluate("""() => {
           const t = document.querySelector('.brand').getBoundingClientRect();
-          const d = document.querySelector('.header-right').getBoundingClientRect();
+          const d = document.getElementById('refreshBtn').getBoundingClientRect();
           return d.top < t.bottom; }""")
-        check(une_ligne, "[%d px] l'entête tient sur une ligne, sans le vide signalé" % largeur)
+        check(une_ligne, "[%d px] le titre et le bouton ↻ tiennent sur une ligne, sans le vide signalé" % largeur)
+        deborde = page.evaluate("""() => { const c = document.querySelector('header.console').getBoundingClientRect();
+          return [...document.querySelectorAll('header.console *')].filter(e => e.offsetParent !== null
+            && e.getBoundingClientRect().right > c.right + 0.5).length; }""")
+        check(deborde == 0, "[%d px] rien ne sort de la carte de l'entête, mode « Backend GitHub » affiché" % largeur)
         check(not erreurs, "[%d px] aucune erreur au démarrage — applyTheme() n'écrit plus "
               "dans un bouton disparu%s" % (largeur, "" if not erreurs else " : " + erreurs[0][:100]))
         ctx.close()
@@ -1554,10 +1669,13 @@ def test_entete_sans_vide(nav, url):
     ctx = nav.new_context(viewport={"width": 368, "height": 800})
     page = ctx.new_page()
     page.goto(url, wait_until="load")
-    page.wait_for_selector(".header-actions")
-    boutons = page.evaluate("""() => [...document.querySelectorAll('.header-actions .icon-btn')]
-                                       .map(b => b.getAttribute('aria-label'))""")
-    check(len(boutons) == 3, "trois boutons dans l'entête : %s" % boutons)
+    page.wait_for_selector(".barre-bas")
+    boutons = page.evaluate("""() => [...document.querySelectorAll('.barre-bas button')]
+                                       .map(b => b.textContent.trim())""")
+    check(boutons == ["Fil", "Compteur", "Stats", "Réglages"],
+          "quatre entrées dans la barre du bas : %s" % boutons)
+    check(page.locator("header .icon-btn").count() == 1,
+          "l'entête ne garde qu'un bouton, l'actualisation")
     check(page.locator("#themeBtn").count() == 0, "plus de bouton de thème dans l'entête")
 
     # Le thème reste réglable, depuis ⚙️.
@@ -4176,10 +4294,13 @@ def test_panneau_du_compteur(nav, url):
         page.wait_for_selector("#feed", state="attached")
         g = page.evaluate("""() => {
             const b = document.getElementById('countdown');
-            const r = b.getBoundingClientRect();
+            // Depuis la tuile du 07/11/2026, le bouton est positionné « static » : son
+            // ::after épouse la TUILE (inset:0), donc la zone de clic est la tuile entière.
+            const tuile = getComputedStyle(b).position === 'static' ? b.closest('.tuile-compteur') : null;
+            const r = (tuile || b).getBoundingClientRect();
             const a = getComputedStyle(b, '::after');
-            const haut = Math.abs(parseFloat(a.top) || 0);
-            const bas = Math.abs(parseFloat(a.bottom) || 0);
+            const haut = tuile ? 0 : Math.abs(parseFloat(a.top) || 0);
+            const bas = tuile ? 0 : Math.abs(parseFloat(a.bottom) || 0);
             let plusProche = 9999;
             for(const e of document.querySelectorAll('button,a,input')){
               if(e === b) continue;
@@ -6334,6 +6455,7 @@ def main():
             test_recherche_sans_accents(nav, url)
             test_barre_detat_suit_le_theme(nav, url)
             test_ecran_de_chargement(nav, url)
+            test_barre_du_bas(nav, url)
             test_toast_annuler(nav, url)
             test_poids_de_tout_charger(nav, url)
             test_plafond_des_lus(nav, url)

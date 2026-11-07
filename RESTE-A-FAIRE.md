@@ -1,6 +1,6 @@
 # Ce qu'il reste à faire
 
-Mis à jour le 04/11/2026. **Rien n'est cassé.** Ce fichier ne garde que ce qui reste ; l'historique (audits, lots faits, anciennes notes) est dans `JOURNAL.md`,
+Mis à jour le 07/11/2026. **Rien n'est cassé.** Ce fichier ne garde que ce qui reste ; l'historique (audits, lots faits, anciennes notes) est dans `JOURNAL.md`,
 sous « Ancien RESTE-A-FAIRE.md ». GTA VI sort le **19/11/2026 à 00:00, heure de Paris**. Tous les chiffres ci-dessous ont été mesurés le 04/11/2026.
 
 ## 1. Le calendrier jusqu'au 24/11
@@ -22,9 +22,6 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 
 ## 2. À trancher
 
-- **L'en-tête du compteur sur deux lignes.** Mesuré avec une horloge simulée : à 320 px il est déjà sur deux lignes (182 px contre 130 px) ; à 340 px dès le 12/11 ;
-  à 390 px il passe de 130 à 185 px le 18/11 (« C'EST BIENTÔT — 11H 59M 58S ») puis revient à 130 px le 19/11 (« GTA 6 EST SORTI ! »). Pistes : raccourcir le texte du dernier palier,
-  ou laisser deux lignes. À trancher avant le 18/11.
 - **Retirer `source_link`.** Antoni l'a choisi le 27/10 ; ce n'est pas fait : 1 205 articles sur 4 389 portent encore le champ, que le cache de décodage rend inutile.
 - **Le mode sans spoiler** après la sortie : lui demander s'il veut l'éteindre.
 
