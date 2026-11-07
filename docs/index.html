@@ -31,6 +31,15 @@
     }
     if(theme === "system") theme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", theme);
+    // « Écran de chargement » coupé dans les Réglages : il ne doit pas même être
+    // peint. Piloté par un test (navigator.webdriver), il est coupé AUSSI tant que
+    // le réglage n'est pas explicitement allumé : sans cela chaque clic de la suite
+    // navigateur attendrait 1,5 s qu'il s'efface. Un vrai téléphone n'a pas
+    // webdriver : pour lui, pas de réglage enregistré veut dire « allumé ».
+    var lu2 = brut ? JSON.parse(brut) : null;
+    var coupe = !!(lu2 && lu2.splashActif === false);
+    if(!coupe && navigator.webdriver && !(lu2 && lu2.splashActif === true)) coupe = true;
+    if(coupe) document.documentElement.setAttribute("data-splash", "off");
   }catch(e){ /* le défaut sombre de la feuille de style vaut */ }
 })();
 </script>
@@ -1960,15 +1969,17 @@
   /* L'ÉCRAN DE CHARGEMENT, demandé par Antoni le 07/11/2026 : blanc en thème
      clair, noir en thème sombre, avec le logo et le décompte du jour. Il prend
      les couleurs du thème (--bg, --text, --text-dim), donc il suit « système »
-     comme tout le reste. pointer-events:none : un doigt qui touche l'écran
-     pendant qu'il s'efface atteint l'app dessous, jamais un mur. */
+     comme tout le reste. Il BLOQUE les touches pendant qu'il reste (1,5 s : un
+     appui involontaire atteindrait un bouton qu'on ne voit pas) et un appui le
+     ferme ; pendant son fondu seulement, les doigts passent à l'app dessous. */
   .splash{
     position:fixed; inset:0; z-index:100000;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
     background:var(--bg); color:var(--text);
-    opacity:1; transition:opacity var(--t-moyen) var(--courbe); pointer-events:none;
+    opacity:1; transition:opacity var(--t-moyen) var(--courbe); touch-action:none;
   }
-  .splash.fini{opacity:0;}
+  .splash.fini{opacity:0; pointer-events:none;}
+  html[data-splash="off"] .splash{display:none;}
   .splash-logo{width:112px; height:112px; border-radius:var(--r-md);}
   .splash-j{
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:44px;
@@ -2316,6 +2327,19 @@
       <div class="setting-desc" hidden>
         « Système » suit le réglage clair/sombre du téléphone. Les deux autres
         forcent un thème.
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Au lancement</span>
+      <div class="setting-row">
+        <label for="splashActif">Écran de chargement</label>
+        <input type="checkbox" id="splashActif" onchange="appliqueReglages()">
+      </div>
+      <div class="setting-desc" hidden>
+        Un écran blanc ou noir selon le thème, avec le décompte du jour, pendant
+        une seconde et demie. Un appui le ferme. Coupé, l'app s'ouvre sans
+        attendre, dès le prochain lancement.
       </div>
     </div>
 
@@ -2695,6 +2719,7 @@ const DEFAULT_SETTINGS = {
   // À 0,9 %, le coût est nul pour qui s'en moque : un article voilé par
   // mois, qu'un appui révèle.
   spoilerMode: true,
+  splashActif: true,
   spoilerKeywords: MOTS_SPOILER.slice(),
   maxDisplay: 500,
   similarityThreshold: 72,
@@ -2996,6 +3021,7 @@ async function saveSettings(){
   settings.keywords = document.getElementById("keywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
   settings.excludeKeywords = document.getElementById("excludeKeywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
   settings.spoilerMode = document.getElementById("spoilerMode").checked;
+  settings.splashActif = document.getElementById("splashActif").checked;
   settings.spoilerKeywords = document.getElementById("spoilerKeywordsInput").value.split("\n").map(k => k.trim().toLowerCase()).filter(Boolean);
   // Changer la liste REMET LES RÉVÉLATIONS À ZÉRO. Sans ça, un article
   // révélé avant d'ajouter le mot qui le concerne resterait visible : le
@@ -3294,6 +3320,7 @@ function populateSettingsUI(){
   document.getElementById("keywordsInput").value = settings.keywords.join("\n");
   document.getElementById("excludeKeywordsInput").value = (settings.excludeKeywords || []).join("\n");
   document.getElementById("spoilerMode").checked = !!settings.spoilerMode;
+  document.getElementById("splashActif").checked = settings.splashActif !== false;
   document.getElementById("spoilerKeywordsInput").value = (settings.spoilerKeywords || []).join("\n");
   document.getElementById("maxDisplay").value = settings.maxDisplay;
   document.getElementById("simRange").value = settings.similarityThreshold;
@@ -9155,9 +9182,10 @@ function greffeAides(){
 // Durée pendant laquelle il reste affiché APRÈS le premier affichage. L'app ne
 // charge rien au démarrage (le fil vient de la copie locale, lue tout de suite),
 // donc sans durée minimale l'écran serait retiré avant d'avoir été peint : mesuré
-// le 07/11/2026, le premier affichage a déjà le bon thème. 450 ms, c'est ce que
-// coûte chaque ouverture de l'app ; mettre 0 le supprime.
-const SPLASH_DUREE_MIN_MS = 450;
+// le 07/11/2026, le premier affichage a déjà le bon thème. 450 ms d'abord, puis
+// 1,5 s sur demande d'Antoni (« il disparaît trop vite »). C'est ce que coûte
+// chaque ouverture de l'app, et le réglage « Écran de chargement » le coupe.
+const SPLASH_DUREE_MIN_MS = 1500;
 const SPLASH_FONDU_MS = 250; // = --t-moyen de la feuille de style
 
 // Le décompte du jour, en jours civils à Paris comme l'agenda (jourParis et
@@ -9185,12 +9213,24 @@ function masqueSplash(){
   setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, SPLASH_FONDU_MS + 50);
 }
 function programmeSplash(){
+  const el = document.getElementById("splash");
+  if(document.documentElement.getAttribute("data-splash") === "off"){
+    // Coupé par le réglage (ou par un test) : le petit script d'en-tête l'a déjà
+    // masqué avant le premier affichage ; on retire l'élément pour de bon.
+    if(el && el.parentNode) el.parentNode.removeChild(el);
+    return;
+  }
+  // Un appui ou une touche le ferme tout de suite : il bloque les touches
+  // pendant qu'il reste, il faut donc un moyen d'en sortir.
+  if(el) el.addEventListener("pointerdown", masqueSplash);
+  document.addEventListener("keydown", masqueSplash, { once: true });
   // Deux images d'abord : la première avant le premier affichage, la seconde
   // juste après — la durée minimale ne commence qu'une fois l'écran peint, et
   // jamais dans un onglet masqué (requestAnimationFrame n'y tourne pas).
   requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(masqueSplash, SPLASH_DUREE_MIN_MS)));
-  // Filet : l'écran ne doit jamais coiffer l'app plus de trois secondes.
-  setTimeout(masqueSplash, 3000);
+  // Filet : l'écran ne doit jamais coiffer l'app plus longtemps que prévu, quoi
+  // qu'il arrive à requestAnimationFrame. Calculé sur la durée, pas écrit à part.
+  setTimeout(masqueSplash, SPLASH_DUREE_MIN_MS + 2500);
 }
 
 // ---------- Init ----------

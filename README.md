@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2187 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2188 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -127,7 +127,7 @@ Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 
 - **Réglages** : thème, mots-clés, seuil de doublon, nombre d'articles, sources (les interrupteurs n'agissent qu'en mode de secours), adresse du backend, déclenchement du robot depuis le téléphone
   (jeton GitHub à portée minimale, gardé dans ce navigateur seulement).
 - **Écran de chargement** : blanc en thème clair, noir en thème sombre (« système » suit le téléphone), avec le logo et le décompte du jour (« J-12 »). Il reste `SPLASH_DUREE_MIN_MS` après le premier
-  affichage puis s'efface. Le petit script d'avant l'affichage, dans l'en-tête de la page, pose le thème pour que cet écran ne passe jamais par le sombre en thème clair.
+  affichage (1,5 s), bloque les touches, et un appui ou une touche le ferme. Le réglage « Écran de chargement » (Réglages › Affichage) le coupe ; piloté par un test, il est coupé tant que le réglage n'est pas allumé. Le petit script d'avant l'affichage, dans l'en-tête de la page, pose le thème pour que cet écran ne passe jamais par le sombre en thème clair.
 - **PWA** : installable, utilisable hors ligne pour la coque ; `docs/sw.js` ne gère que l'installation, l'activation et le cache. **Le nom du cache de `docs/sw.js` se bumpe à chaque changement de `docs/index.html`.**
 
 L'heure de sortie est la constante `GTA6_RELEASE` de l'app ; un test vérifie qu'elle ne diverge pas du workflow.
