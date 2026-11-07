@@ -12360,3 +12360,23 @@ périmé (« base : main après la PR #142 », « GTA 6 sort dans 42 jours »). 
 - **Décision d'Antoni du 04/11/2026** sur le seuil de l'actu majeure : garder « trois flux ». Mesure du jour (`mesure_actu_majeure.py`) : 109 articles à trois flux ou plus sur 4 389, dont 44 à 54 avec au moins
   trois sites distincts. À reprendre après la remesure du 22/11.
 
+### Un écran de chargement blanc ou noir selon le thème — 07/11/2026
+
+Demandé par Antoni (« un splash screen blanc/noir en fonction du thème »), avec la maquette validée (logo + décompte) et le lot « A + B » : un écran dans l'app, plus le manifeste aligné.
+
+- **Mesuré avant** : le premier affichage de l'app a déjà le bon thème dans les quatre cas (clair, sombre, système clair, système sombre), même avec les polices ralenties de 1,2 s. Ce qui ne suit pas le thème,
+  c'est l'**écran de lancement d'Android**, généré à l'installation d'après le manifeste (`background_color` valait #0a0e14, `theme_color` le bleu d'accent #5493ff, alors que le fond sombre de l'app est #0a0d0f).
+  Une variante par thème dans le manifeste n'est pas confirmée par la documentation : non retenue.
+- **Constat qui change la promesse** : j'avais dit que l'écran disparaîtrait « quand les articles sont prêts ». Or l'app ne charge rien au démarrage (« vérification manuelle uniquement ») : le fil vient de la
+  copie locale, lue avant le premier affichage. Sans durée minimale l'écran serait retiré avant d'avoir été peint. Il reste donc **450 ms après le premier affichage**, puis s'efface en 250 ms
+  (`SPLASH_DUREE_MIN_MS`, mettre 0 le supprime). C'est le coût de chaque ouverture ; il se règle ou se retire en une ligne.
+- **Fait** : l'écran (fond, texte et logo de la feuille de style, logo embarqué en base64 de `icon-192.png`), le décompte en jours civils à Paris (« J-12 », puis « SORTI ! » le 19/11, puis
+  « SORTI / DEPUIS N JOURS »), un petit script dans l'en-tête qui pose le thème avant l'écran, le manifeste aligné sur le fond sombre exact. `sw.js` passe à v71.
+- **Deux contrôles ajoutés**. `test_ecran_de_chargement` (navigateur) : fond clair ou sombre selon le thème dans les quatre cas, texte lisible, décompte à quatre dates, écran effacé, thème identique à `applyTheme()`.
+  `test_ecran_de_chargement_et_manifeste` (pipeline) : manifeste égal au fond sombre, octets du logo égaux au fichier.
+  **Rejoués contre l'ancien code** (`git archive HEAD` plus les nouveaux tests) : le contrôle du pipeline échoue sur quatre points (manifeste #0a0e14 et #5493ff, pas de logo embarqué, pas d'écran), celui du navigateur sur huit.
+- **Erreur de test trouvée en route, pas de moi** : `test_les_incidents_passes_sont_dans_le_fil` exigeait que l'incident du décodeur (clos le 06/10) soit encore au journal des incidents. Ce journal ne garde que 30 jours : il en
+  sort par construction depuis le 05/11, et le test est tombé en échec le 06/11 sans que rien ne soit cassé (mesuré le 07/11 : les 55 incidents du fil commencent au 10/10). Il exige maintenant sa présence tant qu'il doit y être,
+  puis plus rien ; le seuil de 48 heures n'a pas bougé, et le nombre de vérifications ne dépend plus de l'horloge.
+- **Environnement** : Playwright et les dépendances du robot n'étaient plus installés dans ce conteneur ; réinstallés (`requirements-dev.txt`, `requirements.txt`).
+

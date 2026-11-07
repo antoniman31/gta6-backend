@@ -14,6 +14,26 @@
      n'était le fond d'aucun des deux thèmes — il coiffait l'application d'une
      bande qui n'appartenait à rien. -->
 <meta name="theme-color" content="#0a0d0f">
+<script>
+// LE THÈME AVANT LE PREMIER AFFICHAGE (03/11/2026, écran de chargement). Sans
+// cela l'écran de chargement, dessiné avant le gros script de la page, aurait
+// pris le thème sombre par défaut : un éclair noir pour qui est en thème clair.
+// Même règle que applyTheme() — le réglage enregistré, et « système » suit le
+// téléphone — mais lue ici sans rien d'autre de l'app ; un test compare les
+// deux sur les quatre cas. La clé et le préfixe sont ceux de storageGet().
+(function(){
+  try{
+    var brut = localStorage.getItem("gta6watch:settings-v1");
+    var theme = "system";
+    if(brut){
+      var lu = JSON.parse(brut);
+      if(lu && (lu.theme === "light" || lu.theme === "dark" || lu.theme === "system")) theme = lu.theme;
+    }
+    if(theme === "system") theme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+  }catch(e){ /* le défaut sombre de la feuille de style vaut */ }
+})();
+</script>
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
@@ -1937,9 +1957,38 @@
     .run-dot.running{animation:none;}
     .countdown.final{box-shadow:0 0 0 2px color-mix(in srgb, var(--compte-final) 50%, transparent);}
   }
+  /* L'ÉCRAN DE CHARGEMENT, demandé par Antoni le 07/11/2026 : blanc en thème
+     clair, noir en thème sombre, avec le logo et le décompte du jour. Il prend
+     les couleurs du thème (--bg, --text, --text-dim), donc il suit « système »
+     comme tout le reste. pointer-events:none : un doigt qui touche l'écran
+     pendant qu'il s'efface atteint l'app dessous, jamais un mur. */
+  .splash{
+    position:fixed; inset:0; z-index:100000;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+    background:var(--bg); color:var(--text);
+    opacity:1; transition:opacity var(--t-moyen) var(--courbe); pointer-events:none;
+  }
+  .splash.fini{opacity:0;}
+  .splash-logo{width:112px; height:112px; border-radius:var(--r-md);}
+  .splash-j{
+    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:44px;
+    letter-spacing:.02em; min-height:1.2em;
+  }
+  .splash-l{
+    font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px;
+    letter-spacing:.08em; color:var(--text-dim); min-height:1.2em;
+  }
+  @media (prefers-reduced-motion: reduce){ .splash{transition:none;} }
 </style>
 </head>
 <body>
+<div id="splash" class="splash" aria-hidden="true">
+  <!-- Logo embarqué (icon-192.png, 4,2 Ko) : il s'affiche au premier affichage, même hors ligne, sans
+       attendre une requête. Un test compare ces octets à ceux du fichier. -->
+  <img class="splash-logo" src="data:image/png;base64,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" alt="" width="112" height="112">
+  <div class="splash-j" id="splashJ"></div>
+  <div class="splash-l" id="splashL"></div>
+</div>
 <div class="wrap">
 
   <!-- Ce que l'actualisation a donné, dit au lecteur d'écran. Visuellement
@@ -9102,7 +9151,51 @@ function greffeAides(){
   });
 }
 
+// ---------- Écran de chargement ----------
+// Durée pendant laquelle il reste affiché APRÈS le premier affichage. L'app ne
+// charge rien au démarrage (le fil vient de la copie locale, lue tout de suite),
+// donc sans durée minimale l'écran serait retiré avant d'avoir été peint : mesuré
+// le 07/11/2026, le premier affichage a déjà le bon thème. 450 ms, c'est ce que
+// coûte chaque ouverture de l'app ; mettre 0 le supprime.
+const SPLASH_DUREE_MIN_MS = 450;
+const SPLASH_FONDU_MS = 250; // = --t-moyen de la feuille de style
+
+// Le décompte du jour, en jours civils à Paris comme l'agenda (jourParis et
+// ecartJoursCivils), jamais une division de millisecondes.
+function textesSplash(maintenant){
+  const jourSortie = jourParis(GTA6_RELEASE);
+  const n = ecartJoursCivils(jourParis(maintenant), jourSortie);
+  if(GTA6_RELEASE > maintenant) return { grand: "J-" + n, petit: "AVANT LA SORTIE" };
+  const depuis = -n;
+  if(depuis < 1) return { grand: "SORTI !", petit: "GTA VI" };
+  return { grand: "SORTI", petit: "DEPUIS " + depuis + " JOUR" + (depuis > 1 ? "S" : "") };
+}
+function majSplash(){
+  const j = document.getElementById("splashJ");
+  const l = document.getElementById("splashL");
+  if(!j || !l) return;
+  const t = textesSplash(new Date());
+  j.textContent = t.grand;
+  l.textContent = t.petit;
+}
+function masqueSplash(){
+  const el = document.getElementById("splash");
+  if(!el || el.classList.contains("fini")) return;
+  el.classList.add("fini");
+  setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, SPLASH_FONDU_MS + 50);
+}
+function programmeSplash(){
+  // Deux images d'abord : la première avant le premier affichage, la seconde
+  // juste après — la durée minimale ne commence qu'une fois l'écran peint, et
+  // jamais dans un onglet masqué (requestAnimationFrame n'y tourne pas).
+  requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(masqueSplash, SPLASH_DUREE_MIN_MS)));
+  // Filet : l'écran ne doit jamais coiffer l'app plus de trois secondes.
+  setTimeout(masqueSplash, 3000);
+}
+
 // ---------- Init ----------
+majSplash();
+programmeSplash();
 // Avant loadState : le premier rendu du fil doit déjà connaître le repère,
 // sinon le trait « lu jusqu'ici » n'apparaîtrait qu'au rendu suivant.
 chargerReprise();
