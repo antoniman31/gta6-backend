@@ -2984,6 +2984,15 @@ def test_graphiques_detailles(nav, url):
     # Ma lecture : la jauge.
     page.evaluate("() => { readSet = new Set(lastItems.slice(0, 20).map(i => i.link)); ongletStatsChoisi('moi'); }")
     page.wait_for_selector(".stats-jauge")
+    # La jauge peut être redessinée par le chargement d'arrière-plan de l'historique et de l'archive (la CI,
+    # elle, a le réseau : l'app y va chercher le vrai fil, pas sur un poste hors ligne). On attend qu'une
+    # part lue soit VISIBLE, plutôt que de lire la première image : si elle ne l'est jamais, le contrôle
+    # échoue quand même, au bout de cinq secondes.
+    try:
+        page.wait_for_function("parseFloat((document.querySelector('.stats-jauge i') || {style: {}}).style.width) > 0",
+                               timeout=5000)
+    except Exception:
+        pass
     largeur = page.evaluate("document.querySelector('.stats-jauge i').style.width")
     check(largeur.endswith("%") and float(largeur[:-1]) > 0, "la part lue se voit en jauge (%s)" % largeur)
 
@@ -7209,34 +7218,6 @@ def test_cycle_de_couleurs(nav, url):
     page.evaluate("() => openSettings()")
     check(page.evaluate("() => document.getElementById('cycleCouleurs').checked"),
           "[cycle] le jour J la case est cochée d'office")
-    # TOUTES LES HORLOGES SONT RECALÉES : la page des Réglages vient d'apparaître, ses animations ont
-    # démarré à leur propre instant ; le battement du compteur les ramène sur celle du document, sinon
-    # un bloc passerait au rose pendant que le reste est cyan.
-    page.clock.run_for(1200)
-    page.wait_for_timeout(150)
-    desynchro = page.evaluate("""() => document.getAnimations().filter(a => (a.animationName === 'cycle-accent'
-        || (a.animationName || '').startsWith('cycle-chiffre')) && a.playState === 'running' && a.startTime !== 0).length""")
-    total_cycle = page.evaluate("""() => document.getAnimations().filter(a => a.animationName === 'cycle-accent').length""")
-    sur_reglages = page.evaluate("""() => document.getAnimations().some(a => a.animationName === 'cycle-accent'
-        && a.effect.target && a.effect.target.classList.contains('page-reglages'))""")
-    # LE PANNEAU DU COMPTEUR, jumeau de l'en-tête dès l'ouverture : ses tuiles démarrent leur cycle au
-    # moment où on l'ouvre, et ne doivent pas attendre la seconde suivante pour retrouver la phase.
-    page.evaluate("() => { closeSettings(); ouvreCompteur(); }")
-    page.wait_for_timeout(100)
-    page.clock.run_for(100)
-    page.wait_for_timeout(100)
-    jumeaux = page.evaluate("""() => { const h = [...document.querySelectorAll('#countdown .cd-t:not(.zero) b')]
-          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
-        const p = [...document.querySelectorAll('#compteurContenu .tuile-panneau .cd-t:not(.zero) b')]
-          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
-        return {n: p.length, ecarts: p.map((a, i) => a && h[i] ? Math.abs(a.currentTime - a.effect.getTiming().delay * -1
-          - (h[i].currentTime - h[i].effect.getTiming().delay * -1)) : null)}; }""")
-    check(jumeaux["n"] >= 3 and all(e is not None and e < 120 for e in jumeaux["ecarts"]),
-          "[cycle] le panneau du compteur est en phase avec l'en-tête dès l'ouverture (écarts en ms : %s)"
-          % jumeaux["ecarts"])
-    check(sur_reglages and desynchro == 0,
-          "[cycle] les %d animations d'accent partagent l'horloge du document, la page des Réglages comprise (%d à contretemps)"
-          % (total_cycle, desynchro))
     page.evaluate("() => { const c = document.getElementById('splashActif'); c.checked = !c.checked; c.onchange(); }")
     check(stocke(page) in ("absent", None) and page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
           "[cycle] le jour J, enregistrer un autre champ laisse le cycle automatique (%s)" % stocke(page))
@@ -7248,6 +7229,57 @@ def test_cycle_de_couleurs(nav, url):
     page.evaluate("() => updateCountdown()")
     check(not page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
           "[cycle] et le battement du compteur ne le rallume pas")
+    ctx.close()
+
+
+def test_cycle_synchronise(nav, url):
+    """Toutes les animations du cycle partagent l'horloge du document, y compris celles d'un bloc apparu plus tard.
+
+    SUR L'HORLOGE RÉELLE, et c'est l'enseignement du 10/11/2026. Ce contrôle était d'abord posé dans
+    test_cycle_de_couleurs, qui installe l'horloge simulée de Playwright : sous elle, toutes les animations
+    démarrent à la même date (0) sans qu'AUCUN recalage n'ait lieu, et le contrôle restait vert avec le
+    recalage supprimé. Prouvé : les deux affectations neutralisées, 53 sur 53. Ici, pas d'horloge simulée :
+    la page des Réglages, puis le panneau du compteur (processeur ralenti ×6, comme une CI lente) démarrent
+    leurs animations bien APRÈS l'en-tête, et doivent se retrouver sur la même phase.
+    """
+    print("\n[cycle] toutes les animations partagent l'horloge du document (horloge réelle)")
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}, timezone_id="Europe/Paris",
+                          reduced_motion="no-preference")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                        "JSON.stringify({splashActif:false, cycleCouleurs:true}));}catch(e){}")
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector(".header-haut")
+    page.wait_for_timeout(1500)
+    HORS_PHASE = """() => document.getAnimations().filter(a => (a.animationName === 'cycle-accent'
+        || (a.animationName || '').startsWith('cycle-chiffre')) && a.playState === 'running' && a.startTime !== 0).length"""
+    check(page.evaluate(HORS_PHASE) == 0 and page.evaluate("() => document.getAnimations().some(a => a.animationName === 'cycle-accent')"),
+          "[cycle synchro] l'en-tête et les barres tournent, tous sur l'horloge du document")
+    page.evaluate("() => openSettings()")
+    page.wait_for_timeout(1800)
+    sur_reglages = page.evaluate("""() => document.getAnimations().some(a => a.animationName === 'cycle-accent'
+        && a.effect.target && a.effect.target.classList.contains('page-reglages'))""")
+    hors = page.evaluate(HORS_PHASE)
+    check(sur_reglages and hors == 0,
+          "[cycle synchro] la page des Réglages, apparue après l'en-tête, est sur la même horloge (%d hors phase)" % hors)
+    cdp = ctx.new_cdp_session(page)
+    cdp.send("Emulation.setCPUThrottlingRate", {"rate": 6})
+    page.evaluate("() => { closeSettings(); ouvreCompteur(); }")
+    page.wait_for_timeout(1800)
+    page.screenshot(clip={"x": 0, "y": 0, "width": 1, "height": 1})
+    page.wait_for_timeout(600)
+    cdp.send("Emulation.setCPUThrottlingRate", {"rate": 1})
+    j = page.evaluate("""() => { const f = sel => [...document.querySelectorAll(sel)]
+          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
+        const h = f('#countdown .cd-t:not(.zero) b'), p = f('#compteurContenu .tuile-panneau .cd-t:not(.zero) b');
+        const t = a => a.currentTime - a.effect.getTiming().delay * -1;
+        return {n: p.length, ecarts: p.map((a, i) => a && h[i] ? Math.abs(t(a) - t(h[i])) : null)}; }""")
+    check(j["n"] >= 3 and all(e is not None and e < 120 for e in j["ecarts"]),
+          "[cycle synchro] le panneau du compteur, ouvert longtemps après l'en-tête, est en phase avec lui (écarts en ms : %s)"
+          % j["ecarts"])
+    check(not erreurs, "[cycle synchro] aucune erreur JavaScript")
     ctx.close()
 
 
@@ -7488,6 +7520,7 @@ def main():
             test_texte_douze_px_et_coins(nav, url)
             test_balayage_des_cartes(nav, url)
             test_cycle_de_couleurs(nav, url)
+            test_cycle_synchronise(nav, url)
             test_contraste_du_cycle(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()

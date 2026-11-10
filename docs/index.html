@@ -3339,6 +3339,17 @@ function syncCycle(){
   }
 }
 
+// ET À CHAQUE DÉMARRAGE : l'événement « animationstart » part exactement quand une animation du cycle
+// commence (page des Réglages ouverte, panneau du compteur, rubrique des statistiques), sur n'importe
+// quelle machine. Le recalage par battement de seconde ne suffisait pas : la CI a vu le panneau du
+// compteur à 623 ms de l'en-tête, alors que mon poste, plus rapide, le voyait à 0 (10/11/2026).
+document.addEventListener("animationstart", e => {
+  const n = e.animationName;
+  if(!n || !(n === "cycle-accent" || n.startsWith("cycle-chiffre")) || e.pseudoElement) return;
+  for(const a of e.target.getAnimations())
+    if(a.animationName === n && a.playState === "running" && a.startTime !== 0) a.startTime = 0;
+}, true);
+
 // Le réglage est écrit ICI et nulle part ailleurs : une case cochée par défaut le jour J ne doit pas
 // devenir un « true » explicite parce qu'un autre champ a été enregistré.
 function basculeCycleCouleurs(actif){
@@ -8943,8 +8954,8 @@ function majPanneauCompteur(){
         : `<p class="compteur-note">Temps écoulé depuis la sortie du jeu, le 19/11/26</p>`);
   // Les tuiles du panneau viennent d'être posées vides : les remplir par le MÊME appel que
   // l'en-tête, au même instant.
-  // (updateCountdown recale aussi les animations du cycle : getAnimations() force le calcul du style,
-  // il voit donc celles des tuiles qui viennent d'apparaître — le panneau est en phase dès l'ouverture.)
+  // (Le panneau est en phase dès l'ouverture : chaque animation du cycle se recale sur l'horloge du
+  // document à son démarrage, voir l'écouteur « animationstart » de syncCycle.)
   updateCountdown();
 }
 
