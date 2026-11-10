@@ -7726,6 +7726,75 @@ def test_effets_du_jour_j(nav, url):
     ctx.close()
 
 
+def _pixels(ctx, png, points):
+    """Lit des pixels d'une capture : la décode dans une page vierge (pas de bibliothèque d'images ici)."""
+    import base64
+    p2 = ctx.new_page()
+    p2.set_content("<canvas id=c></canvas>")
+    out = p2.evaluate("""async ([b64, pts]) => {
+        const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
+        const c = document.getElementById('c'); c.width = img.width; c.height = img.height;
+        const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+        return pts.map(([x, y]) => Array.from(g.getImageData(x, y, 1, 1).data).slice(0, 3)); }""",
+                      [base64.b64encode(png).decode(), points])
+    p2.close()
+    return out
+
+
+def test_coins_du_cadre(nav, url):
+    """Les coins du BAS du cadre suivent l'écran arrondi ; ceux du haut restent droits (Antoni, S26 Ultra, 11/11/2026)."""
+    print("\n[jour J] les coins du cadre : bas arrondi au rayon réglé, haut à angle droit")
+    ctx, page, erreurs = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
+    d = page.evaluate("""() => { const e = document.getElementById('cadreEcran'), cs = getComputedStyle(e);
+        return {hg: cs.borderTopLeftRadius, hd: cs.borderTopRightRadius, bg: cs.borderBottomLeftRadius,
+                bd: cs.borderBottomRightRadius, var: document.documentElement.style.getPropertyValue('--rayon-cadre'),
+                defaut: RAYON_CADRE_DEFAUT}; }""")
+    r = "%dpx" % d["defaut"]
+    check(d["defaut"] > 0 and d["var"] == r and d["bg"] == r and d["bd"] == r,
+          "[coins] par défaut, les deux coins du BAS ont un rayon de %s (%s, %s)" % (r, d["bg"], d["bd"]))
+    check(d["hg"] == "0px" and d["hd"] == "0px",
+          "[coins] les deux coins du HAUT restent à angle droit (%s, %s)" % (d["hg"], d["hd"]))
+    ctx2, page2, _ = _ouvre_effets(nav, url, VEILLE, {}, reduit=True)
+    page2.evaluate("() => openSettings()")
+    check(page2.evaluate("() => !!document.getElementById('rayonCadre')"), "[coins] le curseur « Coins du bas de l'écran » existe dans les Réglages")
+    check(page2.evaluate("() => getComputedStyle(document.getElementById('cadreEcran')).display") == "none",
+          "[coins] la veille, case décochée : pas de cadre")
+    page2.evaluate("() => { const c = document.getElementById('rayonCadre'); c.value = '47'; c.dispatchEvent(new Event('input', {bubbles: true})); }")
+    e = page2.evaluate("""() => ({disp: getComputedStyle(document.getElementById('cadreEcran')).display,
+        r: getComputedStyle(document.getElementById('cadreEcran')).borderBottomLeftRadius,
+        haut: getComputedStyle(document.getElementById('cadreEcran')).borderTopLeftRadius,
+        val: document.getElementById('rayonCadreVal').textContent,
+        stocke: JSON.parse(localStorage.getItem('gta6watch:settings-v1')).rayonCadre})""")
+    check(e["disp"] == "block" and e["r"] == "47px" and e["haut"] == "0px" and e["val"] == "47" and e["stocke"] == 47,
+          "[coins] tirer le curseur règle le rayon du bas, l'enregistre et montre le cadre le temps du réglage (%s)" % e)
+    page2.clock.run_for(2500)
+    check(page2.evaluate("() => getComputedStyle(document.getElementById('cadreEcran')).display") == "none",
+          "[coins] puis l'aperçu s'éteint tout seul (la case est décochée)")
+    page2.reload(wait_until="load")
+    page2.wait_for_selector(".header-haut")
+    page2.wait_for_timeout(200)
+    check(page2.evaluate("() => document.documentElement.style.getPropertyValue('--rayon-cadre')") == "47px",
+          "[coins] le rayon réglé survit au rechargement")
+    ctx2.close()
+    # LA COURBE, lue sur des captures (rayon 40). Haut : angle droit, le trait occupe le coin lui-même.
+    ctx3, page3, _ = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
+    page3.evaluate("() => { settings.rayonCadre = 40; appliqueRayonCadre(); }")
+    page3.wait_for_timeout(200)
+    vif = lambda px: max(px) > 140 and (max(px) - min(px)) > 60
+    haut = page3.screenshot(clip={"x": 0, "y": 0, "width": 60, "height": 60})
+    coin_haut, bord_haut = _pixels(ctx3, haut, [[1, 1], [30, 1]])
+    check(vif(coin_haut) and vif(bord_haut),
+          "[coins] en haut, le trait va jusque dans le coin, à angle droit (%s, %s)" % (coin_haut, bord_haut))
+    bas = page3.screenshot(clip={"x": 0, "y": 740, "width": 60, "height": 60})
+    # Bas gauche : centre de l'arc (40, 800-40) ; point sur l'arc médian à 45° : x = 40 - 38,5/√2 = 12,8, y = 800 - 12,8.
+    hors, sur, loin, dedans = _pixels(ctx3, bas, [[2, 57], [13, 47], [45, 58], [18, 42]])
+    check(not vif(hors) and max(hors) < 60, "[coins] en bas, hors de l'arc, dans le coin de l'écran : le fond (%s)" % hors)
+    check(vif(sur), "[coins] en bas, sur l'arc à 45° : le trait suit la courbe (%s)" % sur)
+    check(vif(loin), "[coins] et sur le bord bas, passé la courbe : le trait continue (%s)" % loin)
+    check(not vif(dedans), "[coins] à l'intérieur de l'arc, au-delà de l'épaisseur du trait : le fond (%s)" % dedans)
+    ctx3.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -7816,6 +7885,7 @@ def main():
             test_cycle_synchronise(nav, url)
             test_contraste_du_cycle(nav, url)
             test_effets_du_jour_j(nav, url)
+            test_coins_du_cadre(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:

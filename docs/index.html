@@ -1648,10 +1648,17 @@
   @property --cadre-ang{syntax:"<angle>"; inherits:false; initial-value:0deg;}
   @keyframes cycle-cadre{from{--cadre-ang:0deg;} to{--cadre-ang:360deg;}}
   .cadre-ecran, .halo-j{display:none;}
-  html.cadre-j .cadre-ecran{
-    display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none; padding:3px;
-    background:conic-gradient(from var(--cadre-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a));
-    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  /* LES COINS (Antoni, 11/11/2026 : « les bords de l'écran de mon S26 sont arrondis », puis « je parle pour
+     le bas de l'écran, en haut laisse 90 degrés »). Un cadre à angles droits est rogné par l'écran aux coins
+     arrondis. Seuls les deux coins du BAS sont arrondis (rayon --rayon-cadre) ; ceux du haut restent à
+     angle droit, sous la barre d'état. Le trait est une VRAIE bordure à coins arrondis : le bord intérieur prend tout seul le rayon moins l'épaisseur, ce que ne faisait
+     pas le masque sur la zone de contenu. Le rayon vient des Réglages (curseur « Coins de l'écran »). */
+  html{--rayon-cadre:32px;}
+  html.cadre-j .cadre-ecran, html.cadre-apercu .cadre-ecran{
+    display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none;
+    border:3px solid transparent; border-radius:0 0 var(--rayon-cadre) var(--rayon-cadre);
+    background:conic-gradient(from var(--cadre-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+    -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
     -webkit-mask-composite:xor; mask-composite:exclude;
   }
   html.cadre-j.cycle-couleur .cadre-ecran{animation:cycle-cadre var(--cycle-duree) steps(24) infinite;}
@@ -1665,6 +1672,7 @@
   html.controles-j input, html.controles-j textarea{caret-color:var(--accent);}
   .halo-j.vif{
     display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none;
+    border-radius:0 0 var(--rayon-cadre) var(--rayon-cadre);
     box-shadow:inset 0 0 0 2px var(--cycle-c),
       inset 0 0 28px 4px color-mix(in srgb, var(--cycle-c) 45%, transparent),
       inset 0 0 60px 10px color-mix(in srgb, var(--cycle-a) 28%, transparent);
@@ -2669,6 +2677,15 @@
         sortie, à minuit pile, un halo d'une seconde l'accompagne si l'app est ouverte.
       </div>
       <div class="setting-row">
+        <label for="rayonCadre">Coins du bas de l'écran : <span id="rayonCadreVal"></span> px</label>
+        <input type="range" id="rayonCadre" min="0" max="60" step="1" oninput="reglerRayonCadre(this.value)">
+      </div>
+      <div class="setting-desc" hidden>
+        Le rayon des coins arrondis du BAS de ton écran : le cadre les suit (ceux du haut restent droits). Tire le curseur : le cadre
+        s'affiche tout seul pendant que tu règles. Le rayon de départ est une estimation tirée des
+        fiches Samsung, pas une mesure de ton téléphone.
+      </div>
+      <div class="setting-row">
         <label for="coulBarreEtat">Barre d'état du téléphone</label>
         <input type="checkbox" id="coulBarreEtat" onchange="basculeEffet('coulBarreEtat', this.checked)">
       </div>
@@ -3125,6 +3142,8 @@ const DEFAULT_SETTINGS = {
   coulBarreEtat: null,
   coulChargement: null,
   coulControles: null,
+  // Rayon des coins du cadre, en px ; null = le défaut (RAYON_CADRE_DEFAUT).
+  rayonCadre: null,
   spoilerKeywords: MOTS_SPOILER.slice(),
   maxDisplay: 500,
   similarityThreshold: 72,
@@ -3432,6 +3451,7 @@ function appliqueEffetsJourJ(maintenant){
   h.toggle("cycle-couleur", effetActif("cycleCouleurs", maintenant));
   h.toggle("cadre-j", effetActif("coulCadre", maintenant));
   h.toggle("controles-j", effetActif("coulControles", maintenant));
+  appliqueRayonCadre();
   // L'écran de chargement vit avant le chargement des réglages : c'est ce battement, le premier,
   // qui lui donne sa couleur du jour J (le script tourne avant le premier affichage).
   const splash = document.getElementById("splash");
@@ -3447,6 +3467,38 @@ function basculeEffet(cle, actif){
   catch(e){ console.error("Erreur sauvegarde de l'effet " + cle, e); }
   appliqueEffetsJourJ(new Date());
   requestAnimationFrame(syncCycle);
+}
+
+// LES COINS DU CADRE. Défaut 32 px : ESTIMATION, jamais mesurée sur un téléphone. Samsung publie 6,9 po
+// pour le rectangle de l'écran du S26 Ultra et 6,7 po « coins arrondis compris » ; l'écart de 0,2 po
+// (5,1 mm) donne un rayon d'environ 6 mm (0,83 × rayon = écart de diagonale), à ±3 mm près puisque les
+// deux diagonales sont arrondies au dixième. À 5,3 px CSS par millimètre (largeur CSS de 412 px pour
+// 78 mm), cela fait une trentaine de pixels. Antoni règle le reste au curseur.
+const RAYON_CADRE_DEFAUT = 32;
+let minuteurApercuCadre = null;
+function rayonCadreEffectif(){
+  const r = Number(settings.rayonCadre);
+  return settings.rayonCadre === null || settings.rayonCadre === undefined || !isFinite(r)
+    ? RAYON_CADRE_DEFAUT : Math.max(0, Math.min(60, Math.round(r)));
+}
+function appliqueRayonCadre(){
+  const r = rayonCadreEffectif();
+  document.documentElement.style.setProperty("--rayon-cadre", r + "px");
+  const val = document.getElementById("rayonCadreVal");
+  if(val) val.textContent = String(r);
+  const curseur = document.getElementById("rayonCadre");
+  if(curseur && Number(curseur.value) !== r) curseur.value = String(r);
+}
+function reglerRayonCadre(v){
+  settings.rayonCadre = Number(v);
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){ console.error("Erreur sauvegarde du rayon du cadre", e); }
+  appliqueRayonCadre();
+  // Le cadre s'affiche pendant le réglage, même case décochée : on règle ce qu'on voit.
+  const h = document.documentElement.classList;
+  h.add("cadre-apercu");
+  clearTimeout(minuteurApercuCadre);
+  minuteurApercuCadre = setTimeout(() => h.remove("cadre-apercu"), 1800);
 }
 
 // LE HALO DE MINUIT : une seconde, une fois. Refusé aux téléphones qui réduisent les animations.
@@ -3812,6 +3864,7 @@ function populateSettingsUI(){
   document.getElementById("cycleCouleurs").checked = cycleCouleursActif(new Date());
   document.getElementById("cycleCouleursReduit").hidden = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   for(const cle of EFFETS_JOUR_J) document.getElementById(cle).checked = effetActif(cle, new Date());
+  appliqueRayonCadre();
   document.getElementById("spoilerKeywordsInput").value = (settings.spoilerKeywords || []).join("\n");
   document.getElementById("maxDisplay").value = settings.maxDisplay;
   document.getElementById("simRange").value = settings.similarityThreshold;

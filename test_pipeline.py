@@ -5973,9 +5973,17 @@ def test_echelle_m3_verrouillee():
     # Deux exceptions, et seulement deux : 50 % pour ce qui est réellement un
     # disque (une pastille ronde n'est pas un cran de l'échelle), et 0 pour
     # une remise à plat explicite — la vignette en bandeau annule le sien.
+    # Une troisième depuis le 11/11/2026, et une seule : le cadre du jour J (et son halo) suit les coins de
+    # l'ÉCRAN du téléphone, pas ceux d'une carte. Son rayon dépend de l'appareil, il se règle au curseur
+    # (--rayon-cadre) et ne peut donc pas être un cran de l'échelle.
+    # Seuls les coins du BAS sont arrondis (« en haut laisse 90 degrés »).
+    BAS_ECRAN = "0 0 var(--rayon-cadre) var(--rayon-cadre)"
     rayons = [v.strip() for v in re.findall(r"border-radius:\s*([^;}]+)", html)]
     hors = [v for v in rayons
-            if "var(--r-" not in v and v not in ("50%", "0")]
+            if "var(--r-" not in v and v not in ("50%", "0", BAS_ECRAN)]
+    check(sum(1 for v in rayons if v == BAS_ECRAN) == 2,
+          "--rayon-cadre n'arrondit que le cadre et le halo du jour J (%d usages)"
+          % sum(1 for v in rayons if v == BAS_ECRAN))
     check(not hors,
           "les %d rayons de la feuille passent tous par l'échelle "
           "(exceptions admises : 50%% pour un disque, 0 pour une remise à "
