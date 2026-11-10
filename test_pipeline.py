@@ -5936,6 +5936,20 @@ def test_derniers_reports_tactiles_et_courbes():
           "les %d animations du cycle de couleurs passent toutes par --cycle-pas, qui vaut steps(12) "
           "(trouvé : %s) — une courbe continue refait calculer le style à chaque image"
           % (len(cycle), pas.group(1).strip() if pas else "absent"))
+    # L'orange des officiels est un APLAT sous un texte presque noir (#100800) : il doit le tenir 4,5:1 à CHAQUE
+    # étape de son dégradé, dans les deux thèmes (le contrôle « couleur fixe » ne le voyait plus, le jeton étant animé).
+    def lum(h):
+        c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+        c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    rap = lambda a, b: (max(lum(a), lum(b)) + 0.05) / (min(lum(a), lum(b)) + 0.05)
+    sombre = re.search(r"html\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);", html)
+    clair = re.search(r'html\[data-theme="light"\]\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);', html)
+    check(sombre and clair, "les trois teintes de l'orange (aplat) existent dans les deux thèmes")
+    if sombre and clair:
+        for theme, m in (("sombre", sombre), ("clair", clair)):
+            for nom, h in zip("abc", m.groups()):
+                check(rap("#100800", h) >= 4.5, "orange %s, étape %s : le texte #100800 sur %s tient %.1f:1 (seuil 4,5)" % (theme, nom, h, rap("#100800", h)))
     check(len(cadre) >= 3 and all("steps(24)" in x for x in cadre),
           "le cadre du jour J et les bordures en dégradé tournent en 24 pas, jamais en courbe continue (%d déclarations : %s)"
           % (len(cadre), cadre[:2]))
