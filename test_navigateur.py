@@ -1969,6 +1969,10 @@ def test_compteurs_jumeaux(nav, url):
                 if tour:
                     page.clock.run_for(1000)
                     page.wait_for_timeout(250)
+                # Les transitions de couleur doivent être FINIES : sur une CI plus lente, la fin de l'une
+                # (rgb(25, 230, 255) contre rgb(26, 229, 254)) était lue comme un écart entre les deux compteurs.
+                page.evaluate("() => Promise.all(document.getAnimations().filter(a => a.transitionProperty)"
+                              ".map(a => a.finished.catch(() => {})))")
                 v = page.evaluate(LIT)
                 check(len(v["h"]) in (4, 5, 6) and v["h"] == v["p"],
                       "%s les %d tuiles sont identiques, chiffre par chiffre et style par style%s"
@@ -6882,6 +6886,9 @@ def test_texte_douze_px_et_coins(nav, url):
               date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3),
               official: i === 0}));
             lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+            // Des articles LUS : sans eux, la rubrique « Ma lecture » n'affiche pas sa jauge, et le <small>
+            // de 10 px qu'elle porte n'était pas balayé — la CI l'a vu, pas mon poste (10/11/2026).
+            readSet = new Set(lastItems.slice(0, 5).map(i => i.link));
             applyFilters(); }""")
         page.wait_for_selector(".card", state="attached", timeout=10000)
         petits, carres, examines = [], [], 0
@@ -6893,6 +6900,12 @@ def test_texte_douze_px_et_coins(nav, url):
                 check(False, "[texte %d px] la surface « %s » ne s'ouvre plus" % (largeur, nom))
                 continue
             page.wait_for_timeout(250)
+            if nom == "stats · ma lecture":
+                # La jauge de lecture (et son <small>) n'apparaît que si le fil porte des données : en
+                # CI, le réseau est ouvert et l'app charge le vrai fil, pas sur un poste hors ligne.
+                # On la fabrique, pour que le balayage la voie TOUJOURS.
+                page.evaluate("() => document.getElementById('statsContenu')"
+                              ".insertAdjacentHTML('beforeend', jaugeStats('Source de test', 3, 10))")
             r = page.evaluate("""() => {
                 const petits = [], carres = []; let n = 0;
                 for(const e of document.querySelectorAll('body *')){
@@ -7057,7 +7070,13 @@ SONDE_ANIMATIONS = """() => {
             pulsation: !!document.getElementById('countdown') && document.getAnimations()
               .some(a => a.animationName === 'countdown-pulse' && a.effect.target === document.getElementById('countdown'))}; }"""
 
-FIGE = """(t) => { for(const a of document.getAnimations()){ a.pause(); a.currentTime = t; } }"""
+# Ne gèle QUE les animations du cycle. Geler « toutes » les animations mettait aussi en pause les
+# TRANSITIONS de couleur (onglets, boutons) et les ramenait à leur premier instant : à 0 ms, l'onglet
+# « Robot » était lu blanc sur blanc (1,00:1), un contraste qui n'a jamais existé à l'écran. L'erreur
+# était celle de l'instrument, et la CI l'a trouvée avant moi (10/11/2026).
+FIGE = """(t) => { for(const a of document.getAnimations()){
+    const n = a.animationName;
+    if(n && (n === 'cycle-accent' || n.startsWith('cycle-chiffre'))){ a.pause(); a.currentTime = t; } } }"""
 
 LIT_COULEURS = """() => {
     // L'accent est animé sur des blocs, pas sur <html> : on le lit sur l'en-tête.
@@ -7194,6 +7213,21 @@ def test_cycle_de_couleurs(nav, url):
     total_cycle = page.evaluate("""() => document.getAnimations().filter(a => a.animationName === 'cycle-accent').length""")
     sur_reglages = page.evaluate("""() => document.getAnimations().some(a => a.animationName === 'cycle-accent'
         && a.effect.target && a.effect.target.classList.contains('page-reglages'))""")
+    # LE PANNEAU DU COMPTEUR, jumeau de l'en-tête dès l'ouverture : ses tuiles démarrent leur cycle au
+    # moment où on l'ouvre, et ne doivent pas attendre la seconde suivante pour retrouver la phase.
+    page.evaluate("() => { closeSettings(); ouvreCompteur(); }")
+    page.wait_for_timeout(100)
+    page.clock.run_for(100)
+    page.wait_for_timeout(100)
+    jumeaux = page.evaluate("""() => { const h = [...document.querySelectorAll('#countdown .cd-t:not(.zero) b')]
+          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
+        const p = [...document.querySelectorAll('#compteurContenu .tuile-panneau .cd-t:not(.zero) b')]
+          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
+        return {n: p.length, ecarts: p.map((a, i) => a && h[i] ? Math.abs(a.currentTime - a.effect.getTiming().delay * -1
+          - (h[i].currentTime - h[i].effect.getTiming().delay * -1)) : null)}; }""")
+    check(jumeaux["n"] >= 3 and all(e is not None and e < 120 for e in jumeaux["ecarts"]),
+          "[cycle] le panneau du compteur est en phase avec l'en-tête dès l'ouverture (écarts en ms : %s)"
+          % jumeaux["ecarts"])
     check(sur_reglages and desynchro == 0,
           "[cycle] les %d animations d'accent partagent l'horloge du document, la page des Réglages comprise (%d à contretemps)"
           % (total_cycle, desynchro))
@@ -7240,6 +7274,9 @@ def test_contraste_du_cycle(nav, url):
                       % (theme, nom, str(e).split("\n")[0][:70]))
                 continue
             page.wait_for_timeout(250)
+            # Les transitions en cours doivent être FINIES avant de mesurer (onglet qui vient de changer d'état).
+            page.evaluate("() => Promise.all(document.getAnimations().filter(a => a.transitionProperty)"
+                          ".map(a => a.finished.catch(() => {})))")
             for t in (0, 500, 1000, 1500, 2000):
                 page.evaluate(FIGE, t)
                 page.wait_for_timeout(100)

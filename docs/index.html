@@ -1675,7 +1675,9 @@
   .stats-sparks .plates{padding-top:10px; font-size:12px; color:var(--text-dim); display:block;}
   .stats-jauge-ligne{margin:8px 0 12px;}
   .stats-jauge-ligne .haut{display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--text);}
-  .stats-jauge-ligne .haut small{color:var(--text-dim); font-variant-numeric:tabular-nums;}
+  /* 12 px EXPLICITES : un <small> sans taille vaut 83 % de son parent, soit 10 px dans un parent à 12 px
+     (relevé par la CI du 10/11/2026, où le réseau ouvert charge le vrai fil et fait apparaître la jauge). */
+  .stats-jauge-ligne .haut small{color:var(--text-dim); font-variant-numeric:tabular-nums; font-size:12px;}
   .stats-jauge-ligne .stats-jauge{margin:4px 0 0; height:8px;}
   .stats-note{font-size:12px; color:var(--text-dim); margin:8px 0 0;}
   .stats-jauge{height:10px; border-radius:var(--r-full); margin:12px 0 2px; overflow:hidden;
@@ -8922,6 +8924,8 @@ function majPanneauCompteur(){
         : `<p class="compteur-note">Temps écoulé depuis la sortie du jeu, le 19/11/26</p>`);
   // Les tuiles du panneau viennent d'être posées vides : les remplir par le MÊME appel que
   // l'en-tête, au même instant.
+  // (updateCountdown recale aussi les animations du cycle : getAnimations() force le calcul du style,
+  // il voit donc celles des tuiles qui viennent d'apparaître — le panneau est en phase dès l'ouverture.)
   updateCountdown();
 }
 
