@@ -35,8 +35,9 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Lot 2b (11/11/2026, codé)** : bordures en dégradé des cartes et des tuiles (2 px, même épaisseur que le cadre), case globale et retour à l'automatique, repère « nouveaux », chiffres de Stats en tuiles. Les squelettes de chargement existaient déjà.
 
 - **Grand moment de minuit (codé)** : à essayer avec « Lancer le halo » dans Réglages ; la vibration dépend du téléphone (Android, après un premier appui).
-- **Minuit, suite (10/11/2026, codé)** : 200 confettis et écran noir « GTA VI EST DISPO ! » qui reste jusqu'au toucher ; à essayer avec « Lancer le halo », et à regarder : la fluidité des 200 confettis sur le téléphone.
+- **Minuit, suite (10/11/2026, codé)** : pluie de confettis continue d'environ 7 s qui s'accumule en bas jusqu'à remplir l'écran, puis écran noir « GTA VI EST DISPO ! » jusqu'au toucher ; à essayer avec « Lancer le halo » dans Réglages ; à regarder : la fluidité sur le téléphone (mesurée seulement dans le navigateur de test).
 - **Frise des jalons (10/11/2026, codée)** : visible seulement après le 19/11 ; pour la voir avant, aucun réglage (elle n'existe qu'après la sortie) : à regarder le jour même ou en simulant la date dans un navigateur de test.
+- **Textes oubliés du cycle (10/11/2026, corrigés)** : titres de jour, repère « nouveaux », ligne « N affichés », sous-titre du compteur. À regarder sur le téléphone : si un texte reste figé, dis-moi dans quelle vue.
 
 ## 3. À regarder quand ça arrive
 

@@ -7583,7 +7583,10 @@ def test_effets_du_jour_j(nav, url):
         ctx, page, _ = _ouvre_effets(nav, url, instant, corps)
         e = page.evaluate(ETAT_EFFETS)
         check(e["sous"] == attendu, "[effets] libellé %s : « %s » (%s)" % (nom, attendu, e["sous"]))
-        degrade = attendu.startswith("GTA VI") or (corps.get("coulCadre") is True)
+        # Avec le cycle qui tourne, le sous-titre est un aplat à l'accent (le dégradé figé ne tournait pas : « on en a oublié »,
+        # 10/11/2026) ; sans le cycle, il garde son dégradé. Le cycle est allumé d'office les 24 h de la sortie.
+        cycle = corps.get("cycleCouleurs") is True or (instant == JOUR_J and corps.get("cycleCouleurs") is not False)
+        degrade = (attendu.startswith("GTA VI") or (corps.get("coulCadre") is True)) and not cycle
         check((e["sousRempli"] == "rgba(0, 0, 0, 0)") == degrade,
               "[effets] libellé %s : texte %s (%s)" % (nom, "en dégradé" if degrade else "uni", e["sousRempli"]))
         ctx.close()
@@ -8215,7 +8218,7 @@ def test_grand_moment_de_minuit(nav, url):
         const cs = f ? getComputedStyle(f) : null;
         return {fete: !!f, pos: cs && cs.position, ev: cs && cs.pointerEvents, z: cs && parseInt(cs.zIndex, 10),
                 flash: f ? f.querySelectorAll('.fete-flash').length : 0, ondes: f ? f.querySelectorAll('.fete-onde').length : 0,
-                confettis: f ? f.querySelectorAll('.fete-confetti').length : 0, halo: h.classList.contains('vif'),
+                toiles: f ? f.querySelectorAll('canvas.fete-toile').length : 0, anciens: f ? f.querySelectorAll('.fete-confetti').length : 0, halo: h.classList.contains('vif'),
                 anims: f ? f.getAnimations({subtree: true}).length : 0,
                 haloAnim: h.getAnimations().map(a => a.animationName), vibre: window.__vibre || null,
                 cx: f ? f.style.getPropertyValue('--cx') : null}; }"""
@@ -8223,14 +8226,13 @@ def test_grand_moment_de_minuit(nav, url):
     page.evaluate(STUB)
     check(page.evaluate("() => lanceHalo()") is True, "[minuit] lanceHalo() accepte de jouer")
     e = page.evaluate(LIT)
-    voulus = page.evaluate("() => FETE_CONFETTIS")
-    check(voulus >= 400, "[minuit] au moins 400 confettis demandés (Antoni : « plus de confettis ») : %s" % voulus)
-    check(e["fete"] and e["flash"] == 1 and e["ondes"] == 2 and e["confettis"] == voulus,
-          "[minuit] un flash, deux ondes, tous les confettis demandés (%s, %s, %s pour %s)" % (e["flash"], e["ondes"], e["confettis"], voulus))
+    check(e["fete"] and e["flash"] == 1 and e["ondes"] == 2 and e["toiles"] == 2 and e["anciens"] == 0,
+          "[minuit] un flash, deux ondes, deux calques de confettis (le tas et la chute), plus de confettis en éléments (%s, %s, %s, %s)"
+          % (e["flash"], e["ondes"], e["toiles"], e["anciens"]))
     check(e["pos"] == "fixed" and e["ev"] == "none" and e["z"] > 100000,
           "[minuit] le calque couvre l'écran, ne prend aucun appui et passe par-dessus tout (%s, %s, %s)" % (e["pos"], e["ev"], e["z"]))
     check(e["halo"] and "halo-j" in e["haloAnim"], "[minuit] le halo des bords joue aussi (%s)" % e["haloAnim"])
-    check(e["anims"] >= voulus, "[minuit] les animations tournent vraiment (%d)" % e["anims"])
+    check(e["anims"] >= 3, "[minuit] les animations CSS (flash, ondes) tournent vraiment (%d)" % e["anims"])
     check(e["vibre"] == [[180, 80, 180, 80, 420]], "[minuit] une vibration courte est demandée (%s)" % e["vibre"])
     # Les ondes partent du compteur, pas d'un coin.
     cible = page.evaluate("() => { const b = document.getElementById('countdown').getBoundingClientRect(); return b.left + b.width / 2; }")
@@ -8261,21 +8263,52 @@ def test_grand_moment_de_minuit(nav, url):
     atteint = page.evaluate("() => { const b = document.getElementById('refreshBtn').getBoundingClientRect();"
                             " const el = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return !!el && !!el.closest('#refreshBtn'); }")
     check(atteint, "[minuit] un appui pendant la fête atteint le bouton dessous")
-    # Six secondes : toujours là à 5 s, plus rien à 6,5 s.
-    page.clock.run_for(5000)
-    check(page.evaluate(LIT)["fete"] and page.evaluate(LIT)["halo"], "[minuit] à cinq secondes, c'est encore en cours")
-    page.clock.run_for(1500)
-    e = page.evaluate(LIT)
-    check(not e["fete"] and not e["halo"], "[minuit] à 6,5 secondes, plus rien : ni calque ni halo (%s, %s)" % (e["fete"], e["halo"]))
-    # L'ÉCRAN NOIR DE FIN : posé à 4,8 s, noir, plein écran, texte en cycle, et il RESTE jusqu'à un appui.
     FIN = """() => { const f = document.querySelector('.fete-final'); if(!f) return null;
         const cs = getComputedStyle(f), t = f.querySelectorAll('.ff-texte'), r = f.getBoundingClientRect();
         const rects = Array.from(t).map(x => { const b = x.getBoundingClientRect(); return [b.left, b.right, b.width]; });
         return {bg: cs.backgroundColor, pos: cs.position, z: parseInt(cs.zIndex, 10), w: r.width, h: r.height,
                 textes: Array.from(t).map(x => x.textContent), anim: Array.from(t).map(x => getComputedStyle(x).animationName),
                 cols: Array.from(t).map(x => getComputedStyle(x).color), rects, iw: innerWidth, label: f.getAttribute('aria-label')}; }"""
+    ETAT = """() => ({t: etatConfettis.t, posees: etatConfettis.posees, r: etatConfettis.remplissage, mini: etatConfettis.minimum,
+                       plein: etatConfettis.plein, actif: etatConfettis.actif})"""
+    # Les PIXELS du calque du tas (l'instrument le plus fidèle : pas la carte de hauteurs du code, ce qu'on voit) : la part de pixels
+    # pleins au total, dans le quart du haut, dans le quart du bas, et une somme de contrôle de la bande du bas (3 % des lignes).
+    COUV = """() => { const c = etatConfettis.toileTas, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, L = c.height, Wd = c.width;
+        let n = 0, hauts = 0, bas = 0, bande = 0;
+        for(let y = 0; y < L; y++) for(let x = 0; x < Wd; x++){
+          const i = (y * Wd + x) * 4; if(d[i + 3] > 200){ n++; if(y < L * 0.25) hauts++; if(y >= L * 0.75) bas++; }
+          if(y >= L * 0.97) bande = (bande * 31 + d[i] + d[i + 1] * 7 + d[i + 2] * 13 + d[i + 3]) % 1000000007;
+        }
+        return {tot: n / (Wd * L), haut: hauts / (Wd * L * 0.25), bas: bas / (Wd * L * 0.25), bande}; }"""
+    # LA PLUIE (refaite le 10/11/2026 : « en continu, plus long, ça remplit l'écran entier en s'accumulant en bas, chaque
+    # confetti reste où il tombe, quand l'écran est plein on passe à la suite »).
+    page.clock.run_for(2000); s1 = page.evaluate(ETAT); c1 = page.evaluate(COUV)
+    page.clock.run_for(2000); s2 = page.evaluate(ETAT); c2 = page.evaluate(COUV)
+    page.clock.run_for(1000); s3 = page.evaluate(ETAT); c3 = page.evaluate(COUV)
+    check(s1["posees"] > 0 and s2["posees"] > s1["posees"] + 100 and s3["posees"] > s2["posees"] + 100,
+          "[minuit] la pluie est CONTINUE : des confettis se posent encore entre 2 s, 4 s et 5 s (%s, %s, %s)" % (s1["posees"], s2["posees"], s3["posees"]))
+    check(s1["r"] < s2["r"] < s3["r"] < 1 and s1["r"] < 0.5,
+          "[minuit] le tas MONTE peu à peu : %.2f à 2 s, %.2f à 4 s, %.2f à 5 s" % (s1["r"], s2["r"], s3["r"]))
+    check(c2["bas"] > c2["haut"] + 0.15 and c2["bas"] > 0.5,
+          "[minuit] il s'accumule EN BAS d'abord : %.0f %% de pixels pleins en bas contre %.0f %% en haut à 4 s" % (c2["bas"] * 100, c2["haut"] * 100))
+    check(c2["bande"] == c3["bande"], "[minuit] chaque confetti RESTE où il est tombé : la bande du bas n'a pas bougé entre 4 s et 5 s")
+    check(page.evaluate(LIT)["fete"] and page.evaluate(LIT)["halo"] and page.evaluate(FIN) is None and not s3["plein"],
+          "[minuit] à cinq secondes, c'est encore en cours : la fête, le halo, pas d'écran noir")
+    # Jusqu'à l'écran noir : il arrive quand l'écran est plein, vers 7 s.
+    ecoule = 5000
+    while page.evaluate(FIN) is None and ecoule < 12000:
+        page.clock.run_for(100); ecoule += 100
+    e_f = page.evaluate(ETAT); cf = page.evaluate(COUV)
+    check(page.evaluate(FIN) is not None and e_f["plein"] and 5.5 <= e_f["t"] <= 8.5,
+          "[minuit] quand l'écran est plein (%.1f s), l'écran noir arrive (entre 5,5 et 8,5 s : avant le filet de 9 s)" % e_f["t"])
+    check(cf["tot"] >= 0.8 and cf["haut"] >= 0.75 and cf["bas"] >= 0.75,
+          "[minuit] l'écran est PLEIN à ce moment-là : %.0f %% de pixels pleins, %.0f %% en haut, %.0f %% en bas" % (cf["tot"] * 100, cf["haut"] * 100, cf["bas"] * 100))
+    page.clock.run_for(1700)
+    e2 = page.evaluate(ETAT)
+    check(not page.evaluate(LIT)["fete"] and not page.evaluate(LIT)["halo"] and not e2["actif"] and e2["posees"] == e_f["posees"],
+          "[minuit] sous le noir, la fête est retirée, la pluie s'arrête, le halo est fini")
     fin = page.evaluate(FIN)
-    check(fin is not None, "[minuit] à 6,5 secondes, l'écran noir de fin est là")
+    check(fin is not None, "[minuit] et l'écran noir de fin reste là")
     if fin:
         check(fin["bg"] == "rgb(0, 0, 0)" and fin["pos"] == "fixed" and fin["w"] == fin["iw"] and fin["z"] > 2147483001,
               "[minuit] l'écran de fin est noir, plein écran et passe par-dessus la fête (%s, %s, %.0f, %s)" % (fin["bg"], fin["pos"], fin["w"], fin["z"]))
@@ -8299,15 +8332,21 @@ def test_grand_moment_de_minuit(nav, url):
     page.evaluate("() => lanceHalo()")
     page.clock.run_for(4000)
     check(page.evaluate(FIN) is None, "[minuit] relancé, l'écran de fin n'est pas encore là à 4 s")
-    page.clock.run_for(1000)
-    check(page.evaluate(FIN) is not None, "[minuit] relancé, il apparaît à 5 s")
+    ecoule = 4000
+    while page.evaluate(FIN) is None and ecoule < 12000:
+        page.clock.run_for(100); ecoule += 100
+    check(page.evaluate(FIN) is not None and 5500 <= ecoule <= 8700, "[minuit] relancé, l'écran de fin revient quand l'écran est plein (%d ms)" % ecoule)
     page.keyboard.press("Escape")
     check(page.evaluate(FIN) is None, "[minuit] Échap ferme aussi l'écran de fin")
-    page.evaluate("() => { lanceHalo(); }"); page.clock.run_for(5000); page.evaluate("() => lanceHalo()")
+    page.evaluate("() => { lanceHalo(); }"); page.clock.run_for(10000)
+    check(page.evaluate(FIN) is not None, "[minuit] (l'écran de fin est posé avant de relancer)")
+    page.evaluate("() => lanceHalo()")
     check(page.evaluate("() => document.querySelectorAll('.fete-final').length") == 0, "[minuit] relancer la fête retire l'écran de fin déjà posé")
     # Relancer remplace au lieu d'empiler.
     page.evaluate("() => { lanceHalo(); lanceHalo(); }")
-    check(page.evaluate("() => document.querySelectorAll('.fete').length") == 1, "[minuit] lancer deux fois ne pose qu'un seul calque")
+    check(page.evaluate("() => document.querySelectorAll('.fete').length") == 1
+          and page.evaluate("() => document.querySelectorAll('.fete canvas').length") == 2,
+          "[minuit] lancer deux fois ne pose qu'un seul calque, avec ses deux toiles")
     check(not erreurs, "[minuit] aucune erreur JavaScript (%s)" % erreurs[:1])
     ctx.close()
     # Animations réduites : rien du tout, pas même la vibration.
@@ -8422,6 +8461,64 @@ def test_frise_des_jalons(nav, url):
                   "[jalons %d px, %s] étiquettes dans la frise (%s), séparées (%s), hauteur %.0f px, texte entier (%s)"
                   % (larg, instant[:10], dedans, separes, e["h"], not e["debord"]))
             ctx.close()
+
+
+def test_aucun_texte_oublie_du_cycle(nav, url):
+    """Aucun texte coloré ou gris ne reste figé quand le cycle tourne (Antoni, 10/11/2026 : « on en a oublié »)."""
+    print("\n[oubli] chaque texte non blanc change de couleur avec le cycle, dans toutes les vues, deux thèmes")
+    INJECTE = """() => { lastItems = Array.from({length: 8}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0, lang: i % 2 ? 'en' : 'fr'}));
+        lastNewLinks = new Set(['https://ex.test/1']); historyPartial = false; rattrapageLance = true; visibleCount = 8; readSet = new Set(['https://ex.test/2']);
+        misDeCote = new Set(); applyFilters(); }"""
+    FIGE_TOUT = """(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }"""
+    # Les textes VISIBLES à l'écran, avec leur couleur réelle (toute syntaxe CSS lue par un canvas).
+    SCAN = """() => {
+      const cv = document.createElement('canvas'); cv.width = cv.height = 1; const cx = cv.getContext('2d', {willReadFrequently: true});
+      const rgb = c => { cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillStyle = c; cx.fillRect(0, 0, 1, 1); const d = cx.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2]]; };
+      const out = {};
+      for(const e of document.querySelectorAll('body *')){
+        const r = e.getBoundingClientRect();
+        if(!r.width || !r.height || r.bottom < 0 || r.top > innerHeight) continue;
+        const cs = getComputedStyle(e);
+        if(cs.visibility === 'hidden' || cs.display === 'none' || parseFloat(cs.opacity) === 0) continue;
+        let txt = ''; for(const n of e.childNodes) if(n.nodeType === 3) txt += n.textContent.trim();
+        if(!txt) continue;
+        const cls = (typeof e.className === 'string' ? e.className : '').trim().split(/\\s+/).join('.');
+        out[e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (cls ? '.' + cls : '') + '|' + txt.slice(0, 24)] = rgb(cs.color);
+      }
+      return out; }"""
+    VUES = [("fil", "() => null"), ("fil défilé", "() => window.scrollTo(0, 600)"), ("compteur", "() => ouvreCompteur()"),
+            ("aperçu", "() => openPreview(document.querySelector('#feed .card').id.replace('card-', ''))"),
+            ("filtres", "() => openFiltersSheet()"), ("réglages", "() => openSettings()"),
+            ("stats fil", "() => { setTab('stats'); ongletStatsChoisi('fil'); }"),
+            ("stats sources", "() => { setTab('stats'); ongletStatsChoisi('sources'); }")]
+    def fige(c):
+        mx, mn = max(c), min(c); lum = sum(c) / 3 / 255; chroma = (mx - mn) / 255
+        rouge = chroma > 0.12 and c[1] < 0.6 * c[0] and c[2] < 0.6 * c[0]      # les erreurs restent rouges, sur son conseil
+        if rouge: return False
+        if lum < 0.2 or lum >= 0.88: return chroma > 0.12 and lum >= 0.2         # texte sombre sur aplat coloré, ou blanc de base : exemptés
+        return True                                                           # coloré ou gris moyen : doit tourner
+    for theme in ("dark", "light"):
+        oublis = []
+        for nom, js in VUES:
+            ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+            page.evaluate(INJECTE)
+            page.wait_for_selector("#feed .card", state="attached")
+            page.wait_for_timeout(500)
+            page.evaluate(js)
+            page.wait_for_timeout(500)
+            vus = []
+            for tt in (0, 2000):
+                page.evaluate(FIGE_TOUT, tt)
+                page.wait_for_timeout(120)
+                vus.append(page.evaluate(SCAN))
+            for k, c0 in vus[0].items():
+                c2 = vus[1].get(k)
+                if c2 is not None and c0 == c2 and fige(c0):
+                    oublis.append("%s : %s %s" % (nom, k, tuple(c0)))
+            check(not erreurs, "[oubli %s %s] aucune erreur JavaScript (%s)" % (theme, nom, erreurs[:1]))
+            ctx.close()
+        check(not oublis, "[oubli %s] aucun texte coloré ou gris ne reste figé pendant le cycle (%d : %s)" % (theme, len(oublis), oublis[:4]))
 
 
 def test_tout_dans_le_cycle(nav, url):
@@ -8623,6 +8720,7 @@ def main():
             test_case_globale_des_effets(nav, url)
             test_grand_moment_de_minuit(nav, url)
             test_frise_des_jalons(nav, url)
+            test_aucun_texte_oublie_du_cycle(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:
