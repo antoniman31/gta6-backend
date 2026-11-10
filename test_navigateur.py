@@ -1657,12 +1657,12 @@ def test_barre_du_bas(nav, url):
 def test_page_reglages(nav, url):
     """Les Réglages sont une PAGE, plus un pop-up (demande d'Antoni, 07/11/2026).
 
-    Mesuré dans un vrai navigateur : la page s'ouvre sous l'entête de l'app, le fil
-    se masque, la barre du bas allume « Réglages » (et eux seuls), les rubriques
+    Mesuré dans un vrai navigateur : la page s'ouvre sous la ligne réduite (l'en-tête déplié est masqué
+    sur cette page depuis le 10/11/2026), le fil se masque, la barre du bas allume « Réglages » (et eux seuls), les rubriques
     restent collées en haut pendant le défilement, le dernier réglage se lit
     au-dessus de la barre, rien ne déborde, et « Fil » comme « Stats » la referment.
     """
-    print("\n[réglages] une page sous l'entête, plus un pop-up")
+    print("\n[réglages] une page sous la ligne réduite, plus un pop-up")
     for largeur, schema in ((320, "dark"), (390, "light")):
         etiq = "[%d px, %s]" % (largeur, schema)
         ctx = nav.new_context(viewport={"width": largeur, "height": 740}, color_scheme=schema,
@@ -1674,11 +1674,15 @@ def test_page_reglages(nav, url):
         page.goto(url, wait_until="load")
         page.wait_for_selector(".barre-bas")
         page.click("#navReglages")
+        page.wait_for_timeout(300)   # l'observateur de la ligne réduite réagit à l'image suivante
         etat = page.evaluate("""() => {
             const vis = s => { const e = document.querySelector(s); return !!e && e.offsetParent !== null
               && getComputedStyle(e).visibility !== 'hidden'; };
             const sp = document.querySelector('#settingsOverlay .settings-panel');
             return {page: vis('#settingsOverlay'), fil: vis('#feed'), entete: vis('#countdown'),
+                    // La ligne réduite est en position FIXE : offsetParent y vaut toujours null, donc vis() la
+                    // croirait cachée. On lit sa classe.
+                    ligne: document.getElementById('barreHaut').classList.contains('visible'),
                     pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed')),
                     corps: getComputedStyle(document.body).position,
                     fond: getComputedStyle(document.getElementById('settingsOverlay')).position,
@@ -1686,8 +1690,10 @@ def test_page_reglages(nav, url):
                     dialogue: !!document.querySelector('#settingsOverlay [aria-modal]'),
                     focus: document.activeElement.id,
                     deborde: document.documentElement.scrollWidth > innerWidth}; }""")
-        check(etat["page"] and not etat["fil"] and etat["entete"],
-              "%s la page s'ouvre sous l'entête, le fil se masque" % etiq)
+        # Depuis le 10/11/2026 l'en-tête DÉPLIÉ est masqué sur Réglages (planche d'Antoni) : la ligne
+        # réduite le remplace. Avant, ce contrôle exigeait l'en-tête visible.
+        check(etat["page"] and not etat["fil"] and not etat["entete"] and etat["ligne"],
+              "%s la page s'ouvre sous la ligne réduite, l'en-tête déplié et le fil se masquent" % etiq)
         check(etat["pressed"] == ["false", "false", "true"],
               "%s la barre du bas allume « Réglages » seul (%s)" % (etiq, etat["pressed"]))
         check(etat["corps"] != "fixed" and etat["fond"] != "fixed" and not etat["dialogue"]
@@ -2978,6 +2984,15 @@ def test_graphiques_detailles(nav, url):
     # Ma lecture : la jauge.
     page.evaluate("() => { readSet = new Set(lastItems.slice(0, 20).map(i => i.link)); ongletStatsChoisi('moi'); }")
     page.wait_for_selector(".stats-jauge")
+    # La jauge peut être redessinée par le chargement d'arrière-plan de l'historique et de l'archive (la CI,
+    # elle, a le réseau : l'app y va chercher le vrai fil, pas sur un poste hors ligne). On attend qu'une
+    # part lue soit VISIBLE, plutôt que de lire la première image : si elle ne l'est jamais, le contrôle
+    # échoue quand même, au bout de cinq secondes.
+    try:
+        page.wait_for_function("parseFloat((document.querySelector('.stats-jauge i') || {style: {}}).style.width) > 0",
+                               timeout=5000)
+    except Exception:
+        pass
     largeur = page.evaluate("document.querySelector('.stats-jauge i').style.width")
     check(largeur.endswith("%") and float(largeur[:-1]) > 0, "la part lue se voit en jauge (%s)" % largeur)
 
@@ -7203,34 +7218,6 @@ def test_cycle_de_couleurs(nav, url):
     page.evaluate("() => openSettings()")
     check(page.evaluate("() => document.getElementById('cycleCouleurs').checked"),
           "[cycle] le jour J la case est cochée d'office")
-    # TOUTES LES HORLOGES SONT RECALÉES : la page des Réglages vient d'apparaître, ses animations ont
-    # démarré à leur propre instant ; le battement du compteur les ramène sur celle du document, sinon
-    # un bloc passerait au rose pendant que le reste est cyan.
-    page.clock.run_for(1200)
-    page.wait_for_timeout(150)
-    desynchro = page.evaluate("""() => document.getAnimations().filter(a => (a.animationName === 'cycle-accent'
-        || (a.animationName || '').startsWith('cycle-chiffre')) && a.playState === 'running' && a.startTime !== 0).length""")
-    total_cycle = page.evaluate("""() => document.getAnimations().filter(a => a.animationName === 'cycle-accent').length""")
-    sur_reglages = page.evaluate("""() => document.getAnimations().some(a => a.animationName === 'cycle-accent'
-        && a.effect.target && a.effect.target.classList.contains('page-reglages'))""")
-    # LE PANNEAU DU COMPTEUR, jumeau de l'en-tête dès l'ouverture : ses tuiles démarrent leur cycle au
-    # moment où on l'ouvre, et ne doivent pas attendre la seconde suivante pour retrouver la phase.
-    page.evaluate("() => { closeSettings(); ouvreCompteur(); }")
-    page.wait_for_timeout(100)
-    page.clock.run_for(100)
-    page.wait_for_timeout(100)
-    jumeaux = page.evaluate("""() => { const h = [...document.querySelectorAll('#countdown .cd-t:not(.zero) b')]
-          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
-        const p = [...document.querySelectorAll('#compteurContenu .tuile-panneau .cd-t:not(.zero) b')]
-          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
-        return {n: p.length, ecarts: p.map((a, i) => a && h[i] ? Math.abs(a.currentTime - a.effect.getTiming().delay * -1
-          - (h[i].currentTime - h[i].effect.getTiming().delay * -1)) : null)}; }""")
-    check(jumeaux["n"] >= 3 and all(e is not None and e < 120 for e in jumeaux["ecarts"]),
-          "[cycle] le panneau du compteur est en phase avec l'en-tête dès l'ouverture (écarts en ms : %s)"
-          % jumeaux["ecarts"])
-    check(sur_reglages and desynchro == 0,
-          "[cycle] les %d animations d'accent partagent l'horloge du document, la page des Réglages comprise (%d à contretemps)"
-          % (total_cycle, desynchro))
     page.evaluate("() => { const c = document.getElementById('splashActif'); c.checked = !c.checked; c.onchange(); }")
     check(stocke(page) in ("absent", None) and page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
           "[cycle] le jour J, enregistrer un autre champ laisse le cycle automatique (%s)" % stocke(page))
@@ -7242,6 +7229,57 @@ def test_cycle_de_couleurs(nav, url):
     page.evaluate("() => updateCountdown()")
     check(not page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
           "[cycle] et le battement du compteur ne le rallume pas")
+    ctx.close()
+
+
+def test_cycle_synchronise(nav, url):
+    """Toutes les animations du cycle partagent l'horloge du document, y compris celles d'un bloc apparu plus tard.
+
+    SUR L'HORLOGE RÉELLE, et c'est l'enseignement du 10/11/2026. Ce contrôle était d'abord posé dans
+    test_cycle_de_couleurs, qui installe l'horloge simulée de Playwright : sous elle, toutes les animations
+    démarrent à la même date (0) sans qu'AUCUN recalage n'ait lieu, et le contrôle restait vert avec le
+    recalage supprimé. Prouvé : les deux affectations neutralisées, 53 sur 53. Ici, pas d'horloge simulée :
+    la page des Réglages, puis le panneau du compteur (processeur ralenti ×6, comme une CI lente) démarrent
+    leurs animations bien APRÈS l'en-tête, et doivent se retrouver sur la même phase.
+    """
+    print("\n[cycle] toutes les animations partagent l'horloge du document (horloge réelle)")
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}, timezone_id="Europe/Paris",
+                          reduced_motion="no-preference")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                        "JSON.stringify({splashActif:false, cycleCouleurs:true}));}catch(e){}")
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector(".header-haut")
+    page.wait_for_timeout(1500)
+    HORS_PHASE = """() => document.getAnimations().filter(a => (a.animationName === 'cycle-accent'
+        || (a.animationName || '').startsWith('cycle-chiffre')) && a.playState === 'running' && a.startTime !== 0).length"""
+    check(page.evaluate(HORS_PHASE) == 0 and page.evaluate("() => document.getAnimations().some(a => a.animationName === 'cycle-accent')"),
+          "[cycle synchro] l'en-tête et les barres tournent, tous sur l'horloge du document")
+    page.evaluate("() => openSettings()")
+    page.wait_for_timeout(1800)
+    sur_reglages = page.evaluate("""() => document.getAnimations().some(a => a.animationName === 'cycle-accent'
+        && a.effect.target && a.effect.target.classList.contains('page-reglages'))""")
+    hors = page.evaluate(HORS_PHASE)
+    check(sur_reglages and hors == 0,
+          "[cycle synchro] la page des Réglages, apparue après l'en-tête, est sur la même horloge (%d hors phase)" % hors)
+    cdp = ctx.new_cdp_session(page)
+    cdp.send("Emulation.setCPUThrottlingRate", {"rate": 6})
+    page.evaluate("() => { closeSettings(); ouvreCompteur(); }")
+    page.wait_for_timeout(1800)
+    page.screenshot(clip={"x": 0, "y": 0, "width": 1, "height": 1})
+    page.wait_for_timeout(600)
+    cdp.send("Emulation.setCPUThrottlingRate", {"rate": 1})
+    j = page.evaluate("""() => { const f = sel => [...document.querySelectorAll(sel)]
+          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
+        const h = f('#countdown .cd-t:not(.zero) b'), p = f('#compteurContenu .tuile-panneau .cd-t:not(.zero) b');
+        const t = a => a.currentTime - a.effect.getTiming().delay * -1;
+        return {n: p.length, ecarts: p.map((a, i) => a && h[i] ? Math.abs(t(a) - t(h[i])) : null)}; }""")
+    check(j["n"] >= 3 and all(e is not None and e < 120 for e in j["ecarts"]),
+          "[cycle synchro] le panneau du compteur, ouvert longtemps après l'en-tête, est en phase avec lui (écarts en ms : %s)"
+          % j["ecarts"])
+    check(not erreurs, "[cycle synchro] aucune erreur JavaScript")
     ctx.close()
 
 
@@ -7290,6 +7328,108 @@ def test_contraste_du_cycle(nav, url):
         check(not tous, "[cycle %s] %d texte(s) sous le seuil WCAG : %s"
               % (theme, len(tous), " | ".join(tous[:4])))
         check(total >= 1500, "[cycle %s] la sonde a bien balayé — %d relevés, plancher 1500" % (theme, total))
+        ctx.close()
+
+
+def test_stats_et_reglages_compacts(nav, url):
+    """Stats et Réglages sans l'en-tête déplié (planche du 10/11/2026).
+
+    L'en-tête déplié prenait environ 268 px sur 844 en haut de chaque page, et se répétait. Sur Stats
+    et Réglages il est masqué et la ligne réduite (titre, point vert, compteur) prend le relais ;
+    sur le fil il revient. Mesuré dans un vrai navigateur, à 320 et 390 px : l'en-tête est caché,
+    la ligne réduite visible, le premier contenu commence SOUS elle (pas dessous), l'onglet
+    « Lecture » tient sur une ligne comme ses voisins, « Dans le fil » range ses chiffres sur deux
+    colonnes, la phrase d'aide n'apparaît qu'une fois — et un toucher sur une colonne y écrit encore
+    sa valeur sans faire sauter le graphique sous le doigt.
+    """
+    print("\n[compact] Stats et Réglages : en-tête masqué, ligne réduite, grille 2×2, une seule phrase")
+    for largeur, schema in ((320, "dark"), (390, "light")):
+        etiq = "[%d px, %s]" % (largeur, schema)
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=schema,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector(".header-haut")
+        base = page.evaluate("""() => { const r = document.querySelector('header.console').getBoundingClientRect();
+            return {affiche: getComputedStyle(document.querySelector('header.console')).display !== 'none',
+                    barre: document.getElementById('barreHaut').classList.contains('visible')}; }""")
+        check(base["affiche"] and not base["barre"],
+              "%s sur le fil : l'en-tête est déplié, la ligne réduite absente" % etiq)
+        # ---- Stats
+        page.evaluate("() => { lastItems = Array.from({length: 240}, (_, i) => ({title: 'Article ' + i, link: 'https://ex.test/' + i,"
+                      " description: 'R', date: new Date(Date.now() - i * 7200e3).toISOString(), source: 'S' + (i % 4)}));"
+                      " lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; archiveChargee = true; applyFilters(); }")
+        page.evaluate("() => { setTab('stats'); ongletStatsChoisi('fil'); }")
+        page.wait_for_timeout(500)
+        m = page.evaluate("""() => {
+            const q = s => document.querySelector(s), r = e => e.getBoundingClientRect();
+            const barre = r(q('#barreHaut'));
+            const onglets = [...document.querySelectorAll('.stats-onglets button')].map(b => Math.round(r(b).height));
+            const chiffres = [...document.querySelectorAll('.stats-chiffres')].map(g => {
+              const t = [...g.children].map(c => Math.round(r(c).top));
+              return {colonnes: getComputedStyle(g).gridTemplateColumns.split(' ').length, rangees: new Set(t).size, n: t.length};
+            });
+            const phrases = [...document.querySelectorAll('.stats-lecture')].map(p => p.textContent.trim());
+            return {entete: getComputedStyle(q('header.console')).display, visible: q('#barreHaut').classList.contains('visible'),
+                    bh: document.body.classList.contains('bh-visible'), barreBas: barre.bottom,
+                    premier: r(q('.stats-onglets')).top, onglets, chiffres, phrases,
+                    etiquette: q('#statsOnglet_moi').textContent.trim(),
+                    deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(m["entete"] == "none" and m["visible"] and m["bh"],
+              "%s Stats : en-tête masqué, ligne réduite et classe bh-visible posées (%s, %s, %s)"
+              % (etiq, m["entete"], m["visible"], m["bh"]))
+        check(m["premier"] >= m["barreBas"] - 0.5,
+              "%s Stats : le premier contenu commence sous la ligne réduite (%.0f px, barre jusqu'à %.0f px)"
+              % (etiq, m["premier"], m["barreBas"]))
+        check(m["etiquette"] == "Lecture" and len(set(m["onglets"])) == 1,
+              "%s Stats : l'onglet « %s » tient sur une ligne comme les trois autres (hauteurs %s)"
+              % (etiq, m["etiquette"], m["onglets"]))
+        c0 = m["chiffres"][0] if m["chiffres"] else None
+        check(c0 is not None and c0["colonnes"] == 2 and c0["rangees"] == (c0["n"] + 1) // 2,
+              "%s Stats : « Dans le fil » range ses %s chiffres sur deux colonnes (%s)"
+              % (etiq, c0 and c0["n"], c0))
+        remplies = [x for x in m["phrases"] if x]
+        check(len(m["phrases"]) >= 3 and len(remplies) == 1 and remplies[0].startswith("Touche"),
+              "%s Stats : la phrase d'aide n'apparaît qu'une fois sur %d graphiques (%d)"
+              % (etiq, len(m["phrases"]), len(remplies)))
+        check(not m["deborde"], "%s Stats : rien ne déborde à droite" % etiq)
+        # Un toucher sur une colonne d'un graphique SANS phrase : la valeur s'écrit, le graphique ne bouge pas.
+        t = page.evaluate("""() => {
+            const blocs = [...document.querySelectorAll('.stats-bloc')].filter(b => b.querySelector('.stats-lecture')
+              && b.querySelector('.stats-col, .stats-case'));
+            const b = blocs[1]; if(!b) return null;
+            const col = b.querySelector('.stats-col, .stats-case'), haut = b.querySelector('.stats-histo, .stats-carte') || col;
+            b.scrollIntoView({block: 'center'});
+            const avant = haut.getBoundingClientRect().top + scrollY;
+            col.click();
+            const apres = haut.getBoundingClientRect().top + scrollY;
+            return {texte: b.querySelector('.stats-lecture').textContent.trim(), saut: Math.abs(apres - avant)}; }""")
+        check(t is not None and t["texte"] != "" and t["saut"] < 1,
+              "%s Stats : toucher une colonne d'un graphique sans phrase y écrit sa valeur, sans faire sauter le graphique (%s)"
+              % (etiq, t))
+        # ---- Réglages
+        page.evaluate("() => openSettings()")
+        page.wait_for_timeout(400)
+        r_ = page.evaluate("""() => { const q = s => document.querySelector(s), r = e => e.getBoundingClientRect();
+            return {entete: getComputedStyle(q('header.console')).display, visible: q('#barreHaut').classList.contains('visible'),
+                    barreBas: r(q('#barreHaut')).bottom, titre: r(q('#settingsOverlay .settings-title, #settingsOverlay h2, #settingsOverlay')).top}; }""")
+        check(r_["entete"] == "none" and r_["visible"],
+              "%s Réglages : en-tête masqué et ligne réduite visible (%s, %s)" % (etiq, r_["entete"], r_["visible"]))
+        check(r_["titre"] >= r_["barreBas"] - 0.5,
+              "%s Réglages : la page commence sous la ligne réduite (%.0f px, barre jusqu'à %.0f px)"
+              % (etiq, r_["titre"], r_["barreBas"]))
+        # ---- retour au fil
+        page.evaluate("() => retourFil()")
+        page.wait_for_timeout(400)
+        f = page.evaluate("""() => ({entete: getComputedStyle(document.querySelector('header.console')).display,
+            barre: document.getElementById('barreHaut').classList.contains('visible'),
+            stats: document.body.classList.contains('vue-stats'), reg: document.body.classList.contains('vue-reglages')})""")
+        check(f["entete"] != "none" and not f["barre"] and not f["stats"] and not f["reg"],
+              "%s retour au fil : l'en-tête est déplié, la ligne réduite repart, plus de classe de vue (%s)" % (etiq, f))
+        check(not erreurs, "%s aucune erreur JavaScript" % etiq)
         ctx.close()
 
 
@@ -7380,7 +7520,9 @@ def main():
             test_texte_douze_px_et_coins(nav, url)
             test_balayage_des_cartes(nav, url)
             test_cycle_de_couleurs(nav, url)
+            test_cycle_synchronise(nav, url)
             test_contraste_du_cycle(nav, url)
+            test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:
         srv.shutdown()
