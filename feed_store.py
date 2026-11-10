@@ -1856,17 +1856,18 @@ COULEUR_COMPTEUR_FINAL = 0xFF2FA8     # moins de 24 h : rose
 COULEUR_COMPTEUR_URGENT = 0xFF8A00    # moins de 7 jours : orange
 COULEUR_COMPTEUR_SOON = 0xF7FF00      # moins de 30 jours : jaune
 COULEUR_COMPTEUR_NEUTRE = 0x5493FF    # sinon : le bleu du récapitulatif
+COULEUR_COMPTEUR_APRES = 0xFF5CAE     # à partir de la sortie : le rose du jour J (html.apres-sortie, 11/11/2026)
 COMPTEUR_SEUIL_FINAL_H = 24
 COMPTEUR_SEUIL_URGENT_J = 7
 COMPTEUR_SEUIL_SOON_J = 30
 
 
 def couleur_compteur(maintenant=None):
-    """La couleur de barre du palier du compteur (avant la sortie)."""
+    """La couleur de barre du palier du compteur ; le rose du jour J à partir de la sortie."""
     maintenant = maintenant or datetime.now(timezone.utc)
     reste = SORTIE_GTA6 - maintenant
     if reste <= timedelta(0):
-        return COULEUR_COMPTEUR_NEUTRE
+        return COULEUR_COMPTEUR_APRES
     if reste < timedelta(hours=COMPTEUR_SEUIL_FINAL_H):
         return COULEUR_COMPTEUR_FINAL
     if reste < timedelta(days=COMPTEUR_SEUIL_URGENT_J):

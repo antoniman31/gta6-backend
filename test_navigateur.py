@@ -1618,8 +1618,8 @@ def test_barre_du_bas(nav, url):
             ("2026-11-07T10:00:00+01:00", r"^11j 1[34]h$", "avant la sortie", False, "loin : jours et heures"),
             ("2026-11-16T10:00:00+01:00", r"^2j 1[34]h \d\dm$", "avant la sortie", False, "sous sept jours : avec les minutes"),
             ("2026-11-18T23:30:00+01:00", r"^00:\d\d:\d\d$", "avant la sortie", True, "dernier jour : HH:MM:SS"),
-            ("2026-11-19T10:00:00+01:00", r"^SORTI !$", "depuis la sortie", True, "le jour de la sortie"),
-            ("2026-11-22T10:00:00+01:00", r"^\+3 j$", "depuis la sortie", False, "trois jours après")):
+            ("2026-11-19T10:00:00+01:00", r"^SORTI !$", "GTA VI est sorti · J+0", True, "le jour de la sortie"),
+            ("2026-11-22T10:00:00+01:00", r"^\+3 j$", "depuis la sortie · J+3", False, "trois jours après")):
         ctx, page, erreurs = ouvre(390, "light", quand)
         page.evaluate("updateCountdown()")
         lu = page.evaluate("""() => ({t: document.getElementById('cbCompteur').textContent,
@@ -7433,6 +7433,299 @@ def test_stats_et_reglages_compacts(nav, url):
         ctx.close()
 
 
+# ---------------------------------------------------------------------------------------------
+# LES EFFETS DU JOUR J (11/11/2026) : le cadre autour de l'écran, la barre d'état, l'écran de
+# chargement, les commandes, le halo de minuit, J+N. Chacun a sa case ; même règle que le cycle.
+# ---------------------------------------------------------------------------------------------
+EFFETS = ("cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles")
+
+
+def _ouvre_effets(nav, url, instant, corps=None, theme="dark", reduit=False, splash=False, reprend=False):
+    """Ouvre l'app à `instant` avec les réglages `corps` (les clés absentes restent « automatique »)."""
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}, color_scheme=theme,
+                          timezone_id="Europe/Paris",
+                          reduced_motion="reduce" if reduit else "no-preference")
+    reglages = {"splashActif": bool(splash)}
+    reglages.update(corps or {})
+    ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))"
+                        "localStorage.setItem('gta6watch:settings-v1', JSON.stringify(%s));}catch(e){}"
+                        % json.dumps(reglages))
+    ctx.clock.install(time=instant)
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector(".header-haut")
+    page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
+    if reprend:
+        page.clock.resume()
+    page.wait_for_timeout(300)
+    return ctx, page, erreurs
+
+
+ETAT_EFFETS = """() => {
+    const h = document.documentElement, cadre = document.getElementById('cadreEcran');
+    const cs = getComputedStyle(cadre), r = cadre.getBoundingClientRect();
+    const sous = document.querySelector('.compteur-sous');
+    const cb = document.querySelector('#sourceList input[type=checkbox]') || document.querySelector('input[type=checkbox]');
+    const meta = document.querySelector('meta[name=theme-color]');
+    return {
+      cadre: h.classList.contains('cadre-j'), controles: h.classList.contains('controles-j'),
+      cycle: h.classList.contains('cycle-couleur'),
+      cadreDisplay: cs.display, cadrePos: cs.position, cadreEvents: cs.pointerEvents,
+      cadreZ: parseInt(cs.zIndex, 10), cadreRect: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)],
+      cadreAnim: cadre.getAnimations().map(a => a.animationName),
+      sous: sous ? sous.textContent : null,
+      sousRempli: sous ? getComputedStyle(sous).webkitTextFillColor : null,
+      sousCouleur: sous ? getComputedStyle(sous).color : null,
+      accentCase: cb ? getComputedStyle(cb).accentColor : null,
+      barre: meta ? meta.getAttribute('content') : null,
+      erreur: window.__erreurEffets || null };
+  }"""
+
+
+def _melange(fond, teinte, part):
+    a = [int(fond[i:i + 2], 16) for i in (1, 3, 5)]
+    b = [int(teinte[i:i + 2], 16) for i in (1, 3, 5)]
+    return "#" + "".join("%02x" % int(x + (y - x) * part + 0.5) for x, y in zip(a, b))
+
+
+def _lum(rgb):
+    def c(v):
+        v /= 255
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+    return 0.2126 * c(rgb[0]) + 0.7152 * c(rgb[1]) + 0.0722 * c(rgb[2])
+
+
+def _rapport(a, b):
+    la, lb = sorted((_lum(a), _lum(b)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
+def test_effets_du_jour_j(nav, url):
+    print("\n[jour J] effets : cadre, barre d'état, chargement, commandes, halo, J+N — chacun avec sa case")
+    FOND_SOMBRE = "#0a0d0f"
+    # 1. Qui est actif quand : la veille (rien), le jour J (tout), le lendemain (rien), et chaque case seule.
+    cas = (
+        ("la veille, rien touché", VEILLE, {}, dict(cadre=False, controles=False, cycle=False)),
+        ("le jour J, rien touché", JOUR_J, {}, dict(cadre=True, controles=True, cycle=True)),
+        ("le lendemain, rien touché", LENDEMAIN, {}, dict(cadre=False, controles=False, cycle=False)),
+        ("le jour J, cadre coupé", JOUR_J, {"coulCadre": False}, dict(cadre=False, controles=True, cycle=True)),
+        ("le jour J, commandes coupées", JOUR_J, {"coulControles": False}, dict(cadre=True, controles=False, cycle=True)),
+        ("la veille, cadre allumé seul", VEILLE, {"coulCadre": True}, dict(cadre=True, controles=False, cycle=False)),
+        ("la veille, commandes allumées seules", VEILLE, {"coulControles": True}, dict(cadre=False, controles=True, cycle=False)),
+    )
+    for nom, instant, corps, attendu in cas:
+        ctx, page, erreurs = _ouvre_effets(nav, url, instant, corps)
+        e = page.evaluate(ETAT_EFFETS)
+        for cle, v in attendu.items():
+            check(e[cle] == v, "[effets] %s : « %s » %s (%s)" % (nom, cle, "posé" if v else "absent", e[cle]))
+        check(not erreurs, "[effets] %s : aucune erreur JavaScript (%s)" % (nom, erreurs[:1]))
+        ctx.close()
+
+    # 2. Le cadre : couche plein écran, par-dessus l'écran de chargement, qui ne gêne aucun appui, et qui tourne.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    e = page.evaluate(ETAT_EFFETS)
+    check(e["cadreDisplay"] == "block" and e["cadrePos"] == "fixed" and e["cadreRect"] == [0, 0, 390, 800],
+          "[effets] le cadre couvre tout l'écran, fixe (%s %s %s)" % (e["cadreDisplay"], e["cadrePos"], e["cadreRect"]))
+    check(e["cadreEvents"] == "none", "[effets] le cadre laisse passer les appuis (pointer-events : %s)" % e["cadreEvents"])
+    check(e["cadreZ"] > 100000, "[effets] le cadre est AU-DESSUS de l'écran de chargement (z-index %s > 100000)" % e["cadreZ"])
+    check("cycle-cadre" in e["cadreAnim"], "[effets] le cadre tourne avec le cycle (%s)" % e["cadreAnim"])
+    toucher = page.evaluate("() => { const b = document.getElementById('refreshBtn').getBoundingClientRect();"
+                            " return document.elementFromPoint(b.x + b.width/2, b.y + b.height/2).closest('#refreshBtn') !== null; }")
+    check(toucher, "[effets] un appui à travers le cadre atteint le bouton dessous")
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
+    e = page.evaluate(ETAT_EFFETS)
+    check(e["cadreDisplay"] == "block" and not e["cadreAnim"],
+          "[effets] animations réduites : le cadre reste, fixe (%s, %s)" % (e["cadreDisplay"], e["cadreAnim"]))
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {"cycleCouleurs": False})
+    e = page.evaluate(ETAT_EFFETS)
+    check(e["cadreDisplay"] == "block" and not e["cadreAnim"],
+          "[effets] sans le cycle, le cadre reste fixe (%s)" % e["cadreAnim"])
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {})
+    e = page.evaluate(ETAT_EFFETS)
+    check(e["cadreDisplay"] == "none", "[effets] la veille, le cadre n'est pas là (%s)" % e["cadreDisplay"])
+    ctx.close()
+
+    # 3. Le libellé et J+N.
+    for nom, instant, corps, attendu in (
+            ("le jour J", JOUR_J, {}, "GTA VI est sorti · J+0"),
+            ("le jour J, cadre coupé", JOUR_J, {"coulCadre": False}, "depuis la sortie · J+0"),
+            ("le lendemain", LENDEMAIN, {}, "depuis la sortie · J+1"),
+            ("le lendemain, cadre allumé", LENDEMAIN, {"coulCadre": True}, "GTA VI est sorti · J+1"),
+            ("la veille", VEILLE, {}, "avant la sortie"),
+            ("la veille, cadre allumé", VEILLE, {"coulCadre": True}, "avant la sortie")):
+        ctx, page, _ = _ouvre_effets(nav, url, instant, corps)
+        e = page.evaluate(ETAT_EFFETS)
+        check(e["sous"] == attendu, "[effets] libellé %s : « %s » (%s)" % (nom, attendu, e["sous"]))
+        degrade = attendu.startswith("GTA VI") or (corps.get("coulCadre") is True)
+        check((e["sousRempli"] == "rgba(0, 0, 0, 0)") == degrade,
+              "[effets] libellé %s : texte %s (%s)" % (nom, "en dégradé" if degrade else "uni", e["sousRempli"]))
+        ctx.close()
+    # Le libellé ne déborde pas à 320 px, et il est lisible : chaque couleur du dégradé tient 4,5:1 sur le panneau.
+    for theme, palette in (("dark", ("#19e6ff", "#b388ff", "#ff5cae")), ("light", ("#00708a", "#7c3aed", "#b8146f"))):
+        ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, theme=theme)
+        page.set_viewport_size({"width": 320, "height": 700})
+        page.wait_for_timeout(200)
+        m = page.evaluate("""() => { const s = document.querySelector('.compteur-sous');
+            const r = s.getBoundingClientRect(), p = s.parentElement.getBoundingClientRect();
+            let n = s, fond = null;
+            while(n && !fond){ const c = getComputedStyle(n).backgroundColor;
+              if(c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') fond = c; n = n.parentElement; }
+            const v = s.getClientRects().length;
+            return {largeur: r.width, boite: p.width, lignes: Math.round(r.height / parseFloat(getComputedStyle(s).lineHeight || 16)), fond}; }""")
+        check(m["largeur"] <= m["boite"] + 0.5, "[effets %s 320 px] le libellé tient dans son panneau (%.0f px pour %.0f)" % (theme, m["largeur"], m["boite"]))
+        fond = [int(x) for x in re.findall(r"\d+", m["fond"] or "0 0 0")[:3]]
+        faibles = [c for c in palette if _rapport([int(c[i:i + 2], 16) for i in (1, 3, 5)], fond) < 4.5]
+        check(not faibles, "[effets %s] chaque couleur du dégradé du libellé tient 4,5:1 sur le fond %s (sous le seuil : %s)" % (theme, fond, faibles))
+        ctx.close()
+
+    # 4. La barre d'état : teinte rose fixe, ou cycle qui change, ou fond d'origine.
+    FOND_CLAIR = "#f4f7fa"
+    for nom, instant, corps, theme, reduit, attendu in (
+            ("la veille", VEILLE, {}, "dark", False, FOND_SOMBRE),
+            ("le jour J, animations réduites : rose fixe", JOUR_J, {}, "dark", True, _melange(FOND_SOMBRE, "#ff5cae", 0.16)),
+            ("le jour J en clair, animations réduites : rose fixe", JOUR_J, {}, "light", True, _melange(FOND_CLAIR, "#b8146f", 0.16)),
+            ("le jour J, case coupée", JOUR_J, {"coulBarreEtat": False}, "dark", False, FOND_SOMBRE),
+            ("la veille, case allumée, animations réduites", VEILLE, {"coulBarreEtat": True}, "dark", True, _melange(FOND_SOMBRE, "#ff5cae", 0.16))):
+        ctx, page, _ = _ouvre_effets(nav, url, instant, corps, theme=theme, reduit=reduit)
+        e = page.evaluate(ETAT_EFFETS)
+        check(e["barre"] == attendu, "[effets] barre d'état, %s : %s (%s)" % (nom, attendu, e["barre"]))
+        ctx.close()
+    # Le cycle sur la barre : les couleurs de départ de chaque segment, et un mouvement réel au fil du temps.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    pts = page.evaluate("""() => [0, 1000, 2000, 3000, 4000, 500, 1500].map(t => couleurDuCycle(t, CYCLE_SOMBRE))""")
+    attendu = ["#19e6ff", "#b388ff", "#ff5cae", "#b388ff", "#19e6ff"]
+    check(pts[:5] == attendu, "[effets] la courbe du cycle passe par cyan, violet, rose, violet, cyan (%s)" % pts[:5])
+    mi = _melange("#19e6ff", "#b388ff", 0.5)
+    check(pts[5] == mi, "[effets] à mi-chemin du premier segment : %s (%s)" % (mi, pts[5]))
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, reprend=True)
+    vus = set()
+    for _ in range(14):
+        vus.add(page.evaluate("() => document.querySelector('meta[name=theme-color]').getAttribute('content')"))
+        page.wait_for_timeout(130)
+    check(len(vus) >= 3, "[effets] la barre d'état change de couleur avec le cycle (%d couleurs vues : %s)" % (len(vus), sorted(vus)[:4]))
+    check(all(c.startswith("#") and len(c) == 7 for c in vus), "[effets] elles sont toutes des couleurs valides")
+    page.evaluate("() => basculeEffet('coulBarreEtat', false)")
+    page.wait_for_timeout(300)
+    fin = page.evaluate("() => document.querySelector('meta[name=theme-color]').getAttribute('content')")
+    page.wait_for_timeout(600)
+    fin2 = page.evaluate("() => document.querySelector('meta[name=theme-color]').getAttribute('content')")
+    check(fin == FOND_SOMBRE and fin2 == FOND_SOMBRE,
+          "[effets] décochée, la barre revient au fond de la page et y reste (%s, %s)" % (fin, fin2))
+    ctx.close()
+
+    # 5. Les commandes : cases à cocher et curseur de saisie à la couleur d'accent.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    c = page.evaluate("""() => { const cb = document.createElement('input'); cb.type = 'checkbox'; document.body.appendChild(cb);
+        const ch = document.createElement('input'); ch.type = 'text'; document.body.appendChild(ch);
+        const r = {accent: getComputedStyle(cb).accentColor, caret: getComputedStyle(ch).caretColor}; cb.remove(); ch.remove(); return r; }""")
+    check(c["accent"] != "auto" and c["caret"] != "auto", "[effets] le jour J, case à cocher et curseur de saisie ont la couleur d'accent (%s)" % c)
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {})
+    c = page.evaluate("""() => { const cb = document.createElement('input'); cb.type = 'checkbox'; document.body.appendChild(cb);
+        const r = getComputedStyle(cb).accentColor; cb.remove(); return r; }""")
+    check(c == "auto", "[effets] la veille, la case à cocher garde la couleur du navigateur (%s)" % c)
+    ctx.close()
+
+    # 6. L'écran de chargement : « VI » rose et dégradé, seulement si la case le dit ; le cadre passe par-dessus.
+    for nom, instant, corps, attendu in (
+            ("le jour J", JOUR_J, {}, True), ("la veille", VEILLE, {}, False),
+            ("la veille, case allumée", VEILLE, {"coulChargement": True}, True),
+            ("le jour J, case coupée", JOUR_J, {"coulChargement": False}, False)):
+        ctx, page, _ = _ouvre_effets(nav, url, instant, corps, splash=True)
+        m = page.evaluate("""() => { const sp = document.getElementById('splash');
+            if(!sp) return null;
+            return {classe: sp.classList.contains('splash-jourj'),
+                    filtre: getComputedStyle(sp.querySelector('.splash-logo')).filter,
+                    rempli: getComputedStyle(document.getElementById('splashJ')).webkitTextFillColor}; }""")
+        check(m is not None, "[effets] écran de chargement présent (%s)" % nom)
+        if m:
+            check(m["classe"] == attendu, "[effets] chargement, %s : classe du jour J %s (%s)" % (nom, "posée" if attendu else "absente", m["classe"]))
+            check(("hue-rotate" in m["filtre"]) == attendu, "[effets] chargement, %s : le « VI » %s (%s)" % (nom, "vire au rose" if attendu else "reste bleu", m["filtre"]))
+            check((m["rempli"] == "rgba(0, 0, 0, 0)") == attendu, "[effets] chargement, %s : la ligne principale %s (%s)" % (nom, "est en dégradé" if attendu else "reste unie", m["rempli"]))
+        ctx.close()
+
+    # 7. Le halo : le bouton le lance une seconde ; animations réduites, il ne se lance pas ; il part tout seul à minuit.
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {})
+    page.evaluate("() => openSettings()")
+    check(page.evaluate("() => !!document.getElementById('lanceHaloBtn')"), "[effets] le bouton « Lancer le halo » existe dans les Réglages")
+    page.evaluate("() => document.getElementById('lanceHaloBtn').click()")
+    h = page.evaluate("() => { const e = document.getElementById('haloJ'), cs = getComputedStyle(e);"
+                      " return {vif: e.classList.contains('vif'), disp: cs.display, ombre: cs.boxShadow !== 'none', pos: cs.position, ev: cs.pointerEvents}; }")
+    check(h["vif"] and h["disp"] == "block" and h["ombre"] and h["pos"] == "fixed" and h["ev"] == "none",
+          "[effets] le bouton lance le halo, plein écran et sans gêner les appuis (%s)" % h)
+    page.clock.run_for(1500)
+    check(page.evaluate("() => !document.getElementById('haloJ').classList.contains('vif')"), "[effets] le halo s'éteint seul après une seconde")
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {}, reduit=True)
+    page.evaluate("() => openSettings()")
+    rendu = page.evaluate("() => lanceHalo()")
+    check(rendu is False, "[effets] animations réduites : lanceHalo() refuse (%s)" % rendu)
+    ctx.close()
+    for nom, corps, attendu in (("case par défaut", {}, True), ("cadre coupé", {"coulCadre": False}, False)):
+        ctx, page, _ = _ouvre_effets(nav, url, "2026-11-18T22:59:57Z", corps)
+        page.evaluate("() => { window.__halos = 0; new MutationObserver(() => { if(document.getElementById('haloJ').classList.contains('vif')) window.__halos++; })"
+                      ".observe(document.getElementById('haloJ'), {attributes: true, attributeFilter: ['class']}); }")
+        page.clock.run_for(5000)
+        n = page.evaluate("() => window.__halos")
+        check((n > 0) == attendu, "[effets] à minuit pile, le halo %s (%s déclenchement(s), %s)" % ("part" if attendu else "ne part pas", n, nom))
+        ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    page.evaluate("() => { window.__halos = 0; new MutationObserver(() => { if(document.getElementById('haloJ').classList.contains('vif')) window.__halos++; })"
+                  ".observe(document.getElementById('haloJ'), {attributes: true, attributeFilter: ['class']}); }")
+    page.clock.run_for(3000)
+    check(page.evaluate("() => window.__halos") == 0, "[effets] ouvrir l'app APRÈS minuit ne lance pas le halo")
+    ctx.close()
+
+    # 8. Les cases des Réglages : une par effet, cochées d'office le jour J, écrites seulement par la case.
+    def stocke(page, cle):
+        return page.evaluate("(c) => { const s = JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}');"
+                             " return Object.prototype.hasOwnProperty.call(s, c) ? s[c] : 'absent'; }", cle)
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {})
+    page.evaluate("() => openSettings()")
+    existent = page.evaluate("(l) => l.map(c => !!document.getElementById(c))", list(EFFETS))
+    check(all(existent), "[effets] une case par effet dans les Réglages (%s)" % dict(zip(EFFETS, existent)))
+    coches = page.evaluate("(l) => l.map(c => document.getElementById(c).checked)", list(EFFETS))
+    check(not any(coches), "[effets] la veille, toutes les cases sont décochées (%s)" % coches)
+    for cle in EFFETS:
+        page.evaluate("(c) => { const e = document.getElementById(c); e.checked = true; e.dispatchEvent(new Event('change', {bubbles: true})); }", cle)
+        check(stocke(page, cle) is True, "[effets] cocher « %s » écrit true (%s)" % (cle, stocke(page, cle)))
+    e = page.evaluate(ETAT_EFFETS)
+    check(e["cadre"] and e["controles"] and e["cycle"] and e["cadreDisplay"] == "block",
+          "[effets] tout cocher la veille pose tous les effets d'un coup (%s)" % {k: e[k] for k in ("cadre", "controles", "cycle", "cadreDisplay")})
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    page.evaluate("() => openSettings()")
+    coches = page.evaluate("(l) => l.map(c => document.getElementById(c).checked)", list(EFFETS))
+    check(all(coches), "[effets] le jour J, toutes les cases sont cochées d'office (%s)" % coches)
+    page.evaluate("() => { document.getElementById('maxDisplay').value = 300; document.getElementById('maxDisplay').dispatchEvent(new Event('change', {bubbles: true})); }")
+    page.evaluate("() => saveSettings()")
+    check(all(stocke(page, c) == "absent" or stocke(page, c) is None for c in EFFETS),
+          "[effets] enregistrer un AUTRE champ ne fige aucun effet (%s)" % {c: stocke(page, c) for c in EFFETS})
+    page.evaluate("() => { const e = document.getElementById('coulCadre'); e.checked = false; e.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(stocke(page, "coulCadre") is False, "[effets] décocher « coulCadre » le jour J écrit false")
+    autres = {c: stocke(page, c) for c in EFFETS if c != "coulCadre"}
+    check(all(v == "absent" or v is None for v in autres.values()),
+          "[effets] décocher UN effet ne fige pas les autres : ils restent automatiques (%s)" % autres)
+    e = page.evaluate(ETAT_EFFETS)
+    check(not e["cadre"] and e["cadreDisplay"] == "none" and e["controles"], "[effets] et coupe SEUL le cadre (%s)" % {k: e[k] for k in ("cadre", "controles", "cadreDisplay")})
+    ctx.close()
+    # Sauvegarde : aucun effet ne s'exporte comme un jeton, mais les réglages voyagent (pas de clé inconnue qui plante).
+    ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {"coulCadre": True})
+    page.reload(wait_until="load")
+    page.wait_for_selector(".header-haut")
+    page.wait_for_timeout(300)
+    e = page.evaluate(ETAT_EFFETS)
+    check(e["cadre"], "[effets] un effet allumé la veille survit au rechargement")
+    check(not erreurs, "[effets] aucune erreur JavaScript au rechargement (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -7522,6 +7815,7 @@ def main():
             test_cycle_de_couleurs(nav, url)
             test_cycle_synchronise(nav, url)
             test_contraste_du_cycle(nav, url)
+            test_effets_du_jour_j(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:
