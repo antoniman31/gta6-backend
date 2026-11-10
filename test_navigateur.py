@@ -1578,6 +1578,8 @@ def test_barre_du_bas(nav, url):
 
     # Les gestes, à 390 px.
     ctx, page, erreurs = ouvre(390, "light", "2026-11-07T10:00:00+01:00")
+    # Les trois sources sont repliées derrière « Par source » (11/11/2026) : on déplie avant de choisir.
+    page.click("#sourcesBtn")
     page.click("#tabRockstar")
     page.click("#statsBtn")
     check(page.get_attribute("#navFil", "aria-pressed") == "false"
@@ -2628,7 +2630,11 @@ def test_officiel_et_filtres_etroits(nav, url):
         ctx = nav.new_context(viewport={"width": largeur, "height": 800})
         page = ctx.new_page()
         page.goto(url, wait_until="load")
-        page.wait_for_selector("#tabRockstarmag")
+        # Repliées depuis le 11/11/2026 : on déplie, et on exige une largeur réelle, sans quoi la mesure
+        # d'un bouton caché (0 px) passerait « sans débordement » pour une mauvaise raison.
+        page.wait_for_selector("#tabRockstarmag", state="attached")
+        page.click("#sourcesBtn")
+        page.wait_for_selector("#tabRockstarmag", state="visible")
         mesures = page.evaluate("""() => {
           document.getElementById("badgeNonRockstar").textContent = "1758";
           document.getElementById("badgeRockstar").textContent = "45";
@@ -7795,6 +7801,128 @@ def test_coins_du_cadre(nav, url):
     ctx3.close()
 
 
+# ---------------------------------------------------------------------------------------------
+# LOT 2A DU 11/11/2026 : chevron « Par source », loupe de recherche, titres de cartes, titres de jour,
+# fondu sous la barre du bas.
+# ---------------------------------------------------------------------------------------------
+def _ouvre_fil(nav, url, largeur=390, theme="dark"):
+    ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=theme,
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))"
+                        "localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("""() => {
+        lastItems = Array.from({length: 8}, (_, i) => ({title: 'Un titre d\\'article assez long pour passer sur deux lignes, numéro ' + (i + 1),
+          link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+          date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3)}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }""")
+    page.wait_for_selector(".card", state="attached", timeout=10000)
+    return ctx, page, erreurs
+
+
+def test_lot_2a_interface(nav, url):
+    print("\n[lot 2a] chevron « Par source », loupe, titres de cartes et de jour, fondu du bas")
+    ETAT = """() => { const r = document.getElementById('rangeeSources'), b = document.getElementById('sourcesBtn');
+        const rb = b.getBoundingClientRect(), cs = getComputedStyle(r);
+        return {ouverte: cs.display !== 'none', expanded: b.getAttribute('aria-expanded'),
+                libelle: document.getElementById('sourcesLibelle').textContent, actif: b.classList.contains('filtre-actif'),
+                nom: b.getAttribute('aria-label'), bx: rb.x + rb.width / 2, by: rb.y + rb.height / 2, bh: rb.height,
+                ligne: document.querySelector('.feed-count').getBoundingClientRect().height,
+                visibles: ['tabNonRockstar', 'tabRockstar', 'tabRockstarmag'].map(i => { const e = document.getElementById(i).getBoundingClientRect(); return e.width > 0 && e.height > 0; })}; }"""
+    for largeur in (320, 390):
+        ctx, page, erreurs = _ouvre_fil(nav, url, largeur)
+        e = page.evaluate(ETAT)
+        check(not e["ouverte"] and e["expanded"] == "false" and e["libelle"] == "Par source" and not any(e["visibles"]),
+              "[chevron %d px] fermé à l'ouverture : les trois sources sont repliées (%s)" % (largeur, e["libelle"]))
+        check(e["nom"] == "Déplier les sources", "[chevron %d px] le bouton a un nom pour les lecteurs d'écran (%s)" % (largeur, e["nom"]))
+        # La zone de toucher fait 44 px de haut sans grossir la ligne : 14 px au-dessus et au-dessous du texte.
+        zones = page.evaluate("""([x, y, h]) => [y - h/2 - 12, y + h/2 + 12, y - h/2 - 18, y + h/2 + 18]
+            .map(yy => { const el = document.elementFromPoint(x, yy); return !!(el && el.closest('#sourcesBtn')); })""",
+                              [e["bx"], e["by"], e["bh"]])
+        check(zones[0] and zones[1], "[chevron %d px] la zone de toucher déborde de 12 px en haut et en bas (%s)" % (largeur, zones))
+        check(not zones[2] and not zones[3], "[chevron %d px] mais pas de 18 px : elle s'arrête à environ 44 px (%s)" % (largeur, zones))
+        check(e["ligne"] < 30, "[chevron %d px] la ligne de comptage ne grossit pas (%.0f px)" % (largeur, e["ligne"]))
+        page.click("#sourcesBtn")
+        e = page.evaluate(ETAT)
+        check(e["ouverte"] and e["expanded"] == "true" and all(e["visibles"]) and e["nom"] == "Replier les sources",
+              "[chevron %d px] un appui déplie les trois sources (%s)" % (largeur, e["nom"]))
+        page.click("#tabRockstar")
+        e = page.evaluate(ETAT)
+        check(e["libelle"] == "Rockstar" and e["actif"] and e["ouverte"],
+              "[chevron %d px] filtre actif : le bouton porte son nom, en accent, la rangée reste ouverte (%s)" % (largeur, e["libelle"]))
+        page.click("#sourcesBtn")
+        e = page.evaluate(ETAT)
+        check(not e["ouverte"] and e["libelle"] == "Rockstar" and e["actif"],
+              "[chevron %d px] replié avec un filtre actif, le nom reste visible (%s)" % (largeur, e["libelle"]))
+        # Rechargement : le filtre revient, donc la rangée s'ouvre seule ; sans filtre, elle est fermée.
+        page.reload(wait_until="load")
+        page.wait_for_selector("#sourcesBtn")
+        page.wait_for_timeout(300)
+        e = page.evaluate(ETAT)
+        check(e["ouverte"] and e["libelle"] == "Rockstar",
+              "[chevron %d px] au rechargement avec un filtre de source, la rangée s'ouvre toute seule (%s)" % (largeur, e["libelle"]))
+        page.click("#tabAll")
+        e = page.evaluate(ETAT)
+        check(e["libelle"] == "Par source" and not e["actif"], "[chevron %d px] « Tous » rend « Par source » (%s)" % (largeur, e["libelle"]))
+        page.reload(wait_until="load")
+        page.wait_for_selector("#sourcesBtn")
+        page.wait_for_timeout(300)
+        e = page.evaluate(ETAT)
+        check(not e["ouverte"], "[chevron %d px] sans filtre, la rangée est refermée à chaque ouverture (jamais mémorisée)" % largeur)
+        check(not erreurs, "[chevron %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+    # LA LOUPE.
+    ctx, page, _ = _ouvre_fil(nav, url, 390)
+    m = page.evaluate("""() => { const l = document.querySelector('.search-loupe').getBoundingClientRect(),
+        i = document.getElementById('searchInput').getBoundingClientRect(), cs = getComputedStyle(document.getElementById('searchInput'));
+        const lc = getComputedStyle(document.querySelector('.search-loupe'));
+        return {gauche: l.left - i.left, droite: l.right - i.left, haut: l.top - i.top, bas: l.bottom - i.top, h: i.height,
+                retrait: parseFloat(cs.paddingLeft), events: lc.pointerEvents, fill: lc.fill}; }""")
+    check(m["gauche"] >= 8 and m["droite"] <= m["retrait"] and m["haut"] >= 0 and m["bas"] <= m["h"],
+          "[loupe] la loupe est DANS le champ, à gauche, sans mordre sur le texte (%.0f à %.0f px, retrait %.0f px)" % (m["gauche"], m["droite"], m["retrait"]))
+    check(m["events"] == "none", "[loupe] elle ne prend pas l'appui : le champ reçoit le toucher (%s)" % m["events"])
+    page.click("#searchInput")
+    check(page.evaluate("() => document.activeElement.id") == "searchInput", "[loupe] un appui sur la loupe focalise bien le champ")
+    ctx.close()
+
+    # LES TITRES DE CARTES : 16 px gras ; le mode compact garde 13 px.
+    for largeur in (320, 390):
+        ctx, page, _ = _ouvre_fil(nav, url, largeur)
+        t = page.evaluate("""() => { const c = getComputedStyle(document.querySelector('.card-title'));
+            return {px: parseFloat(c.fontSize), poids: c.fontWeight, deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(t["px"] == 16 and int(t["poids"]) >= 700 and not t["deborde"],
+              "[titres %d px] le titre d'une carte fait 16 px en gras, sans débordement (%s px, %s)" % (largeur, t["px"], t["poids"]))
+        page.evaluate("() => toggleDensity()")
+        page.wait_for_timeout(200)
+        d = page.evaluate("() => parseFloat(getComputedStyle(document.querySelector('.card-title')).fontSize)")
+        check(d == 13, "[titres %d px] le mode compact garde ses 13 px (%s)" % (largeur, d))
+        ctx.close()
+
+    # LES TITRES DE JOUR : un trait en dégradé jusqu'au bord, collés en haut, fond légèrement flouté.
+    ctx, page, _ = _ouvre_fil(nav, url, 390)
+    j = page.evaluate("""() => { const e = document.querySelector('.day-label'), cs = getComputedStyle(e), ap = getComputedStyle(e, '::after');
+        return {disp: cs.display, pos: cs.position, flou: cs.backdropFilter || cs.webkitBackdropFilter, apres: ap.content,
+                bg: ap.backgroundImage.indexOf('linear-gradient') >= 0, flex: ap.flexGrow, h: ap.height}; }""")
+    check(j["disp"] == "flex" and j["pos"] == "sticky" and "blur" in (j["flou"] or "") and j["apres"] != "none" and j["bg"] and j["flex"] == "1" and j["h"] == "1px",
+          "[jour] le titre de jour est un bandeau collant, flouté, avec un trait de 1 px en dégradé jusqu'au bord (%s)" % j)
+    ctx.close()
+
+    # LE FONDU SOUS LA BARRE DU BAS : il passe sous la barre et ne prend aucun appui.
+    ctx, page, _ = _ouvre_fil(nav, url, 390)
+    f = page.evaluate("""() => { const cs = getComputedStyle(document.body, '::after'), b = getComputedStyle(document.querySelector('.barre-bas'));
+        return {pos: cs.position, z: parseInt(cs.zIndex, 10), bz: parseInt(b.zIndex, 10), ev: cs.pointerEvents,
+                h: parseFloat(cs.height), img: cs.backgroundImage.indexOf('linear-gradient') >= 0, bas: cs.bottom}; }""")
+    check(f["pos"] == "fixed" and f["ev"] == "none" and f["img"] and f["h"] >= 96 and f["z"] < f["bz"],
+          "[fondu] un dégradé de %s px au bas de l'écran, sous la barre (z %s < %s), sans prendre d'appui (%s)" % (f["h"], f["z"], f["bz"], f))
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -7886,6 +8014,7 @@ def main():
             test_contraste_du_cycle(nav, url)
             test_effets_du_jour_j(nav, url)
             test_coins_du_cadre(nav, url)
+            test_lot_2a_interface(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:
