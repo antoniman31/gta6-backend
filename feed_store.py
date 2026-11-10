@@ -1163,15 +1163,23 @@ def elague_cache_decodage(cache, items):
 #
 # Ce champ ne sert plus qu'à une chose côté app : suivre un article jusqu'à
 # sa nouvelle adresse quand le robot corrige son lien, pour qu'il ne
-# redevienne pas « non lu » (voir migreLiensDecodes). Sept jours couvrent
-# tout téléphone qui ouvre l'app une fois par semaine.
+# redevienne pas « non lu » (voir migreLiensDecodes).
 #
-# Le réglage a été choisi sur mesure, pas au jugé. Poids de feed.json gzippé
-# selon la fenêtre, au 06/10/2026 : aucune 461 Ko, 2 j 504 Ko, 7 j 615 Ko,
-# 14 j 749 Ko, 30 j 966 Ko. Sept jours prennent les trois quarts du gain en
-# laissant une marge confortable ; au-delà de quatorze, il n'y a plus de
-# gain du tout.
-JOURS_SOURCE_LINK_PUBLIE = 7
+# TROIS JOURS depuis le 10/11/2026 (choix d'Antoni, à la place de sept, puis
+# de la suppression complète décidée le 27/10 et jamais faite). Sept jours
+# couvraient tout téléphone ouvert une fois par semaine ; trois couvrent un
+# téléphone ouvert au moins tous les trois jours — ce qui est le cas du sien.
+# CE QUI SE PERD, et c'est écrit : si le robot corrige un lien et que le
+# téléphone n'est pas ouvert pendant plus de trois jours, l'article repasse
+# « non lu » (comme les 453 articles du 03 au 06/10/2026).
+#
+# Mesuré le 10/11/2026 avec elague_source_link sur le fil publié (5 754
+# articles, 1 498 portaient le champ) : feed.json gzippé 1 044 Ko à sept
+# jours, 876 Ko à trois (−16,1 %, 862 champs retirés). Les autres fenêtres,
+# sur le même fil : aucune 748 Ko, 1 j 827 Ko, 2 j 852 Ko, 3 j 871 Ko. Mesure
+# antérieure (06/10/2026) : aucune 461 Ko, 2 j 504 Ko, 7 j 615 Ko, 14 j 749
+# Ko, 30 j 966 Ko.
+JOURS_SOURCE_LINK_PUBLIE = 3
 
 
 def elague_source_link(items, maintenant=None, jours=JOURS_SOURCE_LINK_PUBLIE):

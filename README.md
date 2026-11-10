@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2236 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2238 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -72,7 +72,7 @@ Google News restreinte à un site ou à un sujet, les autres par le flux natif d
 RockstarMag n'a aucun filtre (choix assumé).
 
 **Déduplication.** Par lien, puis par ressemblance de titre (`SIMILARITY_THRESHOLD = 0.72`). Les liens Google News sont décodés vers l'adresse réelle ; le résultat est mémorisé dans
-`decode-cache.json`. Si le décodeur est absent (`HAS_DECODER`), le robot le signale au lieu de publier des liens opaques.
+`decode-cache.json`. Les articles publiés ne gardent leur `source_link` que **trois jours** (`feed_store.JOURS_SOURCE_LINK_PUBLIE`, 10/11/2026) : c'est ce qui permet à l'app de suivre un lien corrigé par le robot ; un téléphone resté fermé plus de trois jours verrait l'article repasser « non lu ». Si le décodeur est absent (`HAS_DECODER`), le robot le signale au lieu de publier des liens opaques.
 
 **Récupération.** En parallèle, avec un plafond de requêtes simultanées par domaine. Les miniatures viennent de la balise `og:image` de la page.
 
