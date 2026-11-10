@@ -8181,6 +8181,28 @@ def test_grand_moment_de_minuit(nav, url):
     # Les ondes partent du compteur, pas d'un coin.
     cible = page.evaluate("() => { const b = document.getElementById('countdown').getBoundingClientRect(); return b.left + b.width / 2; }")
     check(abs(float(e["cx"].replace("px", "")) - cible) < 1, "[minuit] les ondes partent du centre du compteur (%s px pour %.0f)" % (e["cx"], cible))
+    # D'où partent les ondes quand l'en-tête n'est PAS à l'écran : jamais du coin (0, 0). Défaut d'Antoni : lancé depuis
+    # Réglages, où l'en-tête est masqué, elles partaient du coin en haut à gauche.
+    ORIGINE = """() => { const f = document.querySelector('.fete'); return [parseFloat(f.style.getPropertyValue('--cx')), parseFloat(f.style.getPropertyValue('--cy')),
+        innerWidth, innerHeight]; }"""
+    page.evaluate("() => { document.querySelectorAll('.fete').forEach(f => f.remove()); openSettings(); }")
+    page.wait_for_timeout(200)
+    check(page.evaluate("() => document.getElementById('countdown').getBoundingClientRect().width") == 0,
+          "[minuit] (sur Réglages, l'en-tête est bien masqué : sa boîte vaut zéro)")
+    page.evaluate("() => lanceHalo()")
+    cx, cy, w, h = page.evaluate(ORIGINE)
+    # Elles partent du compteur de la ligne réduite (en haut à droite), pas du coin (0, 0).
+    check(0 < cx < w and 0 < cy < h and (cx ** 2 + cy ** 2) ** 0.5 > 100,
+          "[minuit] lancé depuis Réglages, les ondes ne partent PAS du coin : (%.0f, %.0f) dans un écran de %dx%d" % (cx, cy, w, h))
+    page.evaluate("() => { document.querySelectorAll('.fete').forEach(f => f.remove()); closeSettings(); }")
+    page.evaluate("() => window.scrollTo(0, 900)")
+    page.wait_for_timeout(300)
+    page.evaluate("() => lanceHalo()")
+    cx, cy, w, h = page.evaluate(ORIGINE)
+    check(0 < cx < w and 0 < cy < h, "[minuit] fil défilé, en-tête sorti de l'écran : les ondes partent de l'écran, pas d'ailleurs (%.0f, %.0f)" % (cx, cy))
+    page.evaluate("() => { document.querySelectorAll('.fete').forEach(f => f.remove()); window.scrollTo(0, 0); }")
+    page.wait_for_timeout(200)
+    page.evaluate("() => lanceHalo()")
     # Un appui à travers le calque atteint le bouton dessous.
     atteint = page.evaluate("() => { const b = document.getElementById('refreshBtn').getBoundingClientRect();"
                             " const el = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return !!el && !!el.closest('#refreshBtn'); }")
