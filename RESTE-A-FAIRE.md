@@ -34,6 +34,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
   la ligne d'aperçu est-elle utile, et le bouton « Ouvrir GTA6_WATCH » est-il là ? S'il manque, le journal du robot dit « nouvel essai sans les boutons ».
 - **Un second message du tableau du jour** dans la même journée : lire le journal de l'étape « Tableau du jour Discord » (« modifié », « créé », « échec transitoire »).
 - **Après la sortie**, les messages ordinaires continuent (« Sorti il y a… »).
+- **Le 19/11 à minuit, sur ton téléphone** : la palette du jour J (accent rose, chiffres cyan, 07/11/2026) est mesurée dans le navigateur de test, pas encore vue sur un vrai écran. Le texte à 12 px minimum et le balayage vers la gauche (mettre de côté) non plus : à regarder dès maintenant pour ces deux-là.
 
 ## 4. Décisions prises : ne pas rouvrir
 

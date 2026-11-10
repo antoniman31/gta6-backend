@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2234 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2236 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -119,8 +119,9 @@ Les notifications push natives ont été retirées le 03/11/2026 ; le service wo
 Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 320 et 390 px).
 
 - **Fil** : onglets Tous les articles, Actu majeure, Non Rockstar, Rockstar, RockstarMag, Toutes langues, News FR, News EN ; recherche sans accents ; filtres qui survivent à la fermeture.
-- **Lecture** : lu/non-lu, mis de côté, reprise là où on s'est arrêté, aperçu d'article. Mots à exclure (article masqué) et mots de spoiler (article flouté, mode actif par défaut).
-- **Compteur** : décompte jusqu'à la sortie, dodos, barre de progression, agenda en frise (jour, rail, J-N, statut « annoncé » ou « selon la presse »), puis « Sorti depuis… » après la sortie.
+- **Lecture** : lu/non-lu, mis de côté, reprise là où on s'est arrêté, aperçu d'article. Balayage d'une carte : vers la droite lu / non lu, vers la gauche mettre de côté / retirer (comme l'étoile). Mots à exclure (article masqué) et mots de spoiler (article flouté, mode actif par défaut).
+- **Compteur** : décompte jusqu'à la sortie, dodos, barre de progression, agenda en frise (jour, rail, J-N, statut « annoncé » ou « selon la presse »), puis, après la sortie, le temps écoulé (mois et années en tuiles quand il y en a), sans dodos, barre ni agenda. **Palette du jour J** : dès le 19/11/2026 00:00, l'accent passe du bleu au rose et les chiffres du compteur au cyan (classe `apres-sortie`, posée par `updateCountdown`). **Cycle de couleurs** : l'accent (en-tête, barres, onglets, recherche, pages) et les chiffres du compteur passent en boucle du cyan au violet puis au rose (4 s, 12 pas par seconde, tuiles décalées en vague). Actif d'office pendant les 24 h qui suivent la sortie, allumable un autre jour et coupable, par la case « Couleurs animées » des Réglages (`settings.cycleCouleurs` : `null` automatique, `true` toujours, `false` jamais) ; à l'arrêt si le téléphone réduit les animations. La liste d'articles et les couleurs de statut ne bougent pas : animer l'accent sur toute la page coûtait 75 % du processeur à la mesure, une animation par bloc environ 6 %.
+- **Typographie et coins** : aucun texte sous 12 px ; les boîtes qui portent du texte ont des coins de 8 ou 12 px (les 4 px ne servent qu'aux favicons, barres et pastilles de légende des graphiques). Un test parcourt les dix surfaces à 320 et 390 px.
 - **Statistiques et journal** : volume par jour et par heure, sources actives et en baisse, médias, délais, incidents du robot ; journal des événements de l'app.
 - **Archive** chargée mois par mois ; **sauvegarde** exportable et importable (réglages, sources, articles lus) ; export OPML des sources.
 - **Mode de secours** : si `feed.json` est injoignable, l'app interroge elle-même les flux (`DEFAULT_FEEDS`) via des proxys, avec sa propre déduplication.
