@@ -1969,6 +1969,10 @@ def test_compteurs_jumeaux(nav, url):
                 if tour:
                     page.clock.run_for(1000)
                     page.wait_for_timeout(250)
+                # Les transitions de couleur doivent être FINIES : sur une CI plus lente, la fin de l'une
+                # (rgb(25, 230, 255) contre rgb(26, 229, 254)) était lue comme un écart entre les deux compteurs.
+                page.evaluate("() => Promise.all(document.getAnimations().filter(a => a.transitionProperty)"
+                              ".map(a => a.finished.catch(() => {})))")
                 v = page.evaluate(LIT)
                 check(len(v["h"]) in (4, 5, 6) and v["h"] == v["p"],
                       "%s les %d tuiles sont identiques, chiffre par chiffre et style par style%s"
@@ -3788,7 +3792,7 @@ def test_compte_a_rebours(nav, url):
     # LE JOUR J. Le palier qui crie est mérité ce jour-là, et ce jour-là
     # seulement.
     jour0 = a("2026-11-19T08:00:00Z")
-    check(jour0["texte"] == "SORTI !" and jour0["classe"].endswith("final"),
+    check(jour0["texte"] == "SORTI !" and "final" in jour0["classe"].split(),
           "[compteur] le jour même, il l'annonce et garde le palier fort "
           "(« %s » / %s)" % (jour0["texte"], jour0["classe"]))
 
@@ -3799,7 +3803,7 @@ def test_compte_a_rebours(nav, url):
     jour3 = a("2026-11-22T08:00:00Z")
     check(jour3["texte"] == "+3 j",
           "[compteur] et continue ensuite (« %s »)" % jour3["texte"])
-    check(jour3["classe"] == "countdown",
+    check("final" not in jour3["classe"].split() and "countdown" in jour3["classe"].split(),
           "[compteur] le ton redescend passé le premier jour — un bandeau "
           "rouge permanent n'alerte plus de rien (%s)" % jour3["classe"])
 
@@ -6709,6 +6713,586 @@ def test_badges_filtres_chrono_et_recherches(nav, url):
     ctx.close()
 
 
+def _hex_rvb(h):
+    h = h.strip().lstrip("#")
+    return tuple(int(h[k:k + 2], 16) for k in (0, 2, 4))
+
+
+def test_palette_du_jour_j(nav, url):
+    """Palette du jour J (07/11/2026, planche A) : accent rose, chiffres cyan, dès la sortie.
+
+    LE CYCLE DE COULEURS EST COUPÉ ICI (réglage « cycleCouleurs » à false) : le contrôle porte sur la
+    palette FIXE — celle qu'on voit quand le cycle est arrêté — et sur la pulsation du premier jour, que le
+    cycle remplace quand il tourne. Le cycle a son propre contrôle (test_cycle_de_couleurs).
+
+    Antoni a choisi, sur planche, « pas de dégradé » : à partir du 19/11/2026 00:00, l'accent
+    passe du bleu au rose (sombre #ff5cae, clair #b8146f) et les chiffres du compteur (tuiles de
+    l'en-tête, du panneau, et ligne réduite) au cyan #19e6ff, cerné du trait sombre en clair.
+    AVANT la sortie rien ne bouge : la palette tient à une classe de page, posée par
+    updateCountdown, que ce contrôle lit aux trois moments qui comptent — la veille, le premier
+    jour (palier « final » et sa pulsation gardés) et une semaine plus tard.
+    """
+    print("\n[jour J] accent rose et chiffres cyan à partir de la sortie")
+    accent = {"dark": {"avant": "#58b9ff", "apres": "#ff5cae"},
+              "light": {"avant": "#1d4ed8", "apres": "#b8146f"}}
+    instants = (("avant", "2026-11-18T12:00:00Z"),
+                ("apres", "2026-11-18T23:30:00Z"),      # 00:30 à Paris : le premier jour
+                ("apres", "2026-11-25T10:00:00Z"))      # une semaine plus tard
+    cyan = (25, 230, 255)
+    for theme in ("dark", "light"):
+        for avant_apres, instant in instants:
+            etiq = "[%s %s]" % (theme, instant[:10])
+            ctx = nav.new_context(viewport={"width": 390, "height": 800}, color_scheme=theme,
+                                  timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                                "JSON.stringify({splashActif:false, cycleCouleurs:false}));}catch(e){}")
+            ctx.clock.install(time=instant)
+            page = ctx.new_page()
+            erreurs = []
+            page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+            page.goto(url, wait_until="load")
+            page.wait_for_selector(".header-haut")
+            page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
+            page.wait_for_timeout(300)
+            m = page.evaluate("""() => {
+                const racine = document.documentElement;
+                const b = document.querySelector('#countdown .cd-t[data-u="s"] b');
+                const cs = getComputedStyle(b), cb = getComputedStyle(document.getElementById('cbCompteur'));
+                return {classe: racine.classList.contains('apres-sortie'),
+                        accent: getComputedStyle(racine).getPropertyValue('--accent').trim(),
+                        chiffre: cs.color, trait: parseFloat(cs.webkitTextStrokeWidth) || 0,
+                        traitCouleur: cs.webkitTextStrokeColor, ligne: cb.color,
+                        classes: document.getElementById('countdown').className,
+                        anim: getComputedStyle(document.getElementById('countdown')).animationName,
+                        encre: getComputedStyle(racine).getPropertyValue('--compte-encre').trim()}; }""")
+            lire = lambda css: tuple(int(x) for x in re.findall(r"\d+", css)[:3])
+            attendu = accent[theme][avant_apres]
+            # @property <color> : le navigateur rend --accent en rgb(), plus en #hex.
+            rendu = lire(m["accent"]) if m["accent"].startswith("rgb") else _hex_rvb(m["accent"])
+            check(m["classe"] == (avant_apres == "apres"),
+                  "%s la page %s la classe « apres-sortie » (%s)"
+                  % (etiq, "porte" if avant_apres == "apres" else "ne porte pas", m["classe"]))
+            check(rendu == _hex_rvb(attendu),
+                  "%s l'accent est %s (%s)" % (etiq, attendu, m["accent"]))
+            if avant_apres == "apres":
+                check(lire(m["chiffre"]) == cyan,
+                      "%s les chiffres des tuiles sont cyan (%s)" % (etiq, m["chiffre"]))
+                check(lire(m["ligne"]) == cyan,
+                      "%s la ligne réduite est cyan aussi (%s)" % (etiq, m["ligne"]))
+                if theme == "light":
+                    check(m["trait"] >= 1 and lire(m["traitCouleur"]) == _hex_rvb(m["encre"]),
+                          "%s en clair, le cyan est cerné du trait sombre (%.1f px, %s)"
+                          % (etiq, m["trait"], m["traitCouleur"]))
+                premier = instant.startswith("2026-11-18T23")
+                check(("final" in m["classes"].split()) == premier,
+                      "%s le palier « final » ne vaut que le premier jour (%s)" % (etiq, m["classes"]))
+                if premier:
+                    check(m["anim"] != "none",
+                          "%s la pulsation du premier jour est gardée (%s)" % (etiq, m["anim"]))
+                page.evaluate("() => ouvreCompteur()")
+                page.wait_for_timeout(300)
+                t = page.evaluate("""() => { const b = document.querySelector(
+                    '#compteurContenu .tuile-panneau .countdown .cd-t:not(.zero) b');
+                    return b ? getComputedStyle(b).color : null; }""")
+                check(t is not None and lire(t) == cyan,
+                      "%s le panneau du compteur est cyan lui aussi (%s)" % (etiq, t))
+            else:
+                check(lire(m["chiffre"]) != cyan,
+                      "%s avant la sortie les chiffres ne sont pas cyan (%s)" % (etiq, m["chiffre"]))
+            check(not erreurs, "%s aucune erreur JavaScript" % etiq)
+            ctx.close()
+
+
+def test_contraste_jour_j(nav, url):
+    """Aucun texte sous le seuil WCAG avec la palette du jour J, dans les deux thèmes.
+
+    Le balayage de test_contraste_partout ne voit que le fil d'AVANT la sortie. La palette du
+    jour J change l'accent, qui colore la source de chaque carte, les pastilles actives, les
+    liens et les graphiques : ce contrôle rejoue la MÊME sonde, sur les dix mêmes surfaces, à une
+    heure d'après la sortie. Les articles sont fabriqués (dont un officiel) : le fil complet
+    n'apporterait rien de plus à cette mesure et coûterait plus d'une minute.
+    """
+    print("\n[jour J] contraste de la palette sur toutes les surfaces")
+    exceptions = list(EXCEPTIONS_CONTRASTE)
+    ctx = nav.new_context(viewport={"width": 390, "height": 900}, timezone_id="Europe/Paris",
+                          reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                        "JSON.stringify({splashActif:false}));}catch(e){}")
+    ctx.clock.install(time="2026-11-25T10:00:00Z")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("""() => {
+        lastItems = Array.from({length: 12}, (_, i) => ({title: 'Article de test numéro ' + (i + 1),
+          link: 'https://ex.test/' + i, description: 'Résumé de l\\'article ' + i,
+          date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3),
+          official: i === 0}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set([lastItems[3].link, lastItems[4].link]); applyFilters(); }""")
+    page.wait_for_selector(".card", state="attached", timeout=10000)
+    check(page.evaluate("() => document.documentElement.classList.contains('apres-sortie')"),
+          "[contraste jour J] l'horloge d'après la sortie pose bien la palette")
+    for theme in ("light", "dark"):
+        page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
+        total, tous = 0, []
+        for nom, ouvre in SURFACES_CONTRASTE:
+            page.evaluate(FERME_TOUT)
+            try:
+                page.evaluate(ouvre)
+            except Exception as e:
+                check(False, "[contraste jour J %s] la surface « %s » ne s'ouvre plus (%s)"
+                      % (theme, nom, str(e).split("\n")[0][:70]))
+                continue
+            page.wait_for_timeout(250)
+            args = [exceptions, CONTRASTE_MINIMAL, CONTRASTE_GRAND_TEXTE]
+            vu = page.evaluate(SONDE_CONTRASTE, args)
+            total += vu["examines"]
+            if vu["ecarts"]:
+                page.wait_for_timeout(500)
+                encore = {(e["ou"], e["texte"]) for e in page.evaluate(SONDE_CONTRASTE, args)["ecarts"]}
+                vu["ecarts"] = [e for e in vu["ecarts"] if (e["ou"], e["texte"]) in encore]
+            for e in vu["ecarts"]:
+                tous.append("%s · %s — %.2f:1 (exigé %.1f) sur %s, %s sur %s"
+                            % (nom, e["ou"][:40], e["ratio"], e["exige"], repr(e["texte"])[:30],
+                               e["couleur"], e["fond"]))
+        check(not tous, "[contraste jour J %s] %d texte(s) sous le seuil WCAG : %s"
+              % (theme, len(tous), " | ".join(tous[:4])))
+        check(total >= 300, "[contraste jour J %s] la sonde a bien balayé — %d éléments textuels "
+              "examinés, plancher 300" % (theme, total))
+    ctx.close()
+
+
+def test_texte_douze_px_et_coins(nav, url):
+    """Planche B (07/11/2026) : aucun texte sous 12 px, et aucune boîte à texte à coins de 4 px.
+
+    Mesuré avant la refonte, à 390 px : 207 éléments de texte à 10 ou 11 px, et quatre rayons
+    (4, 8, 12 px et la pastille). Antoni a choisi 12 px au minimum et deux rayons pour les boîtes
+    qui portent du texte. Les 4 px restent permis aux éléments SANS texte (favicons de 14 px,
+    barres et pastilles de légende des graphiques, poignée de feuille) : ce ne sont pas des boîtes.
+    Le contrôle parcourt les mêmes dix surfaces que le balayage de contraste, 320 et 390 px.
+    """
+    print("\n[texte] 12 px au minimum, coins de 4 px réservés aux éléments sans texte")
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 900}, timezone_id="Europe/Paris",
+                              reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                            "JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        page.evaluate("""() => {
+            lastItems = Array.from({length: 12}, (_, i) => ({title: 'Article de test numéro ' + (i + 1),
+              link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+              date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3),
+              official: i === 0}));
+            lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+            // Des articles LUS : sans eux, la rubrique « Ma lecture » n'affiche pas sa jauge, et le <small>
+            // de 10 px qu'elle porte n'était pas balayé — la CI l'a vu, pas mon poste (10/11/2026).
+            readSet = new Set(lastItems.slice(0, 5).map(i => i.link));
+            applyFilters(); }""")
+        page.wait_for_selector(".card", state="attached", timeout=10000)
+        petits, carres, examines = [], [], 0
+        for nom, ouvre in SURFACES_CONTRASTE:
+            page.evaluate(FERME_TOUT)
+            try:
+                page.evaluate(ouvre)
+            except Exception:
+                check(False, "[texte %d px] la surface « %s » ne s'ouvre plus" % (largeur, nom))
+                continue
+            page.wait_for_timeout(250)
+            if nom == "stats · ma lecture":
+                # La jauge de lecture (et son <small>) n'apparaît que si le fil porte des données : en
+                # CI, le réseau est ouvert et l'app charge le vrai fil, pas sur un poste hors ligne.
+                # On la fabrique, pour que le balayage la voie TOUJOURS.
+                page.evaluate("() => document.getElementById('statsContenu')"
+                              ".insertAdjacentHTML('beforeend', jaugeStats('Source de test', 3, 10))")
+            r = page.evaluate("""() => {
+                const petits = [], carres = []; let n = 0;
+                for(const e of document.querySelectorAll('body *')){
+                  const cs = getComputedStyle(e);
+                  if(cs.display === 'none' || cs.visibility === 'hidden' || !e.getClientRects().length) continue;
+                  const aTexte = [...e.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+                  if(aTexte){
+                    n++;
+                    if(parseFloat(cs.fontSize) < 12 - 0.01)
+                      petits.push(e.tagName.toLowerCase() + '.' + [...e.classList].join('.') + ' ' + cs.fontSize);
+                  }
+                  if(cs.borderTopLeftRadius === '4px' && e.textContent.trim())
+                    carres.push(e.tagName.toLowerCase() + '.' + [...e.classList].join('.'));
+                }
+                return {petits, carres, n}; }""")
+            examines += r["n"]
+            petits += [nom + " : " + x for x in r["petits"]]
+            carres += [nom + " : " + x for x in r["carres"]]
+        check(not petits, "[texte %d px] aucun texte sous 12 px (%d fautif(s) : %s)"
+              % (largeur, len(petits), " | ".join(sorted(set(petits))[:4])))
+        check(not carres, "[texte %d px] aucune boîte à texte aux coins de 4 px (%d : %s)"
+              % (largeur, len(carres), " | ".join(sorted(set(carres))[:4])))
+        check(examines >= 300, "[texte %d px] le balayage a bien balayé — %d éléments à texte, "
+              "plancher 300" % (largeur, examines))
+        ctx.close()
+
+
+def test_balayage_des_cartes(nav, url):
+    """Balayage d'une carte (07/11/2026, planche C) : droite = lu, gauche = mis de côté.
+
+    Avant, les DEUX sens faisaient lu / non lu. Antoni a choisi, sur planche, de garder « lu »
+    vers la droite et de mettre l'étoile (« Mettre de côté ») vers la gauche. Le contrôle fait de
+    VRAIS gestes tactiles par le protocole du navigateur : un geste franc dans chaque sens, le
+    même geste répété (qui doit défaire), un geste trop court et un défilement vertical (qui ne
+    doivent rien faire), puis l'indice que la carte révèle — l'icône « lu » à droite, l'étoile à
+    gauche, jamais les deux.
+    """
+    print("\n[balayage] droite = lu, gauche = mis de côté")
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}, has_touch=True, is_mobile=True,
+                          timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                        "JSON.stringify({splashActif:false}));}catch(e){}")
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    page.evaluate("""() => {
+        lastItems = Array.from({length: 8}, (_, i) => ({title: 'Article de test numéro ' + (i + 1),
+          link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+          date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3)}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }""")
+    page.wait_for_selector(".card", state="attached", timeout=10000)
+    cdp = ctx.new_cdp_session(page)
+
+    def touche(type_, x=0, y=0):
+        pts = [{"x": x, "y": y}] if type_ != "touchEnd" else []
+        cdp.send("Input.dispatchTouchEvent", {"type": type_, "touchPoints": pts})
+
+    def centre(i):
+        page.evaluate("(i) => document.querySelector('.card[data-lien=\"https://ex.test/' + i + '\"]')"
+                      ".scrollIntoView({block: 'center'})", i)
+        page.wait_for_timeout(150)
+        return page.evaluate("(i) => { const r = document.querySelector('.card[data-lien=\"https://ex.test/'"
+                             " + i + '\"]').getBoundingClientRect(); return [r.left + r.width / 2, "
+                             "r.top + 40]; }", i)
+
+    def glisse(i, dx, dy=0, relache=True, pas=8):
+        x, y = centre(i)
+        touche("touchStart", x, y)
+        for k in range(1, pas + 1):
+            touche("touchMove", x + dx * k / pas, y + dy * k / pas)
+        if relache:
+            touche("touchEnd")
+            page.wait_for_timeout(700)
+
+    def etat(i):
+        return page.evaluate("(i) => { const l = 'https://ex.test/' + i; return "
+                             "{lu: readSet.has(l), cote: misDeCote.has(l)}; }", i)
+
+    glisse(0, 140)
+    e = etat(0)
+    check(e["lu"] and not e["cote"], "[balayage] un geste franc vers la DROITE marque lu (%s)" % e)
+    glisse(1, -140)
+    e = etat(1)
+    check(e["cote"] and not e["lu"],
+          "[balayage] un geste franc vers la GAUCHE met de côté, sans marquer lu (%s)" % e)
+    glisse(1, -140)
+    e = etat(1)
+    check(not e["cote"] and not e["lu"],
+          "[balayage] le même geste vers la gauche retire de la liste (%s)" % e)
+    glisse(0, 140)
+    check(not etat(0)["lu"], "[balayage] le même geste vers la droite remet en non lu")
+    glisse(2, 30)
+    glisse(2, -30)
+    e = etat(2)
+    check(not e["lu"] and not e["cote"], "[balayage] un geste trop court ne fait rien (%s)" % e)
+    glisse(3, 10, dy=160)
+    e = etat(3)
+    check(not e["lu"] and not e["cote"], "[balayage] un défilement vertical ne fait rien (%s)" % e)
+
+    # L'indice que la carte révèle, mesuré PENDANT le geste (relâché sous le seuil : aucune action).
+    for sens, dx, visible, cache in (("droite", 40, "sh-lu", "sh-cote"), ("gauche", -40, "sh-cote", "sh-lu")):
+        glisse(4, dx, relache=False)
+        m = page.evaluate("""([v, c]) => {
+            const w = document.querySelector('.swipe-wrap.glisse');
+            if(!w) return null;
+            const d = x => getComputedStyle(w.querySelector('.' + x)).display;
+            return {visible: d(v), cache: d(c), fond: getComputedStyle(w.querySelector('.swipe-hint')).backgroundColor,
+                    gauche: w.classList.contains('vers-gauche')}; }""", [visible, cache])
+        touche("touchEnd")
+        page.wait_for_timeout(500)
+        check(m is not None and m["visible"] != "none" and m["cache"] == "none"
+              and m["gauche"] == (sens == "gauche"),
+              "[balayage] vers la %s l'indice montre « %s » et cache « %s » (%s)"
+              % (sens, visible, cache, m))
+        check(etat(4) == {"lu": False, "cote": False},
+              "[balayage] un geste relâché sous le seuil, vers la %s, n'a rien changé (%s)"
+              % (sens, etat(4)))
+    check(not erreurs, "[balayage] aucune erreur JavaScript")
+    ctx.close()
+
+
+JOUR_J = "2026-11-18T23:30:00Z"      # 00:30 à Paris le 19/11 : le premier jour
+VEILLE = "2026-11-12T10:00:00Z"
+LENDEMAIN = "2026-11-20T10:00:00Z"   # plus de 24 h après la sortie
+
+
+def _ouvre_cycle(nav, url, instant, reglage="auto", theme="dark", reduit=False):
+    """Ouvre l'app à `instant`, avec le réglage « cycleCouleurs » demandé (« auto » : jamais touché)."""
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}, color_scheme=theme,
+                          timezone_id="Europe/Paris",
+                          reduced_motion="reduce" if reduit else "no-preference")
+    corps = {"splashActif": False}
+    if reglage != "auto":
+        corps["cycleCouleurs"] = reglage
+    # Posé SEULEMENT si le stockage est vide : un script d'initialisation rejoué à chaque chargement
+    # effaçait ce que la page venait d'enregistrer, et le contrôle de persistance échouait à tort.
+    ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))"
+                        "localStorage.setItem('gta6watch:settings-v1', JSON.stringify(%s));}catch(e){}"
+                        % json.dumps(corps))
+    ctx.clock.install(time=instant)
+    page = ctx.new_page()
+    erreurs = []
+    page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector(".header-haut")
+    page.evaluate("(t) => document.documentElement.setAttribute('data-theme', t)", theme)
+    page.wait_for_timeout(300)
+    return ctx, page, erreurs
+
+
+SONDE_ANIMATIONS = """() => {
+    const noms = {};
+    for(const a of document.getAnimations()){
+      const n = a.animationName || '';
+      if(n) noms[n] = (noms[n] || 0) + 1;
+    }
+    const pause = () => document.getAnimations().length;
+    return {noms, classe: document.documentElement.classList.contains('cycle-couleur'),
+            pulsation: !!document.getElementById('countdown') && document.getAnimations()
+              .some(a => a.animationName === 'countdown-pulse' && a.effect.target === document.getElementById('countdown'))}; }"""
+
+# Ne gèle QUE les animations du cycle. Geler « toutes » les animations mettait aussi en pause les
+# TRANSITIONS de couleur (onglets, boutons) et les ramenait à leur premier instant : à 0 ms, l'onglet
+# « Robot » était lu blanc sur blanc (1,00:1), un contraste qui n'a jamais existé à l'écran. L'erreur
+# était celle de l'instrument, et la CI l'a trouvée avant moi (10/11/2026).
+FIGE = """(t) => { for(const a of document.getAnimations()){
+    const n = a.animationName;
+    if(n && (n === 'cycle-accent' || n.startsWith('cycle-chiffre'))){ a.pause(); a.currentTime = t; } } }"""
+
+LIT_COULEURS = """() => {
+    // L'accent est animé sur des blocs, pas sur <html> : on le lit sur l'en-tête.
+    const racine = getComputedStyle(document.querySelector('header.console'));
+    const b = [...document.querySelectorAll('#countdown .cd-t:not(.zero) b')];
+    return {accent: racine.getPropertyValue('--accent').trim(),
+            chiffres: b.map(e => getComputedStyle(e).color),
+            delais: b.map(e => { const a = e.getAnimations().find(x => x.animationName.startsWith('cycle-chiffre'));
+                                  return a ? a.effect.getTiming().delay : null; })}; }"""
+
+
+def test_cycle_de_couleurs(nav, url):
+    """Cycle de couleurs (10/11/2026) : d'office le jour J, activable et coupable dans les Réglages.
+
+    Demandé par Antoni : l'accent et les chiffres du compteur passent en boucle du cyan au rose.
+    Actif d'office le jour de la sortie (24 h), allumable n'importe quel autre jour, coupable même
+    le jour J. Le contrôle lit les ANIMATIONS EN COURS du navigateur (pas seulement une classe) :
+    un cycle qui ne tourne pas serait indiscernable d'un cycle qui tourne. Puis il fige le temps
+    pour lire les couleurs aux instants clés, vérifie que les tuiles se décalent (en vague), que la
+    pulsation d'opacité est remplacée, que « réduire les animations » l'arrête, et que le réglage
+    n'est écrit que par la case — pas par l'enregistrement d'un AUTRE champ, qui aurait figé le
+    réglage « automatique » sur « non » dès la première sauvegarde hors du jour J.
+    """
+    print("\n[cycle] actif d'office le jour J, allumable, coupable")
+    lire = lambda css: tuple(int(x) for x in re.findall(r"\d+", css)[:3])
+    cas = (
+        ("la veille, réglage jamais touché", VEILLE, "auto", False),
+        ("le jour J, réglage jamais touché", JOUR_J, "auto", True),
+        ("le jour J, coupé par Antoni", JOUR_J, False, False),
+        ("la veille, allumé par Antoni", VEILLE, True, True),
+        ("le lendemain (24 h passées), jamais touché", LENDEMAIN, "auto", False),
+        ("le lendemain, allumé par Antoni", LENDEMAIN, True, True),
+    )
+    for nom, instant, reglage, attendu in cas:
+        ctx, page, erreurs = _ouvre_cycle(nav, url, instant, reglage)
+        m = page.evaluate(SONDE_ANIMATIONS)
+        check(m["classe"] == attendu, "[cycle] %s : classe « cycle-couleur » %s (%s)"
+              % (nom, "posée" if attendu else "absente", m["classe"]))
+        check(("cycle-accent" in m["noms"]) == attendu,
+              "[cycle] %s : l'animation de l'accent %s (%s)"
+              % (nom, "tourne" if attendu else "ne tourne pas", sorted(m["noms"])))
+        tuiles = sum(v for k, v in m["noms"].items() if k.startswith("cycle-chiffre"))
+        check((tuiles > 0) == attendu, "[cycle] %s : %d animation(s) de chiffres" % (nom, tuiles))
+        if instant == JOUR_J:
+            check(m["pulsation"] == (not attendu),
+                  "[cycle] %s : la pulsation d'opacité du premier jour %s"
+                  % (nom, "est remplacée" if attendu else "est gardée"))
+        check(not erreurs, "[cycle] %s : aucune erreur JavaScript" % nom)
+        ctx.close()
+
+    # LES COULEURS AUX INSTANTS CLÉS, dans les deux thèmes.
+    attendu = {"dark": {0: (25, 230, 255), 1000: (179, 136, 255), 2000: (255, 92, 174)},
+               "light": {0: (0, 112, 138), 1000: (124, 58, 237), 2000: (184, 20, 111)}}
+    for theme in ("dark", "light"):
+        ctx, page, _ = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        for t, rvb in attendu[theme].items():
+            page.evaluate(FIGE, t)
+            page.wait_for_timeout(120)
+            c = page.evaluate(LIT_COULEURS)
+            ecart = max(abs(a - b) for a, b in zip(lire(c["accent"]), rvb))
+            check(ecart <= 3, "[cycle %s] à %d ms l'accent est %s (%s)" % (theme, t, rvb, c["accent"]))
+        # La tuile des jours est grisée à zéro le premier jour : la première tuile VIVANTE n'est pas la
+        # première du cycle. On fige donc au moment où SON décalage la ramène au début du cycle.
+        c = page.evaluate(LIT_COULEURS)
+        d0 = c["delais"][0] if c["delais"] else None
+        rang = round(-d0 / 450) if d0 is not None else 0
+        page.evaluate(FIGE, (4000 - 450 * rang) % 4000)
+        page.wait_for_timeout(120)
+        c = page.evaluate(LIT_COULEURS)
+        check(len(c["chiffres"]) >= 3 and lire(c["chiffres"][0]) == (25, 230, 255),
+              "[cycle %s] la première tuile vivante est cyan au début de SON cycle (%s)"
+              % (theme, c["chiffres"][:1]))
+        check(len(set(c["chiffres"])) == len(c["chiffres"]),
+              "[cycle %s] les tuiles sont décalées, en vague (%s)" % (theme, c["chiffres"]))
+        d = c["delais"]
+        check(all(x is not None for x in d) and all(abs((d[i + 1] - d[i]) + 450) < 1 for i in range(len(d) - 1)),
+              "[cycle %s] 450 ms de décalage entre deux tuiles (%s)" % (theme, d))
+        ctx.close()
+
+    # RÉDUIRE LES ANIMATIONS : la classe est posée, rien ne bouge, et le réglage le dit.
+    ctx, page, _ = _ouvre_cycle(nav, url, JOUR_J, "auto", "dark", reduit=True)
+    m = page.evaluate(SONDE_ANIMATIONS)
+    check(not any(k.startswith("cycle") for k in m["noms"]),
+          "[cycle] animations réduites : aucune animation du cycle ne tourne (%s)" % sorted(m["noms"]))
+    page.evaluate("() => openSettings()")
+    existe = page.evaluate("() => !!document.getElementById('cycleCouleurs')")
+    check(existe, "[cycle] la case « Couleurs animées » existe dans les Réglages")
+    if not existe:
+        ctx.close()
+        return
+    check(page.evaluate("() => !document.getElementById('cycleCouleursReduit').hidden"),
+          "[cycle] animations réduites : les Réglages le disent")
+    ctx.close()
+
+    # LA CASE.
+    def stocke(page):
+        return page.evaluate("() => { const s = JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}');"
+                             " return Object.prototype.hasOwnProperty.call(s, 'cycleCouleurs') ? s.cycleCouleurs : 'absent'; }")
+
+    # Hors du jour J : décochée ; l'allumer écrit true, pose la classe, survit au rechargement.
+    ctx, page, _ = _ouvre_cycle(nav, url, VEILLE, "auto")
+    page.evaluate("() => openSettings()")
+    check(not page.evaluate("() => document.getElementById('cycleCouleurs').checked"),
+          "[cycle] la veille la case est décochée")
+    check(not page.evaluate("() => document.getElementById('cycleCouleursReduit').hidden === false"),
+          "[cycle] sans animations réduites, la note est cachée")
+    page.evaluate("() => { const c = document.getElementById('splashActif'); c.checked = !c.checked; c.onchange(); }")
+    check(stocke(page) in ("absent", None),
+          "[cycle] enregistrer un AUTRE champ n'écrit pas le cycle — le réglage reste automatique (%s)" % stocke(page))
+    page.evaluate("() => { const c = document.getElementById('cycleCouleurs'); c.checked = true; c.onchange(); }")
+    check(stocke(page) is True and page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
+          "[cycle] cocher écrit true et lance le cycle tout de suite (%s)" % stocke(page))
+    page.reload(wait_until="load")
+    page.wait_for_selector(".header-haut")
+    check(page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
+          "[cycle] allumé la veille, il tourne encore après un rechargement")
+    page.evaluate("() => openSettings()")
+    check(page.evaluate("() => document.getElementById('cycleCouleurs').checked"),
+          "[cycle] et la case reste cochée")
+    ctx.close()
+
+    # Le jour J : cochée d'office ; la couper écrit false ; un AUTRE champ ne touche à rien.
+    ctx, page, _ = _ouvre_cycle(nav, url, JOUR_J, "auto")
+    page.evaluate("() => openSettings()")
+    check(page.evaluate("() => document.getElementById('cycleCouleurs').checked"),
+          "[cycle] le jour J la case est cochée d'office")
+    # TOUTES LES HORLOGES SONT RECALÉES : la page des Réglages vient d'apparaître, ses animations ont
+    # démarré à leur propre instant ; le battement du compteur les ramène sur celle du document, sinon
+    # un bloc passerait au rose pendant que le reste est cyan.
+    page.clock.run_for(1200)
+    page.wait_for_timeout(150)
+    desynchro = page.evaluate("""() => document.getAnimations().filter(a => (a.animationName === 'cycle-accent'
+        || (a.animationName || '').startsWith('cycle-chiffre')) && a.playState === 'running' && a.startTime !== 0).length""")
+    total_cycle = page.evaluate("""() => document.getAnimations().filter(a => a.animationName === 'cycle-accent').length""")
+    sur_reglages = page.evaluate("""() => document.getAnimations().some(a => a.animationName === 'cycle-accent'
+        && a.effect.target && a.effect.target.classList.contains('page-reglages'))""")
+    # LE PANNEAU DU COMPTEUR, jumeau de l'en-tête dès l'ouverture : ses tuiles démarrent leur cycle au
+    # moment où on l'ouvre, et ne doivent pas attendre la seconde suivante pour retrouver la phase.
+    page.evaluate("() => { closeSettings(); ouvreCompteur(); }")
+    page.wait_for_timeout(100)
+    page.clock.run_for(100)
+    page.wait_for_timeout(100)
+    jumeaux = page.evaluate("""() => { const h = [...document.querySelectorAll('#countdown .cd-t:not(.zero) b')]
+          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
+        const p = [...document.querySelectorAll('#compteurContenu .tuile-panneau .cd-t:not(.zero) b')]
+          .map(b => b.getAnimations().find(a => a.animationName.startsWith('cycle-chiffre')));
+        return {n: p.length, ecarts: p.map((a, i) => a && h[i] ? Math.abs(a.currentTime - a.effect.getTiming().delay * -1
+          - (h[i].currentTime - h[i].effect.getTiming().delay * -1)) : null)}; }""")
+    check(jumeaux["n"] >= 3 and all(e is not None and e < 120 for e in jumeaux["ecarts"]),
+          "[cycle] le panneau du compteur est en phase avec l'en-tête dès l'ouverture (écarts en ms : %s)"
+          % jumeaux["ecarts"])
+    check(sur_reglages and desynchro == 0,
+          "[cycle] les %d animations d'accent partagent l'horloge du document, la page des Réglages comprise (%d à contretemps)"
+          % (total_cycle, desynchro))
+    page.evaluate("() => { const c = document.getElementById('splashActif'); c.checked = !c.checked; c.onchange(); }")
+    check(stocke(page) in ("absent", None) and page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
+          "[cycle] le jour J, enregistrer un autre champ laisse le cycle automatique (%s)" % stocke(page))
+    page.evaluate("() => { const c = document.getElementById('cycleCouleurs'); c.checked = false; c.onchange(); }")
+    check(stocke(page) is False
+          and not page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
+          "[cycle] décocher le jour J écrit false et arrête le cycle (%s)" % stocke(page))
+    page.wait_for_timeout(1500)
+    page.evaluate("() => updateCountdown()")
+    check(not page.evaluate("() => document.documentElement.classList.contains('cycle-couleur')"),
+          "[cycle] et le battement du compteur ne le rallume pas")
+    ctx.close()
+
+
+def test_contraste_du_cycle(nav, url):
+    """Aucun texte sous le seuil WCAG à AUCUN instant du cycle, dans les deux thèmes.
+
+    L'accent bouge : un contraste mesuré à l'instant 0 ne dit rien du violet, ni du rose. Le
+    contrôle fige les animations à cinq instants (0, 500, 1000, 1500, 2000 ms : le cycle est
+    symétrique, la suite est son image) et passe la MÊME sonde que test_contraste_partout sur les
+    dix mêmes surfaces. Le jour J, avec les articles fabriqués d'un fil ordinaire.
+    """
+    print("\n[cycle] contraste à cinq instants du cycle, dix surfaces, deux thèmes")
+    exceptions = list(EXCEPTIONS_CONTRASTE)
+    for theme in ("light", "dark"):
+        ctx, page, _ = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        page.evaluate("""() => {
+            lastItems = Array.from({length: 12}, (_, i) => ({title: 'Article de test numéro ' + (i + 1),
+              link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+              date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0}));
+            lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+            readSet = new Set([lastItems[3].link]); applyFilters(); }""")
+        page.wait_for_selector(".card", state="attached", timeout=10000)
+        total, tous = 0, []
+        for nom, ouvre in SURFACES_CONTRASTE:
+            page.evaluate(FERME_TOUT)
+            try:
+                page.evaluate(ouvre)
+            except Exception as e:
+                check(False, "[cycle %s] la surface « %s » ne s'ouvre plus (%s)"
+                      % (theme, nom, str(e).split("\n")[0][:70]))
+                continue
+            page.wait_for_timeout(250)
+            # Les transitions en cours doivent être FINIES avant de mesurer (onglet qui vient de changer d'état).
+            page.evaluate("() => Promise.all(document.getAnimations().filter(a => a.transitionProperty)"
+                          ".map(a => a.finished.catch(() => {})))")
+            for t in (0, 500, 1000, 1500, 2000):
+                page.evaluate(FIGE, t)
+                page.wait_for_timeout(100)
+                args = [exceptions, CONTRASTE_MINIMAL, CONTRASTE_GRAND_TEXTE]
+                vu = page.evaluate(SONDE_CONTRASTE, args)
+                total += vu["examines"]
+                for e in vu["ecarts"]:
+                    tous.append("%s @%d ms · %s — %.2f:1 (exigé %.1f) sur %s, %s sur %s"
+                                % (nom, t, e["ou"][:40], e["ratio"], e["exige"], repr(e["texte"])[:30],
+                                   e["couleur"], e["fond"]))
+        check(not tous, "[cycle %s] %d texte(s) sous le seuil WCAG : %s"
+              % (theme, len(tous), " | ".join(tous[:4])))
+        check(total >= 1500, "[cycle %s] la sonde a bien balayé — %d relevés, plancher 1500" % (theme, total))
+        ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -6791,6 +7375,12 @@ def main():
             test_badges_filtres_chrono_et_recherches(nav, url)
             test_graphiques_detailles(nav, url)
             test_graphiques_autres_rubriques(nav, url)
+            test_palette_du_jour_j(nav, url)
+            test_contraste_jour_j(nav, url)
+            test_texte_douze_px_et_coins(nav, url)
+            test_balayage_des_cartes(nav, url)
+            test_cycle_de_couleurs(nav, url)
+            test_contraste_du_cycle(nav, url)
             nav.close()
     finally:
         srv.shutdown()

@@ -5904,9 +5904,19 @@ def test_derniers_reports_tactiles_et_courbes():
     check(not restes,
           "aucune transition ne reste sur une courbe par défaut du navigateur"
           + (" (trouvé : %s)" % restes[:2] if restes else ""))
-    pulsations = re.findall(r"animation:[^;]*infinite", html)
+    # LES ANIMATIONS DU CYCLE DE COULEURS sont PAR PAS, exprès (mesure du 10/11/2026) : une
+    # courbe continue fait recalculer le style à chaque image, et le cycle sur l'accent coûtait
+    # alors 75 % du processeur. Elles passent par --cycle-pas (steps(12)) et sont verrouillées à part.
+    toutes = re.findall(r"animation:[^;]*infinite", html)
+    pulsations = [x for x in toutes if "var(--cycle-pas)" not in x]
+    cycle = [x for x in toutes if "var(--cycle-pas)" in x]
     check(all("ease-in-out" in x for x in pulsations),
           "les %d pulsations infinies gardent leur courbe symétrique" % len(pulsations))
+    pas = re.search(r"--cycle-pas:\s*([^;]+);", html)
+    check(len(cycle) >= 3 and pas is not None and pas.group(1).strip() == "steps(12)",
+          "les %d animations du cycle de couleurs passent toutes par --cycle-pas, qui vaut steps(12) "
+          "(trouvé : %s) — une courbe continue refait calculer le style à chaque image"
+          % (len(cycle), pas.group(1).strip() if pas else "absent"))
 
 
 def test_echelle_m3_verrouillee():
