@@ -3702,8 +3702,17 @@ function lanceHalo(){
 // partent entre 0,3 et 1,5 s et tombent en 2,4 à 4,2 s : plus aucun avant 5,7 s.
 function lanceFete(){
   for(const f of document.querySelectorAll(".fete")) f.remove();
-  const compteur = document.getElementById("countdown");
-  const b = compteur ? compteur.getBoundingClientRect() : { left: innerWidth / 2, width: 0, top: innerHeight * 0.3, height: 0 };
+  // D'OÙ PARTENT LES ONDES (défaut d'Antoni, 11/11/2026 : « le halo part depuis le coin en haut à gauche »).
+  // Elles partent du compteur DE L'EN-TÊTE, mais seulement s'il est visible à l'écran : sur Réglages et Stats l'en-tête
+  // est masqué (sa boîte vaut zéro, d'où le coin), et quand on a fait défiler le fil il est sorti de l'écran.
+  // Alors le compteur de la ligne réduite, s'il est là ; sinon le centre de l'écran, un peu au-dessus du milieu.
+  const visible = e => {
+    if(!e) return null;
+    const r = e.getBoundingClientRect();
+    return (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth) ? r : null;
+  };
+  const b = visible(document.getElementById("countdown")) || visible(document.getElementById("cbCompteur"))
+    || { left: innerWidth / 2, width: 0, top: innerHeight * 0.35, height: 0 };
   const f = document.createElement("div");
   f.className = "fete";
   f.setAttribute("aria-hidden", "true");
