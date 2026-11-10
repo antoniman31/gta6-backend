@@ -446,6 +446,13 @@
   body.vue-stats header.console, body.vue-reglages header.console{display:none;}
   body.vue-stats .wrap, body.vue-reglages .wrap{padding-top:64px;}
   body.bh-visible .panneau-tabs{top:52px;}
+  /* LE FONDU SOUS LA BARRE DU BAS (idée 8, 11/11/2026) : les cartes ne sont plus coupées net par la
+     barre. Sous elle (z-index 59 pour 60), ne prend aucun appui. */
+  body::after{
+    content:""; position:fixed; left:0; right:0; bottom:0; z-index:59; pointer-events:none;
+    height:calc(96px + env(safe-area-inset-bottom, 0px));
+    background:linear-gradient(to top, var(--bg) 25%, transparent);
+  }
   .barre-bas{
     position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:60;
     max-width:496px; margin:0 auto; display:flex; gap:2px; padding:6px;
@@ -545,9 +552,13 @@
      hauteur : le champ ne grandit pas, c'est le texte qui grossit. */
   .search-row input{
     width:100%; background:var(--bg-panel); border:1px solid var(--line); color:var(--text);
-    font-family:'Inter',sans-serif; font-size:16px; padding:7px 32px 7px 12px; border-radius:var(--r-sm);
+    font-family:'Inter',sans-serif; font-size:16px; padding:7px 32px 7px 38px; border-radius:var(--r-sm);
     min-height:44px;
   }
+  /* LA LOUPE (idée 9, 11/11/2026) : le champ se lit tout de suite comme un champ de recherche. Posée
+     DANS le champ, à gauche, sans prendre de place : le retrait de 38 px laisse le texte la dépasser. */
+  .search-loupe{position:absolute; left:13px; top:50%; width:18px; height:18px; margin-top:-9px;
+    fill:var(--text-dim); pointer-events:none;}
   .search-row input:focus{outline:none; border-color:var(--accent);}
   .search-clear-btn{
     position:absolute; right:6px; top:50%; transform:translateY(-50%);
@@ -612,8 +623,12 @@
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--accent);
     text-transform:uppercase; letter-spacing:0.06em; margin-top:10px; margin-bottom:2px;
     position:sticky; top:0; z-index:5;
-    background:var(--bg); padding:6px 0 4px;
+    background:color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter:blur(8px);
+    padding:6px 0 4px;
+    display:flex; align-items:center; gap:10px;
   }
+  /* LE TRAIT DU TITRE DE JOUR (idée 7, 11/11/2026) : il file jusqu'au bord, en dégradé d'accent. */
+  .day-label::after{content:""; flex:1; height:1px; background:linear-gradient(90deg, var(--accent), transparent);}
   @keyframes card-enter{
     from{opacity:0; transform:translateY(4px);}
     to{opacity:1; transform:translateY(0);}
@@ -960,7 +975,9 @@
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);
     text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap;
   }
-  .card-title{font-size:14px; font-weight:600; line-height:1.4; margin-bottom:6px;}
+  /* 16 px gras (idée 10, 11/11/2026) : le titre est ce qu'on lit d'une carte, il passait derrière les
+     pastilles et les boutons. Le mode compact garde ses 13 px. */
+  .card-title{font-size:16px; font-weight:700; line-height:1.3; margin-bottom:6px;}
   .card-title mark{background:var(--accent); color:var(--accent-contrast); border-radius:var(--r-xs); padding:0 1px;}
   /* Le lien devient un BLOC et non plus du texte en ligne : sa zone de clic
      couvre alors tout le titre, et min-height la porte à 44 px quand le titre
@@ -1149,6 +1166,16 @@
   .resume-marker::before, .resume-marker::after{
     content:""; flex:1; height:1px; background:var(--accent); opacity:0.35;
   }
+
+  /* LE REPÈRE « NOUVEAUX · DÉJÀ VUS » (idée 5, 11/11/2026) : une ligne à l'endroit où le fil passe des articles
+     neufs à ceux déjà vus. Distinct de « lu jusqu'ici », qui marque où la LECTURE s'est arrêtée. */
+  .repere-nouveaux{
+    display:flex; align-items:center; gap:10px; margin:10px 0;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+    color:var(--accent); letter-spacing:0.1em; text-transform:uppercase;
+  }
+  .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--accent));}
+  .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--accent), transparent);}
 
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
@@ -1418,8 +1445,19 @@
   /* GRILLE À DEUX COLONNES (planche du 10/11/2026) : en flex qui passe à la ligne, « Dans le fil »
      posait trois chiffres sur une rangée et le quatrième seul dessous. */
   .stats-chiffres{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px 12px; margin:4px 0 2px;}
-  .stats-chiffre b{display:block; font-size:20px; font-weight:600; color:var(--text);}
-  .stats-chiffre span{font-size:12px; color:var(--text-dim);}
+  /* LES CHIFFRES EN TUILES (idée 4, 11/11/2026) : la police du compteur, 30 px, dans une tuile à bordure.
+     Accent pour les deux premiers, couleur d'avertissement pour les deux suivants (la couleur qui, dans
+     l'app, ne veut pas dire « actif »). */
+  .stats-chiffre{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md); padding:12px 12px 10px;
+    min-width:0;
+  }
+  .stats-chiffre b{
+    display:block; font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:800; line-height:1.1;
+    letter-spacing:-0.02em; color:var(--accent); font-variant-numeric:tabular-nums;
+  }
+  .stats-chiffre:nth-child(n+3) b{color:var(--warn);}
+  .stats-chiffre span{display:block; margin-top:2px; font-size:12px; color:var(--text-dim);}
   .stats-liste{list-style:none; margin:0; padding:0; font-size:13px;}
   .stats-liste li{display:flex; justify-content:space-between; gap:12px;
     padding:6px 0; border-top:1px solid var(--line);}
@@ -1653,10 +1691,12 @@
      arrondis. Seuls les deux coins du BAS sont arrondis (rayon --rayon-cadre) ; ceux du haut restent à
      angle droit, sous la barre d'état. Le trait est une VRAIE bordure à coins arrondis : le bord intérieur prend tout seul le rayon moins l'épaisseur, ce que ne faisait
      pas le masque sur la zone de contenu. Le rayon vient des Réglages (curseur « Coins de l'écran »). */
-  html{--rayon-cadre:32px;}
+  /* UNE SEULE ÉPAISSEUR pour toutes les bordures en dégradé (Antoni, 11/11/2026 : « pour être harmonieux, que
+     toutes les bordures fassent la même taille ») : le cadre de l'écran, les cartes et les tuiles. */
+  html{--rayon-cadre:32px; --bord-ep:2px;}
   html.cadre-j .cadre-ecran, html.cadre-apercu .cadre-ecran{
     display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none;
-    border:3px solid transparent; border-radius:0 0 var(--rayon-cadre) var(--rayon-cadre);
+    border:var(--bord-ep) solid transparent; border-radius:0 0 var(--rayon-cadre) var(--rayon-cadre);
     background:conic-gradient(from var(--cadre-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
     -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
     -webkit-mask-composite:xor; mask-composite:exclude;
@@ -1676,10 +1716,59 @@
     box-shadow:inset 0 0 0 2px var(--cycle-c),
       inset 0 0 28px 4px color-mix(in srgb, var(--cycle-c) 45%, transparent),
       inset 0 0 60px 10px color-mix(in srgb, var(--cycle-a) 28%, transparent);
-    animation:halo-j 1.2s ease-in-out 1 both;
+    animation:halo-j 6s ease-in-out 1 both;
   }
-  @keyframes halo-j{0%{opacity:0;} 15%{opacity:1;} 100%{opacity:0;}}
-  @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif{display:none;} }
+  /* LE GRAND MOMENT DE MINUIT (Antoni, 11/11/2026, storyboard validé) : six secondes. Un flash bref, deux ondes de
+     choc qui partent du compteur, le halo qui RESPIRE trois fois, soixante-dix confettis, une vibration courte.
+     Rien ne prend un appui, rien ne reste après 6,3 s, rien du tout quand le téléphone réduit les animations. Un
+     SEUL éclair, bien en dessous de trois par seconde. */
+  @keyframes halo-j{0%{opacity:0;} 6%{opacity:1;} 22%{opacity:.45;} 38%{opacity:1;} 54%{opacity:.45;} 70%{opacity:1;} 100%{opacity:0;}}
+  .fete{position:fixed; inset:0; z-index:2147483001; pointer-events:none; overflow:hidden;}
+  .fete .fete-flash{
+    position:absolute; inset:0; opacity:0; animation:fete-flash .45s ease-out 1 both;
+    background:radial-gradient(circle at 50% 30%, #fff 0%, color-mix(in srgb, var(--cycle-a) 28%, #fff) 40%, transparent 80%);
+  }
+  @keyframes fete-flash{0%{opacity:0;} 10%{opacity:.9;} 100%{opacity:0;}}
+  .fete .fete-onde{
+    position:absolute; left:var(--cx); top:var(--cy); width:40px; height:40px; margin:-20px 0 0 -20px; border-radius:50%;
+    border:6px solid transparent; opacity:0;
+    background:conic-gradient(var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+    -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    animation:fete-onde 1.6s cubic-bezier(.1,.6,.3,1) 1 both;
+  }
+  .fete .fete-onde.deux{animation-delay:.25s; border-width:3px;}
+  @keyframes fete-onde{0%{opacity:.95; transform:scale(1);} 100%{opacity:0; transform:scale(34);}}
+  .fete .fete-confetti{
+    position:absolute; top:-24px; width:9px; height:16px; opacity:0;
+    animation:fete-chute var(--d) linear var(--t) 1 both;
+  }
+  @keyframes fete-chute{
+    0%{opacity:0; transform:translate3d(0,0,0) rotate(0deg);} 6%{opacity:1;} 92%{opacity:1;}
+    100%{opacity:0; transform:translate3d(var(--dx),115vh,0) rotate(var(--r));}
+  }
+  @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif, .fete{display:none;} }
+  /* LES BORDURES DES TUILES ET DES CARTES (Antoni, 11/11/2026 : « fais pareil sur la bordure des cartes et des
+     tuiles », 2 px, « même les tuiles grisées, les bordures pas le texte »). Même dégradé conique que le cadre de
+     l'écran, et la MÊME horloge : l'angle --bord-ang est animé par cycle-bord (24 pas en 4 s, comme cycle-cadre),
+     recalé sur l'horloge du document comme toutes les animations « cycle-* ». Les cartes ne tournent que
+     LORSQU'ELLES SONT À L'ÉCRAN (classe dans-ecran, posée par un IntersectionObserver) : une animation par carte
+     coûtait 21 ms par image avec 500 cartes. Les cartes « officielles » gardent leur bordure orange, qui porte un
+     sens. La tuile « jours » grisée à 00 prend la bordure aussi (pleine, un dégradé ne se pointille pas) ; son
+     texte reste gris. */
+  @property --bord-ang{syntax:"<angle>"; inherits:true; initial-value:0deg;}
+  @keyframes cycle-bord{from{--bord-ang:0deg;} to{--bord-ang:360deg;}}
+  html.bordures-j .card:not(.official), html.bordures-j .cd-t{
+    border:var(--bord-ep) solid transparent;
+    background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
+      conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+  }
+  html.bordures-j .cd-t.zero{border-style:solid;}
+  html.cycle-couleur.bordures-j .cd-t{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
+  html.cycle-couleur .card.dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
+  html.cycle-couleur.bordures-j .card.dans-ecran:not(.official){
+    animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite, cycle-bord var(--cycle-duree) steps(24) infinite;
+  }
   /* L'écran de chargement du jour J : le « VI » du logo vire du bleu au rose (rotation de teinte,
      mesurée sur la capture) et la ligne principale prend le dégradé. */
   .splash.splash-jourj .splash-logo{filter:hue-rotate(125deg);}
@@ -1945,6 +2034,20 @@
   .feed-count{
     margin:-4px 2px 12px; justify-content:flex-start;
   }
+  /* LE CHEVRON « PAR SOURCE » (idée 2, version B, 11/11/2026). Les trois sources (Non Rockstar, Rockstar,
+     RockstarMag) sont repliées derrière lui : fermées, le haut du fil gagne la rangée. Le texte reste à
+     12 px, la ZONE DE TOUCHER fait 44 px de haut (::after) sans grossir la ligne. Avec un filtre de source
+     actif le bouton porte son nom, en couleur d'accent. */
+  .rangee-sources.ferme{display:none;}
+  .sources-btn{
+    margin-left:auto; position:relative; display:inline-flex; align-items:center; gap:2px;
+    background:none; border:0; padding:0; font:inherit; font-size:12px; color:var(--accent); cursor:pointer;
+    min-height:0; min-width:0;
+  }
+  .sources-btn::after{content:""; position:absolute; inset:-14px -8px;}
+  .sources-btn .ic{width:18px; height:18px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
+  .sources-btn[aria-expanded="true"] .ic{transform:rotate(180deg);}
+  .sources-btn.filtre-actif{font-weight:700;}
   /* État du dernier passage du robot. Même famille que .console-status,
      en un cran plus discret : c'est une information de fond, pas une
      action. Sur toute la largeur pour ne pas se battre avec countLine. */
@@ -2313,6 +2416,8 @@
 <symbol id="i-undo" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></symbol>
 <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/></symbol>
 <symbol id="i-star_border" viewBox="0 0 24 24"><path d="m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></symbol>
+<symbol id="i-expand_more" viewBox="0 0 24 24"><path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></symbol>
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></symbol>
 <symbol id="i-arrow_downward" viewBox="0 0 24 24"><path d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></symbol>
@@ -2425,6 +2530,7 @@
   <main>
   <div class="search-row">
     <div class="search-input-wrap">
+      <svg class="ic search-loupe" aria-hidden="true" focusable="false"><use href="#i-search"/></svg>
       <input type="text" id="searchInput" placeholder="Filtrer par mot-clé…" oninput="debouncedSearch(); toggleClearButton();">
       <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none;" aria-label="Effacer"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-close"/></svg></button>
     </div>
@@ -2451,7 +2557,7 @@
     <button class="tab active" id="tabAll" aria-pressed="true" onclick="setTab('all')">Tous les articles</button>
     <button class="tab" id="tabMajeur" aria-pressed="false" onclick="setTab('majeur')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-local_fire_department"/></svg> Actu majeure <span class="tab-badge" id="badgeMajeur"></span></button>
   </div>
-  <div class="tab-row">
+  <div class="tab-row rangee-sources ferme" id="rangeeSources">
     <button class="tab" id="tabNonRockstar" aria-pressed="false" onclick="setTab('non-rockstar')">Non Rockstar <span class="tab-badge" id="badgeNonRockstar"></span></button>
     <button class="tab" id="tabRockstar" aria-pressed="false" onclick="setTab('rockstar')">Rockstar <span class="tab-badge" id="badgeRockstar"></span></button>
     <button class="tab" id="tabRockstarmag" aria-pressed="false" onclick="setTab('rockstarmag')">RockstarMag <span class="tab-badge" id="badgeRockstarmag"></span></button>
@@ -2465,6 +2571,7 @@
        explicitement ce que chaque nombre veut dire. -->
   <div class="console-status feed-count">
     <span id="countLine">0 article suivi</span>
+    <button type="button" class="sources-btn" id="sourcesBtn" aria-expanded="false" aria-controls="rangeeSources" onclick="basculeSources()"><span id="sourcesLibelle">Par source</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg></button>
     <span id="historyLine" class="history-line" style="display:none;"></span>
     <span id="archiveLine" class="history-line" style="display:none;"></span>
   </div>
@@ -2655,6 +2762,21 @@
     <div class="setting-group">
       <span class="setting-label">Couleurs</span>
       <div class="setting-row">
+        <label for="coulTout">Tous les effets du jour J</label>
+        <input type="checkbox" id="coulTout" onchange="basculeTousEffets(this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        Allume ou éteint d'un coup tous les effets ci-dessous (le halo de minuit mis à part). Cochée à moitié :
+        certains sont allumés, d'autres non. Les cases individuelles restent réglables une par une.
+      </div>
+      <div class="setting-row">
+        <label for="coulAutoBtn">Retour à l'automatique</label>
+        <button type="button" id="coulAutoBtn" onclick="effetsEnAutomatique()">Remettre en automatique</button>
+      </div>
+      <div class="setting-desc" hidden>
+        Chaque effet redevient éteint, sauf le jour de la sortie où il s'allume tout seul pendant 24 h.
+      </div>
+      <div class="setting-row">
         <label for="cycleCouleurs">Couleurs animées</label>
         <input type="checkbox" id="cycleCouleurs" onchange="basculeCycleCouleurs(this.checked)">
       </div>
@@ -2674,7 +2796,8 @@
       <div class="setting-desc" hidden>
         Un trait en dégradé cyan, violet, rose fait le tour de tout l'écran, et le panneau du compteur
         affiche « GTA VI est sorti » après la sortie. Il tourne avec les couleurs animées. Le jour de la
-        sortie, à minuit pile, un halo d'une seconde l'accompagne si l'app est ouverte.
+        sortie, à minuit pile, le grand moment (flash, ondes, halo, confettis, six secondes) l'accompagne
+        si l'app est ouverte.
       </div>
       <div class="setting-row">
         <label for="rayonCadre">Coins du bas de l'écran : <span id="rayonCadreVal"></span> px</label>
@@ -2682,8 +2805,8 @@
       </div>
       <div class="setting-desc" hidden>
         Le rayon des coins arrondis du BAS de ton écran : le cadre les suit (ceux du haut restent droits). Tire le curseur : le cadre
-        s'affiche tout seul pendant que tu règles. Le rayon de départ est une estimation tirée des
-        fiches Samsung, pas une mesure de ton téléphone.
+        s'affiche tout seul pendant que tu règles. Le rayon de départ (32 px) est celui réglé sur un
+        Galaxy S26 Ultra ; un autre téléphone peut en demander un autre.
       </div>
       <div class="setting-row">
         <label for="coulBarreEtat">Barre d'état du téléphone</label>
@@ -2711,12 +2834,22 @@
         couleurs animées.
       </div>
       <div class="setting-row">
+        <label for="coulBordures">Bordures des tuiles et des cartes</label>
+        <input type="checkbox" id="coulBordures" onchange="basculeEffet('coulBordures', this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        Les bordures de 2 px des tuiles du compteur et des cartes d'article prennent le dégradé du
+        cadre, et tournent avec les couleurs animées. Les cartes officielles gardent leur bordure
+        orange. Seules les cartes à l'écran tournent.
+      </div>
+      <div class="setting-row">
         <label for="lanceHaloBtn">Halo de minuit</label>
         <button type="button" id="lanceHaloBtn" onclick="lanceHalo()">Lancer le halo</button>
       </div>
       <div class="setting-desc" hidden>
-        Une seconde de halo rose et cyan autour de l'écran, pour l'essayer. Indisponible quand ton
-        téléphone réduit les animations.
+        Le grand moment de minuit, pour l'essayer : un flash, deux ondes de choc, le halo qui respire,
+        des confettis et une vibration courte, pendant six secondes. Indisponible quand ton téléphone
+        réduit les animations ; la vibration dépend du téléphone.
       </div>
     </div>
 
@@ -3142,6 +3275,7 @@ const DEFAULT_SETTINGS = {
   coulBarreEtat: null,
   coulChargement: null,
   coulControles: null,
+  coulBordures: null,
   // Rayon des coins du cadre, en px ; null = le défaut (RAYON_CADRE_DEFAUT).
   rayonCadre: null,
   spoilerKeywords: MOTS_SPOILER.slice(),
@@ -3436,7 +3570,7 @@ function majCompteurMots(idChamp, idCompteur, un, plusieurs, aucun){
 // pendant les 24 heures qui suivent la sortie, le « premier jour » du compteur.
 const JOUR_J_MS = 86400000;
 // Les effets du jour J, chacun avec sa case : le cycle lui-même et quatre autres (11/11/2026).
-const EFFETS_JOUR_J = ["cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles"];
+const EFFETS_JOUR_J = ["cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles", "coulBordures"];
 function effetActif(cle, maintenant){
   if(settings[cle] === true) return true;
   if(settings[cle] === false) return false;
@@ -3451,6 +3585,7 @@ function appliqueEffetsJourJ(maintenant){
   h.toggle("cycle-couleur", effetActif("cycleCouleurs", maintenant));
   h.toggle("cadre-j", effetActif("coulCadre", maintenant));
   h.toggle("controles-j", effetActif("coulControles", maintenant));
+  h.toggle("bordures-j", effetActif("coulBordures", maintenant));
   appliqueRayonCadre();
   // L'écran de chargement vit avant le chargement des réglages : c'est ce battement, le premier,
   // qui lui donne sa couleur du jour J (le script tourne avant le premier affichage).
@@ -3466,14 +3601,56 @@ function basculeEffet(cle, actif){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde de l'effet " + cle, e); }
   appliqueEffetsJourJ(new Date());
+  majCaseGlobale();
   requestAnimationFrame(syncCycle);
 }
 
-// LES COINS DU CADRE. Défaut 32 px : ESTIMATION, jamais mesurée sur un téléphone. Samsung publie 6,9 po
-// pour le rectangle de l'écran du S26 Ultra et 6,7 po « coins arrondis compris » ; l'écart de 0,2 po
-// (5,1 mm) donne un rayon d'environ 6 mm (0,83 × rayon = écart de diagonale), à ±3 mm près puisque les
-// deux diagonales sont arrondies au dixième. À 5,3 px CSS par millimètre (largeur CSS de 412 px pour
-// 78 mm), cela fait une trentaine de pixels. Antoni règle le reste au curseur.
+// LA CASE GLOBALE : coche tout, décoche tout, ou « à moitié » quand les effets divergent. Elle ÉCRIT chaque
+// réglage (true ou false), à la différence de l'automatique : un effet allumé d'un coup le reste après le jour J.
+function majCaseGlobale(){
+  const tous = document.getElementById("coulTout");
+  if(!tous) return;
+  const etats = EFFETS_JOUR_J.map(c => effetActif(c, new Date()));
+  const toutAllume = etats.every(Boolean), toutEteint = !etats.some(Boolean);
+  tous.checked = toutAllume;
+  tous.indeterminate = !toutAllume && !toutEteint;
+}
+function majCasesEffets(){
+  for(const cle of EFFETS_JOUR_J){
+    const c = document.getElementById(cle);
+    if(c) c.checked = effetActif(cle, new Date());
+  }
+  majCaseGlobale();
+}
+function ecritEffets(valeur){
+  for(const cle of EFFETS_JOUR_J) settings[cle] = valeur;
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){ console.error("Erreur sauvegarde des effets", e); }
+  appliqueEffetsJourJ(new Date());
+  majCasesEffets();
+  requestAnimationFrame(syncCycle);
+}
+function basculeTousEffets(actif){ ecritEffets(!!actif); }
+function effetsEnAutomatique(){ ecritEffets(null); }
+
+// LES CARTES À L'ÉCRAN : seules elles animent leur accent et leur bordure (voir « LES BORDURES DES TUILES ET
+// DES CARTES »). Le fil réécrit tout son contenu à chaque rendu : on relâche l'observateur et on le repose.
+let observateurCartes = null;
+function observeCartes(){
+  if(!("IntersectionObserver" in window)) return;
+  if(!observateurCartes){
+    observateurCartes = new IntersectionObserver(entrees => {
+      for(const e of entrees) e.target.classList.toggle("dans-ecran", e.isIntersecting);
+    }, { rootMargin: "120px 0px" });
+  }
+  observateurCartes.disconnect();
+  for(const c of document.querySelectorAll("#feed .card")) observateurCartes.observe(c);
+}
+
+// LES COINS DU CADRE. Défaut 32 px : mon estimation de départ, que Antoni a CONFIRMÉE au curseur sur son S26 Ultra
+// (« 32 px, c'est nickel », 11/11/2026). Les fiches Samsung ne donnent pas le rayon, seulement 6,9 po pour le
+// rectangle de l'écran et 6,7 po « coins arrondis compris » ; l'écart de 0,2 po (5,1 mm) donnait environ 6 mm à
+// ±3 mm près, soit une trentaine de pixels CSS à 5,3 px par millimètre. Un autre téléphone se règle au curseur.
 const RAYON_CADRE_DEFAUT = 32;
 let minuteurApercuCadre = null;
 function rayonCadreEffectif(){
@@ -3502,6 +3679,10 @@ function reglerRayonCadre(v){
 }
 
 // LE HALO DE MINUIT : une seconde, une fois. Refusé aux téléphones qui réduisent les animations.
+const FETE_DUREE_MS = 6000;
+const FETE_CONFETTIS = 70;
+const FETE_VIBRATION = [180, 80, 180, 80, 420];
+let minuteurFete = null;
 function lanceHalo(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
   const h = document.getElementById("haloJ");
@@ -3509,8 +3690,42 @@ function lanceHalo(){
   h.classList.remove("vif");
   void h.offsetWidth;
   h.classList.add("vif");
-  setTimeout(() => h.classList.remove("vif"), 1300);
+  lanceFete();
+  clearTimeout(minuteurFete);
+  minuteurFete = setTimeout(() => {
+    h.classList.remove("vif");
+    for(const f of document.querySelectorAll(".fete")) f.remove();
+  }, FETE_DUREE_MS + 300);
   return true;
+}
+// Le flash, les deux ondes et les confettis : un calque posé à la demande et retiré à la fin. Les confettis
+// partent entre 0,3 et 1,5 s et tombent en 2,4 à 4,2 s : plus aucun avant 5,7 s.
+function lanceFete(){
+  for(const f of document.querySelectorAll(".fete")) f.remove();
+  const compteur = document.getElementById("countdown");
+  const b = compteur ? compteur.getBoundingClientRect() : { left: innerWidth / 2, width: 0, top: innerHeight * 0.3, height: 0 };
+  const f = document.createElement("div");
+  f.className = "fete";
+  f.setAttribute("aria-hidden", "true");
+  f.style.setProperty("--cx", (b.left + b.width / 2) + "px");
+  f.style.setProperty("--cy", (b.top + b.height / 2) + "px");
+  f.innerHTML = '<div class="fete-flash"></div><div class="fete-onde"></div><div class="fete-onde deux"></div>';
+  const couleurs = ["var(--cycle-a)", "var(--cycle-b)", "var(--cycle-c)", "#fff"];
+  for(let i = 0; i < FETE_CONFETTIS; i++){
+    const c = document.createElement("i");
+    c.className = "fete-confetti";
+    c.style.left = (Math.random() * 100) + "%";
+    c.style.background = couleurs[i % couleurs.length];
+    c.style.setProperty("--d", (2.4 + Math.random() * 1.8) + "s");
+    c.style.setProperty("--t", (0.3 + Math.random() * 1.2) + "s");
+    c.style.setProperty("--dx", ((Math.random() - 0.5) * 160) + "px");
+    c.style.setProperty("--r", ((Math.random() - 0.5) * 1440) + "deg");
+    f.appendChild(c);
+  }
+  document.body.appendChild(f);
+  // La vibration est une faveur du navigateur (Android, et seulement après un premier appui sur la page) :
+  // refusée, elle ne fait rien et ne casse rien.
+  try{ if(navigator.vibrate) navigator.vibrate(FETE_VIBRATION); }catch(e){ /* sans effet */ }
 }
 
 // Remet toutes les animations du cycle sur l'horloge du document : celles d'un bloc apparu plus tard
@@ -3544,6 +3759,7 @@ function basculeCycleCouleurs(actif){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde cycle de couleurs", e); }
   appliqueEffetsJourJ(new Date());
+  majCaseGlobale();
   requestAnimationFrame(syncCycle);
 }
 
@@ -3863,7 +4079,7 @@ function populateSettingsUI(){
   document.getElementById("splashActif").checked = settings.splashActif !== false;
   document.getElementById("cycleCouleurs").checked = cycleCouleursActif(new Date());
   document.getElementById("cycleCouleursReduit").hidden = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-  for(const cle of EFFETS_JOUR_J) document.getElementById(cle).checked = effetActif(cle, new Date());
+  majCasesEffets();
   appliqueRayonCadre();
   document.getElementById("spoilerKeywordsInput").value = (settings.spoilerKeywords || []).join("\n");
   document.getElementById("maxDisplay").value = settings.maxDisplay;
@@ -5616,8 +5832,31 @@ function retourFil(){
   window.scrollTo(0, 0);
 }
 
+// LES SOURCES REPLIÉES (idée 2) : fermées à chaque ouverture, SAUF si un filtre de source est actif : la
+// rangée s'ouvre alors toute seule pour le montrer. Jamais mémorisé (choix d'Antoni, 11/11/2026).
+const ONGLETS_SOURCE = { "non-rockstar": "Non Rockstar", "rockstar": "Rockstar", "rockstarmag": "RockstarMag" };
+let sourcesOuvert = false;
+function majSources(){
+  const rangee = document.getElementById("rangeeSources");
+  const bouton = document.getElementById("sourcesBtn");
+  if(!rangee || !bouton) return;
+  rangee.classList.toggle("ferme", !sourcesOuvert);
+  bouton.setAttribute("aria-expanded", String(sourcesOuvert));
+  const nom = ONGLETS_SOURCE[currentTab];
+  document.getElementById("sourcesLibelle").textContent = nom || "Par source";
+  bouton.classList.toggle("filtre-actif", !!nom);
+  bouton.setAttribute("aria-label", nom ? "Source : " + nom + (sourcesOuvert ? " — replier" : " — déplier les sources")
+                                        : (sourcesOuvert ? "Replier les sources" : "Déplier les sources"));
+}
+function basculeSources(){
+  sourcesOuvert = !sourcesOuvert;
+  majSources();
+}
+
 function setTab(t, silencieux){
   currentTab = t;
+  if(ONGLETS_SOURCE[t]) sourcesOuvert = true;
+  majSources();
   visibleCount = PAGE_SIZE;
   marqueActif("tabAll", t === "all");
   marqueActif("tabMajeur", t === "majeur");
@@ -6612,10 +6851,22 @@ function renderFeed(items, newLinks, searchQuery){
     tailles[b] = (tailles[b] || 0) + 1;
   });
 
+  // LE REPÈRE « NOUVEAUX · DÉJÀ VUS » : posé AVANT la première carte déjà vue qui suit au moins une carte neuve.
+  // Rien si tout est neuf ou si rien ne l'est. Il compte les neuves AFFICHÉES, pas celles de la pagination.
+  let neufsVus = 0, repereMis = false;
   const cardsHtml = paliersDuFil(buckets, bucketOrder, tailles).map(p => `
       <div class="day-group">
         <h2 class="day-label">${escapeHtml(p.libelle)}</h2>
-        ${p.items.map(item => enveloppeCarte(item, newLinks, searchQuery)).join("")}
+        ${p.items.map(item => {
+          let avant = "";
+          if(newLinks && newLinks.has(item.link)) neufsVus++;
+          else if(neufsVus > 0 && !repereMis){
+            repereMis = true;
+            const mot = neufsVus > 1 ? "nouveaux" : "nouveau";
+            avant = `<div class="repere-nouveaux" role="separator" aria-label="${neufsVus} ${mot} au-dessus, déjà vus en dessous">▲ ${neufsVus} ${mot} · déjà vus ▼</div>`;
+          }
+          return avant + enveloppeCarte(item, newLinks, searchQuery);
+        }).join("")}
       </div>
     `).join("");
 
@@ -6627,6 +6878,7 @@ function renderFeed(items, newLinks, searchQuery){
     : "";
 
   feedEl.innerHTML = cardsHtml + loadMoreHtml;
+  observeCartes();
 }
 
 // Chaque carte est enveloppée : l'indice coloré du balayage se peint dessous,
@@ -9905,6 +10157,7 @@ function programmeSplash(){
 // ---------- Init ----------
 majSplash();
 programmeSplash();
+majSources();
 // Avant loadState : le premier rendu du fil doit déjà connaître le repère,
 // sinon le trait « lu jusqu'ici » n'apparaîtrait qu'au rendu suivant.
 chargerReprise();

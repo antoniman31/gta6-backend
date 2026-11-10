@@ -5925,7 +5925,8 @@ def test_derniers_reports_tactiles_et_courbes():
     toutes = re.findall(r"animation:[^;]*infinite", html)
     # Le cadre du jour J tourne en 24 pas (un quart de tour par seconde) : un cycle continu sur une
     # couche plein écran redessinerait tout l'écran à chaque image. Verrouillé à part, plus bas.
-    cadre = [x for x in toutes if x.startswith("animation:cycle-cadre")]
+    # Même règle pour les bordures en dégradé (cartes, tuiles) : elles tournent aussi en 24 pas.
+    cadre = [x for x in toutes if "cycle-cadre" in x or "cycle-bord" in x]
     pulsations = [x for x in toutes if "var(--cycle-pas)" not in x and x not in cadre]
     cycle = [x for x in toutes if "var(--cycle-pas)" in x]
     check(all("ease-in-out" in x for x in pulsations),
@@ -5935,8 +5936,9 @@ def test_derniers_reports_tactiles_et_courbes():
           "les %d animations du cycle de couleurs passent toutes par --cycle-pas, qui vaut steps(12) "
           "(trouvé : %s) — une courbe continue refait calculer le style à chaque image"
           % (len(cycle), pas.group(1).strip() if pas else "absent"))
-    check(len(cadre) == 1 and "steps(24)" in cadre[0],
-          "le cadre du jour J tourne en 24 pas, jamais en courbe continue (%s)" % cadre)
+    check(len(cadre) >= 3 and all("steps(24)" in x for x in cadre),
+          "le cadre du jour J et les bordures en dégradé tournent en 24 pas, jamais en courbe continue (%d déclarations : %s)"
+          % (len(cadre), cadre[:2]))
 
 
 def test_echelle_m3_verrouillee():
