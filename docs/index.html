@@ -1716,10 +1716,38 @@
     box-shadow:inset 0 0 0 2px var(--cycle-c),
       inset 0 0 28px 4px color-mix(in srgb, var(--cycle-c) 45%, transparent),
       inset 0 0 60px 10px color-mix(in srgb, var(--cycle-a) 28%, transparent);
-    animation:halo-j 1.2s ease-in-out 1 both;
+    animation:halo-j 6s ease-in-out 1 both;
   }
-  @keyframes halo-j{0%{opacity:0;} 15%{opacity:1;} 100%{opacity:0;}}
-  @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif{display:none;} }
+  /* LE GRAND MOMENT DE MINUIT (Antoni, 11/11/2026, storyboard validé) : six secondes. Un flash bref, deux ondes de
+     choc qui partent du compteur, le halo qui RESPIRE trois fois, soixante-dix confettis, une vibration courte.
+     Rien ne prend un appui, rien ne reste après 6,3 s, rien du tout quand le téléphone réduit les animations. Un
+     SEUL éclair, bien en dessous de trois par seconde. */
+  @keyframes halo-j{0%{opacity:0;} 6%{opacity:1;} 22%{opacity:.45;} 38%{opacity:1;} 54%{opacity:.45;} 70%{opacity:1;} 100%{opacity:0;}}
+  .fete{position:fixed; inset:0; z-index:2147483001; pointer-events:none; overflow:hidden;}
+  .fete .fete-flash{
+    position:absolute; inset:0; opacity:0; animation:fete-flash .45s ease-out 1 both;
+    background:radial-gradient(circle at 50% 30%, #fff 0%, color-mix(in srgb, var(--cycle-a) 28%, #fff) 40%, transparent 80%);
+  }
+  @keyframes fete-flash{0%{opacity:0;} 10%{opacity:.9;} 100%{opacity:0;}}
+  .fete .fete-onde{
+    position:absolute; left:var(--cx); top:var(--cy); width:40px; height:40px; margin:-20px 0 0 -20px; border-radius:50%;
+    border:6px solid transparent; opacity:0;
+    background:conic-gradient(var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+    -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    animation:fete-onde 1.6s cubic-bezier(.1,.6,.3,1) 1 both;
+  }
+  .fete .fete-onde.deux{animation-delay:.25s; border-width:3px;}
+  @keyframes fete-onde{0%{opacity:.95; transform:scale(1);} 100%{opacity:0; transform:scale(34);}}
+  .fete .fete-confetti{
+    position:absolute; top:-24px; width:9px; height:16px; opacity:0;
+    animation:fete-chute var(--d) linear var(--t) 1 both;
+  }
+  @keyframes fete-chute{
+    0%{opacity:0; transform:translate3d(0,0,0) rotate(0deg);} 6%{opacity:1;} 92%{opacity:1;}
+    100%{opacity:0; transform:translate3d(var(--dx),115vh,0) rotate(var(--r));}
+  }
+  @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif, .fete{display:none;} }
   /* LES BORDURES DES TUILES ET DES CARTES (Antoni, 11/11/2026 : « fais pareil sur la bordure des cartes et des
      tuiles », 2 px, « même les tuiles grisées, les bordures pas le texte »). Même dégradé conique que le cadre de
      l'écran, et la MÊME horloge : l'angle --bord-ang est animé par cycle-bord (24 pas en 4 s, comme cycle-cadre),
@@ -2768,7 +2796,8 @@
       <div class="setting-desc" hidden>
         Un trait en dégradé cyan, violet, rose fait le tour de tout l'écran, et le panneau du compteur
         affiche « GTA VI est sorti » après la sortie. Il tourne avec les couleurs animées. Le jour de la
-        sortie, à minuit pile, un halo d'une seconde l'accompagne si l'app est ouverte.
+        sortie, à minuit pile, le grand moment (flash, ondes, halo, confettis, six secondes) l'accompagne
+        si l'app est ouverte.
       </div>
       <div class="setting-row">
         <label for="rayonCadre">Coins du bas de l'écran : <span id="rayonCadreVal"></span> px</label>
@@ -2818,8 +2847,9 @@
         <button type="button" id="lanceHaloBtn" onclick="lanceHalo()">Lancer le halo</button>
       </div>
       <div class="setting-desc" hidden>
-        Une seconde de halo rose et cyan autour de l'écran, pour l'essayer. Indisponible quand ton
-        téléphone réduit les animations.
+        Le grand moment de minuit, pour l'essayer : un flash, deux ondes de choc, le halo qui respire,
+        des confettis et une vibration courte, pendant six secondes. Indisponible quand ton téléphone
+        réduit les animations ; la vibration dépend du téléphone.
       </div>
     </div>
 
@@ -3649,6 +3679,10 @@ function reglerRayonCadre(v){
 }
 
 // LE HALO DE MINUIT : une seconde, une fois. Refusé aux téléphones qui réduisent les animations.
+const FETE_DUREE_MS = 6000;
+const FETE_CONFETTIS = 70;
+const FETE_VIBRATION = [180, 80, 180, 80, 420];
+let minuteurFete = null;
 function lanceHalo(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
   const h = document.getElementById("haloJ");
@@ -3656,8 +3690,42 @@ function lanceHalo(){
   h.classList.remove("vif");
   void h.offsetWidth;
   h.classList.add("vif");
-  setTimeout(() => h.classList.remove("vif"), 1300);
+  lanceFete();
+  clearTimeout(minuteurFete);
+  minuteurFete = setTimeout(() => {
+    h.classList.remove("vif");
+    for(const f of document.querySelectorAll(".fete")) f.remove();
+  }, FETE_DUREE_MS + 300);
   return true;
+}
+// Le flash, les deux ondes et les confettis : un calque posé à la demande et retiré à la fin. Les confettis
+// partent entre 0,3 et 1,5 s et tombent en 2,4 à 4,2 s : plus aucun avant 5,7 s.
+function lanceFete(){
+  for(const f of document.querySelectorAll(".fete")) f.remove();
+  const compteur = document.getElementById("countdown");
+  const b = compteur ? compteur.getBoundingClientRect() : { left: innerWidth / 2, width: 0, top: innerHeight * 0.3, height: 0 };
+  const f = document.createElement("div");
+  f.className = "fete";
+  f.setAttribute("aria-hidden", "true");
+  f.style.setProperty("--cx", (b.left + b.width / 2) + "px");
+  f.style.setProperty("--cy", (b.top + b.height / 2) + "px");
+  f.innerHTML = '<div class="fete-flash"></div><div class="fete-onde"></div><div class="fete-onde deux"></div>';
+  const couleurs = ["var(--cycle-a)", "var(--cycle-b)", "var(--cycle-c)", "#fff"];
+  for(let i = 0; i < FETE_CONFETTIS; i++){
+    const c = document.createElement("i");
+    c.className = "fete-confetti";
+    c.style.left = (Math.random() * 100) + "%";
+    c.style.background = couleurs[i % couleurs.length];
+    c.style.setProperty("--d", (2.4 + Math.random() * 1.8) + "s");
+    c.style.setProperty("--t", (0.3 + Math.random() * 1.2) + "s");
+    c.style.setProperty("--dx", ((Math.random() - 0.5) * 160) + "px");
+    c.style.setProperty("--r", ((Math.random() - 0.5) * 1440) + "deg");
+    f.appendChild(c);
+  }
+  document.body.appendChild(f);
+  // La vibration est une faveur du navigateur (Android, et seulement après un premier appui sur la page) :
+  // refusée, elle ne fait rien et ne casse rien.
+  try{ if(navigator.vibrate) navigator.vibrate(FETE_VIBRATION); }catch(e){ /* sans effet */ }
 }
 
 // Remet toutes les animations du cycle sur l'horloge du document : celles d'un bloc apparu plus tard

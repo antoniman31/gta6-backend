@@ -7665,8 +7665,8 @@ def test_effets_du_jour_j(nav, url):
                       " return {vif: e.classList.contains('vif'), disp: cs.display, ombre: cs.boxShadow !== 'none', pos: cs.position, ev: cs.pointerEvents}; }")
     check(h["vif"] and h["disp"] == "block" and h["ombre"] and h["pos"] == "fixed" and h["ev"] == "none",
           "[effets] le bouton lance le halo, plein écran et sans gêner les appuis (%s)" % h)
-    page.clock.run_for(1500)
-    check(page.evaluate("() => !document.getElementById('haloJ').classList.contains('vif')"), "[effets] le halo s'éteint seul après une seconde")
+    page.clock.run_for(6500)
+    check(page.evaluate("() => !document.getElementById('haloJ').classList.contains('vif')"), "[effets] le halo s'éteint seul après six secondes")
     ctx.close()
     ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {}, reduit=True)
     page.evaluate("() => openSettings()")
@@ -8155,6 +8155,70 @@ def test_case_globale_des_effets(nav, url):
     ctx.close()
 
 
+def test_grand_moment_de_minuit(nav, url):
+    """Le grand moment de minuit (11/11/2026) : flash, deux ondes, halo qui respire, confettis, vibration, six secondes."""
+    print("\n[minuit] le grand moment : flash, ondes, halo qui respire, confettis, vibration, 6 s, sans gêner les appuis")
+    STUB = "() => { window.__vibre = []; navigator.vibrate = p => { window.__vibre.push(p); return true; }; }"
+    LIT = """() => { const f = document.querySelector('.fete'), h = document.getElementById('haloJ');
+        const cs = f ? getComputedStyle(f) : null;
+        return {fete: !!f, pos: cs && cs.position, ev: cs && cs.pointerEvents, z: cs && parseInt(cs.zIndex, 10),
+                flash: f ? f.querySelectorAll('.fete-flash').length : 0, ondes: f ? f.querySelectorAll('.fete-onde').length : 0,
+                confettis: f ? f.querySelectorAll('.fete-confetti').length : 0, halo: h.classList.contains('vif'),
+                anims: f ? f.getAnimations({subtree: true}).length : 0,
+                haloAnim: h.getAnimations().map(a => a.animationName), vibre: window.__vibre || null,
+                cx: f ? f.style.getPropertyValue('--cx') : null}; }"""
+    ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {})
+    page.evaluate(STUB)
+    check(page.evaluate("() => lanceHalo()") is True, "[minuit] lanceHalo() accepte de jouer")
+    e = page.evaluate(LIT)
+    check(e["fete"] and e["flash"] == 1 and e["ondes"] == 2 and e["confettis"] == 70,
+          "[minuit] un flash, deux ondes, 70 confettis (%s, %s, %s)" % (e["flash"], e["ondes"], e["confettis"]))
+    check(e["pos"] == "fixed" and e["ev"] == "none" and e["z"] > 100000,
+          "[minuit] le calque couvre l'écran, ne prend aucun appui et passe par-dessus tout (%s, %s, %s)" % (e["pos"], e["ev"], e["z"]))
+    check(e["halo"] and "halo-j" in e["haloAnim"], "[minuit] le halo des bords joue aussi (%s)" % e["haloAnim"])
+    check(e["anims"] >= 70, "[minuit] les animations tournent vraiment (%d)" % e["anims"])
+    check(e["vibre"] == [[180, 80, 180, 80, 420]], "[minuit] une vibration courte est demandée (%s)" % e["vibre"])
+    # Les ondes partent du compteur, pas d'un coin.
+    cible = page.evaluate("() => { const b = document.getElementById('countdown').getBoundingClientRect(); return b.left + b.width / 2; }")
+    check(abs(float(e["cx"].replace("px", "")) - cible) < 1, "[minuit] les ondes partent du centre du compteur (%s px pour %.0f)" % (e["cx"], cible))
+    # Un appui à travers le calque atteint le bouton dessous.
+    atteint = page.evaluate("() => { const b = document.getElementById('refreshBtn').getBoundingClientRect();"
+                            " const el = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return !!el && !!el.closest('#refreshBtn'); }")
+    check(atteint, "[minuit] un appui pendant la fête atteint le bouton dessous")
+    # Six secondes : toujours là à 5 s, plus rien à 6,5 s.
+    page.clock.run_for(5000)
+    check(page.evaluate(LIT)["fete"] and page.evaluate(LIT)["halo"], "[minuit] à cinq secondes, c'est encore en cours")
+    page.clock.run_for(1500)
+    e = page.evaluate(LIT)
+    check(not e["fete"] and not e["halo"], "[minuit] à 6,5 secondes, plus rien : ni calque ni halo (%s, %s)" % (e["fete"], e["halo"]))
+    # Relancer remplace au lieu d'empiler.
+    page.evaluate("() => { lanceHalo(); lanceHalo(); }")
+    check(page.evaluate("() => document.querySelectorAll('.fete').length") == 1, "[minuit] lancer deux fois ne pose qu'un seul calque")
+    check(not erreurs, "[minuit] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+    # Animations réduites : rien du tout, pas même la vibration.
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {}, reduit=True)
+    page.evaluate(STUB)
+    check(page.evaluate("() => lanceHalo()") is False and not page.evaluate("() => !!document.querySelector('.fete')")
+          and page.evaluate("() => window.__vibre") == [],
+          "[minuit] animations réduites : ni calque, ni halo, ni vibration")
+    ctx.close()
+    # Sans vibration dans le navigateur : la fête joue quand même, sans erreur.
+    ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {})
+    page.evaluate("() => { navigator.vibrate = undefined; }")
+    page.evaluate("() => lanceHalo()")
+    check(page.evaluate("() => !!document.querySelector('.fete')") and not erreurs,
+          "[minuit] sans navigator.vibrate, la fête joue quand même (%s)" % erreurs[:1])
+    ctx.close()
+    # Le déclenchement automatique : la fête part à 00:00:00 sous les yeux, pas à l'ouverture après minuit.
+    ctx, page, _ = _ouvre_effets(nav, url, "2026-11-18T22:59:57Z", {})
+    page.evaluate(STUB)
+    page.clock.run_for(5000)
+    check(page.evaluate("() => !!document.querySelector('.fete') || window.__vibre.length > 0"),
+          "[minuit] à 00:00:00, la fête part toute seule")
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -8250,6 +8314,7 @@ def main():
             test_bordures_du_jour_j(nav, url)
             test_lot_2b_interface(nav, url)
             test_case_globale_des_effets(nav, url)
+            test_grand_moment_de_minuit(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:

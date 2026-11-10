@@ -34,6 +34,8 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Lot 2a (11/11/2026, codé)** : chevron « Par source », loupe, titres de cartes et de jour, fondu du bas.
 - **Lot 2b (11/11/2026, codé)** : bordures en dégradé des cartes et des tuiles (2 px, même épaisseur que le cadre), case globale et retour à l'automatique, repère « nouveaux », chiffres de Stats en tuiles. Les squelettes de chargement existaient déjà.
 
+- **Grand moment de minuit (codé)** : à essayer avec « Lancer le halo » dans Réglages ; la vibration dépend du téléphone (Android, après un premier appui).
+
 ## 3. À regarder quand ça arrive
 
 - **Retard des officiels** : chercher `[officiel] retard` dans le journal du robot ; après **dix alertes** mesurées, décider d'un éventuel second déclencheur sur les flux officiels. Avant, rien à conclure.
