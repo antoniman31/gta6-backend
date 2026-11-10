@@ -12612,3 +12612,16 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 - **Pas mesuré** : le coût de 200 confettis sur le S26 Ultra (la fête ne dure que 6 s) ; à regarder avec « Lancer le halo ».
 - **Un contrôle cassé par la donnée, pas par le code** (10/11/2026) : `test_vignette_ouvre_larticle` échouait aussi sur `main` : la première carte à vignette du fil est devenue un article voilé (« Afficher cet article, qui peut contenir un spoiler »), le voile recouvre la vignette et le clic n'atteint pas le lien. Le contrôle choisit maintenant une carte sans voile, sans baisser aucune exigence ; la vérification « marqué comme lu » se fait par l'identifiant de la carte (markRead relance applyFilters, qui refait la carte). Rejoué contre un lien de vignette qui ne marque plus lu : attrapé.
 - **Défaut trouvé par mon propre test** : l'écran de fin ne se fermait pas avec Échap, il n'avait pas le focus ; il le prend à l'affichage.
+
+### Frise des jalons J+1, J+7, J+30 — 10/11/2026
+
+- **Demandé par Antoni** (« jalons J+1, J+7, J+30 », puis maquette B, la frise de progression, choisie sur trois visuels).
+- **Fait** : sous la tuile du compteur, `#friseJalons`, rempli par `friseJalons(now, diff)` à chaque tick de `updateCountdown`, seulement après la sortie. Les jalons sont des jours civils à Paris (comme « J+N ») ; la barre se remplit en continu sur 30 jours (millisecondes écoulées). Les repères sont posés à leur place (J+1 à un trentième, J+7 à sept trentièmes, J+30 au bout) et leurs étiquettes sont ancrées dessus, la dernière alignée à droite : à 320 px rien ne sort de l'écran ni ne touche sa voisine. Une ligne dit « Prochain jalon : J+7, dans 5 j » (« demain » la veille), ou « Les 30 premiers jours sont passés ». Case « Frise des jalons après la sortie » dans Réglages › Écran (`settings.friseJalons`, vrai d'office). Cache v100.
+- **Défaut trouvé par mon propre test** : décochée puis recochée, la frise ne revenait pas : le rendu était mémorisé (`dataset.etat`) alors que son contenu avait été vidé. La mémoire est maintenant effacée en même temps.
+- **Mes dates de test étaient fausses** (J+3 et J+8 écrits pour le 21 et le 26/11, qui sont J+2 et J+7) : le test a échoué avant le code ; corrigé.
+
+### Minuit : 400 confettis, et le texte de fin change enfin de couleur — 10/11/2026
+
+- **Demandé par Antoni** (vu sur son téléphone) : « plus de confettis », et « le texte GTA VI… ne change pas de couleur selon le cycle ». Confettis : 200 → 400.
+- **Défaut, à moi** : la couleur était posée sur le calque `.fete-final`, l'animation `cycle-accent` sur les lignes de texte. `color:var(--accent)` du parent est calculé AVANT l'animation : les lignes en héritaient une valeur figée, seule l'ombre (posée sur les lignes) bougeait. Mon test ne lisait que le NOM de l'animation, pas la couleur réelle : il passait. La couleur est posée sur les lignes ; le test lit maintenant la couleur calculée à trois instants du cycle.
+- **Non mesuré** : le coût de 400 confettis sur le S26 Ultra.
