@@ -35,6 +35,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Lot 2b (11/11/2026, codé)** : bordures en dégradé des cartes et des tuiles (2 px, même épaisseur que le cadre), case globale et retour à l'automatique, repère « nouveaux », chiffres de Stats en tuiles. Les squelettes de chargement existaient déjà.
 
 - **Grand moment de minuit (codé)** : à essayer avec « Lancer le halo » dans Réglages ; la vibration dépend du téléphone (Android, après un premier appui).
+- **Minuit, suite (10/11/2026, codé)** : 200 confettis et écran noir « GTA VI EST DISPO ! » qui reste jusqu'au toucher ; à essayer avec « Lancer le halo », et à regarder : la fluidité des 200 confettis sur le téléphone.
 
 ## 3. À regarder quand ça arrive
 

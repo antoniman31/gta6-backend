@@ -3520,14 +3520,19 @@ def test_vignette_ouvre_larticle(nav, url):
     page.wait_for_timeout(300)
 
     info = page.evaluate("""() => {
-        const carte = [...document.querySelectorAll('.card')].find(c => c.querySelector('.card-thumb'));
+        // Une carte SANS voile anti-spoiler : le 10/11/2026 la première carte à vignette du fil est devenue un article
+        // voilé (« Afficher cet article, qui peut contenir un spoiler »), le voile recouvre la vignette et le clic
+        // n'atteint pas le lien. Encore la DONNÉE qui bouge, pas l'app : on choisit une carte dont la vignette se clique.
+        const carte = [...document.querySelectorAll('.card')].find(c => c.querySelector('.card-thumb') && !c.querySelector('.spoiler-voile'));
         if(!carte) return null;
         const img = carte.querySelector('.card-thumb');
+        img.setAttribute('data-test-vignette', '1');
         const lien = carte.querySelector('.card-thumb-lien');
         const titre = carte.querySelector('.card-title a');
         const r = img.getBoundingClientRect();
         return {
             dansLien: !!lien && lien.contains(img),
+            idCarte: carte.id,
             hrefVignette: lien ? lien.getAttribute('href') : null,
             hrefTitre: titre ? titre.getAttribute('href') : null,
             ariaHidden: lien ? lien.getAttribute('aria-hidden') : null,
@@ -3600,7 +3605,7 @@ def test_vignette_ouvre_larticle(nav, url):
     ctx.on("request", lambda r: demandees.append(r.url))
     try:
         with ctx.expect_page(timeout=10000) as onglet:
-            page.click(".card .card-thumb", force=True)
+            page.click("[data-test-vignette]", force=True)
         ouvert = onglet.value
     except Exception:
         ouvert = None
@@ -3611,9 +3616,10 @@ def test_vignette_ouvre_larticle(nav, url):
           "[vignette] et c'est la bonne adresse qui est demandée (%s)" % attendu)
 
     lu = page.evaluate("""() => {
-        const c = [...document.querySelectorAll('.card')].find(x => x.querySelector('.card-thumb'));
-        return c ? c.classList.contains('read') : false;
-    }""")
+        // Par l'IDENTIFIANT de la carte : markRead relance applyFilters, qui refait la carte et perd le marqueur posé dessus.
+        const carte = document.getElementById(%s);
+        return carte ? carte.classList.contains('read') : false;
+    }""" % json.dumps(info["idCarte"]))
     check(lu, "[vignette] et l'article est marqué comme lu, comme par le titre")
     ctx.close()
 
@@ -8217,12 +8223,12 @@ def test_grand_moment_de_minuit(nav, url):
     page.evaluate(STUB)
     check(page.evaluate("() => lanceHalo()") is True, "[minuit] lanceHalo() accepte de jouer")
     e = page.evaluate(LIT)
-    check(e["fete"] and e["flash"] == 1 and e["ondes"] == 2 and e["confettis"] == 70,
-          "[minuit] un flash, deux ondes, 70 confettis (%s, %s, %s)" % (e["flash"], e["ondes"], e["confettis"]))
+    check(e["fete"] and e["flash"] == 1 and e["ondes"] == 2 and e["confettis"] == 200,
+          "[minuit] un flash, deux ondes, 200 confettis (%s, %s, %s)" % (e["flash"], e["ondes"], e["confettis"]))
     check(e["pos"] == "fixed" and e["ev"] == "none" and e["z"] > 100000,
           "[minuit] le calque couvre l'écran, ne prend aucun appui et passe par-dessus tout (%s, %s, %s)" % (e["pos"], e["ev"], e["z"]))
     check(e["halo"] and "halo-j" in e["haloAnim"], "[minuit] le halo des bords joue aussi (%s)" % e["haloAnim"])
-    check(e["anims"] >= 70, "[minuit] les animations tournent vraiment (%d)" % e["anims"])
+    check(e["anims"] >= 200, "[minuit] les animations tournent vraiment (%d)" % e["anims"])
     check(e["vibre"] == [[180, 80, 180, 80, 420]], "[minuit] une vibration courte est demandée (%s)" % e["vibre"])
     # Les ondes partent du compteur, pas d'un coin.
     cible = page.evaluate("() => { const b = document.getElementById('countdown').getBoundingClientRect(); return b.left + b.width / 2; }")
@@ -8259,6 +8265,35 @@ def test_grand_moment_de_minuit(nav, url):
     page.clock.run_for(1500)
     e = page.evaluate(LIT)
     check(not e["fete"] and not e["halo"], "[minuit] à 6,5 secondes, plus rien : ni calque ni halo (%s, %s)" % (e["fete"], e["halo"]))
+    # L'ÉCRAN NOIR DE FIN : posé à 4,8 s, noir, plein écran, texte en cycle, et il RESTE jusqu'à un appui.
+    FIN = """() => { const f = document.querySelector('.fete-final'); if(!f) return null;
+        const cs = getComputedStyle(f), t = f.querySelectorAll('.ff-texte'), r = f.getBoundingClientRect();
+        const rects = Array.from(t).map(x => { const b = x.getBoundingClientRect(); return [b.left, b.right, b.width]; });
+        return {bg: cs.backgroundColor, pos: cs.position, z: parseInt(cs.zIndex, 10), w: r.width, h: r.height,
+                textes: Array.from(t).map(x => x.textContent), anim: Array.from(t).map(x => getComputedStyle(x).animationName),
+                cols: Array.from(t).map(x => getComputedStyle(x).color), rects, iw: innerWidth, label: f.getAttribute('aria-label')}; }"""
+    fin = page.evaluate(FIN)
+    check(fin is not None, "[minuit] à 6,5 secondes, l'écran noir de fin est là")
+    if fin:
+        check(fin["bg"] == "rgb(0, 0, 0)" and fin["pos"] == "fixed" and fin["w"] == fin["iw"] and fin["z"] > 2147483001,
+              "[minuit] l'écran de fin est noir, plein écran et passe par-dessus la fête (%s, %s, %.0f, %s)" % (fin["bg"], fin["pos"], fin["w"], fin["z"]))
+        check(fin["textes"] == ["GTA VI", "EST DISPO !"], "[minuit] le texte est « GTA VI » puis « EST DISPO ! » (%s)" % fin["textes"])
+        check(all(a == "cycle-accent" for a in fin["anim"]), "[minuit] chaque ligne du texte suit le cycle de couleur (%s)" % fin["anim"])
+        check(all(l >= 0 and r <= fin["iw"] for l, r, _ in fin["rects"]),
+              "[minuit] le texte tient dans l'écran (%s px de large)" % fin["iw"])
+    page.clock.run_for(60000)
+    check(page.evaluate(FIN) is not None, "[minuit] une minute plus tard, l'écran de fin est TOUJOURS là (il reste jusqu'au toucher)")
+    page.mouse.click(100, 400)
+    check(page.evaluate(FIN) is None, "[minuit] un appui ferme l'écran de fin")
+    page.evaluate("() => lanceHalo()")
+    page.clock.run_for(4000)
+    check(page.evaluate(FIN) is None, "[minuit] relancé, l'écran de fin n'est pas encore là à 4 s")
+    page.clock.run_for(1000)
+    check(page.evaluate(FIN) is not None, "[minuit] relancé, il apparaît à 5 s")
+    page.keyboard.press("Escape")
+    check(page.evaluate(FIN) is None, "[minuit] Échap ferme aussi l'écran de fin")
+    page.evaluate("() => { lanceHalo(); }"); page.clock.run_for(5000); page.evaluate("() => lanceHalo()")
+    check(page.evaluate("() => document.querySelectorAll('.fete-final').length") == 0, "[minuit] relancer la fête retire l'écran de fin déjà posé")
     # Relancer remplace au lieu d'empiler.
     page.evaluate("() => { lanceHalo(); lanceHalo(); }")
     check(page.evaluate("() => document.querySelectorAll('.fete').length") == 1, "[minuit] lancer deux fois ne pose qu'un seul calque")
