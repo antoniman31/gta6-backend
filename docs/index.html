@@ -1753,7 +1753,7 @@
     animation:halo-j 6s ease-in-out 1 both;
   }
   /* LE GRAND MOMENT DE MINUIT (Antoni, 11/11/2026, storyboard validé) : six secondes. Un flash bref, deux ondes de
-     choc qui partent du compteur, le halo qui RESPIRE trois fois, soixante-dix confettis, une vibration courte.
+     choc qui partent du compteur, le halo qui RESPIRE trois fois, deux cents confettis, une vibration courte, puis l'écran noir de fin.
      Rien ne prend un appui, rien ne reste après 6,3 s, rien du tout quand le téléphone réduit les animations. Un
      SEUL éclair, bien en dessous de trois par seconde. */
   @keyframes halo-j{0%{opacity:0;} 6%{opacity:1;} 22%{opacity:.45;} 38%{opacity:1;} 54%{opacity:.45;} 70%{opacity:1;} 100%{opacity:0;}}
@@ -1781,7 +1781,27 @@
     0%{opacity:0; transform:translate3d(0,0,0) rotate(0deg);} 6%{opacity:1;} 92%{opacity:1;}
     100%{opacity:0; transform:translate3d(var(--dx),115vh,0) rotate(var(--r));}
   }
-  @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif, .fete{display:none;} }
+  /* L'ÉCRAN NOIR DE FIN (Antoni, 11/11/2026 : « à la fin un écran noir et tu affiches GTA 6 est dispo en gros avec le
+     cycle de couleur », texte « GTA VI EST DISPO ! », « reste jusqu'au toucher »). Il se fond au noir à partir de 4,8 s,
+     quand les derniers confettis tombent, et RESTE jusqu'à un appui (ou Entrée, ou Échap). Le texte porte sa propre
+     animation cycle-accent : cyan, violet, rose en 4 s, comme tout le cycle. Il ne se pose jamais quand le téléphone
+     réduit les animations (lanceHalo refuse alors de jouer). */
+  .fete-final{
+    position:fixed; inset:0; z-index:2147483002; background:#000; color:var(--accent); cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:24px;
+    text-align:center; font-weight:900; text-transform:uppercase; line-height:1.02; letter-spacing:.01em;
+    animation:fete-final-in 1.2s ease-out 1 both;
+  }
+  .fete-final .ff-texte{
+    display:block; max-width:100%; animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;
+    text-shadow:0 0 28px color-mix(in srgb, var(--accent) 65%, transparent);
+  }
+  .fete-final .ff-gta{font-size:min(24vw, 120px);}
+  .fete-final .ff-dispo{font-size:min(12.5vw, 64px);}
+  .fete-final .ff-aide{font-size:13px; font-weight:600; text-transform:none; letter-spacing:.04em; color:#9a9aa8; opacity:0; animation:fete-final-aide .8s ease-out 1.6s 1 both;}
+  @keyframes fete-final-in{from{opacity:0;} to{opacity:1;}}
+  @keyframes fete-final-aide{from{opacity:0;} to{opacity:1;}}
+  @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif, .fete, .fete-final{display:none;} }
   /* LES BORDURES DES TUILES ET DES CARTES (Antoni, 11/11/2026 : « fais pareil sur la bordure des cartes et des
      tuiles », 2 px, « même les tuiles grisées, les bordures pas le texte »). Même dégradé conique que le cadre de
      l'écran, et la MÊME horloge : l'angle --bord-ang est animé par cycle-bord (24 pas en 4 s, comme cycle-cadre),
@@ -3804,9 +3824,30 @@ function reglerRayonCadre(v){
 
 // LE HALO DE MINUIT : une seconde, une fois. Refusé aux téléphones qui réduisent les animations.
 const FETE_DUREE_MS = 6000;
-const FETE_CONFETTIS = 70;
+const FETE_CONFETTIS = 200;
+const FETE_FINAL_MS = 4800;
 const FETE_VIBRATION = [180, 80, 180, 80, 420];
-let minuteurFete = null;
+let minuteurFete = null, minuteurFinal = null;
+// L'écran noir de fin : posé à FETE_FINAL_MS, retiré par un appui. Un seul à la fois ; relancer la fête le retire.
+function fermeEcranFinal(){
+  for(const e of document.querySelectorAll(".fete-final")) e.remove();
+}
+function afficheEcranFinal(){
+  fermeEcranFinal();
+  const e = document.createElement("div");
+  e.className = "fete-final";
+  e.setAttribute("role", "button");
+  e.tabIndex = 0;
+  e.setAttribute("aria-label", "GTA VI est dispo ! Touche pour fermer.");
+  e.innerHTML = '<span class="ff-texte ff-gta" aria-hidden="true">GTA VI</span>'
+    + '<span class="ff-texte ff-dispo" aria-hidden="true">EST DISPO !</span>'
+    + '<span class="ff-aide" aria-hidden="true">Touche l\u2019\u00e9cran pour continuer</span>';
+  e.addEventListener("click", fermeEcranFinal);
+  e.addEventListener("keydown", ev => { if(ev.key === "Escape" || ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); fermeEcranFinal(); } });
+  document.body.appendChild(e);
+  // Le focus au clavier : Échap et Entrée ne ferment que si l'écran de fin l'a (défaut trouvé par mon propre test).
+  try{ e.focus({preventScroll:true}); }catch(err){ /* sans effet */ }
+}
 function lanceHalo(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
   const h = document.getElementById("haloJ");
@@ -3815,6 +3856,9 @@ function lanceHalo(){
   void h.offsetWidth;
   h.classList.add("vif");
   lanceFete();
+  fermeEcranFinal();
+  clearTimeout(minuteurFinal);
+  minuteurFinal = setTimeout(afficheEcranFinal, FETE_FINAL_MS);
   clearTimeout(minuteurFete);
   minuteurFete = setTimeout(() => {
     h.classList.remove("vif");
