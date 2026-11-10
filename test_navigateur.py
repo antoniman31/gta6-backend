@@ -8223,12 +8223,14 @@ def test_grand_moment_de_minuit(nav, url):
     page.evaluate(STUB)
     check(page.evaluate("() => lanceHalo()") is True, "[minuit] lanceHalo() accepte de jouer")
     e = page.evaluate(LIT)
-    check(e["fete"] and e["flash"] == 1 and e["ondes"] == 2 and e["confettis"] == 200,
-          "[minuit] un flash, deux ondes, 200 confettis (%s, %s, %s)" % (e["flash"], e["ondes"], e["confettis"]))
+    voulus = page.evaluate("() => FETE_CONFETTIS")
+    check(voulus >= 400, "[minuit] au moins 400 confettis demandés (Antoni : « plus de confettis ») : %s" % voulus)
+    check(e["fete"] and e["flash"] == 1 and e["ondes"] == 2 and e["confettis"] == voulus,
+          "[minuit] un flash, deux ondes, tous les confettis demandés (%s, %s, %s pour %s)" % (e["flash"], e["ondes"], e["confettis"], voulus))
     check(e["pos"] == "fixed" and e["ev"] == "none" and e["z"] > 100000,
           "[minuit] le calque couvre l'écran, ne prend aucun appui et passe par-dessus tout (%s, %s, %s)" % (e["pos"], e["ev"], e["z"]))
     check(e["halo"] and "halo-j" in e["haloAnim"], "[minuit] le halo des bords joue aussi (%s)" % e["haloAnim"])
-    check(e["anims"] >= 200, "[minuit] les animations tournent vraiment (%d)" % e["anims"])
+    check(e["anims"] >= voulus, "[minuit] les animations tournent vraiment (%d)" % e["anims"])
     check(e["vibre"] == [[180, 80, 180, 80, 420]], "[minuit] une vibration courte est demandée (%s)" % e["vibre"])
     # Les ondes partent du compteur, pas d'un coin.
     cible = page.evaluate("() => { const b = document.getElementById('countdown').getBoundingClientRect(); return b.left + b.width / 2; }")
@@ -8281,6 +8283,15 @@ def test_grand_moment_de_minuit(nav, url):
         check(all(a == "cycle-accent" for a in fin["anim"]), "[minuit] chaque ligne du texte suit le cycle de couleur (%s)" % fin["anim"])
         check(all(l >= 0 and r <= fin["iw"] for l, r, _ in fin["rects"]),
               "[minuit] le texte tient dans l'écran (%s px de large)" % fin["iw"])
+    # LA COULEUR RÉELLE change avec le cycle (défaut d'Antoni : le texte restait figé, la couleur était posée sur le parent).
+    cols = []
+    for t in (0, 1000, 2000):
+        page.evaluate("(t) => { for(const x of document.querySelectorAll('.fete-final .ff-texte')) for(const a of x.getAnimations()){ a.pause(); a.currentTime = t; } }", t)
+        page.wait_for_timeout(100)
+        cols.append(page.evaluate("() => Array.from(document.querySelectorAll('.fete-final .ff-texte')).map(x => getComputedStyle(x).color)"))
+    check(len({c[0] for c in cols}) == 3 and all(c[0] == c[1] for c in cols),
+          "[minuit] la couleur du texte change vraiment avec le cycle, les deux lignes ensemble (%s)" % cols)
+    page.evaluate("() => { for(const x of document.querySelectorAll('.fete-final .ff-texte')) for(const a of x.getAnimations()) a.play(); }")
     page.clock.run_for(60000)
     check(page.evaluate(FIN) is not None, "[minuit] une minute plus tard, l'écran de fin est TOUJOURS là (il reste jusqu'au toucher)")
     page.mouse.click(100, 400)
@@ -8320,6 +8331,97 @@ def test_grand_moment_de_minuit(nav, url):
     check(page.evaluate("() => !!document.querySelector('.fete') || window.__vibre.length > 0"),
           "[minuit] à 00:00:00, la fête part toute seule")
     ctx.close()
+
+
+def test_frise_des_jalons(nav, url):
+    """La frise des jalons J+1, J+7, J+30 après la sortie (Antoni, 10/11/2026, maquette B)."""
+    print("\n[jalons] la frise : cachée avant la sortie, remplie en continu, jalons à leur place, 320 et 390 px, case des Réglages")
+    from datetime import datetime, timezone
+    SORTIE = datetime(2026, 11, 18, 23, 0, tzinfo=timezone.utc)   # 19/11/2026 00:00 à Paris
+    LIT = """() => { const f = document.getElementById('friseJalons'); const r = f.getBoundingClientRect();
+        const noms = Array.from(f.querySelectorAll('.fj-nom')).map(n => { const b = n.getBoundingClientRect();
+            return {t: n.textContent, l: b.left, r: b.right, cls: n.className}; });
+        const pl = f.querySelector('.fj-plein'), tx = f.querySelector('.fj-texte');
+        return {attr: f.hidden, cache: f.hidden || r.height === 0, vide: f.children.length === 0, h: r.height, l: r.left, r: r.right, iw: innerWidth,
+                largeur: pl ? parseFloat(pl.style.width) : null, texte: tx ? tx.textContent : null,
+                debord: tx ? tx.scrollWidth > tx.clientWidth : null, noms,
+                repPasses: f.querySelectorAll('.fj-repere.passe').length, aria: f.getAttribute('aria-label'),
+                fond: pl ? getComputedStyle(pl).backgroundColor : null}; }"""
+    # Avant la sortie : rien.
+    ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {})
+    e = page.evaluate(LIT)
+    check(e["cache"] and e["vide"], "[jalons] avant la sortie, la frise est cachée et vide (%s, %s)" % (e["cache"], e["vide"]))
+    ctx.close()
+    # (instant, jour civil à Paris, jalons passés, texte attendu)
+    cas = [("2026-11-18T23:30:00Z", 0, 0, "Prochain jalon : J+1, demain"),
+           ("2026-11-19T23:30:00Z", 1, 1, "Prochain jalon : J+7, dans 6 j"),
+           ("2026-11-21T12:00:00Z", 2, 1, "Prochain jalon : J+7, dans 5 j"),
+           ("2026-11-26T12:00:00Z", 7, 2, "Prochain jalon : J+30, dans 23 j"),
+           ("2026-12-19T12:00:00Z", 30, 3, "Les 30 premiers jours sont passés"),
+           ("2027-02-01T12:00:00Z", 74, 3, "Les 30 premiers jours sont passés")]
+    for instant, jour, passes, texte in cas:
+        ctx, page, erreurs = _ouvre_effets(nav, url, instant, {})
+        e = page.evaluate(LIT)
+        t = datetime.strptime(instant, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        attendu = min(100.0, max(0.0, (t - SORTIE).total_seconds() / (30 * 86400) * 100))
+        etiq = "J+%d" % jour
+        check(not e["cache"], "[jalons %s] la frise est visible après la sortie" % etiq)
+        check(e["largeur"] is not None and abs(e["largeur"] - attendu) < 0.2,
+              "[jalons %s] le remplissage suit le temps écoulé (%s %% pour %.2f %%)" % (etiq, e["largeur"], attendu))
+        check(e["repPasses"] == passes, "[jalons %s] %d jalon(s) passé(s) (%d)" % (etiq, passes, e["repPasses"]))
+        check(e["texte"] == texte, "[jalons %s] le texte dit « %s » (%s)" % (etiq, texte, e["texte"]))
+        check(not e["debord"], "[jalons %s] le texte tient sur sa ligne" % etiq)
+        check(e["aria"] and texte in e["aria"], "[jalons %s] le lecteur d'écran reçoit la même phrase (%s)" % (etiq, e["aria"]))
+        check(not erreurs, "[jalons %s] aucune erreur JavaScript (%s)" % (etiq, erreurs[:1]))
+        ctx.close()
+    # Les jalons passés sont cochés, les trois sont à leur place sur la barre (3 %, 23 %, 100 %).
+    ctx, page, _ = _ouvre_effets(nav, url, "2026-11-26T12:00:00Z", {})
+    e = page.evaluate(LIT)
+    check([n["t"] for n in e["noms"]] == ["J+1 \u2713", "J+7 \u2713", "J+30"], "[jalons] J+1 et J+7 cochés, J+30 non (%s)" % [n["t"] for n in e["noms"]])
+    pos = page.evaluate("() => Array.from(document.querySelectorAll('#friseJalons .fj-repere')).map(r => parseFloat(r.style.left))")
+    check(len(pos) == 3 and abs(pos[0] - 100 / 30) < 0.2 and abs(pos[1] - 700 / 30) < 0.2 and abs(pos[2] - 100) < 0.2,
+          "[jalons] les repères sont à leur place sur la barre (%s)" % pos)
+    ctx.close()
+    # Le cycle : le remplissage change de couleur avec l'accent (cycle allumé de force : on est au huitième jour).
+    ctx, page, _ = _ouvre_effets(nav, url, "2026-11-26T12:00:00Z", {"cycleCouleurs": True})
+    couleurs = []
+    for t in (0, 2000):
+        page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", t)
+        page.wait_for_timeout(150)
+        couleurs.append(page.evaluate(LIT)["fond"])
+    check(couleurs[0] != couleurs[1], "[jalons] le remplissage suit le cycle de couleur (%s, %s)" % tuple(couleurs))
+    ctx.close()
+    # Les réglages : décocher cache la frise, recocher la remet.
+    ctx, page, _ = _ouvre_effets(nav, url, "2026-11-26T12:00:00Z", {})
+    page.evaluate("() => openSettings()")
+    page.wait_for_timeout(200)
+    check(page.evaluate("() => document.getElementById('friseJalonsCase').checked") is True, "[jalons] la case est cochée d'office")
+    page.evaluate("() => { const c = document.getElementById('friseJalonsCase'); c.checked = false; c.dispatchEvent(new Event('change')); }")
+    # L'attribut `hidden`, pas la hauteur : sur la page des Réglages l'en-tête entier est masqué, la hauteur vaut zéro quoi qu'il arrive.
+    check(page.evaluate(LIT)["attr"] is True and page.evaluate("() => settings.friseJalons") is False, "[jalons] décochée, la frise disparaît et le réglage est gardé")
+    page.evaluate("() => { const c = document.getElementById('friseJalonsCase'); c.checked = true; c.dispatchEvent(new Event('change')); }")
+    page.evaluate("() => closeSettings()")
+    page.wait_for_timeout(200)
+    check(page.evaluate(LIT)["attr"] is False and not page.evaluate(LIT)["cache"], "[jalons] recochée, la frise revient")
+    ctx.close()
+    # La géométrie à 320, 360, 390 et 430 px : tout tient, rien ne se touche.
+    for larg in (320, 360, 390, 430):
+        for instant in ("2026-11-18T23:30:00Z", "2026-11-26T12:00:00Z", "2026-12-19T12:00:00Z"):
+            ctx = nav.new_context(viewport={"width": larg, "height": 800}, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+            ctx.clock.install(time=instant)
+            page = ctx.new_page()
+            page.goto(url, wait_until="load")
+            page.wait_for_selector(".header-haut")
+            page.wait_for_timeout(300)
+            e = page.evaluate(LIT)
+            n = e["noms"]
+            dedans = all(x["l"] >= e["l"] - 0.5 and x["r"] <= e["r"] + 0.5 for x in n)
+            separes = all(n[i]["r"] + 4 <= n[i + 1]["l"] for i in range(len(n) - 1))
+            check(dedans and separes and e["h"] < 70 and not e["debord"],
+                  "[jalons %d px, %s] étiquettes dans la frise (%s), séparées (%s), hauteur %.0f px, texte entier (%s)"
+                  % (larg, instant[:10], dedans, separes, e["h"], not e["debord"]))
+            ctx.close()
 
 
 def test_tout_dans_le_cycle(nav, url):
@@ -8520,6 +8622,7 @@ def main():
             test_lot_2b_interface(nav, url)
             test_case_globale_des_effets(nav, url)
             test_grand_moment_de_minuit(nav, url)
+            test_frise_des_jalons(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:

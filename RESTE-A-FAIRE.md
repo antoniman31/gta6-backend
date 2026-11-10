@@ -36,6 +36,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 
 - **Grand moment de minuit (codé)** : à essayer avec « Lancer le halo » dans Réglages ; la vibration dépend du téléphone (Android, après un premier appui).
 - **Minuit, suite (10/11/2026, codé)** : 200 confettis et écran noir « GTA VI EST DISPO ! » qui reste jusqu'au toucher ; à essayer avec « Lancer le halo », et à regarder : la fluidité des 200 confettis sur le téléphone.
+- **Frise des jalons (10/11/2026, codée)** : visible seulement après le 19/11 ; pour la voir avant, aucun réglage (elle n'existe qu'après la sortie) : à regarder le jour même ou en simulant la date dans un navigateur de test.
 
 ## 3. À regarder quand ça arrive
 
