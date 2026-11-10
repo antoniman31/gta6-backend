@@ -5185,8 +5185,18 @@ SONDE_CONTRASTE = r"""(args) => {
   // ainsi rapporté à 4,38:1 sur un fond gris imaginaire, alors qu'il
   // est à 4,96:1 sur son vrai fond vert pâle. Un faux positif, pas un
   // défaut, et c'est la sonde qu'il fallait corriger.
+  // TROISIÈME ÉCRITURE (11/11/2026) : un color-mix() à base de variables animées sort en « oklab(0.68 0.03 -0.08) »,
+  // et lu comme du rgb() il donne du presque-noir (1,0,0) : 200 « textes sous le seuil » qui n'existaient pas. Toute
+  // écriture qui n'est ni rgb() ni color() passe par un canvas, qui sait lire n'importe quelle couleur CSS.
+  const cv = document.createElement('canvas'); cv.width = cv.height = 1;
+  const g2 = cv.getContext('2d', {willReadFrequently: true});
   const parse = (css) => {
     const t = (css || '').trim();
+    if(t && !t.startsWith('rgb') && !t.startsWith('color(') && t !== 'transparent'){
+      g2.clearRect(0, 0, 1, 1); g2.fillStyle = '#000'; g2.fillStyle = t; g2.fillRect(0, 0, 1, 1);
+      const d = g2.getImageData(0, 0, 1, 1).data;
+      return {r: d[0], g: d[1], b: d[2], a: d[3] / 255};
+    }
     const m = t.match(/[\d.]+(?:e-?\d+)?/g);
     if(!m || m.length < 3) return null;
     const srgb = t.startsWith('color(');
@@ -7837,8 +7847,8 @@ def test_lot_2a_interface(nav, url):
     for largeur in (320, 390):
         ctx, page, erreurs = _ouvre_fil(nav, url, largeur)
         e = page.evaluate(ETAT)
-        check(not e["ouverte"] and e["expanded"] == "false" and e["libelle"] == "Par source" and not any(e["visibles"]),
-              "[chevron %d px] fermé à l'ouverture : les trois sources sont repliées (%s)" % (largeur, e["libelle"]))
+        check(not e["ouverte"] and e["expanded"] == "false" and e["libelle"] == "" and not any(e["visibles"]),
+              "[chevron %d px] fermé à l'ouverture : les trois sources sont repliées, le chevron seul, sans mot (%r)" % (largeur, e["libelle"]))
         check(e["nom"] == "Déplier les sources", "[chevron %d px] le bouton a un nom pour les lecteurs d'écran (%s)" % (largeur, e["nom"]))
         # La zone de toucher fait 44 px de haut sans grossir la ligne : 14 px au-dessus et au-dessous du texte.
         zones = page.evaluate("""([x, y, h]) => [y - h/2 - 12, y + h/2 + 12, y - h/2 - 18, y + h/2 + 18]
@@ -7853,22 +7863,22 @@ def test_lot_2a_interface(nav, url):
               "[chevron %d px] un appui déplie les trois sources (%s)" % (largeur, e["nom"]))
         page.click("#tabRockstar")
         e = page.evaluate(ETAT)
-        check(e["libelle"] == "Rockstar" and e["actif"] and e["ouverte"],
-              "[chevron %d px] filtre actif : le bouton porte son nom, en accent, la rangée reste ouverte (%s)" % (largeur, e["libelle"]))
+        check(e["libelle"] == "R" and e["actif"] and e["ouverte"] and "Rockstar" in (e["nom"] or ""),
+              "[chevron %d px] filtre actif : le bouton porte l'abréviation « R », en accent, son nom complet pour les lecteurs d'écran, la rangée reste ouverte (%s, %s)" % (largeur, e["libelle"], e["nom"]))
         page.click("#sourcesBtn")
         e = page.evaluate(ETAT)
-        check(not e["ouverte"] and e["libelle"] == "Rockstar" and e["actif"],
-              "[chevron %d px] replié avec un filtre actif, le nom reste visible (%s)" % (largeur, e["libelle"]))
+        check(not e["ouverte"] and e["libelle"] == "R" and e["actif"],
+              "[chevron %d px] replié avec un filtre actif, l'abréviation reste visible (%s)" % (largeur, e["libelle"]))
         # Rechargement : le filtre revient, donc la rangée s'ouvre seule ; sans filtre, elle est fermée.
         page.reload(wait_until="load")
         page.wait_for_selector("#sourcesBtn")
         page.wait_for_timeout(300)
         e = page.evaluate(ETAT)
-        check(e["ouverte"] and e["libelle"] == "Rockstar",
+        check(e["ouverte"] and e["libelle"] == "R",
               "[chevron %d px] au rechargement avec un filtre de source, la rangée s'ouvre toute seule (%s)" % (largeur, e["libelle"]))
         page.click("#tabAll")
         e = page.evaluate(ETAT)
-        check(e["libelle"] == "Par source" and not e["actif"], "[chevron %d px] « Tous » rend « Par source » (%s)" % (largeur, e["libelle"]))
+        check(e["libelle"] == "" and not e["actif"], "[chevron %d px] « Tous » rend le chevron seul (%r)" % (largeur, e["libelle"]))
         page.reload(wait_until="load")
         page.wait_for_selector("#sourcesBtn")
         page.wait_for_timeout(300)
@@ -7957,8 +7967,9 @@ def test_bordures_du_jour_j(nav, url):
                   "[bordures] %s : les quatre tuiles ont 2 px de dégradé, pleines (%s)" % (nom, [(t["l"], t["img"], t["st"]) for t in e["tuiles"]]))
             check(e["norm"] and e["norm"]["l"] == "2px" and e["norm"]["img"],
                   "[bordures] %s : une carte ordinaire a 2 px de dégradé (%s)" % (nom, e["norm"]))
-            check(e["off"] and not e["off"]["img"] and e["off"]["coul"] == "rgb(255, 107, 0)",
-                  "[bordures] %s : la carte officielle garde sa bordure orange (%s)" % (nom, e["off"]))
+            # L'orange suit son propre dégradé (blanc, jaune, orange) : toujours un rouge à 255, jamais un dégradé conique.
+            check(e["off"] and not e["off"]["img"] and e["off"]["coul"].startswith("rgb(255,"),
+                  "[bordures] %s : la carte officielle garde sa bordure unie dans la famille de l'orange (%s)" % (nom, e["off"]))
         else:
             check(all(t["l"] == "1px" and not t["img"] for t in e["tuiles"]) and e["norm"] and not e["norm"]["img"],
                   "[bordures] %s : bordures d'origine (%s)" % (nom, [t["l"] for t in e["tuiles"]]))
@@ -7971,7 +7982,7 @@ def test_bordures_du_jour_j(nav, url):
     vivantes = [t for t in e["tuiles"] if not t["zero"]]
     check(len(zero) == 1 and zero[0]["l"] == "2px" and zero[0]["img"],
           "[bordures] la tuile « jours » grisée à 00 a la bordure en dégradé (%s)" % zero)
-    check(zero and zero[0]["texte"] != vivantes[0]["texte"] and zero[0]["texte"].startswith("rgb(") ,
+    check(zero and zero[0]["texte"] != vivantes[0]["texte"],
           "[bordures] mais son texte reste gris, pas celui des tuiles vivantes (%s contre %s)" % (zero[0]["texte"] if zero else None, vivantes[0]["texte"]))
     ctx.close()
     # 3. Ça tourne : tuiles toujours, cartes seulement à l'écran ; jamais sur celles hors écran.
@@ -8090,53 +8101,88 @@ def test_lot_2b_interface(nav, url):
 
 
 def test_case_globale_des_effets(nav, url):
-    """Une case pour tout allumer ou éteindre d'un coup, un retour à l'automatique, une seule épaisseur de bordure."""
-    print("\n[jour J] case globale des effets, retour à l'automatique, bordures de même épaisseur")
+    """Réglages › Couleurs, rangement C (11/11/2026) : aperçu vivant, préréglages, détail replié, groupe « Écran »."""
+    print("\n[réglages] aperçu vivant, préréglages, détail replié sous « Personnaliser », curseur des coins dans « Écran »")
     def stocke(page, cle):
         return page.evaluate("(c) => { const s = JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}');"
                              " return Object.prototype.hasOwnProperty.call(s, c) ? s[c] : 'absent'; }", cle)
-    ETAT = """() => { const g = document.getElementById('coulTout');
-        return {global: g.checked, mi: g.indeterminate, cases: %s.map(c => document.getElementById(c).checked),
-                classes: ['cadre-j', 'controles-j', 'bordures-j', 'cycle-couleur'].map(c => document.documentElement.classList.contains(c))}; }""" % json.dumps(list(EFFETS))
-    # La veille : tout éteint, la case globale décochée, ni cochée ni « à moitié ».
+    ETAT = """() => ({
+        presses: [...document.querySelectorAll('.prereglage')].filter(b => b.getAttribute('aria-pressed') === 'true').map(b => b.dataset.p),
+        cases: %s.map(c => document.getElementById(c).checked),
+        classes: ['cadre-j', 'controles-j', 'bordures-j', 'cycle-couleur'].map(c => document.documentElement.classList.contains(c)),
+        apercu: ['cadre', 'bord', 'anim'].map(c => document.getElementById('apercuCouleurs').classList.contains(c)),
+        compte: document.getElementById('persoCompte').textContent,
+        ouvert: getComputedStyle(document.getElementById('effetsDetail')).display !== 'none',
+        expanded: document.getElementById('persoBtn').getAttribute('aria-expanded')})""" % json.dumps(list(EFFETS))
+    # La veille : rien d'allumé, « Automatique » surligné (tout à null), détail replié.
     ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {})
     page.evaluate("() => openSettings()")
-    check(page.evaluate("() => !!document.getElementById('coulTout') && !!document.getElementById('coulAutoBtn')"),
-          "[global] la case « Tous les effets » et le bouton « Remettre en automatique » existent")
+    check(page.evaluate("() => ['apercuCouleurs', 'persoBtn', 'effetsDetail'].every(i => !!document.getElementById(i))"
+                        " && document.querySelectorAll('.prereglage').length === 4"),
+          "[réglages] l'aperçu, les quatre préréglages et le bouton « Personnaliser » existent")
     e = page.evaluate(ETAT)
-    check(not e["global"] and not e["mi"] and not any(e["cases"]), "[global] la veille : globale décochée, toutes les cases éteintes (%s)" % e)
-    # Tout allumer d'un coup : écrit true PARTOUT, pose toutes les classes, coche toutes les cases.
-    page.evaluate("() => { const g = document.getElementById('coulTout'); g.checked = true; g.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(e["presses"] == ["auto"] and not any(e["cases"]) and not e["ouvert"] and e["expanded"] == "false" and e["compte"] == "0 sur 6 allumés",
+          "[réglages] la veille : « Automatique » surligné, tout éteint, détail replié (%s)" % {k: e[k] for k in ("presses", "ouvert", "compte")})
+    check(e["apercu"] == [False, False, False], "[réglages] la veille, l'aperçu est nu : ni cadre, ni bordures, ni rotation (%s)" % e["apercu"])
+    # Jour J complet.
+    page.evaluate("() => document.querySelector('.prereglage[data-p=jourj]').click()")
     e = page.evaluate(ETAT)
-    check(e["global"] and not e["mi"] and all(e["cases"]) and all(e["classes"]),
-          "[global] tout allumer coche toutes les cases et pose tous les effets (%s)" % e)
-    check(all(stocke(page, c) is True for c in EFFETS), "[global] et écrit true pour chacun (%s)" % {c: stocke(page, c) for c in EFFETS})
-    # Décocher UN effet : la globale passe « à moitié », pas décochée.
-    page.evaluate("() => { const c = document.getElementById('coulCadre'); c.checked = false; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(e["presses"] == ["jourj"] and all(e["cases"]) and all(e["classes"]) and e["compte"] == "6 sur 6 allumés",
+          "[réglages] « Jour J complet » allume les six effets d'un coup (%s)" % {k: e[k] for k in ("presses", "compte")})
+    check(all(stocke(page, c) is True for c in EFFETS), "[réglages] et écrit true pour chacun (%s)" % {c: stocke(page, c) for c in EFFETS})
+    check(e["apercu"][0] and e["apercu"][1], "[réglages] l'aperçu montre le cadre et les bordures (%s)" % e["apercu"])
+    # Discret : cadre et bordures, fixes ; le reste éteint.
+    page.evaluate("() => document.querySelector('.prereglage[data-p=discret]').click()")
     e = page.evaluate(ETAT)
-    check(not e["global"] and e["mi"], "[global] un effet décoché : la case globale est « à moitié » (%s, %s)" % (e["global"], e["mi"]))
-    # Tout éteindre : écrit false partout.
-    page.evaluate("() => { const g = document.getElementById('coulTout'); g.checked = false; g.dispatchEvent(new Event('change', {bubbles: true})); }")
+    attendu = {"cycleCouleurs": False, "coulCadre": True, "coulBarreEtat": False, "coulChargement": False, "coulControles": False, "coulBordures": True}
+    check(e["presses"] == ["discret"] and e["cases"] == [attendu[c] for c in EFFETS] and e["compte"] == "2 sur 6 allumés",
+          "[réglages] « Discret » : le cadre et les bordures, sans mouvement ni autre effet (%s)" % e["cases"])
+    check(e["apercu"] == [True, True, False], "[réglages] et l'aperçu est fixe : cadre et bordures, pas de rotation (%s)" % e["apercu"])
+    # Régler UN effet à la main : plus aucun préréglage surligné.
+    page.evaluate("() => { const c = document.getElementById('coulControles'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
     e = page.evaluate(ETAT)
-    check(not e["global"] and not e["mi"] and not any(e["cases"]) and not any(e["classes"]),
-          "[global] tout éteindre décoche tout et retire tous les effets (%s)" % e)
-    check(all(stocke(page, c) is False for c in EFFETS), "[global] et écrit false pour chacun (%s)" % {c: stocke(page, c) for c in EFFETS})
-    # Retour à l'automatique : null partout ; hors du jour J tout est éteint.
-    page.evaluate("() => document.getElementById('coulAutoBtn').click()")
-    check(all(stocke(page, c) is None for c in EFFETS), "[global] « Remettre en automatique » remet chaque réglage à null (%s)" % {c: stocke(page, c) for c in EFFETS})
-    check(not any(page.evaluate(ETAT)["cases"]), "[global] la veille, l'automatique laisse tout éteint")
-    check(not erreurs, "[global] aucune erreur JavaScript (%s)" % erreurs[:1])
+    check(e["presses"] == [] and e["compte"] == "3 sur 6 allumés",
+          "[réglages] un réglage à la main : aucun préréglage n'est surligné (%s, %s)" % (e["presses"], e["compte"]))
+    # Aucun, puis Automatique.
+    page.evaluate("() => document.querySelector('.prereglage[data-p=aucun]').click()")
+    e = page.evaluate(ETAT)
+    check(e["presses"] == ["aucun"] and not any(e["cases"]) and not any(e["classes"]) and all(stocke(page, c) is False for c in EFFETS),
+          "[réglages] « Aucun » éteint tout et écrit false (%s)" % e["presses"])
+    page.evaluate("() => document.querySelector('.prereglage[data-p=auto]').click()")
+    e = page.evaluate(ETAT)
+    check(e["presses"] == ["auto"] and all(stocke(page, c) is None for c in EFFETS) and not any(e["cases"]),
+          "[réglages] « Automatique » remet chaque réglage à null, la veille tout reste éteint (%s)" % e["presses"])
+    # Le détail : replié, il s'ouvre au toucher, annonce son état, montre les six cases.
+    page.click("#persoBtn")
+    e = page.evaluate(ETAT)
+    check(e["ouvert"] and e["expanded"] == "true", "[réglages] « Personnaliser » déplie le détail (%s)" % e["expanded"])
+    visibles = page.evaluate("(l) => l.map(c => { const r = document.getElementById(c).getBoundingClientRect(); return r.width > 0 && r.height > 0; })", list(EFFETS))
+    check(all(visibles), "[réglages] les six cases sont visibles une fois déplié (%s)" % visibles)
+    page.click("#persoBtn")
+    check(not page.evaluate(ETAT)["ouvert"], "[réglages] un second appui le replie")
+    # Le grand moment reste hors du détail, visible replié ; le curseur des coins est dans le groupe « Écran ».
+    hors = page.evaluate("""() => { const b = document.getElementById('lanceHaloBtn'), r = b.getBoundingClientRect();
+        return {visible: r.width > 0 && r.height > 0, dansDetail: !!b.closest('#effetsDetail')}; }""")
+    check(hors["visible"] and not hors["dansDetail"], "[réglages] « Lancer le halo » est visible détail replié, hors du détail (%s)" % hors)
+    ecran = page.evaluate("""() => { const g = document.getElementById('rayonCadre').closest('.setting-group');
+        return {titre: g.querySelector('.setting-label').textContent.trim(), dansCouleurs: !!document.getElementById('rayonCadre').closest('#effetsDetail')}; }""")
+    check(ecran["titre"].startswith("Écran") and not ecran["dansCouleurs"], "[réglages] le curseur des coins est dans son propre groupe « Écran » (%s)" % ecran)
+    # Accessibilité tactile : chaque préréglage et le bouton « Personnaliser » font au moins 44 px de haut.
+    haut = page.evaluate("() => [...document.querySelectorAll('.prereglage'), document.getElementById('persoBtn')].map(b => Math.round(b.getBoundingClientRect().height))")
+    check(all(h >= 44 for h in haut), "[réglages] préréglages et « Personnaliser » : au moins 44 px de haut (%s)" % haut)
+    check(not erreurs, "[réglages] aucune erreur JavaScript (%s)" % erreurs[:1])
     ctx.close()
-    # Le jour J : tout cochée d'office ; éteindre d'un coup, puis revenir à l'automatique rallume.
+    # Le jour J : « Automatique » surligné, tout allumé d'office, l'aperçu complet et animé.
     ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
     page.evaluate("() => openSettings()")
     e = page.evaluate(ETAT)
-    check(e["global"] and all(e["cases"]), "[global] le jour J, la case globale est cochée d'office (%s)" % e["global"])
-    page.evaluate("() => { const g = document.getElementById('coulTout'); g.checked = false; g.dispatchEvent(new Event('change', {bubbles: true})); }")
-    check(not any(page.evaluate(ETAT)["cases"]), "[global] le jour J, tout éteindre éteint vraiment tout")
-    page.evaluate("() => document.getElementById('coulAutoBtn').click()")
+    check(e["presses"] == ["auto"] and all(e["cases"]) and e["apercu"] == [True, True, True] and e["compte"] == "6 sur 6 allumés",
+          "[réglages] le jour J : « Automatique » surligné, six sur six, aperçu complet et animé (%s)" % {k: e[k] for k in ("presses", "apercu", "compte")})
+    page.evaluate("() => document.querySelector('.prereglage[data-p=aucun]').click()")
+    check(not any(page.evaluate(ETAT)["cases"]), "[réglages] le jour J, « Aucun » éteint vraiment tout")
+    page.evaluate("() => document.querySelector('.prereglage[data-p=auto]').click()")
     e = page.evaluate(ETAT)
-    check(e["global"] and all(e["cases"]) and all(e["classes"]), "[global] le jour J, le retour à l'automatique rallume tout (%s)" % e["global"])
+    check(all(e["cases"]) and all(e["classes"]), "[réglages] le jour J, « Automatique » rallume tout (%s)" % e["presses"])
     ctx.close()
     # UNE SEULE ÉPAISSEUR : cadre, cartes et tuiles ont la même bordure, lue sur la jeton --bord-ep.
     ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
@@ -8241,6 +8287,106 @@ def test_grand_moment_de_minuit(nav, url):
     ctx.close()
 
 
+def test_tout_dans_le_cycle(nav, url):
+    """Tout ce qui n'est pas blanc de base passe dans le cycle (Antoni, 11/11/2026) ; les erreurs rouges restent rouges."""
+    print("\n[cycle] statuts, textes gris, badges, orange en blanc-jaune-orange ; les erreurs restent rouges")
+    INJECTE = """() => { lastItems = Array.from({length: 6}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 6; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    SONDE = """() => {
+        const ent = document.querySelector('header.console'), cs = getComputedStyle(ent);
+        const carte = document.querySelector('#feed .card.official'), cc = carte ? getComputedStyle(carte) : null;
+        const sonde = document.createElement('span'); sonde.style.color = 'var(--danger)'; ent.appendChild(sonde);
+        const danger = getComputedStyle(sonde).color; sonde.remove();
+        const g = n => cs.getPropertyValue(n).trim();
+        return {accent: g('--accent'), ok: g('--ok'), warn: g('--warn'), gris: g('--text-dim'), base: g('--text-dim-base'),
+                hot: g('--hot-texte'), langue: g('--langue-fr'), danger,
+                officiel: cc ? cc.borderTopColor : null, orange: carte ? cc.getPropertyValue('--orange').trim() : null,
+                cat: carte ? cc.getPropertyValue('--cat-bug').trim() : null, accentCarte: carte ? cc.getPropertyValue('--accent').trim() : null,
+                badge: carte && carte.querySelector('.official-badge') ? getComputedStyle(carte.querySelector('.official-badge')).backgroundColor : null}; }"""
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    for theme, accents, oranges in (("dark", ["#19e6ff", "#b388ff", "#ff5cae"], ["#ffffff", "#ffd60a", "#ff6b00"]),
+                                    ("light", ["#00708a", "#7c3aed", "#b8146f"], ["#ffa500", "#ffc400", "#ff6b00"])):
+        ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        page.evaluate(INJECTE)
+        page.wait_for_selector("#feed .card.official", state="attached")
+        page.wait_for_timeout(500)
+        page.evaluate("""() => { const c = document.querySelector('#feed .card.official');
+            const r = document.createElement('span'); r.className = 'official-badge'; r.textContent = 'OFFICIEL';
+            const row = c.querySelector('.card-src-row') || c.querySelector('.card-top'); if(row) row.appendChild(r); }""")
+        vus = []
+        for i, t in enumerate((0, 1000, 2000)):
+            page.evaluate(FIGE, t)
+            page.evaluate("(t) => { for(const a of document.getAnimations()){ if(a.animationName === 'cycle-accent' || (a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", t)
+            page.wait_for_timeout(150)
+            m = page.evaluate(SONDE)
+            vus.append(m)
+            check(rgb(m["ok"]) == rgb(m["accent"]) and rgb(m["warn"]) == rgb(m["accent"]),
+                  "[tout %s %d ms] les statuts vert et jaune suivent l'accent (%s, %s, %s)" % (theme, t, m["ok"], m["warn"], m["accent"]))
+            check(rgb(m["langue"]) == rgb(m["accent"]), "[tout %s %d ms] la couleur des langues suit l'accent (%s)" % (theme, t, m["langue"]))
+            check(m["gris"] != m["base"], "[tout %s %d ms] le texte gris est teinté, plus le gris d'origine (%s)" % (theme, t, m["gris"]))
+            check(rgb(m["danger"]) == ((248, 113, 113) if theme == "dark" else rgb(m["danger"])) and rgb(m["danger"]) != rgb(m["accent"]),
+                  "[tout %s %d ms] les erreurs restent rouges, jamais dans le cycle (%s)" % (theme, t, m["danger"]))
+            if m["cat"] is not None:
+                check(rgb(m["cat"]) == rgb(m["accentCarte"]), "[tout %s %d ms] les couleurs de catégorie d'une carte suivent l'accent (%s)" % (theme, t, m["cat"]))
+            attendu = tuple(int(oranges[i][j:j + 2], 16) for j in (1, 3, 5))
+            check(m["orange"] and rgb(m["orange"]) == attendu and rgb(m["officiel"]) == attendu,
+                  "[tout %s %d ms] l'orange des officiels est au cran %d du dégradé blanc, jaune, orange (%s, bordure %s)" % (theme, t, i + 1, m["orange"], m["officiel"]))
+            if m["badge"]:
+                check(rgb(m["badge"]) == attendu, "[tout %s %d ms] le badge « OFFICIEL » suit le même dégradé (%s)" % (theme, t, m["badge"]))
+        check(len({v["gris"] for v in vus}) == 3 and len({v["ok"] for v in vus}) == 3,
+              "[tout %s] trois instants, trois teintes différentes pour le gris et les statuts" % theme)
+        check(not erreurs, "[tout %s] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
+        ctx.close()
+    # Cycle éteint : tout retrouve ses couleurs d'origine.
+    ctx, page, _ = _ouvre_cycle(nav, url, JOUR_J, False, "dark")
+    page.evaluate(INJECTE)
+    page.wait_for_selector("#feed .card.official", state="attached")
+    m = page.evaluate(SONDE)
+    check(m["gris"] == m["base"] and rgb(m["officiel"]) == (255, 107, 0) and rgb(m["ok"]) != rgb(m["accent"]),
+          "[tout] cycle éteint : le gris, l'orange (255, 107, 0) et le vert d'origine (%s, %s, %s)" % (m["gris"], m["officiel"], m["ok"]))
+    ctx.close()
+
+
+def test_chevron_toujours_sur_une_ligne(nav, url):
+    """Le chevron « Par source » reste sur la ligne du comptage, partout (Antoni, 11/11/2026)."""
+    print("\n[chevron] toujours sur une ligne : comptage + chevron, 320 à 430 px, tous les filtres, lignes d'historique comprises")
+    for largeur in (320, 360, 390, 430):
+        ctx, page, erreurs = _ouvre_fil(nav, url, largeur)
+        for tab in ("all", "non-rockstar", "rockstar", "rockstarmag"):
+            page.evaluate("(t) => setTab(t)", tab)
+            page.wait_for_timeout(120)
+            # Pire cas, posé APRÈS le changement d'onglet (qui réécrit le comptage et la ligne d'historique) : le
+            # plus long des textes de comptage ET une ligne d'historique visible.
+            page.evaluate("""() => { const c = document.getElementById('countLine');
+                c.dataset.variantes = JSON.stringify(['500 affichés · 500 non lus · 142 masqués', '500 affichés · 500 non lus', '500 non lus']);
+                const h = document.getElementById('historyLine'); h.style.display = 'flex';
+                h.innerHTML = '<span>Historique partiel.</span><button class="small">Tout charger (3,7 Mo)</button>';
+                ajusteComptage(); }""")
+            m = page.evaluate("""() => { const l = document.querySelector('.comptage-ligne').getBoundingClientRect(),
+                c = document.getElementById('countLine'), cr = c.getBoundingClientRect(), b = document.getElementById('sourcesBtn'), br = b.getBoundingClientRect(),
+                lh = parseFloat(getComputedStyle(c).lineHeight) || 18;
+                return {hLigne: l.height, ecartY: Math.abs((cr.top + cr.height / 2) - (br.top + br.height / 2)), unSeul: c.getClientRects().length === 1,
+                        hTexte: cr.height, lh, tient: c.scrollWidth <= c.clientWidth + 1, droite: br.right, boite: l.right,
+                        txt: c.textContent, lib: document.getElementById('sourcesLibelle').textContent, largeurBtn: br.width,
+                        debord: document.documentElement.scrollWidth > innerWidth}; }""")
+            ok = (m["hLigne"] <= 26 and m["ecartY"] <= 6 and m["hTexte"] <= m["lh"] * 1.6 and m["droite"] <= m["boite"] + 1 and not m["debord"])
+            check(ok, "[chevron %d px, %s] une seule ligne de %.0f px, le chevron au même niveau que le texte (écart %.1f px) : « %s » + « %s »"
+                  % (largeur, tab, m["hLigne"], m["ecartY"], m["txt"], m["lib"]))
+            check(m["tient"], "[chevron %d px, %s] le texte garde la phrase la plus complète qui tient, sans ellipse (%s)" % (largeur, tab, m["txt"]))
+        check(not erreurs, "[chevron %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+    # Abréviations : NR, R, RM, et rien sans filtre.
+    ctx, page, _ = _ouvre_fil(nav, url, 390)
+    lues = {}
+    for tab in ("all", "non-rockstar", "rockstar", "rockstarmag"):
+        page.evaluate("(t) => setTab(t)", tab)
+        lues[tab] = page.evaluate("() => document.getElementById('sourcesLibelle').textContent")
+    check(lues == {"all": "", "non-rockstar": "NR", "rockstar": "R", "rockstarmag": "RM"},
+          "[chevron] abréviations : rien, NR, R, RM (%s)" % lues)
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -8330,9 +8476,11 @@ def main():
             test_cycle_de_couleurs(nav, url)
             test_cycle_synchronise(nav, url)
             test_contraste_du_cycle(nav, url)
+            test_tout_dans_le_cycle(nav, url)
             test_effets_du_jour_j(nav, url)
             test_coins_du_cadre(nav, url)
             test_lot_2a_interface(nav, url)
+            test_chevron_toujours_sur_une_ligne(nav, url)
             test_bordures_du_jour_j(nav, url)
             test_lot_2b_interface(nav, url)
             test_case_globale_des_effets(nav, url)

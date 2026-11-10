@@ -58,6 +58,8 @@
        d'un cheveu, et c'est la couleur de la ligne d'état, des libellés de
        jour et de la moitié des mentions secondaires. */
     --text-dim: #7e918b;
+    --text-dim-base: #7e918b;   /* la valeur d'origine, que le cycle teinte (voir « TOUT DANS LE CYCLE ») */
+    --orange: #FF6B00;
     --accent: #58b9ff;
     /* Ce qui s'écrit SUR un aplat --accent. Bascule avec le thème : le bleu
        clair du sombre demande du presque-noir (8,74:1), le bleu profond du
@@ -104,6 +106,8 @@
        (5,53). Était #5c7286 — conforme sur la page à 4,64 mais à 4,47 sur le
        surélevé, ce que seule une mesure élément par élément fait apparaître. */
     --text-dim: #566b7e;
+    --text-dim-base: #566b7e;
+    --orange: #FF6B00;
     /* 6,23:1 sur --bg, 6,70 sur une carte blanche. Était #5493ff — le bleu
        du thème SOMBRE, recopié tel quel, à 2,79:1. C'est la couleur du
        « _WATCH » du logo, du compte à rebours, des libellés de jour et de
@@ -741,12 +745,12 @@
   .card-thumb-lien{display:contents;}
   .card-favicon{width:14px; height:14px; border-radius:var(--r-xs); vertical-align:middle; margin-right:5px;}
   .card.official{
-    border-color:#FF6B00; border-width:1.5px;
-    background:linear-gradient(180deg, color-mix(in srgb, #FF6B00 8%, var(--bg-panel)), var(--bg-panel));
+    border-color:var(--orange); border-width:1.5px;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--orange) 8%, var(--bg-panel)), var(--bg-panel));
   }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
-    background:#FF6B00; color:#100800; border-radius:var(--r-sm);
+    background:var(--orange); color:#100800; border-radius:var(--r-sm);
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -1619,8 +1623,20 @@
   @property --accent{syntax:"<color>"; inherits:true; initial-value:#58b9ff;}
   html{--cycle-duree:4s; --cycle-pas:steps(12); --cycle-a:#19e6ff; --cycle-b:#b388ff; --cycle-c:#ff5cae;}
   html[data-theme="light"]{--cycle-a:#00708a; --cycle-b:#7c3aed; --cycle-c:#b8146f;}
+  /* L'ORANGE A SON PROPRE DÉGRADÉ (Antoni, 11/11/2026 : « pour l'orange, un dégradé blanc, jaune, orange ») :
+     la bordure et le badge des cartes officielles, l'orange d'« Actu majeure ». En clair, le « blanc » serait
+     invisible : trois bruns-ambres qui tiennent 4,5:1 sur la carte blanche. */
+  @property --orange{syntax:"<color>"; inherits:true; initial-value:#FF6B00;}
+  @property --hot{syntax:"<color>"; inherits:true; initial-value:#ff8c3d;}
+  /* DEUX USAGES, DEUX JEUX DE TEINTES : --orange sert d'APLAT (bordure, badge « OFFICIEL », texte presque noir
+     par-dessus) ; --hot sert de TEXTE (« Actu majeure ») sur un fond teinté. En clair, un texte demande des
+     bruns qui tiennent 4,5:1, un aplat des ambres vifs : un seul jeu ne ferait pas les deux. */
+  html{--orange-a:#ffffff; --orange-b:#ffd60a; --orange-c:#ff6b00; --hot-a:#ffffff; --hot-b:#ffd60a; --hot-c:#ff8c3d;}
+  html[data-theme="light"]{--orange-a:#ffa500; --orange-b:#ffc400; --orange-c:#ff6b00; --hot-a:#8a6a00; --hot-b:#9a5b00; --hot-c:#8f4407;}
   @keyframes cycle-accent{
-    0%,100%{--accent:var(--cycle-a);} 25%,75%{--accent:var(--cycle-b);} 50%{--accent:var(--cycle-c);}
+    0%,100%{--accent:var(--cycle-a); --orange:var(--orange-a); --hot:var(--hot-a);}
+    25%,75%{--accent:var(--cycle-b); --orange:var(--orange-b); --hot:var(--hot-b);}
+    50%{--accent:var(--cycle-c); --orange:var(--orange-c); --hot:var(--hot-c);}
   }
   @keyframes cycle-chiffre{
     0%,100%{color:#19e6ff; text-shadow:0 0 10px rgba(25,230,255,.7);}
@@ -1647,6 +1663,24 @@
   html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
       #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn){
     animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;
+  }
+  /* TOUT DANS LE CYCLE (Antoni, 11/11/2026 : « plus de couleurs dans le cycle, tout ce qui n'est pas blanc de
+     base »). Choix d'Antoni sur planche : les statuts vert et jaune, les textes gris (teinte à 55 %), les
+     badges de catégorie et de langue, l'orange en blanc-jaune-orange. LES ERREURS ROUGES (--danger) RESTENT
+     ROUGES, sur son conseil : une panne doit se reconnaître d'un coup d'œil. Les jetons sont posés sur les
+     MÊMES blocs que l'accent, et sur les cartes à l'écran : ils se recalculent à chaque pas avec l'accent local. */
+  html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
+      #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .card.dans-ecran){
+    --text-dim:color-mix(in srgb, var(--accent) 55%, var(--text-dim-base));
+    --ok:var(--accent); --warn:var(--accent);
+    --hot-texte:var(--hot);
+    --langue-fr:var(--accent); --langue-en:var(--accent);
+  }
+  html.cycle-couleur .card.dans-ecran{
+    --cat-bug:var(--accent); --cat-maj:var(--accent); --cat-trophee:var(--accent); --cat-ventes:var(--accent);
+    --cat-soluce:var(--accent); --cat-perf:var(--accent); --cat-online:var(--accent); --cat-test:var(--accent);
+    --cat-gameplay:var(--accent); --cat-mod:var(--accent); --cat-lore:var(--accent); --cat-autre:var(--accent);
+    --cat-astuce:var(--accent); --cat-speedrun:var(--accent);
   }
   /* EN VAGUE : chaque tuile a quatre dixièmes de cycle d'écart avec sa voisine. Les tuiles à zéro
      (grisées) restent grises. Le cycle REMPLACE la pulsation d'opacité des paliers « urgent » et
@@ -1769,6 +1803,45 @@
   html.cycle-couleur.bordures-j .card.dans-ecran:not(.official){
     animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite, cycle-bord var(--cycle-duree) steps(24) infinite;
   }
+  /* LES RÉGLAGES DES EFFETS, REBÂTIS (Antoni, 11/11/2026 : « les paramètres couleurs, c'est le bordel »,
+     rangement C avec préréglages et aperçu vivant). Un aperçu qui réagit, quatre préréglages, le détail replié
+     sous « Personnaliser », le grand moment de minuit à part, et le curseur des coins dans un groupe « Écran ». */
+  .apercu-couleurs{
+    display:flex; flex-direction:column; gap:8px; padding:12px; margin:6px 0 12px;
+    border:2px solid var(--line); border-radius:var(--r-md); background:var(--bg-panel);
+  }
+  .apercu-couleurs.cadre{
+    border-color:transparent;
+    background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
+      conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+  }
+  .apercu-couleurs .ap-tuiles{display:flex; gap:6px;}
+  .apercu-couleurs .ap-tuiles span{
+    flex:1; text-align:center; padding:6px 0; border:2px solid var(--line); border-radius:var(--r-sm);
+    background:var(--bg); font:800 18px 'JetBrains Mono',monospace; color:var(--accent);
+  }
+  .apercu-couleurs .ap-carte{height:34px; border:2px solid var(--line); border-radius:var(--r-md); background:var(--bg);}
+  .apercu-couleurs.bord .ap-tuiles span, .apercu-couleurs.bord .ap-carte{
+    border-color:transparent;
+    background:linear-gradient(var(--bg), var(--bg)) padding-box,
+      conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+  }
+  html.cycle-couleur .apercu-couleurs.anim{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
+  .prereglages{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 8px;}
+  .prereglage{
+    min-height:44px; padding:0 14px; border:1px solid var(--line); border-radius:var(--r-full);
+    background:var(--bg); color:var(--text); font:600 13px 'JetBrains Mono',monospace; cursor:pointer;
+  }
+  .prereglage[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);}
+  .personnaliser{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; min-height:44px;
+    padding:0 14px; border:0; border-top:1px solid var(--line); background:none; color:var(--text-dim);
+    font:600 13px 'JetBrains Mono',monospace; cursor:pointer; text-align:left;
+  }
+  .personnaliser span:first-child{flex:1; color:var(--text);}
+  .personnaliser .ic{width:20px; height:20px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
+  .personnaliser[aria-expanded="true"] .ic{transform:rotate(180deg);}
+  .effets-detail.ferme{display:none;}
   /* L'écran de chargement du jour J : le « VI » du logo vire du bleu au rose (rotation de teinte,
      mesurée sur la capture) et la ligne principale prend le dégradé. */
   .splash.splash-jourj .splash-logo{filter:hue-rotate(125deg);}
@@ -2039,8 +2112,15 @@
      12 px, la ZONE DE TOUCHER fait 44 px de haut (::after) sans grossir la ligne. Avec un filtre de source
      actif le bouton porte son nom, en couleur d'accent. */
   .rangee-sources.ferme{display:none;}
+  /* TOUJOURS SUR UNE LIGNE (Antoni, 11/11/2026 : « je veux que ça soit toujours sur une ligne ») : le comptage et
+     le chevron vivent dans une ligne qui NE passe JAMAIS à la ligne. Le chevron est réduit à son icône, et à
+     l'abréviation du filtre actif (NR, R, RM) ; le texte de comptage se raccourcit tout seul (ajusteComptage)
+     plutôt que de pousser le chevron à la ligne. Les lignes d'historique et d'archive, elles, gardent leur rangée. */
+  .comptage-ligne{display:flex; flex-wrap:nowrap; align-items:center; gap:8px; flex:1 1 100%; min-width:0;}
+  .comptage-ligne #countLine{flex:1 1 0; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .sources-btn #sourcesLibelle:empty{display:none;}
   .sources-btn{
-    margin-left:auto; position:relative; display:inline-flex; align-items:center; gap:2px;
+    flex:none; margin-left:auto; position:relative; display:inline-flex; align-items:center; gap:2px;
     background:none; border:0; padding:0; font:inherit; font-size:12px; color:var(--accent); cursor:pointer;
     min-height:0; min-width:0;
   }
@@ -2570,8 +2650,10 @@
        articles » a donc été retirée — cette ligne la remplace en disant
        explicitement ce que chaque nombre veut dire. -->
   <div class="console-status feed-count">
-    <span id="countLine">0 article suivi</span>
-    <button type="button" class="sources-btn" id="sourcesBtn" aria-expanded="false" aria-controls="rangeeSources" onclick="basculeSources()"><span id="sourcesLibelle">Par source</span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg></button>
+    <div class="comptage-ligne">
+      <span id="countLine">0 article suivi</span>
+      <button type="button" class="sources-btn" id="sourcesBtn" aria-expanded="false" aria-controls="rangeeSources" onclick="basculeSources()"><span id="sourcesLibelle"></span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg></button>
+    </div>
     <span id="historyLine" class="history-line" style="display:none;"></span>
     <span id="archiveLine" class="history-line" style="display:none;"></span>
   </div>
@@ -2761,88 +2843,91 @@
 
     <div class="setting-group">
       <span class="setting-label">Couleurs</span>
-      <div class="setting-row">
-        <label for="coulTout">Tous les effets du jour J</label>
-        <input type="checkbox" id="coulTout" onchange="basculeTousEffets(this.checked)">
+      <!-- L'APERÇU VIVANT (Antoni, 11/11/2026, rangement C) : une maquette minuscule des effets, qui réagit aux
+           interrupteurs : le cadre, les bordures des tuiles et d'une carte, et leur rotation. -->
+      <div class="apercu-couleurs" id="apercuCouleurs" aria-hidden="true">
+        <div class="ap-tuiles"><span>00</span><span>00</span><span>30</span><span>22</span></div>
+        <div class="ap-carte"></div>
       </div>
       <div class="setting-desc" hidden>
-        Allume ou éteint d'un coup tous les effets ci-dessous (le halo de minuit mis à part). Cochée à moitié :
-        certains sont allumés, d'autres non. Les cases individuelles restent réglables une par une.
+        L'aperçu montre ce que font les effets : le cadre de l'écran, les bordures des tuiles du compteur et
+        d'une carte, et leur rotation. Il suit les réglages en direct.
       </div>
-      <div class="setting-row">
-        <label for="coulAutoBtn">Retour à l'automatique</label>
-        <button type="button" id="coulAutoBtn" onclick="effetsEnAutomatique()">Remettre en automatique</button>
-      </div>
-      <div class="setting-desc" hidden>
-        Chaque effet redevient éteint, sauf le jour de la sortie où il s'allume tout seul pendant 24 h.
-      </div>
-      <div class="setting-row">
-        <label for="cycleCouleurs">Couleurs animées</label>
-        <input type="checkbox" id="cycleCouleurs" onchange="basculeCycleCouleurs(this.checked)">
+      <div class="prereglages" role="group" aria-label="Préréglages des effets">
+        <button type="button" class="prereglage" data-p="jourj" aria-pressed="false" onclick="appliquePrereglage('jourj')">Jour J complet</button>
+        <button type="button" class="prereglage" data-p="discret" aria-pressed="false" onclick="appliquePrereglage('discret')">Discret</button>
+        <button type="button" class="prereglage" data-p="aucun" aria-pressed="false" onclick="appliquePrereglage('aucun')">Aucun</button>
+        <button type="button" class="prereglage" data-p="auto" aria-pressed="false" onclick="appliquePrereglage('auto')">Automatique</button>
       </div>
       <div class="setting-desc" hidden>
-        L'accent de l'app (boutons actifs, onglets, liens, graphiques) et les chiffres du compteur
-        passent en continu du cyan au rose. Le jour de la sortie, c'est activé d'office : décoche
-        pour l'arrêter. Tu peux aussi l'allumer n'importe quel autre jour. Les couleurs de statut
-        (vert, orange, rouge) et les badges de catégorie ne bougent pas.
+        « Jour J complet » allume tous les effets. « Discret » garde le cadre et les bordures, fixes, sans
+        mouvement ni autre effet. « Aucun » éteint tout. « Automatique » laisse chaque effet s'allumer tout seul
+        le jour de la sortie, pendant 24 h. Aucun préréglage n'est surligné quand tu règles les effets un par un.
       </div>
-      <div class="setting-desc" id="cycleCouleursReduit" hidden>
-        Ton téléphone réduit les animations : les couleurs restent fixes.
+      <button type="button" class="personnaliser" id="persoBtn" aria-expanded="false" aria-controls="effetsDetail" onclick="basculePerso()">
+        <span>Personnaliser</span><span id="persoCompte"></span>
+        <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
+      </button>
+      <div class="effets-detail ferme" id="effetsDetail">
+  <div class="setting-row">
+          <label for="cycleCouleurs">Couleurs animées</label>
+          <input type="checkbox" id="cycleCouleurs" onchange="basculeCycleCouleurs(this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          L'accent de l'app (boutons actifs, onglets, liens, graphiques) et les chiffres du compteur
+          passent en continu du cyan au rose. Le jour de la sortie, c'est activé d'office : décoche
+          pour l'arrêter. Tu peux aussi l'allumer n'importe quel autre jour. Les couleurs de statut
+          (vert, orange, rouge) et les badges de catégorie ne bougent pas.
+        </div>
+        <div class="setting-desc" id="cycleCouleursReduit" hidden>
+          Ton téléphone réduit les animations : les couleurs restent fixes.
+        </div>
+  <div class="setting-row">
+          <label for="coulCadre">Cadre autour de l'écran</label>
+          <input type="checkbox" id="coulCadre" onchange="basculeEffet('coulCadre', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Un trait en dégradé cyan, violet, rose fait le tour de tout l'écran, et le panneau du compteur
+          affiche « GTA VI est sorti » après la sortie. Il tourne avec les couleurs animées. Le jour de la
+          sortie, à minuit pile, le grand moment (flash, ondes, halo, confettis, six secondes) l'accompagne
+          si l'app est ouverte.
+        </div>
+  <div class="setting-row">
+          <label for="coulBarreEtat">Barre d'état du téléphone</label>
+          <input type="checkbox" id="coulBarreEtat" onchange="basculeEffet('coulBarreEtat', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          La barre du haut de ton téléphone prend une teinte rose sombre, ou suit les couleurs animées.
+          Seulement quand l'app est installée sur l'écran d'accueil ; selon le téléphone, elle peut
+          rester noire.
+        </div>
+  <div class="setting-row">
+          <label for="coulChargement">Écran de chargement du jour J</label>
+          <input type="checkbox" id="coulChargement" onchange="basculeEffet('coulChargement', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Le « VI » passe au rose et la ligne principale au dégradé. Tu le vois à la prochaine ouverture de
+          l'app, si l'écran de chargement (plus bas) est allumé.
+        </div>
+  <div class="setting-row">
+          <label for="coulControles">Cases et curseur de saisie</label>
+          <input type="checkbox" id="coulControles" onchange="basculeEffet('coulControles', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
+          couleurs animées.
+        </div>
+  <div class="setting-row">
+          <label for="coulBordures">Bordures des tuiles et des cartes</label>
+          <input type="checkbox" id="coulBordures" onchange="basculeEffet('coulBordures', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Les bordures de 2 px des tuiles du compteur et des cartes d'article prennent le dégradé du
+          cadre, et tournent avec les couleurs animées. Les cartes officielles gardent leur bordure
+          orange. Seules les cartes à l'écran tournent.
+        </div>
       </div>
-      <div class="setting-row">
-        <label for="coulCadre">Cadre autour de l'écran</label>
-        <input type="checkbox" id="coulCadre" onchange="basculeEffet('coulCadre', this.checked)">
-      </div>
-      <div class="setting-desc" hidden>
-        Un trait en dégradé cyan, violet, rose fait le tour de tout l'écran, et le panneau du compteur
-        affiche « GTA VI est sorti » après la sortie. Il tourne avec les couleurs animées. Le jour de la
-        sortie, à minuit pile, le grand moment (flash, ondes, halo, confettis, six secondes) l'accompagne
-        si l'app est ouverte.
-      </div>
-      <div class="setting-row">
-        <label for="rayonCadre">Coins du bas de l'écran : <span id="rayonCadreVal"></span> px</label>
-        <input type="range" id="rayonCadre" min="0" max="60" step="1" oninput="reglerRayonCadre(this.value)">
-      </div>
-      <div class="setting-desc" hidden>
-        Le rayon des coins arrondis du BAS de ton écran : le cadre les suit (ceux du haut restent droits). Tire le curseur : le cadre
-        s'affiche tout seul pendant que tu règles. Le rayon de départ (32 px) est celui réglé sur un
-        Galaxy S26 Ultra ; un autre téléphone peut en demander un autre.
-      </div>
-      <div class="setting-row">
-        <label for="coulBarreEtat">Barre d'état du téléphone</label>
-        <input type="checkbox" id="coulBarreEtat" onchange="basculeEffet('coulBarreEtat', this.checked)">
-      </div>
-      <div class="setting-desc" hidden>
-        La barre du haut de ton téléphone prend une teinte rose sombre, ou suit les couleurs animées.
-        Seulement quand l'app est installée sur l'écran d'accueil ; selon le téléphone, elle peut
-        rester noire.
-      </div>
-      <div class="setting-row">
-        <label for="coulChargement">Écran de chargement du jour J</label>
-        <input type="checkbox" id="coulChargement" onchange="basculeEffet('coulChargement', this.checked)">
-      </div>
-      <div class="setting-desc" hidden>
-        Le « VI » passe au rose et la ligne principale au dégradé. Tu le vois à la prochaine ouverture de
-        l'app, si l'écran de chargement (plus bas) est allumé.
-      </div>
-      <div class="setting-row">
-        <label for="coulControles">Cases et curseur de saisie</label>
-        <input type="checkbox" id="coulControles" onchange="basculeEffet('coulControles', this.checked)">
-      </div>
-      <div class="setting-desc" hidden>
-        Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
-        couleurs animées.
-      </div>
-      <div class="setting-row">
-        <label for="coulBordures">Bordures des tuiles et des cartes</label>
-        <input type="checkbox" id="coulBordures" onchange="basculeEffet('coulBordures', this.checked)">
-      </div>
-      <div class="setting-desc" hidden>
-        Les bordures de 2 px des tuiles du compteur et des cartes d'article prennent le dégradé du
-        cadre, et tournent avec les couleurs animées. Les cartes officielles gardent leur bordure
-        orange. Seules les cartes à l'écran tournent.
-      </div>
-      <div class="setting-row">
+<div class="setting-row">
         <label for="lanceHaloBtn">Halo de minuit</label>
         <button type="button" id="lanceHaloBtn" onclick="lanceHalo()">Lancer le halo</button>
       </div>
@@ -2850,6 +2935,19 @@
         Le grand moment de minuit, pour l'essayer : un flash, deux ondes de choc, le halo qui respire,
         des confettis et une vibration courte, pendant six secondes. Indisponible quand ton téléphone
         réduit les animations ; la vibration dépend du téléphone.
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Écran</span>
+<div class="setting-row">
+        <label for="rayonCadre">Coins du bas de l'écran : <span id="rayonCadreVal"></span> px</label>
+        <input type="range" id="rayonCadre" min="0" max="60" step="1" oninput="reglerRayonCadre(this.value)">
+      </div>
+      <div class="setting-desc" hidden>
+        Le rayon des coins arrondis du BAS de ton écran : le cadre les suit (ceux du haut restent droits). Tire le curseur : le cadre
+        s'affiche tout seul pendant que tu règles. Le rayon de départ (32 px) est celui réglé sur un
+        Galaxy S26 Ultra ; un autre téléphone peut en demander un autre.
       </div>
     </div>
 
@@ -3601,37 +3699,63 @@ function basculeEffet(cle, actif){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde de l'effet " + cle, e); }
   appliqueEffetsJourJ(new Date());
-  majCaseGlobale();
+  majReglagesEffets();
   requestAnimationFrame(syncCycle);
 }
 
 // LA CASE GLOBALE : coche tout, décoche tout, ou « à moitié » quand les effets divergent. Elle ÉCRIT chaque
 // réglage (true ou false), à la différence de l'automatique : un effet allumé d'un coup le reste après le jour J.
-function majCaseGlobale(){
-  const tous = document.getElementById("coulTout");
-  if(!tous) return;
-  const etats = EFFETS_JOUR_J.map(c => effetActif(c, new Date()));
-  const toutAllume = etats.every(Boolean), toutEteint = !etats.some(Boolean);
-  tous.checked = toutAllume;
-  tous.indeterminate = !toutAllume && !toutEteint;
+// LES PRÉRÉGLAGES (rangement C, 11/11/2026). Chacun ÉCRIT chaque réglage ; « Automatique » les remet à null.
+// « Discret » : le cadre et les bordures, fixes ; ni mouvement, ni barre d'état, ni chargement, ni commandes.
+const PREREGLAGES = {
+  jourj:   { cycleCouleurs: true,  coulCadre: true,  coulBarreEtat: true,  coulChargement: true,  coulControles: true,  coulBordures: true },
+  discret: { cycleCouleurs: false, coulCadre: true,  coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: true },
+  aucun:   { cycleCouleurs: false, coulCadre: false, coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: false },
+  auto:    { cycleCouleurs: null,  coulCadre: null,  coulBarreEtat: null,  coulChargement: null,  coulControles: null,  coulBordures: null },
+};
+function prereglageActif(){
+  for(const nom of Object.keys(PREREGLAGES))
+    if(EFFETS_JOUR_J.every(c => settings[c] === PREREGLAGES[nom][c])) return nom;
+  return null;
+}
+function majReglagesEffets(){
+  const actif = prereglageActif();
+  for(const b of document.querySelectorAll(".prereglage")) b.setAttribute("aria-pressed", String(b.dataset.p === actif));
+  const now = new Date();
+  const a = document.getElementById("apercuCouleurs");
+  if(a){
+    a.classList.toggle("cadre", effetActif("coulCadre", now));
+    a.classList.toggle("bord", effetActif("coulBordures", now));
+    a.classList.toggle("anim", effetActif("cycleCouleurs", now));
+  }
+  const n = EFFETS_JOUR_J.filter(c => effetActif(c, now)).length;
+  const compte = document.getElementById("persoCompte");
+  if(compte) compte.textContent = n + " sur " + EFFETS_JOUR_J.length + " allumés";
+}
+function basculePerso(){
+  const detail = document.getElementById("effetsDetail"), bouton = document.getElementById("persoBtn");
+  if(!detail || !bouton) return;
+  const ouvre = detail.classList.contains("ferme");
+  detail.classList.toggle("ferme", !ouvre);
+  bouton.setAttribute("aria-expanded", String(ouvre));
 }
 function majCasesEffets(){
   for(const cle of EFFETS_JOUR_J){
     const c = document.getElementById(cle);
     if(c) c.checked = effetActif(cle, new Date());
   }
-  majCaseGlobale();
+  majReglagesEffets();
 }
-function ecritEffets(valeur){
-  for(const cle of EFFETS_JOUR_J) settings[cle] = valeur;
+function appliquePrereglage(nom){
+  const p = PREREGLAGES[nom];
+  if(!p) return;
+  for(const cle of EFFETS_JOUR_J) settings[cle] = p[cle];
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
-  catch(e){ console.error("Erreur sauvegarde des effets", e); }
+  catch(e){ console.error("Erreur sauvegarde du préréglage " + nom, e); }
   appliqueEffetsJourJ(new Date());
   majCasesEffets();
   requestAnimationFrame(syncCycle);
 }
-function basculeTousEffets(actif){ ecritEffets(!!actif); }
-function effetsEnAutomatique(){ ecritEffets(null); }
 
 // LES CARTES À L'ÉCRAN : seules elles animent leur accent et leur bordure (voir « LES BORDURES DES TUILES ET
 // DES CARTES »). Le fil réécrit tout son contenu à chaque rendu : on relâche l'observateur et on le repose.
@@ -3768,7 +3892,7 @@ function basculeCycleCouleurs(actif){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde cycle de couleurs", e); }
   appliqueEffetsJourJ(new Date());
-  majCaseGlobale();
+  majReglagesEffets();
   requestAnimationFrame(syncCycle);
 }
 
@@ -5844,6 +5968,8 @@ function retourFil(){
 // LES SOURCES REPLIÉES (idée 2) : fermées à chaque ouverture, SAUF si un filtre de source est actif : la
 // rangée s'ouvre alors toute seule pour le montrer. Jamais mémorisé (choix d'Antoni, 11/11/2026).
 const ONGLETS_SOURCE = { "non-rockstar": "Non Rockstar", "rockstar": "Rockstar", "rockstarmag": "RockstarMag" };
+// Les abréviations d'Antoni (11/11/2026) : le chevron tient ainsi toujours sur la ligne du comptage.
+const ABREVIATIONS_SOURCE = { "non-rockstar": "NR", "rockstar": "R", "rockstarmag": "RM" };
 let sourcesOuvert = false;
 function majSources(){
   const rangee = document.getElementById("rangeeSources");
@@ -5852,11 +5978,27 @@ function majSources(){
   rangee.classList.toggle("ferme", !sourcesOuvert);
   bouton.setAttribute("aria-expanded", String(sourcesOuvert));
   const nom = ONGLETS_SOURCE[currentTab];
-  document.getElementById("sourcesLibelle").textContent = nom || "Par source";
+  document.getElementById("sourcesLibelle").textContent = ABREVIATIONS_SOURCE[currentTab] || "";
+  bouton.title = nom ? "Source : " + nom : "Par source";
   bouton.classList.toggle("filtre-actif", !!nom);
   bouton.setAttribute("aria-label", nom ? "Source : " + nom + (sourcesOuvert ? " — replier" : " — déplier les sources")
                                         : (sourcesOuvert ? "Replier les sources" : "Déplier les sources"));
+  ajusteComptage();
 }
+// Le texte de comptage tient TOUJOURS sur une ligne : on garde la phrase la plus complète qui ne déborde pas ;
+// en dernier recours, c'est l'ellipse du CSS. Rappelée au redimensionnement et quand le libellé du chevron change.
+function ajusteComptage(){
+  const el = document.getElementById("countLine");
+  if(!el || !el.dataset.variantes) return;
+  let variantes;
+  try{ variantes = JSON.parse(el.dataset.variantes); }catch(e){ return; }
+  for(const v of variantes){
+    el.textContent = v;
+    if(el.scrollWidth <= el.clientWidth + 1) return;
+  }
+}
+window.addEventListener("resize", ajusteComptage);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajusteComptage);
 function basculeSources(){
   sourcesOuvert = !sourcesOuvert;
   majSources();
@@ -6519,9 +6661,14 @@ function applyFilters(){
   // L'état de l'historique est porté par historyLine, juste à droite —
   // l'ajouter ici aussi le disait deux fois sur la même ligne.
   const nonLus = items.filter(i => !readSet.has(i.link)).length;
-  countEl.textContent = items.length + " affiché" + (items.length>1?"s":"")
-    + ` · ${nonLus} non lu${nonLus>1?"s":""}`
-    + (masques > 0 ? ` · ${masques} masqué${masques>1?"s":""}` : "");
+  const pluriel = (n, mot) => n + " " + mot + (n > 1 ? "s" : "");
+  // De la phrase complète à la plus courte : ajusteComptage prend la première qui tient sur la ligne.
+  const nonLusTxt = `${nonLus} non lu${nonLus>1?"s":""}`;
+  const base = pluriel(items.length, "affiché") + " · " + nonLusTxt;
+  countEl.dataset.variantes = JSON.stringify(masques > 0
+    ? [base + ` · ${masques} masqué${masques>1?"s":""}`, base, nonLusTxt]
+    : [base, nonLusTxt]);
+  ajusteComptage();
   updateHistoryLine();
 }
 
