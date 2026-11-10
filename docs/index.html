@@ -438,6 +438,13 @@
   .bh-compteur.urgent{color:var(--compte-urgent); text-shadow:var(--compte-halo-urgent);}
   .bh-compteur.final{color:var(--compte-final); text-shadow:var(--compte-halo-final);}
   body.bh-visible .day-label{top:52px;}
+  /* STATS ET RÉGLAGES N'ONT PAS BESOIN DE L'EN-TÊTE DÉPLIÉ (Antoni, 10/11/2026) : il prenait environ
+     268 px sur 844 en haut de chaque page. On le masque ; l'observateur de brancheBarreHaute voit alors
+     l'en-tête hors de l'écran et allume la ligne réduite (titre, point vert, compteur), qui garde
+     l'accès au détail du compteur. Le ↻ de l'en-tête disparaît de ces deux pages : l'actualisation se
+     tire depuis le fil. */
+  body.vue-stats header.console, body.vue-reglages header.console{display:none;}
+  body.vue-stats .wrap, body.vue-reglages .wrap{padding-top:64px;}
   body.bh-visible .panneau-tabs{top:52px;}
   .barre-bas{
     position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:60;
@@ -1408,7 +1415,9 @@
   }
   .stats-bloc h3{font-size:13px; font-weight:600; margin:0 0 4px; color:var(--text);}
   .stats-sous{font-size:12px; color:var(--text-dim); margin:0 0 10px;}
-  .stats-chiffres{display:flex; flex-wrap:wrap; gap:18px; margin:4px 0 2px;}
+  /* GRILLE À DEUX COLONNES (planche du 10/11/2026) : en flex qui passe à la ligne, « Dans le fil »
+     posait trois chiffres sur une rangée et le quatrième seul dessous. */
+  .stats-chiffres{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px 12px; margin:4px 0 2px;}
   .stats-chiffre b{display:block; font-size:20px; font-weight:600; color:var(--text);}
   .stats-chiffre span{font-size:12px; color:var(--text-dim);}
   .stats-liste{list-style:none; margin:0; padding:0; font-size:13px;}
@@ -2427,7 +2436,7 @@
       <button class="tab active" id="statsOnglet_fil" aria-pressed="true" onclick="ongletStatsChoisi('fil')">Le fil</button>
       <button class="tab" id="statsOnglet_sources" aria-pressed="false" onclick="ongletStatsChoisi('sources')">Sources</button>
       <button class="tab" id="statsOnglet_robot" aria-pressed="false" onclick="ongletStatsChoisi('robot')">Robot</button>
-      <button class="tab" id="statsOnglet_moi" aria-pressed="false" onclick="ongletStatsChoisi('moi')">Ma lecture</button>
+      <button class="tab" id="statsOnglet_moi" aria-pressed="false" onclick="ongletStatsChoisi('moi')">Lecture</button>
     </div>
     <div id="statsContenu"></div>
   </div>
@@ -5393,6 +5402,7 @@ function setTab(t, silencieux){
   if(panneauStats) panneauStats.style.display = isStats ? "block" : "none";
   document.querySelector(".search-row").style.display = estVue ? "none" : "flex";
   document.body.classList.toggle("vue-detail", estVue);
+  document.body.classList.toggle("vue-stats", isStats);
   if(!estVue) dernierOngletFil = t;
   // Choisir une autre vue depuis la page Réglages la referme.
   if(document.body.classList.contains("vue-reglages")) closeSettings();
@@ -7953,6 +7963,14 @@ function statsPretes(){
 
 const ONGLETS_STATS = ["fil", "sources", "robot", "moi"];
 
+// La phrase « Touche une colonne pour lire sa valeur » ne s'écrit qu'UNE fois par page : répétée sur
+// chaque graphique, c'était du bruit. Les autres paragraphes restent dans le document, vides : la
+// valeur touchée s'y écrit, et leur hauteur réservée (min-height) évite que le graphique saute sous
+// le doigt.
+function uneSeulePhraseDAide(cible){
+  cible.querySelectorAll(".stats-lecture").forEach((p, i) => { if(i > 0) p.textContent = ""; });
+}
+
 function renderStats(){
   const cible = document.getElementById("statsContenu");
   if(!cible) return;
@@ -7960,8 +7978,8 @@ function renderStats(){
   const s = calculeStats(lastItems, derniereReponseBackend, new Date(), {
     lus: readSet, vus: seenMap, vusDepuis, archiveChargee, archiveIndex,
   });
-  if(ongletStats === "sources"){ cible.innerHTML = renderStatsSources(s); return; }
-  if(ongletStats === "robot"){ chargePassagesRobot(); cible.innerHTML = renderStatsRobot(s); return; }
+  if(ongletStats === "sources"){ cible.innerHTML = renderStatsSources(s); uneSeulePhraseDAide(cible); return; }
+  if(ongletStats === "robot"){ chargePassagesRobot(); cible.innerHTML = renderStatsRobot(s); uneSeulePhraseDAide(cible); return; }
   if((ongletStats === "fil" || ongletStats === "moi") && !statsPretes()){
     cible.innerHTML = `<p class="stats-attente">Chargement de l'historique complet… `
       + `Les chiffres calculés sur les seuls articles récents seraient faux.</p>`;
@@ -7970,6 +7988,7 @@ function renderStats(){
     return;
   }
   cible.innerHTML = ongletStats === "moi" ? renderStatsMoi(s) : renderStatsFil(s);
+  uneSeulePhraseDAide(cible);
   // L'archive peut encore arriver : on redessine quand elle est là, sans
   // bloquer l'affichage de ce qui est déjà juste.
   if(!archiveChargee){

@@ -1657,12 +1657,12 @@ def test_barre_du_bas(nav, url):
 def test_page_reglages(nav, url):
     """Les Réglages sont une PAGE, plus un pop-up (demande d'Antoni, 07/11/2026).
 
-    Mesuré dans un vrai navigateur : la page s'ouvre sous l'entête de l'app, le fil
-    se masque, la barre du bas allume « Réglages » (et eux seuls), les rubriques
+    Mesuré dans un vrai navigateur : la page s'ouvre sous la ligne réduite (l'en-tête déplié est masqué
+    sur cette page depuis le 10/11/2026), le fil se masque, la barre du bas allume « Réglages » (et eux seuls), les rubriques
     restent collées en haut pendant le défilement, le dernier réglage se lit
     au-dessus de la barre, rien ne déborde, et « Fil » comme « Stats » la referment.
     """
-    print("\n[réglages] une page sous l'entête, plus un pop-up")
+    print("\n[réglages] une page sous la ligne réduite, plus un pop-up")
     for largeur, schema in ((320, "dark"), (390, "light")):
         etiq = "[%d px, %s]" % (largeur, schema)
         ctx = nav.new_context(viewport={"width": largeur, "height": 740}, color_scheme=schema,
@@ -1674,11 +1674,15 @@ def test_page_reglages(nav, url):
         page.goto(url, wait_until="load")
         page.wait_for_selector(".barre-bas")
         page.click("#navReglages")
+        page.wait_for_timeout(300)   # l'observateur de la ligne réduite réagit à l'image suivante
         etat = page.evaluate("""() => {
             const vis = s => { const e = document.querySelector(s); return !!e && e.offsetParent !== null
               && getComputedStyle(e).visibility !== 'hidden'; };
             const sp = document.querySelector('#settingsOverlay .settings-panel');
             return {page: vis('#settingsOverlay'), fil: vis('#feed'), entete: vis('#countdown'),
+                    // La ligne réduite est en position FIXE : offsetParent y vaut toujours null, donc vis() la
+                    // croirait cachée. On lit sa classe.
+                    ligne: document.getElementById('barreHaut').classList.contains('visible'),
                     pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed')),
                     corps: getComputedStyle(document.body).position,
                     fond: getComputedStyle(document.getElementById('settingsOverlay')).position,
@@ -1686,8 +1690,10 @@ def test_page_reglages(nav, url):
                     dialogue: !!document.querySelector('#settingsOverlay [aria-modal]'),
                     focus: document.activeElement.id,
                     deborde: document.documentElement.scrollWidth > innerWidth}; }""")
-        check(etat["page"] and not etat["fil"] and etat["entete"],
-              "%s la page s'ouvre sous l'entête, le fil se masque" % etiq)
+        # Depuis le 10/11/2026 l'en-tête DÉPLIÉ est masqué sur Réglages (planche d'Antoni) : la ligne
+        # réduite le remplace. Avant, ce contrôle exigeait l'en-tête visible.
+        check(etat["page"] and not etat["fil"] and not etat["entete"] and etat["ligne"],
+              "%s la page s'ouvre sous la ligne réduite, l'en-tête déplié et le fil se masquent" % etiq)
         check(etat["pressed"] == ["false", "false", "true"],
               "%s la barre du bas allume « Réglages » seul (%s)" % (etiq, etat["pressed"]))
         check(etat["corps"] != "fixed" and etat["fond"] != "fixed" and not etat["dialogue"]
@@ -7293,6 +7299,108 @@ def test_contraste_du_cycle(nav, url):
         ctx.close()
 
 
+def test_stats_et_reglages_compacts(nav, url):
+    """Stats et Réglages sans l'en-tête déplié (planche du 10/11/2026).
+
+    L'en-tête déplié prenait environ 268 px sur 844 en haut de chaque page, et se répétait. Sur Stats
+    et Réglages il est masqué et la ligne réduite (titre, point vert, compteur) prend le relais ;
+    sur le fil il revient. Mesuré dans un vrai navigateur, à 320 et 390 px : l'en-tête est caché,
+    la ligne réduite visible, le premier contenu commence SOUS elle (pas dessous), l'onglet
+    « Lecture » tient sur une ligne comme ses voisins, « Dans le fil » range ses chiffres sur deux
+    colonnes, la phrase d'aide n'apparaît qu'une fois — et un toucher sur une colonne y écrit encore
+    sa valeur sans faire sauter le graphique sous le doigt.
+    """
+    print("\n[compact] Stats et Réglages : en-tête masqué, ligne réduite, grille 2×2, une seule phrase")
+    for largeur, schema in ((320, "dark"), (390, "light")):
+        etiq = "[%d px, %s]" % (largeur, schema)
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=schema,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector(".header-haut")
+        base = page.evaluate("""() => { const r = document.querySelector('header.console').getBoundingClientRect();
+            return {affiche: getComputedStyle(document.querySelector('header.console')).display !== 'none',
+                    barre: document.getElementById('barreHaut').classList.contains('visible')}; }""")
+        check(base["affiche"] and not base["barre"],
+              "%s sur le fil : l'en-tête est déplié, la ligne réduite absente" % etiq)
+        # ---- Stats
+        page.evaluate("() => { lastItems = Array.from({length: 240}, (_, i) => ({title: 'Article ' + i, link: 'https://ex.test/' + i,"
+                      " description: 'R', date: new Date(Date.now() - i * 7200e3).toISOString(), source: 'S' + (i % 4)}));"
+                      " lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; archiveChargee = true; applyFilters(); }")
+        page.evaluate("() => { setTab('stats'); ongletStatsChoisi('fil'); }")
+        page.wait_for_timeout(500)
+        m = page.evaluate("""() => {
+            const q = s => document.querySelector(s), r = e => e.getBoundingClientRect();
+            const barre = r(q('#barreHaut'));
+            const onglets = [...document.querySelectorAll('.stats-onglets button')].map(b => Math.round(r(b).height));
+            const chiffres = [...document.querySelectorAll('.stats-chiffres')].map(g => {
+              const t = [...g.children].map(c => Math.round(r(c).top));
+              return {colonnes: getComputedStyle(g).gridTemplateColumns.split(' ').length, rangees: new Set(t).size, n: t.length};
+            });
+            const phrases = [...document.querySelectorAll('.stats-lecture')].map(p => p.textContent.trim());
+            return {entete: getComputedStyle(q('header.console')).display, visible: q('#barreHaut').classList.contains('visible'),
+                    bh: document.body.classList.contains('bh-visible'), barreBas: barre.bottom,
+                    premier: r(q('.stats-onglets')).top, onglets, chiffres, phrases,
+                    etiquette: q('#statsOnglet_moi').textContent.trim(),
+                    deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(m["entete"] == "none" and m["visible"] and m["bh"],
+              "%s Stats : en-tête masqué, ligne réduite et classe bh-visible posées (%s, %s, %s)"
+              % (etiq, m["entete"], m["visible"], m["bh"]))
+        check(m["premier"] >= m["barreBas"] - 0.5,
+              "%s Stats : le premier contenu commence sous la ligne réduite (%.0f px, barre jusqu'à %.0f px)"
+              % (etiq, m["premier"], m["barreBas"]))
+        check(m["etiquette"] == "Lecture" and len(set(m["onglets"])) == 1,
+              "%s Stats : l'onglet « %s » tient sur une ligne comme les trois autres (hauteurs %s)"
+              % (etiq, m["etiquette"], m["onglets"]))
+        c0 = m["chiffres"][0] if m["chiffres"] else None
+        check(c0 is not None and c0["colonnes"] == 2 and c0["rangees"] == (c0["n"] + 1) // 2,
+              "%s Stats : « Dans le fil » range ses %s chiffres sur deux colonnes (%s)"
+              % (etiq, c0 and c0["n"], c0))
+        remplies = [x for x in m["phrases"] if x]
+        check(len(m["phrases"]) >= 3 and len(remplies) == 1 and remplies[0].startswith("Touche"),
+              "%s Stats : la phrase d'aide n'apparaît qu'une fois sur %d graphiques (%d)"
+              % (etiq, len(m["phrases"]), len(remplies)))
+        check(not m["deborde"], "%s Stats : rien ne déborde à droite" % etiq)
+        # Un toucher sur une colonne d'un graphique SANS phrase : la valeur s'écrit, le graphique ne bouge pas.
+        t = page.evaluate("""() => {
+            const blocs = [...document.querySelectorAll('.stats-bloc')].filter(b => b.querySelector('.stats-lecture')
+              && b.querySelector('.stats-col, .stats-case'));
+            const b = blocs[1]; if(!b) return null;
+            const col = b.querySelector('.stats-col, .stats-case'), haut = b.querySelector('.stats-histo, .stats-carte') || col;
+            b.scrollIntoView({block: 'center'});
+            const avant = haut.getBoundingClientRect().top + scrollY;
+            col.click();
+            const apres = haut.getBoundingClientRect().top + scrollY;
+            return {texte: b.querySelector('.stats-lecture').textContent.trim(), saut: Math.abs(apres - avant)}; }""")
+        check(t is not None and t["texte"] != "" and t["saut"] < 1,
+              "%s Stats : toucher une colonne d'un graphique sans phrase y écrit sa valeur, sans faire sauter le graphique (%s)"
+              % (etiq, t))
+        # ---- Réglages
+        page.evaluate("() => openSettings()")
+        page.wait_for_timeout(400)
+        r_ = page.evaluate("""() => { const q = s => document.querySelector(s), r = e => e.getBoundingClientRect();
+            return {entete: getComputedStyle(q('header.console')).display, visible: q('#barreHaut').classList.contains('visible'),
+                    barreBas: r(q('#barreHaut')).bottom, titre: r(q('#settingsOverlay .settings-title, #settingsOverlay h2, #settingsOverlay')).top}; }""")
+        check(r_["entete"] == "none" and r_["visible"],
+              "%s Réglages : en-tête masqué et ligne réduite visible (%s, %s)" % (etiq, r_["entete"], r_["visible"]))
+        check(r_["titre"] >= r_["barreBas"] - 0.5,
+              "%s Réglages : la page commence sous la ligne réduite (%.0f px, barre jusqu'à %.0f px)"
+              % (etiq, r_["titre"], r_["barreBas"]))
+        # ---- retour au fil
+        page.evaluate("() => retourFil()")
+        page.wait_for_timeout(400)
+        f = page.evaluate("""() => ({entete: getComputedStyle(document.querySelector('header.console')).display,
+            barre: document.getElementById('barreHaut').classList.contains('visible'),
+            stats: document.body.classList.contains('vue-stats'), reg: document.body.classList.contains('vue-reglages')})""")
+        check(f["entete"] != "none" and not f["barre"] and not f["stats"] and not f["reg"],
+              "%s retour au fil : l'en-tête est déplié, la ligne réduite repart, plus de classe de vue (%s)" % (etiq, f))
+        check(not erreurs, "%s aucune erreur JavaScript" % etiq)
+        ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -7381,6 +7489,7 @@ def main():
             test_balayage_des_cartes(nav, url)
             test_cycle_de_couleurs(nav, url)
             test_contraste_du_cycle(nav, url)
+            test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:
         srv.shutdown()
