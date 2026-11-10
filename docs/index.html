@@ -1167,6 +1167,16 @@
     content:""; flex:1; height:1px; background:var(--accent); opacity:0.35;
   }
 
+  /* LE REPÈRE « NOUVEAUX · DÉJÀ VUS » (idée 5, 11/11/2026) : une ligne à l'endroit où le fil passe des articles
+     neufs à ceux déjà vus. Distinct de « lu jusqu'ici », qui marque où la LECTURE s'est arrêtée. */
+  .repere-nouveaux{
+    display:flex; align-items:center; gap:10px; margin:10px 0;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+    color:var(--accent); letter-spacing:0.1em; text-transform:uppercase;
+  }
+  .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--accent));}
+  .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--accent), transparent);}
+
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
     background:var(--accent); color:var(--accent-contrast); border:none; border-radius:var(--r-full);
@@ -1435,8 +1445,19 @@
   /* GRILLE À DEUX COLONNES (planche du 10/11/2026) : en flex qui passe à la ligne, « Dans le fil »
      posait trois chiffres sur une rangée et le quatrième seul dessous. */
   .stats-chiffres{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px 12px; margin:4px 0 2px;}
-  .stats-chiffre b{display:block; font-size:20px; font-weight:600; color:var(--text);}
-  .stats-chiffre span{font-size:12px; color:var(--text-dim);}
+  /* LES CHIFFRES EN TUILES (idée 4, 11/11/2026) : la police du compteur, 30 px, dans une tuile à bordure.
+     Accent pour les deux premiers, couleur d'avertissement pour les deux suivants (la couleur qui, dans
+     l'app, ne veut pas dire « actif »). */
+  .stats-chiffre{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md); padding:12px 12px 10px;
+    min-width:0;
+  }
+  .stats-chiffre b{
+    display:block; font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:800; line-height:1.1;
+    letter-spacing:-0.02em; color:var(--accent); font-variant-numeric:tabular-nums;
+  }
+  .stats-chiffre:nth-child(n+3) b{color:var(--warn);}
+  .stats-chiffre span{display:block; margin-top:2px; font-size:12px; color:var(--text-dim);}
   .stats-liste{list-style:none; margin:0; padding:0; font-size:13px;}
   .stats-liste li{display:flex; justify-content:space-between; gap:12px;
     padding:6px 0; border-top:1px solid var(--line);}
@@ -1670,10 +1691,12 @@
      arrondis. Seuls les deux coins du BAS sont arrondis (rayon --rayon-cadre) ; ceux du haut restent à
      angle droit, sous la barre d'état. Le trait est une VRAIE bordure à coins arrondis : le bord intérieur prend tout seul le rayon moins l'épaisseur, ce que ne faisait
      pas le masque sur la zone de contenu. Le rayon vient des Réglages (curseur « Coins de l'écran »). */
-  html{--rayon-cadre:32px;}
+  /* UNE SEULE ÉPAISSEUR pour toutes les bordures en dégradé (Antoni, 11/11/2026 : « pour être harmonieux, que
+     toutes les bordures fassent la même taille ») : le cadre de l'écran, les cartes et les tuiles. */
+  html{--rayon-cadre:32px; --bord-ep:2px;}
   html.cadre-j .cadre-ecran, html.cadre-apercu .cadre-ecran{
     display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none;
-    border:3px solid transparent; border-radius:0 0 var(--rayon-cadre) var(--rayon-cadre);
+    border:var(--bord-ep) solid transparent; border-radius:0 0 var(--rayon-cadre) var(--rayon-cadre);
     background:conic-gradient(from var(--cadre-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
     -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
     -webkit-mask-composite:xor; mask-composite:exclude;
@@ -1697,6 +1720,27 @@
   }
   @keyframes halo-j{0%{opacity:0;} 15%{opacity:1;} 100%{opacity:0;}}
   @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif{display:none;} }
+  /* LES BORDURES DES TUILES ET DES CARTES (Antoni, 11/11/2026 : « fais pareil sur la bordure des cartes et des
+     tuiles », 2 px, « même les tuiles grisées, les bordures pas le texte »). Même dégradé conique que le cadre de
+     l'écran, et la MÊME horloge : l'angle --bord-ang est animé par cycle-bord (24 pas en 4 s, comme cycle-cadre),
+     recalé sur l'horloge du document comme toutes les animations « cycle-* ». Les cartes ne tournent que
+     LORSQU'ELLES SONT À L'ÉCRAN (classe dans-ecran, posée par un IntersectionObserver) : une animation par carte
+     coûtait 21 ms par image avec 500 cartes. Les cartes « officielles » gardent leur bordure orange, qui porte un
+     sens. La tuile « jours » grisée à 00 prend la bordure aussi (pleine, un dégradé ne se pointille pas) ; son
+     texte reste gris. */
+  @property --bord-ang{syntax:"<angle>"; inherits:true; initial-value:0deg;}
+  @keyframes cycle-bord{from{--bord-ang:0deg;} to{--bord-ang:360deg;}}
+  html.bordures-j .card:not(.official), html.bordures-j .cd-t{
+    border:var(--bord-ep) solid transparent;
+    background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
+      conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+  }
+  html.bordures-j .cd-t.zero{border-style:solid;}
+  html.cycle-couleur.bordures-j .cd-t{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
+  html.cycle-couleur .card.dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
+  html.cycle-couleur.bordures-j .card.dans-ecran:not(.official){
+    animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite, cycle-bord var(--cycle-duree) steps(24) infinite;
+  }
   /* L'écran de chargement du jour J : le « VI » du logo vire du bleu au rose (rotation de teinte,
      mesurée sur la capture) et la ligne principale prend le dégradé. */
   .splash.splash-jourj .splash-logo{filter:hue-rotate(125deg);}
@@ -2690,6 +2734,21 @@
     <div class="setting-group">
       <span class="setting-label">Couleurs</span>
       <div class="setting-row">
+        <label for="coulTout">Tous les effets du jour J</label>
+        <input type="checkbox" id="coulTout" onchange="basculeTousEffets(this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        Allume ou éteint d'un coup tous les effets ci-dessous (le halo de minuit mis à part). Cochée à moitié :
+        certains sont allumés, d'autres non. Les cases individuelles restent réglables une par une.
+      </div>
+      <div class="setting-row">
+        <label for="coulAutoBtn">Retour à l'automatique</label>
+        <button type="button" id="coulAutoBtn" onclick="effetsEnAutomatique()">Remettre en automatique</button>
+      </div>
+      <div class="setting-desc" hidden>
+        Chaque effet redevient éteint, sauf le jour de la sortie où il s'allume tout seul pendant 24 h.
+      </div>
+      <div class="setting-row">
         <label for="cycleCouleurs">Couleurs animées</label>
         <input type="checkbox" id="cycleCouleurs" onchange="basculeCycleCouleurs(this.checked)">
       </div>
@@ -2744,6 +2803,15 @@
       <div class="setting-desc" hidden>
         Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
         couleurs animées.
+      </div>
+      <div class="setting-row">
+        <label for="coulBordures">Bordures des tuiles et des cartes</label>
+        <input type="checkbox" id="coulBordures" onchange="basculeEffet('coulBordures', this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        Les bordures de 2 px des tuiles du compteur et des cartes d'article prennent le dégradé du
+        cadre, et tournent avec les couleurs animées. Les cartes officielles gardent leur bordure
+        orange. Seules les cartes à l'écran tournent.
       </div>
       <div class="setting-row">
         <label for="lanceHaloBtn">Halo de minuit</label>
@@ -3177,6 +3245,7 @@ const DEFAULT_SETTINGS = {
   coulBarreEtat: null,
   coulChargement: null,
   coulControles: null,
+  coulBordures: null,
   // Rayon des coins du cadre, en px ; null = le défaut (RAYON_CADRE_DEFAUT).
   rayonCadre: null,
   spoilerKeywords: MOTS_SPOILER.slice(),
@@ -3471,7 +3540,7 @@ function majCompteurMots(idChamp, idCompteur, un, plusieurs, aucun){
 // pendant les 24 heures qui suivent la sortie, le « premier jour » du compteur.
 const JOUR_J_MS = 86400000;
 // Les effets du jour J, chacun avec sa case : le cycle lui-même et quatre autres (11/11/2026).
-const EFFETS_JOUR_J = ["cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles"];
+const EFFETS_JOUR_J = ["cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles", "coulBordures"];
 function effetActif(cle, maintenant){
   if(settings[cle] === true) return true;
   if(settings[cle] === false) return false;
@@ -3486,6 +3555,7 @@ function appliqueEffetsJourJ(maintenant){
   h.toggle("cycle-couleur", effetActif("cycleCouleurs", maintenant));
   h.toggle("cadre-j", effetActif("coulCadre", maintenant));
   h.toggle("controles-j", effetActif("coulControles", maintenant));
+  h.toggle("bordures-j", effetActif("coulBordures", maintenant));
   appliqueRayonCadre();
   // L'écran de chargement vit avant le chargement des réglages : c'est ce battement, le premier,
   // qui lui donne sa couleur du jour J (le script tourne avant le premier affichage).
@@ -3501,7 +3571,50 @@ function basculeEffet(cle, actif){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde de l'effet " + cle, e); }
   appliqueEffetsJourJ(new Date());
+  majCaseGlobale();
   requestAnimationFrame(syncCycle);
+}
+
+// LA CASE GLOBALE : coche tout, décoche tout, ou « à moitié » quand les effets divergent. Elle ÉCRIT chaque
+// réglage (true ou false), à la différence de l'automatique : un effet allumé d'un coup le reste après le jour J.
+function majCaseGlobale(){
+  const tous = document.getElementById("coulTout");
+  if(!tous) return;
+  const etats = EFFETS_JOUR_J.map(c => effetActif(c, new Date()));
+  const toutAllume = etats.every(Boolean), toutEteint = !etats.some(Boolean);
+  tous.checked = toutAllume;
+  tous.indeterminate = !toutAllume && !toutEteint;
+}
+function majCasesEffets(){
+  for(const cle of EFFETS_JOUR_J){
+    const c = document.getElementById(cle);
+    if(c) c.checked = effetActif(cle, new Date());
+  }
+  majCaseGlobale();
+}
+function ecritEffets(valeur){
+  for(const cle of EFFETS_JOUR_J) settings[cle] = valeur;
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){ console.error("Erreur sauvegarde des effets", e); }
+  appliqueEffetsJourJ(new Date());
+  majCasesEffets();
+  requestAnimationFrame(syncCycle);
+}
+function basculeTousEffets(actif){ ecritEffets(!!actif); }
+function effetsEnAutomatique(){ ecritEffets(null); }
+
+// LES CARTES À L'ÉCRAN : seules elles animent leur accent et leur bordure (voir « LES BORDURES DES TUILES ET
+// DES CARTES »). Le fil réécrit tout son contenu à chaque rendu : on relâche l'observateur et on le repose.
+let observateurCartes = null;
+function observeCartes(){
+  if(!("IntersectionObserver" in window)) return;
+  if(!observateurCartes){
+    observateurCartes = new IntersectionObserver(entrees => {
+      for(const e of entrees) e.target.classList.toggle("dans-ecran", e.isIntersecting);
+    }, { rootMargin: "120px 0px" });
+  }
+  observateurCartes.disconnect();
+  for(const c of document.querySelectorAll("#feed .card")) observateurCartes.observe(c);
 }
 
 // LES COINS DU CADRE. Défaut 32 px : mon estimation de départ, que Antoni a CONFIRMÉE au curseur sur son S26 Ultra
@@ -3578,6 +3691,7 @@ function basculeCycleCouleurs(actif){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde cycle de couleurs", e); }
   appliqueEffetsJourJ(new Date());
+  majCaseGlobale();
   requestAnimationFrame(syncCycle);
 }
 
@@ -3897,7 +4011,7 @@ function populateSettingsUI(){
   document.getElementById("splashActif").checked = settings.splashActif !== false;
   document.getElementById("cycleCouleurs").checked = cycleCouleursActif(new Date());
   document.getElementById("cycleCouleursReduit").hidden = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-  for(const cle of EFFETS_JOUR_J) document.getElementById(cle).checked = effetActif(cle, new Date());
+  majCasesEffets();
   appliqueRayonCadre();
   document.getElementById("spoilerKeywordsInput").value = (settings.spoilerKeywords || []).join("\n");
   document.getElementById("maxDisplay").value = settings.maxDisplay;
@@ -6669,10 +6783,22 @@ function renderFeed(items, newLinks, searchQuery){
     tailles[b] = (tailles[b] || 0) + 1;
   });
 
+  // LE REPÈRE « NOUVEAUX · DÉJÀ VUS » : posé AVANT la première carte déjà vue qui suit au moins une carte neuve.
+  // Rien si tout est neuf ou si rien ne l'est. Il compte les neuves AFFICHÉES, pas celles de la pagination.
+  let neufsVus = 0, repereMis = false;
   const cardsHtml = paliersDuFil(buckets, bucketOrder, tailles).map(p => `
       <div class="day-group">
         <h2 class="day-label">${escapeHtml(p.libelle)}</h2>
-        ${p.items.map(item => enveloppeCarte(item, newLinks, searchQuery)).join("")}
+        ${p.items.map(item => {
+          let avant = "";
+          if(newLinks && newLinks.has(item.link)) neufsVus++;
+          else if(neufsVus > 0 && !repereMis){
+            repereMis = true;
+            const mot = neufsVus > 1 ? "nouveaux" : "nouveau";
+            avant = `<div class="repere-nouveaux" role="separator" aria-label="${neufsVus} ${mot} au-dessus, déjà vus en dessous">▲ ${neufsVus} ${mot} · déjà vus ▼</div>`;
+          }
+          return avant + enveloppeCarte(item, newLinks, searchQuery);
+        }).join("")}
       </div>
     `).join("");
 
@@ -6684,6 +6810,7 @@ function renderFeed(items, newLinks, searchQuery){
     : "";
 
   feedEl.innerHTML = cardsHtml + loadMoreHtml;
+  observeCartes();
 }
 
 // Chaque carte est enveloppée : l'indice coloré du balayage se peint dessous,

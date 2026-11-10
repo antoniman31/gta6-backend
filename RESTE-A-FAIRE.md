@@ -32,7 +32,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Codé** : cadre autour de l'écran (avec cycle), libellé « GTA VI est sorti · J+N », barre d'état, écran de chargement du jour J, cases et curseur, halo de minuit, une case par effet dans Réglages + bouton « Lancer le halo », couleur Discord rose après la sortie.
 - **À regarder sur ton téléphone** : la barre d'état (peut rester noire selon l'appareil), le carré sombre autour du logo rose de l'écran de chargement, le rayon des coins du cadre : 32 px, confirmé par toi sur ton S26 Ultra, est le défaut.
 - **Lot 2a (11/11/2026, codé)** : chevron « Par source », loupe, titres de cartes et de jour, fondu du bas.
-- **Lot 2b, à faire** : tuiles de Stats, repère « nouveaux », squelettes de chargement, cycle sur étoiles et pastilles (mesurer le coût processeur avant : seulement les cartes visibles), bordure en dégradé de 2 px sur les cartes et les tuiles du compteur (tuile « jours » grisée comprise, texte gris), avec une case dans Réglages.
+- **Lot 2b (11/11/2026, codé)** : bordures en dégradé des cartes et des tuiles (2 px, même épaisseur que le cadre), case globale et retour à l'automatique, repère « nouveaux », chiffres de Stats en tuiles. Les squelettes de chargement existaient déjà.
 
 ## 3. À regarder quand ça arrive
 

@@ -7443,7 +7443,7 @@ def test_stats_et_reglages_compacts(nav, url):
 # LES EFFETS DU JOUR J (11/11/2026) : le cadre autour de l'écran, la barre d'état, l'écran de
 # chargement, les commandes, le halo de minuit, J+N. Chacun a sa case ; même règle que le cycle.
 # ---------------------------------------------------------------------------------------------
-EFFETS = ("cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles")
+EFFETS = ("cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles", "coulBordures")
 
 
 def _ouvre_effets(nav, url, instant, corps=None, theme="dark", reduit=False, splash=False, reprend=False):
@@ -7923,6 +7923,238 @@ def test_lot_2a_interface(nav, url):
     ctx.close()
 
 
+def test_bordures_du_jour_j(nav, url):
+    """Bordures en dégradé des tuiles du compteur et des cartes (Antoni, 11/11/2026), sur l'horloge du cycle."""
+    print("\n[jour J] bordures des tuiles et des cartes : 2 px en dégradé, synchronisées, seulement les cartes à l'écran")
+    INJECTE = """() => { lastItems = Array.from({length: 60}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 1}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 60; readSet = new Set(); misDeCote = new Set();
+        applyFilters(); }"""
+    LIT = """() => { const cs = e => getComputedStyle(e);
+        const t = [...document.querySelectorAll('#countdown .cd-t')].map(e => ({zero: e.classList.contains('zero'), l: cs(e).borderTopWidth,
+            st: cs(e).borderTopStyle, img: cs(e).backgroundImage.indexOf('conic-gradient') >= 0,
+            anim: e.getAnimations().map(a => a.animationName), texte: cs(e.querySelector('b')).color}));
+        const cartes = [...document.querySelectorAll('#feed .card')];
+        const norm = cartes.find(c => !c.classList.contains('official')), off = cartes.find(c => c.classList.contains('official'));
+        return {classe: document.documentElement.classList.contains('bordures-j'), tuiles: t, n: cartes.length,
+          ecran: cartes.filter(c => c.classList.contains('dans-ecran')).length,
+          norm: norm ? {l: cs(norm).borderTopWidth, img: cs(norm).backgroundImage.indexOf('conic-gradient') >= 0} : null,
+          off: off ? {coul: cs(off).borderTopColor, img: cs(off).backgroundImage.indexOf('conic-gradient') >= 0} : null,
+          animEcran: cartes.filter(c => c.classList.contains('dans-ecran')).map(c => c.getAnimations().map(a => a.animationName).sort().join('+')),
+          animHors: cartes.filter(c => !c.classList.contains('dans-ecran')).some(c => c.getAnimations().length > 0)}; }"""
+    # 1. Qui est actif quand, et quoi.
+    for nom, instant, corps, attendu in (("le jour J", JOUR_J, {}, True), ("la veille", VEILLE, {}, False),
+                                         ("le jour J, case coupée", JOUR_J, {"coulBordures": False}, False),
+                                         ("la veille, case allumée", VEILLE, {"coulBordures": True}, True)):
+        ctx, page, erreurs = _ouvre_effets(nav, url, instant, corps, reprend=True)
+        page.evaluate(INJECTE)
+        page.wait_for_selector("#feed .card", state="attached")
+        page.wait_for_timeout(500)
+        e = page.evaluate(LIT)
+        check(e["classe"] == attendu, "[bordures] %s : classe « bordures-j » %s (%s)" % (nom, "posée" if attendu else "absente", e["classe"]))
+        if attendu:
+            check(len(e["tuiles"]) == 4 and all(t["l"] == "2px" and t["img"] and t["st"] == "solid" for t in e["tuiles"]),
+                  "[bordures] %s : les quatre tuiles ont 2 px de dégradé, pleines (%s)" % (nom, [(t["l"], t["img"], t["st"]) for t in e["tuiles"]]))
+            check(e["norm"] and e["norm"]["l"] == "2px" and e["norm"]["img"],
+                  "[bordures] %s : une carte ordinaire a 2 px de dégradé (%s)" % (nom, e["norm"]))
+            check(e["off"] and not e["off"]["img"] and e["off"]["coul"] == "rgb(255, 107, 0)",
+                  "[bordures] %s : la carte officielle garde sa bordure orange (%s)" % (nom, e["off"]))
+        else:
+            check(all(t["l"] == "1px" and not t["img"] for t in e["tuiles"]) and e["norm"] and not e["norm"]["img"],
+                  "[bordures] %s : bordures d'origine (%s)" % (nom, [t["l"] for t in e["tuiles"]]))
+        check(not erreurs, "[bordures] %s : aucune erreur JavaScript (%s)" % (nom, erreurs[:1]))
+        ctx.close()
+    # 2. La tuile « jours » grisée : bordure en dégradé, TEXTE gris.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    e = page.evaluate(LIT)
+    zero = [t for t in e["tuiles"] if t["zero"]]
+    vivantes = [t for t in e["tuiles"] if not t["zero"]]
+    check(len(zero) == 1 and zero[0]["l"] == "2px" and zero[0]["img"],
+          "[bordures] la tuile « jours » grisée à 00 a la bordure en dégradé (%s)" % zero)
+    check(zero and zero[0]["texte"] != vivantes[0]["texte"] and zero[0]["texte"].startswith("rgb(") ,
+          "[bordures] mais son texte reste gris, pas celui des tuiles vivantes (%s contre %s)" % (zero[0]["texte"] if zero else None, vivantes[0]["texte"]))
+    ctx.close()
+    # 3. Ça tourne : tuiles toujours, cartes seulement à l'écran ; jamais sur celles hors écran.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, reprend=True)
+    page.evaluate(INJECTE)
+    page.wait_for_selector("#feed .card", state="attached")
+    page.wait_for_timeout(600)
+    e = page.evaluate(LIT)
+    check(all("cycle-bord" in t["anim"] for t in e["tuiles"]), "[bordures] les quatre tuiles tournent (%s)" % [t["anim"] for t in e["tuiles"]])
+    check(0 < e["ecran"] < e["n"] and e["ecran"] <= 8,
+          "[bordures] seules les cartes à l'écran sont marquées : %d sur %d" % (e["ecran"], e["n"]))
+    # La carte officielle (bordure orange) ne tourne que par son accent ; les autres, par l'accent ET la bordure.
+    check("cycle-accent+cycle-bord" in e["animEcran"] and set(e["animEcran"]) <= {"cycle-accent+cycle-bord", "cycle-accent"} and not e["animHors"],
+          "[bordures] elles tournent (accent et bordure ; l'officielle, l'accent seul) et aucune carte hors écran ne tourne (%s)" % sorted(set(e["animEcran"])))
+    # Défilement : de nouvelles cartes entrent, les anciennes sortent.
+    page.evaluate("() => window.scrollTo(0, document.body.scrollHeight / 2)")
+    page.wait_for_timeout(700)
+    f = page.evaluate(LIT)
+    check(0 < f["ecran"] <= 8 and not f["animHors"] and "cycle-accent+cycle-bord" in f["animEcran"] and set(f["animEcran"]) <= {"cycle-accent+cycle-bord", "cycle-accent"},
+          "[bordures] au défilement, d'autres cartes prennent le relais, toujours quelques-unes (%d) (%s)" % (f["ecran"], sorted(set(f["animEcran"]))))
+    # 4. SYNCHRONISÉES : tuile, carte, cadre et en-tête sur la même horloge (page.screenshot force une image, comme au contrôle du cycle).
+    page.evaluate("() => window.scrollTo(0, 0)")
+    page.wait_for_timeout(600)
+    page.screenshot(clip={"x": 0, "y": 0, "width": 1, "height": 1})
+    page.wait_for_timeout(100)
+    h = page.evaluate("""() => { const dur = 4000;
+        const prend = (el, nom) => { const a = (el ? el.getAnimations() : []).find(x => x.animationName === nom);
+            return a ? (((a.currentTime - a.effect.getTiming().delay) % dur) + dur) % dur : null; };
+        const carte = document.querySelector('#feed .card.dans-ecran:not(.official)');
+        return {tuile: prend(document.querySelector('#countdown .cd-t'), 'cycle-bord'), carte: prend(carte, 'cycle-bord'),
+                accentCarte: prend(carte, 'cycle-accent'), cadre: prend(document.getElementById('cadreEcran'), 'cycle-cadre'),
+                entete: prend(document.querySelector('header.console'), 'cycle-accent')}; }""")
+    valeurs = [v for v in h.values() if v is not None]
+    ecart = lambda a, b: min(abs(a - b), 4000 - abs(a - b))
+    check(len(valeurs) == 5, "[bordures] les cinq animations existent (%s)" % h)
+    if len(valeurs) == 5:
+        pires = max(ecart(valeurs[0], v) for v in valeurs)
+        check(pires < 80, "[bordures] tuile, carte, accent de la carte, cadre et en-tête sont sur la MÊME horloge (écart maximal %.0f ms sur 4 000 : %s)" % (pires, {k: round(v) for k, v in h.items()}))
+    ctx.close()
+    # 5. Animations réduites : les bordures restent, fixes.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
+    page.evaluate(INJECTE)
+    page.wait_for_selector("#feed .card", state="attached")
+    page.wait_for_timeout(400)
+    e = page.evaluate(LIT)
+    check(e["classe"] and all(t["img"] for t in e["tuiles"]) and not any(t["anim"] for t in e["tuiles"]) and not e["animHors"] and not any(e["animEcran"]),
+          "[bordures] animations réduites : le dégradé reste, rien ne tourne (%s)" % [t["anim"] for t in e["tuiles"]])
+    ctx.close()
+
+
+def test_lot_2b_interface(nav, url):
+    print("\n[lot 2b] repère « nouveaux · déjà vus », chiffres de Stats en tuiles")
+    # LE REPÈRE : une seule fois, avant la première carte déjà vue qui suit des cartes neuves.
+    def ouvre_avec(neufs, largeur=390):
+        ctx, page, erreurs = _ouvre_fil(nav, url, largeur)
+        page.evaluate("""(n) => { lastNewLinks = new Set(Array.from({length: n}, (_, i) => 'https://ex.test/' + i));
+            applyFilters(); }""", neufs)
+        page.wait_for_selector(".card", state="attached")
+        return ctx, page, erreurs
+    LIT = """() => { const r = [...document.querySelectorAll('.repere-nouveaux')];
+        const cartes = [...document.querySelectorAll('#feed .card')];
+        const m = r[0];
+        const prec = m ? m.previousElementSibling : null, suiv = m ? (m.nextElementSibling || null) : null;
+        const idx = m ? cartes.findIndex(c => m.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING) : -1;
+        return {n: r.length, texte: m ? m.textContent : null, role: m ? m.getAttribute('role') : null, nom: m ? m.getAttribute('aria-label') : null,
+                avant: idx > 0 ? cartes.slice(0, idx).filter(c => c.classList.contains('new')).length : -1,
+                avantTout: idx > 0 ? cartes.slice(0, idx).every(c => c.classList.contains('new')) : null,
+                apresNeuve: idx >= 0 && idx < cartes.length ? cartes[idx].classList.contains('new') : null,
+                disp: m ? getComputedStyle(m).display : null, px: m ? parseFloat(getComputedStyle(m).fontSize) : null}; }"""
+    for neufs, attendu in ((3, ("▲ 3 nouveaux · déjà vus ▼", 3)), (1, ("▲ 1 nouveau · déjà vus ▼", 1))):
+        ctx, page, erreurs = ouvre_avec(neufs)
+        e = page.evaluate(LIT)
+        check(e["n"] == 1 and e["texte"] == attendu[0], "[repère] %d carte(s) neuve(s) : une seule ligne « %s » (%s, %s)" % (neufs, attendu[0], e["n"], e["texte"]))
+        check(e["avant"] == attendu[1] and e["avantTout"] and e["apresNeuve"] is False,
+              "[repère] posée juste entre la dernière carte neuve et la première déjà vue (avant : %s neuves, toutes neuves : %s, suivante neuve : %s)" % (e["avant"], e["avantTout"], e["apresNeuve"]))
+        check(e["role"] == "separator" and "au-dessus" in (e["nom"] or "") and e["disp"] == "flex" and e["px"] >= 12,
+              "[repère] c'est un séparateur annoncé aux lecteurs d'écran, en 12 px au moins (%s, %s, %s px)" % (e["role"], e["nom"], e["px"]))
+        check(not erreurs, "[repère] aucune erreur JavaScript (%s)" % erreurs[:1])
+        ctx.close()
+    for nom, neufs in (("aucune carte neuve", 0), ("toutes les cartes neuves", 60)):
+        ctx, page, _ = ouvre_avec(neufs)
+        check(page.evaluate("() => document.querySelectorAll('.repere-nouveaux').length") == 0, "[repère] %s : pas de repère" % nom)
+        ctx.close()
+
+    # LES CHIFFRES DE STATS EN TUILES.
+    for largeur in (320, 390):
+        ctx, page, erreurs = _ouvre_fil(nav, url, largeur)
+        page.click("#statsBtn")
+        page.wait_for_selector(".stats-chiffre", state="attached")
+        page.wait_for_timeout(300)
+        # Avec ce jeu de test la grille n'a que deux tuiles (articles, par jour) : « officiels » et « actus majeures »
+        # viennent de statistiques que le jeu ne remplit pas. On en ajoute deux, copiées de la première, pour mesurer la règle.
+        page.evaluate("""() => { const g = document.querySelector('.stats-chiffres');
+            for(let i = 0; i < 2; i++) g.appendChild(g.firstElementChild.cloneNode(true)); }""")
+        t = page.evaluate("""() => { const l = [...document.querySelectorAll('.stats-chiffres')][0];
+            const tuiles = [...l.querySelectorAll('.stats-chiffre')];
+            const acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+            return {n: tuiles.length, boite: l.getBoundingClientRect().width,
+              det: tuiles.map(e => { const b = e.querySelector('b'), cs = getComputedStyle(e), cb = getComputedStyle(b);
+                const r = e.getBoundingClientRect();
+                return {px: parseFloat(cb.fontSize), poids: cb.fontWeight, police: cb.fontFamily.split(',')[0], coul: cb.color,
+                        bord: cs.borderTopWidth, rayon: cs.borderTopLeftRadius, droite: r.right, gauche: r.left, h: r.height}; }),
+              rayonMd: getComputedStyle(document.documentElement).getPropertyValue('--r-md').trim(),
+              debord: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(t["n"] >= 4, "[stats %d px] la grille porte au moins quatre tuiles, dont deux ajoutées pour la mesure (%d)" % (largeur, t["n"]))
+        check(all(d["px"] == 30 and int(d["poids"]) >= 800 and "JetBrains" in d["police"] for d in t["det"]),
+              "[stats %d px] chaque chiffre est en 30 px gras, dans la police du compteur (%s)" % (largeur, [(d["px"], d["poids"], d["police"]) for d in t["det"]][:2]))
+        check(all(d["bord"] == "1px" and d["rayon"] == t["rayonMd"] for d in t["det"]),
+              "[stats %d px] chaque tuile a son trait de 1 px et le coin de l'échelle (%s)" % (largeur, t["det"][0]["rayon"]))
+        check(t["det"][0]["coul"] != t["det"][2]["coul"] and t["det"][0]["coul"] == t["det"][1]["coul"],
+              "[stats %d px] accent pour les deux premiers, autre couleur pour les suivants (%s, %s)" % (largeur, t["det"][0]["coul"], t["det"][2]["coul"]))
+        check(all(d["gauche"] >= 0 and d["droite"] <= largeur for d in t["det"]) and not t["debord"],
+              "[stats %d px] aucune tuile ne sort de l'écran" % largeur)
+        check(not erreurs, "[stats %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+
+def test_case_globale_des_effets(nav, url):
+    """Une case pour tout allumer ou éteindre d'un coup, un retour à l'automatique, une seule épaisseur de bordure."""
+    print("\n[jour J] case globale des effets, retour à l'automatique, bordures de même épaisseur")
+    def stocke(page, cle):
+        return page.evaluate("(c) => { const s = JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}');"
+                             " return Object.prototype.hasOwnProperty.call(s, c) ? s[c] : 'absent'; }", cle)
+    ETAT = """() => { const g = document.getElementById('coulTout');
+        return {global: g.checked, mi: g.indeterminate, cases: %s.map(c => document.getElementById(c).checked),
+                classes: ['cadre-j', 'controles-j', 'bordures-j', 'cycle-couleur'].map(c => document.documentElement.classList.contains(c))}; }""" % json.dumps(list(EFFETS))
+    # La veille : tout éteint, la case globale décochée, ni cochée ni « à moitié ».
+    ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {})
+    page.evaluate("() => openSettings()")
+    check(page.evaluate("() => !!document.getElementById('coulTout') && !!document.getElementById('coulAutoBtn')"),
+          "[global] la case « Tous les effets » et le bouton « Remettre en automatique » existent")
+    e = page.evaluate(ETAT)
+    check(not e["global"] and not e["mi"] and not any(e["cases"]), "[global] la veille : globale décochée, toutes les cases éteintes (%s)" % e)
+    # Tout allumer d'un coup : écrit true PARTOUT, pose toutes les classes, coche toutes les cases.
+    page.evaluate("() => { const g = document.getElementById('coulTout'); g.checked = true; g.dispatchEvent(new Event('change', {bubbles: true})); }")
+    e = page.evaluate(ETAT)
+    check(e["global"] and not e["mi"] and all(e["cases"]) and all(e["classes"]),
+          "[global] tout allumer coche toutes les cases et pose tous les effets (%s)" % e)
+    check(all(stocke(page, c) is True for c in EFFETS), "[global] et écrit true pour chacun (%s)" % {c: stocke(page, c) for c in EFFETS})
+    # Décocher UN effet : la globale passe « à moitié », pas décochée.
+    page.evaluate("() => { const c = document.getElementById('coulCadre'); c.checked = false; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    e = page.evaluate(ETAT)
+    check(not e["global"] and e["mi"], "[global] un effet décoché : la case globale est « à moitié » (%s, %s)" % (e["global"], e["mi"]))
+    # Tout éteindre : écrit false partout.
+    page.evaluate("() => { const g = document.getElementById('coulTout'); g.checked = false; g.dispatchEvent(new Event('change', {bubbles: true})); }")
+    e = page.evaluate(ETAT)
+    check(not e["global"] and not e["mi"] and not any(e["cases"]) and not any(e["classes"]),
+          "[global] tout éteindre décoche tout et retire tous les effets (%s)" % e)
+    check(all(stocke(page, c) is False for c in EFFETS), "[global] et écrit false pour chacun (%s)" % {c: stocke(page, c) for c in EFFETS})
+    # Retour à l'automatique : null partout ; hors du jour J tout est éteint.
+    page.evaluate("() => document.getElementById('coulAutoBtn').click()")
+    check(all(stocke(page, c) is None for c in EFFETS), "[global] « Remettre en automatique » remet chaque réglage à null (%s)" % {c: stocke(page, c) for c in EFFETS})
+    check(not any(page.evaluate(ETAT)["cases"]), "[global] la veille, l'automatique laisse tout éteint")
+    check(not erreurs, "[global] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+    # Le jour J : tout cochée d'office ; éteindre d'un coup, puis revenir à l'automatique rallume.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    page.evaluate("() => openSettings()")
+    e = page.evaluate(ETAT)
+    check(e["global"] and all(e["cases"]), "[global] le jour J, la case globale est cochée d'office (%s)" % e["global"])
+    page.evaluate("() => { const g = document.getElementById('coulTout'); g.checked = false; g.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(not any(page.evaluate(ETAT)["cases"]), "[global] le jour J, tout éteindre éteint vraiment tout")
+    page.evaluate("() => document.getElementById('coulAutoBtn').click()")
+    e = page.evaluate(ETAT)
+    check(e["global"] and all(e["cases"]) and all(e["classes"]), "[global] le jour J, le retour à l'automatique rallume tout (%s)" % e["global"])
+    ctx.close()
+    # UNE SEULE ÉPAISSEUR : cadre, cartes et tuiles ont la même bordure, lue sur la jeton --bord-ep.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    page.evaluate("""() => { lastItems = Array.from({length: 5}, (_, i) => ({title: 'T' + i, link: 'https://ex.test/' + i, description: 'R',
+        date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S'})); lastNewLinks = new Set(); historyPartial = false;
+        rattrapageLance = true; visibleCount = 5; applyFilters(); }""")
+    page.wait_for_selector("#feed .card", state="attached")
+    ep = page.evaluate("""() => { const cs = e => getComputedStyle(e);
+        return {jeton: cs(document.documentElement).getPropertyValue('--bord-ep').trim(),
+                cadre: cs(document.getElementById('cadreEcran')).borderTopWidth,
+                carte: cs(document.querySelector('#feed .card:not(.official)')).borderTopWidth,
+                tuile: cs(document.querySelector('#countdown .cd-t')).borderTopWidth,
+                tuileZero: cs(document.querySelector('#countdown .cd-t.zero') || document.querySelector('#countdown .cd-t')).borderTopWidth}; }""")
+    check(ep["jeton"] == "2px" and ep["cadre"] == ep["carte"] == ep["tuile"] == ep["tuileZero"] == ep["jeton"],
+          "[épaisseur] cadre, cartes, tuiles (grisée comprise) : tous à la même épaisseur que le jeton --bord-ep (%s)" % ep)
+    ctx.close()
+
+
 def main():
     try:
         from playwright.sync_api import sync_playwright
@@ -8015,6 +8247,9 @@ def main():
             test_effets_du_jour_j(nav, url)
             test_coins_du_cadre(nav, url)
             test_lot_2a_interface(nav, url)
+            test_bordures_du_jour_j(nav, url)
+            test_lot_2b_interface(nav, url)
+            test_case_globale_des_effets(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:
