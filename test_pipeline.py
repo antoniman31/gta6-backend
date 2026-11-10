@@ -4784,6 +4784,18 @@ def test_cache_de_decodage_hors_du_fil():
     src = open("fetch_feeds.py", encoding="utf-8").read()
     corps = src[src.index("def main("):]
     pos_ecrit = corps.index("feed_store.ecrire_cache_decodage(")
+    # LA FENÊTRE PAR DÉFAUT, verrouillée : tous les contrôles ci-dessus passent « jours=7 » en dur et ne
+    # voyaient donc pas un changement de la constante. Trois jours depuis le 10/11/2026 (choix d'Antoni).
+    check(feed_store.JOURS_SOURCE_LINK_PUBLIE == 3,
+          "source_link se garde TROIS jours dans le fil publié (trouvé : %s)" % feed_store.JOURS_SOURCE_LINK_PUBLIE)
+    ref = datetime(2026, 11, 10, 12, 0, tzinfo=timezone.utc)
+    jeunes_vieux = [
+        {"link": "a", "source_link": "k", "date": (ref - timedelta(days=2, hours=23)).isoformat()},
+        {"link": "b", "source_link": "k", "date": (ref - timedelta(days=3, hours=1)).isoformat()},
+    ]
+    feed_store.elague_source_link(jeunes_vieux, ref)
+    check("source_link" in jeunes_vieux[0] and "source_link" not in jeunes_vieux[1],
+          "par défaut, un article de 2 j 23 h garde son source_link et un article de 3 j 1 h le perd")
     pos_elague = corps.index("feed_store.elague_source_link(")
     pos_garde = corps.index("feed_store.valide_avant_ecriture(")
     pos_publie = corps.index("feed_store.write_feed_pair(")

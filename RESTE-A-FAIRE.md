@@ -24,7 +24,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 
 - **Après la sortie, l'agenda est caché** (07/11/2026, choix d'Antoni) : son code et `docs/agenda.json` restent pour de futurs DLC ou mises à jour, quand on aura des dates officielles. À la sortie, c'est aussi la fin des dodos et de la barre de progression de la fenêtre du compteur ; les compteurs repartent à l'endroit (mois, puis années quand il y en a besoin). Rien à faire, à vérifier le 19/11 à 00:00.
 
-- **`source_link` : passer de 7 à 3 jours** (choix d'Antoni, 10/11/2026, à la place de la suppression complète du 27/10). Mesuré le 10/11 sur `feed.json` compressé : 1040 Ko à 7 jours, 871 Ko à 3 jours (−16 %), 748 Ko sans le champ (−28 %) ; sur `feed-recent.json`, −52 % sans le champ. Le champ sert à l'app à suivre un article dont le robot corrige le lien (`migreLiensDecodes`) : le retirer rendrait possible un nouvel incident comme celui du 03 au 06/10 (453 articles repassés en « non lu »). **Pas codé : en attente du « go » d'Antoni** (la constante est `JOURS_SOURCE_LINK_PUBLIE` dans `feed_store.py`).
+- **`source_link` : fait le 10/11/2026** (trois jours au lieu de sept ; la suppression complète du 27/10 est abandonnée). Le fil publié ne s'allège qu'au passage suivant du robot : mesuré avec la vraie fonction, `feed.json` compressé de 1 044 à 876 Ko (−16,1 %). Reste à constater après un passage du robot que `feed.json` a bien maigri.
 - **Le mode sans spoiler** après la sortie : lui demander s'il veut l'éteindre.
 
 ## 3. À regarder quand ça arrive
