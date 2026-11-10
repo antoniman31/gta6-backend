@@ -1661,7 +1661,7 @@
      Chaque bloc a sa propre horloge : updateCountdown les recale toutes sur celle du document
      (syncCycle), sinon un bloc apparu plus tard serait à contretemps des autres. */
   html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
-      #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn){
+      #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .feed-count){
     animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;
   }
   /* TOUT DANS LE CYCLE (Antoni, 11/11/2026 : « plus de couleurs dans le cycle, tout ce qui n'est pas blanc de
@@ -1670,7 +1670,7 @@
      ROUGES, sur son conseil : une panne doit se reconnaître d'un coup d'œil. Les jetons sont posés sur les
      MÊMES blocs que l'accent, et sur les cartes à l'écran : ils se recalculent à chaque pas avec l'accent local. */
   html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
-      #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .card.dans-ecran){
+      #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .feed-count, .card.dans-ecran){
     --text-dim:color-mix(in srgb, var(--accent) 55%, var(--text-dim-base));
     --ok:var(--accent); --warn:var(--accent);
     --hot-texte:var(--hot);
@@ -1753,7 +1753,7 @@
     animation:halo-j 6s ease-in-out 1 both;
   }
   /* LE GRAND MOMENT DE MINUIT (Antoni, 11/11/2026, storyboard validé) : six secondes. Un flash bref, deux ondes de
-     choc qui partent du compteur, le halo qui RESPIRE trois fois, quatre cents confettis, une vibration courte, puis l'écran noir de fin.
+     choc qui partent du compteur, le halo qui RESPIRE trois fois, une pluie de confettis qui s'accumule et remplit l'écran, une vibration courte, puis l'écran noir de fin.
      Rien ne prend un appui, rien ne reste après 6,3 s, rien du tout quand le téléphone réduit les animations. Un
      SEUL éclair, bien en dessous de trois par seconde. */
   @keyframes halo-j{0%{opacity:0;} 6%{opacity:1;} 22%{opacity:.45;} 38%{opacity:1;} 54%{opacity:.45;} 70%{opacity:1;} 100%{opacity:0;}}
@@ -1773,17 +1773,17 @@
   }
   .fete .fete-onde.deux{animation-delay:.25s; border-width:3px;}
   @keyframes fete-onde{0%{opacity:.95; transform:scale(1);} 100%{opacity:0; transform:scale(34);}}
-  .fete .fete-confetti{
-    position:absolute; top:-24px; width:9px; height:16px; opacity:0;
-    animation:fete-chute var(--d) linear var(--t) 1 both;
-  }
-  @keyframes fete-chute{
-    0%{opacity:0; transform:translate3d(0,0,0) rotate(0deg);} 6%{opacity:1;} 92%{opacity:1;}
-    100%{opacity:0; transform:translate3d(var(--dx),115vh,0) rotate(var(--r));}
-  }
+  /* LES CONFETTIS (refaits à la demande d'Antoni, 10/11/2026 : « tu en mets plus, qu'ils tombent en continu, plus
+     longtemps, qu'ils remplissent l'écran entier en s'accumulant en bas, quand l'écran est plein on passe à la suite »,
+     « chaque confetti reste où il tombe », environ 7 secondes). Ce ne sont plus des éléments de page : une animation CSS
+     par confetti ne peut pas se poser sur les autres. Deux calques canvas, l'un pour le TAS (dessiné une fois par
+     confetti posé, jamais effacé), l'autre pour ceux qui TOMBENT (effacé à chaque image). Le tas est suivi par une
+     carte de hauteurs, une colonne tous les 4 px. */
+  .fete .fete-toile{position:absolute; left:0; top:0; width:100%; height:100%;}
+  .fete .fete-flash, .fete .fete-onde{z-index:3;}
   /* L'ÉCRAN NOIR DE FIN (Antoni, 11/11/2026 : « à la fin un écran noir et tu affiches GTA 6 est dispo en gros avec le
-     cycle de couleur », texte « GTA VI EST DISPO ! », « reste jusqu'au toucher »). Il se fond au noir à partir de 4,8 s,
-     quand les derniers confettis tombent, et RESTE jusqu'à un appui (ou Entrée, ou Échap). Le texte porte sa propre
+     cycle de couleur », texte « GTA VI EST DISPO ! », « reste jusqu'au toucher »). Il se fond au noir quand l'écran est
+     plein de confettis (vers 7 s ; au plus tard à 9 s), et RESTE jusqu'à un appui (ou Entrée, ou Échap). Le texte porte sa propre
      animation cycle-accent : cyan, violet, rose en 4 s, comme tout le cycle. LA COULEUR EST POSÉE SUR CES LIGNES
      MÊMES (défaut d'Antoni, 10/11/2026 : « le texte ne change pas de couleur ») : posée sur le calque parent, elle
      était calculée avant l'animation et les lignes en héritaient une valeur figée. Il ne se pose jamais quand le téléphone
@@ -1839,6 +1839,12 @@
   html.bordures-j .cd-t.zero{border-style:solid;}
   html.cycle-couleur.bordures-j .cd-t{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
   html.cycle-couleur .card.dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
+  /* LES TITRES DE JOUR ET LE REPÈRE « NOUVEAUX » (Antoni, 10/11/2026 : « il y a encore des textes qui ne changent pas
+     de couleur, on en a oublié ») : ils sont dans la liste, qui ne bouge pas, donc leur accent restait celui de la
+     page. Même règle que les cartes : animés seulement à l'écran (classe dans-ecran, posée par observeCartes). */
+  html.cycle-couleur :is(.day-label, .repere-nouveaux).dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
+  /* LE SOUS-TITRE « GTA VI EST SORTI » : avec le cycle, un aplat à l'accent (le dégradé figé ne tournait pas). */
+  html.cadre-j.cycle-couleur .compteur-sous{background:none; -webkit-text-fill-color:currentColor; color:var(--accent);}
   html.cycle-couleur.bordures-j .card.dans-ecran:not(.official){
     animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite, cycle-bord var(--cycle-duree) steps(24) infinite;
   }
@@ -3821,7 +3827,7 @@ function observeCartes(){
     }, { rootMargin: "120px 0px" });
   }
   observateurCartes.disconnect();
-  for(const c of document.querySelectorAll("#feed .card")) observateurCartes.observe(c);
+  for(const c of document.querySelectorAll("#feed .card, #feed .day-label, #feed .repere-nouveaux")) observateurCartes.observe(c);
 }
 
 // LES COINS DU CADRE. Défaut 32 px : mon estimation de départ, que Antoni a CONFIRMÉE au curseur sur son S26 Ultra
@@ -3855,15 +3861,21 @@ function reglerRayonCadre(v){
   minuteurApercuCadre = setTimeout(() => h.remove("cadre-apercu"), 1800);
 }
 
-// LE HALO DE MINUIT : une seconde, une fois. Refusé aux téléphones qui réduisent les animations.
-const FETE_DUREE_MS = 6000;
-const FETE_CONFETTIS = 400;
-const FETE_FINAL_MS = 4800;
+// LE HALO DE MINUIT : le flash, les ondes et le halo des bords (six secondes), la pluie de confettis qui remplit
+// l'écran (environ sept secondes), puis l'écran noir. Refusé aux téléphones qui réduisent les animations.
+const FETE_DUREE_MS = 6000;          // le halo des bords et les ondes
+const FETE_REMPLIT_MS = 7000;        // visée : l'écran est plein de confettis
+const FETE_FINAL_MAX_MS = 9000;      // filet : l'écran noir part au plus tard là, plein ou non
 const FETE_VIBRATION = [180, 80, 180, 80, 420];
-let minuteurFete = null, minuteurFinal = null;
-// L'écran noir de fin : posé à FETE_FINAL_MS, retiré par un appui. Un seul à la fois ; relancer la fête le retire.
+let minuteurHalo = null, minuteurRetraitFete = null, imageConfettis = 0, etatConfettis = null;
+// L'écran noir de fin : retiré par un appui. Un seul à la fois ; relancer la fête le retire.
 function fermeEcranFinal(){
   for(const e of document.querySelectorAll(".fete-final")) e.remove();
+}
+function arreteConfettis(){
+  cancelAnimationFrame(imageConfettis);
+  if(etatConfettis) etatConfettis.actif = false;
+  clearTimeout(minuteurRetraitFete);
 }
 function afficheEcranFinal(){
   fermeEcranFinal();
@@ -3874,12 +3886,15 @@ function afficheEcranFinal(){
   e.setAttribute("aria-label", "GTA VI est dispo ! Touche pour fermer.");
   e.innerHTML = '<span class="ff-texte ff-gta" aria-hidden="true">GTA VI</span>'
     + '<span class="ff-texte ff-dispo" aria-hidden="true">EST DISPO !</span>'
-    + '<span class="ff-aide" aria-hidden="true">Touche l\u2019\u00e9cran pour continuer</span>';
+    + '<span class="ff-aide" aria-hidden="true">Touche l’écran pour continuer</span>';
   e.addEventListener("click", fermeEcranFinal);
   e.addEventListener("keydown", ev => { if(ev.key === "Escape" || ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); fermeEcranFinal(); } });
   document.body.appendChild(e);
   // Le focus au clavier : Échap et Entrée ne ferment que si l'écran de fin l'a (défaut trouvé par mon propre test).
   try{ e.focus({preventScroll:true}); }catch(err){ /* sans effet */ }
+  // Le noir (fondu en 1,2 s) couvre tout : la pluie s'arrête, la fête est retirée une fois le fondu fini.
+  arreteConfettis();
+  minuteurRetraitFete = setTimeout(() => { for(const f of document.querySelectorAll(".fete")) f.remove(); }, 1400);
 }
 function lanceHalo(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
@@ -3890,18 +3905,82 @@ function lanceHalo(){
   h.classList.add("vif");
   lanceFete();
   fermeEcranFinal();
-  clearTimeout(minuteurFinal);
-  minuteurFinal = setTimeout(afficheEcranFinal, FETE_FINAL_MS);
-  clearTimeout(minuteurFete);
-  minuteurFete = setTimeout(() => {
-    h.classList.remove("vif");
-    for(const f of document.querySelectorAll(".fete")) f.remove();
-  }, FETE_DUREE_MS + 300);
+  clearTimeout(minuteurHalo);
+  minuteurHalo = setTimeout(() => h.classList.remove("vif"), FETE_DUREE_MS + 300);
   return true;
 }
-// Le flash, les deux ondes et les confettis : un calque posé à la demande et retiré à la fin. Les confettis
-// partent entre 0,3 et 1,5 s et tombent en 2,4 à 4,2 s : plus aucun avant 5,7 s.
+// LA PLUIE QUI S'ACCUMULE. Chaque confetti tombe (gravité, vitesse limite, balancement, rotation), se pose sur le
+// tas à l'endroit où il arrive et y RESTE. La carte des hauteurs (une colonne tous les 4 px) dit où est le haut du tas ;
+// un confetti qui naît choisit, parmi six abscisses tirées au hasard, la colonne la plus basse : le tas monte
+// à peu près d'un bloc, sans trou durable. La cadence est calculée pour remplir l'écran en FETE_REMPLIT_MS
+// (surface de l'écran divisée par l'aire utile d'un confetti posé, 72 px²).
+// L'écran est « plein » quand le tas atteint 97 % de la hauteur en moyenne et 85 % partout.
+function lanceConfettis(f){
+  const W = innerWidth, H = innerHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+  const toile = z => {
+    const c = document.createElement("canvas");
+    c.className = "fete-toile"; c.style.zIndex = String(z);
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    const x = c.getContext("2d"); x.scale(dpr, dpr);
+    f.appendChild(c);
+    return [c, x];
+  };
+  const [tas, xt] = toile(1), [air, xa] = toile(2);
+  const st = getComputedStyle(document.documentElement);
+  const teintes = ["--cycle-a", "--cycle-b", "--cycle-c"].map(n => st.getPropertyValue(n).trim() || "#ff5cae").concat("#ffffff");
+  const COL = 4, nc = Math.ceil(W / COL), h = new Float32Array(nc), R = 8, DELTA = 6;
+  // Un confetti posé relève de DELTA px chacune des (en gros) trois colonnes qu'il couvre : 3 x 4 x 6 = 72 px² d'aire utile (les confettis se recouvrent : couverture mesurée à 90 % de pixels pleins).
+  const cadence = (W * H / (3 * COL * DELTA)) / ((FETE_REMPLIT_MS + 700) / 1000);   // confettis par seconde (la fenêtre de naissance : mesuré, l'écran est plein en gros à sa fin moins une seconde)
+  const e = etatConfettis = { actif: true, posees: 0, tombent: 0, remplissage: 0, minimum: 0, t: 0, plein: false, toileTas: tas };
+  const colonnes = (x, w) => [Math.max(0, Math.floor((x - w / 2) / COL)), Math.min(nc - 1, Math.floor((x + w / 2) / COL))];
+  const air_ = [];
+  let dernier = null, t0 = null, acc = 0;
+  const nait = () => {
+    let x = Math.random() * W, bas = h[Math.min(nc - 1, Math.floor(x / COL))];
+    for(let k = 0; k < 5; k++){
+      const y = Math.random() * W, hy = h[Math.min(nc - 1, Math.floor(y / COL))];
+      if(hy < bas){ x = y; bas = hy; }
+    }
+    air_.push({ x, y: -20, vx: 0, vy: 150 + Math.random() * 250, w: 10 + Math.random() * 2, l: 17 + Math.random() * 4,
+                r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 14, ph: Math.random() * 6.28, c: teintes[(Math.random() * teintes.length) | 0] });
+  };
+  const trace = (x, p) => {
+    x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.l / 2, p.w, p.l); x.restore();
+  };
+  const pas = ts => {
+    if(!e.actif) return;
+    if(t0 === null){ t0 = ts; dernier = ts; }
+    const dt = Math.min(0.05, (ts - dernier) / 1000);
+    dernier = ts; e.t = (ts - t0) / 1000;
+    if(e.t > 0.15 && air_.length < 1500){ acc += cadence * dt; while(acc >= 1){ acc--; nait(); } }
+    xa.clearRect(0, 0, W, H);
+    for(let i = air_.length - 1; i >= 0; i--){
+      const p = air_[i];
+      p.vy = Math.min(p.vy + 900 * dt, 560);
+      p.ph += dt * 3; p.x += Math.sin(p.ph) * 28 * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+      // Il se pose sur la colonne du CENTRE ; chaque colonne couverte monte ensuite de sa PROPRE hauteur (jamais
+      // « au niveau de la plus haute » : cet étalement s'emballait, l'écran était plein en 0,3 s à la première version).
+      const cm = Math.min(nc - 1, Math.max(0, Math.floor(p.x / COL)));
+      if(p.y + R >= H - h[cm]){
+        p.y = Math.max(-R, H - h[cm] - R);
+        trace(xt, p); e.posees++;
+        const [c0, c1] = colonnes(p.x, p.w);
+        for(let c = c0; c <= c1; c++) h[c] += DELTA;
+        air_[i] = air_[air_.length - 1]; air_.pop();
+      }else trace(xa, p);
+    }
+    let somme = 0, mini = H;
+    for(let c = 0; c < nc; c++){ const v = Math.min(h[c], H); somme += v; if(v < mini) mini = v; }
+    e.remplissage = somme / (nc * H); e.minimum = mini / H; e.tombent = air_.length;
+    if(e.remplissage >= 0.97 && e.minimum >= 0.85) e.plein = true;
+    if(e.plein || e.t * 1000 >= FETE_FINAL_MAX_MS){ e.plein = true; afficheEcranFinal(); return; }
+    imageConfettis = requestAnimationFrame(pas);
+  };
+  imageConfettis = requestAnimationFrame(pas);
+}
+// Le flash, les deux ondes, puis la pluie de confettis : un calque posé à la demande et retiré par l'écran noir.
 function lanceFete(){
+  arreteConfettis();
   for(const f of document.querySelectorAll(".fete")) f.remove();
   // D'OÙ PARTENT LES ONDES (défaut d'Antoni, 11/11/2026 : « le halo part depuis le coin en haut à gauche »).
   // Elles partent du compteur DE L'EN-TÊTE, mais seulement s'il est visible à l'écran : sur Réglages et Stats l'en-tête
@@ -3920,19 +3999,8 @@ function lanceFete(){
   f.style.setProperty("--cx", (b.left + b.width / 2) + "px");
   f.style.setProperty("--cy", (b.top + b.height / 2) + "px");
   f.innerHTML = '<div class="fete-flash"></div><div class="fete-onde"></div><div class="fete-onde deux"></div>';
-  const couleurs = ["var(--cycle-a)", "var(--cycle-b)", "var(--cycle-c)", "#fff"];
-  for(let i = 0; i < FETE_CONFETTIS; i++){
-    const c = document.createElement("i");
-    c.className = "fete-confetti";
-    c.style.left = (Math.random() * 100) + "%";
-    c.style.background = couleurs[i % couleurs.length];
-    c.style.setProperty("--d", (2.4 + Math.random() * 1.8) + "s");
-    c.style.setProperty("--t", (0.3 + Math.random() * 1.2) + "s");
-    c.style.setProperty("--dx", ((Math.random() - 0.5) * 160) + "px");
-    c.style.setProperty("--r", ((Math.random() - 0.5) * 1440) + "deg");
-    f.appendChild(c);
-  }
   document.body.appendChild(f);
+  lanceConfettis(f);
   // La vibration est une faveur du navigateur (Android, et seulement après un premier appui sur la page) :
   // refusée, elle ne fait rien et ne casse rien.
   try{ if(navigator.vibrate) navigator.vibrate(FETE_VIBRATION); }catch(e){ /* sans effet */ }
