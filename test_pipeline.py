@@ -692,6 +692,9 @@ def test_couleur_du_compteur():
     check(m and (int(m.group(1)[1:], 16), int(m.group(2)[1:], 16), int(m.group(3)[1:], 16)) ==
           (feed_store.COULEUR_COMPTEUR_SOON, feed_store.COULEUR_COMPTEUR_URGENT, feed_store.COULEUR_COMPTEUR_FINAL),
           "et les trois couleurs sont celles de la page")
+    m = re.search(r"html\.apres-sortie\{\s*--accent:(#\w+);", page)
+    check(m and int(m.group(1)[1:], 16) == feed_store.COULEUR_COMPTEUR_APRES,
+          "le rose du jour J du robot est l'accent de html.apres-sortie dans la page (%s)" % (m.group(1) if m else "absent"))
     sortie = feed_store.SORTIE_GTA6
     for reste, attendu, nom in (
             (timedelta(hours=feed_store.COMPTEUR_SEUIL_FINAL_H) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_FINAL, "à une seconde des 24 h"),
@@ -700,8 +703,8 @@ def test_couleur_du_compteur():
             (timedelta(days=feed_store.COMPTEUR_SEUIL_URGENT_J), feed_store.COULEUR_COMPTEUR_SOON, "pile 7 jours : soon"),
             (timedelta(days=feed_store.COMPTEUR_SEUIL_SOON_J) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_SOON, "à une seconde des 30 jours"),
             (timedelta(days=feed_store.COMPTEUR_SEUIL_SOON_J), feed_store.COULEUR_COMPTEUR_NEUTRE, "pile 30 jours : le bleu neutre"),
-            (timedelta(0), feed_store.COULEUR_COMPTEUR_NEUTRE, "à l'instant de la sortie"),
-            (-timedelta(days=3), feed_store.COULEUR_COMPTEUR_NEUTRE, "après la sortie")):
+            (timedelta(0), feed_store.COULEUR_COMPTEUR_APRES, "à l'instant de la sortie : le rose du jour J"),
+            (-timedelta(days=3), feed_store.COULEUR_COMPTEUR_APRES, "après la sortie : le rose du jour J")):
         check(feed_store.couleur_compteur(sortie - reste) == attendu, nom)
 
 
@@ -5920,7 +5923,10 @@ def test_derniers_reports_tactiles_et_courbes():
     # courbe continue fait recalculer le style à chaque image, et le cycle sur l'accent coûtait
     # alors 75 % du processeur. Elles passent par --cycle-pas (steps(12)) et sont verrouillées à part.
     toutes = re.findall(r"animation:[^;]*infinite", html)
-    pulsations = [x for x in toutes if "var(--cycle-pas)" not in x]
+    # Le cadre du jour J tourne en 24 pas (un quart de tour par seconde) : un cycle continu sur une
+    # couche plein écran redessinerait tout l'écran à chaque image. Verrouillé à part, plus bas.
+    cadre = [x for x in toutes if x.startswith("animation:cycle-cadre")]
+    pulsations = [x for x in toutes if "var(--cycle-pas)" not in x and x not in cadre]
     cycle = [x for x in toutes if "var(--cycle-pas)" in x]
     check(all("ease-in-out" in x for x in pulsations),
           "les %d pulsations infinies gardent leur courbe symétrique" % len(pulsations))
@@ -5929,6 +5935,8 @@ def test_derniers_reports_tactiles_et_courbes():
           "les %d animations du cycle de couleurs passent toutes par --cycle-pas, qui vaut steps(12) "
           "(trouvé : %s) — une courbe continue refait calculer le style à chaque image"
           % (len(cycle), pas.group(1).strip() if pas else "absent"))
+    check(len(cadre) == 1 and "steps(24)" in cadre[0],
+          "le cadre du jour J tourne en 24 pas, jamais en courbe continue (%s)" % cadre)
 
 
 def test_echelle_m3_verrouillee():

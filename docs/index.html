@@ -1634,6 +1634,52 @@
       animation:none !important;
     }
   }
+  /* LES EFFETS DU JOUR J (Antoni, 11/11/2026). Chacun a sa case dans les Réglages (« Couleurs ») et suit la
+     même règle que le cycle : automatique pendant les 24 h de la sortie, activable un autre jour, coupable.
+     — LE CADRE : un trait de 3 px qui fait le tour de TOUT l'écran, sur toutes les pages et par-dessus
+       l'écran de chargement. Un élément à part (#cadreEcran), jamais un pseudo-élément : l'animation
+       d'un pseudo-élément n'est pas celle que syncCycle recale. Posé sur sa propre couche, il ne
+       recalcule le style d'aucun autre bloc. Le dégradé conique TOURNE avec le cycle (steps(24) en 4 s :
+       un quart de tour par seconde, six images par seconde) et reste fixe sinon.
+     — LE LIBELLÉ du panneau (« GTA VI est sorti ») en dégradé. La couleur de repli est le violet du cycle :
+       c'est elle que lit le contrôle de contraste, et le texte est lisible même sans dégradé.
+     — LES COMMANDES : cases à cocher et curseur de saisie à la couleur d'accent, donc dans le cycle.
+     — LE HALO de minuit : une seconde, une fois, quand le compteur passe à zéro avec l'app ouverte. */
+  @property --cadre-ang{syntax:"<angle>"; inherits:false; initial-value:0deg;}
+  @keyframes cycle-cadre{from{--cadre-ang:0deg;} to{--cadre-ang:360deg;}}
+  .cadre-ecran, .halo-j{display:none;}
+  html.cadre-j .cadre-ecran{
+    display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none; padding:3px;
+    background:conic-gradient(from var(--cadre-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  html.cadre-j.cycle-couleur .cadre-ecran{animation:cycle-cadre var(--cycle-duree) steps(24) infinite;}
+  html.cadre-j .compteur-sous{
+    font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--cycle-b);
+    width:fit-content; margin-inline:auto;
+    background:linear-gradient(90deg, var(--cycle-a), var(--cycle-b), var(--cycle-c));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  html.controles-j input[type="checkbox"], html.controles-j input[type="radio"]{accent-color:var(--accent);}
+  html.controles-j input, html.controles-j textarea{caret-color:var(--accent);}
+  .halo-j.vif{
+    display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none;
+    box-shadow:inset 0 0 0 2px var(--cycle-c),
+      inset 0 0 28px 4px color-mix(in srgb, var(--cycle-c) 45%, transparent),
+      inset 0 0 60px 10px color-mix(in srgb, var(--cycle-a) 28%, transparent);
+    animation:halo-j 1.2s ease-in-out 1 both;
+  }
+  @keyframes halo-j{0%{opacity:0;} 15%{opacity:1;} 100%{opacity:0;}}
+  @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif{display:none;} }
+  /* L'écran de chargement du jour J : le « VI » du logo vire du bleu au rose (rotation de teinte,
+     mesurée sur la capture) et la ligne principale prend le dégradé. */
+  .splash.splash-jourj .splash-logo{filter:hue-rotate(125deg);}
+  .splash.splash-jourj #splashJ{
+    color:var(--cycle-b);
+    background:linear-gradient(90deg, var(--cycle-a), var(--cycle-b), var(--cycle-c));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
   /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
      Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
      thème clair : illisible, et resté invisible tant qu'aucun article à
@@ -2283,6 +2329,10 @@
   <div class="splash-j" id="splashJ"></div>
   <div class="splash-l" id="splashL"></div>
 </div>
+<!-- Les deux calques du jour J (voir « LES EFFETS DU JOUR J ») : le cadre autour de l'écran et le halo de
+     minuit. Vides et cachés tant qu'aucun effet ne les allume. -->
+<div class="cadre-ecran" id="cadreEcran" aria-hidden="true"></div>
+<div class="halo-j" id="haloJ" aria-hidden="true"></div>
 <div class="wrap">
 
   <!-- Ce que l'actualisation a donné, dit au lecteur d'écran. Visuellement
@@ -2608,6 +2658,48 @@
       </div>
       <div class="setting-desc" id="cycleCouleursReduit" hidden>
         Ton téléphone réduit les animations : les couleurs restent fixes.
+      </div>
+      <div class="setting-row">
+        <label for="coulCadre">Cadre autour de l'écran</label>
+        <input type="checkbox" id="coulCadre" onchange="basculeEffet('coulCadre', this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        Un trait en dégradé cyan, violet, rose fait le tour de tout l'écran, et le panneau du compteur
+        affiche « GTA VI est sorti » après la sortie. Il tourne avec les couleurs animées. Le jour de la
+        sortie, à minuit pile, un halo d'une seconde l'accompagne si l'app est ouverte.
+      </div>
+      <div class="setting-row">
+        <label for="coulBarreEtat">Barre d'état du téléphone</label>
+        <input type="checkbox" id="coulBarreEtat" onchange="basculeEffet('coulBarreEtat', this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        La barre du haut de ton téléphone prend une teinte rose sombre, ou suit les couleurs animées.
+        Seulement quand l'app est installée sur l'écran d'accueil ; selon le téléphone, elle peut
+        rester noire.
+      </div>
+      <div class="setting-row">
+        <label for="coulChargement">Écran de chargement du jour J</label>
+        <input type="checkbox" id="coulChargement" onchange="basculeEffet('coulChargement', this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        Le « VI » passe au rose et la ligne principale au dégradé. Tu le vois à la prochaine ouverture de
+        l'app, si l'écran de chargement (plus bas) est allumé.
+      </div>
+      <div class="setting-row">
+        <label for="coulControles">Cases et curseur de saisie</label>
+        <input type="checkbox" id="coulControles" onchange="basculeEffet('coulControles', this.checked)">
+      </div>
+      <div class="setting-desc" hidden>
+        Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
+        couleurs animées.
+      </div>
+      <div class="setting-row">
+        <label for="lanceHaloBtn">Halo de minuit</label>
+        <button type="button" id="lanceHaloBtn" onclick="lanceHalo()">Lancer le halo</button>
+      </div>
+      <div class="setting-desc" hidden>
+        Une seconde de halo rose et cyan autour de l'écran, pour l'essayer. Indisponible quand ton
+        téléphone réduit les animations.
       </div>
     </div>
 
@@ -3028,6 +3120,11 @@ const DEFAULT_SETTINGS = {
   // false = jamais. Il n'est PAS relu par saveSettings : un « décoché » lu hors du jour J aurait
   // figé le réglage sur false à la première sauvegarde d'un autre champ.
   cycleCouleurs: null,
+  // Les autres effets du jour J, même règle : null = automatique (les 24 h de la sortie), true, false.
+  coulCadre: null,
+  coulBarreEtat: null,
+  coulChargement: null,
+  coulControles: null,
   spoilerKeywords: MOTS_SPOILER.slice(),
   maxDisplay: 500,
   similarityThreshold: 72,
@@ -3319,11 +3416,49 @@ function majCompteurMots(idChamp, idCompteur, un, plusieurs, aucun){
 // Actif si Antoni l'a allumé (true), jamais s'il l'a coupé (false), et sinon — réglage jamais touché —
 // pendant les 24 heures qui suivent la sortie, le « premier jour » du compteur.
 const JOUR_J_MS = 86400000;
-function cycleCouleursActif(maintenant){
-  if(settings.cycleCouleurs === true) return true;
-  if(settings.cycleCouleurs === false) return false;
+// Les effets du jour J, chacun avec sa case : le cycle lui-même et quatre autres (11/11/2026).
+const EFFETS_JOUR_J = ["cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles"];
+function effetActif(cle, maintenant){
+  if(settings[cle] === true) return true;
+  if(settings[cle] === false) return false;
   const ecoule = maintenant - GTA6_RELEASE;
   return ecoule >= 0 && ecoule < JOUR_J_MS;
+}
+function cycleCouleursActif(maintenant){ return effetActif("cycleCouleurs", maintenant); }
+
+// Pose les classes de la page selon les cases : une seule fonction, appelée à chaque battement.
+function appliqueEffetsJourJ(maintenant){
+  const h = document.documentElement.classList;
+  h.toggle("cycle-couleur", effetActif("cycleCouleurs", maintenant));
+  h.toggle("cadre-j", effetActif("coulCadre", maintenant));
+  h.toggle("controles-j", effetActif("coulControles", maintenant));
+  // L'écran de chargement vit avant le chargement des réglages : c'est ce battement, le premier,
+  // qui lui donne sa couleur du jour J (le script tourne avant le premier affichage).
+  const splash = document.getElementById("splash");
+  if(splash) splash.classList.toggle("splash-jourj", effetActif("coulChargement", maintenant));
+  majBarreEtatJ();
+}
+
+// Écrit ICI et nulle part ailleurs, comme le cycle : une case cochée d'office le jour J ne doit pas
+// devenir un « true » explicite parce qu'un autre champ a été enregistré.
+function basculeEffet(cle, actif){
+  settings[cle] = !!actif;
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){ console.error("Erreur sauvegarde de l'effet " + cle, e); }
+  appliqueEffetsJourJ(new Date());
+  requestAnimationFrame(syncCycle);
+}
+
+// LE HALO DE MINUIT : une seconde, une fois. Refusé aux téléphones qui réduisent les animations.
+function lanceHalo(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  const h = document.getElementById("haloJ");
+  if(!h) return false;
+  h.classList.remove("vif");
+  void h.offsetWidth;
+  h.classList.add("vif");
+  setTimeout(() => h.classList.remove("vif"), 1300);
+  return true;
 }
 
 // Remet toutes les animations du cycle sur l'horloge du document : celles d'un bloc apparu plus tard
@@ -3334,7 +3469,7 @@ function syncCycle(){
   if(!document.documentElement.classList.contains("cycle-couleur")) return;
   for(const a of document.getAnimations()){
     const n = a.animationName;
-    if(n && (n === "cycle-accent" || n.startsWith("cycle-chiffre")) && a.playState === "running" && a.startTime !== 0)
+    if(n && n.startsWith("cycle-") && a.playState === "running" && a.startTime !== 0)
       a.startTime = 0;
   }
 }
@@ -3345,7 +3480,7 @@ function syncCycle(){
 // compteur à 623 ms de l'en-tête, alors que mon poste, plus rapide, le voyait à 0 (10/11/2026).
 document.addEventListener("animationstart", e => {
   const n = e.animationName;
-  if(!n || !(n === "cycle-accent" || n.startsWith("cycle-chiffre")) || e.pseudoElement) return;
+  if(!n || !n.startsWith("cycle-") || e.pseudoElement) return;
   for(const a of e.target.getAnimations())
     if(a.animationName === n && a.playState === "running" && a.startTime !== 0) a.startTime = 0;
 }, true);
@@ -3356,7 +3491,7 @@ function basculeCycleCouleurs(actif){
   settings.cycleCouleurs = !!actif;
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde cycle de couleurs", e); }
-  document.documentElement.classList.toggle("cycle-couleur", cycleCouleursActif(new Date()));
+  appliqueEffetsJourJ(new Date());
   requestAnimationFrame(syncCycle);
 }
 
@@ -3676,6 +3811,7 @@ function populateSettingsUI(){
   document.getElementById("splashActif").checked = settings.splashActif !== false;
   document.getElementById("cycleCouleurs").checked = cycleCouleursActif(new Date());
   document.getElementById("cycleCouleursReduit").hidden = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  for(const cle of EFFETS_JOUR_J) document.getElementById(cle).checked = effetActif(cle, new Date());
   document.getElementById("spoilerKeywordsInput").value = (settings.spoilerKeywords || []).join("\n");
   document.getElementById("maxDisplay").value = settings.maxDisplay;
   document.getElementById("simRange").value = settings.similarityThreshold;
@@ -4114,6 +4250,48 @@ const COULEUR_BARRE = { dark: "#0a0d0f", light: "#f4f7fa" };
 function majCouleurBarre(theme){
   const meta = document.querySelector('meta[name="theme-color"]');
   if(meta) meta.setAttribute("content", COULEUR_BARRE[theme] || COULEUR_BARRE.dark);
+  majBarreEtatJ();
+}
+
+// LA BARRE D'ÉTAT AUX COULEURS DU JOUR J (case « Barre d'état du téléphone »). Le fond de la page
+// prend 16 % de la couleur du moment : une teinte, jamais un aplat qui ferait de la barre un autre
+// bloc. Avec le cycle, la couleur suit sa courbe (cyan, violet, rose, violet, cyan en 4 s, lue sur
+// l'horloge du document comme les animations) et la balise est réécrite quatre fois par seconde ;
+// sans le cycle, un rose fixe. Selon le téléphone, la barre peut ne pas se redessiner : la balise
+// est alors écrite pour rien, sans autre effet.
+const CYCLE_SOMBRE = ["#19e6ff", "#b388ff", "#ff5cae"];
+const CYCLE_CLAIR = ["#00708a", "#7c3aed", "#b8146f"];
+const PART_TEINTE_BARRE = 0.16;
+let barreEtatMinuteur = null;
+function hexVersRgb(h){ return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function melangeHex(fond, teinte, part){
+  const a = hexVersRgb(fond), b = hexVersRgb(teinte);
+  return "#" + a.map((v, i) => Math.round(v + (b[i] - v) * part).toString(16).padStart(2, "0")).join("");
+}
+// La couleur du cycle à l'instant t (ms de l'horloge du document) : segments de 1 s, a>b>c>b>a.
+function couleurDuCycle(t, palette){
+  const p = (t % 4000) / 1000, seg = Math.floor(p), f = p - seg;
+  const [de, vers] = [[0, 1], [1, 2], [2, 1], [1, 0]][seg];
+  const A = hexVersRgb(palette[de]), B = hexVersRgb(palette[vers]);
+  return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * f).toString(16).padStart(2, "0")).join("");
+}
+function majBarreEtatJ(){
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(!meta) return;
+  const clair = document.documentElement.getAttribute("data-theme") === "light";
+  const fond = clair ? COULEUR_BARRE.light : COULEUR_BARRE.dark;
+  const palette = clair ? CYCLE_CLAIR : CYCLE_SOMBRE;
+  if(!effetActif("coulBarreEtat", new Date())){
+    if(barreEtatMinuteur){ clearInterval(barreEtatMinuteur); barreEtatMinuteur = null; }
+    if(meta.getAttribute("content") !== fond) meta.setAttribute("content", fond);
+    return;
+  }
+  const anime = document.documentElement.classList.contains("cycle-couleur")
+    && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const teinte = anime ? couleurDuCycle(document.timeline.currentTime || 0, palette) : palette[2];
+  meta.setAttribute("content", melangeHex(fond, teinte, PART_TEINTE_BARRE));
+  if(anime && !barreEtatMinuteur) barreEtatMinuteur = setInterval(majBarreEtatJ, 250);
+  else if(!anime && barreEtatMinuteur){ clearInterval(barreEtatMinuteur); barreEtatMinuteur = null; }
 }
 
 function setTheme(t){
@@ -8497,14 +8675,19 @@ function palierCompteur(diff){
   return "";
 }
 
+let diffPrecedente = null;
 function updateCountdown(){
   const now = new Date();
   const diff = GTA6_RELEASE - now;
   // La palette du jour J (accent rose, chiffres cyan) tient à cette seule classe, posée sur la
   // page et retirée avant la sortie : voir « html.apres-sortie » dans la feuille de style.
   document.documentElement.classList.toggle("apres-sortie", diff <= 0);
-  document.documentElement.classList.toggle("cycle-couleur", cycleCouleursActif(now));
+  appliqueEffetsJourJ(now);
   syncCycle();
+  // Le halo de minuit : seulement quand le compteur PASSE à zéro sous les yeux, pas à l'ouverture.
+  const avant = diffPrecedente;
+  diffPrecedente = diff;
+  if(avant !== null && avant > 0 && diff <= 0 && effetActif("coulCadre", now)) lanceHalo();
 
   // APRÈS LA SORTIE, LE COMPTEUR REPART DANS L'AUTRE SENS.
   //
@@ -8524,7 +8707,11 @@ function updateCountdown(){
     // Le palier « final » (celui qui crie) ne vaut que le premier jour.
     const premierJour = t.mois === 0 && t.j < 1;
     // « apres » colore les chiffres en cyan, y compris le premier jour où « final » garde sa pulsation.
-    ecritCompteur(t, (premierJour ? "countdown final" : "countdown") + " apres", "depuis la sortie",
+    // « J+N » : le jour civil à Paris depuis la sortie (J+0 le jour même), comme le décompte « J-N »
+    // de l'écran de chargement.
+    const jourN = -ecartJoursCivils(jourParis(now), jourParis(GTA6_RELEASE));
+    const libelle = (effetActif("coulCadre", now) ? "GTA VI est sorti" : "depuis la sortie") + " · J+" + jourN;
+    ecritCompteur(t, (premierJour ? "countdown final" : "countdown") + " apres", libelle,
       compactApres(t), premierJour ? "final apres" : "apres");
     return;
   }
