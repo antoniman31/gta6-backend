@@ -8523,18 +8523,34 @@ def test_aucun_texte_oublie_du_cycle(nav, url):
                 attendu = "rgb(%d, %d, %d)" % tuple(base)
                 check(len(tits) >= 3 and all(c == attendu for c in tits),
                       "[oubli %s] les titres d'articles RESTENT blancs (%d titres, %s)" % (theme, len(tits), tits[:1]))
+            def fige(v0, v2):
+                c0 = v0["c"]
+                if c0 != v2["c"]: return False
+                mx, mn = max(c0), min(c0); lum = sum(c0) / 3 / 255; chroma = (mx - mn) / 255
+                rouge = chroma > 0.12 and c0[1] < 0.6 * c0[0] and c0[2] < 0.6 * c0[0]    # les erreurs restent rouges, sur son conseil
+                if rouge: return False
+                return c0 == base or chroma > 0.12 or (0.2 <= lum < 0.88)             # le blanc d'origine, un coloré, un gris moyen
+            suspects = []
             for k, v0 in vus[0]["out"].items():
                 v2 = vus[1]["out"].get(k)
                 vus_total += 1
                 if "placeholder" in k or "icône" in k or "loupe" in k: champs += 1
                 if v2 is None or v0["titre"]: continue
-                c0 = v0["c"]
-                if c0 != v2["c"]: continue
-                mx, mn = max(c0), min(c0); lum = sum(c0) / 3 / 255; chroma = (mx - mn) / 255
-                rouge = chroma > 0.12 and c0[1] < 0.6 * c0[0] and c0[2] < 0.6 * c0[0]    # les erreurs restent rouges, sur son conseil
-                if rouge: continue
-                if c0 == base or chroma > 0.12 or (0.2 <= lum < 0.88):                  # le blanc d'origine, un coloré, un gris moyen : figés
-                    oublis.append("%s : %s %s" % (nom, k, tuple(c0)))
+                if fige(v0, v2): suspects.append(k)
+            if suspects:
+                # SECONDE PASSE (la CI a rouge ce contrôle le 10/11/2026 : l'animation d'un bloc fraîchement affiché, ici les onglets des
+                # statistiques en thème clair, n'avait pas encore démarré quand on a figé le cycle ; le texte paraissait figé). Un vrai oubli
+                # est encore figé une seconde plus tard ; une animation qui n'avait pas démarré, non.
+                page.wait_for_timeout(1000)
+                vus2 = []
+                for tt in (0, 2000):
+                    page.evaluate(FIGE_TOUT, tt)
+                    page.wait_for_timeout(150)
+                    vus2.append(page.evaluate(SCAN))
+                for k in suspects:
+                    a2, b2 = vus2[0]["out"].get(k), vus2[1]["out"].get(k)
+                    if a2 is not None and b2 is not None and fige(a2, b2):
+                        oublis.append("%s : %s %s" % (nom, k, tuple(a2["c"])))
             check(not erreurs, "[oubli %s %s] aucune erreur JavaScript (%s)" % (theme, nom, erreurs[:1]))
             ctx.close()
         check(vus_total > 150 and champs >= 8, "[oubli %s] le balayage voit assez de choses : %d éléments, dont %d champs, icônes et loupes" % (theme, vus_total, champs))
