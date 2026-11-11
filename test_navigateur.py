@@ -8126,8 +8126,8 @@ def test_case_globale_des_effets(nav, url):
     ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {})
     page.evaluate("() => openSettings()")
     check(page.evaluate("() => ['apercuCouleurs', 'persoBtn', 'effetsDetail'].every(i => !!document.getElementById(i))"
-                        " && document.querySelectorAll('.prereglage').length === 4"),
-          "[réglages] l'aperçu, les quatre préréglages et le bouton « Personnaliser » existent")
+                        " && document.querySelectorAll('.prereglage').length === 3"),
+          "[réglages] l'aperçu, les trois préréglages et le bouton « Personnaliser » existent")
     e = page.evaluate(ETAT)
     check(e["presses"] == ["auto"] and not any(e["cases"]) and not e["ouvert"] and e["expanded"] == "false" and e["compte"] == "0 sur 9 allumés",
           "[réglages] la veille : « Automatique » surligné, tout éteint, détail replié (%s)" % {k: e[k] for k in ("presses", "ouvert", "compte")})
@@ -8139,17 +8139,11 @@ def test_case_globale_des_effets(nav, url):
           "[réglages] « Jour J complet » allume les six effets d'un coup (%s)" % {k: e[k] for k in ("presses", "compte")})
     check(all(stocke(page, c) is True for c in EFFETS), "[réglages] et écrit true pour chacun (%s)" % {c: stocke(page, c) for c in EFFETS})
     check(e["apercu"][0] and e["apercu"][1], "[réglages] l'aperçu montre le cadre et les bordures (%s)" % e["apercu"])
-    # Discret : cadre et bordures, fixes ; le reste éteint.
-    page.evaluate("() => document.querySelector('.prereglage[data-p=discret]').click()")
-    e = page.evaluate(ETAT)
-    attendu = {"cycleCouleurs": False, "coulCadre": True, "coulBarreEtat": False, "coulChargement": False, "coulControles": False, "coulBordures": True}
-    check(e["presses"] == ["discret"] and e["cases"] == [attendu[c] for c in EFFETS] and e["compte"] == "2 sur 9 allumés",
-          "[réglages] « Discret » : le cadre et les bordures, sans mouvement ni autre effet (%s)" % e["cases"])
-    check(e["apercu"] == [True, True, False], "[réglages] et l'aperçu est fixe : cadre et bordures, pas de rotation (%s)" % e["apercu"])
     # Régler UN effet à la main : plus aucun préréglage surligné.
+    page.evaluate("() => document.querySelector('.prereglage[data-p=aucun]').click()")
     page.evaluate("() => { const c = document.getElementById('coulControles'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
     e = page.evaluate(ETAT)
-    check(e["presses"] == [] and e["compte"] == "3 sur 9 allumés",
+    check(e["presses"] == [] and e["compte"] == "1 sur 9 allumés",
           "[réglages] un réglage à la main : aucun préréglage n'est surligné (%s, %s)" % (e["presses"], e["compte"]))
     # Aucun, puis Automatique.
     page.evaluate("() => document.querySelector('.prereglage[data-p=aucun]').click()")
@@ -8568,46 +8562,93 @@ def test_categories_de_couleur(nav, url):
     ZONES = [("tete", "header.console"), ("fil", ".search-row"), ("barres", ".barre-bas"), ("fenetres", ".page-reglages")]
     def stocke(page):
         return page.evaluate("() => JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}')")
-    # 1. La structure : quatre familles, chacune avec « Où ? » replié et quatre zones.
+    # 1. La structure (disposition 3 d'Antoni, 10/11/2026 : « une zone, quatre familles ») : une ligne « Toute la famille » et une ligne par
+    #    zone, chacune avec quatre pastilles ; de VRAIES cases à cocher, cachées sous leur pastille.
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 1500}, timezone_id="Europe/Paris", reduced_motion="no-preference")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        ctx.clock.install(time=VEILLE)
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
+        page.evaluate("() => openSettings()"); page.wait_for_timeout(300)
+        # Les trois modes (Antoni, 11/11/2026 : « niveau bouton », puis « supprime Discret ») : « Jour J complet » sur toute la largeur, puis deux boutons de même largeur, une seule ligne de texte,
+        # et la ligne « Personnaliser · N sur 9 allumés » sans retour à la ligne.
+        bt = page.evaluate("""() => { const bs = [...document.querySelectorAll('.prereglage')].map(b => b.getBoundingClientRect());
+            const ligne = el => { const r = document.createRange(); r.selectNodeContents(el); return new Set([...r.getClientRects()].map(c => Math.round(c.top))).size; };
+            return {n: bs.length, larg: bs.map(r => Math.round(r.width)), rangs: new Set(bs.map(r => Math.round(r.top))).size,
+                    lignes: [...document.querySelectorAll('.prereglage')].map(ligne), haut: bs.map(r => Math.round(r.height)),
+                    perso: [document.getElementById('persoBtn').getBoundingClientRect().height, document.getElementById('persoCompte').getBoundingClientRect().height],
+                    coupe: [...document.querySelectorAll('.prereglage, #persoBtn')].some(b => b.scrollWidth > b.clientWidth + 1)}; }""")
+        check(bt["n"] == 3 and bt["rangs"] == 2 and bt["larg"][1] == bt["larg"][2] and bt["larg"][0] > bt["larg"][1] and bt["lignes"] == [1] * 3 and min(bt["haut"]) >= 44 and not bt["coupe"],
+              "[catégories %d px] trois modes : « Jour J complet » pleine largeur, puis deux de même largeur, une seule ligne chacun, au moins 44 px (%s)" % (largeur, bt))
+        check(bt["perso"][1] < 24 and bt["perso"][0] <= 48, "[catégories %d px] « Personnaliser · N sur 9 allumés » tient sur une ligne (%s)" % (largeur, bt["perso"]))
+        page.click("#persoBtn")
+        g = page.evaluate("""() => { const lignes = [...document.querySelectorAll('.grille-couleurs .gc-ligne')];
+            return {lignes: lignes.length, chips: lignes.map(l => l.querySelectorAll('.chip input[type=checkbox]').length),
+                    unSeulRang: lignes.map(l => new Set([...l.querySelectorAll('.chip-corps')].map(c => Math.round(c.getBoundingClientRect().top))).size),
+                    hauts: [...document.querySelectorAll('.grille-couleurs .chip-corps')].map(c => Math.round(c.getBoundingClientRect().height)),
+                    dedans: [...document.querySelectorAll('.grille-couleurs .chip-corps')].every(c => { const r = c.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }),
+                    deborde: document.documentElement.scrollWidth > innerWidth,
+                    haut: Math.round(document.querySelector('.grille-couleurs').getBoundingClientRect().height),
+                    ids: ['coulTextes', 'coulFonds', 'coulBordures', 'coulBadges'].every(i => !!document.getElementById(i))
+                         && ['texte', 'fond', 'bord', 'badge'].every(f => ['tete', 'fil', 'barres', 'fenetres'].every(z => !!document.getElementById('zone-' + f + '-' + z))),
+                    noms: [...document.querySelectorAll('.grille-couleurs input')].every(i => !!i.getAttribute('aria-label')),
+                    ancien: document.querySelectorAll('.ou-btn, .famille, .zones').length}; }""")
+        check(g["lignes"] == 5 and g["chips"] == [4] * 5 and g["unSeulRang"] == [1] * 5 and g["ids"],
+              "[catégories %d px] une ligne « Toute la famille » + une par zone, quatre pastilles chacune sur UN rang, mêmes identifiants (%s)" % (largeur, {k: g[k] for k in ("lignes", "chips", "unSeulRang")}))
+        check(min(g["hauts"]) >= 44 and g["dedans"] and not g["deborde"],
+              "[catégories %d px] chaque pastille fait au moins 44 px de haut, tient dans l'écran, rien ne déborde (mini %d px)" % (largeur, min(g["hauts"])))
+        check(g["noms"] and g["ancien"] == 0, "[catégories %d px] chaque case porte un nom lisible ; plus de « Où ? » ni de listes à déplier" % largeur)
+        check(g["haut"] <= 420, "[catégories %d px] la grille entière fait au plus 420 px (%d ; 660 px dépliée avant)" % (largeur, g["haut"]))
+        check(not erreurs, "[catégories %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
     ctx, page, erreurs = _ouvre_cycle(nav, url, VEILLE, "auto", "dark")
     page.evaluate("() => openSettings()"); page.wait_for_timeout(300)
     page.click("#persoBtn")
-    struct = page.evaluate("""() => ['texte', 'fond', 'bord', 'badge'].map(f => ({f,
-        zones: ['tete', 'fil', 'barres', 'fenetres'].filter(z => !!document.getElementById('zone-' + f + '-' + z)).length,
-        replie: getComputedStyle(document.getElementById('zones-' + f)).display === 'none',
-        expanded: document.getElementById('ou-' + f).getAttribute('aria-expanded')}))""")
-    check(all(x["zones"] == 4 and x["replie"] and x["expanded"] == "false" for x in struct),
-          "[catégories] quatre familles, chacune avec ses quatre zones, repliées derrière « Où ? » (%s)" % struct)
-    check(page.evaluate("() => ['coulTextes', 'coulFonds', 'coulBordures', 'coulBadges'].every(i => !!document.getElementById(i))"),
-          "[catégories] une case par famille : textes, fonds, bordures, badges")
-    page.click("#ou-texte")
-    check(page.evaluate("() => getComputedStyle(document.getElementById('zones-texte')).display") != "none"
-          and page.evaluate("() => document.getElementById('ou-texte').getAttribute('aria-expanded')") == "true",
-          "[catégories] « Où ? » déplie les zones et annonce son état")
-    # La veille : tout en automatique, donc éteint ; rien d'écrit.
     check(not page.evaluate("() => ['coulTextes', 'coulFonds', 'coulBordures', 'coulBadges'].some(i => document.getElementById(i).checked)")
+          and not page.evaluate("() => [...document.querySelectorAll('.grille-couleurs .chip input')].some(i => i.checked)")
           and "coulTypes" not in stocke(page) and "coulZones" not in stocke(page),
-          "[catégories] la veille, les familles sont éteintes (automatique) et rien n'est écrit tant qu'on ne touche à rien")
-    # Cocher une famille écrit true ; une zone coupée n'écrit QUE le couple coupé ; la rallumer l'efface.
-    page.evaluate("() => { const c = document.getElementById('coulTextes'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+          "[catégories] la veille, tout est éteint (automatique) et rien n'est écrit tant qu'on ne touche à rien")
+    def clique(ident, etat):
+        page.evaluate("([i, e]) => { const c = document.getElementById(i); c.checked = e; c.dispatchEvent(new Event('change', {bubbles: true})); }", [ident, etat])
+    def pastilles():
+        return page.evaluate("() => [...document.querySelectorAll('.grille-couleurs .gc-ligne:not(.gc-tout) input')].filter(i => i.checked).map(i => i.id.replace('zone-', ''))")
+    # Allumer UNE pastille d'une famille éteinte n'allume que celle-là (les trois autres zones sont coupées, la famille est à true).
+    clique("zone-texte-fil", True)
     st = stocke(page)
-    check(st.get("coulTypes", {}).get("texte") is True, "[catégories] cocher « Textes et icônes » écrit true (%s)" % st.get("coulTypes"))
-    page.evaluate("() => { const c = document.getElementById('zone-texte-fil'); c.checked = false; c.dispatchEvent(new Event('change', {bubbles: true})); }")
-    check(stocke(page).get("coulZones") == {"texte:fil": False}, "[catégories] couper une zone n'écrit que ce couple (%s)" % stocke(page).get("coulZones"))
-    check(page.evaluate("() => document.documentElement.classList.contains('sans-texte-fil')"
-                        " && !document.documentElement.classList.contains('sans-texte-tete')"),
+    check(st.get("coulTypes", {}).get("texte") is True and st.get("coulZones") == {"texte:tete": False, "texte:barres": False, "texte:fenetres": False}
+          and pastilles() == ["texte-fil"],
+          "[catégories] allumer une pastille d'une famille éteinte n'allume que celle-là (%s, %s)" % (st.get("coulZones"), pastilles()))
+    check(page.evaluate("() => document.getElementById('coulTextes').indeterminate && !document.getElementById('coulTextes').checked"),
+          "[catégories] « Toute la famille » est « à moitié » quand certaines zones seulement sont allumées")
+    # Couper la zone, la rallumer.
+    clique("zone-texte-fil", False)
+    check(stocke(page).get("coulZones", {}).get("texte:fil") is False and pastilles() == [], "[catégories] décocher une pastille ne coupe que ce couple")
+    # « Toute la famille » allume les quatre zones ET efface les coupures.
+    clique("coulTextes", True)
+    st = stocke(page)
+    check(st.get("coulZones") == {} and sorted(pastilles()) == sorted("texte-" + z for z in ("tete", "fil", "barres", "fenetres"))
+          and page.evaluate("() => document.getElementById('coulTextes').checked && !document.getElementById('coulTextes').indeterminate"),
+          "[catégories] « Toute la famille » allume les quatre zones et efface les coupures (%s)" % st.get("coulZones"))
+    page.evaluate("() => { const c = document.documentElement.classList; return 0; }")
+    # Couper UNE zone d'une famille allumée : la classe de cette zone seulement.
+    clique("zone-texte-fil", False)
+    check(page.evaluate("() => document.documentElement.classList.contains('sans-texte-fil') && !document.documentElement.classList.contains('sans-texte-tete')"),
           "[catégories] la classe « sans-texte-fil » est posée, pas celle des autres zones")
     check(page.evaluate("() => document.querySelector('.prereglage[aria-pressed=true]')") is None,
           "[catégories] une zone coupée à la main : aucun préréglage n'est surligné")
-    page.evaluate("() => { const c = document.getElementById('zone-texte-fil'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    clique("zone-texte-fil", True)
     check(stocke(page).get("coulZones") == {}, "[catégories] rallumer la zone efface le couple (%s)" % stocke(page).get("coulZones"))
-    page.evaluate("() => { const c = document.getElementById('coulTextes'); c.checked = false; c.dispatchEvent(new Event('change', {bubbles: true})); }")
-    check(page.evaluate("() => ['tete', 'fil', 'barres', 'fenetres'].every(z => document.getElementById('zone-texte-' + z).disabled)"),
-          "[catégories] famille coupée : ses quatre zones sont grisées")
+    # Les bordures passent par leur propre réglage.
+    clique("zone-bord-tete", True)
+    check(stocke(page).get("coulBordures") is True and pastilles().count("bord-tete") == 1,
+          "[catégories] une pastille de bordures écrit « coulBordures » (%s)" % stocke(page).get("coulBordures"))
     page.evaluate("() => document.querySelector('.prereglage[data-p=jourj]').click()")
     st = stocke(page)
-    check(st.get("coulZones") == {} and all(st["coulTypes"][f] is True for f in ("texte", "fond", "badge")),
-          "[catégories] « Jour J complet » allume les trois familles et remet les zones (%s)" % st.get("coulTypes"))
+    check(st.get("coulZones") == {} and all(st["coulTypes"][f] is True for f in ("texte", "fond", "badge"))
+          and len(pastilles()) == 16,
+          "[catégories] « Jour J complet » allume les trois familles, remet les zones : 16 pastilles pleines (%s)" % st.get("coulTypes"))
     check(not erreurs, "[catégories] aucune erreur JavaScript (%s)" % erreurs[:1])
     ctx.close()
     # 1 bis. Forcer le cycle un AUTRE jour que la sortie : les familles en automatique le suivent (avant, elles ne coloraient rien : trouvé
@@ -8697,10 +8738,14 @@ def test_categories_de_couleur(nav, url):
                     cartes: e.querySelectorAll('.card').length, officiel: !!e.querySelector('.card.official .official-badge'), barre: e.querySelectorAll('.barre-bas button').length,
                     ids: e.querySelectorAll('[id]').length, gestionnaires: e.querySelectorAll('[onclick]').length,
                     gauche: r.left, droite: r.right, haut: r.height, iw: innerWidth, deborde: document.documentElement.scrollWidth > innerWidth,
-                    echelle: e.style.transform, hauteurCadre: m.querySelector('.maq-cadre').getBoundingClientRect().height}; }""")
+                    echelle: e.style.transform, hauteurCadre: m.querySelector('.maq-cadre').getBoundingClientRect().height,
+                    inutiles: ['.frise-jalons', '.compteur-sous', '.day-label', '.repere-nouveaux', '.card-actions', '.card-date'].filter(s => !!e.querySelector(s))}; }""")
         check(m["tuiles"] == 4 and m["recherche"] and m["onglets"] == 2 and m["cartes"] == 2 and m["officiel"] and m["barre"] == 3,
               "[maquette %d px] l'écran en petit : 4 tuiles, recherche, 2 onglets, 2 cartes dont une officielle, barre du bas à 3 boutons (%s)"
               % (largeur, {k: m[k] for k in ("tuiles", "recherche", "onglets", "cartes", "officiel", "barre")}))
+        check(m["inutiles"] == [] and m["hauteurCadre"] <= 330,
+              "[maquette %d px] écran resserré (Antoni, 10/11/2026) : ni frise, ni sous-titre, ni jour, ni repère, ni date, ni boutons de carte (%s), et au plus 330 px de haut (%.0f ; 620 avant)"
+              % (largeur, m["inutiles"], m["hauteurCadre"]))
         check(m["ids"] == 0 and m["gestionnaires"] == 0, "[maquette %d px] sans identifiants dupliqués ni gestionnaires de clic (%d, %d)" % (largeur, m["ids"], m["gestionnaires"]))
         check(m["gauche"] >= 0 and m["droite"] <= m["iw"] and not m["deborde"] and m["hauteurCadre"] > 100,
               "[maquette %d px] elle tient dans l'écran (%.0f à %.0f sur %d), sans débordement, hauteur %.0f px" % (largeur, m["gauche"], m["droite"], m["iw"], m["hauteurCadre"]))
@@ -8714,80 +8759,6 @@ def test_categories_de_couleur(nav, url):
         check(res[0][0] == res[1][0] and res[0][1] != res[1][1],
               "[maquette %d px] la copie suit les zones : textes coupés en-tête, son titre est fixe, son « Filtres » tourne (%s)" % (largeur, res))
         check(not erreurs, "[maquette %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
-        ctx.close()
-
-
-def test_apercu_minimaliste(nav, url):
-    """Réglages › Couleurs : la vue minimaliste de l'aperçu et son bouton (Antoni, 10/11/2026 : « détaillé mais minimaliste aussi »)."""
-    print("\n[aperçu] deux vues : détaillée et minimaliste ; quatre zones x quatre familles en pastilles, 320 et 390 px")
-    FIGE_TOUT = """(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }"""
-    def stocke(page):
-        return page.evaluate("() => JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}')")
-    for largeur in (320, 390):
-        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris", reduced_motion="no-preference")
-        ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
-        ctx.clock.install(time=JOUR_J)
-        page = ctx.new_page(); erreurs = []
-        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
-        page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
-        page.evaluate("() => openSettings()"); page.wait_for_timeout(500)
-        e = page.evaluate("""() => ({boutons: [...document.querySelectorAll('.vue-apercu')].map(b => [b.dataset.v, b.getAttribute('aria-pressed'), Math.round(b.getBoundingClientRect().height)]),
-            vue: document.getElementById('apercuCouleurs').getAttribute('data-vue'),
-            detail: getComputedStyle(document.querySelector('#apercuCouleurs .maq-cadre')).display, mini: getComputedStyle(document.getElementById('apercuMini')).display})""")
-        check(e["boutons"] == [["detaillee", "true", e["boutons"][0][2]], ["mini", "false", e["boutons"][1][2]]] and e["vue"] == "detaillee"
-              and e["detail"] != "none" and e["mini"] == "none" and all(b[2] >= 44 for b in e["boutons"]),
-              "[aperçu %d px] deux boutons de 44 px au moins ; la vue détaillée est celle d'origine (%s)" % (largeur, e))
-        page.click(".vue-apercu[data-v=mini]"); page.wait_for_timeout(300)
-        e = page.evaluate("""() => ({vue: document.getElementById('apercuCouleurs').getAttribute('data-vue'),
-            presses: [...document.querySelectorAll('.vue-apercu')].map(b => b.getAttribute('aria-pressed')),
-            detail: getComputedStyle(document.querySelector('#apercuCouleurs .maq-cadre')).display, mini: getComputedStyle(document.getElementById('apercuMini')).display,
-            zones: [...document.querySelectorAll('#apercuMini .mini-zone')].map(z => z.dataset.z),
-            pastilles: document.querySelectorAll('#apercuMini .mini-zone[data-z]:not([data-z=ecran]) .pastille').length,
-            tags: document.querySelectorAll('#apercuMini .mini-zone[data-z=ecran] .pastille').length})""")
-        check(e["vue"] == "mini" and e["presses"] == ["false", "true"] and e["detail"] == "none" and e["mini"] != "none",
-              "[aperçu %d px] « Minimaliste » masque la maquette et montre le schéma (%s)" % (largeur, {k: e[k] for k in ("vue", "presses", "detail", "mini")}))
-        check(e["zones"] == ["tete", "fil", "barres", "fenetres", "ecran"] and e["pastilles"] == 16 and e["tags"] == 3,
-              "[aperçu %d px] quatre zones x quatre pastilles, plus les trois effets de l'écran du téléphone (%s)" % (largeur, e["zones"]))
-        check(stocke(page).get("apercuVue") == "mini", "[aperçu %d px] le choix de la vue est gardé (%s)" % (largeur, stocke(page).get("apercuVue")))
-        # Chaque zone range ses quatre pastilles sur UNE rangée, dans l'écran.
-        g = page.evaluate("""() => [...document.querySelectorAll('#apercuMini .mini-zone[data-z]:not([data-z=ecran])')].map(z => {
-            const r = [...z.querySelectorAll('.pastille')].map(p => p.getBoundingClientRect()), b = z.getBoundingClientRect();
-            return {z: z.dataset.z, hauts: new Set(r.map(x => Math.round(x.top))).size, dedans: r.every(x => x.left >= b.left - 1 && x.right <= b.right + 1), largeurs: r.map(x => Math.round(x.width))}; })""")
-        check(all(x["hauts"] == 1 and x["dedans"] for x in g) and not page.evaluate("() => document.documentElement.scrollWidth > innerWidth"),
-              "[aperçu %d px] chaque zone tient ses quatre pastilles sur une rangée, rien ne déborde (%s)" % (largeur, [(x["z"], x["hauts"], x["largeurs"]) for x in g][:2]))
-        # Elle suit l'état : tout allumé d'abord (jour J, automatique).
-        lit = """() => [...document.querySelectorAll('#apercuMini .mini-zone[data-z]:not([data-z=ecran]) .pastille')].map(p => p.dataset.z + ':' + p.dataset.f + ':' + (p.classList.contains('on') ? 'on' : 'off'))"""
-        etat = page.evaluate(lit)
-        check(len(etat) == 16 and all(x.endswith(":on") for x in etat), "[aperçu %d px] le jour J, tout est coloré dans les 16 pastilles" % largeur)
-        page.evaluate("() => { basculeZone('texte', 'fil', false); basculeCouleurFamille('badge', false); }"); page.wait_for_timeout(300)
-        etat = page.evaluate(lit)
-        coupes = sorted(x for x in etat if x.endswith(":off"))
-        attendu = sorted(["fil:texte:off"] + ["%s:badge:off" % z for z in ("tete", "fil", "barres", "fenetres")])
-        check(coupes == attendu, "[aperçu %d px] une zone et une famille coupées : exactement ces pastilles s'éteignent (%s)" % (largeur, coupes))
-        aria = page.evaluate("() => document.querySelector('#apercuMini .mini-zone[data-z=fil]').getAttribute('aria-label')")
-        check("textes coupés" in aria and "fonds colorés" in aria, "[aperçu %d px] le bloc le dit en clair à un lecteur d'écran (« %s »)" % (largeur, aria))
-        page.evaluate("() => basculeEffet('coulCadre', false)"); page.wait_for_timeout(200)
-        tags = page.evaluate("() => [...document.querySelectorAll('#apercuMini [data-e]')].map(p => p.dataset.e + ':' + (p.classList.contains('on') ? 'on' : 'off'))")
-        check("coulCadre:off" in tags and "coulBarreEtat:on" in tags, "[aperçu %d px] les trois effets de l'écran suivent leurs cases (%s)" % (largeur, tags))
-        # Les pastilles pleines TOURNENT avec le cycle ; une pastille coupée ne bouge pas.
-        res = []
-        for tt in (0, 2000):
-            page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(120)
-            res.append(page.evaluate("""() => { const c = s => getComputedStyle(document.querySelector('#apercuMini ' + s));
-                const off = c('.pastille.off[data-f=texte]');
-                return [c('.pastille.on[data-f=fond]').backgroundColor, [off.borderTopStyle, off.opacity, off.textDecorationLine]]; }"""))
-        check(res[0][0] != res[1][0] and res[0][1] == res[1][1] == ["dashed", "0.5", "line-through"],
-              "[aperçu %d px] une pastille pleine suit le cycle ; une coupée est en pointillé, éteinte et barrée (%s)" % (largeur, res))
-        check(not erreurs, "[aperçu %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
-        # Rouvrir : la vue choisie est celle de l'ouverture.
-        page.reload(wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
-        page.evaluate("() => openSettings()"); page.wait_for_timeout(400)
-        check(page.evaluate("() => document.getElementById('apercuCouleurs').getAttribute('data-vue')") == "mini",
-              "[aperçu %d px] rouverte, l'app reprend la vue minimaliste" % largeur)
-        page.click(".vue-apercu[data-v=detaillee]"); page.wait_for_timeout(400)
-        check(page.evaluate("() => document.getElementById('apercuCouleurs').getAttribute('data-vue')") == "detaillee"
-              and page.evaluate("() => document.querySelectorAll('#apercuCouleurs .maq-ecran .card').length") == 2,
-              "[aperçu %d px] retour à la vue détaillée : la maquette est reconstruite (2 cartes)" % largeur)
         ctx.close()
 
 
@@ -8992,7 +8963,6 @@ def main():
             test_frise_des_jalons(nav, url)
             test_aucun_texte_oublie_du_cycle(nav, url)
             test_categories_de_couleur(nav, url)
-            test_apercu_minimaliste(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:
