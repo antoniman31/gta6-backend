@@ -8464,42 +8464,47 @@ def test_frise_des_jalons(nav, url):
 
 
 def test_aucun_texte_oublie_du_cycle(nav, url):
-    """Aucun texte coloré ou gris ne reste figé quand le cycle tourne (Antoni, 10/11/2026 : « on en a oublié »)."""
-    print("\n[oubli] chaque texte non blanc change de couleur avec le cycle, dans toutes les vues, deux thèmes")
+    """Tout texte, sauf les titres d'articles, change de couleur avec le cycle (Antoni, 10/11/2026 : « on en a oublié »)."""
+    print("\n[oubli] chaque texte (sauf les titres d'articles) change de couleur avec le cycle : huit vues, deux thèmes, champs et icônes compris")
     INJECTE = """() => { lastItems = Array.from({length: 8}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
           description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0, lang: i % 2 ? 'en' : 'fr'}));
         lastNewLinks = new Set(['https://ex.test/1']); historyPartial = false; rattrapageLance = true; visibleCount = 8; readSet = new Set(['https://ex.test/2']);
         misDeCote = new Set(); applyFilters(); }"""
     FIGE_TOUT = """(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }"""
-    # Les textes VISIBLES à l'écran, avec leur couleur réelle (toute syntaxe CSS lue par un canvas).
+    # Les textes VISIBLES à l'écran, avec leur couleur réelle (toute syntaxe CSS lue par un canvas) : le texte, le texte d'un champ vide
+    # (pseudo-élément ::placeholder, que le navigateur peint d'un gris à lui), les boutons qui ne portent qu'une icône, la loupe.
+    # Les titres d'articles (.card-title, liste des statistiques, aperçu) sont mis à part : ils RESTENT blancs, c'est voulu.
     SCAN = """() => {
-      const cv = document.createElement('canvas'); cv.width = cv.height = 1; const cx = cv.getContext('2d', {willReadFrequently: true});
-      const rgb = c => { cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillStyle = c; cx.fillRect(0, 0, 1, 1); const d = cx.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2]]; };
-      const out = {};
-      for(const e of document.querySelectorAll('body *')){
-        const r = e.getBoundingClientRect();
-        if(!r.width || !r.height || r.bottom < 0 || r.top > innerHeight) continue;
-        const cs = getComputedStyle(e);
-        if(cs.visibility === 'hidden' || cs.display === 'none' || parseFloat(cs.opacity) === 0) continue;
-        let txt = ''; for(const n of e.childNodes) if(n.nodeType === 3) txt += n.textContent.trim();
-        if(!txt) continue;
-        const cls = (typeof e.className === 'string' ? e.className : '').trim().split(/\\s+/).join('.');
-        out[e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (cls ? '.' + cls : '') + '|' + txt.slice(0, 24)] = rgb(cs.color);
-      }
-      return out; }"""
+  const cv = document.createElement('canvas'); cv.width = cv.height = 1; const cx = cv.getContext('2d', {willReadFrequently:true});
+  const rgb = c => { cx.clearRect(0,0,1,1); cx.fillStyle = '#000'; cx.fillStyle = c; cx.fillRect(0,0,1,1); const d = cx.getImageData(0,0,1,1).data; return [d[0],d[1],d[2]]; };
+  const base = rgb(getComputedStyle(document.documentElement).getPropertyValue('--text-base').trim());
+  const out = {};
+  for(const e of document.querySelectorAll('body *')){
+    const r = e.getBoundingClientRect();
+    if(!r.width || !r.height || r.bottom < 0 || r.top > innerHeight) continue;
+    const cs = getComputedStyle(e);
+    if(cs.visibility === 'hidden' || cs.display === 'none' || parseFloat(cs.opacity) === 0) continue;
+    const cls = (typeof e.className === 'string' ? e.className : '').trim().split(/\\s+/).join('.');
+    const cle = e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (cls ? '.' + cls : '');
+    const titre = !!e.closest('.card-title, .stats-liste, #previewTitle');
+    let txt = ''; for(const n of e.childNodes) if(n.nodeType === 3) txt += n.textContent.trim();
+    if(txt){ out[cle + '|' + txt.slice(0, 24)] = {c: rgb(cs.color), titre}; continue; }
+    if((e.tagName === 'INPUT' || e.tagName === 'TEXTAREA') && e.placeholder && !e.value)
+      out[cle + '::placeholder|' + e.placeholder.slice(0, 20)] = {c: rgb(getComputedStyle(e, '::placeholder').color), titre};
+    else if(e.querySelector(':scope > svg') && e.tagName === 'BUTTON')
+      out[cle + '|icône'] = {c: rgb(cs.color), titre};
+    else if(e.tagName === 'svg' && e.classList.contains('search-loupe'))
+      out[cle + '|loupe'] = {c: rgb(cs.fill), titre};
+  }
+  return {out, base}; }"""
     VUES = [("fil", "() => null"), ("fil défilé", "() => window.scrollTo(0, 600)"), ("compteur", "() => ouvreCompteur()"),
             ("aperçu", "() => openPreview(document.querySelector('#feed .card').id.replace('card-', ''))"),
             ("filtres", "() => openFiltersSheet()"), ("réglages", "() => openSettings()"),
+            ("réglages bas", "() => { openSettings(); document.querySelector('.page-reglages').scrollTo(0, 1500); window.scrollTo(0, 1500); }"),
             ("stats fil", "() => { setTab('stats'); ongletStatsChoisi('fil'); }"),
             ("stats sources", "() => { setTab('stats'); ongletStatsChoisi('sources'); }")]
-    def fige(c):
-        mx, mn = max(c), min(c); lum = sum(c) / 3 / 255; chroma = (mx - mn) / 255
-        rouge = chroma > 0.12 and c[1] < 0.6 * c[0] and c[2] < 0.6 * c[0]      # les erreurs restent rouges, sur son conseil
-        if rouge: return False
-        if lum < 0.2 or lum >= 0.88: return chroma > 0.12 and lum >= 0.2         # texte sombre sur aplat coloré, ou blanc de base : exemptés
-        return True                                                           # coloré ou gris moyen : doit tourner
     for theme in ("dark", "light"):
-        oublis = []
+        oublis = []; vus_total = 0; champs = 0
         for nom, js in VUES:
             ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
             page.evaluate(INJECTE)
@@ -8510,15 +8515,46 @@ def test_aucun_texte_oublie_du_cycle(nav, url):
             vus = []
             for tt in (0, 2000):
                 page.evaluate(FIGE_TOUT, tt)
-                page.wait_for_timeout(120)
+                page.wait_for_timeout(150)
                 vus.append(page.evaluate(SCAN))
-            for k, c0 in vus[0].items():
-                c2 = vus[1].get(k)
-                if c2 is not None and c0 == c2 and fige(c0):
-                    oublis.append("%s : %s %s" % (nom, k, tuple(c0)))
+            base = vus[0]["base"]
+            if nom == "fil":
+                tits = page.evaluate("() => Array.from(document.querySelectorAll('.card-title a')).map(a => getComputedStyle(a).color)")
+                attendu = "rgb(%d, %d, %d)" % tuple(base)
+                check(len(tits) >= 3 and all(c == attendu for c in tits),
+                      "[oubli %s] les titres d'articles RESTENT blancs (%d titres, %s)" % (theme, len(tits), tits[:1]))
+            def fige(v0, v2):
+                c0 = v0["c"]
+                if c0 != v2["c"]: return False
+                mx, mn = max(c0), min(c0); lum = sum(c0) / 3 / 255; chroma = (mx - mn) / 255
+                rouge = chroma > 0.12 and c0[1] < 0.6 * c0[0] and c0[2] < 0.6 * c0[0]    # les erreurs restent rouges, sur son conseil
+                if rouge: return False
+                return c0 == base or chroma > 0.12 or (0.2 <= lum < 0.88)             # le blanc d'origine, un coloré, un gris moyen
+            suspects = []
+            for k, v0 in vus[0]["out"].items():
+                v2 = vus[1]["out"].get(k)
+                vus_total += 1
+                if "placeholder" in k or "icône" in k or "loupe" in k: champs += 1
+                if v2 is None or v0["titre"]: continue
+                if fige(v0, v2): suspects.append(k)
+            if suspects:
+                # SECONDE PASSE (la CI a rouge ce contrôle le 10/11/2026 : l'animation d'un bloc fraîchement affiché, ici les onglets des
+                # statistiques en thème clair, n'avait pas encore démarré quand on a figé le cycle ; le texte paraissait figé). Un vrai oubli
+                # est encore figé une seconde plus tard ; une animation qui n'avait pas démarré, non.
+                page.wait_for_timeout(1000)
+                vus2 = []
+                for tt in (0, 2000):
+                    page.evaluate(FIGE_TOUT, tt)
+                    page.wait_for_timeout(150)
+                    vus2.append(page.evaluate(SCAN))
+                for k in suspects:
+                    a2, b2 = vus2[0]["out"].get(k), vus2[1]["out"].get(k)
+                    if a2 is not None and b2 is not None and fige(a2, b2):
+                        oublis.append("%s : %s %s" % (nom, k, tuple(a2["c"])))
             check(not erreurs, "[oubli %s %s] aucune erreur JavaScript (%s)" % (theme, nom, erreurs[:1]))
             ctx.close()
-        check(not oublis, "[oubli %s] aucun texte coloré ou gris ne reste figé pendant le cycle (%d : %s)" % (theme, len(oublis), oublis[:4]))
+        check(vus_total > 150 and champs >= 8, "[oubli %s] le balayage voit assez de choses : %d éléments, dont %d champs, icônes et loupes" % (theme, vus_total, champs))
+        check(not oublis, "[oubli %s] aucun texte (hors titres d'articles) ne reste figé pendant le cycle (%d : %s)" % (theme, len(oublis), oublis[:4]))
 
 
 def test_tout_dans_le_cycle(nav, url):

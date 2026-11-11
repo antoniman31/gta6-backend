@@ -54,6 +54,7 @@
     --bg-elevated: #161c22;
     --line: #1e2730;
     --text: #e4ece8;
+    --text-base: #e4ece8;   /* le blanc d'origine, que le cycle remplace par l'accent SAUF pour les titres d'articles (voir « TOUT DANS LE CYCLE ») */
     /* 5,86:1 sur --bg. Était #6b7d78, soit 4,48 — sous les 4,5 de WCAG AA
        d'un cheveu, et c'est la couleur de la ligne d'état, des libellés de
        jour et de la moitié des mentions secondaires. */
@@ -101,6 +102,7 @@
     --bg-elevated: #eef3f8;
     --line: #d7e1ea;
     --text: #10222f;
+    --text-base: #10222f;
     /* Mesuré contre les TROIS fonds où il sert, pas seulement --bg : la page
        (5,14), le surélevé des pastilles d'onglet (4,95) et la carte blanche
        (5,53). Était #5c7286 — conforme sur la page à 4,64 mais à 4,47 sur le
@@ -563,6 +565,9 @@
      DANS le champ, à gauche, sans prendre de place : le retrait de 38 px laisse le texte la dépasser. */
   .search-loupe{position:absolute; left:13px; top:50%; width:18px; height:18px; margin-top:-9px;
     fill:var(--text-dim); pointer-events:none;}
+  /* LE TEXTE DU CHAMP VIDE (Antoni, 10/11/2026 : « il manque le champ de recherche ») : le navigateur le peint d'un gris à lui, hors
+     de tout jeton. Il prend le gris teinté du cycle, comme les autres textes gris. */
+  input::placeholder, textarea::placeholder{color:var(--text-dim); opacity:1;}
   .search-row input:focus{outline:none; border-color:var(--accent);}
   .search-clear-btn{
     position:absolute; right:6px; top:50%; transform:translateY(-50%);
@@ -993,7 +998,7 @@
      Ici il peut : le titre est seul sur ses lignes, il n'est pas au milieu
      d'une phrase. L'exception ne s'applique donc pas vraiment. */
   .card-title a{
-    color:var(--text); text-decoration:none;
+    color:var(--text-base); text-decoration:none;
     display:block; min-height:44px;
   }
   .card-title a:hover{color:var(--accent);}
@@ -1466,7 +1471,7 @@
   .stats-liste li{display:flex; justify-content:space-between; gap:12px;
     padding:6px 0; border-top:1px solid var(--line);}
   .stats-liste li:first-child{border-top:0;}
-  .stats-liste a{color:var(--text); text-decoration:none;}
+  .stats-liste a{color:var(--text-base); text-decoration:none;}
   .stats-liste .stats-n{color:var(--text-dim); flex:0 0 auto; font-variant-numeric:tabular-nums;}
 
   /* Histogramme : une seule série, donc pas de légende — le titre la nomme.
@@ -1672,6 +1677,10 @@
   html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
       #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .feed-count, .card.dans-ecran){
     --text-dim:color-mix(in srgb, var(--accent) 55%, var(--text-dim-base));
+    --text:var(--accent);
+    /* LA COULEUR HÉRITÉE : « color » se transmet CALCULÉE : le body l'a figée au blanc d'origine, et un bloc qui ne fait que
+       changer --text ne repeint donc pas les textes qui n'ont pas leur propre règle (étiquettes, titres de pages, cellules). */
+    color:var(--text);
     --ok:var(--accent); --warn:var(--accent);
     --hot-texte:var(--hot);
     --langue-fr:var(--accent); --langue-en:var(--accent);
@@ -3231,7 +3240,7 @@
       <button onclick="closePreview()">Fermer</button>
     </div>
     <div id="previewImage"></div>
-    <h3 id="previewTitle" style="font-size:16px; font-weight:700; line-height:1.4; margin-bottom:10px;"></h3>
+    <h3 id="previewTitle" style="font-size:16px; font-weight:700; line-height:1.4; margin-bottom:10px; color:var(--text-base);"></h3>
     <p id="previewBody" style="font-size:13px; line-height:1.6; color:var(--text-dim); margin-bottom:16px;"></p>
     <div class="preview-actions">
       <a id="previewLink" href="#" target="_blank" rel="noopener">
