@@ -223,7 +223,7 @@
     letter-spacing:0.03em; text-transform:uppercase; width:fit-content;
   }
   .mode-indicator.backend{background:color-mix(in srgb, var(--ok) 15%, transparent); color:var(--ok); border:1px solid var(--ok);}
-  .mode-indicator.direct{background:color-mix(in srgb, var(--accent) 12%, transparent); color:var(--accent); border:1px solid var(--accent);}
+  .mode-indicator.direct{background:color-mix(in srgb, var(--c-fond) 12%, transparent); color:var(--c-texte); border:1px solid var(--c-bord);}
   .mode-indicator .dot{width:5px; height:5px; border-radius:50%; background:currentColor;}
   /* LE COMPTEUR EST UN BOUTON depuis qu'il ouvre son panneau de détail,
      et il doit donc DÉFAIRE le style de bouton par défaut — fond, bordure,
@@ -232,7 +232,7 @@
      la hauteur apparente : c'est l'exception déjà prévue par le défaut, et
      celle qu'appliquent .icon-btn, .card-mark et .aide. */
   .countdown{
-    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-texte);
     margin-top:4px; font-weight:600; letter-spacing:0.02em;
     transition:color var(--t-moyen) var(--courbe);
     background:none; border:none; padding:0; min-height:0;
@@ -273,7 +273,7 @@
     0%, 100%{ box-shadow:0 0 0 0 rgba(255,77,77,0); }
     50%{ box-shadow:0 0 0 2px rgba(255,77,77,0.5); }
   }
-  .brand span{color:var(--accent);}
+  .brand span{color:var(--c-texte);}
   .status-line{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); margin-top:6px;}
 
   /* Écart 10px et non 6 : chaque bouton étend sa zone de clic de 5px de
@@ -308,7 +308,7 @@
     font-size:12px; font-weight:700; color:var(--bg); line-height:1;
   }
   .logs-error-badge:empty{display:none;}
-  .icon-btn:hover{border-color:var(--accent);}
+  .icon-btn:hover{border-color:var(--c-bord);}
 
   .stale-banner{
     background:color-mix(in srgb, var(--warn) 15%, var(--bg-panel)); border:1px solid var(--warn);
@@ -319,21 +319,21 @@
   /* Même gabarit que .stale-banner, mais en accent et non en avertissement :
      une nouvelle version n'est pas un problème, c'est une bonne nouvelle. */
   .update-banner{
-    background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
-    border:1px solid var(--accent); color:var(--accent);
+    background:color-mix(in srgb, var(--c-fond) 12%, var(--bg-panel));
+    border:1px solid var(--c-bord); color:var(--c-texte);
     border-radius:var(--r-md); padding:10px 12px; margin-bottom:14px;
     font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.4;
     font-weight:600;
     display:flex; align-items:center; justify-content:space-between; gap:10px;
   }
   .update-banner button{
-    flex-shrink:0; background:var(--accent); color:var(--accent-contrast); border:none;
+    flex-shrink:0; background:var(--c-fond); color:var(--accent-contrast); border:none;
     border-radius:var(--r-sm); padding:6px 12px; font-family:'JetBrains Mono',monospace;
     font-size:12px; font-weight:700; cursor:pointer; height:30px;
   }
 
   /* ---------- En-tête : rangée du haut, tuiles, ligne réduite (07/11/2026) ---------- */
-  .icon-btn-grand{width:44px; height:44px; min-height:44px; color:var(--accent); flex-shrink:0;}
+  .icon-btn-grand{width:44px; height:44px; min-height:44px; color:var(--c-texte); flex-shrink:0;}
   .icon-btn-grand .ic{width:24px; height:24px;}
   .icon-btn-grand::after{inset:0;}
   /* La rangée du haut : tout est CENTRÉ sur la même ligne (la maquette avait posé la
@@ -394,14 +394,14 @@
        à 5 px de marge, elle tient : mesuré par test_entete_sans_vide à 340, 360, 368, 390 et 412 px. */
     body:not(.a-jeton) .header-haut .mode-indicator{padding:3px 5px; letter-spacing:0;}
     body:not(.a-jeton) .header-haut .mode-indicator.backend{border:1px solid var(--ok); background:color-mix(in srgb, var(--ok) 15%, var(--bg-panel));}
-    body:not(.a-jeton) .header-haut .mode-indicator.direct{border:1px solid var(--accent); background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));}
+    body:not(.a-jeton) .header-haut .mode-indicator.direct{border:1px solid var(--c-bord); background:color-mix(in srgb, var(--c-fond) 12%, var(--bg-panel));}
     body:not(.a-jeton) .header-haut .mode-indicator .dot{width:5px; height:5px;}
   }
   @media (min-width:430px){
     .header-haut .mode-indicator .mi-mot{display:inline;}
     .header-haut .mode-indicator{padding:3px 7px;}
     .header-haut .mode-indicator.backend{border:1px solid var(--ok); background:color-mix(in srgb, var(--ok) 15%, var(--bg-panel));}
-    .header-haut .mode-indicator.direct{border:1px solid var(--accent); background:color-mix(in srgb, var(--accent) 12%, var(--bg-panel));}
+    .header-haut .mode-indicator.direct{border:1px solid var(--c-bord); background:color-mix(in srgb, var(--c-fond) 12%, var(--bg-panel));}
     .header-haut .mode-indicator .dot{width:5px; height:5px;}
   }
   .relance{
@@ -411,7 +411,7 @@
   }
   .relance::after{content:""; position:absolute; inset:-2px;}
   .relance .ic{width:24px; height:24px;}
-  .relance:hover{color:var(--accent);}
+  .relance:hover{color:var(--c-texte);}
   .relance:disabled{opacity:.5;}
   /* LA LIGNE RÉDUITE. Elle apparaît quand l'entête complète a quitté le haut (voir
      brancheBarreHaute) ; le jour « AUJOURD'HUI » et les rubriques des Réglages se
@@ -429,7 +429,7 @@
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:16px; white-space:nowrap;
     display:inline-flex; align-items:center;
   }
-  .bh-titre > span:not(.bh-point){color:var(--accent);}
+  .bh-titre > span:not(.bh-point){color:var(--c-texte);}
   .bh-point{
     display:none; width:9px; height:9px; margin-left:8px; border-radius:50%; background:var(--ok);
     box-shadow:0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent);
@@ -437,7 +437,7 @@
   body:has(#modeIndicator.backend) .bh-point{display:inline-block;}
   .bh-compteur{
     margin-left:auto; background:none; border:0; padding:0; min-height:44px;
-    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:18px; color:var(--accent);
+    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:18px; color:var(--c-texte);
     white-space:nowrap; letter-spacing:0;
   }
   .bh-compteur.soon{color:var(--compte-soon); text-shadow:var(--compte-halo-soon);}
@@ -472,7 +472,7 @@
     transition:background var(--t-court) var(--courbe), color var(--t-court) var(--courbe);
   }
   .barre-bas button .ic{width:22px; height:22px;}
-  .barre-bas button.active, .barre-bas button[aria-pressed="true"]{background:var(--accent); color:var(--accent-contrast);}
+  .barre-bas button.active, .barre-bas button[aria-pressed="true"]{background:var(--c-fond); color:var(--accent-contrast);}
   .barre-bas .logs-error-badge, .barre-bas .settings-error-badge{top:4px; right:calc(50% - 22px);}
   /* La barre flotte au-dessus du fil : le dernier article ne doit pas passer dessous. */
   body{padding-bottom:calc(88px + env(safe-area-inset-bottom, 0px));}
@@ -515,13 +515,13 @@
      dérogation accordée sur un motif inexistant. Un test lit maintenant le
      CSS et exige le mécanisme que la phrase revendique. */
   .icon-btn, .card-mark, .search-clear-btn, .aide, .bascule-soucis{min-height:0;}
-  button:hover{border-color:var(--accent);}
+  button:hover{border-color:var(--c-bord);}
   button:active{transform:translateY(1px);}
   /* --accent-contrast, pas #ffffff : le blanc en dur donnait 2,14:1 sur le
      bleu clair du thème sombre. C'est le bouton le plus utilisé de l'app, et
      le jeton existait déjà — il servait au badge, à la surbrillance de
      recherche et à la sélection, mais pas ici. */
-  button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);}
+  button.primary{background:var(--c-fond); border-color:var(--c-bord); color:var(--accent-contrast);}
   button.primary:hover{filter:brightness(1.1);}
   button:disabled{opacity:0.4; cursor:default;}
   /* min-height et non un rembourrage plus épais : le bouton « Charger 30 de
@@ -543,7 +543,7 @@
      depuis la fusion. Désaccordées, la barre déborde ou laisse un liseré. */
   .console .progress-bar{margin:0 -14px -14px; width:auto; border-radius:0;}
   .progress-fill{
-    height:100%; width:0%; background:var(--accent);
+    height:100%; width:0%; background:var(--c-fond);
     transition:width var(--t-moyen) var(--courbe-entree);
   }
 
@@ -568,13 +568,13 @@
   /* LE TEXTE DU CHAMP VIDE (Antoni, 10/11/2026 : « il manque le champ de recherche ») : le navigateur le peint d'un gris à lui, hors
      de tout jeton. Il prend le gris teinté du cycle, comme les autres textes gris. */
   input::placeholder, textarea::placeholder{color:var(--text-dim); opacity:1;}
-  .search-row input:focus{outline:none; border-color:var(--accent);}
+  .search-row input:focus{outline:none; border-color:var(--c-bord);}
   .search-clear-btn{
     position:absolute; right:6px; top:50%; transform:translateY(-50%);
     width:22px; height:22px; padding:0; display:flex; align-items:center; justify-content:center;
     background:none; border:none; color:var(--text-dim); font-size:14px; cursor:pointer; border-radius:50%;
   }
-  .search-clear-btn:active{background:var(--bg-elevated); color:var(--accent);}
+  .search-clear-btn:active{background:var(--bg-elevated); color:var(--c-texte);}
 
   .tab-row{display:flex; gap:8px; margin-bottom:12px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
   .tab-row::-webkit-scrollbar{display:none;}
@@ -601,7 +601,7 @@
   .tab:active{background:var(--bg-elevated);}
   /* L'onglet actif et le bouton principal sont le même état : celui vers
      lequel on veut être conduit. */
-  .tab.active{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
+  .tab.active{color:var(--accent-contrast); background:var(--c-fond); border-color:var(--c-bord);}
   .tab-badge{
     font-size:12px; font-weight:700; background:var(--bg-elevated); color:var(--text-dim);
     padding:1px 5px; border-radius:var(--r-full); margin-left:2px;
@@ -629,7 +629,7 @@
      texte transparent ; et z-index 5 le garde sous les panneaux (100) et
      la confirmation (200). */
   .day-label{
-    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--accent);
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--c-texte);
     text-transform:uppercase; letter-spacing:0.06em; margin-top:10px; margin-bottom:2px;
     position:sticky; top:0; z-index:5;
     background:color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter:blur(8px);
@@ -637,7 +637,7 @@
     display:flex; align-items:center; gap:10px;
   }
   /* LE TRAIT DU TITRE DE JOUR (idée 7, 11/11/2026) : il file jusqu'au bord, en dégradé d'accent. */
-  .day-label::after{content:""; flex:1; height:1px; background:linear-gradient(90deg, var(--accent), transparent);}
+  .day-label::after{content:""; flex:1; height:1px; background:linear-gradient(90deg, var(--c-fond), transparent);}
   @keyframes card-enter{
     from{opacity:0; transform:translateY(4px);}
     to{opacity:1; transform:translateY(0);}
@@ -658,11 +658,11 @@
      d'Antoni le 16/10/2026, c'est de l'accessoire sur un article déjà lu,
      et le balayage de contraste porte une exception nommée pour elles. */
   .card.read{opacity:0.70;}
-  .card.new{border-color:var(--accent);}
+  .card.new{border-color:var(--c-bord);}
   .card.new::before{
     content:'NOUVEAU'; position:absolute; top:0; right:0;
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
-    background:var(--accent); color:var(--accent-contrast); padding:3px 8px; letter-spacing:0.05em;
+    background:var(--c-fond); color:var(--accent-contrast); padding:3px 8px; letter-spacing:0.05em;
     border-bottom-left-radius:6px;
   }
   /* Colonne, et non plus rangée : c'est ce qui fait passer la vignette
@@ -711,7 +711,7 @@
     padding:0 2px; font-size:15px; cursor:pointer;
     color:var(--text-dim); flex:0 0 auto;
   }
-  .card-etoile.cote{color:var(--accent);}
+  .card-etoile.cote{color:var(--c-texte);}
 
   .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap;
                 gap:8px; margin-top:8px;}
@@ -750,12 +750,12 @@
   .card-thumb-lien{display:contents;}
   .card-favicon{width:14px; height:14px; border-radius:var(--r-xs); vertical-align:middle; margin-right:5px;}
   .card.official{
-    border-color:var(--orange); border-width:1.5px;
-    background:linear-gradient(180deg, color-mix(in srgb, var(--orange) 8%, var(--bg-panel)), var(--bg-panel));
+    border-color:var(--c-orange); border-width:1.5px;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--c-orange) 8%, var(--bg-panel)), var(--bg-panel));
   }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
-    background:var(--orange); color:#100800; border-radius:var(--r-sm);
+    background:var(--c-orange); color:#100800; border-radius:var(--r-sm);
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -837,7 +837,7 @@
   .chrono-point{position:relative; margin:0 0 14px; padding-left:4px;}
   .chrono-point::before{
     content:""; position:absolute; left:-21px; top:6px; width:8px; height:8px;
-    border-radius:var(--r-full); background:var(--accent);
+    border-radius:var(--r-full); background:var(--c-fond);
   }
   .chrono-point.lu::before{background:var(--line);}
   .chrono-point.lu .chrono-titre{color:var(--text-dim);}
@@ -976,18 +976,18 @@
   .tag-lang{background:transparent; color:var(--text-dim); border:1px solid var(--line);}
   .specialist-badge{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
-    background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:var(--r-sm);
+    background:transparent; color:var(--c-texte); border:1px solid var(--c-bord); border-radius:var(--r-sm);
     letter-spacing:0.03em; white-space:nowrap;
   }
   .card-src-row{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin-bottom:6px;}
   .card-src{
-    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent);
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-texte);
     text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap;
   }
   /* 16 px gras (idée 10, 11/11/2026) : le titre est ce qu'on lit d'une carte, il passait derrière les
      pastilles et les boutons. Le mode compact garde ses 13 px. */
   .card-title{font-size:16px; font-weight:700; line-height:1.3; margin-bottom:6px;}
-  .card-title mark{background:var(--accent); color:var(--accent-contrast); border-radius:var(--r-xs); padding:0 1px;}
+  .card-title mark{background:var(--c-fond); color:var(--accent-contrast); border-radius:var(--r-xs); padding:0 1px;}
   /* Le lien devient un BLOC et non plus du texte en ligne : sa zone de clic
      couvre alors tout le titre, et min-height la porte à 44 px quand le titre
      tient sur une ou deux lignes (mesuré : 36 px sur deux lignes, ~18 sur
@@ -1001,7 +1001,7 @@
     color:var(--text-base); text-decoration:none;
     display:block; min-height:44px;
   }
-  .card-title a:hover{color:var(--accent);}
+  .card-title a:hover{color:var(--c-texte);}
   .card-date{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim);}
   .card-extra{font-size:12px; color:var(--text-dim); margin-top:4px; font-style:italic;}
   /* Cible tactile élargie sans grossir le texte : sur un lien de 10 px, le
@@ -1011,7 +1011,7 @@
      pseudo-élément, ce qui ne déplace rien : le texte reste où il est, la
      carte garde sa hauteur, seul le doigt y gagne. */
   .card-extra a{
-    color:var(--accent); text-decoration:none; padding:3px 0;
+    color:var(--c-texte); text-decoration:none; padding:3px 0;
     display:inline-block; position:relative;
   }
   /* Les deux affirmations qui étaient écrites ici étaient fausses, et la
@@ -1079,7 +1079,7 @@
      extension » plafonne donc l'extension à 2 px (6 > 4). Avec la vignette
      à 80 px le bouton visible tombe à 40 px de large ; 40 + 4 = 44. */
   .feed.dense .card-mark::after{inset:-10px -2px;}
-  .card-mark:hover{border-color:var(--accent); color:var(--accent);}
+  .card-mark:hover{border-color:var(--c-bord); color:var(--c-texte);}
   .card-mark.done{border-color:var(--ok); color:var(--ok);}
 
   /* ---------- Mode dense ---------- */
@@ -1170,10 +1170,10 @@
   .resume-marker{
     display:flex; align-items:center; gap:8px; margin:2px 0 6px;
     font-family:'JetBrains Mono',monospace; font-size:12px;
-    color:var(--accent); letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--c-texte); letter-spacing:0.06em; text-transform:uppercase;
   }
   .resume-marker::before, .resume-marker::after{
-    content:""; flex:1; height:1px; background:var(--accent); opacity:0.35;
+    content:""; flex:1; height:1px; background:var(--c-fond); opacity:0.35;
   }
 
   /* LE REPÈRE « NOUVEAUX · DÉJÀ VUS » (idée 5, 11/11/2026) : une ligne à l'endroit où le fil passe des articles
@@ -1181,14 +1181,14 @@
   .repere-nouveaux{
     display:flex; align-items:center; gap:10px; margin:10px 0;
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
-    color:var(--accent); letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--c-texte); letter-spacing:0.1em; text-transform:uppercase;
   }
-  .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--accent));}
-  .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--accent), transparent);}
+  .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--c-fond));}
+  .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--c-fond), transparent);}
 
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
-    background:var(--accent); color:var(--accent-contrast); border:none; border-radius:var(--r-full);
+    background:var(--c-fond); color:var(--accent-contrast); border:none; border-radius:var(--r-full);
     padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:12px;
     font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;
   }
@@ -1271,7 +1271,7 @@
     gap:8px; justify-content:stretch;
   }
   .compteur-tuiles.equiv > div{
-    background:var(--bg-elevated); border:1px solid var(--line); border-left:3px solid var(--accent);
+    background:var(--bg-elevated); border:1px solid var(--line); border-left:3px solid var(--c-bord);
     border-radius:var(--r-sm); padding:10px 8px 10px 12px; text-align:left; min-width:0;
   }
   .compteur-tuiles.equiv span{
@@ -1331,7 +1331,7 @@
     border-radius:50%; border:2px solid var(--text-dim); background:var(--bg-panel);
   }
   .compteur-agenda li[data-statut="annonce"] .ag-rail::after{
-    border-color:var(--accent); background:var(--accent);
+    border-color:var(--c-bord); background:var(--c-fond);
   }
   .compteur-agenda .ag-c{padding:0 0 14px;}
   .compteur-agenda li:last-child .ag-c{padding-bottom:0;}
@@ -1359,7 +1359,7 @@
   }
   .compteur-barre > span{
     position:relative; display:block; height:100%;
-    background:var(--accent); overflow:hidden;
+    background:var(--c-fond); overflow:hidden;
   }
   /* Le chiffre est posé PAR-DESSUS, aligné à droite, pas à la fin du
      remplissage : à 0,1 % il sortirait de l'écran, et à 99,9 % il
@@ -1413,10 +1413,10 @@
   }
   .log-entry.ok{border-left:3px solid var(--ok);}
   .log-entry.fail{border-left:3px solid var(--warn);}
-  .log-entry.info{border-left:3px solid var(--accent);}
+  .log-entry.info{border-left:3px solid var(--c-bord);}
   .log-time{color:var(--text-dim); flex-shrink:0;}
   .log-msg{flex:1; word-break:break-word;}
-  .log-msg .src{color:var(--accent); font-weight:700;}
+  .log-msg .src{color:var(--c-texte); font-weight:700;}
 
   /* ---------- Panneau Paramètres ---------- */
   .overlay{
@@ -1463,7 +1463,7 @@
   }
   .stats-chiffre b{
     display:block; font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:800; line-height:1.1;
-    letter-spacing:-0.02em; color:var(--accent); font-variant-numeric:tabular-nums;
+    letter-spacing:-0.02em; color:var(--c-texte); font-variant-numeric:tabular-nums;
   }
   .stats-chiffre:nth-child(n+3) b{color:var(--warn);}
   .stats-chiffre span{display:block; margin-top:2px; font-size:12px; color:var(--text-dim);}
@@ -1495,9 +1495,9 @@
      55 %, soit 2,61:1 en clair : refusé au calcul. Le maximum et la colonne
      touchée reprennent l'accent plein. */
   .stats-col i{display:block; width:100%; max-width:24px; min-height:2px;
-    background:color-mix(in srgb, var(--accent) 70%, var(--bg-panel));
+    background:color-mix(in srgb, var(--c-fond) 70%, var(--bg-panel));
     border-radius:var(--r-xs) var(--r-xs) 0 0; position:relative;}
-  .stats-col.pic i, .stats-col.choisie i{background:var(--accent);}
+  .stats-col.pic i, .stats-col.choisie i{background:var(--c-fond);}
   /* Une seule valeur écrite dans le graphique : le maximum. Un chiffre sur
      chaque colonne ne se lit plus ; le toucher et le tableau portent les
      autres. */
@@ -1520,7 +1520,7 @@
   .stats-carte .j{font-size:12px; color:var(--text-dim);}
   /* Carrés nets : à 320 px une case fait 8 px, et le plus petit cran de
      l'échelle (4 px) en faisait un rond. */
-  .stats-case{aspect-ratio:1; border-radius:0; background:var(--accent); cursor:pointer;}
+  .stats-case{aspect-ratio:1; border-radius:0; background:var(--c-fond); cursor:pointer;}
   .stats-case.vide{background:var(--bg-elevated);}
   .stats-case.choisie{outline:2px solid var(--text); outline-offset:1px;}
   .stats-heures{display:grid; grid-template-columns:28px repeat(24, minmax(0, 1fr));
@@ -1528,7 +1528,7 @@
   .stats-heures span{white-space:nowrap;}
   .stats-gradient{display:flex; align-items:center; gap:4px; font-size:12px;
     color:var(--text-dim); margin-top:8px;}
-  .stats-gradient i{width:12px; height:12px; border-radius:var(--r-xs); background:var(--accent);}
+  .stats-gradient i{width:12px; height:12px; border-radius:var(--r-xs); background:var(--c-fond);}
   /* Classements : le nom, un trait proportionnel dessous, la valeur à
      droite — la barre compare, le chiffre précise. */
   .stats-barres{list-style:none; margin:0; padding:0;}
@@ -1536,7 +1536,7 @@
     align-items:center; padding:4px 0;}
   .stats-barres .nom{font-size:12px; color:var(--text); min-width:0;}
   .stats-barres .nom span{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .stats-barres .trait{display:block; height:6px; margin-top:4px; background:var(--accent);
+  .stats-barres .trait{display:block; height:6px; margin-top:4px; background:var(--c-fond);
     border-radius:0 var(--r-xs) var(--r-xs) 0; min-width:2px;}
   .stats-barres .n{font-size:12px; color:var(--text-dim); text-align:right;
     font-variant-numeric:tabular-nums;}
@@ -1627,6 +1627,16 @@
      sans lui (navigateur ancien) l'accent saute de couleur au lieu de glisser. */
   @property --accent{syntax:"<color>"; inherits:true; initial-value:#58b9ff;}
   html{--cycle-duree:4s; --cycle-pas:steps(12); --cycle-a:#19e6ff; --cycle-b:#b388ff; --cycle-c:#ff5cae;}
+  /* LES JETONS TYPÉS (Antoni, 10/11/2026 : « sépare le plus possible par catégorie, ce qu'il contrôle, pour choisir quoi
+     mettre en couleur ou pas »). Chaque usage de l'accent passe par le jeton de SA catégorie : --c-texte (textes, ombres de
+     texte), --c-fond (fonds, boutons, onglets, cases, curseur), --c-bord (bordures, traits). Au niveau de la page ils valent
+     l'accent ; les blocs du cycle les recalculent avec leur accent animé ; une catégorie coupée dans une zone les ramène à
+     --accent-stat, l'accent FIXE de la page (rose le jour J, bleu avant), qui ne tourne pas. Les couleurs de statut gardent
+     leur valeur d'origine dans des jetons « -base », figés ici, au niveau de la page, avant que le cycle ne les remplace. */
+  html{--c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent); --accent-stat:var(--accent);
+    --c-orange:var(--orange);
+    --ok-base:var(--ok); --warn-base:var(--warn); --langue-fr-base:var(--langue-fr); --langue-en-base:var(--langue-en);
+    --hot-texte-base:var(--hot-texte); --cat-bug-base:var(--cat-bug); --cat-maj-base:var(--cat-maj); --cat-trophee-base:var(--cat-trophee); --cat-ventes-base:var(--cat-ventes); --cat-soluce-base:var(--cat-soluce); --cat-perf-base:var(--cat-perf); --cat-online-base:var(--cat-online); --cat-test-base:var(--cat-test); --cat-gameplay-base:var(--cat-gameplay); --cat-mod-base:var(--cat-mod); --cat-lore-base:var(--cat-lore); --cat-autre-base:var(--cat-autre); --cat-astuce-base:var(--cat-astuce); --cat-speedrun-base:var(--cat-speedrun);}
   html[data-theme="light"]{--cycle-a:#00708a; --cycle-b:#7c3aed; --cycle-c:#b8146f;}
   /* L'ORANGE A SON PROPRE DÉGRADÉ (Antoni, 11/11/2026 : « pour l'orange, un dégradé blanc, jaune, orange ») :
      la bordure et le badge des cartes officielles, l'orange d'« Actu majeure ». En clair, le « blanc » serait
@@ -1675,14 +1685,16 @@
      ROUGES, sur son conseil : une panne doit se reconnaître d'un coup d'œil. Les jetons sont posés sur les
      MÊMES blocs que l'accent, et sur les cartes à l'écran : ils se recalculent à chaque pas avec l'accent local. */
   html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
-      #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .feed-count, .card.dans-ecran){
+      #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .feed-count, .card.dans-ecran,
+      .day-label.dans-ecran, .repere-nouveaux.dans-ecran){
     --text-dim:color-mix(in srgb, var(--accent) 55%, var(--text-dim-base));
     --text:var(--accent);
     /* LA COULEUR HÉRITÉE : « color » se transmet CALCULÉE : le body l'a figée au blanc d'origine, et un bloc qui ne fait que
        changer --text ne repeint donc pas les textes qui n'ont pas leur propre règle (étiquettes, titres de pages, cellules). */
     color:var(--text);
     --ok:var(--accent); --warn:var(--accent);
-    --hot-texte:var(--hot);
+    --hot-texte:var(--hot); --c-orange:var(--orange);
+    --c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent);
     --langue-fr:var(--accent); --langue-en:var(--accent);
   }
   html.cycle-couleur .card.dans-ecran{
@@ -1751,8 +1763,8 @@
     background:linear-gradient(90deg, var(--cycle-a), var(--cycle-b), var(--cycle-c));
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
   }
-  html.controles-j input[type="checkbox"], html.controles-j input[type="radio"]{accent-color:var(--accent);}
-  html.controles-j input, html.controles-j textarea{caret-color:var(--accent);}
+  html.controles-j input[type="checkbox"], html.controles-j input[type="radio"]{accent-color:var(--c-fond);}
+  html.controles-j input, html.controles-j textarea{caret-color:var(--c-fond);}
   .halo-j.vif{
     display:block; position:fixed; inset:0; z-index:2147483000; pointer-events:none;
     border-radius:0 0 var(--rayon-cadre) var(--rayon-cadre);
@@ -1798,12 +1810,14 @@
      était calculée avant l'animation et les lignes en héritaient une valeur figée. Il ne se pose jamais quand le téléphone
      réduit les animations (lanceHalo refuse alors de jouer). */
   .fete-final{
-    position:fixed; inset:0; z-index:2147483002; background:#000; color:var(--accent); cursor:pointer;
+    position:fixed; inset:0; z-index:2147483002; background:#000; color:var(--c-texte); cursor:pointer;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:24px;
     text-align:center; font-weight:900; text-transform:uppercase; line-height:1.02; letter-spacing:.01em;
     animation:fete-final-in 1.2s ease-out 1 both;
   }
   .fete-final .ff-texte{
+    /* --accent, PAS --c-texte : l'écran de fin est hors de tout bloc du cycle, son animation est la sienne et ne repeint que --accent
+       (le jeton typé, hérité de la page, serait figé : trouvé par le test de minuit après le refactor des jetons). */
     display:block; max-width:100%; color:var(--accent); animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;
     text-shadow:0 0 28px color-mix(in srgb, var(--accent) 65%, transparent);
   }
@@ -1821,12 +1835,12 @@
   .frise-jalons{margin:10px 2px 2px; font-size:11px; line-height:1.2;}
   .frise-jalons[hidden]{display:none;}
   .frise-jalons .fj-barre{position:relative; height:6px; border-radius:var(--r-full); background:color-mix(in srgb, var(--text-dim) 28%, transparent);}
-  .frise-jalons .fj-plein{position:absolute; left:0; top:0; bottom:0; border-radius:var(--r-full); background:var(--accent);}
+  .frise-jalons .fj-plein{position:absolute; left:0; top:0; bottom:0; border-radius:var(--r-full); background:var(--c-fond);}
   .frise-jalons .fj-repere{position:absolute; top:-3px; width:2px; height:12px; margin-left:-1px; border-radius:var(--r-full); background:var(--text-dim);}
-  .frise-jalons .fj-repere.passe{background:var(--accent);}
+  .frise-jalons .fj-repere.passe{background:var(--c-fond);}
   .frise-jalons .fj-reperes{position:relative; height:14px; margin-top:4px;}
   .frise-jalons .fj-nom{position:absolute; top:0; white-space:nowrap; color:var(--text-dim);}
-  .frise-jalons .fj-nom.passe{color:var(--accent); font-weight:700;}
+  .frise-jalons .fj-nom.passe{color:var(--c-texte); font-weight:700;}
   .frise-jalons .fj-nom.prochain{color:var(--text); font-weight:700;}
   .frise-jalons .fj-nom.dernier{transform:translateX(-100%);}
   .frise-jalons .fj-texte{margin-top:4px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -1840,53 +1854,108 @@
      texte reste gris. */
   @property --bord-ang{syntax:"<angle>"; inherits:true; initial-value:0deg;}
   @keyframes cycle-bord{from{--bord-ang:0deg;} to{--bord-ang:360deg;}}
-  html.bordures-j .card:not(.official), html.bordures-j .cd-t{
+  html.bordures-fil .card:not(.official), html.bordures-tete .cd-t{
     border:var(--bord-ep) solid transparent;
     background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
       conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
   }
-  html.bordures-j .cd-t.zero{border-style:solid;}
-  html.cycle-couleur.bordures-j .cd-t{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
+  html.bordures-tete .cd-t.zero{border-style:solid;}
+  html.cycle-couleur.bordures-tete .cd-t{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
   html.cycle-couleur .card.dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
   /* LES TITRES DE JOUR ET LE REPÈRE « NOUVEAUX » (Antoni, 10/11/2026 : « il y a encore des textes qui ne changent pas
      de couleur, on en a oublié ») : ils sont dans la liste, qui ne bouge pas, donc leur accent restait celui de la
      page. Même règle que les cartes : animés seulement à l'écran (classe dans-ecran, posée par observeCartes). */
   html.cycle-couleur :is(.day-label, .repere-nouveaux).dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
   /* LE SOUS-TITRE « GTA VI EST SORTI » : avec le cycle, un aplat à l'accent (le dégradé figé ne tournait pas). */
-  html.cadre-j.cycle-couleur .compteur-sous{background:none; -webkit-text-fill-color:currentColor; color:var(--accent);}
-  html.cycle-couleur.bordures-j .card.dans-ecran:not(.official){
+  html.cadre-j.cycle-couleur .compteur-sous{background:none; -webkit-text-fill-color:currentColor; color:var(--c-texte);}
+  html.cycle-couleur.bordures-fil .card.dans-ecran:not(.official){
     animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite, cycle-bord var(--cycle-duree) steps(24) infinite;
   }
+  /* LES CATÉGORIES COUPÉES, ZONE PAR ZONE (Antoni, 10/11/2026 : « sépare le plus possible par catégorie, ce qu'il contrôle, pour
+     choisir quoi mettre en couleur ou pas »). Cinq familles d'éléments (textes et icônes, fonds et commandes, bordures, badges et
+     statuts) × quatre zones de l'écran (en-tête et compteur, fil d'articles, barres du haut et du bas, réglages et fenêtres).
+     Une famille coupée dans une zone y retrouve son aspect d'origine : textes blancs et gris, fonds et bordures à l'accent FIXE,
+     statuts verts, jaunes et oranges. Les classes « sans-FAMILLE-ZONE » sont posées sur <html> par appliqueCouleursZones. Chaque
+     règle porte un identifiant fantôme dans son :is() (« #zone-… ») : la spécificité d'un :is() est celle de son argument le PLUS
+     spécifique, présent ou non ; le bloc du cycle contient #statsContenu et #logsPanel, donc la règle d'une zone sans identifiant (en-tête,
+     fil, barres) perdait contre lui (trouvé par le test des zones : seules les fenêtres se coupaient). Elle gagne ainsi sans !important. */
+  html.cycle-couleur.sans-texte-tete :is(header.console, #zone-tete){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-texte-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-texte-barres :is(.barre-haut, .barre-bas, #zone-barres){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-texte-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-fond-tete :is(header.console, #zone-tete){ --c-fond:var(--accent-stat); }
+  html.cycle-couleur.sans-fond-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --c-fond:var(--accent-stat); }
+  html.cycle-couleur.sans-fond-barres :is(.barre-haut, .barre-bas, #zone-barres){ --c-fond:var(--accent-stat); }
+  html.cycle-couleur.sans-fond-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --c-fond:var(--accent-stat); }
+  html.cycle-couleur.sans-bord-tete :is(header.console, #zone-tete){ --c-bord:var(--accent-stat); }
+  html.cycle-couleur.sans-bord-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --c-bord:var(--accent-stat); }
+  html.cycle-couleur.sans-bord-barres :is(.barre-haut, .barre-bas, #zone-barres){ --c-bord:var(--accent-stat); }
+  html.cycle-couleur.sans-bord-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --c-bord:var(--accent-stat); }
+  html.cycle-couleur.sans-badge-tete :is(header.console, #zone-tete){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-barres :is(.barre-haut, .barre-bas, #zone-barres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
   /* LES RÉGLAGES DES EFFETS, REBÂTIS (Antoni, 11/11/2026 : « les paramètres couleurs, c'est le bordel »,
      rangement C avec préréglages et aperçu vivant). Un aperçu qui réagit, quatre préréglages, le détail replié
      sous « Personnaliser », le grand moment de minuit à part, et le curseur des coins dans un groupe « Écran ». */
+  /* LA MAQUETTE FIDÈLE (10/11/2026) : l'écran de l'app à l'échelle, fait des vrais éléments de la page (copiés par
+     construitMaquette) : tout ce que les cases changent, elle le change, sans règle à part. 390 px de large, réduits par
+     transform à la largeur disponible ; la hauteur du cadre est posée par construitMaquette. Les éléments fixes de la
+     page (barre du bas) sont rendus dans le flux, l'en-tête reste visible même sur les pages où la vraie est masquée. */
   .apercu-couleurs{
-    display:flex; flex-direction:column; gap:8px; padding:12px; margin:6px 0 12px;
-    border:2px solid var(--line); border-radius:var(--r-md); background:var(--bg-panel);
+    position:relative; margin:6px 0 12px; padding:0; overflow:hidden;
+    border:2px solid var(--line); border-radius:0 0 var(--r-md) var(--r-md); background:var(--bg);
   }
   .apercu-couleurs.cadre{
-    border-color:transparent;
-    background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
-      conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
-  }
-  .apercu-couleurs .ap-tuiles{display:flex; gap:6px;}
-  .apercu-couleurs .ap-tuiles span{
-    flex:1; text-align:center; padding:6px 0; border:2px solid var(--line); border-radius:var(--r-sm);
-    background:var(--bg); font:800 18px 'JetBrains Mono',monospace; color:var(--accent);
-  }
-  .apercu-couleurs .ap-carte{height:34px; border:2px solid var(--line); border-radius:var(--r-md); background:var(--bg);}
-  .apercu-couleurs.bord .ap-tuiles span, .apercu-couleurs.bord .ap-carte{
     border-color:transparent;
     background:linear-gradient(var(--bg), var(--bg)) padding-box,
       conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
   }
+  .apercu-couleurs .maq-cadre{position:relative; overflow:hidden; min-height:40px;}
+  .apercu-couleurs .maq-ecran{
+    position:absolute; left:0; top:0; width:390px; transform-origin:0 0; pointer-events:none; user-select:none;
+    padding-bottom:6px;
+  }
+  .maq-ecran *{pointer-events:none;}
+  /* LA VUE MINIMALISTE (Antoni, 10/11/2026 : « un aperçu détaillé mais minimaliste aussi ») : un schéma épuré de l'écran, en quatre
+     blocs (les quatre zones), chacun avec ses quatre familles en pastilles. Pleine = colorée (elle prend l'accent, donc elle TOURNE avec
+     le cycle), grisée et barrée = coupée. Fait de l'état des réglages, pas d'éléments copiés : elle ne dépend d'aucune largeur. */
+  .vues-apercu{display:flex; gap:8px; margin:4px 0 0;}
+  .vue-apercu{flex:1; min-height:44px; font:600 13px 'JetBrains Mono',monospace;}
+  .vue-apercu[aria-pressed="true"]{background:var(--c-fond); color:var(--accent-contrast); border-color:transparent;}
+  .apercu-couleurs[data-vue="mini"] .maq-cadre{display:none;}
+  .apercu-couleurs[data-vue="detaillee"] .maq-mini{display:none;}
+  .maq-mini{padding:10px; display:grid; gap:8px;}
+  .mini-zone{border:1px solid var(--line); border-radius:var(--r-md); padding:8px 10px; display:grid; gap:6px;}
+  .mini-zone.haute{min-height:64px;} .mini-zone.grande{min-height:96px;}
+  .mini-zone h4{margin:0; font:700 11px 'JetBrains Mono',monospace; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim);}
+  .pastilles{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:6px;}
+  .pastille{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; min-width:0; height:40px; padding:0 2px;
+    border:2px solid var(--line); border-radius:var(--r-sm); font:800 13px 'JetBrains Mono',monospace; color:var(--text-dim);
+  }
+  .pastille small{font:600 9px 'JetBrains Mono',monospace; letter-spacing:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .mini-ecran-tags .pastille{flex-direction:row; height:28px; padding:0 10px; font-size:11px;}
+  .pastille.off{opacity:.5; border-style:dashed; text-decoration:line-through;}
+  .pastille.on[data-f="texte"]{color:var(--c-texte); border-color:var(--c-texte);}
+  .pastille.on[data-f="fond"]{background:var(--c-fond); border-color:var(--c-fond); color:var(--accent-contrast);}
+  .pastille.on[data-f="bord"]{border-color:var(--c-bord); color:var(--text);}
+  .pastille.on[data-f="badge"]{background:var(--orange); border-color:var(--orange); color:#100800;}
+  .mini-ecran-tags{display:flex; flex-wrap:wrap; gap:6px;}
+  .maq-ecran .maq-barre-etat{height:14px; background:#000;}
+  .maq-ecran .maq-barre-etat.teinte{background:color-mix(in srgb, var(--accent) 16%, #000);}
+  .maq-ecran header.console{display:block !important; position:static !important; margin:8px 12px 10px;}
+  .maq-ecran .maq-corps{padding:0 16px;}
+  .maq-ecran .maq-corps .search-row, .maq-ecran .maq-corps .tab-row{margin-bottom:10px;}
+  .maq-ecran .barre-bas{position:static !important; inset:auto !important; transform:none !important; margin:8px 12px 0; width:auto !important;}
+  .maq-ecran .card{margin-bottom:10px;}
   html.cycle-couleur .apercu-couleurs.anim{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
   .prereglages{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 8px;}
   .prereglage{
     min-height:44px; padding:0 14px; border:1px solid var(--line); border-radius:var(--r-full);
     background:var(--bg); color:var(--text); font:600 13px 'JetBrains Mono',monospace; cursor:pointer;
   }
-  .prereglage[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);}
+  .prereglage[aria-pressed="true"]{background:var(--c-fond); border-color:var(--c-bord); color:var(--accent-contrast);}
   .personnaliser{
     display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; min-height:44px;
     padding:0 14px; border:0; border-top:1px solid var(--line); background:none; color:var(--text-dim);
@@ -1896,6 +1965,21 @@
   .personnaliser .ic{width:20px; height:20px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
   .personnaliser[aria-expanded="true"] .ic{transform:rotate(180deg);}
   .effets-detail.ferme{display:none;}
+  /* LES CATÉGORIES (10/11/2026) : des titres de section, et sous chaque famille un « Où ? » replié avec ses quatre zones. */
+  .coul-titre{display:block; margin:14px 0 4px; font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim);}
+  .famille{border-top:1px solid var(--line); padding-top:2px;}
+  .famille:first-of-type{border-top:0;}
+  .ou-btn{
+    display:flex; align-items:center; gap:8px; width:100%; margin:0 0 4px; padding:4px 0; min-height:0;
+    background:none; border:none; color:var(--text-dim); font:600 12px 'JetBrains Mono',monospace; text-align:left; cursor:pointer; position:relative;
+  }
+  .ou-btn span:first-child{flex:none;}
+  .ou-btn span:nth-child(2){flex:1; opacity:.85;}
+  .ou-btn::after{content:""; position:absolute; inset:-12px 0;}
+  .ou-btn .ic{width:18px; height:18px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
+  .ou-btn[aria-expanded="true"] .ic{transform:rotate(180deg);}
+  .zones{margin:0 0 6px 14px; padding-left:10px; border-left:2px solid var(--line);}
+  .zones.ferme{display:none;}
   /* L'écran de chargement du jour J : le « VI » du logo vire du bleu au rose (rotation de teinte,
      mesurée sur la capture) et la ligne principale prend le dégradé. */
   .splash.splash-jourj .splash-logo{filter:hue-rotate(125deg);}
@@ -1929,7 +2013,7 @@
   .stats-piste i, .stats-point{width:10px; height:10px; border-radius:50%; display:inline-block;}
   .stats-piste i{position:absolute; top:1px; margin-left:-5px; box-shadow:0 0 0 2px var(--bg-panel);}
   .stats-avant{background:var(--text-dim);}
-  .stats-apres{background:var(--accent);}
+  .stats-apres{background:var(--c-fond);}
   .stats-halteres .n{color:var(--text-dim); text-align:right; font-variant-numeric:tabular-nums;}
   .stats-legende-points{display:inline-flex; align-items:center; gap:4px; margin-right:12px;}
   .stats-col.echec i{background:var(--danger);}
@@ -1937,13 +2021,13 @@
   /* Lus et non lus empilés : le lu, en accent, porte sur la ligne de base ;
      le non-lu, gris, arrondi au sommet. 2 px de fond entre les deux. */
   .stats-empile{flex-direction:column; justify-content:flex-end; gap:2px;}
-  .stats-empile i.lu{background:var(--accent); border-radius:0; min-height:0;}
+  .stats-empile i.lu{background:var(--c-fond); border-radius:0; min-height:0;}
   .stats-empile i.non-lu, .stats-cles i.non-lu{background:color-mix(in srgb, var(--text-dim) 35%, var(--bg-panel));}
   .stats-empile i.non-lu{min-height:0;}
   /* La colonne touchée garde ses deux couleurs : la règle générale
      « colonne choisie = accent plein » peindrait le non-lu en lu. */
   .stats-col.stats-empile.choisie i.non-lu{background:color-mix(in srgb, var(--text-dim) 55%, var(--bg-panel));}
-  .stats-col.stats-empile.choisie i.lu{background:var(--accent);}
+  .stats-col.stats-empile.choisie i.lu{background:var(--c-fond);}
   .stats-cles-haut{margin-bottom:16px;}
   .stats-sparks{list-style:none; margin:0; padding:0;}
   .stats-sparks li{display:grid; grid-template-columns:minmax(0, 1fr) 92px 34px; gap:10px;
@@ -1960,8 +2044,8 @@
   .stats-jauge-ligne .stats-jauge{margin:4px 0 0; height:8px;}
   .stats-note{font-size:12px; color:var(--text-dim); margin:8px 0 0;}
   .stats-jauge{height:10px; border-radius:var(--r-full); margin:12px 0 2px; overflow:hidden;
-    background:color-mix(in srgb, var(--accent) 22%, var(--bg-panel));}
-  .stats-jauge i{display:block; height:100%; background:var(--accent); border-radius:var(--r-full);}
+    background:color-mix(in srgb, var(--c-fond) 22%, var(--bg-panel));}
+  .stats-jauge i{display:block; height:100%; background:var(--c-fond); border-radius:var(--r-full);}
   .stats-tableau{margin-top:8px; font-size:12px;}
   .stats-tableau summary{cursor:pointer; color:var(--text-dim); min-height:32px;
     display:flex; align-items:center;}
@@ -1989,14 +2073,14 @@
      est un bouton qui n'existe pas. */
   .toast-btn{
     flex:0 0 auto; min-height:44px; padding:0 14px;
-    background:transparent; border:1px solid var(--accent);
-    color:var(--accent); border-radius:var(--r-sm);
+    background:transparent; border:1px solid var(--c-bord);
+    color:var(--c-texte); border-radius:var(--r-sm);
     font-weight:600; font-size:13px; cursor:pointer;
   }
   /* Pas de jeton « accent doux » dans ce projet : on teinte l'accent lui-même
      plutôt que d'inventer une variable que le thème clair ne saurait pas
      corriger. color-mix respecte donc les deux thèmes sans rien ajouter. */
-  .toast-btn:hover{background:color-mix(in srgb, var(--accent) 14%, transparent);}
+  .toast-btn:hover{background:color-mix(in srgb, var(--c-fond) 14%, transparent);}
 
   .confirm-panel{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
@@ -2056,7 +2140,7 @@
      l'identifiant du groupe : les autres rangées de cette feuille n'ont
      que deux boutons et ne doivent pas bouger. */
   #groupeFiltres button{min-width:116px;}
-  .sheet-btn-group button.active{color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);}
+  .sheet-btn-group button.active{color:var(--accent-contrast); background:var(--c-fond); border-color:var(--c-bord);}
 
   .settings-title{
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:15px;
@@ -2175,7 +2259,7 @@
   .sources-btn #sourcesLibelle:empty{display:none;}
   .sources-btn{
     flex:none; margin-left:auto; position:relative; display:inline-flex; align-items:center; gap:2px;
-    background:none; border:0; padding:0; font:inherit; font-size:12px; color:var(--accent); cursor:pointer;
+    background:none; border:0; padding:0; font:inherit; font-size:12px; color:var(--c-texte); cursor:pointer;
     min-height:0; min-width:0;
   }
   .sources-btn::after{content:""; position:absolute; inset:-14px -8px;}
@@ -2255,7 +2339,7 @@
   .run-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
   .run-dot.success{background:var(--ok);}
   .run-dot.failure{background:#ff4d4d;}
-  .run-dot.running{background:var(--accent); animation:countdown-pulse 1.2s ease-in-out infinite;}
+  .run-dot.running{background:var(--c-fond); animation:countdown-pulse 1.2s ease-in-out infinite;}
   .run-dot.other{background:var(--text-dim);}
 
   .theme-toggle{display:flex; gap:6px;}
@@ -2264,7 +2348,7 @@
      les onglets et le bouton principal le disent en aplat blanc sur accent —
      deux langages à vingt pixels d'écart. Il adopte celui du site. */
   .theme-toggle button.active{
-    color:var(--accent-contrast); background:var(--accent); border-color:var(--accent);
+    color:var(--accent-contrast); background:var(--c-fond); border-color:var(--c-bord);
   }
 
   /* Le curseur mesurait 16 px de haut. Le rembourrage vertical porte sa
@@ -2274,7 +2358,7 @@
   /* Largeur souple et non 140 px figés : à 390 px, le libellé passait sur
      deux lignes pendant que le curseur gardait sa laisse. */
   input[type="range"]{
-    width:auto; flex:1 1 0; min-width:110px; accent-color:var(--accent);
+    width:auto; flex:1 1 0; min-width:110px; accent-color:var(--c-fond);
     height:44px; padding:0; margin:0; background:transparent;
   }
   input[type="range"]::-webkit-slider-thumb{width:20px; height:20px;}
@@ -2304,7 +2388,7 @@
     content:''; position:absolute; width:18px; height:18px; left:3px; top:3px;
     background:var(--bg-panel); border-radius:50%; transition:var(--t-court) var(--courbe);
   }
-  .switch input:checked + .slider{background:var(--accent);}
+  .switch input:checked + .slider{background:var(--c-fond);}
   .switch input:checked + .slider::before{transform:translateX(16px); background:var(--accent-contrast);}
 
   /* La grille est descendue au niveau de la FAMILLE : la liste elle-même
@@ -2337,7 +2421,7 @@
   .source-row:active{background:var(--bg-panel);}
   /* Le focus clavier se pose sur la case, invisible : c'est la ligne qui
      doit le montrer. */
-  .source-row:has(input:focus-visible){border-color:var(--accent);}
+  .source-row:has(input:focus-visible){border-color:var(--c-bord);}
   .source-row span{font-size:12px; line-height:1.3; overflow-wrap:break-word;}
   /* 10 px : un message d'erreur est exactement le texte qu'il ne faut pas
      rendre difficile à lire. */
@@ -2417,7 +2501,7 @@
     transition:border-color var(--t-court) var(--courbe);
   }
   .src-repli > summary::-webkit-details-marker{display:none;}
-  .src-repli > summary:hover{border-color:var(--accent);}
+  .src-repli > summary:hover{border-color:var(--c-bord);}
   .src-repli[open] > summary{margin-bottom:10px;}
   .src-outils{margin-bottom:10px;}
   .src-count-ligne{margin-top:8px;}
@@ -2451,7 +2535,7 @@
      Débordement latéral plus large que vertical : au-dessus il n'y a que la
      marge du groupe, en dessous le champ commence huit pixels plus bas. */
   .aide::after{content:""; position:absolute; inset:-10px -6px;}
-  .aide[aria-expanded="true"]{border-color:var(--accent); color:var(--accent);}
+  .aide[aria-expanded="true"]{border-color:var(--c-bord); color:var(--c-texte);}
   .setting-label{display:flex; align-items:center;}
 
   /* Présent dans l'arbre d'accessibilité, absent de l'écran. clip-path pour
@@ -2464,7 +2548,7 @@
     white-space:nowrap; border:0;
   }
 
-  ::selection{background:var(--accent); color:var(--accent-contrast);}
+  ::selection{background:var(--c-fond); color:var(--accent-contrast);}
 
   #previewImage img{width:100%; border-radius:var(--r-sm); margin-bottom:14px; max-height:220px; object-fit:cover;}
   #previewLink{text-decoration:none; flex:1; display:flex;}
@@ -2899,15 +2983,17 @@
 
     <div class="setting-group">
       <span class="setting-label">Couleurs</span>
-      <!-- L'APERÇU VIVANT (Antoni, 11/11/2026, rangement C) : une maquette minuscule des effets, qui réagit aux
-           interrupteurs : le cadre, les bordures des tuiles et d'une carte, et leur rotation. -->
-      <div class="apercu-couleurs" id="apercuCouleurs" aria-hidden="true">
-        <div class="ap-tuiles"><span>00</span><span>00</span><span>30</span><span>22</span></div>
-        <div class="ap-carte"></div>
+      <!-- LA MAQUETTE FIDÈLE (Antoni, 10/11/2026 : « maj l'aperçu pour le rendre vraiment précis ») : l'écran de l'app en petit, fait
+           des VRAIS éléments (en-tête et tuiles du compteur, recherche, onglets, jour, cartes, barre du bas, copiés de la page par
+           construitMaquette) : il suit donc chaque case, famille et zone, sans règle à part. -->
+      <div class="vues-apercu" role="group" aria-label="Vue de l'aperçu">
+        <button type="button" class="vue-apercu" data-v="detaillee" aria-pressed="true" onclick="basculeVueApercu('detaillee')">Détaillée</button>
+        <button type="button" class="vue-apercu" data-v="mini" aria-pressed="false" onclick="basculeVueApercu('mini')">Minimaliste</button>
       </div>
+      <div class="apercu-couleurs" id="apercuCouleurs" data-vue="detaillee"><div class="maq-cadre" aria-hidden="true"><div class="maq-ecran"></div></div><div class="maq-mini" id="apercuMini"></div></div>
       <div class="setting-desc" hidden>
-        L'aperçu montre ce que font les effets : le cadre de l'écran, les bordures des tuiles du compteur et
-        d'une carte, et leur rotation. Il suit les réglages en direct.
+        L'aperçu est l'écran de l'app en miniature, avec ses vrais éléments : il montre en direct ce que chaque
+        case colore ou non, zone par zone.
       </div>
       <div class="prereglages" role="group" aria-label="Préréglages des effets">
         <button type="button" class="prereglage" data-p="jourj" aria-pressed="false" onclick="appliquePrereglage('jourj')">Jour J complet</button>
@@ -2916,16 +3002,17 @@
         <button type="button" class="prereglage" data-p="auto" aria-pressed="false" onclick="appliquePrereglage('auto')">Automatique</button>
       </div>
       <div class="setting-desc" hidden>
-        « Jour J complet » allume tous les effets. « Discret » garde le cadre et les bordures, fixes, sans
-        mouvement ni autre effet. « Aucun » éteint tout. « Automatique » laisse chaque effet s'allumer tout seul
-        le jour de la sortie, pendant 24 h. Aucun préréglage n'est surligné quand tu règles les effets un par un.
+        « Jour J complet » colore tout, partout. « Discret » garde le cadre et les bordures, fixes, sans mouvement ni autre
+        effet. « Aucun » éteint tout. « Automatique » laisse chaque effet s'allumer tout seul le jour de la sortie, pendant
+        24 h. Un préréglage remet aussi toutes les zones allumées. Aucun n'est surligné quand tu règles à la main.
       </div>
       <button type="button" class="personnaliser" id="persoBtn" aria-expanded="false" aria-controls="effetsDetail" onclick="basculePerso()">
         <span>Personnaliser</span><span id="persoCompte"></span>
         <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
       </button>
       <div class="effets-detail ferme" id="effetsDetail">
-  <div class="setting-row">
+        <span class="coul-titre">Mouvement</span>
+        <div class="setting-row">
           <label for="cycleCouleurs">Couleurs animées</label>
           <input type="checkbox" id="cycleCouleurs" onchange="basculeCycleCouleurs(this.checked)">
         </div>
@@ -2938,7 +3025,144 @@
         <div class="setting-desc" id="cycleCouleursReduit" hidden>
           Ton téléphone réduit les animations : les couleurs restent fixes.
         </div>
-  <div class="setting-row">
+        <span class="coul-titre">Ce qui est coloré</span>
+        <div class="famille" id="famille-texte">
+        <div class="setting-row">
+          <label for="coulTextes">Textes et icônes</label>
+          <input type="checkbox" id="coulTextes" onchange="basculeCouleurFamille('texte', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Le blanc et les gris des textes, les icônes et le texte des champs suivent la couleur. Les titres d'articles restent blancs.
+        </div>
+          <button type="button" class="ou-btn" id="ou-texte" aria-expanded="false" aria-controls="zones-texte" onclick="basculeOu('texte')">
+            <span>Où ?</span><span id="ou-texte-n"></span>
+            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
+          </button>
+          <div class="zones ferme" id="zones-texte">
+            <div class="setting-row">
+              <label for="zone-texte-tete">En-tête et compteur</label>
+              <input type="checkbox" id="zone-texte-tete" onchange="basculeZone('texte', 'tete', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-texte-fil">Fil d'articles</label>
+              <input type="checkbox" id="zone-texte-fil" onchange="basculeZone('texte', 'fil', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-texte-barres">Barres du haut et du bas</label>
+              <input type="checkbox" id="zone-texte-barres" onchange="basculeZone('texte', 'barres', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-texte-fenetres">Réglages, statistiques et fenêtres</label>
+              <input type="checkbox" id="zone-texte-fenetres" onchange="basculeZone('texte', 'fenetres', this.checked)">
+            </div>
+          </div>
+        </div>
+        <div class="famille" id="famille-fond">
+        <div class="setting-row">
+          <label for="coulFonds">Fonds, boutons et onglets</label>
+          <input type="checkbox" id="coulFonds" onchange="basculeCouleurFamille('fond', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Les fonds colorés : bouton et onglet actifs, barre du bas, fonds teintés, graphiques.
+        </div>
+          <button type="button" class="ou-btn" id="ou-fond" aria-expanded="false" aria-controls="zones-fond" onclick="basculeOu('fond')">
+            <span>Où ?</span><span id="ou-fond-n"></span>
+            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
+          </button>
+          <div class="zones ferme" id="zones-fond">
+            <div class="setting-row">
+              <label for="zone-fond-tete">En-tête et compteur</label>
+              <input type="checkbox" id="zone-fond-tete" onchange="basculeZone('fond', 'tete', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-fond-fil">Fil d'articles</label>
+              <input type="checkbox" id="zone-fond-fil" onchange="basculeZone('fond', 'fil', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-fond-barres">Barres du haut et du bas</label>
+              <input type="checkbox" id="zone-fond-barres" onchange="basculeZone('fond', 'barres', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-fond-fenetres">Réglages, statistiques et fenêtres</label>
+              <input type="checkbox" id="zone-fond-fenetres" onchange="basculeZone('fond', 'fenetres', this.checked)">
+            </div>
+            
+          </div>
+          <div class="setting-row">
+          <label for="coulControles">Cases à cocher et curseur de saisie</label>
+          <input type="checkbox" id="coulControles" onchange="basculeEffet('coulControles', this.checked)">
+          </div>
+          <div class="setting-desc" hidden>
+          Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
+          couleurs animées.
+          </div>
+        </div>
+        <div class="famille" id="famille-bord">
+        <div class="setting-row">
+          <label for="coulBordures">Bordures</label>
+          <input type="checkbox" id="coulBordures" onchange="basculeCouleurFamille('bord', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Les bordures de 2 px des tuiles du compteur et des cartes d'article prennent le dégradé du
+          cadre, et tournent avec les couleurs animées. Les cartes officielles gardent leur bordure
+          orange. Seules les cartes à l'écran tournent.
+        </div>
+          <button type="button" class="ou-btn" id="ou-bord" aria-expanded="false" aria-controls="zones-bord" onclick="basculeOu('bord')">
+            <span>Où ?</span><span id="ou-bord-n"></span>
+            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
+          </button>
+          <div class="zones ferme" id="zones-bord">
+            <div class="setting-row">
+              <label for="zone-bord-tete">En-tête et compteur</label>
+              <input type="checkbox" id="zone-bord-tete" onchange="basculeZone('bord', 'tete', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-bord-fil">Fil d'articles</label>
+              <input type="checkbox" id="zone-bord-fil" onchange="basculeZone('bord', 'fil', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-bord-barres">Barres du haut et du bas</label>
+              <input type="checkbox" id="zone-bord-barres" onchange="basculeZone('bord', 'barres', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-bord-fenetres">Réglages, statistiques et fenêtres</label>
+              <input type="checkbox" id="zone-bord-fenetres" onchange="basculeZone('bord', 'fenetres', this.checked)">
+            </div>
+          </div>
+        </div>
+        <div class="famille" id="famille-badge">
+        <div class="setting-row">
+          <label for="coulBadges">Badges et statuts</label>
+          <input type="checkbox" id="coulBadges" onchange="basculeCouleurFamille('badge', this.checked)">
+        </div>
+        <div class="setting-desc" hidden>
+          Les pastilles de langue et de catégorie, les voyants vert et jaune, l'orange des articles officiels. Les erreurs restent rouges.
+        </div>
+          <button type="button" class="ou-btn" id="ou-badge" aria-expanded="false" aria-controls="zones-badge" onclick="basculeOu('badge')">
+            <span>Où ?</span><span id="ou-badge-n"></span>
+            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
+          </button>
+          <div class="zones ferme" id="zones-badge">
+            <div class="setting-row">
+              <label for="zone-badge-tete">En-tête et compteur</label>
+              <input type="checkbox" id="zone-badge-tete" onchange="basculeZone('badge', 'tete', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-badge-fil">Fil d'articles</label>
+              <input type="checkbox" id="zone-badge-fil" onchange="basculeZone('badge', 'fil', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-badge-barres">Barres du haut et du bas</label>
+              <input type="checkbox" id="zone-badge-barres" onchange="basculeZone('badge', 'barres', this.checked)">
+            </div>
+            <div class="setting-row">
+              <label for="zone-badge-fenetres">Réglages, statistiques et fenêtres</label>
+              <input type="checkbox" id="zone-badge-fenetres" onchange="basculeZone('badge', 'fenetres', this.checked)">
+            </div>
+          </div>
+        </div>
+        <span class="coul-titre">Écran du téléphone</span>
+        <div class="setting-row">
           <label for="coulCadre">Cadre autour de l'écran</label>
           <input type="checkbox" id="coulCadre" onchange="basculeEffet('coulCadre', this.checked)">
         </div>
@@ -2948,7 +3172,7 @@
           sortie, à minuit pile, le grand moment (flash, ondes, halo, confettis, six secondes) l'accompagne
           si l'app est ouverte.
         </div>
-  <div class="setting-row">
+        <div class="setting-row">
           <label for="coulBarreEtat">Barre d'état du téléphone</label>
           <input type="checkbox" id="coulBarreEtat" onchange="basculeEffet('coulBarreEtat', this.checked)">
         </div>
@@ -2957,7 +3181,7 @@
           Seulement quand l'app est installée sur l'écran d'accueil ; selon le téléphone, elle peut
           rester noire.
         </div>
-  <div class="setting-row">
+        <div class="setting-row">
           <label for="coulChargement">Écran de chargement du jour J</label>
           <input type="checkbox" id="coulChargement" onchange="basculeEffet('coulChargement', this.checked)">
         </div>
@@ -2965,25 +3189,8 @@
           Le « VI » passe au rose et la ligne principale au dégradé. Tu le vois à la prochaine ouverture de
           l'app, si l'écran de chargement (plus bas) est allumé.
         </div>
-  <div class="setting-row">
-          <label for="coulControles">Cases et curseur de saisie</label>
-          <input type="checkbox" id="coulControles" onchange="basculeEffet('coulControles', this.checked)">
-        </div>
-        <div class="setting-desc" hidden>
-          Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
-          couleurs animées.
-        </div>
-  <div class="setting-row">
-          <label for="coulBordures">Bordures des tuiles et des cartes</label>
-          <input type="checkbox" id="coulBordures" onchange="basculeEffet('coulBordures', this.checked)">
-        </div>
-        <div class="setting-desc" hidden>
-          Les bordures de 2 px des tuiles du compteur et des cartes d'article prennent le dégradé du
-          cadre, et tournent avec les couleurs animées. Les cartes officielles gardent leur bordure
-          orange. Seules les cartes à l'écran tournent.
-        </div>
       </div>
-<div class="setting-row">
+      <div class="setting-row">
         <label for="lanceHaloBtn">Halo de minuit</label>
         <button type="button" id="lanceHaloBtn" onclick="lanceHalo()">Lancer le halo</button>
       </div>
@@ -3442,6 +3649,12 @@ const DEFAULT_SETTINGS = {
   rayonCadre: null,
   // La frise des jalons J+1, J+7, J+30 après la sortie ; allumée d'office.
   friseJalons: true,
+  // LES CATÉGORIES DE COULEUR (10/11/2026) : quatre familles d'éléments, chacune coupable zone par zone. « bord » n'est pas ici :
+  // c'est la case « coulBordures » d'origine. coulZones ne garde que les couples coupés : { "texte:fil": false }.
+  coulTypes: { texte: null, fond: null, badge: null },
+  coulZones: {},
+  // La vue de l'aperçu des couleurs : « detaillee » (la maquette fidèle) ou « mini » (le schéma épuré).
+  apercuVue: "detaillee",
   spoilerKeywords: MOTS_SPOILER.slice(),
   maxDisplay: 500,
   similarityThreshold: 72,
@@ -3735,13 +3948,80 @@ function majCompteurMots(idChamp, idCompteur, un, plusieurs, aucun){
 const JOUR_J_MS = 86400000;
 // Les effets du jour J, chacun avec sa case : le cycle lui-même et quatre autres (11/11/2026).
 const EFFETS_JOUR_J = ["cycleCouleurs", "coulCadre", "coulBarreEtat", "coulChargement", "coulControles", "coulBordures"];
-function effetActif(cle, maintenant){
-  if(settings[cle] === true) return true;
-  if(settings[cle] === false) return false;
+function dansJourJ(maintenant){
   const ecoule = maintenant - GTA6_RELEASE;
   return ecoule >= 0 && ecoule < JOUR_J_MS;
 }
+function effetActif(cle, maintenant){
+  if(settings[cle] === true) return true;
+  if(settings[cle] === false) return false;
+  return dansJourJ(maintenant);
+}
 function cycleCouleursActif(maintenant){ return effetActif("cycleCouleurs", maintenant); }
+
+// LES CATÉGORIES DE COULEUR (Antoni, 10/11/2026 : « sépare le plus possible par catégorie ce qu'il contrôle, pour choisir quoi
+// mettre en couleur ou pas »). QUATRE FAMILLES d'éléments (ce que la couleur touche) × QUATRE ZONES de l'écran (où).
+// Le cycle lui-même (« Couleurs animées ») reste la case maîtresse : ces choix règlent ce qui y participe. Une famille
+// coupée dans une zone y retrouve son aspect d'origine (voir « LES CATÉGORIES COUPÉES, ZONE PAR ZONE » dans la feuille de style).
+const COUL_FAMILLES = [
+  { id: "texte", cle: "coulTextes", nom: "Textes et icônes", aide: "Le blanc et les gris des textes, les icônes, le texte des champs. Les titres d'articles restent blancs." },
+  { id: "fond",  cle: "coulFonds",  nom: "Fonds, boutons et onglets", aide: "Les fonds colorés : bouton et onglet actifs, barre du bas, fonds teintés, graphiques. Les cases à cocher et le curseur de saisie ont leur case dans le détail." },
+  { id: "bord",  cle: "coulBordures", nom: "Bordures", aide: "Les bordures en dégradé des tuiles du compteur et des cartes d'article, et les traits d'accent." },
+  { id: "badge", cle: "coulBadges", nom: "Badges et statuts", aide: "Les pastilles de langue et de catégorie, les voyants vert et jaune, l'orange des articles officiels. Les erreurs restent rouges." },
+];
+const COUL_ZONES = [
+  { id: "tete",     nom: "En-tête et compteur" },
+  { id: "fil",      nom: "Fil d'articles" },
+  { id: "barres",   nom: "Barres du haut et du bas" },
+  { id: "fenetres", nom: "Réglages, statistiques et fenêtres" },
+];
+function familleActive(f, maintenant){
+  if(f === "bord") return effetActif("coulBordures", maintenant);
+  // null = automatique : la famille suit le CYCLE (allumé d'office les 24 h de la sortie, ou à la main n'importe quel autre jour) ;
+  // true = toujours, false = jamais. (Avant : « les 24 h » seulement ; forcer le cycle un autre jour ne colorait alors rien.)
+  const v = settings.coulTypes ? settings.coulTypes[f] : null;
+  return v === true ? true : v === false ? false : effetActif("cycleCouleurs", maintenant);
+}
+function zoneActive(f, z){
+  return !(settings.coulZones && settings.coulZones[f + ":" + z] === false);
+}
+// Pose les classes « sans-FAMILLE-ZONE » (une famille coupée dans une zone) et les deux classes des bordures en dégradé.
+function appliqueCouleursZones(maintenant){
+  const h = document.documentElement.classList;
+  for(const f of COUL_FAMILLES) for(const z of COUL_ZONES)
+    h.toggle("sans-" + f.id + "-" + z.id, !(familleActive(f.id, maintenant) && zoneActive(f.id, z.id)));
+  h.toggle("bordures-tete", familleActive("bord", maintenant) && zoneActive("bord", "tete"));
+  h.toggle("bordures-fil", familleActive("bord", maintenant) && zoneActive("bord", "fil"));
+}
+function sauveReglages(erreur){
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){ console.error(erreur, e); }
+}
+// Écrit ICI et nulle part ailleurs : une famille cochée d'office ne devient pas un « true » parce qu'un autre champ a été enregistré.
+function basculeCouleurFamille(f, actif){
+  if(f === "bord"){ basculeEffet("coulBordures", actif); return; }
+  settings.coulTypes = Object.assign({}, settings.coulTypes, { [f]: !!actif });
+  sauveReglages("Erreur sauvegarde de la famille " + f);
+  appliqueEffetsJourJ(new Date());
+  majReglagesEffets();
+  requestAnimationFrame(syncCycle);
+}
+function basculeZone(f, z, actif){
+  const zones = Object.assign({}, settings.coulZones);
+  if(actif) delete zones[f + ":" + z]; else zones[f + ":" + z] = false;
+  settings.coulZones = zones;
+  sauveReglages("Erreur sauvegarde de la zone " + f + ":" + z);
+  appliqueEffetsJourJ(new Date());
+  majReglagesEffets();
+  requestAnimationFrame(syncCycle);
+}
+function basculeOu(f){
+  const zones = document.getElementById("zones-" + f), bouton = document.getElementById("ou-" + f);
+  if(!zones || !bouton) return;
+  const ouvre = zones.classList.contains("ferme");
+  zones.classList.toggle("ferme", !ouvre);
+  bouton.setAttribute("aria-expanded", String(ouvre));
+}
 
 // Pose les classes de la page selon les cases : une seule fonction, appelée à chaque battement.
 function appliqueEffetsJourJ(maintenant){
@@ -3750,6 +4030,7 @@ function appliqueEffetsJourJ(maintenant){
   h.toggle("cadre-j", effetActif("coulCadre", maintenant));
   h.toggle("controles-j", effetActif("coulControles", maintenant));
   h.toggle("bordures-j", effetActif("coulBordures", maintenant));
+  appliqueCouleursZones(maintenant);
   appliqueRayonCadre();
   // L'écran de chargement vit avant le chargement des réglages : c'est ce battement, le premier,
   // qui lui donne sa couleur du jour J (le script tourne avant le premier affichage).
@@ -3773,15 +4054,21 @@ function basculeEffet(cle, actif){
 // réglage (true ou false), à la différence de l'automatique : un effet allumé d'un coup le reste après le jour J.
 // LES PRÉRÉGLAGES (rangement C, 11/11/2026). Chacun ÉCRIT chaque réglage ; « Automatique » les remet à null.
 // « Discret » : le cadre et les bordures, fixes ; ni mouvement, ni barre d'état, ni chargement, ni commandes.
+// Les familles de couleur (textes, fonds, badges) et les zones coupées font partie du préréglage : il remet les zones à « toutes allumées ».
 const PREREGLAGES = {
-  jourj:   { cycleCouleurs: true,  coulCadre: true,  coulBarreEtat: true,  coulChargement: true,  coulControles: true,  coulBordures: true },
-  discret: { cycleCouleurs: false, coulCadre: true,  coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: true },
-  aucun:   { cycleCouleurs: false, coulCadre: false, coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: false },
-  auto:    { cycleCouleurs: null,  coulCadre: null,  coulBarreEtat: null,  coulChargement: null,  coulControles: null,  coulBordures: null },
+  jourj:   { cycleCouleurs: true,  coulCadre: true,  coulBarreEtat: true,  coulChargement: true,  coulControles: true,  coulBordures: true,  types: { texte: true,  fond: true,  badge: true } },
+  discret: { cycleCouleurs: false, coulCadre: true,  coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: true,  types: { texte: false, fond: false, badge: false } },
+  aucun:   { cycleCouleurs: false, coulCadre: false, coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: false, types: { texte: false, fond: false, badge: false } },
+  auto:    { cycleCouleurs: null,  coulCadre: null,  coulBarreEtat: null,  coulChargement: null,  coulControles: null,  coulBordures: null,  types: { texte: null,  fond: null,  badge: null } },
 };
 function prereglageActif(){
-  for(const nom of Object.keys(PREREGLAGES))
-    if(EFFETS_JOUR_J.every(c => settings[c] === PREREGLAGES[nom][c])) return nom;
+  const t = settings.coulTypes || {};
+  const zonesVides = !settings.coulZones || Object.keys(settings.coulZones).length === 0;
+  for(const nom of Object.keys(PREREGLAGES)){
+    const p = PREREGLAGES[nom];
+    if(EFFETS_JOUR_J.every(c => settings[c] === p[c]) && zonesVides
+       && ["texte", "fond", "badge"].every(f => (t[f] === undefined ? null : t[f]) === p.types[f])) return nom;
+  }
   return null;
 }
 function majReglagesEffets(){
@@ -3794,10 +4081,121 @@ function majReglagesEffets(){
     a.classList.toggle("bord", effetActif("coulBordures", now));
     a.classList.toggle("anim", effetActif("cycleCouleurs", now));
   }
-  const n = EFFETS_JOUR_J.filter(c => effetActif(c, now)).length;
+  // Les familles de couleur : leur case, et leurs quatre zones (grisées quand la famille est coupée).
+  let nFam = 0;
+  for(const f of COUL_FAMILLES){
+    const actif = familleActive(f.id, now);
+    if(actif) nFam++;
+    const c = document.getElementById(f.cle);
+    if(c) c.checked = actif;
+    let nZ = 0;
+    for(const z of COUL_ZONES){
+      const cz = document.getElementById("zone-" + f.id + "-" + z.id);
+      const on = zoneActive(f.id, z.id);
+      if(on) nZ++;
+      if(cz){ cz.checked = on; cz.disabled = !actif; }
+    }
+    const ou = document.getElementById("ou-" + f.id + "-n");
+    if(ou) ou.textContent = actif ? nZ + " sur " + COUL_ZONES.length : "coupé";
+  }
+  const n = EFFETS_JOUR_J.filter(c => c !== "coulBordures" && effetActif(c, now)).length + nFam;
+  const total = EFFETS_JOUR_J.length - 1 + COUL_FAMILLES.length;
   const compte = document.getElementById("persoCompte");
-  if(compte) compte.textContent = n + " sur " + EFFETS_JOUR_J.length + " allumés";
+  if(compte) compte.textContent = n + " sur " + total + " allumés";
+  majVueApercu();
+  construitMiniature();
+  construitMaquette();
 }
+// LA MAQUETTE FIDÈLE (Antoni, 10/11/2026 : « maj l'aperçu pour le rendre vraiment précis »). On COPIE les vrais éléments de la
+// page (en-tête et tuiles du compteur, recherche, onglets, barre du bas) et on y pose un jour, un repère « nouveaux » et deux
+// cartes bâtis avec les vraies classes : toutes les règles de la feuille de style s'y appliquent, y compris les zones coupées.
+// Les copies perdent leurs identifiants et leurs gestionnaires. Rien n'est construit tant que les Réglages sont fermés
+// (largeur nulle) : openSettings la rappelle une fois la page visible.
+const MAQUETTE_LARGEUR = 390;
+const MAQUETTE_CARTES = `<div class="maq-corps">
+  <div class="repere-nouveaux dans-ecran">▲ 1 nouveau · déjà vus ▼</div>
+  <h2 class="day-label dans-ecran">Aujourd'hui</h2>
+  <div class="card new dans-ecran"><div class="card-top"><div class="card-body">
+    <div class="card-src-row"><span class="card-src">Source</span><span class="tag-badge tag-lang">FR</span><span class="tag-cat">Date de sortie</span></div>
+    <h3 class="card-title"><a href="#" tabindex="-1">Titre d'un article</a></h3>
+    <div class="card-date">il y a 1h · 19 nov., 00:30</div>
+    <div class="card-actions"><button class="card-mark" data-icon-only="1" tabindex="-1" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check_circle"></use></svg></button><button class="card-mark" data-icon-only="1" tabindex="-1" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg></button></div>
+  </div></div></div>
+  <div class="card official dans-ecran"><div class="card-top"><div class="card-body">
+    <div class="card-src-row"><span class="card-src">Rockstar</span><span class="official-badge">OFFICIEL ROCKSTAR</span></div>
+    <h3 class="card-title"><a href="#" tabindex="-1">Un article officiel</a></h3>
+    <div class="card-date">il y a 2h · 19 nov., 00:02</div>
+  </div></div></div>
+</div>`;
+function construitMaquette(){
+  const m = document.getElementById("apercuCouleurs");
+  const ecran = m && m.querySelector(".maq-ecran");
+  if(!ecran || !m.clientWidth) return;
+  const copie = sel => {
+    const e = document.querySelector(sel);
+    if(!e || m.contains(e)) return null;
+    const c = e.cloneNode(true);
+    const marche = document.createTreeWalker(c, NodeFilter.SHOW_COMMENT), morts = [];
+    while(marche.nextNode()) morts.push(marche.currentNode);
+    for(const n of morts) n.remove();
+    for(const x of [c, ...c.querySelectorAll("*")]){
+      for(const a of ["id", "onclick", "oninput", "onchange", "data-etat"]) x.removeAttribute(a);
+      if(x.matches("button, input, a")) x.setAttribute("tabindex", "-1");
+    }
+    return c;
+  };
+  const barre = document.createElement("div");
+  barre.className = "maq-barre-etat" + (effetActif("coulBarreEtat", new Date()) ? " teinte" : "");
+  const corps = document.createElement("div");
+  corps.className = "maq-corps";
+  for(const sel of [".search-row", ".tab-row"]){ const c = copie(sel); if(c) corps.appendChild(c); }
+  const cartes = document.createElement("div");
+  cartes.innerHTML = MAQUETTE_CARTES;
+  const morceaux = [barre, copie("header.console"), corps, cartes.firstElementChild, copie(".barre-bas")].filter(Boolean);
+  ecran.replaceChildren(...morceaux);
+  const echelle = m.clientWidth / MAQUETTE_LARGEUR;
+  ecran.style.transform = "scale(" + echelle + ")";
+  m.querySelector(".maq-cadre").style.height = Math.ceil(ecran.offsetHeight * echelle) + "px";
+}
+// LA VUE MINIMALISTE de l'aperçu : quatre blocs (les zones) × quatre pastilles (les familles), plus les trois effets de l'écran du téléphone.
+// Un bloc dit en clair, pour un lecteur d'écran, ce qui est coloré ou coupé dans la zone.
+const MINI_SYMBOLES = { texte: "Aa", fond: "▬", bord: "▢", badge: "●" };
+const MINI_COURT = { texte: "Textes", fond: "Fonds", bord: "Bordures", badge: "Badges" };
+function construitMiniature(){
+  const cible = document.getElementById("apercuMini");
+  if(!cible) return;
+  const now = new Date();
+  const formes = { tete: "haute", fil: "grande", barres: "haute", fenetres: "haute" };
+  let html = "";
+  for(const z of COUL_ZONES){
+    let aria = z.nom + " : ", pastilles = "";
+    for(const f of COUL_FAMILLES){
+      const on = familleActive(f.id, now) && zoneActive(f.id, z.id);
+      pastilles += '<span class="pastille ' + (on ? "on" : "off") + '" data-f="' + f.id + '" data-z="' + z.id + '" aria-hidden="true">'
+        + MINI_SYMBOLES[f.id] + '<small>' + MINI_COURT[f.id] + '</small></span>';
+      aria += MINI_COURT[f.id].toLowerCase() + (on ? " colorés" : " coupés") + (f === COUL_FAMILLES[COUL_FAMILLES.length - 1] ? "." : ", ");
+    }
+    html += '<div class="mini-zone ' + formes[z.id] + '" data-z="' + z.id + '" role="img" aria-label="' + aria.replace(/"/g, "") + '"><h4>' + z.nom + '</h4><div class="pastilles">' + pastilles + '</div></div>';
+  }
+  const ecran = [["coulCadre", "Cadre"], ["coulBarreEtat", "Barre d'état"], ["coulChargement", "Chargement"]];
+  html += '<div class="mini-zone" data-z="ecran"><h4>Écran du téléphone</h4><div class="mini-ecran-tags">'
+    + ecran.map(([cle, nom]) => '<span class="pastille ' + (effetActif(cle, now) ? "on" : "off") + '" data-f="bord" data-e="' + cle + '">' + nom + '</span>').join("")
+    + '</div></div>';
+  cible.innerHTML = html;
+}
+function majVueApercu(){
+  const m = document.getElementById("apercuCouleurs");
+  const v = settings.apercuVue === "mini" ? "mini" : "detaillee";
+  if(m) m.setAttribute("data-vue", v);
+  for(const b of document.querySelectorAll(".vue-apercu")) b.setAttribute("aria-pressed", String(b.dataset.v === v));
+}
+function basculeVueApercu(v){
+  settings.apercuVue = v === "mini" ? "mini" : "detaillee";
+  sauveReglages("Erreur sauvegarde de la vue de l'aperçu");
+  majVueApercu();
+  requestAnimationFrame(construitMaquette);
+}
+window.addEventListener("resize", () => requestAnimationFrame(construitMaquette));
 function basculePerso(){
   const detail = document.getElementById("effetsDetail"), bouton = document.getElementById("persoBtn");
   if(!detail || !bouton) return;
@@ -3818,6 +4216,8 @@ function appliquePrereglage(nom){
   const p = PREREGLAGES[nom];
   if(!p) return;
   for(const cle of EFFETS_JOUR_J) settings[cle] = p[cle];
+  settings.coulTypes = Object.assign({}, p.types);
+  settings.coulZones = {};
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){ console.error("Erreur sauvegarde du préréglage " + nom, e); }
   appliqueEffetsJourJ(new Date());
@@ -4433,6 +4833,7 @@ function openSettings(){
   document.body.classList.add("vue-reglages");
   majNavigation();
   window.scrollTo(0, 0);
+  requestAnimationFrame(construitMaquette);   // la maquette de Réglages › Couleurs a besoin d'une largeur : la page est visible
   // Le titre reçoit le focus pour qu'un lecteur d'écran annonce la nouvelle page.
   const titre = document.getElementById("titreParametres");
   if(titre){ titre.setAttribute("tabindex", "-1"); try{ titre.focus({preventScroll: true}); }catch(e){} }
@@ -8311,7 +8712,7 @@ function histogrammeLecture(jours){
   const axe = reperesAxe(jours.length, 7).map(i =>
     `<span style="left:${((i + 0.5) / jours.length * 100).toFixed(2)}%">${escapeHtml(dateCourte(jours[i].jour))}</span>`).join("");
   const lignes = jours.map(j => `<tr><td>${escapeHtml(dateCourte(j.jour))}</td><td>${j.lus} lus</td><td>${j.total}</td></tr>`).join("");
-  return `<div class="stats-cles stats-cles-haut"><span><i style="background:var(--accent)"></i>lus</span>`
+  return `<div class="stats-cles stats-cles-haut"><span><i style="background:var(--c-fond)"></i>lus</span>`
     + `<span><i class="non-lu"></i>non lus</span></div>`
     + `<p class="stats-lecture" aria-live="polite">Touche une colonne pour lire sa valeur</p>`
     + `<div class="stats-histo" role="img" aria-label="Articles lus et non lus, jour par jour">${grille}${cols}</div>`

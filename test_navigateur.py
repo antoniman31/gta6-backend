@@ -148,7 +148,7 @@ def test_cibles_tactiles(page, largeur):
     trop_petits = page.evaluate(
         """(mini) => {
         const mauvais = [];
-        for (const b of document.querySelectorAll('#settingsOverlay button')) {
+        for (const b of document.querySelectorAll('#settingsOverlay button:not(#apercuCouleurs *)')) {
           if (b.offsetParent === null) continue;
           const r = b.getBoundingClientRect();
           const a = getComputedStyle(b, '::after');
@@ -204,7 +204,7 @@ def test_rien_ne_deborde(page, largeur):
     hors = page.evaluate(
         """() => {
         const mauvais = [];
-        for (const b of document.querySelectorAll('#settingsOverlay button')) {
+        for (const b of document.querySelectorAll('#settingsOverlay button:not(#apercuCouleurs *)')) {
           if (b.offsetParent === null) continue;
           // Le « ? » est un rond de 24 px contenant un caractère : la notion
           // de « libellé qui sort de sa boîte » ne s'y applique pas.
@@ -268,7 +268,7 @@ def test_libelles_centres(page, largeur):
     mauvais = page.evaluate(
         """([tol, air]) => {
         const out = [];
-        for (const b of document.querySelectorAll('#settingsOverlay button')) {
+        for (const b of document.querySelectorAll('#settingsOverlay button:not(#apercuCouleurs *)')) {
           if (b.offsetParent === null) continue;
           if (b.classList.contains('aide')) continue;   // rond calibré, pas un libellé
           // Le seuil d'air ne vaut que pour les boutons dimensionnés par leur
@@ -351,7 +351,7 @@ def test_etats_annonces(page, largeur):
     sans_nom = page.evaluate(
         """() => {
         const out = [];
-        for (const c of document.querySelectorAll('#settingsOverlay input, #settingsOverlay textarea')) {
+        for (const c of document.querySelectorAll('#settingsOverlay input:not(#apercuCouleurs *), #settingsOverlay textarea:not(#apercuCouleurs *)')) {
           if (c.type === 'checkbox' || c.offsetParent === null) continue;
           const parLabel = c.id && document.querySelector(`label[for="${c.id}"]`);
           if (!c.getAttribute('aria-label') && !c.getAttribute('aria-labelledby') && !parLabel)
@@ -1547,8 +1547,8 @@ def test_barre_du_bas(nav, url):
         etiquette = "[%d px, %s]" % (largeur, schema)
         mesures = page.evaluate("""() => {
             const r = e => e.getBoundingClientRect();
-            const barre = r(document.querySelector('.barre-bas'));
-            const b = [...document.querySelectorAll('.barre-bas button')].map(x => r(x));
+            const barre = r(document.querySelector('.barre-bas:not(#apercuCouleurs *)'));
+            const b = [...document.querySelectorAll('.barre-bas:not(#apercuCouleurs *) button')].map(x => r(x));
             const tuile = r(document.querySelector('.tuile-compteur'));
             const hors = [...document.querySelectorAll('.tuile-compteur > *, header.console > *')]
               .filter(e => e.offsetParent !== null && (r(e).right > innerWidth + 0.5 || r(e).left < -0.5)).length;
@@ -1685,7 +1685,7 @@ def test_page_reglages(nav, url):
                     // La ligne réduite est en position FIXE : offsetParent y vaut toujours null, donc vis() la
                     // croirait cachée. On lit sa classe.
                     ligne: document.getElementById('barreHaut').classList.contains('visible'),
-                    pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed')),
+                    pressed: [...document.querySelectorAll('.barre-bas:not(#apercuCouleurs *) button')].map(b => b.getAttribute('aria-pressed')),
                     corps: getComputedStyle(document.body).position,
                     fond: getComputedStyle(document.getElementById('settingsOverlay')).position,
                     cadre: sp ? getComputedStyle(sp).borderTopWidth : null,
@@ -1718,7 +1718,7 @@ def test_page_reglages(nav, url):
         bas = page.evaluate("""() => { const c = [...document.querySelectorAll('#settingsOverlay .setting-group')]
             .filter(e => e.offsetParent !== null).pop();
             return {contenu: c.getBoundingClientRect().bottom,
-                    barre: document.querySelector('.barre-bas').getBoundingClientRect().top}; }""")
+                    barre: document.querySelector('.barre-bas:not(#apercuCouleurs *)').getBoundingClientRect().top}; }""")
         check(bas["contenu"] <= bas["barre"] + 1,
               "%s le dernier réglage (%.0f) reste au-dessus de la barre (%.0f)" % (etiq, bas["contenu"], bas["barre"]))
 
@@ -1726,14 +1726,14 @@ def test_page_reglages(nav, url):
         page.click("#statsBtn")
         etat = page.evaluate("""() => ({page: document.getElementById('settingsOverlay').classList.contains('open'),
             stats: document.getElementById('statsPanel').offsetParent !== null,
-            pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed'))})""")
+            pressed: [...document.querySelectorAll('.barre-bas:not(#apercuCouleurs *) button')].map(b => b.getAttribute('aria-pressed'))})""")
         check(not etat["page"] and etat["stats"] and etat["pressed"] == ["false", "true", "false"],
               "%s « Stats » referme la page et ouvre les statistiques (%s)" % (etiq, etat["pressed"]))
         page.click("#navReglages")
         page.click("#navFil")
         etat = page.evaluate("""() => ({page: document.getElementById('settingsOverlay').classList.contains('open'),
             fil: document.getElementById('feed').offsetParent !== null,
-            pressed: [...document.querySelectorAll('.barre-bas button')].map(b => b.getAttribute('aria-pressed'))})""")
+            pressed: [...document.querySelectorAll('.barre-bas:not(#apercuCouleurs *) button')].map(b => b.getAttribute('aria-pressed'))})""")
         check(not etat["page"] and etat["fil"] and etat["pressed"] == ["true", "false", "false"],
               "%s « Fil » referme la page et rend le fil (%s)" % (etiq, etat["pressed"]))
         ctx.close()
@@ -2040,7 +2040,7 @@ def test_entete_sans_vide(nav, url):
     page = ctx.new_page()
     page.goto(url, wait_until="load")
     page.wait_for_selector(".barre-bas")
-    boutons = page.evaluate("""() => [...document.querySelectorAll('.barre-bas button')]
+    boutons = page.evaluate("""() => [...document.querySelectorAll('.barre-bas:not(#apercuCouleurs *) button')]
                                        .map(b => b.textContent.trim())""")
     check(boutons == ["Fil", "Stats", "Réglages"],
           "trois entrées dans la barre du bas : %s" % boutons)
@@ -7934,7 +7934,7 @@ def test_lot_2a_interface(nav, url):
 
     # LE FONDU SOUS LA BARRE DU BAS : il passe sous la barre et ne prend aucun appui.
     ctx, page, _ = _ouvre_fil(nav, url, 390)
-    f = page.evaluate("""() => { const cs = getComputedStyle(document.body, '::after'), b = getComputedStyle(document.querySelector('.barre-bas'));
+    f = page.evaluate("""() => { const cs = getComputedStyle(document.body, '::after'), b = getComputedStyle(document.querySelector('.barre-bas:not(#apercuCouleurs *)'));
         return {pos: cs.position, z: parseInt(cs.zIndex, 10), bz: parseInt(b.zIndex, 10), ev: cs.pointerEvents,
                 h: parseFloat(cs.height), img: cs.backgroundImage.indexOf('linear-gradient') >= 0, bas: cs.bottom}; }""")
     check(f["pos"] == "fixed" and f["ev"] == "none" and f["img"] and f["h"] >= 96 and f["z"] < f["bz"],
@@ -8130,13 +8130,13 @@ def test_case_globale_des_effets(nav, url):
                         " && document.querySelectorAll('.prereglage').length === 4"),
           "[réglages] l'aperçu, les quatre préréglages et le bouton « Personnaliser » existent")
     e = page.evaluate(ETAT)
-    check(e["presses"] == ["auto"] and not any(e["cases"]) and not e["ouvert"] and e["expanded"] == "false" and e["compte"] == "0 sur 6 allumés",
+    check(e["presses"] == ["auto"] and not any(e["cases"]) and not e["ouvert"] and e["expanded"] == "false" and e["compte"] == "0 sur 9 allumés",
           "[réglages] la veille : « Automatique » surligné, tout éteint, détail replié (%s)" % {k: e[k] for k in ("presses", "ouvert", "compte")})
     check(e["apercu"] == [False, False, False], "[réglages] la veille, l'aperçu est nu : ni cadre, ni bordures, ni rotation (%s)" % e["apercu"])
     # Jour J complet.
     page.evaluate("() => document.querySelector('.prereglage[data-p=jourj]').click()")
     e = page.evaluate(ETAT)
-    check(e["presses"] == ["jourj"] and all(e["cases"]) and all(e["classes"]) and e["compte"] == "6 sur 6 allumés",
+    check(e["presses"] == ["jourj"] and all(e["cases"]) and all(e["classes"]) and e["compte"] == "9 sur 9 allumés",
           "[réglages] « Jour J complet » allume les six effets d'un coup (%s)" % {k: e[k] for k in ("presses", "compte")})
     check(all(stocke(page, c) is True for c in EFFETS), "[réglages] et écrit true pour chacun (%s)" % {c: stocke(page, c) for c in EFFETS})
     check(e["apercu"][0] and e["apercu"][1], "[réglages] l'aperçu montre le cadre et les bordures (%s)" % e["apercu"])
@@ -8144,13 +8144,13 @@ def test_case_globale_des_effets(nav, url):
     page.evaluate("() => document.querySelector('.prereglage[data-p=discret]').click()")
     e = page.evaluate(ETAT)
     attendu = {"cycleCouleurs": False, "coulCadre": True, "coulBarreEtat": False, "coulChargement": False, "coulControles": False, "coulBordures": True}
-    check(e["presses"] == ["discret"] and e["cases"] == [attendu[c] for c in EFFETS] and e["compte"] == "2 sur 6 allumés",
+    check(e["presses"] == ["discret"] and e["cases"] == [attendu[c] for c in EFFETS] and e["compte"] == "2 sur 9 allumés",
           "[réglages] « Discret » : le cadre et les bordures, sans mouvement ni autre effet (%s)" % e["cases"])
     check(e["apercu"] == [True, True, False], "[réglages] et l'aperçu est fixe : cadre et bordures, pas de rotation (%s)" % e["apercu"])
     # Régler UN effet à la main : plus aucun préréglage surligné.
     page.evaluate("() => { const c = document.getElementById('coulControles'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
     e = page.evaluate(ETAT)
-    check(e["presses"] == [] and e["compte"] == "3 sur 6 allumés",
+    check(e["presses"] == [] and e["compte"] == "3 sur 9 allumés",
           "[réglages] un réglage à la main : aucun préréglage n'est surligné (%s, %s)" % (e["presses"], e["compte"]))
     # Aucun, puis Automatique.
     page.evaluate("() => document.querySelector('.prereglage[data-p=aucun]').click()")
@@ -8185,8 +8185,8 @@ def test_case_globale_des_effets(nav, url):
     ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
     page.evaluate("() => openSettings()")
     e = page.evaluate(ETAT)
-    check(e["presses"] == ["auto"] and all(e["cases"]) and e["apercu"] == [True, True, True] and e["compte"] == "6 sur 6 allumés",
-          "[réglages] le jour J : « Automatique » surligné, six sur six, aperçu complet et animé (%s)" % {k: e[k] for k in ("presses", "apercu", "compte")})
+    check(e["presses"] == ["auto"] and all(e["cases"]) and e["apercu"] == [True, True, True] and e["compte"] == "9 sur 9 allumés",
+          "[réglages] le jour J : « Automatique » surligné, neuf sur neuf, aperçu complet et animé (%s)" % {k: e[k] for k in ("presses", "apercu", "compte")})
     page.evaluate("() => document.querySelector('.prereglage[data-p=aucun]').click()")
     check(not any(page.evaluate(ETAT)["cases"]), "[réglages] le jour J, « Aucun » éteint vraiment tout")
     page.evaluate("() => document.querySelector('.prereglage[data-p=auto]').click()")
@@ -8557,6 +8557,241 @@ def test_aucun_texte_oublie_du_cycle(nav, url):
         check(not oublis, "[oubli %s] aucun texte (hors titres d'articles) ne reste figé pendant le cycle (%d : %s)" % (theme, len(oublis), oublis[:4]))
 
 
+def test_categories_de_couleur(nav, url):
+    """Réglages › Couleurs : quatre familles × quatre zones, et la maquette fidèle (Antoni, 10/11/2026)."""
+    print("\n[catégories] quatre familles x quatre zones : cases, effet réel sur les couleurs, maquette fidèle, 320 et 390 px")
+    INJECTE = """() => { lastItems = Array.from({length: 6}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0, lang: i % 2 ? 'en' : 'fr'}));
+        lastNewLinks = new Set(['https://ex.test/1']); historyPartial = false; rattrapageLance = true; visibleCount = 6; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    FIGE_TOUT = """(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }"""
+    JETON = """([sel, jeton]) => getComputedStyle(document.querySelector(sel)).getPropertyValue(jeton).trim()"""
+    FAMILLES = [("texte", "coulTextes", "--c-texte"), ("fond", "coulFonds", "--c-fond"), ("bord", "coulBordures", "--c-bord"), ("badge", "coulBadges", "--ok")]
+    ZONES = [("tete", "header.console"), ("fil", ".search-row"), ("barres", ".barre-bas"), ("fenetres", ".page-reglages")]
+    def stocke(page):
+        return page.evaluate("() => JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}')")
+    # 1. La structure : quatre familles, chacune avec « Où ? » replié et quatre zones.
+    ctx, page, erreurs = _ouvre_cycle(nav, url, VEILLE, "auto", "dark")
+    page.evaluate("() => openSettings()"); page.wait_for_timeout(300)
+    page.click("#persoBtn")
+    struct = page.evaluate("""() => ['texte', 'fond', 'bord', 'badge'].map(f => ({f,
+        zones: ['tete', 'fil', 'barres', 'fenetres'].filter(z => !!document.getElementById('zone-' + f + '-' + z)).length,
+        replie: getComputedStyle(document.getElementById('zones-' + f)).display === 'none',
+        expanded: document.getElementById('ou-' + f).getAttribute('aria-expanded')}))""")
+    check(all(x["zones"] == 4 and x["replie"] and x["expanded"] == "false" for x in struct),
+          "[catégories] quatre familles, chacune avec ses quatre zones, repliées derrière « Où ? » (%s)" % struct)
+    check(page.evaluate("() => ['coulTextes', 'coulFonds', 'coulBordures', 'coulBadges'].every(i => !!document.getElementById(i))"),
+          "[catégories] une case par famille : textes, fonds, bordures, badges")
+    page.click("#ou-texte")
+    check(page.evaluate("() => getComputedStyle(document.getElementById('zones-texte')).display") != "none"
+          and page.evaluate("() => document.getElementById('ou-texte').getAttribute('aria-expanded')") == "true",
+          "[catégories] « Où ? » déplie les zones et annonce son état")
+    # La veille : tout en automatique, donc éteint ; rien d'écrit.
+    check(not page.evaluate("() => ['coulTextes', 'coulFonds', 'coulBordures', 'coulBadges'].some(i => document.getElementById(i).checked)")
+          and "coulTypes" not in stocke(page) and "coulZones" not in stocke(page),
+          "[catégories] la veille, les familles sont éteintes (automatique) et rien n'est écrit tant qu'on ne touche à rien")
+    # Cocher une famille écrit true ; une zone coupée n'écrit QUE le couple coupé ; la rallumer l'efface.
+    page.evaluate("() => { const c = document.getElementById('coulTextes'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    st = stocke(page)
+    check(st.get("coulTypes", {}).get("texte") is True, "[catégories] cocher « Textes et icônes » écrit true (%s)" % st.get("coulTypes"))
+    page.evaluate("() => { const c = document.getElementById('zone-texte-fil'); c.checked = false; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(stocke(page).get("coulZones") == {"texte:fil": False}, "[catégories] couper une zone n'écrit que ce couple (%s)" % stocke(page).get("coulZones"))
+    check(page.evaluate("() => document.documentElement.classList.contains('sans-texte-fil')"
+                        " && !document.documentElement.classList.contains('sans-texte-tete')"),
+          "[catégories] la classe « sans-texte-fil » est posée, pas celle des autres zones")
+    check(page.evaluate("() => document.querySelector('.prereglage[aria-pressed=true]')") is None,
+          "[catégories] une zone coupée à la main : aucun préréglage n'est surligné")
+    page.evaluate("() => { const c = document.getElementById('zone-texte-fil'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(stocke(page).get("coulZones") == {}, "[catégories] rallumer la zone efface le couple (%s)" % stocke(page).get("coulZones"))
+    page.evaluate("() => { const c = document.getElementById('coulTextes'); c.checked = false; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(page.evaluate("() => ['tete', 'fil', 'barres', 'fenetres'].every(z => document.getElementById('zone-texte-' + z).disabled)"),
+          "[catégories] famille coupée : ses quatre zones sont grisées")
+    page.evaluate("() => document.querySelector('.prereglage[data-p=jourj]').click()")
+    st = stocke(page)
+    check(st.get("coulZones") == {} and all(st["coulTypes"][f] is True for f in ("texte", "fond", "badge")),
+          "[catégories] « Jour J complet » allume les trois familles et remet les zones (%s)" % st.get("coulTypes"))
+    check(not erreurs, "[catégories] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+    # 1 bis. Forcer le cycle un AUTRE jour que la sortie : les familles en automatique le suivent (avant, elles ne coloraient rien : trouvé
+    #        par le test des jalons, qui force le cycle le 26/11).
+    ctx, page, _ = _ouvre_cycle(nav, url, "2026-11-26T12:00:00Z", True, "dark")
+    page.evaluate("() => openSettings()"); page.wait_for_timeout(300)
+    check(page.evaluate("() => ['coulTextes', 'coulFonds', 'coulBadges'].every(i => document.getElementById(i).checked)"),
+          "[catégories] cycle forcé un autre jour : les familles en automatique le suivent (cochées)")
+    page.evaluate("() => closeSettings()"); page.wait_for_timeout(300)
+    tok = []
+    for tt in (0, 2000):
+        page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(100)
+        tok.append(page.evaluate(JETON, ["header.console", "--c-texte"]))
+    check(tok[0] != tok[1], "[catégories] et l'en-tête colore vraiment ses textes avec le cycle forcé (%s, %s)" % (tok[0][:20], tok[1][:20]))
+    ctx.close()
+    # 2. L'EFFET RÉEL : pour chaque famille et chaque zone, le jeton de la zone tourne avec le cycle quand elle est allumée,
+    #    et reste sur l'accent FIXE (celui qui ne tourne pas) quand elle est coupée ; les autres zones n'y changent rien.
+    for vue in ("fil", "reglages"):
+        ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", "dark")
+        page.evaluate(INJECTE)
+        page.wait_for_selector("#feed .card.dans-ecran", state="attached")
+        if vue == "reglages":
+            page.evaluate("() => openSettings()")
+        page.wait_for_timeout(500)
+        zones = [z for z in ZONES if (z[0] == "fenetres") == (vue == "reglages")]
+        for f, cle, jeton in FAMILLES:
+            for z, sel in zones:
+                def lit(etat):
+                    page.evaluate("([f, z, e]) => basculeZone(f, z, e)", [f, z, etat])
+                    page.wait_for_timeout(150)
+                    r = []
+                    for tt in (0, 2000):
+                        page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(100)
+                        r.append((page.evaluate(JETON, [sel, jeton]), page.evaluate(JETON, [sel, "--ok-base" if f == "badge" else "--accent-stat"])))
+                    return r
+                allume = lit(True)
+                coupe = lit(False)
+                autres = [x for x in ZONES if x[0] != z and ((x[0] == "fenetres") == (vue == "reglages"))]
+                lit(True)
+                check(allume[0][0] != allume[1][0],
+                      "[catégories %s/%s] allumée, la zone suit le cycle (%s puis %s)" % (f, z, allume[0][0][:22], allume[1][0][:22]))
+                check(coupe[0][0] == coupe[1][0] == coupe[0][1] and coupe[0][1] == coupe[1][1],
+                      "[catégories %s/%s] coupée, la zone reste sur l'accent fixe (%s, %s)" % (f, z, coupe[0][0][:22], coupe[1][0][:22]))
+        check(not erreurs, "[catégories %s] aucune erreur JavaScript (%s)" % (vue, erreurs[:1]))
+        ctx.close()
+    # 3. Une zone coupée ne touche PAS les autres : textes coupés en-tête seulement.
+    ctx, page, _ = _ouvre_cycle(nav, url, JOUR_J, "auto", "dark")
+    page.evaluate(INJECTE); page.wait_for_selector("#feed .card.dans-ecran", state="attached")
+    page.evaluate("() => basculeZone('texte', 'tete', false)"); page.wait_for_timeout(200)
+    res = []
+    for tt in (0, 2000):
+        page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(100)
+        res.append(page.evaluate("""() => { const c = (s) => getComputedStyle(document.querySelector(s)).color;
+            return {tete: c('header.console .brand'), fil: c('.search-row .filters-trigger'), barres: c('.barre-bas button:not(.active) span')}; }"""))
+    check(res[0]["tete"] == res[1]["tete"] and res[0]["fil"] != res[1]["fil"] and res[0]["barres"] != res[1]["barres"],
+          "[catégories] textes coupés dans l'en-tête seulement : le titre ne bouge plus, « Filtres » et la barre du bas tournent encore (%s)" % res)
+    page.evaluate("() => basculeZone('texte', 'tete', true)")
+    # Les VRAIS éléments : les tuiles en dégradé, un badge de langue.
+    page.evaluate("() => basculeZone('bord', 'tete', false)"); page.wait_for_timeout(200)
+    check("conic-gradient" not in page.evaluate("() => getComputedStyle(document.querySelector('header.console .cd-t')).backgroundImage")
+          and "conic-gradient" in page.evaluate("() => getComputedStyle(document.querySelector('#feed .card:not(.official)')).backgroundImage"),
+          "[catégories] bordures coupées dans l'en-tête : les tuiles perdent leur dégradé, les cartes le gardent")
+    page.evaluate("() => { basculeZone('bord', 'tete', true); basculeZone('bord', 'fil', false); }"); page.wait_for_timeout(200)
+    check("conic-gradient" in page.evaluate("() => getComputedStyle(document.querySelector('header.console .cd-t')).backgroundImage")
+          and "conic-gradient" not in page.evaluate("() => getComputedStyle(document.querySelector('#feed .card:not(.official)')).backgroundImage"),
+          "[catégories] bordures coupées dans le fil : les cartes perdent leur dégradé, les tuiles le gardent")
+    page.evaluate("() => basculeZone('bord', 'fil', true)")
+    page.evaluate("() => basculeCouleurFamille('badge', false)"); page.wait_for_timeout(200)
+    ok = []
+    for tt in (0, 2000):
+        page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(100)
+        ok.append(page.evaluate("() => getComputedStyle(document.querySelector('#feed .card.official')).getPropertyValue('--c-orange').trim()"))
+    check(ok[0] == ok[1] == "#ff6b00",
+          "[catégories] badges coupés : l'orange des articles officiels ne tourne plus (%s)" % ok)
+    ctx.close()
+    # 4. La maquette : les vrais éléments, copiés, sans identifiants, qui suivent les zones ; elle tient dans l'écran.
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris", reduced_motion="no-preference")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        ctx.clock.install(time=JOUR_J)
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
+        page.evaluate("() => openSettings()"); page.wait_for_timeout(600)
+        m = page.evaluate("""() => { const m = document.getElementById('apercuCouleurs'), e = m.querySelector('.maq-ecran'), r = m.getBoundingClientRect();
+            return {tuiles: e.querySelectorAll('header.console .cd-t').length, recherche: !!e.querySelector('.search-row input'), onglets: e.querySelectorAll('.tab-row .tab').length,
+                    cartes: e.querySelectorAll('.card').length, officiel: !!e.querySelector('.card.official .official-badge'), barre: e.querySelectorAll('.barre-bas button').length,
+                    ids: e.querySelectorAll('[id]').length, gestionnaires: e.querySelectorAll('[onclick]').length,
+                    gauche: r.left, droite: r.right, haut: r.height, iw: innerWidth, deborde: document.documentElement.scrollWidth > innerWidth,
+                    echelle: e.style.transform, hauteurCadre: m.querySelector('.maq-cadre').getBoundingClientRect().height}; }""")
+        check(m["tuiles"] == 4 and m["recherche"] and m["onglets"] == 2 and m["cartes"] == 2 and m["officiel"] and m["barre"] == 3,
+              "[maquette %d px] l'écran en petit : 4 tuiles, recherche, 2 onglets, 2 cartes dont une officielle, barre du bas à 3 boutons (%s)"
+              % (largeur, {k: m[k] for k in ("tuiles", "recherche", "onglets", "cartes", "officiel", "barre")}))
+        check(m["ids"] == 0 and m["gestionnaires"] == 0, "[maquette %d px] sans identifiants dupliqués ni gestionnaires de clic (%d, %d)" % (largeur, m["ids"], m["gestionnaires"]))
+        check(m["gauche"] >= 0 and m["droite"] <= m["iw"] and not m["deborde"] and m["hauteurCadre"] > 100,
+              "[maquette %d px] elle tient dans l'écran (%.0f à %.0f sur %d), sans débordement, hauteur %.0f px" % (largeur, m["gauche"], m["droite"], m["iw"], m["hauteurCadre"]))
+        # Elle suit les zones : textes coupés dans l'en-tête, le titre de la copie ne bouge plus ; le « Filtres » de la copie tourne.
+        page.evaluate("() => basculeZone('texte', 'tete', false)"); page.wait_for_timeout(250)
+        res = []
+        for tt in (0, 2000):
+            page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(120)
+            res.append(page.evaluate("""() => { const c = s => getComputedStyle(document.querySelector('#apercuCouleurs ' + s)).color;
+                return [c('header.console .brand'), c('.search-row .filters-trigger')]; }"""))
+        check(res[0][0] == res[1][0] and res[0][1] != res[1][1],
+              "[maquette %d px] la copie suit les zones : textes coupés en-tête, son titre est fixe, son « Filtres » tourne (%s)" % (largeur, res))
+        check(not erreurs, "[maquette %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+
+def test_apercu_minimaliste(nav, url):
+    """Réglages › Couleurs : la vue minimaliste de l'aperçu et son bouton (Antoni, 10/11/2026 : « détaillé mais minimaliste aussi »)."""
+    print("\n[aperçu] deux vues : détaillée et minimaliste ; quatre zones x quatre familles en pastilles, 320 et 390 px")
+    FIGE_TOUT = """(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }"""
+    def stocke(page):
+        return page.evaluate("() => JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}')")
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris", reduced_motion="no-preference")
+        ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        ctx.clock.install(time=JOUR_J)
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
+        page.evaluate("() => openSettings()"); page.wait_for_timeout(500)
+        e = page.evaluate("""() => ({boutons: [...document.querySelectorAll('.vue-apercu')].map(b => [b.dataset.v, b.getAttribute('aria-pressed'), Math.round(b.getBoundingClientRect().height)]),
+            vue: document.getElementById('apercuCouleurs').getAttribute('data-vue'),
+            detail: getComputedStyle(document.querySelector('#apercuCouleurs .maq-cadre')).display, mini: getComputedStyle(document.getElementById('apercuMini')).display})""")
+        check(e["boutons"] == [["detaillee", "true", e["boutons"][0][2]], ["mini", "false", e["boutons"][1][2]]] and e["vue"] == "detaillee"
+              and e["detail"] != "none" and e["mini"] == "none" and all(b[2] >= 44 for b in e["boutons"]),
+              "[aperçu %d px] deux boutons de 44 px au moins ; la vue détaillée est celle d'origine (%s)" % (largeur, e))
+        page.click(".vue-apercu[data-v=mini]"); page.wait_for_timeout(300)
+        e = page.evaluate("""() => ({vue: document.getElementById('apercuCouleurs').getAttribute('data-vue'),
+            presses: [...document.querySelectorAll('.vue-apercu')].map(b => b.getAttribute('aria-pressed')),
+            detail: getComputedStyle(document.querySelector('#apercuCouleurs .maq-cadre')).display, mini: getComputedStyle(document.getElementById('apercuMini')).display,
+            zones: [...document.querySelectorAll('#apercuMini .mini-zone')].map(z => z.dataset.z),
+            pastilles: document.querySelectorAll('#apercuMini .mini-zone[data-z]:not([data-z=ecran]) .pastille').length,
+            tags: document.querySelectorAll('#apercuMini .mini-zone[data-z=ecran] .pastille').length})""")
+        check(e["vue"] == "mini" and e["presses"] == ["false", "true"] and e["detail"] == "none" and e["mini"] != "none",
+              "[aperçu %d px] « Minimaliste » masque la maquette et montre le schéma (%s)" % (largeur, {k: e[k] for k in ("vue", "presses", "detail", "mini")}))
+        check(e["zones"] == ["tete", "fil", "barres", "fenetres", "ecran"] and e["pastilles"] == 16 and e["tags"] == 3,
+              "[aperçu %d px] quatre zones x quatre pastilles, plus les trois effets de l'écran du téléphone (%s)" % (largeur, e["zones"]))
+        check(stocke(page).get("apercuVue") == "mini", "[aperçu %d px] le choix de la vue est gardé (%s)" % (largeur, stocke(page).get("apercuVue")))
+        # Chaque zone range ses quatre pastilles sur UNE rangée, dans l'écran.
+        g = page.evaluate("""() => [...document.querySelectorAll('#apercuMini .mini-zone[data-z]:not([data-z=ecran])')].map(z => {
+            const r = [...z.querySelectorAll('.pastille')].map(p => p.getBoundingClientRect()), b = z.getBoundingClientRect();
+            return {z: z.dataset.z, hauts: new Set(r.map(x => Math.round(x.top))).size, dedans: r.every(x => x.left >= b.left - 1 && x.right <= b.right + 1), largeurs: r.map(x => Math.round(x.width))}; })""")
+        check(all(x["hauts"] == 1 and x["dedans"] for x in g) and not page.evaluate("() => document.documentElement.scrollWidth > innerWidth"),
+              "[aperçu %d px] chaque zone tient ses quatre pastilles sur une rangée, rien ne déborde (%s)" % (largeur, [(x["z"], x["hauts"], x["largeurs"]) for x in g][:2]))
+        # Elle suit l'état : tout allumé d'abord (jour J, automatique).
+        lit = """() => [...document.querySelectorAll('#apercuMini .mini-zone[data-z]:not([data-z=ecran]) .pastille')].map(p => p.dataset.z + ':' + p.dataset.f + ':' + (p.classList.contains('on') ? 'on' : 'off'))"""
+        etat = page.evaluate(lit)
+        check(len(etat) == 16 and all(x.endswith(":on") for x in etat), "[aperçu %d px] le jour J, tout est coloré dans les 16 pastilles" % largeur)
+        page.evaluate("() => { basculeZone('texte', 'fil', false); basculeCouleurFamille('badge', false); }"); page.wait_for_timeout(300)
+        etat = page.evaluate(lit)
+        coupes = sorted(x for x in etat if x.endswith(":off"))
+        attendu = sorted(["fil:texte:off"] + ["%s:badge:off" % z for z in ("tete", "fil", "barres", "fenetres")])
+        check(coupes == attendu, "[aperçu %d px] une zone et une famille coupées : exactement ces pastilles s'éteignent (%s)" % (largeur, coupes))
+        aria = page.evaluate("() => document.querySelector('#apercuMini .mini-zone[data-z=fil]').getAttribute('aria-label')")
+        check("textes coupés" in aria and "fonds colorés" in aria, "[aperçu %d px] le bloc le dit en clair à un lecteur d'écran (« %s »)" % (largeur, aria))
+        page.evaluate("() => basculeEffet('coulCadre', false)"); page.wait_for_timeout(200)
+        tags = page.evaluate("() => [...document.querySelectorAll('#apercuMini [data-e]')].map(p => p.dataset.e + ':' + (p.classList.contains('on') ? 'on' : 'off'))")
+        check("coulCadre:off" in tags and "coulBarreEtat:on" in tags, "[aperçu %d px] les trois effets de l'écran suivent leurs cases (%s)" % (largeur, tags))
+        # Les pastilles pleines TOURNENT avec le cycle ; une pastille coupée ne bouge pas.
+        res = []
+        for tt in (0, 2000):
+            page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(120)
+            res.append(page.evaluate("""() => { const c = s => getComputedStyle(document.querySelector('#apercuMini ' + s));
+                const off = c('.pastille.off[data-f=texte]');
+                return [c('.pastille.on[data-f=fond]').backgroundColor, [off.borderTopStyle, off.opacity, off.textDecorationLine]]; }"""))
+        check(res[0][0] != res[1][0] and res[0][1] == res[1][1] == ["dashed", "0.5", "line-through"],
+              "[aperçu %d px] une pastille pleine suit le cycle ; une coupée est en pointillé, éteinte et barrée (%s)" % (largeur, res))
+        check(not erreurs, "[aperçu %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        # Rouvrir : la vue choisie est celle de l'ouverture.
+        page.reload(wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
+        page.evaluate("() => openSettings()"); page.wait_for_timeout(400)
+        check(page.evaluate("() => document.getElementById('apercuCouleurs').getAttribute('data-vue')") == "mini",
+              "[aperçu %d px] rouverte, l'app reprend la vue minimaliste" % largeur)
+        page.click(".vue-apercu[data-v=detaillee]"); page.wait_for_timeout(400)
+        check(page.evaluate("() => document.getElementById('apercuCouleurs').getAttribute('data-vue')") == "detaillee"
+              and page.evaluate("() => document.querySelectorAll('#apercuCouleurs .maq-ecran .card').length") == 2,
+              "[aperçu %d px] retour à la vue détaillée : la maquette est reconstruite (2 cartes)" % largeur)
+        ctx.close()
+
+
 def test_tout_dans_le_cycle(nav, url):
     """Tout ce qui n'est pas blanc de base passe dans le cycle (Antoni, 11/11/2026) ; les erreurs rouges restent rouges."""
     print("\n[cycle] statuts, textes gris, badges, orange en blanc-jaune-orange ; les erreurs restent rouges")
@@ -8757,6 +8992,8 @@ def main():
             test_grand_moment_de_minuit(nav, url)
             test_frise_des_jalons(nav, url)
             test_aucun_texte_oublie_du_cycle(nav, url)
+            test_categories_de_couleur(nav, url)
+            test_apercu_minimaliste(nav, url)
             test_stats_et_reglages_compacts(nav, url)
             nav.close()
     finally:

@@ -7878,7 +7878,7 @@ def test_barre_du_bas_et_entete():
     check(all('ic("%s")' % n in ie for n in ("calendar_today", "schedule", "hourglass_top", "timer")),
           "les équivalences ont leurs quatre icônes Material : jours, heures, minutes, secondes")
     regle = re.search(r"\.compteur-tuiles\.equiv > div\{([^}]*)\}", html).group(1)
-    check("border-left:3px solid var(--accent)" in regle and "border-radius:var(--r-sm)" in regle,
+    check("border-left:3px solid var(--c-bord)" in regle and "border-radius:var(--r-sm)" in regle,
           "chaque équivalence est une carte à filet d'accent")
     check(re.search(r"\.compteur-tuiles\.equiv b\.long\{font-size:15px;\}", html) is not None,
           "et un total de neuf signes ou plus passe en corps réduit")
