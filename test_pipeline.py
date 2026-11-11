@@ -8080,18 +8080,19 @@ def test_le_decodeur_google_news_est_vraiment_la():
           "le décodeur Google News est importable — sinon le décodage "
           "s'arrête en silence (%s)" % (fetch_feeds.DECODEUR_ABSENT or "ok"))
 
-    # Le module nommément supprimé par selectolax 1.0. Le citer ici donne
-    # au prochain lecteur le nom exact à chercher, au lieu d'un ImportError
-    # anonyme remonté de trois niveaux.
+    # Le moteur que le décodeur utilise depuis la 0.2.2 (11/11/2026) : selectolax.lexbor.
+    # L'ancien, selectolax.parser (« Modest »), est celui que la 1.0 a retiré le 03/10/2026 ;
+    # on ne le teste plus, puisque plus rien ne l'importe. Le nom exact reste ici pour le
+    # prochain lecteur, au lieu d'un ImportError anonyme remonté de trois niveaux.
     try:
-        from selectolax.parser import HTMLParser
-        moteur = HTMLParser("<b>x</b>").css_first("b") is not None
+        from selectolax.lexbor import LexborHTMLParser
+        moteur = LexborHTMLParser("<b>x</b>").css_first("b") is not None
     except Exception as e:  # pragma: no cover - c'est précisément l'échec visé
         moteur = False
         print("     (%s)" % e)
     check(moteur,
-          "selectolax.parser répond — c'est CE module que la 1.0 retire, "
-          "et celui que googlenewsdecoder importe")
+          "selectolax.lexbor répond — c'est le moteur que googlenewsdecoder "
+          "importe depuis la 0.2.2")
 
     # Et le chemin d'analyse du décodeur, exercé sans réseau : parse_signature
     # est une fonction pure qui passe par selectolax. La suite n'ouvre
