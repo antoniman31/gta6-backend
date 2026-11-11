@@ -10039,6 +10039,34 @@ def test_menage_de_laudit():
     feed_store.valide_avant_ecriture(bon, precedent)
     check(True, "[audit] 4.12 tandis qu'un fichier intact passe sans broncher")
 
+    # 11/11/2026 : vingt-deux incidents du MÊME jour (la panne du 12/10) sortent ensemble de la
+    # fenêtre de 30 jours ; le garde-fou y voyait une perte de 33 à 11 et bloquait le robot à
+    # chaque passage (deux passages rouges, 16:00 et 16:08 UTC). Il compare désormais à ce qui survit.
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+    ce_jour = _dt(2026, 11, 11, 16, 1, tzinfo=_tz.utc)
+
+    def incident(age_j, k):
+        fin = ce_jour - _td(days=age_j, minutes=k)
+        return {"source": "s%d" % k, "debut": (fin - _td(hours=3)).isoformat(), "fin": fin.isoformat(), "heures": 3.0}
+    anciens = [incident(30.2, k) for k in range(22)]          # tous nés le même jour, juste hors fenêtre
+    recents = [incident(2 + k, 100 + k) for k in range(11)]
+    avant_rafale = {"items": precedent["items"], "sources_incidents": anciens + recents}
+    try:
+        feed_store.valide_avant_ecriture({"items": precedent["items"], "sources_incidents": recents},
+                                         avant_rafale, maintenant=ce_jour)
+        passe = True
+    except feed_store.FeedInvalide as e:
+        passe = False
+        print("     (%s)" % e)
+    check(passe, "[audit] 4.12 vingt-deux incidents du même jour qui sortent de la fenêtre de rétention ne bloquent pas la publication")
+    try:
+        feed_store.valide_avant_ecriture({"items": precedent["items"], "sources_incidents": recents[:3]},
+                                         avant_rafale, maintenant=ce_jour)
+        perte = False
+    except feed_store.FeedInvalide:
+        perte = True
+    check(perte, "[audit] 4.12 mais perdre en plus des incidents RÉCENTS (11 attendus, 3 reçus) est toujours refusé")
+
 
 def test_ce_que_le_robot_publie_est_bien_commite():
     print("\n[workflow] tout ce que le robot écrit est commité, et ignoré par la CI")
