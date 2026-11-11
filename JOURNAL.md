@@ -12705,3 +12705,11 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 
 - **Pourquoi à la main** : la PR Dependabot #227 était rouge sur une base vieille de 9 jours, et `@dependabot rebase` n'a rien changé en dix minutes (même commit, même base). Une ligne dans `requirements-dev.txt`.
 - **Mesuré** : playwright 1.64.1 lance le Chromium déjà installé du conteneur et rend une page ; pipeline, sources et audit verts. La suite navigateur complète a tourné avant le commit.
+
+### Robot bloqué : le garde-fou du journal des incidents — 11/11/2026
+
+- **Constat** : les passages du robot de 16:00 et 16:08 UTC (runs 2443 et 2444) sont rouges ; `feed.json` reste à son dernier état publié (15:01 UTC). Journal : `FeedInvalide : le journal des incidents tombe de 33 à 11 entrées — trop pour la seule fenêtre de rétention`. Rien à voir avec les dépendances.
+- **Cause** : vingt-deux des trente-trois incidents du journal datent du MÊME jour, le 12/10 (une seule panne). La rétention de 30 jours les a retirés tous ensemble ; le garde-fou, qui attend « un ou deux mois à la fois, jamais la moitié d'un coup », y a vu une perte et a refusé d'écrire. À chaque passage le même résultat : bloqué jusqu'à correction.
+- **Correction** : le garde-fou compare à ce qui SURVIT à la rétention (entrées de moins de 30 jours ; sans date de fin lisible, elles comptent comme survivantes), pas au journal brut. Une perte d'incidents récents reste refusée (11 attendus, 3 reçus : refusé).
+- **Contrôles** : deux dans l'audit 4.12 ; le premier échoue sur l'ancien code avec le message exact du robot. README à 2260 vérifications.
+- **Mon écart** : mes tests des lots précédents n'avaient aucun cas de rafale d'incidents sortant ensemble de la fenêtre.

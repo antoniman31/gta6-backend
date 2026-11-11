@@ -747,7 +747,7 @@ PERTE_MAX_RATIO = 0.10
 PERTE_MAX_ABSOLUE = 50
 
 
-def valide_avant_ecriture(data, precedent=None, elagues=0):
+def valide_avant_ecriture(data, precedent=None, elagues=0, maintenant=None):
     """Vérifie qu'un flux est publiable, et lève FeedInvalide sinon.
 
     Publier un fichier abîmé est pire que ne rien publier : l'app le charge,
@@ -812,15 +812,26 @@ def valide_avant_ecriture(data, precedent=None, elagues=0):
         if cle in (precedent or {}) and (precedent or {}).get(cle) and cle not in data:
             raise FeedInvalide(f"« {cle} » a disparu du fichier à publier")
 
-    # Le journal des incidents ne rétrécit que par la fenêtre de rétention,
-    # qui retire un ou deux mois à la fois — jamais la moitié d'un coup.
+    # Le journal des incidents ne rétrécit que par la fenêtre de rétention. On compare donc à ce
+    # qui SURVIT à la rétention, pas au journal brut : le 11/11/2026, vingt-deux des trente-trois
+    # incidents dataient du même jour (la panne du 12/10) et sont sortis ensemble de la fenêtre de
+    # 30 jours ; le garde-fou y a vu une perte de 33 à 11, a refusé d'écrire, et le robot est
+    # resté bloqué à chaque passage. Les entrées sans date de fin lisible comptent comme survivantes.
     av = (precedent or {}).get("sources_incidents")
     ap = data.get("sources_incidents")
-    if isinstance(av, list) and isinstance(ap, list) and len(av) >= 10 \
-       and len(ap) < len(av) / 2:
-        raise FeedInvalide(
-            f"le journal des incidents tombe de {len(av)} à {len(ap)} entrées "
-            f"— trop pour la seule fenêtre de rétention")
+    if isinstance(av, list) and isinstance(ap, list) and len(av) >= 10:
+        limite = (maintenant or datetime.now(timezone.utc)) - timedelta(days=INCIDENTS_JOURS)
+
+        def _expire(i):
+            try:
+                return bool(i.get("fin")) and parse_date_key(i["fin"]) < limite
+            except Exception:
+                return False
+        attendus = sum(1 for i in av if not _expire(i))
+        if len(ap) < attendus / 2:
+            raise FeedInvalide(
+                f"le journal des incidents tombe de {len(av)} à {len(ap)} entrées "
+                f"(attendu : environ {attendus} après la fenêtre de rétention)")
 
     return len(items)
 
