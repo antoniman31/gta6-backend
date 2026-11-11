@@ -1901,7 +1901,7 @@
      transform à la largeur disponible ; la hauteur du cadre est posée par construitMaquette. Les éléments fixes de la
      page (barre du bas) sont rendus dans le flux, l'en-tête reste visible même sur les pages où la vraie est masquée. */
   .apercu-couleurs{
-    position:relative; margin:6px 0 12px; padding:0; overflow:hidden;
+    position:relative; width:74%; margin:6px auto 12px; padding:0; overflow:hidden;
     border:2px solid var(--line); border-radius:0 0 var(--r-md) var(--r-md); background:var(--bg);
   }
   .apercu-couleurs.cadre{
@@ -1915,69 +1915,60 @@
     padding-bottom:6px;
   }
   .maq-ecran *{pointer-events:none;}
-  /* LA VUE MINIMALISTE (Antoni, 10/11/2026 : « un aperçu détaillé mais minimaliste aussi ») : un schéma épuré de l'écran, en quatre
-     blocs (les quatre zones), chacun avec ses quatre familles en pastilles. Pleine = colorée (elle prend l'accent, donc elle TOURNE avec
-     le cycle), grisée et barrée = coupée. Fait de l'état des réglages, pas d'éléments copiés : elle ne dépend d'aucune largeur. */
-  .vues-apercu{display:flex; gap:8px; margin:4px 0 0;}
-  .vue-apercu{flex:1; min-height:44px; font:600 13px 'JetBrains Mono',monospace;}
-  .vue-apercu[aria-pressed="true"]{background:var(--c-fond); color:var(--accent-contrast); border-color:transparent;}
-  .apercu-couleurs[data-vue="mini"] .maq-cadre{display:none;}
-  .apercu-couleurs[data-vue="detaillee"] .maq-mini{display:none;}
-  .maq-mini{padding:10px; display:grid; gap:8px;}
-  .mini-zone{border:1px solid var(--line); border-radius:var(--r-md); padding:8px 10px; display:grid; gap:6px;}
-  .mini-zone.haute{min-height:64px;} .mini-zone.grande{min-height:96px;}
-  .mini-zone h4{margin:0; font:700 11px 'JetBrains Mono',monospace; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim);}
-  .pastilles{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:6px;}
-  .pastille{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; min-width:0; height:40px; padding:0 2px;
-    border:2px solid var(--line); border-radius:var(--r-sm); font:800 13px 'JetBrains Mono',monospace; color:var(--text-dim);
-  }
-  .pastille small{font:600 9px 'JetBrains Mono',monospace; letter-spacing:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .mini-ecran-tags .pastille{flex-direction:row; height:28px; padding:0 10px; font-size:11px;}
-  .pastille.off{opacity:.5; border-style:dashed; text-decoration:line-through;}
-  .pastille.on[data-f="texte"]{color:var(--c-texte); border-color:var(--c-texte);}
-  .pastille.on[data-f="fond"]{background:var(--c-fond); border-color:var(--c-fond); color:var(--accent-contrast);}
-  .pastille.on[data-f="bord"]{border-color:var(--c-bord); color:var(--text);}
-  .pastille.on[data-f="badge"]{background:var(--orange); border-color:var(--orange); color:#100800;}
-  .mini-ecran-tags{display:flex; flex-wrap:wrap; gap:6px;}
-  .maq-ecran .maq-barre-etat{height:14px; background:#000;}
+  /* L'ÉCRAN RESSERRÉ (Antoni, 10/11/2026 : « 3, avec moins de hauteur, et enlève les détails inutiles ») : le conteneur ne prend que 74 %
+     de la largeur (l'échelle baisse d'autant), la frise des jalons, le sous-titre, le jour, le repère « nouveaux », la date et les boutons des
+     cartes sont retirés, les marges et les commandes sont resserrées. Reste tout ce qui change de couleur. */
+  .maq-ecran .maq-barre-etat{height:10px; background:#000;}
   .maq-ecran .maq-barre-etat.teinte{background:color-mix(in srgb, var(--accent) 16%, #000);}
-  .maq-ecran header.console{display:block !important; position:static !important; margin:8px 12px 10px;}
-  .maq-ecran .maq-corps{padding:0 16px;}
-  .maq-ecran .maq-corps .search-row, .maq-ecran .maq-corps .tab-row{margin-bottom:10px;}
-  .maq-ecran .barre-bas{position:static !important; inset:auto !important; transform:none !important; margin:8px 12px 0; width:auto !important;}
-  .maq-ecran .card{margin-bottom:10px;}
+  .maq-ecran header.console{display:block !important; position:static !important; margin:6px 10px;}
+  .maq-ecran .maq-corps{padding:0 10px;}
+  .maq-ecran .maq-corps .search-row, .maq-ecran .maq-corps .tab-row{margin-bottom:6px;}
+  .maq-ecran .barre-bas{position:static !important; inset:auto !important; transform:none !important; margin:6px 10px 0; width:auto !important;}
+  .maq-ecran .card{margin-bottom:6px;}
+  .maq-ecran button, .maq-ecran input{min-height:34px !important;}
+  .maq-ecran .card-title a{min-height:0 !important;}
+  .maq-ecran .card-title{margin-bottom:0;}
   html.cycle-couleur .apercu-couleurs.anim{animation:cycle-bord var(--cycle-duree) steps(24) infinite;}
-  .prereglages{display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 8px;}
+  /* LES QUATRE PRÉRÉGLAGES EN GRILLE 2 x 2 (Antoni, 11/11/2026 : « non, niveau bouton, pour le truc de sélection pour activer les modes
+     couleur ») : en gélules sur une ligne qui se replie, le quatrième (« Automatique ») passait SEUL sur une deuxième ligne à 390 px et les
+     deux rangées étaient inégales à 320 px (143 + 86, puis 70 + 119). Quatre boutons de même largeur, au même rayon que les pastilles. */
+  .prereglages{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:6px; margin:4px 0 8px;}
   .prereglage{
-    min-height:44px; padding:0 14px; border:1px solid var(--line); border-radius:var(--r-full);
-    background:var(--bg); color:var(--text); font:600 13px 'JetBrains Mono',monospace; cursor:pointer;
+    min-height:44px; min-width:0; width:100%; padding:0 6px; border:2px solid var(--line); border-radius:var(--r-sm);
+    background:var(--bg); color:var(--text); font:600 12px 'JetBrains Mono',monospace; cursor:pointer; white-space:nowrap;
   }
+  .prereglage[data-p="jourj"]{grid-column:1 / -1;}
   .prereglage[aria-pressed="true"]{background:var(--c-fond); border-color:var(--c-bord); color:var(--accent-contrast);}
   .personnaliser{
-    display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; min-height:44px;
+    display:flex; align-items:center; justify-content:space-between; gap:3px; width:100%; min-height:44px;
     padding:0 14px; border:0; border-top:1px solid var(--line); background:none; color:var(--text-dim);
-    font:600 13px 'JetBrains Mono',monospace; cursor:pointer; text-align:left;
+    font:600 12px 'JetBrains Mono',monospace; cursor:pointer; text-align:left; white-space:nowrap;
   }
   .personnaliser span:first-child{flex:1; color:var(--text);}
-  .personnaliser .ic{width:20px; height:20px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
+  .personnaliser .ic{width:16px; height:16px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
   .personnaliser[aria-expanded="true"] .ic{transform:rotate(180deg);}
   .effets-detail.ferme{display:none;}
   /* LES CATÉGORIES (10/11/2026) : des titres de section, et sous chaque famille un « Où ? » replié avec ses quatre zones. */
   .coul-titre{display:block; margin:14px 0 4px; font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim);}
-  .famille{border-top:1px solid var(--line); padding-top:2px;}
-  .famille:first-of-type{border-top:0;}
-  .ou-btn{
-    display:flex; align-items:center; gap:8px; width:100%; margin:0 0 4px; padding:4px 0; min-height:0;
-    background:none; border:none; color:var(--text-dim); font:600 12px 'JetBrains Mono',monospace; text-align:left; cursor:pointer; position:relative;
+  /* LES PASTILLES (Antoni, 10/11/2026, disposition 3 : « une zone, quatre familles ») : une ligne par zone de l'écran, quatre pastilles (une par
+     famille) à toucher ; une ligne « Toute la famille » en tête. Ce sont de VRAIES cases à cocher (même id, même événement « change »),
+     cachées sous leur pastille (opacité nulle, pleine taille) : le clavier et les lecteurs d'écran les voient comme des cases. */
+  .grille-couleurs{display:grid; gap:0; margin-bottom:6px;}
+  .gc-ligne{border-top:1px solid var(--line); padding:7px 0 8px;}
+  .gc-ligne:first-child{border-top:0;}
+  .gc-nom{display:block; margin-bottom:6px; font-size:13px; color:var(--text);}
+  .gc-tout .gc-nom{font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim);}
+  .chips{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:6px;}
+  .chip{position:relative; display:block;}
+  .chip input{position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; z-index:1;}
+  .chip-corps{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; min-height:44px; min-width:0; padding:4px 2px;
+    border:2px solid var(--line); border-radius:var(--r-sm); font:800 14px 'JetBrains Mono',monospace; color:var(--text-dim);
   }
-  .ou-btn span:first-child{flex:none;}
-  .ou-btn span:nth-child(2){flex:1; opacity:.85;}
-  .ou-btn::after{content:""; position:absolute; inset:-12px 0;}
-  .ou-btn .ic{width:18px; height:18px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
-  .ou-btn[aria-expanded="true"] .ic{transform:rotate(180deg);}
-  .zones{margin:0 0 6px 14px; padding-left:10px; border-left:2px solid var(--line);}
-  .zones.ferme{display:none;}
+  .chip-corps small{font:600 9px 'JetBrains Mono',monospace; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .chip input:checked + .chip-corps{background:var(--c-fond); border-color:var(--c-fond); color:var(--accent-contrast);}
+  .chip input:indeterminate + .chip-corps{border-color:var(--c-fond); border-style:dashed; color:var(--c-texte);}
+  .chip input:focus-visible + .chip-corps{outline:2px solid var(--text); outline-offset:2px;}
   /* L'écran de chargement du jour J : le « VI » du logo vire du bleu au rose (rotation de teinte,
      mesurée sur la capture) et la ligne principale prend le dégradé. */
   .splash.splash-jourj .splash-logo{filter:hue-rotate(125deg);}
@@ -2984,24 +2975,18 @@
       <!-- LA MAQUETTE FIDÈLE (Antoni, 10/11/2026 : « maj l'aperçu pour le rendre vraiment précis ») : l'écran de l'app en petit, fait
            des VRAIS éléments (en-tête et tuiles du compteur, recherche, onglets, jour, cartes, barre du bas, copiés de la page par
            construitMaquette) : il suit donc chaque case, famille et zone, sans règle à part. -->
-      <div class="vues-apercu" role="group" aria-label="Vue de l'aperçu">
-        <button type="button" class="vue-apercu" data-v="detaillee" aria-pressed="true" onclick="basculeVueApercu('detaillee')">Détaillée</button>
-        <button type="button" class="vue-apercu" data-v="mini" aria-pressed="false" onclick="basculeVueApercu('mini')">Minimaliste</button>
-      </div>
-      <div class="apercu-couleurs" id="apercuCouleurs" data-vue="detaillee"><div class="maq-cadre" aria-hidden="true"><div class="maq-ecran"></div></div><div class="maq-mini" id="apercuMini"></div></div>
+      <div class="apercu-couleurs" id="apercuCouleurs"><div class="maq-cadre" aria-hidden="true"><div class="maq-ecran"></div></div></div>
       <div class="setting-desc" hidden>
         L'aperçu est l'écran de l'app en miniature, avec ses vrais éléments : il montre en direct ce que chaque
         case colore ou non, zone par zone.
       </div>
       <div class="prereglages" role="group" aria-label="Préréglages des effets">
         <button type="button" class="prereglage" data-p="jourj" aria-pressed="false" onclick="appliquePrereglage('jourj')">Jour J complet</button>
-        <button type="button" class="prereglage" data-p="discret" aria-pressed="false" onclick="appliquePrereglage('discret')">Discret</button>
         <button type="button" class="prereglage" data-p="aucun" aria-pressed="false" onclick="appliquePrereglage('aucun')">Aucun</button>
         <button type="button" class="prereglage" data-p="auto" aria-pressed="false" onclick="appliquePrereglage('auto')">Automatique</button>
       </div>
       <div class="setting-desc" hidden>
-        « Jour J complet » colore tout, partout. « Discret » garde le cadre et les bordures, fixes, sans mouvement ni autre
-        effet. « Aucun » éteint tout. « Automatique » laisse chaque effet s'allumer tout seul le jour de la sortie, pendant
+        « Jour J complet » colore tout, partout. « Aucun » éteint tout. « Automatique » laisse chaque effet s'allumer tout seul le jour de la sortie, pendant
         24 h. Un préréglage remet aussi toutes les zones allumées. Aucun n'est surligné quand tu règles à la main.
       </div>
       <button type="button" class="personnaliser" id="persoBtn" aria-expanded="false" aria-controls="effetsDetail" onclick="basculePerso()">
@@ -3024,140 +3009,23 @@
           Ton téléphone réduit les animations : les couleurs restent fixes.
         </div>
         <span class="coul-titre">Ce qui est coloré</span>
-        <div class="famille" id="famille-texte">
-        <div class="setting-row">
-          <label for="coulTextes">Textes et icônes</label>
-          <input type="checkbox" id="coulTextes" onchange="basculeCouleurFamille('texte', this.checked)">
+        <div class="grille-couleurs">
+          <div class="gc-ligne gc-tout"><span class="gc-nom">Toute la famille</span><div class="chips"><label class="chip"><input type="checkbox" id="coulTextes" aria-label="Textes et icônes, toutes les zones" onchange="basculeCouleurFamille('texte', this.checked)"><span class="chip-corps"><b>Aa</b><small>textes</small></span></label><label class="chip"><input type="checkbox" id="coulFonds" aria-label="Fonds, boutons et onglets, toutes les zones" onchange="basculeCouleurFamille('fond', this.checked)"><span class="chip-corps"><b>▬</b><small>fonds</small></span></label><label class="chip"><input type="checkbox" id="coulBordures" aria-label="Bordures, toutes les zones" onchange="basculeCouleurFamille('bord', this.checked)"><span class="chip-corps"><b>▢</b><small>bordures</small></span></label><label class="chip"><input type="checkbox" id="coulBadges" aria-label="Badges et statuts, toutes les zones" onchange="basculeCouleurFamille('badge', this.checked)"><span class="chip-corps"><b>●</b><small>badges</small></span></label></div></div>
+          <div class="gc-ligne"><span class="gc-nom">En-tête et compteur</span><div class="chips"><label class="chip"><input type="checkbox" id="zone-texte-tete" aria-label="En-tête et compteur : Textes et icônes" onchange="basculeZoneChip('texte', 'tete', this.checked)"><span class="chip-corps"><b>Aa</b><small>textes</small></span></label><label class="chip"><input type="checkbox" id="zone-fond-tete" aria-label="En-tête et compteur : Fonds, boutons et onglets" onchange="basculeZoneChip('fond', 'tete', this.checked)"><span class="chip-corps"><b>▬</b><small>fonds</small></span></label><label class="chip"><input type="checkbox" id="zone-bord-tete" aria-label="En-tête et compteur : Bordures" onchange="basculeZoneChip('bord', 'tete', this.checked)"><span class="chip-corps"><b>▢</b><small>bordures</small></span></label><label class="chip"><input type="checkbox" id="zone-badge-tete" aria-label="En-tête et compteur : Badges et statuts" onchange="basculeZoneChip('badge', 'tete', this.checked)"><span class="chip-corps"><b>●</b><small>badges</small></span></label></div></div>
+          <div class="gc-ligne"><span class="gc-nom">Fil d'articles</span><div class="chips"><label class="chip"><input type="checkbox" id="zone-texte-fil" aria-label="Fil d'articles : Textes et icônes" onchange="basculeZoneChip('texte', 'fil', this.checked)"><span class="chip-corps"><b>Aa</b><small>textes</small></span></label><label class="chip"><input type="checkbox" id="zone-fond-fil" aria-label="Fil d'articles : Fonds, boutons et onglets" onchange="basculeZoneChip('fond', 'fil', this.checked)"><span class="chip-corps"><b>▬</b><small>fonds</small></span></label><label class="chip"><input type="checkbox" id="zone-bord-fil" aria-label="Fil d'articles : Bordures" onchange="basculeZoneChip('bord', 'fil', this.checked)"><span class="chip-corps"><b>▢</b><small>bordures</small></span></label><label class="chip"><input type="checkbox" id="zone-badge-fil" aria-label="Fil d'articles : Badges et statuts" onchange="basculeZoneChip('badge', 'fil', this.checked)"><span class="chip-corps"><b>●</b><small>badges</small></span></label></div></div>
+          <div class="gc-ligne"><span class="gc-nom">Barres du haut et du bas</span><div class="chips"><label class="chip"><input type="checkbox" id="zone-texte-barres" aria-label="Barres du haut et du bas : Textes et icônes" onchange="basculeZoneChip('texte', 'barres', this.checked)"><span class="chip-corps"><b>Aa</b><small>textes</small></span></label><label class="chip"><input type="checkbox" id="zone-fond-barres" aria-label="Barres du haut et du bas : Fonds, boutons et onglets" onchange="basculeZoneChip('fond', 'barres', this.checked)"><span class="chip-corps"><b>▬</b><small>fonds</small></span></label><label class="chip"><input type="checkbox" id="zone-bord-barres" aria-label="Barres du haut et du bas : Bordures" onchange="basculeZoneChip('bord', 'barres', this.checked)"><span class="chip-corps"><b>▢</b><small>bordures</small></span></label><label class="chip"><input type="checkbox" id="zone-badge-barres" aria-label="Barres du haut et du bas : Badges et statuts" onchange="basculeZoneChip('badge', 'barres', this.checked)"><span class="chip-corps"><b>●</b><small>badges</small></span></label></div></div>
+          <div class="gc-ligne"><span class="gc-nom">Réglages, statistiques et fenêtres</span><div class="chips"><label class="chip"><input type="checkbox" id="zone-texte-fenetres" aria-label="Réglages, statistiques et fenêtres : Textes et icônes" onchange="basculeZoneChip('texte', 'fenetres', this.checked)"><span class="chip-corps"><b>Aa</b><small>textes</small></span></label><label class="chip"><input type="checkbox" id="zone-fond-fenetres" aria-label="Réglages, statistiques et fenêtres : Fonds, boutons et onglets" onchange="basculeZoneChip('fond', 'fenetres', this.checked)"><span class="chip-corps"><b>▬</b><small>fonds</small></span></label><label class="chip"><input type="checkbox" id="zone-bord-fenetres" aria-label="Réglages, statistiques et fenêtres : Bordures" onchange="basculeZoneChip('bord', 'fenetres', this.checked)"><span class="chip-corps"><b>▢</b><small>bordures</small></span></label><label class="chip"><input type="checkbox" id="zone-badge-fenetres" aria-label="Réglages, statistiques et fenêtres : Badges et statuts" onchange="basculeZoneChip('badge', 'fenetres', this.checked)"><span class="chip-corps"><b>●</b><small>badges</small></span></label></div></div>
         </div>
         <div class="setting-desc" hidden>
-          Le blanc et les gris des textes, les icônes et le texte des champs suivent la couleur. Les titres d'articles restent blancs.
+          Aa textes et icônes (les titres d'articles restent blancs) · ▬ fonds, boutons et onglets · ▢ bordures en dégradé et traits · ● pastilles de langue et de catégorie, voyants, orange des articles officiels (les erreurs restent rouges). Une pastille pleine est colorée ; « Toute la famille » les allume ou les coupe dans les quatre zones.
         </div>
-          <button type="button" class="ou-btn" id="ou-texte" aria-expanded="false" aria-controls="zones-texte" onclick="basculeOu('texte')">
-            <span>Où ?</span><span id="ou-texte-n"></span>
-            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
-          </button>
-          <div class="zones ferme" id="zones-texte">
-            <div class="setting-row">
-              <label for="zone-texte-tete">En-tête et compteur</label>
-              <input type="checkbox" id="zone-texte-tete" onchange="basculeZone('texte', 'tete', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-texte-fil">Fil d'articles</label>
-              <input type="checkbox" id="zone-texte-fil" onchange="basculeZone('texte', 'fil', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-texte-barres">Barres du haut et du bas</label>
-              <input type="checkbox" id="zone-texte-barres" onchange="basculeZone('texte', 'barres', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-texte-fenetres">Réglages, statistiques et fenêtres</label>
-              <input type="checkbox" id="zone-texte-fenetres" onchange="basculeZone('texte', 'fenetres', this.checked)">
-            </div>
-          </div>
-        </div>
-        <div class="famille" id="famille-fond">
         <div class="setting-row">
-          <label for="coulFonds">Fonds, boutons et onglets</label>
-          <input type="checkbox" id="coulFonds" onchange="basculeCouleurFamille('fond', this.checked)">
+        <label for="coulControles">Cases à cocher et curseur de saisie</label>
+        <input type="checkbox" id="coulControles" onchange="basculeEffet('coulControles', this.checked)">
         </div>
         <div class="setting-desc" hidden>
-          Les fonds colorés : bouton et onglet actifs, barre du bas, fonds teintés, graphiques.
-        </div>
-          <button type="button" class="ou-btn" id="ou-fond" aria-expanded="false" aria-controls="zones-fond" onclick="basculeOu('fond')">
-            <span>Où ?</span><span id="ou-fond-n"></span>
-            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
-          </button>
-          <div class="zones ferme" id="zones-fond">
-            <div class="setting-row">
-              <label for="zone-fond-tete">En-tête et compteur</label>
-              <input type="checkbox" id="zone-fond-tete" onchange="basculeZone('fond', 'tete', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-fond-fil">Fil d'articles</label>
-              <input type="checkbox" id="zone-fond-fil" onchange="basculeZone('fond', 'fil', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-fond-barres">Barres du haut et du bas</label>
-              <input type="checkbox" id="zone-fond-barres" onchange="basculeZone('fond', 'barres', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-fond-fenetres">Réglages, statistiques et fenêtres</label>
-              <input type="checkbox" id="zone-fond-fenetres" onchange="basculeZone('fond', 'fenetres', this.checked)">
-            </div>
-            
-          </div>
-          <div class="setting-row">
-          <label for="coulControles">Cases à cocher et curseur de saisie</label>
-          <input type="checkbox" id="coulControles" onchange="basculeEffet('coulControles', this.checked)">
-          </div>
-          <div class="setting-desc" hidden>
-          Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
-          couleurs animées.
-          </div>
-        </div>
-        <div class="famille" id="famille-bord">
-        <div class="setting-row">
-          <label for="coulBordures">Bordures</label>
-          <input type="checkbox" id="coulBordures" onchange="basculeCouleurFamille('bord', this.checked)">
-        </div>
-        <div class="setting-desc" hidden>
-          Les bordures de 2 px des tuiles du compteur et des cartes d'article prennent le dégradé du
-          cadre, et tournent avec les couleurs animées. Les cartes officielles gardent leur bordure
-          orange. Seules les cartes à l'écran tournent.
-        </div>
-          <button type="button" class="ou-btn" id="ou-bord" aria-expanded="false" aria-controls="zones-bord" onclick="basculeOu('bord')">
-            <span>Où ?</span><span id="ou-bord-n"></span>
-            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
-          </button>
-          <div class="zones ferme" id="zones-bord">
-            <div class="setting-row">
-              <label for="zone-bord-tete">En-tête et compteur</label>
-              <input type="checkbox" id="zone-bord-tete" onchange="basculeZone('bord', 'tete', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-bord-fil">Fil d'articles</label>
-              <input type="checkbox" id="zone-bord-fil" onchange="basculeZone('bord', 'fil', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-bord-barres">Barres du haut et du bas</label>
-              <input type="checkbox" id="zone-bord-barres" onchange="basculeZone('bord', 'barres', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-bord-fenetres">Réglages, statistiques et fenêtres</label>
-              <input type="checkbox" id="zone-bord-fenetres" onchange="basculeZone('bord', 'fenetres', this.checked)">
-            </div>
-          </div>
-        </div>
-        <div class="famille" id="famille-badge">
-        <div class="setting-row">
-          <label for="coulBadges">Badges et statuts</label>
-          <input type="checkbox" id="coulBadges" onchange="basculeCouleurFamille('badge', this.checked)">
-        </div>
-        <div class="setting-desc" hidden>
-          Les pastilles de langue et de catégorie, les voyants vert et jaune, l'orange des articles officiels. Les erreurs restent rouges.
-        </div>
-          <button type="button" class="ou-btn" id="ou-badge" aria-expanded="false" aria-controls="zones-badge" onclick="basculeOu('badge')">
-            <span>Où ?</span><span id="ou-badge-n"></span>
-            <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg>
-          </button>
-          <div class="zones ferme" id="zones-badge">
-            <div class="setting-row">
-              <label for="zone-badge-tete">En-tête et compteur</label>
-              <input type="checkbox" id="zone-badge-tete" onchange="basculeZone('badge', 'tete', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-badge-fil">Fil d'articles</label>
-              <input type="checkbox" id="zone-badge-fil" onchange="basculeZone('badge', 'fil', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-badge-barres">Barres du haut et du bas</label>
-              <input type="checkbox" id="zone-badge-barres" onchange="basculeZone('badge', 'barres', this.checked)">
-            </div>
-            <div class="setting-row">
-              <label for="zone-badge-fenetres">Réglages, statistiques et fenêtres</label>
-              <input type="checkbox" id="zone-badge-fenetres" onchange="basculeZone('badge', 'fenetres', this.checked)">
-            </div>
-          </div>
+        Les cases à cocher et le curseur clignotant des champs suivent la couleur d'accent, donc les
+        couleurs animées.
         </div>
         <span class="coul-titre">Écran du téléphone</span>
         <div class="setting-row">
@@ -3651,8 +3519,6 @@ const DEFAULT_SETTINGS = {
   // c'est la case « coulBordures » d'origine. coulZones ne garde que les couples coupés : { "texte:fil": false }.
   coulTypes: { texte: null, fond: null, badge: null },
   coulZones: {},
-  // La vue de l'aperçu des couleurs : « detaillee » (la maquette fidèle) ou « mini » (le schéma épuré).
-  apercuVue: "detaillee",
   spoilerKeywords: MOTS_SPOILER.slice(),
   maxDisplay: 500,
   similarityThreshold: 72,
@@ -3997,6 +3863,12 @@ function sauveReglages(erreur){
 }
 // Écrit ICI et nulle part ailleurs : une famille cochée d'office ne devient pas un « true » parce qu'un autre champ a été enregistré.
 function basculeCouleurFamille(f, actif){
+  // « Toute la famille » : allumée, elle rend aussi les quatre zones coupées ; coupée, elle éteint la famille partout.
+  if(actif){
+    const zones = Object.assign({}, settings.coulZones);
+    for(const z of COUL_ZONES) delete zones[f + ":" + z.id];
+    settings.coulZones = zones;
+  }
   if(f === "bord"){ basculeEffet("coulBordures", actif); return; }
   settings.coulTypes = Object.assign({}, settings.coulTypes, { [f]: !!actif });
   sauveReglages("Erreur sauvegarde de la famille " + f);
@@ -4013,12 +3885,25 @@ function basculeZone(f, z, actif){
   majReglagesEffets();
   requestAnimationFrame(syncCycle);
 }
-function basculeOu(f){
-  const zones = document.getElementById("zones-" + f), bouton = document.getElementById("ou-" + f);
-  if(!zones || !bouton) return;
-  const ouvre = zones.classList.contains("ferme");
-  zones.classList.toggle("ferme", !ouvre);
-  bouton.setAttribute("aria-expanded", String(ouvre));
+// Une pastille de zone. Allumer UNE zone d'une famille éteinte n'allume que celle-là : la famille est rendue à « vrai » et ses trois autres
+// zones sont coupées ; sinon c'est une simple bascule du couple.
+function basculeZoneChip(f, z, veut){
+  const now = new Date();
+  if(veut && !familleActive(f, now)){
+    const zones = Object.assign({}, settings.coulZones);
+    for(const autre of COUL_ZONES){
+      if(autre.id === z) delete zones[f + ":" + autre.id]; else zones[f + ":" + autre.id] = false;
+    }
+    settings.coulZones = zones;
+    if(f === "bord") settings.coulBordures = true;
+    else settings.coulTypes = Object.assign({}, settings.coulTypes, { [f]: true });
+    sauveReglages("Erreur sauvegarde de la zone " + f + ":" + z);
+    appliqueEffetsJourJ(now);
+    majReglagesEffets();
+    requestAnimationFrame(syncCycle);
+    return;
+  }
+  basculeZone(f, z, veut);
 }
 
 // Pose les classes de la page selon les cases : une seule fonction, appelée à chaque battement.
@@ -4051,11 +3936,9 @@ function basculeEffet(cle, actif){
 // LA CASE GLOBALE : coche tout, décoche tout, ou « à moitié » quand les effets divergent. Elle ÉCRIT chaque
 // réglage (true ou false), à la différence de l'automatique : un effet allumé d'un coup le reste après le jour J.
 // LES PRÉRÉGLAGES (rangement C, 11/11/2026). Chacun ÉCRIT chaque réglage ; « Automatique » les remet à null.
-// « Discret » : le cadre et les bordures, fixes ; ni mouvement, ni barre d'état, ni chargement, ni commandes.
 // Les familles de couleur (textes, fonds, badges) et les zones coupées font partie du préréglage : il remet les zones à « toutes allumées ».
 const PREREGLAGES = {
   jourj:   { cycleCouleurs: true,  coulCadre: true,  coulBarreEtat: true,  coulChargement: true,  coulControles: true,  coulBordures: true,  types: { texte: true,  fond: true,  badge: true } },
-  discret: { cycleCouleurs: false, coulCadre: true,  coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: true,  types: { texte: false, fond: false, badge: false } },
   aucun:   { cycleCouleurs: false, coulCadre: false, coulBarreEtat: false, coulChargement: false, coulControles: false, coulBordures: false, types: { texte: false, fond: false, badge: false } },
   auto:    { cycleCouleurs: null,  coulCadre: null,  coulBarreEtat: null,  coulChargement: null,  coulControles: null,  coulBordures: null,  types: { texte: null,  fond: null,  badge: null } },
 };
@@ -4079,29 +3962,25 @@ function majReglagesEffets(){
     a.classList.toggle("bord", effetActif("coulBordures", now));
     a.classList.toggle("anim", effetActif("cycleCouleurs", now));
   }
-  // Les familles de couleur : leur case, et leurs quatre zones (grisées quand la famille est coupée).
+  // Les familles de couleur : « toute la famille » (cochée si les quatre zones le sont, à moitié si certaines seulement) et chaque pastille de zone.
   let nFam = 0;
   for(const f of COUL_FAMILLES){
     const actif = familleActive(f.id, now);
     if(actif) nFam++;
-    const c = document.getElementById(f.cle);
-    if(c) c.checked = actif;
     let nZ = 0;
     for(const z of COUL_ZONES){
       const cz = document.getElementById("zone-" + f.id + "-" + z.id);
-      const on = zoneActive(f.id, z.id);
+      const on = actif && zoneActive(f.id, z.id);
       if(on) nZ++;
-      if(cz){ cz.checked = on; cz.disabled = !actif; }
+      if(cz) cz.checked = on;
     }
-    const ou = document.getElementById("ou-" + f.id + "-n");
-    if(ou) ou.textContent = actif ? nZ + " sur " + COUL_ZONES.length : "coupé";
+    const c = document.getElementById(f.cle);
+    if(c){ c.checked = nZ === COUL_ZONES.length; c.indeterminate = nZ > 0 && nZ < COUL_ZONES.length; }
   }
   const n = EFFETS_JOUR_J.filter(c => c !== "coulBordures" && effetActif(c, now)).length + nFam;
   const total = EFFETS_JOUR_J.length - 1 + COUL_FAMILLES.length;
   const compte = document.getElementById("persoCompte");
   if(compte) compte.textContent = n + " sur " + total + " allumés";
-  majVueApercu();
-  construitMiniature();
   construitMaquette();
 }
 // LA MAQUETTE FIDÈLE (Antoni, 10/11/2026 : « maj l'aperçu pour le rendre vraiment précis »). On COPIE les vrais éléments de la
@@ -4111,18 +3990,13 @@ function majReglagesEffets(){
 // (largeur nulle) : openSettings la rappelle une fois la page visible.
 const MAQUETTE_LARGEUR = 390;
 const MAQUETTE_CARTES = `<div class="maq-corps">
-  <div class="repere-nouveaux dans-ecran">▲ 1 nouveau · déjà vus ▼</div>
-  <h2 class="day-label dans-ecran">Aujourd'hui</h2>
   <div class="card new dans-ecran"><div class="card-top"><div class="card-body">
     <div class="card-src-row"><span class="card-src">Source</span><span class="tag-badge tag-lang">FR</span><span class="tag-cat">Date de sortie</span></div>
     <h3 class="card-title"><a href="#" tabindex="-1">Titre d'un article</a></h3>
-    <div class="card-date">il y a 1h · 19 nov., 00:30</div>
-    <div class="card-actions"><button class="card-mark" data-icon-only="1" tabindex="-1" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check_circle"></use></svg></button><button class="card-mark" data-icon-only="1" tabindex="-1" aria-hidden="true"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg></button></div>
   </div></div></div>
   <div class="card official dans-ecran"><div class="card-top"><div class="card-body">
     <div class="card-src-row"><span class="card-src">Rockstar</span><span class="official-badge">OFFICIEL ROCKSTAR</span></div>
     <h3 class="card-title"><a href="#" tabindex="-1">Un article officiel</a></h3>
-    <div class="card-date">il y a 2h · 19 nov., 00:02</div>
   </div></div></div>
 </div>`;
 function construitMaquette(){
@@ -4140,6 +4014,7 @@ function construitMaquette(){
       for(const a of ["id", "onclick", "oninput", "onchange", "data-etat"]) x.removeAttribute(a);
       if(x.matches("button, input, a")) x.setAttribute("tabindex", "-1");
     }
+    for(const inutile of c.querySelectorAll(".frise-jalons, .compteur-sous")) inutile.remove();
     return c;
   };
   const barre = document.createElement("div");
@@ -4154,44 +4029,6 @@ function construitMaquette(){
   const echelle = m.clientWidth / MAQUETTE_LARGEUR;
   ecran.style.transform = "scale(" + echelle + ")";
   m.querySelector(".maq-cadre").style.height = Math.ceil(ecran.offsetHeight * echelle) + "px";
-}
-// LA VUE MINIMALISTE de l'aperçu : quatre blocs (les zones) × quatre pastilles (les familles), plus les trois effets de l'écran du téléphone.
-// Un bloc dit en clair, pour un lecteur d'écran, ce qui est coloré ou coupé dans la zone.
-const MINI_SYMBOLES = { texte: "Aa", fond: "▬", bord: "▢", badge: "●" };
-const MINI_COURT = { texte: "Textes", fond: "Fonds", bord: "Bordures", badge: "Badges" };
-function construitMiniature(){
-  const cible = document.getElementById("apercuMini");
-  if(!cible) return;
-  const now = new Date();
-  const formes = { tete: "haute", fil: "grande", barres: "haute", fenetres: "haute" };
-  let html = "";
-  for(const z of COUL_ZONES){
-    let aria = z.nom + " : ", pastilles = "";
-    for(const f of COUL_FAMILLES){
-      const on = familleActive(f.id, now) && zoneActive(f.id, z.id);
-      pastilles += '<span class="pastille ' + (on ? "on" : "off") + '" data-f="' + f.id + '" data-z="' + z.id + '" aria-hidden="true">'
-        + MINI_SYMBOLES[f.id] + '<small>' + MINI_COURT[f.id] + '</small></span>';
-      aria += MINI_COURT[f.id].toLowerCase() + (on ? " colorés" : " coupés") + (f === COUL_FAMILLES[COUL_FAMILLES.length - 1] ? "." : ", ");
-    }
-    html += '<div class="mini-zone ' + formes[z.id] + '" data-z="' + z.id + '" role="img" aria-label="' + aria.replace(/"/g, "") + '"><h4>' + z.nom + '</h4><div class="pastilles">' + pastilles + '</div></div>';
-  }
-  const ecran = [["coulCadre", "Cadre"], ["coulBarreEtat", "Barre d'état"], ["coulChargement", "Chargement"]];
-  html += '<div class="mini-zone" data-z="ecran"><h4>Écran du téléphone</h4><div class="mini-ecran-tags">'
-    + ecran.map(([cle, nom]) => '<span class="pastille ' + (effetActif(cle, now) ? "on" : "off") + '" data-f="bord" data-e="' + cle + '">' + nom + '</span>').join("")
-    + '</div></div>';
-  cible.innerHTML = html;
-}
-function majVueApercu(){
-  const m = document.getElementById("apercuCouleurs");
-  const v = settings.apercuVue === "mini" ? "mini" : "detaillee";
-  if(m) m.setAttribute("data-vue", v);
-  for(const b of document.querySelectorAll(".vue-apercu")) b.setAttribute("aria-pressed", String(b.dataset.v === v));
-}
-function basculeVueApercu(v){
-  settings.apercuVue = v === "mini" ? "mini" : "detaillee";
-  sauveReglages("Erreur sauvegarde de la vue de l'aperçu");
-  majVueApercu();
-  requestAnimationFrame(construitMaquette);
 }
 window.addEventListener("resize", () => requestAnimationFrame(construitMaquette));
 function basculePerso(){

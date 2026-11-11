@@ -12666,3 +12666,29 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 - **Rien n'a bougé dans `docs/agenda.json`** : aucune entrée n'entre ni ne sort ; c'est l'affichage qui filtre. Cache v105.
 - **Contrôles** : l'entrée est encore là à 23:59:59 le jour même, a disparu à minuit ; dans le panneau, la ligne d'« hier » n'apparaît plus et le contraste n'a plus d'état « passé » ; rejoués contre l'ancienne règle (`jours < -1`) : attrapés.
 - **Le libellé du 19/11 modifié à la main a fait planter la CI** (11/11/2026, commit 85d370b sur `main`) : Antoni a réécrit l'entrée 5 de `docs/agenda.json` (« Map de Leonida en téléchargement gratuit ; Map/Affiche recto-verso vendu : 0,99 € ») ; elle faisait 81 caractères, le contrôle « le vrai fichier est valide » (`test_pipeline.py`) en accepte 80 au plus, pour que la ligne tienne dans le panneau du compteur à 320 px. Rien n'était cassé côté données : seul le seuil. Choix d'Antoni parmi quatre : retirer les deux-points avant le prix (79 caractères) ; le seuil n'a PAS été relevé. C'est la seule modification de `docs/agenda.json` de ce lot, faite sur son instruction.
+
+### L'aperçu des couleurs : écran resserré, sans la vue minimaliste — 11/11/2026
+
+- **Demandé par Antoni** : après trois séries de maquettes, « on oublie la version minimale », puis, sur « l'écran resserré » (version 3) : « avec moins de hauteur, et enlève les détails inutiles ».
+- **Fait** : la vue minimaliste, son bouton, `settings.apercuVue` et leur test sont retirés. La maquette n'occupe plus que 74 % de la largeur (l'échelle baisse d'autant), sans la frise des jalons, le sous-titre « GTA VI est sorti », le jour, le repère « nouveaux », les dates ni les boutons des cartes ; marges et commandes resserrées. **Mesuré** : 243 px de haut à 320 px de large et 309 px à 390 px, contre 620 avant. Cache v106.
+- **Mon erreur** : en retirant le bloc CSS de la vue minimaliste, j'ai emporté avec lui les règles de la maquette qui le suivaient (barre d'état, marges de l'en-tête, barre du bas dans le flux) ; je les ai réécrites, resserrées.
+- **Contrôles** : la maquette ne contient aucun des six détails retirés et fait au plus 330 px de haut aux deux largeurs.
+
+### Réglages › Couleurs : des pastilles à la place des listes à déplier — 11/11/2026
+
+- **Demandé par Antoni** (capture à l'appui : seize cases et quatre « Où ? » dépliés, 660 px) : « il faut modifier ça aussi, propose plusieurs versions » ; quatre dispositions proposées (matrice, pastilles par famille, **pastilles par zone**, onglets de famille) ; choix : « 3 », une zone, quatre familles.
+- **Fait** : une ligne « Toute la famille » et une ligne par zone de l'écran, quatre pastilles chacune (Aa textes · ▬ fonds · ▢ bordures · ● badges). Ce sont de VRAIES cases à cocher (mêmes identifiants, même événement « change », nom lisible) cachées sous leur pastille ; « Toute la famille » est cochée si les quatre zones le sont, « à moitié » (`indeterminate`) sinon. **Règles** : allumer UNE pastille d'une famille éteinte n'allume que celle-là (la famille passe à `true`, les trois autres zones sont coupées) ; allumer « Toute la famille » efface aussi les coupures de la famille. Les « Où ? », `.famille` et `.zones` sont retirés. Cache v107.
+- **Mesuré** : la grille fait 407 px de haut à 320 comme à 390 px, sans rien à déplier, contre 280 px replié (rien de visible) et 660 px déplié. **Mon écart** : la maquette annonçait 327 px ; les pastilles de 44 px (minimum tactile) et les titres de ligne font 407 px, je l'ai dit à Antoni.
+
+### Réglages › Couleurs : les quatre modes en grille 2 × 2 — 11/11/2026
+
+- **Demandé par Antoni** : « niveau bouton pour le truc de sélection pour activer les modes couleur ».
+- **Fait** : les quatre préréglages (Jour J complet, Discret, Aucun, Automatique) passent en grille 2 × 2, boutons de même largeur, une seule ligne de texte (police 12 px), 44 px de haut ; la ligne « Personnaliser · N sur 9 allumés » ne passe plus à la ligne.
+- **Mesuré** : à 320 px, quatre boutons de 126 px ; à 390 px, de 161 px ; Personnaliser sur une ligne (16 px de texte dans 44 px) aux deux largeurs.
+- **Contrôle** : `test_categories_de_couleur` vérifie les deux largeurs ; refusé face à l'ancienne mise en page en flex-wrap (boutons de 258 px, une colonne) et face à un `white-space:normal` sur « Personnaliser » (texte sur deux lignes). Un `white-space:normal` sur les préréglages seuls passe encore : les libellés tiennent déjà, le `nowrap` n'est qu'un garde-fou.
+
+### Préréglage « Discret » supprimé — 11/11/2026
+
+- **Demandé par Antoni** : « supprime Discret ».
+- **Fait** : le bouton, son entrée dans `PREREGLAGES`, sa phrase d'explication et son contrôle sont retirés. Restent trois préréglages : « Jour J complet » sur toute la largeur, « Aucun » et « Automatique » côte à côte dessous (grille 2 colonnes, 258 px puis 126 + 126 px à 320 px ; 328 puis 161 + 161 à 390 px). Les réglages déjà écrits ne changent pas : un téléphone qui avait « Discret » n'a simplement plus de bouton surligné.
+- **Contrôles** : le test des préréglages compte trois boutons ; le test « réglage à la main » passe par « Aucun » avant de cocher une case (sinon « Jour J complet » restait surligné). Cache `gta6watch-shell-v108`.
