@@ -4292,12 +4292,11 @@ def test_agenda_jours_civils(nav, url):
           "00:00:00 (%s puis %s)" % (r["avantMinuit"], r["apresMinuit"]))
     check(r["etatJour"] == "aujourdhui",
           "le jour même s'annonce « aujourd'hui » (%s)" % r["etatJour"])
-    check(r["finDuJour"] == 0 and r["lendemain"] == -1
-          and r["etatLendemain"] == "passe",
-          "le lendemain, l'entrée est « passée » et grisée (%s, %s, %s)"
-          % (r["finDuJour"], r["lendemain"], r["etatLendemain"]))
+    check(r["finDuJour"] == 0 and r["lendemain"] is None and r["etatLendemain"] is None,
+          "à 23:59:59 le jour même elle est encore là (J-0), à minuit elle a DISPARU : plus de « passé d'un jour » grisé "
+          "(Antoni, 11/11/2026) (%s, %s, %s)" % (r["finDuJour"], r["lendemain"], r["etatLendemain"]))
     check(r["deuxJoursApres"] is None,
-          "deux jours après, elle a disparu (%s)" % r["deuxJoursApres"])
+          "deux jours après, elle a toujours disparu (%s)" % r["deuxJoursApres"])
     check(r["avantDST"] == 1 and r["apresDST"] == 0,
           "le changement d'heure du 25/10 ne décale pas la frontière : J-1 "
           "puis J-0 à la seconde (%s puis %s)" % (r["avantDST"], r["apresDST"]))
@@ -4393,13 +4392,13 @@ def test_agenda_dans_le_panneau(nav, url):
     ctx, page, erreurs = ouvre(320, bon)
     lignes = page.evaluate("""() => [...document.querySelectorAll('#compteurContenu .compteur-agenda li')]
         .map(li => ({classe: li.className, texte: li.textContent}))""")
-    check(len(lignes) == 3, "[agenda] trois lignes affichées (%d)" % len(lignes))
-    if len(lignes) == 3:
-        check(lignes[0]["classe"] == "passe" and "Hier" in lignes[0]["texte"],
-              "[agenda] le passé d'un jour est marqué « Hier » et grisé")
-        check("J-2" in lignes[1]["texte"] and "annoncé" in lignes[1]["texte"],
-              "[agenda] 29/10 est à J-2 et « annoncé » (%s)" % lignes[1]["texte"])
-        check("selon la presse" in lignes[2]["texte"] and "à revérifier" in lignes[2]["texte"],
+    check(len(lignes) == 2, "[agenda] deux lignes affichées, l'événement d'hier a disparu (%d)" % len(lignes))
+    check(not any("Hier" in l["texte"] or "passé" in l["texte"] for l in lignes) and not any(l["classe"] == "passe" for l in lignes),
+          "[agenda] rien de « passé » ni d'« Hier » : un événement passé disparaît (Antoni, 11/11/2026)")
+    if len(lignes) == 2:
+        check("J-2" in lignes[0]["texte"] and "annoncé" in lignes[0]["texte"],
+              "[agenda] 29/10 est à J-2 et « annoncé » (%s)" % lignes[0]["texte"])
+        check("selon la presse" in lignes[1]["texte"] and "à revérifier" in lignes[1]["texte"],
               "[agenda] une vérification de plus de 14 jours se dit « à revérifier »")
         # LA FRISE (choisie le 03/11/2026) : le jour en gros dans sa colonne, le
         # mois en petit dessous, un rail, et le statut dans `data-statut` — pas
@@ -4410,17 +4409,17 @@ def test_agenda_dans_le_panneau(nav, url):
                          rail: !!li.querySelector('.ag-rail'),
                          statut: li.getAttribute('data-statut'),
                          libelle: (li.querySelector('.ag-t') || {}).textContent}))""")
-        check([f["jour"] for f in frise] == ["26", "29", "12"]
-              and [f["mois"] for f in frise] == ["OCT", "OCT", "NOV"],
+        check([f["jour"] for f in frise] == ["29", "12"]
+              and [f["mois"] for f in frise] == ["OCT", "NOV"],
               "[agenda] la frise donne le jour et le mois de chaque rendez-vous (%s)" % frise)
         check(all(f["rail"] for f in frise)
-              and [f["statut"] for f in frise] == ["presse", "annonce", "presse"],
+              and [f["statut"] for f in frise] == ["annonce", "presse"],
               "[agenda] un rail par ligne, et le statut dans data-statut (%s)" % frise)
-        check(frise[1]["libelle"].startswith("Un libellé très long")
-              and "29" not in frise[1]["libelle"],
+        check(frise[0]["libelle"].startswith("Un libellé très long")
+              and "29" not in frise[0]["libelle"],
               "[agenda] le libellé ne répète plus la date")
     page.wait_for_timeout(2200)
-    check(page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda li').length") == 3,
+    check(page.evaluate("() => document.querySelectorAll('#compteurContenu .compteur-agenda li').length") == 2,
           "[agenda] il survit au repeint de chaque seconde")
     sorties = page.evaluate("""() => {
         const p = document.querySelector('#compteurContenu').getBoundingClientRect();
@@ -4448,8 +4447,8 @@ def test_agenda_dans_le_panneau(nav, url):
             // Une opacité < 1 ferait baisser le contraste sans que la couleur
             // calculée le dise.
             const opaque = [...li].every(l => getComputedStyle(l).opacity === '1');
-            return {opaque: opaque, fond: fond, passe: c(li[0]), normal: c(li[1]),
-                    statut: c(li[1].querySelector('.ag-s'))};
+            return {opaque: opaque, fond: fond, normal: c(li[0]),
+                    statut: c(li[0].querySelector('.ag-s'))};
         }""")
 
         def lire(css):
@@ -4463,7 +4462,7 @@ def test_agenda_dans_le_panneau(nav, url):
 
         check(m["opaque"], "[agenda %s] aucune ligne n'est rendue translucide" % theme)
         fond = lire(m["fond"])
-        for cle in ("passe", "normal", "statut"):
+        for cle in ("normal", "statut"):
             a, b = lum(lire(m[cle])), lum(fond)
             r = (max(a, b) + 0.05) / (min(a, b) + 0.05)
             check(r >= 4.5, "[agenda %s] %s passe 4,5:1 sur %s (%.2f:1)"
