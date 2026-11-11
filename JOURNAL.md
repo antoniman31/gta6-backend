@@ -12700,3 +12700,8 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 - **Mesuré** : avec googlenewsdecoder 0.2.2 et selectolax 1.0.2 installés, l'import du décodeur réussit, `parse_signature` et `article_id` répondent comme avant et `selectolax.lexbor` analyse.
 - **Contrôle** : le test du décodeur vérifiait que `selectolax.parser` répond, le module que la 1.0 retire exprès, il aurait refusé la mise à jour. Il vérifie maintenant `selectolax.lexbor`, le moteur réellement utilisé ; refusé quand l'import est cassé dans une copie.
 - **Règle gardée** : toujours relever le décodeur AVANT selectolax, jamais l'inverse (écrit dans `requirements.txt`).
+
+### Dépendances : playwright 1.64.1 — 11/11/2026
+
+- **Pourquoi à la main** : la PR Dependabot #227 était rouge sur une base vieille de 9 jours, et `@dependabot rebase` n'a rien changé en dix minutes (même commit, même base). Une ligne dans `requirements-dev.txt`.
+- **Mesuré** : playwright 1.64.1 lance le Chromium déjà installé du conteneur et rend une page ; pipeline, sources et audit verts. La suite navigateur complète a tourné avant le commit.
