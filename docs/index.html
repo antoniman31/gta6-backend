@@ -1310,7 +1310,6 @@
     display:grid; grid-template-columns:3em 14px minmax(0,1fr); column-gap:8px;
     padding:0; font-size:14px; color:var(--text); overflow-wrap:anywhere;
   }
-  .compteur-agenda li.passe{color:var(--text-dim);}
   .compteur-agenda .ag-d{text-align:right; padding-top:1px; line-height:1;}
   .compteur-agenda .ag-d b{
     display:block; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px;
@@ -1340,7 +1339,6 @@
     color:var(--text-dim);
   }
   .compteur-agenda .ag-j{color:var(--text);}
-  .compteur-agenda li.passe .ag-j{color:var(--text-dim);}
   .compteur-agenda .ag-t{display:block; margin-top:1px;}
   .compteur-agenda .ag-s{font-weight:700; color:var(--text-dim);}
 
@@ -10070,13 +10068,15 @@ function rendezVousAVenir(agenda, maintenant){
     if(!e || !jourIsoValide(e.date)) continue;
     if(typeof e.libelle !== "string" || !e.libelle.trim()) continue;
     const jours = ecartJoursCivils(aujourdhui, e.date);
-    // Passé d'un jour : grisé. Au-delà : disparu.
-    if(jours < -1) continue;
+    // UN ÉVÉNEMENT PASSÉ DISPARAÎT dès le lendemain (Antoni, 11/11/2026 : « quand un événement de l'agenda est passé il doit
+    // disparaître : on est le 11 et j'ai toujours celui du 10 »). Avant : grisé « Hier » pendant un jour de plus. Le jour même
+    // reste affiché, « Aujourd'hui », jusqu'à minuit à Paris.
+    if(jours < 0) continue;
     sortie.push({
       date: e.date,
       libelle: e.libelle.trim(),
       jours: jours,
-      etat: jours > 0 ? "avenir" : (jours === 0 ? "aujourdhui" : "passe"),
+      etat: jours > 0 ? "avenir" : "aujourdhui",
       // Un statut inconnu vaut « presse », jamais « annonce » : on ne
       // promeut une date au rang d'annonce officielle que sur un mot exact.
       statut: e.statut === "annonce" ? "annonce" : "presse",
@@ -10105,7 +10105,6 @@ function chargeAgenda(){
 
 function libelleJours(r){
   if(r.etat === "aujourdhui") return "Aujourd'hui";
-  if(r.etat === "passe") return "Hier";
   return "J-" + r.jours;
 }
 
