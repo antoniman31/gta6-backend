@@ -12692,3 +12692,11 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 - **Demandé par Antoni** : « supprime Discret ».
 - **Fait** : le bouton, son entrée dans `PREREGLAGES`, sa phrase d'explication et son contrôle sont retirés. Restent trois préréglages : « Jour J complet » sur toute la largeur, « Aucun » et « Automatique » côte à côte dessous (grille 2 colonnes, 258 px puis 126 + 126 px à 320 px ; 328 puis 161 + 161 à 390 px). Les réglages déjà écrits ne changent pas : un téléphone qui avait « Discret » n'a simplement plus de bouton surligné.
 - **Contrôles** : le test des préréglages compte trois boutons ; le test « réglage à la main » passe par « Aucun » avant de cocher une case (sinon « Jour J complet » restait surligné). Cache `gta6watch-shell-v108`.
+
+### Dépendances : googlenewsdecoder 0.2.2 puis selectolax 1.0.2 — 11/11/2026
+
+- **Demandé par Antoni** : trois PR de Dependabot ouvertes (#244, #228, #227), « fais ce qu'il faut ».
+- **Ordre** : #244 (googlenewsdecoder 0.2.1 → 0.2.2) fusionnée d'abord, CI verte : cette version passe de `selectolax.parser` à `selectolax.lexbor`, la correction que `requirements.txt` attendait depuis la panne du 03/10/2026. Puis selectolax 0.4.13 → 1.0.2 (#228, rouge : elle passait seule, avec l'ancien décodeur) refaite à la main, dans le bon ordre.
+- **Mesuré** : avec googlenewsdecoder 0.2.2 et selectolax 1.0.2 installés, l'import du décodeur réussit, `parse_signature` et `article_id` répondent comme avant et `selectolax.lexbor` analyse.
+- **Contrôle** : le test du décodeur vérifiait que `selectolax.parser` répond, le module que la 1.0 retire exprès, il aurait refusé la mise à jour. Il vérifie maintenant `selectolax.lexbor`, le moteur réellement utilisé ; refusé quand l'import est cassé dans une copie.
+- **Règle gardée** : toujours relever le décodeur AVANT selectolax, jamais l'inverse (écrit dans `requirements.txt`).

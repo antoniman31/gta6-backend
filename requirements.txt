@@ -37,11 +37,11 @@ googlenewsdecoder==0.2.2
 requests==2.34.2
 
 # ---- Indirectes : tirées par les quatre ci-dessus --------------------------
-# selectolax est la raison d'être de ce bloc. Elle reste SOUS la 1.0 tant
-# que googlenewsdecoder importe `selectolax.parser` : son dépôt n'a pas
-# bougé depuis le 21/09/2026 et aucune version corrigée n'est publiée.
-# À relever dès que le décodeur passera à `selectolax.lexbor`.
-selectolax==0.4.13
+# selectolax est la raison d'être de ce bloc (panne du 03/10/2026, voir plus haut).
+# Relevée à la 1.0.2 le 11/11/2026, APRÈS googlenewsdecoder 0.2.2 qui est passé à
+# `selectolax.lexbor` : la 1.0 ne retire que l'ancien moteur, que plus rien n'importe.
+# Toujours relever le décodeur AVANT elle, jamais l'inverse.
+selectolax==1.0.2
 
 anyio==4.15.1
 certifi==2026.10.19
