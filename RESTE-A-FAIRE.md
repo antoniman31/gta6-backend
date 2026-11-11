@@ -35,12 +35,14 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Lot 2b (11/11/2026, codé)** : bordures en dégradé des cartes et des tuiles (2 px, même épaisseur que le cadre), case globale et retour à l'automatique, repère « nouveaux », chiffres de Stats en tuiles. Les squelettes de chargement existaient déjà.
 
 - **Grand moment de minuit (codé)** : à essayer avec « Lancer le halo » dans Réglages ; la vibration dépend du téléphone (Android, après un premier appui).
-- **Minuit, suite (10/11/2026, codé)** : pluie de confettis continue d'environ 7 s qui s'accumule en bas jusqu'à remplir l'écran, puis écran noir « GTA VI EST DISPO ! » jusqu'au toucher ; à essayer avec « Lancer le halo » dans Réglages ; à regarder : la fluidité sur le téléphone (mesurée seulement dans le navigateur de test).
+- **Minuit, suite (10/11/2026, codé)** : pluie de confettis continue d'environ 7 s qui s'accumule en bas jusqu'à remplir l'écran, puis écran noir « GTA VI EST DISPO ! » jusqu'au toucher ; à essayer avec « Lancer le halo » dans Réglages ; **fluidité vue sur le téléphone par Antoni le 11/11/2026 : « fluide, très bien ».**
 - **Frise des jalons (10/11/2026, codée)** : visible seulement après le 19/11 ; pour la voir avant, aucun réglage (elle n'existe qu'après la sortie) : à regarder le jour même ou en simulant la date dans un navigateur de test.
 - **Tout le texte dans le cycle (10/11/2026, codé)** : tous les textes suivent le cycle SAUF les titres d'articles (blancs) ; champ de recherche, loupe, « Filtres » et textes hérités compris. À regarder sur le téléphone : la lisibilité de longs textes en couleur (descriptions, Réglages) ; si c'est trop, on peut garder le blanc pour les paragraphes.
-- **Réglages › Couleurs par catégories (11/11/2026, codé)** : quatre familles × quatre zones en pastilles (une ligne « Toute la famille » + une par zone, sans rien à déplier) et un aperçu resserré (310 px de haut à 390 px, contre 620). À regarder sur le téléphone : la lisibilité des pastilles (407 px de haut, pastilles de 44 px) et celle de l'aperçu à 320 px (échelle 0,48, texte petit) ; dis-moi ce qui manque ou est en trop.
+- **Réglages › Couleurs par catégories (11/11/2026, codé)** : quatre familles × quatre zones en pastilles (une ligne « Toute la famille » + une par zone, sans rien à déplier) et un aperçu resserré (310 px de haut à 390 px, contre 620). **Vu sur le téléphone par Antoni le 11/11/2026 : pastilles « nickel », aperçu « assez lisible », rien à changer.** Les préréglages sont trois : « Jour J complet », « Aucun », « Automatique » (« Discret » supprimé le 11/11/2026).
 
 ## 3. À regarder quand ça arrive
+
+- **Minuit du 19/11 (réponse d'Antoni, 11/11/2026)** : rien à préparer à la main, « tout est prêt » ; les tâches planifiées surveillent la nuit. Dépendances remontées le 11/11 (googlenewsdecoder 0.2.2, selectolax 1.0.2, playwright 1.64.1) : à vérifier dans le journal du robot que le décodage Google News tient.
 
 - **Retard des officiels** : chercher `[officiel] retard` dans le journal du robot ; après **dix alertes** mesurées, décider d'un éventuel second déclencheur sur les flux officiels. Avant, rien à conclure.
 - **Les premiers messages Discord** sont partis (premier bilan du soir le 03/11, tableau du jour du 04/11, `rockstarmag_envoyes` rempli). Reste à voir sur le téléphone **l'écran verrouillé** :
