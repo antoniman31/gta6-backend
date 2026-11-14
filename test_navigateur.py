@@ -8230,7 +8230,7 @@ def test_grand_moment_de_minuit(nav, url):
           "[minuit] le calque couvre l'écran, ne prend aucun appui et passe par-dessus tout (%s, %s, %s)" % (e["pos"], e["ev"], e["z"]))
     check(e["halo"] and "halo-j" in e["haloAnim"], "[minuit] le halo des bords joue aussi (%s)" % e["haloAnim"])
     check(e["anims"] >= 3, "[minuit] les animations CSS (flash, ondes) tournent vraiment (%d)" % e["anims"])
-    check(e["vibre"] == [[180, 80, 180, 80, 420]], "[minuit] une vibration courte est demandée (%s)" % e["vibre"])
+    check(e["vibre"] == [], "[minuit] au lancement, pas de motif unique : la vibration part avec chaque salve de canons (%s)" % e["vibre"])
     # Les ondes partent du compteur, pas d'un coin.
     cible = page.evaluate("() => { const b = document.getElementById('countdown').getBoundingClientRect(); return b.left + b.width / 2; }")
     check(abs(float(e["cx"].replace("px", "")) - cible) < 1, "[minuit] les ondes partent du centre du compteur (%s px pour %.0f)" % (e["cx"], cible))
@@ -8267,7 +8267,8 @@ def test_grand_moment_de_minuit(nav, url):
                 textes: Array.from(t).map(x => x.textContent), anim: Array.from(t).map(x => getComputedStyle(x).animationName),
                 cols: Array.from(t).map(x => getComputedStyle(x).color), rects, iw: innerWidth, label: f.getAttribute('aria-label')}; }"""
     ETAT = """() => ({t: etatConfettis.t, posees: etatConfettis.posees, r: etatConfettis.remplissage, mini: etatConfettis.minimum,
-                       plein: etatConfettis.plein, actif: etatConfettis.actif, tombent: etatConfettis.tombent, ecart: etatConfettis.ecart})"""
+                       plein: etatConfettis.plein, actif: etatConfettis.actif, tombent: etatConfettis.tombent, ecart: etatConfettis.ecart,
+                       vibre: window.__vibre.slice()})"""
     # Les PIXELS du calque du tas (l'instrument le plus fidèle : pas la carte de hauteurs du code, ce qu'on voit) : la part de pixels
     # pleins au total, dans le quart du haut, dans le quart du bas, et une somme de contrôle de la bande du bas (3 % des lignes).
     COUV = """() => { const c = etatConfettis.toileTas, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, L = c.height, Wd = c.width;
@@ -8280,15 +8281,21 @@ def test_grand_moment_de_minuit(nav, url):
     # LA PLUIE (refaite le 10/11/2026 : « en continu, plus long, ça remplit l'écran entier en s'accumulant en bas, chaque
     # confetti reste où il tombe, quand l'écran est plein on passe à la suite »).
     # (14/11/2026, version 6 : des canons et un tas en rangées, l'écran est plein vers 4,6 s au lieu de 7 s : points de contrôle à 2 s, 2,8 s et 3,5 s.)
+    page.evaluate("() => { window.__vibre.length = 0; }")   # (les lancements d'essai plus haut n'ont pas avancé l'horloge, mais on repart de zéro)
     page.clock.run_for(600); s0 = page.evaluate(ETAT)
     check(s0["tombent"] >= 300, "[minuit] les CANONS tirent dès le début : %d confettis en l'air à 0,6 s (seuil : 300)" % s0["tombent"])
+    SALVE = [60, 90, 60]; FINAL = [40, 90, 40]
+    check(s0["vibre"] == [SALVE], "[minuit] la PREMIÈRE salve de canons (0,1 s) fait vibrer deux battements de 60 ms séparés de 90 ms, une seule fois à 0,6 s (%s)" % s0["vibre"])
     page.clock.run_for(1400); s1 = page.evaluate(ETAT); c1 = page.evaluate(COUV)
+    check(s1["vibre"] == [SALVE] * 3, "[minuit] à 2 s, trois salves ont fait vibrer (0,1 s, 0,9 s, 1,7 s) : %d vibrations" % len(s1["vibre"]))
     page.clock.run_for(800); s2 = page.evaluate(ETAT); c2 = page.evaluate(COUV)
     page.clock.run_for(700); s3 = page.evaluate(ETAT); c3 = page.evaluate(COUV)
     check(s1["posees"] > 0 and s2["posees"] > s1["posees"] + 100 and s3["posees"] > s2["posees"] + 100,
           "[minuit] la pluie est CONTINUE : des confettis se posent encore entre 2 s, 2,8 s et 3,5 s (%s, %s, %s)" % (s1["posees"], s2["posees"], s3["posees"]))
     check(s1["r"] < s2["r"] < s3["r"] < 1 and s1["r"] < 0.5,
           "[minuit] le tas MONTE peu à peu : %.2f à 2 s, %.2f à 2,8 s, %.2f à 3,5 s" % (s1["r"], s2["r"], s3["r"]))
+    check(s2["vibre"] == [SALVE] * 4 and s3["vibre"] == [SALVE] * 4,
+          "[minuit] à 2,8 s la quatrième salve (2,5 s) a vibré, et plus aucune ensuite avant l'écran de fin (%d, puis %d)" % (len(s2["vibre"]), len(s3["vibre"])))
     check(max(s2["ecart"], s3["ecart"]) <= 0.12,
           "[minuit] le tas monte EN RANGÉES : écart de hauteur de %.2f à 2,8 s et %.2f à 3,5 s entre la colonne la plus haute et la plus basse (0,12 au plus ; l'ancien tas : 0,84)" % (s2["ecart"], s3["ecart"]))
     check(c2["bas"] > c2["haut"] + 0.15 and c2["bas"] > 0.5,
@@ -8311,6 +8318,9 @@ def test_grand_moment_de_minuit(nav, url):
                 zc: c ? +getComputedStyle(c).zIndex : null, zt: t ? +getComputedStyle(t).zIndex : null, aide: f ? f.querySelectorAll('.ff-aide').length : -1,
                 texte: f ? f.textContent : ''}; }"""
     ca = page.evaluate(CAN)
+    vf = page.evaluate("() => window.__vibre.slice()")
+    check(len(vf) >= 5 and vf[4] == FINAL and all(v == SALVE for v in vf[:4]),
+          "[minuit] sur l'écran de fin, chaque tir réduit fait vibrer plus léger (40 ms, 90 ms, 40 ms) après les quatre salves du début (%s)" % vf[3:])
     check(ca["fini"] and ca["actif"] and ca["tombent"] > 0 and ca["dans"],
           "[minuit] sur l'écran de fin, les canons CONTINUENT (%d confettis en l'air, calque dans l'écran de fin)" % ca["tombent"])
     check(ca["zc"] is not None and ca["zt"] is not None and ca["zc"] < ca["zt"],
@@ -8343,6 +8353,7 @@ def test_grand_moment_de_minuit(nav, url):
     page.mouse.click(100, 400)
     check(page.evaluate(FIN) is None, "[minuit] un appui ferme l'écran de fin")
     check(not page.evaluate("() => etatConfettis.actif"), "[minuit] et le fermer arrête les canons")
+    check(page.evaluate("() => window.__vibre[window.__vibre.length - 1]") == 0, "[minuit] et il arrête aussi la vibration en cours (dernier appel : vibrate(0))")
     page.evaluate("() => lanceHalo()")
     page.clock.run_for(3000)
     check(page.evaluate(FIN) is None, "[minuit] relancé, l'écran de fin n'est pas encore là à 3 s")
