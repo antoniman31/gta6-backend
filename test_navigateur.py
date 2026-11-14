@@ -3574,10 +3574,10 @@ def test_vignette_ouvre_larticle(nav, url):
     check(info["focalisables"] == 1,
           "[vignette] la vignette et le titre ne font qu'UN seul lien focalisable "
           "(obtenu : %d)" % info["focalisables"])
-    # 16/9 à 390 px de large moins les marges : l'enveloppe ne doit rien
-    # avoir changé à la géométrie. display:contents est là pour ça.
+    # 21/9 depuis le 14/11/2026 (piste C2 d'Antoni ; 16/9 avant) à 390 px de large moins les marges :
+    # l'enveloppe ne doit rien avoir changé à la géométrie. display:contents est là pour ça.
     ratio = info["largeur"] / info["hauteur"] if info["hauteur"] else 0
-    check(abs(ratio - 16 / 9) < 0.05,
+    check(abs(ratio - 21 / 9) < 0.05,
           "[vignette] la géométrie est intacte (%dx%d, ratio %.2f)"
           % (info["largeur"], info["hauteur"], ratio))
 
@@ -8865,6 +8865,147 @@ def test_chevron_toujours_sur_une_ligne(nav, url):
     ctx.close()
 
 
+def test_compact_en_un_toucher_entete_replie_photo_basse(nav, url):
+    """Les trois pistes d'interface retenues par Antoni le 14/11/2026 : A1, B1 (avec chevron), C2."""
+    print("\n[ui 14/11] mode compact en un toucher, ligne d'état repliée, photo 21:9, à 320 et 390 px")
+    INJECTE = """() => { lastItems = Array.from({length: 6}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0, lang: i % 2 ? 'en' : 'fr'}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 6; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    def donnees(muettes):
+        return {"duration_seconds": 36, "new_this_run": 12,
+                "sources_health": [{"id": "m%d" % i, "name": "M%d" % i, "status": "muette"} for i in range(muettes)]
+                                  + [{"id": "ok%d" % i, "name": "Ok%d" % i, "status": "ok"} for i in range(72)]}
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 850}, timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
+        page.evaluate(INJECTE)
+        page.evaluate("() => ajusteComptage()")
+        # ---- A1 : le bouton du mode compact, sur la ligne du comptage.
+        bt = page.evaluate("""() => { const b = document.querySelector('.comptage-ligne #densiteBtn'); if(!b) return null;
+            const r = b.getBoundingClientRect(), c = document.getElementById('countLine').getBoundingClientRect(), s = document.getElementById('sourcesBtn').getBoundingClientRect();
+            const x = (r.left + r.right) / 2, y = (r.top + r.bottom) / 2;
+            const touche = dy => document.elementFromPoint(x, y + dy);
+            return {pressed: b.getAttribute('aria-pressed'), label: b.getAttribute('aria-label'),
+                    zoneHaut: [-20, 20].every(dy => { const e = touche(dy); return e === b || b.contains(e); }),
+                    memeRang: Math.abs((r.top + r.bottom) / 2 - (c.top + c.bottom) / 2) < 12 && Math.abs((r.top + r.bottom) / 2 - (s.top + s.bottom) / 2) < 12,
+                    countTient: document.getElementById('countLine').scrollWidth <= document.getElementById('countLine').clientWidth + 1,
+                    dedans: r.left >= 0 && r.right <= innerWidth}; }""")
+        check(bt is not None and bt["label"] == "Mode compact" and bt["pressed"] == "false",
+              "[ui %d px] le bouton « Mode compact » est sur la ligne du comptage, éteint au départ (%s)" % (largeur, bt))
+        if bt:
+            check(bt["zoneHaut"], "[ui %d px] sa zone de toucher fait au moins 40 px de haut (20 px au-dessus et au-dessous du centre)" % largeur)
+            check(bt["memeRang"] and bt["countTient"] and bt["dedans"],
+                  "[ui %d px] la ligne ne passe pas à la ligne : comptage, icône et chevron sur le même rang, rien ne déborde (%s)" % (largeur, bt))
+        page.click("#densiteBtn")
+        e = page.evaluate("""() => ({dense: document.getElementById('feed').classList.contains('dense'), pressed: document.getElementById('densiteBtn').getAttribute('aria-pressed'),
+              reglages: document.getElementById('densityBtn').textContent, stocke: JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}').denseMode === true,
+              haut: Math.round(document.querySelector('.card').getBoundingClientRect().height)})""")
+        check(e["dense"] and e["pressed"] == "true" and e["reglages"] == "Revenir à l'affichage normal" and e["stocke"],
+              "[ui %d px] un toucher : le fil passe en compact, l'icône s'allume, le bouton de Réglages suit, le choix est enregistré (%s)" % (largeur, e))
+        page.click("#densiteBtn")
+        e = page.evaluate("() => ({dense: document.getElementById('feed').classList.contains('dense'), pressed: document.getElementById('densiteBtn').getAttribute('aria-pressed')})")
+        check(not e["dense"] and e["pressed"] == "false", "[ui %d px] un second toucher revient à l'affichage normal" % largeur)
+        # ---- B1 : la ligne des soucis est REPLIÉE au premier affichage ; le chevron la déplie ; un changement la rouvre.
+        page.evaluate("d => majLigneRun(d)", donnees(2))
+        etat = lambda: page.evaluate("""() => { const l = document.getElementById('runSoucis'), b = document.querySelector('.bascule-soucis');
+            return {visible: l.style.display !== 'none', expanded: b ? b.getAttribute('aria-expanded') : null, texte: l.textContent.trim(),
+                    ligne: Math.round(document.getElementById('runLine').getBoundingClientRect().height)}; }""")
+        e = etat()
+        check(not e["visible"] and e["expanded"] == "false" and e["ligne"] <= 24,
+              "[ui %d px] au premier affichage la ligne des soucis est repliée, et la ligne d'état tient sur UNE ligne (%s)" % (largeur, e))
+        page.click(".bascule-soucis")
+        e = etat()
+        check(e["visible"] and e["expanded"] == "true" and "2 sources muettes" in e["texte"],
+              "[ui %d px] le chevron déplie le détail (%s)" % (largeur, e["texte"]))
+        page.evaluate("d => majLigneRun(d)", donnees(2))
+        check(etat()["visible"], "[ui %d px] un passage du robot qui ne change rien laisse la ligne dépliée" % largeur)
+        page.click(".bascule-soucis")
+        page.evaluate("d => majLigneRun(d)", donnees(2))
+        check(not etat()["visible"], "[ui %d px] repliée à la main, elle le reste au passage suivant" % largeur)
+        page.evaluate("d => majLigneRun(d)", donnees(3))
+        e = etat()
+        check(e["visible"] and "3 sources muettes" in e["texte"],
+              "[ui %d px] un NOUVEAU souci (3 muettes au lieu de 2) rouvre la ligne d'elle-même" % largeur)
+        # ---- C2 : la photo des cartes est en 21:9.
+        page.evaluate("""() => { const c = document.querySelector('.card'); const img = document.createElement('img'); img.className = 'card-thumb'; img.id = 'miseEnScene';
+            img.src = 'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22450%22/>'; c.querySelector('.card-top').prepend(img); }""")
+        r = page.evaluate("() => { const b = document.getElementById('miseEnScene').getBoundingClientRect(); return b.width / b.height; }")
+        check(abs(r - 21 / 9) < 0.05, "[ui %d px] la photo d'une carte est en 21:9 (ratio %.2f)" % (largeur, r))
+        check(not erreurs, "[ui %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+
+def test_titres_en_cache_et_dates_paris(nav, url):
+    """Lenteur du chargement et de Stats (Antoni, 14/11/2026) : mêmes résultats qu'avant, calculés une fois au lieu de milliers."""
+    print("\n[perf] jetons de titre en cache, un seul formateur de date : résultats identiques, travail divisé")
+    html = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "index.html"), encoding="utf-8").read()
+    check(html.count("function jourParis(") == 1,
+          "[perf] `jourParis` n'est définie qu'UNE fois (elle l'était deux, la seconde écrasait la première sans le dire : %d)" % html.count("function jourParis("))
+    ctx = nav.new_context(viewport={"width": 390, "height": 850}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+    page = ctx.new_page(); erreurs = []
+    page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+    page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached")
+    # ---- Doublons : même similarité, même verdict, que l'ancienne version (sans cache), sur les VRAIS titres.
+    r = page.evaluate("""async () => {
+        const data = await (await fetch('feed-recent.json')).json();
+        const titres = data.items.slice(0, 140).map(i => i.title || '').concat(['', 'a b', 'Dévoilé  ! Le trailer', 'devoile le trailer', 'GTA 6 trailer 3']);
+        const ancienne = (a, b) => { const tk = t => new Set(normalizeTitle(t).split(' ').filter(w => w.length > 2));
+          const ta = tk(a), tb = tk(b); if(ta.size === 0 || tb.size === 0) return 0; let n = 0; for(const w of ta) if(tb.has(w)) n++; return n / Math.min(ta.size, tb.size); };
+        cacheJetonsTitre.clear();
+        let paires = 0, ecarts = 0;
+        for(const a of titres) for(const b of titres){ paires++; if(titleSimilarity(a, b) !== ancienne(a, b)) ecarts++; }
+        const seuil = settings.similarityThreshold / 100;
+        // Les vrais articles du fil sont déjà dédoublonnés : on ajoute 40 quasi-doublons (titre repris avec un mot de plus, autre lien),
+        // sinon la comparaison ne verrait que des « non » et ne prouverait rien.
+        const reels = data.items.slice(0, 120);
+        const items = reels.concat(reels.slice(0, 40).map((i, k) => ({title: i.title + ' vidéo', link: i.link + '#repris' + k})));
+        const dupAncien = (item, list) => list.some(o => o.link === item.link || ancienne(item.title, o.title) > seuil);
+        let dupEcarts = 0, dupVrais = 0;
+        for(let k = 0; k < items.length; k++){ const liste = items.slice(0, k); const a = dupAncien(items[k], liste), b = isDuplicate(items[k], liste); if(a !== b) dupEcarts++; if(b) dupVrais++; }
+        // Travail : combien de fois on normalise un titre pour comparer chaque article à tous les précédents.
+        cacheJetonsTitre.clear();
+        const origine = normalizeTitle; let appels = 0; normalizeTitle = t => { appels++; return origine(t); };
+        for(let k = 0; k < items.length; k++) isDuplicate(items[k], items.slice(0, k));
+        normalizeTitle = origine;
+        return {titres: titres.length, paires, ecarts, dupEcarts, dupVrais, appels, comparaisons: items.length * (items.length - 1) / 2, total: items.length};
+    }""")
+    check(r["titres"] > 100 and r["ecarts"] == 0,
+          "[perf] la similarité de titres est IDENTIQUE à l'ancienne sur %d paires de vrais titres (%d écart)" % (r["paires"], r["ecarts"]))
+    check(r["dupEcarts"] == 0 and r["dupVrais"] > 0,
+          "[perf] `isDuplicate` rend le même verdict que l'ancien sur %d articles dont 40 quasi-doublons (%d doublons trouvés, %d écart)" % (r["total"], r["dupVrais"], r["dupEcarts"]))
+    check(r["appels"] <= 2 * r["total"],
+          "[perf] chaque titre n'est normalisé qu'UNE fois : %d normalisations pour %d comparaisons (sans cache, environ 2 par comparaison)" % (r["appels"], r["comparaisons"]))
+    # ---- Dates de Paris : mêmes jours et mêmes heures que l'ancienne écriture, autour des changements d'heure compris.
+    d = page.evaluate("""async () => {
+        const data = await (await fetch('feed-recent.json')).json();
+        const dates = data.items.slice(0, 300).map(i => new Date(i.date)).filter(x => !isNaN(x));
+        for(const [debut, heures] of [['2026-03-28T20:00:00Z', 60], ['2026-10-24T20:00:00Z', 60], ['2026-12-31T22:00:00Z', 6], ['2026-11-19T22:00:00Z', 4]]){
+          const t0 = new Date(debut).getTime(); for(let h = 0; h < heures; h++) dates.push(new Date(t0 + h * 3600e3 + (h % 3) * 1800e3));
+        }
+        const jourRef = x => x.toLocaleDateString('fr-CA', {timeZone: 'Europe/Paris'});
+        const heureRef = x => Number(x.toLocaleString('en-GB', {timeZone: 'Europe/Paris', hour: '2-digit', hourCycle: 'h23'}));
+        let jEcarts = 0, hEcarts = 0;
+        for(const x of dates){ if(jourParis(x) !== jourRef(x)) jEcarts++; if(heureParis(x) !== heureRef(x)) hEcarts++; }
+        // Travail : combien de formateurs construits pour 2 000 appels de chaque.
+        formateurJourParis = null; formateurHeureParis = null;
+        const Origine = Intl.DateTimeFormat; let construits = 0;
+        Intl.DateTimeFormat = function(...a){ construits++; return new Origine(...a); };
+        for(let k = 0; k < 2000; k++){ jourParis(dates[k % dates.length]); heureParis(dates[k % dates.length]); }
+        Intl.DateTimeFormat = Origine;
+        return {n: dates.length, jEcarts, hEcarts, construits};
+    }""")
+    check(d["n"] > 200 and d["jEcarts"] == 0 and d["hEcarts"] == 0,
+          "[perf] `jourParis` et `heureParis` rendent les mêmes valeurs que l'ancienne écriture sur %d dates (changements d'heure et Nouvel An compris) : %d + %d écarts" % (d["n"], d["jEcarts"], d["hEcarts"]))
+    check(d["construits"] <= 2,
+          "[perf] un seul formateur par fonction : %d construits pour 4 000 appels (avant : un par appel)" % d["construits"])
+    check(not erreurs, "[perf] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def _controles_par_largeur(nav, url):
     """Les six contrôles de géométrie, rejoués aux deux largeurs (320 et 390 px)."""
     for largeur in LARGEURS:
@@ -8956,6 +9097,8 @@ CONTROLES = [
     test_aucun_texte_oublie_du_cycle,
     test_categories_de_couleur,
     test_stats_et_reglages_compacts,
+    test_compact_en_un_toucher_entete_replie_photo_basse,
+    test_titres_en_cache_et_dates_paris,
 ]
 
 

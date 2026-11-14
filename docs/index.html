@@ -734,7 +734,9 @@
      seuls — inutile de répéter un rayon ici, on verrait la carte dépasser
      derrière l'image. */
   .card-thumb{
-    width:auto; aspect-ratio:16/9; align-self:stretch;
+    /* 21:9 et non 16:9 (Antoni, 14/11/2026, piste C2 : « C2 ») : à 390 px la carte avec photo passe de 380 / 399 px à 333 / 351, soit
+       47 px de moins, pour voir plus d'une carte à la fois. La photo est rognée par le haut et le bas (object-fit:cover). */
+    width:auto; aspect-ratio:21/9; align-self:stretch;
     object-fit:cover;
     margin:-14px -16px 0;
     border:0; border-bottom:1px solid var(--line); border-radius:0;
@@ -2252,6 +2254,17 @@
     min-height:0; min-width:0;
   }
   .sources-btn::after{content:""; position:absolute; inset:-14px -8px;}
+  /* LE MODE COMPACT EN UN TOUCHER (Antoni, 14/11/2026, piste A1 : « A1 »). Avant, il fallait ouvrir Réglages, descendre et toucher
+     « Basculer mode compact » : trois gestes. Mesuré à 390 px : cartes de 155 px au lieu de 380 à 399, deux articles visibles au lieu
+     d'un, et 30 cartes occupent 5 817 px au lieu de 11 716. Même méthode que le chevron voisin : l'icône fait 18 px, la ZONE DE
+     TOUCHER 44 px de haut (::after) sans grossir la ligne. Allumé (accent) quand le mode compact est actif. */
+  .densite-btn{
+    flex:none; position:relative; display:inline-flex; align-items:center; background:none; border:0; padding:0;
+    color:var(--text-dim); cursor:pointer; min-height:0; min-width:0;
+  }
+  .densite-btn::after{content:""; position:absolute; inset:-14px -8px;}
+  .densite-btn .ic{width:18px; height:18px; fill:currentColor;}
+  .densite-btn[aria-pressed="true"]{color:var(--c-texte);}
   .sources-btn .ic{width:18px; height:18px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
   .sources-btn[aria-expanded="true"] .ic{transform:rotate(180deg);}
   .sources-btn.filtre-actif{font-weight:700;}
@@ -2623,6 +2636,7 @@
 <symbol id="i-undo" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></symbol>
 <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/></symbol>
 <symbol id="i-star_border" viewBox="0 0 24 24"><path d="m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></symbol>
+<symbol id="i-reorder" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></symbol>
 <symbol id="i-expand_more" viewBox="0 0 24 24"><path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/></symbol>
 <symbol id="i-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></symbol>
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></symbol>
@@ -2781,6 +2795,7 @@
   <div class="console-status feed-count">
     <div class="comptage-ligne">
       <span id="countLine">0 article suivi</span>
+      <button type="button" class="densite-btn" id="densiteBtn" aria-pressed="false" aria-label="Mode compact" title="Mode compact" onclick="toggleDensity()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reorder"/></svg></button>
       <button type="button" class="sources-btn" id="sourcesBtn" aria-expanded="false" aria-controls="rangeeSources" onclick="basculeSources()"><span id="sourcesLibelle"></span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg></button>
     </div>
     <span id="historyLine" class="history-line" style="display:none;"></span>
@@ -3651,6 +3666,8 @@ function applyDensity(){
   const btn = document.getElementById("densityBtn");
   btn.classList.toggle("active", settings.denseMode);
   btn.textContent = settings.denseMode ? "Revenir à l'affichage normal" : "Basculer mode compact";
+  const rapide = document.getElementById("densiteBtn");
+  if(rapide) rapide.setAttribute("aria-pressed", String(!!settings.denseMode));
 }
 
 function copyLogs(){
@@ -5163,21 +5180,35 @@ function texteCherchable(item){
   return v;
 }
 
+// LES JETONS D'UN TITRE, calculés UNE fois par titre (14/11/2026, lenteur du chargement de l'historique). Avant, chaque comparaison de deux
+// titres renormalisait et redécoupait les deux : mesuré sur 11 318 articles, un seul calcul bloquait l'écran 20 s à vitesse normale
+// (92 s avec un processeur 4 fois plus lent), dont 91 % dans `titleTokens`, `normalizeTitle` et leurs expressions régulières. Le
+// résultat est inchangé. L'ensemble rendu ne doit jamais être modifié par l'appelant. Le cache est vidé s'il dépasse 40 000 titres.
+const cacheJetonsTitre = new Map();
 function titleTokens(t){
-  return new Set(normalizeTitle(t).split(" ").filter(w => w.length > 2));
+  let v = cacheJetonsTitre.get(t);
+  if(v === undefined){
+    if(cacheJetonsTitre.size > 40000) cacheJetonsTitre.clear();
+    v = new Set(normalizeTitle(t).split(" ").filter(w => w.length > 2));
+    cacheJetonsTitre.set(t, v);
+  }
+  return v;
 }
-function titleSimilarity(a, b){
-  const ta = titleTokens(a), tb = titleTokens(b);
+function similariteJetons(ta, tb){
   if(ta.size === 0 || tb.size === 0) return 0;
   let inter = 0;
   for(const w of ta) if(tb.has(w)) inter++;
   return inter / Math.min(ta.size, tb.size);
 }
+function titleSimilarity(a, b){
+  return similariteJetons(titleTokens(a), titleTokens(b));
+}
 function isDuplicate(item, list){
   const threshold = settings.similarityThreshold / 100;
+  const ta = titleTokens(item.title);
   return list.some(other =>
     other.link === item.link ||
-    titleSimilarity(item.title, other.title) > threshold
+    similariteJetons(ta, titleTokens(other.title)) > threshold
   );
 }
 
@@ -7982,12 +8013,17 @@ const STATS_TRANCHES_DELAI = [
 ];       // articles notés avant d'annoncer un délai médian
 
 // Le jour, à l'heure de Paris : c'est l'heure dans laquelle Antoni lit, et
-// un article publié à 23h30 le 12 n'appartient pas au 13.
-function jourParis(d){
-  return d.toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" }); // AAAA-MM-JJ
-}
+// un article publié à 23h30 le 12 n'appartient pas au 13. `jourParis` est définie UNE fois, plus bas (section Agenda) : elle l'était
+// deux fois, et la seconde écrasait la première sans que rien ne le dise.
+//
+// UN FORMATEUR, créé à la première demande (14/11/2026, lenteur de la vue Stats). `toLocaleString` et `new Intl.DateTimeFormat` à chaque
+// appel reconstruisent le formateur à chaque article : mesuré à l'ouverture de Stats sur 11 318 articles, `jourParis` et `heureParis` pesaient
+// 77 % du temps de calcul (4,8 s bloquées). Créé à la demande et non au chargement du script : une constante serait en zone morte
+// si un appel arrivait avant sa ligne.
+let formateurHeureParis = null;
 function heureParis(d){
-  return Number(d.toLocaleString("en-GB", { timeZone: "Europe/Paris", hour: "2-digit", hourCycle: "h23" }));
+  if(!formateurHeureParis) formateurHeureParis = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Paris", hour: "2-digit", hourCycle: "h23" });
+  return Number(formateurHeureParis.format(d));
 }
 // 0 = lundi … 6 = dimanche, à l'heure de Paris.
 function jourSemaineParis(d){
@@ -9871,10 +9907,12 @@ const AGENDA_LIGNES_MAX = 5;
 
 // Le jour civil à Paris, « 2026-11-12 ». « en-CA » parce que c'est la locale
 // qui écrit année-mois-jour ; c'est le FUSEAU, posé explicitement, qui compte.
+let formateurJourParis = null;
 function jourParis(date){
-  return new Intl.DateTimeFormat("en-CA", {
+  if(!formateurJourParis) formateurJourParis = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit",
-  }).format(date);
+  });
+  return formateurJourParis.format(date);
 }
 
 // Un « AAAA-MM-JJ » qui est un vrai jour : « 2026-13-45 » passe une regex
@@ -10466,7 +10504,14 @@ function soucisOuverts(signature){
   // signature — l'accordéon se rouvrait à chaque rechargement. Attrapé par
   // le contrôle navigateur, invisible à la lecture.
   const range = storageGet(SOUCIS_ACQUITTES);
-  return signature !== (range ? range.value : "");
+  // Première fois qu'on affiche cette ligne sur cet appareil (Antoni, 14/11/2026, piste B1 : « une ligne, avec le chevron pour tout
+  // voir ») : on acquitte l'état du jour, la ligne reste REPLIÉE (33 px de moins au-dessus du fil, mesuré à 390 px). Le compteur
+  // « 72/74 sources » reste en alerte et son chevron déplie le détail ; un CHANGEMENT de la liste des soucis rouvre toujours la ligne.
+  if(!range){
+    try{ storageSet(SOUCIS_ACQUITTES, signature); }catch(e){ /* stockage indisponible : la ligne s'ouvrira, comme avant */ return true; }
+    return false;
+  }
+  return signature !== range.value;
 }
 
 function basculeSoucis(){
