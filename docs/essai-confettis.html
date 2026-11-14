@@ -36,9 +36,9 @@
   #scene canvas{ position:absolute; left:0; top:0; width:100%; height:100%; }
   #quitter{ position:absolute; top:8px; right:8px; z-index:5; min-width:44px; min-height:44px; padding:0 14px; border:1px solid var(--bord); border-radius:10px; background:rgba(20,26,34,.85); color:var(--texte); font:600 14px ui-monospace, monospace; cursor:pointer; }
   #noir{ position:absolute; inset:0; z-index:4; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:24px;
-         text-align:center; font:900 clamp(34px, 12vw, 64px)/1.02 system-ui, sans-serif; text-transform:uppercase; cursor:pointer; animation:fond 1.2s ease-out 1 both; }
+         text-align:center; font:900 clamp(44px, 18vw, 96px)/1 system-ui, sans-serif; text-transform:uppercase; cursor:pointer; animation:fond 1.2s ease-out 1 both; }
   #noir[hidden]{ display:none; }
-  #noir .t{ animation:cycle 4s steps(12) infinite; }
+  #noir .t{ position:relative; z-index:2; animation:cycle 4s steps(12) infinite; }
   #noir small{ font:600 13px ui-monospace, monospace; color:var(--dim); text-transform:none; }
   @keyframes fond{ from{ opacity:0; } to{ opacity:1; } }
   @keyframes cycle{ 0%{ color:#19e6ff; } 33%{ color:#b388ff; } 66%{ color:#ff5cae; } 100%{ color:#19e6ff; } }
@@ -54,7 +54,7 @@
 </main>
 <div id="scene" hidden>
   <button id="quitter" type="button">Quitter</button>
-  <div id="noir" hidden><span class="t">GTA VI<br>EST DISPO !</span></div>
+  <div id="noir" hidden><span class="t">GTA VI<br>EST<br>DISPO !</span></div>
 </div>
 <script>
 (function(){
@@ -145,8 +145,8 @@
       var dt = Math.min(0.05, (ts - dernier) / 1000); deltas.push(ts - dernier); dernier = ts; E.t = (ts - t0) / 1000;
       // canons : par salves de 0,45 s, la suivante 1,3 s après
       if(E.fini){
-        // écran final affiché : les canons continuent de tirer, les confettis passent devant le texte et ne se posent plus
-        if(v.canons){ var ph = (E.t - E.tfin) % (v.intervalle || 1.3); if(ph < 0.45){ var nf = Math.ceil(parSalve / 0.45 * dt); for(var q2 = 0; q2 < nf; q2++) nait(true); } }
+        // écran final affiché : les canons continuent de tirer en plus petit (un cinquième des confettis, un tir sur 1,5), les confettis passent DERRIÈRE le texte (canvas dans #noir sous .t) et ne se posent plus
+        if(v.canons){ var ph = (E.t - E.tfin) % ((v.intervalle || 1.3) * 1.5); if(ph < 0.45){ var nf = Math.ceil(parSalve * 0.2 / 0.45 * dt); for(var q2 = 0; q2 < nf; q2++) nait(true); } }
       }else for(var s = 0; s < salves; s++){ var d0 = 0.1 + s * (v.intervalle || 1.3); if(v.canons && E.t > d0 && E.t < d0 + 0.45){ var n = Math.ceil(parSalve / 0.45 * dt); for(var q = 0; q < n; q++) nait(true); } }
       if(!E.fini && E.t > (v.canons ? 0.4 : 0.15) && air.length < 1500){ acc += cadence * dt; while(acc >= 1){ acc--; nait(false); } }
       xa.clearRect(0, 0, W, H);
@@ -184,7 +184,7 @@
       for(var c2 = 0; c2 < nc; c2++){ var val = Math.min(h[c2], H); somme += val; if(val < mini) mini = val; if(val > maxi) maxi = val; }
       E.rempl = somme / (nc * H); E.mini = mini / H; E.maxi = maxi / H;
       if(E.rempl >= 0.97 && E.mini >= 0.85) E.plein = true;
-      if(!E.fini && (E.plein || E.t * 1000 >= FINAL_MAX)){ E.plein = true; E.fini = true; E.tfin = E.t; t2[0].style.zIndex = "5"; t2[0].style.pointerEvents = "none"; fin(E, deltas); }
+      if(!E.fini && (E.plein || E.t * 1000 >= FINAL_MAX)){ E.plein = true; E.fini = true; E.tfin = E.t; t2[0].style.zIndex = "1"; t2[0].style.pointerEvents = "none"; noir.insertBefore(t2[0], noir.firstChild); fin(E, deltas); }
       E.image = requestAnimationFrame(pas);
     }
     E.image = requestAnimationFrame(pas);

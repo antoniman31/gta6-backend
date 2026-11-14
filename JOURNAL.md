@@ -12792,3 +12792,10 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 - **Mes erreurs en chemin** : trois règles d'atterrissage essayées avant la bonne. (1) Glisser vers la colonne basse la plus proche : écart 0,43. (2) Glisser vers les colonnes sous la moyenne : 0,55, pire. (3) Tirage de la plus basse de 6 colonnes : 0,51, aucune amélioration. Le profil des hauteurs a donné la cause : une dent de scie 43 % / 85 % une colonne sur deux, parce qu'un confetti large de 3 colonnes relève aussi ses voisines. La règle retenue compare des fenêtres de 3 colonnes et pose le confetti à plat sur la plus haute des trois.
 - **Contrôles** : `test_essai_des_confettis` passe à 50 contrôles (régularité du tas, canons vivants sur l'écran final, pas de consigne « touche »). Mutations : voir ci-dessous.
 - **Mutations jouées sur la version 6** : tas posé colonne par colonne (écart 0,38 et 0,32, le contrôle échoue), animation gelée à l'écran final (les canons ne continuent plus, échec), consigne « Touche » remise (échec sur chaque version). Chacune est détectée.
+
+### Confettis : l'écran final lisible — 14/11/2026
+
+- **Demandé par Antoni**, après avoir essayé la version 6 : « avec le texte "GTA 6 est dispo", il faut réduire les canons et ne pas cacher le texte », puis « grossis le texte ».
+- **Mon erreur** : à la version 6, j'avais mis les confettis AU-DESSUS du texte final, ce qui le cachait.
+- **Corrigé** (page d'essai seulement, l'app n'est pas touchée) : sur l'écran final, les canons tirent un cinquième des confettis, un tir sur 1,5 ; le canvas des confettis est déplacé dans `#noir`, sous le texte (`.t` en `position:relative; z-index:2`) ; le texte passe sur trois lignes (GTA VI / EST / DISPO !) et grossit : 58 px à 320 px de large et 70 px à 390 px (`clamp(44px, 18vw, 96px)`), contre 46 px à 390 px avant, sans déborder.
+- **Contrôles** : `test_essai_des_confettis` passe à 62 contrôles (texte d'au moins 15 % de la largeur et dans l'écran, confettis derrière le texte, canons vivants). Mutations : texte rétréci, texte remis devant, canons gelés.
