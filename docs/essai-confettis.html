@@ -54,7 +54,7 @@
 </main>
 <div id="scene" hidden>
   <button id="quitter" type="button">Quitter</button>
-  <div id="noir" hidden><span class="t">GTA VI<br>EST DISPO !</span><small>Touche pour revenir</small></div>
+  <div id="noir" hidden><span class="t">GTA VI<br>EST DISPO !</span></div>
 </div>
 <script>
 (function(){
@@ -74,7 +74,9 @@
     { id: "dense", nom: "4 · Réaliste, plus dense", desc: "Comme la 3, avec des pièces plus grosses et sans serpentins : un tas bien plein, proche de l'actuel.",
       phys: "air", formes: [0.8, 0.2, 0], w: [8, 14], l: [14, 25], flip: true, ombre: true, canons: 260, palette: RICHE, cad: 1.3, delta: 6, fond: 1400 },
     { id: "spectacle", nom: "5 · Spectaculaire", desc: "Trois salves de canons, beaucoup d'or et d'argent, serpentins : moins « vrai papier », plus fête.",
-      phys: "air", formes: [0.55, 0.15, 0.3], w: [7, 13], l: [12, 22], flip: true, ombre: true, canons: 420, salves: 3, palette: OR, cad: 1.8, delta: 6, fond: 1400 }
+      phys: "air", formes: [0.55, 0.15, 0.3], w: [7, 13], l: [12, 22], flip: true, ombre: true, canons: 420, salves: 3, palette: OR, cad: 1.8, delta: 6, fond: 1400 },
+    { id: "rangees", nom: "6 · Canons renforcés, en rangées", desc: "La 2, avec beaucoup plus de canons et un tas qui monte rangée par rangée, de bas en haut, sans gros paquets à la fin. Vise 5 s.",
+      phys: "actuel", formes: [1, 0, 0], w: [10, 12], l: [17, 21], flip: false, ombre: false, canons: 1800, salves: 4, intervalle: 0.8, rangees: true, palette: CYCLE, cad: 0.85, delta: 6, fond: 700 }
   ];
   var FINAL_MAX = 9000, REMPLIT = 7000;
 
@@ -114,7 +116,7 @@
         p.vx = Math.sin(ang) * vit; p.vy = -Math.cos(ang) * vit * (0.85 + Math.random() * 0.3);
       }else{
         var x = Math.random() * W, bas = h[Math.min(nc - 1, Math.floor(x / COL))];
-        for(var k = 0; k < 5; k++){ var y = Math.random() * W, hy = h[Math.min(nc - 1, Math.floor(y / COL))]; if(hy < bas){ x = y; bas = hy; } }
+        for(var k = 0; k < (v.rangees ? 12 : 5); k++){ var y = Math.random() * W, hy = h[Math.min(nc - 1, Math.floor(y / COL))]; if(hy < bas){ x = y; bas = hy; } }
         p.x = x; p.y = -20; p.vy = v.phys === "air" ? p.vt * (0.5 + Math.random() * 0.5) : 150 + Math.random() * 250;
       }
       air.push(p);
@@ -142,8 +144,11 @@
       if(t0 === null){ t0 = ts; dernier = ts; }
       var dt = Math.min(0.05, (ts - dernier) / 1000); deltas.push(ts - dernier); dernier = ts; E.t = (ts - t0) / 1000;
       // canons : par salves de 0,45 s, la suivante 1,3 s après
-      for(var s = 0; s < salves; s++){ var d0 = 0.1 + s * 1.3; if(v.canons && E.t > d0 && E.t < d0 + 0.45){ var n = Math.ceil(parSalve / 0.45 * dt); for(var q = 0; q < n; q++) nait(true); } }
-      if(E.t > (v.canons ? 0.4 : 0.15) && air.length < 1500){ acc += cadence * dt; while(acc >= 1){ acc--; nait(false); } }
+      if(E.fini){
+        // écran final affiché : les canons continuent de tirer, les confettis passent devant le texte et ne se posent plus
+        if(v.canons){ var ph = (E.t - E.tfin) % (v.intervalle || 1.3); if(ph < 0.45){ var nf = Math.ceil(parSalve / 0.45 * dt); for(var q2 = 0; q2 < nf; q2++) nait(true); } }
+      }else for(var s = 0; s < salves; s++){ var d0 = 0.1 + s * (v.intervalle || 1.3); if(v.canons && E.t > d0 && E.t < d0 + 0.45){ var n = Math.ceil(parSalve / 0.45 * dt); for(var q = 0; q < n; q++) nait(true); } }
+      if(!E.fini && E.t > (v.canons ? 0.4 : 0.15) && air.length < 1500){ acc += cadence * dt; while(acc >= 1){ acc--; nait(false); } }
       xa.clearRect(0, 0, W, H);
       for(var i = air.length - 1; i >= 0; i--){
         var p = air[i];
@@ -156,18 +161,30 @@
         }
         if(p.x < -30) p.x = W + 20; else if(p.x > W + 30) p.x = -20;
         var cm = Math.min(nc - 1, Math.max(0, Math.floor(p.x / COL)));
+        if(E.fini){ if(p.y > H + 40){ air[i] = air[air.length - 1]; air.pop(); } else dessine(xa, p, false); continue; }
         if(p.y + R >= H - h[cm]){
-          p.y = Math.max(-R, H - h[cm] - R); dessine(xt, p, true); E.posees++;
           var c0 = Math.max(0, Math.floor((p.x - p.w / 2) / COL)), c1 = Math.min(nc - 1, Math.floor((p.x + p.w / 2) / COL));
-          for(var c = c0; c <= c1; c++) h[c] += DELTA;
+          if(v.rangees){
+            // rangée par rangée : on compare des fenêtres de 3 colonnes (la largeur d'un confetti) et il se pose à plat sur la plus haute des trois, de la fenêtre la plus basse parmi 6 tirées au hasard. Mesuré le 14/11 : poser sur UNE colonne laissait une dent de scie (43 % / 85 % une colonne sur deux), car le confetti relève aussi ses voisines.
+            var meilleur = 1e9, cc = cm;
+            for(var e = 0; e < 7; e++){ var cr = e === 0 ? cm : (Math.random() * nc) | 0, a0 = Math.max(0, cr - 1), a1 = Math.min(nc - 1, cr + 1), mx = 0;
+              for(var q = a0; q <= a1; q++) if(h[q] > mx) mx = h[q];
+              if(mx < meilleur){ meilleur = mx; cc = cr; } }
+            c0 = Math.max(0, cc - 1); c1 = Math.min(nc - 1, cc + 1); p.x = cc * COL + COL / 2;
+            p.y = Math.max(-R, H - meilleur - R); dessine(xt, p, true); E.posees++;
+            for(var c = c0; c <= c1; c++) h[c] = meilleur + DELTA;
+          }else{
+            p.y = Math.max(-R, H - h[cm] - R); dessine(xt, p, true); E.posees++;
+            for(var c3 = c0; c3 <= c1; c3++) h[c3] += DELTA;
+          }
           air[i] = air[air.length - 1]; air.pop();
         }else dessine(xa, p, false);
       }
-      var somme = 0, mini = H;
-      for(var c2 = 0; c2 < nc; c2++){ var val = Math.min(h[c2], H); somme += val; if(val < mini) mini = val; }
-      E.rempl = somme / (nc * H); E.mini = mini / H;
+      var somme = 0, mini = H, maxi = 0;
+      for(var c2 = 0; c2 < nc; c2++){ var val = Math.min(h[c2], H); somme += val; if(val < mini) mini = val; if(val > maxi) maxi = val; }
+      E.rempl = somme / (nc * H); E.mini = mini / H; E.maxi = maxi / H;
       if(E.rempl >= 0.97 && E.mini >= 0.85) E.plein = true;
-      if(E.plein || E.t * 1000 >= FINAL_MAX){ E.plein = true; E.actif = false; fin(E, deltas); return; }
+      if(!E.fini && (E.plein || E.t * 1000 >= FINAL_MAX)){ E.plein = true; E.fini = true; E.tfin = E.t; t2[0].style.zIndex = "5"; t2[0].style.pointerEvents = "none"; fin(E, deltas); }
       E.image = requestAnimationFrame(pas);
     }
     E.image = requestAnimationFrame(pas);
@@ -203,6 +220,7 @@
   $("quitter").addEventListener("click", nettoie);
   noir.addEventListener("click", nettoie);
   document.addEventListener("keydown", function(e){ if(e.key === "Escape") nettoie(); });
+  window.__etat = function(){ return courant ? { t: courant.t, rempl: courant.rempl, mini: courant.mini, maxi: courant.maxi } : null; };
   window.__versions = VERSIONS.map(function(v){ return v.id; });
 })();
 </script>

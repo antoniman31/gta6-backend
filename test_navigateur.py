@@ -9027,12 +9027,28 @@ def test_essai_des_confettis(nav, url):
         for vid in b["ids"]:
             page.evaluate("() => { window.__dernier = null; }")
             page.click('button.v[data-version="%s"]' % vid)
-            page.wait_for_function("() => window.__dernier !== null", timeout=20000)
+            ecart = 0
+            while page.evaluate("() => window.__dernier === null"):
+                e = page.evaluate("() => window.__etat && window.__etat()")
+                if e and e["t"] > 1 and e["maxi"] is not None:
+                    ecart = max(ecart, e["maxi"] - e["mini"])
+                page.wait_for_timeout(100)
+            if vid == "rangees":
+                check(ecart <= 0.12,
+                      "[essai confettis %d px] « rangees » monte rangée par rangée : écart de hauteur au plus %.2f entre la colonne la plus haute et la plus basse (0,12 au plus ; l'ancienne version 2 : 0,84)" % (largeur, ecart))
             r = page.evaluate("() => window.__dernier")
             check(0 < r["plein"] < 9 and not r["limite"] and r["posees"] > 100,
                   "[essai confettis %d px] « %s » remplit vraiment l'écran en %.1f s (avant la limite de 9 s) avec %d confettis posés" % (largeur, vid, r["plein"], r["posees"]))
             check(page.evaluate("() => !document.getElementById('noir').hidden"),
                   "[essai confettis %d px] « %s » finit sur l'écran final" % (largeur, vid))
+            check("touche" not in page.evaluate("() => document.getElementById('noir').textContent").lower(),
+                  "[essai confettis %d px] « %s » : l'écran final n'affiche pas de consigne « touche »" % (largeur, vid))
+            if vid in ("canons", "rangees"):
+                t0 = page.evaluate("() => window.__etat().t"); page.wait_for_timeout(700)
+                t1 = page.evaluate("() => window.__etat().t")
+                z = page.evaluate("() => { const c = document.querySelectorAll('#scene canvas'); return Math.max(...[...c].map(x => +x.style.zIndex)); }")
+                check(t1 > t0 + 0.5 and z > 4,
+                      "[essai confettis %d px] « %s » : les canons continuent sur l'écran final (animation vivante : %.1f s puis %.1f s, confettis au-dessus du texte : z %d)" % (largeur, vid, t0, t1, z))
             page.click("#noir")
         check(page.evaluate("() => localStorage.length === 0 && sessionStorage.length === 0"),
               "[essai confettis %d px] la page n'a rien écrit dans le stockage" % largeur)
