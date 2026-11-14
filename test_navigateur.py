@@ -8938,6 +8938,74 @@ def test_compact_en_un_toucher_entete_replie_photo_basse(nav, url):
         ctx.close()
 
 
+def test_titres_en_cache_et_dates_paris(nav, url):
+    """Lenteur du chargement et de Stats (Antoni, 14/11/2026) : mêmes résultats qu'avant, calculés une fois au lieu de milliers."""
+    print("\n[perf] jetons de titre en cache, un seul formateur de date : résultats identiques, travail divisé")
+    html = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "index.html"), encoding="utf-8").read()
+    check(html.count("function jourParis(") == 1,
+          "[perf] `jourParis` n'est définie qu'UNE fois (elle l'était deux, la seconde écrasait la première sans le dire : %d)" % html.count("function jourParis("))
+    ctx = nav.new_context(viewport={"width": 390, "height": 850}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+    page = ctx.new_page(); erreurs = []
+    page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+    page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached")
+    # ---- Doublons : même similarité, même verdict, que l'ancienne version (sans cache), sur les VRAIS titres.
+    r = page.evaluate("""async () => {
+        const data = await (await fetch('feed-recent.json')).json();
+        const titres = data.items.slice(0, 140).map(i => i.title || '').concat(['', 'a b', 'Dévoilé  ! Le trailer', 'devoile le trailer', 'GTA 6 trailer 3']);
+        const ancienne = (a, b) => { const tk = t => new Set(normalizeTitle(t).split(' ').filter(w => w.length > 2));
+          const ta = tk(a), tb = tk(b); if(ta.size === 0 || tb.size === 0) return 0; let n = 0; for(const w of ta) if(tb.has(w)) n++; return n / Math.min(ta.size, tb.size); };
+        cacheJetonsTitre.clear();
+        let paires = 0, ecarts = 0;
+        for(const a of titres) for(const b of titres){ paires++; if(titleSimilarity(a, b) !== ancienne(a, b)) ecarts++; }
+        const seuil = settings.similarityThreshold / 100;
+        // Les vrais articles du fil sont déjà dédoublonnés : on ajoute 40 quasi-doublons (titre repris avec un mot de plus, autre lien),
+        // sinon la comparaison ne verrait que des « non » et ne prouverait rien.
+        const reels = data.items.slice(0, 120);
+        const items = reels.concat(reels.slice(0, 40).map((i, k) => ({title: i.title + ' vidéo', link: i.link + '#repris' + k})));
+        const dupAncien = (item, list) => list.some(o => o.link === item.link || ancienne(item.title, o.title) > seuil);
+        let dupEcarts = 0, dupVrais = 0;
+        for(let k = 0; k < items.length; k++){ const liste = items.slice(0, k); const a = dupAncien(items[k], liste), b = isDuplicate(items[k], liste); if(a !== b) dupEcarts++; if(b) dupVrais++; }
+        // Travail : combien de fois on normalise un titre pour comparer chaque article à tous les précédents.
+        cacheJetonsTitre.clear();
+        const origine = normalizeTitle; let appels = 0; normalizeTitle = t => { appels++; return origine(t); };
+        for(let k = 0; k < items.length; k++) isDuplicate(items[k], items.slice(0, k));
+        normalizeTitle = origine;
+        return {titres: titres.length, paires, ecarts, dupEcarts, dupVrais, appels, comparaisons: items.length * (items.length - 1) / 2, total: items.length};
+    }""")
+    check(r["titres"] > 100 and r["ecarts"] == 0,
+          "[perf] la similarité de titres est IDENTIQUE à l'ancienne sur %d paires de vrais titres (%d écart)" % (r["paires"], r["ecarts"]))
+    check(r["dupEcarts"] == 0 and r["dupVrais"] > 0,
+          "[perf] `isDuplicate` rend le même verdict que l'ancien sur %d articles dont 40 quasi-doublons (%d doublons trouvés, %d écart)" % (r["total"], r["dupVrais"], r["dupEcarts"]))
+    check(r["appels"] <= 2 * r["total"],
+          "[perf] chaque titre n'est normalisé qu'UNE fois : %d normalisations pour %d comparaisons (sans cache, environ 2 par comparaison)" % (r["appels"], r["comparaisons"]))
+    # ---- Dates de Paris : mêmes jours et mêmes heures que l'ancienne écriture, autour des changements d'heure compris.
+    d = page.evaluate("""async () => {
+        const data = await (await fetch('feed-recent.json')).json();
+        const dates = data.items.slice(0, 300).map(i => new Date(i.date)).filter(x => !isNaN(x));
+        for(const [debut, heures] of [['2026-03-28T20:00:00Z', 60], ['2026-10-24T20:00:00Z', 60], ['2026-12-31T22:00:00Z', 6], ['2026-11-19T22:00:00Z', 4]]){
+          const t0 = new Date(debut).getTime(); for(let h = 0; h < heures; h++) dates.push(new Date(t0 + h * 3600e3 + (h % 3) * 1800e3));
+        }
+        const jourRef = x => x.toLocaleDateString('fr-CA', {timeZone: 'Europe/Paris'});
+        const heureRef = x => Number(x.toLocaleString('en-GB', {timeZone: 'Europe/Paris', hour: '2-digit', hourCycle: 'h23'}));
+        let jEcarts = 0, hEcarts = 0;
+        for(const x of dates){ if(jourParis(x) !== jourRef(x)) jEcarts++; if(heureParis(x) !== heureRef(x)) hEcarts++; }
+        // Travail : combien de formateurs construits pour 2 000 appels de chaque.
+        formateurJourParis = null; formateurHeureParis = null;
+        const Origine = Intl.DateTimeFormat; let construits = 0;
+        Intl.DateTimeFormat = function(...a){ construits++; return new Origine(...a); };
+        for(let k = 0; k < 2000; k++){ jourParis(dates[k % dates.length]); heureParis(dates[k % dates.length]); }
+        Intl.DateTimeFormat = Origine;
+        return {n: dates.length, jEcarts, hEcarts, construits};
+    }""")
+    check(d["n"] > 200 and d["jEcarts"] == 0 and d["hEcarts"] == 0,
+          "[perf] `jourParis` et `heureParis` rendent les mêmes valeurs que l'ancienne écriture sur %d dates (changements d'heure et Nouvel An compris) : %d + %d écarts" % (d["n"], d["jEcarts"], d["hEcarts"]))
+    check(d["construits"] <= 2,
+          "[perf] un seul formateur par fonction : %d construits pour 4 000 appels (avant : un par appel)" % d["construits"])
+    check(not erreurs, "[perf] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def _controles_par_largeur(nav, url):
     """Les six contrôles de géométrie, rejoués aux deux largeurs (320 et 390 px)."""
     for largeur in LARGEURS:
@@ -9030,6 +9098,7 @@ CONTROLES = [
     test_categories_de_couleur,
     test_stats_et_reglages_compacts,
     test_compact_en_un_toucher_entete_replie_photo_basse,
+    test_titres_en_cache_et_dates_paris,
 ]
 
 
