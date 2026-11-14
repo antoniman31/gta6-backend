@@ -8128,6 +8128,125 @@ def test_le_decodeur_google_news_est_vraiment_la():
           "décodeur, lui, ne pose aucune borne haute")
 
 
+def test_alerte_panne_discord():
+    print("\n[alerte] une panne du robot arrive dans Discord, une fois par panne, et son retour aussi")
+    import json as _json
+    import alerte_panne
+    import discord_notify
+    from datetime import datetime, timezone
+
+    def run(i, conclusion, cree, statut="completed"):
+        return {"id": i, "status": statut, "conclusion": conclusion, "created_at": cree}
+    histoire = [run(5, None, "2026-11-11T16:08:00Z", "in_progress"), run(4, "failure", "2026-11-11T16:00:00Z"),
+                run(3, "success", "2026-11-11T15:00:00Z")]
+    check(alerte_panne.passage_precedent(histoire, 5)["id"] == 4,
+          "[alerte] le passage d'avant est le plus récent TERMINÉ (le courant, encore en cours, est exclu)")
+    check(alerte_panne.passage_precedent(histoire, 4)["id"] == 3,
+          "[alerte] et le passage courant lui-même n'est jamais son propre précédent")
+    check(alerte_panne.passage_precedent([], 1) is None and alerte_panne.passage_precedent(None, 1) is None,
+          "[alerte] pas d'historique : pas de précédent")
+    ok, ko = {"conclusion": "success"}, {"conclusion": "failure"}
+    check(alerte_panne.decide("echec", ok) == "echec" and alerte_panne.decide("echec", None) == "echec"
+          and alerte_panne.decide("echec", {"conclusion": "cancelled"}) == "echec",
+          "[alerte] premier passage rouge après un vert (ou sans historique, par prudence) : on alerte")
+    check(alerte_panne.decide("echec", ko) is None,
+          "[alerte] passage rouge après un rouge : silence, une seule alerte par panne")
+    check(alerte_panne.decide("succes", ko) == "retour" and alerte_panne.decide("succes", ok) is None
+          and alerte_panne.decide("succes", None) is None,
+          "[alerte] « reparti » seulement après un vrai rouge, jamais sans preuve")
+
+    url = "https://github.com/o/r/actions/runs/5"
+    hiver = alerte_panne.message("echec", datetime(2026, 11, 11, 16, 1, tzinfo=timezone.utc), url)
+    ete = alerte_panne.message("retour", datetime(2026, 7, 1, 16, 1, tzinfo=timezone.utc), url)
+    essai = alerte_panne.message("essai", datetime(2026, 11, 11, 16, 1, tzinfo=timezone.utc), url)
+    check("17:01" in hiver["description"] and "18:01" in ete["description"],
+          "[alerte] l'heure est celle de Paris, hiver (UTC+1) et été (UTC+2)")
+    check(url in hiver["description"] and url in ete["description"] and hiver["description"].count("http") == 1,
+          "[alerte] chaque message porte le lien du passage, et rien d'autre")
+    check("TEST" in essai["title"] and url not in essai["description"] and len({hiver["color"], ete["color"], essai["color"]}) == 3,
+          "[alerte] l'essai est marqué TEST ; rouge, vert et gris sont distincts")
+
+    # De bout en bout, sans réseau : on remplace l'envoi et la lecture de l'historique.
+    envoyes = []
+    secret = "https://discord.test/api/webhooks/123/SECRET-TOKEN"
+    origines = (discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL, alerte_panne.lis_historique, alerte_panne.requests.get)
+    env = {"GITHUB_REPOSITORY": "o/r", "GITHUB_RUN_ID": "5", "GITHUB_TOKEN": "jeton"}
+    maintenant = datetime(2026, 11, 11, 16, 1, tzinfo=timezone.utc)
+    try:
+        discord_notify.DISCORD_WEBHOOK_URL = secret
+        discord_notify.send_discord_with_retry = lambda embed, titre, *a, **k: envoyes.append(embed) or True
+
+        tous = []   # tout ce qui est parti pendant ce contrôle, pour chercher une fuite sur l'ensemble
+
+        def joue(mode, hist):
+            envoyes.clear()
+            alerte_panne.lis_historique = lambda repo, token: hist
+            code = alerte_panne.main([mode], env=env, maintenant=maintenant)
+            tous.extend(envoyes)
+            return code, list(envoyes)
+        code, e = joue("echec", [run(4, "success", "2026-11-11T15:00:00Z")])
+        check(code == 0 and len(e) == 1 and "échoué" in e[0]["title"], "[alerte] passage rouge après un vert : UN message « a échoué »")
+        code, e = joue("echec", [run(4, "failure", "2026-11-11T15:00:00Z")])
+        check(code == 0 and e == [], "[alerte] passage rouge après un rouge : aucun message")
+        code, e = joue("succes", [run(4, "failure", "2026-11-11T15:00:00Z")])
+        check(code == 0 and len(e) == 1 and "reparti" in e[0]["title"], "[alerte] passage vert après un rouge : UN message « est reparti »")
+        code, e = joue("succes", [run(4, "success", "2026-11-11T15:00:00Z")])
+        check(code == 0 and e == [], "[alerte] passage vert après un vert : aucun message (le cas de 99 % des passages)")
+        code, e = joue("echec", None)
+        check(code == 0 and len(e) == 1, "[alerte] historique illisible : un échec alerte quand même, par prudence")
+        code, e = joue("succes", None)
+        check(code == 0 and e == [], "[alerte] historique illisible : « reparti » n'est jamais envoyé sans preuve")
+        check(len(tous) >= 3 and "SECRET-TOKEN" not in _json.dumps(tous, ensure_ascii=False) and "discord.test" not in _json.dumps(tous),
+              "[alerte] l'adresse du webhook n'apparaît dans aucun des %d messages envoyés" % len(tous))
+        discord_notify.DISCORD_WEBHOOK_URL = ""
+        code, e = joue("echec", [run(4, "success", "2026-11-11T15:00:00Z")])
+        check(code == 0 and e == [], "[alerte] sans webhook configuré : rien n'est envoyé, le programme sort sans erreur")
+        discord_notify.DISCORD_WEBHOOK_URL = secret
+
+        def plante(*a, **k):
+            raise RuntimeError("réseau")
+        discord_notify.send_discord_with_retry = plante
+        alerte_panne.lis_historique = lambda repo, token: [run(4, "success", "2026-11-11T15:00:00Z")]
+        check(alerte_panne.main(["echec"], env=env, maintenant=maintenant) == 0,
+              "[alerte] un envoi qui plante ne fait jamais échouer le job")
+        # La lecture de l'historique : HTTP 500 et exception réseau rendent None, un 200 rend la liste.
+        alerte_panne.lis_historique = origines[2]
+
+        class Reponse:
+            def __init__(self, code, corps): self.status_code, self._c = code, corps
+            def json(self): return self._c
+        alerte_panne.requests.get = lambda *a, **k: Reponse(500, {})
+        r500 = alerte_panne.lis_historique("o/r", "t")
+
+        def coupe(*a, **k):
+            raise OSError("réseau")
+        alerte_panne.requests.get = coupe
+        rexc = alerte_panne.lis_historique("o/r", "t")
+        alerte_panne.requests.get = lambda *a, **k: Reponse(200, {"workflow_runs": [run(1, "success", "x")]})
+        r200 = alerte_panne.lis_historique("o/r", "t")
+        check(r500 is None and rexc is None and r200 == [run(1, "success", "x")],
+              "[alerte] lecture de l'historique : HTTP 500 et panne réseau rendent « inconnu », 200 rend la liste")
+    finally:
+        (discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL,
+         alerte_panne.lis_historique, alerte_panne.requests.get) = origines
+
+    wf = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    morceaux = {}
+    for bloc in wf.split("\n      - name: ")[1:]:
+        morceaux[bloc.split("\n", 1)[0]] = bloc
+    echec = morceaux.get("Alerter Discord (passage en échec)", "")
+    retour = morceaux.get("Alerter Discord (retour à la normale)", "")
+    check("if: failure()" in echec and "continue-on-error: true" in echec and "python alerte_panne.py echec" in echec,
+          "[alerte] le workflow lance l'alerte de panne sur un échec, sans jamais la rendre bloquante")
+    check("if: success()" in retour and "continue-on-error: true" in retour and "python alerte_panne.py succes" in retour,
+          "[alerte] et l'alerte de retour sur un succès, de la même façon")
+    check("secrets.DISCORD_WEBHOOK_URL" in echec and "secrets.DISCORD_WEBHOOK_URL" in retour
+          and "github.token" in echec and "github.token" in retour and "\n  actions: read\n" in wf.split("jobs:")[0],
+          "[alerte] le secret vient des secrets GitHub, et la lecture des passages est déclarée (actions: read)")
+    tw = open(".github/workflows/test-discord.yml", encoding="utf-8").read()
+    check("python alerte_panne.py --essai" in tw, "[alerte] le workflow d'essai peut envoyer l'alerte en message de TEST")
+
+
 def test_readme_ne_cite_que_des_constantes_reelles():
     print("\n[doc] le README ne décrit que des constantes qui existent")
     import re, glob
@@ -11483,6 +11602,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_rafale_officielle_du_jour_j,
            test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
+           test_alerte_panne_discord,
            test_readme_annonce_le_bon_nombre):
     fn()
 

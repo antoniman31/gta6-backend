@@ -5,7 +5,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2260 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2283 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -94,7 +94,7 @@ actualités majeures échappent à la coupe. Ce que la coupe écarte va dans `do
 - **Notification après publication seulement** : l'étape Discord attend que la page soit réellement en ligne.
 - **Fenêtre de veille.** De 00h à 05h (Paris, changement d'heure compris), les articles ordinaires sont mis de côté dans `attente_recap` et annoncés au premier passage de la journée.
   Du 18 au 20/11/2026 la pause est levée (dates écrites dans l'étape « Fenêtre de veille » du workflow).
-- **Surveillance.** healthchecks.io reçoit un signal à chaque passage réussi.
+- **Surveillance.** healthchecks.io reçoit un signal à chaque passage réussi. **Alerte Discord de panne** (14/11/2026, `alerte_panne.py`) : au premier passage rouge après un vert, un message « Le robot a échoué » (heure de Paris, lien du passage, aucun contenu d'article) ; au premier vert qui suit, « Le robot est reparti » ; une seule alerte par panne, jamais bloquante. Limite : un échec avant le checkout ou l'installation de Python ne peut pas la déclencher, seul healthchecks.io prévient alors. Le workflow « Tester les notifications Discord » peut en envoyer un message de TEST (`python alerte_panne.py --essai`).
 
 ## Discord
 

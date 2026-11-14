@@ -42,6 +42,9 @@ on:
 
 permissions:
   contents: write
+  # Lecture de l'historique des passages, pour l'alerte Discord (alerte_panne.py, 14/11/2026) : savoir si le
+  # passage d'AVANT était déjà rouge, afin de n'alerter qu'UNE fois par panne.
+  actions: read
 
 # Empêche deux exécutions de tourner en même temps (ex: une automatique
 # horaire + une relance manuelle) — la seconde attend que la première
@@ -436,3 +439,24 @@ jobs:
           # déjà publié, une panne du service de surveillance n'est pas une
           # panne du robot.
           curl -fsS -m 10 --retry 3 "$CIBLE" > /dev/null && echo "Signal envoyé." || echo "Signal non envoyé (service injoignable)."
+
+      # ALERTE DISCORD (Antoni, 14/11/2026 : « message Discord dans ton salon »). Le 11/11/2026 le robot est resté rouge
+      # près d'une heure et seul Antoni l'a vu, sur une app figée : la surveillance externe ci-dessus n'écrit pas dans
+      # Discord. Une fois par panne : « a échoué » au premier passage rouge, « est reparti » au premier vert qui suit.
+      # Jamais bloquant (continue-on-error + le programme ne sort jamais en erreur). Ne dit rien du contenu : voir
+      # alerte_panne.py. LIMITE : un échec AVANT le checkout ou l'installation de Python ne peut pas la déclencher.
+      - name: Alerter Discord (passage en échec)
+        if: failure()
+        continue-on-error: true
+        run: python alerte_panne.py echec
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Alerter Discord (retour à la normale)
+        if: success()
+        continue-on-error: true
+        run: python alerte_panne.py succes
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
