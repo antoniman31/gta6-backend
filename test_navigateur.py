@@ -8266,7 +8266,7 @@ def test_grand_moment_de_minuit(nav, url):
                 textes: Array.from(t).map(x => x.textContent), anim: Array.from(t).map(x => getComputedStyle(x).animationName),
                 cols: Array.from(t).map(x => getComputedStyle(x).color), rects, iw: innerWidth, label: f.getAttribute('aria-label')}; }"""
     ETAT = """() => ({t: etatConfettis.t, posees: etatConfettis.posees, r: etatConfettis.remplissage, mini: etatConfettis.minimum,
-                       plein: etatConfettis.plein, actif: etatConfettis.actif})"""
+                       plein: etatConfettis.plein, actif: etatConfettis.actif, tombent: etatConfettis.tombent, ecart: etatConfettis.ecart})"""
     # Les PIXELS du calque du tas (l'instrument le plus fidèle : pas la carte de hauteurs du code, ce qu'on voit) : la part de pixels
     # pleins au total, dans le quart du haut, dans le quart du bas, et une somme de contrôle de la bande du bas (3 % des lignes).
     COUV = """() => { const c = etatConfettis.toileTas, d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, L = c.height, Wd = c.width;
@@ -8278,37 +8278,53 @@ def test_grand_moment_de_minuit(nav, url):
         return {tot: n / (Wd * L), haut: hauts / (Wd * L * 0.25), bas: bas / (Wd * L * 0.25), bande}; }"""
     # LA PLUIE (refaite le 10/11/2026 : « en continu, plus long, ça remplit l'écran entier en s'accumulant en bas, chaque
     # confetti reste où il tombe, quand l'écran est plein on passe à la suite »).
-    page.clock.run_for(2000); s1 = page.evaluate(ETAT); c1 = page.evaluate(COUV)
-    page.clock.run_for(2000); s2 = page.evaluate(ETAT); c2 = page.evaluate(COUV)
-    page.clock.run_for(1000); s3 = page.evaluate(ETAT); c3 = page.evaluate(COUV)
+    # (14/11/2026, version 6 : des canons et un tas en rangées, l'écran est plein vers 4,6 s au lieu de 7 s : points de contrôle à 2 s, 2,8 s et 3,5 s.)
+    page.clock.run_for(600); s0 = page.evaluate(ETAT)
+    check(s0["tombent"] >= 300, "[minuit] les CANONS tirent dès le début : %d confettis en l'air à 0,6 s (seuil : 300)" % s0["tombent"])
+    page.clock.run_for(1400); s1 = page.evaluate(ETAT); c1 = page.evaluate(COUV)
+    page.clock.run_for(800); s2 = page.evaluate(ETAT); c2 = page.evaluate(COUV)
+    page.clock.run_for(700); s3 = page.evaluate(ETAT); c3 = page.evaluate(COUV)
     check(s1["posees"] > 0 and s2["posees"] > s1["posees"] + 100 and s3["posees"] > s2["posees"] + 100,
-          "[minuit] la pluie est CONTINUE : des confettis se posent encore entre 2 s, 4 s et 5 s (%s, %s, %s)" % (s1["posees"], s2["posees"], s3["posees"]))
+          "[minuit] la pluie est CONTINUE : des confettis se posent encore entre 2 s, 2,8 s et 3,5 s (%s, %s, %s)" % (s1["posees"], s2["posees"], s3["posees"]))
     check(s1["r"] < s2["r"] < s3["r"] < 1 and s1["r"] < 0.5,
-          "[minuit] le tas MONTE peu à peu : %.2f à 2 s, %.2f à 4 s, %.2f à 5 s" % (s1["r"], s2["r"], s3["r"]))
+          "[minuit] le tas MONTE peu à peu : %.2f à 2 s, %.2f à 2,8 s, %.2f à 3,5 s" % (s1["r"], s2["r"], s3["r"]))
+    check(max(s2["ecart"], s3["ecart"]) <= 0.12,
+          "[minuit] le tas monte EN RANGÉES : écart de hauteur de %.2f à 2,8 s et %.2f à 3,5 s entre la colonne la plus haute et la plus basse (0,12 au plus ; l'ancien tas : 0,84)" % (s2["ecart"], s3["ecart"]))
     check(c2["bas"] > c2["haut"] + 0.15 and c2["bas"] > 0.5,
-          "[minuit] il s'accumule EN BAS d'abord : %.0f %% de pixels pleins en bas contre %.0f %% en haut à 4 s" % (c2["bas"] * 100, c2["haut"] * 100))
-    check(c2["bande"] == c3["bande"], "[minuit] chaque confetti RESTE où il est tombé : la bande du bas n'a pas bougé entre 4 s et 5 s")
+          "[minuit] il s'accumule EN BAS d'abord : %.0f %% de pixels pleins en bas contre %.0f %% en haut à 2,8 s" % (c2["bas"] * 100, c2["haut"] * 100))
+    check(c2["bande"] == c3["bande"], "[minuit] chaque confetti RESTE où il est tombé : la bande du bas n'a pas bougé entre 2,8 s et 3,5 s")
     check(page.evaluate(LIT)["fete"] and page.evaluate(LIT)["halo"] and page.evaluate(FIN) is None and not s3["plein"],
-          "[minuit] à cinq secondes, c'est encore en cours : la fête, le halo, pas d'écran noir")
+          "[minuit] à 3,5 secondes, c'est encore en cours : la fête, le halo, pas d'écran noir")
     # Jusqu'à l'écran noir : il arrive quand l'écran est plein, vers 7 s.
-    ecoule = 5000
+    ecoule = 3500
     while page.evaluate(FIN) is None and ecoule < 12000:
         page.clock.run_for(100); ecoule += 100
     e_f = page.evaluate(ETAT); cf = page.evaluate(COUV)
-    check(page.evaluate(FIN) is not None and e_f["plein"] and 5.5 <= e_f["t"] <= 8.5,
-          "[minuit] quand l'écran est plein (%.1f s), l'écran noir arrive (entre 5,5 et 8,5 s : avant le filet de 9 s)" % e_f["t"])
+    check(page.evaluate(FIN) is not None and e_f["plein"] and 3.5 <= e_f["t"] <= 6.5,
+          "[minuit] quand l'écran est plein (%.1f s), l'écran noir arrive (entre 3,5 et 6,5 s : bien avant le filet de 9 s)" % e_f["t"])
     check(cf["tot"] >= 0.8 and cf["haut"] >= 0.75 and cf["bas"] >= 0.75,
           "[minuit] l'écran est PLEIN à ce moment-là : %.0f %% de pixels pleins, %.0f %% en haut, %.0f %% en bas" % (cf["tot"] * 100, cf["haut"] * 100, cf["bas"] * 100))
-    page.clock.run_for(1700)
+    page.clock.run_for(300)
+    CAN = """() => { const f = document.querySelector('.fete-final'), c = f && f.querySelector('canvas'), t = f && f.querySelector('.ff-texte');
+        return {tombent: etatConfettis.tombent, actif: etatConfettis.actif, fini: etatConfettis.fini, dans: !!c,
+                zc: c ? +getComputedStyle(c).zIndex : null, zt: t ? +getComputedStyle(t).zIndex : null, aide: f ? f.querySelectorAll('.ff-aide').length : -1,
+                texte: f ? f.textContent : ''}; }"""
+    ca = page.evaluate(CAN)
+    check(ca["fini"] and ca["actif"] and ca["tombent"] > 0 and ca["dans"],
+          "[minuit] sur l'écran de fin, les canons CONTINUENT (%d confettis en l'air, calque dans l'écran de fin)" % ca["tombent"])
+    check(ca["zc"] is not None and ca["zt"] is not None and ca["zc"] < ca["zt"],
+          "[minuit] les confettis passent SOUS le texte, qu'ils ne cachent pas (calque z %s, texte z %s)" % (ca["zc"], ca["zt"]))
+    check(ca["aide"] == 0 and "touche" not in ca["texte"].lower(), "[minuit] plus de consigne « Touche l'écran » sur l'écran de fin (%r)" % ca["texte"])
+    page.clock.run_for(2500)   # (le halo dure 6,3 s : l'écran de fin arrive vers 4,5 s, il faut attendre plus d'1,7 s)
     e2 = page.evaluate(ETAT)
-    check(not page.evaluate(LIT)["fete"] and not page.evaluate(LIT)["halo"] and not e2["actif"] and e2["posees"] == e_f["posees"],
-          "[minuit] sous le noir, la fête est retirée, la pluie s'arrête, le halo est fini")
+    check(not page.evaluate(LIT)["fete"] and not page.evaluate(LIT)["halo"] and e2["posees"] == e_f["posees"],
+          "[minuit] sous le noir, la fête est retirée, plus rien ne se pose, le halo est fini")
     fin = page.evaluate(FIN)
     check(fin is not None, "[minuit] et l'écran noir de fin reste là")
     if fin:
         check(fin["bg"] == "rgb(0, 0, 0)" and fin["pos"] == "fixed" and fin["w"] == fin["iw"] and fin["z"] > 2147483001,
               "[minuit] l'écran de fin est noir, plein écran et passe par-dessus la fête (%s, %s, %.0f, %s)" % (fin["bg"], fin["pos"], fin["w"], fin["z"]))
-        check(fin["textes"] == ["GTA VI", "EST DISPO !"], "[minuit] le texte est « GTA VI » puis « EST DISPO ! » (%s)" % fin["textes"])
+        check(fin["textes"] == ["GTA VI", "EST", "DISPO !"], "[minuit] le texte est « GTA VI », « EST », « DISPO ! » sur trois lignes (%s)" % fin["textes"])
         check(all(a == "cycle-accent" for a in fin["anim"]), "[minuit] chaque ligne du texte suit le cycle de couleur (%s)" % fin["anim"])
         check(all(l >= 0 and r <= fin["iw"] for l, r, _ in fin["rects"]),
               "[minuit] le texte tient dans l'écran (%s px de large)" % fin["iw"])
@@ -8325,13 +8341,14 @@ def test_grand_moment_de_minuit(nav, url):
     check(page.evaluate(FIN) is not None, "[minuit] une minute plus tard, l'écran de fin est TOUJOURS là (il reste jusqu'au toucher)")
     page.mouse.click(100, 400)
     check(page.evaluate(FIN) is None, "[minuit] un appui ferme l'écran de fin")
+    check(not page.evaluate("() => etatConfettis.actif"), "[minuit] et le fermer arrête les canons")
     page.evaluate("() => lanceHalo()")
-    page.clock.run_for(4000)
-    check(page.evaluate(FIN) is None, "[minuit] relancé, l'écran de fin n'est pas encore là à 4 s")
-    ecoule = 4000
+    page.clock.run_for(3000)
+    check(page.evaluate(FIN) is None, "[minuit] relancé, l'écran de fin n'est pas encore là à 3 s")
+    ecoule = 3000
     while page.evaluate(FIN) is None and ecoule < 12000:
         page.clock.run_for(100); ecoule += 100
-    check(page.evaluate(FIN) is not None and 5500 <= ecoule <= 8700, "[minuit] relancé, l'écran de fin revient quand l'écran est plein (%d ms)" % ecoule)
+    check(page.evaluate(FIN) is not None and 3500 <= ecoule <= 6700, "[minuit] relancé, l'écran de fin revient quand l'écran est plein (%d ms)" % ecoule)
     page.keyboard.press("Escape")
     check(page.evaluate(FIN) is None, "[minuit] Échap ferme aussi l'écran de fin")
     page.evaluate("() => { lanceHalo(); }"); page.clock.run_for(10000)
