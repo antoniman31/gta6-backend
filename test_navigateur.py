@@ -9109,8 +9109,9 @@ def test_agenda_sortie_du_19(nav, url):
               "[agenda sortie %d px] « Sortie de GTA VI » est le 19, juste avant la carte de Leonida, elle aussi le 19 (%s)" % (largeur, [(l["jour"], l["texte"][:24]) for l in lignes]))
         if sorties:
             s = lignes[sorties[0]]
-            check(s["statut"] == "annonce" and "00:00 (Paris)" in s["texte"] and "XSX" in s["texte"] and "PS5" in s["texte"],
-                  "[agenda sortie %d px] statut « annoncé » et libellé « %s »" % (largeur, s["texte"]))
+            # (Antoni, 14/11/2026 : « retirer l'heure, garder la date et les consoles » : le lien officiel lu ne donne que la date.)
+            check(s["statut"] == "annonce" and s["texte"] == "Sortie de GTA VI sur XSX et PS5" and "00:00" not in s["texte"],
+                  "[agenda sortie %d px] statut « annoncé », libellé « %s » (les deux consoles, sans heure)" % (largeur, s["texte"]))
         check(all(l["gauche"] >= 0 and l["droite"] <= largeur for l in lignes) and not page.evaluate("() => document.documentElement.scrollWidth > innerWidth"),
               "[agenda sortie %d px] aucune ligne ne déborde de l'écran (%s)" % (largeur, [l["droite"] for l in lignes]))
         check(not erreurs, "[agenda sortie %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
