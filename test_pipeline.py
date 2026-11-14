@@ -5679,8 +5679,10 @@ def test_ergonomie_tactile():
     check("flex-direction:column" in haut,
           "en mode normal la carte s'empile : la vignette passe au-dessus du texte")
     base = re.search(r"\n  \.card-thumb\{([^}]*)\}", html, re.S).group(1)
-    check("aspect-ratio:16/9" in base.replace(" ", ""),
-          "le bandeau est en 16:9, le format des images des sources — rien n'est rogné")
+    # 21:9 depuis le 14/11/2026 (piste C2 choisie par Antoni, en connaissance du rognage) : 16/9 avant, « rien n'est rogné ».
+    # À 390 px la carte avec photo passe de 380 / 399 px à 333 / 351 ; la photo est rognée en haut et en bas.
+    check("aspect-ratio:21/9" in base.replace(" ", ""),
+          "le bandeau est en 21:9 (choix d'Antoni du 14/11/2026 : 47 px de moins par carte, photo rognée en haut et en bas)")
 
     # Le débordement du bandeau doit valoir EXACTEMENT le rembourrage de la
     # carte, sinon il s'arrête avant le bord ou dépasse. Les deux valeurs

@@ -69,6 +69,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
   et on ne moyenne jamais des étoiles ni des mentions sans chiffre.
 - **Bande « À la une »** en tête de fil : elle dépend de la mesure du seuil de l'actu majeure.
 - **Pistes d'interface** (« Interface et expérience », huit pistes du 09/10) : l'état de chacune est dans `JOURNAL.md` ; à relire avant de s'y fier.
+- **Interface du 14/11/2026 (codée, à regarder sur le téléphone)** : icône « Mode compact » sur la ligne de comptage, ligne des soucis repliée au premier affichage (chevron pour tout voir), photo des cartes en 21:9. À regarder : l'icône est-elle trouvable, la photo rognée te va-t-elle ? Restent des idées non retenues : bouton flottant (A2), tuiles du compteur plus petites (B2 : trop petites sous la règle des 12 px), photo 2:1 (C1).
 
 ## 6. Mémos
 

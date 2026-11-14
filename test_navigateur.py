@@ -3574,10 +3574,10 @@ def test_vignette_ouvre_larticle(nav, url):
     check(info["focalisables"] == 1,
           "[vignette] la vignette et le titre ne font qu'UN seul lien focalisable "
           "(obtenu : %d)" % info["focalisables"])
-    # 16/9 à 390 px de large moins les marges : l'enveloppe ne doit rien
-    # avoir changé à la géométrie. display:contents est là pour ça.
+    # 21/9 depuis le 14/11/2026 (piste C2 d'Antoni ; 16/9 avant) à 390 px de large moins les marges :
+    # l'enveloppe ne doit rien avoir changé à la géométrie. display:contents est là pour ça.
     ratio = info["largeur"] / info["hauteur"] if info["hauteur"] else 0
-    check(abs(ratio - 16 / 9) < 0.05,
+    check(abs(ratio - 21 / 9) < 0.05,
           "[vignette] la géométrie est intacte (%dx%d, ratio %.2f)"
           % (info["largeur"], info["hauteur"], ratio))
 
@@ -8865,6 +8865,79 @@ def test_chevron_toujours_sur_une_ligne(nav, url):
     ctx.close()
 
 
+def test_compact_en_un_toucher_entete_replie_photo_basse(nav, url):
+    """Les trois pistes d'interface retenues par Antoni le 14/11/2026 : A1, B1 (avec chevron), C2."""
+    print("\n[ui 14/11] mode compact en un toucher, ligne d'état repliée, photo 21:9, à 320 et 390 px")
+    INJECTE = """() => { lastItems = Array.from({length: 6}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0, lang: i % 2 ? 'en' : 'fr'}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 6; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    def donnees(muettes):
+        return {"duration_seconds": 36, "new_this_run": 12,
+                "sources_health": [{"id": "m%d" % i, "name": "M%d" % i, "status": "muette"} for i in range(muettes)]
+                                  + [{"id": "ok%d" % i, "name": "Ok%d" % i, "status": "ok"} for i in range(72)]}
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 850}, timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
+        page.evaluate(INJECTE)
+        page.evaluate("() => ajusteComptage()")
+        # ---- A1 : le bouton du mode compact, sur la ligne du comptage.
+        bt = page.evaluate("""() => { const b = document.querySelector('.comptage-ligne #densiteBtn'); if(!b) return null;
+            const r = b.getBoundingClientRect(), c = document.getElementById('countLine').getBoundingClientRect(), s = document.getElementById('sourcesBtn').getBoundingClientRect();
+            const x = (r.left + r.right) / 2, y = (r.top + r.bottom) / 2;
+            const touche = dy => document.elementFromPoint(x, y + dy);
+            return {pressed: b.getAttribute('aria-pressed'), label: b.getAttribute('aria-label'),
+                    zoneHaut: [-20, 20].every(dy => { const e = touche(dy); return e === b || b.contains(e); }),
+                    memeRang: Math.abs((r.top + r.bottom) / 2 - (c.top + c.bottom) / 2) < 12 && Math.abs((r.top + r.bottom) / 2 - (s.top + s.bottom) / 2) < 12,
+                    countTient: document.getElementById('countLine').scrollWidth <= document.getElementById('countLine').clientWidth + 1,
+                    dedans: r.left >= 0 && r.right <= innerWidth}; }""")
+        check(bt is not None and bt["label"] == "Mode compact" and bt["pressed"] == "false",
+              "[ui %d px] le bouton « Mode compact » est sur la ligne du comptage, éteint au départ (%s)" % (largeur, bt))
+        if bt:
+            check(bt["zoneHaut"], "[ui %d px] sa zone de toucher fait au moins 40 px de haut (20 px au-dessus et au-dessous du centre)" % largeur)
+            check(bt["memeRang"] and bt["countTient"] and bt["dedans"],
+                  "[ui %d px] la ligne ne passe pas à la ligne : comptage, icône et chevron sur le même rang, rien ne déborde (%s)" % (largeur, bt))
+        page.click("#densiteBtn")
+        e = page.evaluate("""() => ({dense: document.getElementById('feed').classList.contains('dense'), pressed: document.getElementById('densiteBtn').getAttribute('aria-pressed'),
+              reglages: document.getElementById('densityBtn').textContent, stocke: JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}').denseMode === true,
+              haut: Math.round(document.querySelector('.card').getBoundingClientRect().height)})""")
+        check(e["dense"] and e["pressed"] == "true" and e["reglages"] == "Revenir à l'affichage normal" and e["stocke"],
+              "[ui %d px] un toucher : le fil passe en compact, l'icône s'allume, le bouton de Réglages suit, le choix est enregistré (%s)" % (largeur, e))
+        page.click("#densiteBtn")
+        e = page.evaluate("() => ({dense: document.getElementById('feed').classList.contains('dense'), pressed: document.getElementById('densiteBtn').getAttribute('aria-pressed')})")
+        check(not e["dense"] and e["pressed"] == "false", "[ui %d px] un second toucher revient à l'affichage normal" % largeur)
+        # ---- B1 : la ligne des soucis est REPLIÉE au premier affichage ; le chevron la déplie ; un changement la rouvre.
+        page.evaluate("d => majLigneRun(d)", donnees(2))
+        etat = lambda: page.evaluate("""() => { const l = document.getElementById('runSoucis'), b = document.querySelector('.bascule-soucis');
+            return {visible: l.style.display !== 'none', expanded: b ? b.getAttribute('aria-expanded') : null, texte: l.textContent.trim(),
+                    ligne: Math.round(document.getElementById('runLine').getBoundingClientRect().height)}; }""")
+        e = etat()
+        check(not e["visible"] and e["expanded"] == "false" and e["ligne"] <= 24,
+              "[ui %d px] au premier affichage la ligne des soucis est repliée, et la ligne d'état tient sur UNE ligne (%s)" % (largeur, e))
+        page.click(".bascule-soucis")
+        e = etat()
+        check(e["visible"] and e["expanded"] == "true" and "2 sources muettes" in e["texte"],
+              "[ui %d px] le chevron déplie le détail (%s)" % (largeur, e["texte"]))
+        page.evaluate("d => majLigneRun(d)", donnees(2))
+        check(etat()["visible"], "[ui %d px] un passage du robot qui ne change rien laisse la ligne dépliée" % largeur)
+        page.click(".bascule-soucis")
+        page.evaluate("d => majLigneRun(d)", donnees(2))
+        check(not etat()["visible"], "[ui %d px] repliée à la main, elle le reste au passage suivant" % largeur)
+        page.evaluate("d => majLigneRun(d)", donnees(3))
+        e = etat()
+        check(e["visible"] and "3 sources muettes" in e["texte"],
+              "[ui %d px] un NOUVEAU souci (3 muettes au lieu de 2) rouvre la ligne d'elle-même" % largeur)
+        # ---- C2 : la photo des cartes est en 21:9.
+        page.evaluate("""() => { const c = document.querySelector('.card'); const img = document.createElement('img'); img.className = 'card-thumb'; img.id = 'miseEnScene';
+            img.src = 'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22450%22/>'; c.querySelector('.card-top').prepend(img); }""")
+        r = page.evaluate("() => { const b = document.getElementById('miseEnScene').getBoundingClientRect(); return b.width / b.height; }")
+        check(abs(r - 21 / 9) < 0.05, "[ui %d px] la photo d'une carte est en 21:9 (ratio %.2f)" % (largeur, r))
+        check(not erreurs, "[ui %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+
 def _controles_par_largeur(nav, url):
     """Les six contrôles de géométrie, rejoués aux deux largeurs (320 et 390 px)."""
     for largeur in LARGEURS:
@@ -8956,6 +9029,7 @@ CONTROLES = [
     test_aucun_texte_oublie_du_cycle,
     test_categories_de_couleur,
     test_stats_et_reglages_compacts,
+    test_compact_en_un_toucher_entete_replie_photo_basse,
 ]
 
 
