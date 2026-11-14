@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0f14">
+<title>Répétition du jour J</title>
+<!--
+  RÉPÉTITION DU JOUR J (Antoni, 14/11/2026 : « une répétition de minuit sur ton téléphone »).
+
+  Cette page lance la VRAIE app (index.html, telle qu'elle est servie) avec une horloge avancée : on voit le compteur
+  tomber à zéro, le grand moment de minuit, puis l'état d'après la sortie (palette rose, J+N, frise des jalons), sur
+  son propre téléphone, avant le 19/11. Elle n'est liée depuis nulle part dans l'app.
+
+  COMMENT. index.html est lu, puis réécrit dans cette page avec, tout en haut, un petit script qui (1) remplace `Date`
+  par une version décalée (`new Date()` et `Date.now()` rendent l'heure simulée ; les dates données, `Date.UTC` et
+  `Date.parse` sont inchangés), (2) remplace `localStorage` par une COPIE EN MÉMOIRE : l'app lit tes réglages réels,
+  mais rien de ce qu'elle écrit pendant la répétition ne persiste ; fermer la page efface tout, (3) pose un bandeau
+  « RÉPÉTITION » avec l'heure simulée et un lien pour quitter. index.html n'est pas modifié, et ses données non plus.
+
+  L'ADRESSE. `repetition.html?cible=2026-11-18T22:59:30Z` : l'heure simulée de départ, en UTC (minuit à Paris le
+  19/11 = 22:59:59 + 1 s en UTC, 23:00:00Z). Les boutons de la page ne font que poser cette adresse.
+-->
+<style>
+  :root{ color-scheme: dark; --bg:#0b0f14; --carte:#141a22; --bord:#2a3441; --texte:#e4ece8; --dim:#9aa7b4; --accent:#5ab4ff; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--texte); font:16px/1.45 system-ui, sans-serif; padding:20px 16px 40px; }
+  main{ max-width:480px; margin:0 auto; }
+  h1{ font:700 22px/1.2 ui-monospace, monospace; margin:6px 0 10px; }
+  p{ color:var(--dim); margin:0 0 14px; }
+  .liste{ display:grid; gap:10px; margin:18px 0; }
+  a.scene{ display:flex; flex-direction:column; justify-content:center; min-height:56px; padding:10px 14px; border:2px solid var(--bord);
+           border-radius:12px; background:var(--carte); color:var(--texte); text-decoration:none; }
+  a.scene b{ font:700 16px ui-monospace, monospace; color:var(--accent); }
+  a.scene span{ font-size:13px; color:var(--dim); }
+  .erreur{ border:2px solid #e5484d; border-radius:10px; padding:10px 12px; color:#ffb4b6; margin:12px 0; }
+  .petit{ font-size:13px; }
+</style>
+</head>
+<body>
+<main id="accueil">
+  <h1>Répétition du jour J</h1>
+  <p>Lance la vraie app avec une horloge avancée. Tu vois le compteur tomber à zéro, le grand moment de minuit, puis l'état d'après la sortie.</p>
+  <p class="petit"><b>Rien n'est enregistré</b> : l'app lit tes réglages, mais ce qu'elle écrit disparaît quand tu fermes la page. Pour voir les confettis, il faut que ton téléphone n'ait pas coupé les animations.</p>
+  <div id="erreur" class="erreur" hidden></div>
+  <div class="liste" id="liste"></div>
+  <p class="petit">Pose ton téléphone, lance « Minuit dans 30 secondes », et regarde. Le bandeau violet en haut rappelle que c'est une répétition ; « Quitter » revient ici.</p>
+</main>
+<script>
+(function(){
+  // Minuit à Paris le 19/11/2026 = 23:00:00 UTC la veille (UTC+1 en novembre).
+  var SORTIE = Date.UTC(2026, 10, 18, 23, 0, 0);
+  var SCENES = [
+    ["Minuit dans 30 secondes", "Le compteur tombe à zéro sous tes yeux : le grand moment", SORTIE - 30e3],
+    ["Minuit dans 2 minutes", "Le temps de poser le téléphone et de te reculer", SORTIE - 120e3],
+    ["La veille, 12 h", "Compteur à moins de 12 heures, le 18/11", Date.UTC(2026, 10, 18, 11, 0, 0)],
+    ["Jour J, 9 h", "Le matin du 19/11 : palette rose, J+0, effets du jour J", Date.UTC(2026, 10, 19, 8, 0, 0)],
+    ["Lendemain, 9 h", "Le 20/11 : J+1, frise des jalons, les effets automatiques sont finis", Date.UTC(2026, 10, 20, 8, 0, 0)],
+    ["J+7, 9 h", "Le 26/11 : le jalon J+7", Date.UTC(2026, 10, 26, 8, 0, 0)]
+  ];
+  function iso(ms){ return new Date(ms).toISOString().replace(".000Z", "Z"); }
+  var liste = document.getElementById("liste");
+  SCENES.forEach(function(s){
+    var a = document.createElement("a"); a.className = "scene"; a.href = "?cible=" + encodeURIComponent(iso(s[2]));
+    a.innerHTML = "<b></b><span></span>"; a.firstChild.textContent = s[0]; a.lastChild.textContent = s[1]; liste.appendChild(a);
+  });
+
+  var param = new URLSearchParams(location.search).get("cible");
+  if(param === null) return;
+  var cible = Date.parse(param);
+  if(!isFinite(cible)){
+    var e = document.getElementById("erreur"); e.hidden = false;
+    e.textContent = "Heure simulée illisible : « " + param + " ». Choisis une des scènes ci-dessous."; return;
+  }
+
+  // Le script posé tout en haut de l'app. Écrit en texte : il doit s'exécuter AVANT le premier script de l'app.
+  var injection = "<script>(" + function(CIBLE){
+    var Reel = Date, decalage = CIBLE - Reel.now();
+    function maintenant(){ return Reel.now() + decalage; }
+    window.Date = new Proxy(Reel, {
+      construct: function(cible, args, nouveau){ return args.length ? Reflect.construct(cible, args, nouveau) : new cible(maintenant()); },
+      apply: function(){ return new Reel(maintenant()).toString(); },
+      get: function(cible, prop){ return prop === "now" ? maintenant : Reflect.get(cible, prop); }
+    });
+    // Copie en mémoire du stockage réel : on lit les réglages, on n'écrit jamais.
+    var mem = {};
+    try{ for(var i = 0; i < localStorage.length; i++){ var k = localStorage.key(i); mem[k] = localStorage.getItem(k); } }catch(e){}
+    var faux = {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(mem, k) ? mem[k] : null; },
+      setItem: function(k, v){ mem[k] = String(v); },
+      removeItem: function(k){ delete mem[k]; },
+      clear: function(){ mem = {}; },
+      key: function(i){ return Object.keys(mem)[i] || null; },
+      get length(){ return Object.keys(mem).length; }
+    };
+    Object.defineProperty(window, "localStorage", { configurable: true, get: function(){ return faux; } });
+    document.addEventListener("DOMContentLoaded", function(){
+      var b = document.createElement("div"); b.id = "repetitionBandeau";
+      b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:2147483647;display:flex;justify-content:space-between;align-items:center;" +
+        "padding:2px 8px;background:#7a1fa2;color:#fff;font:600 11px ui-monospace,monospace;pointer-events:none;height:18px";
+      var t = document.createElement("span"), q = document.createElement("a");
+      q.textContent = "Quitter"; q.href = "repetition.html"; q.style.cssText = "color:#fff;pointer-events:auto;text-decoration:underline";
+      b.appendChild(t); b.appendChild(q); document.body.appendChild(b);
+      function maj(){ t.textContent = "RÉPÉTITION · " + new Date().toLocaleString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }); }
+      maj(); setInterval(maj, 1000);
+    });
+  }.toString() + ")(" + cible + ");<" + "/script>";
+
+  fetch("index.html", { cache: "no-store" }).then(function(r){ return r.text(); }).then(function(html){
+    var page = html.replace(/<head[^>]*>/i, function(m){ return m + injection; });
+    document.open(); document.write(page); document.close();
+  }).catch(function(){
+    var e = document.getElementById("erreur"); e.hidden = false; e.textContent = "L'app n'a pas pu être chargée : vérifie ta connexion.";
+  });
+})();
+</script>
+</body>
+</html>
