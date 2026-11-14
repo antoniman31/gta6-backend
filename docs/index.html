@@ -1827,10 +1827,12 @@
     text-shadow:0 0 28px color-mix(in srgb, var(--accent) 65%, transparent);
   }
   .fete-final .ff-gta{font-size:min(24vw, 120px);}
-  .fete-final .ff-dispo{font-size:min(12.5vw, 64px);}
-  .fete-final .ff-aide{font-size:13px; font-weight:600; text-transform:none; letter-spacing:.04em; color:#9a9aa8; opacity:0; animation:fete-final-aide .8s ease-out 1.6s 1 both;}
+  /* « EST » et « DISPO ! » : une ligne chacune, plus grosses (Antoni, 14/11/2026 : « grossis le texte ». Mesuré dans la page d'essai : à 18 vw, « DISPO ! » tient à 320 px de large, alors que « EST DISPO ! » sur une ligne était bloqué à 12 vw). */
+  .fete-final .ff-dispo{font-size:min(18vw, 96px);}
+  /* LES CANONS CONTINUENT SOUS LE TEXTE (Antoni, 14/11/2026 : « continue les canons même quand GTA 6 est dispo s'affiche, mais réduis-les et ne cache pas le texte ») : le calque des confettis qui tombent est déplacé ici, SOUS les lignes du texte (z-index 1 contre 2). */
+  .fete-final .fete-toile{position:absolute; left:0; top:0; width:100%; height:100%; z-index:1; pointer-events:none;}
+  .fete-final .ff-texte{position:relative; z-index:2;}
   @keyframes fete-final-in{from{opacity:0;} to{opacity:1;}}
-  @keyframes fete-final-aide{from{opacity:0;} to{opacity:1;}}
   @media (prefers-reduced-motion: reduce){ html .cadre-ecran{animation:none !important;} .halo-j.vif, .fete, .fete-final{display:none;} }
   /* LA FRISE DES JALONS (Antoni, 10/11/2026, maquette B) : après la sortie, une barre de J+0 à J+30 sous le compteur,
      remplie en continu, avec les jalons J+1, J+7 et J+30 posés À LEUR PLACE (3 %, 23 % et 100 % de la barre : la
@@ -4132,11 +4134,23 @@ function reglerRayonCadre(v){
 const FETE_DUREE_MS = 6000;          // le halo des bords et les ondes
 const FETE_REMPLIT_MS = 7000;        // visée : l'écran est plein de confettis
 const FETE_FINAL_MAX_MS = 9000;      // filet : l'écran noir part au plus tard là, plein ou non
+// LES CANONS ET LE TAS EN RANGÉES (Antoni, 14/11/2026, version 6 de la page d'essai : « plus de canons, pas de gros paquets à la fin, un remplissage
+// en rangées consécutives, 5 secondes »). Mesuré dans la page d'essai sur 3 passages : l'écran est plein en 3,9 s (320 px) à 4,5 s (390 px), 60 images/s.
+const FETE_CADENCE = 0.85;           // facteur sur la cadence de la pluie : sans lui, avec les canons, l'écran était plein en 3,6 s (mesuré)
+const FETE_CANONS_SALVES = 4;        // salves de canons, une toutes les FETE_CANONS_PAUSE secondes, chacune sur 0,45 s
+const FETE_CANONS_PAR_SALVE = 450;   // confettis par salve (la version 2 de l'essai : 120 par salve toutes les 1,3 s)
+const FETE_CANONS_PAUSE = 0.8;
+const FETE_CANONS_FINAL = 0.2;       // sur l'écran de fin : un cinquième des confettis, un tir sur 1,5 (réduits à la demande d'Antoni)
 const FETE_VIBRATION = [180, 80, 180, 80, 420];
 let minuteurHalo = null, minuteurRetraitFete = null, imageConfettis = 0, etatConfettis = null;
 // L'écran noir de fin : retiré par un appui. Un seul à la fois ; relancer la fête le retire.
-function fermeEcranFinal(){
+function retireEcranFinal(){
   for(const e of document.querySelectorAll(".fete-final")) e.remove();
+}
+function fermeEcranFinal(){
+  retireEcranFinal();
+  // Les canons de l'écran de fin tirent jusqu'à l'appui : le fermer les arrête (et seulement eux : une fête relancée a son propre état).
+  if(etatConfettis && etatConfettis.fini) arreteConfettis();
 }
 function arreteConfettis(){
   cancelAnimationFrame(imageConfettis);
@@ -4144,22 +4158,25 @@ function arreteConfettis(){
   clearTimeout(minuteurRetraitFete);
 }
 function afficheEcranFinal(){
-  fermeEcranFinal();
+  retireEcranFinal();   // (pas fermeEcranFinal : elle couperait les canons qu'on veut garder sous le texte)
   const e = document.createElement("div");
   e.className = "fete-final";
   e.setAttribute("role", "button");
   e.tabIndex = 0;
   e.setAttribute("aria-label", "GTA VI est dispo ! Touche pour fermer.");
+  // Plus de consigne « Touche l'écran pour continuer » (Antoni, 14/11/2026 : « supprime le truc qui dit de toucher l'écran »).
   e.innerHTML = '<span class="ff-texte ff-gta" aria-hidden="true">GTA VI</span>'
-    + '<span class="ff-texte ff-dispo" aria-hidden="true">EST DISPO !</span>'
-    + '<span class="ff-aide" aria-hidden="true">Touche l’écran pour continuer</span>';
+    + '<span class="ff-texte ff-dispo" aria-hidden="true">EST</span>'
+    + '<span class="ff-texte ff-dispo" aria-hidden="true">DISPO !</span>';
   e.addEventListener("click", fermeEcranFinal);
   e.addEventListener("keydown", ev => { if(ev.key === "Escape" || ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); fermeEcranFinal(); } });
   document.body.appendChild(e);
   // Le focus au clavier : Échap et Entrée ne ferment que si l'écran de fin l'a (défaut trouvé par mon propre test).
   try{ e.focus({preventScroll:true}); }catch(err){ /* sans effet */ }
-  // Le noir (fondu en 1,2 s) couvre tout : la pluie s'arrête, la fête est retirée une fois le fondu fini.
-  arreteConfettis();
+  // Le noir (fondu en 1,2 s) couvre tout : le tas est retiré avec la fête une fois le fondu fini ; les canons, eux, continuent SOUS le texte :
+  // le calque des confettis qui tombent change de parent avant que la fête ne soit retirée.
+  clearTimeout(minuteurRetraitFete);
+  if(etatConfettis && etatConfettis.toileAir){ etatConfettis.toileAir.style.zIndex = "1"; e.insertBefore(etatConfettis.toileAir, e.firstChild); }
   minuteurRetraitFete = setTimeout(() => { for(const f of document.querySelectorAll(".fete")) f.remove(); }, 1400);
 }
 function lanceHalo(){
@@ -4181,6 +4198,10 @@ function lanceHalo(){
 // à peu près d'un bloc, sans trou durable. La cadence est calculée pour remplir l'écran en FETE_REMPLIT_MS
 // (surface de l'écran divisée par l'aire utile d'un confetti posé, 72 px²).
 // L'écran est « plein » quand le tas atteint 97 % de la hauteur en moyenne et 85 % partout.
+// VERSION 6 (14/11/2026, essayée par Antoni sur son téléphone) : des canons tirent depuis les deux côtés, et le tas monte EN RANGÉES : un
+// confetti se pose sur la fenêtre de 3 colonnes (la largeur d'un confetti) la plus basse parmi 7, à plat sur la plus haute des trois. Mesuré
+// dans la page d'essai : l'écart de hauteur entre la colonne la plus haute et la plus basse est de 0,04 à 0,06 (0,84 pour l'ancien tas, qui
+// finissait en gros paquets). Poser sur UNE seule colonne laissait une dent de scie (43 % / 85 % une colonne sur deux) : le confetti relève aussi ses voisines.
 function lanceConfettis(f){
   const W = innerWidth, H = innerHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
   const toile = z => {
@@ -4196,14 +4217,22 @@ function lanceConfettis(f){
   const teintes = ["--cycle-a", "--cycle-b", "--cycle-c"].map(n => st.getPropertyValue(n).trim() || "#ff5cae").concat("#ffffff");
   const COL = 4, nc = Math.ceil(W / COL), h = new Float32Array(nc), R = 8, DELTA = 6;
   // Un confetti posé relève de DELTA px chacune des (en gros) trois colonnes qu'il couvre : 3 x 4 x 6 = 72 px² d'aire utile (les confettis se recouvrent : couverture mesurée à 90 % de pixels pleins).
-  const cadence = (W * H / (3 * COL * DELTA)) / ((FETE_REMPLIT_MS + 700) / 1000);   // confettis par seconde (la fenêtre de naissance : mesuré, l'écran est plein en gros à sa fin moins une seconde)
-  const e = etatConfettis = { actif: true, posees: 0, tombent: 0, remplissage: 0, minimum: 0, t: 0, plein: false, toileTas: tas };
+  const cadence = (W * H / (3 * COL * DELTA)) / ((FETE_REMPLIT_MS + 700) / 1000) * FETE_CADENCE;   // confettis par seconde (la fenêtre de naissance : mesuré, l'écran est plein en gros à sa fin moins une seconde)
+  const e = etatConfettis = { actif: true, posees: 0, tombent: 0, remplissage: 0, minimum: 0, t: 0, plein: false, toileTas: tas, toileAir: air, fini: false, tfin: 0, ecart: 0 };
   const colonnes = (x, w) => [Math.max(0, Math.floor((x - w / 2) / COL)), Math.min(nc - 1, Math.floor((x + w / 2) / COL))];
   const air_ = [];
-  let dernier = null, t0 = null, acc = 0;
-  const nait = () => {
+  let dernier = null, t0 = null, acc = 0, tirs = 0;
+  const nait = canon => {
+    if(canon){
+      // Un canon : parti du bas d'un côté, lancé vers l'intérieur et vers le haut (la même gravité que la pluie le ramène).
+      const gauche = (tirs++ % 2) === 0, ang = (gauche ? 1 : -1) * (Math.PI / 2 - (0.5 + Math.random() * 0.5)), vit = 950 + Math.random() * 800;
+      air_.push({ x: gauche ? 6 : W - 6, y: H * (0.6 + Math.random() * 0.2), vx: Math.sin(ang) * vit, vy: -Math.cos(ang) * vit * (0.85 + Math.random() * 0.3),
+                  w: 10 + Math.random() * 2, l: 17 + Math.random() * 4, r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 14, ph: Math.random() * 6.28,
+                  c: teintes[(Math.random() * teintes.length) | 0] });
+      return;
+    }
     let x = Math.random() * W, bas = h[Math.min(nc - 1, Math.floor(x / COL))];
-    for(let k = 0; k < 5; k++){
+    for(let k = 0; k < 12; k++){
       const y = Math.random() * W, hy = h[Math.min(nc - 1, Math.floor(y / COL))];
       if(hy < bas){ x = y; bas = hy; }
     }
@@ -4218,28 +4247,53 @@ function lanceConfettis(f){
     if(t0 === null){ t0 = ts; dernier = ts; }
     const dt = Math.min(0.05, (ts - dernier) / 1000);
     dernier = ts; e.t = (ts - t0) / 1000;
-    if(e.t > 0.15 && air_.length < 1500){ acc += cadence * dt; while(acc >= 1){ acc--; nait(); } }
+    const parSalve = FETE_CANONS_PAR_SALVE;
+    if(e.fini){
+      // Écran de fin posé : les canons continuent en plus petit, sous le texte (un cinquième des confettis, un tir sur 1,5).
+      const ph = (e.t - e.tfin) % (FETE_CANONS_PAUSE * 1.5);
+      if(ph < 0.45){ const n = Math.ceil(parSalve * FETE_CANONS_FINAL / 0.45 * dt); for(let q = 0; q < n; q++) nait(true); }
+    }else{
+      for(let s = 0; s < FETE_CANONS_SALVES; s++){
+        const d0 = 0.1 + s * FETE_CANONS_PAUSE;
+        if(e.t > d0 && e.t < d0 + 0.45){ const n = Math.ceil(parSalve / 0.45 * dt); for(let q = 0; q < n; q++) nait(true); }
+      }
+      if(e.t > 0.4 && air_.length < 1500){ acc += cadence * dt; while(acc >= 1){ acc--; nait(false); } }
+    }
     xa.clearRect(0, 0, W, H);
     for(let i = air_.length - 1; i >= 0; i--){
       const p = air_[i];
       p.vy = Math.min(p.vy + 900 * dt, 560);
       p.ph += dt * 3; p.x += Math.sin(p.ph) * 28 * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+      if(p.vx){ p.x += p.vx * dt; p.vx *= Math.max(0, 1 - 2.6 * dt); }
+      if(p.x < -30) p.x = W + 20; else if(p.x > W + 30) p.x = -20;
+      // Sur l'écran de fin, rien ne se pose plus : les confettis passent, puis sortent par le bas.
+      if(e.fini){ if(p.y > H + 40){ air_[i] = air_[air_.length - 1]; air_.pop(); }else trace(xa, p); continue; }
       // Il se pose sur la colonne du CENTRE ; chaque colonne couverte monte ensuite de sa PROPRE hauteur (jamais
       // « au niveau de la plus haute » : cet étalement s'emballait, l'écran était plein en 0,3 s à la première version).
       const cm = Math.min(nc - 1, Math.max(0, Math.floor(p.x / COL)));
       if(p.y + R >= H - h[cm]){
-        p.y = Math.max(-R, H - h[cm] - R);
+        // En rangées : la fenêtre de 3 colonnes la plus basse parmi 7 (la sienne et six tirées au hasard), le confetti à plat sur la plus haute des trois.
+        let meilleur = 1e9, cc = cm;
+        for(let k = 0; k < 7; k++){
+          const cr = k === 0 ? cm : (Math.random() * nc) | 0;
+          const mx = Math.max(h[Math.max(0, cr - 1)], h[cr], h[Math.min(nc - 1, cr + 1)]);
+          if(mx < meilleur){ meilleur = mx; cc = cr; }
+        }
+        p.x = cc * COL + COL / 2; p.y = Math.max(-R, H - meilleur - R);
         trace(xt, p); e.posees++;
-        const [c0, c1] = colonnes(p.x, p.w);
-        for(let c = c0; c <= c1; c++) h[c] += DELTA;
+        for(let c = Math.max(0, cc - 1); c <= Math.min(nc - 1, cc + 1); c++) h[c] = meilleur + DELTA;
         air_[i] = air_[air_.length - 1]; air_.pop();
       }else trace(xa, p);
     }
-    let somme = 0, mini = H;
-    for(let c = 0; c < nc; c++){ const v = Math.min(h[c], H); somme += v; if(v < mini) mini = v; }
-    e.remplissage = somme / (nc * H); e.minimum = mini / H; e.tombent = air_.length;
-    if(e.remplissage >= 0.97 && e.minimum >= 0.85) e.plein = true;
-    if(e.plein || e.t * 1000 >= FETE_FINAL_MAX_MS){ e.plein = true; afficheEcranFinal(); return; }
+    e.tombent = air_.length;
+    if(!e.fini){
+      let somme = 0, mini = H, maxi = 0;
+      for(let c = 0; c < nc; c++){ const v = Math.min(h[c], H); somme += v; if(v < mini) mini = v; if(v > maxi) maxi = v; }
+      e.remplissage = somme / (nc * H); e.minimum = mini / H; e.ecart = (maxi - mini) / H;
+      if(e.remplissage >= 0.97 && e.minimum >= 0.85) e.plein = true;
+      // L'écran de fin se pose, mais la boucle CONTINUE (les canons sous le texte) : elle s'arrête quand on ferme l'écran de fin.
+      if(e.plein || e.t * 1000 >= FETE_FINAL_MAX_MS){ e.plein = true; e.fini = true; e.tfin = e.t; afficheEcranFinal(); }
+    }
     imageConfettis = requestAnimationFrame(pas);
   };
   imageConfettis = requestAnimationFrame(pas);
