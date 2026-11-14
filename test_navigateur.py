@@ -9043,12 +9043,15 @@ def test_essai_des_confettis(nav, url):
                   "[essai confettis %d px] « %s » finit sur l'écran final" % (largeur, vid))
             check("touche" not in page.evaluate("() => document.getElementById('noir').textContent").lower(),
                   "[essai confettis %d px] « %s » : l'écran final n'affiche pas de consigne « touche »" % (largeur, vid))
+            tx = page.evaluate("() => { const t = document.querySelector('#noir .t'), r = t.getBoundingClientRect(); return {taille: parseFloat(getComputedStyle(t).fontSize), gauche: r.left, droite: r.right, largeur: innerWidth}; }")
+            check(tx["taille"] >= 0.15 * largeur and tx["gauche"] >= 0 and tx["droite"] <= tx["largeur"],
+                  "[essai confettis %d px] « %s » : le texte de l'écran final est gros (%.0f px, au moins 15 %% de la largeur) et tient dans l'écran (%.0f à %.0f sur %d)" % (largeur, vid, tx["taille"], tx["gauche"], tx["droite"], tx["largeur"]))
             if vid in ("canons", "rangees"):
                 t0 = page.evaluate("() => window.__etat().t"); page.wait_for_timeout(700)
                 t1 = page.evaluate("() => window.__etat().t")
-                z = page.evaluate("() => { const c = document.querySelectorAll('#scene canvas'); return Math.max(...[...c].map(x => +x.style.zIndex)); }")
-                check(t1 > t0 + 0.5 and z > 4,
-                      "[essai confettis %d px] « %s » : les canons continuent sur l'écran final (animation vivante : %.1f s puis %.1f s, confettis au-dessus du texte : z %d)" % (largeur, vid, t0, t1, z))
+                z = page.evaluate("() => { const c = document.querySelector('#noir canvas'), t = document.querySelector('#noir .t'); return c ? [+c.style.zIndex, +getComputedStyle(t).zIndex, getComputedStyle(t).position] : null; }")
+                check(t1 > t0 + 0.5 and z is not None and z[1] > z[0] and z[2] == "relative",
+                      "[essai confettis %d px] « %s » : les canons continuent sur l'écran final (animation vivante : %.1f s puis %.1f s) et les confettis passent DERRIÈRE le texte (canvas z %s, texte z %s)" % (largeur, vid, t0, t1, z and z[0], z and z[1]))
             page.click("#noir")
         check(page.evaluate("() => localStorage.length === 0 && sessionStorage.length === 0"),
               "[essai confettis %d px] la page n'a rien écrit dans le stockage" % largeur)
