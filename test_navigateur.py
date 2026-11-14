@@ -9088,6 +9088,35 @@ def test_essai_des_confettis(nav, url):
         ctx.close()
 
 
+def test_agenda_sortie_du_19(nav, url):
+    """L'agenda montre la sortie du jeu le 19/11 (Antoni, 14/11/2026), annoncée par Rockstar, au-dessus de la carte de Leonida."""
+    print("\n[agenda sortie] « Sortie de GTA VI » le 19/11, annoncée, avant la carte de Leonida")
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 900}, timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.clock.install(time="2026-11-14T21:30:00Z")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached")
+        page.evaluate("() => ouvreCompteur()")
+        page.wait_for_selector("#compteurContenu .compteur-agenda li", state="attached", timeout=15000)
+        page.wait_for_timeout(300)
+        lignes = page.evaluate("""() => [...document.querySelectorAll('#compteurContenu .compteur-agenda li')].map(li => {
+            const r = li.getBoundingClientRect(); return {jour: li.querySelector('.ag-d b').textContent.trim(), statut: li.dataset.statut,
+                texte: li.querySelector('.ag-t').textContent.trim(), droite: Math.round(r.right), gauche: Math.round(r.left)}; })""")
+        sorties = [i for i, l in enumerate(lignes) if l["texte"].startswith("Sortie de GTA VI")]
+        cartes = [i for i, l in enumerate(lignes) if l["texte"].startswith("Map de Leonida")]
+        check(len(sorties) == 1 and len(cartes) == 1 and sorties[0] + 1 == cartes[0] and lignes[sorties[0]]["jour"] == "19" and lignes[cartes[0]]["jour"] == "19",
+              "[agenda sortie %d px] « Sortie de GTA VI » est le 19, juste avant la carte de Leonida, elle aussi le 19 (%s)" % (largeur, [(l["jour"], l["texte"][:24]) for l in lignes]))
+        if sorties:
+            s = lignes[sorties[0]]
+            check(s["statut"] == "annonce" and "00:00 (Paris)" in s["texte"] and "XSX" in s["texte"] and "PS5" in s["texte"],
+                  "[agenda sortie %d px] statut « annoncé » et libellé « %s »" % (largeur, s["texte"]))
+        check(all(l["gauche"] >= 0 and l["droite"] <= largeur for l in lignes) and not page.evaluate("() => document.documentElement.scrollWidth > innerWidth"),
+              "[agenda sortie %d px] aucune ligne ne déborde de l'écran (%s)" % (largeur, [l["droite"] for l in lignes]))
+        check(not erreurs, "[agenda sortie %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+
 def test_repetition_de_minuit(nav, url):
     """La page de répétition du jour J (Antoni, 14/11/2026) : la vraie app, une horloge avancée, rien d'enregistré."""
     print("\n[répétition] la page lance la vraie app avec une horloge avancée, et n'écrit rien dans le vrai stockage")
@@ -9347,6 +9376,7 @@ CONTROLES = [
     test_compact_en_un_toucher_entete_replie_photo_basse,
     test_titres_en_cache_et_dates_paris,
     test_repetition_de_minuit,
+    test_agenda_sortie_du_19,
     test_essai_des_confettis,
     test_le_logo_remonte_en_haut,
 ]
