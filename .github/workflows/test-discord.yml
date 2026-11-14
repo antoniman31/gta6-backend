@@ -35,3 +35,9 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python test_discord.py
+
+      # L'alerte de panne du robot (14/11/2026), en message de TEST : « TEST » dans le titre, rien n'a échoué.
+      - name: Envoyer l'alerte de panne (essai)
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python alerte_panne.py --essai
