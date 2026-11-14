@@ -161,7 +161,7 @@ CHROMIUM_PATH="$(ls /opt/pw-browsers/chromium_headless_shell-*/*/chrome-headless
 python3 test_navigateur.py      # l'app dans un vrai navigateur, 320 et 390 px
 ```
 
-`test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la récupération est injectable. La suite navigateur dure plusieurs minutes. Les quatre doivent être vertes avant chaque commit ;
+`test_pipeline.py` n'a besoin ni de réseau ni de dépendance : la récupération est injectable. La suite navigateur dure environ 8 minutes seule et environ 3 minutes avec `--workers 3` (mesuré le 14/11/2026 ; `--seulement NOM` rejoue un contrôle). Les quatre doivent être vertes avant chaque commit ;
 `checks.yml` les rejoue sur chaque pull request.
 
 - **Un contrôle doit être prouvé capable d'échouer** : on le rejoue contre l'ancien code (`git archive HEAD` plus le nouveau test) avant de l'annoncer vert.
