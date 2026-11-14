@@ -8,7 +8,7 @@ robot Python (`fetch_feeds.py`, `feed_store.py`, `merge_feed.py`, `discord_notif
 **Réponds en français, et toujours en heure de Paris.** Antoni est seul utilisateur,
 sur téléphone : le rendu à 320 et 390 px passe avant tout autre.
 
-## Les quatre suites (toutes vertes avant chaque commit)
+## Les quatre suites (toutes vertes avant chaque commit, sauf la dernière quand rien de visuel ne change)
 
 ```
 python3 test_pipeline.py
@@ -17,9 +17,16 @@ python3 audit_donnees.py
 PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers CHROMIUM_PATH="$(ls /opt/pw-browsers/chromium_headless_shell-*/*/chrome-headless-shell)" python3 test_navigateur.py
 ```
 
-Le dossier du navigateur change avec l'image du conteneur (`-1194` puis `-1243` : mesuré le 07/11/2026) : la commande le cherche au lieu de le figer. La dernière dure plusieurs minutes : lance-la en arrière-plan et attends sa fin
-avec un moniteur, sans enchaîner de `sleep`. Un contrôle que tu
-ajoutes doit être **prouvé capable d'échouer** : rejoue-le contre l'ancien code
+Le dossier du navigateur change avec l'image du conteneur (`-1194` puis `-1243` : mesuré le 07/11/2026) : la commande le cherche au lieu de le figer.
+
+**La suite navigateur en parallèle** (choix d'Antoni, 14/11/2026 : « c'est trop long ») : ajoute `--workers 3` à la commande. Mesuré le 14/11/2026 : 180 s au lieu de 501 s, le même 1749/1749 ;
+six passages sur six verts à trois processus, un sur six rouge à quatre (une attente de 20 s dépassée sous charge) : **ne monte pas à quatre**. La CI l'utilise aussi. Lance-la en arrière-plan et attends sa fin
+avec un moniteur, sans enchaîner de `sleep`.
+
+**Quand la lancer** : en cours de mise au point, rejoue seulement les contrôles concernés (`python3 test_navigateur.py --seulement test_frise_des_jalons ...`) ; la suite complète une seule fois avant le commit.
+**Pas de suite navigateur locale quand rien de visuel ne change** (documentation, dépendances, robot Python, agenda) : pipeline, sources et audit suffisent, la CI lance la suite navigateur de toute façon.
+
+Un contrôle que tu ajoutes doit être **prouvé capable d'échouer** : rejoue-le contre l'ancien code
 (`git archive HEAD` dans un dossier à part, plus tes tests) avant de l'annoncer vert.
 
 ## Règles qui ont déjà coûté un cycle

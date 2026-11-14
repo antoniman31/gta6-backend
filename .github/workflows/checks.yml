@@ -109,8 +109,11 @@ jobs:
       # `display:grid`, une entête collante qui recouvre son contenu, un
       # libellé décentré de huit pixels. Quatre défauts de ce genre ont été
       # trouvés le 16/09/2026, dont deux rendaient l'app pire qu'avant.
+      # Trois processus qui se partagent les contrôles (14/11/2026) : mesuré 180 s contre 501 s en séquentiel,
+      # le même 1749/1749 ; six passages sur six verts à trois, un sur six rouge à quatre (délai de 20 s
+      # dépassé sous charge : quatre navigateurs saturent quatre cœurs). Ne pas passer à quatre.
       - name: Contrôles rendus dans un navigateur
-        run: python test_navigateur.py
+        run: python test_navigateur.py --workers 3
 
       - name: Audit des données publiées
         run: python audit_donnees.py

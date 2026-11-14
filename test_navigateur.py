@@ -3280,7 +3280,10 @@ def test_actualiser_ne_jette_plus_rien(nav, url):
           "à l'affichage, seul le fichier allégé est là (%d articles) — le "
           "rattrapage ne retarde pas le fil" % tout_de_suite)
 
-    page.wait_for_function("lastItems.length > %d" % tout_de_suite, timeout=20000)
+    # 60 s et non 20 : l'historique complet (plusieurs milliers d'articles) est téléchargé et analysé ici ;
+    # dans la suite à quatre processus (14/11/2026), un passage sur cinq a dépassé 20 s sous charge.
+    # C'est une borne d'attente, pas un seuil : le contrôle qui suit vérifie toujours le résultat.
+    page.wait_for_function("lastItems.length > %d" % tout_de_suite, timeout=60000)
     page.wait_for_timeout(1200)
     complet = page.evaluate("lastItems.length")
     check(complet > tout_de_suite,
@@ -8862,14 +8865,139 @@ def test_chevron_toujours_sur_une_ligne(nav, url):
     ctx.close()
 
 
-def main():
+def _controles_par_largeur(nav, url):
+    """Les six contrôles de géométrie, rejoués aux deux largeurs (320 et 390 px)."""
+    for largeur in LARGEURS:
+        ctx = nav.new_context(viewport={"width": largeur, "height": 850})
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#feed", state="attached")
+        for fn in (test_cibles_tactiles, test_rien_ne_deborde,
+                   test_replie_est_replie, test_libelles_centres,
+                   test_etats_annonces, test_comportements):
+            fn(page, largeur)
+            # Chaque contrôle repart d'une page propre : un panneau
+            # laissé ouvert ou un filtre laissé rempli ferait échouer
+            # le suivant pour une raison qui n'est pas la sienne.
+            page.goto(url, wait_until="load")
+            page.wait_for_selector("#feed", state="attached")
+        check(not erreurs,
+              "[%d px] aucune erreur JavaScript%s"
+              % (largeur, "" if not erreurs else " — " + erreurs[0][:120]))
+        ctx.close()
+
+
+# Les contrôles qui ouvrent leurs propres contextes, dans l'ordre d'origine. Hors de la boucle des
+# largeurs : ils ne regardent pas une géométrie et branchent leurs interceptions avant le chargement.
+CONTROLES = [
+    test_repli_backend,
+    test_vignette_ouvre_larticle,
+    test_archive_dans_lapp,
+    test_archive_mois_par_mois,
+    test_actualiser_ne_jette_plus_rien,
+    test_recherche_sans_accents,
+    test_barre_detat_suit_le_theme,
+    test_ecran_de_chargement,
+    test_barre_du_bas,
+    test_page_reglages,
+    test_entete_tuiles_et_ligne_reduite,
+    test_fenetre_du_compteur,
+    test_compteurs_jumeaux,
+    test_toast_annuler,
+    test_poids_de_tout_charger,
+    test_plafond_des_lus,
+    test_sauvegarde_export_import,
+    test_vue_statistiques,
+    test_entete_sans_vide,
+    test_heure_de_premiere_vue,
+    test_reprise_des_liens_redecodes,
+    test_bloc_incidents,
+    test_stats_quatre_rubriques,
+    test_officiel_et_filtres_etroits,
+    test_badge_actu_majeure_lisible,
+    test_onglet_actu_majeure,
+    test_sources_disent_la_verite,
+    test_compte_a_rebours,
+    test_resume_du_mode_de_secours,
+    test_mode_sans_spoiler,
+    test_vecteurs_du_resume,
+    test_compte_a_rebours_flashy,
+    test_agenda_jours_civils,
+    test_agenda_dans_le_panneau,
+    test_panneau_du_compteur,
+    test_budget_du_stockage,
+    test_contraste_partout,
+    test_le_service_worker_sans_push,
+    test_mettre_de_cote,
+    test_le_vrai_editeur,
+    test_mur_du_jour_j,
+    test_badges_filtres_chrono_et_recherches,
+    test_graphiques_detailles,
+    test_graphiques_autres_rubriques,
+    test_palette_du_jour_j,
+    test_contraste_jour_j,
+    test_texte_douze_px_et_coins,
+    test_balayage_des_cartes,
+    test_cycle_de_couleurs,
+    test_cycle_synchronise,
+    test_contraste_du_cycle,
+    test_tout_dans_le_cycle,
+    test_effets_du_jour_j,
+    test_coins_du_cadre,
+    test_lot_2a_interface,
+    test_chevron_toujours_sur_une_ligne,
+    test_bordures_du_jour_j,
+    test_lot_2b_interface,
+    test_case_globale_des_effets,
+    test_grand_moment_de_minuit,
+    test_frise_des_jalons,
+    test_aucun_texte_oublie_du_cycle,
+    test_categories_de_couleur,
+    test_stats_et_reglages_compacts,
+]
+
+
+def _unites():
+    """Les unités de travail, dans l'ordre : la boucle des largeurs, puis chaque contrôle."""
+    return [("_largeurs", _controles_par_largeur)] + [(f.__name__, f) for f in CONTROLES]
+
+
+def _lance_unites(nav, url, dossier_reclames=None, seulement=None):
+    """Joue les unités ; avec un dossier de réclamations, seulement celles qu'on a réussi à réclamer.
+
+    La réclamation est un fichier créé en exclusivité : le premier processus qui le crée joue
+    l'unité, les autres passent à la suivante. Pas de table de durées à tenir à jour, et un
+    processus qui finit tôt prend le travail restant.
+    """
+    for i, (nom, fn) in enumerate(_unites()):
+        if seulement is not None and nom not in seulement:
+            continue
+        if dossier_reclames is not None:
+            try:
+                os.close(os.open(os.path.join(dossier_reclames, "u%d" % i), os.O_CREAT | os.O_EXCL))
+            except FileExistsError:
+                continue
+        if dossier_reclames is None:
+            fn(nav, url)
+            continue
+        # Dans la suite parallèle, un contrôle qui plante est un ÉCHEC noté, pas la perte des résultats
+        # de tout le processus (le 14/11/2026, une attente expirée avait fait disparaître 35 contrôles).
+        try:
+            fn(nav, url)
+        except Exception as e:
+            check(False, "%s a planté : %s" % (nom, str(e).splitlines()[0][:160] if str(e) else type(e).__name__))
+
+
+def _joue(dossier_reclames=None, seulement=None):
+    """Lance le navigateur et joue les unités ; rend le code de sortie du jeu (0 si rien n'a planté)."""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("playwright absent — `pip install -r requirements.txt` puis "
               "`python -m playwright install chromium`")
         return 1
-
     srv, url = sert_docs()
     # PLAYWRIGHT_BROWSERS_PATH pointe déjà le bon dossier en CI comme en local ;
     # on ne force un exécutable que s'il est explicitement fourni.
@@ -8877,105 +9005,81 @@ def main():
     try:
         with sync_playwright() as p:
             nav = p.chromium.launch(executable_path=exe)
-            for largeur in LARGEURS:
-                ctx = nav.new_context(viewport={"width": largeur, "height": 850})
-                page = ctx.new_page()
-                erreurs = []
-                page.on("pageerror", lambda e: erreurs.append(str(e)))
-                page.goto(url, wait_until="load")
-                page.wait_for_selector("#feed", state="attached")
-                for fn in (test_cibles_tactiles, test_rien_ne_deborde,
-                           test_replie_est_replie, test_libelles_centres,
-                           test_etats_annonces, test_comportements):
-                    fn(page, largeur)
-                    # Chaque contrôle repart d'une page propre : un panneau
-                    # laissé ouvert ou un filtre laissé rempli ferait échouer
-                    # le suivant pour une raison qui n'est pas la sienne.
-                    page.goto(url, wait_until="load")
-                    page.wait_for_selector("#feed", state="attached")
-                check(not erreurs,
-                      "[%d px] aucune erreur JavaScript%s"
-                      % (largeur, "" if not erreurs else " — " + erreurs[0][:120]))
-                ctx.close()
-            # Hors de la boucle des largeurs : ce contrôle ne regarde pas une
-            # géométrie, et ouvre ses propres contextes pour brancher ses
-            # interceptions avant le chargement de la page.
-            test_repli_backend(nav, url)
-            test_vignette_ouvre_larticle(nav, url)
-            test_archive_dans_lapp(nav, url)
-            test_archive_mois_par_mois(nav, url)
-            test_actualiser_ne_jette_plus_rien(nav, url)
-            test_recherche_sans_accents(nav, url)
-            test_barre_detat_suit_le_theme(nav, url)
-            test_ecran_de_chargement(nav, url)
-            test_barre_du_bas(nav, url)
-            test_page_reglages(nav, url)
-            test_entete_tuiles_et_ligne_reduite(nav, url)
-            test_fenetre_du_compteur(nav, url)
-            test_compteurs_jumeaux(nav, url)
-            test_toast_annuler(nav, url)
-            test_poids_de_tout_charger(nav, url)
-            test_plafond_des_lus(nav, url)
-            test_sauvegarde_export_import(nav, url)
-            test_vue_statistiques(nav, url)
-            test_entete_sans_vide(nav, url)
-            test_heure_de_premiere_vue(nav, url)
-            test_reprise_des_liens_redecodes(nav, url)
-            test_bloc_incidents(nav, url)
-            test_stats_quatre_rubriques(nav, url)
-            test_officiel_et_filtres_etroits(nav, url)
-            test_badge_actu_majeure_lisible(nav, url)
-            test_onglet_actu_majeure(nav, url)
-            test_sources_disent_la_verite(nav, url)
-            test_compte_a_rebours(nav, url)
-            test_resume_du_mode_de_secours(nav, url)
-            test_mode_sans_spoiler(nav, url)
-            test_vecteurs_du_resume(nav, url)
-            test_compte_a_rebours_flashy(nav, url)
-            test_agenda_jours_civils(nav, url)
-            test_agenda_dans_le_panneau(nav, url)
-            test_panneau_du_compteur(nav, url)
-            test_budget_du_stockage(nav, url)
-            test_contraste_partout(nav, url)
-            test_le_service_worker_sans_push(nav, url)
-            test_mettre_de_cote(nav, url)
-            test_le_vrai_editeur(nav, url)
-            test_mur_du_jour_j(nav, url)
-            test_badges_filtres_chrono_et_recherches(nav, url)
-            test_graphiques_detailles(nav, url)
-            test_graphiques_autres_rubriques(nav, url)
-            test_palette_du_jour_j(nav, url)
-            test_contraste_jour_j(nav, url)
-            test_texte_douze_px_et_coins(nav, url)
-            test_balayage_des_cartes(nav, url)
-            test_cycle_de_couleurs(nav, url)
-            test_cycle_synchronise(nav, url)
-            test_contraste_du_cycle(nav, url)
-            test_tout_dans_le_cycle(nav, url)
-            test_effets_du_jour_j(nav, url)
-            test_coins_du_cadre(nav, url)
-            test_lot_2a_interface(nav, url)
-            test_chevron_toujours_sur_une_ligne(nav, url)
-            test_bordures_du_jour_j(nav, url)
-            test_lot_2b_interface(nav, url)
-            test_case_globale_des_effets(nav, url)
-            test_grand_moment_de_minuit(nav, url)
-            test_frise_des_jalons(nav, url)
-            test_aucun_texte_oublie_du_cycle(nav, url)
-            test_categories_de_couleur(nav, url)
-            test_stats_et_reglages_compacts(nav, url)
+            _lance_unites(nav, url, dossier_reclames, seulement)
             nav.close()
     finally:
         srv.shutdown()
+    return 0
 
-    print("\n%d/%d contrôles rendus passés" % (CHECKS - len(FAILURES), CHECKS))
-    if FAILURES:
+
+def _bilan(checks, echecs):
+    print("\n%d/%d contrôles rendus passés" % (checks - len(echecs), checks))
+    if echecs:
         print("ÉCHECS :")
-        for f in FAILURES:
+        for f in echecs:
             print("  -", f)
         return 1
     print("Tout est vert.")
     return 0
+
+
+def _en_parallele(n):
+    """Joue la suite dans `n` processus qui se partagent les unités ; même bilan que la suite seule.
+
+    Chaque processus a son navigateur et son serveur (port libre choisi par le système), et écrit son
+    journal dans un fichier : les sorties ne se mélangent pas, on les imprime à la fin, processus par
+    processus. Un processus qui plante sans rendre son résultat compte comme un échec.
+    """
+    import subprocess, tempfile
+    with tempfile.TemporaryDirectory(prefix="nav-") as d:
+        procs = []
+        for k in range(n):
+            journal = open(os.path.join(d, "journal-%d.txt" % k), "w", encoding="utf-8")
+            procs.append((k, journal, subprocess.Popen(
+                [sys.executable, os.path.abspath(__file__), "--worker", d, str(k)],
+                stdout=journal, stderr=subprocess.STDOUT)))
+        checks, echecs = 0, []
+        for k, journal, proc in procs:
+            code = proc.wait()
+            journal.close()
+            print("=== processus %d/%d ===" % (k + 1, n))
+            print(open(os.path.join(d, "journal-%d.txt" % k), encoding="utf-8").read())
+            try:
+                res = json.load(open(os.path.join(d, "res-%d.json" % k), encoding="utf-8"))
+                checks += res["checks"]
+                echecs += res["echecs"]
+            except (OSError, ValueError):
+                echecs.append("le processus %d s'est arrêté sans rendre de résultat (code %s)" % (k + 1, code))
+            else:
+                if code:
+                    echecs.append("le processus %d a rendu son résultat mais sort en erreur (code %s)" % (k + 1, code))
+    return _bilan(checks, echecs)
+
+
+def main():
+    argv = sys.argv[1:]
+    if argv[:1] == ["--seulement"]:
+        # Rejoue quelques contrôles seulement, pour la mise au point : `--seulement test_frise_des_jalons ...`.
+        # Un nom inconnu est une erreur, pas un « tout est vert » sur zéro contrôle.
+        noms = argv[1:]
+        connus = [n for n, _ in _unites()]
+        inconnus = [n for n in noms if n not in connus]
+        if not noms or inconnus:
+            print("contrôles inconnus : %s\nconnus : %s" % (inconnus or "(aucun nom donné)", ", ".join(connus)))
+            return 2
+        code = _joue(seulement=noms)
+        return code or _bilan(CHECKS, FAILURES)
+    if argv[:1] == ["--workers"]:
+        return _en_parallele(int(argv[1]))
+    if argv[:1] == ["--worker"]:
+        # Mode interne d'un processus de la suite parallèle : argv = ["--worker", dossier, numéro].
+        dossier, k = argv[1], argv[2]
+        code = _joue(dossier)
+        with open(os.path.join(dossier, "res-%s.json" % k), "w", encoding="utf-8") as f:
+            json.dump({"checks": CHECKS, "echecs": FAILURES}, f)
+        return code
+    code = _joue()
+    return code or _bilan(CHECKS, FAILURES)
 
 
 if __name__ == "__main__":
