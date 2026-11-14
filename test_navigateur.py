@@ -9085,11 +9085,28 @@ def test_repetition_de_minuit(nav, url):
 
 
 def test_le_logo_remonte_en_haut(nav, url):
-    """Toucher le logo GTA6_WATCH de l'en-tête remonte en haut de la page (Antoni, 14/11/2026)."""
-    print("\n[logo] toucher le logo remonte en haut, au doigt comme au clavier, à 320 et 390 px")
+    """Toucher le titre GTA6_WATCH de la LIGNE RÉDUITE remonte en haut de la page (Antoni, 14/11/2026).
+
+    D'abord posé sur le titre du grand en-tête, corrigé le jour même par Antoni : « c'est celui de l'en-tête réduit qu'il faut utiliser, car
+    l'autre n'est pas visible » — le grand en-tête a quitté l'écran dès qu'on a défilé, il n'y a plus rien à toucher.
+    """
+    print("\n[logo] toucher le titre de la ligne réduite remonte en haut, au doigt comme au clavier, à 320 et 390 px")
     INJECTE = """() => { lastItems = Array.from({length: 60}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
           description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0, lang: i % 2 ? 'en' : 'fr'}));
         lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 60; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+
+    def vers(page, y):
+        """Défile à y et attend que la ligne réduite soit visible (y > 0) ou cachée (y = 0)."""
+        page.evaluate("(y) => window.scrollTo(0, y)", y)
+        for _ in range(30):
+            if page.evaluate("() => document.getElementById('barreHaut').classList.contains('visible')") == (y > 0): break
+            page.wait_for_timeout(100)
+
+    def attend_haut(page):
+        for _ in range(50):
+            if page.evaluate("() => scrollY") == 0: break
+            page.wait_for_timeout(100)
+        return page.evaluate("() => Math.round(scrollY)")
     for largeur in (320, 390):
         for mouvement in ("reduce", "no-preference"):
             ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris", reduced_motion=mouvement)
@@ -9098,47 +9115,45 @@ def test_le_logo_remonte_en_haut(nav, url):
             page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
             page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
             page.evaluate(INJECTE)
-            info = page.evaluate("""() => { const b = document.querySelector('header.console .brand .brand-btn'), r = b.getBoundingClientRect(), h = document.querySelector('.header-haut').getBoundingClientRect();
-                return {dansH1: b.parentElement.tagName === 'H1', nom: b.getAttribute('aria-label'), haut: Math.round(r.height), large: Math.round(r.width), entete: Math.round(h.height),
-                        police: getComputedStyle(b).fontSize + ' ' + getComputedStyle(b).fontWeight, policeTitre: getComputedStyle(b.parentElement).fontSize + ' ' + getComputedStyle(b.parentElement).fontWeight,
-                        fond: getComputedStyle(b).backgroundColor, bord: getComputedStyle(b).borderTopWidth}; }""")
+            vers(page, 1800)
+            info = page.evaluate("""() => { const b = document.querySelector('#barreHaut button.bh-titre'); if(!b) return null; const r = b.getBoundingClientRect(), s = getComputedStyle(b);
+                return {nom: b.getAttribute('aria-label'), haut: Math.round(r.height), large: Math.round(r.width), barre: Math.round(document.getElementById('barreHaut').getBoundingClientRect().height),
+                        police: s.fontSize + ' ' + s.fontWeight, fond: s.backgroundColor, bord: s.borderTopWidth,
+                        grandEnTeteBouton: document.querySelectorAll('header.console .brand button').length}; }""")
             if mouvement == "reduce":
-                check(info["dansH1"] and "remonter" in (info["nom"] or "") and info["haut"] >= 44 and info["large"] > 60,
-                      "[logo %d px] le logo est un bouton dans le titre, nommé, d'au moins 44 px de haut (%s)" % (largeur, info))
-                check(info["police"] == info["policeTitre"] and info["bord"] == "0px" and info["fond"] == "rgba(0, 0, 0, 0)" and info["entete"] <= 48,
-                      "[logo %d px] il garde l'apparence du titre (police %s) sans cadre ni fond, et l'en-tête ne grandit pas (%d px)" % (largeur, info["police"], info["entete"]))
-            # Au doigt : défiler loin, toucher, être en haut.
-            page.evaluate("() => window.scrollTo(0, 1800)"); page.wait_for_timeout(250)
+                check(info is not None and "remonter" in (info["nom"] or "") and info["haut"] >= 44 and info["large"] > 60,
+                      "[logo %d px] le titre de la ligne réduite est un bouton nommé, d'au moins 44 px de haut (%s)" % (largeur, info))
+                if info:
+                    check(info["police"] == "16px 800" and info["bord"] == "0px" and info["fond"] == "rgba(0, 0, 0, 0)" and info["barre"] == 52,
+                          "[logo %d px] il garde l'apparence de l'ancien titre (%s), sans cadre ni fond, et la ligne reste à %d px" % (largeur, info["police"], info["barre"]))
+                    check(info["grandEnTeteBouton"] == 0,
+                          "[logo %d px] le titre du GRAND en-tête n'est pas un bouton (il n'est plus visible quand on a défilé)" % largeur)
+            # Au doigt (toucher réel, vérifié visible et touchable) : défiler loin, toucher, être en haut.
             loin = page.evaluate("() => Math.round(scrollY)")
-            page.evaluate("() => window.scrollTo(0, 1800)"); page.wait_for_timeout(100)
-            page.evaluate("() => document.querySelector('header.console .brand-btn').click()")
-            for _ in range(40):
-                if page.evaluate("() => scrollY") == 0: break
-                page.wait_for_timeout(100)
-            en_haut = page.evaluate("() => Math.round(scrollY)")
+            page.click("#barreHaut .bh-titre")
+            en_haut = attend_haut(page)
             check(loin > 800 and en_haut == 0,
                   "[logo %d px, animations %s] depuis %d px de défilement, un toucher ramène à %d" % (largeur, mouvement, loin, en_haut))
             if mouvement == "no-preference":
                 # Au clavier : focus + Entrée.
-                page.evaluate("() => window.scrollTo(0, 1500)"); page.wait_for_timeout(250)
-                page.focus("header.console .brand-btn"); page.keyboard.press("Enter")
-                for _ in range(40):
-                    if page.evaluate("() => scrollY") == 0: break
-                    page.wait_for_timeout(100)
-                check(page.evaluate("() => Math.round(scrollY)") == 0, "[logo %d px] au clavier (Entrée), même résultat" % largeur)
-                # La copie de l'en-tête dans l'aperçu des couleurs ne doit pas faire défiler la page.
+                vers(page, 1500)
+                page.focus("#barreHaut .bh-titre"); page.keyboard.press("Enter")
+                check(attend_haut(page) == 0, "[logo %d px] au clavier (Entrée), même résultat" % largeur)
+                # Une COPIE de la ligne réduite (l'aperçu des couleurs copie l'en-tête) ne doit pas faire défiler la page.
                 page.evaluate("() => { openSettings(); }"); page.wait_for_timeout(300)
                 page.click("#persoBtn"); page.wait_for_timeout(300)
                 page.evaluate("() => { construitMaquette(); window.scrollTo(0, 700); }"); page.wait_for_timeout(400)
+                copie = page.evaluate("""() => { const m = document.querySelector('#apercuCouleurs'); if(!m) return false; const c = document.getElementById('barreHaut').cloneNode(true);
+                    c.removeAttribute('id'); c.id = 'copieBarre'; c.style.cssText = 'position:static;visibility:visible;transform:none'; m.appendChild(c); return true; }""")
+                page.wait_for_timeout(500)   # la copie décale la page : on mesure APRÈS son insertion, AVANT le toucher
                 avant = page.evaluate("() => Math.round(scrollY)")
-                copie = page.evaluate("() => { const b = document.querySelector('#apercuCouleurs .brand-btn'); if(!b) return false; b.click(); return true; }")
+                page.evaluate("() => document.querySelector('#copieBarre button.bh-titre').click()")
                 page.wait_for_timeout(700)
                 apres = page.evaluate("() => Math.round(scrollY)")
                 check(copie and avant > 0 and apres == avant,
-                      "[logo %d px] la copie du logo dans l'aperçu des couleurs ne fait pas défiler la page (%s, %d puis %d)" % (largeur, "copie trouvée" if copie else "AUCUNE copie", avant, apres))
+                      "[logo %d px] une copie du titre dans l'aperçu des couleurs ne fait pas défiler la page (%s, %d puis %d)" % (largeur, "copie posée" if copie else "AUCUN aperçu", avant, apres))
             check(not erreurs, "[logo %d px, %s] aucune erreur JavaScript (%s)" % (largeur, mouvement, erreurs[:1]))
             ctx.close()
-
 
 def _controles_par_largeur(nav, url):
     """Les six contrôles de géométrie, rejoués aux deux largeurs (320 et 390 px)."""
