@@ -9006,6 +9006,40 @@ def test_titres_en_cache_et_dates_paris(nav, url):
     ctx.close()
 
 
+def test_essai_des_confettis(nav, url):
+    """La page d'essai des confettis (Antoni, 14/11/2026) : chaque version se lance, remplit l'écran avant 9 s, n'écrit rien."""
+    print("\n[essai confettis] chaque version se joue jusqu'à l'écran plein, sans erreur et sans écrire dans le stockage")
+    base = url.rsplit("/", 1)[0]
+    dossier = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+    check("essai-confettis" not in open(os.path.join(dossier, "index.html"), encoding="utf-8").read(),
+          "[essai confettis] l'app ne renvoie nulle part vers la page d'essai")
+    check('name="robots" content="noindex"' in open(os.path.join(dossier, "essai-confettis.html"), encoding="utf-8").read(),
+          "[essai confettis] la page n'est pas indexable")
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris", reduced_motion="no-preference")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)))
+        page.goto(base + "/essai-confettis.html", wait_until="load")
+        b = page.evaluate("""() => ({ids: window.__versions, boutons: [...document.querySelectorAll('button.v')].map(x => Math.round(x.getBoundingClientRect().height)),
+              deborde: document.documentElement.scrollWidth > innerWidth})""")
+        check(len(b["ids"]) >= 5 and len(b["boutons"]) == len(b["ids"]) and all(h >= 44 for h in b["boutons"]) and not b["deborde"],
+              "[essai confettis %d px] un bouton de 44 px ou plus par version, rien ne déborde (%s)" % (largeur, b["boutons"]))
+        for vid in b["ids"]:
+            page.evaluate("() => { window.__dernier = null; }")
+            page.click('button.v[data-version="%s"]' % vid)
+            page.wait_for_function("() => window.__dernier !== null", timeout=20000)
+            r = page.evaluate("() => window.__dernier")
+            check(0 < r["plein"] < 9 and not r["limite"] and r["posees"] > 100,
+                  "[essai confettis %d px] « %s » remplit vraiment l'écran en %.1f s (avant la limite de 9 s) avec %d confettis posés" % (largeur, vid, r["plein"], r["posees"]))
+            check(page.evaluate("() => !document.getElementById('noir').hidden"),
+                  "[essai confettis %d px] « %s » finit sur l'écran final" % (largeur, vid))
+            page.click("#noir")
+        check(page.evaluate("() => localStorage.length === 0 && sessionStorage.length === 0"),
+              "[essai confettis %d px] la page n'a rien écrit dans le stockage" % largeur)
+        check(not erreurs, "[essai confettis %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+
 def test_repetition_de_minuit(nav, url):
     """La page de répétition du jour J (Antoni, 14/11/2026) : la vraie app, une horloge avancée, rien d'enregistré."""
     print("\n[répétition] la page lance la vraie app avec une horloge avancée, et n'écrit rien dans le vrai stockage")
@@ -9249,6 +9283,7 @@ CONTROLES = [
     test_compact_en_un_toucher_entete_replie_photo_basse,
     test_titres_en_cache_et_dates_paris,
     test_repetition_de_minuit,
+    test_essai_des_confettis,
     test_le_logo_remonte_en_haut,
 ]
 

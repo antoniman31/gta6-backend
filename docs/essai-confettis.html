@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0f14">
+<title>Essai des confettis</title>
+<!--
+  ESSAI DES CONFETTIS (Antoni, 14/11/2026 : « améliore les confettis, je veux que ce soit plus réaliste » puis « envoie un truc que je peux
+  tester pour toutes tes versions »).
+
+  Une page À PART, non liée depuis l'app, qui joue le même spectacle que le grand moment de minuit (pluie qui s'accumule jusqu'à remplir l'écran, puis
+  écran noir « GTA VI EST DISPO ! ») avec plusieurs versions des confettis, une par bouton, pour les comparer sur le même téléphone. Elle n'utilise
+  ni index.html ni le stockage de l'app : rien n'est lu, rien n'est écrit. La version « Actuel » reproduit l'algorithme de `lanceConfettis` de l'app.
+
+  Après chaque essai la page affiche la durée jusqu'à l'écran plein et le nombre d'images par seconde : de quoi comparer des chiffres et pas
+  seulement une impression.
+-->
+<style>
+  :root{ color-scheme: dark; --bg:#0b0f14; --carte:#141a22; --bord:#2a3441; --texte:#e4ece8; --dim:#9aa7b4; --accent:#5ab4ff; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--texte); font:16px/1.45 system-ui, sans-serif; padding:20px 16px 48px; }
+  main{ max-width:480px; margin:0 auto; }
+  h1{ font:700 22px/1.2 ui-monospace, monospace; margin:6px 0 10px; }
+  p{ color:var(--dim); margin:0 0 12px; }
+  .liste{ display:grid; gap:10px; margin:16px 0; }
+  button.v{ text-align:left; min-height:60px; padding:10px 14px; border:2px solid var(--bord); border-radius:12px; background:var(--carte); color:var(--texte); font:inherit; cursor:pointer; }
+  button.v b{ display:block; font:700 16px ui-monospace, monospace; color:var(--accent); }
+  button.v span{ font-size:13px; color:var(--dim); }
+  .petit{ font-size:13px; }
+  #resultats{ margin-top:18px; padding:10px 12px; border:1px solid var(--bord); border-radius:10px; font:13px/1.6 ui-monospace, monospace; color:var(--dim); }
+  #resultats b{ color:var(--texte); }
+  #scene{ position:fixed; inset:0; z-index:10; background:var(--bg); }
+  #scene[hidden]{ display:none; }
+  #scene canvas{ position:absolute; left:0; top:0; width:100%; height:100%; }
+  #quitter{ position:absolute; top:8px; right:8px; z-index:5; min-width:44px; min-height:44px; padding:0 14px; border:1px solid var(--bord); border-radius:10px; background:rgba(20,26,34,.85); color:var(--texte); font:600 14px ui-monospace, monospace; cursor:pointer; }
+  #noir{ position:absolute; inset:0; z-index:4; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:24px;
+         text-align:center; font:900 clamp(34px, 12vw, 64px)/1.02 system-ui, sans-serif; text-transform:uppercase; cursor:pointer; animation:fond 1.2s ease-out 1 both; }
+  #noir[hidden]{ display:none; }
+  #noir .t{ animation:cycle 4s steps(12) infinite; }
+  #noir small{ font:600 13px ui-monospace, monospace; color:var(--dim); text-transform:none; }
+  @keyframes fond{ from{ opacity:0; } to{ opacity:1; } }
+  @keyframes cycle{ 0%{ color:#19e6ff; } 33%{ color:#b388ff; } 66%{ color:#ff5cae; } 100%{ color:#19e6ff; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Essai des confettis</h1>
+  <p>Touche une version : le spectacle se joue en plein écran (comme à minuit), jusqu'à l'écran noir. Touche l'écran noir, ou « Quitter », pour revenir.</p>
+  <p class="petit">Rien n'est lu ni enregistré. Même téléphone, mêmes conditions : refais les essais dans l'ordre et dis-moi laquelle te plaît le plus.</p>
+  <div class="liste" id="liste"></div>
+  <div id="resultats" hidden></div>
+</main>
+<div id="scene" hidden>
+  <button id="quitter" type="button">Quitter</button>
+  <div id="noir" hidden><span class="t">GTA VI<br>EST DISPO !</span><small>Touche pour revenir</small></div>
+</div>
+<script>
+(function(){
+  "use strict";
+  // Les couleurs du cycle de l'app (cyan, violet, rose) et du blanc ; « riche » y ajoute or, argent et rose vif.
+  var CYCLE = ["#19e6ff", "#b388ff", "#ff5cae", "#ffffff"];
+  var RICHE = CYCLE.concat(["#ffd166", "#dfe6ee", "#ff3d9a"]);
+  var OR = ["#ffd166", "#ffd166", "#ffe29a", "#dfe6ee", "#ff5cae", "#19e6ff", "#b388ff", "#ffffff"];
+  // formes : poids [paillette rectangulaire, pastille ronde, serpentin]
+  var VERSIONS = [
+    { id: "actuel", nom: "1 · Actuel", desc: "Les confettis de l'app aujourd'hui : rectangles pleins, chute rapide et régulière.",
+      phys: "actuel", formes: [1, 0, 0], w: [10, 12], l: [17, 21], flip: false, ombre: false, canons: 0, palette: CYCLE, cad: 1, delta: 6, fond: 700 },
+    { id: "canons", nom: "2 · Actuel + canons", desc: "Les mêmes confettis, mais deux jets partent des côtés au début. Le reste ne change pas.",
+      phys: "actuel", formes: [1, 0, 0], w: [10, 12], l: [17, 21], flip: false, ombre: false, canons: 120, palette: CYCLE, cad: 1.1, delta: 6, fond: 700 },
+    { id: "realiste", nom: "3 · Réaliste", desc: "Retournement et nuances, chute lente qui flotte, canons, paillettes + pastilles + serpentins, tas ombré.",
+      phys: "air", formes: [0.66, 0.16, 0.18], w: [6, 11], l: [11, 19], flip: true, ombre: true, canons: 220, palette: RICHE, cad: 1.85, delta: 6, fond: 1400 },
+    { id: "dense", nom: "4 · Réaliste, plus dense", desc: "Comme la 3, avec des pièces plus grosses et sans serpentins : un tas bien plein, proche de l'actuel.",
+      phys: "air", formes: [0.8, 0.2, 0], w: [8, 14], l: [14, 25], flip: true, ombre: true, canons: 260, palette: RICHE, cad: 1.3, delta: 6, fond: 1400 },
+    { id: "spectacle", nom: "5 · Spectaculaire", desc: "Trois salves de canons, beaucoup d'or et d'argent, serpentins : moins « vrai papier », plus fête.",
+      phys: "air", formes: [0.55, 0.15, 0.3], w: [7, 13], l: [12, 22], flip: true, ombre: true, canons: 420, salves: 3, palette: OR, cad: 1.8, delta: 6, fond: 1400 }
+  ];
+  var FINAL_MAX = 9000, REMPLIT = 7000;
+
+  var $ = function(i){ return document.getElementById(i); };
+  var scene = $("scene"), noir = $("noir"), liste = $("liste"), resultats = $("resultats"), courant = null;
+  var essais = [];
+
+  function nuance(hex, k){
+    var n = parseInt(hex.replace("#", "").padEnd(6, "0").slice(0, 6), 16), m = 0.45 + 0.55 * k / 5;
+    return "rgb(" + [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(function(v){ return Math.round(v * m + (m > 0.95 ? (255 - v) * 0.15 : 0)); }).join(",") + ")";
+  }
+
+  function lance(v, fin){
+    var W = innerWidth, H = innerHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+    function toile(z){
+      var c = document.createElement("canvas"); c.style.zIndex = String(z);
+      c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+      var x = c.getContext("2d"); x.scale(dpr, dpr); scene.insertBefore(c, $("quitter")); return [c, x];
+    }
+    var t1 = toile(1), t2 = toile(2), xt = t1[1], xa = t2[1];
+    var teintes = v.palette.map(function(h){ return [0, 1, 2, 3, 4, 5].map(function(k){ return nuance(h, k); }); });
+    var COL = 4, nc = Math.ceil(W / COL), h = new Float32Array(nc), R = 8, DELTA = v.delta;
+    var cadence = (W * H / (3 * COL * 6)) / ((REMPLIT + v.fond) / 1000) * v.cad;
+    var E = { actif: true, posees: 0, plein: false, t: 0 }, air = [], acc = 0, dernier = null, t0 = null, lots = 0, deltas = [];
+    var tot = v.formes[0] + v.formes[1] + v.formes[2];
+    function forme(){ var t = Math.random() * tot; return t < v.formes[0] ? 0 : t < v.formes[0] + v.formes[1] ? 1 : 2; }
+    function nait(canon){
+      var z = v.phys === "air" ? 0.75 + Math.random() * 0.5 : 1, f = forme();
+      var p = { z: z, f: f, c: (Math.random() * teintes.length) | 0, w: (v.w[0] + Math.random() * (v.w[1] - v.w[0])) * z, l: (v.l[0] + Math.random() * (v.l[1] - v.l[0])) * z,
+                r: Math.random() * 6.28, vr: v.phys === "air" ? (Math.random() - 0.5) * 5 : (Math.random() - 0.5) * 14, fl: Math.random() * 6.28, vf: 6 + Math.random() * 9,
+                ph: Math.random() * 6.28, vph: v.phys === "air" ? 1.6 + Math.random() * 2.2 : 3, amp: 35 + Math.random() * 60, vt: (250 + Math.random() * 130) * (0.85 + z * 0.2), vx: 0, vy: 0 };
+      if(f === 1){ p.w = p.l = (v.w[0] + Math.random() * (v.w[1] - v.w[0]) * 0.6) * z; }
+      if(f === 2){ p.w = 3.2 * z; p.l = (34 + Math.random() * 16) * z; p.vt *= 0.8; }
+      if(canon){
+        var gauche = (lots++ % 2) === 0, ang = (gauche ? 1 : -1) * (Math.PI / 2 - (0.5 + Math.random() * 0.5)), vit = 950 + Math.random() * 800;
+        p.x = gauche ? 6 : W - 6; p.y = H * (0.6 + Math.random() * 0.2);
+        p.vx = Math.sin(ang) * vit; p.vy = -Math.cos(ang) * vit * (0.85 + Math.random() * 0.3);
+      }else{
+        var x = Math.random() * W, bas = h[Math.min(nc - 1, Math.floor(x / COL))];
+        for(var k = 0; k < 5; k++){ var y = Math.random() * W, hy = h[Math.min(nc - 1, Math.floor(y / COL))]; if(hy < bas){ x = y; bas = hy; } }
+        p.x = x; p.y = -20; p.vy = v.phys === "air" ? p.vt * (0.5 + Math.random() * 0.5) : 150 + Math.random() * 250;
+      }
+      air.push(p);
+    }
+    function dessine(x, p, pose){
+      var k = Math.abs(Math.cos(p.fl)), tint = teintes[p.c][v.flip ? (pose ? 3 : Math.min(5, Math.round(k * 5))) : 5];
+      x.save(); x.translate(p.x, p.y); x.rotate(p.r);
+      if(p.f === 2){
+        x.strokeStyle = tint; x.lineWidth = p.w; x.lineCap = "round"; x.beginPath(); x.moveTo(-p.l / 2, 0);
+        x.quadraticCurveTo(0, Math.sin(p.ph * 1.5) * p.l * 0.22 * (pose ? 0.3 : 1), p.l / 2, 0); x.stroke();
+      }else{
+        if(pose && v.ombre){
+          x.scale(1, 0.32 + 0.2 * (p.fl % 1)); x.fillStyle = "rgba(0,0,0,.28)";
+          if(p.f === 1){ x.beginPath(); x.arc(0.8, 1.4, p.w / 2, 0, 6.29); x.fill(); } else x.fillRect(-p.w / 2 + 0.8, -p.l / 2 + 1.4, p.w, p.l);
+        }else if(!pose && v.flip) x.scale(Math.max(0.12, k), 1);
+        x.fillStyle = tint;
+        if(p.f === 1){ x.beginPath(); x.arc(0, 0, p.w / 2, 0, 6.29); x.fill(); } else x.fillRect(-p.w / 2, -p.l / 2, p.w, p.l);
+        if(!pose && v.flip && k > 0.94 && p.c > 3){ x.fillStyle = "rgba(255,255,255,.75)"; x.fillRect(-p.w / 2, -p.l / 2, p.w * 0.45, p.l * 0.35); }
+      }
+      x.restore();
+    }
+    var salves = v.salves || 1, parSalve = Math.round(v.canons / salves);
+    function pas(ts){
+      if(!E.actif) return;
+      if(t0 === null){ t0 = ts; dernier = ts; }
+      var dt = Math.min(0.05, (ts - dernier) / 1000); deltas.push(ts - dernier); dernier = ts; E.t = (ts - t0) / 1000;
+      // canons : par salves de 0,45 s, la suivante 1,3 s après
+      for(var s = 0; s < salves; s++){ var d0 = 0.1 + s * 1.3; if(v.canons && E.t > d0 && E.t < d0 + 0.45){ var n = Math.ceil(parSalve / 0.45 * dt); for(var q = 0; q < n; q++) nait(true); } }
+      if(E.t > (v.canons ? 0.4 : 0.15) && air.length < 1500){ acc += cadence * dt; while(acc >= 1){ acc--; nait(false); } }
+      xa.clearRect(0, 0, W, H);
+      for(var i = air.length - 1; i >= 0; i--){
+        var p = air[i];
+        if(v.phys === "actuel"){
+          p.vy = Math.min(p.vy + 900 * dt, 560); p.ph += dt * 3; p.x += Math.sin(p.ph) * 28 * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+          if(p.vx){ p.x += p.vx * dt; p.vx *= Math.max(0, 1 - 2.6 * dt); }
+        }else{
+          var r = Math.min(1, 2.6 * dt); p.vx += (Math.sin(p.ph) * p.amp - p.vx) * r; p.vy += (p.vt - p.vy) * r;
+          p.ph += p.vph * dt; p.fl += p.vf * dt; p.r += (p.vr + Math.sin(p.ph) * 0.9) * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+        }
+        if(p.x < -30) p.x = W + 20; else if(p.x > W + 30) p.x = -20;
+        var cm = Math.min(nc - 1, Math.max(0, Math.floor(p.x / COL)));
+        if(p.y + R >= H - h[cm]){
+          p.y = Math.max(-R, H - h[cm] - R); dessine(xt, p, true); E.posees++;
+          var c0 = Math.max(0, Math.floor((p.x - p.w / 2) / COL)), c1 = Math.min(nc - 1, Math.floor((p.x + p.w / 2) / COL));
+          for(var c = c0; c <= c1; c++) h[c] += DELTA;
+          air[i] = air[air.length - 1]; air.pop();
+        }else dessine(xa, p, false);
+      }
+      var somme = 0, mini = H;
+      for(var c2 = 0; c2 < nc; c2++){ var val = Math.min(h[c2], H); somme += val; if(val < mini) mini = val; }
+      E.rempl = somme / (nc * H); E.mini = mini / H;
+      if(E.rempl >= 0.97 && E.mini >= 0.85) E.plein = true;
+      if(E.plein || E.t * 1000 >= FINAL_MAX){ E.plein = true; E.actif = false; fin(E, deltas); return; }
+      E.image = requestAnimationFrame(pas);
+    }
+    E.image = requestAnimationFrame(pas);
+    E.stop = function(){ E.actif = false; cancelAnimationFrame(E.image); };
+    return E;
+  }
+
+  function nettoie(){
+    if(courant && courant.stop) courant.stop();
+    courant = null; noir.hidden = true; scene.hidden = true;
+    var cs = scene.querySelectorAll("canvas"); for(var i = 0; i < cs.length; i++) cs[i].remove();
+  }
+  function joue(v){
+    nettoie(); scene.hidden = false;
+    courant = lance(v, function(E, deltas){
+      var ds = deltas.slice(3).sort(function(a, b){ return a - b; }), med = ds.length ? ds[ds.length >> 1] : 16.7;
+      var r = { nom: v.nom, plein: E.t, images: Math.round(1000 / med), posees: E.posees, limite: E.t * 1000 >= FINAL_MAX - 5, id: v.id };
+      essais.push(r); window.__dernier = r; affiche();
+      noir.hidden = false;
+    });
+  }
+  function affiche(){
+    resultats.hidden = false;
+    resultats.innerHTML = "<b>Tes essais</b><br>" + essais.slice(-8).map(function(r){
+      return r.nom + " : écran plein en <b>" + r.plein.toFixed(1).replace(".", ",") + " s</b>, " + r.images + " images/s" + (r.limite ? " (limite de 9 s atteinte)" : "");
+    }).join("<br>");
+  }
+  VERSIONS.forEach(function(v){
+    var b = document.createElement("button"); b.type = "button"; b.className = "v"; b.dataset.version = v.id;
+    b.innerHTML = "<b></b><span></span>"; b.firstChild.textContent = v.nom; b.lastChild.textContent = v.desc;
+    b.addEventListener("click", function(){ joue(v); }); liste.appendChild(b);
+  });
+  $("quitter").addEventListener("click", nettoie);
+  noir.addEventListener("click", nettoie);
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") nettoie(); });
+  window.__versions = VERSIONS.map(function(v){ return v.id; });
+})();
+</script>
+</body>
+</html>
