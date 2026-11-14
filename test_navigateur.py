@@ -9006,6 +9006,84 @@ def test_titres_en_cache_et_dates_paris(nav, url):
     ctx.close()
 
 
+def test_repetition_de_minuit(nav, url):
+    """La page de répétition du jour J (Antoni, 14/11/2026) : la vraie app, une horloge avancée, rien d'enregistré."""
+    print("\n[répétition] la page lance la vraie app avec une horloge avancée, et n'écrit rien dans le vrai stockage")
+    base = url.rsplit("/", 1)[0]
+    dossier = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+    check("repetition.html" not in open(os.path.join(dossier, "index.html"), encoding="utf-8").read(),
+          "[répétition] l'app ne renvoie nulle part vers la page de répétition (index.html n'est pas touché)")
+    check('name="robots" content="noindex"' in open(os.path.join(dossier, "repetition.html"), encoding="utf-8").read(),
+          "[répétition] la page n'est pas indexable")
+    # ---- L'accueil : les scènes, à 320 et 390 px.
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris")
+        page = ctx.new_page(); page.goto(base + "/repetition.html", wait_until="load")
+        a = page.evaluate("""() => ({scenes: [...document.querySelectorAll('a.scene')].map(x => [Math.round(x.getBoundingClientRect().height), x.getAttribute('href')]),
+              deborde: document.documentElement.scrollWidth > innerWidth})""")
+        check(len(a["scenes"]) >= 5 and all(h >= 44 and "cible=" in href for h, href in a["scenes"]) and not a["deborde"],
+              "[répétition %d px] au moins cinq scènes, chacune de 44 px ou plus avec son heure simulée, rien ne déborde (%s)" % (largeur, [h for h, _ in a["scenes"]]))
+        page.goto(base + "/repetition.html?cible=nimportequoi", wait_until="load")
+        check(page.evaluate("() => !document.getElementById('erreur').hidden && document.querySelectorAll('a.scene').length > 0 && !document.getElementById('repetitionBandeau')"),
+              "[répétition %d px] une heure illisible affiche l'erreur et les scènes, pas l'app" % largeur)
+        ctx.close()
+    # ---- Une répétition : minuit dans 6 s, animations permises, stockage réel observé depuis une autre page.
+    ctx = nav.new_context(viewport={"width": 390, "height": 844}, timezone_id="Europe/Paris", reduced_motion="no-preference")
+    reel = ctx.new_page(); reel.goto(url, wait_until="load")
+    reel.evaluate("() => { localStorage.setItem('gta6watch:sentinelle', 'avant'); localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false})); }")
+    avant = reel.evaluate("() => JSON.stringify(Object.keys(localStorage).sort().map(k => [k, localStorage.getItem(k)]))")
+    page = ctx.new_page(); erreurs = []
+    page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+    page.goto(base + "/repetition.html?cible=2026-11-18T22:59:54Z", wait_until="load")
+    try:
+        page.wait_for_selector("#repetitionBandeau", state="attached", timeout=30000)
+        arrive = True
+    except Exception:
+        arrive = False
+    check(arrive, "[répétition] la vraie app se charge dans la page, avec son bandeau « RÉPÉTITION »")
+    if not arrive:
+        ctx.close()
+        return
+    page.wait_for_timeout(800)
+    r = page.evaluate("""() => ({bandeau: document.getElementById('repetitionBandeau').textContent, now: Date.now(), instance: new Date() instanceof Date,
+          utc: Date.UTC(2026, 10, 18, 23), donnee: new Date('2026-11-19T00:00:00+01:00').toISOString(), sentinelle: localStorage.getItem('gta6watch:sentinelle'),
+          reglages: localStorage.getItem('gta6watch:settings-v1'), app: !!document.getElementById('countdown') && !!document.querySelector('header.console')})""")
+    cible = 1795042794000   # 2026-11-18T22:59:54Z
+    check(r["app"] and r["bandeau"].startswith("RÉPÉTITION") and "23:59" in r["bandeau"],
+          "[répétition] la vraie app est là, avec le bandeau « RÉPÉTITION » à l'heure de Paris (%s)" % r["bandeau"])
+    check(cible <= r["now"] < cible + 120000 and r["instance"] and r["utc"] == 1795042800000 and r["donnee"] == "2026-11-18T23:00:00.000Z",
+          "[répétition] `Date` est avancée (maintenant = %d, soit %.0f s après l'heure cible) sans toucher aux dates données ni à Date.UTC" % (r["now"], (r["now"] - cible) / 1000))
+    check(r["sentinelle"] == "avant" and r["reglages"] == '{"splashActif":false}',
+          "[répétition] l'app LIT les réglages réels (copie en mémoire)")
+    try:
+        page.wait_for_selector(".fete", state="attached", timeout=25000)
+        fete = True
+    except Exception:
+        fete = False
+    check(fete, "[répétition] le compteur tombe à zéro et le grand moment de minuit part tout seul")
+    page.evaluate("() => { localStorage.setItem('gta6watch:ecrit-pendant-la-repetition', 'oui'); localStorage.setItem('gta6watch:sentinelle', 'modifiee'); }")
+    page.close()
+    reel.reload(wait_until="load")
+    apres = reel.evaluate("() => JSON.stringify(Object.keys(localStorage).sort().map(k => [k, localStorage.getItem(k)]))")
+    check(apres == avant, "[répétition] RIEN de ce que la page écrit n'arrive dans le vrai stockage (clés et valeurs identiques avant et après)")
+    check(not erreurs, "[répétition] aucune erreur JavaScript (%s)" % erreurs[:1])
+    # ---- Les autres scènes : la veille et le lendemain.
+    for cible_iso, apres_sortie in (("2026-11-18T11:00:00Z", False), ("2026-11-20T08:00:00Z", True)):
+        page = ctx.new_page(); page.goto(base + "/repetition.html?cible=" + cible_iso, wait_until="load")
+        try:
+            page.wait_for_selector("#repetitionBandeau", state="attached", timeout=30000)
+        except Exception:
+            check(False, "[répétition] à %s : la page ne se charge pas" % cible_iso)
+            page.close()
+            continue
+        page.wait_for_timeout(600)
+        e = page.evaluate("() => ({apres: document.documentElement.classList.contains('apres-sortie'), cd: document.getElementById('countdown').textContent.replace(/\\s+/g, ' ').trim()})")
+        check(e["apres"] == apres_sortie,
+              "[répétition] à %s : %s (%s)" % (cible_iso, "état d'après la sortie (palette du jour J)" if apres_sortie else "avant la sortie, palette normale", e["cd"]))
+        page.close()
+    ctx.close()
+
+
 def _controles_par_largeur(nav, url):
     """Les six contrôles de géométrie, rejoués aux deux largeurs (320 et 390 px)."""
     for largeur in LARGEURS:
@@ -9099,6 +9177,7 @@ CONTROLES = [
     test_stats_et_reglages_compacts,
     test_compact_en_un_toucher_entete_replie_photo_basse,
     test_titres_en_cache_et_dates_paris,
+    test_repetition_de_minuit,
 ]
 
 

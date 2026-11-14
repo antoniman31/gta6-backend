@@ -95,6 +95,7 @@ actualités majeures échappent à la coupe. Ce que la coupe écarte va dans `do
 - **Fenêtre de veille.** De 00h à 05h (Paris, changement d'heure compris), les articles ordinaires sont mis de côté dans `attente_recap` et annoncés au premier passage de la journée.
   Du 18 au 20/11/2026 la pause est levée (dates écrites dans l'étape « Fenêtre de veille » du workflow).
 - **Surveillance.** healthchecks.io reçoit un signal à chaque passage réussi. **Alerte Discord de panne** (14/11/2026, `alerte_panne.py`) : au premier passage rouge après un vert, un message « Le robot a échoué » (heure de Paris, lien du passage, aucun contenu d'article) ; au premier vert qui suit, « Le robot est reparti » ; une seule alerte par panne, jamais bloquante. Limite : un échec avant le checkout ou l'installation de Python ne peut pas la déclencher, seul healthchecks.io prévient alors. Le workflow « Tester les notifications Discord » peut en envoyer un message de TEST (`python alerte_panne.py --essai`).
+- **Répétition du jour J** (14/11/2026, `docs/repetition.html`, non liée depuis l'app) : lance la VRAIE `index.html` avec une horloge avancée (`Date` remplacée par un proxy décalé, `localStorage` remplacé par une COPIE EN MÉMOIRE : les réglages réels sont lus, rien n'est écrit, fermer la page efface tout), un bandeau « RÉPÉTITION » et six scènes (minuit dans 30 s ou 2 min, la veille à 12 h, le jour J à 9 h, le lendemain, J+7). L'adresse `repetition.html?cible=2026-11-18T22:59:30Z` fixe l'heure simulée de départ, en UTC. `index.html` n'est pas modifié.
 
 ## Discord
 
