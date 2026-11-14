@@ -9084,6 +9084,62 @@ def test_repetition_de_minuit(nav, url):
     ctx.close()
 
 
+def test_le_logo_remonte_en_haut(nav, url):
+    """Toucher le logo GTA6_WATCH de l'en-tête remonte en haut de la page (Antoni, 14/11/2026)."""
+    print("\n[logo] toucher le logo remonte en haut, au doigt comme au clavier, à 320 et 390 px")
+    INJECTE = """() => { lastItems = Array.from({length: 60}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0, lang: i % 2 ? 'en' : 'fr'}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 60; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    for largeur in (320, 390):
+        for mouvement in ("reduce", "no-preference"):
+            ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris", reduced_motion=mouvement)
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+            page = ctx.new_page(); erreurs = []
+            page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(300)
+            page.evaluate(INJECTE)
+            info = page.evaluate("""() => { const b = document.querySelector('header.console .brand .brand-btn'), r = b.getBoundingClientRect(), h = document.querySelector('.header-haut').getBoundingClientRect();
+                return {dansH1: b.parentElement.tagName === 'H1', nom: b.getAttribute('aria-label'), haut: Math.round(r.height), large: Math.round(r.width), entete: Math.round(h.height),
+                        police: getComputedStyle(b).fontSize + ' ' + getComputedStyle(b).fontWeight, policeTitre: getComputedStyle(b.parentElement).fontSize + ' ' + getComputedStyle(b.parentElement).fontWeight,
+                        fond: getComputedStyle(b).backgroundColor, bord: getComputedStyle(b).borderTopWidth}; }""")
+            if mouvement == "reduce":
+                check(info["dansH1"] and "remonter" in (info["nom"] or "") and info["haut"] >= 44 and info["large"] > 60,
+                      "[logo %d px] le logo est un bouton dans le titre, nommé, d'au moins 44 px de haut (%s)" % (largeur, info))
+                check(info["police"] == info["policeTitre"] and info["bord"] == "0px" and info["fond"] == "rgba(0, 0, 0, 0)" and info["entete"] <= 48,
+                      "[logo %d px] il garde l'apparence du titre (police %s) sans cadre ni fond, et l'en-tête ne grandit pas (%d px)" % (largeur, info["police"], info["entete"]))
+            # Au doigt : défiler loin, toucher, être en haut.
+            page.evaluate("() => window.scrollTo(0, 1800)"); page.wait_for_timeout(250)
+            loin = page.evaluate("() => Math.round(scrollY)")
+            page.evaluate("() => window.scrollTo(0, 1800)"); page.wait_for_timeout(100)
+            page.evaluate("() => document.querySelector('header.console .brand-btn').click()")
+            for _ in range(40):
+                if page.evaluate("() => scrollY") == 0: break
+                page.wait_for_timeout(100)
+            en_haut = page.evaluate("() => Math.round(scrollY)")
+            check(loin > 800 and en_haut == 0,
+                  "[logo %d px, animations %s] depuis %d px de défilement, un toucher ramène à %d" % (largeur, mouvement, loin, en_haut))
+            if mouvement == "no-preference":
+                # Au clavier : focus + Entrée.
+                page.evaluate("() => window.scrollTo(0, 1500)"); page.wait_for_timeout(250)
+                page.focus("header.console .brand-btn"); page.keyboard.press("Enter")
+                for _ in range(40):
+                    if page.evaluate("() => scrollY") == 0: break
+                    page.wait_for_timeout(100)
+                check(page.evaluate("() => Math.round(scrollY)") == 0, "[logo %d px] au clavier (Entrée), même résultat" % largeur)
+                # La copie de l'en-tête dans l'aperçu des couleurs ne doit pas faire défiler la page.
+                page.evaluate("() => { openSettings(); }"); page.wait_for_timeout(300)
+                page.click("#persoBtn"); page.wait_for_timeout(300)
+                page.evaluate("() => { construitMaquette(); window.scrollTo(0, 700); }"); page.wait_for_timeout(400)
+                avant = page.evaluate("() => Math.round(scrollY)")
+                copie = page.evaluate("() => { const b = document.querySelector('#apercuCouleurs .brand-btn'); if(!b) return false; b.click(); return true; }")
+                page.wait_for_timeout(700)
+                apres = page.evaluate("() => Math.round(scrollY)")
+                check(copie and avant > 0 and apres == avant,
+                      "[logo %d px] la copie du logo dans l'aperçu des couleurs ne fait pas défiler la page (%s, %d puis %d)" % (largeur, "copie trouvée" if copie else "AUCUNE copie", avant, apres))
+            check(not erreurs, "[logo %d px, %s] aucune erreur JavaScript (%s)" % (largeur, mouvement, erreurs[:1]))
+            ctx.close()
+
+
 def _controles_par_largeur(nav, url):
     """Les six contrôles de géométrie, rejoués aux deux largeurs (320 et 390 px)."""
     for largeur in LARGEURS:
@@ -9178,6 +9234,7 @@ CONTROLES = [
     test_compact_en_un_toucher_entete_replie_photo_basse,
     test_titres_en_cache_et_dates_paris,
     test_repetition_de_minuit,
+    test_le_logo_remonte_en_haut,
 ]
 
 

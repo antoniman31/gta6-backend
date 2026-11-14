@@ -217,6 +217,13 @@
      flex-wrap de .header-haut), le bloc repartirait sinon coller à gauche —
      justify-content:space-between ne s'applique qu'aux lignes à deux items. */
   .brand{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:20px; letter-spacing:-0.02em;}
+  /* LE LOGO REMONTE EN HAUT (Antoni, 14/11/2026 : « quand j'appuie sur le logo gta6_watch dans l'en-tête, ça remonte en haut de la page »).
+     Un vrai bouton DANS le titre : la page garde son titre de premier niveau, le clavier et les lecteurs d'écran le trouvent. Il reprend l'apparence du titre
+     à l'identique (police, couleur, graisse) et garde les 44 px de haut par défaut des boutons : la ligne de l'en-tête fait déjà 44 px. */
+  .brand-btn{
+    font:inherit; letter-spacing:inherit; color:inherit; background:none; border:0; padding:0; margin:0; border-radius:0;
+    display:inline-flex; align-items:center; cursor:pointer; text-align:left;
+  }
   .mode-indicator{
     display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace;
     font-size:12px; font-weight:700; padding:2px 7px; border-radius:var(--r-sm);
@@ -2701,7 +2708,7 @@
          secondes, avec leur libellé centré dessous (« avant la sortie », puis « depuis
          la sortie »). Toucher les tuiles ouvre le détail du compteur. -->
     <div class="header-haut">
-      <h1 class="brand">GTA6<span>_WATCH</span></h1>
+      <h1 class="brand"><button type="button" class="brand-btn" aria-label="GTA6_WATCH, remonter en haut de la page" title="Remonter en haut">GTA6<span>_WATCH</span></button></h1>
       <div id="modeIndicator" class="mode-indicator"></div>
       <button type="button" id="triggerRunBtn" class="relance" onclick="triggerBackendRun()"
               title="Relancer le robot" aria-label="Relancer le robot" style="display:none;"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-play_circle"/></svg></button>
@@ -6993,6 +7000,17 @@ function boutonsBadges(item){
 // un réglage. Retrouver le fil filtré sur « fuite » trois jours plus tard
 // sans se rappeler pourquoi serait une mauvaise surprise.
 let badgeActif = null;
+
+// Le logo de l'en-tête remonte en haut de la page (14/11/2026). Doux, sauf si le téléphone réduit les animations. UN écouteur sur le
+// document, et non un onclick dans la balise : l'aperçu des couleurs (Réglages) copie l'en-tête, et sa copie ne doit pas faire défiler la page.
+function remonteEnHaut(){
+  const reduit = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: reduit ? "auto" : "smooth" });
+}
+document.addEventListener("click", ev => {
+  const b = ev.target && ev.target.closest ? ev.target.closest(".brand-btn") : null;
+  if(b && !b.closest("#apercuCouleurs")) remonteEnHaut();
+});
 
 function filtreBadge(ev, cle){
   // Le badge vit dans une carte dont le titre et la vignette sont des
