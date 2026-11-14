@@ -520,6 +520,15 @@
      dérogation accordée sur un motif inexistant. Un test lit maintenant le
      CSS et exige le mécanisme que la phrase revendique. */
   .icon-btn, .card-mark, .search-clear-btn, .aide, .bascule-soucis{min-height:0;}
+  /* Un lien qui a l'apparence exacte d'un bouton (la ligne « Répétition du jour J » des Réglages) : mêmes jetons, 44 px de haut. */
+  .lien-bouton{
+    display:inline-flex; align-items:center; justify-content:center; min-height:44px; box-sizing:border-box;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; text-decoration:none;
+    background:var(--bg-panel); color:var(--text); border:1px solid var(--line);
+    padding:10px 14px; border-radius:var(--r-sm); letter-spacing:0.02em;
+    transition:border-color var(--t-court) var(--courbe);
+  }
+  .lien-bouton:hover{border-color:var(--c-bord);}
   button:hover{border-color:var(--c-bord);}
   button:active{transform:translateY(1px);}
   /* --accent-contrast, pas #ffffff : le blanc en dur donnait 2,14:1 sur le
@@ -3078,14 +3087,17 @@
           l'app, si l'écran de chargement (plus bas) est allumé.
         </div>
       </div>
+      <!-- La répétition du jour J remplace l'ancien bouton « Lancer le halo » (Antoni, 14/11/2026 : « et halo de minuit devient inutile alors »).
+           Un vrai lien, dans le MÊME onglet (choix d'Antoni) : « Quitter » sur la page revient à ses scènes, le retour du téléphone aux Réglages. -->
       <div class="setting-row">
-        <label for="lanceHaloBtn">Halo de minuit</label>
-        <button type="button" id="lanceHaloBtn" onclick="lanceHalo()">Lancer le halo</button>
+        <span class="setting-label" id="repetitionLibelle">Répétition du jour J</span>
+        <a class="lien-bouton" id="repetitionLien" href="repetition.html" aria-labelledby="repetitionLibelle">Ouvrir</a>
       </div>
       <div class="setting-desc" hidden>
-        Le grand moment de minuit, pour l'essayer : un flash, deux ondes de choc, le halo qui respire,
-        des confettis et une vibration courte, pendant six secondes. Indisponible quand ton téléphone
-        réduit les animations ; la vibration dépend du téléphone.
+        Lance la vraie app avec une horloge avancée : le compteur tombe à zéro sous tes yeux, le grand moment
+        de minuit (flash, ondes, halo, confettis, vibration), puis l'état d'après la sortie. Rien n'est
+        enregistré : fermer la page efface tout. Indisponible quand ton téléphone réduit les animations
+        (le grand moment ne joue pas) ; la vibration dépend du téléphone.
       </div>
     </div>
 
