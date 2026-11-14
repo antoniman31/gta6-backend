@@ -55,6 +55,9 @@ httpx==0.28.1
 hyperframe==6.1.0
 idna==3.20
 socksio==1.0.0
-soupsieve==3.0.4
+# soupsieve 4.0.0 corrige GHSA-mmhr-3c5m-f64f (déni de service en temps polynomial dans le
+# combinateur « descendant », gravité haute, alerte Dependabot n° 2 du 13/11/2026). Le robot
+# n'appelle jamais `select()`, la faille ne l'atteignait pas en pratique ; épinglée quand même.
+soupsieve==4.1
 typing_extensions==4.16.0
 urllib3==2.8.0

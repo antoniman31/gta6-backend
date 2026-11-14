@@ -12713,3 +12713,9 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 - **Correction** : le garde-fou compare à ce qui SURVIT à la rétention (entrées de moins de 30 jours ; sans date de fin lisible, elles comptent comme survivantes), pas au journal brut. Une perte d'incidents récents reste refusée (11 attendus, 3 reçus : refusé).
 - **Contrôles** : deux dans l'audit 4.12 ; le premier échoue sur l'ancien code avec le message exact du robot. README à 2260 vérifications.
 - **Mon écart** : mes tests des lots précédents n'avaient aucun cas de rafale d'incidents sortant ensemble de la fenêtre.
+
+### soupsieve 4.1 : alerte de sécurité Dependabot n° 2 — 14/11/2026
+
+- **Alerte** (vue par Antoni sur son téléphone) : GHSA-mmhr-3c5m-f64f, gravité haute, déni de service en temps polynomial dans le combinateur « descendant » de soupsieve, versions avant 4.0.0 ; `requirements.txt` épinglait la 3.0.4.
+- **Fait** : épinglée à la 4.1 (dernière version, correction depuis la 4.0.0). Le robot n'appelle jamais `select()` (aucune occurrence dans les cinq scripts) : la faille ne l'atteignait pas, mais l'alerte est levée.
+- **Mesuré** : avec beautifulsoup4 4.15.0 et soupsieve 4.1, `select('div p')` et `select_one('div > p.a')` rendent les mêmes résultats ; le décodeur Google News s'importe (`HAS_DECODER` vrai) ; pipeline, sources et audit verts. Pas de suite navigateur locale : rien de visuel ne change (la CI la lance).
