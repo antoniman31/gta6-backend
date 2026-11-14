@@ -7680,12 +7680,13 @@ def test_effets_du_jour_j(nav, url):
     # 7. Le halo : le bouton le lance une seconde ; animations réduites, il ne se lance pas ; il part tout seul à minuit.
     ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {})
     page.evaluate("() => openSettings()")
-    check(page.evaluate("() => !!document.getElementById('lanceHaloBtn')"), "[effets] le bouton « Lancer le halo » existe dans les Réglages")
-    page.evaluate("() => document.getElementById('lanceHaloBtn').click()")
+    # (14/11/2026 : le bouton « Lancer le halo » est remplacé par le lien vers la répétition ; la fonction lanceHalo, elle, sert toujours à minuit.)
+    check(page.evaluate("() => !document.getElementById('lanceHaloBtn')"), "[effets] l'ancien bouton « Lancer le halo » n'existe plus dans les Réglages")
+    page.evaluate("() => lanceHalo()")
     h = page.evaluate("() => { const e = document.getElementById('haloJ'), cs = getComputedStyle(e);"
                       " return {vif: e.classList.contains('vif'), disp: cs.display, ombre: cs.boxShadow !== 'none', pos: cs.position, ev: cs.pointerEvents}; }")
     check(h["vif"] and h["disp"] == "block" and h["ombre"] and h["pos"] == "fixed" and h["ev"] == "none",
-          "[effets] le bouton lance le halo, plein écran et sans gêner les appuis (%s)" % h)
+          "[effets] lanceHalo() lance le halo, plein écran et sans gêner les appuis (%s)" % h)
     page.clock.run_for(6500)
     check(page.evaluate("() => !document.getElementById('haloJ').classList.contains('vif')"), "[effets] le halo s'éteint seul après six secondes")
     ctx.close()
@@ -8166,9 +8167,9 @@ def test_case_globale_des_effets(nav, url):
     page.click("#persoBtn")
     check(not page.evaluate(ETAT)["ouvert"], "[réglages] un second appui le replie")
     # Le grand moment reste hors du détail, visible replié ; le curseur des coins est dans le groupe « Écran ».
-    hors = page.evaluate("""() => { const b = document.getElementById('lanceHaloBtn'), r = b.getBoundingClientRect();
-        return {visible: r.width > 0 && r.height > 0, dansDetail: !!b.closest('#effetsDetail')}; }""")
-    check(hors["visible"] and not hors["dansDetail"], "[réglages] « Lancer le halo » est visible détail replié, hors du détail (%s)" % hors)
+    hors = page.evaluate("""() => { const b = document.getElementById('repetitionLien'), r = b.getBoundingClientRect();
+        return {visible: r.width > 0 && r.height > 0, dansDetail: !!b.closest('#effetsDetail'), haut: Math.round(r.height)}; }""")
+    check(hors["visible"] and not hors["dansDetail"] and hors["haut"] >= 44, "[réglages] « Répétition du jour J » est visible détail replié, hors du détail, 44 px de haut au moins (%s)" % hors)
     ecran = page.evaluate("""() => { const g = document.getElementById('rayonCadre').closest('.setting-group');
         return {titre: g.querySelector('.setting-label').textContent.trim(), dansCouleurs: !!document.getElementById('rayonCadre').closest('#effetsDetail')}; }""")
     check(ecran["titre"].startswith("Écran") and not ecran["dansCouleurs"], "[réglages] le curseur des coins est dans son propre groupe « Écran » (%s)" % ecran)
@@ -9081,8 +9082,24 @@ def test_repetition_de_minuit(nav, url):
     print("\n[répétition] la page lance la vraie app avec une horloge avancée, et n'écrit rien dans le vrai stockage")
     base = url.rsplit("/", 1)[0]
     dossier = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
-    check("repetition.html" not in open(os.path.join(dossier, "index.html"), encoding="utf-8").read(),
-          "[répétition] l'app ne renvoie nulle part vers la page de répétition (index.html n'est pas touché)")
+    # (14/11/2026 : l'app renvoie vers la répétition à UN seul endroit, la ligne « Répétition du jour J » des Réglages.)
+    check(open(os.path.join(dossier, "index.html"), encoding="utf-8").read().count("repetition.html") == 1,
+          "[répétition] l'app ne renvoie vers la page de répétition qu'à un seul endroit (le lien des Réglages)")
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris")
+        page = ctx.new_page(); page.goto(url, wait_until="load")
+        page.evaluate("() => openSettings()")
+        page.wait_for_selector("#repetitionLien", state="visible")
+        lien = page.evaluate("""() => { const a = document.getElementById('repetitionLien'), r = a.getBoundingClientRect(), s = a.closest('.setting-row').getBoundingClientRect();
+            return {href: a.getAttribute('href'), cible: a.getAttribute('target'), haut: Math.round(r.height), large: Math.round(r.width), dans: r.left >= 0 && r.right <= innerWidth && s.right <= innerWidth,
+                    libelle: document.getElementById('repetitionLibelle').textContent.trim(), nom: a.getAttribute('aria-labelledby')}; }""")
+        check(lien["href"] == "repetition.html" and lien["cible"] is None and lien["haut"] >= 44 and lien["dans"] and lien["libelle"] == "Répétition du jour J" and lien["nom"] == "repetitionLibelle",
+              "[répétition %d px] le lien des Réglages va à repetition.html dans le MÊME onglet, 44 px de haut au moins, dans l'écran, avec son libellé (%s)" % (largeur, lien))
+        page.click("#repetitionLien")
+        page.wait_for_url("**/repetition.html", timeout=15000)
+        check(page.evaluate("() => document.querySelectorAll('a.scene').length") >= 5 and len(ctx.pages) == 1,
+              "[répétition %d px] toucher le lien ouvre la page de répétition (ses scènes) dans le même onglet" % largeur)
+        ctx.close()
     check('name="robots" content="noindex"' in open(os.path.join(dossier, "repetition.html"), encoding="utf-8").read(),
           "[répétition] la page n'est pas indexable")
     # ---- L'accueil : les scènes, à 320 et 390 px.
