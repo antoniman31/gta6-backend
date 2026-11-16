@@ -9118,6 +9118,83 @@ def test_agenda_sortie_du_19(nav, url):
         ctx.close()
 
 
+LIMITE_MS_SPOILER = 500   # mesuré le 16/11/2026 : 76 ms pour 178 mots sur 7 619 articles ; 500 ms laisse une marge de six pour une machine de CI plus lente
+
+
+def test_spoiler_debut_de_mot(nav, url):
+    """Le mode sans spoiler cherche chaque mot au DÉBUT d'un mot du texte (Antoni, 16/11/2026), pas n'importe où.
+
+    Mesuré sur 7 619 articles avec sa liste nettoyée : 691 voilés par morceau de mot, 666 par début de mot (25 faux positifs de moins :
+    « trending », « spending », « studies »), 533 par mot entier strict (133 vrais spoilers de moins : « leaked », « leaker »).
+    """
+    print("\n[spoiler début de mot] un mot de la liste voile ce qui COMMENCE par lui, pas ce qui le contient au milieu")
+    ctx = nav.new_context(viewport={"width": 390, "height": 900}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    page = ctx.new_page(); erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)))
+    page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached")
+    CAS = [
+        # (mots de la liste, texte, voilé ?, pourquoi)
+        (["ending"], "GTA 6 ending explained", True, "le mot commence le texte"),
+        (["ending"], "The true ending of GTA 6", True, "le mot au milieu du texte, entre espaces"),
+        (["ending"], "Nina's What's Trending: GTA 6 hype", False, "« trending » contient « ending » au milieu : pas voilé"),
+        (["ending"], "Tout ce qu'on dépense : spending, impending release", False, "« spending » et « impending » non plus"),
+        (["ending"], "Alternate endings of GTA 6", True, "un pluriel commence par le mot : voilé"),
+        (["leak"], "GTA 6 leaker threatens to release the game", True, "« leaker » commence par « leak »"),
+        (["leak"], "New GTA 6 Pre-Order Bonus Leaked", True, "« leaked » aussi"),
+        (["leak"], "Man fired after leaking Vice City ads", True, "« leaking » aussi"),
+        (["dies"], "Who dies in GTA 6", True, "mot entier en fin de phrase"),
+        (["dies"], "Studies show GTA 6 hype is high", False, "« studies » contient « dies » : pas voilé"),
+        (["tué"], "Jason est tuée dans la mission", True, "accents : « tué » trouve « tuée »"),
+        (["tue"], "Une statue de Leonida, et la suite continue", False, "« statue », « continue » : pas voilés par « tue »"),
+        (["mission finale"], "La mission finale en vidéo", True, "une expression de deux mots"),
+        (["mission finale"], "Une permission finale accordée", False, "« permission » contient « mission » au milieu : pas voilé"),
+        (["ending"], "(ending) l\u2019ending et l'ending", True, "après une parenthèse ou une apostrophe, c'est un début de mot"),
+        (["a.b"], "le code axb", False, "un point dans un mot n'est pas « n'importe quel caractère »"),
+        (["a.b"], "le code a.b est connu", True, "mais le point lui-même est trouvé"),
+        (["c++", "(x", "[y"], "un texte qui parle de c++ et pas plus", True, "des caractères spéciaux d'expression régulière dans la liste ne cassent rien"),
+        ([], "GTA 6 ending explained", False, "liste vide : rien n'est voilé"),
+        (["", "  "], "GTA 6 ending explained", False, "des lignes vides ne voilent pas tout"),
+    ]
+    res = page.evaluate("""(cas) => {
+        settings.spoilerMode = true; spoilersReveles = new Set();
+        return cas.map(([mots, texte]) => {
+          settings.spoilerKeywords = mots;
+          try{ return contientSpoiler({title: texte, description: ""}); }catch(e){ return "ERREUR " + e.message; }
+        });
+    }""", [[m, t] for m, t, _, _ in CAS])
+    for (mots, texte, attendu, pourquoi), r in zip(CAS, res):
+        check(r == attendu, "[spoiler début de mot] %r dans %r : %s (%s)" % (mots, texte[:48], "voilé" if attendu else "pas voilé", pourquoi))
+    # Le cache de l'expression suit la liste : changer les mots change le résultat tout de suite.
+    suit = page.evaluate("""() => {
+        settings.spoilerMode = true; spoilersReveles = new Set(); const it = {title: "GTA 6 plot twist", description: ""};
+        settings.spoilerKeywords = ["plot twist"]; const a = contientSpoiler(it);
+        settings.spoilerKeywords = ["ending"]; const b = contientSpoiler(it);
+        settings.spoilerKeywords = ["plot twist"]; const c = contientSpoiler(it);
+        return [a, b, c];
+    }""")
+    check(suit == [True, False, True], "[spoiler début de mot] changer la liste change le résultat aussitôt (%s)" % suit)
+    # La description compte aussi, comme avant ; mode éteint : rien.
+    desc = page.evaluate("""() => {
+        settings.spoilerKeywords = ["fin alternative"]; settings.spoilerMode = true; spoilersReveles = new Set();
+        const it = {title: "Un titre calme", description: "La fin alternative expliquée"};
+        const a = contientSpoiler(it); settings.spoilerMode = false; const b = contientSpoiler(it); return [a, b];
+    }""")
+    check(desc == [True, False], "[spoiler début de mot] la description compte aussi, et le mode éteint ne voile rien (%s)" % desc)
+    # La rapidité : une liste de 178 mots contre 7 619 articles (la taille du fil mesurée le 16/11/2026).
+    duree = page.evaluate("""() => {
+        settings.spoilerMode = true; spoilersReveles = new Set();
+        settings.spoilerKeywords = Array.from({length: 178}, (_, i) => "motspoiler" + i + " fin alternative");
+        const items = Array.from({length: 7619}, (_, i) => ({title: "GTA 6 article numéro " + i + " : le prix de l'édition collector en précommande", description: "Un texte un peu plus long pour ressembler à une vraie description de flux, avec des mots variés " + i}));
+        const t0 = performance.now(); let n = 0;
+        for(const it of items) if(contientSpoiler(it)) n++;
+        return {ms: performance.now() - t0, n};
+    }""")
+    check(duree["n"] == 0 and duree["ms"] < LIMITE_MS_SPOILER,
+          "[spoiler début de mot] 178 mots sur 7 619 articles : %.0f ms (moins de %d ms)" % (duree["ms"], LIMITE_MS_SPOILER))
+    check(not erreurs, "[spoiler début de mot] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def test_repetition_de_minuit(nav, url):
     """La page de répétition du jour J (Antoni, 14/11/2026) : la vraie app, une horloge avancée, rien d'enregistré."""
     print("\n[répétition] la page lance la vraie app avec une horloge avancée, et n'écrit rien dans le vrai stockage")
@@ -9377,6 +9454,7 @@ CONTROLES = [
     test_compact_en_un_toucher_entete_replie_photo_basse,
     test_titres_en_cache_et_dates_paris,
     test_repetition_de_minuit,
+    test_spoiler_debut_de_mot,
     test_agenda_sortie_du_19,
     test_essai_des_confettis,
     test_le_logo_remonte_en_haut,
