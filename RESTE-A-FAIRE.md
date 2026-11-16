@@ -65,8 +65,8 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 
 ## 4 bis. Zones tactiles à 48 px et CI à trois niveaux (faits le 16/11/2026, avant la sortie, choix d'Antoni)
 
-- [ ] **À regarder sur le téléphone avant le 19/11** : boutons, filtres, pastilles des catégories et titres du mode compact
-      (interligne de 24 px au lieu de 22) à 320 et 390 px. La suite navigateur est verte, mais rien n'a été vu sur le S26.
+- [x] **Regardé sur le téléphone le 16/11/2026** (Antoni, sur le S26, après la mise en ligne de la #299) : boutons, filtres,
+      pastilles des catégories et titres du mode compact à 48 px ; répétition de minuit rejouée avec.
 - [ ] **CSP : écartée pour l'instant.** La page compte 122 gestionnaires d'événements écrits dans le HTML (`onclick=`…,
       dont ceux des cartes, fabriqués avec les données des articles) ; une CSP stricte demanderait de tous les réécrire en
       délégation d'événements. L'échappement de ces gestionnaires a été relu le 16/11 (`escapeAttr` : JavaScript puis HTML,
@@ -79,7 +79,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Bande « À la une »** en tête de fil : elle dépend de la mesure du seuil de l'actu majeure.
 - **Pistes d'interface** (« Interface et expérience », huit pistes du 09/10) : l'état de chacune est dans `JOURNAL.md` ; à relire avant de s'y fier.
 - **Répétition de minuit (14/11/2026, codée, à essayer sur ton téléphone)** : ouvre « Répétition du jour J » dans Réglages (ou `repetition.html`) (https://antoniman31.github.io/gta6-backend/repetition.html), touche « Minuit dans 30 secondes » et regarde. Rien n'est enregistré. À regarder : confettis, texte, vibration, couleurs d'après la sortie ; dis-moi ce qui cloche avant le 19/11.
-  Validée par Antoni le 14/11/2026 : « ça marche bien, à minuit tout se déclenche ».
+  Validée par Antoni le 14/11/2026 : « ça marche bien, à minuit tout se déclenche ». Rejouée le 16/11, après le passage à 48 px.
 - **Confettis version 6 dans l'app (14/11/2026, à regarder sur le téléphone)** : validée par Antoni sur la page d'essai (« Ok ajoute »), mise dans `lanceConfettis` : canons, tas en rangées, écran plein en 4 s à 4,5 s, canons réduits sous un gros texte « GTA VI / EST / DISPO ! », plus de consigne « touche ». Regarde-la avec la répétition (`repetition.html`, « Minuit dans 30 secondes ») et dis-moi ce qui cloche avant le 19/11. La page d'essai reste en ligne (non liée).
 - **Agenda : la sortie du 19/11 (14/11/2026, codée)** : entrée « Sortie de GTA VI sur XSX et PS5 », statut « annoncé », source l'article Rockstar « Grand Theft Auto VI is Now Set to Launch November 19, 2026 » (domaine officiel), `verifie_le` au 14/11, au-dessus de la carte de Leonida. Sans heure : le lien lu ne donne que la date. À toi : si tu me colles l'adresse complète de la page du magasin Rockstar (`store.rockstargames.com`), je peux la mettre à la place de l'article.
 - **Mode sans spoiler : ta liste (16/11/2026)** : liste nettoyée (178 mots, sans `rat`, `tue`, `tué`, `tuer`, `indic`, `spoil`, `script`, `kill`, `kills`) livrée en fichier ; à coller dans Réglages, « Mots-clés de spoiler ». PR « début de mot » ouverte (la recherche ne trouve plus un mot au milieu d'un autre : « trending », « studies ») : à fusionner par toi avec « go ». Mesuré : 691 articles voilés sur 7 619 (9,1 %) avec cette liste, contre 64 (0,8 %) avec les 22 mots d'origine.
