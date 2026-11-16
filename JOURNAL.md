@@ -12858,3 +12858,13 @@ Demandé par Antoni sur planches (07 au 10/11/2026) : A palette du jour J, B tex
 - **Mesuré au passage** (non codé) : pendant la fête seule, 0 image à plus de 50 ms à vitesse normale (60 images/s) ; avec le processeur ralenti 4 fois, une image de 83 à 117 ms au lancement et 5 à 10 images de 50 à 83 ms vers 2 s à 3 s. Ma mesure de la veille comptait des images AVANT la fête (« 3 images lentes ») : corrigée.
 - **Contrôles** : `test_liste_du_jour_j` (23 contrôles : le lien à 320 et 390 px, même onglet, 44 px ; 17 cases de 44 px ou plus ; mémoire après rechargement ; la page n'écrit que sa propre clé ; la confirmation, son annulation à 3 s et l'effacement en deux appuis ; stockage refusé). Mutations : voir ci-dessous.
 - **Mutations jouées, toutes détectées** : la mémoire retirée ; la demande de confirmation sans annulation à 3 s ; « Tout décocher » sans confirmation ; cases rétrécies à 24 px ; `noindex` retiré ; lien des Réglages en nouvel onglet ; un stockage refusé qui lève une erreur ; une dix-huitième case. Deux m'ont d'abord échappé et je les ai refaites : ma première mutation des cases (hauteur minimale 20 px) ne les rétrécissait pas, leur texte les tient déjà au-dessus de 44 px (je l'ai refaite avec une hauteur imposée de 24 px) ; et la mutation de la mémoire faisait PLANTER le contrôle par un `TypeError` (rien de mémorisé) au lieu de le faire échouer : le contrôle est rendu robuste.
+
+### Bilan de santé avant la sortie — 16/11/2026
+
+Lecture seule, à J-3, rien de modifié dans le code ni les dépendances.
+
+- **Robot** : 30 passages sur 30 verts du 15/11 07:00 au 16/11 09:00 (Paris), pour la plupart déclenchés par cron-job.org, quelques-uns par le cron de secours. Le décodage Google News tient avec les dépendances remontées le 11/11 (des liens décodés à chaque passage ; cache de 7 865 liens). Jalon J-3 envoyé, signal de vie envoyé.
+- **Sources sans entrée** au passage de 09:00 : JeuxActu (HTTP 503, connu depuis le 21/10), Reddit fuites et rumeurs (HTTP 429, repasse seul). Take-Two Investor Relations : aucun article depuis 144 jours. Aucune source ajoutée ni retirée.
+- **`source_link`** (lot du 10/11) : l'allègement tient. `feed.json` : 5 030 615 octets bruts, 1 191 493 compressés (gzip -9) pour 7 707 articles, soit 155 octets par article contre 181 le 10/11 (1 044 Ko pour 5 754 articles) : −15 %, dans l'ordre de grandeur des −16,1 % mesurés alors sur un fil fixe. `feed-recent.json`, que l'application charge d'abord : 109 104 octets compressés.
+- **Croissance** : +34 % d'articles en six jours (5 754 → 7 707). Rien à faire avant la sortie : l'application ne dépend pas de la taille de `feed.json` pour son premier affichage.
+

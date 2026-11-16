@@ -1,6 +1,6 @@
 # Ce qu'il reste à faire
 
-Mis à jour le 11/11/2026. **Rien n'est cassé.** Ce fichier ne garde que ce qui reste ; l'historique (audits, lots faits, anciennes notes) est dans `JOURNAL.md`,
+Mis à jour le 16/11/2026. **Rien n'est cassé.** Ce fichier ne garde que ce qui reste ; l'historique (audits, lots faits, anciennes notes) est dans `JOURNAL.md`,
 sous « Ancien RESTE-A-FAIRE.md ». GTA VI sort le **19/11/2026 à 00:00, heure de Paris**. Tous les chiffres ci-dessous ont été mesurés le 04/11/2026.
 
 ## 1. Le calendrier jusqu'au 24/11
@@ -24,7 +24,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 
 - **Après la sortie, l'agenda est caché** (07/11/2026, choix d'Antoni) : son code et `docs/agenda.json` restent pour de futurs DLC ou mises à jour, quand on aura des dates officielles. À la sortie, c'est aussi la fin des dodos et de la barre de progression de la fenêtre du compteur ; les compteurs repartent à l'endroit (mois, puis années quand il y en a besoin). Rien à faire, à vérifier le 19/11 à 00:00.
 
-- **`source_link` : fait le 10/11/2026** (trois jours au lieu de sept ; la suppression complète du 27/10 est abandonnée). Le fil publié ne s'allège qu'au passage suivant du robot : mesuré avec la vraie fonction, `feed.json` compressé de 1 044 à 876 Ko (−16,1 %). Reste à constater après un passage du robot que `feed.json` a bien maigri.
+- **`source_link` : fait le 10/11/2026** (trois jours au lieu de sept ; la suppression complète du 27/10 est abandonnée). Le fil publié ne s'allège qu'au passage suivant du robot : mesuré avec la vraie fonction, `feed.json` compressé de 1 044 à 876 Ko (−16,1 %). **Constaté le 16/11/2026** : 1 191 Ko compressés pour 7 707 articles, soit 155 octets par article contre 181 avant (1 044 Ko pour 5 754 articles le 10/11) : −15 %, l'allègement tient.
 - **Le mode sans spoiler** après la sortie : lui demander s'il veut l'éteindre.
 
 ## 2 bis. Lot du 11/11/2026 : effets du jour J (codé, à regarder sur le téléphone)
