@@ -68,7 +68,7 @@ FAILURES = []
 LARGEURS = (320, 390)
 
 # Seuils, nommés une fois plutôt que semés dans les assertions.
-CIBLE_MINIMALE = 44      # WCAG 2.5.5 — ce que le reste de l'app s'impose
+CIBLE_MINIMALE = 48      # règle commune des 8 dépôts (16/11/2026) : 48 px, au-dessus des 44 de WCAG 2.5.5
 AIR_MINIMAL = 13         # marge latérale autour d'un libellé de bouton
 DECENTRAGE_TOLERE = 1.0  # en pixels, horizontal comme vertical
 
@@ -1559,8 +1559,8 @@ def test_barre_du_bas(nav, url):
         }""")
         check(not mesures["debordement"] and mesures["hors"] == 0,
               "%s aucune tuile ni page qui déborde sur le côté" % etiquette)
-        check(all(h >= 44 for h in mesures["hauteurs"]) and all(w >= 44 for w in mesures["largeurs"]),
-              "%s chaque entrée de la barre fait au moins 44 px (%s × %s)"
+        check(all(h >= CIBLE_MINIMALE for h in mesures["hauteurs"]) and all(w >= CIBLE_MINIMALE for w in mesures["largeurs"]),
+              "%s chaque entrée de la barre fait au moins 48 px (%s × %s)"
               % (etiquette, [round(w) for w in mesures["largeurs"]], [round(h) for h in mesures["hauteurs"]]))
         check(mesures["bas"] <= mesures["vh"] and mesures["haut"] > 0,
               "%s la barre est entière dans l'écran" % etiquette)
@@ -1650,8 +1650,8 @@ def test_barre_du_bas(nav, url):
     boite = page.evaluate("""() => { const r = document.getElementById('triggerRunBtn').getBoundingClientRect();
         const apres = getComputedStyle(document.getElementById('triggerRunBtn'), '::after');
         return {w: r.width, h: r.height, ext: parseFloat(apres.top) }; }""")
-    check(boite["w"] + 2 * abs(boite["ext"]) >= 44 and boite["h"] + 2 * abs(boite["ext"]) >= 44,
-          "avec un jeton, l'icône ▶ a au moins 44 px de zone de clic (%.0f × %.0f + %.0f)"
+    check(boite["w"] + 2 * abs(boite["ext"]) >= CIBLE_MINIMALE and boite["h"] + 2 * abs(boite["ext"]) >= CIBLE_MINIMALE,
+          "avec un jeton, l'icône ▶ a au moins 48 px de zone de clic (%.0f × %.0f + %.0f)"
           % (boite["w"], boite["h"], abs(boite["ext"])))
     ctx.close()
 
@@ -8169,13 +8169,13 @@ def test_case_globale_des_effets(nav, url):
     # Le grand moment reste hors du détail, visible replié ; le curseur des coins est dans le groupe « Écran ».
     hors = page.evaluate("""() => { const b = document.getElementById('repetitionLien'), r = b.getBoundingClientRect();
         return {visible: r.width > 0 && r.height > 0, dansDetail: !!b.closest('#effetsDetail'), haut: Math.round(r.height)}; }""")
-    check(hors["visible"] and not hors["dansDetail"] and hors["haut"] >= 44, "[réglages] « Répétition du jour J » est visible détail replié, hors du détail, 44 px de haut au moins (%s)" % hors)
+    check(hors["visible"] and not hors["dansDetail"] and hors["haut"] >= CIBLE_MINIMALE, "[réglages] « Répétition du jour J » est visible détail replié, hors du détail, 48 px de haut au moins (%s)" % hors)
     ecran = page.evaluate("""() => { const g = document.getElementById('rayonCadre').closest('.setting-group');
         return {titre: g.querySelector('.setting-label').textContent.trim(), dansCouleurs: !!document.getElementById('rayonCadre').closest('#effetsDetail')}; }""")
     check(ecran["titre"].startswith("Écran") and not ecran["dansCouleurs"], "[réglages] le curseur des coins est dans son propre groupe « Écran » (%s)" % ecran)
     # Accessibilité tactile : chaque préréglage et le bouton « Personnaliser » font au moins 44 px de haut.
     haut = page.evaluate("() => [...document.querySelectorAll('.prereglage'), document.getElementById('persoBtn')].map(b => Math.round(b.getBoundingClientRect().height))")
-    check(all(h >= 44 for h in haut), "[réglages] préréglages et « Personnaliser » : au moins 44 px de haut (%s)" % haut)
+    check(all(h >= CIBLE_MINIMALE for h in haut), "[réglages] préréglages et « Personnaliser » : au moins 48 px de haut (%s)" % haut)
     check(not erreurs, "[réglages] aucune erreur JavaScript (%s)" % erreurs[:1])
     ctx.close()
     # Le jour J : « Automatique » surligné, tout allumé d'office, l'aperçu complet et animé.
@@ -8612,8 +8612,8 @@ def test_categories_de_couleur(nav, url):
                     lignes: [...document.querySelectorAll('.prereglage')].map(ligne), haut: bs.map(r => Math.round(r.height)),
                     perso: [document.getElementById('persoBtn').getBoundingClientRect().height, document.getElementById('persoCompte').getBoundingClientRect().height],
                     coupe: [...document.querySelectorAll('.prereglage, #persoBtn')].some(b => b.scrollWidth > b.clientWidth + 1)}; }""")
-        check(bt["n"] == 3 and bt["rangs"] == 2 and bt["larg"][1] == bt["larg"][2] and bt["larg"][0] > bt["larg"][1] and bt["lignes"] == [1] * 3 and min(bt["haut"]) >= 44 and not bt["coupe"],
-              "[catégories %d px] trois modes : « Jour J complet » pleine largeur, puis deux de même largeur, une seule ligne chacun, au moins 44 px (%s)" % (largeur, bt))
+        check(bt["n"] == 3 and bt["rangs"] == 2 and bt["larg"][1] == bt["larg"][2] and bt["larg"][0] > bt["larg"][1] and bt["lignes"] == [1] * 3 and min(bt["haut"]) >= CIBLE_MINIMALE and not bt["coupe"],
+              "[catégories %d px] trois modes : « Jour J complet » pleine largeur, puis deux de même largeur, une seule ligne chacun, au moins 48 px (%s)" % (largeur, bt))
         check(bt["perso"][1] < 24 and bt["perso"][0] <= 48, "[catégories %d px] « Personnaliser · N sur 9 allumés » tient sur une ligne (%s)" % (largeur, bt["perso"]))
         page.click("#persoBtn")
         g = page.evaluate("""() => { const lignes = [...document.querySelectorAll('.grille-couleurs .gc-ligne')];
@@ -8629,10 +8629,12 @@ def test_categories_de_couleur(nav, url):
                     ancien: document.querySelectorAll('.ou-btn, .famille, .zones').length}; }""")
         check(g["lignes"] == 5 and g["chips"] == [4] * 5 and g["unSeulRang"] == [1] * 5 and g["ids"],
               "[catégories %d px] une ligne « Toute la famille » + une par zone, quatre pastilles chacune sur UN rang, mêmes identifiants (%s)" % (largeur, {k: g[k] for k in ("lignes", "chips", "unSeulRang")}))
-        check(min(g["hauts"]) >= 44 and g["dedans"] and not g["deborde"],
-              "[catégories %d px] chaque pastille fait au moins 44 px de haut, tient dans l'écran, rien ne déborde (mini %d px)" % (largeur, min(g["hauts"])))
+        check(min(g["hauts"]) >= CIBLE_MINIMALE and g["dedans"] and not g["deborde"],
+              "[catégories %d px] chaque pastille fait au moins 48 px de haut, tient dans l'écran, rien ne déborde (mini %d px)" % (largeur, min(g["hauts"])))
         check(g["noms"] and g["ancien"] == 0, "[catégories %d px] chaque case porte un nom lisible ; plus de « Où ? » ni de listes à déplier" % largeur)
-        check(g["haut"] <= 420, "[catégories %d px] la grille entière fait au plus 420 px (%d ; 660 px dépliée avant)" % (largeur, g["haut"]))
+        # 430 et non 420 depuis le 16/11/2026 : chaque rang de pastilles a pris 4 px en passant de 44 à 48 px (427 mesurés).
+        # La borne garde son rôle : la grille reste loin des 660 px de la version dépliée.
+        check(g["haut"] <= 430, "[catégories %d px] la grille entière fait au plus 430 px (%d ; 660 px dépliée avant)" % (largeur, g["haut"]))
         check(not erreurs, "[catégories %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
         ctx.close()
     ctx, page, erreurs = _ouvre_cycle(nav, url, VEILLE, "auto", "dark")
@@ -9051,8 +9053,8 @@ def test_essai_des_confettis(nav, url):
         page.goto(base + "/essai-confettis.html", wait_until="load")
         b = page.evaluate("""() => ({ids: window.__versions, boutons: [...document.querySelectorAll('button.v')].map(x => Math.round(x.getBoundingClientRect().height)),
               deborde: document.documentElement.scrollWidth > innerWidth})""")
-        check(len(b["ids"]) >= 5 and len(b["boutons"]) == len(b["ids"]) and all(h >= 44 for h in b["boutons"]) and not b["deborde"],
-              "[essai confettis %d px] un bouton de 44 px ou plus par version, rien ne déborde (%s)" % (largeur, b["boutons"]))
+        check(len(b["ids"]) >= 5 and len(b["boutons"]) == len(b["ids"]) and all(h >= CIBLE_MINIMALE for h in b["boutons"]) and not b["deborde"],
+              "[essai confettis %d px] un bouton de 48 px ou plus par version, rien ne déborde (%s)" % (largeur, b["boutons"]))
         for vid in b["ids"]:
             page.evaluate("() => { window.__dernier = null; }")
             page.click('button.v[data-version="%s"]' % vid)
@@ -9320,7 +9322,7 @@ def test_liste_du_jour_j(nav, url):
         lien = page.evaluate("""() => { const a = document.getElementById('listeJourJLien'), r = a.getBoundingClientRect(), s = a.closest('.setting-row').getBoundingClientRect();
             return {href: a.getAttribute('href'), cible: a.getAttribute('target'), haut: Math.round(r.height), dans: r.left >= 0 && r.right <= innerWidth && s.right <= innerWidth,
                     libelle: document.getElementById('listeJourJLibelle').textContent.trim(), nom: a.getAttribute('aria-labelledby')}; }""")
-        check(lien["href"] == "liste-jour-j.html" and lien["cible"] is None and lien["haut"] >= 44 and lien["dans"]
+        check(lien["href"] == "liste-jour-j.html" and lien["cible"] is None and lien["haut"] >= CIBLE_MINIMALE and lien["dans"]
               and lien["libelle"] == "Liste de contrôle du jour J" and lien["nom"] == "listeJourJLibelle",
               "[liste jour J %d px] le lien des Réglages va à liste-jour-j.html dans le MÊME onglet, 44 px de haut au moins, dans l'écran (%s)" % (largeur, lien))
         avant = page.evaluate(SNAP, CLE)
@@ -9330,8 +9332,8 @@ def test_liste_du_jour_j(nav, url):
         etat = page.evaluate("""() => ({n: document.querySelectorAll('input[type=checkbox]').length, compte: document.getElementById('compte').textContent,
               hauts: [...document.querySelectorAll('label')].map(l => Math.round(l.getBoundingClientRect().height)), deborde: document.documentElement.scrollWidth > innerWidth,
               bouton: Math.round(document.getElementById('reset').getBoundingClientRect().height)})""")
-        check(etat["n"] == 17 and etat["compte"] == "0 / 17" and min(etat["hauts"]) >= 44 and etat["bouton"] >= 44 and not etat["deborde"],
-              "[liste jour J %d px] dix-sept cases à « 0 / 17 », chacune de 44 px ou plus, rien ne déborde (min %d px)" % (largeur, min(etat["hauts"])))
+        check(etat["n"] == 17 and etat["compte"] == "0 / 17" and min(etat["hauts"]) >= CIBLE_MINIMALE and etat["bouton"] >= CIBLE_MINIMALE and not etat["deborde"],
+              "[liste jour J %d px] dix-sept cases à « 0 / 17 », chacune de 48 px ou plus, rien ne déborde (min %d px)" % (largeur, min(etat["hauts"])))
         for i in ("batterie", "ecran", "volume"):
             page.click('label:has(input[data-id="%s"])' % i)
         c = page.evaluate("() => ({compte: document.getElementById('compte').textContent, now: document.querySelector('.prog').getAttribute('aria-valuenow'), stock: localStorage.getItem('%s')})" % CLE)
@@ -9383,8 +9385,8 @@ def test_repetition_de_minuit(nav, url):
         lien = page.evaluate("""() => { const a = document.getElementById('repetitionLien'), r = a.getBoundingClientRect(), s = a.closest('.setting-row').getBoundingClientRect();
             return {href: a.getAttribute('href'), cible: a.getAttribute('target'), haut: Math.round(r.height), large: Math.round(r.width), dans: r.left >= 0 && r.right <= innerWidth && s.right <= innerWidth,
                     libelle: document.getElementById('repetitionLibelle').textContent.trim(), nom: a.getAttribute('aria-labelledby')}; }""")
-        check(lien["href"] == "repetition.html" and lien["cible"] is None and lien["haut"] >= 44 and lien["dans"] and lien["libelle"] == "Répétition du jour J" and lien["nom"] == "repetitionLibelle",
-              "[répétition %d px] le lien des Réglages va à repetition.html dans le MÊME onglet, 44 px de haut au moins, dans l'écran, avec son libellé (%s)" % (largeur, lien))
+        check(lien["href"] == "repetition.html" and lien["cible"] is None and lien["haut"] >= CIBLE_MINIMALE and lien["dans"] and lien["libelle"] == "Répétition du jour J" and lien["nom"] == "repetitionLibelle",
+              "[répétition %d px] le lien des Réglages va à repetition.html dans le MÊME onglet, 48 px de haut au moins, dans l'écran, avec son libellé (%s)" % (largeur, lien))
         page.click("#repetitionLien")
         page.wait_for_url("**/repetition.html", timeout=15000)
         check(page.evaluate("() => document.querySelectorAll('a.scene').length") >= 5 and len(ctx.pages) == 1,
@@ -9398,8 +9400,8 @@ def test_repetition_de_minuit(nav, url):
         page = ctx.new_page(); page.goto(base + "/repetition.html", wait_until="load")
         a = page.evaluate("""() => ({scenes: [...document.querySelectorAll('a.scene')].map(x => [Math.round(x.getBoundingClientRect().height), x.getAttribute('href')]),
               deborde: document.documentElement.scrollWidth > innerWidth})""")
-        check(len(a["scenes"]) >= 5 and all(h >= 44 and "cible=" in href for h, href in a["scenes"]) and not a["deborde"],
-              "[répétition %d px] au moins cinq scènes, chacune de 44 px ou plus avec son heure simulée, rien ne déborde (%s)" % (largeur, [h for h, _ in a["scenes"]]))
+        check(len(a["scenes"]) >= 5 and all(h >= CIBLE_MINIMALE and "cible=" in href for h, href in a["scenes"]) and not a["deborde"],
+              "[répétition %d px] au moins cinq scènes, chacune de 48 px ou plus avec son heure simulée, rien ne déborde (%s)" % (largeur, [h for h, _ in a["scenes"]]))
         page.goto(base + "/repetition.html?cible=nimportequoi", wait_until="load")
         check(page.evaluate("() => !document.getElementById('erreur').hidden && document.querySelectorAll('a.scene').length > 0 && !document.getElementById('repetitionBandeau')"),
               "[répétition %d px] une heure illisible affiche l'erreur et les scènes, pas l'app" % largeur)
@@ -9498,8 +9500,8 @@ def test_le_logo_remonte_en_haut(nav, url):
                         police: s.fontSize + ' ' + s.fontWeight, fond: s.backgroundColor, bord: s.borderTopWidth,
                         grandEnTeteBouton: document.querySelectorAll('header.console .brand button').length}; }""")
             if mouvement == "reduce":
-                check(info is not None and "remonter" in (info["nom"] or "") and info["haut"] >= 44 and info["large"] > 60,
-                      "[logo %d px] le titre de la ligne réduite est un bouton nommé, d'au moins 44 px de haut (%s)" % (largeur, info))
+                check(info is not None and "remonter" in (info["nom"] or "") and info["haut"] >= CIBLE_MINIMALE and info["large"] > 60,
+                      "[logo %d px] le titre de la ligne réduite est un bouton nommé, d'au moins 48 px de haut (%s)" % (largeur, info))
                 if info:
                     check(info["police"] == "16px 800" and info["bord"] == "0px" and info["fond"] == "rgba(0, 0, 0, 0)" and info["barre"] == 52,
                           "[logo %d px] il garde l'apparence de l'ancien titre (%s), sans cadre ni fond, et la ligne reste à %d px" % (largeur, info["police"], info["barre"]))

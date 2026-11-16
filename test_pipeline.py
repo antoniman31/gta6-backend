@@ -5876,8 +5876,9 @@ def test_derniers_reports_tactiles_et_courbes():
     check("display:block" in bloc,
           "le lien de titre est un bloc, plus du texte en ligne")
     mh = re.search(r"min-height:\s*(\d+)px", bloc)
-    check(mh is not None and int(mh.group(1)) >= 44,
-          "et sa zone de clic fait au moins 44 px")
+    # 48 depuis le 16/11/2026 (règle commune des dépôts), 44 avant.
+    check(mh is not None and int(mh.group(1)) >= 48,
+          "et sa zone de clic fait au moins 48 px")
     hauteur = int(mh.group(1)) if mh else 0
 
     # L'INVARIANT qui a coûté une passe. En mode dense le titre est coupé à
@@ -8467,10 +8468,14 @@ def test_les_workflows_epinglent_leurs_dependances():
     # Le job doit tenir DEUX FOIS l'installation la plus lente mesurée
     # (8 min 27 s, le 27/10/2026) : à 10 minutes, deux jobs sur trois ce
     # jour-là ont été annulés avant d'avoir lancé un seul test.
+    # Depuis le 16/11/2026, la suite navigateur a son propre job (`navigateur`, sauté sur une PR de documentation) :
+    # c'est lui qui installe le navigateur, donc c'est SON délai qui doit tenir.
     import re as _re
-    delai = [int(m) for m in _re.findall(r"timeout-minutes:\s*(\d+)", controles)]
-    check(len(delai) == 1 and delai[0] >= 17,
-          "le job des contrôles tolère une installation de navigateur deux fois plus lente "
+    job_nav = _re.search(r"\n  navigateur:\n(.*?)(?=\n  [a-z][\w-]*:\n|\Z)", controles, _re.S)
+    corps = job_nav.group(1) if job_nav else ""
+    delai = [int(m) for m in _re.findall(r"timeout-minutes:\s*(\d+)", corps)]
+    check("playwright install" in corps and len(delai) == 1 and delai[0] >= 17,
+          "le job qui installe le navigateur tolère une installation deux fois plus lente "
           "que la pire mesurée (%s minute(s))" % delai)
 
 

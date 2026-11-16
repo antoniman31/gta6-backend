@@ -63,14 +63,14 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Connus, mesurés, sans suite** : les deux flux YouTube échouent ensemble environ 27 % des passages ; JeuxActu est en erreur depuis le 21/10 sans rien coûter ; Reddit r/GTA6 est retiré.
 - **Rien de payant** (pas de résumé par IA). Les noms de modèle sont autorisés depuis le 16/11/2026 (règle commune des dépôts).
 
-## 4 bis. Après le 20/11 : zones tactiles à 48 px, et la CI à trois niveaux
+## 4 bis. Zones tactiles à 48 px et CI à trois niveaux (faits le 16/11/2026, avant la sortie, choix d'Antoni)
 
-- **Règle commune des dépôts (16/11/2026, choix d'Antoni) : 48 px.** L'app et `test_navigateur.py` (`CIBLE_MINIMALE = 44`)
-  sont à 44 px. Changement visible : pas avant la sortie. Le 20/11 ou après, passer le seuil à 48, voir échouer les contrôles,
-  agrandir ce qui doit l'être (à 320 et 390 px d'abord), puis la suite navigateur complète.
-- **CI à trois niveaux (règle commune du 16/11/2026).** `checks.yml` lance tout, suite navigateur comprise (5 à 7 min),
-  même sur une PR qui ne touche que des `.md`. Après le 20/11 : séparer la suite navigateur dans un job sauté sur ces PR,
-  sans toucher au contrôle du README (« N vérifications »), qui doit rester dans le job toujours joué.
+- [ ] **À regarder sur le téléphone avant le 19/11** : boutons, filtres, pastilles des catégories et titres du mode compact
+      (interligne de 24 px au lieu de 22) à 320 et 390 px. La suite navigateur est verte, mais rien n'a été vu sur le S26.
+- [ ] **CSP : écartée pour l'instant.** La page compte 122 gestionnaires d'événements écrits dans le HTML (`onclick=`…,
+      dont ceux des cartes, fabriqués avec les données des articles) ; une CSP stricte demanderait de tous les réécrire en
+      délégation d'événements. L'échappement de ces gestionnaires a été relu le 16/11 (`escapeAttr` : JavaScript puis HTML,
+      dans le bon ordre) : pas de faille trouvée. Gros chantier, à décider après la sortie.
 
 ## 5. Idées non faites
 
