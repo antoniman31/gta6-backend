@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0f14">
+<title>Liste de contrôle du jour J</title>
+<!--
+  LISTE DE CONTRÔLE DU JOUR J (Antoni, 16/11/2026 : « une liste de contrôle de la veille », puis « oui, un lien dans les Réglages »).
+
+  Une page à cocher la veille de la sortie. Elle regroupe ce que la relecture du chemin de minuit (16/11/2026, mesurée en temps réel
+  à 320 et 390 px) a trouvé de fragile et que le code ne peut pas garantir à la place du téléphone : l'app au premier plan, le premier
+  appui (Android l'exige pour la vibration), les animations non réduites (sinon le grand moment ne joue pas du tout), l'écran allumé.
+  Plus les points du robot et de Discord (jalons H-1 à 23 h et « sorti » vers 00:02 : le dernier passage mesuré faisait tourner l'étape
+  Discord 1 min 20 s après le déclenchement de l'heure).
+
+  LES CASES RESTENT SUR LE TÉLÉPHONE : une seule clé de localStorage, jamais d'envoi, aucune requête réseau (la page marche hors ligne).
+  Un stockage refusé (navigation privée…) laisse la page utilisable : les cases se cochent, elles ne se souviennent plus.
+  « Tout décocher » demande une confirmation (un second appui dans les 3 s) : un doigt malheureux ne doit pas tout effacer la veille.
+  La page n'est liée que depuis les Réglages. Le service worker ne l'intercepte pas (seule la page de l'app l'est).
+-->
+<style>
+  :root{ color-scheme: dark; --bg:#0b0f14; --carte:#141a22; --bord:#2a3441; --texte:#e4ece8; --dim:#9aa7b4; --accent:#5ab4ff; --ok:#3ddc97; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--texte); font:16px/1.45 system-ui, sans-serif; padding:16px 16px 48px; }
+  main{ max-width:480px; margin:0 auto; }
+  h1{ font:700 21px/1.2 ui-monospace, monospace; margin:6px 0 6px; }
+  p.note{ color:var(--dim); margin:0 0 10px; font-size:14px; }
+  a.retour{ display:inline-flex; align-items:center; min-height:44px; color:var(--accent); font:600 14px ui-monospace, monospace; text-decoration:none; }
+  .barre{ position:sticky; top:0; z-index:2; background:var(--bg); padding:8px 0 10px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--bord); margin-bottom:6px; }
+  .prog{ flex:1; height:8px; background:var(--bord); border-radius:6px; overflow:hidden; }
+  .prog i{ display:block; height:100%; width:0; background:var(--ok); }
+  .compte{ font:700 14px ui-monospace, monospace; color:var(--ok); min-width:56px; text-align:right; }
+  h2{ font:700 15px ui-monospace, monospace; color:var(--accent); margin:18px 0 8px; display:flex; justify-content:space-between; gap:8px; }
+  h2 span{ font:600 12px ui-monospace, monospace; color:var(--dim); white-space:nowrap; }
+  label{ display:flex; gap:12px; align-items:flex-start; min-height:48px; padding:10px 12px; border:2px solid var(--bord); border-radius:12px; background:var(--carte); margin-bottom:8px; cursor:pointer; }
+  label.fait{ border-color:#245a45; color:var(--dim); }
+  label.fait .t{ text-decoration:line-through; }
+  input[type=checkbox]{ width:24px; height:24px; margin:1px 0 0; accent-color:var(--ok); flex:none; }
+  small{ display:block; color:var(--dim); font-size:13px; margin-top:2px; }
+  button{ min-height:48px; width:100%; border:2px solid var(--bord); background:var(--carte); color:var(--texte); border-radius:12px; font:600 14px ui-monospace, monospace; margin-top:14px; cursor:pointer; }
+  button[data-etat="confirme"]{ border-color:#e5484d; color:#ffb4b6; }
+</style>
+</head>
+<body>
+<main>
+  <a class="retour" href="./">← Retour à l'app</a>
+  <h1>Liste de contrôle du jour J</h1>
+  <p class="note">Les cases restent sur ton téléphone : rien n'est envoyé.</p>
+  <div class="barre"><div class="prog" role="progressbar" aria-label="Cases cochées" aria-valuemin="0" aria-valuemax="17" aria-valuenow="0"><i id="barre"></i></div><div class="compte" id="compte" aria-live="polite">0 / 17</div></div>
+
+  <h2>Avant minuit : téléphone <span>le 18/11</span></h2>
+  <label><input type="checkbox" data-id="batterie"><span class="t">Batterie chargée, ou branché sur secteur</span></label>
+  <label><input type="checkbox" data-id="ecran"><span class="t">Écran qui reste allumé<small>Veille de l'écran sur la durée la plus longue</small></span></label>
+  <label><input type="checkbox" data-id="premier-plan"><span class="t">App GTA6_WATCH ouverte au premier plan<small>Onglet Fil, écran déverrouillé</small></span></label>
+  <label><input type="checkbox" data-id="appui"><span class="t">Un appui sur la page<small>Android exige un premier appui pour la vibration</small></span></label>
+  <label><input type="checkbox" data-id="animations"><span class="t">« Supprimer les animations » désactivé<small>Android › Accessibilité : sinon le grand moment ne joue pas</small></span></label>
+  <label><input type="checkbox" data-id="volume"><span class="t">Volume et vibration activés<small>Mode « Ne pas déranger » éteint</small></span></label>
+
+  <h2>Dans l'app <span>avant 22h</span></h2>
+  <label><input type="checkbox" data-id="rouverte"><span class="t">App fermée puis rouverte<small>Pour installer le dernier cache</small></span></label>
+  <label><input type="checkbox" data-id="spoilers"><span class="t">Mots-clés de spoiler collés, mode sans spoiler allumé</span></label>
+  <label><input type="checkbox" data-id="sauvegarde"><span class="t">Une sauvegarde de l'app exportée<small>Réglages › Données</small></span></label>
+  <label><input type="checkbox" data-id="repetition"><span class="t">Répétition refaite une dernière fois<small>Réglages › Répétition du jour J › « Minuit dans 30 secondes »</small></span></label>
+
+  <h2>Discord et robot <span>dès 23h</span></h2>
+  <label><input type="checkbox" data-id="h1"><span class="t">Le message H-1 arrive à 23h00<small>Sinon : le robot a un retard, l'app n'est pas touchée</small></span></label>
+  <label><input type="checkbox" data-id="signal"><span class="t">Le canal d'alerte du signal de vie est confirmé<small>Il doit te prévenir sur ton téléphone</small></span></label>
+  <label><input type="checkbox" data-id="robot"><span class="t">Le dernier passage du robot est vert<small>Moins d'une heure</small></span></label>
+  <label><input type="checkbox" data-id="jeton"><span class="t">Jeton mobile à régénérer avant le 26/11<small>Il sert au bouton « Relancer le robot »</small></span></label>
+
+  <h2>Après minuit <span>le 19/11</span></h2>
+  <label><input type="checkbox" data-id="minuit"><span class="t">00:00 : compteur à zéro, flash, ondes, confettis, vibration</span></label>
+  <label><input type="checkbox" data-id="sorti"><span class="t">Vers 00:02 : le message « 🎉 GTA VI est sorti » sur Discord</span></label>
+  <label><input type="checkbox" data-id="rien"><span class="t">Rien à minuit ?<small>Rouvre l'app, ou lance la répétition « Jour J, 9 h » en secours</small></span></label>
+
+  <button type="button" id="reset">Tout décocher</button>
+</main>
+<script>
+(function(){
+  var CLE = "gta6watch:liste-jour-j-v1";
+  var cases = [].slice.call(document.querySelectorAll("input[type=checkbox]"));
+  var barre = document.getElementById("barre"), compte = document.getElementById("compte"), bouton = document.getElementById("reset");
+  var progression = document.querySelector(".prog"), minuteur = null;
+  function lit(){ try{ var v = JSON.parse(localStorage.getItem(CLE) || "[]"); return Array.isArray(v) ? v : []; }catch(e){ return []; } }
+  function ecrit(){ try{ localStorage.setItem(CLE, JSON.stringify(cases.filter(function(c){ return c.checked; }).map(function(c){ return c.getAttribute("data-id"); }))); }catch(e){ /* stockage refusé : la page reste utilisable */ } }
+  function maj(){
+    var n = cases.filter(function(c){ return c.checked; }).length;
+    barre.style.width = (100 * n / cases.length) + "%"; compte.textContent = n + " / " + cases.length;
+    progression.setAttribute("aria-valuenow", String(n)); progression.setAttribute("aria-valuemax", String(cases.length));
+    cases.forEach(function(c){ c.parentNode.classList.toggle("fait", c.checked); });
+  }
+  function annule(){ clearTimeout(minuteur); minuteur = null; bouton.removeAttribute("data-etat"); bouton.textContent = "Tout décocher"; }
+  var cochees = lit();
+  cases.forEach(function(c){ c.checked = cochees.indexOf(c.getAttribute("data-id")) >= 0; c.addEventListener("change", function(){ ecrit(); maj(); }); });
+  bouton.addEventListener("click", function(){
+    if(bouton.getAttribute("data-etat") !== "confirme"){
+      bouton.setAttribute("data-etat", "confirme"); bouton.textContent = "Confirmer : tout effacer"; minuteur = setTimeout(annule, 3000); return;
+    }
+    cases.forEach(function(c){ c.checked = false; }); ecrit(); maj(); annule();
+  });
+  maj();
+})();
+</script>
+</body>
+</html>

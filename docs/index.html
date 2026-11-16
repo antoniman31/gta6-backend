@@ -3099,6 +3099,16 @@
         enregistré : fermer la page efface tout. Indisponible quand ton téléphone réduit les animations
         (le grand moment ne joue pas) ; la vibration dépend du téléphone.
       </div>
+      <!-- La liste de contrôle du jour J (Antoni, 16/11/2026 : « oui, un lien dans les Réglages »). Même forme que la répétition : un vrai lien,
+           dans le MÊME onglet ; les cases cochées restent sur le téléphone (une clé de localStorage, sur la page elle-même). -->
+      <div class="setting-row">
+        <span class="setting-label" id="listeJourJLibelle">Liste de contrôle du jour J</span>
+        <a class="lien-bouton" id="listeJourJLien" href="liste-jour-j.html" aria-labelledby="listeJourJLibelle">Ouvrir</a>
+      </div>
+      <div class="setting-desc" hidden>
+        Dix-sept cases à cocher la veille de la sortie : téléphone (batterie, écran allumé, animations, vibration),
+        app, Discord et robot, puis ce que tu dois voir à minuit. Les cases restent sur ton téléphone.
+      </div>
     </div>
 
     <div class="setting-group">
