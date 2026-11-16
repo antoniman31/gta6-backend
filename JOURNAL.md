@@ -12872,3 +12872,24 @@ Lecture seule, à J-3, rien de modifié dans le code ni les dépendances.
 
 Bloc commun : règle « CI, trois niveaux » (rapide à chaque PR, lourd seulement si autre chose que des `.md` change, appareil réel). La CI de ce dépôt ne change pas avant la sortie : le saut de la suite navigateur sur une PR de documentation est
 noté dans `RESTE-A-FAIRE.md`, pour après le 20/11, avec le passage à 48 px.
+
+### Zones tactiles à 48 px et CI à trois niveaux, avant la sortie — 16/11/2026
+
+Antoni a choisi de les faire tout de suite plutôt qu'après le 20/11, risque dit : un changement visible à trois jours de la
+sortie.
+
+- **48 px** : `CIBLE_MINIMALE` passe de 44 à 48, et les douze contrôles qui écrivaient « 44 » en dur s'y branchent. Vus
+  échouer d'abord sur le CSS d'avant (boutons du panneau, ligne de source, filtres à 44 px). Puis : `min-height` de 44 à 48
+  partout (20 règles), curseurs et pages annexes (liste du jour J, essai des confettis) aussi. Trois zones étendues au lieu
+  d'agrandir la boîte, pour ne rien déplacer : `.icon-btn` (34 px visibles, débord de 7 px), `.icon-btn-grand` (44
+  visibles, débord de 2 px : agrandi, le bouton ↻ passait sous le titre à 360 px), `.relance` (40 visibles, 4 px). Le `?`
+  d'aide gagne ses 4 px vers le haut seulement (le champ commence 8 px sous lui). Mode compact : interligne des titres de
+  22 à 24 px, pour que deux lignes fassent les 48 px. Grille des catégories : borne de 420 à 430 px (427 mesurés, +4 px
+  par rang ; loin des 660 de la version dépliée). `CACHE_NAME` v119.
+- **CI** : la suite navigateur passe dans un job `navigateur`, sauté sur une PR qui ne touche que des `.md` ; pipeline,
+  sources et audit restent dans `controles`. Le contrôle du délai (`test_pipeline.py`) vise désormais le job qui installe
+  le navigateur ; vu échouer sur l'ancien `checks.yml`.
+- **CSP écartée** : 122 gestionnaires d'événements dans le HTML (voir `RESTE-A-FAIRE.md`, 4 bis).
+- Un contrôle a échoué une fois puis réussi au passage suivant, sans changement : « le panneau du compteur, ouvert longtemps
+  après l'en-tête, est en phase avec lui » (écart de 6,8 s). Instable ; cause non cherchée dans ce lot.
+- Qualité : `test_pipeline.py` 2286/2286, sources synchronisées, audit vert, `test_navigateur.py` 1966/1966.

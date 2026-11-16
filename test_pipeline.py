@@ -5876,8 +5876,9 @@ def test_derniers_reports_tactiles_et_courbes():
     check("display:block" in bloc,
           "le lien de titre est un bloc, plus du texte en ligne")
     mh = re.search(r"min-height:\s*(\d+)px", bloc)
-    check(mh is not None and int(mh.group(1)) >= 44,
-          "et sa zone de clic fait au moins 44 px")
+    # 48 depuis le 16/11/2026 (règle commune des dépôts), 44 avant.
+    check(mh is not None and int(mh.group(1)) >= 48,
+          "et sa zone de clic fait au moins 48 px")
     hauteur = int(mh.group(1)) if mh else 0
 
     # L'INVARIANT qui a coûté une passe. En mode dense le titre est coupé à
