@@ -3213,6 +3213,9 @@
         Un article contenant l'un de ces mots est flouté : touche-le pour le
         révéler. Contrairement aux mots à exclure, rien n'est retiré du fil.
         <br><br>
+        Un mot compte quand il commence un mot du texte : « leak » floute
+        « leaked » et « leaker », mais pas « trending » ni « spending ».
+        <br><br>
         Le floutage est visuel. Il protège d'un regard, pas d'une
         recherche : le texte reste dans la page.
       </div>
@@ -6737,8 +6740,27 @@ function contientSpoiler(item){
   if(spoilersReveles.has(item && item.link)) return false;
   // Aplati des DEUX côtés, comme estExclu : les mots sont saisis à la
   // main et peuvent porter leurs accents.
-  const foin = texteCherchable(item);
-  return mots.some(mot => foin.includes(sansAccents(mot).toLowerCase()));
+  const re = regexSpoiler(mots);
+  return !!re && re.test(texteCherchable(item));
+}
+
+// LA RECHERCHE PAR DÉBUT DE MOT (Antoni, 16/11/2026, après la mesure de sa liste de 187 mots sur 7 619 articles) : un mot de la liste compte
+// quand il COMMENCE un mot du texte. Avant, chaque mot était cherché n'importe où dans le texte : « ending » voilait « trending » et
+// « spending », « dies » voilait « studies », « rat » voilait 337 articles sans un seul mot « rat » (« Génération », « Rockstar »). Mesuré sur la liste
+// nettoyée (178 mots) : 691 articles voilés par morceau de mot, 666 par début de mot (25 faux positifs de moins), 533 par mot entier strict (133 vrais
+// spoilers de moins : « leaked », « leaker », « leaking » ne seraient plus voilés par « leak »). D'où le DÉBUT de mot et pas le mot entier.
+// Une seule expression régulière pour toute la liste, recompilée seulement quand la liste change ; sans « (?<!…) » (lookbehind) qui casse
+// certains navigateurs anciens : le caractère d'avant est consommé dans l'expression (début du texte ou tout caractère hors a-z0-9).
+let spoilerRegexCle = null, spoilerRegex = null;
+function regexSpoiler(mots){
+  const cle = mots.join("\n");
+  if(cle !== spoilerRegexCle){
+    spoilerRegexCle = cle;
+    const alternatives = mots.map(m => sansAccents(m).toLowerCase().trim()).filter(Boolean)
+      .map(m => m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    spoilerRegex = alternatives.length ? new RegExp("(?:^|[^a-z0-9])(?:" + alternatives.join("|") + ")") : null;
+  }
+  return spoilerRegex;
 }
 
 // Le voile, posé par les deux vues. Une seule fabrique, pour la même
