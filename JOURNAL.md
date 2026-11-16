@@ -12893,3 +12893,9 @@ sortie.
 - Un contrôle a échoué une fois puis réussi au passage suivant, sans changement : « le panneau du compteur, ouvert longtemps
   après l'en-tête, est en phase avec lui » (écart de 6,8 s). Instable ; cause non cherchée dans ce lot.
 - Qualité : `test_pipeline.py` 2286/2286, sources synchronisées, audit vert, `test_navigateur.py` 1966/1966.
+
+### Essais sur le téléphone après le passage à 48 px — 16/11/2026
+
+Antoni a regardé l'app sur le S26 après la mise en ligne de la #299 : en-tête, filtres, Réglages, pastilles des
+catégories et mode compact à 48 px, puis la répétition de minuit. Rien à corriger. Première PR de documentation seule
+depuis la CI à trois niveaux : la suite navigateur doit y être « sautée ».
