@@ -61,7 +61,13 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Sources** : on n'en ajoute ni n'en retire jamais sans instruction. Les quatre requêtes du 03/11 (patchs EN, serveurs EN et FR, streamers) sont un filet pour le jour J : deux articles utiles en
   quatorze jours avant leur ajout. `rockstar-support` n'a apporté aucun article exclusif ; elle reste.
 - **Connus, mesurés, sans suite** : les deux flux YouTube échouent ensemble environ 27 % des passages ; JeuxActu est en erreur depuis le 21/10 sans rien coûter ; Reddit r/GTA6 est retiré.
-- **Rien de payant** (pas de résumé par IA). **Aucun nom de modèle** dans un commit, une PR ou un fichier.
+- **Rien de payant** (pas de résumé par IA). Les noms de modèle sont autorisés depuis le 16/11/2026 (règle commune des dépôts).
+
+## 4 bis. Après le 20/11 : zones tactiles à 48 px
+
+- **Règle commune des dépôts (16/11/2026, choix d'Antoni) : 48 px.** L'app et `test_navigateur.py` (`CIBLE_MINIMALE = 44`)
+  sont à 44 px. Changement visible : pas avant la sortie. Le 20/11 ou après, passer le seuil à 48, voir échouer les contrôles,
+  agrandir ce qui doit l'être (à 320 et 390 px d'abord), puis la suite navigateur complète.
 
 ## 5. Idées non faites
 
