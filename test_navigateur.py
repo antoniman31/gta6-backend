@@ -9299,6 +9299,74 @@ def test_le_service_worker_en_vrai(nav, url):
     ctx.close()
 
 
+def test_liste_du_jour_j(nav, url):
+    """La liste de contrôle du jour J (Antoni, 16/11/2026) : un lien dans les Réglages, dix-sept cases mémorisées sur le téléphone."""
+    print("\n[liste jour J] lien dans les Réglages, cases mémorisées, confirmation avant d'effacer")
+    base = url.rsplit("/", 1)[0]
+    dossier = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+    check(open(os.path.join(dossier, "index.html"), encoding="utf-8").read().count("liste-jour-j.html") == 1,
+          "[liste jour J] l'app ne renvoie vers la liste qu'à un seul endroit (le lien des Réglages)")
+    check('name="robots" content="noindex"' in open(os.path.join(dossier, "liste-jour-j.html"), encoding="utf-8").read(),
+          "[liste jour J] la page n'est pas indexable")
+    CLE = "gta6watch:liste-jour-j-v1"
+    SNAP = "(cle) => JSON.stringify(Object.keys(localStorage).filter(k => k !== cle).sort().map(k => [k, localStorage.getItem(k)]))"
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, timezone_id="Europe/Paris", reduced_motion="reduce")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e: erreurs.append(str(e)[:100]))
+        page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached")
+        page.evaluate("() => openSettings()")
+        page.wait_for_selector("#listeJourJLien", state="visible")
+        lien = page.evaluate("""() => { const a = document.getElementById('listeJourJLien'), r = a.getBoundingClientRect(), s = a.closest('.setting-row').getBoundingClientRect();
+            return {href: a.getAttribute('href'), cible: a.getAttribute('target'), haut: Math.round(r.height), dans: r.left >= 0 && r.right <= innerWidth && s.right <= innerWidth,
+                    libelle: document.getElementById('listeJourJLibelle').textContent.trim(), nom: a.getAttribute('aria-labelledby')}; }""")
+        check(lien["href"] == "liste-jour-j.html" and lien["cible"] is None and lien["haut"] >= 44 and lien["dans"]
+              and lien["libelle"] == "Liste de contrôle du jour J" and lien["nom"] == "listeJourJLibelle",
+              "[liste jour J %d px] le lien des Réglages va à liste-jour-j.html dans le MÊME onglet, 44 px de haut au moins, dans l'écran (%s)" % (largeur, lien))
+        avant = page.evaluate(SNAP, CLE)
+        page.click("#listeJourJLien")
+        page.wait_for_url("**/liste-jour-j.html", timeout=15000)
+        check(len(ctx.pages) == 1, "[liste jour J %d px] la liste s'ouvre dans le même onglet" % largeur)
+        etat = page.evaluate("""() => ({n: document.querySelectorAll('input[type=checkbox]').length, compte: document.getElementById('compte').textContent,
+              hauts: [...document.querySelectorAll('label')].map(l => Math.round(l.getBoundingClientRect().height)), deborde: document.documentElement.scrollWidth > innerWidth,
+              bouton: Math.round(document.getElementById('reset').getBoundingClientRect().height)})""")
+        check(etat["n"] == 17 and etat["compte"] == "0 / 17" and min(etat["hauts"]) >= 44 and etat["bouton"] >= 44 and not etat["deborde"],
+              "[liste jour J %d px] dix-sept cases à « 0 / 17 », chacune de 44 px ou plus, rien ne déborde (min %d px)" % (largeur, min(etat["hauts"])))
+        for i in ("batterie", "ecran", "volume"):
+            page.click('label:has(input[data-id="%s"])' % i)
+        c = page.evaluate("() => ({compte: document.getElementById('compte').textContent, now: document.querySelector('.prog').getAttribute('aria-valuenow'), stock: localStorage.getItem('%s')})" % CLE)
+        check(c["compte"] == "3 / 17" and c["now"] == "3" and (json.loads(c["stock"]) if c["stock"] else None) == ["batterie", "ecran", "volume"],
+              "[liste jour J %d px] trois cases cochées : « %s », barre à %s, mémorisées (%s)" % (largeur, c["compte"], c["now"], c["stock"]))
+        check(page.evaluate(SNAP, CLE) == avant, "[liste jour J %d px] la page n'a écrit QUE sa propre clé dans le stockage" % largeur)
+        page.reload(wait_until="load")
+        check(page.evaluate("() => document.getElementById('compte').textContent") == "3 / 17",
+              "[liste jour J %d px] les cases cochées sont encore là après un rechargement" % largeur)
+        # « Tout décocher » : un premier appui ne fait que demander confirmation.
+        page.click("#reset")
+        e1 = page.evaluate("() => ({etat: document.getElementById('reset').getAttribute('data-etat'), texte: document.getElementById('reset').textContent, compte: document.getElementById('compte').textContent})")
+        check(e1["etat"] == "confirme" and "Confirmer" in e1["texte"] and e1["compte"] == "3 / 17",
+              "[liste jour J %d px] un premier appui sur « Tout décocher » demande confirmation et n'efface rien (%s)" % (largeur, e1))
+        page.wait_for_timeout(3400)
+        e2 = page.evaluate("() => ({etat: document.getElementById('reset').getAttribute('data-etat'), texte: document.getElementById('reset').textContent, compte: document.getElementById('compte').textContent})")
+        check(e2["etat"] is None and e2["texte"] == "Tout décocher" and e2["compte"] == "3 / 17",
+              "[liste jour J %d px] sans second appui, la demande s'annule toute seule en 3 s, rien n'est effacé (%s)" % (largeur, e2))
+        page.click("#reset"); page.click("#reset")
+        e3 = page.evaluate("() => ({compte: document.getElementById('compte').textContent, texte: document.getElementById('reset').textContent, stock: localStorage.getItem('%s')})" % CLE)
+        check(e3["compte"] == "0 / 17" and e3["texte"] == "Tout décocher" and (json.loads(e3["stock"]) if e3["stock"] else None) == [],
+              "[liste jour J %d px] deux appuis efface tout, y compris la mémoire (%s)" % (largeur, e3))
+        check(not erreurs, "[liste jour J %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+    # Un stockage refusé ne casse pas la page : les cases se cochent quand même.
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}); page = ctx.new_page(); erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)[:100]))
+    page.add_init_script("Object.defineProperty(window, 'localStorage', { get(){ throw new Error('refusé'); } });")
+    page.goto(base + "/liste-jour-j.html", wait_until="load")
+    page.click('label:has(input[data-id="robot"])')
+    check(page.evaluate("() => document.getElementById('compte').textContent") == "1 / 17" and not erreurs,
+          "[liste jour J] avec un stockage refusé, la case se coche quand même, sans erreur (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def test_repetition_de_minuit(nav, url):
     """La page de répétition du jour J (Antoni, 14/11/2026) : la vraie app, une horloge avancée, rien d'enregistré."""
     print("\n[répétition] la page lance la vraie app avec une horloge avancée, et n'écrit rien dans le vrai stockage")
@@ -9558,6 +9626,7 @@ CONTROLES = [
     test_compact_en_un_toucher_entete_replie_photo_basse,
     test_titres_en_cache_et_dates_paris,
     test_repetition_de_minuit,
+    test_liste_du_jour_j,
     test_le_service_worker_coque,
     test_le_service_worker_en_vrai,
     test_spoiler_debut_de_mot,
