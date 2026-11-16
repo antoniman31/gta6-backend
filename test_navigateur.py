@@ -9195,6 +9195,110 @@ def test_spoiler_debut_de_mot(nav, url):
     ctx.close()
 
 
+def test_le_service_worker_coque(nav, url):
+    """La coque de l'app : retombe sur la copie sur une erreur 5xx, et ne traite que la page de l'app (16/11/2026).
+
+    Mesuré le 16/11/2026 sur le vrai service worker : (1) une réponse 503 remplaçait l'app par la page d'erreur ; (2) ouvrir
+    repetition.html écrasait la copie d'index.html par cette page, et hors ligne l'app s'ouvrait sur la répétition.
+    Joué sur le VRAI docs/sw.js avec un `self`, des `caches` et un `fetch` factices : on observe ce qu'il fait.
+    """
+    print("\n[sw coque] 5xx retombe sur la copie, et seules les navigations de l'app sont interceptées")
+    racine = os.path.dirname(os.path.abspath(__file__))
+    source = open(os.path.join(racine, "docs", "sw.js"), encoding="utf-8").read()
+    ctx = nav.new_context(); page = ctx.new_page(); page.goto("about:blank")
+    P = "https://x.test/gta6-backend/"
+    CAS = [
+        # (nom, url, mode, réseau, copie ?, attendu)
+        ("la racine de l'app, réseau 200", P, "navigate", 200, True, dict(intercepte=True, texte="RESEAU", status=200, puts=1)),
+        ("index.html, réseau 200", P + "index.html", "navigate", 200, True, dict(intercepte=True, texte="RESEAU", status=200, puts=1)),
+        ("index.html avec une requête (?x=1)", P + "index.html?x=1", "navigate", 200, True, dict(intercepte=True, texte="RESEAU", status=200, puts=1)),
+        ("réseau 503, copie présente : la copie", P + "index.html", "navigate", 503, True, dict(intercepte=True, texte="COPIE", status=200, puts=0)),
+        ("réseau 500, copie présente : la copie", P, "navigate", 500, True, dict(intercepte=True, texte="COPIE", status=200, puts=0)),
+        ("réseau 504, copie présente : la copie", P, "navigate", 504, True, dict(intercepte=True, texte="COPIE", status=200, puts=0)),
+        ("réseau 503, AUCUNE copie : la réponse d'erreur passe telle quelle", P, "navigate", 503, False, dict(intercepte=True, texte="RESEAU", status=503, puts=0)),
+        ("réseau 404, copie présente : PAS de repli (ce n'est pas une panne)", P, "navigate", 404, True, dict(intercepte=True, texte="RESEAU", status=404, puts=0)),
+        ("échec du réseau, copie présente : la copie", P, "navigate", "panne", True, dict(intercepte=True, texte="COPIE", status=200, puts=0)),
+        ("échec du réseau, aucune copie : rien à servir", P, "navigate", "panne", False, dict(intercepte=True, texte=None, status=None, puts=0)),
+        ("repetition.html : le service worker n'y touche pas", P + "repetition.html", "navigate", 200, True, dict(intercepte=False, puts=0)),
+        ("repetition.html en 503 : pas de coque à la place", P + "repetition.html", "navigate", 503, True, dict(intercepte=False, puts=0)),
+        ("essai-confettis.html hors ligne : pas de coque à la place", P + "essai-confettis.html", "navigate", "panne", True, dict(intercepte=False, puts=0)),
+        ("une requête qui n'est pas une navigation (feed.json)", P + "index.html", "cors", 200, True, dict(intercepte=False, puts=0)),
+        ("une autre origine, même chemin", "https://autre.test/gta6-backend/", "navigate", 200, True, dict(intercepte=False, puts=0)),
+    ]
+    res = page.evaluate("""async ([src, cas, portee]) => {
+        const sorties = [];
+        for(const c of cas){
+          const ecouteurs = {}, puts = [];
+          const cacheFaux = { put: async (k) => { puts.push(k); }, add: async () => {} };
+          const fauxCaches = { open: async () => cacheFaux, keys: async () => [], delete: async () => true,
+            match: async () => c.copie ? new Response("COPIE", {status: 200}) : undefined };
+          const fauxFetch = async () => { if(c.reseau === "panne") throw new TypeError("réseau"); return new Response("RESEAU", {status: c.reseau}); };
+          const fauxSelf = { addEventListener: (t, f) => { ecouteurs[t] = f; }, skipWaiting: () => {}, clients: { claim: async () => {} },
+            registration: { scope: portee } };
+          new Function("self", "caches", "fetch", src)(fauxSelf, fauxCaches, fauxFetch);
+          let promesse = null;
+          ecouteurs.fetch({ request: { mode: c.mode, url: c.url }, respondWith: (p) => { promesse = p; } });
+          let r = null;
+          if(promesse){ const rep = await promesse; r = rep ? { status: rep.status, texte: await rep.text() } : null; }
+          await new Promise(ok => setTimeout(ok, 0));
+          sorties.push({ intercepte: !!promesse, status: r && r.status, texte: r && r.texte, puts: puts.length });
+        }
+        return sorties;
+    }""", [source, [dict(url=u, mode=m, reseau=rz, copie=cp) for _, u, m, rz, cp, _ in CAS], P])
+    for (nom, _, _, _, _, att), r in zip(CAS, res):
+        ok = r["intercepte"] == att["intercepte"] and r["puts"] == att["puts"] \
+             and all(r[k] == att[k] for k in ("texte", "status") if k in att)
+        check(ok, "[sw coque] %s (%s)" % (nom, r))
+    ctx.close()
+
+
+def test_le_service_worker_en_vrai(nav, url):
+    """Le VRAI service worker, installé : hors ligne, erreur 503, et page de répétition ouverte entre-temps (16/11/2026)."""
+    print("\n[sw en vrai] hors ligne, 503, et la répétition n'écrase pas la coque")
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}, service_workers="allow")
+    page = ctx.new_page(); erreurs = []
+    page.on("pageerror", lambda e: erreurs.append(str(e)[:100]))
+    page.goto(base + "/index.html", wait_until="load"); page.wait_for_selector("#feed", state="attached")
+    page.evaluate("() => navigator.serviceWorker.ready.then(() => true)"); page.wait_for_timeout(1200)
+    page.reload(wait_until="load"); page.wait_for_selector("#feed", state="attached")
+    check(page.evaluate("() => !!navigator.serviceWorker.controller"), "[sw en vrai] le service worker est actif et contrôle la page")
+    page.evaluate("s => { settings.backendUrl = s; }", base + "/feed.json")
+    page.evaluate("async () => { await checkFromBackend(true); }")
+    page.wait_for_selector("#feed .card", state="attached", timeout=30000); page.wait_for_timeout(1200)
+    n = page.evaluate("() => document.querySelectorAll('#feed .card').length")
+    COQUE = "async () => { const c = await caches.open((await caches.keys())[0]); const r = await c.match('./index.html'); return ((await r.text()).match(/<title>([^<]*)/) || [])[1]; }"
+    ouvert = lambda: page.evaluate("() => ({feed: !!document.getElementById('feed'), cartes: document.querySelectorAll('#feed .card').length})")
+    # HORS LIGNE : la coque en cache, les articles mémorisés dans localStorage.
+    ctx.set_offline(True)
+    page.goto(base + "/index.html", wait_until="load"); page.wait_for_timeout(2000)
+    o = ouvert()
+    check(o["feed"] and o["cartes"] >= 1, "[sw en vrai] hors ligne, l'app s'ouvre avec ses articles mémorisés (%d cartes, %d en ligne)" % (o["cartes"], n))
+    ctx.set_offline(False)
+    # ERREUR 503 sur la page de l'app (y compris pour le service worker).
+    def r503(route):
+        route.fulfill(status=503, content_type="text/html", body="<html><title>503 Service Unavailable</title><body>Service Unavailable</body></html>")
+    ctx.route("**/index.html", r503)
+    page.goto(base + "/index.html", wait_until="load"); page.wait_for_timeout(1500)
+    o = ouvert()
+    check(o["feed"] and o["cartes"] >= 1 and "503" not in page.title(),
+          "[sw en vrai] sur une erreur 503, l'app s'ouvre quand même depuis la copie (%d cartes, titre %r)" % (o["cartes"], page.title()))
+    ctx.unroute("**/index.html")
+    # LA RÉPÉTITION N'ÉCRASE PAS LA COQUE.
+    page.goto(base + "/index.html", wait_until="load"); page.wait_for_timeout(800)
+    avant = page.evaluate(COQUE)
+    page.goto(base + "/repetition.html", wait_until="load"); page.wait_for_timeout(1500)
+    apres = page.evaluate(COQUE)
+    check(avant == apres and "pétition" not in (apres or ""),
+          "[sw en vrai] ouvrir repetition.html ne remplace pas la coque en cache (%r puis %r)" % (avant, apres))
+    ctx.set_offline(True)
+    page.goto(base + "/index.html", wait_until="load"); page.wait_for_timeout(1500)
+    check(ouvert()["feed"], "[sw en vrai] hors ligne après la répétition, c'est bien l'app qui s'ouvre, pas la répétition")
+    ctx.set_offline(False)
+    check(not erreurs, "[sw en vrai] aucune erreur JavaScript (%s)" % erreurs[:1])
+    ctx.close()
+
+
 def test_repetition_de_minuit(nav, url):
     """La page de répétition du jour J (Antoni, 14/11/2026) : la vraie app, une horloge avancée, rien d'enregistré."""
     print("\n[répétition] la page lance la vraie app avec une horloge avancée, et n'écrit rien dans le vrai stockage")
@@ -9454,6 +9558,8 @@ CONTROLES = [
     test_compact_en_un_toucher_entete_replie_photo_basse,
     test_titres_en_cache_et_dates_paris,
     test_repetition_de_minuit,
+    test_le_service_worker_coque,
+    test_le_service_worker_en_vrai,
     test_spoiler_debut_de_mot,
     test_agenda_sortie_du_19,
     test_essai_des_confettis,

@@ -20,8 +20,27 @@
 // docs/index.html (règle du dépôt) : le service worker sert le squelette en
 // réseau-d'abord, donc l'app se met déjà à jour dès qu'il y a du réseau, mais un
 // nouveau nom évite de revivre l'incident de cache tenace jamais élucidé.
-const CACHE_NAME = "gta6watch-shell-v116";
+// v117 (16/11/2026) : DEUX défauts mesurés le même jour sur le vrai service worker (voir le test « coque »).
+// (1) Une erreur serveur 5xx sur la page de l'app remplaçait l'app par la page d'erreur (503 : « Service Unavailable », zéro carte) : seul
+//     un échec RÉSEAU retombait sur la copie. Le soir du 19/11, un GitHub Pages saturé répond précisément par des 5xx.
+// (2) TOUTE navigation de la portée était traitée comme la coque : ouvrir repetition.html (ou essai-confettis.html) écrasait la copie
+//     d'index.html par cette page, et hors ligne l'app s'ouvrait sur la répétition, sans fil. Seule la page de l'app est désormais
+//     interceptée ; les autres pages passent sans que le service worker y touche.
+// Le changement de nom purge aussi, sur les téléphones, une copie déjà polluée.
+const CACHE_NAME = "gta6watch-shell-v117";
 const SHELL_URL = "./index.html";
+
+// La navigation est-elle celle de l'APP (la racine de la portée ou index.html) ? Les autres pages du dossier (repetition.html,
+// essai-confettis.html) ne sont ni mises en cache ni remplacées par la coque.
+function estLaCoque(requete){
+  try{
+    const portee = (self.registration && self.registration.scope) || self.location.href;
+    const u = new URL(requete.url), racine = new URL("./", portee), index = new URL(SHELL_URL, portee);
+    return u.origin === racine.origin && (u.pathname === racine.pathname || u.pathname === index.pathname);
+  }catch(e){
+    return false;
+  }
+}
 
 // Le cache des réglages d'avant le 03/11/2026 (« ne pas déranger » et journal de
 // diagnostic du push) : il n'a plus de lecteur. L'activation le supprime, comme
@@ -63,7 +82,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   // Seulement pour les requêtes de navigation (ouverture/rechargement de la
   // page elle-même) : réseau en priorité, cache en secours si hors-ligne.
-  if(event.request.mode === "navigate"){
+  if(event.request.mode === "navigate" && estLaCoque(event.request)){
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
         .then((response) => {
@@ -73,6 +92,12 @@ self.addEventListener("fetch", (event) => {
           if(response.ok){
             const copy = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(SHELL_URL, copy));
+            return response;
+          }
+          // Une erreur SERVEUR (5xx) retombe aussi sur la copie, comme un échec réseau : mieux vaut l'app d'hier que la page d'erreur.
+          // Sans copie, la réponse d'erreur passe telle quelle. Les 4xx (404…) ne retombent pas : ce n'est pas une panne.
+          if(response.status >= 500){
+            return caches.match(SHELL_URL).then((copie) => copie || response);
           }
           return response;
         })
