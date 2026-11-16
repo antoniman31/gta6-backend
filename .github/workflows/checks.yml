@@ -47,17 +47,8 @@ concurrency:
 jobs:
   controles:
     runs-on: ubuntu-latest
-    # 20 minutes, et non 10. L'étape « Installer le navigateur de test » est
-    # tombée deux fois le 27/10/2026 sur un miroir apt qui ralentit (un seul
-    # paquet de police, 7 Mo, a mis plus de 2 minutes à arriver) :
-    #   - #204  : 1 min 40 s  (le cas ordinaire) ;
-    #   - #205  : 8 min 27 s, puis la suite n'a plus eu que 1 min 14 s avant
-    #             la coupure à 10 minutes — alors qu'elle dure ~1 min 30 ;
-    #   - #208  : 9 min 38 s sans finir l'installation, job annulé.
-    # Les deux jobs annulés ont réussi à la relance. Un cache du navigateur
-    # n'y change rien : le téléchargement de Chromium n'est pas ce qui
-    # ralentit, c'est `apt-get` (--with-deps), qu'on ne met pas en cache.
-    timeout-minutes: 20
+    # Pipeline, sources et audit : quelques secondes chacun. La suite navigateur est dans le job `navigateur`.
+    timeout-minutes: 10
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -88,6 +79,61 @@ jobs:
       # URL n'est pas un bug du robot). Bloquer les PR dessus rendrait
       # l'outil insupportable et on finirait par l'ignorer — il est là pour
       # être LU dans le journal de la CI, pas pour barrer la route.
+      - name: Audit des données publiées
+        run: python audit_donnees.py
+
+  # Règle commune « CI, trois niveaux » (16/11/2026) : une PR qui ne touche que des .md n'a rien à donner à la suite
+  # navigateur (5 à 7 min), qui est alors marquée « sautée ». Le contrôle du README (« N vérifications ») reste dans
+  # `controles`, qui tourne toujours. Sur main et au lancement manuel, tout tourne.
+  changements:
+    name: Fichiers touchés
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.tri.outputs.code }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: github.event_name == 'pull_request'
+        with:
+          fetch-depth: 2
+      - id: tri
+        env:
+          EVENEMENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENEMENT" != pull_request ]; then echo code=true >> "$GITHUB_OUTPUT"; exit 0; fi
+          # Le commit de fusion d'une PR a pour premier parent la pointe de main : leur écart est exactement la PR.
+          fichiers=$(git diff --name-only HEAD^1 HEAD)
+          printf '%s\n' "$fichiers"
+          if printf '%s\n' "$fichiers" | grep -qvE '\.md$'; then echo code=true; else echo code=false; fi >> "$GITHUB_OUTPUT"
+
+  navigateur:
+    name: Contrôles rendus
+    needs: changements
+    if: needs.changements.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    # 20 minutes, et non 10. L'étape « Installer le navigateur de test » est
+    # tombée deux fois le 27/10/2026 sur un miroir apt qui ralentit (un seul
+    # paquet de police, 7 Mo, a mis plus de 2 minutes à arriver) :
+    #   - #204  : 1 min 40 s  (le cas ordinaire) ;
+    #   - #205  : 8 min 27 s, puis la suite n'a plus eu que 1 min 14 s avant
+    #             la coupure à 10 minutes — alors qu'elle dure ~1 min 30 ;
+    #   - #208  : 9 min 38 s sans finir l'installation, job annulé.
+    # Les deux jobs annulés ont réussi à la relance. Un cache du navigateur
+    # n'y change rien : le téléchargement de Chromium n'est pas ce qui
+    # ralentit, c'est `apt-get` (--with-deps), qu'on ne met pas en cache.
+    timeout-minutes: 20
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Installer Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
       # Le navigateur est installé SÉPARÉMENT du paquet : pip pose la
       # bibliothèque, pas le Chromium qu'elle pilote. `--only-shell` prend la
       # variante sans interface, deux fois plus légère à télécharger et
@@ -115,5 +161,3 @@ jobs:
       - name: Contrôles rendus dans un navigateur
         run: python test_navigateur.py --workers 3
 
-      - name: Audit des données publiées
-        run: python audit_donnees.py
