@@ -12868,3 +12868,7 @@ Lecture seule, à J-3, rien de modifié dans le code ni les dépendances.
 - **`source_link`** (lot du 10/11) : l'allègement tient. `feed.json` : 5 030 615 octets bruts, 1 191 493 compressés (gzip -9) pour 7 707 articles, soit 155 octets par article contre 181 le 10/11 (1 044 Ko pour 5 754 articles) : −15 %, dans l'ordre de grandeur des −16,1 % mesurés alors sur un fil fixe. `feed-recent.json`, que l'application charge d'abord : 109 104 octets compressés.
 - **Croissance** : +34 % d'articles en six jours (5 754 → 7 707). Rien à faire avant la sortie : l'application ne dépend pas de la taille de `feed.json` pour son premier affichage.
 
+### CI, trois niveaux (règle seule) — 16/11/2026
+
+Bloc commun : règle « CI, trois niveaux » (rapide à chaque PR, lourd seulement si autre chose que des `.md` change, appareil réel). La CI de ce dépôt ne change pas avant la sortie : le saut de la suite navigateur sur une PR de documentation est
+noté dans `RESTE-A-FAIRE.md`, pour après le 20/11, avec le passage à 48 px.
