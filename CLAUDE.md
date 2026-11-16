@@ -1,5 +1,24 @@
 # GTA6_WATCH
 
+## Règles communes (le même bloc dans les 8 dépôts d'Antoni : le modifier ici, c'est le modifier partout)
+
+Décidées par Antoni le 16/11/2026. Les règles propres à ce dépôt suivent ce bloc ; en cas de conflit, ce bloc l'emporte.
+
+- **Avec Antoni** : français, tutoiement, réponses courtes, franches, sans flatterie. Il est seul utilisateur (Galaxy S26 Ultra, PC Windows).
+- **Proposer d'abord** : décrire le changement, attendre un « ok » explicite avant de toucher quoi que ce soit, ne jamais régénérer un fichier de son propre chef. « Pose des questions » veut dire `AskUserQuestion`, avec des choix concrets et un recommandé.
+- **Fusion** : PR en brouillon, fusion par squash **seulement sur le « go » d'Antoni**, CI verte. Jamais de fusion de sa propre initiative, même verte.
+- **Branche** : celle que la session impose. Aucun nom de branche n'est écrit dans ce dépôt : l'environnement le change à chaque session.
+- **Identité de commit** : `AntoniMan31 <268696974+antoniman31@users.noreply.github.com>`. Jamais l'adresse personnelle d'Antoni : GitHub refuse le push qui l'expose.
+- **Noms de modèle** : autorisés (ligne de co-auteur des commits comprise).
+- **Secrets** : jamais de clé, de jeton ni de mot de passe dans le dépôt ou la conversation ; ils se saisissent dans l'application ou dans les secrets GitHub/Cloudflare. Jamais d'export de données personnelles ni de `.env` commité.
+- **Tests** : le lint et les tests du dépôt passent avant chaque commit. Un test ne compte qu'après l'avoir **vu échouer** sur le code d'avant. Jamais affaiblir un contrôle pour obtenir du vert (test sauté, seuil baissé, exception sans raison écrite).
+- **Interface** : de vrais boutons (jamais un `div` cliquable) ; dans une appli utilisée au doigt, **zones tactiles d'au moins 48 px** (48 dp sous Android) ; contraste et focus vérifiés par l'outil du dépôt.
+- **Robustesse** : une écriture qui peut échouer (stockage, réseau) se voit à l'écran ; toute donnée venue d'un fichier, du stockage ou du réseau est une entrée non fiable. Exporter les données avant toute opération destructive.
+- **Écrit** : commentaires en français qui disent **pourquoi** ; aucun chiffre écrit sans l'avoir mesuré ; ne jamais écrire « ça marche » pour ce qui n'a pas tourné sur l'appareil réel.
+- **Suivi, trois fichiers à la racine** : `README.md` dit l'**état actuel** ; `JOURNAL.md` garde l'**histoire** (chaque lot s'y ajoute en fin de fichier, sous `### Titre — jj/mm/aaaa`) ; `RESTE-A-FAIRE.md` dit **ce qui reste**, mis à jour à chaque lot. Un fichier de suivi retiré part en entier dans `JOURNAL.md`, sous « Ancien X.md ».
+
+## Règles propres à ce dépôt
+
 Une PWA d'un seul fichier (`docs/index.html`, GitHub Pages, **aucun build**) et un
 robot Python (`fetch_feeds.py`, `feed_store.py`, `merge_feed.py`, `discord_notify.py`,
 `tableau_discord.py`) lancé toutes les heures par GitHub Actions. GTA VI sort le
@@ -55,20 +74,13 @@ Un contrôle que tu ajoutes doit être **prouvé capable d'échouer** : rejoue-l
 - **Aucun chiffre écrit sans l'avoir mesuré**, et aucun nombre recopié dans un test
   (« 63 sources » a fait tomber deux contrôles quand la liste a changé) : le test lit
   la liste.
-- **Aucun nom de modèle** dans un commit, une PR, un commentaire ou un fichier.
 
 ## Git
 
-- **Identité de commit** : `AntoniMan31 <268696974+antoniman31@users.noreply.github.com>`.
-  Toute autre adresse fait refuser le push (« email privacy restrictions »).
-- Développe sur `claude/new-session-hai5yt`. Une fusion *squash* orpheline la branche ;
-  pour la réaligner : `git fetch origin main`, `git checkout -B claude/new-session-hai5yt
-  origin/main`, puis `git push --force-with-lease=claude/new-session-hai5yt:<SHA>` avec
-  le SHA lu par `git ls-remote origin refs/heads/claude/new-session-hai5yt`. **Ne
-  l'invente jamais.**
-- PR en brouillon ; sors-la du brouillon et fusionne (squash) **seulement quand Antoni
-  dit « go »**. `gh api -X POST repos/antoniman31/gta6-backend/pulls/N/ccr/ready_for_review`
-  puis `gh api -X PUT .../pulls/N/merge -f merge_method=squash`.
+- L'identité de commit, la branche et la fusion suivent le bloc commun (fusion par squash sur le « go » d'Antoni).
+- Le robot pousse directement sur `main` à chaque passage (`update-feeds.yml`) : repartir de `origin/main` juste avant
+  de commencer, et ne jamais modifier à la main les fichiers qu'il écrit (`docs/feed*.json`, `docs/archives/`,
+  `decode-cache.json`, `elagues-recents.json`).
 
 ## Pièges de mesure (cinq fois, l'instrument était faux et pas la chose mesurée)
 
@@ -83,8 +95,7 @@ Un contrôle que tu ajoutes doit être **prouvé capable d'échouer** : rejoue-l
 
 ## Méthode de travail avec Antoni
 
-- « **Propose, ne code pas** » : propose avec des chiffres mesurés et attends.
-- « **Pose tes questions** » : `AskUserQuestion`, des choix concrets, un recommandé.
+- Une proposition porte des **chiffres mesurés** (règle commune : proposer d'abord, attendre l'« ok »).
 - Les commentaires du code disent *pourquoi*, avec la mesure et la date : garde cette
   densité. Une erreur de ta part se dit, se corrige et s'écrit dans `JOURNAL.md`.
 - Où chercher : `README.md` (l'état), `JOURNAL.md` (l'histoire, cherche le titre d'un lot), `RESTE-A-FAIRE.md`
