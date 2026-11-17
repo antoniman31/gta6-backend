@@ -6040,6 +6040,14 @@ def test_derniers_reports_tactiles_et_courbes():
           "la photo de fond est éteinte par défaut, voile de 30 à 85 %, départ 55 %")
     check("html.photo-fond::before{" in html and 'url("fond-sombre.jpg")' in html and 'url("fond-clair.jpg")' in html and 'id="photoFondCase"' in html and 'id="photoVoile" min="30" max="85"' in html,
           "la photo de fond a sa couche fixe, ses deux photos et ses deux réglages (case et curseur)")
+    check("\n  :is(.day-label, .feed-count, .resume-marker, .repere-nouveaux, .chrono-annee, .chrono-point, .empty){\n    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);" in html,
+          "le titre de jour, la ligne « n affichés », les repères et la chronologie ont la forme d'une carte, avec ou sans photo (fond, filet, angles)")
+    check("html.cycle-couleur .card:is(.official, .card-majeur, .card-rm).dans-ecran .card-src{" in html
+          and "html.cycle-couleur .chrono-point:not(.lu):is(.chrono-off, .chrono-maj)::before{" in html and "const CYCLES_ONGLET = {" in html
+          and "(CYCLES_ONGLET[currentTab] || {})[clair ? \"light\" : \"dark\"] || (clair ? CYCLE_CLAIR : CYCLE_SOMBRE)" in html and 'item.rockstarmag && !item.official ? " chrono-rm"' in html,
+          "au jour J, le nom de source par type, les points de la frise et la barre d'état tournent dans la famille de leur type ou de leur onglet")
+    check(re.search(r"\.barre-bas\{[^}]*border-radius:var\(--r-md\)", html) is not None and ".card-title{font-size:16px; font-weight:700; line-height:1.2;" in html
+          and ".card-date{font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.25;" in html, "le bandeau du bas a les angles des cartes, et les interlignes sont resserrés (titre 1,2 ; date et autres sources 1,25)")
     check(".tab-badge{color:var(--oe); background:color-mix(in srgb, var(--oe) 20%, transparent);}" in html, "la pastille de l'onglet sélectionné prend l'encre de l'onglet (1,9:1 en blanc sur l'orange de Rockstar)")
     check('class="card card-majeur dans-ecran"' in html and 'class="card card-rm dans-ecran"' in html, "l'aperçu des couleurs montre une carte Actu majeure et une carte RockstarMag")
     check(rap("#100800", "#ffab00") >= 4.5, "badge « OFFICIEL » : #100800 sur #FFAB00 tient %.1f:1 (seuil 4,5)" % rap("#100800", "#ffab00"))

@@ -7868,7 +7868,7 @@ def test_lot_2a_interface(nav, url):
         return {ouverte: cs.display !== 'none', expanded: b.getAttribute('aria-expanded'),
                 libelle: document.getElementById('sourcesLibelle').textContent, actif: b.classList.contains('filtre-actif'),
                 nom: b.getAttribute('aria-label'), bx: rb.x + rb.width / 2, by: rb.y + rb.height / 2, bh: rb.height,
-                ligne: document.querySelector('.feed-count').getBoundingClientRect().height,
+                ligne: (() => { const f = document.querySelector('.feed-count'), c = getComputedStyle(f); return f.getBoundingClientRect().height - parseFloat(c.paddingTop) - parseFloat(c.paddingBottom) - parseFloat(c.borderTopWidth) - parseFloat(c.borderBottomWidth); })(),   // 17/11/2026 : la ligne est une carte (marge intérieure 7 px, filet 1 px) : on mesure le CONTENU, qui doit rester sur une ligne
                 visibles: ['tabNonRockstar', 'tabRockstar', 'tabRockstarmag'].map(i => { const e = document.getElementById(i).getBoundingClientRect(); return e.width > 0 && e.height > 0; })}; }"""
     for largeur in (320, 390):
         ctx, page, erreurs = _ouvre_fil(nav, url, largeur)
@@ -9238,6 +9238,41 @@ def test_couleur_de_l_onglet_dans_le_fil(nav, url):
                 m = page.evaluate(SONDE)
                 att = hexa((pd if theme == "dark" else pc)[i])
                 check(m["refresh"] and rgb(m["refresh"]) == att, "[PR F %s %s %d ms] cycle : le ↻ est au cran %d de la famille de l'onglet (%s)" % (theme, onglet, tt, i + 1, m["refresh"]))
+        # AU JOUR J, LE NOM DE SOURCE DES CARTES TYPÉES, LES POINTS DE LA FRISE ET LA BARRE D'ÉTAT TOURNENT AUSSI DANS LA FAMILLE (Antoni, 17/11/2026 :
+        # « vérifie bien que tout ce qui change de couleur avec un onglet respecte aussi le cycle de cet onglet en jour J » ; l'audit les avait trouvés fixes).
+        FAM_TYPE = {"dark": {"official": ["#ffab00", "#d98a00", "#ffffff"], "majeur": ["#f06f7d", "#f87db7", "#ffffff"], "rm": ["#3380ff", "#8488e7", "#f87db7"]},
+                    "light": {"official": ["#8f4407", "#000000", "#b34000"], "majeur": ["#b3202e", "#c01f6e", "#7f1d1d"], "rm": ["#1f5fd9", "#5258c4", "#c01f6e"]}}[theme]
+        page.evaluate("() => setTab('all')"); page.wait_for_timeout(300)
+        SEL = {"official": '.card.official:not(.card-majeur)', "majeur": '.card.card-majeur:not(.official)', "rm": '.card.card-rm:not(.card-majeur)'}
+        for type_, sel in SEL.items():
+            # seules les cartes à l'écran tournent : on amène la carte à l'écran avant de figer
+            page.evaluate("(s) => document.querySelector(s).scrollIntoView({block: 'center'})", sel)
+            page.wait_for_selector(sel + ".dans-ecran", state="attached"); page.wait_for_timeout(300)
+            for i, tt in enumerate((0, 1000, 2000)):
+                page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+                page.wait_for_timeout(600)
+                couleur = page.evaluate("(s) => getComputedStyle(document.querySelector(s + ' .card-src')).color", sel)
+                check(rgb(couleur) == hexa(FAM_TYPE[type_][i]), "[PR F %s %d ms] cycle : le nom de source d'une carte « %s » est au cran %d de sa famille (%s, attendu %s)" % (theme, tt, type_, i + 1, couleur, FAM_TYPE[type_][i]))
+        page.evaluate("() => setTab('rockstar')"); page.wait_for_timeout(400)
+        for i, tt in enumerate((0, 1000, 2000)):
+            page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+            page.wait_for_timeout(600)
+            pt = page.evaluate("() => { const e = document.querySelector('.chrono-point.chrono-off:not(.chrono-maj):not(.lu)'); return e ? getComputedStyle(e, '::before').backgroundColor : null; }")
+            check(pt and rgb(pt) == hexa(FAM_TYPE["official"][i]), "[PR F %s %d ms] cycle : le point de frise d'une annonce officielle est au cran %d de sa famille (%s)" % (theme, tt, i + 1, pt))
+        for onglet in ("majeur", "rockstar", "rockstarmag", "non-rockstar", "all"):
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(300)
+            barre = page.evaluate("""() => { majBarreEtatJ(); const clair = document.documentElement.getAttribute('data-theme') === 'light';
+                const fond = clair ? COULEUR_BARRE.light : COULEUR_BARRE.dark;
+                const pal = (CYCLES_ONGLET[currentTab] || {})[clair ? 'light' : 'dark'] || (clair ? CYCLE_CLAIR : CYCLE_SOMBRE);
+                return {meta: document.querySelector('meta[name="theme-color"]').getAttribute('content').toLowerCase(), famille: !!CYCLES_ONGLET[currentTab], pal,
+                        attendu: melangeHex(fond, couleurDuCycle(document.timeline.currentTime || 0, pal), PART_TEINTE_BARRE).toLowerCase()}; }""")
+            PAL = {"dark": {"majeur": ["#e04f5f", "#f87db7", "#ffffff"], "rockstar": ["#ffab00", "#b36b00", "#ffffff"], "rockstarmag": ["#3380ff", "#8488e7", "#f87db7"],
+                            "non-rockstar": ["#9aa7b4", "#c9d2db", "#ffffff"], "all": ["#3380ff", "#f87db7", "#ffffff"]},
+                   "light": {"majeur": ["#b3202e", "#c01f6e", "#7f1d1d"], "rockstar": ["#ffab00", "#b36b00", "#ff6b00"], "rockstarmag": ["#1f5fd9", "#5258c4", "#c01f6e"],
+                             "non-rockstar": ["#566b7e", "#627689", "#2f3b47"], "all": ["#1f5fd9", "#c01f6e", "#3a4350"]}}[theme][onglet]
+            check(barre["pal"] == PAL, "[PR F %s %s] cycle : la barre d'état tourne dans la palette de l'onglet (« Tous » : le cycle général) (%s, attendu %s)" % (theme, onglet, barre["pal"], PAL))
+            check(sum(abs(int(barre["meta"][j:j + 2], 16) - int(barre["attendu"][j:j + 2], 16)) for j in (1, 3, 5)) <= 6,
+                  "[PR F %s %s] cycle : la couleur écrite dans la balise theme-color est celle de la palette à l'instant lu (%s, attendu %s)" % (theme, onglet, barre["meta"], barre["attendu"]))
         check(not erreurs, "[PR F %s cycle] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
         ctx.close()
 
@@ -9306,6 +9341,28 @@ def test_photo_de_fond(nav, url):
     check(not page.evaluate(LIT)["classe"], "[photo] décocher la case éteint la photo")
     check(not err, "[photo] aucune erreur JavaScript dans les Réglages (%s)" % err[:1])
     ctx.close()
+    # 4 bis. LA FORME D'UNE CARTE, AVEC OU SANS PHOTO (PR H, 17/11/2026, Antoni : « sous forme de carte, et le repère lu jusqu'ici aussi », puis « tout en forme carte
+    # même si le fond n'est pas activé », le bandeau du bas aussi, interlignes resserrés) : le titre de jour, la ligne « n affichés », les deux repères et le
+    # bandeau du bas ont le fond, le filet et les angles d'une carte d'article.
+    for theme, photo in (("dark", True), ("light", True), ("dark", False), ("light", False)):
+        ctx, page, err = ouvre(theme, {"photoFond": photo, "photoVoile": 55})
+        page.evaluate(INJECTE); page.wait_for_timeout(300)
+        page.evaluate("() => { lastNewLinks = new Set([lastItems[0].link]); repriseLien = lastItems[2].link; applyFilters(); }"); page.wait_for_timeout(500)
+        formes = page.evaluate("""() => { const f = s => { const e = document.querySelector(s); if(!e) return null; const c = getComputedStyle(e);
+            return [parseFloat(c.borderTopWidth), c.borderTopLeftRadius, c.backgroundColor, parseFloat(c.paddingTop)]; };
+          return {carte: f('#feed .card'), jour: f('.day-label'), compte: f('.feed-count'), repere: f('.resume-marker'), nouveaux: f('.repere-nouveaux'), barre: f('.barre-bas')}; }""")
+        for nom in ("jour", "compte", "repere", "nouveaux", "barre"):
+            f = formes[nom]
+            alpha = float(re.findall(r"[\d.]+", f[2])[-1]) if f and "/" in f[2] else 1.0
+            check(f is not None and f[0] >= 0.5 and f[1] == formes["carte"][1] and alpha >= 0.9 and (f[3] >= 6 or nom == "barre"),
+                  "[forme %s %s] « %s » a la forme d'une carte : filet, mêmes angles (%s), fond à %.0f %%, marge intérieure (%s)"
+                  % (theme, "avec photo" if photo else "sans photo", nom, formes["carte"][1], alpha * 100, f))
+        lh = page.evaluate("""() => { const g = s => getComputedStyle(document.querySelector(s)).lineHeight, fs = s => parseFloat(getComputedStyle(document.querySelector(s)).fontSize);
+            return {titre: g('#feed .card-title'), tf: fs('#feed .card-title'), date: g('#feed .card-date'), df: fs('#feed .card-date'),
+                    lien: document.querySelector('#feed .card-title a').getBoundingClientRect().height}; }""")
+        check(abs(float(lh["titre"][:-2]) - lh["tf"] * 1.2) < 0.05 and abs(float(lh["date"][:-2]) - lh["df"] * 1.25) < 0.05 and lh["lien"] >= 44,
+              "[forme %s %s] interlignes resserrés : titre 1,2, date 1,25, zone tactile du titre à 44 px au moins (%s)" % (theme, "avec photo" if photo else "sans photo", lh))
+        ctx.close()
     # 5. LISIBILITÉ AU VOILE MINIMUM (30 %) : le fond réellement peint derrière chaque texte, le texte étant masqué, contre sa couleur.
     TEXTES = """() => { const out = [], w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
         while((n = w.nextNode())){ const t = n.textContent.trim(); if(!t) continue; const e = n.parentElement; if(!e) continue;
