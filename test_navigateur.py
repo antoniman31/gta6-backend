@@ -750,7 +750,7 @@ def test_ecran_de_chargement(nav, url):
                     theme: document.documentElement.getAttribute('data-theme'),
                     j: document.getElementById('splashJ').textContent,
                     l: document.getElementById('splashL').textContent,
-                    logo: (document.querySelector('#splash img') || {}).naturalWidth,
+                    logo: !!document.querySelector('#splash .logo-vi.splash-logo') && getComputedStyle(document.querySelector('#splash .splash-logo')).webkitMaskImage !== 'none' && (document.querySelector('#splash .splash-logo').getBoundingClientRect().width > 100),
                     bloque: !!(dessus && dessus.closest('#splash'))}
         }""")
         nom = "%s, téléphone %s" % (reglage, schema)
@@ -763,7 +763,7 @@ def test_ecran_de_chargement(nav, url):
                   "[%s] le texte (%s) se lit sur le fond (%s)" % (nom, etat["couleur"], etat["fond"]))
             check(etat["j"] == "J-12" and etat["l"] == "AVANT LA SORTIE",
                   "[%s] il dit le décompte en jours civils à Paris (%s, %s)" % (nom, etat["j"], etat["l"]))
-            check(etat["pointeur"] == "auto" and etat["bloque"] and etat["cache"] == "true" and etat["logo"] == 192,
+            check(etat["pointeur"] == "auto" and etat["bloque"] and etat["cache"] == "true" and etat["logo"] is True,
                   "[%s] il BLOQUE les touches, se cache des lecteurs d'écran et affiche le logo (%s)" % (nom, etat))
         # Encore là à une seconde : c'est tout l'objet de la demande d'Antoni.
         page.wait_for_timeout(900)
@@ -7167,8 +7167,8 @@ def test_cycle_de_couleurs(nav, url):
         ctx.close()
 
     # LES COULEURS AUX INSTANTS CLÉS, dans les deux thèmes.
-    attendu = {"dark": {0: (25, 230, 255), 1000: (179, 136, 255), 2000: (255, 92, 174)},
-               "light": {0: (0, 112, 138), 1000: (124, 58, 237), 2000: (184, 20, 111)}}
+    attendu = {"dark": {0: (51, 128, 255), 1000: (248, 125, 183), 2000: (255, 255, 255)},
+               "light": {0: (31, 95, 217), 1000: (192, 31, 110), 2000: (58, 67, 80)}}
     for theme in ("dark", "light"):
         ctx, page, _ = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
         for t, rvb in attendu[theme].items():
@@ -7185,8 +7185,8 @@ def test_cycle_de_couleurs(nav, url):
         page.evaluate(FIGE, (4000 - 450 * rang) % 4000)
         page.wait_for_timeout(120)
         c = page.evaluate(LIT_COULEURS)
-        check(len(c["chiffres"]) >= 3 and lire(c["chiffres"][0]) == (25, 230, 255),
-              "[cycle %s] la première tuile vivante est cyan au début de SON cycle (%s)"
+        check(len(c["chiffres"]) >= 3 and lire(c["chiffres"][0]) == ((51, 128, 255) if theme == "dark" else (74, 141, 255)),
+              "[cycle %s] la première tuile vivante est bleue au début de SON cycle (#3380ff en sombre, #4a8dff en clair : cernée d'un trait sombre, elle doit tenir 4,5:1 contre lui) (%s)"
               % (theme, c["chiffres"][:1]))
         check(len(set(c["chiffres"])) == len(c["chiffres"]),
               "[cycle %s] les tuiles sont décalées, en vague (%s)" % (theme, c["chiffres"]))
@@ -7593,7 +7593,7 @@ def test_effets_du_jour_j(nav, url):
               "[effets] libellé %s : texte %s (%s)" % (nom, "en dégradé" if degrade else "uni", e["sousRempli"]))
         ctx.close()
     # Le libellé ne déborde pas à 320 px, et il est lisible : chaque couleur du dégradé tient 4,5:1 sur le panneau.
-    for theme, palette in (("dark", ("#19e6ff", "#b388ff", "#ff5cae")), ("light", ("#00708a", "#7c3aed", "#b8146f"))):
+    for theme, palette in (("dark", ("#3380ff", "#f87db7", "#ffffff")), ("light", ("#1f5fd9", "#c01f6e", "#3a4350"))):
         ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, theme=theme)
         page.set_viewport_size({"width": 320, "height": 700})
         page.wait_for_timeout(200)
@@ -7614,10 +7614,10 @@ def test_effets_du_jour_j(nav, url):
     FOND_CLAIR = "#f4f7fa"
     for nom, instant, corps, theme, reduit, attendu in (
             ("la veille", VEILLE, {}, "dark", False, FOND_SOMBRE),
-            ("le jour J, animations réduites : rose fixe", JOUR_J, {}, "dark", True, _melange(FOND_SOMBRE, "#ff5cae", 0.16)),
-            ("le jour J en clair, animations réduites : rose fixe", JOUR_J, {}, "light", True, _melange(FOND_CLAIR, "#b8146f", 0.16)),
+            ("le jour J, animations réduites : rose fixe", JOUR_J, {}, "dark", True, _melange(FOND_SOMBRE, "#f87db7", 0.16)),
+            ("le jour J en clair, animations réduites : rose fixe", JOUR_J, {}, "light", True, _melange(FOND_CLAIR, "#c01f6e", 0.16)),
             ("le jour J, case coupée", JOUR_J, {"coulBarreEtat": False}, "dark", False, FOND_SOMBRE),
-            ("la veille, case allumée, animations réduites", VEILLE, {"coulBarreEtat": True}, "dark", True, _melange(FOND_SOMBRE, "#ff5cae", 0.16))):
+            ("la veille, case allumée, animations réduites", VEILLE, {"coulBarreEtat": True}, "dark", True, _melange(FOND_SOMBRE, "#f87db7", 0.16))):
         ctx, page, _ = _ouvre_effets(nav, url, instant, corps, theme=theme, reduit=reduit)
         e = page.evaluate(ETAT_EFFETS)
         check(e["barre"] == attendu, "[effets] barre d'état, %s : %s (%s)" % (nom, attendu, e["barre"]))
@@ -7625,9 +7625,9 @@ def test_effets_du_jour_j(nav, url):
     # Le cycle sur la barre : les couleurs de départ de chaque segment, et un mouvement réel au fil du temps.
     ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
     pts = page.evaluate("""() => [0, 1000, 2000, 3000, 4000, 500, 1500].map(t => couleurDuCycle(t, CYCLE_SOMBRE))""")
-    attendu = ["#19e6ff", "#b388ff", "#ff5cae", "#b388ff", "#19e6ff"]
-    check(pts[:5] == attendu, "[effets] la courbe du cycle passe par cyan, violet, rose, violet, cyan (%s)" % pts[:5])
-    mi = _melange("#19e6ff", "#b388ff", 0.5)
+    attendu = ["#3380ff", "#f87db7", "#ffffff", "#f87db7", "#3380ff"]
+    check(pts[:5] == attendu, "[effets] la courbe du cycle passe par bleu, rose, blanc, rose, bleu (%s)" % pts[:5])
+    mi = _melange("#3380ff", "#f87db7", 0.5)
     check(pts[5] == mi, "[effets] à mi-chemin du premier segment : %s (%s)" % (mi, pts[5]))
     ctx.close()
     ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, reprend=True)
@@ -7668,12 +7668,13 @@ def test_effets_du_jour_j(nav, url):
         m = page.evaluate("""() => { const sp = document.getElementById('splash');
             if(!sp) return null;
             return {classe: sp.classList.contains('splash-jourj'),
-                    filtre: getComputedStyle(sp.querySelector('.splash-logo')).filter,
+                    fond: getComputedStyle(sp.querySelector('.splash-logo')).backgroundColor,
+                    anim: getComputedStyle(sp.querySelector('.splash-marque')).animationName,
                     rempli: getComputedStyle(document.getElementById('splashJ')).webkitTextFillColor}; }""")
         check(m is not None, "[effets] écran de chargement présent (%s)" % nom)
         if m:
             check(m["classe"] == attendu, "[effets] chargement, %s : classe du jour J %s (%s)" % (nom, "posée" if attendu else "absente", m["classe"]))
-            check(("hue-rotate" in m["filtre"]) == attendu, "[effets] chargement, %s : le « VI » %s (%s)" % (nom, "vire au rose" if attendu else "reste bleu", m["filtre"]))
+            check((m["anim"] == "cycle-accent") == attendu, "[effets] chargement, %s : le logo %s (%s)" % (nom, "suit le cycle de couleurs" if attendu else "reste rose fixe", m["anim"]))
             check((m["rempli"] == "rgba(0, 0, 0, 0)") == attendu, "[effets] chargement, %s : la ligne principale %s (%s)" % (nom, "est en dégradé" if attendu else "reste unie", m["rempli"]))
         ctx.close()
 
@@ -7808,7 +7809,9 @@ def test_coins_du_cadre(nav, url):
     ctx3, page3, _ = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
     page3.evaluate("() => { settings.rayonCadre = 40; appliqueRayonCadre(); }")
     page3.wait_for_timeout(200)
-    vif = lambda px: max(px) > 140 and (max(px) - min(px)) > 60
+    # Le trait est « vif » s'il est CLAIR sur le fond sombre (17/11/2026 : avant, il devait aussi être saturé ; le cadre passe maintenant par le blanc
+    # du cycle bleu, rose, blanc, et un blanc à 222/193/207 n'est pas saturé. Le fond de la page, lui, reste sous 60 : le contrôle « hors de l'arc » le garde.)
+    vif = lambda px: max(px) > 140
     haut = page3.screenshot(clip={"x": 0, "y": 0, "width": 60, "height": 60})
     coin_haut, bord_haut = _pixels(ctx3, haut, [[1, 1], [30, 1]])
     check(vif(coin_haut) and vif(bord_haut),
@@ -8207,6 +8210,69 @@ def test_case_globale_des_effets(nav, url):
     ctx.close()
 
 
+def test_logo_vi(nav, url):
+    """Le logo « VI » (Antoni, 17/11/2026) : un masque coloré par le CSS, rose fixe hors jour J, couleur du cycle le jour J,
+    dans l'en-tête et sur l'écran de chargement (avec « GTA6_WATCH » dessous)."""
+    print("\n[logo] le VI de l'en-tête et du chargement : rose fixe, puis couleur du cycle le jour J")
+    ROSE = {"dark": "rgb(248, 125, 183)", "light": "rgb(192, 31, 110)"}
+    LIT = """() => { const l = document.querySelector('.brand .brand-logo'), b = document.querySelector('.brand'), sp = b && b.querySelector('span:not(.logo-vi)');
+        if(!l) return null; const r = l.getBoundingClientRect(), h = document.querySelector('.header-haut');
+        return {bg: getComputedStyle(l).backgroundColor, texte: sp ? getComputedStyle(sp).color : null, nom: b.textContent.trim(),
+                masque: getComputedStyle(l).webkitMaskImage !== 'none', w: r.width, h: r.height,
+                deborde: h ? h.scrollWidth > h.clientWidth + 1 : null, droite: Math.max(...Array.from(h.children).map(c => c.getBoundingClientRect().right)), iw: innerWidth}; }"""
+    for theme in ("dark", "light"):
+        for largeur in (412, 390, 320):
+            ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {}, theme=theme)
+            page.set_viewport_size({"width": largeur, "height": 800})
+            page.wait_for_timeout(200)
+            m = page.evaluate(LIT)
+            etiq = "[logo %s %d px]" % (theme, largeur)
+            # À 390 px et en dessous, le VI de l'en-tête est caché : il ferait passer le bouton ↻ à la ligne (mesuré, voir la feuille de style).
+            if largeur >= 410:
+                check(m is not None and m["masque"] and m["w"] >= 30 and m["h"] >= 22, "%s le logo est là, en masque, lisible (%s)" % (etiq, m and (m["w"], m["h"])))
+                check(m and m["bg"] == ROSE[theme], "%s hors jour J, le logo est rose fixe (%s)" % (etiq, m and m["bg"]))
+            else:
+                check(m is not None and m["w"] == 0, "%s le VI de l'en-tête est caché : il ne tient pas à côté du titre et de la pastille (%s)" % (etiq, m and m["w"]))
+            check(m and m["nom"] == "GTA6_WATCH", "%s le nom reste « GTA6_WATCH » (%s)" % (etiq, m and m["nom"]))
+            check(m and not m["deborde"] and m["droite"] <= m["iw"] + 0.5, "%s l'en-tête ne déborde pas avec le logo (droite %.0f / %d)" % (etiq, m["droite"] if m else -1, largeur))
+            check(not erreurs, "%s aucune erreur JavaScript" % etiq)
+            ctx.close()
+    # Le jour J : le logo a la couleur du mot « _WATCH » à chaque instant du cycle (même variable animée, mêmes pas).
+    for theme in ("dark", "light"):
+        ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, theme=theme)
+        page.set_viewport_size({"width": 412, "height": 800})
+        page.wait_for_timeout(150)
+        vus = []
+        for t in (0, 1000, 2000):
+            page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", t)
+            page.wait_for_timeout(120)
+            m = page.evaluate(LIT)
+            vus.append((m["bg"], m["texte"]))
+        check(all(b == t for b, t in vus) and len({b for b, _ in vus}) == 3,
+              "[logo %s] le jour J, le logo a exactement la couleur du texte à 0, 1 et 2 s du cycle (%s)" % (theme, vus))
+        ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
+    page.set_viewport_size({"width": 412, "height": 800})
+    page.wait_for_timeout(150)
+    m = page.evaluate(LIT)
+    check(m["bg"] == m["texte"], "[logo] animations réduites : le logo reste de la couleur fixe du texte (%s, %s)" % (m["bg"], m["texte"]))
+    ctx.close()
+    # L'écran de chargement : le logo, puis « GTA6_WATCH » dessous ; le jour J il suit le cycle, sinon il reste rose.
+    SPL = """() => { const sp = document.getElementById('splash'); if(!sp) return null;
+        const l = sp.querySelector('.splash-logo'), n = sp.querySelector('.splash-nom'), r = l.getBoundingClientRect(), q = n.getBoundingClientRect();
+        return {sous: q.top >= r.bottom - 1, nom: n.textContent.trim(), bg: getComputedStyle(l).backgroundColor, masque: getComputedStyle(l).webkitMaskImage !== 'none',
+                anim: getComputedStyle(sp.querySelector('.splash-marque')).animationName, dedans: r.left >= 0 && r.right <= innerWidth && q.left >= 0 && q.right <= innerWidth, w: r.width}; }"""
+    for nom, instant, theme, anim in (("la veille", VEILLE, "dark", "none"), ("la veille, clair", VEILLE, "light", "none"), ("le jour J", JOUR_J, "dark", "cycle-accent")):
+        ctx, page, _ = _ouvre_effets(nav, url, instant, {}, theme=theme, splash=True)
+        page.set_viewport_size({"width": 320, "height": 640})
+        page.wait_for_timeout(150)
+        m = page.evaluate(SPL)
+        check(m is not None and m["masque"] and m["sous"] and m["nom"] == "GTA6_WATCH" and m["dedans"],
+              "[logo chargement, %s, 320 px] le logo en masque, « GTA6_WATCH » dessous, tout dans l'écran (%s)" % (nom, m))
+        check(m is not None and m["anim"] == anim and (anim == "cycle-accent" or m["bg"] == ROSE[theme]),
+              "[logo chargement, %s] %s (%s, %s)" % (nom, "suit le cycle" if anim != "none" else "rose fixe", m and m["anim"], m and m["bg"]))
+        ctx.close()
+
 def test_grand_moment_de_minuit(nav, url):
     """Le grand moment de minuit (11/11/2026) : flash, deux ondes, halo qui respire, confettis, vibration, six secondes."""
     print("\n[minuit] le grand moment : flash, ondes, halo qui respire, confettis, vibration, 6 s, sans gêner les appuis")
@@ -8347,6 +8413,22 @@ def test_grand_moment_de_minuit(nav, url):
         cols.append(page.evaluate("() => Array.from(document.querySelectorAll('.fete-final .ff-texte')).map(x => getComputedStyle(x).color)"))
     check(len({c[0] for c in cols}) == 3 and all(c[0] == c[1] for c in cols),
           "[minuit] la couleur du texte change vraiment avec le cycle, les deux lignes ensemble (%s)" % cols)
+    # LE LOGO SOUS LE TEXTE (Antoni, 17/11/2026) : sous la dernière ligne, dans l'écran, et de la MÊME couleur que le texte à chaque instant du cycle.
+    page.evaluate("() => { for(const x of document.querySelectorAll('.fete-final .ff-logo')) for(const a of x.getAnimations()) a.play(); }")
+    fin_logo = page.evaluate("""() => { const f = document.querySelector('.fete-final'), l = f && f.querySelector('.ff-logo');
+        if(!l) return null; const t = f.querySelectorAll('.ff-texte'), r = l.getBoundingClientRect(), d = t[t.length - 1].getBoundingClientRect();
+        return {sous: r.top >= d.bottom - 1, dedans: r.left >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, l: r.width, h: r.height,
+                masque: getComputedStyle(l).webkitMaskImage !== 'none' || getComputedStyle(l).maskImage !== 'none', anim: getComputedStyle(l).animationName}; }""")
+    check(fin_logo is not None and fin_logo["sous"] and fin_logo["dedans"] and fin_logo["masque"] and fin_logo["anim"] == "cycle-accent",
+          "[minuit] le logo est sous la dernière ligne, dans l'écran, en masque, et suit le cycle (%s)" % fin_logo)
+    accord = []
+    for t in (0, 1000, 2000):
+        page.evaluate("(t) => { for(const x of document.querySelectorAll('.fete-final .ff-texte, .fete-final .ff-logo')) for(const a of x.getAnimations()){ a.pause(); a.currentTime = t; } }", t)
+        page.wait_for_timeout(100)
+        accord.append(page.evaluate("() => { const f = document.querySelector('.fete-final'); return [getComputedStyle(f.querySelector('.ff-texte')).color, getComputedStyle(f.querySelector('.ff-logo')).backgroundColor]; }"))
+    check(all(c == b for c, b in accord) and len({c for c, _ in accord}) == 3,
+          "[minuit] à 0, 1 et 2 s du cycle, le logo a exactement la couleur du texte (%s)" % accord)
+    page.evaluate("() => { for(const x of document.querySelectorAll('.fete-final .ff-texte, .fete-final .ff-logo')) for(const a of x.getAnimations()) a.play(); }")
     page.evaluate("() => { for(const x of document.querySelectorAll('.fete-final .ff-texte')) for(const a of x.getAnimations()) a.play(); }")
     page.clock.run_for(60000)
     check(page.evaluate(FIN) is not None, "[minuit] une minute plus tard, l'écran de fin est TOUJOURS là (il reste jusqu'au toucher)")
@@ -8814,8 +8896,8 @@ def test_tout_dans_le_cycle(nav, url):
                 cat: carte ? cc.getPropertyValue('--cat-bug').trim() : null, accentCarte: carte ? cc.getPropertyValue('--accent').trim() : null,
                 badge: carte && carte.querySelector('.official-badge') ? getComputedStyle(carte.querySelector('.official-badge')).backgroundColor : null}; }"""
     rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
-    for theme, accents, oranges in (("dark", ["#19e6ff", "#b388ff", "#ff5cae"], ["#ffffff", "#ffd60a", "#ff6b00"]),
-                                    ("light", ["#00708a", "#7c3aed", "#b8146f"], ["#ffa500", "#ffc400", "#ff6b00"])):
+    for theme, accents, oranges in (("dark", ["#3380ff", "#f87db7", "#ffffff"], ["#ffffff", "#ffd60a", "#ff6b00"]),
+                                    ("light", ["#1f5fd9", "#c01f6e", "#3a4350"], ["#ffa500", "#ffc400", "#ff6b00"])):
         ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
         page.evaluate(INJECTE)
         page.wait_for_selector("#feed .card.official", state="attached")
@@ -9620,6 +9702,7 @@ CONTROLES = [
     test_bordures_du_jour_j,
     test_lot_2b_interface,
     test_case_globale_des_effets,
+    test_logo_vi,
     test_grand_moment_de_minuit,
     test_frise_des_jalons,
     test_aucun_texte_oublie_du_cycle,

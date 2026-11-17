@@ -10287,7 +10287,7 @@ def test_icones_de_lapp():
             continue
         largeur, hauteur, bpp, lignes = _pixels_png(chemin)
         fond = lignes[0][0:3]
-        BLEU = (88, 185, 255)    # --accent, la couleur du « VI »
+        BLEU = (47, 125, 255)    # #2f7dff, le bleu du « VI » du logo d'Antoni (17/11/2026 ; avant : --accent #58b9ff)
         CLAIR = (228, 236, 232)  # --text, la couleur de « WATCH »
 
         def proche(p, q, tolerance=20):
@@ -11442,11 +11442,16 @@ def test_ecran_de_chargement_et_manifeste():
           "theme_color du manifeste (%s) aussi : le bleu d'accent n'était le fond d'aucun thème"
           % manifeste.get("theme_color"))
 
-    m = re.search(r'<img class="splash-logo" src="data:image/png;base64,([A-Za-z0-9+/=]+)"', html)
-    check(m is not None, "l'écran de chargement porte un logo embarqué")
+    # Le logo n'est plus une image <img> (17/11/2026) : c'est un masque embarqué dans la feuille de style, dont la couleur vient du CSS.
+    m = re.search(r'--logo-vi:url\("data:image/png;base64,([A-Za-z0-9+/=]+)"\)', html)
+    check(m is not None, "la page embarque le masque du logo (--logo-vi)")
     if m:
-        check(base64.b64decode(m.group(1)) == open("docs/icon-192.png", "rb").read(),
-              "et ce sont exactement les octets de icon-192.png")
+        check(base64.b64decode(m.group(1)) == open("docs/logo-vi.png", "rb").read(),
+              "et ce sont exactement les octets de logo-vi.png")
+    check(re.search(r'<div id="splash".*?class="logo-vi splash-logo".*?GTA6<span>_WATCH</span>', html, re.S) is not None,
+          "l'écran de chargement porte le logo puis « GTA6_WATCH » dessous")
+    check('class="logo-vi brand-logo"' in html and 'class="logo-vi ff-logo"' in html,
+          "l'en-tête et l'écran final de minuit portent le même logo")
     check('id="splash"' in html and "SPLASH_DUREE_MIN_MS" in html,
           "la page porte l'écran et sa durée minimale")
 
