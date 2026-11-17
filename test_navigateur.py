@@ -1804,8 +1804,9 @@ def test_entete_tuiles_et_ligne_reduite(nav, url):
                     cpt: document.getElementById('cbCompteur').textContent,
                     jourTop: jour ? jour.getBoundingClientRect().top : null,
                     ghost: document.documentElement.scrollWidth > innerWidth}; }""")
-        check(r2["visible"] and abs(r2["top"]) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
-              "%s en défilant, la ligne réduite de 52 px se colle en haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
+        # 17/11/2026 (PR H) : la ligne réduite est une carte FLOTTANTE à 10 px du haut (avant : collée au bord, top 0), toujours haute de 52 px.
+        check(r2["visible"] and abs(r2["top"] - 10) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
+              "%s en défilant, la ligne réduite de 52 px flotte à 10 px du haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
         check(r2["point"] != "none", "%s son point vert est là en mode backend" % etiq)
         check(r2["jourTop"] is not None and abs(r2["jourTop"] - 52) <= 1.5,
               "%s le jour « AUJOURD'HUI » se colle juste dessous (top %s)" % (etiq, r2["jourTop"]))
@@ -6837,8 +6838,24 @@ def test_palette_du_jour_j(nav, url):
                 check(("final" in m["classes"].split()) == premier,
                       "%s le palier « final » ne vaut que le premier jour (%s)" % (etiq, m["classes"]))
                 if premier:
-                    check(m["anim"] != "none",
-                          "%s la pulsation du premier jour est gardée (%s)" % (etiq, m["anim"]))
+                    # 17/11/2026 : ce contrôle lisait la pulsation sous reduced_motion="reduce" et
+                    # passait parce que la tuile pulsait MÊME en mouvement réduit (défaut corrigé :
+                    # étiquettes à 2,5:1 dans le creux de la pulsation). La pulsation se vérifie donc
+                    # sans préférence, et en mouvement réduit elle doit être coupée.
+                    check(m["anim"] == "none",
+                          "%s en mouvement réduit, la pulsation du premier jour est coupée (%s)" % (etiq, m["anim"]))
+                    ctx2 = nav.new_context(viewport={"width": 390, "height": 800}, color_scheme=theme,
+                                           timezone_id="Europe/Paris", reduced_motion="no-preference")
+                    ctx2.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                                         "JSON.stringify({splashActif:false, cycleCouleurs:false}));}catch(e){}")
+                    ctx2.clock.install(time=instant)
+                    p2 = ctx2.new_page()
+                    p2.goto(url, wait_until="load")
+                    p2.wait_for_selector(".header-haut")
+                    anim2 = p2.evaluate("() => getComputedStyle(document.getElementById('countdown')).animationName")
+                    check(anim2 != "none",
+                          "%s sans préférence, la pulsation du premier jour est gardée (%s)" % (etiq, anim2))
+                    ctx2.close()
                 page.evaluate("() => ouvreCompteur()")
                 page.wait_for_timeout(300)
                 t = page.evaluate("""() => { const b = document.querySelector(
@@ -7868,7 +7885,7 @@ def test_lot_2a_interface(nav, url):
         return {ouverte: cs.display !== 'none', expanded: b.getAttribute('aria-expanded'),
                 libelle: document.getElementById('sourcesLibelle').textContent, actif: b.classList.contains('filtre-actif'),
                 nom: b.getAttribute('aria-label'), bx: rb.x + rb.width / 2, by: rb.y + rb.height / 2, bh: rb.height,
-                ligne: document.querySelector('.feed-count').getBoundingClientRect().height,
+                ligne: (() => { const f = document.querySelector('.feed-count'), c = getComputedStyle(f); return f.getBoundingClientRect().height - parseFloat(c.paddingTop) - parseFloat(c.paddingBottom) - parseFloat(c.borderTopWidth) - parseFloat(c.borderBottomWidth); })(),   // 17/11/2026 : la ligne est une carte (marge intérieure 7 px, filet 1 px) : on mesure le CONTENU, qui doit rester sur une ligne
                 visibles: ['tabNonRockstar', 'tabRockstar', 'tabRockstarmag'].map(i => { const e = document.getElementById(i).getBoundingClientRect(); return e.width > 0 && e.height > 0; })}; }"""
     for largeur in (320, 390):
         ctx, page, erreurs = _ouvre_fil(nav, url, largeur)
@@ -9238,8 +9255,156 @@ def test_couleur_de_l_onglet_dans_le_fil(nav, url):
                 m = page.evaluate(SONDE)
                 att = hexa((pd if theme == "dark" else pc)[i])
                 check(m["refresh"] and rgb(m["refresh"]) == att, "[PR F %s %s %d ms] cycle : le ↻ est au cran %d de la famille de l'onglet (%s)" % (theme, onglet, tt, i + 1, m["refresh"]))
+        # AU JOUR J, LE NOM DE SOURCE DES CARTES TYPÉES, LES POINTS DE LA FRISE ET LA BARRE D'ÉTAT TOURNENT AUSSI DANS LA FAMILLE (Antoni, 17/11/2026 :
+        # « vérifie bien que tout ce qui change de couleur avec un onglet respecte aussi le cycle de cet onglet en jour J » ; l'audit les avait trouvés fixes).
+        FAM_TYPE = {"dark": {"official": ["#ffab00", "#d98a00", "#ffffff"], "majeur": ["#f06f7d", "#f87db7", "#ffffff"], "rm": ["#3380ff", "#8488e7", "#f87db7"]},
+                    "light": {"official": ["#8f4407", "#000000", "#b34000"], "majeur": ["#b3202e", "#c01f6e", "#7f1d1d"], "rm": ["#1f5fd9", "#5258c4", "#c01f6e"]}}[theme]
+        page.evaluate("() => setTab('all')"); page.wait_for_timeout(300)
+        SEL = {"official": '.card.official:not(.card-majeur)', "majeur": '.card.card-majeur:not(.official)', "rm": '.card.card-rm:not(.card-majeur)'}
+        for type_, sel in SEL.items():
+            # seules les cartes à l'écran tournent : on amène la carte à l'écran avant de figer
+            page.evaluate("(s) => document.querySelector(s).scrollIntoView({block: 'center'})", sel)
+            page.wait_for_selector(sel + ".dans-ecran", state="attached"); page.wait_for_timeout(300)
+            for i, tt in enumerate((0, 1000, 2000)):
+                page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+                page.wait_for_timeout(600)
+                couleur = page.evaluate("(s) => getComputedStyle(document.querySelector(s + ' .card-src')).color", sel)
+                check(rgb(couleur) == hexa(FAM_TYPE[type_][i]), "[PR F %s %d ms] cycle : le nom de source d'une carte « %s » est au cran %d de sa famille (%s, attendu %s)" % (theme, tt, type_, i + 1, couleur, FAM_TYPE[type_][i]))
+        page.evaluate("() => setTab('rockstar')"); page.wait_for_timeout(400)
+        for i, tt in enumerate((0, 1000, 2000)):
+            page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+            page.wait_for_timeout(600)
+            pt = page.evaluate("() => { const e = document.querySelector('.chrono-point.chrono-off:not(.chrono-maj):not(.lu)'); return e ? getComputedStyle(e, '::before').backgroundColor : null; }")
+            check(pt and rgb(pt) == hexa(FAM_TYPE["official"][i]), "[PR F %s %d ms] cycle : le point de frise d'une annonce officielle est au cran %d de sa famille (%s)" % (theme, tt, i + 1, pt))
+        for onglet in ("majeur", "rockstar", "rockstarmag", "non-rockstar", "all"):
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(300)
+            barre = page.evaluate("""() => { majBarreEtatJ(); const clair = document.documentElement.getAttribute('data-theme') === 'light';
+                const fond = clair ? COULEUR_BARRE.light : COULEUR_BARRE.dark;
+                const pal = (CYCLES_ONGLET[currentTab] || {})[clair ? 'light' : 'dark'] || (clair ? CYCLE_CLAIR : CYCLE_SOMBRE);
+                return {meta: document.querySelector('meta[name="theme-color"]').getAttribute('content').toLowerCase(), famille: !!CYCLES_ONGLET[currentTab], pal,
+                        attendu: melangeHex(fond, couleurDuCycle(document.timeline.currentTime || 0, pal), PART_TEINTE_BARRE).toLowerCase()}; }""")
+            PAL = {"dark": {"majeur": ["#e04f5f", "#f87db7", "#ffffff"], "rockstar": ["#ffab00", "#b36b00", "#ffffff"], "rockstarmag": ["#3380ff", "#8488e7", "#f87db7"],
+                            "non-rockstar": ["#9aa7b4", "#c9d2db", "#ffffff"], "all": ["#3380ff", "#f87db7", "#ffffff"]},
+                   "light": {"majeur": ["#b3202e", "#c01f6e", "#7f1d1d"], "rockstar": ["#ffab00", "#b36b00", "#ff6b00"], "rockstarmag": ["#1f5fd9", "#5258c4", "#c01f6e"],
+                             "non-rockstar": ["#566b7e", "#627689", "#2f3b47"], "all": ["#1f5fd9", "#c01f6e", "#3a4350"]}}[theme][onglet]
+            check(barre["pal"] == PAL, "[PR F %s %s] cycle : la barre d'état tourne dans la palette de l'onglet (« Tous » : le cycle général) (%s, attendu %s)" % (theme, onglet, barre["pal"], PAL))
+            check(sum(abs(int(barre["meta"][j:j + 2], 16) - int(barre["attendu"][j:j + 2], 16)) for j in (1, 3, 5)) <= 6,
+                  "[PR F %s %s] cycle : la couleur écrite dans la balise theme-color est celle de la palette à l'instant lu (%s, attendu %s)" % (theme, onglet, barre["meta"], barre["attendu"]))
         check(not erreurs, "[PR F %s cycle] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
         ctx.close()
+
+
+def test_flou_et_fondu_sous_les_barres(nav, url):
+    """18/11/2026 (Antoni) : flou + fondu sous la barre du bas ET sous la petite entête du haut, pour qu'on ne lise pas ce qui passe dessous.
+
+    Mesuré sur le rendu : le flou (backdrop-filter) est posé sur les deux cartes ; le fondu du haut n'existe que lorsque l'entête est visible (opacité 0 puis 1),
+    ne prend aucun appui, et avec la photo il reste translucide (sinon une bande plate cacherait la photo).
+    """
+    print("\n[flou et fondu] sous la barre du bas et la petite entête")
+    INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S', feed: 'S'});
+        lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    for theme in ("dark", "light"):
+        for photo in (False, True):
+            etiq = "[%s%s]" % (theme, " photo" if photo else "")
+            ctx = nav.new_context(viewport={"width": 390, "height": 800}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, cycleCouleurs: false, photoFond: %s}));}catch(e){}" % ("true" if photo else "false"))
+            page = ctx.new_page(); err = []
+            page.on("pageerror", lambda e, err=err: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
+            page.evaluate(INJECTE); page.wait_for_timeout(400)
+            LIT = """() => { const f = e => getComputedStyle(e).backdropFilter || getComputedStyle(e).webkitBackdropFilter, h = getComputedStyle(document.body, '::before'), b = getComputedStyle(document.body, '::after');
+                return {flouBas: f(document.querySelector('.barre-bas')), flouHaut: f(document.getElementById('barreHaut')), opHaut: parseFloat(h.opacity), appuiHaut: h.pointerEvents,
+                        fondHaut: h.backgroundImage, fondBas: b.backgroundImage}; }"""
+            m0 = page.evaluate(LIT)
+            page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(700)
+            m = page.evaluate(LIT)
+            check("blur" in m["flouBas"] and "blur" in m["flouHaut"], "%s flou posé sur la barre du bas (%s) et sur la petite entête (%s)" % (etiq, m["flouBas"], m["flouHaut"]))
+            check(m0["opHaut"] == 0 and m["opHaut"] == 1 and m["appuiHaut"] == "none", "%s le fondu du haut n'apparaît qu'avec l'entête (%s puis %s) et ne prend aucun appui (%s)" % (etiq, m0["opHaut"], m["opHaut"], m["appuiHaut"]))
+            check("linear-gradient" in m["fondHaut"] and "linear-gradient" in m["fondBas"], "%s un dégradé sous chaque barre" % etiq)
+            if photo:
+                check("/ 0.6)" in m["fondHaut"] and "/ 0.6)" in m["fondBas"],
+                      "%s avec la photo, le fondu reste translucide (%s)" % (etiq, m["fondHaut"][:90]))
+            check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
+            ctx.close()
+
+
+def test_barre_haute_en_carte_et_apercu_complet(nav, url):
+    """PR H : la ligne réduite du haut est une carte avec le logo VI ; l'aperçu des Réglages montre TOUJOURS tous ses éléments.
+
+    Antoni, 17/11/2026 : « la petite entête qui reste collée en haut quand on défile, sous forme de carte, avec le logo en rose » ; « peu importe quelle option
+    je sélectionne, que tous les éléments soient affichés dans l'aperçu, car des fois la barre du bas disparaît » (cause : à partir de la deuxième construction,
+    l'aperçu copiait SA PROPRE copie de la barre du bas au lieu de la vraie, donc rien).
+    """
+    print("\n[PR H] ligne réduite en carte avec logo ; aperçu des Réglages complet quelle que soit l'option")
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'Source ' + i, lang: 'fr'});
+        lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    # 1. LA LIGNE RÉDUITE : carte flottante, logo VI, rien ne déborde de 320 à 430 px
+    for theme, rose in (("dark", (248, 125, 183)), ("light", (192, 31, 110))):
+        for largeur in (320, 360, 390, 430):
+            ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, cycleCouleurs: false}));}catch(e){}")
+            page = ctx.new_page(); err = []
+            page.on("pageerror", lambda e, err=err: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
+            page.evaluate(INJECTE); page.wait_for_timeout(400)
+            page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
+            m = page.evaluate("""() => { const b = document.getElementById('barreHaut'), c = getComputedStyle(b), r = b.getBoundingClientRect(), l = b.querySelector('.bh-logo'), lc = l ? getComputedStyle(l) : null,
+                t = b.querySelector('.bh-titre').getBoundingClientRect(), k = document.getElementById('cbCompteur').getBoundingClientRect(), lr = l ? l.getBoundingClientRect() : null, carte = getComputedStyle(document.querySelector('#feed .card'));
+                return {gauche: r.left, droite: innerWidth - r.right, haut: r.top, rayon: c.borderTopLeftRadius, rayonCarte: carte.borderTopLeftRadius, filet: parseFloat(c.borderTopWidth), fond: c.backgroundColor,
+                        logo: !!l, logoCouleur: lc ? lc.backgroundColor : null, logoMasque: lc ? (lc.webkitMaskImage || lc.maskImage) : null, logoL: lr ? lr.width : 0,
+                        deborde: t.right > k.left + 1 || k.right > r.right - 4 || lr && lr.left < r.left, defile: document.documentElement.scrollWidth > innerWidth}; }""")
+            alpha = float(re.findall(r"[\d.]+", m["fond"])[-1]) if "/" in m["fond"] else 1.0
+            check(m["gauche"] >= 10 and m["droite"] >= 10 and m["haut"] >= 8 and m["rayon"] == m["rayonCarte"] and m["filet"] >= 0.5 and alpha >= 0.9,
+                  "[ligne réduite %s %d px] carte flottante : à %.0f px des bords et %.0f du haut, angles de la carte (%s), filet, fond plein" % (theme, largeur, m["gauche"], m["haut"], m["rayon"]))
+            check(m["logo"] and rgb(m["logoCouleur"]) == rose and m["logoMasque"] not in (None, "none") and m["logoL"] >= 26,
+                  "[ligne réduite %s %d px] le logo VI est là, rose %s (%s, %.0f px de large)" % (theme, largeur, rose, m["logoCouleur"], m["logoL"]))
+            check(not m["deborde"] and not m["defile"], "[ligne réduite %s %d px] le titre, le logo et le compteur tiennent sur la ligne, la page ne défile pas de côté (%s)" % (theme, largeur, m))
+            check(not err, "[ligne réduite %s %d px] aucune erreur JavaScript (%s)" % (theme, largeur, err[:1]))
+            ctx.close()
+    # 2. L'APERÇU DES RÉGLAGES : tous ses éléments, après CHAQUE case cochée puis décochée et chaque préréglage
+    ctx = nav.new_context(viewport={"width": 390, "height": 844}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false}));}catch(e){}")
+    page = ctx.new_page(); err = []
+    page.on("pageerror", lambda e, err=err: err.append(str(e)))
+    page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(600)
+    page.evaluate("() => { openSettings(); ongletParam('aff'); }"); page.wait_for_timeout(500)
+    COMPLET = """() => { const a = document.getElementById('apercuCouleurs'); if(!a) return {ok: false, raison: 'pas d\\'aperçu'};
+        const q = s => a.querySelector(s), vis = (e, mini = 8) => { if(!e) return false; const c = getComputedStyle(e), r = e.getBoundingClientRect(); return c.display !== 'none' && c.visibility === 'visible' && parseFloat(c.opacity) > 0.5 && r.height > mini && r.width > 8; };
+        const parts = {etat: vis(q('.maq-barre-etat'), 4),   // la bande de la barre d'état ne fait que 10 px, et l'aperçu est à l'échelle
+                        entete: vis(q('header.console')), recherche: vis(q('.search-row')), onglets: vis(q('.tab-row')), cartes: a.querySelectorAll('.card').length === 4 && [...a.querySelectorAll('.card')].every(vis),
+                       barre: vis(q('.barre-bas')) && q('.barre-bas').querySelectorAll('button').length === 3};
+        return {ok: Object.values(parts).every(Boolean), parts, nb: a.querySelectorAll('.barre-bas').length}; }"""
+    m = page.evaluate(COMPLET)
+    check(m["ok"] and m["nb"] == 1, "[aperçu] au départ : barre d'état, en-tête, recherche, onglets, quatre cartes et barre du bas (%s)" % (m,))
+    cases = page.evaluate("() => [...document.querySelectorAll('.page-reglages input[type=checkbox]')].map(i => i.id).filter(Boolean)")
+    check(len(cases) >= 60, "[aperçu] le balayage voit assez de cases (%d)" % len(cases))
+    manques = []
+    for ident in cases:
+        for _ in range(2):   # cochée, puis décochée : on remet le réglage comme il était
+            page.evaluate("(i) => { const c = document.getElementById(i); if(!c || c.disabled) return; c.checked = !c.checked; c.dispatchEvent(new Event('change', {bubbles: true})); }", ident)
+            page.wait_for_timeout(60)
+            m = page.evaluate(COMPLET)
+            if not (m["ok"] and m["nb"] == 1):
+                manques.append((ident, m.get("parts")))
+    check(not manques, "[aperçu] après CHAQUE case (%d cases, cochée puis décochée), l'aperçu garde tous ses éléments (manques : %s)" % (len(cases), manques[:3]))
+    for nom in ("jourj", "aucun", "auto"):
+        page.evaluate("(n) => appliquePrereglage(n)", nom); page.wait_for_timeout(150)
+        m = page.evaluate(COMPLET)
+        check(m["ok"] and m["nb"] == 1, "[aperçu] après le préréglage « %s » : tous les éléments (%s)" % (nom, m))
+    check(not err, "[aperçu] aucune erreur JavaScript (%s)" % (err[:1]))
+    ctx.close()
+    # 3. LA PHOTO DANS L'APERÇU, quand elle est allumée
+    ctx = nav.new_context(viewport={"width": 390, "height": 844}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, photoFond: true, photoVoile: 55}));}catch(e){}")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(600)
+    page.evaluate("() => { openSettings(); ongletParam('aff'); }"); page.wait_for_timeout(500)
+    img = page.evaluate("() => getComputedStyle(document.querySelector('#apercuCouleurs .maq-ecran')).backgroundImage")
+    check("fond-" in img, "[aperçu] la photo de fond (et son voile) se voit dans l'aperçu quand elle est allumée (%s)" % img[:80])
+    ctx.close()
 
 
 def test_photo_de_fond(nav, url):
@@ -9306,6 +9471,28 @@ def test_photo_de_fond(nav, url):
     check(not page.evaluate(LIT)["classe"], "[photo] décocher la case éteint la photo")
     check(not err, "[photo] aucune erreur JavaScript dans les Réglages (%s)" % err[:1])
     ctx.close()
+    # 4 bis. LA FORME D'UNE CARTE, AVEC OU SANS PHOTO (PR H, 17/11/2026, Antoni : « sous forme de carte, et le repère lu jusqu'ici aussi », puis « tout en forme carte
+    # même si le fond n'est pas activé », le bandeau du bas aussi, interlignes resserrés) : le titre de jour, la ligne « n affichés », les deux repères et le
+    # bandeau du bas ont le fond, le filet et les angles d'une carte d'article.
+    for theme, photo in (("dark", True), ("light", True), ("dark", False), ("light", False)):
+        ctx, page, err = ouvre(theme, {"photoFond": photo, "photoVoile": 55})
+        page.evaluate(INJECTE); page.wait_for_timeout(300)
+        page.evaluate("() => { lastNewLinks = new Set([lastItems[0].link]); repriseLien = lastItems[2].link; applyFilters(); }"); page.wait_for_timeout(500)
+        formes = page.evaluate("""() => { const f = s => { const e = document.querySelector(s); if(!e) return null; const c = getComputedStyle(e);
+            return [parseFloat(c.borderTopWidth), c.borderTopLeftRadius, c.backgroundColor, parseFloat(c.paddingTop)]; };
+          return {carte: f('#feed .card'), jour: f('.day-label'), compte: f('.feed-count'), repere: f('.resume-marker'), nouveaux: f('.repere-nouveaux'), barre: f('.barre-bas')}; }""")
+        for nom in ("jour", "compte", "repere", "nouveaux", "barre"):
+            f = formes[nom]
+            alpha = float(re.findall(r"[\d.]+", f[2])[-1]) if f and "/" in f[2] else 1.0
+            check(f is not None and f[0] >= 0.5 and f[1] == formes["carte"][1] and alpha >= 0.9 and (f[3] >= 6 or nom == "barre"),
+                  "[forme %s %s] « %s » a la forme d'une carte : filet, mêmes angles (%s), fond à %.0f %%, marge intérieure (%s)"
+                  % (theme, "avec photo" if photo else "sans photo", nom, formes["carte"][1], alpha * 100, f))
+        lh = page.evaluate("""() => { const g = s => getComputedStyle(document.querySelector(s)).lineHeight, fs = s => parseFloat(getComputedStyle(document.querySelector(s)).fontSize);
+            return {titre: g('#feed .card-title'), tf: fs('#feed .card-title'), date: g('#feed .card-date'), df: fs('#feed .card-date'),
+                    lien: document.querySelector('#feed .card-title a').getBoundingClientRect().height}; }""")
+        check(abs(float(lh["titre"][:-2]) - lh["tf"] * 1.2) < 0.05 and abs(float(lh["date"][:-2]) - lh["df"] * 1.25) < 0.05 and lh["lien"] >= 44,
+              "[forme %s %s] interlignes resserrés : titre 1,2, date 1,25, zone tactile du titre à 44 px au moins (%s)" % (theme, "avec photo" if photo else "sans photo", lh))
+        ctx.close()
     # 5. LISIBILITÉ AU VOILE MINIMUM (30 %) : le fond réellement peint derrière chaque texte, le texte étant masqué, contre sa couleur.
     TEXTES = """() => { const out = [], w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
         while((n = w.nextNode())){ const t = n.textContent.trim(); if(!t) continue; const e = n.parentElement; if(!e) continue;
@@ -10199,6 +10386,8 @@ CONTROLES = [
     test_contraste_du_cycle,
     test_repere_lu_jusquici_dans_le_cycle,
     test_photo_de_fond,
+    test_barre_haute_en_carte_et_apercu_complet,
+    test_flou_et_fondu_sous_les_barres,
     test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
     test_rockstarmag_badge_et_bordure,

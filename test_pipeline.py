@@ -6040,6 +6040,25 @@ def test_derniers_reports_tactiles_et_courbes():
           "la photo de fond est éteinte par défaut, voile de 30 à 85 %, départ 55 %")
     check("html.photo-fond::before{" in html and 'url("fond-sombre.jpg")' in html and 'url("fond-clair.jpg")' in html and 'id="photoFondCase"' in html and 'id="photoVoile" min="30" max="85"' in html,
           "la photo de fond a sa couche fixe, ses deux photos et ses deux réglages (case et curseur)")
+    check("\n  :is(.day-label, .feed-count, .resume-marker, .repere-nouveaux, .chrono-annee, .chrono-point, .empty){\n    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);" in html,
+          "le titre de jour, la ligne « n affichés », les repères et la chronologie ont la forme d'une carte, avec ou sans photo (fond, filet, angles)")
+    check("const e = [...document.querySelectorAll(sel)].find(x => !m.contains(x));" in html and "html.photo-fond .apercu-couleurs .maq-ecran{background-image:" in html,
+          "l'aperçu des Réglages cherche la vraie barre du bas HORS de lui (sa copie la masquait) et montre la photo de fond quand elle est allumée")
+    # Mouvement réduit : la règle plus précise `.tuile-compteur .countdown.final` (pulsation) battait la coupure générale ; mesuré le 17/11/2026 après minuit, étiquettes à 2,5:1 en plein creux.
+    check(re.search(r"prefers-reduced-motion: reduce\)\{[^@]*\.tuile-compteur \.countdown\.final\{animation:none;\}", html) is not None,
+          "mouvement réduit : la tuile du compteur ne pulse plus (palier final)")
+    check(re.search(r"\.barre-bas button\{[^}]*border-radius:var\(--r-md\)", html) is not None,
+          "bandeau du bas : le bouton actif a les angles des cartes, plus de pilule dans un cadre rectangulaire")
+    check(len(re.findall(r"backdrop-filter:blur\(10px\)", html)) >= 4 and re.search(r"body\.bh-visible::before\{opacity:1;\}", html) is not None and "html.photo-fond body::before{" in html,
+          "flou sous la barre du bas et la petite entête (verre dépoli), fondu du haut lié à l'entête, fondus translucides avec la photo")
+    check('<span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span>' in html and re.search(r"\.barre-haut\{[^}]*border-radius:var\(--r-md\)[^}]*box-shadow", html) is not None,
+          "la ligne réduite du haut est une carte flottante avec le logo VI rose à côté du titre")
+    check("html.cycle-couleur .card:is(.official, .card-majeur, .card-rm).dans-ecran .card-src{" in html
+          and "html.cycle-couleur .chrono-point:not(.lu):is(.chrono-off, .chrono-maj)::before{" in html and "const CYCLES_ONGLET = {" in html
+          and "(CYCLES_ONGLET[currentTab] || {})[clair ? \"light\" : \"dark\"] || (clair ? CYCLE_CLAIR : CYCLE_SOMBRE)" in html and 'item.rockstarmag && !item.official ? " chrono-rm"' in html,
+          "au jour J, le nom de source par type, les points de la frise et la barre d'état tournent dans la famille de leur type ou de leur onglet")
+    check(re.search(r"\.barre-bas\{[^}]*border-radius:var\(--r-md\)", html) is not None and ".card-title{font-size:16px; font-weight:700; line-height:1.2;" in html
+          and ".card-date{font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.25;" in html, "le bandeau du bas a les angles des cartes, et les interlignes sont resserrés (titre 1,2 ; date et autres sources 1,25)")
     check(".tab-badge{color:var(--oe); background:color-mix(in srgb, var(--oe) 20%, transparent);}" in html, "la pastille de l'onglet sélectionné prend l'encre de l'onglet (1,9:1 en blanc sur l'orange de Rockstar)")
     check('class="card card-majeur dans-ecran"' in html and 'class="card card-rm dans-ecran"' in html, "l'aperçu des couleurs montre une carte Actu majeure et une carte RockstarMag")
     check(rap("#100800", "#ffab00") >= 4.5, "badge « OFFICIEL » : #100800 sur #FFAB00 tient %.1f:1 (seuil 4,5)" % rap("#100800", "#ffab00"))
@@ -7991,9 +8010,10 @@ def test_barre_du_bas_et_entete():
     check(bh is not None and 'id="cbCompteur"' in bh.group(1) and "bh-point" in bh.group(1),
           "une ligne réduite porte le titre, un point et le compteur")
     regle = re.search(r"\.barre-haut\{([^}]*)\}", html).group(1)
-    check("position:fixed" in regle and "top:0" in regle and "height:52px" in regle
+    # 17/11/2026 (PR H) : carte flottante à 10 px du haut (avant : collée au bord, « top:0 »), toujours haute de 52 px et cachée tant que l'entête est en vue.
+    check("position:fixed" in regle and "top:calc(10px + env(safe-area-inset-top, 0px))" in regle and "height:52px" in regle
           and "visibility:hidden" in regle,
-          "elle est fixe en haut, haute de 52 px, et cachée (visibility) tant que l'entête est en vue")
+          "elle est fixe en haut (carte flottante à 10 px du bord), haute de 52 px, et cachée (visibility) tant que l'entête est en vue")
     check("body:has(#modeIndicator.backend) .bh-point{display:inline-block;}" in html,
           "son point vert n'apparaît qu'en mode backend GitHub")
     check("body.bh-visible .day-label{top:52px;}" in html and "body.bh-visible .panneau-tabs{top:52px;}" in html,
