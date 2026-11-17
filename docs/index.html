@@ -653,17 +653,17 @@
      --ot texte du bouton « R / RM ») ; au jour J elle tourne dans la FAMILLE de l'onglet (--oa/b/c le fond, --ea/b/c l'encre, --ta/b/c le
      texte), comme les bordures des cartes. Le gros bouton « Fil » de la barre du bas reste bleu : il indique la page, pas l'onglet. */
   @property --accent-contrast{syntax:"<color>"; inherits:true; initial-value:#0b0b14;}
-  html[data-onglet="majeur"]{--of:#e04f5f; --oe:#1a0612; --oa:#e04f5f; --ob:#f87db7; --oc:#ffffff; --ea:#1a0612; --eb:#1a0612; --ec:#1a0612; --ta:#f06f7d; --tb:#f87db7; --tc:#ffffff;}
-  html[data-onglet="rockstar"]{--of:#FFAB00; --oe:#100800; --ot:#FFAB00; --oa:#ffab00; --ob:#b36b00; --oc:#ffffff; --ea:#100800; --eb:#000000; --ec:#100800; --ta:#ffab00; --tb:#d98a00; --tc:#ffffff;}
-  html[data-onglet="rockstarmag"]{--of:#8488e7; --oe:#0b0b14; --ot:#8488e7; --oa:#3380ff; --ob:#8488e7; --oc:#f87db7; --ea:#0b0b14; --eb:#0b0b14; --ec:#0b0b14; --ta:#3380ff; --tb:#8488e7; --tc:#f87db7;}
-  html[data-theme="light"][data-onglet="majeur"]{--of:#b3202e; --oe:#ffffff; --oa:#b3202e; --ob:#c01f6e; --oc:#7f1d1d; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff; --ta:#b3202e; --tb:#c01f6e; --tc:#7f1d1d;}
-  html[data-theme="light"][data-onglet="rockstar"]{--of:#FFAB00; --oe:#100800; --ot:#8f4407; --oa:#ffab00; --ob:#000000; --oc:#ff6b00; --ea:#100800; --eb:#ffffff; --ec:#100800; --ta:#8f4407; --tb:#000000; --tc:#b34000;}
-  html[data-theme="light"][data-onglet="rockstarmag"]{--of:#5258c4; --oe:#ffffff; --ot:#5258c4; --oa:#1f5fd9; --ob:#5258c4; --oc:#c01f6e; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff; --ta:#1f5fd9; --tb:#5258c4; --tc:#c01f6e;}
+  html[data-onglet="majeur"]{--tt:#f06f7d; --of:#e04f5f; --oe:#1a0612; --oa:#e04f5f; --ob:#f87db7; --oc:#ffffff; --ea:#1a0612; --eb:#1a0612; --ec:#1a0612; --ta:#f06f7d; --tb:#f87db7; --tc:#ffffff;}
+  html[data-onglet="rockstar"]{--tt:#FFAB00; --of:#FFAB00; --oe:#100800; --ot:#FFAB00; --oa:#ffab00; --ob:#b36b00; --oc:#ffffff; --ea:#100800; --eb:#000000; --ec:#100800; --ta:#ffab00; --tb:#d98a00; --tc:#ffffff;}
+  html[data-onglet="rockstarmag"]{--tt:#8488e7; --of:#8488e7; --oe:#0b0b14; --ot:#8488e7; --oa:#3380ff; --ob:#8488e7; --oc:#f87db7; --ea:#0b0b14; --eb:#0b0b14; --ec:#0b0b14; --ta:#3380ff; --tb:#8488e7; --tc:#f87db7;}
+  html[data-theme="light"][data-onglet="majeur"]{--tt:#b3202e; --of:#b3202e; --oe:#ffffff; --oa:#b3202e; --ob:#c01f6e; --oc:#7f1d1d; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff; --ta:#b3202e; --tb:#c01f6e; --tc:#7f1d1d;}
+  html[data-theme="light"][data-onglet="rockstar"]{--tt:#8f4407; --of:#FFAB00; --oe:#100800; --ot:#8f4407; --oa:#ffab00; --ob:#000000; --oc:#ff6b00; --ea:#100800; --eb:#ffffff; --ec:#100800; --ta:#8f4407; --tb:#000000; --tc:#b34000;}
+  html[data-theme="light"][data-onglet="rockstarmag"]{--tt:#5258c4; --of:#5258c4; --oe:#ffffff; --ot:#5258c4; --oa:#1f5fd9; --ob:#5258c4; --oc:#c01f6e; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff; --ta:#1f5fd9; --tb:#5258c4; --tc:#c01f6e;}
   /* « Autres » : le BOUTON seul devient gris quand il est sélectionné (Antoni, 17/11/2026 : « juste le bouton, on change que ça, comme ça les
      trois boutons ont de la couleur »), fixe hors cycle ; au jour J il tourne gris, gris clair, blanc (gris ardoise, gris moyen, gris foncé en clair : le blanc y serait
      invisible). Ni le bouton « A », ni le fil, ni les cartes ne changent. */
-  html[data-onglet="non-rockstar"]{--of:#9aa7b4; --oe:#0b0b14; --oa:#9aa7b4; --ob:#c9d2db; --oc:#ffffff; --ea:#0b0b14; --eb:#0b0b14; --ec:#0b0b14;}
-  html[data-theme="light"][data-onglet="non-rockstar"]{--of:#566b7e; --oe:#ffffff; --oa:#566b7e; --ob:#627689; --oc:#2f3b47; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff;}
+  html[data-onglet="non-rockstar"]{--tt:#9aa7b4; --of:#9aa7b4; --oe:#0b0b14; --oa:#9aa7b4; --ob:#c9d2db; --oc:#ffffff; --ea:#0b0b14; --eb:#0b0b14; --ec:#0b0b14; --ta:#9aa7b4; --tb:#c9d2db; --tc:#ffffff;}
+  html[data-theme="light"][data-onglet="non-rockstar"]{--tt:#566b7e; --of:#566b7e; --oe:#ffffff; --oa:#566b7e; --ob:#627689; --oc:#2f3b47; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff; --ta:#566b7e; --tb:#627689; --tc:#2f3b47;}
   :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{background:var(--of); border-color:var(--of); color:var(--oe);}
   html[data-onglet="rockstar"] .sources-btn, html[data-onglet="rockstarmag"] .sources-btn{color:var(--ot);}
   @keyframes cycle-onglet{
@@ -681,6 +681,39 @@
   html.cycle-couleur:is([data-onglet="rockstar"], [data-onglet="rockstarmag"]) .sources-btn{
     color:var(--accent); animation:cycle-onglet-texte var(--cycle-duree) var(--cycle-pas) infinite;
   }
+  /* LA COULEUR DE L'ONGLET GAGNE LE FIL (PR F, 17/11/2026, Antoni : « d'autres idées pour les couleurs » : les quatre maquettes + le ↻ + la
+     sélection) : le titre de jour, la ligne « n affichés · n non lus » et le bouton ↻ de l'en-tête prennent la couleur de l'onglet sélectionné
+     (--tt), fixe hors cycle, dans sa famille au jour J (même animation que le bouton « R / RM »). « Tous les articles » garde l'accent. */
+  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) :is(.day-label, .feed-count, .icon-btn-grand){
+    --c-texte:var(--tt); --c-fond:var(--tt); --c-bord:var(--tt);
+  }
+  html.cycle-couleur:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) :is(.day-label.dans-ecran, .feed-count, .icon-btn-grand){
+    --c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent);
+    animation:cycle-onglet-texte var(--cycle-duree) var(--cycle-pas) infinite;
+  }
+  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) .feed-count{color:var(--tt);}
+  html.cycle-couleur:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) .feed-count{color:var(--accent);}
+  /* Le bouton « A » d'Autres garde l'accent hors cycle (Antoni : pour « Autres », seul le bouton de l'onglet change, et la maquette de la ligne de comptage
+     le montrait ainsi) : il hérite sinon du gris de la ligne. */
+  html:not(.cycle-couleur)[data-onglet="non-rockstar"] .sources-btn{color:var(--accent);}
+  /* L'année de la frise (onglet Rockstar en chronologie) prend aussi la couleur de l'onglet : elle y tient la place du titre de jour. */
+  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) .chrono-annee{color:var(--tt);}
+  html.cycle-couleur:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) .chrono-annee{color:var(--accent); animation:cycle-onglet-texte var(--cycle-duree) var(--cycle-pas) infinite;}
+  /* La sélection de texte et le curseur de saisie, fixes, aux couleurs (fond et encre) de l'onglet. */
+  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) ::selection{background:var(--of); color:var(--oe);}
+  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) :is(input, textarea){caret-color:var(--tt);}
+  /* LE NOM DE SOURCE PAR TYPE : officielle orange, Actu majeure rouge, RockstarMag violet, les autres gris (le gris cède à l'accent quand
+     le cycle est actif, sinon le cycle perdrait le nom de source de la plupart des cartes). Textes fixes : le blanc du cycle clair serait illisible. */
+  .card.card-rm .card-src{color:var(--violet-rm);}
+  .card.card-majeur .card-src{color:var(--rouge-majeur);}
+  .card.official .card-src{color:var(--t-off);}
+  html:not(.cycle-couleur) .card:not(.official):not(.card-rm):not(.card-majeur) .card-src{color:var(--t-aut);}
+  /* LA FRISE PAR TYPE (onglet Rockstar en chronologie) : orange pour une annonce officielle, rouge pour une actu majeure, gris pour le reste ;
+     un point lu reste gris (règle d'après). */
+  .chrono-point.chrono-off::before{background:var(--pt-off);}
+  .chrono-point.chrono-maj::before{background:var(--rouge-majeur);}
+  .chrono-point:not(.chrono-off):not(.chrono-maj)::before{background:var(--pt-aut);}
+  .chrono-point.lu::before{background:var(--line);}
   /* Un drapeau n'est pas un chiffre : il lui faut sa taille propre, et le
      fond de pastille disparaît — un emoji encadré d'une bulle grise se lit
      mal. */
@@ -2147,8 +2180,8 @@
      fond COMPOSITÉ (voir test_badge_actu_majeure_lisible), pas sur le blanc. 17/11/2026 (Antoni) : « Actu majeure » est ROUGE (celui de la section Discord, #E04F5F ; le TEXTE est éclairci à #F06F7D : #E04F5F ne faisait que 3,96:1 sur son fond à 18 %, #F06F7D fait 4,81 sur fond de carte teinté à 8 % PUIS badge à 18 %) tous thèmes et toutes phases, SANS cycle
      (Antoni, 17/11/2026 : « le badge Actu majeure reste rouge dans tous les thèmes ») : le texte et le trait suivent --rouge-majeur, éclairci en
      sombre, plus foncé en clair. L'orange est celui des officielles. */
-  :root{--rouge-majeur:#f06f7d; --violet-rm:#8488e7;}
-  html[data-theme="light"]{--rouge-majeur:#b3202e; --violet-rm:#5258c4;}
+  :root{--rouge-majeur:#f06f7d; --violet-rm:#8488e7; --t-off:#FFAB00; --t-aut:#9aa7b4; --pt-off:#FFAB00; --pt-aut:#9aa7b4;}
+  html[data-theme="light"]{--rouge-majeur:#b3202e; --violet-rm:#5258c4; --t-off:#8f4407; --t-aut:#566b7e; --pt-off:#b36b00; --pt-aut:#566b7e;}
   :root{--langue-fr:#3380ff; --langue-en:#f87db7;}   /* 17/11/2026 : le bleu et le rose du logo (avant #3987e5 et #d95926). Écart de couleur plus faible qu'avec l'orange : 114 → 70 en sombre (protanope 97 → 49) ; la légende donne les chiffres, la barre ne repose pas sur la couleur seule. */
   html[data-theme="light"]{--langue-fr:#1f5fd9; --langue-en:#c01f6e;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
@@ -5329,6 +5362,10 @@ function majCouleurBarre(theme){
 const CYCLE_SOMBRE = ["#3380ff", "#f87db7", "#ffffff"];
 const CYCLE_CLAIR = ["#1f5fd9", "#c01f6e", "#3a4350"];
 const PART_TEINTE_BARRE = 0.16;
+const COULEURS_ONGLET = {
+  "majeur": { dark: "#e04f5f", light: "#b3202e" }, "rockstar": { dark: "#FFAB00", light: "#b36b00" },
+  "rockstarmag": { dark: "#8488e7", light: "#5258c4" }, "non-rockstar": { dark: "#9aa7b4", light: "#566b7e" }
+};
 let barreEtatMinuteur = null;
 function hexVersRgb(h){ return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); }
 function melangeHex(fond, teinte, part){
@@ -5350,7 +5387,11 @@ function majBarreEtatJ(){
   const palette = clair ? CYCLE_CLAIR : CYCLE_SOMBRE;
   if(!effetActif("coulBarreEtat", new Date())){
     if(barreEtatMinuteur){ clearInterval(barreEtatMinuteur); barreEtatMinuteur = null; }
-    if(meta.getAttribute("content") !== fond) meta.setAttribute("content", fond);
+    // PR F (17/11/2026) : hors jour J, la barre prend 16 % de la couleur de l'onglet sélectionné (Actu majeure, Rockstar, RockstarMag, Autres).
+    // Désactivable avec la même case « Barre d'état du téléphone » que les couleurs du jour J.
+    const teinteOnglet = settings.coulBarreEtat === false ? null : (COULEURS_ONGLET[currentTab] || {})[clair ? "light" : "dark"];
+    const voulu = teinteOnglet ? melangeHex(fond, teinteOnglet, PART_TEINTE_BARRE) : fond;
+    if(meta.getAttribute("content") !== voulu) meta.setAttribute("content", voulu);
     return;
   }
   const anime = document.documentElement.classList.contains("cycle-couleur")
@@ -6693,6 +6734,7 @@ function basculeSources(){
 function setTab(t, silencieux){
   currentTab = t;
   document.documentElement.setAttribute("data-onglet", t);   // les couleurs de l'onglet sélectionné (voir « L'ONGLET SÉLECTIONNÉ »)
+  if(typeof majBarreEtatJ === "function") majBarreEtatJ();     // la barre d'état suit l'onglet (PR F)
   if(ONGLETS_SOURCE[t]) sourcesOuvert = true;
   majSources();
   visibleCount = PAGE_SIZE;
@@ -7552,7 +7594,7 @@ function renderChronologie(items){
     const masque = contientSpoiler(item);
 
     return sep + `
-      <li class="chrono-point${lu ? " lu" : ""}${masque ? " spoiler-masque" : ""}" id="card-${safeId}">
+      <li class="chrono-point${lu ? " lu" : ""}${item.official ? " chrono-off" : ""}${estMajeur(item) ? " chrono-maj" : ""}${masque ? " spoiler-masque" : ""}" id="card-${safeId}">
         ${masque ? voileSpoiler(item.link) : ""}
         <span class="chrono-date">${jour}${heure ? ` · ${heure}` : ""}</span>
         <a class="chrono-lien" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"

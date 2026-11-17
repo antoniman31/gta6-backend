@@ -5993,7 +5993,7 @@ def test_derniers_reports_tactiles_et_courbes():
     check('html[data-onglet="majeur"]{' in html and 'document.documentElement.setAttribute("data-onglet", t)' in html and "@keyframes cycle-onglet{" in html
           and "@keyframes cycle-onglet-texte{" in html and ":is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{background:var(--of)" in html,
           "l'onglet sélectionné et le bouton R / RM prennent la couleur des cartes de l'onglet, fixe puis en cycle (Actu majeure, Rockstar, RockstarMag)")
-    check('html[data-onglet="non-rockstar"]{--of:#9aa7b4; --oe:#0b0b14; --oa:#9aa7b4; --ob:#c9d2db; --oc:#ffffff;' in html
+    check('html[data-onglet="non-rockstar"]{--tt:#9aa7b4; --of:#9aa7b4; --oe:#0b0b14; --oa:#9aa7b4; --ob:#c9d2db; --oc:#ffffff;' in html
           and "--oa:#566b7e; --ob:#627689; --oc:#2f3b47;" in html and ":is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{background:var(--of)" in html
           and "html.cycle-couleur :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{" in html,
           "le bouton « Autres » sélectionné est gris hors cycle, et tourne gris, gris clair, blanc au jour J (gris ardoise, moyen, foncé en clair)")
@@ -6009,6 +6009,18 @@ def test_derniers_reports_tactiles_et_courbes():
         fond_page = "#ffffff" if "clair" in theme else "#10151a"
         check(rap(fond, fond_page) >= 3, "jauge %s : %s sur %s tient %.2f:1 (graphique : 3:1)" % (theme, fond, fond_page, rap(fond, fond_page)))
     check('"non-rockstar": "A"' in html, "l'abréviation du bouton de source « Autres » est « A »")
+    check(".card.official .card-src{color:var(--t-off);}" in html and ".card.card-majeur .card-src{color:var(--rouge-majeur);}" in html
+          and ".card.card-rm .card-src{color:var(--violet-rm);}" in html and 'html:not(.cycle-couleur) .card:not(.official):not(.card-rm):not(.card-majeur) .card-src{color:var(--t-aut);}' in html,
+          "le nom de source de chaque carte est à la couleur de son type (orange, rouge, violet, gris hors cycle)")
+    check(".chrono-point.chrono-off::before{background:var(--pt-off);}" in html and ".chrono-point.chrono-maj::before{background:var(--rouge-majeur);}" in html
+          and 'item.official ? " chrono-off" : ""' in html and 'estMajeur(item) ? " chrono-maj" : ""' in html, "les points de la frise ont la couleur de leur type (orange officiel, rouge actu majeure)")
+    check("const COULEURS_ONGLET = {" in html and "melangeHex(fond, teinteOnglet, PART_TEINTE_BARRE)" in html and "majBarreEtatJ();     // la barre d'état suit l'onglet" in html,
+          "la barre d'état prend 16 % de la couleur de l'onglet sélectionné, et suit l'onglet à chaque changement")
+    check(":is(.day-label, .feed-count, .icon-btn-grand){" in html and "::selection{background:var(--of); color:var(--oe);}" in html and "caret-color:var(--tt)" in html,
+          "le titre de jour, la ligne de comptage, le ↻, la sélection de texte et le curseur suivent la couleur de l'onglet")
+    for theme, fond, fond_page in (("sombre", "#f06f7d", "#0a0d0f"), ("clair", "#b3202e", "#f4f7fa"), ("Rockstar sombre", "#ffab00", "#0a0d0f"), ("Rockstar clair", "#8f4407", "#f4f7fa"),
+                                   ("RockstarMag sombre", "#8488e7", "#0a0d0f"), ("RockstarMag clair", "#5258c4", "#f4f7fa"), ("Autres sombre", "#9aa7b4", "#0a0d0f"), ("Autres clair", "#566b7e", "#f4f7fa")):
+        check(rap(fond, fond_page) >= 4.5, "texte d'onglet (titre de jour, comptage) %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, fond, fond_page, rap(fond, fond_page)))
     check('class="card card-majeur dans-ecran"' in html and 'class="card card-rm dans-ecran"' in html, "l'aperçu des couleurs montre une carte Actu majeure et une carte RockstarMag")
     check(rap("#100800", "#ffab00") >= 4.5, "badge « OFFICIEL » : #100800 sur #FFAB00 tient %.1f:1 (seuil 4,5)" % rap("#100800", "#ffab00"))
     # Les commentaires peuvent citer l'ancienne valeur (« avant : #58b9ff ») : c'est leur rôle, on ne contrôle que le code.

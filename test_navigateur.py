@@ -8783,6 +8783,8 @@ def test_aucun_texte_oublie_du_cycle(nav, url):
                 if "placeholder" in k or "icône" in k or "loupe" in k: champs += 1
                 if v2 is None or v0["titre"]: continue
                 if "badge-rm" in k: continue   # le badge « ROCKSTARMAG » est violet FIXE par choix d'Antoni (17/11/2026), comme le rouge des erreurs
+                # PR F : le nom de source d'une carte officielle, Actu majeure ou RockstarMag est FIXE par type (orange, rouge, violet), choix d'Antoni
+                if "card-src" in k and tuple(v0["c"]) in {(255, 171, 0), (240, 111, 125), (132, 136, 231), (143, 68, 7), (179, 32, 46), (82, 88, 196)}: continue
                 if fige(v0, v2): suspects.append(k)
             if suspects:
                 # SECONDE PASSE (la CI a rouge ce contrôle le 10/11/2026 : l'animation d'un bloc fraîchement affiché, ici les onglets des
@@ -9155,6 +9157,88 @@ def test_onglet_selectionne_aux_couleurs_des_cartes(nav, url):
             attendu = hexa({"dark": ["#9aa7b4", "#c9d2db", "#ffffff"], "light": ["#566b7e", "#627689", "#2f3b47"]}[theme][i])
             check(m["fond"] and rgb(m["fond"]) == attendu, "[onglet %s Autres %d ms] cycle : le bouton est au cran %d de gris, gris clair, %s (%s)" % (theme, tt, i + 1, "blanc" if theme == "dark" else "gris foncé", m["fond"]))
         check(not erreurs, "[onglet %s cycle] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
+        ctx.close()
+
+
+def test_couleur_de_l_onglet_dans_le_fil(nav, url):
+    """PR F : le titre de jour, la ligne de comptage, le ↻, le curseur, la barre d'état, le nom de source et la frise suivent l'onglet / le type.
+
+    Antoni, 17/11/2026 (« d'autres idées pour les couleurs », quatre maquettes et le ↻ et la sélection acceptés). Hors cycle les couleurs sont
+    FIXES ; au jour J les éléments liés à l'onglet tournent dans sa famille (comme le bouton « R / RM »).
+    """
+    print("\n[PR F] titre de jour, comptage, ↻, curseur, barre d'état, nom de source et frise aux couleurs de l'onglet / du type")
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    hexa = lambda h: tuple(int(h[j:j + 2], 16) for j in (1, 3, 5))
+    INJECTE = """() => { const m = (i, o) => Object.assign({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+          date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'Source ' + i, lang: 'fr'}, o || {});
+        lastItems = [m(0, {official: true, source: 'Rockstar Games'}), m(1, {official: true, source: 'Rockstar Games', extraSources: [{source: 'A', link: 'https://a.test/1'}, {source: 'B', link: 'https://b.test/1'}]}),
+          m(2, {rockstarmag: true, specialist: true, source: 'RockstarMag'}), m(3, {source: 'Kotaku', extraSources: [{source: 'A', link: 'https://a.test/1'}, {source: 'B', link: 'https://b.test/1'}]}), m(4, {source: 'Kotaku'})];
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 5; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    SONDE = """() => { const g = (s, p) => { const e = document.querySelector(s); return e ? getComputedStyle(e)[p] : null; };
+        return {jour: g('.day-label', 'color'), annee: g('.chrono-annee', 'color'), compte: g('.feed-count', 'color'), refresh: g('header.console .icon-btn-grand', 'color'),
+                caret: g('.search-row input', 'caretColor'), barre: document.querySelector('meta[name="theme-color"]').getAttribute('content')}; }"""
+    ONGLETS = {  # onglet : (texte fixe sombre, texte fixe clair, phases sombre, phases clair, teinte barre sombre, clair)
+        "majeur": ("#f06f7d", "#b3202e", ["#f06f7d", "#f87db7", "#ffffff"], ["#b3202e", "#c01f6e", "#7f1d1d"], "#e04f5f", "#b3202e"),
+        "rockstar": ("#ffab00", "#8f4407", ["#ffab00", "#d98a00", "#ffffff"], ["#8f4407", "#000000", "#b34000"], "#ffab00", "#b36b00"),
+        "rockstarmag": ("#8488e7", "#5258c4", ["#3380ff", "#8488e7", "#f87db7"], ["#1f5fd9", "#5258c4", "#c01f6e"], "#8488e7", "#5258c4"),
+        "non-rockstar": ("#9aa7b4", "#566b7e", ["#9aa7b4", "#c9d2db", "#ffffff"], ["#566b7e", "#627689", "#2f3b47"], "#9aa7b4", "#566b7e")}
+    def melange(fond, couleur, part):
+        a, b = hexa(fond), hexa(couleur)
+        return "#" + "".join("%02x" % round(v + (w - v) * part) for v, w in zip(a, b))
+    for theme in ("dark", "light"):
+        ctx, page, erreurs = _ouvre_cycle(nav, url, "2026-11-12T10:00:00Z", False, theme)
+        page.evaluate(INJECTE)
+        fond_barre = "#0a0d0f" if theme == "dark" else "#f4f7fa"
+        for onglet, (fd, fc, _, _, bd, bc) in ONGLETS.items():
+            page.evaluate("(t) => setTab(t)", onglet)
+            page.wait_for_timeout(500)
+            m = page.evaluate(SONDE)
+            fixe = hexa(fd if theme == "dark" else fc)
+            for cle, nom in (("jour", "le titre de jour"), ("compte", "la ligne de comptage"), ("refresh", "le bouton ↻"), ("caret", "le curseur de saisie")):
+                if cle == "jour" and onglet == "rockstar": continue   # la chronologie n'a pas de titre de jour : l'année, contrôlée à part
+                check(m[cle] and rgb(m[cle]) == fixe, "[PR F %s %s] %s est à la couleur de l'onglet, fixe (%s, attendu %s)" % (theme, onglet, nom, m[cle], fixe))
+            attendue = melange(fond_barre, bd if theme == "dark" else bc, 0.16)
+            check(m["barre"].lower() == attendue, "[PR F %s %s] la barre d'état prend 16 %% de la couleur de l'onglet (%s, attendu %s)" % (theme, onglet, m["barre"], attendue))
+        page.evaluate("() => setTab('all')"); page.wait_for_timeout(300)
+        m = page.evaluate(SONDE)
+        check(m["barre"].lower() == fond_barre, "[PR F %s] sur « Tous les articles », la barre d'état garde le fond de la page (%s)" % (theme, m["barre"]))
+        # Le NOM DE SOURCE par type (hors cycle) : officielle, Actu majeure, RockstarMag, autres.
+        page.evaluate("() => { document.querySelectorAll('#feed .card').forEach(c => c.scrollIntoView()); window.scrollTo(0, 0); }")
+        noms = page.evaluate("() => [...document.querySelectorAll('#feed .card')].map(c => [c.className, getComputedStyle(c.querySelector('.card-src')).color])")
+        att = {"dark": {"official": (255, 171, 0), "majeur": (240, 111, 125), "rm": (132, 136, 231), "autre": (154, 167, 180)},
+               "light": {"official": (143, 68, 7), "majeur": (179, 32, 46), "rm": (82, 88, 196), "autre": (86, 107, 126)}}[theme]
+        for cls, col in noms:
+            type_ = "official" if "official" in cls else "majeur" if "card-majeur" in cls else "rm" if "card-rm" in cls else "autre"
+            check(rgb(col) == att[type_], "[PR F %s] le nom de source d'une carte « %s » est à la couleur de son type (%s, attendu %s)" % (theme, type_, col, att[type_]))
+        check(len({c for c, _ in noms if 'official' in c}) >= 1 and len(noms) == 5, "[PR F %s] cinq cartes de quatre types (%d)" % (theme, len(noms)))
+        # La FRISE (onglet Rockstar en chronologie) : point orange pour une annonce officielle, rouge pour une actu majeure.
+        page.evaluate("() => setTab('rockstar')"); page.wait_for_timeout(400)
+        pts = page.evaluate("() => [...document.querySelectorAll('.chrono-point')].map(e => [e.className, getComputedStyle(e, '::before').backgroundColor])")
+        m = page.evaluate(SONDE)
+        check(m["annee"] and rgb(m["annee"]) == hexa("#ffab00" if theme == "dark" else "#8f4407"), "[PR F %s] l'année de la frise prend la couleur de l'onglet Rockstar (%s)" % (theme, m["annee"]))
+        check(len(pts) >= 2, "[PR F %s] la chronologie de l'onglet Rockstar montre au moins deux points (%d)" % (theme, len(pts)))
+        pt_off = (255, 171, 0) if theme == "dark" else (179, 107, 0)
+        pt_maj = (240, 111, 125) if theme == "dark" else (179, 32, 46)
+        for cls, col in pts:
+            attendu = pt_maj if "chrono-maj" in cls else pt_off if "chrono-off" in cls else None
+            if attendu:
+                check(rgb(col) == attendu, "[PR F %s] le point de frise « %s » est de la couleur de son type (%s, attendu %s)" % (theme, cls.split()[1] if len(cls.split()) > 1 else cls, col, attendu))
+        check(not erreurs, "[PR F %s] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
+        ctx.close()
+        # JOUR J, CYCLE : le titre de jour, le comptage et le ↻ tournent dans la famille de l'onglet ; le nom des cartes d'un type reste fixe.
+        ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        page.evaluate(INJECTE)
+        for onglet, (_, _, pd, pc, _, _) in ONGLETS.items():
+            page.evaluate("(t) => setTab(t)", onglet)
+            page.wait_for_timeout(300)
+            page.evaluate("() => window.scrollTo(0, 0)")
+            for i, tt in enumerate((0, 1000, 2000)):
+                page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+                page.wait_for_timeout(600)
+                m = page.evaluate(SONDE)
+                att = hexa((pd if theme == "dark" else pc)[i])
+                check(m["refresh"] and rgb(m["refresh"]) == att, "[PR F %s %s %d ms] cycle : le ↻ est au cran %d de la famille de l'onglet (%s)" % (theme, onglet, tt, i + 1, m["refresh"]))
+        check(not erreurs, "[PR F %s cycle] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
         ctx.close()
 
 
@@ -10013,6 +10097,7 @@ CONTROLES = [
     test_cycle_synchronise,
     test_contraste_du_cycle,
     test_repere_lu_jusquici_dans_le_cycle,
+    test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
     test_rockstarmag_badge_et_bordure,
     test_tout_dans_le_cycle,
