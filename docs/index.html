@@ -1578,13 +1578,13 @@
     /* FLUO (Antoni, 28/10/2026 : « plutôt des couleurs fluo »), palette « Chaud »
        choisie sur trois maquettes : jaune fluo, orange fluo, rose vif. Les
        mêmes teintes dans les deux thèmes ; ce qui change, c'est le TRAITEMENT. */
-    --compte-soon:#f7ff00; --compte-urgent:#ff8a00; --compte-final:#ff2fa8;
-    /* Sombre : le texte EST fluo, avec un halo. Sur la carte : 16,83 / 7,77 /
-       5,44:1. Le rose #ff1493 de la maquette, lui, tombait à 4,47:1 en
-       surligneur : éclairci à #ff2fa8 (4,82:1 en clair, 5,44 en sombre). */
-    --compte-halo-soon:0 0 8px rgba(247,255,0,.6);
-    --compte-halo-urgent:0 0 9px rgba(255,138,0,.65);
-    --compte-halo-final:0 0 10px rgba(255,47,168,.7);
+    --compte-soon:#8488e7; --compte-urgent:#be82cf; --compte-final:#f87db7;   /* 17/11/2026 : en dégradé du bleu au rose du logo (avant : #f7ff00, #ff8a00, #ff2fa8) ; même valeurs que le robot (feed_store.py) */
+    /* Sombre : le texte EST teinté, avec un halo. Mesuré le 17/11/2026 sur --bg-elevated, le plus exigeant des trois fonds : 5,44 / 5,95 / 7,04:1
+       (soon, urgent, final). En clair, le contraste se mesure contre le trait sombre : 5,15 / 5,64 / 6,66:1. (Avant : jaune, orange et rose fluo,
+       16,83 / 7,77 / 5,44:1 ; le rose #ff1493 de la maquette de 2026 tombait à 4,47:1.) */
+    --compte-halo-soon:0 0 8px rgba(132,136,231,.6);
+    --compte-halo-urgent:0 0 9px rgba(190,130,207,.65);
+    --compte-halo-final:0 0 10px rgba(248,125,183,.7);
     --compte-encre:#10222f;
   }
   /* Clair : un texte fluo sur blanc est illisible (le jaune fluo tombe à
@@ -1613,11 +1613,11 @@
   /* 17/11/2026 : les chiffres d'après la sortie passent du cyan #19e6ff au bleu du logo #4a8dff (le bleu du cycle #3380ff, éclairci : en clair ils sont cernés d'un
      trait sombre et doivent tenir 4,5:1 contre lui, 5,07:1 mesurés). L'accent reste le rose #ff5cae : la couleur des messages Discord du robot. */
   html.apres-sortie{
-    --accent:#ff5cae; --accent-contrast:#1a0612; --grid-tint:rgba(255,92,174,0.04);
+    --accent:#f87db7; --accent-contrast:#1a0612; --grid-tint:rgba(248,125,183,0.04);
     --compte-apres:#4a8dff; --compte-halo-apres:0 0 10px rgba(74,141,255,.7);
   }
   html[data-theme="light"].apres-sortie{
-    --accent:#b8146f; --accent-contrast:#ffffff; --grid-tint:rgba(184,20,111,0.05);
+    --accent:#c01f6e; --accent-contrast:#ffffff; --grid-tint:rgba(192,31,110,0.05);
     --compte-halo-apres:none;
   }
   html .countdown.apres, html .bh-compteur.apres{

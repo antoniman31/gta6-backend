@@ -623,14 +623,19 @@ def test_jalons_du_compte_a_rebours():
         discord_notify.send_discord_with_retry = vrai_envoi
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
     check(len(envoyes) == 2, "un message par jalon (%d)" % len(envoyes))
-    e1, e2 = envoyes[0][0], envoyes[1][0]
+    e1, m2 = envoyes[0][0], envoyes[1][0]
+    # Le message « sorti » est un message complet à trois bandes (17/11/2026) : la première porte le texte, les deux autres sont courtes.
+    check("embeds" in m2 and len(m2["embeds"]) == 3 and [c["color"] for c in m2["embeds"]] == list(discord_notify.COULEURS_SORTI)
+          and list(discord_notify.COULEURS_SORTI) == [0x3380FF, 0xF87DB7, 0xFFFFFF],
+          "« sorti » : trois bandes, bleu, rose, blanc (%s)" % [c.get("color") for c in m2.get("embeds", [])])
+    e2 = m2["embeds"][0]
     check(e1["title"] == "⏳ J-14" and f"<t:{ts}:R>" in e1["description"] and f"<t:{ts}:F>" in e1["description"],
           "le décompte est une balise de temps Discord (vivante), pas un nombre figé")
     check("Depuis 7 jours : 1 article." in e1["description"] and "Sujet" in e1["description"],
           "le bilan depuis le jalon précédent et les sujets les plus couverts (%s)" % e1["description"].splitlines()[1])
     check(e2["title"] == "🎉 GTA VI est sorti" and "2 officiels Rockstar" in e2["description"] and "12 articles" in e2["description"],
           "« sorti » : titre dédié, pluriels justes")
-    check(all("image" not in e and "thumbnail" not in e for e in (e1, e2)), "aucune image")
+    check(all("image" not in e and "thumbnail" not in e for e in [e1] + m2["embeds"]), "aucune image")
     check(e1["color"] == feed_store.couleur_compteur(), "la barre prend la couleur du palier du compteur")
 
     # Bout en bout : JALONS_FILE lu par discord_notify.main.
@@ -976,8 +981,9 @@ def test_message_a_sections():
     finally:
         discord_notify.requests.post = vrai_post
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
-    check(vus[0] == {"embeds": [{"title": "t"}]} and vus[1].get("username") == "u" and vus[1].get("content") == "c",
-          "un embed seul est enveloppé comme avant, un message complet part tel quel")
+    # (17/11/2026 : chaque message part avec l'avatar du VI et le pied de message ; le reste est inchangé.)
+    check(vus[0]["embeds"][0]["title"] == "t" and set(vus[0]) == {"embeds", "avatar_url"} and vus[1].get("username") == "u" and vus[1].get("content") == "c",
+          "un embed seul est enveloppé comme avant, un message complet part tel quel (avec l'avatar du VI en plus)")
     check(parametres == [None, None, {"with_components": "true"}],
           "le paramètre with_components n'est demandé que pour un message à boutons (%s)" % parametres)
 
@@ -1802,8 +1808,8 @@ def test_bilan_du_soir():
         m = envoyes[-1]
         carte = m["embeds"][0]
         check(len(envoyes) == 1 and m["username"] == "🌙 GTA6_WATCH" and m["content"] == "🌙 Bilan du 02/11 : 15 articles"
-              and carte["title"] == "🌙 Bilan du 02/11 : 15 articles" and carte["color"] == 0x8E5CFF == discord_notify.COULEUR_BILAN,
-              "un message violet, titre « 🌙 Bilan du JJ/MM : N articles » : %s" % carte["title"])
+              and carte["title"] == "🌙 Bilan du 02/11 : 15 articles" and carte["color"] == 0xF87DB7 == discord_notify.COULEUR_BILAN,
+              "un message rose (le rose du logo, avant : violet), titre « 🌙 Bilan du JJ/MM : N articles » : %s" % carte["title"])
         check(len(m["embeds"]) == 1 and "🇫🇷 3 · 🇬🇧 12 · 13 médias" in carte["description"],
               "un lundi : une seule carte, avec les langues et les 13 sites distincts (%s)" % carte["description"].splitlines()[0])
         check("• IGN France — 4" in carte["description"] and "**Les plus actifs**" in carte["description"]
@@ -11461,6 +11467,77 @@ def test_ecran_de_chargement_et_manifeste():
           "la page porte l'écran et sa durée minimale")
 
 
+def test_le_vi_sur_chaque_message_discord():
+    print("\n[discord] le VI sur chaque message : avatar, pied de message, couleurs du logo")
+    import copy, io, math, os as _os, struct
+    import discord_notify, feed_store, tableau_discord
+
+    # Les couleurs : du bleu au rose, et le rose de l'après-sortie est celui du logo.
+    check((feed_store.COULEUR_COMPTEUR_NEUTRE, feed_store.COULEUR_COMPTEUR_SOON, feed_store.COULEUR_COMPTEUR_URGENT, feed_store.COULEUR_COMPTEUR_FINAL,
+           feed_store.COULEUR_COMPTEUR_APRES) == (0x3380FF, 0x8488E7, 0xBE82CF, 0xF87DB7, 0xF87DB7)
+          and discord_notify.COULEUR_BILAN == 0xF87DB7,
+          "paliers du bleu au rose, rose du logo pour l'après-sortie et le bilan")
+    # Le dégradé : chaque palier se rapproche du rose (le canal rouge monte, le bleu descend).
+    paliers = [feed_store.COULEUR_COMPTEUR_NEUTRE, feed_store.COULEUR_COMPTEUR_SOON, feed_store.COULEUR_COMPTEUR_URGENT, feed_store.COULEUR_COMPTEUR_FINAL]
+    check(all((a >> 16) < (b >> 16) for a, b in zip(paliers, paliers[1:])), "les paliers montent en rouge, du bleu au rose : c'est un dégradé")
+
+    # avec_le_vi : une copie, l'avatar, le pied sur le DERNIER embed seulement.
+    message = {"username": "x", "embeds": [{"title": "a", "description": "b"}, {"title": "c", "description": "d"}]}
+    avant = copy.deepcopy(message)
+    out = discord_notify.avec_le_vi(message)
+    check(message == avant, "le message de l'appelant n'est pas modifié (copie)")
+    check(out["avatar_url"] == feed_store.AVATAR_DISCORD_URL and out["username"] == "x", "l'avatar du robot est le VI, l'expéditeur est gardé")
+    check("footer" not in out["embeds"][0] and out["embeds"][1]["footer"] == {"text": "GTA6_WATCH · heure de Paris", "icon_url": feed_store.AVATAR_DISCORD_URL},
+          "le pied « GTA6_WATCH · heure de Paris » et son icône sont sur le dernier embed seulement")
+    deja = {"avatar_url": "https://autre/x.png", "embeds": [{"title": "a", "footer": {"text": "mien"}}]}
+    out2 = discord_notify.avec_le_vi(deja)
+    check(out2["avatar_url"] == "https://autre/x.png" and out2["embeds"][0]["footer"] == {"text": "mien"}, "un avatar ou un pied déjà posé n'est jamais écrasé")
+    gros = {"embeds": [{"title": "t", "description": "x" * (discord_notify.EMBEDS_TOTAL_MAX - 5)}]}
+    check("footer" not in discord_notify.avec_le_vi(gros)["embeds"][0], "le pied ne fait JAMAIS dépasser les 6 000 caractères de Discord : il saute")
+    check("embeds" not in discord_notify.avec_le_vi({"content": "seul"}) and discord_notify.avec_le_vi({"content": "seul"})["avatar_url"],
+          "un message sans embed reçoit l'avatar, pas de pied")
+
+    # Le vrai chemin d'envoi : ce que reçoit Discord.
+    recu = []
+
+    class Rep:
+        status_code = 204
+        text = ""
+
+    vrai_post = discord_notify.requests.post
+    vrai_url = discord_notify.DISCORD_WEBHOOK_URL
+    try:
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.requests.post = lambda url, json=None, **k: recu.append(json) or Rep()
+        discord_notify.send_discord_with_retry({"title": "t", "description": "d", "color": 1}, "essai")
+    finally:
+        discord_notify.requests.post = vrai_post
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    check(len(recu) == 1 and recu[0]["avatar_url"] == feed_store.AVATAR_DISCORD_URL and recu[0]["embeds"][0]["footer"]["icon_url"] == feed_store.AVATAR_DISCORD_URL,
+          "à l'envoi réel, l'avatar et le pied du VI partent avec le message")
+
+    # Le tableau du jour (son propre chemin d'envoi) porte l'avatar aussi.
+    src = open("tableau_discord.py", encoding="utf-8").read()
+    check("avatar_url=feed_store.AVATAR_DISCORD_URL" in src, "le tableau du jour est créé avec l'avatar du VI")
+
+    # L'image d'avatar : un PNG carré, assez grand, sur le fond sombre, avec une marge pour le cercle.
+    chemin = "docs/avatar-discord.png"
+    check(_os.path.exists(chemin), "docs/avatar-discord.png existe (c'est l'adresse publiée par GitHub Pages)")
+    if _os.path.exists(chemin):
+        d = open(chemin, "rb").read()
+        l, h = struct.unpack(">II", d[16:24])
+        largeur, hauteur, bpp, lignes = _pixels_png(chemin)
+        fond = lignes[0][0:3]
+        rayon = 0.0
+        for y in range(hauteur):
+            for x in range(largeur):
+                p = lignes[y][x * bpp:x * bpp + 3]
+                if max(abs(p[0] - fond[0]), abs(p[1] - fond[1]), abs(p[2] - fond[2])) > 12:
+                    rayon = max(rayon, math.hypot(x - largeur / 2, y - hauteur / 2))
+        check(l == h == 512 and max(abs(a - b) for a, b in zip(fond, (10, 13, 15))) <= 2 and rayon <= largeur * 0.5 - 8,
+              "l'avatar fait 512 x 512, sur le fond du manifeste, et le VI tient dans le cercle (rayon du dessin %.0f px sur 256)" % rayon)
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -11496,6 +11573,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_mesure_actu_majeure,
            test_jalons_du_compte_a_rebours,
            test_couleur_du_compteur,
+           test_le_vi_sur_chaque_message_discord,
            test_alerte_report_officielle,
            test_message_a_sections,
            test_detail_des_officiels,

@@ -118,7 +118,7 @@ def met_a_jour(webhook, etat, stats, maintenant):
         # passer seule : en créer un second dupliquerait le tableau et sonnerait.
         if r.status_code != 404:
             return etat, "échec transitoire"
-    creation = dict(message, username="📊 GTA6_WATCH")
+    creation = dict(message, username="📊 GTA6_WATCH", avatar_url=feed_store.AVATAR_DISCORD_URL)
     try:
         r = requests.post(base, params={"wait": "true"}, json=creation, timeout=15)
     except Exception as e:
