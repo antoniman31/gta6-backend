@@ -8328,7 +8328,7 @@ def test_logo_vi(nav, url):
 
 def test_rose_deuxieme_accent_et_vi_de_l_app(nav, url):
     """Le rose du logo, deuxième accent de l'app, le trait sous l'en-tête, l'anneau du ↻, le VI de l'état vide, la frise, « À propos » (Antoni, 17/11/2026)."""
-    print("\n[PR B] rose en deuxième accent, trait, anneau du ↻, état vide, frise, À propos")
+    print("\n[PR B] rose en deuxième accent, anneau du ↻, état vide, frise, À propos")
     ROSE = {"dark": (248, 125, 183), "light": (192, 31, 110)}
     rvb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
     PREP = """() => { const cs = Array.from(document.querySelectorAll('#feed .card'));
@@ -8354,7 +8354,8 @@ def test_rose_deuxieme_accent_et_vi_de_l_app(nav, url):
         if m["tab"]:
             check(_rapport(rvb(m["tab"][1]), rvb(m["tab"][0])) >= 4.5, "%s et son texte tient 4,5:1 sur le rose (%.2f:1)" % (e, _rapport(rvb(m["tab"][1]), rvb(m["tab"][0]))))
         check(_rapport(rvb(m["texteBadge"]), rvb(m["badge"])) >= 4.5, "%s le texte du badge NOUVEAU tient 4,5:1 (%.2f:1)" % (e, _rapport(rvb(m["texteBadge"]), rvb(m["badge"]))))
-        check("linear-gradient" in m["trait"] and m["traitTaille"].endswith("2px"), "%s le trait en dégradé est sous l'en-tête (%s, %s)" % (e, m["trait"][:40], m["traitTaille"]))
+        # Le filet en dégradé sous l'en-tête (PR B, 17/11/2026) a été RETIRÉ le soir même : Antoni l'a vu sur son téléphone, il flottait sous le panneau du compteur.
+        check(m["trait"] == "none", "%s plus aucun trait sous l'en-tête (%s)" % (e, m["trait"]))
         check(not erreurs, "%s aucune erreur JavaScript" % e)
         ctx.close()
     # Avec le cycle de couleurs, les repères reprennent les jetons d'avant (les cases « fonds », « bordures », « textes » gardent leur effet) et le trait disparaît.
