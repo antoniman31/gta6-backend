@@ -1853,6 +1853,9 @@
     text-align:center; font-weight:900; text-transform:uppercase; line-height:1.02; letter-spacing:.01em;
     animation:fete-final-in 1.2s ease-out 1 both;
   }
+  /* L'ÉCRAN FINAL EST TOUJOURS NOIR, quel que soit le thème : il prend donc toujours les teintes CLAIRES du cycle (bleu, rose, blanc). Avec celles du thème clair
+     (bleu foncé, rose foncé, gris foncé #3a4350), le texte passait à 1,9:1 sur le noir au tiers du cycle (trouvé le 17/11/2026 en ouvrant la démo en thème clair). */
+  .fete-final{--cycle-a:#3380ff; --cycle-b:#f87db7; --cycle-c:#ffffff;}
   .fete-final .ff-texte{
     /* --accent, PAS --c-texte : l'écran de fin est hors de tout bloc du cycle, son animation est la sienne et ne repeint que --accent
        (le jeton typé, hérité de la page, serait figé : trouvé par le test de minuit après le refactor des jetons). */
@@ -4279,8 +4282,10 @@ function lanceConfettis(f){
     return [c, x];
   };
   const [tas, xt] = toile(1), [air, xa] = toile(2);
-  const st = getComputedStyle(document.documentElement);
-  const teintes = ["--cycle-a", "--cycle-b", "--cycle-c"].map(n => st.getPropertyValue(n).trim() || "#ff5cae").concat("#ffffff");
+  // LES TEINTES DES CONFETTIS (Antoni, 17/11/2026 : « teintes vives dans les deux thèmes ») : bleu, rose, blanc, à parts égales, quel que soit le thème. Elles lisaient
+  // les teintes du cycle du thème : en clair (bleu foncé, rose foncé, gris foncé) elles devenaient ternes sur l'écran noir final, et en sombre le blanc
+  // comptait pour moitié (la teinte du cycle plus un blanc ajouté). Le blanc se voit peu sur la page claire pendant les premières secondes : accepté par Antoni.
+  const teintes = ["#3380ff", "#f87db7", "#ffffff"];
   const COL = 4, nc = Math.ceil(W / COL), h = new Float32Array(nc), R = 8, DELTA = 6;
   // Un confetti posé relève de DELTA px chacune des (en gros) trois colonnes qu'il couvre : 3 x 4 x 6 = 72 px² d'aire utile (les confettis se recouvrent : couverture mesurée à 90 % de pixels pleins).
   const cadence = (W * H / (3 * COL * DELTA)) / ((FETE_REMPLIT_MS + 700) / 1000) * FETE_CADENCE;   // confettis par seconde (la fenêtre de naissance : mesuré, l'écran est plein en gros à sa fin moins une seconde)

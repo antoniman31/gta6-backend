@@ -8257,6 +8257,44 @@ def test_logo_vi(nav, url):
     m = page.evaluate(LIT)
     check(m["bg"] == m["texte"], "[logo] animations réduites : le logo reste de la couleur fixe du texte (%s, %s)" % (m["bg"], m["texte"]))
     ctx.close()
+    # L'écran de minuit est NOIR dans les deux thèmes : le texte et le logo doivent tenir 4,5:1 contre le noir, à chaque phase du cycle, même en thème clair
+    # (avec les teintes du thème clair, le gris foncé tombait à 1,9:1 : trouvé en ouvrant la démo en clair).
+    for theme in ("dark", "light"):
+        ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, theme=theme)
+        page.evaluate("() => afficheEcranFinal()")
+        page.wait_for_timeout(200)
+        faibles = []
+        for t in (0, 500, 1000, 1500, 2000, 2500, 3000):
+            page.evaluate("(t) => { for(const x of document.querySelectorAll('.fete-final .ff-texte, .fete-final .ff-logo')) for(const a of x.getAnimations()){ a.pause(); a.currentTime = t; } }", t)
+            page.wait_for_timeout(60)
+            cols = page.evaluate("() => [getComputedStyle(document.querySelector('.fete-final .ff-texte')).color, getComputedStyle(document.querySelector('.fete-final .ff-logo')).backgroundColor]")
+            for c in cols:
+                rvb = [int(x) for x in re.findall(r"\d+", c)[:3]]
+                if _rapport(rvb, [0, 0, 0]) < 4.5:
+                    faibles.append((t, c, round(_rapport(rvb, [0, 0, 0]), 2)))
+        check(not faibles, "[minuit %s] texte et logo de l'écran noir tiennent 4,5:1 à toutes les phases du cycle (sous le seuil : %s)" % (theme, faibles[:3]))
+        ctx.close()
+    # LES CONFETTIS (Antoni, 17/11/2026 : « teintes vives dans les deux thèmes ») : bleu, rose, blanc, en sombre comme en clair, jamais les teintes foncées du thème clair.
+    for theme in ("dark", "light"):
+        ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {}, theme=theme)
+        page.evaluate("() => lanceHalo()")
+        page.clock.run_for(3500)
+        page.wait_for_timeout(200)
+        n = page.evaluate("""() => { const proches = (d, c, t) => Math.abs(d[0]-c[0]) <= t && Math.abs(d[1]-c[1]) <= t && Math.abs(d[2]-c[2]) <= t;
+            const vives = [[51,128,255],[248,125,183],[255,255,255]], foncees = [[31,95,217],[192,31,110],[58,67,80]];
+            const sortie = {vives: [0,0,0], foncees: 0, total: 0};
+            for(const c of document.querySelectorAll('.fete canvas')){
+              const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+              for(let i = 0; i < d.length; i += 4 * 7){
+                if(d[i+3] < 250) continue; sortie.total++;
+                const px = [d[i], d[i+1], d[i+2]];
+                vives.forEach((v, k) => { if(proches(px, v, 6)) sortie.vives[k]++; });
+                if(foncees.some(f => proches(px, f, 6))) sortie.foncees++;
+              } }
+            return sortie; }""")
+        check(n["total"] > 500 and all(v > 0 for v in n["vives"]) and n["foncees"] == 0,
+              "[confettis %s] la pluie est faite de bleu, de rose et de blanc, et d'aucune teinte foncée du thème clair (%s)" % (theme, n))
+        ctx.close()
     # L'écran de chargement : le logo, puis « GTA6_WATCH » dessous ; le jour J il suit le cycle, sinon il reste rose.
     SPL = """() => { const sp = document.getElementById('splash'); if(!sp) return null;
         const l = sp.querySelector('.splash-logo'), n = sp.querySelector('.splash-nom'), r = l.getBoundingClientRect(), q = n.getBoundingClientRect();
