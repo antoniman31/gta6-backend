@@ -6047,6 +6047,8 @@ def test_derniers_reports_tactiles_et_courbes():
     # Mouvement réduit : la règle plus précise `.tuile-compteur .countdown.final` (pulsation) battait la coupure générale ; mesuré le 17/11/2026 après minuit, étiquettes à 2,5:1 en plein creux.
     check(re.search(r"prefers-reduced-motion: reduce\)\{[^@]*\.tuile-compteur \.countdown\.final\{animation:none;\}", html) is not None,
           "mouvement réduit : la tuile du compteur ne pulse plus (palier final)")
+    check(re.search(r"\.barre-bas button\{[^}]*border-radius:var\(--r-md\)", html) is not None,
+          "bandeau du bas : le bouton actif a les angles des cartes, plus de pilule dans un cadre rectangulaire")
     check('<span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span>' in html and re.search(r"\.barre-haut\{[^}]*border-radius:var\(--r-md\)[^}]*box-shadow", html) is not None,
           "la ligne réduite du haut est une carte flottante avec le logo VI rose à côté du titre")
     check("html.cycle-couleur .card:is(.official, .card-majeur, .card-rm).dans-ecran .card-src{" in html
