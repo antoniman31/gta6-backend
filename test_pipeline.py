@@ -11542,6 +11542,33 @@ def test_le_vi_sur_chaque_message_discord():
               "l'avatar fait 512 x 512, sur le fond du manifeste, et le VI tient dans le cercle (rayon du dessin %.0f px sur 256)" % rayon)
 
 
+def test_apercu_de_lien_et_couverture():
+    print("\n[PR C] aperçu de lien (og:image) et couverture du dépôt")
+    import os as _os, re, struct
+    html = open("docs/index.html", encoding="utf-8").read()
+    tete = html[:html.index("</head>")]
+    meta = dict(re.findall(r'<meta (?:property|name)="((?:og|twitter):[a-z_:]+)" content="([^"]*)"', tete))
+    for cle in ("og:type", "og:title", "og:description", "og:url", "og:image", "og:image:width", "og:image:height", "og:image:alt", "twitter:card"):
+        check(cle in meta and meta[cle].strip(), "la balise %s est dans l'en-tête de la page" % cle)
+    site = "https://antoniman31.github.io/gta6-backend/"
+    check(meta.get("og:url") == site and meta.get("og:image", "").startswith(site) and meta.get("twitter:card") == "summary_large_image",
+          "les adresses de l'aperçu sont absolues et celles du site publié")
+    fichier = "docs/" + meta.get("og:image", "")[len(site):]
+    check(_os.path.exists(fichier), "l'image de l'aperçu existe dans docs/ (%s)" % fichier)
+    if _os.path.exists(fichier):
+        d = open(fichier, "rb").read()
+        l, h = struct.unpack(">II", d[16:24])
+        check(d[:8] == b"\x89PNG\r\n\x1a\n" and (l, h) == (int(meta["og:image:width"]), int(meta["og:image:height"])) == (1200, 630) and len(d) < 300000,
+              "c'est un PNG de 1200 x 630 qui annonce sa vraie taille, et il reste léger (%d x %d, %d octets)" % (l, h, len(d)))
+    check(len(meta.get("og:description", "")) <= 200 and len(meta.get("og:title", "")) <= 70, "titre et description tiennent dans une carte d'aperçu")
+    readme = open("README.md", encoding="utf-8").read()
+    m = re.match(r"!\[[^\]]+\]\((docs/[A-Za-z0-9_.-]+\.png)\)\n", readme)
+    check(m is not None and _os.path.exists(m.group(1)), "le README s'ouvre sur son image de couverture, qui existe (%s)" % (m.group(1) if m else "absente"))
+    if m and _os.path.exists(m.group(1)):
+        l, h = struct.unpack(">II", open(m.group(1), "rb").read()[16:24])
+        check((l, h) == (1280, 320), "la couverture fait 1280 x 320 (%d x %d)" % (l, h))
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -11578,6 +11605,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_jalons_du_compte_a_rebours,
            test_couleur_du_compteur,
            test_le_vi_sur_chaque_message_discord,
+           test_apercu_de_lien_et_couverture,
            test_alerte_report_officielle,
            test_message_a_sections,
            test_detail_des_officiels,

@@ -12943,3 +12943,13 @@ Deuxième des trois PR validées par Antoni sur visuels (« go » après la plan
 - **État vide** avec le VI (120 px, rose, 28 % d'opacité), **frise des jalons** de `--cycle-a` à `--cycle-b` (teintes du thème), **chargement** où le VI passe du bleu au rose en 1,5 s hors jour J (le jour J il suit le cycle ; « J-2 » est bleu), **« À propos »** avec le VI, le nom et la ligne de présentation (dans l'onglet « adv » des Réglages ; pas de numéro de version : l'app n'en a pas de source fiable).
 - **Paire français / anglais** : bleu `#3380ff` et rose `#f87db7` en sombre, `#1f5fd9` et `#c01f6e` en clair. L'écart de couleur baisse (114 → 70 en sombre ; protanope 97 → 49) : la légende donne les chiffres et les pourcentages, la barre ne repose pas sur la couleur seule.
 - Test : nouveau `test_rose_deuxieme_accent_et_vi_de_l_app` (22 contrôles, 16 échouent sur le code d'avant) ; deux contrôles existants adaptés (paire de langues, couleur d'arrivée du VI au chargement). Cache du service worker v121.
+
+### Aperçu de lien et couverture du dépôt (PR C) — 17/11/2026
+
+Dernière des trois PR validées par Antoni sur visuels (cartes `og` et couverture, planche C).
+
+- **Aperçu de lien** : balises `og:*` et `twitter:card` dans l'en-tête de `docs/index.html` (titre, description, adresse du site, image `docs/og-image.png` de 1200 x 630 px, 35 919 octets, texte alternatif) ; adresses absolues, un aperçu ne lit pas la page. Le VI y est en dégradé bleu → rose (le masque de `logo-vi.png` rempli par un dégradé), nom à droite, bande bleu, rose, blanc en bas.
+- **Couverture du dépôt** : `docs/couverture.png` (1280 x 320, 19 087 octets) en tête du `README.md`.
+- **À faire par Antoni, à la main** : l'« image de prévisualisation sociale » du dépôt GitHub (Settings › General › Social preview) ne se règle pas par l'API de cette session ; il peut y envoyer `docs/og-image.png`.
+- Test : `test_apercu_de_lien_et_couverture` (balises, adresses absolues, image présente, vraie taille et poids, couverture du README). Cache du service worker v122 (`index.html` a changé).
+- Les polices des deux images viennent du rendu local (DejaVu Sans Mono, à défaut de JetBrains Mono) : le dessin diffère légèrement de la police de l'app.
