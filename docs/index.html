@@ -674,6 +674,10 @@
   @keyframes cycle-onglet-texte{
     0%,100%{--accent:var(--ta);} 25%,75%{--accent:var(--tb);} 50%{--accent:var(--tc);}
   }
+  /* LA PASTILLE DE L'ONGLET SÉLECTIONNÉ prend l'encre de l'onglet (--oe), pas --accent-contrast : en clair celui-ci est blanc, soit 1,9:1 sur le fond
+     orange de Rockstar. Défaut de la PR E, trouvé le 17/11/2026 par le contrôle de lisibilité de la photo de fond (il y est aussi sans photo). */
+  :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active .tab-badge{color:var(--oe); background:color-mix(in srgb, var(--oe) 20%, transparent);}
+  html.cycle-couleur :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active .tab-badge{color:var(--accent-contrast); background:color-mix(in srgb, var(--accent-contrast) 20%, transparent);}
   html.cycle-couleur :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{
     background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);
     animation:cycle-onglet var(--cycle-duree) var(--cycle-pas) infinite;
@@ -2818,6 +2822,34 @@
     letter-spacing:.08em; color:var(--text-dim); min-height:1.2em;
   }
   @media (prefers-reduced-motion: reduce){ .splash{transition:none;} }
+  /* LA PHOTO DE FOND (PR G, 17/11/2026, Antoni : « deux photos, une pour le mode clair, une pour le sombre », réglage actif ou inactif, photo visible À TRAVERS
+     les cartes avec un voile). Éteinte par défaut. DEUX voiles : un voile GÉNÉRAL de la couleur de la page sur la photo (réglable de 30 à 85 %), pour que
+     les textes posés directement dessus (titre de jour, ligne « n affichés ») restent lisibles ; et les panneaux et cartes à 94 % d'opacité (82 % sur la maquette, remonté à 94 % après la mesure du 17/11/2026 : à 82 %, le texte rouge d'Actu majeure
+     tombait sous 4,5:1 en clair), la photo passe donc à travers. Sans le voile général, ces textes devenaient illisibles sur le ciel rose et magenta (maquette du 17/11/2026). La couche est un
+     pseudo-élément FIXE (pas d'attachement fixe du fond : il se redessine à chaque défilement sur mobile). Photos : 1 080 px de large, JPEG, 171 et 157 Ko. */
+  html.photo-fond{
+    --photo-teinte:color-mix(in srgb, #0a0d0f var(--photo-voile, 55%), transparent); --photo-url:url("fond-sombre.jpg");
+    --bg-panel:color-mix(in srgb, #10151a 94%, transparent); --bg-elevated:color-mix(in srgb, #161c22 94%, transparent);
+    background-color:#0a0d0f;
+  }
+  html[data-theme="light"].photo-fond{
+    --photo-teinte:color-mix(in srgb, #f4f7fa var(--photo-voile, 55%), transparent); --photo-url:url("fond-clair.jpg");
+    --bg-panel:color-mix(in srgb, #ffffff 94%, transparent); --bg-elevated:color-mix(in srgb, #eef3f8 94%, transparent);
+    background-color:#f4f7fa;
+  }
+  html[data-theme="light"].photo-fond{--rouge-majeur:#a81f2b;}   /* un cran plus sombre : le fond de la carte reçoit un peu de photo */
+  html.photo-fond body{background:transparent;}
+  /* Les textes posés DIRECTEMENT sur la photo (la chronologie de l'onglet Rockstar, la ligne « n affichés », le message d'une liste vide) passent
+     par un fond de page à 82 % : mesuré le 17/11/2026, la chronologie tombait à 1,0:1 en clair et 1,8:1 en sombre sans lui. */
+  html.photo-fond :is(.chrono-point, .chrono-annee, .feed-count, .empty){
+    background:color-mix(in srgb, var(--bg) 94%, transparent); border-radius:var(--r-sm);
+  }
+  html.photo-fond .chrono-point{padding:6px 8px 6px 10px;}
+  html.photo-fond::before{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:linear-gradient(var(--photo-teinte), var(--photo-teinte)), var(--photo-url);
+    background-size:cover; background-position:center; background-repeat:no-repeat;
+  }
 </style>
 </head>
 <body>
@@ -3296,6 +3328,22 @@
     </div>
 
     <div class="setting-group">
+      <span class="setting-label">Photo de fond</span>
+      <div class="setting-row">
+        <label for="photoFondCase">Photo de fond</label>
+        <input type="checkbox" id="photoFondCase" onchange="basculePhotoFond(this.checked)">
+      </div>
+      <div class="setting-row">
+        <label for="photoVoile">Voile : <span id="photoVoileVal"></span> %</label>
+        <input type="range" id="photoVoile" min="30" max="85" step="5" oninput="reglerPhotoVoile(this.value)">
+      </div>
+      <div class="setting-desc" hidden>
+        Une photo derrière toute l'app : la photo violette en thème sombre, l'orange en thème clair. Le voile règle à quel point elle s'efface
+        (plus il est haut, plus le texte est lisible) ; les cartes restent à 94 % d'opacité par-dessus.
+      </div>
+    </div>
+
+    <div class="setting-group">
       <span class="setting-label">Écran</span>
 <div class="setting-row">
         <label for="rayonCadre">Coins du bas de l'écran : <span id="rayonCadreVal"></span> px</label>
@@ -3747,6 +3795,9 @@ const DEFAULT_SETTINGS = {
   rayonCadre: null,
   // La frise des jalons J+1, J+7, J+30 après la sortie ; allumée d'office.
   friseJalons: true,
+  // LA PHOTO DE FOND (17/11/2026, Antoni : deux photos, une pour chaque thème) : ÉTEINTE par défaut. Voile : de 30 à 85 %, départ 55 %.
+  photoFond: false,
+  photoVoile: 55,
   // LES CATÉGORIES DE COULEUR (10/11/2026) : quatre familles d'éléments, chacune coupable zone par zone. « bord » n'est pas ici :
   // c'est la case « coulBordures » d'origine. coulZones ne garde que les couples coupés : { "texte:fil": false }.
   coulTypes: { texte: null, fond: null, badge: null },
@@ -4289,6 +4340,7 @@ function majCasesEffets(){
   }
   const fj = document.getElementById("friseJalonsCase");
   if(fj) fj.checked = settings.friseJalons !== false;
+  appliquePhotoFond();
   majReglagesEffets();
 }
 function appliquePrereglage(nom){
@@ -5331,6 +5383,7 @@ function applyTheme(){
   }
   document.documentElement.setAttribute("data-theme", effective);
   majCouleurBarre(effective);
+  if(typeof appliquePhotoFond === "function") appliquePhotoFond();
   // Plus de bouton de thème dans l'entête depuis le 23/09/2026 : il est
   // sorti avec ℹ️ pour que l'entête tienne sur une ligne. La ligne qui y
   // écrivait l'icône est partie avec lui — la laisser aurait fait planter
@@ -9929,6 +9982,45 @@ function friseJalons(now, diff){
   el.setAttribute("aria-label", "Jalons après la sortie : " + texte + ". Jour " + jourN + ".");
   if(el.dataset.etat !== html){ el.innerHTML = html; el.dataset.etat = html; }
   el.hidden = false;
+}
+// LA PHOTO DE FOND. Une classe sur <html> (photo-fond) et une variable (--photo-voile) : tout le reste est dans la feuille de style. Le voile
+// vient d'un réglage sauvegardé, donc d'une entrée non fiable : il est ramené entre 30 et 85, et n'importe quoi d'autre qu'un vrai « true »
+// laisse la photo éteinte.
+const PHOTO_VOILE_MIN = 30, PHOTO_VOILE_MAX = 85, PHOTO_VOILE_DEFAUT = 55;
+function photoVoileEffectif(){
+  if(settings.photoVoile === null || settings.photoVoile === undefined || settings.photoVoile === "") return PHOTO_VOILE_DEFAUT;
+  const v = Number(settings.photoVoile);
+  if(!isFinite(v)) return PHOTO_VOILE_DEFAUT;
+  return Math.min(PHOTO_VOILE_MAX, Math.max(PHOTO_VOILE_MIN, Math.round(v)));
+}
+function appliquePhotoFond(){
+  const h = document.documentElement;
+  h.classList.toggle("photo-fond", settings.photoFond === true);
+  h.style.setProperty("--photo-voile", photoVoileEffectif() + "%");
+  const c = document.getElementById("photoFondCase");
+  if(c) c.checked = settings.photoFond === true;
+  const v = photoVoileEffectif();
+  const curseur = document.getElementById("photoVoile");
+  if(curseur) curseur.value = v;
+  const val = document.getElementById("photoVoileVal");
+  if(val) val.textContent = v;
+}
+function sauvePhotoFond(){
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){
+    console.error("Erreur sauvegarde de la photo de fond", e);
+    if(typeof montreToast === "function") montreToast("Réglage non enregistré : le stockage de l'appareil a refusé l'écriture.");
+  }
+}
+function basculePhotoFond(v){
+  settings.photoFond = v === true;
+  sauvePhotoFond();
+  appliquePhotoFond();
+}
+function reglerPhotoVoile(v){
+  settings.photoVoile = Number(v);
+  sauvePhotoFond();
+  appliquePhotoFond();
 }
 function basculeFriseJalons(v){
   settings.friseJalons = !!v;
