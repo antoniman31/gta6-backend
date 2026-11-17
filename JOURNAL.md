@@ -12953,3 +12953,7 @@ Dernière des trois PR validées par Antoni sur visuels (cartes `og` et couvertu
 - **À faire par Antoni, à la main** : l'« image de prévisualisation sociale » du dépôt GitHub (Settings › General › Social preview) ne se règle pas par l'API de cette session ; il peut y envoyer `docs/og-image.png`.
 - Test : `test_apercu_de_lien_et_couverture` (balises, adresses absolues, image présente, vraie taille et poids, couverture du README). Cache du service worker v122 (`index.html` a changé).
 - Les polices des deux images viennent du rendu local (DejaVu Sans Mono, à défaut de JetBrains Mono) : le dessin diffère légèrement de la police de l'app.
+
+### Le filet sous l'en-tête retiré — 17/11/2026
+
+Antoni a vu sur son téléphone le filet bleu → rose de 2 px de la PR B (« c'est quoi ce trait ? ») : sous le panneau du compteur et sa ligne « avant la sortie », avec un vide au-dessus, il paraissait détaché du reste. Il a choisi de l'enlever. Je l'avais montré sur la planche B1, où il se lisait à peine ; sur l'écran réel, au bas de la carte, il flottait : une erreur d'appréciation de ma part, à ne pas répéter (regarder un élément nouveau sur l'écran réel et pas seulement sur une planche à l'échelle réduite). Le contrôle correspondant vérifie désormais l'absence de trait. Cache du service worker v123.

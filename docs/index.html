@@ -1697,13 +1697,6 @@
     --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast);}
   html[data-theme="light"]{--accent-2:#c01f6e; --accent-2-contrast:#ffffff; --logo-bleu:#1f5fd9;}
   html.cycle-couleur, html.apres-sortie{--c-fond-2:var(--c-fond); --c-bord-2:var(--c-bord); --c-texte-2:var(--c-texte); --c-on-2:var(--accent-contrast);}
-  /* LE TRAIT EN DÉGRADÉ SOUS L'EN-TÊTE (Antoni, 17/11/2026) : un filet de 2 px, du bleu au rose du logo, collé au bas de la carte, hors jour J seulement (avec le cycle ou
-     après la sortie, le cadre de l'écran et l'accent animé prennent le relais). Posé en IMAGE DE FOND et non en pseudo-élément : la miniature des Réglages copie
-     l'en-tête en position statique, un élément absolu y serait parti au bas de la miniature. */
-  html:not(.cycle-couleur):not(.apres-sortie) header.console{
-    background-image:linear-gradient(90deg, var(--logo-bleu), var(--accent-2)); background-repeat:no-repeat;
-    background-size:calc(100% - 28px) 2px; background-position:center bottom;
-  }
   /* ↻ PENDANT L'ACTUALISATION : un anneau qui tourne du bleu au rose (la classe « en-cours » est posée par checkNow). Immobile si le téléphone réduit les animations. */
   @property --ang-ref{syntax:"<angle>"; inherits:false; initial-value:0deg;}
   @keyframes ref-tourne{to{--ang-ref:360deg;}}
