@@ -9294,6 +9294,41 @@ def test_couleur_de_l_onglet_dans_le_fil(nav, url):
         ctx.close()
 
 
+def test_flou_et_fondu_sous_les_barres(nav, url):
+    """18/11/2026 (Antoni) : flou + fondu sous la barre du bas ET sous la petite entête du haut, pour qu'on ne lise pas ce qui passe dessous.
+
+    Mesuré sur le rendu : le flou (backdrop-filter) est posé sur les deux cartes ; le fondu du haut n'existe que lorsque l'entête est visible (opacité 0 puis 1),
+    ne prend aucun appui, et avec la photo il reste translucide (sinon une bande plate cacherait la photo).
+    """
+    print("\n[flou et fondu] sous la barre du bas et la petite entête")
+    INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S', feed: 'S'});
+        lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    for theme in ("dark", "light"):
+        for photo in (False, True):
+            etiq = "[%s%s]" % (theme, " photo" if photo else "")
+            ctx = nav.new_context(viewport={"width": 390, "height": 800}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, cycleCouleurs: false, photoFond: %s}));}catch(e){}" % ("true" if photo else "false"))
+            page = ctx.new_page(); err = []
+            page.on("pageerror", lambda e, err=err: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
+            page.evaluate(INJECTE); page.wait_for_timeout(400)
+            LIT = """() => { const f = e => getComputedStyle(e).backdropFilter || getComputedStyle(e).webkitBackdropFilter, h = getComputedStyle(document.body, '::before'), b = getComputedStyle(document.body, '::after');
+                return {flouBas: f(document.querySelector('.barre-bas')), flouHaut: f(document.getElementById('barreHaut')), opHaut: parseFloat(h.opacity), appuiHaut: h.pointerEvents,
+                        fondHaut: h.backgroundImage, fondBas: b.backgroundImage}; }"""
+            m0 = page.evaluate(LIT)
+            page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(700)
+            m = page.evaluate(LIT)
+            check("blur" in m["flouBas"] and "blur" in m["flouHaut"], "%s flou posé sur la barre du bas (%s) et sur la petite entête (%s)" % (etiq, m["flouBas"], m["flouHaut"]))
+            check(m0["opHaut"] == 0 and m["opHaut"] == 1 and m["appuiHaut"] == "none", "%s le fondu du haut n'apparaît qu'avec l'entête (%s puis %s) et ne prend aucun appui (%s)" % (etiq, m0["opHaut"], m["opHaut"], m["appuiHaut"]))
+            check("linear-gradient" in m["fondHaut"] and "linear-gradient" in m["fondBas"], "%s un dégradé sous chaque barre" % etiq)
+            if photo:
+                check("/ 0.6)" in m["fondHaut"] and "/ 0.6)" in m["fondBas"],
+                      "%s avec la photo, le fondu reste translucide (%s)" % (etiq, m["fondHaut"][:90]))
+            check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
+            ctx.close()
+
+
 def test_barre_haute_en_carte_et_apercu_complet(nav, url):
     """PR H : la ligne réduite du haut est une carte avec le logo VI ; l'aperçu des Réglages montre TOUJOURS tous ses éléments.
 
@@ -10352,6 +10387,7 @@ CONTROLES = [
     test_repere_lu_jusquici_dans_le_cycle,
     test_photo_de_fond,
     test_barre_haute_en_carte_et_apercu_complet,
+    test_flou_et_fondu_sous_les_barres,
     test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
     test_rockstarmag_badge_et_bordure,

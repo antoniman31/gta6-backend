@@ -441,9 +441,18 @@
     display:flex; align-items:center; gap:10px; padding:0 14px;
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md); box-shadow:0 6px 24px rgba(0,0,0,.28);
     visibility:hidden; transform:translateY(calc(-100% - 24px));
+    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
     transition:transform var(--t-moyen) var(--courbe);
   }
   .barre-haut.visible{visibility:visible; transform:none;}
+  /* LE FONDU SOUS LA PETITE ENTÊTE (Antoni, 18/11/2026) : même principe que celui du bas ; il suit l'entête (body.bh-visible) et ne prend aucun appui. */
+  body::before{
+    content:""; position:fixed; left:0; right:0; top:0; z-index:54; pointer-events:none;
+    height:calc(92px + env(safe-area-inset-top, 0px));
+    background:linear-gradient(to bottom, var(--bg) 20%, transparent);
+    opacity:0; transition:opacity var(--t-moyen) var(--courbe);
+  }
+  body.bh-visible::before{opacity:1;}
   /* LE TITRE DE LA LIGNE RÉDUITE REMONTE EN HAUT (Antoni, 14/11/2026 : « le logo qui renvoie en haut, c'est celui de l'en-tête réduit qu'il faut
      utiliser, car l'autre n'est pas visible » : le grand en-tête a quitté l'écran dès qu'on a défilé, c'est la ligne réduite qui reste). Un vrai
      bouton, avec l'apparence exacte de l'ancien titre (police, graisse, couleur, ni cadre ni fond) et les 44 px de haut par défaut. Il
@@ -489,6 +498,7 @@
     max-width:496px; margin:0 auto; display:flex; gap:2px; padding:6px;
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);   /* 17/11/2026 : les angles des cartes (avant : une pilule), à la demande d'Antoni */
     box-shadow:0 6px 24px rgba(0,0,0,.28);
+    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);   /* 18/11/2026 : verre dépoli, on ne lit plus ce qui passe dessous (Antoni) */
   }
   .barre-bas button{
     flex:1 1 0; min-width:0; min-height:50px; padding:0; border:0; background:none;
@@ -2860,6 +2870,9 @@
   }
   html[data-theme="light"].photo-fond{--rouge-majeur:#a81f2b;}   /* un cran plus sombre : le fond de la carte reçoit un peu de photo */
   html.photo-fond body{background:transparent;}
+  /* Avec la photo, un fondu plein en --bg ferait une bande plate : on le laisse translucide pour que la photo reste visible dessous. */
+  html.photo-fond body::before{background:linear-gradient(to bottom, color-mix(in srgb, var(--bg) 60%, transparent) 20%, transparent);}
+  html.photo-fond body::after{background:linear-gradient(to top, color-mix(in srgb, var(--bg) 60%, transparent) 25%, transparent);}
   /* TOUT PREND LA FORME D'UNE CARTE, AVEC OU SANS PHOTO (PR H, 17/11/2026, Antoni : capture du S26 avec la photo, où le titre de jour était une barre noire sans
      angles et la ligne « n affichés » un bandeau collé aux onglets ; « sous forme de carte, le repère lu jusqu'ici aussi », puis « tout en forme carte même si le
      fond n'est pas activé » ; le titre de jour reste COLLANT au défilement, choix d'Antoni). Même fond (--bg-panel : à 94 % sous photo, plein sans), même filet et

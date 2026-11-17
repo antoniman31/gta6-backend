@@ -6049,6 +6049,8 @@ def test_derniers_reports_tactiles_et_courbes():
           "mouvement réduit : la tuile du compteur ne pulse plus (palier final)")
     check(re.search(r"\.barre-bas button\{[^}]*border-radius:var\(--r-md\)", html) is not None,
           "bandeau du bas : le bouton actif a les angles des cartes, plus de pilule dans un cadre rectangulaire")
+    check(len(re.findall(r"backdrop-filter:blur\(10px\)", html)) >= 4 and re.search(r"body\.bh-visible::before\{opacity:1;\}", html) is not None and "html.photo-fond body::before{" in html,
+          "flou sous la barre du bas et la petite entête (verre dépoli), fondu du haut lié à l'entête, fondus translucides avec la photo")
     check('<span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span>' in html and re.search(r"\.barre-haut\{[^}]*border-radius:var\(--r-md\)[^}]*box-shadow", html) is not None,
           "la ligne réduite du haut est une carte flottante avec le logo VI rose à côté du titre")
     check("html.cycle-couleur .card:is(.official, .card-majeur, .card-rm).dans-ecran .card-src{" in html
