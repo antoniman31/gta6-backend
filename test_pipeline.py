@@ -700,11 +700,11 @@ def test_couleur_du_compteur():
     m = re.search(r"html\.apres-sortie\{\s*--accent:(#\w+);", page)
     check(m and int(m.group(1)[1:], 16) == feed_store.COULEUR_COMPTEUR_APRES,
           "le rose du jour J du robot est l'accent de html.apres-sortie dans la page (%s)" % (m.group(1) if m else "absent"))
-    # Le bleu des messages RockstarMag est l'accent de base de l'app (17/11/2026 : il suivait #58b9ff, il suit maintenant le bleu du logo) : la page et
-    # le robot ne doivent plus se séparer en silence.
-    m = re.search(r":root\{[^}]*?--accent:\s*(#[0-9a-fA-F]{6})", page, re.S)
+    # Le violet des messages RockstarMag est celui du badge et des cartes RockstarMag dans la page (17/11/2026 ; il suivait l'accent bleu) : la page
+    # et le robot ne doivent plus se séparer en silence.
+    m = re.search(r"--violet-rm:(#[0-9a-fA-F]{6});", page)
     check(m and int(m.group(1)[1:], 16) == feed_store.COULEUR_ROCKSTARMAG,
-          "la couleur des messages RockstarMag du robot est l'accent de base de la page (%s)" % (m.group(1) if m else "absent"))
+          "la couleur des messages RockstarMag du robot est le violet des cartes RockstarMag de la page (%s)" % (m.group(1) if m else "absent"))
     sortie = feed_store.SORTIE_GTA6
     for reste, attendu, nom in (
             (timedelta(hours=feed_store.COMPTEUR_SEUIL_FINAL_H) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_FINAL, "à une seconde des 24 h"),
@@ -826,8 +826,8 @@ def test_message_a_sections():
               "trois sections dans l'ordre d'importance, chacune avec son total (%s)" % titres)
         check(m["embeds"][0]["color"] == discord_notify.COULEUR_OFFICIEL
               and m["embeds"][1]["color"] == discord_notify.COULEUR_MAJEURE
-              and m["embeds"][2]["color"] == feed_store.couleur_compteur(base),
-              "orange officiel, rouge majeur, couleur du palier du compteur pour les autres")
+              and m["embeds"][2]["color"] == discord_notify.COULEUR_AUTRES == 0x9AA7B4,
+              "orange du logo Rockstar pour l'officiel, rouge majeur, gris de l'onglet « Autres » pour les autres")
         check(all(k not in e for e in m["embeds"] for k in ("image", "thumbnail", "video")),
               "aucune image, aucune vignette")
         liens = [re.findall(r"\]\(<([^>]+)>\)", e["description"]) for e in m["embeds"]]
@@ -1255,7 +1255,7 @@ def test_section_rockstarmag():
         m = envoie(apercus=[autre], totaux=(3, 0, 1), rockstarmag=[mag(1), mag(2)])
         titres = [e["title"] for e in m["embeds"]]
         check(titres == ["📰 RockstarMag · 2", "🎮 Les autres · 1"], "section entre l'actu majeure et « Les autres » : %s" % titres)
-        check(m["embeds"][0]["color"] == feed_store.COULEUR_ROCKSTARMAG == 0x3380FF, "couleur de l'accent de l'app")
+        check(m["embeds"][0]["color"] == feed_store.COULEUR_ROCKSTARMAG == 0x8488E7, "couleur violette de RockstarMag")
         check(m["username"] == "📰 RockstarMag" and m["content"].endswith("· 📰 2 RockstarMag"),
               "expéditeur et ligne d'aperçu (%s / %s)" % (m["username"], m["content"]))
         check(envoie(totaux=None, content="", rockstarmag=[mag(1)])["content"] == "📰 1 RockstarMag",
@@ -5954,8 +5954,8 @@ def test_derniers_reports_tactiles_et_courbes():
           "les %d animations du cycle de couleurs passent toutes par --cycle-pas, qui vaut steps(12) "
           "(trouvé : %s) — une courbe continue refait calculer le style à chaque image"
           % (len(cycle), pas.group(1).strip() if pas else "absent"))
-    # L'orange des officiels est un APLAT sous un texte presque noir (#100800) : il doit le tenir 4,5:1 à CHAQUE
-    # étape de son dégradé, dans les deux thèmes (le contrôle « couleur fixe » ne le voyait plus, le jeton étant animé).
+    # 17/11/2026 : le BADGE « OFFICIEL » est un aplat orange du logo Rockstar (#FFAB00) FIXE sous un texte presque noir (#100800) : il
+    # doit le tenir 4,5:1. La bordure tourne (orange, orange foncé ou noir, blanc) et ne porte pas de texte.
     def lum(h):
         c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
         c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
@@ -5963,11 +5963,64 @@ def test_derniers_reports_tactiles_et_courbes():
     rap = lambda a, b: (max(lum(a), lum(b)) + 0.05) / (min(lum(a), lum(b)) + 0.05)
     sombre = re.search(r"html\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);", html)
     clair = re.search(r'html\[data-theme="light"\]\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);', html)
-    check(sombre and clair, "les trois teintes de l'orange (aplat) existent dans les deux thèmes")
+    check(sombre and clair, "les trois teintes de la bordure des officielles existent dans les deux thèmes")
     if sombre and clair:
-        for theme, m in (("sombre", sombre), ("clair", clair)):
-            for nom, h in zip("abc", m.groups()):
-                check(rap("#100800", h) >= 4.5, "orange %s, étape %s : le texte #100800 sur %s tient %.1f:1 (seuil 4,5)" % (theme, nom, h, rap("#100800", h)))
+        check(sombre.group(1).lower() == clair.group(1).lower() == "#ffab00" and "--orange: #FFAB00" in html,
+              "la bordure part de l'orange du logo Rockstar, #FFAB00 (mesuré sur l'image d'Antoni)")
+        check(clair.group(2).lower() == "#000000" and sombre.group(2).lower() != "#000000",
+              "le noir du logo n'est que dans le thème clair : en sombre il ferait disparaître la bordure (%s)" % sombre.group(2))
+    check(re.search(r"\.official-badge\{[^}]*background:#FFAB00; color:#100800", html) is not None, "le badge « OFFICIEL » est orange #FFAB00 fixe")
+    # RockstarMag : badge violet FIXE (texte sur les trois fonds de chaque thème, 4,5:1) ; « Actu majeure » : rouge FIXE, sans --hot.
+    violets = re.search(r":root\{--rouge-majeur:(#\w+); --violet-rm:(#\w+);[^}]*\}\s*html\[data-theme=\"light\"\]\{--rouge-majeur:(#\w+); --violet-rm:(#\w+);", html)
+    check(violets is not None and "--hot" not in html, "« Actu majeure » (rouge) et RockstarMag (violet) ont des jetons fixes, et le jeton --hot n'existe plus")
+    if violets:
+        rs, vs, rc, vc = violets.groups()
+        for theme, v, fonds in (("sombre", vs, ("#0a0d0f", "#10151a", "#161c22")), ("clair", vc, ("#f4f7fa", "#ffffff", "#eef3f8"))):
+            for f in fonds:
+                check(rap(v, f) >= 4.5, "badge ROCKSTARMAG %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, v, f, rap(v, f)))
+    check("class=\"specialist-badge${item.rockstarmag ? ' badge-rm' : ''}\"" in html and "card-rm" in html and "--cycle-b:#8488e7" in html,
+          "la carte et le badge RockstarMag portent leurs classes, et la bordure tourne bleu, violet, rose")
+    check(".card.card-majeur{" in html and "estMajeur(item) && !item.official ? ' card-majeur'" in html
+          and html.count(":not(.official):not(.card-majeur)") == 3 and ".card.card-rm{\n    border-color:var(--violet-rm)" in html,
+          "les cartes « Actu majeure » (rouge) et RockstarMag (violet) ont leur bordure, et la première est exclue du dégradé du jour J")
+    check("--rouge-a:#e04f5f; --rouge-b:#f87db7; --rouge-c:#ffffff" in html and "--rouge-a:#b3202e; --rouge-b:#c01f6e; --rouge-c:#7f1d1d" in html
+          and "border-color:var(--c-rouge)" in html and html.count("--c-rouge:var(--rouge-a)") == 4,
+          "la bordure d'Actu majeure tourne rouge, rose, blanc (rouge, rose, rouge foncé en clair) et se fige en coupant les badges")
+    check("color-mix(in srgb, var(--violet-rm) 8%, var(--bg-panel))" in html and ".card.card-rm:not(.official):not(.card-majeur){" in html,
+          "la carte RockstarMag a son voile violet, y compris sous le dégradé du jour J")
+    check("#tabMajeur:not(.active) .tab-badge{background:var(--c-fond-2); color:var(--c-on-2);}" in html and "#tabRockstarmag:not(.active) .tab-badge" not in html
+          and "--rouge-fond" not in html, "les pastilles des onglets NON sélectionnés gardent leur couleur de base (Antoni, 17/11/2026)")
+    check('html[data-onglet="majeur"]{' in html and 'document.documentElement.setAttribute("data-onglet", t)' in html and "@keyframes cycle-onglet{" in html
+          and "@keyframes cycle-onglet-texte{" in html and ":is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{background:var(--of)" in html,
+          "l'onglet sélectionné et le bouton R / RM prennent la couleur des cartes de l'onglet, fixe puis en cycle (Actu majeure, Rockstar, RockstarMag)")
+    check('html[data-onglet="non-rockstar"]{--of:#9aa7b4; --oe:#0b0b14; --oa:#9aa7b4; --ob:#c9d2db; --oc:#ffffff;' in html
+          and "--oa:#566b7e; --ob:#627689; --oc:#2f3b47;" in html and ":is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{background:var(--of)" in html
+          and "html.cycle-couleur :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{" in html,
+          "le bouton « Autres » sélectionné est gris hors cycle, et tourne gris, gris clair, blanc au jour J (gris ardoise, moyen, foncé en clair)")
+    for theme, fond, encre in (("Autres clair cran 2", "#627689", "#ffffff"), ("Autres clair cran 3", "#2f3b47", "#ffffff"), ("Autres sombre cran 2", "#c9d2db", "#0b0b14"), ("Autres sombre cran 3", "#ffffff", "#0b0b14")):
+        check(rap(fond, encre) >= 4.5, "onglet sélectionné %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, encre, fond, rap(fond, encre)))
+    for theme, fond, encre in (("Actu majeure sombre", "#e04f5f", "#1a0612"), ("Actu majeure clair", "#b3202e", "#ffffff"), ("Rockstar", "#ffab00", "#100800"),
+                               ("RockstarMag sombre", "#8488e7", "#0b0b14"), ("RockstarMag clair", "#5258c4", "#ffffff")):
+        check(rap(fond, encre) >= 4.5, "onglet sélectionné %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, encre, fond, rap(fond, encre)))
+    check(".stats-jauge-ligne.src-rockstar .stats-jauge i{background:#FFAB00;}" in html and ".stats-jauge-ligne.src-rockstarmag .stats-jauge i{background:var(--violet-rm);}" in html
+          and ".stats-jauge-ligne.src-autres .stats-jauge i{background:#9aa7b4;}" in html and all(('"%s")' % c) in html for c in ("src-rockstar", "src-rockstarmag", "src-autres")),
+          "les jauges « lus par source » des statistiques prennent la couleur de leur onglet (orange, violet, gris)")
+    for theme, fond in (("Rockstar clair", "#b36b00"), ("Autres clair", "#566b7e"), ("RockstarMag clair", "#5258c4"), ("Autres sombre", "#9aa7b4"), ("Rockstar sombre", "#ffab00"), ("RockstarMag sombre", "#8488e7")):
+        fond_page = "#ffffff" if "clair" in theme else "#10151a"
+        check(rap(fond, fond_page) >= 3, "jauge %s : %s sur %s tient %.2f:1 (graphique : 3:1)" % (theme, fond, fond_page, rap(fond, fond_page)))
+    check('"non-rockstar": "A"' in html, "l'abréviation du bouton de source « Autres » est « A »")
+    check('class="card card-majeur dans-ecran"' in html and 'class="card card-rm dans-ecran"' in html, "l'aperçu des couleurs montre une carte Actu majeure et une carte RockstarMag")
+    check(rap("#100800", "#ffab00") >= 4.5, "badge « OFFICIEL » : #100800 sur #FFAB00 tient %.1f:1 (seuil 4,5)" % rap("#100800", "#ffab00"))
+    # Les commentaires peuvent citer l'ancienne valeur (« avant : #58b9ff ») : c'est leur rôle, on ne contrôle que le code.
+    sans_commentaires = lambda t: re.sub(r"(?<!:)//[^\n]*", "", re.sub(r"/\*.*?\*/", "", t, flags=re.S))
+    ancien = re.compile(r"#58b9ff|#19e6ff|#ff5cae|#f7ff00|rgba\(88, ?185, ?255", re.I)
+    for nom in ("liste-jour-j.html", "repetition.html", "essai-confettis.html"):
+        page_annexe = open("docs/" + nom, encoding="utf-8").read()
+        code = sans_commentaires(page_annexe)
+        check(not ancien.search(code) and "#3380ff" in code,
+              "%s : le bleu du logo #3380ff et plus aucune ancienne teinte (%s)" % (nom, sorted(set(ancien.findall(code)))))
+    code = sans_commentaires(html)
+    check(not ancien.search(code), "index.html : la grille de fond et le reste n'ont plus d'ancienne teinte, commentaires exceptés (%s)" % sorted(set(ancien.findall(code))))
     check(len(cadre) >= 3 and all("steps(24)" in x for x in cadre),
           "le cadre du jour J et les bordures en dégradé tournent en 24 pas, jamais en courbe continue (%d déclarations : %s)"
           % (len(cadre), cadre[:2]))

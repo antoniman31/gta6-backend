@@ -72,7 +72,8 @@
        jour et de la moitié des mentions secondaires. */
     --text-dim: #7e918b;
     --text-dim-base: #7e918b;   /* la valeur d'origine, que le cycle teinte (voir « TOUT DANS LE CYCLE ») */
-    --orange: #FF6B00;
+    --rouge: #e04f5f;   /* bordure des cartes « Actu majeure » : rouge fixe hors cycle, rouge, rose, blanc dans le cycle (17/11/2026) */
+    --orange: #FFAB00;   /* 17/11/2026 : l'orange MESURÉ sur le logo Rockstar envoyé par Antoni (fond du logo, deux points : #FFAB00). Avant : #FF6B00. */
     --accent: #3380ff;   /* 17/11/2026 : le bleu du logo d'Antoni, éclairci pour tenir 4,5:1 (avant : #58b9ff). 4,64:1 sur --bg-elevated, 5,27 sur --bg. */
     /* Ce qui s'écrit SUR un aplat --accent. Bascule avec le thème : le bleu
        moyen du sombre demande du presque-noir #0b0b14 (5,29:1 ; avant le 17/11/2026 : #06131f sur #58b9ff, 8,74:1), le bleu profond du
@@ -81,7 +82,7 @@
     --ok: #4ade80;
     --warn: #facc15;
     --danger: #f87171;
-    --grid-tint: rgba(88,185,255,0.04);
+    --grid-tint: rgba(51,128,255,0.04);
     /* LES DOUZE TEINTES DE CATÉGORIE. Demandées par Antoni le 20/10/2026
        — « faut faire des couleurs pour chaque badge » — après la première
        version où les douze partageaient un même trait neutre.
@@ -121,7 +122,8 @@
        surélevé, ce que seule une mesure élément par élément fait apparaître. */
     --text-dim: #566b7e;
     --text-dim-base: #566b7e;
-    --orange: #FF6B00;
+    --rouge: #b3202e;
+    --orange: #FFAB00;
     /* 6,23:1 sur --bg, 6,70 sur une carte blanche. Était #5493ff — le bleu
        du thème SOMBRE, recopié tel quel, à 2,79:1. C'est la couleur du
        « _WATCH » du logo, du compte à rebours, des libellés de jour et de
@@ -133,7 +135,7 @@
                                    — était #b45309, conforme sur la page à
                                    4,67 mais à 4,50 sur le surélevé */
     --danger: #b91c1c;          /* 6,02:1 — était #dc2626, 4,49 */
-    --grid-tint: rgba(29,78,216,0.05);
+    --grid-tint: rgba(31,95,217,0.05);
     /* Les mêmes douze teintes, assombries jusqu'à passer 4,6:1 sur une
        carte blanche. Voir le commentaire du thème sombre. */
     --cat-bug:#e61d1d;       --cat-maj:#af6113;
@@ -643,6 +645,42 @@
   }
   .tab-badge:empty{display:none;}
   #tabMajeur:not(.active) .tab-badge{background:var(--c-fond-2); color:var(--c-on-2);}
+  /* Les boutons NON sélectionnés gardent leur couleur de base, pastilles comprises (Antoni, 17/11/2026 : « c'est juste quand ils sont
+     sélectionnés que ça respecte la couleur de leur carte ») : j'avais coloré les pastilles d'Actu majeure, RockstarMag et Rockstar, retiré. */
+  /* L'ONGLET SÉLECTIONNÉ PREND LA COULEUR DE SES CARTES (Antoni, 17/11/2026 : « ça aussi faut que ça respecte la couleur suivant l'onglet
+     sélectionné, et le bouton de l'onglet sélectionné », avec le bouton « RM ^ » entouré sur sa capture) : Actu majeure rouge, Rockstar
+     orange, RockstarMag violet ; « Tous » et « Autres » gardent l'accent. Hors cycle la couleur est FIXE (--of fond, --oe encre,
+     --ot texte du bouton « R / RM ») ; au jour J elle tourne dans la FAMILLE de l'onglet (--oa/b/c le fond, --ea/b/c l'encre, --ta/b/c le
+     texte), comme les bordures des cartes. Le gros bouton « Fil » de la barre du bas reste bleu : il indique la page, pas l'onglet. */
+  @property --accent-contrast{syntax:"<color>"; inherits:true; initial-value:#0b0b14;}
+  html[data-onglet="majeur"]{--of:#e04f5f; --oe:#1a0612; --oa:#e04f5f; --ob:#f87db7; --oc:#ffffff; --ea:#1a0612; --eb:#1a0612; --ec:#1a0612; --ta:#f06f7d; --tb:#f87db7; --tc:#ffffff;}
+  html[data-onglet="rockstar"]{--of:#FFAB00; --oe:#100800; --ot:#FFAB00; --oa:#ffab00; --ob:#b36b00; --oc:#ffffff; --ea:#100800; --eb:#000000; --ec:#100800; --ta:#ffab00; --tb:#d98a00; --tc:#ffffff;}
+  html[data-onglet="rockstarmag"]{--of:#8488e7; --oe:#0b0b14; --ot:#8488e7; --oa:#3380ff; --ob:#8488e7; --oc:#f87db7; --ea:#0b0b14; --eb:#0b0b14; --ec:#0b0b14; --ta:#3380ff; --tb:#8488e7; --tc:#f87db7;}
+  html[data-theme="light"][data-onglet="majeur"]{--of:#b3202e; --oe:#ffffff; --oa:#b3202e; --ob:#c01f6e; --oc:#7f1d1d; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff; --ta:#b3202e; --tb:#c01f6e; --tc:#7f1d1d;}
+  html[data-theme="light"][data-onglet="rockstar"]{--of:#FFAB00; --oe:#100800; --ot:#8f4407; --oa:#ffab00; --ob:#000000; --oc:#ff6b00; --ea:#100800; --eb:#ffffff; --ec:#100800; --ta:#8f4407; --tb:#000000; --tc:#b34000;}
+  html[data-theme="light"][data-onglet="rockstarmag"]{--of:#5258c4; --oe:#ffffff; --ot:#5258c4; --oa:#1f5fd9; --ob:#5258c4; --oc:#c01f6e; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff; --ta:#1f5fd9; --tb:#5258c4; --tc:#c01f6e;}
+  /* « Autres » : le BOUTON seul devient gris quand il est sélectionné (Antoni, 17/11/2026 : « juste le bouton, on change que ça, comme ça les
+     trois boutons ont de la couleur »), fixe hors cycle ; au jour J il tourne gris, gris clair, blanc (gris ardoise, gris moyen, gris foncé en clair : le blanc y serait
+     invisible). Ni le bouton « A », ni le fil, ni les cartes ne changent. */
+  html[data-onglet="non-rockstar"]{--of:#9aa7b4; --oe:#0b0b14; --oa:#9aa7b4; --ob:#c9d2db; --oc:#ffffff; --ea:#0b0b14; --eb:#0b0b14; --ec:#0b0b14;}
+  html[data-theme="light"][data-onglet="non-rockstar"]{--of:#566b7e; --oe:#ffffff; --oa:#566b7e; --ob:#627689; --oc:#2f3b47; --ea:#ffffff; --eb:#ffffff; --ec:#ffffff;}
+  :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{background:var(--of); border-color:var(--of); color:var(--oe);}
+  html[data-onglet="rockstar"] .sources-btn, html[data-onglet="rockstarmag"] .sources-btn{color:var(--ot);}
+  @keyframes cycle-onglet{
+    0%,100%{--accent:var(--oa); --accent-contrast:var(--ea);}
+    25%,75%{--accent:var(--ob); --accent-contrast:var(--eb);}
+    50%{--accent:var(--oc); --accent-contrast:var(--ec);}
+  }
+  @keyframes cycle-onglet-texte{
+    0%,100%{--accent:var(--ta);} 25%,75%{--accent:var(--tb);} 50%{--accent:var(--tc);}
+  }
+  html.cycle-couleur :is(#tabMajeur, #tabRockstar, #tabRockstarmag, #tabNonRockstar).active{
+    background:var(--accent); border-color:var(--accent); color:var(--accent-contrast);
+    animation:cycle-onglet var(--cycle-duree) var(--cycle-pas) infinite;
+  }
+  html.cycle-couleur:is([data-onglet="rockstar"], [data-onglet="rockstarmag"]) .sources-btn{
+    color:var(--accent); animation:cycle-onglet-texte var(--cycle-duree) var(--cycle-pas) infinite;
+  }
   /* Un drapeau n'est pas un chiffre : il lui faut sa taille propre, et le
      fond de pastille disparaît — un emoji encadré d'une bulle grise se lit
      mal. */
@@ -785,9 +823,21 @@
     border-color:var(--c-orange); border-width:1.5px;
     background:linear-gradient(180deg, color-mix(in srgb, var(--c-orange) 8%, var(--bg-panel)), var(--bg-panel));
   }
+  /* LES BORDURES DE ROCKSTARMAG ET D'ACTU MAJEURE (Antoni, 17/11/2026 : « rajoute des bordures à RockstarMag et Actu majeure ») : 1,5 px comme
+     les officielles. RockstarMag : violet FIXE, que le dégradé bleu, violet, rose du jour J remplace (il lit --cycle-b et --cycle-c de la
+     carte, voir plus bas). Actu majeure : rouge FIXE, un léger voile rouge à 8 % ; elle est exclue du dégradé du jour J, comme les
+     officielles : le rouge garde son sens. Une carte à la fois RockstarMag et Actu majeure prend le rouge (règle écrite en dernier). */
+  .card.card-rm{
+    border-color:var(--violet-rm); border-width:1.5px;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--violet-rm) 8%, var(--bg-panel)), var(--bg-panel));
+  }
+  .card.card-majeur{
+    border-color:var(--c-rouge); border-width:1.5px;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--c-rouge) 8%, var(--bg-panel)), var(--bg-panel));
+  }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
-    background:var(--c-orange); color:#100800; border-radius:var(--r-sm);
+    background:#FFAB00; color:#100800; border-radius:var(--r-sm);   /* orange du logo Rockstar, FIXE : ni cycle ni thème */
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -1011,6 +1061,12 @@
     background:transparent; color:var(--c-texte); border:1px solid var(--c-bord); border-radius:var(--r-sm);
     letter-spacing:0.03em; white-space:nowrap;
   }
+  /* ROCKSTARMAG (Antoni, 17/11/2026) : un badge à lui, violet FIXE (#8488E7 en sombre, #5258C4 en clair : 6,18 et 5,5:1 mesurés), et une
+     bordure de carte qui tourne bleu, violet, rose quand le cycle est actif (les deux dernières teintes de LA CARTE seulement : le reste du
+     fil garde bleu, rose, blanc). Les jetons --cycle-b et --cycle-c sont redéfinis sur la carte, donc ses animations les lisent. */
+  .specialist-badge.badge-rm{color:var(--violet-rm); border-color:var(--violet-rm);}
+  html.cycle-couleur .card.card-rm{--cycle-b:#8488e7; --cycle-c:#f87db7;}
+  html[data-theme="light"].cycle-couleur .card.card-rm{--cycle-b:#5258c4; --cycle-c:#c01f6e;}
   .card-src-row{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin-bottom:6px;}
   .card-src{
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-texte);
@@ -1624,7 +1680,7 @@
      sur la tuile sombre, 10,69:1 entre le cyan et le trait sombre du thème clair. La classe est
      posée par updateCountdown : avant le 19/11/2026 00:00, rien de ceci ne s'applique. */
   /* 17/11/2026 : les chiffres d'après la sortie passent du cyan #19e6ff au bleu du logo #4a8dff (le bleu du cycle #3380ff, éclairci : en clair ils sont cernés d'un
-     trait sombre et doivent tenir 4,5:1 contre lui, 5,07:1 mesurés). L'accent reste le rose #ff5cae : la couleur des messages Discord du robot. */
+     trait sombre et doivent tenir 4,5:1 contre lui, 5,07:1 mesurés). L'accent après la sortie est le rose du logo #f87db7 (PR A du 17/11/2026 : c'est aussi la couleur des messages Discord du robot, un test les lie ; avant #ff5cae). */
   html.apres-sortie{
     --accent:#f87db7; --accent-contrast:#1a0612; --grid-tint:rgba(248,125,183,0.04);
     --compte-apres:#4a8dff; --compte-halo-apres:0 0 10px rgba(74,141,255,.7);
@@ -1665,9 +1721,9 @@
      --accent-stat, l'accent FIXE de la page (rose le jour J, bleu avant), qui ne tourne pas. Les couleurs de statut gardent
      leur valeur d'origine dans des jetons « -base », figés ici, au niveau de la page, avant que le cycle ne les remplace. */
   html{--c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent); --accent-stat:var(--accent);
-    --c-orange:var(--orange);
+    --c-orange:var(--orange); --c-rouge:var(--rouge);
     --ok-base:var(--ok); --warn-base:var(--warn); --langue-fr-base:var(--langue-fr); --langue-en-base:var(--langue-en);
-    --hot-texte-base:var(--hot-texte); --cat-bug-base:var(--cat-bug); --cat-maj-base:var(--cat-maj); --cat-trophee-base:var(--cat-trophee); --cat-ventes-base:var(--cat-ventes); --cat-soluce-base:var(--cat-soluce); --cat-perf-base:var(--cat-perf); --cat-online-base:var(--cat-online); --cat-test-base:var(--cat-test); --cat-gameplay-base:var(--cat-gameplay); --cat-mod-base:var(--cat-mod); --cat-lore-base:var(--cat-lore); --cat-autre-base:var(--cat-autre); --cat-astuce-base:var(--cat-astuce); --cat-speedrun-base:var(--cat-speedrun);}
+    --cat-bug-base:var(--cat-bug); --cat-maj-base:var(--cat-maj); --cat-trophee-base:var(--cat-trophee); --cat-ventes-base:var(--cat-ventes); --cat-soluce-base:var(--cat-soluce); --cat-perf-base:var(--cat-perf); --cat-online-base:var(--cat-online); --cat-test-base:var(--cat-test); --cat-gameplay-base:var(--cat-gameplay); --cat-mod-base:var(--cat-mod); --cat-lore-base:var(--cat-lore); --cat-autre-base:var(--cat-autre); --cat-astuce-base:var(--cat-astuce); --cat-speedrun-base:var(--cat-speedrun);}
   html[data-theme="light"]{--cycle-a:#1f5fd9; --cycle-b:#c01f6e; --cycle-c:#3a4350;}
   /* LE LOGO « VI » (Antoni, 17/11/2026) : une SEULE image sert de forme (masque), la couleur vient du CSS. Hors jour J il est rose
      fixe ; avec le cycle (jour J) il prend --accent, la variable que le cycle anime : même instant, mêmes pas que le texte. Le fichier
@@ -1723,20 +1779,18 @@
   .apropos-marque b{display:block; font:800 16px 'JetBrains Mono',monospace;}
   .apropos-marque b span{color:var(--accent);}
   .apropos-marque small{display:block; margin-top:2px; font-size:12px; color:var(--text-dim);}
-  /* L'ORANGE A SON PROPRE DÉGRADÉ (Antoni, 11/11/2026 : « pour l'orange, un dégradé blanc, jaune, orange ») :
-     la bordure et le badge des cartes officielles, l'orange d'« Actu majeure ». En clair, le « blanc » serait
-     invisible : trois bruns-ambres qui tiennent 4,5:1 sur la carte blanche. */
-  @property --orange{syntax:"<color>"; inherits:true; initial-value:#FF6B00;}
-  @property --hot{syntax:"<color>"; inherits:true; initial-value:#ff8c3d;}
-  /* DEUX USAGES, DEUX JEUX DE TEINTES : --orange sert d'APLAT (bordure, badge « OFFICIEL », texte presque noir
-     par-dessus) ; --hot sert de TEXTE (« Actu majeure ») sur un fond teinté. En clair, un texte demande des
-     bruns qui tiennent 4,5:1, un aplat des ambres vifs : un seul jeu ne ferait pas les deux. */
-  html{--orange-a:#ffffff; --orange-b:#ffd60a; --orange-c:#ff6b00; --hot-a:#ffffff; --hot-b:#ffd60a; --hot-c:#ff8c3d;}
-  html[data-theme="light"]{--orange-a:#ffa500; --orange-b:#ffc400; --orange-c:#ff6b00; --hot-a:#8a6a00; --hot-b:#9a5b00; --hot-c:#8f4407;}
+  /* LA BORDURE DES OFFICIELLES TOURNE AUX COULEURS DU LOGO ROCKSTAR (Antoni, 17/11/2026, après avoir envoyé le logo : « le rose était une
+     mauvaise idée pour le cycle orange / blanc » ; avant : blanc, jaune, orange du 11/11/2026) : orange #FFAB00 (mesuré sur le logo),
+     puis noir, puis blanc. En sombre, le noir ferait disparaître la bordure sur le fond : un orange foncé #B36B00 le remplace. Le BADGE
+     « OFFICIEL », lui, reste orange #FFAB00 dans tous les thèmes et toutes les phases (choix d'Antoni, planche du 17/11/2026). */
+  @property --orange{syntax:"<color>"; inherits:true; initial-value:#FFAB00;}
+  @property --rouge{syntax:"<color>"; inherits:true; initial-value:#e04f5f;}
+  html{--orange-a:#ffab00; --orange-b:#b36b00; --orange-c:#ffffff; --rouge-a:#e04f5f; --rouge-b:#f87db7; --rouge-c:#ffffff;}
+  html[data-theme="light"]{--orange-a:#ffab00; --orange-b:#000000; --orange-c:#ffffff; --rouge-a:#b3202e; --rouge-b:#c01f6e; --rouge-c:#7f1d1d;}
   @keyframes cycle-accent{
-    0%,100%{--accent:var(--cycle-a); --orange:var(--orange-a); --hot:var(--hot-a);}
-    25%,75%{--accent:var(--cycle-b); --orange:var(--orange-b); --hot:var(--hot-b);}
-    50%{--accent:var(--cycle-c); --orange:var(--orange-c); --hot:var(--hot-c);}
+    0%,100%{--accent:var(--cycle-a); --orange:var(--orange-a); --rouge:var(--rouge-a);}
+    25%,75%{--accent:var(--cycle-b); --orange:var(--orange-b); --rouge:var(--rouge-b);}
+    50%{--accent:var(--cycle-c); --orange:var(--orange-c); --rouge:var(--rouge-c);}
   }
   @keyframes cycle-chiffre{
     0%,100%{color:#3380ff; text-shadow:0 0 10px rgba(51,128,255,.7);}
@@ -1766,20 +1820,23 @@
   }
   /* TOUT DANS LE CYCLE (Antoni, 11/11/2026 : « plus de couleurs dans le cycle, tout ce qui n'est pas blanc de
      base »). Choix d'Antoni sur planche : les statuts vert et jaune, les textes gris (teinte à 55 %), les
-     badges de catégorie et de langue, l'orange en blanc-jaune-orange. LES ERREURS ROUGES (--danger) RESTENT
+     badges de catégorie et de langue, l'orange en orange-jaune-blanc. LES ERREURS ROUGES (--danger) RESTENT
      ROUGES, sur son conseil : une panne doit se reconnaître d'un coup d'œil. Les jetons sont posés sur les
      MÊMES blocs que l'accent, et sur les cartes à l'écran : ils se recalculent à chaque pas avec l'accent local. */
   html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
       #statsContenu, #logsPanel, .page-reglages, .overlay, .resume-chip, .info-btn, .feed-count, .card.dans-ecran,
-      .day-label.dans-ecran, .repere-nouveaux.dans-ecran){
+      .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran){
     --text-dim:color-mix(in srgb, var(--accent) 55%, var(--text-dim-base));
     --text:var(--accent);
     /* LA COULEUR HÉRITÉE : « color » se transmet CALCULÉE : le body l'a figée au blanc d'origine, et un bloc qui ne fait que
        changer --text ne repeint donc pas les textes qui n'ont pas leur propre règle (étiquettes, titres de pages, cellules). */
     color:var(--text);
     --ok:var(--accent); --warn:var(--accent);
-    --hot-texte:var(--hot); --c-orange:var(--orange);
+    --c-orange:var(--orange); --c-rouge:var(--rouge);
     --c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent);
+    /* Les jetons « -2 » (rose hors cycle) sont aussi recalculés ICI : définis sur <html>, ils se figeraient à la valeur de la page et
+       la carte officielle, le badge « OFFICIEL », « Actu majeure » et le repère « lu jusqu'ici » ne tourneraient pas (mesuré le 17/11/2026). */
+    --c-texte-2:var(--accent); --c-fond-2:var(--accent); --c-bord-2:var(--accent); --c-on-2:var(--accent-contrast);
     --langue-fr:var(--accent); --langue-en:var(--accent);
   }
   html.cycle-couleur .card.dans-ecran{
@@ -1949,7 +2006,7 @@
      texte reste gris. */
   @property --bord-ang{syntax:"<angle>"; inherits:true; initial-value:0deg;}
   @keyframes cycle-bord{from{--bord-ang:0deg;} to{--bord-ang:360deg;}}
-  html.bordures-fil .card:not(.official), html.bordures-tete .cd-t{
+  html.bordures-fil .card:not(.official):not(.card-majeur), html.bordures-tete .cd-t{
     border:var(--bord-ep) solid transparent;
     background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
       conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
@@ -1960,10 +2017,15 @@
   /* LES TITRES DE JOUR ET LE REPÈRE « NOUVEAUX » (Antoni, 10/11/2026 : « il y a encore des textes qui ne changent pas
      de couleur, on en a oublié ») : ils sont dans la liste, qui ne bouge pas, donc leur accent restait celui de la
      page. Même règle que les cartes : animés seulement à l'écran (classe dans-ecran, posée par observeCartes). */
-  html.cycle-couleur :is(.day-label, .repere-nouveaux).dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
+  html.cycle-couleur :is(.day-label, .repere-nouveaux, .resume-marker).dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
   /* LE SOUS-TITRE « GTA VI EST SORTI » : avec le cycle, un aplat à l'accent (le dégradé figé ne tournait pas). */
   html.cadre-j.cycle-couleur .compteur-sous{background:none; -webkit-text-fill-color:currentColor; color:var(--c-texte);}
-  html.cycle-couleur.bordures-fil .card.dans-ecran:not(.official){
+  /* Au jour J le dégradé conique remplace la bordure de RockstarMag, mais son voile violet reste (le fond à deux couches le reprend). */
+  html.bordures-fil .card.card-rm:not(.official):not(.card-majeur){
+    background:linear-gradient(180deg, color-mix(in srgb, var(--violet-rm) 8%, var(--bg-panel)), var(--bg-panel)) padding-box,
+      conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
+  }
+  html.cycle-couleur.bordures-fil .card.dans-ecran:not(.official):not(.card-majeur){
     animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite, cycle-bord var(--cycle-duree) steps(24) infinite;
   }
   /* LES CATÉGORIES COUPÉES, ZONE PAR ZONE (Antoni, 10/11/2026 : « sépare le plus possible par catégorie, ce qu'il contrôle, pour
@@ -1974,22 +2036,22 @@
      règle porte un identifiant fantôme dans son :is() (« #zone-… ») : la spécificité d'un :is() est celle de son argument le PLUS
      spécifique, présent ou non ; le bloc du cycle contient #statsContenu et #logsPanel, donc la règle d'une zone sans identifiant (en-tête,
      fil, barres) perdait contre lui (trouvé par le test des zones : seules les fenêtres se coupaient). Elle gagne ainsi sans !important. */
-  html.cycle-couleur.sans-texte-tete :is(header.console, #zone-tete){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
-  html.cycle-couleur.sans-texte-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
-  html.cycle-couleur.sans-texte-barres :is(.barre-haut, .barre-bas, #zone-barres){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
-  html.cycle-couleur.sans-texte-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --text:var(--text-base); --text-dim:var(--text-dim-base); --hot-texte:var(--hot-texte-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-texte-tete :is(header.console, #zone-tete){ --text:var(--text-base); --text-dim:var(--text-dim-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-texte-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran, #zone-fil){ --text:var(--text-base); --text-dim:var(--text-dim-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-texte-barres :is(.barre-haut, .barre-bas, #zone-barres){ --text:var(--text-base); --text-dim:var(--text-dim-base); --c-texte:var(--accent-stat); color:var(--text-base); }
+  html.cycle-couleur.sans-texte-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --text:var(--text-base); --text-dim:var(--text-dim-base); --c-texte:var(--accent-stat); color:var(--text-base); }
   html.cycle-couleur.sans-fond-tete :is(header.console, #zone-tete){ --c-fond:var(--accent-stat); }
-  html.cycle-couleur.sans-fond-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --c-fond:var(--accent-stat); }
+  html.cycle-couleur.sans-fond-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran, #zone-fil){ --c-fond:var(--accent-stat); }
   html.cycle-couleur.sans-fond-barres :is(.barre-haut, .barre-bas, #zone-barres){ --c-fond:var(--accent-stat); }
   html.cycle-couleur.sans-fond-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --c-fond:var(--accent-stat); }
   html.cycle-couleur.sans-bord-tete :is(header.console, #zone-tete){ --c-bord:var(--accent-stat); }
-  html.cycle-couleur.sans-bord-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --c-bord:var(--accent-stat); }
+  html.cycle-couleur.sans-bord-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran, #zone-fil){ --c-bord:var(--accent-stat); }
   html.cycle-couleur.sans-bord-barres :is(.barre-haut, .barre-bas, #zone-barres){ --c-bord:var(--accent-stat); }
   html.cycle-couleur.sans-bord-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --c-bord:var(--accent-stat); }
-  html.cycle-couleur.sans-badge-tete :is(header.console, #zone-tete){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
-  html.cycle-couleur.sans-badge-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, #zone-fil){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
-  html.cycle-couleur.sans-badge-barres :is(.barre-haut, .barre-bas, #zone-barres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
-  html.cycle-couleur.sans-badge-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-c); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-tete :is(header.console, #zone-tete){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-rouge:var(--rouge-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran, #zone-fil){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-rouge:var(--rouge-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-barres :is(.barre-haut, .barre-bas, #zone-barres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-rouge:var(--rouge-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-rouge:var(--rouge-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
   /* LES RÉGLAGES DES EFFETS, REBÂTIS (Antoni, 11/11/2026 : « les paramètres couleurs, c'est le bordel »,
      rangement C avec préréglages et aperçu vivant). Un aperçu qui réagit, quatre préréglages, le détail replié
      sous « Personnaliser », le grand moment de minuit à part, et le curseur des coins dans un groupe « Écran ». */
@@ -2022,6 +2084,10 @@
   .maq-ecran .maq-corps .search-row, .maq-ecran .maq-corps .tab-row{margin-bottom:6px;}
   .maq-ecran .barre-bas{position:static !important; inset:auto !important; transform:none !important; margin:6px 10px 0; width:auto !important;}
   .maq-ecran .card{margin-bottom:6px;}
+  .maq-ecran .maq-duo{display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+  .maq-ecran .maq-duo .card{margin-bottom:0; padding:6px 10px;}
+  .maq-ecran .maq-duo .card-src-row{margin-bottom:0;}
+  .maq-ecran .maq-duo .card-title{display:none;}   /* seul le badge compte pour juger la couleur : sans le titre, le cadre reste sous les 330 px (360 avec) */   /* Actu majeure et RockstarMag côte à côte : quatre cartes l'une sous l'autre dépassaient les 330 px du cadre (406 mesurés) */
   .maq-ecran button, .maq-ecran input{min-height:34px !important;}
   .maq-ecran .card-title a{min-height:0 !important;}
   .maq-ecran .card-title{margin-bottom:0;}
@@ -2076,19 +2142,13 @@
     background:linear-gradient(90deg, var(--cycle-a), var(--cycle-b), var(--cycle-c));
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
   }
-  /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède.
-     Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui donne 1,92:1 en
-     thème clair : illisible, et resté invisible tant qu'aucun article à
-     trois sources ne tombait dans ce que le balayage de contraste rend.
-     Le 27/10/2026 le fil en a eu un, et c'est la CI de toutes les PR qui
-     est passée au rouge — Dependabot compris.
-     Le fond est teinté, donc la mesure se fait sur le fond COMPOSITÉ
-     (255,228,219 sur une carte blanche), pas sur le blanc : #b4530a, qui
-     passe 5,02:1 sur blanc, ne fait que 4,15 ici. #8f4407 donne 5,79 sur
-     la carte, 5,45 sur --bg et 5,28 sur --bg-elevated, les trois fonds où
-     le badge peut se trouver. Le sombre (6,22 et 5,76) ne bouge pas. */
-  :root{--hot-texte:#ff8c3d;}
-  html[data-theme="light"]{--hot-texte:#8f4407;}
+  /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède. Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui
+     donnait 1,92:1 en thème clair (la CI de toutes les PR est tombée le 27/10/2026). Le fond est teinté : la mesure se fait sur le
+     fond COMPOSITÉ (voir test_badge_actu_majeure_lisible), pas sur le blanc. 17/11/2026 (Antoni) : « Actu majeure » est ROUGE (celui de la section Discord, #E04F5F ; le TEXTE est éclairci à #F06F7D : #E04F5F ne faisait que 3,96:1 sur son fond à 18 %, #F06F7D fait 4,81 sur fond de carte teinté à 8 % PUIS badge à 18 %) tous thèmes et toutes phases, SANS cycle
+     (Antoni, 17/11/2026 : « le badge Actu majeure reste rouge dans tous les thèmes ») : le texte et le trait suivent --rouge-majeur, éclairci en
+     sombre, plus foncé en clair. L'orange est celui des officielles. */
+  :root{--rouge-majeur:#f06f7d; --violet-rm:#8488e7;}
+  html[data-theme="light"]{--rouge-majeur:#b3202e; --violet-rm:#5258c4;}
   :root{--langue-fr:#3380ff; --langue-en:#f87db7;}   /* 17/11/2026 : le bleu et le rose du logo (avant #3987e5 et #d95926). Écart de couleur plus faible qu'avec l'orange : 114 → 70 en sombre (protanope 97 → 49) ; la légende donne les chiffres, la barre ne repose pas sur la couleur seule. */
   html[data-theme="light"]{--langue-fr:#1f5fd9; --langue-en:#c01f6e;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
@@ -2134,6 +2194,13 @@
   .stats-jauge{height:10px; border-radius:var(--r-full); margin:12px 0 2px; overflow:hidden;
     background:color-mix(in srgb, var(--c-fond) 22%, var(--bg-panel));}
   .stats-jauge i{display:block; height:100%; background:var(--c-fond); border-radius:var(--r-full);}
+  /* LES JAUGES « LUS PAR SOURCE » PRENNENT LA COULEUR DE LEUR ONGLET (17/11/2026) : Rockstar orange, RockstarMag violet, Autres gris. Une barre est un
+     graphique : 3:1 contre le fond suffit, d'où un orange plus profond en clair (#FFAB00 ne fait que 1,9:1 sur blanc). Fixes, comme les onglets. */
+  .stats-jauge-ligne.src-rockstar .stats-jauge i{background:#FFAB00;}
+  .stats-jauge-ligne.src-rockstarmag .stats-jauge i{background:var(--violet-rm);}
+  .stats-jauge-ligne.src-autres .stats-jauge i{background:#9aa7b4;}
+  html[data-theme="light"] .stats-jauge-ligne.src-rockstar .stats-jauge i{background:#b36b00;}
+  html[data-theme="light"] .stats-jauge-ligne.src-autres .stats-jauge i{background:#566b7e;}
   .stats-tableau{margin-top:8px; font-size:12px;}
   .stats-tableau summary{cursor:pointer; color:var(--text-dim); min-height:32px;
     display:flex; align-items:center;}
@@ -2321,8 +2388,8 @@
     .tab-row:not(.tab-row-full) .tab{letter-spacing:0;}
   }
   .tag-badge.tag-hot{
-    background:color-mix(in srgb, #ff6b35 18%, transparent);
-    color:var(--hot-texte); border:1px solid var(--hot-texte); font-weight:800;
+    background:color-mix(in srgb, #e04f5f 18%, transparent);
+    color:var(--rouge-majeur); border:1px solid var(--rouge-majeur); font-weight:800;
   }
   .history-line{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap;
@@ -2881,7 +2948,7 @@
     <button class="tab" id="tabMajeur" aria-pressed="false" onclick="setTab('majeur')"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-local_fire_department"/></svg> Actu majeure <span class="tab-badge" id="badgeMajeur"></span></button>
   </div>
   <div class="tab-row rangee-sources ferme" id="rangeeSources">
-    <button class="tab" id="tabNonRockstar" aria-pressed="false" onclick="setTab('non-rockstar')">Non Rockstar <span class="tab-badge" id="badgeNonRockstar"></span></button>
+    <button class="tab" id="tabNonRockstar" aria-pressed="false" onclick="setTab('non-rockstar')">Autres <span class="tab-badge" id="badgeNonRockstar"></span></button>
     <button class="tab" id="tabRockstar" aria-pressed="false" onclick="setTab('rockstar')">Rockstar <span class="tab-badge" id="badgeRockstar"></span></button>
     <button class="tab" id="tabRockstarmag" aria-pressed="false" onclick="setTab('rockstarmag')">RockstarMag <span class="tab-badge" id="badgeRockstarmag"></span></button>
   </div>
@@ -4132,6 +4199,16 @@ const MAQUETTE_CARTES = `<div class="maq-corps">
     <div class="card-src-row"><span class="card-src">Rockstar</span><span class="official-badge">OFFICIEL ROCKSTAR</span></div>
     <h3 class="card-title"><a href="#" tabindex="-1">Un article officiel</a></h3>
   </div></div></div>
+  <div class="maq-duo">
+    <div class="card card-majeur dans-ecran"><div class="card-top"><div class="card-body">
+      <div class="card-src-row"><span class="tag-badge tag-hot">ACTU MAJEURE</span></div>
+      <h3 class="card-title"><a href="#" tabindex="-1">Un sujet repris</a></h3>
+    </div></div></div>
+    <div class="card card-rm dans-ecran"><div class="card-top"><div class="card-body">
+      <div class="card-src-row"><span class="specialist-badge badge-rm">ROCKSTARMAG</span></div>
+      <h3 class="card-title"><a href="#" tabindex="-1">Un article RM</a></h3>
+    </div></div></div>
+  </div>
 </div>`;
 function construitMaquette(){
   const m = document.getElementById("apercuCouleurs");
@@ -4205,7 +4282,7 @@ function observeCartes(){
     }, { rootMargin: "120px 0px" });
   }
   observateurCartes.disconnect();
-  for(const c of document.querySelectorAll("#feed .card, #feed .day-label, #feed .repere-nouveaux")) observateurCartes.observe(c);
+  for(const c of document.querySelectorAll("#feed .card, #feed .day-label, #feed .repere-nouveaux, #feed .resume-marker")) observateurCartes.observe(c);
 }
 
 // LES COINS DU CADRE. Défaut 32 px : mon estimation de départ, que Antoni a CONFIRMÉE au curseur sur son S26 Ultra
@@ -6576,9 +6653,9 @@ function retourFil(){
 
 // LES SOURCES REPLIÉES (idée 2) : fermées à chaque ouverture, SAUF si un filtre de source est actif : la
 // rangée s'ouvre alors toute seule pour le montrer. Jamais mémorisé (choix d'Antoni, 11/11/2026).
-const ONGLETS_SOURCE = { "non-rockstar": "Non Rockstar", "rockstar": "Rockstar", "rockstarmag": "RockstarMag" };
+const ONGLETS_SOURCE = { "non-rockstar": "Autres", "rockstar": "Rockstar", "rockstarmag": "RockstarMag" };
 // Les abréviations d'Antoni (11/11/2026) : le chevron tient ainsi toujours sur la ligne du comptage.
-const ABREVIATIONS_SOURCE = { "non-rockstar": "NR", "rockstar": "R", "rockstarmag": "RM" };
+const ABREVIATIONS_SOURCE = { "non-rockstar": "A", "rockstar": "R", "rockstarmag": "RM" };
 let sourcesOuvert = false;
 function majSources(){
   const rangee = document.getElementById("rangeeSources");
@@ -6615,6 +6692,7 @@ function basculeSources(){
 
 function setTab(t, silencieux){
   currentTab = t;
+  document.documentElement.setAttribute("data-onglet", t);   // les couleurs de l'onglet sélectionné (voir « L'ONGLET SÉLECTIONNÉ »)
   if(ONGLETS_SOURCE[t]) sourcesOuvert = true;
   majSources();
   visibleCount = PAGE_SIZE;
@@ -7761,7 +7839,7 @@ function renderCard(item, newLinks, searchQuery){
     : vignette;
   const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
   const specialistBadge = estSpecialiste(item)
-    ? `<button type="button" class="specialist-badge" onclick="filtreBadge(event,'specialist')" title="Ne montrer que les sources spécialisées">SPÉCIALISTE GTA 6</button>` : "";
+    ? `<button type="button" class="specialist-badge${item.rockstarmag ? ' badge-rm' : ''}" onclick="filtreBadge(event,'specialist')" title="Ne montrer que les sources spécialisées">${item.rockstarmag ? "ROCKSTARMAG" : "SPÉCIALISTE GTA 6"}</button>` : "";
 
   // Badges de contenu — même principe qu'estMajeur : UN SEUL juge, partagé
   // par la carte et par le filtre. Voir estFuite / estVideo plus haut.
@@ -7810,7 +7888,7 @@ function renderCard(item, newLinks, searchQuery){
   const masque = contientSpoiler(item);
 
   return `
-    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}${masque ? ' spoiler-masque' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
+    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}${item.rockstarmag && !item.official ? ' card-rm' : ''}${estMajeur(item) && !item.official ? ' card-majeur' : ''}${masque ? ' spoiler-masque' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
       ${masque ? voileSpoiler(item.link) : ""}
       <div class="card-top">
         ${thumb}
@@ -8780,9 +8858,9 @@ function sparklineStats(vals){
     + `<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="3.5" fill="var(--accent)" stroke="var(--bg-panel)" stroke-width="2"/></svg>`;
 }
 
-function jaugeStats(nom, lus, total){
+function jaugeStats(nom, lus, total, classe){
   const pct = total ? Math.round(100 * lus / total) : 0;
-  return `<div class="stats-jauge-ligne"><div class="haut"><span>${escapeHtml(nom)}</span>`
+  return `<div class="stats-jauge-ligne${classe ? " " + classe : ""}"><div class="haut"><span>${escapeHtml(nom)}</span>`
     + `<small>${lus} / ${total} · ${pct} %</small></div>`
     + `<div class="stats-jauge" role="img" aria-label="${escapeAttr(`${nom} : ${pct} % lus`)}"><i style="width:${total ? Math.max(pct, lus ? 1 : 0) : 0}%"></i></div></div>`;
 }
@@ -9225,9 +9303,9 @@ function renderStatsMoi(s){
   if(o.rockstar.total + o.rockstarmag.total + o.autre.total){
     blocs.push(blocStats("Ce que tu lis, par onglet",
       "Part lue de chaque onglet sur les mêmes jours. Rockstar compte les publications officielles de ces jours-là.",
-      jaugeStats("Rockstar", o.rockstar.lus, o.rockstar.total)
-      + jaugeStats("RockstarMag", o.rockstarmag.lus, o.rockstarmag.total)
-      + jaugeStats("Non Rockstar", o.autre.lus, o.autre.total)));
+      jaugeStats("Rockstar", o.rockstar.lus, o.rockstar.total, "src-rockstar")
+      + jaugeStats("RockstarMag", o.rockstarmag.lus, o.rockstarmag.total, "src-rockstarmag")
+      + jaugeStats("Autres", o.autre.lus, o.autre.total, "src-autres")));
   }
   blocs.push(blocStats("Entre la publication et ton écran",
     m.delaiMedianMin != null

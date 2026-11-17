@@ -2263,7 +2263,7 @@ def officiels_du_message(items, maintenant=None):
 ROCKSTARMAG_FENETRE_H = 48
 ROCKSTARMAG_ENVOYES_MAX = 50
 ROCKSTARMAG_EXTRAIT_MAX = 160
-COULEUR_ROCKSTARMAG = 0x3380FF    # --accent de l'app (17/11/2026 : le bleu du logo, avant 0x58B9FF) : l'onglet n'a pas de couleur propre
+COULEUR_ROCKSTARMAG = 0x8488E7    # le violet de RockstarMag dans l'app (--violet-rm, 17/11/2026 ; avant : le bleu du logo 0x3380FF, et avant 0x58B9FF)
 
 
 def rockstarmag_envoyes_lus(stored):
