@@ -12899,3 +12899,7 @@ sortie.
 Antoni a regardé l'app sur le S26 après la mise en ligne de la #299 : en-tête, filtres, Réglages, pastilles des
 catégories et mode compact à 48 px, puis la répétition de minuit. Rien à corriger. Première PR de documentation seule
 depuis la CI à trois niveaux : la suite navigateur doit y être « sautée ».
+
+### Liste du jour J : une case pour les actualités Rockstar — 17/11/2026
+
+Google News limite le robot depuis le 16/11 à 21h (Paris) : de 3 à 13 flux « cassés » et de 2 à 11 « muets » par passage, sans changement de notre volume ; cause non prouvée. Antoni a choisi d'attendre et de ne rien toucher au robot. Seule contrepartie : une 18e case dans `docs/liste-jour-j.html`, « Vers 00:05 : les actualités de Rockstar ouvertes à la main », pour couvrir l'officiel même si le robot est limité. Aucune source ajoutée, pas de lien cliquable. Le contrôle `test_liste_du_jour_j` passe de 17 à 18 cases ; vu échouer sur la page d'avant.
