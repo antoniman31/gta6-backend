@@ -827,7 +827,7 @@ def test_message_a_sections():
         check(m["embeds"][0]["color"] == discord_notify.COULEUR_OFFICIEL
               and m["embeds"][1]["color"] == discord_notify.COULEUR_MAJEURE
               and m["embeds"][2]["color"] == feed_store.couleur_compteur(base),
-              "orange officiel, rouge majeur, couleur du palier du compteur pour les autres")
+              "rose du logo pour l'officiel, rouge majeur, couleur du palier du compteur pour les autres")
         check(all(k not in e for e in m["embeds"] for k in ("image", "thumbnail", "video")),
               "aucune image, aucune vignette")
         liens = [re.findall(r"\]\(<([^>]+)>\)", e["description"]) for e in m["embeds"]]
@@ -5954,20 +5954,30 @@ def test_derniers_reports_tactiles_et_courbes():
           "les %d animations du cycle de couleurs passent toutes par --cycle-pas, qui vaut steps(12) "
           "(trouvé : %s) — une courbe continue refait calculer le style à chaque image"
           % (len(cycle), pas.group(1).strip() if pas else "absent"))
-    # L'orange des officiels est un APLAT sous un texte presque noir (#100800) : il doit le tenir 4,5:1 à CHAQUE
-    # étape de son dégradé, dans les deux thèmes (le contrôle « couleur fixe » ne le voyait plus, le jeton étant animé).
+    # 17/11/2026 : l'orange (#FF6B00) et son dégradé blanc-jaune-orange sont retirés (Antoni : seulement bleu, rose, blanc). La carte
+    # officielle, son badge « OFFICIEL » et « Actu majeure » passent sur les jetons -2 (rose du logo, cycle quand il est actif).
     def lum(h):
         c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
         c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
         return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
     rap = lambda a, b: (max(lum(a), lum(b)) + 0.05) / (min(lum(a), lum(b)) + 0.05)
-    sombre = re.search(r"html\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);", html)
-    clair = re.search(r'html\[data-theme="light"\]\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);', html)
-    check(sombre and clair, "les trois teintes de l'orange (aplat) existent dans les deux thèmes")
-    if sombre and clair:
-        for theme, m in (("sombre", sombre), ("clair", clair)):
-            for nom, h in zip("abc", m.groups()):
-                check(rap("#100800", h) >= 4.5, "orange %s, étape %s : le texte #100800 sur %s tient %.1f:1 (seuil 4,5)" % (theme, nom, h, rap("#100800", h)))
+    reste = [m for m in re.findall(r"--orange[\w-]*|--hot[\w-]*|--c-orange|#ff6b00|#ff6b35|#ffd60a|#100800", html, re.I)]
+    check(not reste, "plus aucun reste de l'ancien orange dans la page (trouvé : %s)" % sorted(set(reste)))
+    for theme, fond, encre in (("sombre", "#f87db7", "#1a0612"), ("clair", "#c01f6e", "#ffffff")):
+        check(rap(fond, encre) >= 4.5, "badge « OFFICIEL » %s : %s sur %s tient %.1f:1 (seuil 4,5)" % (theme, encre, fond, rap(fond, encre)))
+    check(re.search(r"\.official-badge\{[^}]*background:var\(--c-fond-2\); color:var\(--c-on-2\)", html) is not None,
+          "le badge « OFFICIEL » lit les jetons -2 (rose, puis le cycle), pas une couleur en dur")
+    # Les pages annexes et la grille de fond : la même palette (17/11/2026, « vérifie tout »), jamais l'ancien cyan, jaune ou rose fluo.
+    # Les commentaires peuvent citer l'ancienne valeur (« avant : #58b9ff ») : c'est leur rôle, on ne contrôle que le code.
+    sans_commentaires = lambda t: re.sub(r"(?<!:)//[^\n]*", "", re.sub(r"/\*.*?\*/", "", t, flags=re.S))
+    ancien = re.compile(r"#58b9ff|#19e6ff|#ffd60a|#ff5cae|#ff6b00|#f7ff00|rgba\(88, ?185, ?255", re.I)
+    for nom in ("liste-jour-j.html", "repetition.html", "essai-confettis.html"):
+        page_annexe = open("docs/" + nom, encoding="utf-8").read()
+        code = sans_commentaires(page_annexe)
+        check(not ancien.search(code) and "#3380ff" in code,
+              "%s : le bleu du logo #3380ff et plus aucune ancienne teinte (%s)" % (nom, sorted(set(ancien.findall(code)))))
+    code = sans_commentaires(html)
+    check(not ancien.search(code), "index.html : la grille de fond et le reste n'ont plus d'ancienne teinte, commentaires exceptés (%s)" % sorted(set(ancien.findall(code))))
     check(len(cadre) >= 3 and all("steps(24)" in x for x in cadre),
           "le cadre du jour J et les bordures en dégradé tournent en 24 pas, jamais en courbe continue (%d déclarations : %s)"
           % (len(cadre), cadre[:2]))

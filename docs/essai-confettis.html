@@ -18,7 +18,7 @@
   seulement une impression.
 -->
 <style>
-  :root{ color-scheme: dark; --bg:#0b0f14; --carte:#141a22; --bord:#2a3441; --texte:#e4ece8; --dim:#9aa7b4; --accent:#5ab4ff; }
+  :root{ color-scheme: dark; --bg:#0b0f14; --carte:#141a22; --bord:#2a3441; --texte:#e4ece8; --dim:#9aa7b4; --accent:#3380ff; }
   *{ box-sizing:border-box; }
   body{ margin:0; background:var(--bg); color:var(--texte); font:16px/1.45 system-ui, sans-serif; padding:20px 16px 48px; }
   main{ max-width:480px; margin:0 auto; }
@@ -41,7 +41,7 @@
   #noir .t{ position:relative; z-index:2; animation:cycle 4s steps(12) infinite; }
   #noir small{ font:600 13px ui-monospace, monospace; color:var(--dim); text-transform:none; }
   @keyframes fond{ from{ opacity:0; } to{ opacity:1; } }
-  @keyframes cycle{ 0%{ color:#19e6ff; } 33%{ color:#b388ff; } 66%{ color:#ff5cae; } 100%{ color:#19e6ff; } }
+  @keyframes cycle{ 0%{ color:#3380ff; } 33%{ color:#f87db7; } 66%{ color:#ffffff; } 100%{ color:#3380ff; } }
 </style>
 </head>
 <body>
@@ -59,10 +59,10 @@
 <script>
 (function(){
   "use strict";
-  // Les couleurs du cycle de l'app (cyan, violet, rose) et du blanc ; « riche » y ajoute or, argent et rose vif.
-  var CYCLE = ["#19e6ff", "#b388ff", "#ff5cae", "#ffffff"];
+  // Les couleurs du cycle de l'app (bleu, rose, blanc depuis le 17/11/2026) ; « riche » y ajoute or, argent et rose vif.
+  var CYCLE = ["#3380ff", "#f87db7", "#ffffff"];
   var RICHE = CYCLE.concat(["#ffd166", "#dfe6ee", "#ff3d9a"]);
-  var OR = ["#ffd166", "#ffd166", "#ffe29a", "#dfe6ee", "#ff5cae", "#19e6ff", "#b388ff", "#ffffff"];
+  var OR = ["#ffd166", "#ffd166", "#ffe29a", "#dfe6ee", "#f87db7", "#3380ff", "#ffffff"];
   // formes : poids [paillette rectangulaire, pastille ronde, serpentin]
   var VERSIONS = [
     { id: "actuel", nom: "1 · Actuel", desc: "Les confettis de l'app aujourd'hui : rectangles pleins, chute rapide et régulière.",

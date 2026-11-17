@@ -7,7 +7,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2318 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2319 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -106,7 +106,7 @@ actualités majeures échappent à la coupe. Ce que la coupe écarte va dans `do
 
 Un message par passage (`discord_notify.py`), jamais un par article. Il commence par une ligne d'aperçu pour la notification du téléphone, puis des sections dans cet ordre :
 
-1. **⭐ Officiel** (orange) : les annonces Rockstar et Take-Two, avec leur type (déduit du domaine) ; les versions française et anglaise d'une même annonce sont fusionnées.
+1. **⭐ Officiel** (rose du logo) : les annonces Rockstar et Take-Two, avec leur type (déduit du domaine) ; les versions française et anglaise d'une même annonce sont fusionnées.
 2. **🚨 Actu majeure**, 3. **📰 RockstarMag**, 4. **🎮 Les autres**.
 
 Cinq lignes au plus par section, avec « + N autres dans l'app ». Quand le message dépasse la limite de Discord, on coupe d'abord « Les autres », puis RockstarMag, puis l'actu majeure, **jamais l'officiel**.

@@ -12957,3 +12957,17 @@ Dernière des trois PR validées par Antoni sur visuels (cartes `og` et couvertu
 ### Le filet sous l'en-tête retiré — 17/11/2026
 
 Antoni a vu sur son téléphone le filet bleu → rose de 2 px de la PR B (« c'est quoi ce trait ? ») : sous le panneau du compteur et sa ligne « avant la sortie », avec un vide au-dessus, il paraissait détaché du reste. Il a choisi de l'enlever. Je l'avais montré sur la planche B1, où il se lisait à peine ; sur l'écran réel, au bas de la carte, il flottait : une erreur d'appréciation de ma part, à ne pas répéter (regarder un élément nouveau sur l'écran réel et pas seulement sur une planche à l'échelle réduite). Le contrôle correspondant vérifie désormais l'absence de trait. Cache du service worker v123.
+
+### PR E — le cycle partout, plus d'orange, les annexes à la palette — 17/11/2026
+
+Antoni : « Ça ne change pas avec le cycle » (le repère « lu jusqu'ici »), puis « vérifie vraiment tout, oublie rien ». Un scan par teinte de chaque écran (fil, onglets, stats et ses trois sous-onglets, réglages, infos, clic sur une carte ; sombre et clair, veille et jour J, cycle actif et coupé) a cherché tout ce qui sort du bleu, rose, blanc.
+
+- **Le repère « lu jusqu'ici »** n'était pas dans la liste des blocs que l'observateur marque `.dans-ecran` : il restait à la couleur de la page. Ajouté (texte, deux traits), comme les titres de jour. Il est souvent sous la ligne de flottaison (mesuré à 951 px dans un écran de 800) : il ne s'anime qu'une fois à l'écran, comme le reste.
+- **Seul reste de l'ancienne palette trouvé : l'orange** de la carte « officielle », du badge OFFICIEL et du badge « Actu majeure » (blanc → jaune → orange dans le cycle). Antoni a choisi de le passer au bleu, rose, blanc : ils lisent maintenant les jetons « -2 » (rose du logo hors cycle, accent du cycle sinon). Les jetons `--orange`, `--hot`, `--c-orange` et leur dégradé sont retirés. La section « Officiel » du bilan Discord passe aussi au rose (`COULEUR_OFFICIEL`).
+- **Une erreur de ma part, trouvée par le test** : les jetons « -2 » définis sur `<html>` se figeaient à la valeur de la page, donc la carte officielle ne tournait pas. Ils sont recalculés dans les blocs du cycle, comme `--c-fond`.
+- **Contraste** : le rose clair `#c01f6e` ne faisait que 4,29:1 sur le fond à 18 % du badge « Actu majeure » ; le fond passe à 12 % (le contrôle recalcule le fond attendu à la main : (247, 228, 238)).
+- **Pages annexes** (`liste-jour-j`, `repetition`, `essai-confettis`) et grille de fond : l'ancien cyan, le jaune et le rose fluo sont retirés ; commentaires périmés corrigés.
+- **Laissé tel quel, par choix d'Antoni (« couleurs de sens »)** : le vert (ok), le rouge (danger), le jaune ou orange du bandeau « données périmées », les étiquettes de catégorie, le cadre d'écran (sa propre animation). Dans les pages d'essai, `essai-confettis` garde des variantes or et `repetition` un violet de repère de test : ce sont des pages de comparaison, pas l'app.
+- **Contrôles** : `test_repere_lu_jusquici_dans_le_cycle` (14 contrôles, échoue sur l'ancien code par délai dépassé) ; les contrôles de l'orange (cycle, bordures, zones, README) sont réécrits pour le rose ; nouveau contrôle du pipeline « plus aucun reste de l'ancien orange » et « annexes à la palette » (échoue sur l'ancien code). Cache du service worker v124.
+- **Limite du scan** : l'écran des stats recrée son contenu pendant la mesure ; je l'ai donc vérifié autrement (aucun des 1 314 éléments bleus à t = 0 n'est encore bleu 1 s plus tard).
+

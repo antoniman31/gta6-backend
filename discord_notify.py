@@ -641,9 +641,9 @@ def send_alertes_report(articles):
     return envoyes > 0
 
 
-# Orange Rockstar, celui de la pastille OFFICIEL dans l'app (#FF6B00) :
-# la même annonce se reconnaît à la même couleur d'un canal à l'autre.
-COULEUR_OFFICIEL = 0xFF6B00
+# Rose du logo (#F87DB7), celui de la pastille OFFICIEL dans l'app depuis le 17/11/2026 (avant : l'orange Rockstar #FF6B00, retiré :
+# Antoni veut seulement bleu, rose, blanc) : la même annonce se reconnaît à la même couleur d'un canal à l'autre.
+COULEUR_OFFICIEL = 0xF87DB7
 
 
 def send_source_alerts(alertes):

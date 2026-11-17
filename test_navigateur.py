@@ -2763,15 +2763,15 @@ def test_badge_actu_majeure_lisible(nav, url):
         check("3 SOURCES" in m["libelle"],
               "[badge %s] il annonce trois sources (« %s »)" % (theme, m["libelle"]))
         # L'INSTRUMENT D'ABORD. En thème clair le fond composité doit
-        # retrouver ce que le balayage avait mesuré (255, 228, 219) ; si le
+        # retrouver ce que le calcul à la main donne : rose #c01f6e à 12 % sur blanc = (247, 228, 238) (17/11/2026 ; avant : (255, 228, 219) pour l'orange) ; si le
         # canevas ne comprenait pas la couleur, il rendrait du noir ou du
         # blanc et le rapport ci-dessous serait faux dans un sens ou
         # l'autre sans que rien ne le dise.
         if theme == "light":
-            ecart = max(abs(x - y) for x, y in zip(m["fond"], (255, 228, 219)))
+            ecart = max(abs(x - y) for x, y in zip(m["fond"], (247, 228, 238)))
             check(ecart <= 2,
                   "[badge light] l'instrument est juste : le fond composité "
-                  "retrouve (255, 228, 219) mesuré par le balayage (%s)" % m["fond"])
+                  "retrouve (247, 228, 238) calculé à la main (%s)" % m["fond"])
         check(m["ratio"] >= 4.5,
               "[badge %s] le texte se lit : %.2f:1 sur %s (exigé 4,5)"
               % (theme, m["ratio"], tuple(m["fond"])))
@@ -7988,9 +7988,10 @@ def test_bordures_du_jour_j(nav, url):
                   "[bordures] %s : les quatre tuiles ont 2 px de dégradé, pleines (%s)" % (nom, [(t["l"], t["img"], t["st"]) for t in e["tuiles"]]))
             check(e["norm"] and e["norm"]["l"] == "2px" and e["norm"]["img"],
                   "[bordures] %s : une carte ordinaire a 2 px de dégradé (%s)" % (nom, e["norm"]))
-            # L'orange suit son propre dégradé (blanc, jaune, orange) : toujours un rouge à 255, jamais un dégradé conique.
-            check(e["off"] and not e["off"]["img"] and e["off"]["coul"].startswith("rgb(255,"),
-                  "[bordures] %s : la carte officielle garde sa bordure unie dans la famille de l'orange (%s)" % (nom, e["off"]))
+            # 17/11/2026 : plus d'orange. La carte officielle garde une bordure UNIE (jamais un dégradé conique) ; sa couleur est celle du
+            # jeton -2 (accent du cycle), donc ni rouge ni orange : le rouge, à 255 avec un vert fort, est exclu.
+            check(e["off"] and not e["off"]["img"] and not re.match(r"rgb\(255, ?(1[0-9][0-9]|2[0-9][0-9]), ?0\)", e["off"]["coul"]),
+                  "[bordures] %s : la carte officielle garde sa bordure unie, sans orange (%s)" % (nom, e["off"]))
         else:
             check(all(t["l"] == "1px" and not t["img"] for t in e["tuiles"]) and e["norm"] and not e["norm"]["img"],
                   "[bordures] %s : bordures d'origine (%s)" % (nom, [t["l"] for t in e["tuiles"]]))
@@ -8015,7 +8016,7 @@ def test_bordures_du_jour_j(nav, url):
     check(all("cycle-bord" in t["anim"] for t in e["tuiles"]), "[bordures] les quatre tuiles tournent (%s)" % [t["anim"] for t in e["tuiles"]])
     check(0 < e["ecran"] < e["n"] and e["ecran"] <= 8,
           "[bordures] seules les cartes à l'écran sont marquées : %d sur %d" % (e["ecran"], e["n"]))
-    # La carte officielle (bordure orange) ne tourne que par son accent ; les autres, par l'accent ET la bordure.
+    # La carte officielle (bordure unie, jeton -2) ne tourne que par son accent ; les autres, par l'accent ET la bordure.
     check("cycle-accent+cycle-bord" in e["animEcran"] and set(e["animEcran"]) <= {"cycle-accent+cycle-bord", "cycle-accent"} and not e["animHors"],
           "[bordures] elles tournent (accent et bordure ; l'officielle, l'accent seul) et aucune carte hors écran ne tourne (%s)" % sorted(set(e["animEcran"])))
     # Défilement : de nouvelles cartes entrent, les anciennes sortent.
@@ -8970,9 +8971,9 @@ def test_categories_de_couleur(nav, url):
     ok = []
     for tt in (0, 2000):
         page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(100)
-        ok.append(page.evaluate("() => getComputedStyle(document.querySelector('#feed .card.official')).getPropertyValue('--c-orange').trim()"))
-    check(ok[0] == ok[1] == "#ff6b00",
-          "[catégories] badges coupés : l'orange des articles officiels ne tourne plus (%s)" % ok)
+        ok.append(page.evaluate("() => getComputedStyle(document.querySelector('#feed .card.official')).borderTopColor"))
+    check(ok[0] == ok[1] == "rgb(248, 125, 183)",
+          "[catégories] badges coupés : le rose des articles officiels ne tourne plus (%s)" % ok)
     ctx.close()
     # 4. La maquette : les vrais éléments, copiés, sans identifiants, qui suivent les zones ; elle tient dans l'écran.
     for largeur in (320, 390):
@@ -9012,9 +9013,45 @@ def test_categories_de_couleur(nav, url):
         ctx.close()
 
 
+def test_repere_lu_jusquici_dans_le_cycle(nav, url):
+    """Le repère « lu jusqu'ici » suit le cycle bleu, rose, blanc (Antoni, 17/11/2026 : « ça ne change pas avec le cycle »).
+
+    Il n'était pas dans la liste des blocs que l'observateur marque « .dans-ecran » : il restait à la couleur de la page. On le
+    fabrique (repriseLien) et on lit sa couleur et celle de ses deux traits à trois instants, dans les deux thèmes.
+    """
+    print("\n[cycle] le repère « lu jusqu'ici » tourne avec le cycle")
+    INJECTE = """() => { lastItems = Array.from({length: 4}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
+          description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3)}));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 4; readSet = new Set(); misDeCote = new Set();
+        repriseLien = 'https://ex.test/2'; applyFilters(); }"""
+    SONDE = """() => { const m = document.querySelector('#feed .resume-marker'); if(!m) return null;
+        const c = getComputedStyle(m), a = getComputedStyle(m, '::before');
+        return {texte: c.color, trait: a.backgroundColor, ecran: m.classList.contains('dans-ecran'), accent: c.getPropertyValue('--accent').trim()}; }"""
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    for theme, accents in (("dark", ["#3380ff", "#f87db7", "#ffffff"]), ("light", ["#1f5fd9", "#c01f6e", "#3a4350"])):
+        ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        page.evaluate(INJECTE)
+        page.wait_for_selector("#feed .resume-marker", state="attached")
+        # Le repère est souvent sous la ligne de flottaison (mesuré : à 951 px dans un écran de 800) : il ne s'anime qu'à l'écran, on l'y amène.
+        page.evaluate("() => document.querySelector('#feed .resume-marker').scrollIntoView({block: 'center'})")
+        page.wait_for_selector("#feed .resume-marker.dans-ecran", state="attached")
+        page.wait_for_timeout(500)
+        for t, hexa in zip((0, 1000, 2000), accents):
+            page.evaluate(FIGE, t)
+            page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", t)
+            page.wait_for_timeout(150)
+            m = page.evaluate(SONDE)
+            attendu = tuple(int(hexa[j:j + 2], 16) for j in (1, 3, 5))
+            check(m is not None and m["ecran"], "[repère %s %d ms] le repère est marqué « dans-ecran » (%s)" % (theme, t, m))
+            if m:
+                check(rgb(m["texte"]) == attendu, "[repère %s %d ms] son texte est au cran du cycle (%s, attendu %s)" % (theme, t, m["texte"], hexa))
+        check(not erreurs, "[repère %s] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
+        ctx.close()
+
+
 def test_tout_dans_le_cycle(nav, url):
     """Tout ce qui n'est pas blanc de base passe dans le cycle (Antoni, 11/11/2026) ; les erreurs rouges restent rouges."""
-    print("\n[cycle] statuts, textes gris, badges, orange en blanc-jaune-orange ; les erreurs restent rouges")
+    print("\n[cycle] statuts, textes gris, badges, cartes officielles dans le cycle ; les erreurs restent rouges")
     INJECTE = """() => { lastItems = Array.from({length: 6}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
           description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0}));
         lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 6; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
@@ -9025,13 +9062,12 @@ def test_tout_dans_le_cycle(nav, url):
         const danger = getComputedStyle(sonde).color; sonde.remove();
         const g = n => cs.getPropertyValue(n).trim();
         return {accent: g('--accent'), ok: g('--ok'), warn: g('--warn'), gris: g('--text-dim'), base: g('--text-dim-base'),
-                hot: g('--hot-texte'), langue: g('--langue-fr'), danger,
-                officiel: cc ? cc.borderTopColor : null, orange: carte ? cc.getPropertyValue('--orange').trim() : null,
+                langue: g('--langue-fr'), danger,
+                officiel: cc ? cc.borderTopColor : null,
                 cat: carte ? cc.getPropertyValue('--cat-bug').trim() : null, accentCarte: carte ? cc.getPropertyValue('--accent').trim() : null,
                 badge: carte && carte.querySelector('.official-badge') ? getComputedStyle(carte.querySelector('.official-badge')).backgroundColor : null}; }"""
     rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
-    for theme, accents, oranges in (("dark", ["#3380ff", "#f87db7", "#ffffff"], ["#ffffff", "#ffd60a", "#ff6b00"]),
-                                    ("light", ["#1f5fd9", "#c01f6e", "#3a4350"], ["#ffa500", "#ffc400", "#ff6b00"])):
+    for theme, accents in (("dark", ["#3380ff", "#f87db7", "#ffffff"]), ("light", ["#1f5fd9", "#c01f6e", "#3a4350"])):
         ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
         page.evaluate(INJECTE)
         page.wait_for_selector("#feed .card.official", state="attached")
@@ -9054,11 +9090,11 @@ def test_tout_dans_le_cycle(nav, url):
                   "[tout %s %d ms] les erreurs restent rouges, jamais dans le cycle (%s)" % (theme, t, m["danger"]))
             if m["cat"] is not None:
                 check(rgb(m["cat"]) == rgb(m["accentCarte"]), "[tout %s %d ms] les couleurs de catégorie d'une carte suivent l'accent (%s)" % (theme, t, m["cat"]))
-            attendu = tuple(int(oranges[i][j:j + 2], 16) for j in (1, 3, 5))
-            check(m["orange"] and rgb(m["orange"]) == attendu and rgb(m["officiel"]) == attendu,
-                  "[tout %s %d ms] l'orange des officiels est au cran %d du dégradé blanc, jaune, orange (%s, bordure %s)" % (theme, t, i + 1, m["orange"], m["officiel"]))
+            attendu = tuple(int(accents[i][j:j + 2], 16) for j in (1, 3, 5))
+            check(rgb(m["officiel"]) == attendu,
+                  "[tout %s %d ms] la bordure des officiels est au cran %d du cycle bleu, rose, blanc (bordure %s)" % (theme, t, i + 1, m["officiel"]))
             if m["badge"]:
-                check(rgb(m["badge"]) == attendu, "[tout %s %d ms] le badge « OFFICIEL » suit le même dégradé (%s)" % (theme, t, m["badge"]))
+                check(rgb(m["badge"]) == attendu, "[tout %s %d ms] le badge « OFFICIEL » suit le même cycle (%s)" % (theme, t, m["badge"]))
         check(len({v["gris"] for v in vus}) == 3 and len({v["ok"] for v in vus}) == 3,
               "[tout %s] trois instants, trois teintes différentes pour le gris et les statuts" % theme)
         check(not erreurs, "[tout %s] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
@@ -9068,8 +9104,8 @@ def test_tout_dans_le_cycle(nav, url):
     page.evaluate(INJECTE)
     page.wait_for_selector("#feed .card.official", state="attached")
     m = page.evaluate(SONDE)
-    check(m["gris"] == m["base"] and rgb(m["officiel"]) == (255, 107, 0) and rgb(m["ok"]) != rgb(m["accent"]),
-          "[tout] cycle éteint : le gris, l'orange (255, 107, 0) et le vert d'origine (%s, %s, %s)" % (m["gris"], m["officiel"], m["ok"]))
+    check(m["gris"] == m["base"] and rgb(m["officiel"]) == (248, 125, 183) and rgb(m["ok"]) != rgb(m["accent"]),
+          "[tout] cycle éteint : le gris, le rose (248, 125, 183) des officiels et le vert d'origine (%s, %s, %s)" % (m["gris"], m["officiel"], m["ok"]))
     ctx.close()
 
 
@@ -9828,6 +9864,7 @@ CONTROLES = [
     test_cycle_de_couleurs,
     test_cycle_synchronise,
     test_contraste_du_cycle,
+    test_repere_lu_jusquici_dans_le_cycle,
     test_tout_dans_le_cycle,
     test_effets_du_jour_j,
     test_coins_du_cadre,
