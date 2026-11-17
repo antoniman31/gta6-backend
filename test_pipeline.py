@@ -827,7 +827,7 @@ def test_message_a_sections():
         check(m["embeds"][0]["color"] == discord_notify.COULEUR_OFFICIEL
               and m["embeds"][1]["color"] == discord_notify.COULEUR_MAJEURE
               and m["embeds"][2]["color"] == feed_store.couleur_compteur(base),
-              "rose du logo pour l'officiel, rouge majeur, couleur du palier du compteur pour les autres")
+              "orange du logo Rockstar pour l'officiel, rouge majeur, couleur du palier du compteur pour les autres")
         check(all(k not in e for e in m["embeds"] for k in ("image", "thumbnail", "video")),
               "aucune image, aucune vignette")
         liens = [re.findall(r"\]\(<([^>]+)>\)", e["description"]) for e in m["embeds"]]
@@ -5954,23 +5954,36 @@ def test_derniers_reports_tactiles_et_courbes():
           "les %d animations du cycle de couleurs passent toutes par --cycle-pas, qui vaut steps(12) "
           "(trouvé : %s) — une courbe continue refait calculer le style à chaque image"
           % (len(cycle), pas.group(1).strip() if pas else "absent"))
-    # 17/11/2026 : l'orange (#FF6B00) et son dégradé blanc-jaune-orange sont retirés (Antoni : seulement bleu, rose, blanc). La carte
-    # officielle, son badge « OFFICIEL » et « Actu majeure » passent sur les jetons -2 (rose du logo, cycle quand il est actif).
+    # 17/11/2026 : le BADGE « OFFICIEL » est un aplat orange du logo Rockstar (#FFAB00) FIXE sous un texte presque noir (#100800) : il
+    # doit le tenir 4,5:1. La bordure tourne (orange, orange foncé ou noir, blanc) et ne porte pas de texte.
     def lum(h):
         c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
         c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
         return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
     rap = lambda a, b: (max(lum(a), lum(b)) + 0.05) / (min(lum(a), lum(b)) + 0.05)
-    reste = [m for m in re.findall(r"--orange[\w-]*|--hot[\w-]*|--c-orange|#ff6b00|#ff6b35|#ffd60a|#100800", html, re.I)]
-    check(not reste, "plus aucun reste de l'ancien orange dans la page (trouvé : %s)" % sorted(set(reste)))
-    for theme, fond, encre in (("sombre", "#f87db7", "#1a0612"), ("clair", "#c01f6e", "#ffffff")):
-        check(rap(fond, encre) >= 4.5, "badge « OFFICIEL » %s : %s sur %s tient %.1f:1 (seuil 4,5)" % (theme, encre, fond, rap(fond, encre)))
-    check(re.search(r"\.official-badge\{[^}]*background:var\(--c-fond-2\); color:var\(--c-on-2\)", html) is not None,
-          "le badge « OFFICIEL » lit les jetons -2 (rose, puis le cycle), pas une couleur en dur")
-    # Les pages annexes et la grille de fond : la même palette (17/11/2026, « vérifie tout »), jamais l'ancien cyan, jaune ou rose fluo.
+    sombre = re.search(r"html\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);", html)
+    clair = re.search(r'html\[data-theme="light"\]\{--orange-a:(#\w+); --orange-b:(#\w+); --orange-c:(#\w+);', html)
+    check(sombre and clair, "les trois teintes de la bordure des officielles existent dans les deux thèmes")
+    if sombre and clair:
+        check(sombre.group(1).lower() == clair.group(1).lower() == "#ffab00" and "--orange: #FFAB00" in html,
+              "la bordure part de l'orange du logo Rockstar, #FFAB00 (mesuré sur l'image d'Antoni)")
+        check(clair.group(2).lower() == "#000000" and sombre.group(2).lower() != "#000000",
+              "le noir du logo n'est que dans le thème clair : en sombre il ferait disparaître la bordure (%s)" % sombre.group(2))
+    check(re.search(r"\.official-badge\{[^}]*background:#FFAB00; color:#100800", html) is not None, "le badge « OFFICIEL » est orange #FFAB00 fixe")
+    # RockstarMag : badge violet FIXE (texte sur les trois fonds de chaque thème, 4,5:1) ; « Actu majeure » : rouge FIXE, sans --hot.
+    violets = re.search(r":root\{--rouge-majeur:(#\w+); --violet-rm:(#\w+);\}\s*html\[data-theme=\"light\"\]\{--rouge-majeur:(#\w+); --violet-rm:(#\w+);\}", html)
+    check(violets is not None and "--hot" not in html, "« Actu majeure » (rouge) et RockstarMag (violet) ont des jetons fixes, et le jeton --hot n'existe plus")
+    if violets:
+        rs, vs, rc, vc = violets.groups()
+        for theme, v, fonds in (("sombre", vs, ("#0a0d0f", "#10151a", "#161c22")), ("clair", vc, ("#f4f7fa", "#ffffff", "#eef3f8"))):
+            for f in fonds:
+                check(rap(v, f) >= 4.5, "badge ROCKSTARMAG %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, v, f, rap(v, f)))
+    check("class=\"specialist-badge${item.rockstarmag ? ' badge-rm' : ''}\"" in html and "card-rm" in html and "--cycle-b:#8488e7" in html,
+          "la carte et le badge RockstarMag portent leurs classes, et la bordure tourne bleu, violet, rose")
+    check(rap("#100800", "#ffab00") >= 4.5, "badge « OFFICIEL » : #100800 sur #FFAB00 tient %.1f:1 (seuil 4,5)" % rap("#100800", "#ffab00"))
     # Les commentaires peuvent citer l'ancienne valeur (« avant : #58b9ff ») : c'est leur rôle, on ne contrôle que le code.
     sans_commentaires = lambda t: re.sub(r"(?<!:)//[^\n]*", "", re.sub(r"/\*.*?\*/", "", t, flags=re.S))
-    ancien = re.compile(r"#58b9ff|#19e6ff|#ffd60a|#ff5cae|#ff6b00|#f7ff00|rgba\(88, ?185, ?255", re.I)
+    ancien = re.compile(r"#58b9ff|#19e6ff|#ff5cae|#f7ff00|rgba\(88, ?185, ?255", re.I)
     for nom in ("liste-jour-j.html", "repetition.html", "essai-confettis.html"):
         page_annexe = open("docs/" + nom, encoding="utf-8").read()
         code = sans_commentaires(page_annexe)

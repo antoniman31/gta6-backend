@@ -2763,15 +2763,15 @@ def test_badge_actu_majeure_lisible(nav, url):
         check("3 SOURCES" in m["libelle"],
               "[badge %s] il annonce trois sources (« %s »)" % (theme, m["libelle"]))
         # L'INSTRUMENT D'ABORD. En thème clair le fond composité doit
-        # retrouver ce que le calcul à la main donne : rose #c01f6e à 12 % sur blanc = (247, 228, 238) (17/11/2026 ; avant : (255, 228, 219) pour l'orange) ; si le
+        # retrouver ce que le calcul à la main donne : #e04f5f à 18 % sur blanc = (249, 223, 226) (17/11/2026 ; avant : (255, 228, 219) pour l'orange #ff6b35) ; si le
         # canevas ne comprenait pas la couleur, il rendrait du noir ou du
         # blanc et le rapport ci-dessous serait faux dans un sens ou
         # l'autre sans que rien ne le dise.
         if theme == "light":
-            ecart = max(abs(x - y) for x, y in zip(m["fond"], (247, 228, 238)))
+            ecart = max(abs(x - y) for x, y in zip(m["fond"], (249, 223, 226)))
             check(ecart <= 2,
                   "[badge light] l'instrument est juste : le fond composité "
-                  "retrouve (247, 228, 238) calculé à la main (%s)" % m["fond"])
+                  "retrouve (249, 223, 226) calculé à la main (%s)" % m["fond"])
         check(m["ratio"] >= 4.5,
               "[badge %s] le texte se lit : %.2f:1 sur %s (exigé 4,5)"
               % (theme, m["ratio"], tuple(m["fond"])))
@@ -7988,10 +7988,9 @@ def test_bordures_du_jour_j(nav, url):
                   "[bordures] %s : les quatre tuiles ont 2 px de dégradé, pleines (%s)" % (nom, [(t["l"], t["img"], t["st"]) for t in e["tuiles"]]))
             check(e["norm"] and e["norm"]["l"] == "2px" and e["norm"]["img"],
                   "[bordures] %s : une carte ordinaire a 2 px de dégradé (%s)" % (nom, e["norm"]))
-            # 17/11/2026 : plus d'orange. La carte officielle garde une bordure UNIE (jamais un dégradé conique) ; sa couleur est celle du
-            # jeton -2 (accent du cycle), donc ni rouge ni orange : le rouge, à 255 avec un vert fort, est exclu.
-            check(e["off"] and not e["off"]["img"] and not re.match(r"rgb\(255, ?(1[0-9][0-9]|2[0-9][0-9]), ?0\)", e["off"]["coul"]),
-                  "[bordures] %s : la carte officielle garde sa bordure unie, sans orange (%s)" % (nom, e["off"]))
+            # La bordure suit son propre dégradé (orange, orange foncé ou noir, blanc) : toujours unie, jamais un dégradé conique.
+            check(e["off"] and not e["off"]["img"] and e["off"]["coul"].startswith("rgb("),
+                  "[bordures] %s : la carte officielle garde sa bordure unie dans la famille de l'orange (%s)" % (nom, e["off"]))
         else:
             check(all(t["l"] == "1px" and not t["img"] for t in e["tuiles"]) and e["norm"] and not e["norm"]["img"],
                   "[bordures] %s : bordures d'origine (%s)" % (nom, [t["l"] for t in e["tuiles"]]))
@@ -8016,7 +8015,7 @@ def test_bordures_du_jour_j(nav, url):
     check(all("cycle-bord" in t["anim"] for t in e["tuiles"]), "[bordures] les quatre tuiles tournent (%s)" % [t["anim"] for t in e["tuiles"]])
     check(0 < e["ecran"] < e["n"] and e["ecran"] <= 8,
           "[bordures] seules les cartes à l'écran sont marquées : %d sur %d" % (e["ecran"], e["n"]))
-    # La carte officielle (bordure unie, jeton -2) ne tourne que par son accent ; les autres, par l'accent ET la bordure.
+    # La carte officielle (bordure orange) ne tourne que par son accent ; les autres, par l'accent ET la bordure.
     check("cycle-accent+cycle-bord" in e["animEcran"] and set(e["animEcran"]) <= {"cycle-accent+cycle-bord", "cycle-accent"} and not e["animHors"],
           "[bordures] elles tournent (accent et bordure ; l'officielle, l'accent seul) et aucune carte hors écran ne tourne (%s)" % sorted(set(e["animEcran"])))
     # Défilement : de nouvelles cartes entrent, les anciennes sortent.
@@ -8971,9 +8970,9 @@ def test_categories_de_couleur(nav, url):
     ok = []
     for tt in (0, 2000):
         page.evaluate(FIGE_TOUT, tt); page.wait_for_timeout(100)
-        ok.append(page.evaluate("() => getComputedStyle(document.querySelector('#feed .card.official')).borderTopColor"))
-    check(ok[0] == ok[1] == "rgb(248, 125, 183)",
-          "[catégories] badges coupés : le rose des articles officiels ne tourne plus (%s)" % ok)
+        ok.append(page.evaluate("() => getComputedStyle(document.querySelector('#feed .card.official')).getPropertyValue('--c-orange').trim()"))
+    check(ok[0] == ok[1] == "#ffab00",
+          "[catégories] badges coupés : l'orange des articles officiels ne tourne plus (%s)" % ok)
     ctx.close()
     # 4. La maquette : les vrais éléments, copiés, sans identifiants, qui suivent les zones ; elle tient dans l'écran.
     for largeur in (320, 390):
@@ -9010,6 +9009,53 @@ def test_categories_de_couleur(nav, url):
         check(res[0][0] == res[1][0] and res[0][1] != res[1][1],
               "[maquette %d px] la copie suit les zones : textes coupés en-tête, son titre est fixe, son « Filtres » tourne (%s)" % (largeur, res))
         check(not erreurs, "[maquette %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
+        ctx.close()
+
+
+def test_rockstarmag_badge_et_bordure(nav, url):
+    """RockstarMag a son badge (violet fixe) et sa bordure de carte (bleu, violet, rose dans le cycle) ; « Actu majeure » reste rouge.
+
+    Antoni, 17/11/2026 : « pour RockstarMag, le badge et les bordures de carte en fixe et en cycle », puis choix : badge violet fixe,
+    bordure en cycle bleu, violet, rose ; et « le badge Actu majeure reste aussi en rouge dans tous les thèmes ».
+    """
+    print("\n[cycle] RockstarMag : badge violet fixe, carte bleu, violet, rose ; Actu majeure rouge fixe")
+    INJECTE = """() => { const m = (i, o) => Object.assign({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+          date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'Source ' + i, lang: 'fr'}, o || {});
+        lastItems = [m(0, {rockstarmag: true, specialist: true, source: 'RockstarMag'}), m(1, {specialist: true, source: 'RockstarINTEL'}),
+          m(2, {extraSources: [{source: 'A', link: 'https://a.test/1'}, {source: 'B', link: 'https://b.test/1'}]}), m(3)];
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 4; readSet = new Set(); misDeCote = new Set();
+        applyFilters(); }"""
+    SONDE = """() => { const rm = document.querySelector('#feed .card.card-rm'), autre = document.querySelector('#feed .card:not(.card-rm):not(.official)');
+        const bm = rm && rm.querySelector('.specialist-badge'), bi = [...document.querySelectorAll('#feed .specialist-badge')].find(b => !b.classList.contains('badge-rm'));
+        const hot = document.querySelector('#feed .tag-hot');
+        return {rm: !!rm, texteBadge: bm ? bm.textContent.trim() : null, badge: bm ? getComputedStyle(bm).color : null,
+                badgeIntel: bi ? getComputedStyle(bi).color : null, intelTexte: bi ? bi.textContent.trim() : null,
+                accentRm: rm ? getComputedStyle(rm).getPropertyValue('--accent').trim() : null,
+                accentAutre: autre ? getComputedStyle(autre).getPropertyValue('--accent').trim() : null,
+                hot: hot ? getComputedStyle(hot).color : null, hotBord: hot ? getComputedStyle(hot).borderTopColor : null}; }"""
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    for theme, violet, rouge, rm_cycle, autre_cycle in (
+            ("dark", (132, 136, 231), (234, 101, 115), ["#3380ff", "#8488e7", "#f87db7"], ["#3380ff", "#f87db7", "#ffffff"]),
+            ("light", (82, 88, 196), (179, 32, 46), ["#1f5fd9", "#5258c4", "#c01f6e"], ["#1f5fd9", "#c01f6e", "#3a4350"])):
+        ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        page.evaluate(INJECTE)
+        page.wait_for_selector("#feed .card.card-rm", state="attached")
+        page.wait_for_selector("#feed .card.dans-ecran", state="attached")
+        page.wait_for_timeout(400)
+        for i, tt in enumerate((0, 1000, 2000)):
+            page.evaluate(FIGE, tt)
+            page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+            page.wait_for_timeout(150)
+            m = page.evaluate(SONDE)
+            check(m["rm"] and m["texteBadge"] == "ROCKSTARMAG", "[mag %s %d ms] la carte RockstarMag a son badge « ROCKSTARMAG » (%s)" % (theme, tt, m["texteBadge"]))
+            check(m["badge"] and rgb(m["badge"]) == violet, "[mag %s %d ms] le badge reste violet, sans cycle (%s, attendu %s)" % (theme, tt, m["badge"], violet))
+            check(m["intelTexte"] == "SPÉCIALISTE GTA 6", "[mag %s %d ms] une autre source spécialisée garde « SPÉCIALISTE GTA 6 » (%s)" % (theme, tt, m["intelTexte"]))
+            attendu = tuple(int(rm_cycle[i][j:j + 2], 16) for j in (1, 3, 5))
+            attendu_autre = tuple(int(autre_cycle[i][j:j + 2], 16) for j in (1, 3, 5))
+            check(m["accentRm"] and rgb(m["accentRm"]) == attendu, "[mag %s %d ms] la carte RockstarMag est au cran %d de bleu, violet, rose (%s, attendu %s)" % (theme, tt, i + 1, m["accentRm"], rm_cycle[i]))
+            check(m["accentAutre"] and rgb(m["accentAutre"]) == attendu_autre, "[mag %s %d ms] une carte ordinaire garde bleu, rose, %s (%s)" % (theme, tt, "blanc" if theme == "dark" else "gris", m["accentAutre"]))
+            check(m["hot"] and rgb(m["hot"]) == rouge and rgb(m["hotBord"]) == rouge, "[mag %s %d ms] « Actu majeure » reste rouge, texte et trait (%s, %s)" % (theme, tt, m["hot"], m["hotBord"]))
+        check(not erreurs, "[mag %s] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
         ctx.close()
 
 
@@ -9051,7 +9097,7 @@ def test_repere_lu_jusquici_dans_le_cycle(nav, url):
 
 def test_tout_dans_le_cycle(nav, url):
     """Tout ce qui n'est pas blanc de base passe dans le cycle (Antoni, 11/11/2026) ; les erreurs rouges restent rouges."""
-    print("\n[cycle] statuts, textes gris, badges, cartes officielles dans le cycle ; les erreurs restent rouges")
+    print("\n[cycle] statuts, textes gris, badges, bordure des officielles aux couleurs du logo Rockstar, « Actu majeure » rouge fixe ; les erreurs restent rouges")
     INJECTE = """() => { lastItems = Array.from({length: 6}, (_, i) => ({title: 'Un titre ' + (i + 1), link: 'https://ex.test/' + i,
           description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), official: i === 0}));
         lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 6; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
@@ -9062,12 +9108,14 @@ def test_tout_dans_le_cycle(nav, url):
         const danger = getComputedStyle(sonde).color; sonde.remove();
         const g = n => cs.getPropertyValue(n).trim();
         return {accent: g('--accent'), ok: g('--ok'), warn: g('--warn'), gris: g('--text-dim'), base: g('--text-dim-base'),
-                langue: g('--langue-fr'), danger,
-                officiel: cc ? cc.borderTopColor : null,
+                hot: g('--rouge-majeur'), langue: g('--langue-fr'), danger,
+                officiel: cc ? cc.borderTopColor : null, orange: carte ? cc.getPropertyValue('--orange').trim() : null,
                 cat: carte ? cc.getPropertyValue('--cat-bug').trim() : null, accentCarte: carte ? cc.getPropertyValue('--accent').trim() : null,
                 badge: carte && carte.querySelector('.official-badge') ? getComputedStyle(carte.querySelector('.official-badge')).backgroundColor : null}; }"""
     rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
-    for theme, accents in (("dark", ["#3380ff", "#f87db7", "#ffffff"]), ("light", ["#1f5fd9", "#c01f6e", "#3a4350"])):
+    rouge_fixe = {"dark": "#ea6573", "light": "#b3202e"}
+    for theme, accents, oranges in (("dark", ["#3380ff", "#f87db7", "#ffffff"], ["#ffab00", "#b36b00", "#ffffff"]),
+                                    ("light", ["#1f5fd9", "#c01f6e", "#3a4350"], ["#ffab00", "#000000", "#ffffff"])):
         ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
         page.evaluate(INJECTE)
         page.wait_for_selector("#feed .card.official", state="attached")
@@ -9090,11 +9138,12 @@ def test_tout_dans_le_cycle(nav, url):
                   "[tout %s %d ms] les erreurs restent rouges, jamais dans le cycle (%s)" % (theme, t, m["danger"]))
             if m["cat"] is not None:
                 check(rgb(m["cat"]) == rgb(m["accentCarte"]), "[tout %s %d ms] les couleurs de catégorie d'une carte suivent l'accent (%s)" % (theme, t, m["cat"]))
-            attendu = tuple(int(accents[i][j:j + 2], 16) for j in (1, 3, 5))
-            check(rgb(m["officiel"]) == attendu,
-                  "[tout %s %d ms] la bordure des officiels est au cran %d du cycle bleu, rose, blanc (bordure %s)" % (theme, t, i + 1, m["officiel"]))
+            attendu = tuple(int(oranges[i][j:j + 2], 16) for j in (1, 3, 5))
+            check(m["orange"] and rgb(m["orange"]) == attendu and rgb(m["officiel"]) == attendu,
+                  "[tout %s %d ms] la bordure des officiels est au cran %d du dégradé orange, orange foncé ou noir, blanc (%s, bordure %s)" % (theme, t, i + 1, m["orange"], m["officiel"]))
             if m["badge"]:
-                check(rgb(m["badge"]) == attendu, "[tout %s %d ms] le badge « OFFICIEL » suit le même cycle (%s)" % (theme, t, m["badge"]))
+                check(rgb(m["badge"]) == (255, 171, 0), "[tout %s %d ms] le badge « OFFICIEL » reste orange #FFAB00, sans cycle (%s)" % (theme, t, m["badge"]))
+            check(m["hot"].lower() == rouge_fixe[theme], "[tout %s %d ms] « Actu majeure » reste rouge, sans cycle (%s, attendu %s)" % (theme, t, m["hot"], rouge_fixe[theme]))
         check(len({v["gris"] for v in vus}) == 3 and len({v["ok"] for v in vus}) == 3,
               "[tout %s] trois instants, trois teintes différentes pour le gris et les statuts" % theme)
         check(not erreurs, "[tout %s] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
@@ -9104,8 +9153,8 @@ def test_tout_dans_le_cycle(nav, url):
     page.evaluate(INJECTE)
     page.wait_for_selector("#feed .card.official", state="attached")
     m = page.evaluate(SONDE)
-    check(m["gris"] == m["base"] and rgb(m["officiel"]) == (248, 125, 183) and rgb(m["ok"]) != rgb(m["accent"]),
-          "[tout] cycle éteint : le gris, le rose (248, 125, 183) des officiels et le vert d'origine (%s, %s, %s)" % (m["gris"], m["officiel"], m["ok"]))
+    check(m["gris"] == m["base"] and rgb(m["officiel"]) == (255, 171, 0) and rgb(m["ok"]) != rgb(m["accent"]),
+          "[tout] cycle éteint : le gris, l'orange (255, 171, 0) et le vert d'origine (%s, %s, %s)" % (m["gris"], m["officiel"], m["ok"]))
     ctx.close()
 
 
@@ -9865,6 +9914,7 @@ CONTROLES = [
     test_cycle_synchronise,
     test_contraste_du_cycle,
     test_repere_lu_jusquici_dans_le_cycle,
+    test_rockstarmag_badge_et_bordure,
     test_tout_dans_le_cycle,
     test_effets_du_jour_j,
     test_coins_du_cadre,

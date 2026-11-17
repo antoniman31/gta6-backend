@@ -641,9 +641,9 @@ def send_alertes_report(articles):
     return envoyes > 0
 
 
-# Rose du logo (#F87DB7), celui de la pastille OFFICIEL dans l'app depuis le 17/11/2026 (avant : l'orange Rockstar #FF6B00, retiré :
-# Antoni veut seulement bleu, rose, blanc) : la même annonce se reconnaît à la même couleur d'un canal à l'autre.
-COULEUR_OFFICIEL = 0xF87DB7
+# Orange du logo Rockstar (#FFAB00, mesuré sur le logo envoyé par Antoni le 17/11/2026 ; avant : #FF6B00), celui de la pastille OFFICIEL dans
+# l'app : la même annonce se reconnaît à la même couleur d'un canal à l'autre.
+COULEUR_OFFICIEL = 0xFFAB00
 
 
 def send_source_alerts(alertes):

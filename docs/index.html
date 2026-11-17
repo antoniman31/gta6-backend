@@ -72,6 +72,7 @@
        jour et de la moitié des mentions secondaires. */
     --text-dim: #7e918b;
     --text-dim-base: #7e918b;   /* la valeur d'origine, que le cycle teinte (voir « TOUT DANS LE CYCLE ») */
+    --orange: #FFAB00;   /* 17/11/2026 : l'orange MESURÉ sur le logo Rockstar envoyé par Antoni (fond du logo, deux points : #FFAB00). Avant : #FF6B00. */
     --accent: #3380ff;   /* 17/11/2026 : le bleu du logo d'Antoni, éclairci pour tenir 4,5:1 (avant : #58b9ff). 4,64:1 sur --bg-elevated, 5,27 sur --bg. */
     /* Ce qui s'écrit SUR un aplat --accent. Bascule avec le thème : le bleu
        moyen du sombre demande du presque-noir #0b0b14 (5,29:1 ; avant le 17/11/2026 : #06131f sur #58b9ff, 8,74:1), le bleu profond du
@@ -120,6 +121,7 @@
        surélevé, ce que seule une mesure élément par élément fait apparaître. */
     --text-dim: #566b7e;
     --text-dim-base: #566b7e;
+    --orange: #FFAB00;
     /* 6,23:1 sur --bg, 6,70 sur une carte blanche. Était #5493ff — le bleu
        du thème SOMBRE, recopié tel quel, à 2,79:1. C'est la couleur du
        « _WATCH » du logo, du compte à rebours, des libellés de jour et de
@@ -780,12 +782,12 @@
   .card-thumb-lien{display:contents;}
   .card-favicon{width:14px; height:14px; border-radius:var(--r-xs); vertical-align:middle; margin-right:5px;}
   .card.official{
-    border-color:var(--c-bord-2); border-width:1.5px;
-    background:linear-gradient(180deg, color-mix(in srgb, var(--c-fond-2) 8%, var(--bg-panel)), var(--bg-panel));
+    border-color:var(--c-orange); border-width:1.5px;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--c-orange) 8%, var(--bg-panel)), var(--bg-panel));
   }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
-    background:var(--c-fond-2); color:var(--c-on-2); border-radius:var(--r-sm);
+    background:#FFAB00; color:#100800; border-radius:var(--r-sm);   /* orange du logo Rockstar, FIXE : ni cycle ni thème */
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -1009,6 +1011,12 @@
     background:transparent; color:var(--c-texte); border:1px solid var(--c-bord); border-radius:var(--r-sm);
     letter-spacing:0.03em; white-space:nowrap;
   }
+  /* ROCKSTARMAG (Antoni, 17/11/2026) : un badge à lui, violet FIXE (#8488E7 en sombre, #5258C4 en clair : 6,18 et 5,5:1 mesurés), et une
+     bordure de carte qui tourne bleu, violet, rose quand le cycle est actif (les deux dernières teintes de LA CARTE seulement : le reste du
+     fil garde bleu, rose, blanc). Les jetons --cycle-b et --cycle-c sont redéfinis sur la carte, donc ses animations les lisent. */
+  .specialist-badge.badge-rm{color:var(--violet-rm); border-color:var(--violet-rm);}
+  html.cycle-couleur .card.card-rm{--cycle-b:#8488e7; --cycle-c:#f87db7;}
+  html[data-theme="light"].cycle-couleur .card.card-rm{--cycle-b:#5258c4; --cycle-c:#c01f6e;}
   .card-src-row{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; margin-bottom:6px;}
   .card-src{
     font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-texte);
@@ -1663,6 +1671,7 @@
      --accent-stat, l'accent FIXE de la page (rose le jour J, bleu avant), qui ne tourne pas. Les couleurs de statut gardent
      leur valeur d'origine dans des jetons « -base », figés ici, au niveau de la page, avant que le cycle ne les remplace. */
   html{--c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent); --accent-stat:var(--accent);
+    --c-orange:var(--orange);
     --ok-base:var(--ok); --warn-base:var(--warn); --langue-fr-base:var(--langue-fr); --langue-en-base:var(--langue-en);
     --cat-bug-base:var(--cat-bug); --cat-maj-base:var(--cat-maj); --cat-trophee-base:var(--cat-trophee); --cat-ventes-base:var(--cat-ventes); --cat-soluce-base:var(--cat-soluce); --cat-perf-base:var(--cat-perf); --cat-online-base:var(--cat-online); --cat-test-base:var(--cat-test); --cat-gameplay-base:var(--cat-gameplay); --cat-mod-base:var(--cat-mod); --cat-lore-base:var(--cat-lore); --cat-autre-base:var(--cat-autre); --cat-astuce-base:var(--cat-astuce); --cat-speedrun-base:var(--cat-speedrun);}
   html[data-theme="light"]{--cycle-a:#1f5fd9; --cycle-b:#c01f6e; --cycle-c:#3a4350;}
@@ -1720,12 +1729,17 @@
   .apropos-marque b{display:block; font:800 16px 'JetBrains Mono',monospace;}
   .apropos-marque b span{color:var(--accent);}
   .apropos-marque small{display:block; margin-top:2px; font-size:12px; color:var(--text-dim);}
-  /* 17/11/2026 : l'orange (et son dégradé blanc-jaune-orange du 11/11) est retiré : la carte officielle, le badge « OFFICIEL » et
-     « Actu majeure » prennent le rose du logo (--accent-2) et suivent le cycle comme le reste (Antoni : seules trois teintes, bleu / rose / blanc). */
+  /* LA BORDURE DES OFFICIELLES TOURNE AUX COULEURS DU LOGO ROCKSTAR (Antoni, 17/11/2026, après avoir envoyé le logo : « le rose était une
+     mauvaise idée pour le cycle orange / blanc » ; avant : blanc, jaune, orange du 11/11/2026) : orange #FFAB00 (mesuré sur le logo),
+     puis noir, puis blanc. En sombre, le noir ferait disparaître la bordure sur le fond : un orange foncé #B36B00 le remplace. Le BADGE
+     « OFFICIEL », lui, reste orange #FFAB00 dans tous les thèmes et toutes les phases (choix d'Antoni, planche du 17/11/2026). */
+  @property --orange{syntax:"<color>"; inherits:true; initial-value:#FFAB00;}
+  html{--orange-a:#ffab00; --orange-b:#b36b00; --orange-c:#ffffff;}
+  html[data-theme="light"]{--orange-a:#ffab00; --orange-b:#000000; --orange-c:#ffffff;}
   @keyframes cycle-accent{
-    0%,100%{--accent:var(--cycle-a);}
-    25%,75%{--accent:var(--cycle-b);}
-    50%{--accent:var(--cycle-c);}
+    0%,100%{--accent:var(--cycle-a); --orange:var(--orange-a);}
+    25%,75%{--accent:var(--cycle-b); --orange:var(--orange-b);}
+    50%{--accent:var(--cycle-c); --orange:var(--orange-c);}
   }
   @keyframes cycle-chiffre{
     0%,100%{color:#3380ff; text-shadow:0 0 10px rgba(51,128,255,.7);}
@@ -1755,7 +1769,7 @@
   }
   /* TOUT DANS LE CYCLE (Antoni, 11/11/2026 : « plus de couleurs dans le cycle, tout ce qui n'est pas blanc de
      base »). Choix d'Antoni sur planche : les statuts vert et jaune, les textes gris (teinte à 55 %), les
-     badges de catégorie et de langue, le rose des cartes officielles. LES ERREURS ROUGES (--danger) RESTENT
+     badges de catégorie et de langue, l'orange en orange-jaune-blanc. LES ERREURS ROUGES (--danger) RESTENT
      ROUGES, sur son conseil : une panne doit se reconnaître d'un coup d'œil. Les jetons sont posés sur les
      MÊMES blocs que l'accent, et sur les cartes à l'écran : ils se recalculent à chaque pas avec l'accent local. */
   html.cycle-couleur :is(header.console, .barre-haut, .barre-bas, .search-row, .tab-row, .stats-onglets,
@@ -1767,6 +1781,7 @@
        changer --text ne repeint donc pas les textes qui n'ont pas leur propre règle (étiquettes, titres de pages, cellules). */
     color:var(--text);
     --ok:var(--accent); --warn:var(--accent);
+    --c-orange:var(--orange);
     --c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent);
     /* Les jetons « -2 » (rose hors cycle) sont aussi recalculés ICI : définis sur <html>, ils se figeraient à la valeur de la page et
        la carte officielle, le badge « OFFICIEL », « Actu majeure » et le repère « lu jusqu'ici » ne tourneraient pas (mesuré le 17/11/2026). */
@@ -1935,7 +1950,7 @@
      l'écran, et la MÊME horloge : l'angle --bord-ang est animé par cycle-bord (24 pas en 4 s, comme cycle-cadre),
      recalé sur l'horloge du document comme toutes les animations « cycle-* ». Les cartes ne tournent que
      LORSQU'ELLES SONT À L'ÉCRAN (classe dans-ecran, posée par un IntersectionObserver) : une animation par carte
-     coûtait 21 ms par image avec 500 cartes. Les cartes « officielles » ont une bordure rose du logo (jeton -2), qui porte un
+     coûtait 21 ms par image avec 500 cartes. Les cartes « officielles » gardent leur bordure orange, qui porte un
      sens. La tuile « jours » grisée à 00 prend la bordure aussi (pleine, un dégradé ne se pointille pas) ; son
      texte reste gris. */
   @property --bord-ang{syntax:"<angle>"; inherits:true; initial-value:0deg;}
@@ -1977,10 +1992,10 @@
   html.cycle-couleur.sans-bord-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran, #zone-fil){ --c-bord:var(--accent-stat); }
   html.cycle-couleur.sans-bord-barres :is(.barre-haut, .barre-bas, #zone-barres){ --c-bord:var(--accent-stat); }
   html.cycle-couleur.sans-bord-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --c-bord:var(--accent-stat); }
-  html.cycle-couleur.sans-badge-tete :is(header.console, #zone-tete){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
-  html.cycle-couleur.sans-badge-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran, #zone-fil){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
-  html.cycle-couleur.sans-badge-barres :is(.barre-haut, .barre-bas, #zone-barres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
-  html.cycle-couleur.sans-badge-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-tete :is(header.console, #zone-tete){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-fil :is(.search-row, .tab-row, .feed-count, .card.dans-ecran, .day-label.dans-ecran, .repere-nouveaux.dans-ecran, .resume-marker.dans-ecran, #zone-fil){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-barres :is(.barre-haut, .barre-bas, #zone-barres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
+  html.cycle-couleur.sans-badge-fenetres :is(.page-reglages, .overlay, #statsContenu, .stats-onglets, #logsPanel, .resume-chip, .info-btn, #zone-fenetres){ --ok:var(--ok-base); --warn:var(--warn-base); --langue-fr:var(--langue-fr-base); --langue-en:var(--langue-en-base); --c-orange:var(--orange-a); --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast); --cat-bug:var(--cat-bug-base); --cat-maj:var(--cat-maj-base); --cat-trophee:var(--cat-trophee-base); --cat-ventes:var(--cat-ventes-base); --cat-soluce:var(--cat-soluce-base); --cat-perf:var(--cat-perf-base); --cat-online:var(--cat-online-base); --cat-test:var(--cat-test-base); --cat-gameplay:var(--cat-gameplay-base); --cat-mod:var(--cat-mod-base); --cat-lore:var(--cat-lore-base); --cat-autre:var(--cat-autre-base); --cat-astuce:var(--cat-astuce-base); --cat-speedrun:var(--cat-speedrun-base); }
   /* LES RÉGLAGES DES EFFETS, REBÂTIS (Antoni, 11/11/2026 : « les paramètres couleurs, c'est le bordel »,
      rangement C avec préréglages et aperçu vivant). Un aperçu qui réagit, quatre préréglages, le détail replié
      sous « Personnaliser », le grand moment de minuit à part, et le curseur des coins dans un groupe « Écran ». */
@@ -2067,8 +2082,13 @@
     background:linear-gradient(90deg, var(--cycle-a), var(--cycle-b), var(--cycle-c));
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
   }
-  /* LE BADGE « ACTU MAJEURE » : texte et trait en rose du logo, jeton --c-texte-2 (cycle quand il est actif). Il écrivait #ff8c3d sur un
-     orange à 18 % (1,92:1 en clair, qui a fait tomber la CI le 27/10/2026) ; la mesure se fait désormais sur le fond composité (voir le test). */
+  /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède. Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui
+     donnait 1,92:1 en thème clair (la CI de toutes les PR est tombée le 27/10/2026). Le fond est teinté : la mesure se fait sur le
+     fond COMPOSITÉ (voir test_badge_actu_majeure_lisible), pas sur le blanc. 17/11/2026 (Antoni) : « Actu majeure » est ROUGE (celui de la section Discord, #E04F5F ; le TEXTE est éclairci à #EA6573 : #E04F5F ne faisait que 3,96:1 sur son fond à 18 %, #EA6573 4,8) tous thèmes et toutes phases, SANS cycle
+     (Antoni, 17/11/2026 : « le badge Actu majeure reste rouge dans tous les thèmes ») : le texte et le trait suivent --rouge-majeur, éclairci en
+     sombre, plus foncé en clair. L'orange est celui des officielles. */
+  :root{--rouge-majeur:#ea6573; --violet-rm:#8488e7;}
+  html[data-theme="light"]{--rouge-majeur:#b3202e; --violet-rm:#5258c4;}
   :root{--langue-fr:#3380ff; --langue-en:#f87db7;}   /* 17/11/2026 : le bleu et le rose du logo (avant #3987e5 et #d95926). Écart de couleur plus faible qu'avec l'orange : 114 → 70 en sombre (protanope 97 → 49) ; la légende donne les chiffres, la barre ne repose pas sur la couleur seule. */
   html[data-theme="light"]{--langue-fr:#1f5fd9; --langue-en:#c01f6e;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
@@ -2301,8 +2321,8 @@
     .tab-row:not(.tab-row-full) .tab{letter-spacing:0;}
   }
   .tag-badge.tag-hot{
-    background:color-mix(in srgb, var(--c-fond-2) 12%, transparent);   /* 12 % et non 18 : le rose clair #c01f6e ne fait que 4,29:1 sur son propre fond à 18 % */
-    color:var(--c-texte-2); border:1px solid var(--c-texte-2); font-weight:800;
+    background:color-mix(in srgb, #e04f5f 18%, transparent);
+    color:var(--rouge-majeur); border:1px solid var(--rouge-majeur); font-weight:800;
   }
   .history-line{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap;
@@ -3098,7 +3118,7 @@
           L'accent de l'app (boutons actifs, onglets, liens, graphiques) et les chiffres du compteur
           passent en continu du cyan au rose. Le jour de la sortie, c'est activé d'office : décoche
           pour l'arrêter. Tu peux aussi l'allumer n'importe quel autre jour. Les couleurs de statut
-          (vert, jaune, rouge) et les badges de catégorie ne bougent pas.
+          (vert, orange, rouge) et les badges de catégorie ne bougent pas.
         </div>
         <div class="setting-desc" id="cycleCouleursReduit" hidden>
           Ton téléphone réduit les animations : les couleurs restent fixes.
@@ -3945,7 +3965,7 @@ const COUL_FAMILLES = [
   { id: "texte", cle: "coulTextes", nom: "Textes et icônes", aide: "Le blanc et les gris des textes, les icônes, le texte des champs. Les titres d'articles restent blancs." },
   { id: "fond",  cle: "coulFonds",  nom: "Fonds, boutons et onglets", aide: "Les fonds colorés : bouton et onglet actifs, barre du bas, fonds teintés, graphiques. Les cases à cocher et le curseur de saisie ont leur case dans le détail." },
   { id: "bord",  cle: "coulBordures", nom: "Bordures", aide: "Les bordures en dégradé des tuiles du compteur et des cartes d'article, et les traits d'accent." },
-  { id: "badge", cle: "coulBadges", nom: "Badges et statuts", aide: "Les pastilles de langue et de catégorie, les voyants vert et jaune, le rose des articles officiels. Les erreurs restent rouges." },
+  { id: "badge", cle: "coulBadges", nom: "Badges et statuts", aide: "Les pastilles de langue et de catégorie, les voyants vert et jaune, l'orange des articles officiels. Les erreurs restent rouges." },
 ];
 const COUL_ZONES = [
   { id: "tete",     nom: "En-tête et compteur" },
@@ -7741,7 +7761,7 @@ function renderCard(item, newLinks, searchQuery){
     : vignette;
   const officialBadge = item.official ? `<span class="official-badge">OFFICIEL ROCKSTAR</span>` : "";
   const specialistBadge = estSpecialiste(item)
-    ? `<button type="button" class="specialist-badge" onclick="filtreBadge(event,'specialist')" title="Ne montrer que les sources spécialisées">SPÉCIALISTE GTA 6</button>` : "";
+    ? `<button type="button" class="specialist-badge${item.rockstarmag ? ' badge-rm' : ''}" onclick="filtreBadge(event,'specialist')" title="Ne montrer que les sources spécialisées">${item.rockstarmag ? "ROCKSTARMAG" : "SPÉCIALISTE GTA 6"}</button>` : "";
 
   // Badges de contenu — même principe qu'estMajeur : UN SEUL juge, partagé
   // par la carte et par le filtre. Voir estFuite / estVideo plus haut.
@@ -7790,7 +7810,7 @@ function renderCard(item, newLinks, searchQuery){
   const masque = contientSpoiler(item);
 
   return `
-    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}${masque ? ' spoiler-masque' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
+    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}${item.rockstarmag && !item.official ? ' card-rm' : ''}${masque ? ' spoiler-masque' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
       ${masque ? voileSpoiler(item.link) : ""}
       <div class="card-top">
         ${thumb}
