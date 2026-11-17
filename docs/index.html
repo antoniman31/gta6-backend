@@ -785,6 +785,15 @@
     border-color:var(--c-orange); border-width:1.5px;
     background:linear-gradient(180deg, color-mix(in srgb, var(--c-orange) 8%, var(--bg-panel)), var(--bg-panel));
   }
+  /* LES BORDURES DE ROCKSTARMAG ET D'ACTU MAJEURE (Antoni, 17/11/2026 : « rajoute des bordures à RockstarMag et Actu majeure ») : 1,5 px comme
+     les officielles. RockstarMag : violet FIXE, que le dégradé bleu, violet, rose du jour J remplace (il lit --cycle-b et --cycle-c de la
+     carte, voir plus bas). Actu majeure : rouge FIXE, un léger voile rouge à 8 % ; elle est exclue du dégradé du jour J, comme les
+     officielles : le rouge garde son sens. Une carte à la fois RockstarMag et Actu majeure prend le rouge (règle écrite en dernier). */
+  .card.card-rm{border-color:var(--violet-rm); border-width:1.5px;}
+  .card.card-majeur{
+    border-color:var(--rouge-majeur); border-width:1.5px;
+    background:linear-gradient(180deg, color-mix(in srgb, #e04f5f 8%, var(--bg-panel)), var(--bg-panel));
+  }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
     background:#FFAB00; color:#100800; border-radius:var(--r-sm);   /* orange du logo Rockstar, FIXE : ni cycle ni thème */
@@ -1955,7 +1964,7 @@
      texte reste gris. */
   @property --bord-ang{syntax:"<angle>"; inherits:true; initial-value:0deg;}
   @keyframes cycle-bord{from{--bord-ang:0deg;} to{--bord-ang:360deg;}}
-  html.bordures-fil .card:not(.official), html.bordures-tete .cd-t{
+  html.bordures-fil .card:not(.official):not(.card-majeur), html.bordures-tete .cd-t{
     border:var(--bord-ep) solid transparent;
     background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
       conic-gradient(from var(--bord-ang), var(--cycle-a), var(--cycle-b), var(--cycle-c), var(--cycle-b), var(--cycle-a)) border-box;
@@ -1969,7 +1978,7 @@
   html.cycle-couleur :is(.day-label, .repere-nouveaux, .resume-marker).dans-ecran{animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite;}
   /* LE SOUS-TITRE « GTA VI EST SORTI » : avec le cycle, un aplat à l'accent (le dégradé figé ne tournait pas). */
   html.cadre-j.cycle-couleur .compteur-sous{background:none; -webkit-text-fill-color:currentColor; color:var(--c-texte);}
-  html.cycle-couleur.bordures-fil .card.dans-ecran:not(.official){
+  html.cycle-couleur.bordures-fil .card.dans-ecran:not(.official):not(.card-majeur){
     animation:cycle-accent var(--cycle-duree) var(--cycle-pas) infinite, cycle-bord var(--cycle-duree) steps(24) infinite;
   }
   /* LES CATÉGORIES COUPÉES, ZONE PAR ZONE (Antoni, 10/11/2026 : « sépare le plus possible par catégorie, ce qu'il contrôle, pour
@@ -2084,10 +2093,10 @@
   }
   /* LE BADGE « ACTU MAJEURE », même défaut que le compteur et même remède. Il écrivait #ff8c3d sur un fond d'orange à 18 %, ce qui
      donnait 1,92:1 en thème clair (la CI de toutes les PR est tombée le 27/10/2026). Le fond est teinté : la mesure se fait sur le
-     fond COMPOSITÉ (voir test_badge_actu_majeure_lisible), pas sur le blanc. 17/11/2026 (Antoni) : « Actu majeure » est ROUGE (celui de la section Discord, #E04F5F ; le TEXTE est éclairci à #EA6573 : #E04F5F ne faisait que 3,96:1 sur son fond à 18 %, #EA6573 4,8) tous thèmes et toutes phases, SANS cycle
+     fond COMPOSITÉ (voir test_badge_actu_majeure_lisible), pas sur le blanc. 17/11/2026 (Antoni) : « Actu majeure » est ROUGE (celui de la section Discord, #E04F5F ; le TEXTE est éclairci à #F06F7D : #E04F5F ne faisait que 3,96:1 sur son fond à 18 %, #F06F7D fait 4,81 sur fond de carte teinté à 8 % PUIS badge à 18 %) tous thèmes et toutes phases, SANS cycle
      (Antoni, 17/11/2026 : « le badge Actu majeure reste rouge dans tous les thèmes ») : le texte et le trait suivent --rouge-majeur, éclairci en
      sombre, plus foncé en clair. L'orange est celui des officielles. */
-  :root{--rouge-majeur:#ea6573; --violet-rm:#8488e7;}
+  :root{--rouge-majeur:#f06f7d; --violet-rm:#8488e7;}
   html[data-theme="light"]{--rouge-majeur:#b3202e; --violet-rm:#5258c4;}
   :root{--langue-fr:#3380ff; --langue-en:#f87db7;}   /* 17/11/2026 : le bleu et le rose du logo (avant #3987e5 et #d95926). Écart de couleur plus faible qu'avec l'orange : 114 → 70 en sombre (protanope 97 → 49) ; la légende donne les chiffres, la barre ne repose pas sur la couleur seule. */
   html[data-theme="light"]{--langue-fr:#1f5fd9; --langue-en:#c01f6e;}
@@ -7810,7 +7819,7 @@ function renderCard(item, newLinks, searchQuery){
   const masque = contientSpoiler(item);
 
   return `
-    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}${item.rockstarmag && !item.official ? ' card-rm' : ''}${masque ? ' spoiler-masque' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
+    <div class="card ${isNew ? 'new' : ''} ${isRead ? 'read' : ''} ${item.official ? 'official' : ''}${item.rockstarmag && !item.official ? ' card-rm' : ''}${estMajeur(item) && !item.official ? ' card-majeur' : ''}${masque ? ' spoiler-masque' : ''}" id="card-${safeId}" data-lien="${escapeAttr(item.link)}">
       ${masque ? voileSpoiler(item.link) : ""}
       <div class="card-top">
         ${thumb}

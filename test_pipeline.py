@@ -5980,6 +5980,9 @@ def test_derniers_reports_tactiles_et_courbes():
                 check(rap(v, f) >= 4.5, "badge ROCKSTARMAG %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, v, f, rap(v, f)))
     check("class=\"specialist-badge${item.rockstarmag ? ' badge-rm' : ''}\"" in html and "card-rm" in html and "--cycle-b:#8488e7" in html,
           "la carte et le badge RockstarMag portent leurs classes, et la bordure tourne bleu, violet, rose")
+    check(".card.card-majeur{" in html and "estMajeur(item) && !item.official ? ' card-majeur'" in html
+          and html.count(":not(.official):not(.card-majeur)") == 2 and ".card.card-rm{border-color:var(--violet-rm)" in html,
+          "les cartes « Actu majeure » (rouge) et RockstarMag (violet) ont leur bordure fixe, et la première est exclue du dégradé du jour J")
     check(rap("#100800", "#ffab00") >= 4.5, "badge « OFFICIEL » : #100800 sur #FFAB00 tient %.1f:1 (seuil 4,5)" % rap("#100800", "#ffab00"))
     # Les commentaires peuvent citer l'ancienne valeur (« avant : #58b9ff ») : c'est leur rôle, on ne contrôle que le code.
     sans_commentaires = lambda t: re.sub(r"(?<!:)//[^\n]*", "", re.sub(r"/\*.*?\*/", "", t, flags=re.S))

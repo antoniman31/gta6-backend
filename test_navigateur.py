@@ -2737,7 +2737,12 @@ def test_badge_actu_majeure_lisible(nav, url):
             cv.width = cv.height = 1;
             const g = cv.getContext('2d', {willReadFrequently: true});
             const lire = () => [...g.getImageData(0, 0, 1, 1).data].slice(0, 3);
-            g.fillStyle = getComputedStyle(carte).backgroundColor;
+            // Le fond de la carte « Actu majeure » est un DÉGRADÉ (voile rouge à 8 % sur le panneau) : son backgroundColor est transparent.
+            // On peint donc le panneau, puis le voile, puis le fond du badge : le pire cas réel, mesuré le 17/11/2026.
+            const sonde = document.createElement('span'); sonde.style.background = 'var(--bg-panel)'; carte.appendChild(sonde);
+            g.fillStyle = getComputedStyle(sonde).backgroundColor; sonde.remove();
+            g.fillRect(0, 0, 1, 1);
+            g.fillStyle = 'rgba(224, 79, 95, 0.08)';
             g.fillRect(0, 0, 1, 1);
             g.fillStyle = getComputedStyle(badge).backgroundColor;
             g.fillRect(0, 0, 1, 1);
@@ -2763,15 +2768,15 @@ def test_badge_actu_majeure_lisible(nav, url):
         check("3 SOURCES" in m["libelle"],
               "[badge %s] il annonce trois sources (« %s »)" % (theme, m["libelle"]))
         # L'INSTRUMENT D'ABORD. En thème clair le fond composité doit
-        # retrouver ce que le calcul à la main donne : #e04f5f à 18 % sur blanc = (249, 223, 226) (17/11/2026 ; avant : (255, 228, 219) pour l'orange #ff6b35) ; si le
+        # retrouver ce que le calcul à la main donne : #e04f5f à 8 % puis 18 % sur blanc = (247, 212, 216) (17/11/2026 ; avant : (255, 228, 219) pour l'orange #ff6b35) ; si le
         # canevas ne comprenait pas la couleur, il rendrait du noir ou du
         # blanc et le rapport ci-dessous serait faux dans un sens ou
         # l'autre sans que rien ne le dise.
         if theme == "light":
-            ecart = max(abs(x - y) for x, y in zip(m["fond"], (249, 223, 226)))
+            ecart = max(abs(x - y) for x, y in zip(m["fond"], (247, 212, 216)))
             check(ecart <= 2,
                   "[badge light] l'instrument est juste : le fond composité "
-                  "retrouve (249, 223, 226) calculé à la main (%s)" % m["fond"])
+                  "retrouve (247, 212, 216) calculé à la main (%s)" % m["fond"])
         check(m["ratio"] >= 4.5,
               "[badge %s] le texte se lit : %.2f:1 sur %s (exigé 4,5)"
               % (theme, m["ratio"], tuple(m["fond"])))
@@ -9032,10 +9037,13 @@ def test_rockstarmag_badge_et_bordure(nav, url):
                 badgeIntel: bi ? getComputedStyle(bi).color : null, intelTexte: bi ? bi.textContent.trim() : null,
                 accentRm: rm ? getComputedStyle(rm).getPropertyValue('--accent').trim() : null,
                 accentAutre: autre ? getComputedStyle(autre).getPropertyValue('--accent').trim() : null,
-                hot: hot ? getComputedStyle(hot).color : null, hotBord: hot ? getComputedStyle(hot).borderTopColor : null}; }"""
+                hot: hot ? getComputedStyle(hot).color : null, hotBord: hot ? getComputedStyle(hot).borderTopColor : null,
+                carteMajeur: hot ? getComputedStyle(hot.closest('.card')).borderTopColor : null,
+                carteMajeurLarg: hot ? getComputedStyle(hot.closest('.card')).borderTopWidth : null,
+                carteMajeurFond: hot ? getComputedStyle(hot.closest('.card')).backgroundImage : null}; }"""
     rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
     for theme, violet, rouge, rm_cycle, autre_cycle in (
-            ("dark", (132, 136, 231), (234, 101, 115), ["#3380ff", "#8488e7", "#f87db7"], ["#3380ff", "#f87db7", "#ffffff"]),
+            ("dark", (132, 136, 231), (240, 111, 125), ["#3380ff", "#8488e7", "#f87db7"], ["#3380ff", "#f87db7", "#ffffff"]),
             ("light", (82, 88, 196), (179, 32, 46), ["#1f5fd9", "#5258c4", "#c01f6e"], ["#1f5fd9", "#c01f6e", "#3a4350"])):
         ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
         page.evaluate(INJECTE)
@@ -9055,6 +9063,17 @@ def test_rockstarmag_badge_et_bordure(nav, url):
             check(m["accentRm"] and rgb(m["accentRm"]) == attendu, "[mag %s %d ms] la carte RockstarMag est au cran %d de bleu, violet, rose (%s, attendu %s)" % (theme, tt, i + 1, m["accentRm"], rm_cycle[i]))
             check(m["accentAutre"] and rgb(m["accentAutre"]) == attendu_autre, "[mag %s %d ms] une carte ordinaire garde bleu, rose, %s (%s)" % (theme, tt, "blanc" if theme == "dark" else "gris", m["accentAutre"]))
             check(m["hot"] and rgb(m["hot"]) == rouge and rgb(m["hotBord"]) == rouge, "[mag %s %d ms] « Actu majeure » reste rouge, texte et trait (%s, %s)" % (theme, tt, m["hot"], m["hotBord"]))
+            # LES BORDURES (17/11/2026) : la carte « Actu majeure » a sa bordure ROUGE unie à chaque phase (jamais le dégradé du cycle).
+            check(m["carteMajeur"] and rgb(m["carteMajeur"]) == rouge and m["carteMajeurLarg"] in ("1px", "1.5px") and "conic-gradient" not in (m["carteMajeurFond"] or ""),
+                  "[mag %s %d ms] la carte « Actu majeure » a une bordure rouge unie de 1,5 px (%s, %s)" % (theme, tt, m["carteMajeur"], m["carteMajeurLarg"]))
+        # (Chromium arrondit une bordure de 1,5 px à 1 px quand l'écran a un pixel par pixel CSS, comme ici ; sur un téléphone elle fait 1,5.)
+        # La carte RockstarMag : bordure violette de 1,5 px SANS cycle (cycle coupé), dégradé bleu-violet-rose avec le cycle (vérifié plus haut par --accent).
+        ctx2, page2, _ = _ouvre_cycle(nav, url, "2026-11-12T10:00:00Z", False, theme)
+        page2.evaluate(INJECTE)
+        page2.wait_for_selector("#feed .card.card-rm", state="attached")
+        bm = page2.evaluate("() => { const c = document.querySelector('#feed .card.card-rm'), s = getComputedStyle(c); return [s.borderTopColor, s.borderTopWidth]; }")
+        check(rgb(bm[0]) == violet and bm[1] in ("1px", "1.5px"), "[mag %s] hors cycle, la carte RockstarMag a une bordure violette fixe de 1,5 px (%s)" % (theme, bm))
+        ctx2.close()
         check(not erreurs, "[mag %s] aucune erreur JavaScript (%s)" % (theme, erreurs[:1]))
         ctx.close()
 
@@ -9113,7 +9132,7 @@ def test_tout_dans_le_cycle(nav, url):
                 cat: carte ? cc.getPropertyValue('--cat-bug').trim() : null, accentCarte: carte ? cc.getPropertyValue('--accent').trim() : null,
                 badge: carte && carte.querySelector('.official-badge') ? getComputedStyle(carte.querySelector('.official-badge')).backgroundColor : null}; }"""
     rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
-    rouge_fixe = {"dark": "#ea6573", "light": "#b3202e"}
+    rouge_fixe = {"dark": "#f06f7d", "light": "#b3202e"}
     for theme, accents, oranges in (("dark", ["#3380ff", "#f87db7", "#ffffff"], ["#ffab00", "#b36b00", "#ffffff"]),
                                     ("light", ["#1f5fd9", "#c01f6e", "#3a4350"], ["#ffab00", "#000000", "#ffffff"])):
         ctx, page, erreurs = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
