@@ -1804,8 +1804,9 @@ def test_entete_tuiles_et_ligne_reduite(nav, url):
                     cpt: document.getElementById('cbCompteur').textContent,
                     jourTop: jour ? jour.getBoundingClientRect().top : null,
                     ghost: document.documentElement.scrollWidth > innerWidth}; }""")
-        check(r2["visible"] and abs(r2["top"]) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
-              "%s en défilant, la ligne réduite de 52 px se colle en haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
+        # 17/11/2026 (PR H) : la ligne réduite est une carte FLOTTANTE à 10 px du haut (avant : collée au bord, top 0), toujours haute de 52 px.
+        check(r2["visible"] and abs(r2["top"] - 10) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
+              "%s en défilant, la ligne réduite de 52 px flotte à 10 px du haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
         check(r2["point"] != "none", "%s son point vert est là en mode backend" % etiq)
         check(r2["jourTop"] is not None and abs(r2["jourTop"] - 52) <= 1.5,
               "%s le jour « AUJOURD'HUI » se colle juste dessous (top %s)" % (etiq, r2["jourTop"]))
@@ -6837,8 +6838,24 @@ def test_palette_du_jour_j(nav, url):
                 check(("final" in m["classes"].split()) == premier,
                       "%s le palier « final » ne vaut que le premier jour (%s)" % (etiq, m["classes"]))
                 if premier:
-                    check(m["anim"] != "none",
-                          "%s la pulsation du premier jour est gardée (%s)" % (etiq, m["anim"]))
+                    # 17/11/2026 : ce contrôle lisait la pulsation sous reduced_motion="reduce" et
+                    # passait parce que la tuile pulsait MÊME en mouvement réduit (défaut corrigé :
+                    # étiquettes à 2,5:1 dans le creux de la pulsation). La pulsation se vérifie donc
+                    # sans préférence, et en mouvement réduit elle doit être coupée.
+                    check(m["anim"] == "none",
+                          "%s en mouvement réduit, la pulsation du premier jour est coupée (%s)" % (etiq, m["anim"]))
+                    ctx2 = nav.new_context(viewport={"width": 390, "height": 800}, color_scheme=theme,
+                                           timezone_id="Europe/Paris", reduced_motion="no-preference")
+                    ctx2.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', "
+                                         "JSON.stringify({splashActif:false, cycleCouleurs:false}));}catch(e){}")
+                    ctx2.clock.install(time=instant)
+                    p2 = ctx2.new_page()
+                    p2.goto(url, wait_until="load")
+                    p2.wait_for_selector(".header-haut")
+                    anim2 = p2.evaluate("() => getComputedStyle(document.getElementById('countdown')).animationName")
+                    check(anim2 != "none",
+                          "%s sans préférence, la pulsation du premier jour est gardée (%s)" % (etiq, anim2))
+                    ctx2.close()
                 page.evaluate("() => ouvreCompteur()")
                 page.wait_for_timeout(300)
                 t = page.evaluate("""() => { const b = document.querySelector(
@@ -9277,6 +9294,84 @@ def test_couleur_de_l_onglet_dans_le_fil(nav, url):
         ctx.close()
 
 
+def test_barre_haute_en_carte_et_apercu_complet(nav, url):
+    """PR H : la ligne réduite du haut est une carte avec le logo VI ; l'aperçu des Réglages montre TOUJOURS tous ses éléments.
+
+    Antoni, 17/11/2026 : « la petite entête qui reste collée en haut quand on défile, sous forme de carte, avec le logo en rose » ; « peu importe quelle option
+    je sélectionne, que tous les éléments soient affichés dans l'aperçu, car des fois la barre du bas disparaît » (cause : à partir de la deuxième construction,
+    l'aperçu copiait SA PROPRE copie de la barre du bas au lieu de la vraie, donc rien).
+    """
+    print("\n[PR H] ligne réduite en carte avec logo ; aperçu des Réglages complet quelle que soit l'option")
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'Source ' + i, lang: 'fr'});
+        lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    # 1. LA LIGNE RÉDUITE : carte flottante, logo VI, rien ne déborde de 320 à 430 px
+    for theme, rose in (("dark", (248, 125, 183)), ("light", (192, 31, 110))):
+        for largeur in (320, 360, 390, 430):
+            ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, cycleCouleurs: false}));}catch(e){}")
+            page = ctx.new_page(); err = []
+            page.on("pageerror", lambda e, err=err: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
+            page.evaluate(INJECTE); page.wait_for_timeout(400)
+            page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
+            m = page.evaluate("""() => { const b = document.getElementById('barreHaut'), c = getComputedStyle(b), r = b.getBoundingClientRect(), l = b.querySelector('.bh-logo'), lc = l ? getComputedStyle(l) : null,
+                t = b.querySelector('.bh-titre').getBoundingClientRect(), k = document.getElementById('cbCompteur').getBoundingClientRect(), lr = l ? l.getBoundingClientRect() : null, carte = getComputedStyle(document.querySelector('#feed .card'));
+                return {gauche: r.left, droite: innerWidth - r.right, haut: r.top, rayon: c.borderTopLeftRadius, rayonCarte: carte.borderTopLeftRadius, filet: parseFloat(c.borderTopWidth), fond: c.backgroundColor,
+                        logo: !!l, logoCouleur: lc ? lc.backgroundColor : null, logoMasque: lc ? (lc.webkitMaskImage || lc.maskImage) : null, logoL: lr ? lr.width : 0,
+                        deborde: t.right > k.left + 1 || k.right > r.right - 4 || lr && lr.left < r.left, defile: document.documentElement.scrollWidth > innerWidth}; }""")
+            alpha = float(re.findall(r"[\d.]+", m["fond"])[-1]) if "/" in m["fond"] else 1.0
+            check(m["gauche"] >= 10 and m["droite"] >= 10 and m["haut"] >= 8 and m["rayon"] == m["rayonCarte"] and m["filet"] >= 0.5 and alpha >= 0.9,
+                  "[ligne réduite %s %d px] carte flottante : à %.0f px des bords et %.0f du haut, angles de la carte (%s), filet, fond plein" % (theme, largeur, m["gauche"], m["haut"], m["rayon"]))
+            check(m["logo"] and rgb(m["logoCouleur"]) == rose and m["logoMasque"] not in (None, "none") and m["logoL"] >= 26,
+                  "[ligne réduite %s %d px] le logo VI est là, rose %s (%s, %.0f px de large)" % (theme, largeur, rose, m["logoCouleur"], m["logoL"]))
+            check(not m["deborde"] and not m["defile"], "[ligne réduite %s %d px] le titre, le logo et le compteur tiennent sur la ligne, la page ne défile pas de côté (%s)" % (theme, largeur, m))
+            check(not err, "[ligne réduite %s %d px] aucune erreur JavaScript (%s)" % (theme, largeur, err[:1]))
+            ctx.close()
+    # 2. L'APERÇU DES RÉGLAGES : tous ses éléments, après CHAQUE case cochée puis décochée et chaque préréglage
+    ctx = nav.new_context(viewport={"width": 390, "height": 844}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false}));}catch(e){}")
+    page = ctx.new_page(); err = []
+    page.on("pageerror", lambda e, err=err: err.append(str(e)))
+    page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(600)
+    page.evaluate("() => { openSettings(); ongletParam('aff'); }"); page.wait_for_timeout(500)
+    COMPLET = """() => { const a = document.getElementById('apercuCouleurs'); if(!a) return {ok: false, raison: 'pas d\\'aperçu'};
+        const q = s => a.querySelector(s), vis = (e, mini = 8) => { if(!e) return false; const c = getComputedStyle(e), r = e.getBoundingClientRect(); return c.display !== 'none' && c.visibility === 'visible' && parseFloat(c.opacity) > 0.5 && r.height > mini && r.width > 8; };
+        const parts = {etat: vis(q('.maq-barre-etat'), 4),   // la bande de la barre d'état ne fait que 10 px, et l'aperçu est à l'échelle
+                        entete: vis(q('header.console')), recherche: vis(q('.search-row')), onglets: vis(q('.tab-row')), cartes: a.querySelectorAll('.card').length === 4 && [...a.querySelectorAll('.card')].every(vis),
+                       barre: vis(q('.barre-bas')) && q('.barre-bas').querySelectorAll('button').length === 3};
+        return {ok: Object.values(parts).every(Boolean), parts, nb: a.querySelectorAll('.barre-bas').length}; }"""
+    m = page.evaluate(COMPLET)
+    check(m["ok"] and m["nb"] == 1, "[aperçu] au départ : barre d'état, en-tête, recherche, onglets, quatre cartes et barre du bas (%s)" % (m,))
+    cases = page.evaluate("() => [...document.querySelectorAll('.page-reglages input[type=checkbox]')].map(i => i.id).filter(Boolean)")
+    check(len(cases) >= 60, "[aperçu] le balayage voit assez de cases (%d)" % len(cases))
+    manques = []
+    for ident in cases:
+        for _ in range(2):   # cochée, puis décochée : on remet le réglage comme il était
+            page.evaluate("(i) => { const c = document.getElementById(i); if(!c || c.disabled) return; c.checked = !c.checked; c.dispatchEvent(new Event('change', {bubbles: true})); }", ident)
+            page.wait_for_timeout(60)
+            m = page.evaluate(COMPLET)
+            if not (m["ok"] and m["nb"] == 1):
+                manques.append((ident, m.get("parts")))
+    check(not manques, "[aperçu] après CHAQUE case (%d cases, cochée puis décochée), l'aperçu garde tous ses éléments (manques : %s)" % (len(cases), manques[:3]))
+    for nom in ("jourj", "aucun", "auto"):
+        page.evaluate("(n) => appliquePrereglage(n)", nom); page.wait_for_timeout(150)
+        m = page.evaluate(COMPLET)
+        check(m["ok"] and m["nb"] == 1, "[aperçu] après le préréglage « %s » : tous les éléments (%s)" % (nom, m))
+    check(not err, "[aperçu] aucune erreur JavaScript (%s)" % (err[:1]))
+    ctx.close()
+    # 3. LA PHOTO DANS L'APERÇU, quand elle est allumée
+    ctx = nav.new_context(viewport={"width": 390, "height": 844}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, photoFond: true, photoVoile: 55}));}catch(e){}")
+    page = ctx.new_page()
+    page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(600)
+    page.evaluate("() => { openSettings(); ongletParam('aff'); }"); page.wait_for_timeout(500)
+    img = page.evaluate("() => getComputedStyle(document.querySelector('#apercuCouleurs .maq-ecran')).backgroundImage")
+    check("fond-" in img, "[aperçu] la photo de fond (et son voile) se voit dans l'aperçu quand elle est allumée (%s)" % img[:80])
+    ctx.close()
+
+
 def test_photo_de_fond(nav, url):
     """PR G : la photo de fond (une par thème), éteinte par défaut, voile réglable de 30 à 85 %, textes lisibles (4,5:1) même au voile minimum.
 
@@ -10256,6 +10351,7 @@ CONTROLES = [
     test_contraste_du_cycle,
     test_repere_lu_jusquici_dans_le_cycle,
     test_photo_de_fond,
+    test_barre_haute_en_carte_et_apercu_complet,
     test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
     test_rockstarmag_badge_et_bordure,

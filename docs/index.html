@@ -433,12 +433,14 @@
   /* LA LIGNE RÉDUITE. Elle apparaît quand l'entête complète a quitté le haut (voir
      brancheBarreHaute) ; le jour « AUJOURD'HUI » et les rubriques des Réglages se
      collent alors dessous (body.bh-visible). */
+  /* LA LIGNE RÉDUITE EST UNE CARTE FLOTTANTE, comme la barre du bas (Antoni, 17/11/2026 : « la petite entête qui reste collée en haut quand on défile, sous
+     forme de carte, avec le logo en rose à côté de GTA6_WATCH pour que ça ressemble à la carte d'en-tête ») : mêmes angles, filet, fond et ombre que les
+     cartes, 12 px des bords de l'écran. Avant : une barre pleine largeur collée au bord, avec un simple trait dessous. */
   .barre-haut{
-    position:fixed; top:0; left:0; right:0; z-index:55; height:52px;
-    display:flex; align-items:center; gap:10px;
-    padding:0 max(16px, calc((100% - 640px) / 2 + 16px));
-    background:var(--bg-panel); border-bottom:1px solid var(--line);
-    visibility:hidden; transform:translateY(-100%);
+    position:fixed; top:calc(10px + env(safe-area-inset-top, 0px)); left:12px; right:12px; max-width:496px; margin:0 auto; z-index:55; height:52px;
+    display:flex; align-items:center; gap:10px; padding:0 14px;
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md); box-shadow:0 6px 24px rgba(0,0,0,.28);
+    visibility:hidden; transform:translateY(calc(-100% - 24px));
     transition:transform var(--t-moyen) var(--courbe);
   }
   .barre-haut.visible{visibility:visible; transform:none;}
@@ -457,6 +459,7 @@
     box-shadow:0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent);
   }
   body:has(#modeIndicator.backend) .bh-point{display:inline-block;}
+  .bh-logo{width:30px; margin-right:8px;}   /* le VI du grand en-tête, rose (ou la couleur du cycle) ; mesuré : la ligne tient à 320 px */
   .bh-compteur{
     margin-left:auto; background:none; border:0; padding:0; min-height:48px;
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:18px; color:var(--c-texte);
@@ -2126,6 +2129,8 @@
     padding-bottom:6px;
   }
   .maq-ecran *{pointer-events:none;}
+  /* L'aperçu montre aussi la photo de fond (et son voile) quand elle est allumée. */
+  html.photo-fond .apercu-couleurs .maq-ecran{background-image:linear-gradient(var(--photo-teinte), var(--photo-teinte)), var(--photo-url); background-size:cover; background-position:center;}
   /* L'ÉCRAN RESSERRÉ (Antoni, 10/11/2026 : « 3, avec moins de hauteur, et enlève les détails inutiles ») : le conteneur ne prend que 74 %
      de la largeur (l'échelle baisse d'autant), la frise des jalons, le sous-titre, le jour, le repère « nouveaux », la date et les boutons des
      cartes sont retirés, les marges et les commandes sont resserrées. Reste tout ce qui change de couleur. */
@@ -2790,7 +2795,8 @@
     .countdown.final,
     .skeleton-thumb,
     .skeleton-line,
-    .run-dot.running{animation:none;}
+    .run-dot.running,
+    .tuile-compteur .countdown.final{animation:none;}
     .countdown.final{box-shadow:0 0 0 2px color-mix(in srgb, var(--compte-final) 50%, transparent);}
   }
   /* LES ICÔNES (Material Outlined, demandé par Antoni le 07/11/2026 : « supprime-moi les
@@ -3629,7 +3635,7 @@
      compteur. Cachée par visibility tant que l'entête est en vue : elle sort alors du
      parcours de tabulation et de l'arbre d'accessibilité. -->
 <div class="barre-haut" id="barreHaut">
-  <button type="button" class="bh-titre" aria-label="GTA6_WATCH, remonter en haut de la page" title="Remonter en haut">GTA6<span>_WATCH</span><span class="bh-point" aria-hidden="true"></span></button>
+  <button type="button" class="bh-titre" aria-label="GTA6_WATCH, remonter en haut de la page" title="Remonter en haut"><span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span><span class="bh-point" aria-hidden="true"></span></button>
   <button type="button" id="cbCompteur" class="bh-compteur" aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
 </div>
 
@@ -4318,8 +4324,11 @@ function construitMaquette(){
   const ecran = m && m.querySelector(".maq-ecran");
   if(!ecran || !m.clientWidth) return;
   const copie = sel => {
-    const e = document.querySelector(sel);
-    if(!e || m.contains(e)) return null;
+    // Le premier élément de la page HORS de l'aperçu : après une première construction, la copie de l'aperçu précède la vraie barre du bas dans la
+    // page, et document.querySelector la rendait : l'aperçu perdait sa barre du bas dès la deuxième construction (reproduit le 17/11/2026 : première
+    // case cochée, « cycleCouleurs »).
+    const e = [...document.querySelectorAll(sel)].find(x => !m.contains(x));
+    if(!e) return null;
     const c = e.cloneNode(true);
     const marche = document.createTreeWalker(c, NodeFilter.SHOW_COMMENT), morts = [];
     while(marche.nextNode()) morts.push(marche.currentNode);
