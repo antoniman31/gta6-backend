@@ -30,7 +30,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 ## 2 bis. Lot du 11/11/2026 : effets du jour J (codé, à regarder sur le téléphone)
 
 - **Codé** : cadre autour de l'écran (avec cycle), libellé « GTA VI est sorti · J+N », barre d'état, écran de chargement du jour J, cases et curseur, halo de minuit, une case par effet dans Réglages + bouton « Lancer le halo », couleur Discord rose après la sortie.
-- **À regarder sur ton téléphone** : la barre d'état (peut rester noire selon l'appareil), le carré sombre autour du logo rose de l'écran de chargement, le rayon des coins du cadre : 32 px, confirmé par toi sur ton S26 Ultra, est le défaut.
+- **À regarder sur ton téléphone** : la barre d'état (peut rester noire selon l'appareil), le rayon des coins du cadre : 32 px, confirmé par toi sur ton S26 Ultra, est le défaut.
 - **Lot 2a (11/11/2026, codé)** : chevron « Par source », loupe, titres de cartes et de jour, fondu du bas.
 - **Lot 2b (11/11/2026, codé)** : bordures en dégradé des cartes et des tuiles (2 px, même épaisseur que le cadre), case globale et retour à l'automatique, repère « nouveaux », chiffres de Stats en tuiles. Les squelettes de chargement existaient déjà.
 
@@ -50,7 +50,8 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Un second message du tableau du jour** dans la même journée : lire le journal de l'étape « Tableau du jour Discord » (« modifié », « créé », « échec transitoire »).
 - **Après la sortie**, les messages ordinaires continuent (« Sorti il y a… »).
 - **Agenda reconfirmé le 10/11/2026** par Antoni, les quatre dates (`verifie_le` au 2026-11-10, valable jusqu'au 24/11). Doute sur le 19/11 LEVÉ par Antoni après lecture de l'article officiel : la carte de Leonida est gratuite en téléchargement, l'affiche recto-verso livrée coûte 0,99 $ ; le libellé de l'agenda est corrigé en conséquence. Reste le point d'Amazon : la livraison des exemplaires Xbox repoussée au 28/02/2027 (GameGPU, 09/11), qui ne touche pas la date du 12/11 chez les autres revendeurs. Répétition générale du 10/11 faite, « tout va bien » (liste `tasks/repetition-10-11.md` mise à jour). Rappel créé pour le 20/11 à 10h : le cycle de couleurs doit s'être arrêté.
-- **Le 19/11 à minuit, sur ton téléphone** : la palette du jour J (accent rose, chiffres cyan, 07/11/2026) est mesurée dans le navigateur de test, pas encore vue sur un vrai écran. Le texte à 12 px minimum et le balayage vers la gauche (mettre de côté) non plus : à regarder dès maintenant pour ces deux-là.
+- **Logo et cycle bleu/rose/blanc (17/11/2026, codé, à regarder sur le S26)** : VI de l'en-tête à 320 et 390 px, écran de chargement avec GTA6_WATCH dessous, couleurs du cycle sur tout l'écran (sombre et clair), logo sous « GTA VI EST DISPO ! » (utilise la répétition de minuit). Le bleu du cycle est `#3380ff` et non `#2f7dff` du logo : ce dernier faisait 4,495:1 sur `--bg-elevated`, sous le seuil de 4,5.
+- **Le 19/11 à minuit, sur ton téléphone** : la palette du jour J (accent rose, chiffres bleus depuis le 17/11/2026, palette du 07/11/2026) est mesurée dans le navigateur de test, pas encore vue sur un vrai écran. Le texte à 12 px minimum et le balayage vers la gauche (mettre de côté) non plus : à regarder dès maintenant pour ces deux-là.
 
 ## 4. Décisions prises : ne pas rouvrir
 

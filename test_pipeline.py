@@ -695,6 +695,11 @@ def test_couleur_du_compteur():
     m = re.search(r"html\.apres-sortie\{\s*--accent:(#\w+);", page)
     check(m and int(m.group(1)[1:], 16) == feed_store.COULEUR_COMPTEUR_APRES,
           "le rose du jour J du robot est l'accent de html.apres-sortie dans la page (%s)" % (m.group(1) if m else "absent"))
+    # Le bleu des messages RockstarMag est l'accent de base de l'app (17/11/2026 : il suivait #58b9ff, il suit maintenant le bleu du logo) : la page et
+    # le robot ne doivent plus se séparer en silence.
+    m = re.search(r":root\{[^}]*?--accent:\s*(#[0-9a-fA-F]{6})", page, re.S)
+    check(m and int(m.group(1)[1:], 16) == feed_store.COULEUR_ROCKSTARMAG,
+          "la couleur des messages RockstarMag du robot est l'accent de base de la page (%s)" % (m.group(1) if m else "absent"))
     sortie = feed_store.SORTIE_GTA6
     for reste, attendu, nom in (
             (timedelta(hours=feed_store.COMPTEUR_SEUIL_FINAL_H) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_FINAL, "à une seconde des 24 h"),
@@ -1244,7 +1249,7 @@ def test_section_rockstarmag():
         m = envoie(apercus=[autre], totaux=(3, 0, 1), rockstarmag=[mag(1), mag(2)])
         titres = [e["title"] for e in m["embeds"]]
         check(titres == ["📰 RockstarMag · 2", "🎮 Les autres · 1"], "section entre l'actu majeure et « Les autres » : %s" % titres)
-        check(m["embeds"][0]["color"] == feed_store.COULEUR_ROCKSTARMAG == 0x58B9FF, "couleur de l'accent de l'app")
+        check(m["embeds"][0]["color"] == feed_store.COULEUR_ROCKSTARMAG == 0x3380FF, "couleur de l'accent de l'app")
         check(m["username"] == "📰 RockstarMag" and m["content"].endswith("· 📰 2 RockstarMag"),
               "expéditeur et ligne d'aperçu (%s / %s)" % (m["username"], m["content"]))
         check(envoie(totaux=None, content="", rockstarmag=[mag(1)])["content"] == "📰 1 RockstarMag",
@@ -11442,11 +11447,16 @@ def test_ecran_de_chargement_et_manifeste():
           "theme_color du manifeste (%s) aussi : le bleu d'accent n'était le fond d'aucun thème"
           % manifeste.get("theme_color"))
 
-    m = re.search(r'<img class="splash-logo" src="data:image/png;base64,([A-Za-z0-9+/=]+)"', html)
-    check(m is not None, "l'écran de chargement porte un logo embarqué")
+    # Le logo n'est plus une image <img> (17/11/2026) : c'est un masque embarqué dans la feuille de style, dont la couleur vient du CSS.
+    m = re.search(r'--logo-vi:url\("data:image/png;base64,([A-Za-z0-9+/=]+)"\)', html)
+    check(m is not None, "la page embarque le masque du logo (--logo-vi)")
     if m:
-        check(base64.b64decode(m.group(1)) == open("docs/icon-192.png", "rb").read(),
-              "et ce sont exactement les octets de icon-192.png")
+        check(base64.b64decode(m.group(1)) == open("docs/logo-vi.png", "rb").read(),
+              "et ce sont exactement les octets de logo-vi.png")
+    check(re.search(r'<div id="splash".*?class="logo-vi splash-logo".*?GTA6<span>_WATCH</span>', html, re.S) is not None,
+          "l'écran de chargement porte le logo puis « GTA6_WATCH » dessous")
+    check('class="logo-vi brand-logo"' in html and 'class="logo-vi ff-logo"' in html,
+          "l'en-tête et l'écran final de minuit portent le même logo")
     check('id="splash"' in html and "SPLASH_DUREE_MIN_MS" in html,
           "la page porte l'écran et sa durée minimale")
 
