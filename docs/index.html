@@ -61,11 +61,11 @@
     --text-dim: #7e918b;
     --text-dim-base: #7e918b;   /* la valeur d'origine, que le cycle teinte (voir « TOUT DANS LE CYCLE ») */
     --orange: #FF6B00;
-    --accent: #58b9ff;
+    --accent: #3380ff;   /* 17/11/2026 : le bleu du logo d'Antoni, éclairci pour tenir 4,5:1 (avant : #58b9ff). 4,64:1 sur --bg-elevated, 5,27 sur --bg. */
     /* Ce qui s'écrit SUR un aplat --accent. Bascule avec le thème : le bleu
-       clair du sombre demande du presque-noir (8,74:1), le bleu profond du
-       clair demande du blanc (6,70:1). Aucun ton unique ne tient les deux. */
-    --accent-contrast: #06131f;
+       moyen du sombre demande du presque-noir #0b0b14 (5,29:1 ; avant le 17/11/2026 : #06131f sur #58b9ff, 8,74:1), le bleu profond du
+       clair demande du blanc (5,68:1 sur #1f5fd9, avant : 6,70:1 sur #1d4ed8). Aucun ton unique ne tient les deux. */
+    --accent-contrast: #0b0b14;
     --ok: #4ade80;
     --warn: #facc15;
     --danger: #f87171;
@@ -114,7 +114,7 @@
        du thème SOMBRE, recopié tel quel, à 2,79:1. C'est la couleur du
        « _WATCH » du logo, du compte à rebours, des libellés de jour et de
        vingt-cinq autres endroits : tous délavés. */
-    --accent: #1d4ed8;
+    --accent: #1f5fd9;   /* 17/11/2026 : le bleu clair du cycle (avant : #1d4ed8). 5,09 à 5,68:1 sur les trois fonds clairs. */
     --accent-contrast: #ffffff;
     --ok: #127034;              /* 5,76:1 — était #16a34a, 3,07 */
     --warn: #9a4a08;            /* 5,60:1 sur le plus exigeant des trois fonds
@@ -1492,8 +1492,7 @@
   .stats-liste .stats-n{color:var(--text-dim); flex:0 0 auto; font-variant-numeric:tabular-nums;}
 
   /* Histogramme : une seule série, donc pas de légende — le titre la nomme.
-     Couleur d'accent, validée au script et non à l'œil : 8,56:1 sur le fond
-     sombre, 6,70:1 sur le clair, pour 3:1 requis sur un graphique. Colonnes
+     Couleur d'accent, validée au script et non à l'œil (nouveau bleu du 17/11/2026 : 4,96:1 sur --bg-panel en sombre, 5,68:1 en clair ; avant 8,56 et 6,70), pour 3:1 requis sur un graphique. Colonnes
      d'au plus 24 px, arrondies de 4 px au sommet et carrées à la base,
      séparées par 2 px de fond plutôt que par un trait. */
   .stats-histo{position:relative; display:flex; align-items:flex-end; gap:2px;
@@ -1644,7 +1643,7 @@
        clair   bleu #1f5fd9 > rose #c01f6e > gris #3a4350 : accent en texte >= 5,09:1, blanc sur
                l'aplat accent >= 5,68:1 (le blanc du sombre serait invisible sur fond clair, d'où le gris) @property rend --accent animable ;
      sans lui (navigateur ancien) l'accent saute de couleur au lieu de glisser. */
-  @property --accent{syntax:"<color>"; inherits:true; initial-value:#58b9ff;}
+  @property --accent{syntax:"<color>"; inherits:true; initial-value:#3380ff;}
   html{--cycle-duree:4s; --cycle-pas:steps(12); --cycle-a:#3380ff; --cycle-b:#f87db7; --cycle-c:#ffffff;}
   /* LES JETONS TYPÉS (Antoni, 10/11/2026 : « sépare le plus possible par catégorie, ce qu'il contrôle, pour choisir quoi
      mettre en couleur ou pas »). Chaque usage de l'accent passe par le jeton de SA catégorie : --c-texte (textes, ombres de

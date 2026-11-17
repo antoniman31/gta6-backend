@@ -6772,8 +6772,8 @@ def test_palette_du_jour_j(nav, url):
     jour (palier « final » et sa pulsation gardés) et une semaine plus tard.
     """
     print("\n[jour J] accent rose et chiffres bleus à partir de la sortie")
-    accent = {"dark": {"avant": "#58b9ff", "apres": "#ff5cae"},
-              "light": {"avant": "#1d4ed8", "apres": "#b8146f"}}
+    accent = {"dark": {"avant": "#3380ff", "apres": "#ff5cae"},
+              "light": {"avant": "#1f5fd9", "apres": "#b8146f"}}
     instants = (("avant", "2026-11-18T12:00:00Z"),
                 ("apres", "2026-11-18T23:30:00Z"),      # 00:30 à Paris : le premier jour
                 ("apres", "2026-11-25T10:00:00Z"))      # une semaine plus tard

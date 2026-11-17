@@ -695,6 +695,11 @@ def test_couleur_du_compteur():
     m = re.search(r"html\.apres-sortie\{\s*--accent:(#\w+);", page)
     check(m and int(m.group(1)[1:], 16) == feed_store.COULEUR_COMPTEUR_APRES,
           "le rose du jour J du robot est l'accent de html.apres-sortie dans la page (%s)" % (m.group(1) if m else "absent"))
+    # Le bleu des messages RockstarMag est l'accent de base de l'app (17/11/2026 : il suivait #58b9ff, il suit maintenant le bleu du logo) : la page et
+    # le robot ne doivent plus se séparer en silence.
+    m = re.search(r":root\{[^}]*?--accent:\s*(#[0-9a-fA-F]{6})", page, re.S)
+    check(m and int(m.group(1)[1:], 16) == feed_store.COULEUR_ROCKSTARMAG,
+          "la couleur des messages RockstarMag du robot est l'accent de base de la page (%s)" % (m.group(1) if m else "absent"))
     sortie = feed_store.SORTIE_GTA6
     for reste, attendu, nom in (
             (timedelta(hours=feed_store.COMPTEUR_SEUIL_FINAL_H) - timedelta(seconds=1), feed_store.COULEUR_COMPTEUR_FINAL, "à une seconde des 24 h"),
@@ -1244,7 +1249,7 @@ def test_section_rockstarmag():
         m = envoie(apercus=[autre], totaux=(3, 0, 1), rockstarmag=[mag(1), mag(2)])
         titres = [e["title"] for e in m["embeds"]]
         check(titres == ["📰 RockstarMag · 2", "🎮 Les autres · 1"], "section entre l'actu majeure et « Les autres » : %s" % titres)
-        check(m["embeds"][0]["color"] == feed_store.COULEUR_ROCKSTARMAG == 0x58B9FF, "couleur de l'accent de l'app")
+        check(m["embeds"][0]["color"] == feed_store.COULEUR_ROCKSTARMAG == 0x3380FF, "couleur de l'accent de l'app")
         check(m["username"] == "📰 RockstarMag" and m["content"].endswith("· 📰 2 RockstarMag"),
               "expéditeur et ligne d'aperçu (%s / %s)" % (m["username"], m["content"]))
         check(envoie(totaux=None, content="", rockstarmag=[mag(1)])["content"] == "📰 1 RockstarMag",
