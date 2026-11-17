@@ -6771,13 +6771,13 @@ def test_palette_du_jour_j(nav, url):
     updateCountdown, que ce contrôle lit aux trois moments qui comptent — la veille, le premier
     jour (palier « final » et sa pulsation gardés) et une semaine plus tard.
     """
-    print("\n[jour J] accent rose et chiffres cyan à partir de la sortie")
+    print("\n[jour J] accent rose et chiffres bleus à partir de la sortie")
     accent = {"dark": {"avant": "#58b9ff", "apres": "#ff5cae"},
               "light": {"avant": "#1d4ed8", "apres": "#b8146f"}}
     instants = (("avant", "2026-11-18T12:00:00Z"),
                 ("apres", "2026-11-18T23:30:00Z"),      # 00:30 à Paris : le premier jour
                 ("apres", "2026-11-25T10:00:00Z"))      # une semaine plus tard
-    cyan = (25, 230, 255)
+    cyan = (74, 141, 255)   # le « cyan » d'avant le 17/11/2026 est devenu le bleu du logo (#4a8dff) ; le nom de la variable est resté
     for theme in ("dark", "light"):
         for avant_apres, instant in instants:
             etiq = "[%s %s]" % (theme, instant[:10])
@@ -6815,12 +6815,12 @@ def test_palette_du_jour_j(nav, url):
                   "%s l'accent est %s (%s)" % (etiq, attendu, m["accent"]))
             if avant_apres == "apres":
                 check(lire(m["chiffre"]) == cyan,
-                      "%s les chiffres des tuiles sont cyan (%s)" % (etiq, m["chiffre"]))
+                      "%s les chiffres des tuiles sont bleus (%s)" % (etiq, m["chiffre"]))
                 check(lire(m["ligne"]) == cyan,
-                      "%s la ligne réduite est cyan aussi (%s)" % (etiq, m["ligne"]))
+                      "%s la ligne réduite est bleue aussi (%s)" % (etiq, m["ligne"]))
                 if theme == "light":
                     check(m["trait"] >= 1 and lire(m["traitCouleur"]) == _hex_rvb(m["encre"]),
-                          "%s en clair, le cyan est cerné du trait sombre (%.1f px, %s)"
+                          "%s en clair, le bleu est cerné du trait sombre (%.1f px, %s)"
                           % (etiq, m["trait"], m["traitCouleur"]))
                 premier = instant.startswith("2026-11-18T23")
                 check(("final" in m["classes"].split()) == premier,
@@ -6834,10 +6834,10 @@ def test_palette_du_jour_j(nav, url):
                     '#compteurContenu .tuile-panneau .countdown .cd-t:not(.zero) b');
                     return b ? getComputedStyle(b).color : null; }""")
                 check(t is not None and lire(t) == cyan,
-                      "%s le panneau du compteur est cyan lui aussi (%s)" % (etiq, t))
+                      "%s le panneau du compteur est bleu lui aussi (%s)" % (etiq, t))
             else:
                 check(lire(m["chiffre"]) != cyan,
-                      "%s avant la sortie les chiffres ne sont pas cyan (%s)" % (etiq, m["chiffre"]))
+                      "%s avant la sortie les chiffres ne sont pas bleus (%s)" % (etiq, m["chiffre"]))
             check(not erreurs, "%s aucune erreur JavaScript" % etiq)
             ctx.close()
 
@@ -8260,7 +8260,7 @@ def test_logo_vi(nav, url):
     # L'écran de chargement : le logo, puis « GTA6_WATCH » dessous ; le jour J il suit le cycle, sinon il reste rose.
     SPL = """() => { const sp = document.getElementById('splash'); if(!sp) return null;
         const l = sp.querySelector('.splash-logo'), n = sp.querySelector('.splash-nom'), r = l.getBoundingClientRect(), q = n.getBoundingClientRect();
-        return {sous: q.top >= r.bottom - 1, nom: n.textContent.trim(), bg: getComputedStyle(l).backgroundColor, masque: getComputedStyle(l).webkitMaskImage !== 'none',
+        return {sous: q.top >= r.bottom - 1, nom: n.textContent.trim(), axe: r.left + r.width * 0.572 - innerWidth / 2, bg: getComputedStyle(l).backgroundColor, masque: getComputedStyle(l).webkitMaskImage !== 'none',
                 anim: getComputedStyle(sp.querySelector('.splash-marque')).animationName, dedans: r.left >= 0 && r.right <= innerWidth && q.left >= 0 && q.right <= innerWidth, w: r.width}; }"""
     for nom, instant, theme, anim in (("la veille", VEILLE, "dark", "none"), ("la veille, clair", VEILLE, "light", "none"), ("le jour J", JOUR_J, "dark", "cycle-accent")):
         ctx, page, _ = _ouvre_effets(nav, url, instant, {}, theme=theme, splash=True)
@@ -8269,6 +8269,8 @@ def test_logo_vi(nav, url):
         m = page.evaluate(SPL)
         check(m is not None and m["masque"] and m["sous"] and m["nom"] == "GTA6_WATCH" and m["dedans"],
               "[logo chargement, %s, 320 px] le logo en masque, « GTA6_WATCH » dessous, tout dans l'écran (%s)" % (nom, m))
+        check(m is not None and abs(m["axe"]) <= 1.0,
+              "[logo chargement, %s] le centre de masse du logo est sur l'axe de l'écran, pas le cadre du fichier (écart %s px)" % (nom, m and m["axe"]))
         check(m is not None and m["anim"] == anim and (anim == "cycle-accent" or m["bg"] == ROSE[theme]),
               "[logo chargement, %s] %s (%s, %s)" % (nom, "suit le cycle" if anim != "none" else "rose fixe", m and m["anim"], m and m["bg"]))
         ctx.close()
@@ -8418,9 +8420,12 @@ def test_grand_moment_de_minuit(nav, url):
     fin_logo = page.evaluate("""() => { const f = document.querySelector('.fete-final'), l = f && f.querySelector('.ff-logo');
         if(!l) return null; const t = f.querySelectorAll('.ff-texte'), r = l.getBoundingClientRect(), d = t[t.length - 1].getBoundingClientRect();
         return {sous: r.top >= d.bottom - 1, dedans: r.left >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, l: r.width, h: r.height,
-                masque: getComputedStyle(l).webkitMaskImage !== 'none' || getComputedStyle(l).maskImage !== 'none', anim: getComputedStyle(l).animationName}; }""")
+                masque: getComputedStyle(l).webkitMaskImage !== 'none' || getComputedStyle(l).maskImage !== 'none', anim: getComputedStyle(l).animationName,
+                axe: r.left + r.width * 0.572 - innerWidth / 2}; }""")
     check(fin_logo is not None and fin_logo["sous"] and fin_logo["dedans"] and fin_logo["masque"] and fin_logo["anim"] == "cycle-accent",
           "[minuit] le logo est sous la dernière ligne, dans l'écran, en masque, et suit le cycle (%s)" % fin_logo)
+    check(fin_logo is not None and abs(fin_logo["axe"]) <= 1.0,
+          "[minuit] le centre de masse du logo est sur l'axe de l'écran (écart %s px)" % (fin_logo and fin_logo["axe"]))
     accord = []
     for t in (0, 1000, 2000):
         page.evaluate("(t) => { for(const x of document.querySelectorAll('.fete-final .ff-texte, .fete-final .ff-logo')) for(const a of x.getAnimations()){ a.pause(); a.currentTime = t; } }", t)

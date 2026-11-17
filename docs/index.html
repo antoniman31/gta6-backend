@@ -1611,9 +1611,11 @@
      blanc (5,80 sur --bg, 5,59 sur --bg-elevated), blanc sur l'aplat 6,24:1 ; cyan #19e6ff 12,06:1
      sur la tuile sombre, 10,69:1 entre le cyan et le trait sombre du thème clair. La classe est
      posée par updateCountdown : avant le 19/11/2026 00:00, rien de ceci ne s'applique. */
+  /* 17/11/2026 : les chiffres d'après la sortie passent du cyan #19e6ff au bleu du logo #4a8dff (le bleu du cycle #3380ff, éclairci : en clair ils sont cernés d'un
+     trait sombre et doivent tenir 4,5:1 contre lui, 5,07:1 mesurés). L'accent reste le rose #ff5cae : la couleur des messages Discord du robot. */
   html.apres-sortie{
     --accent:#ff5cae; --accent-contrast:#1a0612; --grid-tint:rgba(255,92,174,0.04);
-    --compte-apres:#19e6ff; --compte-halo-apres:0 0 10px rgba(25,230,255,.7);
+    --compte-apres:#4a8dff; --compte-halo-apres:0 0 10px rgba(74,141,255,.7);
   }
   html[data-theme="light"].apres-sortie{
     --accent:#b8146f; --accent-contrast:#ffffff; --grid-tint:rgba(184,20,111,0.05);
@@ -1663,6 +1665,13 @@
   .logo-vi{display:block; flex:none; aspect-ratio:1048 / 780; background:var(--logo-rose);
     -webkit-mask:var(--logo-vi) center / contain no-repeat; mask:var(--logo-vi) center / contain no-repeat;}
   html.cycle-couleur .logo-vi{background:var(--accent);}
+  /* LE CENTRE OPTIQUE DU LOGO (Antoni, 17/11/2026) : le cadre du fichier centrait un VI dont le « I » pèse à droite. Antoni a d'abord demandé
+     l'intersection entre le V et le I (x 258 à 260 sur 360, soit 0,72 de la largeur : les trois seules colonnes vides), puis, en le voyant, a
+     jugé que ça faisait bizarre : le V est bien plus grand que le I et pendait à gauche de l'axe. Il a choisi sur planche le CENTRE DE MASSE
+     de la matière : la moyenne des x pondérée par l'opacité du masque, mesurée à 0,5724 de la largeur de logo-vi.png. Les grands logos
+     (chargement, minuit) sont décalés de (0,5 - 0,572) = 7,2 % de leur largeur pour que ce point tombe sur l'axe de l'écran. */
+  html{--vi-centre:.572;}
+  .splash-logo, .fete-final .ff-logo{transform:translateX(calc((.5 - var(--vi-centre)) * 100%));}
   /* LE VI DE L'EN-TÊTE n'apparaît qu'à partir de 410 px de large (mesuré le 17/11/2026 avec le mode « Backend GitHub » affiché : à 360 px,
      titre 116 + pastille 123 + ↻ 44 + 2 écarts de 6 = 295 px pour 298 de place, soit 3 px de marge ; le VI ajoute 42 px et le bouton ↻
      passait à la ligne, à 360, 368 et 390 px). Dessous, le VI reste sur l'écran de chargement, l'écran de minuit et l'icône. */

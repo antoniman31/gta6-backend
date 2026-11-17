@@ -10287,7 +10287,7 @@ def test_icones_de_lapp():
             continue
         largeur, hauteur, bpp, lignes = _pixels_png(chemin)
         fond = lignes[0][0:3]
-        BLEU = (47, 125, 255)    # #2f7dff, le bleu du « VI » du logo d'Antoni (17/11/2026 ; avant : --accent #58b9ff)
+        BLEU = (88, 185, 255)    # --accent, la couleur du « VI »
         CLAIR = (228, 236, 232)  # --text, la couleur de « WATCH »
 
         def proche(p, q, tolerance=20):
