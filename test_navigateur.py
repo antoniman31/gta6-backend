@@ -9242,6 +9242,107 @@ def test_couleur_de_l_onglet_dans_le_fil(nav, url):
         ctx.close()
 
 
+def test_photo_de_fond(nav, url):
+    """PR G : la photo de fond (une par thème), éteinte par défaut, voile réglable de 30 à 85 %, textes lisibles (4,5:1) même au voile minimum.
+
+    Antoni, 17/11/2026 : « deux images en fond de la page, la violette pour le mode sombre, l'orange pour le clair, un paramètre actif ou inactif » ;
+    photo À TRAVERS les cartes avec un voile ; inactive par défaut ; voile de 30 à 85 %, départ 55 %.
+    """
+    print("\n[photo] fond : éteint par défaut, une photo par thème, voile borné, entrées non fiables, textes lisibles au voile minimum")
+    INJECTE = """() => { const m = (i, o) => Object.assign({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+          date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'Source ' + i, lang: 'fr'}, o || {});
+        lastItems = [m(0, {official: true, source: 'Rockstar Games'}), m(1, {extraSources: [{source: 'A', link: 'https://a.test/1'}, {source: 'B', link: 'https://b.test/1'}]}),
+          m(2, {rockstarmag: true, specialist: true, source: 'RockstarMag'}), m(3, {source: 'Kotaku'}), m(4)];
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 5; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    LIT = """() => { const h = document.documentElement, b = getComputedStyle(h, '::before');
+        return {classe: h.classList.contains('photo-fond'), image: b.backgroundImage, voile: h.style.getPropertyValue('--photo-voile'), corps: getComputedStyle(document.body).backgroundColor}; }"""
+    def ouvre(theme, reglages, largeur=390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 844}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1'))localStorage.setItem('gta6watch:settings-v1', JSON.stringify(%s));}catch(e){}" % json.dumps(dict({"splashActif": False}, **reglages)))
+        page = ctx.new_page(); err = []
+        page.on("pageerror", lambda e, err=err: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(700)
+        return ctx, page, err
+    # 1. ÉTEINTE PAR DÉFAUT
+    ctx, page, err = ouvre("dark", {})
+    m = page.evaluate(LIT)
+    check(not m["classe"] and m["image"] == "none", "[photo] éteinte par défaut : aucune classe, aucune image (%s, %s)" % (m["classe"], m["image"]))
+    ctx.close()
+    # 2. UNE PHOTO PAR THÈME
+    for theme, fichier in (("dark", "fond-sombre.jpg"), ("light", "fond-clair.jpg")):
+        ctx, page, err = ouvre(theme, {"photoFond": True, "photoVoile": 55})
+        m = page.evaluate(LIT)
+        check(m["classe"] and fichier in m["image"] and m["voile"] == "55%", "[photo %s] allumée : la photo %s, voile 55 %% (%s, %s)" % (theme, fichier, m["image"][:60], m["voile"]))
+        check(m["corps"] == "rgba(0, 0, 0, 0)", "[photo %s] le fond de la page est transparent, la photo se voit (%s)" % (theme, m["corps"]))
+        ok = page.evaluate("""async (f) => { const r = await fetch(f, {cache: 'no-store'}); const b = await r.blob(); return [r.status, b.size]; }""", fichier)
+        check(ok[0] == 200 and 20000 < ok[1] < 250000, "[photo %s] le fichier %s se charge, de taille raisonnable (%s)" % (theme, fichier, ok))
+        check(not err, "[photo %s] aucune erreur JavaScript (%s)" % (theme, err[:1]))
+        ctx.close()
+    # 3. ENTRÉES NON FIABLES : voile borné, seul un vrai « true » allume
+    for brut, attendu in ((999, "85%"), (-5, "30%"), ("abc", "55%"), (None, "55%"), (47.6, "48%")):
+        ctx, page, err = ouvre("dark", {"photoFond": True, "photoVoile": brut})
+        m = page.evaluate(LIT)
+        check(m["voile"] == attendu, "[photo] voile enregistré %r : ramené à %s (%s)" % (brut, attendu, m["voile"]))
+        ctx.close()
+    for brut in ("true", 1, "oui", None):
+        ctx, page, err = ouvre("dark", {"photoFond": brut})
+        check(not page.evaluate(LIT)["classe"], "[photo] réglage %r : seule la valeur booléenne true allume la photo" % (brut,))
+        ctx.close()
+    # 4. LES RÉGLAGES : la case et le curseur, et la persistance après rechargement
+    ctx, page, err = ouvre("dark", {})
+    page.evaluate("() => { openSettings(); ongletParam('aff'); }")
+    page.wait_for_timeout(300)
+    check(page.evaluate("() => !document.getElementById('photoFondCase').checked && document.getElementById('photoVoile').min === '30' && document.getElementById('photoVoile').max === '85'"),
+          "[photo] Réglages : case décochée au départ, curseur de 30 à 85")
+    page.evaluate("() => { const c = document.getElementById('photoFondCase'); c.checked = true; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    page.evaluate("() => { const r = document.getElementById('photoVoile'); r.value = '70'; r.dispatchEvent(new Event('input', {bubbles: true})); }")
+    page.wait_for_timeout(200)
+    m = page.evaluate(LIT)
+    check(m["classe"] and m["voile"] == "70%" and page.evaluate("() => document.getElementById('photoVoileVal').textContent") == "70", "[photo] Réglages : la case allume la photo et le curseur règle le voile (%s)" % m)
+    page.reload(wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(600)
+    m = page.evaluate(LIT)
+    check(m["classe"] and m["voile"] == "70%", "[photo] le réglage survit au rechargement (%s)" % m)
+    page.evaluate("() => { openSettings(); ongletParam('aff'); const c = document.getElementById('photoFondCase'); c.checked = false; c.dispatchEvent(new Event('change', {bubbles: true})); }")
+    check(not page.evaluate(LIT)["classe"], "[photo] décocher la case éteint la photo")
+    check(not err, "[photo] aucune erreur JavaScript dans les Réglages (%s)" % err[:1])
+    ctx.close()
+    # 5. LISIBILITÉ AU VOILE MINIMUM (30 %) : le fond réellement peint derrière chaque texte, le texte étant masqué, contre sa couleur.
+    TEXTES = """() => { const out = [], w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+        while((n = w.nextNode())){ const t = n.textContent.trim(); if(!t) continue; const e = n.parentElement; if(!e) continue;
+          if(!e.closest('#feed, .feed-count, .tab-row')) continue;
+          const cs = getComputedStyle(e); if(cs.visibility === 'hidden' || cs.display === 'none') continue;
+          if(cs.webkitTextFillColor && cs.webkitTextFillColor !== cs.color && cs.webkitTextFillColor === 'rgba(0, 0, 0, 0)') continue;
+          const r = document.createRange(); r.selectNodeContents(n); const b = r.getBoundingClientRect();
+          if(b.width < 6 || b.height < 6 || b.bottom < 0 || b.top > innerHeight - 90) continue;     // sous la barre du bas : non mesurable
+          const c = cs.color.match(/[\\d.]+/g).map(Number); if(c.length > 3 && c[3] < 0.5) continue;
+          out.push({x: b.left, y: b.top, w: b.width, h: b.height, c: c.slice(0, 3), t: t.slice(0, 26), sel: e.className && typeof e.className === 'string' ? e.className.split(' ')[0] : e.tagName.toLowerCase()}); }
+        return out; }"""
+    CALCUL = """async ([b64, items]) => { const img = new Image(); await new Promise(r => { img.onload = r; img.src = 'data:image/png;base64,' + b64; });
+        const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height; const g = cv.getContext('2d', {willReadFrequently: true}); g.drawImage(img, 0, 0);
+        const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+        const Y = (r, gg, b) => 0.2126 * lin(r) + 0.7152 * lin(gg) + 0.0722 * lin(b);
+        return items.map(it => { const x = Math.floor(it.x + 3), y = Math.floor(it.y + 3), w = Math.max(1, Math.ceil(it.w - 6)), h = Math.max(1, Math.ceil(it.h - 6));
+          const d = g.getImageData(x, y, w, h).data, ys = []; for(let i = 0; i < d.length; i += 4) ys.push(Y(d[i], d[i + 1], d[i + 2]));
+          ys.sort((a, b) => a - b); const yt = Y(...it.c);
+          const pire = Math.min(...[ys[Math.floor(ys.length * 0.1)], ys[Math.floor(ys.length * 0.9)]].map(yb => (Math.max(yt, yb) + 0.05) / (Math.min(yt, yb) + 0.05)));
+          return {t: it.t, sel: it.sel, r: pire}; }); }"""
+    import base64
+    for theme in ("dark", "light"):
+        for onglet in ("all", "rockstar"):
+            ctx, page, err = ouvre(theme, {"photoFond": True, "photoVoile": 30}, 390)
+            page.evaluate(INJECTE); page.wait_for_timeout(500)
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(500)
+            page.evaluate("() => window.scrollTo(0, 0)"); page.wait_for_timeout(300)
+            items = page.evaluate(TEXTES)
+            page.add_style_tag(content="*{color:transparent !important;-webkit-text-fill-color:transparent !important;text-shadow:none !important} svg,img{opacity:0 !important}")
+            page.wait_for_timeout(250)
+            png = page.screenshot()
+            res = page.evaluate(CALCUL, [base64.b64encode(png).decode(), items])
+            mauvais = [(r["sel"], r["t"], round(r["r"], 2)) for r in res if r["r"] < 4.5]
+            check(len(res) >= 8 and not mauvais, "[photo %s %s] au voile minimum (30 %%), les %d textes mesurés tiennent 4,5:1 sur le fond réellement peint (sous le seuil : %s)" % (theme, onglet, len(res), mauvais[:4]))
+            ctx.close()
+
+
 def test_repere_lu_jusquici_dans_le_cycle(nav, url):
     """Le repère « lu jusqu'ici » suit le cycle bleu, rose, blanc (Antoni, 17/11/2026 : « ça ne change pas avec le cycle »).
 
@@ -10097,6 +10198,7 @@ CONTROLES = [
     test_cycle_synchronise,
     test_contraste_du_cycle,
     test_repere_lu_jusquici_dans_le_cycle,
+    test_photo_de_fond,
     test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
     test_rockstarmag_badge_et_bordure,

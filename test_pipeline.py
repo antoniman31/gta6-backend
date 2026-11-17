@@ -6021,6 +6021,26 @@ def test_derniers_reports_tactiles_et_courbes():
     for theme, fond, fond_page in (("sombre", "#f06f7d", "#0a0d0f"), ("clair", "#b3202e", "#f4f7fa"), ("Rockstar sombre", "#ffab00", "#0a0d0f"), ("Rockstar clair", "#8f4407", "#f4f7fa"),
                                    ("RockstarMag sombre", "#8488e7", "#0a0d0f"), ("RockstarMag clair", "#5258c4", "#f4f7fa"), ("Autres sombre", "#9aa7b4", "#0a0d0f"), ("Autres clair", "#566b7e", "#f4f7fa")):
         check(rap(fond, fond_page) >= 4.5, "texte d'onglet (titre de jour, comptage) %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, fond, fond_page, rap(fond, fond_page)))
+    # LA PHOTO DE FOND (PR G, 17/11/2026) : deux JPEG de 1 080 x 2 340 px (une par thème), éteinte par défaut, voile de 30 à 85 %, départ 55 %.
+    import struct
+    for nom_photo in ("fond-sombre.jpg", "fond-clair.jpg"):
+        with open("docs/" + nom_photo, "rb") as f_photo:
+            octets = f_photo.read()
+        i_photo, dims = 2, None
+        while i_photo + 9 < len(octets) and dims is None:
+            if octets[i_photo] != 0xFF:
+                break
+            marque, longueur = octets[i_photo + 1], struct.unpack(">H", octets[i_photo + 2:i_photo + 4])[0]
+            if marque in (0xC0, 0xC1, 0xC2):
+                dims = struct.unpack(">HH", octets[i_photo + 5:i_photo + 9])[::-1]
+            i_photo += 2 + longueur
+        check(octets[:2] == b"\xff\xd8" and dims is not None and dims[0] == 1080 and 2340 <= dims[1] <= 2341 and 50000 < len(octets) < 250000,   # 2 341 pour la photo claire : le rapport de la source (2 352 x 5 098)
+              "%s : un vrai JPEG de 1 080 px de large et 2 340 ou 2 341 de haut, de taille raisonnable (trouvé : %s, %d octets)" % (nom_photo, dims, len(octets)))
+    check("photoFond: false," in html and "photoVoile: 55," in html and "const PHOTO_VOILE_MIN = 30, PHOTO_VOILE_MAX = 85, PHOTO_VOILE_DEFAUT = 55;" in html,
+          "la photo de fond est éteinte par défaut, voile de 30 à 85 %, départ 55 %")
+    check("html.photo-fond::before{" in html and 'url("fond-sombre.jpg")' in html and 'url("fond-clair.jpg")' in html and 'id="photoFondCase"' in html and 'id="photoVoile" min="30" max="85"' in html,
+          "la photo de fond a sa couche fixe, ses deux photos et ses deux réglages (case et curseur)")
+    check(".tab-badge{color:var(--oe); background:color-mix(in srgb, var(--oe) 20%, transparent);}" in html, "la pastille de l'onglet sélectionné prend l'encre de l'onglet (1,9:1 en blanc sur l'orange de Rockstar)")
     check('class="card card-majeur dans-ecran"' in html and 'class="card card-rm dans-ecran"' in html, "l'aperçu des couleurs montre une carte Actu majeure et une carte RockstarMag")
     check(rap("#100800", "#ffab00") >= 4.5, "badge « OFFICIEL » : #100800 sur #FFAB00 tient %.1f:1 (seuil 4,5)" % rap("#100800", "#ffab00"))
     # Les commentaires peuvent citer l'ancienne valeur (« avant : #58b9ff ») : c'est leur rôle, on ne contrôle que le code.
