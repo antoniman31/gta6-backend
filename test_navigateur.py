@@ -9302,7 +9302,7 @@ def test_le_service_worker_en_vrai(nav, url):
 
 
 def test_liste_du_jour_j(nav, url):
-    """La liste de contrôle du jour J (Antoni, 16/11/2026) : un lien dans les Réglages, dix-sept cases mémorisées sur le téléphone."""
+    """La liste de contrôle du jour J (Antoni, 16/11/2026) : un lien dans les Réglages, dix-huit cases mémorisées sur le téléphone."""
     print("\n[liste jour J] lien dans les Réglages, cases mémorisées, confirmation avant d'effacer")
     base = url.rsplit("/", 1)[0]
     dossier = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
@@ -9332,29 +9332,29 @@ def test_liste_du_jour_j(nav, url):
         etat = page.evaluate("""() => ({n: document.querySelectorAll('input[type=checkbox]').length, compte: document.getElementById('compte').textContent,
               hauts: [...document.querySelectorAll('label')].map(l => Math.round(l.getBoundingClientRect().height)), deborde: document.documentElement.scrollWidth > innerWidth,
               bouton: Math.round(document.getElementById('reset').getBoundingClientRect().height)})""")
-        check(etat["n"] == 17 and etat["compte"] == "0 / 17" and min(etat["hauts"]) >= CIBLE_MINIMALE and etat["bouton"] >= CIBLE_MINIMALE and not etat["deborde"],
-              "[liste jour J %d px] dix-sept cases à « 0 / 17 », chacune de 48 px ou plus, rien ne déborde (min %d px)" % (largeur, min(etat["hauts"])))
+        check(etat["n"] == 18 and etat["compte"] == "0 / 18" and min(etat["hauts"]) >= CIBLE_MINIMALE and etat["bouton"] >= CIBLE_MINIMALE and not etat["deborde"],
+              "[liste jour J %d px] dix-huit cases à « 0 / 18 », chacune de 48 px ou plus, rien ne déborde (min %d px)" % (largeur, min(etat["hauts"])))
         for i in ("batterie", "ecran", "volume"):
             page.click('label:has(input[data-id="%s"])' % i)
         c = page.evaluate("() => ({compte: document.getElementById('compte').textContent, now: document.querySelector('.prog').getAttribute('aria-valuenow'), stock: localStorage.getItem('%s')})" % CLE)
-        check(c["compte"] == "3 / 17" and c["now"] == "3" and (json.loads(c["stock"]) if c["stock"] else None) == ["batterie", "ecran", "volume"],
+        check(c["compte"] == "3 / 18" and c["now"] == "3" and (json.loads(c["stock"]) if c["stock"] else None) == ["batterie", "ecran", "volume"],
               "[liste jour J %d px] trois cases cochées : « %s », barre à %s, mémorisées (%s)" % (largeur, c["compte"], c["now"], c["stock"]))
         check(page.evaluate(SNAP, CLE) == avant, "[liste jour J %d px] la page n'a écrit QUE sa propre clé dans le stockage" % largeur)
         page.reload(wait_until="load")
-        check(page.evaluate("() => document.getElementById('compte').textContent") == "3 / 17",
+        check(page.evaluate("() => document.getElementById('compte').textContent") == "3 / 18",
               "[liste jour J %d px] les cases cochées sont encore là après un rechargement" % largeur)
         # « Tout décocher » : un premier appui ne fait que demander confirmation.
         page.click("#reset")
         e1 = page.evaluate("() => ({etat: document.getElementById('reset').getAttribute('data-etat'), texte: document.getElementById('reset').textContent, compte: document.getElementById('compte').textContent})")
-        check(e1["etat"] == "confirme" and "Confirmer" in e1["texte"] and e1["compte"] == "3 / 17",
+        check(e1["etat"] == "confirme" and "Confirmer" in e1["texte"] and e1["compte"] == "3 / 18",
               "[liste jour J %d px] un premier appui sur « Tout décocher » demande confirmation et n'efface rien (%s)" % (largeur, e1))
         page.wait_for_timeout(3400)
         e2 = page.evaluate("() => ({etat: document.getElementById('reset').getAttribute('data-etat'), texte: document.getElementById('reset').textContent, compte: document.getElementById('compte').textContent})")
-        check(e2["etat"] is None and e2["texte"] == "Tout décocher" and e2["compte"] == "3 / 17",
+        check(e2["etat"] is None and e2["texte"] == "Tout décocher" and e2["compte"] == "3 / 18",
               "[liste jour J %d px] sans second appui, la demande s'annule toute seule en 3 s, rien n'est effacé (%s)" % (largeur, e2))
         page.click("#reset"); page.click("#reset")
         e3 = page.evaluate("() => ({compte: document.getElementById('compte').textContent, texte: document.getElementById('reset').textContent, stock: localStorage.getItem('%s')})" % CLE)
-        check(e3["compte"] == "0 / 17" and e3["texte"] == "Tout décocher" and (json.loads(e3["stock"]) if e3["stock"] else None) == [],
+        check(e3["compte"] == "0 / 18" and e3["texte"] == "Tout décocher" and (json.loads(e3["stock"]) if e3["stock"] else None) == [],
               "[liste jour J %d px] deux appuis efface tout, y compris la mémoire (%s)" % (largeur, e3))
         check(not erreurs, "[liste jour J %d px] aucune erreur JavaScript (%s)" % (largeur, erreurs[:1]))
         ctx.close()
@@ -9364,7 +9364,7 @@ def test_liste_du_jour_j(nav, url):
     page.add_init_script("Object.defineProperty(window, 'localStorage', { get(){ throw new Error('refusé'); } });")
     page.goto(base + "/liste-jour-j.html", wait_until="load")
     page.click('label:has(input[data-id="robot"])')
-    check(page.evaluate("() => document.getElementById('compte').textContent") == "1 / 17" and not erreurs,
+    check(page.evaluate("() => document.getElementById('compte').textContent") == "1 / 18" and not erreurs,
           "[liste jour J] avec un stockage refusé, la case se coche quand même, sans erreur (%s)" % erreurs[:1])
     ctx.close()
 
