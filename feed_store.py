@@ -1863,11 +1863,16 @@ def resume_depuis(items, depuis, maintenant, nb_sujets=3):
 # palierCompteur et les variables --compte-*). Les seuils sont recopiés ici et
 # un test les relit dans la page : ils ne peuvent pas dériver sans que le test
 # casse.
-COULEUR_COMPTEUR_FINAL = 0xFF2FA8     # moins de 24 h : rose
-COULEUR_COMPTEUR_URGENT = 0xFF8A00    # moins de 7 jours : orange
-COULEUR_COMPTEUR_SOON = 0xF7FF00      # moins de 30 jours : jaune
-COULEUR_COMPTEUR_NEUTRE = 0x5493FF    # sinon : le bleu du récapitulatif
-COULEUR_COMPTEUR_APRES = 0xFF5CAE     # à partir de la sortie : le rose du jour J (html.apres-sortie, 11/11/2026)
+# 17/11/2026 (Antoni : « tout en dégradé ») : les paliers suivent le logo, du bleu au rose. Avant : jaune fluo #F7FF00, orange #FF8A00, rose #FF2FA8
+# (la palette « Chaude » du 28/10/2026, qu'Antoni a laissée pour le dégradé). Les deux teintes intermédiaires sont le mélange à 1/3 et 2/3 du bleu
+# #4A8DFF et du rose #F87DB7, mesurées 5,15 et 5,64:1 contre le trait sombre du compteur en thème clair (le seuil est 4,5).
+COULEUR_COMPTEUR_FINAL = 0xF87DB7     # moins de 24 h : le rose du logo
+COULEUR_COMPTEUR_URGENT = 0xBE82CF    # moins de 7 jours : aux deux tiers du chemin
+COULEUR_COMPTEUR_SOON = 0x8488E7      # moins de 30 jours : au tiers du chemin
+COULEUR_COMPTEUR_NEUTRE = 0x3380FF    # sinon : le bleu de base de l'app (--accent, 17/11/2026 ; avant #5493FF)
+COULEUR_COMPTEUR_APRES = 0xF87DB7     # à partir de la sortie : le rose du logo (html.apres-sortie ; avant #FF5CAE)
+# L'image ronde du robot Discord : le VI sur fond sombre, avec une marge pour le recadrage en cercle (docs/avatar-discord.png, publiée par GitHub Pages).
+AVATAR_DISCORD_URL = "https://antoniman31.github.io/gta6-backend/avatar-discord.png"
 COMPTEUR_SEUIL_FINAL_H = 24
 COMPTEUR_SEUIL_URGENT_J = 7
 COMPTEUR_SEUIL_SOON_J = 30

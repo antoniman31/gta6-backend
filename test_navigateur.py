@@ -4130,7 +4130,11 @@ def test_vecteurs_du_resume(nav, url):
 
 
 def test_compte_a_rebours_flashy(nav, url):
-    """Les trois paliers du compte à rebours en FLUO, lisibles dans les deux thèmes.
+    """Les trois paliers du compte à rebours, lisibles dans les deux thèmes. FLUO jusqu'au 17/11/2026, puis EN DÉGRADÉ du bleu au rose du logo.
+
+    17/11/2026 (Antoni : « tout en dégradé », après avoir été prévenu qu'il perdait le jaune et l'orange fluo) : le contrôle « la teinte du jeton est
+    fluo » (un canal à fond, un autre presque éteint) est remplacé par « la teinte est celle du dégradé » : le mélange à 1/3, 2/3 et 3/3 du bleu #4a8dff
+    et du rose #f87db7. Ce n'est pas un seuil baissé : le contraste (4,5:1) et le gras sont contrôlés exactement comme avant.
 
     Demandé par Antoni le 28/10/2026 (« pas assez flashy », puis « plutôt des
     couleurs fluo »). Sombre : le texte est fluo, avec un halo. Clair : un texte
@@ -4190,9 +4194,11 @@ def test_compte_a_rebours_flashy(nav, url):
                 fluo = tuple(int(h[k:k + 2], 16) for k in (0, 2, 4))
                 check(palier in m["classe"].split(),
                       "%s l'horloge posée donne bien le palier « %s » (%s)" % (etiq, palier, m["classe"]))
-                check(max(fluo) >= 240 and min(fluo) <= 90,
-                      "%s la teinte du jeton est FLUO (%s : un canal à fond, un autre presque éteint)"
-                      % (etiq, m["jeton"]))
+                k = {"soon": 1, "urgent": 2, "final": 3}[palier]
+                attendu_degrade = tuple(round(a + (b - a) * k / 3) for a, b in zip((0x4a, 0x8d, 0xff), (0xf8, 0x7d, 0xb7)))
+                check(max(abs(a - b) for a, b in zip(fluo, attendu_degrade)) <= 1,
+                      "%s la teinte du jeton est celle du dégradé bleu → rose, cran %d sur 3 (%s, attendu %s)"
+                      % (etiq, k, m["jeton"], "#%02x%02x%02x" % attendu_degrade))
                 check(m["poids"] >= 800, "%s en gras 800 (%d)" % (etiq, m["poids"]))
                 if theme == "dark":
                     r = contraste(lire(m["couleur"]), lire(m["carte"]))
@@ -6772,8 +6778,8 @@ def test_palette_du_jour_j(nav, url):
     jour (palier « final » et sa pulsation gardés) et une semaine plus tard.
     """
     print("\n[jour J] accent rose et chiffres bleus à partir de la sortie")
-    accent = {"dark": {"avant": "#3380ff", "apres": "#ff5cae"},
-              "light": {"avant": "#1f5fd9", "apres": "#b8146f"}}
+    accent = {"dark": {"avant": "#3380ff", "apres": "#f87db7"},
+              "light": {"avant": "#1f5fd9", "apres": "#c01f6e"}}
     instants = (("avant", "2026-11-18T12:00:00Z"),
                 ("apres", "2026-11-18T23:30:00Z"),      # 00:30 à Paris : le premier jour
                 ("apres", "2026-11-25T10:00:00Z"))      # une semaine plus tard

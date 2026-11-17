@@ -36,6 +36,36 @@ import feed_store
 
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL", "")
 SITE_URL = "https://antoniman31.github.io/gta6-backend/"
+# LE VI SUR CHAQUE MESSAGE (Antoni, 17/11/2026) : l'avatar du robot et l'icône du pied de message sont la même image (voir feed_store.AVATAR_DISCORD_URL).
+PIED_TEXTE = "GTA6_WATCH · heure de Paris"
+EMBEDS_TOTAL_MAX = 6000     # la limite de Discord, en caractères, pour tous les embeds d'un message
+# LES TROIS BANDES DU MESSAGE « SORTI » (Antoni, 17/11/2026) : bleu, rose, blanc, les trois teintes du logo.
+COULEURS_SORTI = (0x3380FF, 0xF87DB7, 0xFFFFFF)
+TEXTES_SORTI = (("Bonne partie !", "Le fil continue de tourner toute la nuit."),
+                ("GTA6_WATCH", "Suivi en direct, heure de Paris."))
+
+
+def taille_embed(e):
+    """Les caractères d'un embed que Discord compte dans sa limite de 6 000 par message."""
+    n = len(e.get("title") or "") + len(e.get("description") or "")
+    n += len((e.get("footer") or {}).get("text") or "") + len((e.get("author") or {}).get("name") or "")
+    for f in e.get("fields") or ():
+        n += len(f.get("name") or "") + len(f.get("value") or "")
+    return n
+
+
+def avec_le_vi(charge):
+    """Une COPIE du message avec l'avatar du robot et, sur le dernier embed, le pied « GTA6_WATCH · heure de Paris » et son icône.
+    Rien n'est ajouté si le message a déjà l'un ou l'autre, ni si le pied ferait dépasser les 6 000 caractères de Discord."""
+    out = dict(charge)
+    out.setdefault("avatar_url", feed_store.AVATAR_DISCORD_URL)
+    embeds = [dict(e) for e in (out.get("embeds") or ())]
+    if embeds and "footer" not in embeds[-1] \
+            and sum(taille_embed(e) for e in embeds) + len(PIED_TEXTE) <= EMBEDS_TOTAL_MAX:
+        embeds[-1]["footer"] = {"text": PIED_TEXTE, "icon_url": feed_store.AVATAR_DISCORD_URL}
+    if embeds:
+        out["embeds"] = embeds
+    return out
 
 
 def send_discord_with_retry(embed, title_for_log, max_attempts=3, repli=None):
@@ -47,7 +77,7 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3, repli=None):
     jamais retentées, ça ne changerait rien."""
     # Un message complet (expéditeur, aperçu, plusieurs cartes) porte déjà sa
     # clé `embeds` ; un embed seul est enveloppé comme avant.
-    charge = embed if "embeds" in embed else {"embeds": [embed]}
+    charge = avec_le_vi(embed if "embeds" in embed else {"embeds": [embed]})
     # Des boutons-liens demandent ce paramètre sur un lien d'envoi sans bot.
     # Vérifié le 03/11/2026 par l'envoi TEST : deux boutons de style « lien »
     # s'affichent et ouvrent leur adresse.
@@ -465,7 +495,7 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None, 
     return send_discord_with_retry(charge, f"message {detail}", repli=repli)
 
 
-COULEUR_BILAN = 0x8E5CFF
+COULEUR_BILAN = 0xF87DB7   # le rose du logo (17/11/2026 ; avant le violet #8E5CFF)
 
 
 def send_bilan(bilan):
@@ -569,8 +599,13 @@ def send_jalons(jalons):
             "title": titre,
             "url": SITE_URL,
             "description": "\n".join(lignes)[:DESCRIPTION_MAX_CARACTERES],
-            "color": feed_store.couleur_compteur(),
+            "color": COULEURS_SORTI[0] if sorti else feed_store.couleur_compteur(),
         }
+        if sorti:
+            # Trois bandes, bleu, rose, blanc (Antoni, 17/11/2026) : le message principal, puis deux cartes courtes.
+            cartes = [embed] + [{"title": t, "description": d, "color": c}
+                                for (t, d), c in zip(TEXTES_SORTI, COULEURS_SORTI[1:])]
+            embed = {"embeds": cartes}
         if send_discord_with_retry(embed, f"jalon {j.get('id')}"):
             envoyes += 1
     print(f"  [discord] {envoyes} jalon(s) du compte à rebours envoyé(s) sur {len(jalons)}.")
