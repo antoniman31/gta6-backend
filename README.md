@@ -1,3 +1,5 @@
+![GTA6_WATCH : le VI en dégradé bleu et rose](docs/couverture.png)
+
 # GTA6_WATCH
 
 Veille automatisée de l'actualité GTA VI. Un robot Python interroge des dizaines de sources toutes les heures, écrit un fichier JSON, et une application
@@ -5,7 +7,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2303 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2318 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
