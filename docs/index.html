@@ -630,6 +630,7 @@
     color:var(--accent-contrast);
   }
   .tab-badge:empty{display:none;}
+  #tabMajeur:not(.active) .tab-badge{background:var(--c-fond-2); color:var(--c-on-2);}
   /* Un drapeau n'est pas un chiffre : il lui faut sa taille propre, et le
      fond de pastille disparaît — un emoji encadré d'une bulle grise se lit
      mal. */
@@ -675,11 +676,11 @@
      d'Antoni le 16/10/2026, c'est de l'accessoire sur un article déjà lu,
      et le balayage de contraste porte une exception nommée pour elles. */
   .card.read{opacity:0.70;}
-  .card.new{border-color:var(--c-bord);}
+  .card.new{border-color:var(--c-bord-2);}
   .card.new::before{
     content:'NOUVEAU'; position:absolute; top:0; right:0;
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
-    background:var(--c-fond); color:var(--accent-contrast); padding:3px 8px; letter-spacing:0.05em;
+    background:var(--c-fond-2); color:var(--c-on-2); padding:3px 8px; letter-spacing:0.05em;
     border-bottom-left-radius:6px;
   }
   /* Colonne, et non plus rangée : c'est ce qui fait passer la vignette
@@ -728,7 +729,7 @@
     padding:0 2px; font-size:15px; cursor:pointer;
     color:var(--text-dim); flex:0 0 auto;
   }
-  .card-etoile.cote{color:var(--c-texte);}
+  .card-etoile.cote{color:var(--c-texte-2);}
 
   .card-actions{display:flex; flex-direction:row; flex-wrap:nowrap;
                 gap:8px; margin-top:8px;}
@@ -1200,10 +1201,10 @@
   .repere-nouveaux{
     display:flex; align-items:center; gap:10px; margin:10px 0;
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
-    color:var(--c-texte); letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--c-texte-2); letter-spacing:0.1em; text-transform:uppercase;
   }
-  .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--c-fond));}
-  .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--c-fond), transparent);}
+  .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--c-fond-2));}
+  .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--c-fond-2), transparent);}
 
   .resume-chip{
     position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
@@ -1676,6 +1677,47 @@
      passait à la ligne, à 360, 368 et 390 px). Dessous, le VI reste sur l'écran de chargement, l'écran de minuit et l'icône. */
   .brand .brand-logo{display:none; width:34px; margin-right:8px; vertical-align:-4px;}
   @media (min-width:410px){ .brand .brand-logo{display:inline-block;} }
+  /* LE ROSE, DEUXIÈME ACCENT (Antoni, 17/11/2026 : « le rose comme deuxième accent ») : le bleu reste l'accent principal ; le rose du logo prend les petits
+     repères : badge et cadre des cartes NOUVEAU, trait « nouveaux », étoile « mis de côté », compteur d'« Actu majeure ». Contrastes mesurés : le texte
+     #1a0612 sur le rose #f87db7 fait 7,98:1 (sombre), le blanc sur #c01f6e 5,73:1 (clair). Avec le cycle de couleurs ou après la sortie, ces repères reprennent
+     les jetons typés d'avant (--c-fond, --c-bord, --c-texte) : les cases des Réglages (« fonds », « bordures », « textes ») gardent donc leur effet. */
+  html{--accent-2:#f87db7; --accent-2-contrast:#1a0612; --logo-bleu:#3380ff;
+    --c-fond-2:var(--accent-2); --c-bord-2:var(--accent-2); --c-texte-2:var(--accent-2); --c-on-2:var(--accent-2-contrast);}
+  html[data-theme="light"]{--accent-2:#c01f6e; --accent-2-contrast:#ffffff; --logo-bleu:#1f5fd9;}
+  html.cycle-couleur, html.apres-sortie{--c-fond-2:var(--c-fond); --c-bord-2:var(--c-bord); --c-texte-2:var(--c-texte); --c-on-2:var(--accent-contrast);}
+  /* LE TRAIT EN DÉGRADÉ SOUS L'EN-TÊTE (Antoni, 17/11/2026) : un filet de 2 px, du bleu au rose du logo, collé au bas de la carte, hors jour J seulement (avec le cycle ou
+     après la sortie, le cadre de l'écran et l'accent animé prennent le relais). Posé en IMAGE DE FOND et non en pseudo-élément : la miniature des Réglages copie
+     l'en-tête en position statique, un élément absolu y serait parti au bas de la miniature. */
+  html:not(.cycle-couleur):not(.apres-sortie) header.console{
+    background-image:linear-gradient(90deg, var(--logo-bleu), var(--accent-2)); background-repeat:no-repeat;
+    background-size:calc(100% - 28px) 2px; background-position:center bottom;
+  }
+  /* ↻ PENDANT L'ACTUALISATION : un anneau qui tourne du bleu au rose (la classe « en-cours » est posée par checkNow). Immobile si le téléphone réduit les animations. */
+  @property --ang-ref{syntax:"<angle>"; inherits:false; initial-value:0deg;}
+  @keyframes ref-tourne{to{--ang-ref:360deg;}}
+  .icon-btn-grand.en-cours{
+    border:2px solid transparent;
+    background:linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
+      conic-gradient(from var(--ang-ref), var(--logo-bleu), var(--accent-2), var(--logo-bleu)) border-box;
+    animation:ref-tourne 1.1s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .icon-btn-grand.en-cours{animation:none;} }
+  /* L'ÉTAT VIDE PORTE LE VI (Antoni, 17/11/2026) : en filigrane rose, au-dessus du message. */
+  .empty::before{
+    content:""; display:block; width:120px; aspect-ratio:1048 / 780; margin:0 auto 14px;
+    background:var(--accent-2); opacity:.28;
+    -webkit-mask:var(--logo-vi) center / contain no-repeat; mask:var(--logo-vi) center / contain no-repeat;
+  }
+  /* L'ÉCRAN DE CHARGEMENT : le VI passe du bleu au rose pendant les 1,5 s (hors jour J ; le jour J il suit le cycle), et « J-2 » est bleu. */
+  @keyframes vi-bleu-rose{from{background:var(--logo-bleu);} to{background:var(--logo-rose);}}
+  .splash:not(.splash-jourj) .splash-logo{animation:vi-bleu-rose 1.5s ease-in-out both;}
+  @media (prefers-reduced-motion: reduce){ .splash:not(.splash-jourj) .splash-logo{animation:none;} }
+  /* « À propos » : le VI, le nom et la ligne de présentation, au-dessus du bouton des informations. */
+  .apropos-marque{display:flex; align-items:center; gap:14px; padding:4px 0 10px;}
+  .apropos-marque .logo-vi{width:64px;}
+  .apropos-marque b{display:block; font:800 16px 'JetBrains Mono',monospace;}
+  .apropos-marque b span{color:var(--accent);}
+  .apropos-marque small{display:block; margin-top:2px; font-size:12px; color:var(--text-dim);}
   /* L'ORANGE A SON PROPRE DÉGRADÉ (Antoni, 11/11/2026 : « pour l'orange, un dégradé blanc, jaune, orange ») :
      la bordure et le badge des cartes officielles, l'orange d'« Actu majeure ». En clair, le « blanc » serait
      invisible : trois bruns-ambres qui tiennent 4,5:1 sur la carte blanche. */
@@ -1882,6 +1924,8 @@
   .frise-jalons[hidden]{display:none;}
   .frise-jalons .fj-barre{position:relative; height:6px; border-radius:var(--r-full); background:color-mix(in srgb, var(--text-dim) 28%, transparent);}
   .frise-jalons .fj-plein{position:absolute; left:0; top:0; bottom:0; border-radius:var(--r-full); background:var(--c-fond);}
+  /* 17/11/2026 : sans le cycle, la frise est un dégradé du bleu au rose du logo ; AVEC le cycle elle garde sa couleur qui suit l'accent (un contrôle l'exige depuis le 11/11). */
+  html:not(.cycle-couleur) .frise-jalons .fj-plein{background:linear-gradient(90deg, var(--cycle-a), var(--cycle-b));}
   .frise-jalons .fj-repere{position:absolute; top:-3px; width:2px; height:12px; margin-left:-1px; border-radius:var(--r-full); background:var(--text-dim);}
   .frise-jalons .fj-repere.passe{background:var(--c-fond);}
   .frise-jalons .fj-reperes{position:relative; height:14px; margin-top:4px;}
@@ -2040,8 +2084,8 @@
      le badge peut se trouver. Le sombre (6,22 et 5,76) ne bouge pas. */
   :root{--hot-texte:#ff8c3d;}
   html[data-theme="light"]{--hot-texte:#8f4407;}
-  :root{--langue-fr:#3987e5; --langue-en:#d95926;}
-  html[data-theme="light"]{--langue-fr:#1d4ed8; --langue-en:#eb6834;}
+  :root{--langue-fr:#3380ff; --langue-en:#f87db7;}   /* 17/11/2026 : le bleu et le rose du logo (avant #3987e5 et #d95926). Écart de couleur plus faible qu'avec l'orange : 114 → 70 en sombre (protanope 97 → 49) ; la légende donne les chiffres, la barre ne repose pas sur la couleur seule. */
+  html[data-theme="light"]{--langue-fr:#1f5fd9; --langue-en:#c01f6e;}
   /* Haltères : la semaine d'avant en gris, cette semaine en accent. */
   .stats-halteres{list-style:none; margin:0; padding:0;}
   .stats-halteres li{display:grid; grid-template-columns:minmax(0, 78px) minmax(0, 1fr) auto;
@@ -2662,7 +2706,7 @@
   .splash-nom span{color:var(--accent);}
   .splash-j{
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:44px;
-    letter-spacing:.02em; min-height:1.2em;
+    letter-spacing:.02em; min-height:1.2em; color:var(--accent);
   }
   .splash-l{
     font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px;
@@ -3371,6 +3415,7 @@
          du focus et la touche Échap. -->
     <div class="setting-group">
       <span class="setting-label">À propos</span>
+      <div class="apropos-marque"><span class="logo-vi" aria-hidden="true"></span><div><b>GTA6<span>_WATCH</span></b><small>Veille de GTA VI · heure de Paris</small></div></div>
       <button class="pleine-largeur" onclick="closeSettings(); openInfo();"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"/></svg> Informations et derniers passages du robot</button>
     </div>
 
@@ -6249,7 +6294,14 @@ async function loadArchive(moisVoulu){
   }
 }
 
+// L'anneau de l'actualisation (Antoni, 17/11/2026) : la classe « en-cours » du bouton ↻ dure le temps de la vérification.
 async function checkNow(force){
+  const bouton = document.getElementById("refreshBtn");
+  if(bouton) bouton.classList.add("en-cours");
+  try{ await verifieMaintenant(force); }
+  finally{ if(bouton) bouton.classList.remove("en-cours"); }
+}
+async function verifieMaintenant(force){
   const now = Date.now();
   // Greffé sur la vérification des données : le geste qui dit « montre-moi
   // du neuf » est aussi le bon moment pour regarder s'il y a une nouvelle

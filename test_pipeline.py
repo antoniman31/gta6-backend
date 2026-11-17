@@ -5941,7 +5941,11 @@ def test_derniers_reports_tactiles_et_courbes():
     # couche plein écran redessinerait tout l'écran à chaque image. Verrouillé à part, plus bas.
     # Même règle pour les bordures en dégradé (cartes, tuiles) : elles tournent aussi en 24 pas.
     cadre = [x for x in toutes if "cycle-cadre" in x or "cycle-bord" in x]
-    pulsations = [x for x in toutes if "var(--cycle-pas)" not in x and x not in cadre]
+    # L'ANNEAU D'ATTENTE DU ↻ (17/11/2026) est une exception NOMMÉE : il tourne en continu (« linear »), parce qu'une courbe symétrique le ferait osciller au lieu de
+    # tourner ; ce n'est pas une respiration décorative. Il ne porte que sur un bouton de 44 px (aucune couche plein écran) et s'arrête quand la vérification finit.
+    anneau = [x for x in toutes if "ref-tourne" in x]
+    check(len(anneau) == 1 and "linear" in anneau[0], "l'anneau d'attente du ↻ est la seule animation infinie linéaire : rotation continue, sur un bouton de 44 px")
+    pulsations = [x for x in toutes if "var(--cycle-pas)" not in x and x not in cadre and x not in anneau]
     cycle = [x for x in toutes if "var(--cycle-pas)" in x]
     check(all("ease-in-out" in x for x in pulsations),
           "les %d pulsations infinies gardent leur courbe symétrique" % len(pulsations))

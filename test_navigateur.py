@@ -2978,7 +2978,7 @@ def test_graphiques_detailles(nav, url):
     # Les deux paires ont été passées au validateur de palette (daltonismes
     # compris), chacune sur le fond de son thème : il faut que ce soit bien
     # celle du thème affiché.
-    for theme, attendu in (("dark", ["#3987e5", "#d95926"]), ("light", ["#1d4ed8", "#eb6834"])):
+    for theme, attendu in (("dark", ["#3380ff", "#f87db7"]), ("light", ["#1f5fd9", "#c01f6e"])):
         couleurs = page.evaluate("""(t) => {
           document.documentElement.setAttribute("data-theme", t);
           const cs = getComputedStyle(document.documentElement);
@@ -8315,9 +8315,93 @@ def test_logo_vi(nav, url):
               "[logo chargement, %s, 320 px] le logo en masque, « GTA6_WATCH » dessous, tout dans l'écran (%s)" % (nom, m))
         check(m is not None and abs(m["axe"]) <= 1.0,
               "[logo chargement, %s] le centre de masse du logo est sur l'axe de l'écran, pas le cadre du fichier (écart %s px)" % (nom, m and m["axe"]))
+        if anim == "none" and m is not None:
+            # hors jour J le VI passe du bleu au rose en 1,5 s (17/11/2026) : on lit la couleur d'arrivée
+            m["anim"] = page.evaluate("() => getComputedStyle(document.querySelector('.splash-logo')).animationName")
+            check(m["anim"] == "vi-bleu-rose", "[logo chargement, %s] le VI passe du bleu au rose (%s)" % (nom, m["anim"]))
+            page.evaluate("() => document.querySelector('.splash-logo').getAnimations().forEach(a => a.finish())")
+            m["bg"] = page.evaluate("() => getComputedStyle(document.querySelector('.splash-logo')).backgroundColor")
+            m["anim"] = "none"
         check(m is not None and m["anim"] == anim and (anim == "cycle-accent" or m["bg"] == ROSE[theme]),
               "[logo chargement, %s] %s (%s, %s)" % (nom, "suit le cycle" if anim != "none" else "rose fixe", m and m["anim"], m and m["bg"]))
         ctx.close()
+
+def test_rose_deuxieme_accent_et_vi_de_l_app(nav, url):
+    """Le rose du logo, deuxième accent de l'app, le trait sous l'en-tête, l'anneau du ↻, le VI de l'état vide, la frise, « À propos » (Antoni, 17/11/2026)."""
+    print("\n[PR B] rose en deuxième accent, trait, anneau du ↻, état vide, frise, À propos")
+    ROSE = {"dark": (248, 125, 183), "light": (192, 31, 110)}
+    rvb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    PREP = """() => { const cs = Array.from(document.querySelectorAll('#feed .card'));
+        cs[0].classList.add('new'); cs[1].classList.add('new');
+        const r = document.createElement('div'); r.className = 'repere-nouveaux'; r.textContent = 'Nouveaux · déjà vus'; cs[2].parentNode.insertBefore(r, cs[2]);
+        cs[0].querySelector('.card-etoile').classList.add('cote');
+        return cs.length; }"""
+    LIT = """() => { const cs = x => getComputedStyle(x), c0 = document.querySelector('#feed .card.new'), av = getComputedStyle(c0, '::before'),
+        et = document.querySelector('#feed .card-etoile.cote'), re = document.querySelector('.repere-nouveaux'), tb = document.querySelector('#tabMajeur .tab-badge'),
+        h = getComputedStyle(document.querySelector('header.console'));
+        return {bord: cs(c0).borderTopColor, badge: av.backgroundColor, texteBadge: av.color, etoile: cs(et).color, repere: cs(re).color,
+                tab: tb ? [cs(tb).backgroundColor, cs(tb).color] : null, trait: h.backgroundImage, traitTaille: h.backgroundSize}; }"""
+    for theme in ("dark", "light"):
+        ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {}, theme=theme)
+        page.evaluate("() => checkNow(true)")
+        page.wait_for_selector("#feed .card", timeout=15000)
+        page.wait_for_timeout(300)
+        m = page.evaluate("() => { (" + PREP.strip() + ")(); return (" + LIT.strip() + ")(); }")   # un seul appel : l'app peut redessiner le fil entre deux
+        e = "[PR B %s]" % theme
+        check(rvb(m["bord"]) == ROSE[theme] and rvb(m["badge"]) == ROSE[theme], "%s carte NOUVEAU : cadre et badge roses (%s, %s)" % (e, m["bord"], m["badge"]))
+        check(rvb(m["etoile"]) == ROSE[theme] and rvb(m["repere"]) == ROSE[theme], "%s étoile « mis de côté » et trait « nouveaux » roses (%s, %s)" % (e, m["etoile"], m["repere"]))
+        check(m["tab"] is not None and rvb(m["tab"][0]) == ROSE[theme], "%s le compteur d'« Actu majeure » est rose (%s)" % (e, m["tab"]))
+        if m["tab"]:
+            check(_rapport(rvb(m["tab"][1]), rvb(m["tab"][0])) >= 4.5, "%s et son texte tient 4,5:1 sur le rose (%.2f:1)" % (e, _rapport(rvb(m["tab"][1]), rvb(m["tab"][0]))))
+        check(_rapport(rvb(m["texteBadge"]), rvb(m["badge"])) >= 4.5, "%s le texte du badge NOUVEAU tient 4,5:1 (%.2f:1)" % (e, _rapport(rvb(m["texteBadge"]), rvb(m["badge"]))))
+        check("linear-gradient" in m["trait"] and m["traitTaille"].endswith("2px"), "%s le trait en dégradé est sous l'en-tête (%s, %s)" % (e, m["trait"][:40], m["traitTaille"]))
+        check(not erreurs, "%s aucune erreur JavaScript" % e)
+        ctx.close()
+    # Avec le cycle de couleurs, les repères reprennent les jetons d'avant (les cases « fonds », « bordures », « textes » gardent leur effet) et le trait disparaît.
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {})
+    page.evaluate("() => checkNow(true)")
+    page.wait_for_selector("#feed .card", timeout=15000)
+    page.wait_for_timeout(300)
+    page.evaluate(PREP)
+    m = page.evaluate("""() => { const r = getComputedStyle(document.documentElement);
+        return {fond2: r.getPropertyValue('--c-fond-2').trim(), fond: r.getPropertyValue('--c-fond').trim(), trait: getComputedStyle(document.querySelector('header.console')).backgroundImage}; }""")
+    check(m["fond2"] == m["fond"] and m["trait"] == "none", "[PR B jour J] les repères suivent les jetons typés et le trait est absent (%s, %s)" % (m["fond2"] == m["fond"], m["trait"]))
+    ctx.close()
+    # L'anneau du ↻ : la classe « en-cours » dure le temps de la vérification, l'anneau est un dégradé conique, immobile si les animations sont réduites.
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {})
+    r = page.evaluate("""async () => { const b = document.getElementById('refreshBtn'); let fin;
+        window.checkFromBackend = () => new Promise(ok => { fin = ok; });
+        const p = checkNow(true); await new Promise(x => setTimeout(x, 0));
+        const pendant = b.classList.contains('en-cours'), cs = getComputedStyle(b);
+        const anneau = cs.backgroundImage.includes('conic-gradient'), anim = cs.animationName;
+        fin(); await p; return {pendant, apres: b.classList.contains('en-cours'), anneau, anim}; }""")
+    check(r["pendant"] and not r["apres"] and r["anneau"] and r["anim"] == "ref-tourne",
+          "[PR B] l'anneau bleu-rose du ↻ dure le temps de la vérification, puis disparaît (%s)" % r)
+    ctx.close()
+    ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {}, reduit=True)
+    r = page.evaluate("""() => { const b = document.getElementById('refreshBtn'); b.classList.add('en-cours'); return getComputedStyle(b).animationName; }""")
+    check(r == "none", "[PR B] animations réduites : l'anneau du ↻ est immobile (%s)" % r)
+    ctx.close()
+    # L'état vide porte le VI ; « À propos » aussi.
+    for theme in ("dark", "light"):
+        ctx, page, _ = _ouvre_effets(nav, url, VEILLE, {}, theme=theme)
+        v = page.evaluate("""() => { const e = document.querySelector('#feed .empty'); if(!e) return null; const b = getComputedStyle(e, '::before');
+            return {mask: b.webkitMaskImage !== 'none', w: parseFloat(b.width), bg: b.backgroundColor, op: parseFloat(b.opacity)}; }""")
+        check(v is not None and v["mask"] and abs(v["w"] - 120) < 1 and rvb(v["bg"]) == ROSE[theme] and 0.2 < v["op"] < 0.4,
+              "[PR B %s] l'état vide porte le VI en filigrane rose (%s)" % (theme, v))
+        page.evaluate("() => { openSettings(); ongletParam('adv'); }")   # « À propos » est dans l'onglet « adv » des Réglages
+        page.wait_for_timeout(200)
+        ap = page.evaluate("""() => { const m = document.querySelector('.apropos-marque'); if(!m) return null; const r = m.getBoundingClientRect();
+            return {texte: m.querySelector('b').textContent, logo: m.querySelector('.logo-vi').getBoundingClientRect().width, dedans: r.left >= 0 && r.right <= innerWidth}; }""")
+        check(ap is not None and ap["texte"] == "GTA6_WATCH" and ap["logo"] >= 60 and ap["dedans"], "[PR B %s] « À propos » montre le VI et le nom, dans l'écran (%s)" % (theme, ap))
+        ctx.close()
+    # La frise des jalons (visible le jour J) : du bleu au rose.
+    # (avec le cycle, elle garde sa couleur qui suit l'accent : voir test_jalons ; sans le cycle, elle est en dégradé)
+    ctx, page, _ = _ouvre_effets(nav, url, JOUR_J, {"cycleCouleurs": False})
+    f = page.evaluate("() => { const e = document.querySelector('.frise-jalons .fj-plein'); return e ? getComputedStyle(e).backgroundImage : null; }")
+    check(f is not None and "linear-gradient" in f, "[PR B après la sortie, sans le cycle] la frise des jalons est en dégradé (%s)" % (f and f[:60]))
+    ctx.close()
+
 
 def test_grand_moment_de_minuit(nav, url):
     """Le grand moment de minuit (11/11/2026) : flash, deux ondes, halo qui respire, confettis, vibration, six secondes."""
@@ -9752,6 +9836,7 @@ CONTROLES = [
     test_lot_2b_interface,
     test_case_globale_des_effets,
     test_logo_vi,
+    test_rose_deuxieme_accent_et_vi_de_l_app,
     test_grand_moment_de_minuit,
     test_frise_des_jalons,
     test_aucun_texte_oublie_du_cycle,
