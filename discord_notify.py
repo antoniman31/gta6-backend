@@ -461,7 +461,7 @@ def send_message(officiels, apercus, totaux, majeurs, content, maintenant=None, 
     # tôt serait retiré deux fois (rare, et le compte reste positif).
     autres_total = max(0, n - off_total - majeurs - len(mag))
     sections.append(nouvelle_section(
-        SECTION_AUTRES, "🎮 Les autres", feed_store.couleur_compteur(maintenant),
+        SECTION_AUTRES, "🎮 Les autres", COULEUR_AUTRES,
         par_cat["autre"], autres_total))
     sections = [s for s in sections if s]
     if lignes_mag:
@@ -644,6 +644,10 @@ def send_alertes_report(articles):
 # Orange du logo Rockstar (#FFAB00, mesuré sur le logo envoyé par Antoni le 17/11/2026 ; avant : #FF6B00), celui de la pastille OFFICIEL dans
 # l'app : la même annonce se reconnaît à la même couleur d'un canal à l'autre.
 COULEUR_OFFICIEL = 0xFFAB00
+
+# Gris de l'onglet « Autres » de l'app (#9AA7B4, 17/11/2026) : la section « Les autres » du bilan avait la couleur du palier du compteur ; les quatre
+# sections (officiel orange, actu majeure rouge, RockstarMag violet, autres gris) ont maintenant chacune la leur.
+COULEUR_AUTRES = 0x9AA7B4
 
 
 def send_source_alerts(alertes):
