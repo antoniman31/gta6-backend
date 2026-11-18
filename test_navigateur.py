@@ -9390,6 +9390,34 @@ def test_espaces_resserres(nav, url):
             ctx.close()
 
 
+def test_pastille_reprise_au_dessus_de_la_barre(nav, url):
+    """18/11/2026 (Antoni, capture du S26 : « c'est quoi ce truc bleu ? ») : la pastille « Reprendre » ne dépasse plus de la barre du bas, elle est AU-DESSUS.
+
+    Mesuré avant : pastille de 50 px à 18 px du bas (776 → 826 sur 844), barre du bas à 781 : 5 px de pastille dépassaient. La pastille est affichée par le vrai chemin
+    (un repère de lecture introuvable dans le fil, majPastilleReprise) ; on mesure sa position, sa hauteur, sa zone tactile et son nom accessible.
+    """
+    print("\n[pastille reprise] au-dessus de la barre du bas, 40 px, zone tactile de 48 px")
+    for theme in ("dark", "light"):
+        for largeur in (320, 390):
+            ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false}));}catch(e){}")
+            page = ctx.new_page(); err = []
+            page.on("pageerror", lambda e, err=err: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
+            page.evaluate("() => { repriseLien = 'https://absent.test/x'; repriseAtteinte = false; majPastilleReprise(); }"); page.wait_for_timeout(300)
+            m = page.evaluate("""() => { const c = document.getElementById('resumeChip'), r = c.getBoundingClientRect(), b = document.querySelector('.barre-bas').getBoundingClientRect(), a = getComputedStyle(c, '::after');
+                return {aff: getComputedStyle(c).display, haut: r.height, bas: r.bottom, barreHaut: b.top, gauche: r.left, droite: innerWidth - r.right, zoneH: r.height + Math.abs(parseFloat(a.top)) + Math.abs(parseFloat(a.bottom)),
+                        nom: c.getAttribute('aria-label'), texte: c.textContent.trim()}; }""")
+            etiq = "[pastille %s %d px]" % (theme, largeur)
+            check(m["aff"] != "none", "%s la pastille s'affiche par le vrai chemin (%s)" % (etiq, m["aff"]))
+            check(m["bas"] <= m["barreHaut"] - 8, "%s elle est au-dessus de la barre, à %.0f px d'écart (bas %.0f, barre %.0f)" % (etiq, m["barreHaut"] - m["bas"], m["bas"], m["barreHaut"]))
+            check(abs(m["haut"] - 40) <= 0.5 and m["zoneH"] >= 48, "%s hauteur de 40 px (%.0f) et zone tactile d'au moins 48 px (%.0f)" % (etiq, m["haut"], m["zoneH"]))
+            check(abs(m["gauche"] - m["droite"]) <= 1, "%s elle est centrée (%.0f, %.0f)" % (etiq, m["gauche"], m["droite"]))
+            check(m["texte"] == "Reprendre" and "où j'en étais" in (m["nom"] or ""), "%s texte court « %s », nom complet pour le lecteur d'écran (« %s »)" % (etiq, m["texte"], m["nom"]))
+            check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
+            ctx.close()
+
+
 def test_barres_collees_et_opaques(nav, url):
     """18/11/2026 (Antoni, capture du S26) : « je ne veux pas voir ce qu'il y a en dessous de la barre du bas et au-dessus de la barre du haut ».
 
@@ -10485,6 +10513,7 @@ CONTROLES = [
     test_photo_de_fond,
     test_barre_haute_en_carte_et_apercu_complet,
     test_barres_collees_et_opaques,
+    test_pastille_reprise_au_dessus_de_la_barre,
     test_espaces_resserres,
     test_jour_dans_la_barre,
     test_couleur_de_l_onglet_dans_le_fil,

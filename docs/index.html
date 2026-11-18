@@ -1346,12 +1346,18 @@
   .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--c-fond-2));}
   .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--c-fond-2), transparent);}
 
+  /* LA PASTILLE « REPRENDRE » AU-DESSUS DE LA BARRE DU BAS (Antoni, 18/11/2026, capture du S26 : « c'est quoi ce truc bleu ? »). Elle était fixée à 18 px du bas,
+     haute de 50 px, au même niveau d'empilement que la barre : cachée derrière l'ancienne barre flottante, elle a dépassé de 5 px (mesuré) quand la barre a été collée
+     au bord (haute de 63 px). Placée à 12 px au-dessus (76 px + la zone du geste), centrée, 40 px de haut ; la zone tactile reste de 48 px (::after, sans grossir la
+     pastille). Choix d'Antoni : centrée, plus petite, texte « Reprendre » (le nom complet reste pour le lecteur d'écran). */
   .resume-chip{
-    position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:60;
+    position:fixed; left:50%; transform:translateX(-50%); bottom:calc(76px + env(safe-area-inset-bottom, 0px)); z-index:60;
     background:var(--c-fond); color:var(--accent-contrast); border:none; border-radius:var(--r-full);
-    padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:12px;
+    height:40px; min-height:0; line-height:40px; padding:0 16px; font-family:'JetBrains Mono',monospace; font-size:12px;   /* min-height:0 : sinon la règle des 48 px de tout bouton l'étire */
     font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;
   }
+  .resume-chip::after{content:""; position:absolute; left:0; right:0; top:-4px; bottom:-4px;}
+  .resume-chip .ic{vertical-align:middle;}
 
   .empty{
     text-align:center; padding:60px 20px; color:var(--text-dim);
@@ -3123,7 +3129,7 @@
 
 <!-- Pastille de reprise : masquée par défaut, révélée seulement si un repère
      de lecture existe et qu'il se trouve hors de l'écran. -->
-<button class="resume-chip" id="resumeChip" style="display:none;" onclick="reprendreLecture()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow_downward"/></svg> Reprendre où j'en étais</button>
+<button class="resume-chip" id="resumeChip" style="display:none;" onclick="reprendreLecture()" aria-label="Reprendre où j'en étais"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-arrow_downward"/></svg> Reprendre</button>
 
 <!-- ---------- Confirmation d'une action sans retour ----------
      Un seul panneau pour toutes les actions irréversibles : le jeton
