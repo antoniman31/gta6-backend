@@ -9307,7 +9307,7 @@ def test_jour_dans_la_barre(nav, url):
     print("\n[jour dans la barre] deuxième ligne de la barre du haut : jour en cours, trait, couleurs de l'onglet, cycle du jour J")
     rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
     hexa = lambda h: tuple(int(h[j:j + 2], 16) for j in (1, 3, 5))
-    INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 4 * 3600e3).toISOString(), source: 'Kotaku', lang: 'fr'});
+    INJECTE = """() => { const m = i => Object.assign({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 4 * 3600e3).toISOString(), source: 'Kotaku', lang: 'fr'}, i % 3 === 0 ? {extraSources: [{source: 'A', link: 'https://a.test/' + i}, {source: 'B', link: 'https://b.test/' + i}]} : {}, i % 3 === 1 ? {rockstarmag: true, specialist: true, source: 'RockstarMag'} : {});
         lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
         readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
     LIT = """() => { const j = document.getElementById('bhJour'), b = document.getElementById('barreHaut'), cs = getComputedStyle(j), ligne = b.getBoundingClientRect().bottom,
@@ -9332,11 +9332,12 @@ def test_jour_dans_la_barre(nav, url):
         m2 = page.evaluate(LIT)
         check(m2["texte"] == m2["attendu"] and m2["texte"] != premier, "[jour %s] au bas du fil, le jour a changé (« %s » puis « %s »)" % (theme, premier, m2["texte"]))
         check(rgb(m["couleur"]) == rgb(m["trait"]) == rgb(m["titreCouleur"]), "[jour %s] le trait, le texte et les titres de jour ont la même couleur (%s, %s, %s)" % (theme, m["couleur"], m["trait"], m["titreCouleur"]))
-        page.evaluate("() => setTab('non-rockstar')"); page.wait_for_timeout(500)
-        page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_timeout(400)
-        m3 = page.evaluate(LIT)
-        fixe = hexa("#9aa7b4" if theme == "dark" else "#566b7e")
-        check(rgb(m3["couleur"]) == fixe and rgb(m3["trait"]) == fixe, "[jour %s] onglet Autres : trait et texte à la couleur de l'onglet (%s, %s, attendu %s)" % (theme, m3["couleur"], m3["trait"], fixe))
+        for onglet, (fd, fc) in {"non-rockstar": ("#9aa7b4", "#566b7e"), "majeur": ("#f06f7d", "#b3202e"), "rockstarmag": ("#8488e7", "#5258c4"), "all": ("#3380ff", "#1f5fd9")}.items():
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(500)
+            page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_timeout(400)
+            m3 = page.evaluate(LIT)
+            fixe = hexa(fd if theme == "dark" else fc)
+            check(rgb(m3["couleur"]) == fixe and rgb(m3["trait"]) == fixe, "[jour %s %s] hors cycle : trait et texte à la couleur de base de l'onglet (%s, %s, attendu %s)" % (theme, onglet, m3["couleur"], m3["trait"], fixe))
         page.evaluate("() => setTab('stats')"); page.wait_for_timeout(500)
         vue = page.evaluate("() => getComputedStyle(document.getElementById('bhJour')).display")
         check(vue == "none", "[jour %s] dans Statistiques, la ligne du jour n'existe pas (%s)" % (theme, vue))
@@ -9344,15 +9345,18 @@ def test_jour_dans_la_barre(nav, url):
         ctx.close()
         # JOUR J, CYCLE : trait et texte tournent ensemble dans la famille de l'onglet « Autres »
         ctx, page, err = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
-        page.evaluate(INJECTE); page.evaluate("() => setTab('non-rockstar')"); page.wait_for_timeout(400)
-        page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
-        famille = ["#9aa7b4", "#c9d2db", "#ffffff"] if theme == "dark" else ["#566b7e", "#627689", "#2f3b47"]
-        for i, tt in enumerate((0, 1000, 2000)):
-            page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
-            page.wait_for_timeout(600)
-            c = page.evaluate(LIT)
-            check(rgb(c["couleur"]) == hexa(famille[i]) and rgb(c["trait"]) == hexa(famille[i]),
-                  "[jour %s J %d ms] cycle : trait et texte sont au cran %d de la famille de l'onglet (%s, %s, attendu %s)" % (theme, tt, i + 1, c["couleur"], c["trait"], famille[i]))
+        page.evaluate(INJECTE)
+        FAMILLES = {"dark": {"non-rockstar": ["#9aa7b4", "#c9d2db", "#ffffff"], "majeur": ["#f06f7d", "#f87db7", "#ffffff"], "rockstarmag": ["#3380ff", "#8488e7", "#f87db7"], "all": ["#3380ff", "#f87db7", "#ffffff"]},
+                    "light": {"non-rockstar": ["#566b7e", "#627689", "#2f3b47"], "majeur": ["#b3202e", "#c01f6e", "#7f1d1d"], "rockstarmag": ["#1f5fd9", "#5258c4", "#c01f6e"], "all": ["#1f5fd9", "#c01f6e", "#3a4350"]}}[theme]
+        for onglet, famille in FAMILLES.items():
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(400)
+            page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
+            for i, tt in enumerate((0, 1000, 2000)):
+                page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+                page.wait_for_timeout(600)
+                c = page.evaluate(LIT)
+                check(rgb(c["couleur"]) == hexa(famille[i]) and rgb(c["trait"]) == hexa(famille[i]),
+                      "[jour %s J %s %d ms] cycle : trait et texte sont au cran %d de la famille de l'onglet (%s, %s, attendu %s)" % (theme, onglet, tt, i + 1, c["couleur"], c["trait"], famille[i]))
         check(not err, "[jour %s J] aucune erreur JavaScript (%s)" % (theme, err[:1]))
         ctx.close()
 
