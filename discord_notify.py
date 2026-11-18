@@ -39,10 +39,12 @@ SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 # LE VI SUR CHAQUE MESSAGE (Antoni, 17/11/2026) : l'avatar du robot et l'icône du pied de message sont la même image (voir feed_store.AVATAR_DISCORD_URL).
 PIED_TEXTE = "GTA6_WATCH · heure de Paris"
 EMBEDS_TOTAL_MAX = 6000     # la limite de Discord, en caractères, pour tous les embeds d'un message
-# LES TROIS BANDES DU MESSAGE « SORTI » (Antoni, 17/11/2026) : bleu, rose, blanc, les trois teintes du logo.
-COULEURS_SORTI = (0x3380FF, 0xF87DB7, 0xFFFFFF)
-TEXTES_SORTI = (("Bonne partie !", "Le fil continue de tourner toute la nuit."),
-                ("GTA6_WATCH", "Suivi en direct, heure de Paris."))
+# LE MESSAGE « SORTI » (Antoni, 18/11/2026, sur planches : « un truc hyper stylé avec les fonctionnalités de Discord » ; avant, trois bandes bleu, rose, blanc, sans image) :
+# un @here, l'affiche officielle de la couverture fournie par Antoni (docs/sorti-affiche.jpg, 1600 × 900, servie par GitHub Pages : l'image doit être EN LIGNE avant minuit ; le trait
+# bleu, rose, blanc en bas est celui de l'app), une carte principale bleue
+# et trois cartes aux couleurs des onglets de l'app (officiel orange, actu majeure rouge, RockstarMag violet) quand il y a un article de ce type, un bouton-lien.
+COULEUR_SORTI = 0x3380FF
+AFFICHE_SORTI_NOM = "sorti-affiche.jpg"
 
 
 def taille_embed(e):
@@ -77,7 +79,8 @@ def send_discord_with_retry(embed, title_for_log, max_attempts=3, repli=None):
     jamais retentées, ça ne changerait rien."""
     # Un message complet (expéditeur, aperçu, plusieurs cartes) porte déjà sa
     # clé `embeds` ; un embed seul est enveloppé comme avant.
-    charge = avec_le_vi(embed if "embeds" in embed else {"embeds": [embed]})
+    # Un message en composants V2 (drapeau IS_COMPONENTS_V2) ne porte ni embeds ni content : on ne l'enveloppe pas.
+    charge = avec_le_vi(embed if ("embeds" in embed or embed.get("flags", 0) & IS_COMPONENTS_V2 or "content" in embed) else {"embeds": [embed]})
     # Des boutons-liens demandent ce paramètre sur un lien d'envoi sans bot.
     # Vérifié le 03/11/2026 par l'envoi TEST : deux boutons de style « lien »
     # s'affichent et ouvrent leur adresse.
@@ -175,7 +178,7 @@ def coupe(texte, maximum=TITRE_MAX_CARACTERES):
     return tronque.rstrip(" ,;:-–—") + "…"
 
 
-def ligne_apercu(apercu):
+def ligne_apercu(apercu, marqueur_visible=True):
     """Une ligne du récapitulatif : marqueur, titre cliquable, média.
 
     Le marqueur reprend la hiérarchie appliquée partout ailleurs — ⭐ pour une
@@ -201,7 +204,8 @@ def ligne_apercu(apercu):
         marqueur = "•"
 
     corps = f"[{titre}](<{lien}>)" if lien else titre
-    ligne = f"{marqueur} {corps}"
+    # Les cartes du message « sorti » portent déjà le symbole dans leur titre : pas deux fois (vu sur la capture d'Antoni, 18/11/2026).
+    ligne = f"{marqueur} {corps}" if marqueur_visible else corps
     if media:
         ligne += f" — *{echappe_markdown(media)}*"
     # Le nombre de rédactions n'est dit que quand il est l'information : sur
@@ -563,13 +567,138 @@ def _lignes_sujets(sujets):
     return lignes
 
 
+def cartes_derniers(derniers):
+    """Les cartes du message « sorti » : le dernier officiel, la dernière actu majeure, le dernier RockstarMag. Une carte par type qui a un article, aux couleurs de l'app."""
+    d = derniers if isinstance(derniers, dict) else {}
+    cartes = []
+    for cle, titre, couleur in (("officiel", "⭐ Rockstar · officiel", COULEUR_OFFICIEL),
+                                ("majeur", "🔥 Actu majeure", COULEUR_MAJEURE),
+                                ("rockstarmag", "RockstarMag", feed_store.COULEUR_ROCKSTARMAG)):
+        ap = d.get(cle)
+        ligne = ligne_apercu(ap, marqueur_visible=False) if isinstance(ap, dict) else ""
+        if not ligne:
+            continue
+        if cle == "majeur" and int(ap.get("sources") or 0) >= 2:
+            titre = f"🔥 Actu majeure · {int(ap['sources'])} sources"
+        cartes.append({"title": titre, "description": ligne[:DESCRIPTION_MAX_CARACTERES], "color": couleur})
+    return cartes
+
+
+# ---------------------------------------------------------------------------
+# Le message « sorti » (19/11/2026, 00h00) : un ping, puis le message principal en
+# composants V2 (mise en page Discord de 2025), avec la version classique en repli.
+# ---------------------------------------------------------------------------
+IS_COMPONENTS_V2 = 1 << 15   # drapeau Discord : le message ne porte plus que des composants (ni content, ni embeds)
+
+
+def _texte(contenu):
+    return {"type": 10, "content": contenu}                       # Text Display : du Markdown, titres # compris
+
+
+def _bouton_lien(libelle, url):
+    return {"type": 2, "style": 5, "label": libelle, "url": url}  # un bouton-lien : le seul bouton que ce lien d'envoi sans bot accepte
+
+
+def _lien_sur(url):
+    url = (url or "").strip()
+    return url if url.startswith(("http://", "https://")) and not any(c in url for c in CARACTERES_INTERDITS_URL) else ""
+
+
+def _depuis(j):
+    d = str(j.get("depuis") or "")
+    return "la dernière heure" if d == "H-1" else (d or "le jalon précédent")
+
+
+def message_ping_sorti(test=False):
+    """Le message court qui fait sonner : @here et le plus gros titre que Discord sait faire (`#`). Un message à part : en composants V2, le texte ne peut plus accompagner."""
+    if test:
+        # Un TEST ne pingue personne : allowed_mentions vide, et le @here est écrit entre parenthèses.
+        return {"content": "🧪 TEST — (ici sonnerait le @here)\n# 🎮 GTA VI EST SORTI", "allowed_mentions": {"parse": []}}
+    return {"content": "@here\n# 🎮 GTA VI EST SORTI", "allowed_mentions": {"parse": ["everyone"]}}
+
+
+def message_sorti_v2(j, test=False, affiche_url=None):
+    """Le message principal en composants V2 : un conteneur bleu (titre, affiche, chiffres, bouton) puis un conteneur par type qui a un article, à la couleur de son onglet."""
+    sortie = int(feed_store.SORTIE_GTA6.timestamp())
+    n, off = int(j.get("articles") or 0), int(j.get("officiels") or 0)
+    entete = f"-# GTA6_WATCH · en direct\n# 🎮 GTA VI est sorti\nSortie <t:{sortie}:R> · <t:{sortie}:F>\nBonne partie ! Le fil continue de tourner toute la nuit."
+    if test:
+        entete = "🧪 **TEST** — ce message est un essai.\n" + entete
+    chiffres = f"### 📊 Dans {_depuis(j)}\n**{n}** article{'s' if n > 1 else ''} · **{off}** officiel{'s' if off > 1 else ''} Rockstar"
+    sujets = [l for l in (ligne_apercu(a) for a in (j.get("sujets") or ())) if l]
+    if sujets:
+        chiffres += "\n**Les sujets les plus couverts**\n" + "\n".join(sujets)
+    principal = [_texte(entete),
+                 {"type": 12, "items": [{"media": {"url": affiche_url or SITE_URL + AFFICHE_SORTI_NOM}, "description": "GTA VI : l'affiche officielle"}]},
+                 {"type": 14, "divider": True, "spacing": 2},
+                 _texte(chiffres[:DESCRIPTION_MAX_CARACTERES]),
+                 {"type": 14, "divider": True, "spacing": 1},
+                 {"type": 1, "components": [_bouton_lien("Ouvrir GTA6_WATCH", SITE_URL)]}]
+    conteneurs = [{"type": 17, "accent_color": COULEUR_SORTI, "components": principal}]
+    d = j.get("derniers") if isinstance(j.get("derniers"), dict) else {}
+    for cle, titre, couleur in (("officiel", "⭐ Rockstar · officiel", COULEUR_OFFICIEL),
+                                ("majeur", "🔥 Actu majeure", COULEUR_MAJEURE),
+                                ("rockstarmag", "RockstarMag", feed_store.COULEUR_ROCKSTARMAG)):
+        ap = d.get(cle)
+        ligne = ligne_apercu(ap, marqueur_visible=False) if isinstance(ap, dict) else ""
+        if not ligne:
+            continue
+        if cle == "majeur" and int(ap.get("sources") or 0) >= 2:
+            titre = f"🔥 Actu majeure · {int(ap['sources'])} sources"
+        texte = _texte(f"### {titre}\n{ligne}"[:DESCRIPTION_MAX_CARACTERES])
+        lien = _lien_sur(ap.get("link"))
+        # Une section a besoin d'un accessoire : le bouton « Lire » ; sans lien sûr, un simple texte.
+        bloc = {"type": 9, "components": [texte], "accessory": _bouton_lien("Lire", lien)} if lien else texte
+        conteneurs.append({"type": 17, "accent_color": couleur, "components": [bloc]})
+    conteneurs[-1]["components"].append(_texte(f"-# {PIED_TEXTE}"))
+    return {"flags": IS_COMPONENTS_V2, "components": conteneurs}
+
+
+def message_sorti_classique(j, test=False, avec_boutons=True, affiche_url=None):
+    """Le repli : la version à embeds (carte principale, une carte par type, bouton-lien), sans content : le ping est un message à part."""
+    sortie = int(feed_store.SORTIE_GTA6.timestamp())
+    n, off = int(j.get("articles") or 0), int(j.get("officiels") or 0)
+    lignes = [f"Sortie <t:{sortie}:R> · <t:{sortie}:F>.", "Bonne partie ! Le fil continue de tourner toute la nuit."]
+    if test:
+        lignes.insert(0, "🧪 **TEST** — ce message est un essai.")
+    sujets = [l for l in (ligne_apercu(a) for a in (j.get("sujets") or ())) if l]
+    if sujets:
+        lignes.append("**Les sujets les plus couverts**")
+        lignes.extend(sujets)
+    embed = {"title": "🎮 GTA VI est sorti", "url": SITE_URL, "color": COULEUR_SORTI,
+             "description": "\n".join(lignes)[:DESCRIPTION_MAX_CARACTERES],
+             "author": {"name": "GTA6_WATCH · en direct", "icon_url": feed_store.AVATAR_DISCORD_URL},
+             "fields": [{"name": "Articles", "value": str(n), "inline": True},
+                        {"name": "Officiels Rockstar", "value": str(off), "inline": True},
+                        {"name": "Depuis", "value": _depuis(j), "inline": True}],
+             "image": {"url": affiche_url or SITE_URL + AFFICHE_SORTI_NOM}}
+    message = {"embeds": [embed] + cartes_derniers(j.get("derniers"))}
+    if avec_boutons:
+        message["components"] = boutons_app()
+    return message
+
+
+# Pause entre « sorti » et le reste du passage : 3 minutes, choix d'Antoni (18/11/2026), le message de minuit doit rester seul à l'écran avant les autres.
+PAUSE_APRES_SORTI_S = 180
+
+
+def envoie_sortie(j):
+    """Le ping, puis le message principal en V2. Si Discord refuse le V2, la version classique avec bouton ; si elle est refusée aussi, la classique sans bouton."""
+    envoye = send_discord_with_retry(message_ping_sorti(), "jalon sorti (ping)")
+    principal = message_sorti_v2(j)
+    ok = send_discord_with_retry(principal, "jalon sorti (V2)", repli=message_sorti_classique(j))
+    if not ok:
+        ok = send_discord_with_retry(message_sorti_classique(j, avec_boutons=False), "jalon sorti (classique)")
+    return ok or envoye
+
+
 def send_jalons(jalons):
     """Un message par jalon du compte à rebours : J-14, J-7, J-3, J-1, H-12, H-1, sorti.
 
     Rares, et chacun ne part qu'une fois : c'est fetch_feeds qui décide et qui
     retient l'état dans feed.json. Le décompte est une balise de temps de
     Discord (`<t:…:R>`), recalculée à l'affichage : elle reste juste dans un
-    message ancien. Aucune image.
+    message ancien. Aucune image, sauf « sorti » (voir envoie_sortie).
     """
     if not DISCORD_WEBHOOK_URL or not jalons:
         return False
@@ -578,15 +707,13 @@ def send_jalons(jalons):
     for j in jalons:
         if not isinstance(j, dict):
             continue
-        sorti = j.get("type") == "sortie"
-        if sorti:
-            titre = "🎉 GTA VI est sorti"
-            lignes = [f"Sortie <t:{sortie}:R>."]
-        else:
-            titre = f"⏳ {j.get('libelle')}"
-            lignes = [f"GTA VI sort <t:{sortie}:F> · <t:{sortie}:R>"]
+        if j.get("type") == "sortie":
+            if envoie_sortie(j):
+                envoyes += 1
+            continue
         n = int(j.get("articles") or 0)
         off = int(j.get("officiels") or 0)
+        lignes = [f"GTA VI sort <t:{sortie}:F> · <t:{sortie}:R>"]
         bilan = f"Depuis {j.get('depuis')} : {n} article{'s' if n > 1 else ''}"
         bilan += f", dont {off} officiel{'s' if off > 1 else ''} Rockstar" if off else ""
         lignes.append(bilan + ".")
@@ -596,16 +723,11 @@ def send_jalons(jalons):
             lignes.extend(sujets)
         lignes.append(f"[Ouvrir GTA6_WATCH]({SITE_URL})")
         embed = {
-            "title": titre,
+            "title": f"⏳ {j.get('libelle')}",
             "url": SITE_URL,
             "description": "\n".join(lignes)[:DESCRIPTION_MAX_CARACTERES],
-            "color": COULEURS_SORTI[0] if sorti else feed_store.couleur_compteur(),
+            "color": feed_store.couleur_compteur(),
         }
-        if sorti:
-            # Trois bandes, bleu, rose, blanc (Antoni, 17/11/2026) : le message principal, puis deux cartes courtes.
-            cartes = [embed] + [{"title": t, "description": d, "color": c}
-                                for (t, d), c in zip(TEXTES_SORTI, COULEURS_SORTI[1:])]
-            embed = {"embeds": cartes}
         if send_discord_with_retry(embed, f"jalon {j.get('id')}"):
             envoyes += 1
     print(f"  [discord] {envoyes} jalon(s) du compte à rebours envoyé(s) sur {len(jalons)}.")
@@ -793,6 +915,10 @@ def _annonces():
     jalons = lire_liste(os.environ.get("JALONS_FILE", ""))
     if jalons:
         send_jalons(jalons)
+    # « sorti » reste seul quelques minutes : le reste du passage (annonces, articles, alertes) part après la pause, dans ce même passage (Antoni, 18/11/2026).
+    if feed_store.porte_sorti(jalons):
+        print(f"[discord] « sorti » envoyé : pause de {PAUSE_APRES_SORTI_S} s avant le reste du passage.")
+        time.sleep(PAUSE_APRES_SORTI_S)
 
     if seulement_officiels:
         # La nuit, seule la section ⭐ part, seule dans son message.

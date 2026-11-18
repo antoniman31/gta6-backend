@@ -1831,6 +1831,39 @@ def jalons_dus(maintenant, deja_envoyes=()):
     return dus
 
 
+def porte_sorti(jalons):
+    """Ce passage annonce « GTA VI est sorti » : discord_notify fait alors une pause après ce message, pour qu'il reste seul à l'écran.
+
+    Antoni (18/11/2026) : « on envoie ce message en solo et quelques minutes après je reçois le message normal du robot ». Rien n'est reporté : tout part au même passage,
+    seulement plus tard. (Une première version reportait tout au passage suivant, 01h01 : Antoni l'a refusée.)
+    """
+    return any(isinstance(j, dict) and j.get("type") == "sortie" for j in (jalons or ()))
+
+
+def derniers_par_type(items, maintenant, heures=24):
+    """Le dernier article de chaque type qui compte, au moment de la sortie (message « sorti » du 19/11/2026).
+
+    Trois cartes aux couleurs des onglets de l'app : une annonce OFFICIELLE de Rockstar, l'actu MAJEURE la plus couverte, un article ROCKSTARMAG. Sur les dernières
+    `heures` heures, pas sur « depuis le jalon précédent » : à l'heure pile de la sortie, la dernière heure peut très bien n'avoir aucune annonce officielle, et une carte
+    vide serait pire qu'une carte d'hier. Un type sans article donne None (la carte n'est alors pas affichée). Forme : celle d'apercu_de.
+    """
+    depuis = maintenant - timedelta(hours=heures)
+    dernier = {"officiel": None, "rockstarmag": None}
+    for i in (items or ()):
+        if not isinstance(i, dict):
+            continue
+        quand = parse_date_key(i.get("date") or "")
+        if quand == DATE_FLOOR or not (depuis < quand <= maintenant):
+            continue
+        for cle, vrai in (("officiel", i.get("official")), ("rockstarmag", i.get("rockstarmag"))):
+            if vrai and (dernier[cle] is None or quand > dernier[cle][0]):
+                dernier[cle] = (quand, i)
+    majeurs = resume_depuis(items, depuis, maintenant, nb_sujets=1)["sujets"]
+    return {"officiel": apercu_de(dernier["officiel"][1]) if dernier["officiel"] else None,
+            "majeur": majeurs[0] if majeurs else None,
+            "rockstarmag": apercu_de(dernier["rockstarmag"][1]) if dernier["rockstarmag"] else None}
+
+
 def jalon_precedent(jalon):
     """La cible du jalon d'avant, ou N jours avant pour le premier."""
     cal = calendrier_jalons()

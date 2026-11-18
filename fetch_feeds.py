@@ -2755,8 +2755,12 @@ def prepare_jalons(stored, items, maintenant):
     for j in dus:
         depuis, depuis_libelle = feed_store.jalon_precedent(j)
         resume = feed_store.resume_depuis(items, depuis, maintenant)
-        a_annoncer.append({"id": j["id"], "libelle": j["libelle"], "type": j["type"],
-                           "cible": j["cible"].isoformat(), "depuis": depuis_libelle, **resume})
+        jalon = {"id": j["id"], "libelle": j["libelle"], "type": j["type"],
+                 "cible": j["cible"].isoformat(), "depuis": depuis_libelle, **resume}
+        if j["type"] == "sortie":
+            # Les trois cartes du message « sorti » : officiel, actu majeure, RockstarMag (voir feed_store.derniers_par_type).
+            jalon["derniers"] = feed_store.derniers_par_type(items, maintenant)
+        a_annoncer.append(jalon)
     return a_annoncer, deja + [j["id"] for j in dus]
 
 
@@ -4514,16 +4518,19 @@ def main():
                         feed_store.nb_sources_max(promus))
     officiels_du_run = len(feed_store.articles_officiels(a_notifier))
 
-    attente = reporte_ou_annonce(attente, a_notifier, promus,
-                                 officiels_du_run, sommet_du_run,
-                                 SILENCE_NOCTURNE)
-
+    # Les jalons d'abord : leur état est retenu avec le reste du passage. Le message « sorti » reste seul à l'écran grâce à une pause dans discord_notify, pas en
+    # reportant les articles (refusé par Antoni, 18/11/2026).
     jalons_a_annoncer, jalons_envoyes = prepare_jalons(
         stored, all_items, datetime.now(timezone.utc))
     depose_jalons(jalons_a_annoncer)
+    silence = SILENCE_NOCTURNE
+
+    attente = reporte_ou_annonce(attente, a_notifier, promus,
+                                 officiels_du_run, sommet_du_run,
+                                 silence)
 
     mag_a_annoncer, mag_envoyes = feed_store.prepare_rockstarmag(
-        stored, all_items, a_notifier, SILENCE_NOCTURNE)
+        stored, all_items, a_notifier, silence)
     depose_rockstarmag(mag_a_annoncer)
 
     bilan_a_annoncer, bilan_envoye_le = feed_store.prepare_bilan(

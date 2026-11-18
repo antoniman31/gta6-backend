@@ -202,6 +202,33 @@ def etape_gris(webhook):
     return ok
 
 
+def etape_sorti(webhook):
+    """Le message « sorti » du 19/11/2026 (demandé par Antoni le 18/11, « le message le plus important depuis que j'ai créé l'appli »), avec le VRAI lien d'envoi :
+    le message court de ping (NEUTRALISÉ : aucun @here ne sonne), puis le message principal en composants V2 et sa version classique de repli. Les trois portent TEST.
+    Ce qu'on veut savoir : Discord accepte-t-il les composants V2 sur un lien d'envoi sans bot (drapeau 1 << 15 + with_components) ? Un refus est un RÉSULTAT :
+    le robot, lui, enverrait alors la version classique."""
+    print("\nF. Le message « sorti » : ping neutralisé, composants V2, repli classique")
+    exemple = {"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie", "depuis": "H-1", "articles": 24, "officiels": 2, "sujets": [],
+               "derniers": {"officiel": {"title": "TEST — annonce officielle d'exemple - Rockstar Games", "link": discord_notify.SITE_URL, "source": "Rockstar Games",
+                                         "official": True, "sources": 1},
+                            "majeur": {"title": "TEST — actu majeure d'exemple - Média", "link": discord_notify.SITE_URL, "source": "Média", "official": False, "sources": 5},
+                            "rockstarmag": {"title": "TEST — article d'exemple - RockstarMag", "link": discord_notify.SITE_URL, "source": "RockstarMag",
+                                            "official": False, "sources": 1}}}
+    nom = "TEST · GTA6_WATCH"
+    # L'affiche n'est servie par GitHub Pages qu'après la fusion : pour un essai AVANT, on prend le fichier sur la branche qui lance le test (le dépôt est public).
+    depot, branche = os.environ.get("GITHUB_REPOSITORY", ""), os.environ.get("GITHUB_REF_NAME", "")
+    affiche = f"https://raw.githubusercontent.com/{depot}/{branche}/docs/{discord_notify.AFFICHE_SORTI_NOM}" if depot and branche else None
+    print(f"  affiche : {affiche or 'adresse du site (GitHub Pages)'}")
+    ping = dict(discord_notify.message_ping_sorti(test=True), username=nom)
+    ok_ping, _ = envoie(webhook, discord_notify.avec_le_vi(ping), "ping (TEST, sans @here)", {"wait": "true"})
+    v2 = dict(discord_notify.message_sorti_v2(exemple, test=True, affiche_url=affiche), username=nom)
+    ok_v2, _ = envoie(webhook, discord_notify.avec_le_vi(v2), "composants V2 (with_components=true)", {"wait": "true", "with_components": "true"})
+    classique = dict(discord_notify.message_sorti_classique(exemple, test=True, affiche_url=affiche), username=nom)
+    ok_cl, _ = envoie(webhook, discord_notify.avec_le_vi(classique), "version classique (repli)", {"wait": "true", "with_components": "true"})
+    print(f"  Résultat : V2 {'ACCEPTÉ' if ok_v2 else 'REFUSÉ (le robot enverrait la version classique)'} ; classique {'accepté' if ok_cl else 'REFUSÉ'}.")
+    return ok_ping or ok_v2 or ok_cl
+
+
 def main():
     webhook = os.environ.get("DISCORD_WEBHOOK_URL", "")
     if not webhook:
@@ -209,6 +236,9 @@ def main():
         return 1
     discord_notify.DISCORD_WEBHOOK_URL = webhook
     maintenant = datetime.now(timezone.utc)
+    if "--sorti" in sys.argv[1:]:
+        # Seulement le message « sorti » : pas les anciens essais, pas de bruit de plus dans le salon.
+        return 0 if etape_sorti(webhook) else 1
     acceptes = [etape_boutons(webhook), etape_modification(webhook), etape_balise(webhook, maintenant),
                 etape_exemples(webhook, maintenant), etape_gris(webhook)]
     print(f"\n{sum(bool(a) for a in acceptes)}/{len(acceptes)} étapes ont fait accepter au moins un message.")

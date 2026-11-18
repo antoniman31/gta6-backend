@@ -600,6 +600,23 @@ def test_jalons_du_compte_a_rebours():
           "prepare_jalons rend le jalon dû et retient son identifiant (%s)" % retenus)
     a2, retenus2 = fetch_feeds.prepare_jalons({"jalons_envoyes": ["j14"]}, items, j14["cible"] + timedelta(minutes=3))
     check(a2 == [] and retenus2 == ["j14"], "relancé dans la même heure : rien à annoncer, l'état est conservé")
+    # Les trois cartes du message « sorti » : le dernier de chaque type sur les 24 dernières heures, None sans article de ce type.
+    sort = feed_store.SORTIE_GTA6
+    def at(titre, heures, **kw):
+        return dict({"title": titre, "link": "https://e.example/" + titre, "source": "S",
+                     "date": (sort - timedelta(hours=heures)).isoformat()}, **kw)
+    lot = [at("off ancien", 6, official=True), at("off recent", 2, official=True), at("off trop vieux", 30, official=True),
+           at("mag", 3, rockstarmag=True), at("majeur", 1, extraSources=[{"source": "B", "link": "u"}, {"source": "C", "link": "v"}]),
+           at("ordinaire", 0.5), "pas un dict"]
+    d = feed_store.derniers_par_type(lot, sort)
+    check(d["officiel"]["title"] == "off recent" and d["rockstarmag"]["title"] == "mag" and d["majeur"]["title"] == "majeur" and d["majeur"]["sources"] == 3,
+          "derniers_par_type : l'officiel le plus récent, le RockstarMag, l'actu majeure (%s)" % {k: (v or {}).get("title") for k, v in d.items()})
+    vide = feed_store.derniers_par_type([at("ordinaire", 1), at("off trop vieux", 30, official=True)], sort)
+    check(vide == {"officiel": None, "majeur": None, "rockstarmag": None}, "sans article d'un type dans les 24 h, la carte est None (%s)" % vide)
+    ps, _ = fetch_feeds.prepare_jalons({"jalons_envoyes": []}, lot, sort + timedelta(minutes=3))
+    check([x["id"] for x in ps] == ["sorti"] and ps[0].get("derniers", {}).get("officiel", {}).get("title") == "off recent"
+          and all("derniers" not in x for x in a_annoncer),
+          "prepare_jalons joint les derniers au seul jalon « sorti » (%s)" % [x["id"] for x in ps])
     src = open("fetch_feeds.py", encoding="utf-8").read()
     check('"jalons_envoyes": jalons_envoyes' in src and "depose_jalons(jalons_a_annoncer)" in src,
           "fetch_feeds écrit l'état dans feed.json et dépose les jalons pour Discord")
@@ -622,20 +639,91 @@ def test_jalons_du_compte_a_rebours():
     finally:
         discord_notify.send_discord_with_retry = vrai_envoi
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
-    check(len(envoyes) == 2, "un message par jalon (%d)" % len(envoyes))
-    e1, m2 = envoyes[0][0], envoyes[1][0]
-    # Le message « sorti » est un message complet à trois bandes (17/11/2026) : la première porte le texte, les deux autres sont courtes.
-    check("embeds" in m2 and len(m2["embeds"]) == 3 and [c["color"] for c in m2["embeds"]] == list(discord_notify.COULEURS_SORTI)
-          and list(discord_notify.COULEURS_SORTI) == [0x3380FF, 0xF87DB7, 0xFFFFFF],
-          "« sorti » : trois bandes, bleu, rose, blanc (%s)" % [c.get("color") for c in m2.get("embeds", [])])
-    e2 = m2["embeds"][0]
-    check(e1["title"] == "⏳ J-14" and f"<t:{ts}:R>" in e1["description"] and f"<t:{ts}:F>" in e1["description"],
-          "le décompte est une balise de temps Discord (vivante), pas un nombre figé")
-    check("Depuis 7 jours : 1 article." in e1["description"] and "Sujet" in e1["description"],
-          "le bilan depuis le jalon précédent et les sujets les plus couverts (%s)" % e1["description"].splitlines()[1])
-    check(e2["title"] == "🎉 GTA VI est sorti" and "2 officiels Rockstar" in e2["description"] and "12 articles" in e2["description"],
-          "« sorti » : titre dédié, pluriels justes")
-    check(all("image" not in e and "thumbnail" not in e for e in [e1] + m2["embeds"]), "aucune image")
+    check(len(envoyes) == 3 and [l for _, l in envoyes] == ["jalon j14", "jalon sorti (ping)", "jalon sorti (V2)"],
+          "un message par jalon, et « sorti » en deux messages : le ping, puis le principal en V2 (%s)" % [l for _, l in envoyes])
+    e1, ping, v2 = envoyes[0][0], envoyes[1][0], envoyes[2][0]
+    # Le message « sorti » (18/11/2026, demandé par Antoni : « le message le plus important depuis que j'ai créé l'appli ») : un message court de ping, puis le principal
+    # en composants V2 (conteneur bleu : titre, affiche, chiffres, bouton ; puis un conteneur par type qui a un article, aux couleurs des onglets de l'app).
+    check(ping["content"] == "@here\n# 🎮 GTA VI EST SORTI" and ping["allowed_mentions"] == {"parse": ["everyone"]},
+          "« sorti » : le ping est un message court avec @here et le plus gros titre (%s)" % ping["content"])
+    essai = discord_notify.message_ping_sorti(test=True)
+    check(essai["allowed_mentions"] == {"parse": []} and essai["content"].startswith("🧪 TEST") and "(ici sonnerait le @here)" in essai["content"],
+          "le ping d'ESSAI ne pingue personne (allowed_mentions vide, @here entre parenthèses)")
+    check(v2["flags"] == discord_notify.IS_COMPONENTS_V2 == 32768 and "content" not in v2 and "embeds" not in v2,
+          "« sorti » en V2 : le drapeau 1 << 15, ni content ni embeds (Discord répond 400 sinon)")
+    cont = v2["components"]
+    c0 = cont[0]
+    textes0 = [c["content"] for c in c0["components"] if c["type"] == 10]
+    check(c0["type"] == 17 and c0["accent_color"] == discord_notify.COULEUR_SORTI == 0x3380FF and [c["type"] for c in c0["components"]] == [10, 12, 14, 10, 14, 1, 10]
+          and "# 🎮 GTA VI est sorti" in textes0[0] and "Bonne partie" in textes0[0] and f"<t:{ts}:R>" in textes0[0],
+          "« sorti » en V2 : conteneur bleu, titre en gros, balise de temps vivante, galerie, séparateurs, bouton, pied de message")
+    check("12" in textes0[1] and "2" in textes0[1] and "la dernière heure" in textes0[1] and "H-1" not in textes0[1],
+          "« sorti » en V2 : les chiffres justes, et « la dernière heure » plutôt que « H-1 » (%s)" % textes0[1].replace("\n", " | "))
+    galerie = c0["components"][1]["items"][0]["media"]["url"]
+    check(galerie == discord_notify.SITE_URL + "sorti-affiche.jpg", "« sorti » : l'affiche est dans la galerie (%s)" % galerie)
+    bouton = c0["components"][5]["components"][0]
+    check(bouton == {"type": 2, "style": 5, "label": "Ouvrir GTA6_WATCH", "url": discord_notify.SITE_URL}, "« sorti » : un bouton-lien « Ouvrir GTA6_WATCH »")
+    check(len(cont) == 1, "« sorti » sans article d'un type : le conteneur principal seul (%d)" % len(cont))
+    perso = discord_notify.message_sorti_v2(complet_essai := {"articles": 1, "officiels": 0, "depuis": "H-1", "sujets": []}, test=True, affiche_url="https://exemple.test/a.jpg")
+    check(perso["components"][0]["components"][1]["items"][0]["media"]["url"] == "https://exemple.test/a.jpg"
+          and discord_notify.message_sorti_classique(complet_essai, test=True, affiche_url="https://exemple.test/a.jpg")["embeds"][0]["image"]["url"] == "https://exemple.test/a.jpg",
+          "l'essai peut donner sa propre adresse d'affiche (V2 et classique), le message de minuit garde celle du site")
+    affiche = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", discord_notify.AFFICHE_SORTI_NOM)
+    check(os.path.isfile(affiche) and 0 < os.path.getsize(affiche) < 5_000_000 and open(affiche, "rb").read(3) == b"\xff\xd8\xff",
+          "l'affiche du message « sorti » existe dans docs/ (elle doit être EN LIGNE avant minuit), c'est un JPEG de moins de 5 Mo (%s octets)" % (os.path.getsize(affiche) if os.path.isfile(affiche) else "absente"))
+    derniers = {"officiel": {"title": "Pre-Load - Rockstar Games", "link": "https://rockstargames.com/x", "source": "Rockstar Games", "official": True, "sources": 1},
+                "majeur": {"title": "Le lancement - Kotaku", "link": "https://k.example/l", "source": "Kotaku", "official": False, "sources": 5},
+                "rockstarmag": {"title": "Les coulisses - RockstarMag", "link": "https://m.example/c", "source": "RockstarMag", "official": False, "sources": 1}}
+    complet = {"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie", "depuis": "H-1", "articles": 12, "officiels": 2, "sujets": [], "derniers": derniers}
+    m3 = discord_notify.message_sorti_v2(complet)
+    def compte(c):
+        return 1 + sum(compte(x) for x in (c.get("components") or ())) + (1 if c.get("accessory") else 0) + len(c.get("items") or ())
+    check([c["accent_color"] for c in m3["components"]] == [0x3380FF, discord_notify.COULEUR_OFFICIEL, discord_notify.COULEUR_MAJEURE, feed_store.COULEUR_ROCKSTARMAG]
+          and m3["components"][1]["accent_color"] == 0xFFAB00,
+          "« sorti » avec les trois types : un conteneur bleu puis orange, rouge, violet, aux couleurs de l'app (%s)" % [hex(c["accent_color"]) for c in m3["components"]])
+    sect = [c["components"][0] for c in m3["components"][1:]]
+    check(all(s["type"] == 9 and s["accessory"]["style"] == 5 and s["accessory"]["label"] == "Lire" and s["accessory"]["url"].startswith("http") for s in sect)
+          and "5 sources" in sect[1]["components"][0]["content"],
+          "« sorti » : chaque carte est une section avec un bouton « Lire » vers l'article (%s)" % [s["accessory"]["url"] for s in sect])
+    check(m3["components"][-1]["components"][-1]["content"].startswith("-# GTA6_WATCH"), "« sorti » : le pied de message est la dernière ligne")
+    total = sum(compte(c) for c in m3["components"])
+    check(total <= 40, "« sorti » en V2 reste sous la limite de 40 composants de Discord (%d)" % total)
+    sans_lien = discord_notify.message_sorti_v2(dict(complet, derniers={"officiel": dict(derniers["officiel"], link="javascript:alert(1)")}))
+    check(sans_lien["components"][1]["components"][0]["type"] == 10, "un lien qui n'est pas http(s) n'obtient pas de bouton (simple texte)")
+    cl = discord_notify.message_sorti_classique(complet)
+    check("content" not in cl and len(cl["embeds"]) == 4 and cl.get("components") and cl["embeds"][0]["image"]["url"].endswith("sorti-affiche.jpg")
+          and "H-1" not in str(cl["embeds"][0]["fields"]),
+          "la version classique de repli : quatre cartes, l'affiche, le bouton, sans content (le ping est à part)")
+    # Le repli : V2 refusé → la classique avec bouton ; refusée aussi → la classique sans bouton.
+    essais = []
+    reponses = iter([True, False, False, True])
+    try:
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: essais.append((label, embed, k.get("repli"))) or next(reponses)
+        discord_notify.send_jalons([complet])
+    finally:
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    check([e[0] for e in essais] == ["jalon sorti (ping)", "jalon sorti (V2)", "jalon sorti (classique)"] and essais[1][2] and essais[1][2].get("components")
+          and "components" not in essais[2][1] and len(essais[2][1]["embeds"]) == 4,
+          "V2 refusé par Discord : la classique avec bouton en repli, puis sans bouton si refusée aussi (%s)" % [e[0] for e in essais])
+    # L'envoi réel : un message V2 n'est pas enveloppé dans « embeds », et demande with_components.
+    posts = []
+    class Rep:
+        status_code = 204
+        text = ""
+    vrai_post = discord_notify.requests.post
+    try:
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.requests.post = lambda url, json=None, params=None, timeout=None: posts.append((json, params)) or Rep()
+        discord_notify.send_discord_with_retry(m3, "essai V2")
+        discord_notify.send_discord_with_retry(discord_notify.message_ping_sorti(), "essai ping")
+    finally:
+        discord_notify.requests.post = vrai_post
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    check("embeds" not in posts[0][0] and posts[0][0]["flags"] == 32768 and posts[0][1] == {"with_components": "true"} and posts[0][0].get("avatar_url")
+          and posts[1][0]["content"].startswith("@here") and "embeds" not in posts[1][0],
+          "à l'envoi, le V2 part tel quel avec with_components=true, et le ping n'est pas enveloppé non plus")
     check(e1["color"] == feed_store.couleur_compteur(), "la barre prend la couleur du palier du compteur")
 
     # Bout en bout : JALONS_FILE lu par discord_notify.main.
@@ -674,6 +762,63 @@ def test_jalons_du_compte_a_rebours():
     discord = wf[wf.index("name: Notifier Discord"):wf.index("name: Tableau du jour Discord")]
     check("JALONS_FILE:" in robot and "JALONS_FILE:" in discord,
           "le workflow transmet JALONS_FILE au robot et à Discord")
+
+    # LA PAUSE APRÈS « SORTI » (Antoni, 18/11/2026) : « sorti » part seul, le reste du passage 3 minutes plus tard, dans le même passage, rien reporté à 01h01.
+    sorti_j = {"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie", "depuis": "H-1", "articles": 3, "officiels": 1, "sujets": [], "derniers": {}}
+    check(feed_store.porte_sorti([sorti_j]) and not feed_store.porte_sorti([jalon]) and not feed_store.porte_sorti([]) and not feed_store.porte_sorti(None)
+          and not feed_store.porte_sorti(["pas un dict", 3]),
+          "porte_sorti : vrai seulement avec le jalon « sorti »")
+    check(discord_notify.PAUSE_APRES_SORTI_S == 180, "la pause après « sorti » est de 3 minutes (choix d'Antoni)")
+    src_f = open("fetch_feeds.py", encoding="utf-8").read()
+    corps = src_f[src_f.index("jalons_a_annoncer, jalons_envoyes = prepare_jalons("):]
+    check("silence = SILENCE_NOCTURNE\n" in corps and "passage_solitaire" not in src_f,
+          "fetch_feeds ne reporte plus les articles au passage « sorti » : le silence reste celui de la pause nocturne")
+    art_off = {"title": "Annonce - Rockstar Games", "link": "https://r.example/a", "source": "Rockstar Games", "official": True, "date": "2026-11-18T23:00:30+00:00", "sources": 1}
+    art_ord = {"title": "Article ordinaire - Média", "link": "https://m.example/o", "source": "Média", "official": False, "date": "2026-11-18T23:00:20+00:00", "sources": 1}
+    chemin_s = _os.path.join(dossier, "jalons_sorti.json")
+    chemin_n2 = _os.path.join(dossier, "nouveaux2.json")
+    chemin_a = _os.path.join(dossier, "alertes.json")
+    _json.dump([sorti_j], open(chemin_s, "w", encoding="utf-8"))
+    _json.dump([art_ord, art_off], open(chemin_n2, "w", encoding="utf-8"))
+    _json.dump([{"id": "x", "libelle": "Source A", "etat": "cassee"}], open(chemin_a, "w", encoding="utf-8"))
+    cles = ("NEW_ITEMS_FILE", "PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE", "SOURCE_ALERTS_FILE", "SEULEMENT_OFFICIELS", "JALONS_FILE", "ROCKSTARMAG_FILE")
+    anciens2 = {k: _os.environ.get(k) for k in cles}
+    envoyes3 = []
+    vrai_sleep = discord_notify.time.sleep
+    try:
+        _os.environ["NEW_ITEMS_FILE"] = chemin_n2
+        _os.environ["JALONS_FILE"] = chemin_s
+        _os.environ["SOURCE_ALERTS_FILE"] = chemin_a
+        _os.environ["SEULEMENT_OFFICIELS"] = "0"     # nuit d'exception : la pause nocturne est levée
+        for k in ("PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE", "ROCKSTARMAG_FILE"):
+            _os.environ.pop(k, None)
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: envoyes3.append((embed, label)) or True
+        discord_notify.send_message = lambda officiels, *a, **k: envoyes3.append((officiels, "message")) or True
+        discord_notify.send_source_alerts = lambda *a, **k: envoyes3.append((a, "alertes de sources")) or True
+        discord_notify.time.sleep = lambda s: envoyes3.append((s, "pause"))
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = discord_notify.main()
+    finally:
+        discord_notify.time.sleep = vrai_sleep
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+        for k, v in anciens2.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+        import importlib
+        importlib.reload(discord_notify)
+    etiq = [l for _, l in envoyes3]
+    check(code == 0 and etiq[:3] == ["jalon sorti (ping)", "jalon sorti (V2)", "pause"] and envoyes3[2][0] == 180,
+          "« sorti » (ping et V2) part d'abord, puis une pause de 180 s (%s)" % etiq)
+    check("alertes de sources" in etiq[3:] and "message" in etiq[3:],
+          "après la pause, le reste du passage part quand même : alertes de sources et message des articles (%s)" % etiq)
+    check(etiq.count("pause") == 1, "une seule pause, pas une par message (%s)" % etiq)
+    wf2 = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    check("passage « sorti »" not in wf2 and "solitaire" not in wf2,
+          "le workflow ne porte plus de règle solitaire (tableau du jour et « est reparti » se font au même passage)")
 
 
 def test_couleur_du_compteur():
