@@ -482,7 +482,10 @@
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--c-texte); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  .bh-jour:empty, body.vue-stats .bh-jour, body.vue-reglages .bh-jour{display:none;}
+  .bh-jour-nom{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis;}
+  /* Le nombre d'articles AFFICHÉS dans le groupe du jour en cours (Antoni, 18/11/2026, variante 5 des planches) : en minuscules et en graisse normale, même couleur que le jour. */
+  .bh-jour-n{flex:none; margin-left:12px; font-weight:500; letter-spacing:0.02em; text-transform:none;}
+  .bh-jour[hidden], body.vue-stats .bh-jour, body.vue-reglages .bh-jour{display:none;}
   /* STATS ET RÉGLAGES N'ONT PAS BESOIN DE L'EN-TÊTE DÉPLIÉ (Antoni, 10/11/2026) : il prenait environ
      268 px sur 844 en haut de chaque page. On le masque ; l'observateur de brancheBarreHaute voit alors
      l'en-tête hors de l'écran et allume la ligne réduite (titre, point vert, compteur), qui garde
@@ -3653,7 +3656,7 @@
 <div class="barre-haut" id="barreHaut">
   <button type="button" class="bh-titre" aria-label="GTA6_WATCH, remonter en haut de la page" title="Remonter en haut"><span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span><span class="bh-point" aria-hidden="true"></span></button>
   <button type="button" id="cbCompteur" class="bh-compteur" aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
-  <div class="bh-jour" id="bhJour" aria-hidden="true"></div>   <!-- le jour en cours (majBhJour) : doublon visuel des titres de jour du fil, donc caché au lecteur d'écran -->
+  <div class="bh-jour" id="bhJour" aria-hidden="true" hidden><span class="bh-jour-nom" id="bhJourNom"></span><span class="bh-jour-n" id="bhJourN"></span></div>   <!-- le jour en cours (majBhJour) : doublon visuel des titres de jour du fil, donc caché au lecteur d'écran -->
 </div>
 
 <!-- Barre du bas, flottante (choix C d'Antoni, 07/11/2026). Trois entrées : le fil, les statistiques
@@ -10287,10 +10290,10 @@ function brancheBarreHaute(){
 // LE JOUR EN COURS, dans la deuxième ligne de la barre du haut : le titre du dernier groupe d'articles dont le haut est passé sous le bord bas de la barre
 // (à défaut, le premier). Appelée au défilement, quand la barre apparaît et après chaque rendu du fil.
 function majBhJour(){
-  const cible = document.getElementById("bhJour"), barre = document.getElementById("barreHaut");
-  if(!cible || !barre) return;
+  const cible = document.getElementById("bhJour"), nomEl = document.getElementById("bhJourNom"), nEl = document.getElementById("bhJourN"), barre = document.getElementById("barreHaut");
+  if(!cible || !nomEl || !nEl || !barre) return;
   const titres = document.querySelectorAll("#feed .day-label");
-  let texte = "";
+  let texte = "", n = 0;
   if(titres.length){
     const ligne = barre.getBoundingClientRect().bottom;
     let bas = 0, haut = titres.length - 1, k = 0;
@@ -10299,8 +10302,13 @@ function majBhJour(){
       if(titres[m].getBoundingClientRect().top <= ligne){ k = m; bas = m + 1; } else haut = m - 1;
     }
     texte = titres[k].textContent.replace(/\s+/g, " ").trim();
+    const groupe = titres[k].parentElement;
+    n = groupe ? groupe.querySelectorAll(".card").length : 0;
   }
-  if(cible.textContent !== texte) cible.textContent = texte;
+  const compte = n ? n + (n > 1 ? " affichés" : " affiché") : "";
+  if(nomEl.textContent !== texte) nomEl.textContent = texte;
+  if(nEl.textContent !== compte) nEl.textContent = compte;
+  cible.hidden = !texte;
 }
 
 // ---------- Le détail du compte à rebours ----------

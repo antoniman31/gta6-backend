@@ -9312,8 +9312,9 @@ def test_jour_dans_la_barre(nav, url):
         readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
     LIT = """() => { const j = document.getElementById('bhJour'), b = document.getElementById('barreHaut'), cs = getComputedStyle(j), ligne = b.getBoundingClientRect().bottom,
             titres = [...document.querySelectorAll('#feed .day-label')]; let k = 0; titres.forEach((t, i) => { if(t.getBoundingClientRect().top <= ligne) k = i; });
-            const t0 = getComputedStyle(titres[0]);
-            return {texte: j.textContent, attendu: titres.length ? titres[k].textContent.replace(/\\s+/g, ' ').trim() : '', nb: titres.length, haut: b.getBoundingClientRect().height, jourH: j.getBoundingClientRect().height,
+            const t0 = getComputedStyle(titres[0]), nb = titres[k].parentElement.querySelectorAll('.card').length, nEl = document.getElementById('bhJourN'), nomEl = document.getElementById('bhJourNom');
+            return {nombre: nEl.textContent, nombreAttendu: nb + (nb > 1 ? ' affichés' : ' affiché'), nombreAlignee: nEl.getBoundingClientRect().right >= nomEl.getBoundingClientRect().right,
+                    nombreCouleur: getComputedStyle(nEl).color, texte: nomEl.textContent, attendu: titres.length ? titres[k].textContent.replace(/\\s+/g, ' ').trim() : '', nb: titres.length, haut: b.getBoundingClientRect().height, jourH: j.getBoundingClientRect().height,
                     couleur: cs.color, trait: cs.borderTopColor, traitL: parseFloat(cs.borderTopWidth), titreCouleur: t0.color, pos: t0.position, aria: j.getAttribute('aria-hidden')}; }"""
     for theme in ("dark", "light"):
         ctx, page, err = _ouvre_cycle(nav, url, "2026-11-12T10:00:00Z", False, theme)
@@ -9321,6 +9322,8 @@ def test_jour_dans_la_barre(nav, url):
         page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
         m = page.evaluate(LIT)
         check(m["nb"] >= 3, "[jour %s] l'injection donne au moins trois groupes de jours (%d)" % (theme, m["nb"]))
+        check(m["nombre"] == m["nombreAttendu"] and m["nombreAlignee"] and rgb(m["nombreCouleur"]) == rgb(m["couleur"]),
+              "[jour %s] à droite, le nombre d'articles affichés du groupe en cours « %s » (attendu « %s »), même couleur que le jour" % (theme, m["nombre"], m["nombreAttendu"]))
         check(m["texte"] and m["texte"] == m["attendu"], "[jour %s] la deuxième ligne affiche le jour en cours (« %s », attendu « %s »)" % (theme, m["texte"], m["attendu"]))
         check(m["jourH"] == 32 and m["traitL"] == 1 and 84 <= m["haut"] <= 86, "[jour %s] ligne de 32 px sous un trait de 1 px, barre de 85 px (%.0f, %.0f, %.0f)" % (theme, m["jourH"], m["traitL"], m["haut"]))
         check(m["pos"] != "sticky" and m["aria"] == "true", "[jour %s] les titres de jour du fil ne sont plus collants (%s), le doublon est caché au lecteur d'écran (%s)" % (theme, m["pos"], m["aria"]))
