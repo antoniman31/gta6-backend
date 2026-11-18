@@ -9391,31 +9391,56 @@ def test_espaces_resserres(nav, url):
 
 
 def test_pastille_reprise_au_dessus_de_la_barre(nav, url):
-    """18/11/2026 (Antoni, capture du S26 : « c'est quoi ce truc bleu ? ») : la pastille « Reprendre » ne dépasse plus de la barre du bas, elle est AU-DESSUS.
+    """18/11/2026 (Antoni, capture du S26 : « c'est quoi ce truc bleu ? », puis « pas une pilule, une carte ») : la languette « Reprendre » est POSÉE sur la barre du bas.
 
-    Mesuré avant : pastille de 50 px à 18 px du bas (776 → 826 sur 844), barre du bas à 781 : 5 px de pastille dépassaient. La pastille est affichée par le vrai chemin
-    (un repère de lecture introuvable dans le fil, majPastilleReprise) ; on mesure sa position, sa hauteur, sa zone tactile et son nom accessible.
+    Mesuré avant : pilule de 50 px à 18 px du bas (776 → 826 sur 844), barre du bas à 781 : 5 px de pastille dépassaient. Choix d'Antoni sur planche : la languette collée à la
+    barre (angles de carte en haut, 36 px), au fond de l'onglet sélectionné, avec son cycle du jour J. On la fait afficher par le vrai chemin (un repère de lecture introuvable,
+    majPastilleReprise) et on mesure : elle touche le haut de la barre sans la recouvrir, sa forme, sa zone tactile de 48 px, son nom accessible, et sa couleur contre celle de
+    la pastille de l'onglet sélectionné, hors cycle puis aux trois crans du jour J.
     """
-    print("\n[pastille reprise] au-dessus de la barre du bas, 40 px, zone tactile de 48 px")
+    print("\n[languette reprise] posée sur la barre, 36 px, zone de 48 px, couleur de l'onglet et cycle du jour J")
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    MESURE = """() => { const c = document.getElementById('resumeChip'), r = c.getBoundingClientRect(), b = document.querySelector('.barre-bas').getBoundingClientRect(), a = getComputedStyle(c, '::after'),
+        cs = getComputedStyle(c), actif = document.querySelector('.tab-row .tab.active') || document.getElementById('tabAll'), ca = getComputedStyle(actif);
+        return {aff: cs.display, haut: r.height, bas: r.bottom, barreHaut: b.top, gauche: r.left, droite: innerWidth - r.right, zoneH: r.height + Math.abs(parseFloat(a.top)) + Math.abs(parseFloat(a.bottom)),
+                nom: c.getAttribute('aria-label'), texte: c.textContent.trim(), rayonHaut: cs.borderTopLeftRadius, rayonBas: cs.borderBottomLeftRadius, fond: cs.backgroundColor, fondOnglet: ca.backgroundColor, encre: cs.color, encreOnglet: ca.color}; }"""
     for theme in ("dark", "light"):
         for largeur in (320, 390):
             ctx = nav.new_context(viewport={"width": largeur, "height": 800}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
-            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false}));}catch(e){}")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, cycleCouleurs: false}));}catch(e){}")
             page = ctx.new_page(); err = []
             page.on("pageerror", lambda e, err=err: err.append(str(e)))
             page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
             page.evaluate("() => { repriseLien = 'https://absent.test/x'; repriseAtteinte = false; majPastilleReprise(); }"); page.wait_for_timeout(300)
-            m = page.evaluate("""() => { const c = document.getElementById('resumeChip'), r = c.getBoundingClientRect(), b = document.querySelector('.barre-bas').getBoundingClientRect(), a = getComputedStyle(c, '::after');
-                return {aff: getComputedStyle(c).display, haut: r.height, bas: r.bottom, barreHaut: b.top, gauche: r.left, droite: innerWidth - r.right, zoneH: r.height + Math.abs(parseFloat(a.top)) + Math.abs(parseFloat(a.bottom)),
-                        nom: c.getAttribute('aria-label'), texte: c.textContent.trim()}; }""")
-            etiq = "[pastille %s %d px]" % (theme, largeur)
-            check(m["aff"] != "none", "%s la pastille s'affiche par le vrai chemin (%s)" % (etiq, m["aff"]))
-            check(m["bas"] <= m["barreHaut"] - 8, "%s elle est au-dessus de la barre, à %.0f px d'écart (bas %.0f, barre %.0f)" % (etiq, m["barreHaut"] - m["bas"], m["bas"], m["barreHaut"]))
-            check(abs(m["haut"] - 40) <= 0.5 and m["zoneH"] >= 48, "%s hauteur de 40 px (%.0f) et zone tactile d'au moins 48 px (%.0f)" % (etiq, m["haut"], m["zoneH"]))
+            m = page.evaluate(MESURE)
+            etiq = "[languette %s %d px]" % (theme, largeur)
+            check(m["aff"] != "none", "%s elle s'affiche par le vrai chemin (%s)" % (etiq, m["aff"]))
+            check(-0.5 <= m["barreHaut"] - m["bas"] <= 1.5, "%s elle est posée sur la barre, sans la recouvrir (bas %.1f, haut de la barre %.1f)" % (etiq, m["bas"], m["barreHaut"]))
+            check(abs(m["haut"] - 36) <= 0.5 and m["zoneH"] >= 48, "%s hauteur de 36 px (%.0f) et zone tactile d'au moins 48 px (%.0f)" % (etiq, m["haut"], m["zoneH"]))
+            check(m["rayonHaut"] != "0px" and m["rayonBas"] == "0px", "%s angles de carte en haut (%s), droits en bas (%s) : plus une pilule" % (etiq, m["rayonHaut"], m["rayonBas"]))
             check(abs(m["gauche"] - m["droite"]) <= 1, "%s elle est centrée (%.0f, %.0f)" % (etiq, m["gauche"], m["droite"]))
             check(m["texte"] == "Reprendre" and "où j'en étais" in (m["nom"] or ""), "%s texte court « %s », nom complet pour le lecteur d'écran (« %s »)" % (etiq, m["texte"], m["nom"]))
+            for onglet in ("all", "majeur", "rockstarmag", "non-rockstar", "rockstar"):
+                page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(500)
+                page.evaluate("() => { repriseLien = 'https://absent.test/x'; repriseAtteinte = false; majPastilleReprise(); }"); page.wait_for_timeout(200)
+                c = page.evaluate(MESURE)
+                check(rgb(c["fond"]) == rgb(c["fondOnglet"]) and rgb(c["encre"]) == rgb(c["encreOnglet"]),
+                      "%s onglet %s : fond et encre de la languette = ceux de la pastille de l'onglet (%s / %s, %s / %s)" % (etiq, onglet, c["fond"], c["fondOnglet"], c["encre"], c["encreOnglet"]))
             check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
             ctx.close()
+        # JOUR J, CYCLE : la languette tourne avec la pastille de l'onglet, aux trois crans
+        ctx, page, err = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        for onglet in ("all", "majeur", "rockstarmag", "non-rockstar", "rockstar"):
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(400)
+            page.evaluate("() => { repriseLien = 'https://absent.test/x'; repriseAtteinte = false; majPastilleReprise(); }"); page.wait_for_timeout(300)
+            for i, tt in enumerate((0, 1000, 2000)):
+                page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+                page.wait_for_timeout(600)
+                c = page.evaluate(MESURE)
+                check(rgb(c["fond"]) == rgb(c["fondOnglet"]) and rgb(c["encre"]) == rgb(c["encreOnglet"]),
+                      "[languette %s J %s %d ms] cycle : fond et encre au cran %d, comme la pastille de l'onglet (%s / %s)" % (theme, onglet, tt, i + 1, c["fond"], c["fondOnglet"]))
+        check(not err, "[languette %s J] aucune erreur JavaScript (%s)" % (theme, err[:1]))
+        ctx.close()
 
 
 def test_barres_collees_et_opaques(nav, url):

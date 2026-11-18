@@ -1346,18 +1346,27 @@
   .repere-nouveaux::before{content:""; flex:1; height:2px; background:linear-gradient(90deg, transparent, var(--c-fond-2));}
   .repere-nouveaux::after{content:""; flex:1; height:2px; background:linear-gradient(90deg, var(--c-fond-2), transparent);}
 
-  /* LA PASTILLE « REPRENDRE » AU-DESSUS DE LA BARRE DU BAS (Antoni, 18/11/2026, capture du S26 : « c'est quoi ce truc bleu ? »). Elle était fixée à 18 px du bas,
-     haute de 50 px, au même niveau d'empilement que la barre : cachée derrière l'ancienne barre flottante, elle a dépassé de 5 px (mesuré) quand la barre a été collée
-     au bord (haute de 63 px). Placée à 12 px au-dessus (76 px + la zone du geste), centrée, 40 px de haut ; la zone tactile reste de 48 px (::after, sans grossir la
-     pastille). Choix d'Antoni : centrée, plus petite, texte « Reprendre » (le nom complet reste pour le lecteur d'écran). */
+  /* LA LANGUETTE « REPRENDRE » COLLÉE À LA BARRE DU BAS (Antoni, 18/11/2026, capture du S26 : « c'est quoi ce truc bleu ? », puis « pas une pilule, une carte » ;
+     choix sur planche : la languette collée à la barre, au fond de l'onglet sélectionné, avec son cycle du jour J, une seule ligne « Reprendre »). Avant, une pilule de
+     50 px fixée à 18 px du bas, au même niveau d'empilement que la barre : cachée derrière l'ancienne barre flottante, elle dépassait de 5 px (mesuré : 776 → 826 sur
+     844, barre à 781) depuis que la barre est collée au bord. Maintenant : posée sur le haut de la barre (63 px = 6 + 50 + 6 + le filet), angles de carte en haut, 36 px de
+     haut ; la règle des 48 px de tout bouton est levée (min-height:0) et la zone tactile de 48 px est tenue par un ::after qui monte de 12 px. Le fond est celui de la
+     pastille de l'onglet sélectionné (voir plus bas) ; sur « Tous », l'accent. */
   .resume-chip{
-    position:fixed; left:50%; transform:translateX(-50%); bottom:calc(76px + env(safe-area-inset-bottom, 0px)); z-index:60;
-    background:var(--c-fond); color:var(--accent-contrast); border:none; border-radius:var(--r-full);
-    height:40px; min-height:0; line-height:40px; padding:0 16px; font-family:'JetBrains Mono',monospace; font-size:12px;   /* min-height:0 : sinon la règle des 48 px de tout bouton l'étire */
-    font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;
+    position:fixed; left:50%; transform:translateX(-50%); bottom:calc(63px + env(safe-area-inset-bottom, 0px)); z-index:60;
+    background:var(--c-fond); color:var(--accent-contrast); border:none; border-radius:var(--r-md) var(--r-md) 0 0;
+    height:36px; min-height:0; line-height:36px; padding:0 18px; font-family:'JetBrains Mono',monospace; font-size:12px;
+    font-weight:600; box-shadow:0 -6px 24px rgba(0,0,0,.28); cursor:pointer;
   }
-  .resume-chip::after{content:""; position:absolute; left:0; right:0; top:-4px; bottom:-4px;}
+  .resume-chip::after{content:""; position:absolute; left:0; right:0; top:-12px; bottom:0;}
   .resume-chip .ic{vertical-align:middle;}
+  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) .resume-chip{background:var(--of); color:var(--oe);}
+  /* EN CYCLE, par l'identifiant : la règle de groupe « tout dans le cycle » (plus bas) contient des #id, donc sa spécificité est plus haute que celle d'une classe ;
+     sans l'identifiant, la languette tournait dans le cycle général (pas celui de l'onglet) et son texte prenait la couleur du fond (mesuré le 18/11/2026). */
+  html.cycle-couleur #resumeChip.resume-chip{color:var(--accent-contrast);}
+  html.cycle-couleur:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) #resumeChip.resume-chip{
+    background:var(--accent); color:var(--accent-contrast); animation:cycle-onglet var(--cycle-duree) var(--cycle-pas) infinite;
+  }
 
   .empty{
     text-align:center; padding:60px 20px; color:var(--text-dim);
