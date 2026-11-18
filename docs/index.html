@@ -981,17 +981,22 @@
   }
   /* La chronologie des officiels. Le trait vertical porte toute la lecture :
      c'est lui qui transforme une liste en histoire. */
-  .chrono{list-style:none; margin:0; padding:0 0 0 14px; border-left:2px solid var(--line);}
+  /* LA FRISE SANS TRAIT NI POINT : UNE BARRE DE COULEUR PAR CARTE (Antoni, 18/11/2026, capture du S26 : « c'est moche ça », puis, sur cinq planches, « C — barre de
+     couleur » et l'année « en carte pleine largeur comme un titre de jour »). Avant : un trait de 2 px et des points de 8 px à 21 px à gauche des cartes, qui mangeaient
+     la largeur (cartes plus étroites que celles du fil) et dont les points se voyaient à peine ; l'année flottait sur le trait. Maintenant : les cartes ont toute la
+     largeur, la barre de 4 px au bord gauche (le ::before d'avant, donc les mêmes couleurs de type et le même cycle du jour J) dit le type, l'année est une carte pleine
+     largeur, SANS filet (Antoni, sur la planche : « enlève le trait »). */
+  .chrono{list-style:none; margin:0; padding:0;}
   .chrono-annee{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
-    color:var(--text-dim); letter-spacing:0.08em; margin:18px 0 8px -22px;
-    padding-left:8px; background:var(--bg); display:inline-block;
+    color:var(--text-dim); letter-spacing:0.08em; margin:10px 0 6px;
+    display:flex; align-items:center; gap:10px;
   }
   .chrono-annee:first-child{margin-top:0;}
-  .chrono-point{position:relative; margin:0 0 14px; padding-left:4px;}
+  .chrono-point{position:relative; margin:0 0 8px; padding-left:4px; overflow:hidden;}
   .chrono-point::before{
-    content:""; position:absolute; left:-21px; top:6px; width:8px; height:8px;
-    border-radius:var(--r-full); background:var(--c-fond);
+    content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+    background:var(--c-fond);
   }
   .chrono-point.lu::before{background:var(--line);}
   .chrono-point.lu .chrono-titre{color:var(--text-dim);}
@@ -2903,7 +2908,7 @@
   }
   :is(.day-label, .feed-count, .resume-marker, .repere-nouveaux, .chrono-annee){padding:7px 12px;}
   :is(.day-label, .resume-marker, .repere-nouveaux){margin:6px 0 2px;}
-  .chrono-point{padding:8px 12px;}
+  .chrono-point{padding:8px 12px 8px 16px;}   /* 16 px à gauche : 4 px de barre de couleur + la marge de carte */
   html.photo-fond::before{
     content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
     background-image:linear-gradient(var(--photo-teinte), var(--photo-teinte)), var(--photo-url);

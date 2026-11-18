@@ -9443,6 +9443,43 @@ def test_pastille_reprise_au_dessus_de_la_barre(nav, url):
         ctx.close()
 
 
+def test_frise_barre_de_couleur(nav, url):
+    """18/11/2026 (Antoni, capture du S26 : « c'est moche ça », puis « C — barre de couleur » et l'année en carte pleine largeur) : la frise de l'onglet Rockstar.
+
+    Mesuré avant : un trait de 2 px à gauche, des points de 8 px à 21 px des cartes, des cartes plus étroites que celles du fil (le trait et sa marge mangeaient 14 px
+    plus le trait), l'année en petite carte posée sur le trait. Maintenant : pas de trait, cartes aussi larges que le reste du fil, barre de 4 px au bord gauche (la
+    couleur du type est déjà contrôlée par test_couleur_de_l_onglet_dans_le_fil), année en carte pleine largeur, sans filet (Antoni : « enlève le trait »).
+    """
+    print("\n[frise] sans trait, cartes pleine largeur, barre de couleur, année pleine largeur")
+    INJECTE = """() => { const m = (i, o) => Object.assign({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+          date: new Date(Date.now() - i * 86400e3 * 3).toISOString(), source: 'Rockstar Games', lang: 'en', official: true}, o || {});
+        lastItems = [m(0), m(1, {extraSources: [{source: 'A', link: 'https://a.test/1'}, {source: 'B', link: 'https://b.test/1'}]}), m(2), m(3, {official: false})];
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 4; readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    for theme in ("dark", "light"):
+        for largeur in (320, 390):
+            ctx = nav.new_context(viewport={"width": largeur, "height": 900}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false, cycleCouleurs: false}));}catch(e){}")
+            page = ctx.new_page(); err = []
+            page.on("pageerror", lambda e, err=err: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
+            page.evaluate(INJECTE); page.evaluate("() => setTab('rockstar')"); page.wait_for_selector(".chrono-point", state="attached"); page.wait_for_timeout(500)
+            m = page.evaluate("""() => { const q = s => document.querySelector(s), R = e => e.getBoundingClientRect(), c = q('.chrono'), p = q('.chrono-point'), a = q('.chrono-annee'),
+                    b = getComputedStyle(p, '::before'), ref = R(q('.search-row')), an = getComputedStyle(a, '::after');
+                return {trait: parseFloat(getComputedStyle(c).borderLeftWidth), gauchePoint: R(p).left, droitePoint: R(p).right, gaucheRef: ref.left, droiteRef: ref.right,
+                        annee: [R(a).left, R(a).right], barreL: parseFloat(b.width), barreH: parseFloat(b.height), pointH: R(p).height, barreG: b.left, barreOverflow: getComputedStyle(p).overflow,
+                        filet: an.content, defile: document.documentElement.scrollWidth > innerWidth}; }""")
+            etiq = "[frise %s %d px]" % (theme, largeur)
+            check(m["trait"] == 0, "%s plus de trait vertical (%s px)" % (etiq, m["trait"]))
+            check(abs(m["gauchePoint"] - m["gaucheRef"]) <= 1 and abs(m["droitePoint"] - m["droiteRef"]) <= 1,
+                  "%s les cartes de la frise ont la largeur du fil (%.0f → %.0f, repère %.0f → %.0f)" % (etiq, m["gauchePoint"], m["droitePoint"], m["gaucheRef"], m["droiteRef"]))
+            check(abs(m["barreL"] - 4) <= 0.5 and abs(m["barreH"] - m["pointH"]) <= 3, "%s barre de couleur de 4 px sur toute la hauteur de la carte (%.1f × %.0f, carte %.0f)" % (etiq, m["barreL"], m["barreH"], m["pointH"]))
+            check(abs(m["annee"][0] - m["gaucheRef"]) <= 1 and abs(m["annee"][1] - m["droiteRef"]) <= 1 and m["filet"] in ("none", "normal"),
+                  "%s l'année est une carte pleine largeur, sans filet (%.0f → %.0f, contenu « %s »)" % (etiq, m["annee"][0], m["annee"][1], m["filet"]))
+            check(not m["defile"], "%s la page ne défile pas de côté" % etiq)
+            check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
+            ctx.close()
+
+
 def test_barres_collees_et_opaques(nav, url):
     """18/11/2026 (Antoni, capture du S26) : « je ne veux pas voir ce qu'il y a en dessous de la barre du bas et au-dessus de la barre du haut ».
 
@@ -10538,6 +10575,7 @@ CONTROLES = [
     test_photo_de_fond,
     test_barre_haute_en_carte_et_apercu_complet,
     test_barres_collees_et_opaques,
+    test_frise_barre_de_couleur,
     test_pastille_reprise_au_dessus_de_la_barre,
     test_espaces_resserres,
     test_jour_dans_la_barre,
