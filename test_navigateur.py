@@ -9362,10 +9362,10 @@ def test_jour_dans_la_barre(nav, url):
 
 
 def test_espaces_resserres(nav, url):
-    """18/11/2026 (Antoni, capture du S26 : « réduis les espaces ») : un cran de moins entre les blocs du haut et du fil et entre les cartes.
+    """18/11/2026 (Antoni, capture du S26 : « réduis les espaces ») : deux crans de moins entre les blocs du haut et du fil et entre les cartes.
 
-    Mesuré avant : en-tête → recherche 14, recherche → onglets 14, onglets → comptage 8, comptage → jour 18, jour → carte 18, carte → carte 10 (px). Les plafonds
-    ci-dessous sont les valeurs d'après (10, 10, 6, 12, 12, 8) : ce contrôle échoue sur l'ancien code. Les zones tactiles ne bougent pas (on ne change que des marges).
+    Mesuré avant : en-tête → recherche 14, recherche → onglets 14, onglets → comptage 8, comptage → jour 18, jour → carte 18, carte → carte 10 (px). Antoni a choisi
+    le DEUXIÈME cran sur planche : les plafonds ci-dessous sont les valeurs d'après (8, 8, 4, 8, 8, 6) ; ce contrôle échoue sur l'ancien code ET sur le premier cran (10, 10, 6, 12, 12, 8). Les zones tactiles ne bougent pas (on ne change que des marges).
     """
     print("\n[espaces] un cran de moins entre les blocs du haut, du fil et des cartes")
     INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 4 * 3600e3).toISOString(), source: 'Kotaku', lang: 'fr'});
@@ -9384,7 +9384,7 @@ def test_espaces_resserres(nav, url):
                 return {entete: g('header.console', '.search-row'), recherche: g('.search-row', '.tab-row'), onglets: g('.tab-row', '.feed-count'), comptage: g('.feed-count', '.day-label'),
                         jour: g('.day-label', '#feed .card'), cartes: cs.length > 1 ? Math.round(R(cs[1]).top - R(cs[0]).bottom) : null}; }""")
             etiq = "[espaces %s %d px]" % (theme, largeur)
-            for cle, plafond in (("entete", 10), ("recherche", 10), ("onglets", 6), ("comptage", 12), ("jour", 12), ("cartes", 8)):
+            for cle, plafond in (("entete", 8), ("recherche", 8), ("onglets", 4), ("comptage", 8), ("jour", 8), ("cartes", 6)):
                 check(m[cle] is not None and m[cle] <= plafond, "%s l'espace « %s » fait %s px au plus %d" % (etiq, cle, m[cle], plafond))
             check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
             ctx.close()
