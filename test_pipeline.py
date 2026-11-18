@@ -6049,10 +6049,13 @@ def test_derniers_reports_tactiles_et_courbes():
           "mouvement réduit : la tuile du compteur ne pulse plus (palier final)")
     check(re.search(r"\.barre-bas button\{[^}]*border-radius:var\(--r-md\)", html) is not None,
           "bandeau du bas : le bouton actif a les angles des cartes, plus de pilule dans un cadre rectangulaire")
-    check(len(re.findall(r"backdrop-filter:blur\(10px\)", html)) >= 4 and re.search(r"body\.bh-visible::before\{opacity:1;\}", html) is not None and "html.photo-fond body::before{" in html,
-          "flou sous la barre du bas et la petite entête (verre dépoli), fondu du haut lié à l'entête, fondus translucides avec la photo")
-    check('<span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span>' in html and re.search(r"\.barre-haut\{[^}]*border-radius:var\(--r-md\)[^}]*box-shadow", html) is not None,
-          "la ligne réduite du haut est une carte flottante avec le logo VI rose à côté du titre")
+    # 18/11/2026 : barres collées aux bords et opaques (choix d'Antoni sur planche) : plus de flou, plus de calque du haut ; le fondu du bas reste, translucide avec la photo.
+    check(re.search(r"\.barre-bas\{[^}]*left:0; right:0; bottom:0[^}]*background:var\(--bg-panel-plein\)", html) is not None
+          and re.search(r"\.barre-haut\{[^}]*top:0; left:0; right:0[^}]*background:var\(--bg-panel-plein\)", html) is not None
+          and "backdrop-filter:blur(10px)" not in html and "body.bh-visible::before" not in html and "html.photo-fond body::after{" in html,
+          "les deux barres sont collées aux bords et opaques (--bg-panel-plein), sans flou ni calque du haut ; le fondu du bas reste, translucide avec la photo")
+    check('<span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span>' in html and re.search(r"\.barre-haut\{[^}]*border-radius:0 0 var\(--r-md\) var\(--r-md\)[^}]*box-shadow", html) is not None,
+          "la ligne réduite du haut est collée au bord, angles de carte en bas, avec le logo VI rose à côté du titre")
     check("html.cycle-couleur .card:is(.official, .card-majeur, .card-rm).dans-ecran .card-src{" in html
           and "html.cycle-couleur .chrono-point:not(.lu):is(.chrono-off, .chrono-maj)::before{" in html and "const CYCLES_ONGLET = {" in html
           and "(CYCLES_ONGLET[currentTab] || {})[clair ? \"light\" : \"dark\"] || (clair ? CYCLE_CLAIR : CYCLE_SOMBRE)" in html and 'item.rockstarmag && !item.official ? " chrono-rm"' in html,
@@ -8010,13 +8013,13 @@ def test_barre_du_bas_et_entete():
     check(bh is not None and 'id="cbCompteur"' in bh.group(1) and "bh-point" in bh.group(1),
           "une ligne réduite porte le titre, un point et le compteur")
     regle = re.search(r"\.barre-haut\{([^}]*)\}", html).group(1)
-    # 17/11/2026 (PR H) : carte flottante à 10 px du haut (avant : collée au bord, « top:0 »), toujours haute de 52 px et cachée tant que l'entête est en vue.
-    check("position:fixed" in regle and "top:calc(10px + env(safe-area-inset-top, 0px))" in regle and "height:52px" in regle
+    # 18/11/2026 : collée au bord (la carte flottante de la PR H laissait une marge où le contenu passait), haute de 52 px + la zone système, cachée tant que l'entête est en vue.
+    check("position:fixed" in regle and "top:0; left:0; right:0" in regle and "height:calc(52px + env(safe-area-inset-top, 0px))" in regle
           and "visibility:hidden" in regle,
-          "elle est fixe en haut (carte flottante à 10 px du bord), haute de 52 px, et cachée (visibility) tant que l'entête est en vue")
+          "elle est fixe en haut, collée au bord, haute de 52 px plus la zone système, et cachée (visibility) tant que l'entête est en vue")
     check("body:has(#modeIndicator.backend) .bh-point{display:inline-block;}" in html,
           "son point vert n'apparaît qu'en mode backend GitHub")
-    check("body.bh-visible .day-label{top:52px;}" in html and "body.bh-visible .panneau-tabs{top:52px;}" in html,
+    check("body.bh-visible .day-label{top:calc(52px + env(safe-area-inset-top, 0px));}" in html and "body.bh-visible .panneau-tabs{top:calc(52px + env(safe-area-inset-top, 0px));}" in html,
           "le jour et les rubriques des Réglages se collent sous la ligne")
     corps = html[html.index("function brancheBarreHaute("):]
     corps = corps[:corps.index("\n}")]

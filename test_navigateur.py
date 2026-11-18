@@ -1804,9 +1804,9 @@ def test_entete_tuiles_et_ligne_reduite(nav, url):
                     cpt: document.getElementById('cbCompteur').textContent,
                     jourTop: jour ? jour.getBoundingClientRect().top : null,
                     ghost: document.documentElement.scrollWidth > innerWidth}; }""")
-        # 17/11/2026 (PR H) : la ligne réduite est une carte FLOTTANTE à 10 px du haut (avant : collée au bord, top 0), toujours haute de 52 px.
-        check(r2["visible"] and abs(r2["top"] - 10) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
-              "%s en défilant, la ligne réduite de 52 px flotte à 10 px du haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
+        # 18/11/2026 : la ligne réduite est COLLÉE au bord du haut (la carte flottante de la PR H, à 10 px, laissait une marge où le contenu passait), haute de 52 px.
+        check(r2["visible"] and abs(r2["top"]) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
+              "%s en défilant, la ligne réduite de 52 px est collée au bord du haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
         check(r2["point"] != "none", "%s son point vert est là en mode backend" % etiq)
         check(r2["jourTop"] is not None and abs(r2["jourTop"] - 52) <= 1.5,
               "%s le jour « AUJOURD'HUI » se colle juste dessous (top %s)" % (etiq, r2["jourTop"]))
@@ -7836,6 +7836,9 @@ def test_coins_du_cadre(nav, url):
     # LA COURBE, lue sur des captures (rayon 40). Haut : angle droit, le trait occupe le coin lui-même.
     ctx3, page3, _ = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
     page3.evaluate("() => { settings.rayonCadre = 40; appliqueRayonCadre(); }")
+    # La barre du bas est collée au bord (18/11/2026) : sa pastille active tomberait sur le point mesuré « dans l'arc ». Ce contrôle lit la COURBE du cadre,
+    # pas la barre : on la rend invisible (elle garde sa place), sinon le point lu serait la pastille et pas le fond.
+    page3.add_style_tag(content=".barre-bas{visibility:hidden}")
     page3.wait_for_timeout(200)
     # Le trait est « vif » s'il est CLAIR sur le fond sombre (17/11/2026 : avant, il devait aussi être saturé ; le cadre passe maintenant par le blanc
     # du cycle bleu, rose, blanc, et un blanc à 222/193/207 n'est pas saturé. Le fond de la page, lui, reste sous 60 : le contrôle « hors de l'arc » le garde.)
@@ -9294,13 +9297,13 @@ def test_couleur_de_l_onglet_dans_le_fil(nav, url):
         ctx.close()
 
 
-def test_flou_et_fondu_sous_les_barres(nav, url):
-    """18/11/2026 (Antoni) : flou + fondu sous la barre du bas ET sous la petite entête du haut, pour qu'on ne lise pas ce qui passe dessous.
+def test_barres_collees_et_opaques(nav, url):
+    """18/11/2026 (Antoni, capture du S26) : « je ne veux pas voir ce qu'il y a en dessous de la barre du bas et au-dessus de la barre du haut ».
 
-    Mesuré sur le rendu : le flou (backdrop-filter) est posé sur les deux cartes ; le fondu du haut n'existe que lorsque l'entête est visible (opacité 0 puis 1),
-    ne prend aucun appui, et avec la photo il reste translucide (sinon une bande plate cacherait la photo).
+    Choix d'Antoni sur planche : les deux barres COLLÉES aux bords de l'écran et 100 % opaques, sans flou ; le petit fondu du bas (11/11) reste, translucide avec la photo
+    (sinon une bande plate cacherait la photo). Mesuré : position collée, fond sans transparence même avec la photo, aucun calque au-dessus de l'entête.
     """
-    print("\n[flou et fondu] sous la barre du bas et la petite entête")
+    print("\n[barres collées] opaques, sans marge, sans flou, fondu du bas gardé")
     INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S', feed: 'S'});
         lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
         readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
@@ -9313,18 +9316,19 @@ def test_flou_et_fondu_sous_les_barres(nav, url):
             page.on("pageerror", lambda e, err=err: err.append(str(e)))
             page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
             page.evaluate(INJECTE); page.wait_for_timeout(400)
-            LIT = """() => { const f = e => getComputedStyle(e).backdropFilter || getComputedStyle(e).webkitBackdropFilter, h = getComputedStyle(document.body, '::before'), b = getComputedStyle(document.body, '::after');
-                return {flouBas: f(document.querySelector('.barre-bas')), flouHaut: f(document.getElementById('barreHaut')), opHaut: parseFloat(h.opacity), appuiHaut: h.pointerEvents,
-                        fondHaut: h.backgroundImage, fondBas: b.backgroundImage}; }"""
-            m0 = page.evaluate(LIT)
             page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(700)
-            m = page.evaluate(LIT)
-            check("blur" in m["flouBas"] and "blur" in m["flouHaut"], "%s flou posé sur la barre du bas (%s) et sur la petite entête (%s)" % (etiq, m["flouBas"], m["flouHaut"]))
-            check(m0["opHaut"] == 0 and m["opHaut"] == 1 and m["appuiHaut"] == "none", "%s le fondu du haut n'apparaît qu'avec l'entête (%s puis %s) et ne prend aucun appui (%s)" % (etiq, m0["opHaut"], m["opHaut"], m["appuiHaut"]))
-            check("linear-gradient" in m["fondHaut"] and "linear-gradient" in m["fondBas"], "%s un dégradé sous chaque barre" % etiq)
+            m = page.evaluate("""() => { const g = s => document.querySelector(s), r = e => e.getBoundingClientRect(), c = e => getComputedStyle(e),
+                    f = e => c(e).backdropFilter || c(e).webkitBackdropFilter || 'none', bas = g('.barre-bas'), haut = g('#barreHaut'), a = getComputedStyle(document.body, '::after'), b = getComputedStyle(document.body, '::before');
+                return {basG: r(bas).left, basD: innerWidth - r(bas).right, basB: innerHeight - r(bas).bottom, hautG: r(haut).left, hautD: innerWidth - r(haut).right, hautH: r(haut).top,
+                        fondBas: c(bas).backgroundColor, fondHaut: c(haut).backgroundColor, floubas: f(bas), flouhaut: f(haut), fondu: a.backgroundImage, avant: b.content}; }""")
+            check(all(abs(m[k]) <= 0.5 for k in ("basG", "basD", "basB", "hautG", "hautD", "hautH")),
+                  "%s les deux barres touchent les bords : bas (%.0f, %.0f, %.0f), haut (%.0f, %.0f, %.0f)" % (etiq, m["basG"], m["basD"], m["basB"], m["hautG"], m["hautD"], m["hautH"]))
+            check("/" not in m["fondBas"] and "/" not in m["fondHaut"] and not m["fondBas"].endswith(", 0)") and m["fondBas"].startswith("rgb(") and m["fondHaut"].startswith("rgb("),
+                  "%s les deux barres sont 100 %% opaques (%s, %s)" % (etiq, m["fondBas"], m["fondHaut"]))
+            check(m["floubas"] == "none" and m["flouhaut"] == "none", "%s plus de flou (%s, %s) : il ne sert plus sur une barre opaque" % (etiq, m["floubas"], m["flouhaut"]))
+            check("linear-gradient" in m["fondu"] and m["avant"] in ("none", "normal"), "%s le fondu du bas est gardé, aucun calque au-dessus de l'entête (%s)" % (etiq, m["avant"]))
             if photo:
-                check("/ 0.6)" in m["fondHaut"] and "/ 0.6)" in m["fondBas"],
-                      "%s avec la photo, le fondu reste translucide (%s)" % (etiq, m["fondHaut"][:90]))
+                check("/ 0.6)" in m["fondu"], "%s avec la photo, le fondu du bas reste translucide (%s)" % (etiq, m["fondu"][:90]))
             check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
             ctx.close()
 
@@ -9353,12 +9357,12 @@ def test_barre_haute_en_carte_et_apercu_complet(nav, url):
             page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
             m = page.evaluate("""() => { const b = document.getElementById('barreHaut'), c = getComputedStyle(b), r = b.getBoundingClientRect(), l = b.querySelector('.bh-logo'), lc = l ? getComputedStyle(l) : null,
                 t = b.querySelector('.bh-titre').getBoundingClientRect(), k = document.getElementById('cbCompteur').getBoundingClientRect(), lr = l ? l.getBoundingClientRect() : null, carte = getComputedStyle(document.querySelector('#feed .card'));
-                return {gauche: r.left, droite: innerWidth - r.right, haut: r.top, rayon: c.borderTopLeftRadius, rayonCarte: carte.borderTopLeftRadius, filet: parseFloat(c.borderTopWidth), fond: c.backgroundColor,
+                return {gauche: r.left, droite: innerWidth - r.right, haut: r.top, rayon: c.borderBottomLeftRadius, rayonCarte: carte.borderTopLeftRadius, filet: parseFloat(c.borderBottomWidth), fond: c.backgroundColor,
                         logo: !!l, logoCouleur: lc ? lc.backgroundColor : null, logoMasque: lc ? (lc.webkitMaskImage || lc.maskImage) : null, logoL: lr ? lr.width : 0,
                         deborde: t.right > k.left + 1 || k.right > r.right - 4 || lr && lr.left < r.left, defile: document.documentElement.scrollWidth > innerWidth}; }""")
             alpha = float(re.findall(r"[\d.]+", m["fond"])[-1]) if "/" in m["fond"] else 1.0
-            check(m["gauche"] >= 10 and m["droite"] >= 10 and m["haut"] >= 8 and m["rayon"] == m["rayonCarte"] and m["filet"] >= 0.5 and alpha >= 0.9,
-                  "[ligne réduite %s %d px] carte flottante : à %.0f px des bords et %.0f du haut, angles de la carte (%s), filet, fond plein" % (theme, largeur, m["gauche"], m["haut"], m["rayon"]))
+            check(abs(m["gauche"]) <= 0.5 and abs(m["droite"]) <= 0.5 and abs(m["haut"]) <= 0.5 and m["rayon"] == m["rayonCarte"] and m["filet"] >= 0.5 and alpha == 1.0,
+                  "[ligne réduite %s %d px] collée aux bords (%.0f, %.0f, %.0f), angles de carte en bas (%s), filet, fond 100 %% opaque (%s)" % (theme, largeur, m["gauche"], m["droite"], m["haut"], m["rayon"], m["fond"]))
             check(m["logo"] and rgb(m["logoCouleur"]) == rose and m["logoMasque"] not in (None, "none") and m["logoL"] >= 26,
                   "[ligne réduite %s %d px] le logo VI est là, rose %s (%s, %.0f px de large)" % (theme, largeur, rose, m["logoCouleur"], m["logoL"]))
             check(not m["deborde"] and not m["defile"], "[ligne réduite %s %d px] le titre, le logo et le compteur tiennent sur la ligne, la page ne défile pas de côté (%s)" % (theme, largeur, m))
@@ -10387,7 +10391,7 @@ CONTROLES = [
     test_repere_lu_jusquici_dans_le_cycle,
     test_photo_de_fond,
     test_barre_haute_en_carte_et_apercu_complet,
-    test_flou_et_fondu_sous_les_barres,
+    test_barres_collees_et_opaques,
     test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
     test_rockstarmag_badge_et_bordure,

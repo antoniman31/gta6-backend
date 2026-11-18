@@ -63,6 +63,7 @@
   :root{
     --bg: #0a0d0f;
     --bg-panel: #10151a;
+    --bg-panel-plein: #10151a;   /* même teinte, jamais translucide, même sous la photo : les deux barres collées (18/11/2026) */
     --bg-elevated: #161c22;
     --line: #1e2730;
     --text: #e4ece8;
@@ -112,6 +113,7 @@
   html[data-theme="light"]{
     --bg: #f4f7fa;
     --bg-panel: #ffffff;
+    --bg-panel-plein: #ffffff;
     --bg-elevated: #eef3f8;
     --line: #d7e1ea;
     --text: #10222f;
@@ -433,26 +435,19 @@
   /* LA LIGNE RÉDUITE. Elle apparaît quand l'entête complète a quitté le haut (voir
      brancheBarreHaute) ; le jour « AUJOURD'HUI » et les rubriques des Réglages se
      collent alors dessous (body.bh-visible). */
-  /* LA LIGNE RÉDUITE EST UNE CARTE FLOTTANTE, comme la barre du bas (Antoni, 17/11/2026 : « la petite entête qui reste collée en haut quand on défile, sous
-     forme de carte, avec le logo en rose à côté de GTA6_WATCH pour que ça ressemble à la carte d'en-tête ») : mêmes angles, filet, fond et ombre que les
-     cartes, 12 px des bords de l'écran. Avant : une barre pleine largeur collée au bord, avec un simple trait dessous. */
+  /* LES DEUX BARRES SONT COLLÉES AUX BORDS DE L'ÉCRAN ET OPAQUES (Antoni, 18/11/2026, sur capture du S26 : « je ne veux pas voir ce qu'il y a en dessous de la
+     barre du bas et au-dessus de la barre du haut » ; il a choisi, sur planche, les barres collées aux bords). Flottantes, elles laissaient une marge où l'on
+     voyait passer le contenu, et à 94 % la carte laissait deviner ce qui passait dessous ; collées et pleines (--bg-panel-plein), il n'y a plus rien à cacher,
+     donc plus de flou ni de calque de masquage. Les zones système (barre d'état, geste) sont couvertes par un remplissage safe-area. Les angles de carte restent
+     sur le bord intérieur. Elles gardent le logo, le filet et l'ombre de la carte d'en-tête. */
   .barre-haut{
-    position:fixed; top:calc(10px + env(safe-area-inset-top, 0px)); left:12px; right:12px; max-width:496px; margin:0 auto; z-index:55; height:52px;
-    display:flex; align-items:center; gap:10px; padding:0 14px;
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md); box-shadow:0 6px 24px rgba(0,0,0,.28);
-    visibility:hidden; transform:translateY(calc(-100% - 24px));
-    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+    position:fixed; top:0; left:0; right:0; z-index:55; height:calc(52px + env(safe-area-inset-top, 0px));
+    display:flex; align-items:center; gap:10px; padding:env(safe-area-inset-top, 0px) max(14px, calc((100% - 468px) / 2)) 0;
+    background:var(--bg-panel-plein); border:1px solid var(--line); border-width:0 0 1px; border-radius:0 0 var(--r-md) var(--r-md); box-shadow:0 6px 24px rgba(0,0,0,.28);
+    visibility:hidden; transform:translateY(-100%);
     transition:transform var(--t-moyen) var(--courbe);
   }
   .barre-haut.visible{visibility:visible; transform:none;}
-  /* LE FONDU SOUS LA PETITE ENTÊTE (Antoni, 18/11/2026) : même principe que celui du bas ; il suit l'entête (body.bh-visible) et ne prend aucun appui. */
-  body::before{
-    content:""; position:fixed; left:0; right:0; top:0; z-index:54; pointer-events:none;
-    height:calc(92px + env(safe-area-inset-top, 0px));
-    background:linear-gradient(to bottom, var(--bg) 20%, transparent);
-    opacity:0; transition:opacity var(--t-moyen) var(--courbe);
-  }
-  body.bh-visible::before{opacity:1;}
   /* LE TITRE DE LA LIGNE RÉDUITE REMONTE EN HAUT (Antoni, 14/11/2026 : « le logo qui renvoie en haut, c'est celui de l'en-tête réduit qu'il faut
      utiliser, car l'autre n'est pas visible » : le grand en-tête a quitté l'écran dès qu'on a défilé, c'est la ligne réduite qui reste). Un vrai
      bouton, avec l'apparence exacte de l'ancien titre (police, graisse, couleur, ni cadre ni fond) et les 44 px de haut par défaut. Il
@@ -477,7 +472,7 @@
   .bh-compteur.soon{color:var(--compte-soon); text-shadow:var(--compte-halo-soon);}
   .bh-compteur.urgent{color:var(--compte-urgent); text-shadow:var(--compte-halo-urgent);}
   .bh-compteur.final{color:var(--compte-final); text-shadow:var(--compte-halo-final);}
-  body.bh-visible .day-label{top:52px;}
+  body.bh-visible .day-label{top:calc(52px + env(safe-area-inset-top, 0px));}
   /* STATS ET RÉGLAGES N'ONT PAS BESOIN DE L'EN-TÊTE DÉPLIÉ (Antoni, 10/11/2026) : il prenait environ
      268 px sur 844 en haut de chaque page. On le masque ; l'observateur de brancheBarreHaute voit alors
      l'en-tête hors de l'écran et allume la ligne réduite (titre, point vert, compteur), qui garde
@@ -485,7 +480,7 @@
      tire depuis le fil. */
   body.vue-stats header.console, body.vue-reglages header.console{display:none;}
   body.vue-stats .wrap, body.vue-reglages .wrap{padding-top:64px;}
-  body.bh-visible .panneau-tabs{top:52px;}
+  body.bh-visible .panneau-tabs{top:calc(52px + env(safe-area-inset-top, 0px));}
   /* LE FONDU SOUS LA BARRE DU BAS (idée 8, 11/11/2026) : les cartes ne sont plus coupées net par la
      barre. Sous elle (z-index 59 pour 60), ne prend aucun appui. */
   body::after{
@@ -494,11 +489,10 @@
     background:linear-gradient(to top, var(--bg) 25%, transparent);
   }
   .barre-bas{
-    position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:60;
-    max-width:496px; margin:0 auto; display:flex; gap:2px; padding:6px;
-    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);   /* 17/11/2026 : les angles des cartes (avant : une pilule), à la demande d'Antoni */
-    box-shadow:0 6px 24px rgba(0,0,0,.28);
-    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);   /* 18/11/2026 : verre dépoli, on ne lit plus ce qui passe dessous (Antoni) */
+    position:fixed; left:0; right:0; bottom:0; z-index:60;
+    display:flex; gap:2px; padding:6px max(6px, calc((100% - 484px) / 2)) calc(6px + env(safe-area-inset-bottom, 0px));
+    background:var(--bg-panel-plein); border:1px solid var(--line); border-width:1px 0 0; border-radius:var(--r-md) var(--r-md) 0 0;
+    box-shadow:0 -6px 24px rgba(0,0,0,.28);
   }
   .barre-bas button{
     flex:1 1 0; min-width:0; min-height:50px; padding:0; border:0; background:none;
@@ -2870,8 +2864,7 @@
   }
   html[data-theme="light"].photo-fond{--rouge-majeur:#a81f2b;}   /* un cran plus sombre : le fond de la carte reçoit un peu de photo */
   html.photo-fond body{background:transparent;}
-  /* Avec la photo, un fondu plein en --bg ferait une bande plate : on le laisse translucide pour que la photo reste visible dessous. */
-  html.photo-fond body::before{background:linear-gradient(to bottom, color-mix(in srgb, var(--bg) 60%, transparent) 20%, transparent);}
+  /* Avec la photo, le fondu du bas en --bg plein ferait une bande plate : on le laisse translucide pour que la photo reste visible dessous. */
   html.photo-fond body::after{background:linear-gradient(to top, color-mix(in srgb, var(--bg) 60%, transparent) 25%, transparent);}
   /* TOUT PREND LA FORME D'UNE CARTE, AVEC OU SANS PHOTO (PR H, 17/11/2026, Antoni : capture du S26 avec la photo, où le titre de jour était une barre noire sans
      angles et la ligne « n affichés » un bandeau collé aux onglets ; « sous forme de carte, le repère lu jusqu'ici aussi », puis « tout en forme carte même si le
