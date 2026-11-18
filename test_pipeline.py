@@ -6016,7 +6016,7 @@ def test_derniers_reports_tactiles_et_courbes():
           and 'item.official ? " chrono-off" : ""' in html and 'estMajeur(item) ? " chrono-maj" : ""' in html, "les points de la frise ont la couleur de leur type (orange officiel, rouge actu majeure)")
     check("const COULEURS_ONGLET = {" in html and "melangeHex(fond, teinteOnglet, PART_TEINTE_BARRE)" in html and "majBarreEtatJ();     // la barre d'état suit l'onglet" in html,
           "la barre d'état prend 16 % de la couleur de l'onglet sélectionné, et suit l'onglet à chaque changement")
-    check(":is(.day-label, .feed-count, .icon-btn-grand){" in html and "::selection{background:var(--of); color:var(--oe);}" in html and "caret-color:var(--tt)" in html,
+    check(":is(.day-label, .feed-count, .icon-btn-grand, .bh-jour){" in html and "::selection{background:var(--of); color:var(--oe);}" in html and "caret-color:var(--tt)" in html,
           "le titre de jour, la ligne de comptage, le ↻, la sélection de texte et le curseur suivent la couleur de l'onglet")
     for theme, fond, fond_page in (("sombre", "#f06f7d", "#0a0d0f"), ("clair", "#b3202e", "#f4f7fa"), ("Rockstar sombre", "#ffab00", "#0a0d0f"), ("Rockstar clair", "#8f4407", "#f4f7fa"),
                                    ("RockstarMag sombre", "#8488e7", "#0a0d0f"), ("RockstarMag clair", "#5258c4", "#f4f7fa"), ("Autres sombre", "#9aa7b4", "#0a0d0f"), ("Autres clair", "#566b7e", "#f4f7fa")):
@@ -8014,13 +8014,15 @@ def test_barre_du_bas_et_entete():
           "une ligne réduite porte le titre, un point et le compteur")
     regle = re.search(r"\.barre-haut\{([^}]*)\}", html).group(1)
     # 18/11/2026 : collée au bord (la carte flottante de la PR H laissait une marge où le contenu passait), haute de 52 px + la zone système, cachée tant que l'entête est en vue.
-    check("position:fixed" in regle and "top:0; left:0; right:0" in regle and "height:calc(52px + env(safe-area-inset-top, 0px))" in regle
+    check("position:fixed" in regle and "top:0; left:0; right:0" in regle and "grid-template-rows:52px auto" in regle and "padding:env(safe-area-inset-top, 0px)" in regle
           and "visibility:hidden" in regle,
-          "elle est fixe en haut, collée au bord, haute de 52 px plus la zone système, et cachée (visibility) tant que l'entête est en vue")
+          "elle est fixe en haut, collée au bord, première ligne de 52 px plus la zone système, et cachée (visibility) tant que l'entête est en vue")
     check("body:has(#modeIndicator.backend) .bh-point{display:inline-block;}" in html,
           "son point vert n'apparaît qu'en mode backend GitHub")
-    check("body.bh-visible .day-label{top:calc(52px + env(safe-area-inset-top, 0px));}" in html and "body.bh-visible .panneau-tabs{top:calc(52px + env(safe-area-inset-top, 0px));}" in html,
-          "le jour et les rubriques des Réglages se collent sous la ligne")
+    check("body.bh-visible .panneau-tabs{top:calc(52px + env(safe-area-inset-top, 0px));}" in html
+          and re.search(r"\.bh-jour\{[^}]*grid-column:1 / -1[^}]*height:32px[^}]*border-top:1px solid var\(--c-bord\)", html) is not None
+          and 'id="bhJour"' in html and "function majBhJour()" in html and "position:relative;   /* plus collant" in html,
+          "le jour en cours est la deuxième ligne de la barre (32 px, trait à la couleur de l'onglet), les titres de jour ne sont plus collants, les rubriques des Réglages se collent sous la ligne")
     corps = html[html.index("function brancheBarreHaute("):]
     corps = corps[:corps.index("\n}")]
     check("IntersectionObserver" in corps and '"-52px 0px 0px 0px"' in corps,

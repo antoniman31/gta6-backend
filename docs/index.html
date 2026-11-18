@@ -441,8 +441,8 @@
      donc plus de flou ni de calque de masquage. Les zones système (barre d'état, geste) sont couvertes par un remplissage safe-area. Les angles de carte restent
      sur le bord intérieur. Elles gardent le logo, le filet et l'ombre de la carte d'en-tête. */
   .barre-haut{
-    position:fixed; top:0; left:0; right:0; z-index:55; height:calc(52px + env(safe-area-inset-top, 0px));
-    display:flex; align-items:center; gap:10px; padding:env(safe-area-inset-top, 0px) max(14px, calc((100% - 468px) / 2)) 0;
+    position:fixed; top:0; left:0; right:0; z-index:55;
+    display:grid; grid-template-columns:minmax(0, 1fr) auto; grid-template-rows:52px auto; align-items:center; column-gap:10px; padding:env(safe-area-inset-top, 0px) max(14px, calc((100% - 468px) / 2)) 0;
     background:var(--bg-panel-plein); border:1px solid var(--line); border-width:0 0 1px; border-radius:0 0 var(--r-md) var(--r-md); box-shadow:0 6px 24px rgba(0,0,0,.28);
     visibility:hidden; transform:translateY(-100%);
     transition:transform var(--t-moyen) var(--courbe);
@@ -455,7 +455,7 @@
   .bh-titre{
     font-family:'JetBrains Mono',monospace; font-weight:800; font-size:16px; white-space:nowrap; letter-spacing:inherit;
     display:inline-flex; align-items:center; color:inherit; background:none; border:0; padding:0; margin:0; border-radius:0;
-    cursor:pointer; text-align:left;
+    cursor:pointer; text-align:left; justify-self:start;   /* dans la grille de la barre (18/11/2026), sinon le bouton s'étire et centre son contenu */
   }
   .bh-titre > span:not(.bh-point){color:var(--c-texte);}
   .bh-point{
@@ -472,7 +472,17 @@
   .bh-compteur.soon{color:var(--compte-soon); text-shadow:var(--compte-halo-soon);}
   .bh-compteur.urgent{color:var(--compte-urgent); text-shadow:var(--compte-halo-urgent);}
   .bh-compteur.final{color:var(--compte-final); text-shadow:var(--compte-halo-final);}
-  body.bh-visible .day-label{top:calc(52px + env(safe-area-inset-top, 0px));}
+  /* LE JOUR EN COURS DANS LA BARRE (Antoni, 18/11/2026 : « le petit truc "Aujourd'hui" avec l'heure fusionné avec la mini-entête, une seule carte, avec un
+     trait pour séparer » ; trait fin dans la couleur de l'onglet, choisi sur proposition). Deuxième ligne de 32 px, sous un trait ; elle affiche le titre de jour
+     du dernier groupe passé sous le bord de la barre (majBhJour). Le trait et le texte prennent la couleur de l'onglet comme les titres de jour, et tournent
+     dans sa famille au jour J (mêmes règles que .day-label). Absente dans Statistiques et Réglages, où il n'y a pas de jours. Les titres de jour du fil ne sont
+     plus collants : c'est cette ligne qui les remplace. */
+  .bh-jour{
+    grid-column:1 / -1; height:32px; display:flex; align-items:center; border-top:1px solid var(--c-bord);
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--c-texte); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .bh-jour:empty, body.vue-stats .bh-jour, body.vue-reglages .bh-jour{display:none;}
   /* STATS ET RÉGLAGES N'ONT PAS BESOIN DE L'EN-TÊTE DÉPLIÉ (Antoni, 10/11/2026) : il prenait environ
      268 px sur 844 en haut de chaque page. On le masque ; l'observateur de brancheBarreHaute voit alors
      l'en-tête hors de l'écran et allume la ligne réduite (titre, point vert, compteur), qui garde
@@ -695,10 +705,10 @@
   /* LA COULEUR DE L'ONGLET GAGNE LE FIL (PR F, 17/11/2026, Antoni : « d'autres idées pour les couleurs » : les quatre maquettes + le ↻ + la
      sélection) : le titre de jour, la ligne « n affichés · n non lus » et le bouton ↻ de l'en-tête prennent la couleur de l'onglet sélectionné
      (--tt), fixe hors cycle, dans sa famille au jour J (même animation que le bouton « R / RM »). « Tous les articles » garde l'accent. */
-  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) :is(.day-label, .feed-count, .icon-btn-grand){
+  html:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) :is(.day-label, .feed-count, .icon-btn-grand, .bh-jour){
     --c-texte:var(--tt); --c-fond:var(--tt); --c-bord:var(--tt);
   }
-  html.cycle-couleur:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) :is(.day-label.dans-ecran, .feed-count, .icon-btn-grand){
+  html.cycle-couleur:is([data-onglet="majeur"], [data-onglet="rockstar"], [data-onglet="rockstarmag"], [data-onglet="non-rockstar"]) :is(.day-label.dans-ecran, .feed-count, .icon-btn-grand, .barre-haut.visible .bh-jour){
     --c-texte:var(--accent); --c-fond:var(--accent); --c-bord:var(--accent);
     animation:cycle-onglet-texte var(--cycle-duree) var(--cycle-pas) infinite;
   }
@@ -758,7 +768,7 @@
   .day-label{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--c-texte);
     text-transform:uppercase; letter-spacing:0.06em; margin-top:10px; margin-bottom:2px;
-    position:sticky; top:0; z-index:5;
+    position:relative;   /* plus collant (18/11/2026) : le jour en cours est dans la barre du haut */
     background:color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter:blur(8px);
     padding:6px 0 4px;
     display:flex; align-items:center; gap:10px;
@@ -3643,6 +3653,7 @@
 <div class="barre-haut" id="barreHaut">
   <button type="button" class="bh-titre" aria-label="GTA6_WATCH, remonter en haut de la page" title="Remonter en haut"><span class="logo-vi bh-logo" aria-hidden="true"></span>GTA6<span>_WATCH</span><span class="bh-point" aria-hidden="true"></span></button>
   <button type="button" id="cbCompteur" class="bh-compteur" aria-haspopup="dialog" onclick="ouvreCompteur()"></button>
+  <div class="bh-jour" id="bhJour" aria-hidden="true"></div>   <!-- le jour en cours (majBhJour) : doublon visuel des titres de jour du fil, donc caché au lecteur d'écran -->
 </div>
 
 <!-- Barre du bas, flottante (choix C d'Antoni, 07/11/2026). Trois entrées : le fil, les statistiques
@@ -7886,6 +7897,7 @@ function renderFeed(items, newLinks, searchQuery){
 
   feedEl.innerHTML = cardsHtml + loadMoreHtml;
   observeCartes();
+  majBhJour();
 }
 
 // Chaque carte est enveloppée : l'indice coloré du balayage se peint dessous,
@@ -10261,7 +10273,34 @@ function brancheBarreHaute(){
     const visible = !entrees[entrees.length - 1].isIntersecting;
     barre.classList.toggle("visible", visible);
     document.body.classList.toggle("bh-visible", visible);
+    majBhJour();
   }, { rootMargin: "-52px 0px 0px 0px", threshold: 0 }).observe(entete);
+  // Une lecture par image au plus (rAF), et une recherche dichotomique : les titres de jour sont dans l'ordre de la page.
+  let enAttente = false;
+  window.addEventListener("scroll", () => {
+    if(enAttente) return;
+    enAttente = true;
+    requestAnimationFrame(() => { enAttente = false; majBhJour(); });
+  }, { passive: true });
+}
+
+// LE JOUR EN COURS, dans la deuxième ligne de la barre du haut : le titre du dernier groupe d'articles dont le haut est passé sous le bord bas de la barre
+// (à défaut, le premier). Appelée au défilement, quand la barre apparaît et après chaque rendu du fil.
+function majBhJour(){
+  const cible = document.getElementById("bhJour"), barre = document.getElementById("barreHaut");
+  if(!cible || !barre) return;
+  const titres = document.querySelectorAll("#feed .day-label");
+  let texte = "";
+  if(titres.length){
+    const ligne = barre.getBoundingClientRect().bottom;
+    let bas = 0, haut = titres.length - 1, k = 0;
+    while(bas <= haut){
+      const m = (bas + haut) >> 1;
+      if(titres[m].getBoundingClientRect().top <= ligne){ k = m; bas = m + 1; } else haut = m - 1;
+    }
+    texte = titres[k].textContent.replace(/\s+/g, " ").trim();
+  }
+  if(cible.textContent !== texte) cible.textContent = texte;
 }
 
 // ---------- Le détail du compte à rebours ----------
