@@ -1802,14 +1802,14 @@ def test_entete_tuiles_et_ligne_reduite(nav, url):
             return {visible: b.classList.contains('visible'), top: q.top, h: q.height,
                     point: getComputedStyle(document.querySelector('.bh-point')).display,
                     cpt: document.getElementById('cbCompteur').textContent,
-                    jourTop: jour ? jour.getBoundingClientRect().top : null,
+                    jourBarre: document.getElementById('bhJour').textContent.trim(),
                     ghost: document.documentElement.scrollWidth > innerWidth}; }""")
-        # 17/11/2026 (PR H) : la ligne réduite est une carte FLOTTANTE à 10 px du haut (avant : collée au bord, top 0), toujours haute de 52 px.
-        check(r2["visible"] and abs(r2["top"] - 10) <= 0.5 and abs(r2["h"] - 52) <= 0.5,
-              "%s en défilant, la ligne réduite de 52 px flotte à 10 px du haut (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
+        # 18/11/2026 : la ligne réduite est COLLÉE au bord du haut (la carte flottante de la PR H, à 10 px, laissait une marge où le contenu passait), haute de 52 px.
+        check(r2["visible"] and abs(r2["top"]) <= 0.5 and abs(r2["h"] - 85) <= 1,
+              "%s en défilant, la barre du haut est collée au bord, haute de 85 px (52 + trait + 32 : le jour en cours en deuxième ligne) (top %.0f, haut %.0f)" % (etiq, r2["top"], r2["h"]))
         check(r2["point"] != "none", "%s son point vert est là en mode backend" % etiq)
-        check(r2["jourTop"] is not None and abs(r2["jourTop"] - 52) <= 1.5,
-              "%s le jour « AUJOURD'HUI » se colle juste dessous (top %s)" % (etiq, r2["jourTop"]))
+        # 18/11/2026 : le titre de jour ne se colle plus sous la barre, il est DANS la barre (test_jour_dans_la_barre le mesure en détail).
+        check(bool(r2["jourBarre"]), "%s le jour en cours est affiché dans la deuxième ligne de la barre (« %s »)" % (etiq, r2["jourBarre"]))
         page.evaluate("() => { const m = document.getElementById('modeIndicator'); m.className = 'mode-indicator direct'; }")
         pt = page.evaluate("() => getComputedStyle(document.querySelector('.bh-point')).display")
         check(pt == "none", "%s hors mode backend (mode direct), le point disparaît" % etiq)
@@ -7836,6 +7836,9 @@ def test_coins_du_cadre(nav, url):
     # LA COURBE, lue sur des captures (rayon 40). Haut : angle droit, le trait occupe le coin lui-même.
     ctx3, page3, _ = _ouvre_effets(nav, url, JOUR_J, {}, reduit=True)
     page3.evaluate("() => { settings.rayonCadre = 40; appliqueRayonCadre(); }")
+    # La barre du bas est collée au bord (18/11/2026) : sa pastille active tomberait sur le point mesuré « dans l'arc ». Ce contrôle lit la COURBE du cadre,
+    # pas la barre : on la rend invisible (elle garde sa place), sinon le point lu serait la pastille et pas le fond.
+    page3.add_style_tag(content=".barre-bas{visibility:hidden}")
     page3.wait_for_timeout(200)
     # Le trait est « vif » s'il est CLAIR sur le fond sombre (17/11/2026 : avant, il devait aussi être saturé ; le cadre passe maintenant par le blanc
     # du cycle bleu, rose, blanc, et un blanc à 222/193/207 n'est pas saturé. Le fond de la page, lui, reste sous 60 : le contrôle « hors de l'arc » le garde.)
@@ -7962,8 +7965,8 @@ def test_lot_2a_interface(nav, url):
     j = page.evaluate("""() => { const e = document.querySelector('.day-label'), cs = getComputedStyle(e), ap = getComputedStyle(e, '::after');
         return {disp: cs.display, pos: cs.position, flou: cs.backdropFilter || cs.webkitBackdropFilter, apres: ap.content,
                 bg: ap.backgroundImage.indexOf('linear-gradient') >= 0, flex: ap.flexGrow, h: ap.height}; }""")
-    check(j["disp"] == "flex" and j["pos"] == "sticky" and "blur" in (j["flou"] or "") and j["apres"] != "none" and j["bg"] and j["flex"] == "1" and j["h"] == "1px",
-          "[jour] le titre de jour est un bandeau collant, flouté, avec un trait de 1 px en dégradé jusqu'au bord (%s)" % j)
+    check(j["disp"] == "flex" and j["pos"] == "relative" and "blur" in (j["flou"] or "") and j["apres"] != "none" and j["bg"] and j["flex"] == "1" and j["h"] == "1px",
+          "[jour] le titre de jour est un bandeau (plus collant depuis le 18/11/2026 : le jour est dans la barre), flouté, avec un trait de 1 px en dégradé jusqu'au bord (%s)" % j)
     ctx.close()
 
     # LE FONDU SOUS LA BARRE DU BAS : il passe sous la barre et ne prend aucun appui.
@@ -9294,13 +9297,77 @@ def test_couleur_de_l_onglet_dans_le_fil(nav, url):
         ctx.close()
 
 
-def test_flou_et_fondu_sous_les_barres(nav, url):
-    """18/11/2026 (Antoni) : flou + fondu sous la barre du bas ET sous la petite entête du haut, pour qu'on ne lise pas ce qui passe dessous.
+def test_jour_dans_la_barre(nav, url):
+    """18/11/2026 (Antoni) : le titre « Aujourd'hui · heure » est fusionné dans la barre du haut : une seule carte, deux lignes, un trait entre les deux.
 
-    Mesuré sur le rendu : le flou (backdrop-filter) est posé sur les deux cartes ; le fondu du haut n'existe que lorsque l'entête est visible (opacité 0 puis 1),
-    ne prend aucun appui, et avec la photo il reste translucide (sinon une bande plate cacherait la photo).
+    Mesuré : la deuxième ligne affiche le titre de jour du dernier groupe passé sous le bord de la barre et CHANGE au défilement ; le trait et le texte sont à la
+    couleur de l'onglet (même jeton que les titres de jour) ; au jour J ils tournent dans la famille de l'onglet, trait et texte ensemble ; la ligne n'existe pas
+    dans Statistiques ; les titres de jour du fil ne sont plus collants.
     """
-    print("\n[flou et fondu] sous la barre du bas et la petite entête")
+    print("\n[jour dans la barre] deuxième ligne de la barre du haut : jour en cours, trait, couleurs de l'onglet, cycle du jour J")
+    rgb = lambda c: tuple(int(x) for x in re.findall(r"\d+", c)[:3])
+    hexa = lambda h: tuple(int(h[j:j + 2], 16) for j in (1, 3, 5))
+    INJECTE = """() => { const m = i => Object.assign({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 4 * 3600e3).toISOString(), source: 'Kotaku', lang: 'fr'}, i % 3 === 0 ? {extraSources: [{source: 'A', link: 'https://a.test/' + i}, {source: 'B', link: 'https://b.test/' + i}]} : {}, i % 3 === 1 ? {rockstarmag: true, specialist: true, source: 'RockstarMag'} : {});
+        lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    LIT = """() => { const j = document.getElementById('bhJour'), b = document.getElementById('barreHaut'), cs = getComputedStyle(j), ligne = b.getBoundingClientRect().bottom,
+            titres = [...document.querySelectorAll('#feed .day-label')]; let k = 0; titres.forEach((t, i) => { if(t.getBoundingClientRect().top <= ligne) k = i; });
+            const t0 = getComputedStyle(titres[0]), nb = titres[k].parentElement.querySelectorAll('.card').length, nEl = document.getElementById('bhJourN'), nomEl = document.getElementById('bhJourNom');
+            return {nombre: nEl.textContent, nombreAttendu: nb + (nb > 1 ? ' affichés' : ' affiché'), nombreAlignee: nEl.getBoundingClientRect().right >= nomEl.getBoundingClientRect().right,
+                    nombreCouleur: getComputedStyle(nEl).color, texte: nomEl.textContent, attendu: titres.length ? titres[k].textContent.replace(/\\s+/g, ' ').trim() : '', nb: titres.length, haut: b.getBoundingClientRect().height, jourH: j.getBoundingClientRect().height,
+                    couleur: cs.color, trait: cs.borderTopColor, traitL: parseFloat(cs.borderTopWidth), titreCouleur: t0.color, pos: t0.position, aria: j.getAttribute('aria-hidden')}; }"""
+    for theme in ("dark", "light"):
+        ctx, page, err = _ouvre_cycle(nav, url, "2026-11-12T10:00:00Z", False, theme)
+        page.evaluate(INJECTE); page.wait_for_timeout(300)
+        page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
+        m = page.evaluate(LIT)
+        check(m["nb"] >= 3, "[jour %s] l'injection donne au moins trois groupes de jours (%d)" % (theme, m["nb"]))
+        check(m["nombre"] == m["nombreAttendu"] and m["nombreAlignee"] and rgb(m["nombreCouleur"]) == rgb(m["couleur"]),
+              "[jour %s] à droite, le nombre d'articles affichés du groupe en cours « %s » (attendu « %s »), même couleur que le jour" % (theme, m["nombre"], m["nombreAttendu"]))
+        check(m["texte"] and m["texte"] == m["attendu"], "[jour %s] la deuxième ligne affiche le jour en cours (« %s », attendu « %s »)" % (theme, m["texte"], m["attendu"]))
+        check(m["jourH"] == 32 and m["traitL"] == 1 and 84 <= m["haut"] <= 86, "[jour %s] ligne de 32 px sous un trait de 1 px, barre de 85 px (%.0f, %.0f, %.0f)" % (theme, m["jourH"], m["traitL"], m["haut"]))
+        check(m["pos"] != "sticky" and m["aria"] == "true", "[jour %s] les titres de jour du fil ne sont plus collants (%s), le doublon est caché au lecteur d'écran (%s)" % (theme, m["pos"], m["aria"]))
+        premier = m["texte"]
+        page.evaluate("() => window.scrollTo(0, document.documentElement.scrollHeight)"); page.wait_for_timeout(500)
+        m2 = page.evaluate(LIT)
+        check(m2["texte"] == m2["attendu"] and m2["texte"] != premier, "[jour %s] au bas du fil, le jour a changé (« %s » puis « %s »)" % (theme, premier, m2["texte"]))
+        check(rgb(m["couleur"]) == rgb(m["trait"]) == rgb(m["titreCouleur"]), "[jour %s] le trait, le texte et les titres de jour ont la même couleur (%s, %s, %s)" % (theme, m["couleur"], m["trait"], m["titreCouleur"]))
+        for onglet, (fd, fc) in {"non-rockstar": ("#9aa7b4", "#566b7e"), "majeur": ("#f06f7d", "#b3202e"), "rockstarmag": ("#8488e7", "#5258c4"), "all": ("#3380ff", "#1f5fd9")}.items():
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(500)
+            page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_timeout(400)
+            m3 = page.evaluate(LIT)
+            fixe = hexa(fd if theme == "dark" else fc)
+            check(rgb(m3["couleur"]) == fixe and rgb(m3["trait"]) == fixe, "[jour %s %s] hors cycle : trait et texte à la couleur de base de l'onglet (%s, %s, attendu %s)" % (theme, onglet, m3["couleur"], m3["trait"], fixe))
+        page.evaluate("() => setTab('stats')"); page.wait_for_timeout(500)
+        vue = page.evaluate("() => getComputedStyle(document.getElementById('bhJour')).display")
+        check(vue == "none", "[jour %s] dans Statistiques, la ligne du jour n'existe pas (%s)" % (theme, vue))
+        check(not err, "[jour %s] aucune erreur JavaScript (%s)" % (theme, err[:1]))
+        ctx.close()
+        # JOUR J, CYCLE : trait et texte tournent ensemble dans la famille de l'onglet « Autres »
+        ctx, page, err = _ouvre_cycle(nav, url, JOUR_J, "auto", theme)
+        page.evaluate(INJECTE)
+        FAMILLES = {"dark": {"non-rockstar": ["#9aa7b4", "#c9d2db", "#ffffff"], "majeur": ["#f06f7d", "#f87db7", "#ffffff"], "rockstarmag": ["#3380ff", "#8488e7", "#f87db7"], "all": ["#3380ff", "#f87db7", "#ffffff"]},
+                    "light": {"non-rockstar": ["#566b7e", "#627689", "#2f3b47"], "majeur": ["#b3202e", "#c01f6e", "#7f1d1d"], "rockstarmag": ["#1f5fd9", "#5258c4", "#c01f6e"], "all": ["#1f5fd9", "#c01f6e", "#3a4350"]}}[theme]
+        for onglet, famille in FAMILLES.items():
+            page.evaluate("(t) => setTab(t)", onglet); page.wait_for_timeout(400)
+            page.evaluate("() => window.scrollTo(0, 700)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
+            for i, tt in enumerate((0, 1000, 2000)):
+                page.evaluate("(t) => { for(const a of document.getAnimations()){ if((a.animationName || '').startsWith('cycle-')){ a.pause(); a.currentTime = t; } } }", tt)
+                page.wait_for_timeout(600)
+                c = page.evaluate(LIT)
+                check(rgb(c["couleur"]) == hexa(famille[i]) and rgb(c["trait"]) == hexa(famille[i]),
+                      "[jour %s J %s %d ms] cycle : trait et texte sont au cran %d de la famille de l'onglet (%s, %s, attendu %s)" % (theme, onglet, tt, i + 1, c["couleur"], c["trait"], famille[i]))
+        check(not err, "[jour %s J] aucune erreur JavaScript (%s)" % (theme, err[:1]))
+        ctx.close()
+
+
+def test_barres_collees_et_opaques(nav, url):
+    """18/11/2026 (Antoni, capture du S26) : « je ne veux pas voir ce qu'il y a en dessous de la barre du bas et au-dessus de la barre du haut ».
+
+    Choix d'Antoni sur planche : les deux barres COLLÉES aux bords de l'écran et 100 % opaques, sans flou ; le petit fondu du bas (11/11) reste, translucide avec la photo
+    (sinon une bande plate cacherait la photo). Mesuré : position collée, fond sans transparence même avec la photo, aucun calque au-dessus de l'entête.
+    """
+    print("\n[barres collées] opaques, sans marge, sans flou, fondu du bas gardé")
     INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S', feed: 'S'});
         lastItems = Array.from({length: 30}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
         readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
@@ -9313,18 +9380,19 @@ def test_flou_et_fondu_sous_les_barres(nav, url):
             page.on("pageerror", lambda e, err=err: err.append(str(e)))
             page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
             page.evaluate(INJECTE); page.wait_for_timeout(400)
-            LIT = """() => { const f = e => getComputedStyle(e).backdropFilter || getComputedStyle(e).webkitBackdropFilter, h = getComputedStyle(document.body, '::before'), b = getComputedStyle(document.body, '::after');
-                return {flouBas: f(document.querySelector('.barre-bas')), flouHaut: f(document.getElementById('barreHaut')), opHaut: parseFloat(h.opacity), appuiHaut: h.pointerEvents,
-                        fondHaut: h.backgroundImage, fondBas: b.backgroundImage}; }"""
-            m0 = page.evaluate(LIT)
             page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(700)
-            m = page.evaluate(LIT)
-            check("blur" in m["flouBas"] and "blur" in m["flouHaut"], "%s flou posé sur la barre du bas (%s) et sur la petite entête (%s)" % (etiq, m["flouBas"], m["flouHaut"]))
-            check(m0["opHaut"] == 0 and m["opHaut"] == 1 and m["appuiHaut"] == "none", "%s le fondu du haut n'apparaît qu'avec l'entête (%s puis %s) et ne prend aucun appui (%s)" % (etiq, m0["opHaut"], m["opHaut"], m["appuiHaut"]))
-            check("linear-gradient" in m["fondHaut"] and "linear-gradient" in m["fondBas"], "%s un dégradé sous chaque barre" % etiq)
+            m = page.evaluate("""() => { const g = s => document.querySelector(s), r = e => e.getBoundingClientRect(), c = e => getComputedStyle(e),
+                    f = e => c(e).backdropFilter || c(e).webkitBackdropFilter || 'none', bas = g('.barre-bas'), haut = g('#barreHaut'), a = getComputedStyle(document.body, '::after'), b = getComputedStyle(document.body, '::before');
+                return {basG: r(bas).left, basD: innerWidth - r(bas).right, basB: innerHeight - r(bas).bottom, hautG: r(haut).left, hautD: innerWidth - r(haut).right, hautH: r(haut).top,
+                        fondBas: c(bas).backgroundColor, fondHaut: c(haut).backgroundColor, floubas: f(bas), flouhaut: f(haut), fondu: a.backgroundImage, avant: b.content}; }""")
+            check(all(abs(m[k]) <= 0.5 for k in ("basG", "basD", "basB", "hautG", "hautD", "hautH")),
+                  "%s les deux barres touchent les bords : bas (%.0f, %.0f, %.0f), haut (%.0f, %.0f, %.0f)" % (etiq, m["basG"], m["basD"], m["basB"], m["hautG"], m["hautD"], m["hautH"]))
+            check("/" not in m["fondBas"] and "/" not in m["fondHaut"] and not m["fondBas"].endswith(", 0)") and m["fondBas"].startswith("rgb(") and m["fondHaut"].startswith("rgb("),
+                  "%s les deux barres sont 100 %% opaques (%s, %s)" % (etiq, m["fondBas"], m["fondHaut"]))
+            check(m["floubas"] == "none" and m["flouhaut"] == "none", "%s plus de flou (%s, %s) : il ne sert plus sur une barre opaque" % (etiq, m["floubas"], m["flouhaut"]))
+            check("linear-gradient" in m["fondu"] and m["avant"] in ("none", "normal"), "%s le fondu du bas est gardé, aucun calque au-dessus de l'entête (%s)" % (etiq, m["avant"]))
             if photo:
-                check("/ 0.6)" in m["fondHaut"] and "/ 0.6)" in m["fondBas"],
-                      "%s avec la photo, le fondu reste translucide (%s)" % (etiq, m["fondHaut"][:90]))
+                check("/ 0.6)" in m["fondu"], "%s avec la photo, le fondu du bas reste translucide (%s)" % (etiq, m["fondu"][:90]))
             check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
             ctx.close()
 
@@ -9353,12 +9421,12 @@ def test_barre_haute_en_carte_et_apercu_complet(nav, url):
             page.evaluate("() => window.scrollTo(0, 900)"); page.wait_for_selector("#barreHaut.visible", state="attached"); page.wait_for_timeout(500)
             m = page.evaluate("""() => { const b = document.getElementById('barreHaut'), c = getComputedStyle(b), r = b.getBoundingClientRect(), l = b.querySelector('.bh-logo'), lc = l ? getComputedStyle(l) : null,
                 t = b.querySelector('.bh-titre').getBoundingClientRect(), k = document.getElementById('cbCompteur').getBoundingClientRect(), lr = l ? l.getBoundingClientRect() : null, carte = getComputedStyle(document.querySelector('#feed .card'));
-                return {gauche: r.left, droite: innerWidth - r.right, haut: r.top, rayon: c.borderTopLeftRadius, rayonCarte: carte.borderTopLeftRadius, filet: parseFloat(c.borderTopWidth), fond: c.backgroundColor,
+                return {gauche: r.left, droite: innerWidth - r.right, haut: r.top, rayon: c.borderBottomLeftRadius, rayonCarte: carte.borderTopLeftRadius, filet: parseFloat(c.borderBottomWidth), fond: c.backgroundColor,
                         logo: !!l, logoCouleur: lc ? lc.backgroundColor : null, logoMasque: lc ? (lc.webkitMaskImage || lc.maskImage) : null, logoL: lr ? lr.width : 0,
                         deborde: t.right > k.left + 1 || k.right > r.right - 4 || lr && lr.left < r.left, defile: document.documentElement.scrollWidth > innerWidth}; }""")
             alpha = float(re.findall(r"[\d.]+", m["fond"])[-1]) if "/" in m["fond"] else 1.0
-            check(m["gauche"] >= 10 and m["droite"] >= 10 and m["haut"] >= 8 and m["rayon"] == m["rayonCarte"] and m["filet"] >= 0.5 and alpha >= 0.9,
-                  "[ligne réduite %s %d px] carte flottante : à %.0f px des bords et %.0f du haut, angles de la carte (%s), filet, fond plein" % (theme, largeur, m["gauche"], m["haut"], m["rayon"]))
+            check(abs(m["gauche"]) <= 0.5 and abs(m["droite"]) <= 0.5 and abs(m["haut"]) <= 0.5 and m["rayon"] == m["rayonCarte"] and m["filet"] >= 0.5 and alpha == 1.0,
+                  "[ligne réduite %s %d px] collée aux bords (%.0f, %.0f, %.0f), angles de carte en bas (%s), filet, fond 100 %% opaque (%s)" % (theme, largeur, m["gauche"], m["droite"], m["haut"], m["rayon"], m["fond"]))
             check(m["logo"] and rgb(m["logoCouleur"]) == rose and m["logoMasque"] not in (None, "none") and m["logoL"] >= 26,
                   "[ligne réduite %s %d px] le logo VI est là, rose %s (%s, %.0f px de large)" % (theme, largeur, rose, m["logoCouleur"], m["logoL"]))
             check(not m["deborde"] and not m["defile"], "[ligne réduite %s %d px] le titre, le logo et le compteur tiennent sur la ligne, la page ne défile pas de côté (%s)" % (theme, largeur, m))
@@ -10275,8 +10343,8 @@ def test_le_logo_remonte_en_haut(nav, url):
                 check(info is not None and "remonter" in (info["nom"] or "") and info["haut"] >= CIBLE_MINIMALE and info["large"] > 60,
                       "[logo %d px] le titre de la ligne réduite est un bouton nommé, d'au moins 48 px de haut (%s)" % (largeur, info))
                 if info:
-                    check(info["police"] == "16px 800" and info["bord"] == "0px" and info["fond"] == "rgba(0, 0, 0, 0)" and info["barre"] == 52,
-                          "[logo %d px] il garde l'apparence de l'ancien titre (%s), sans cadre ni fond, et la ligne reste à %d px" % (largeur, info["police"], info["barre"]))
+                    check(info["police"] == "16px 800" and info["bord"] == "0px" and info["fond"] == "rgba(0, 0, 0, 0)" and info["barre"] == 85,
+                          "[logo %d px] il garde l'apparence de l'ancien titre (%s), sans cadre ni fond, et la barre reste à %d px (52 + trait + 32 depuis le 18/11/2026)" % (largeur, info["police"], info["barre"]))
                     check(info["grandEnTeteBouton"] == 0,
                           "[logo %d px] le titre du GRAND en-tête n'est pas un bouton (il n'est plus visible quand on a défilé)" % largeur)
             # Au doigt (toucher réel, vérifié visible et touchable) : défiler loin, toucher, être en haut.
@@ -10387,7 +10455,8 @@ CONTROLES = [
     test_repere_lu_jusquici_dans_le_cycle,
     test_photo_de_fond,
     test_barre_haute_en_carte_et_apercu_complet,
-    test_flou_et_fondu_sous_les_barres,
+    test_barres_collees_et_opaques,
+    test_jour_dans_la_barre,
     test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
     test_rockstarmag_badge_et_bordure,
