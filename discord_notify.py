@@ -617,7 +617,7 @@ def message_ping_sorti(test=False):
     return {"content": "@here\n# 🎮 GTA VI EST SORTI", "allowed_mentions": {"parse": ["everyone"]}}
 
 
-def message_sorti_v2(j, test=False):
+def message_sorti_v2(j, test=False, affiche_url=None):
     """Le message principal en composants V2 : un conteneur bleu (titre, affiche, chiffres, bouton) puis un conteneur par type qui a un article, à la couleur de son onglet."""
     sortie = int(feed_store.SORTIE_GTA6.timestamp())
     n, off = int(j.get("articles") or 0), int(j.get("officiels") or 0)
@@ -629,7 +629,7 @@ def message_sorti_v2(j, test=False):
     if sujets:
         chiffres += "\n**Les sujets les plus couverts**\n" + "\n".join(sujets)
     principal = [_texte(entete),
-                 {"type": 12, "items": [{"media": {"url": SITE_URL + AFFICHE_SORTI_NOM}, "description": "GTA VI : l'affiche officielle"}]},
+                 {"type": 12, "items": [{"media": {"url": affiche_url or SITE_URL + AFFICHE_SORTI_NOM}, "description": "GTA VI : l'affiche officielle"}]},
                  {"type": 14, "divider": True, "spacing": 2},
                  _texte(chiffres[:DESCRIPTION_MAX_CARACTERES]),
                  {"type": 14, "divider": True, "spacing": 1},
@@ -654,7 +654,7 @@ def message_sorti_v2(j, test=False):
     return {"flags": IS_COMPONENTS_V2, "components": conteneurs}
 
 
-def message_sorti_classique(j, test=False, avec_boutons=True):
+def message_sorti_classique(j, test=False, avec_boutons=True, affiche_url=None):
     """Le repli : la version à embeds (carte principale, une carte par type, bouton-lien), sans content : le ping est un message à part."""
     sortie = int(feed_store.SORTIE_GTA6.timestamp())
     n, off = int(j.get("articles") or 0), int(j.get("officiels") or 0)
@@ -671,7 +671,7 @@ def message_sorti_classique(j, test=False, avec_boutons=True):
              "fields": [{"name": "Articles", "value": str(n), "inline": True},
                         {"name": "Officiels Rockstar", "value": str(off), "inline": True},
                         {"name": "Depuis", "value": _depuis(j), "inline": True}],
-             "image": {"url": SITE_URL + AFFICHE_SORTI_NOM}}
+             "image": {"url": affiche_url or SITE_URL + AFFICHE_SORTI_NOM}}
     message = {"embeds": [embed] + cartes_derniers(j.get("derniers"))}
     if avec_boutons:
         message["components"] = boutons_app()

@@ -215,11 +215,15 @@ def etape_sorti(webhook):
                             "rockstarmag": {"title": "TEST — article d'exemple - RockstarMag", "link": discord_notify.SITE_URL, "source": "RockstarMag",
                                             "official": False, "sources": 1}}}
     nom = "TEST · GTA6_WATCH"
+    # L'affiche n'est servie par GitHub Pages qu'après la fusion : pour un essai AVANT, on prend le fichier sur la branche qui lance le test (le dépôt est public).
+    depot, branche = os.environ.get("GITHUB_REPOSITORY", ""), os.environ.get("GITHUB_REF_NAME", "")
+    affiche = f"https://raw.githubusercontent.com/{depot}/{branche}/docs/{discord_notify.AFFICHE_SORTI_NOM}" if depot and branche else None
+    print(f"  affiche : {affiche or 'adresse du site (GitHub Pages)'}")
     ping = dict(discord_notify.message_ping_sorti(test=True), username=nom)
     ok_ping, _ = envoie(webhook, discord_notify.avec_le_vi(ping), "ping (TEST, sans @here)", {"wait": "true"})
-    v2 = dict(discord_notify.message_sorti_v2(exemple, test=True), username=nom)
+    v2 = dict(discord_notify.message_sorti_v2(exemple, test=True, affiche_url=affiche), username=nom)
     ok_v2, _ = envoie(webhook, discord_notify.avec_le_vi(v2), "composants V2 (with_components=true)", {"wait": "true", "with_components": "true"})
-    classique = dict(discord_notify.message_sorti_classique(exemple, test=True), username=nom)
+    classique = dict(discord_notify.message_sorti_classique(exemple, test=True, affiche_url=affiche), username=nom)
     ok_cl, _ = envoie(webhook, discord_notify.avec_le_vi(classique), "version classique (repli)", {"wait": "true", "with_components": "true"})
     print(f"  Résultat : V2 {'ACCEPTÉ' if ok_v2 else 'REFUSÉ (le robot enverrait la version classique)'} ; classique {'accepté' if ok_cl else 'REFUSÉ'}.")
     return ok_ping or ok_v2 or ok_cl

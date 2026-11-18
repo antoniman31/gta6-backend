@@ -664,6 +664,10 @@ def test_jalons_du_compte_a_rebours():
     bouton = c0["components"][5]["components"][0]
     check(bouton == {"type": 2, "style": 5, "label": "Ouvrir GTA6_WATCH", "url": discord_notify.SITE_URL}, "« sorti » : un bouton-lien « Ouvrir GTA6_WATCH »")
     check(len(cont) == 1, "« sorti » sans article d'un type : le conteneur principal seul (%d)" % len(cont))
+    perso = discord_notify.message_sorti_v2(complet_essai := {"articles": 1, "officiels": 0, "depuis": "H-1", "sujets": []}, test=True, affiche_url="https://exemple.test/a.jpg")
+    check(perso["components"][0]["components"][1]["items"][0]["media"]["url"] == "https://exemple.test/a.jpg"
+          and discord_notify.message_sorti_classique(complet_essai, test=True, affiche_url="https://exemple.test/a.jpg")["embeds"][0]["image"]["url"] == "https://exemple.test/a.jpg",
+          "l'essai peut donner sa propre adresse d'affiche (V2 et classique), le message de minuit garde celle du site")
     affiche = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", discord_notify.AFFICHE_SORTI_NOM)
     check(os.path.isfile(affiche) and 0 < os.path.getsize(affiche) < 5_000_000 and open(affiche, "rb").read(3) == b"\xff\xd8\xff",
           "l'affiche du message « sorti » existe dans docs/ (elle doit être EN LIGNE avant minuit), c'est un JPEG de moins de 5 Mo (%s octets)" % (os.path.getsize(affiche) if os.path.isfile(affiche) else "absente"))
