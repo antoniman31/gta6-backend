@@ -7097,6 +7097,138 @@ def test_balayage_des_cartes(nav, url):
     ctx.close()
 
 
+def test_vue_rockstar_et_balayage_chronologie(nav, url):
+    """L'onglet Rockstar en chronologie OU en cartes, et le balayage dans la chronologie (18/11/2026, Antoni).
+
+    Il voulait « afficher en mode normal, les cartes comme dans le fil » et « swiper pour mettre en favoris ou en lu / non lu » dans cet onglet.
+    Le contrôle mesure : le bouton (caché ailleurs, zone de 48 px, sur la ligne du compteur à 320 et 390 px), les deux vues, l'année entre les cartes, le choix
+    enregistré, la valeur non fiable, puis de VRAIS gestes tactiles sur une ligne de chronologie (droite = lu, gauche = favori, trop court = rien).
+    """
+    print("\n[vue Rockstar] chronologie ou cartes, bascule, balayage des lignes")
+    INJECTE = """() => {
+        const jour = (a, h) => new Date(Date.UTC(a, 5, 10, 12 - h)).toISOString();
+        lastItems = [
+          ...Array.from({length: 6}, (_, i) => ({title: 'Annonce 2026 numéro ' + (i + 1), link: 'https://ex.test/o' + i, description: 'Résumé ' + i,
+              date: jour(2026, i), source: 'Rockstar Games', official: true, lang: 'en'})),
+          ...Array.from({length: 4}, (_, i) => ({title: 'Annonce 2025 numéro ' + (i + 1), link: 'https://ex.test/p' + i, description: 'Résumé ' + i,
+              date: jour(2025, i), source: 'Rockstar Games', official: true, lang: 'en'})),
+          ...Array.from({length: 3}, (_, i) => ({title: 'Article ordinaire ' + (i + 1), link: 'https://ex.test/x' + i, description: 'Résumé',
+              date: jour(2026, i), source: 'Média', official: false, lang: 'fr'}))];
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    for largeur in (320, 390):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 800}, has_touch=True, is_mobile=True,
+                              timezone_id="Europe/Paris", reduced_motion="reduce")
+        # Seulement si absent : le script rejoue à chaque chargement, et écraserait le choix que le rechargement doit retrouver.
+        ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1')) localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
+        page.evaluate(INJECTE)
+        etiq = "[vue Rockstar %d px]" % largeur
+
+        # ---- Le bouton n'existe que sous l'onglet Rockstar.
+        ailleurs = {t: page.evaluate("(t) => { setTab(t); return document.getElementById('vueBtn').hidden; }", t)
+                    for t in ("all", "majeur", "non-rockstar", "rockstarmag")}
+        check(all(ailleurs.values()), "%s le bouton de vue est caché hors de l'onglet Rockstar (%s)" % (etiq, ailleurs))
+        page.evaluate("() => setTab('rockstar')"); page.wait_for_timeout(200)
+        page.evaluate("() => ajusteComptage()")
+        bt = page.evaluate("""() => { const b = document.getElementById('vueBtn'); if(b.hidden) return null;
+            const r = b.getBoundingClientRect(), c = document.getElementById('countLine').getBoundingClientRect(), d = document.getElementById('densiteBtn').getBoundingClientRect();
+            const a = getComputedStyle(b, '::after'), deborde = a.content && a.content !== 'none' ? Math.abs(parseFloat(a.top) || 0) : 0;
+            const x = (r.left + r.right) / 2, y = (r.top + r.bottom) / 2;
+            return {zone: r.height + 2 * deborde, haut: [-23, 23].every(dy => { const e = document.elementFromPoint(x, y + dy); return e === b || b.contains(e); }),
+                    avant: r.right <= d.left + 1, rang: Math.abs(y - (c.top + c.bottom) / 2) < 12 && Math.abs(y - (d.top + d.bottom) / 2) < 12,
+                    tient: document.getElementById('countLine').scrollWidth <= document.getElementById('countLine').clientWidth + 1,
+                    dedans: r.left >= 0 && r.right <= innerWidth, label: b.getAttribute('aria-label'), pressed: b.getAttribute('aria-pressed')}; }""")
+        check(bt is not None and bt["label"] == "Afficher en cartes" and bt["pressed"] == "false",
+              "%s le bouton est là sous Rockstar, « Afficher en cartes », éteint au départ (%s)" % (etiq, bt))
+        if bt:
+            check(bt["zone"] >= CIBLE_MINIMALE and bt["haut"],
+                  "%s sa zone de toucher fait au moins %d px de haut (%.0f px mesurés)" % (etiq, CIBLE_MINIMALE, bt["zone"]))
+            check(bt["avant"] and bt["rang"] and bt["tient"] and bt["dedans"],
+                  "%s il est avant le mode compact, sur le même rang, et la ligne du compteur ne déborde pas (%s)" % (etiq, bt))
+
+        # ---- Chronologie d'office : les 10 officiels, aucun article ordinaire, aucune carte.
+        v = page.evaluate("() => ({lignes: document.querySelectorAll('.chrono-point').length, cartes: document.querySelectorAll('.card').length, "
+                          "indices: document.querySelectorAll('.chrono-ligne .swipe-wrap .swipe-hint').length, "
+                          "etoiles: document.querySelectorAll('.chrono-actions .card-mark[aria-pressed]').length})")
+        check(v["lignes"] == 10 and v["cartes"] == 0 and v["indices"] == 10 and v["etoiles"] == 10,
+              "%s la chronologie est la vue d'office : 10 lignes, chacune avec son indice de balayage et son étoile (%s)" % (etiq, v))
+
+        # ---- Un toucher : les cartes du fil, l'année entre elles, le choix enregistré.
+        page.click("#vueBtn"); page.wait_for_timeout(300)
+        c = page.evaluate("""() => ({lignes: document.querySelectorAll('.chrono-point').length, cartes: document.querySelectorAll('.card').length,
+            officielles: document.querySelectorAll('.card.official').length, annees: [...document.querySelectorAll('.chrono-annee')].map(e => e.textContent),
+            label: document.getElementById('vueBtn').getAttribute('aria-label'), pressed: document.getElementById('vueBtn').getAttribute('aria-pressed'),
+            icone: document.querySelector('#vueBtn use').getAttribute('href'),
+            stocke: JSON.parse(localStorage.getItem('gta6watch:settings-v1') || '{}').rockstarCartes === true})""")
+        check(c["lignes"] == 0 and c["cartes"] == 10 and c["officielles"] == 10,
+              "%s un toucher : les 10 officiels en cartes du fil, plus de chronologie (%s)" % (etiq, c))
+        check(c["annees"] == ["2026", "2025"], "%s l'année sépare les cartes, du plus récent au plus ancien (%s)" % (etiq, c["annees"]))
+        check(c["label"] == "Afficher en chronologie" and c["pressed"] == "true" and c["icone"] == "#i-timeline" and c["stocke"],
+              "%s le bouton propose le retour, s'allume, et le choix est enregistré (%s)" % (etiq, c))
+        # Les autres onglets ne changent pas de forme, et reviennent à leur vue.
+        autres = page.evaluate("() => { setTab('majeur'); const a = document.querySelectorAll('.chrono-point').length; setTab('rockstar'); return a; }")
+        check(autres == 0, "%s l'onglet Actu majeure n'est pas touché par la bascule (%d lignes de chronologie)" % (etiq, autres))
+
+        # ---- Recharger : le choix reste ; une valeur douteuse ne passe pas aux cartes.
+        page.reload(wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
+        page.evaluate(INJECTE); page.evaluate("() => setTab('rockstar')"); page.wait_for_timeout(200)
+        r = page.evaluate("() => ({cartes: document.querySelectorAll('.card').length, pressed: document.getElementById('vueBtn').getAttribute('aria-pressed')})")
+        check(r["cartes"] == 10 and r["pressed"] == "true", "%s après un rechargement, l'onglet Rockstar reste en cartes (%s)" % (etiq, r))
+        douteux = page.evaluate("() => [\"true\", 1, \"oui\", null, {}].map(v => { settings.rockstarCartes = v; return vueChronologie(); })")
+        check(all(douteux), "%s seul un vrai true allume les cartes : « true » texte, 1, « oui », null, {} gardent la chronologie (%s)" % (etiq, douteux))
+        page.evaluate("() => { settings.rockstarCartes = false; applyFilters(); majBoutonVue(); }")
+
+        # ---- Le balayage, avec de VRAIS gestes tactiles, sur la chronologie.
+        cdp = ctx.new_cdp_session(page)
+        def touche(type_, x=0, y=0):
+            cdp.send("Input.dispatchTouchEvent", {"type": type_, "touchPoints": [{"x": x, "y": y}] if type_ != "touchEnd" else []})
+        def centre(i):
+            page.evaluate("(i) => document.querySelector('.chrono-point[data-lien=\"https://ex.test/o' + i + '\"]').scrollIntoView({block: 'center'})", i)
+            page.wait_for_timeout(150)
+            return page.evaluate("(i) => { const r = document.querySelector('.chrono-point[data-lien=\"https://ex.test/o' + i + '\"]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + 20]; }", i)
+        def glisse(i, dx, dy=0, relache=True, pas=8):
+            x, y = centre(i)
+            touche("touchStart", x, y)
+            for k in range(1, pas + 1):
+                touche("touchMove", x + dx * k / pas, y + dy * k / pas)
+            if relache:
+                touche("touchEnd"); page.wait_for_timeout(700)
+        etat = lambda i: page.evaluate("(i) => { const l = 'https://ex.test/o' + i; return {lu: readSet.has(l), cote: misDeCote.has(l)}; }", i)
+        glisse(0, 140)
+        e = etat(0)
+        check(e["lu"] and not e["cote"], "%s un geste franc vers la DROITE sur une ligne de chronologie marque lu (%s)" % (etiq, e))
+        check(page.evaluate("() => document.querySelectorAll('.chrono-point.lu').length") == 1, "%s et la ligne se grise" % etiq)
+        glisse(1, -140)
+        e = etat(1)
+        check(e["cote"] and not e["lu"], "%s un geste franc vers la GAUCHE la met de côté, sans marquer lu (%s)" % (etiq, e))
+        etoile = page.evaluate("() => document.querySelector('.chrono-point[data-lien=\"https://ex.test/o1\"] .chrono-actions .card-mark[aria-pressed]').getAttribute('aria-pressed')")
+        check(etoile == "true", "%s l'étoile de la ligne s'allume (%s)" % (etiq, etoile))
+        glisse(1, -140)
+        check(not etat(1)["cote"], "%s le même geste la retire de la liste" % etiq)
+        glisse(2, 30); glisse(2, -30)
+        e = etat(2)
+        check(not e["lu"] and not e["cote"], "%s un geste trop court ne fait rien (%s)" % (etiq, e))
+        glisse(3, 10, dy=160)
+        e = etat(3)
+        check(not e["lu"] and not e["cote"], "%s un défilement vertical ne fait rien (%s)" % (etiq, e))
+        glisse(4, 40, relache=False)
+        m = page.evaluate("""() => { const w = document.querySelector('.swipe-wrap.glisse'); if(!w) return null;
+            const p = w.querySelector('.chrono-point'), h = w.querySelector('.swipe-hint');
+            return {decalage: Math.round(p.getBoundingClientRect().left - w.getBoundingClientRect().left), indice: getComputedStyle(h).display, opacite: getComputedStyle(h).opacity,
+                    hauteurs: Math.abs(h.getBoundingClientRect().height - p.getBoundingClientRect().height) < 1}; }""")
+        touche("touchEnd"); page.wait_for_timeout(500)
+        check(m is not None and m["decalage"] > 20 and m["indice"] != "none" and float(m["opacite"]) > 0 and m["hauteurs"],
+              "%s pendant le geste la ligne glisse et l'indice coloré, de sa hauteur, apparaît dessous (%s)" % (etiq, m))
+        # Un toucher simple sur le lien doit toujours ouvrir l'article (le balayage ne le vole pas) : le lien reste cliquable, hors geste.
+        lien = page.evaluate("() => { const a = document.querySelector('.chrono-point .chrono-lien'); return a ? a.getAttribute('href') : null; }")
+        check(lien is not None and lien.startswith("https://ex.test/"), "%s le lien de la ligne est intact (%s)" % (etiq, lien))
+        check(not erreurs, "%s aucune erreur JavaScript (%s)" % (etiq, erreurs))
+        ctx.close()
+
+
 JOUR_J = "2026-11-18T23:30:00Z"      # 00:30 à Paris le 19/11 : le premier jour
 VEILLE = "2026-11-12T10:00:00Z"
 LENDEMAIN = "2026-11-20T10:00:00Z"   # plus de 24 h après la sortie
@@ -10568,6 +10700,7 @@ CONTROLES = [
     test_contraste_jour_j,
     test_texte_douze_px_et_coins,
     test_balayage_des_cartes,
+    test_vue_rockstar_et_balayage_chronologie,
     test_cycle_de_couleurs,
     test_cycle_synchronise,
     test_contraste_du_cycle,

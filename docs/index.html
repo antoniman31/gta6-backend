@@ -1310,12 +1310,16 @@
   }
   .swipe-wrap.vers-gauche .sh-lu{display:none;}
   .swipe-wrap.vers-gauche .sh-cote{display:inline-flex;}
-  .swipe-wrap.glisse .card{transition:none;}
-  .swipe-wrap .card{will-change:transform;}
-  .swipe-wrap.rend .card{transition:transform var(--t-court) var(--courbe-entree);}
+  .swipe-wrap.glisse :is(.card, .chrono-point){transition:none;}
+  .swipe-wrap :is(.card, .chrono-point){will-change:transform;}
+  .swipe-wrap.rend :is(.card, .chrono-point){transition:transform var(--t-court) var(--courbe-entree);}
   @media (prefers-reduced-motion: reduce){
-    .swipe-wrap.rend .card{transition:none;}
+    .swipe-wrap.rend :is(.card, .chrono-point){transition:none;}
   }
+  /* LA LIGNE DE CHRONOLOGIE SE BALAIE AUSSI (Antoni, 18/11/2026 : « pouvoir swiper pour mettre en favoris ou en lu / non lu » dans l'onglet Rockstar). L'enveloppe
+     (.swipe-wrap, celle des cartes) prend la place de la marge du bas, et la ligne glisse sans marge : sinon l'indice coloré dépasserait de 8 px sous elle. */
+  .chrono-ligne{list-style:none; margin:0 0 8px;}
+  .chrono-ligne > .swipe-wrap > .chrono-point{margin:0;}
 
   /* ---------- Tirer pour actualiser ---------- */
   /* contain empêche le geste natif du navigateur de se déclencher en plus du
@@ -2522,6 +2526,11 @@
   }
   .densite-btn::after{content:""; position:absolute; inset:-14px -8px;}
   .densite-btn .ic{width:18px; height:18px; fill:currentColor;}
+  /* LA BASCULE « CHRONOLOGIE / CARTES » de l'onglet Rockstar (Antoni, 18/11/2026) : même gabarit que le mode compact voisin, mais zone de toucher de 48 px (règle commune),
+     pas les 44 px de ses voisins. Caché hors de l'onglet Rockstar : l'attribut hidden doit gagner contre display:inline-flex. */
+  .vue-btn::after{inset:-15px -9px;}
+  .vue-btn[hidden]{display:none;}
+  .vue-btn[aria-pressed="true"]{color:var(--c-texte);}
   .densite-btn[aria-pressed="true"]{color:var(--c-texte);}
   .sources-btn .ic{width:18px; height:18px; fill:currentColor; transition:transform var(--t-court) var(--courbe);}
   .sources-btn[aria-expanded="true"] .ic{transform:rotate(180deg);}
@@ -2934,6 +2943,8 @@
 <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/></symbol>
 <symbol id="i-star_border" viewBox="0 0 24 24"><path d="m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></symbol>
 <symbol id="i-reorder" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></symbol>
+<symbol id="i-view_agenda" viewBox="0 0 24 24"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zm-1 6H5v-4h14v4zM20 3H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zm-1 6H5V5h14v4z"/></symbol>
+<symbol id="i-timeline" viewBox="0 0 24 24"><path d="M23 8c0 1.1-.9 2-2 2-.18 0-.35-.02-.51-.07l-3.56 3.55c.05.16.07.34.07.52 0 1.1-.9 2-2 2s-2-.9-2-2c0-.18.02-.36.07-.52l-2.55-2.55c-.16.05-.34.07-.52.07s-.36-.02-.52-.07l-4.55 4.56c.05.16.07.33.07.51 0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2c.18 0 .35.02.51.07l4.56-4.55C8.02 9.36 8 9.18 8 9c0-1.1.9-2 2-2s2 .9 2 2c0 .18-.02.36-.07.52l2.55 2.55c.16-.05.34-.07.52-.07s.36.02.52.07l3.55-3.56C19.02 8.35 19 8.18 19 8c0-1.1.9-2 2-2s2 .9 2 2z"/></symbol>
 <symbol id="i-expand_more" viewBox="0 0 24 24"><path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"/></symbol>
 <symbol id="i-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></symbol>
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></symbol>
@@ -3091,6 +3102,7 @@
   <div class="console-status feed-count">
     <div class="comptage-ligne">
       <span id="countLine">0 article suivi</span>
+      <button type="button" class="densite-btn vue-btn" id="vueBtn" hidden aria-pressed="false" aria-label="Afficher en cartes" title="Afficher en cartes" onclick="basculeVueRockstar()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-view_agenda"/></svg></button>
       <button type="button" class="densite-btn" id="densiteBtn" aria-pressed="false" aria-label="Mode compact" title="Mode compact" onclick="toggleDensity()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reorder"/></svg></button>
       <button type="button" class="sources-btn" id="sourcesBtn" aria-expanded="false" aria-controls="rangeeSources" onclick="basculeSources()"><span id="sourcesLibelle"></span><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-expand_more"/></svg></button>
     </div>
@@ -3871,6 +3883,8 @@ const DEFAULT_SETTINGS = {
   maxDisplay: 500,
   similarityThreshold: 72,
   denseMode: false,
+  // L'onglet Rockstar en CARTES au lieu de la chronologie (18/11/2026, Antoni). Chronologie d'office ; seul un vrai true allume les cartes (valeur lue du stockage = entrée non fiable).
+  rockstarCartes: false,
   backendUrl: "https://antoniman31.github.io/gta6-backend/feed.json" // pré-rempli car ce fichier est hébergé sur le même domaine que le backend — modifiable dans les paramètres si besoin
 };
 
@@ -4001,6 +4015,7 @@ function applyDensity(){
   btn.textContent = settings.denseMode ? "Revenir à l'affichage normal" : "Basculer mode compact";
   const rapide = document.getElementById("densiteBtn");
   if(rapide) rapide.setAttribute("aria-pressed", String(!!settings.denseMode));
+  majBoutonVue();   // même moment : au chargement et après une importation, le bouton de vue suit le réglage
 }
 
 function copyLogs(){
@@ -6869,6 +6884,7 @@ function setTab(t, silencieux){
   marqueActif("tabNonRockstar", t === "non-rockstar");
   marqueActif("tabRockstar", t === "rockstar");
   marqueActif("tabRockstarmag", t === "rockstarmag");
+  majBoutonVue();
 
   // Deux VUES, et le reste sont des filtres sur le fil. Une vue remplace le
   // fil entier et masque la recherche, qui n'y a pas de sens. `estVue` est
@@ -7659,6 +7675,39 @@ function dayBucket(dateStr){
 // ça laisse de la marge.
 const CHRONO_MAX = 400;
 
+// LA VUE DE L'ONGLET ROCKSTAR (18/11/2026, Antoni : « pouvoir afficher en mode normal, les cartes comme dans le fil »). Chronologie par défaut ; un bouton sur la ligne
+// du compteur passe aux cartes du fil. Seul l'onglet Rockstar est concerné : Actu majeure se rend déjà en cartes (mesuré dans renderFeed : seul "rockstar" appelle
+// renderChronologie), et j'avais écrit l'inverse à Antoni avant de lire le code, je l'ai corrigé devant lui.
+function vueChronologie(){
+  return currentTab === "rockstar" && settings.rockstarCartes !== true;
+}
+function majBoutonVue(){
+  const b = document.getElementById("vueBtn");
+  if(!b) return;
+  const visible = currentTab === "rockstar";
+  b.hidden = !visible;
+  const cartes = settings.rockstarCartes === true;
+  const libelle = cartes ? "Afficher en chronologie" : "Afficher en cartes";
+  b.setAttribute("aria-pressed", String(cartes));
+  b.setAttribute("aria-label", libelle);
+  b.title = libelle;
+  // L'icône montre la vue vers laquelle on va : cartes depuis la chronologie, chronologie depuis les cartes.
+  b.innerHTML = cartes ? ic("timeline") : ic("view_agenda");
+  if(typeof ajusteComptage === "function") ajusteComptage();
+}
+function basculeVueRockstar(){
+  settings.rockstarCartes = settings.rockstarCartes !== true;
+  // Une écriture qui peut échouer se voit à l'écran (règle commune) : le choix reste valable pour la session même si le stockage refuse.
+  try{ storageSet("settings-v1", JSON.stringify(settings)); }
+  catch(e){
+    console.error("Erreur sauvegarde de la vue Rockstar", e);
+    if(typeof montreToast === "function") montreToast("Choix non enregistré : le stockage de l'appareil a refusé l'écriture.");
+  }
+  majBoutonVue();
+  visibleCount = PAGE_SIZE;
+  applyFilters();
+}
+
 function renderChronologie(items){
   if(!items.length) return '<div class="empty">Aucun article correspondant.</div>';
   let annee = null;
@@ -7719,8 +7768,10 @@ function renderChronologie(items){
     // on ne peut pas se fier.
     const masque = contientSpoiler(item);
 
+    const cote = misDeCote.has(item.link);
     return sep + `
-      <li class="chrono-point${lu ? " lu" : ""}${item.official ? " chrono-off" : ""}${item.rockstarmag && !item.official ? " chrono-rm" : ""}${estMajeur(item) ? " chrono-maj" : ""}${masque ? " spoiler-masque" : ""}" id="card-${safeId}">
+      <li class="chrono-ligne"><div class="swipe-wrap"><div class="swipe-hint"><span class="sh-lu">${lu ? ic("undo") : ic("check_circle")}</span><span class="sh-cote">${cote ? ic("star_border") : ic("star")}</span></div>
+      <div class="chrono-point${lu ? " lu" : ""}${item.official ? " chrono-off" : ""}${item.rockstarmag && !item.official ? " chrono-rm" : ""}${estMajeur(item) ? " chrono-maj" : ""}${masque ? " spoiler-masque" : ""}" id="card-${safeId}" data-lien="${escapeHtml(item.link)}">
         ${masque ? voileSpoiler(item.link) : ""}
         <span class="chrono-date">${jour}${heure ? ` · ${heure}` : ""}</span>
         <a class="chrono-lien" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"
@@ -7734,11 +7785,12 @@ function renderChronologie(items){
         ${badges ? `<div class="chrono-badges">${badges}</div>` : ""}
         <div class="card-actions chrono-actions">
           <button class="card-mark" data-icon-only="1" title="${lu ? "Marquer comme non lu" : "Marquer comme lu"}" aria-label="${lu ? "Marquer comme non lu" : "Marquer comme lu"}" onclick="toggleRead('${safeId}', '${escapeAttr(item.link)}')">${lu ? ic("undo") : ic("check_circle")}</button>
+          <button class="card-mark" data-icon-only="1" title="${cote ? "Retirer de la liste" : "Mettre de côté"}" aria-label="${cote ? "Retirer de la liste" : "Mettre de côté"}" aria-pressed="${cote ? "true" : "false"}" onclick="basculeCote('${escapeAttr(item.link)}')">${cote ? ic("star") : ic("star_border")}</button>
           <button class="card-mark" data-icon-only="1" title="Copier le lien" aria-label="Copier le lien" onclick="copyLink('${escapeAttr(item.link)}', this)">${ic("link")}</button>
           ${item.description ? `<button class="card-mark" data-icon-only="1" title="Aperçu de l'article" aria-label="Aperçu de l'article" onclick="openPreview('${safeId}')">${ic("visibility")}</button>` : ""}
           ${item.lang !== "fr" ? `<button class="card-mark" data-icon-only="1" title="Traduire en français" aria-label="Traduire en français" onclick="openTranslated('${escapeAttr(item.link)}')">${ic("translate")}</button>` : ""}
         </div>
-      </li>`;
+      </div></div></li>`;
   }).join("");
   return `<ol class="chrono">${lignes}</ol>`;
 }
@@ -7866,7 +7918,7 @@ function renderFeed(items, newLinks, searchQuery){
   // L'onglet Rockstar se rend en CHRONOLOGIE, pas en cartes — voir
   // renderChronologie. Avant la pagination : une histoire se lit d'un bout
   // à l'autre, pas trente entrées à la fois.
-  if(currentTab === "rockstar" && items.length <= CHRONO_MAX){
+  if(vueChronologie() && items.length <= CHRONO_MAX){
     feedEl.innerHTML = renderChronologie(items);
     return;
   }
@@ -7894,7 +7946,7 @@ function renderFeed(items, newLinks, searchQuery){
 
   // LE REPÈRE « NOUVEAUX · DÉJÀ VUS » : posé AVANT la première carte déjà vue qui suit au moins une carte neuve.
   // Rien si tout est neuf ou si rien ne l'est. Il compte les neuves AFFICHÉES, pas celles de la pagination.
-  let neufsVus = 0, repereMis = false;
+  let neufsVus = 0, repereMis = false, anneeVue = null;
   const cardsHtml = paliersDuFil(buckets, bucketOrder, tailles).map(p => `
       <div class="day-group">
         <h2 class="day-label">${escapeHtml(p.libelle)}</h2>
@@ -7906,7 +7958,14 @@ function renderFeed(items, newLinks, searchQuery){
             const mot = neufsVus > 1 ? "nouveaux" : "nouveau";
             avant = `<div class="repere-nouveaux" role="separator" aria-label="${neufsVus} ${mot} au-dessus, déjà vus en dessous">▲ ${neufsVus} ${mot} · déjà vus ▼</div>`;
           }
-          return avant + enveloppeCarte(item, newLinks, searchQuery);
+          // L'année, seulement en cartes de l'onglet Rockstar et quand elle change (choix d'Antoni, 18/11/2026 : « garder l'année »).
+          let annee = "";
+          if(currentTab === "rockstar"){
+            const dt = new Date(item.date);
+            const an = isNaN(dt) ? null : dt.getFullYear();
+            if(an !== null && an !== anneeVue){ anneeVue = an; annee = `<div class="chrono-annee" role="separator">${an}</div>`; }
+          }
+          return annee + avant + enveloppeCarte(item, newLinks, searchQuery);
         }).join("")}
       </div>
     `).join("");
@@ -10739,7 +10798,7 @@ function surTouchStart(e){
   geste = {
     x0: t.clientX, y0: t.clientY, axe: null, tirage: 0,
     enveloppe,
-    carte: enveloppe ? enveloppe.querySelector(".card") : null,
+    carte: enveloppe ? enveloppe.querySelector(".card, .chrono-point") : null,
     enHaut: window.scrollY <= 0
   };
 }
