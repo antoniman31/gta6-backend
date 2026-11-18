@@ -156,10 +156,6 @@ def _main():
     if os.environ.get("SEULEMENT_OFFICIELS") == "1":
         print("[tableau] pause nocturne — le tableau du jour est créé au premier passage de 5 h.")
         return 0
-    # Le passage du message « sorti » est solitaire (18/11/2026) : le tableau du jour, qui notifie à sa création, attend le passage suivant.
-    if feed_store.passage_solitaire(discord_notify.lire_liste(os.environ.get("JALONS_FILE", ""))):
-        print("[tableau] passage solitaire (message « sorti ») — le tableau du jour est créé au passage suivant.")
-        return 0
     maintenant = datetime.now(timezone.utc)
     chemin_etat = os.environ.get("TABLEAU_ETAT", ETAT_PATH)
     items = feed_store.load_feed().get("items", [])

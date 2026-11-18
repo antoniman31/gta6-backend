@@ -7,7 +7,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2404 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2403 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -113,7 +113,7 @@ Cinq lignes au plus par section, avec « + N autres dans l'app ». Quand le mess
 Un article n'apparaît qu'une fois. Un bouton ouvre l'app (retombe sur un lien texte si Discord refuse les boutons). Le nombre d'annonces officielles notifiées par passage est plafonné
 à `NOTIFS_OFFICIELLES_MAX = 10`.
 
-**Le message « sorti »** (jalon de minuit, refait le 18/11/2026) : un message court de ping (`@here` et un titre `#` en gros), puis le message principal en **composants V2** (mise en page Discord : conteneur bleu avec titre, balise de temps vivante, l'affiche officielle `docs/sorti-affiche.jpg` en galerie, chiffres, bouton-lien ; puis un conteneur par type qui a un article sur les dernières 24 h, aux couleurs des onglets : officiel orange, actu majeure rouge, RockstarMag violet, chacun avec un bouton « Lire »). Si Discord refuse le V2, la version classique (embeds) part à la place, avec puis sans bouton. L'affiche doit être en ligne (GitHub Pages) avant minuit. **Le passage de minuit est solitaire** (choix d'Antoni, 18/11/2026) : à ce passage le robot n'envoie que « sorti » et les annonces officielles de Rockstar ; le résumé des articles, les alertes de sources, RockstarMag, le tableau du jour et l'alerte « est reparti » attendent le passage suivant (une alerte de panne passe toujours). Règle unique : `feed_store.passage_solitaire`. Essai réel, marqué TEST et sans `@here` : workflow « Tester les notifications Discord » avec `--sorti`.
+**Le message « sorti »** (jalon de minuit, refait le 18/11/2026) : un message court de ping (`@here` et un titre `#` en gros), puis le message principal en **composants V2** (mise en page Discord : conteneur bleu avec titre, balise de temps vivante, l'affiche officielle `docs/sorti-affiche.jpg` en galerie, chiffres, bouton-lien ; puis un conteneur par type qui a un article sur les dernières 24 h, aux couleurs des onglets : officiel orange, actu majeure rouge, RockstarMag violet, chacun avec un bouton « Lire »). Si Discord refuse le V2, la version classique (embeds) part à la place, avec puis sans bouton. L'affiche doit être en ligne (GitHub Pages) avant minuit. **« sorti » reste seul à l'écran** (choix d'Antoni, 18/11/2026) : après l'envoi, `discord_notify` attend 3 minutes (`PAUSE_APRES_SORTI_S`), puis le reste du passage part comme d'habitude (annonces, articles, alertes, tableau du jour). Rien n'est reporté au passage suivant. Règle : `feed_store.porte_sorti`. Essai réel, marqué TEST et sans `@here` : workflow « Tester les notifications Discord » avec `--sorti`.
 
 À part : les **jalons** du compte à rebours (`JALONS_JOURS` avant la sortie, puis `JALONS_HEURES`), le **bilan du soir** (premier passage après `BILAN_HEURE_PARIS = 22` h, un seul par jour : médias les plus actifs, sujets les plus couverts,
 et « cette semaine » le dimanche), le **tableau du jour** (message créé le matin et modifié sur place, sans nouvelle notification) et les alertes de sources. Après la sortie, les messages

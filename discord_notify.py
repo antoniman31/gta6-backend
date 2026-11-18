@@ -678,6 +678,10 @@ def message_sorti_classique(j, test=False, avec_boutons=True, affiche_url=None):
     return message
 
 
+# Pause entre « sorti » et le reste du passage : 3 minutes, choix d'Antoni (18/11/2026), le message de minuit doit rester seul à l'écran avant les autres.
+PAUSE_APRES_SORTI_S = 180
+
+
 def envoie_sortie(j):
     """Le ping, puis le message principal en V2. Si Discord refuse le V2, la version classique avec bouton ; si elle est refusée aussi, la classique sans bouton."""
     envoye = send_discord_with_retry(message_ping_sorti(), "jalon sorti (ping)")
@@ -911,17 +915,18 @@ def _annonces():
     jalons = lire_liste(os.environ.get("JALONS_FILE", ""))
     if jalons:
         send_jalons(jalons)
-    # Le passage du message « sorti » est SOLITAIRE : seul « sorti » part, plus les annonces officielles (voir feed_store.passage_solitaire).
-    solitaire = feed_store.passage_solitaire(jalons)
-    seulement_officiels = seulement_officiels or solitaire
+    # « sorti » reste seul quelques minutes : le reste du passage (annonces, articles, alertes) part après la pause, dans ce même passage (Antoni, 18/11/2026).
+    if feed_store.porte_sorti(jalons):
+        print(f"[discord] « sorti » envoyé : pause de {PAUSE_APRES_SORTI_S} s avant le reste du passage.")
+        time.sleep(PAUSE_APRES_SORTI_S)
 
     if seulement_officiels:
         # La nuit, seule la section ⭐ part, seule dans son message.
         if officiels:
             send_message(officiels, [], None, 0, feed_store.libelle_officiels(
                 len(feed_store.officiels_du_message(officiels))))
-        print(f"[discord] {'passage solitaire (message « sorti »)' if solitaire else 'pause nocturne'} — {len(officiels)} annonce(s) officielle(s) "
-              f"envoyée(s), le reste attend {'le passage suivant' if solitaire else 'le matin'}.")
+        print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
+              f"envoyée(s), le reste attend le matin.")
         return 0
 
     # Les alertes de source sont indépendantes des articles : elles doivent
