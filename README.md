@@ -7,7 +7,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2386 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2395 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -113,7 +113,7 @@ Cinq lignes au plus par section, avec « + N autres dans l'app ». Quand le mess
 Un article n'apparaît qu'une fois. Un bouton ouvre l'app (retombe sur un lien texte si Discord refuse les boutons). Le nombre d'annonces officielles notifiées par passage est plafonné
 à `NOTIFS_OFFICIELLES_MAX = 10`.
 
-**Le message « sorti »** (jalon de minuit, 18/11/2026) : un `@here`, une carte principale bleue avec l'affiche officielle de la couverture (`docs/sorti-affiche.jpg`, 1 600 × 900, doit être en ligne avant minuit), trois champs (articles, officiels, depuis), une carte par type qui a un article sur les dernières 24 h (officiel orange, actu majeure rouge, RockstarMag violet) et un bouton-lien ; sans bouton si Discord le refuse.
+**Le message « sorti »** (jalon de minuit, refait le 18/11/2026) : un message court de ping (`@here` et un titre `#` en gros), puis le message principal en **composants V2** (mise en page Discord : conteneur bleu avec titre, balise de temps vivante, l'affiche officielle `docs/sorti-affiche.jpg` en galerie, chiffres, bouton-lien ; puis un conteneur par type qui a un article sur les dernières 24 h, aux couleurs des onglets : officiel orange, actu majeure rouge, RockstarMag violet, chacun avec un bouton « Lire »). Si Discord refuse le V2, la version classique (embeds) part à la place, avec puis sans bouton. L'affiche doit être en ligne (GitHub Pages) avant minuit. Essai réel, marqué TEST et sans `@here` : workflow « Tester les notifications Discord » avec `--sorti`.
 
 À part : les **jalons** du compte à rebours (`JALONS_JOURS` avant la sortie, puis `JALONS_HEURES`), le **bilan du soir** (premier passage après `BILAN_HEURE_PARIS = 22` h, un seul par jour : médias les plus actifs, sujets les plus couverts,
 et « cette semaine » le dimanche), le **tableau du jour** (message créé le matin et modifié sur place, sans nouvelle notification) et les alertes de sources. Après la sortie, les messages

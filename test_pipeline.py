@@ -639,43 +639,87 @@ def test_jalons_du_compte_a_rebours():
     finally:
         discord_notify.send_discord_with_retry = vrai_envoi
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
-    check(len(envoyes) == 2, "un message par jalon (%d)" % len(envoyes))
-    e1, m2 = envoyes[0][0], envoyes[1][0]
-    # Le message « sorti » (18/11/2026, sur planches d'Antoni) : un @here, la carte principale bleue avec l'affiche et trois champs, une carte par type qui a un article
-    # (officiel orange, actu majeure rouge, RockstarMag violet), un bouton-lien ; sans article d'un type, pas de carte pour lui.
-    e2 = m2["embeds"][0]
-    check(m2.get("content", "").startswith("@here") and m2.get("allowed_mentions") == {"parse": ["everyone"]},
-          "« sorti » : un @here, et seulement ce message (%s)" % m2.get("content"))
-    check(e2["title"] == "🎮 GTA VI est sorti" and e2["color"] == discord_notify.COULEUR_SORTI == 0x3380FF and "Bonne partie" in e2["description"]
-          and f"<t:{ts}:R>" in e2["description"],
-          "« sorti » : carte principale bleue, titre dédié, balise de temps vivante")
-    check([f["name"] for f in e2.get("fields", [])] == ["Articles", "Officiels Rockstar", "Depuis"]
-          and [f["value"] for f in e2["fields"]][:2] == ["12", "2"] and all(f.get("inline") for f in e2["fields"]),
-          "« sorti » : trois champs en colonnes, les chiffres justes (%s)" % [(f["name"], f["value"]) for f in e2.get("fields", [])])
-    check(e2.get("image", {}).get("url") == discord_notify.SITE_URL + "sorti-affiche.jpg" and e2.get("author", {}).get("name", "").startswith("GTA6_WATCH"),
-          "« sorti » : l'affiche et l'auteur (%s)" % e2.get("image"))
+    check(len(envoyes) == 3 and [l for _, l in envoyes] == ["jalon j14", "jalon sorti (ping)", "jalon sorti (V2)"],
+          "un message par jalon, et « sorti » en deux messages : le ping, puis le principal en V2 (%s)" % [l for _, l in envoyes])
+    e1, ping, v2 = envoyes[0][0], envoyes[1][0], envoyes[2][0]
+    # Le message « sorti » (18/11/2026, demandé par Antoni : « le message le plus important depuis que j'ai créé l'appli ») : un message court de ping, puis le principal
+    # en composants V2 (conteneur bleu : titre, affiche, chiffres, bouton ; puis un conteneur par type qui a un article, aux couleurs des onglets de l'app).
+    check(ping["content"] == "@here\n# 🎮 GTA VI EST SORTI" and ping["allowed_mentions"] == {"parse": ["everyone"]},
+          "« sorti » : le ping est un message court avec @here et le plus gros titre (%s)" % ping["content"])
+    essai = discord_notify.message_ping_sorti(test=True)
+    check(essai["allowed_mentions"] == {"parse": []} and essai["content"].startswith("🧪 TEST") and "(ici sonnerait le @here)" in essai["content"],
+          "le ping d'ESSAI ne pingue personne (allowed_mentions vide, @here entre parenthèses)")
+    check(v2["flags"] == discord_notify.IS_COMPONENTS_V2 == 32768 and "content" not in v2 and "embeds" not in v2,
+          "« sorti » en V2 : le drapeau 1 << 15, ni content ni embeds (Discord répond 400 sinon)")
+    cont = v2["components"]
+    c0 = cont[0]
+    textes0 = [c["content"] for c in c0["components"] if c["type"] == 10]
+    check(c0["type"] == 17 and c0["accent_color"] == discord_notify.COULEUR_SORTI == 0x3380FF and [c["type"] for c in c0["components"]] == [10, 12, 14, 10, 14, 1, 10]
+          and "# 🎮 GTA VI est sorti" in textes0[0] and "Bonne partie" in textes0[0] and f"<t:{ts}:R>" in textes0[0],
+          "« sorti » en V2 : conteneur bleu, titre en gros, balise de temps vivante, galerie, séparateurs, bouton, pied de message")
+    check("12" in textes0[1] and "2" in textes0[1] and "la dernière heure" in textes0[1] and "H-1" not in textes0[1],
+          "« sorti » en V2 : les chiffres justes, et « la dernière heure » plutôt que « H-1 » (%s)" % textes0[1].replace("\n", " | "))
+    galerie = c0["components"][1]["items"][0]["media"]["url"]
+    check(galerie == discord_notify.SITE_URL + "sorti-affiche.jpg", "« sorti » : l'affiche est dans la galerie (%s)" % galerie)
+    bouton = c0["components"][5]["components"][0]
+    check(bouton == {"type": 2, "style": 5, "label": "Ouvrir GTA6_WATCH", "url": discord_notify.SITE_URL}, "« sorti » : un bouton-lien « Ouvrir GTA6_WATCH »")
+    check(len(cont) == 1, "« sorti » sans article d'un type : le conteneur principal seul (%d)" % len(cont))
     affiche = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", discord_notify.AFFICHE_SORTI_NOM)
     check(os.path.isfile(affiche) and 0 < os.path.getsize(affiche) < 5_000_000 and open(affiche, "rb").read(3) == b"\xff\xd8\xff",
           "l'affiche du message « sorti » existe dans docs/ (elle doit être EN LIGNE avant minuit), c'est un JPEG de moins de 5 Mo (%s octets)" % (os.path.getsize(affiche) if os.path.isfile(affiche) else "absente"))
-    check(len(m2["embeds"]) == 1 and m2.get("components"), "« sorti » sans article de type : la carte principale seule, avec son bouton (%d cartes)" % len(m2["embeds"]))
     derniers = {"officiel": {"title": "Pre-Load - Rockstar Games", "link": "https://rockstargames.com/x", "source": "Rockstar Games", "official": True, "sources": 1},
                 "majeur": {"title": "Le lancement - Kotaku", "link": "https://k.example/l", "source": "Kotaku", "official": False, "sources": 5},
                 "rockstarmag": {"title": "Les coulisses - RockstarMag", "link": "https://m.example/c", "source": "RockstarMag", "official": False, "sources": 1}}
-    envoyes2 = []
+    complet = {"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie", "depuis": "H-1", "articles": 12, "officiels": 2, "sujets": [], "derniers": derniers}
+    m3 = discord_notify.message_sorti_v2(complet)
+    def compte(c):
+        return 1 + sum(compte(x) for x in (c.get("components") or ())) + (1 if c.get("accessory") else 0) + len(c.get("items") or ())
+    check([c["accent_color"] for c in m3["components"]] == [0x3380FF, discord_notify.COULEUR_OFFICIEL, discord_notify.COULEUR_MAJEURE, feed_store.COULEUR_ROCKSTARMAG]
+          and m3["components"][1]["accent_color"] == 0xFFAB00,
+          "« sorti » avec les trois types : un conteneur bleu puis orange, rouge, violet, aux couleurs de l'app (%s)" % [hex(c["accent_color"]) for c in m3["components"]])
+    sect = [c["components"][0] for c in m3["components"][1:]]
+    check(all(s["type"] == 9 and s["accessory"]["style"] == 5 and s["accessory"]["label"] == "Lire" and s["accessory"]["url"].startswith("http") for s in sect)
+          and "5 sources" in sect[1]["components"][0]["content"],
+          "« sorti » : chaque carte est une section avec un bouton « Lire » vers l'article (%s)" % [s["accessory"]["url"] for s in sect])
+    check(m3["components"][-1]["components"][-1]["content"].startswith("-# GTA6_WATCH"), "« sorti » : le pied de message est la dernière ligne")
+    total = sum(compte(c) for c in m3["components"])
+    check(total <= 40, "« sorti » en V2 reste sous la limite de 40 composants de Discord (%d)" % total)
+    sans_lien = discord_notify.message_sorti_v2(dict(complet, derniers={"officiel": dict(derniers["officiel"], link="javascript:alert(1)")}))
+    check(sans_lien["components"][1]["components"][0]["type"] == 10, "un lien qui n'est pas http(s) n'obtient pas de bouton (simple texte)")
+    cl = discord_notify.message_sorti_classique(complet)
+    check("content" not in cl and len(cl["embeds"]) == 4 and cl.get("components") and cl["embeds"][0]["image"]["url"].endswith("sorti-affiche.jpg")
+          and "H-1" not in str(cl["embeds"][0]["fields"]),
+          "la version classique de repli : quatre cartes, l'affiche, le bouton, sans content (le ping est à part)")
+    # Le repli : V2 refusé → la classique avec bouton ; refusée aussi → la classique sans bouton.
+    essais = []
+    reponses = iter([True, False, False, True])
     try:
         discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
-        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: envoyes2.append((embed, k.get("repli"))) or True
-        discord_notify.send_jalons([{"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie", "depuis": "H-1", "articles": 12, "officiels": 2, "sujets": [], "derniers": derniers}])
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: essais.append((label, embed, k.get("repli"))) or next(reponses)
+        discord_notify.send_jalons([complet])
     finally:
         discord_notify.send_discord_with_retry = vrai_envoi
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
-    mm, repli = envoyes2[0]
-    cartes = mm["embeds"][1:]
-    check([c["color"] for c in cartes] == [discord_notify.COULEUR_OFFICIEL, discord_notify.COULEUR_MAJEURE, feed_store.COULEUR_ROCKSTARMAG]
-          and cartes[0]["color"] == 0xFFAB00 and "5 sources" in cartes[1]["title"] and len(mm["embeds"]) == 4,
-          "« sorti » avec les trois types : une carte orange, une rouge, une violette, aux couleurs de l'app (%s)" % [(c["title"], hex(c["color"])) for c in cartes])
-    check(repli is not None and "components" not in repli and len(repli["embeds"]) == 4 and repli["content"] == mm["content"],
-          "« sorti » : si Discord refuse le bouton, le message part sans lui, intact (repli)")
+    check([e[0] for e in essais] == ["jalon sorti (ping)", "jalon sorti (V2)", "jalon sorti (classique)"] and essais[1][2] and essais[1][2].get("components")
+          and "components" not in essais[2][1] and len(essais[2][1]["embeds"]) == 4,
+          "V2 refusé par Discord : la classique avec bouton en repli, puis sans bouton si refusée aussi (%s)" % [e[0] for e in essais])
+    # L'envoi réel : un message V2 n'est pas enveloppé dans « embeds », et demande with_components.
+    posts = []
+    class Rep:
+        status_code = 204
+        text = ""
+    vrai_post = discord_notify.requests.post
+    try:
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.requests.post = lambda url, json=None, params=None, timeout=None: posts.append((json, params)) or Rep()
+        discord_notify.send_discord_with_retry(m3, "essai V2")
+        discord_notify.send_discord_with_retry(discord_notify.message_ping_sorti(), "essai ping")
+    finally:
+        discord_notify.requests.post = vrai_post
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    check("embeds" not in posts[0][0] and posts[0][0]["flags"] == 32768 and posts[0][1] == {"with_components": "true"} and posts[0][0].get("avatar_url")
+          and posts[1][0]["content"].startswith("@here") and "embeds" not in posts[1][0],
+          "à l'envoi, le V2 part tel quel avec with_components=true, et le ping n'est pas enveloppé non plus")
     check(e1["color"] == feed_store.couleur_compteur(), "la barre prend la couleur du palier du compteur")
 
     # Bout en bout : JALONS_FILE lu par discord_notify.main.

@@ -15,6 +15,11 @@ name: Tester les notifications Discord
 
 on:
   workflow_dispatch:
+    inputs:
+      seulement:
+        description: "Laisser vide : tous les essais. « --sorti » : seulement le message « sorti » (18/11/2026), marqué TEST, sans @here."
+        required: false
+        default: ""
 
 # Lecture seule : ce workflow n'écrit rien, nulle part.
 permissions:
@@ -34,10 +39,11 @@ jobs:
       - name: Envoyer les messages de test
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: python test_discord.py
+        run: python test_discord.py ${{ inputs.seulement }}
 
       # L'alerte de panne du robot (14/11/2026), en message de TEST : « TEST » dans le titre, rien n'a échoué.
       - name: Envoyer l'alerte de panne (essai)
+        if: ${{ inputs.seulement == '' }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python alerte_panne.py --essai
