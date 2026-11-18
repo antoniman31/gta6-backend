@@ -2755,8 +2755,12 @@ def prepare_jalons(stored, items, maintenant):
     for j in dus:
         depuis, depuis_libelle = feed_store.jalon_precedent(j)
         resume = feed_store.resume_depuis(items, depuis, maintenant)
-        a_annoncer.append({"id": j["id"], "libelle": j["libelle"], "type": j["type"],
-                           "cible": j["cible"].isoformat(), "depuis": depuis_libelle, **resume})
+        jalon = {"id": j["id"], "libelle": j["libelle"], "type": j["type"],
+                 "cible": j["cible"].isoformat(), "depuis": depuis_libelle, **resume}
+        if j["type"] == "sortie":
+            # Les trois cartes du message « sorti » : officiel, actu majeure, RockstarMag (voir feed_store.derniers_par_type).
+            jalon["derniers"] = feed_store.derniers_par_type(items, maintenant)
+        a_annoncer.append(jalon)
     return a_annoncer, deja + [j["id"] for j in dus]
 
 

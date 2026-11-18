@@ -600,6 +600,23 @@ def test_jalons_du_compte_a_rebours():
           "prepare_jalons rend le jalon dû et retient son identifiant (%s)" % retenus)
     a2, retenus2 = fetch_feeds.prepare_jalons({"jalons_envoyes": ["j14"]}, items, j14["cible"] + timedelta(minutes=3))
     check(a2 == [] and retenus2 == ["j14"], "relancé dans la même heure : rien à annoncer, l'état est conservé")
+    # Les trois cartes du message « sorti » : le dernier de chaque type sur les 24 dernières heures, None sans article de ce type.
+    sort = feed_store.SORTIE_GTA6
+    def at(titre, heures, **kw):
+        return dict({"title": titre, "link": "https://e.example/" + titre, "source": "S",
+                     "date": (sort - timedelta(hours=heures)).isoformat()}, **kw)
+    lot = [at("off ancien", 6, official=True), at("off recent", 2, official=True), at("off trop vieux", 30, official=True),
+           at("mag", 3, rockstarmag=True), at("majeur", 1, extraSources=[{"source": "B", "link": "u"}, {"source": "C", "link": "v"}]),
+           at("ordinaire", 0.5), "pas un dict"]
+    d = feed_store.derniers_par_type(lot, sort)
+    check(d["officiel"]["title"] == "off recent" and d["rockstarmag"]["title"] == "mag" and d["majeur"]["title"] == "majeur" and d["majeur"]["sources"] == 3,
+          "derniers_par_type : l'officiel le plus récent, le RockstarMag, l'actu majeure (%s)" % {k: (v or {}).get("title") for k, v in d.items()})
+    vide = feed_store.derniers_par_type([at("ordinaire", 1), at("off trop vieux", 30, official=True)], sort)
+    check(vide == {"officiel": None, "majeur": None, "rockstarmag": None}, "sans article d'un type dans les 24 h, la carte est None (%s)" % vide)
+    ps, _ = fetch_feeds.prepare_jalons({"jalons_envoyes": []}, lot, sort + timedelta(minutes=3))
+    check([x["id"] for x in ps] == ["sorti"] and ps[0].get("derniers", {}).get("officiel", {}).get("title") == "off recent"
+          and all("derniers" not in x for x in a_annoncer),
+          "prepare_jalons joint les derniers au seul jalon « sorti » (%s)" % [x["id"] for x in ps])
     src = open("fetch_feeds.py", encoding="utf-8").read()
     check('"jalons_envoyes": jalons_envoyes' in src and "depose_jalons(jalons_a_annoncer)" in src,
           "fetch_feeds écrit l'état dans feed.json et dépose les jalons pour Discord")
@@ -624,18 +641,41 @@ def test_jalons_du_compte_a_rebours():
         discord_notify.DISCORD_WEBHOOK_URL = vrai_url
     check(len(envoyes) == 2, "un message par jalon (%d)" % len(envoyes))
     e1, m2 = envoyes[0][0], envoyes[1][0]
-    # Le message « sorti » est un message complet à trois bandes (17/11/2026) : la première porte le texte, les deux autres sont courtes.
-    check("embeds" in m2 and len(m2["embeds"]) == 3 and [c["color"] for c in m2["embeds"]] == list(discord_notify.COULEURS_SORTI)
-          and list(discord_notify.COULEURS_SORTI) == [0x3380FF, 0xF87DB7, 0xFFFFFF],
-          "« sorti » : trois bandes, bleu, rose, blanc (%s)" % [c.get("color") for c in m2.get("embeds", [])])
+    # Le message « sorti » (18/11/2026, sur planches d'Antoni) : un @here, la carte principale bleue avec l'affiche et trois champs, une carte par type qui a un article
+    # (officiel orange, actu majeure rouge, RockstarMag violet), un bouton-lien ; sans article d'un type, pas de carte pour lui.
     e2 = m2["embeds"][0]
-    check(e1["title"] == "⏳ J-14" and f"<t:{ts}:R>" in e1["description"] and f"<t:{ts}:F>" in e1["description"],
-          "le décompte est une balise de temps Discord (vivante), pas un nombre figé")
-    check("Depuis 7 jours : 1 article." in e1["description"] and "Sujet" in e1["description"],
-          "le bilan depuis le jalon précédent et les sujets les plus couverts (%s)" % e1["description"].splitlines()[1])
-    check(e2["title"] == "🎉 GTA VI est sorti" and "2 officiels Rockstar" in e2["description"] and "12 articles" in e2["description"],
-          "« sorti » : titre dédié, pluriels justes")
-    check(all("image" not in e and "thumbnail" not in e for e in [e1] + m2["embeds"]), "aucune image")
+    check(m2.get("content", "").startswith("@here") and m2.get("allowed_mentions") == {"parse": ["everyone"]},
+          "« sorti » : un @here, et seulement ce message (%s)" % m2.get("content"))
+    check(e2["title"] == "🎮 GTA VI est sorti" and e2["color"] == discord_notify.COULEUR_SORTI == 0x3380FF and "Bonne partie" in e2["description"]
+          and f"<t:{ts}:R>" in e2["description"],
+          "« sorti » : carte principale bleue, titre dédié, balise de temps vivante")
+    check([f["name"] for f in e2.get("fields", [])] == ["Articles", "Officiels Rockstar", "Depuis"]
+          and [f["value"] for f in e2["fields"]][:2] == ["12", "2"] and all(f.get("inline") for f in e2["fields"]),
+          "« sorti » : trois champs en colonnes, les chiffres justes (%s)" % [(f["name"], f["value"]) for f in e2.get("fields", [])])
+    check(e2.get("image", {}).get("url") == discord_notify.SITE_URL + "sorti-affiche.jpg" and e2.get("author", {}).get("name", "").startswith("GTA6_WATCH"),
+          "« sorti » : l'affiche et l'auteur (%s)" % e2.get("image"))
+    affiche = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", discord_notify.AFFICHE_SORTI_NOM)
+    check(os.path.isfile(affiche) and 0 < os.path.getsize(affiche) < 5_000_000 and open(affiche, "rb").read(3) == b"\xff\xd8\xff",
+          "l'affiche du message « sorti » existe dans docs/ (elle doit être EN LIGNE avant minuit), c'est un JPEG de moins de 5 Mo (%s octets)" % (os.path.getsize(affiche) if os.path.isfile(affiche) else "absente"))
+    check(len(m2["embeds"]) == 1 and m2.get("components"), "« sorti » sans article de type : la carte principale seule, avec son bouton (%d cartes)" % len(m2["embeds"]))
+    derniers = {"officiel": {"title": "Pre-Load - Rockstar Games", "link": "https://rockstargames.com/x", "source": "Rockstar Games", "official": True, "sources": 1},
+                "majeur": {"title": "Le lancement - Kotaku", "link": "https://k.example/l", "source": "Kotaku", "official": False, "sources": 5},
+                "rockstarmag": {"title": "Les coulisses - RockstarMag", "link": "https://m.example/c", "source": "RockstarMag", "official": False, "sources": 1}}
+    envoyes2 = []
+    try:
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: envoyes2.append((embed, k.get("repli"))) or True
+        discord_notify.send_jalons([{"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie", "depuis": "H-1", "articles": 12, "officiels": 2, "sujets": [], "derniers": derniers}])
+    finally:
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+    mm, repli = envoyes2[0]
+    cartes = mm["embeds"][1:]
+    check([c["color"] for c in cartes] == [discord_notify.COULEUR_OFFICIEL, discord_notify.COULEUR_MAJEURE, feed_store.COULEUR_ROCKSTARMAG]
+          and cartes[0]["color"] == 0xFFAB00 and "5 sources" in cartes[1]["title"] and len(mm["embeds"]) == 4,
+          "« sorti » avec les trois types : une carte orange, une rouge, une violette, aux couleurs de l'app (%s)" % [(c["title"], hex(c["color"])) for c in cartes])
+    check(repli is not None and "components" not in repli and len(repli["embeds"]) == 4 and repli["content"] == mm["content"],
+          "« sorti » : si Discord refuse le bouton, le message part sans lui, intact (repli)")
     check(e1["color"] == feed_store.couleur_compteur(), "la barre prend la couleur du palier du compteur")
 
     # Bout en bout : JALONS_FILE lu par discord_notify.main.

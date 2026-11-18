@@ -39,10 +39,12 @@ SITE_URL = "https://antoniman31.github.io/gta6-backend/"
 # LE VI SUR CHAQUE MESSAGE (Antoni, 17/11/2026) : l'avatar du robot et l'icône du pied de message sont la même image (voir feed_store.AVATAR_DISCORD_URL).
 PIED_TEXTE = "GTA6_WATCH · heure de Paris"
 EMBEDS_TOTAL_MAX = 6000     # la limite de Discord, en caractères, pour tous les embeds d'un message
-# LES TROIS BANDES DU MESSAGE « SORTI » (Antoni, 17/11/2026) : bleu, rose, blanc, les trois teintes du logo.
-COULEURS_SORTI = (0x3380FF, 0xF87DB7, 0xFFFFFF)
-TEXTES_SORTI = (("Bonne partie !", "Le fil continue de tourner toute la nuit."),
-                ("GTA6_WATCH", "Suivi en direct, heure de Paris."))
+# LE MESSAGE « SORTI » (Antoni, 18/11/2026, sur planches : « un truc hyper stylé avec les fonctionnalités de Discord » ; avant, trois bandes bleu, rose, blanc, sans image) :
+# un @here, l'affiche officielle de la couverture fournie par Antoni (docs/sorti-affiche.jpg, 1600 × 900, servie par GitHub Pages : l'image doit être EN LIGNE avant minuit ; le trait
+# bleu, rose, blanc en bas est celui de l'app), une carte principale bleue
+# et trois cartes aux couleurs des onglets de l'app (officiel orange, actu majeure rouge, RockstarMag violet) quand il y a un article de ce type, un bouton-lien.
+COULEUR_SORTI = 0x3380FF
+AFFICHE_SORTI_NOM = "sorti-affiche.jpg"
 
 
 def taille_embed(e):
@@ -563,6 +565,23 @@ def _lignes_sujets(sujets):
     return lignes
 
 
+def cartes_derniers(derniers):
+    """Les cartes du message « sorti » : le dernier officiel, la dernière actu majeure, le dernier RockstarMag. Une carte par type qui a un article, aux couleurs de l'app."""
+    d = derniers if isinstance(derniers, dict) else {}
+    cartes = []
+    for cle, titre, couleur in (("officiel", "⭐ Rockstar · officiel", COULEUR_OFFICIEL),
+                                ("majeur", "🔥 Actu majeure", COULEUR_MAJEURE),
+                                ("rockstarmag", "RockstarMag", feed_store.COULEUR_ROCKSTARMAG)):
+        ap = d.get(cle)
+        ligne = ligne_apercu(ap) if isinstance(ap, dict) else ""
+        if not ligne:
+            continue
+        if cle == "majeur" and int(ap.get("sources") or 0) >= 2:
+            titre = f"🔥 Actu majeure · {int(ap['sources'])} sources"
+        cartes.append({"title": titre, "description": ligne[:DESCRIPTION_MAX_CARACTERES], "color": couleur})
+    return cartes
+
+
 def send_jalons(jalons):
     """Un message par jalon du compte à rebours : J-14, J-7, J-3, J-1, H-12, H-1, sorti.
 
@@ -580,33 +599,47 @@ def send_jalons(jalons):
             continue
         sorti = j.get("type") == "sortie"
         if sorti:
-            titre = "🎉 GTA VI est sorti"
-            lignes = [f"Sortie <t:{sortie}:R>."]
+            titre = "🎮 GTA VI est sorti"
+            lignes = [f"Sortie <t:{sortie}:R> · <t:{sortie}:F>.", "Bonne partie ! Le fil continue de tourner toute la nuit."]
         else:
             titre = f"⏳ {j.get('libelle')}"
             lignes = [f"GTA VI sort <t:{sortie}:F> · <t:{sortie}:R>"]
         n = int(j.get("articles") or 0)
         off = int(j.get("officiels") or 0)
-        bilan = f"Depuis {j.get('depuis')} : {n} article{'s' if n > 1 else ''}"
-        bilan += f", dont {off} officiel{'s' if off > 1 else ''} Rockstar" if off else ""
-        lignes.append(bilan + ".")
         sujets = [l for l in (ligne_apercu(a) for a in (j.get("sujets") or ())) if l]
+        if sorti:
+            # Les chiffres sont des champs (trois colonnes), pas une phrase : la carte se lit d'un coup d'œil.
+            champs = [{"name": "Articles", "value": str(n), "inline": True},
+                      {"name": "Officiels Rockstar", "value": str(off), "inline": True},
+                      {"name": "Depuis", "value": str(j.get("depuis") or "—"), "inline": True}]
+        else:
+            bilan = f"Depuis {j.get('depuis')} : {n} article{'s' if n > 1 else ''}"
+            bilan += f", dont {off} officiel{'s' if off > 1 else ''} Rockstar" if off else ""
+            lignes.append(bilan + ".")
+            champs = []
         if sujets:
             lignes.append("**Les sujets les plus couverts**")
             lignes.extend(sujets)
-        lignes.append(f"[Ouvrir GTA6_WATCH]({SITE_URL})")
+        if not sorti:
+            lignes.append(f"[Ouvrir GTA6_WATCH]({SITE_URL})")
         embed = {
             "title": titre,
             "url": SITE_URL,
             "description": "\n".join(lignes)[:DESCRIPTION_MAX_CARACTERES],
-            "color": COULEURS_SORTI[0] if sorti else feed_store.couleur_compteur(),
+            "color": COULEUR_SORTI if sorti else feed_store.couleur_compteur(),
         }
+        repli = None
         if sorti:
-            # Trois bandes, bleu, rose, blanc (Antoni, 17/11/2026) : le message principal, puis deux cartes courtes.
-            cartes = [embed] + [{"title": t, "description": d, "color": c}
-                                for (t, d), c in zip(TEXTES_SORTI, COULEURS_SORTI[1:])]
-            embed = {"embeds": cartes}
-        if send_discord_with_retry(embed, f"jalon {j.get('id')}"):
+            embed["author"] = {"name": "GTA6_WATCH · en direct", "icon_url": feed_store.AVATAR_DISCORD_URL}
+            embed["fields"] = champs
+            embed["image"] = {"url": SITE_URL + AFFICHE_SORTI_NOM}
+            message = {"content": "@here **GTA VI est sorti !** 🎉", "allowed_mentions": {"parse": ["everyone"]},
+                       "embeds": [embed] + cartes_derniers(j.get("derniers"))}
+            # Si Discord refuse les boutons, le message part sans eux (la carte garde son lien dans le titre).
+            repli = dict(message)
+            message["components"] = boutons_app()
+            embed = message
+        if send_discord_with_retry(embed, f"jalon {j.get('id')}", repli=repli):
             envoyes += 1
     print(f"  [discord] {envoyes} jalon(s) du compte à rebours envoyé(s) sur {len(jalons)}.")
     return envoyes > 0
