@@ -522,7 +522,7 @@
   /* ---------- Bloc de contrôle ---------- */
   .console{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
-    padding:14px; margin-bottom:14px; overflow:hidden;
+    padding:14px; margin-bottom:10px; overflow:hidden;   /* 18/11/2026 : espaces resserrés d'un cran (14 → 10), Antoni */
     display:flex; flex-direction:column; gap:10px;
   }
   .console-status{
@@ -598,7 +598,7 @@
     transition:width var(--t-moyen) var(--courbe-entree);
   }
 
-  .search-row{margin-bottom:14px; display:flex; flex-direction:row; align-items:stretch; gap:8px;}
+  .search-row{margin-bottom:10px; display:flex; flex-direction:row; align-items:stretch; gap:8px;}
   .search-input-wrap{position:relative; flex:1; min-width:0;}
   /* 16 px et pas 13 : en dessous de 16, Safari sur iOS ZOOME la page tout
      seul quand le doigt entre dans le champ. L'utilisateur se retrouve à
@@ -627,7 +627,7 @@
   }
   .search-clear-btn:active{background:var(--bg-elevated); color:var(--c-texte);}
 
-  .tab-row{display:flex; gap:8px; margin-bottom:12px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  .tab-row{display:flex; gap:8px; margin-bottom:10px; padding-bottom:4px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
   .tab-row::-webkit-scrollbar{display:none;}
   .tab-row-full .tab{flex:1; padding:10px 14px;}
   /* Les sous-onglets des statistiques partagent CETTE déclaration plutôt
@@ -760,8 +760,8 @@
     font-size:13px; background:transparent; padding:0 2px; line-height:1;
   }
 
-  .feed{display:flex; flex-direction:column; gap:4px;}
-  .day-group{display:flex; flex-direction:column; gap:10px; margin-bottom:6px;}
+  .feed{display:flex; flex-direction:column; gap:2px;}
+  .day-group{display:flex; flex-direction:column; gap:8px; margin-bottom:4px;}
   /* Collant : passé trois cartes, on ne savait plus quel jour on lisait.
      Chaque label tient le haut de l'écran tant que son groupe y est, puis
      le groupe suivant le pousse dehors — comportement natif, aucun JS.
@@ -2472,7 +2472,7 @@
      Pas de fond ni de bordure : il légende la liste, il ne la surplombe
      pas. Le retrait latéral l'aligne sur le texte des cartes d'articles. */
   .feed-count{
-    margin:-4px 2px 12px; justify-content:flex-start;
+    margin:-4px 2px 6px; justify-content:flex-start;
   }
   /* LE CHEVRON « PAR SOURCE » (idée 2, version B, 11/11/2026). Les trois sources (Non Rockstar, Rockstar,
      RockstarMag) sont repliées derrière lui : fermées, le haut du fil gagne la rangée. Le texte reste à
@@ -2887,7 +2887,7 @@
     background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--r-md);
   }
   :is(.day-label, .feed-count, .resume-marker, .repere-nouveaux, .chrono-annee){padding:7px 12px;}
-  :is(.day-label, .resume-marker, .repere-nouveaux){margin:6px 0 8px;}
+  :is(.day-label, .resume-marker, .repere-nouveaux){margin:6px 0 4px;}
   .chrono-point{padding:8px 12px;}
   html.photo-fond::before{
     content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;

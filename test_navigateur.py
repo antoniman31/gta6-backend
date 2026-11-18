@@ -9361,6 +9361,35 @@ def test_jour_dans_la_barre(nav, url):
         ctx.close()
 
 
+def test_espaces_resserres(nav, url):
+    """18/11/2026 (Antoni, capture du S26 : « réduis les espaces ») : un cran de moins entre les blocs du haut et du fil et entre les cartes.
+
+    Mesuré avant : en-tête → recherche 14, recherche → onglets 14, onglets → comptage 8, comptage → jour 18, jour → carte 18, carte → carte 10 (px). Les plafonds
+    ci-dessous sont les valeurs d'après (10, 10, 6, 12, 12, 8) : ce contrôle échoue sur l'ancien code. Les zones tactiles ne bougent pas (on ne change que des marges).
+    """
+    print("\n[espaces] un cran de moins entre les blocs du haut, du fil et des cartes")
+    INJECTE = """() => { const m = i => ({title: 'Titre ' + i, link: 'https://ex.test/' + i, description: 'Résumé ' + i, date: new Date(Date.now() - i * 4 * 3600e3).toISOString(), source: 'Kotaku', lang: 'fr'});
+        lastItems = Array.from({length: 12}, (_, i) => m(i)); lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 12;
+        readSet = new Set(); misDeCote = new Set(); applyFilters(); }"""
+    for theme in ("dark", "light"):
+        for largeur in (320, 390):
+            ctx = nav.new_context(viewport={"width": largeur, "height": 900}, color_scheme=theme, timezone_id="Europe/Paris", reduced_motion="reduce")
+            ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif: false}));}catch(e){}")
+            page = ctx.new_page(); err = []
+            page.on("pageerror", lambda e, err=err: err.append(str(e)))
+            page.goto(url, wait_until="load"); page.wait_for_selector(".header-haut"); page.wait_for_timeout(500)
+            page.evaluate(INJECTE); page.wait_for_timeout(500)
+            m = page.evaluate("""() => { const q = s => document.querySelector(s), R = e => e.getBoundingClientRect(), g = (a, b) => Math.round(R(q(b)).top - R(q(a)).bottom);
+                const cs = [...document.querySelectorAll('#feed .day-group')].map(x => [...x.querySelectorAll('.card')]).find(l => l.length > 1) || [];
+                return {entete: g('header.console', '.search-row'), recherche: g('.search-row', '.tab-row'), onglets: g('.tab-row', '.feed-count'), comptage: g('.feed-count', '.day-label'),
+                        jour: g('.day-label', '#feed .card'), cartes: cs.length > 1 ? Math.round(R(cs[1]).top - R(cs[0]).bottom) : null}; }""")
+            etiq = "[espaces %s %d px]" % (theme, largeur)
+            for cle, plafond in (("entete", 10), ("recherche", 10), ("onglets", 6), ("comptage", 12), ("jour", 12), ("cartes", 8)):
+                check(m[cle] is not None and m[cle] <= plafond, "%s l'espace « %s » fait %s px au plus %d" % (etiq, cle, m[cle], plafond))
+            check(not err, "%s aucune erreur JavaScript (%s)" % (etiq, err[:1]))
+            ctx.close()
+
+
 def test_barres_collees_et_opaques(nav, url):
     """18/11/2026 (Antoni, capture du S26) : « je ne veux pas voir ce qu'il y a en dessous de la barre du bas et au-dessus de la barre du haut ».
 
@@ -10456,6 +10485,7 @@ CONTROLES = [
     test_photo_de_fond,
     test_barre_haute_en_carte_et_apercu_complet,
     test_barres_collees_et_opaques,
+    test_espaces_resserres,
     test_jour_dans_la_barre,
     test_couleur_de_l_onglet_dans_le_fil,
     test_onglet_selectionne_aux_couleurs_des_cartes,
