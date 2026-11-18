@@ -1831,6 +1831,16 @@ def jalons_dus(maintenant, deja_envoyes=()):
     return dus
 
 
+def passage_solitaire(jalons):
+    """Ce passage porte le message « sorti » : il ne doit rien envoyer d'autre à Discord (sauf une annonce officielle de Rockstar).
+
+    Demandé par Antoni le 18/11/2026 (« un message unique et solitaire : si un autre message du robot sort, il ne faut pas qu'il se mélange avec celui-là »).
+    Règle PARTAGÉE : fetch_feeds met les articles de côté, discord_notify n'envoie que « sorti » et les officiels, le tableau du jour et l'alerte « est reparti »
+    attendent le passage suivant. Une seule définition, pour qu'aucune des quatre étapes ne diverge des autres.
+    """
+    return any(isinstance(j, dict) and j.get("type") == "sortie" for j in (jalons or ()))
+
+
 def derniers_par_type(items, maintenant, heures=24):
     """Le dernier article de chaque type qui compte, au moment de la sortie (message « sorti » du 19/11/2026).
 

@@ -4518,16 +4518,21 @@ def main():
                         feed_store.nb_sources_max(promus))
     officiels_du_run = len(feed_store.articles_officiels(a_notifier))
 
-    attente = reporte_ou_annonce(attente, a_notifier, promus,
-                                 officiels_du_run, sommet_du_run,
-                                 SILENCE_NOCTURNE)
-
+    # Les jalons d'abord : le passage qui porte « sorti » est SOLITAIRE (voir feed_store.passage_solitaire), il met les articles de côté comme une pause
+    # nocturne, et les annonce au passage suivant. Les officiels, eux, partent quand même (choix d'Antoni, 18/11/2026).
     jalons_a_annoncer, jalons_envoyes = prepare_jalons(
         stored, all_items, datetime.now(timezone.utc))
     depose_jalons(jalons_a_annoncer)
+    silence = SILENCE_NOCTURNE or feed_store.passage_solitaire(jalons_a_annoncer)
+    if silence and not SILENCE_NOCTURNE:
+        print("  Passage solitaire : le message « sorti » part seul, le reste attend le passage suivant.")
+
+    attente = reporte_ou_annonce(attente, a_notifier, promus,
+                                 officiels_du_run, sommet_du_run,
+                                 silence)
 
     mag_a_annoncer, mag_envoyes = feed_store.prepare_rockstarmag(
-        stored, all_items, a_notifier, SILENCE_NOCTURNE)
+        stored, all_items, a_notifier, silence)
     depose_rockstarmag(mag_a_annoncer)
 
     bilan_a_annoncer, bilan_envoye_le = feed_store.prepare_bilan(

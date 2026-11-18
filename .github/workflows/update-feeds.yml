@@ -381,6 +381,7 @@ jobs:
         env:
           SEULEMENT_OFFICIELS: ${{ steps.veille.outputs.silence == 'true' && '1' || '0' }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          JALONS_FILE: ${{ runner.temp }}/jalons.json   # le passage « sorti » est solitaire : pas de tableau à ce passage
 
       # L'identifiant du message est la seule chose à retenir d'un passage à
       # l'autre : tableau_discord.py le range dans tableau-discord.json, que
@@ -460,3 +461,4 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           GITHUB_TOKEN: ${{ github.token }}
+          JALONS_FILE: ${{ runner.temp }}/jalons.json   # le passage « sorti » est solitaire : « est reparti » attend le passage suivant

@@ -178,7 +178,7 @@ def coupe(texte, maximum=TITRE_MAX_CARACTERES):
     return tronque.rstrip(" ,;:-–—") + "…"
 
 
-def ligne_apercu(apercu):
+def ligne_apercu(apercu, marqueur_visible=True):
     """Une ligne du récapitulatif : marqueur, titre cliquable, média.
 
     Le marqueur reprend la hiérarchie appliquée partout ailleurs — ⭐ pour une
@@ -204,7 +204,8 @@ def ligne_apercu(apercu):
         marqueur = "•"
 
     corps = f"[{titre}](<{lien}>)" if lien else titre
-    ligne = f"{marqueur} {corps}"
+    # Les cartes du message « sorti » portent déjà le symbole dans leur titre : pas deux fois (vu sur la capture d'Antoni, 18/11/2026).
+    ligne = f"{marqueur} {corps}" if marqueur_visible else corps
     if media:
         ligne += f" — *{echappe_markdown(media)}*"
     # Le nombre de rédactions n'est dit que quand il est l'information : sur
@@ -574,7 +575,7 @@ def cartes_derniers(derniers):
                                 ("majeur", "🔥 Actu majeure", COULEUR_MAJEURE),
                                 ("rockstarmag", "RockstarMag", feed_store.COULEUR_ROCKSTARMAG)):
         ap = d.get(cle)
-        ligne = ligne_apercu(ap) if isinstance(ap, dict) else ""
+        ligne = ligne_apercu(ap, marqueur_visible=False) if isinstance(ap, dict) else ""
         if not ligne:
             continue
         if cle == "majeur" and int(ap.get("sources") or 0) >= 2:
@@ -639,7 +640,7 @@ def message_sorti_v2(j, test=False):
                                 ("majeur", "🔥 Actu majeure", COULEUR_MAJEURE),
                                 ("rockstarmag", "RockstarMag", feed_store.COULEUR_ROCKSTARMAG)):
         ap = d.get(cle)
-        ligne = ligne_apercu(ap) if isinstance(ap, dict) else ""
+        ligne = ligne_apercu(ap, marqueur_visible=False) if isinstance(ap, dict) else ""
         if not ligne:
             continue
         if cle == "majeur" and int(ap.get("sources") or 0) >= 2:
@@ -910,14 +911,17 @@ def _annonces():
     jalons = lire_liste(os.environ.get("JALONS_FILE", ""))
     if jalons:
         send_jalons(jalons)
+    # Le passage du message « sorti » est SOLITAIRE : seul « sorti » part, plus les annonces officielles (voir feed_store.passage_solitaire).
+    solitaire = feed_store.passage_solitaire(jalons)
+    seulement_officiels = seulement_officiels or solitaire
 
     if seulement_officiels:
         # La nuit, seule la section ⭐ part, seule dans son message.
         if officiels:
             send_message(officiels, [], None, 0, feed_store.libelle_officiels(
                 len(feed_store.officiels_du_message(officiels))))
-        print(f"[discord] pause nocturne — {len(officiels)} annonce(s) officielle(s) "
-              f"envoyée(s), le reste attend le matin.")
+        print(f"[discord] {'passage solitaire (message « sorti »)' if solitaire else 'pause nocturne'} — {len(officiels)} annonce(s) officielle(s) "
+              f"envoyée(s), le reste attend {'le passage suivant' if solitaire else 'le matin'}.")
         return 0
 
     # Les alertes de source sont indépendantes des articles : elles doivent

@@ -29,6 +29,7 @@ from zoneinfo import ZoneInfo
 import requests
 
 import discord_notify
+import feed_store
 
 ROUGE = 0xE5484D
 VERT = 0x30A46C
@@ -102,6 +103,10 @@ def main(argv=None, env=None, maintenant=None):
         return 0
     if not discord_notify.DISCORD_WEBHOOK_URL:
         print("  [alerte] DISCORD_WEBHOOK_URL absent : aucune alerte Discord.")
+        return 0
+    # Le passage du message « sorti » est solitaire (18/11/2026) : « est reparti » est un état, il sera dit au passage suivant ; une panne (echec), elle, passe toujours.
+    if mode == "succes" and feed_store.passage_solitaire(discord_notify.lire_liste(env.get("JALONS_FILE", ""))):
+        print("  [alerte] passage solitaire (message « sorti ») — rien à dire à ce passage.")
         return 0
     maintenant = maintenant or datetime.now(PARIS)
     repo = env.get("GITHUB_REPOSITORY", "antoniman31/gta6-backend")

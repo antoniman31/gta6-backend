@@ -759,6 +759,93 @@ def test_jalons_du_compte_a_rebours():
     check("JALONS_FILE:" in robot and "JALONS_FILE:" in discord,
           "le workflow transmet JALONS_FILE au robot et à Discord")
 
+    # LE PASSAGE SOLITAIRE (Antoni, 18/11/2026) : le message « sorti » part seul. Les annonces officielles passent quand même (son choix) ; tout le reste attend le suivant.
+    sorti_j = {"id": "sorti", "libelle": "GTA VI est sorti", "type": "sortie", "depuis": "H-1", "articles": 3, "officiels": 1, "sujets": [], "derniers": {}}
+    check(feed_store.passage_solitaire([sorti_j]) and not feed_store.passage_solitaire([jalon]) and not feed_store.passage_solitaire([]) and not feed_store.passage_solitaire(None)
+          and not feed_store.passage_solitaire(["pas un dict", 3]),
+          "passage_solitaire : vrai seulement avec le jalon « sorti »")
+    src_f = open("fetch_feeds.py", encoding="utf-8").read()
+    corps = src_f[src_f.index("jalons_a_annoncer, jalons_envoyes = prepare_jalons("):]
+    check(corps.index("silence = SILENCE_NOCTURNE or feed_store.passage_solitaire(jalons_a_annoncer)") < corps.index("attente = reporte_ou_annonce(")
+          and "                                 silence)" in corps and "a_notifier, silence)" in corps,
+          "fetch_feeds décide du passage solitaire AVANT de mettre les articles de côté, et le même silence vaut pour le récapitulatif et pour RockstarMag")
+    art_off = {"title": "Annonce - Rockstar Games", "link": "https://r.example/a", "source": "Rockstar Games", "official": True, "date": "2026-11-18T23:00:30+00:00", "sources": 1}
+    art_ord = {"title": "Article ordinaire - Média", "link": "https://m.example/o", "source": "Média", "official": False, "date": "2026-11-18T23:00:20+00:00", "sources": 1}
+    chemin_s = _os.path.join(dossier, "jalons_sorti.json")
+    chemin_n2 = _os.path.join(dossier, "nouveaux2.json")
+    chemin_a = _os.path.join(dossier, "alertes.json")
+    _json.dump([sorti_j], open(chemin_s, "w", encoding="utf-8"))
+    _json.dump([art_ord, art_off], open(chemin_n2, "w", encoding="utf-8"))
+    _json.dump([{"id": "x", "libelle": "Source A", "etat": "cassee"}], open(chemin_a, "w", encoding="utf-8"))
+    cles = ("NEW_ITEMS_FILE", "PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE", "SOURCE_ALERTS_FILE", "SEULEMENT_OFFICIELS", "JALONS_FILE", "ROCKSTARMAG_FILE")
+    anciens2 = {k: _os.environ.get(k) for k in cles}
+    envoyes3 = []
+    try:
+        _os.environ["NEW_ITEMS_FILE"] = chemin_n2
+        _os.environ["JALONS_FILE"] = chemin_s
+        _os.environ["SOURCE_ALERTS_FILE"] = chemin_a
+        _os.environ["SEULEMENT_OFFICIELS"] = "0"     # nuit d'exception : la pause nocturne est levée, SEUL le passage solitaire retient le reste
+        for k in ("PROMOTED_ITEMS_FILE", "RECAP_TOTALS_FILE", "ROCKSTARMAG_FILE"):
+            _os.environ.pop(k, None)
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        discord_notify.send_discord_with_retry = lambda embed, label, *a, **k: envoyes3.append((embed, label)) or True
+        discord_notify.send_message = lambda officiels, *a, **k: envoyes3.append((officiels, "message")) or True
+        discord_notify.send_source_alerts = lambda *a, **k: envoyes3.append((a, "alertes de sources")) or True
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = discord_notify.main()
+    finally:
+        discord_notify.send_discord_with_retry = vrai_envoi
+        discord_notify.DISCORD_WEBHOOK_URL = vrai_url
+        for k, v in anciens2.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+        import importlib
+        importlib.reload(discord_notify)
+    etiq = [l for _, l in envoyes3]
+    check(code == 0 and etiq == ["jalon sorti (ping)", "jalon sorti (V2)", "message"],
+          "passage solitaire : « sorti » (ping et V2), puis SEULEMENT le message des annonces officielles (%s)" % etiq)
+    off_envoyes = envoyes3[-1][0]
+    check([a["title"] for a in off_envoyes] == ["Annonce - Rockstar Games"],
+          "passage solitaire : l'article ordinaire et l'alerte de source attendent, l'officiel passe (%s)" % [a["title"] for a in off_envoyes])
+    import tableau_discord, alerte_panne
+    appels = []
+    anciens3 = (tableau_discord.met_a_jour, alerte_panne.lis_historique, discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL)
+    try:
+        tableau_discord.met_a_jour = lambda *a, **k: appels.append("tableau") or ({}, "créé")
+        alerte_panne.lis_historique = lambda *a, **k: appels.append("historique") or []
+        discord_notify.send_discord_with_retry = lambda *a, **k: appels.append("alerte envoyée") or True
+        discord_notify.DISCORD_WEBHOOK_URL = "https://discord.test/webhook/secret"
+        ancien_env = {k: _os.environ.get(k) for k in ("DISCORD_WEBHOOK_URL", "JALONS_FILE", "SEULEMENT_OFFICIELS")}
+        _os.environ["DISCORD_WEBHOOK_URL"] = "https://discord.test/webhook/secret"
+        _os.environ["JALONS_FILE"] = chemin_s
+        _os.environ["SEULEMENT_OFFICIELS"] = "0"
+        with contextlib.redirect_stdout(io.StringIO()):
+            tableau_discord.main()
+            alerte_panne.main(["succes"], env={"JALONS_FILE": chemin_s, "GITHUB_TOKEN": "x"})
+        solitaire_ok = appels == []
+        _os.environ["JALONS_FILE"] = chemin_j     # passage ordinaire : le tableau reprend, l'alerte aussi
+        with contextlib.redirect_stdout(io.StringIO()):
+            tableau_discord.main()
+        ordinaire_ok = "tableau" in appels
+        with contextlib.redirect_stdout(io.StringIO()):
+            alerte_panne.main(["echec"], env={"JALONS_FILE": chemin_s, "GITHUB_TOKEN": "x"})
+    finally:
+        tableau_discord.met_a_jour, alerte_panne.lis_historique, discord_notify.send_discord_with_retry, discord_notify.DISCORD_WEBHOOK_URL = anciens3
+        for k, v in ancien_env.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+    check(solitaire_ok, "passage solitaire : le tableau du jour n'est pas créé et l'alerte « est reparti » ne part pas (%s)" % appels)
+    check(ordinaire_ok, "hors passage solitaire, le tableau du jour est créé comme avant")
+    check("alerte envoyée" in appels or "historique" in appels, "une alerte de PANNE (echec) passe toujours, même au passage solitaire (%s)" % appels)
+    wf2 = open(".github/workflows/update-feeds.yml", encoding="utf-8").read()
+    tab = wf2[wf2.index("name: Tableau du jour Discord"):wf2.index("name: Retenir le tableau du jour")]
+    rep = wf2[wf2.index("name: Alerter Discord (retour à la normale)"):]
+    check("JALONS_FILE:" in tab and "JALONS_FILE:" in rep, "le workflow transmet JALONS_FILE au tableau du jour et à l'alerte « est reparti »")
+
 
 def test_couleur_du_compteur():
     """La couleur de barre suit les paliers du compteur de l'app, lus dans la page."""
