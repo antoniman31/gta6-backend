@@ -28,7 +28,7 @@
 //     interceptée ; les autres pages passent sans que le service worker y touche.
 // Le changement de nom purge aussi, sur les téléphones, une copie déjà polluée.
 // v118 (16/11/2026) : docs/index.html change (le lien « Liste de contrôle du jour J » des Réglages).
-const CACHE_NAME = "gta6watch-shell-v133";
+const CACHE_NAME = "gta6watch-shell-v135";
 const SHELL_URL = "./index.html";
 
 // La navigation est-elle celle de l'APP (la racine de la portée ou index.html) ? Les autres pages du dossier (repetition.html,
