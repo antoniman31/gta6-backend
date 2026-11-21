@@ -3551,6 +3551,10 @@ def test_vignette_ouvre_larticle(nav, url):
                if r.request.resource_type == "image" else r.continue_())
     page.goto(url, wait_until="load")
     page.wait_for_selector("#feed", state="attached")
+    # RATTRAPAGE COUPÉ (21/11/2026) : sans cette ligne, l'historique complet arrive PENDANT le contrôle (mesuré : de 300 à 16 870 articles), l'app redessine le fil, la carte marquée plus bas
+    # perd son marqueur `data-test-vignette` et le clic ne trouve plus rien. D'où trois vérifications rouges sur certains passages de CI (#318 le 21/11, #320 le 21/11) et vertes sur
+    # d'autres, sans qu'une ligne de l'app ait changé : une COURSE entre le clic et la fin du chargement. Les autres contrôles du dossier posent déjà cette ligne.
+    page.evaluate("rattrapageLance = true;")
     page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
     page.evaluate("async () => { await checkFromBackend(false); }")
     page.wait_for_timeout(300)
