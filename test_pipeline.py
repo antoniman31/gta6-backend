@@ -2870,9 +2870,14 @@ def _verifie_flux_sans_source_fantome(chemin, fetch_feeds):
     # afficherait éternellement une ligne tarie pour une source qui n'est
     # plus interrogée.
     ids = {f["id"] for f in fetch_feeds.FEEDS}
+    # Le suivi des sources muettes est un DICTIONNAIRE : `true` publié par la PR M (panne du 21/11/2026) faisait planter ce contrôle sans dire pourquoi, puis le robot.
+    check(isinstance(d.get("sources_silence", {}), dict),
+          "%s : sources_silence est un dictionnaire (valeur lue : %r)" % (nom, d.get("sources_silence")))
     for cle in ("sources_health", "sources_silence", "sources_entries_history",
                 "sources_declining", "feed_http_state"):
         valeurs = d.get(cle) or []
+        if not isinstance(valeurs, (list, dict)):
+            continue                                   # déjà signalé ci-dessus, sans planter le contrôle
         restants = ([s["id"] for s in valeurs if s["id"] not in ids]
                     if isinstance(valeurs, list)
                     else [k for k in valeurs if k not in ids])
