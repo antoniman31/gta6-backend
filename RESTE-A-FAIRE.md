@@ -25,7 +25,8 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Après la sortie, l'agenda est caché** (07/11/2026, choix d'Antoni) : son code et `docs/agenda.json` restent pour de futurs DLC ou mises à jour, quand on aura des dates officielles. À la sortie, c'est aussi la fin des dodos et de la barre de progression de la fenêtre du compteur ; les compteurs repartent à l'endroit (mois, puis années quand il y en a besoin). Rien à faire, à vérifier le 19/11 à 00:00.
 
 - **`source_link` : fait le 10/11/2026** (trois jours au lieu de sept ; la suppression complète du 27/10 est abandonnée). Le fil publié ne s'allège qu'au passage suivant du robot : mesuré avec la vraie fonction, `feed.json` compressé de 1 044 à 876 Ko (−16,1 %). **Constaté le 16/11/2026** : 1 191 Ko compressés pour 7 707 articles, soit 155 octets par article contre 181 avant (1 044 Ko pour 5 754 articles le 10/11) : −15 %, l'allègement tient.
-- **Le mode sans spoiler** après la sortie : lui demander s'il veut l'éteindre.
+- **CI de `main` rouge depuis la sortie (constaté le 21/11/2026)** : 14 contrôles navigateur échouent sur `main` sans aucune PR, parce que la date réelle est passée après le 19/11 (compteur « Depuis la sortie » au lieu de « Avant la sortie », dodos et barre, carte NOUVEAU, contraste d'un article lu) et que la frise des jalons porte du texte à **11 px** (règle : 12 px minimum) à 320 et 390 px. À traiter dans une PR à part : fixer l'horloge des contrôles qui supposent l'avant-sortie, et corriger les 11 px. Aucun contrôle n'est affaibli.
+- **Trou dans le journal des incidents, du 18/11 au 21/11/2026** : le bug de la PR M a fait repartir le suivi des sources de zéro à chaque passage. Rejoué sur les 74 passages : 275 épisodes clos (médiane 2 h, plus long 8 h, aucun alerté) dont 90 auraient été retenus par le journal ; aucune alerte « tombée » ou « retour » perdue. Non reconstitué à la main.
 
 ## 2 bis. Lot du 11/11/2026 : effets du jour J (codé, à regarder sur le téléphone)
 
@@ -72,6 +73,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Sources** : on n'en ajoute ni n'en retire jamais sans instruction. Les quatre requêtes du 03/11 (patchs EN, serveurs EN et FR, streamers) sont un filet pour le jour J : deux articles utiles en
   quatorze jours avant leur ajout. `rockstar-support` n'a apporté aucun article exclusif ; elle reste.
 - **Connus, mesurés, sans suite** : les deux flux YouTube échouent ensemble environ 27 % des passages ; JeuxActu est en erreur depuis le 21/10 sans rien coûter ; Reddit r/GTA6 est retiré.
+- **Le mode sans spoiler reste ALLUMÉ après la sortie ; c'est Antoni qui décide quand l'enlever** (décidé le 19/11/2026). Ne plus lui poser la question.
 - **Rien de payant** (pas de résumé par IA). Les noms de modèle sont autorisés depuis le 16/11/2026 (règle commune des dépôts).
 
 ## 4 bis. Zones tactiles à 48 px et CI à trois niveaux (faits le 16/11/2026, avant la sortie, choix d'Antoni)
