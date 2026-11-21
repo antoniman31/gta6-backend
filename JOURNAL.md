@@ -13107,3 +13107,7 @@ Formulation d'Antoni : un plan détaillé (étapes, fichiers touchés, approche)
 ### Règles communes mises à jour — 21/11/2026
 
 Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 98885d3), par la propagation automatique.
+
+### Règles communes mises à jour — 21/11/2026
+
+Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 400626b), par la propagation automatique.
