@@ -17,6 +17,7 @@ Décidées par Antoni le 16/11/2026, mises à jour le 21/11/2026. Les règles pr
 - **Robustesse** : une écriture qui peut échouer (stockage, réseau) se voit à l'écran ; toute donnée venue d'un fichier, du stockage ou du réseau est une entrée non fiable. Exporter les données avant toute opération destructive.
 - **Versions et API** : vérifier dans la doc officielle les versions à jour avant d'utiliser une librairie ou une API ; jamais de code déprécié sans le signaler.
 - **Contradiction** : si une demande contredit une règle de ce fichier, le signaler avant d'appliquer.
+- **Règles à jour** : avant chaque nouvelle tâche, `git fetch origin`, puis relire le bloc « Règles communes » de `CLAUDE.md` sur la branche par défaut (`git show origin/<branche par défaut>:CLAUDE.md`) ; s'il a changé, appliquer la nouvelle version et le dire en une phrase.
 - **Écrit** : commentaires en français qui disent **pourquoi** ; aucun chiffre écrit sans l'avoir mesuré ; ne jamais écrire « ça marche » pour ce qui n'a pas tourné sur l'appareil réel.
 - **Suivi, trois fichiers à la racine** : `README.md` dit l'**état actuel** ; `JOURNAL.md` garde l'**histoire** (chaque lot s'y ajoute en fin de fichier, sous `### Titre — jj/mm/aaaa`) ; `RESTE-A-FAIRE.md` dit **ce qui reste**, mis à jour à chaque lot. Un fichier de suivi retiré part en entier dans `JOURNAL.md`, sous « Ancien X.md ».
 
