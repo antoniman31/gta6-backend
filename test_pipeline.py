@@ -771,8 +771,9 @@ def test_jalons_du_compte_a_rebours():
     check(discord_notify.PAUSE_APRES_SORTI_S == 180, "la pause après « sorti » est de 3 minutes (choix d'Antoni)")
     src_f = open("fetch_feeds.py", encoding="utf-8").read()
     corps = src_f[src_f.index("jalons_a_annoncer, jalons_envoyes = prepare_jalons("):]
-    check("silence = SILENCE_NOCTURNE\n" in corps and "passage_solitaire" not in src_f,
-          "fetch_feeds ne reporte plus les articles au passage « sorti » : le silence reste celui de la pause nocturne")
+    check("                                 SILENCE_NOCTURNE)" in corps and "a_notifier, SILENCE_NOCTURNE)" in corps and "passage_solitaire" not in src_f,
+          "fetch_feeds ne reporte plus les articles au passage « sorti » : seule la pause nocturne (SILENCE_NOCTURNE) retient le récapitulatif et RockstarMag, sans variable intermédiaire "
+          "(celle de la PR M portait le nom `silence` et écrasait le suivi des sources : panne du 21/11/2026)")
     art_off = {"title": "Annonce - Rockstar Games", "link": "https://r.example/a", "source": "Rockstar Games", "official": True, "date": "2026-11-18T23:00:30+00:00", "sources": 1}
     art_ord = {"title": "Article ordinaire - Média", "link": "https://m.example/o", "source": "Média", "official": False, "date": "2026-11-18T23:00:20+00:00", "sources": 1}
     chemin_s = _os.path.join(dossier, "jalons_sorti.json")
@@ -2869,9 +2870,14 @@ def _verifie_flux_sans_source_fantome(chemin, fetch_feeds):
     # afficherait éternellement une ligne tarie pour une source qui n'est
     # plus interrogée.
     ids = {f["id"] for f in fetch_feeds.FEEDS}
+    # Le suivi des sources muettes est un DICTIONNAIRE : `true` publié par la PR M (panne du 21/11/2026) faisait planter ce contrôle sans dire pourquoi, puis le robot.
+    check(isinstance(d.get("sources_silence", {}), dict),
+          "%s : sources_silence est un dictionnaire (valeur lue : %r)" % (nom, d.get("sources_silence")))
     for cle in ("sources_health", "sources_silence", "sources_entries_history",
                 "sources_declining", "feed_http_state"):
         valeurs = d.get(cle) or []
+        if not isinstance(valeurs, (list, dict)):
+            continue                                   # déjà signalé ci-dessus, sans planter le contrôle
         restants = ([s["id"] for s in valeurs if s["id"] not in ids]
                     if isinstance(valeurs, list)
                     else [k for k in valeurs if k not in ids])
@@ -11824,6 +11830,40 @@ def test_apercu_de_lien_et_couverture():
         check((l, h) == (1280, 320), "la couverture fait 1280 x 320 (%d x %d)" % (l, h))
 
 
+def test_le_suivi_des_sources_muettes_reste_un_dictionnaire():
+    """Panne du 21/11/2026 : la PR M avait écrasé `silence` (le suivi des sources muettes) par un booléen, et feed.json a porté `true`.
+
+    Du 18/11 au 21/11, `sources_silence` valait `false` (lu comme `{}`, donc des chronomètres remis à zéro sans bruit), puis `true` quand la pause de nuit est revenue :
+    le passage de 02h00 (Paris) a planté sur `.get` d'un booléen et plus rien n'a été publié. Aucun contrôle ne regardait ce que main() écrit dans cette clé.
+    """
+    print("\n[panne 21/11] le suivi des sources muettes reste un dictionnaire")
+    import ast
+    import fetch_feeds as ff
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    principal = next(n for n in ast.parse(src).body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    affectations = []
+    for n in ast.walk(principal):
+        cibles = n.targets if isinstance(n, ast.Assign) else ([n.target] if isinstance(n, (ast.AugAssign, ast.AnnAssign)) else [])
+        for c in cibles:
+            if any(isinstance(m, ast.Name) and m.id == "silence" for m in ast.walk(c)):
+                affectations.append(n.lineno)
+    check(len(affectations) == 1,
+          "main() n'affecte `silence` qu'UNE fois (le suivi rendu par suivre_sources_muettes), jamais un booléen par-dessus (lignes : %s)" % affectations)
+    check('"sources_silence": silence,' in src, "et c'est bien ce suivi qui est publié sous `sources_silence`")
+    sain = {"a": {"depuis": "2026-11-01T00:00:00+00:00", "succes": 0, "alertee": True}}
+    check(ff.lis_silence_precedent({"sources_silence": sain}) == sain, "un vrai suivi est relu tel quel")
+    douteux = (True, False, None, 0, 1, "oui", ["a"])
+    check(all(ff.lis_silence_precedent({"sources_silence": v}) == {} for v in douteux),
+          "une valeur qui n'est pas un dictionnaire (true, false, null, 0, 1, texte, liste) repart d'un suivi vide au lieu de planter")
+    check(ff.lis_silence_precedent({}) == {} and ff.lis_silence_precedent(None) == {}, "une clé absente ou un fichier vide aussi")
+    try:
+        suivi, alertes = ff.suivre_sources_muettes([{"id": "a", "status": "ok", "name": "A"}], ff.lis_silence_precedent({"sources_silence": True}))
+        plante = None
+    except Exception as e:                         # le contrôle doit dire ce qui casse, pas casser lui-même
+        suivi, alertes, plante = None, None, repr(e)
+    check(plante is None and isinstance(suivi, dict), "avec `true` dans feed.json, le suivi des sources ne plante plus (%s)" % plante)
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -11983,6 +12023,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_ce_que_le_robot_publie_est_bien_commite,
            test_icones_de_lapp,
            test_alerte_panne_discord,
+           test_le_suivi_des_sources_muettes_reste_un_dictionnaire,
            test_readme_annonce_le_bon_nombre):
     fn()
 

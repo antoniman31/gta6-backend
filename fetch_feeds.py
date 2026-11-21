@@ -2986,6 +2986,16 @@ def _chrono_precedent(valeur, maintenant):
     return None
 
 
+def lis_silence_precedent(stored):
+    """Le suivi des sources muettes du passage précédent, toujours sous forme de dictionnaire.
+
+    Ce qui vient de feed.json est une entrée non fiable : du 18/11/2026 (PR M) au 21/11, le robot y a écrit `false`, puis `true` la nuit, et le passage suivant a planté sur
+    `.get` d'un booléen (panne du 21/11 à 02h00 Paris). Tout ce qui n'est pas un dictionnaire repart d'un suivi vide : le robot le réécrit juste au passage même.
+    """
+    valeur = (stored or {}).get("sources_silence")
+    return valeur if isinstance(valeur, dict) else {}
+
+
 def suivre_sources_muettes(health, silence_precedent, maintenant=None):
     """Suit DEPUIS QUAND chaque source ne rapporte plus rien.
 
@@ -4178,7 +4188,7 @@ def main():
     existing_items = stored.get("items", [])
     # Validateurs HTTP du passage précédent, par source.
     http_state = stored.get("feed_http_state", {}) or {}
-    silence_precedent = stored.get("sources_silence", {}) or {}
+    silence_precedent = lis_silence_precedent(stored)
     entrees_precedentes = stored.get("sources_entries_history", {}) or {}
     is_first_run = len(existing_items) == 0
     print(f"Historique chargé : {len(existing_items)} article(s) déjà connus" + (" (premier lancement)" if is_first_run else ""))
@@ -4523,14 +4533,14 @@ def main():
     jalons_a_annoncer, jalons_envoyes = prepare_jalons(
         stored, all_items, datetime.now(timezone.utc))
     depose_jalons(jalons_a_annoncer)
-    silence = SILENCE_NOCTURNE
-
+    # ATTENTION (panne du 21/11/2026) : ici `silence` est le SUIVI DES SOURCES MUETTES (calculé plus haut, écrit dans feed.json sous `sources_silence`). Ne jamais le
+    # réaffecter : la PR M l'avait écrasé par SILENCE_NOCTURNE, un booléen, et feed.json s'est mis à porter `true` puis a fait planter le passage suivant.
     attente = reporte_ou_annonce(attente, a_notifier, promus,
                                  officiels_du_run, sommet_du_run,
-                                 silence)
+                                 SILENCE_NOCTURNE)
 
     mag_a_annoncer, mag_envoyes = feed_store.prepare_rockstarmag(
-        stored, all_items, a_notifier, silence)
+        stored, all_items, a_notifier, SILENCE_NOCTURNE)
     depose_rockstarmag(mag_a_annoncer)
 
     bilan_a_annoncer, bilan_envoye_le = feed_store.prepare_bilan(
