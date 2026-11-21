@@ -13094,3 +13094,8 @@ Capture d'Antoni sur son S26, photo de fond allumée : le titre de jour (« AUJO
 - **Non vérifié** : le rendu sur le S26.
 - **Cinquième cause, trouvée sur la CI de la PR #320 : le contrôle « vignette » (3 vérifications)** : il échouait sur certains passages de CI (PR #318 puis #320) et passait sur d'autres, sans qu'une ligne de l'app change. Cause prouvée, pas « un flake » : le contrôle marque une carte (`data-test-vignette`) puis clique ; si l'historique complet arrive entre les deux (mesuré sur la vraie page : de 300 à 16 870 articles), l'app redessine le fil, le marqueur disparaît et le clic ne trouve plus rien. Reproduit à l'identique (mêmes 3 vérifications, même adresse `big-n.fr`) en attendant la fin de l'historique avant le clic. Réparation : `rattrapageLance = true` avant le chargement, comme les autres contrôles du dossier ; vu passer 9/9. Les passages de CI verts de ce contrôle depuis le 06/10 étaient donc une course gagnée.
 
+### Règles communes : trois changements — 21/11/2026
+
+Bloc commun de `CLAUDE.md` mis à jour (décision d'Antoni) : deux règles en plus et une règle précisée, « Versions et API » (vérifier les
+versions dans la doc officielle, signaler tout code déprécié) et « Contradiction » (signaler une demande qui contredit une
+règle avant de l'appliquer) ; « Proposer d'abord » demande désormais un plan détaillé et des suggestions avant tout code, et un visuel (maquette HTML ou schéma ASCII) pour une fonctionnalité ou un design ; « les 8 dépôts » devient « tous les dépôts d'Antoni, existants et futurs », avec l'arrivée de game_timer.
