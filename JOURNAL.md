@@ -13103,3 +13103,7 @@ règle avant de l'appliquer) ; « Proposer d'abord » demande désormais un plan
 ### Règles communes : « Proposer d'abord » reformulée — 21/11/2026
 
 Formulation d'Antoni : un plan détaillé (étapes, fichiers touchés, approche) et des suggestions d'amélioration avant tout changement, puis l'« ok » ; pour une fonctionnalité ou un design, proposer sans coder, avec questions et visuel (maquette HTML sans canvas ou schéma ASCII). Le bloc est identique dans tous les dépôts et dans le skill `regles-communes-depots`.
+
+### Règles communes mises à jour — 21/11/2026
+
+Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 98885d3), par la propagation automatique.
