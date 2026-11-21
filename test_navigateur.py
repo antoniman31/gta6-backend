@@ -10403,6 +10403,12 @@ def test_le_service_worker_coque(nav, url):
         ("essai-confettis.html hors ligne : pas de coque à la place", P + "essai-confettis.html", "navigate", "panne", True, dict(intercepte=False, puts=0)),
         ("une requête qui n'est pas une navigation (feed.json)", P + "index.html", "cors", 200, True, dict(intercepte=False, puts=0)),
         ("une autre origine, même chemin", "https://autre.test/gta6-backend/", "navigate", 200, True, dict(intercepte=False, puts=0)),
+        # Les polices servies par le site (21/11/2026) : le cache d'abord, le réseau en secours, mis en cache s'il répond.
+        ("une police en cache : servie depuis le cache, sans réseau", P + "fonts/inter-latin-wght-normal.woff2", "cors", "panne", True, dict(intercepte=True, texte="COPIE", status=200, puts=0)),
+        ("une police pas encore en cache : le réseau, puis mise en cache", P + "fonts/jetbrains-mono-latin-wght-normal.woff2", "cors", 200, False, dict(intercepte=True, texte="RESEAU", status=200, puts=1)),
+        ("une police en 404 : passe telle quelle, jamais mise en cache", P + "fonts/inter-latin-wght-normal.woff2", "cors", 404, False, dict(intercepte=True, texte="RESEAU", status=404, puts=0)),
+        ("un autre fichier de fonts/ n'est pas intercepté", P + "fonts/OFL.txt", "cors", 200, True, dict(intercepte=False, puts=0)),
+        ("la même police sur une autre origine n'est pas interceptée", "https://autre.test/gta6-backend/fonts/inter-latin-wght-normal.woff2", "cors", 200, True, dict(intercepte=False, puts=0)),
     ]
     res = page.evaluate("""async ([src, cas, portee]) => {
         const sorties = [];
@@ -10428,6 +10434,34 @@ def test_le_service_worker_coque(nav, url):
         ok = r["intercepte"] == att["intercepte"] and r["puts"] == att["puts"] \
              and all(r[k] == att[k] for k in ("texte", "status") if k in att)
         check(ok, "[sw coque] %s (%s)" % (nom, r))
+    ctx.close()
+
+
+def test_polices_servies_par_le_site(nav, url):
+    """Les deux polices viennent du site et rien n'est demandé à un autre site (21/11/2026, règle « rien qui piste »).
+
+    Avant le 21/11/2026, la page importait ses polices de fonts.googleapis.com : chaque ouverture appelait Google.
+    """
+    print("\n[polices] Inter et JetBrains Mono chargées depuis le site, aucune requête vers un autre site")
+    base = url.rsplit("/", 1)[0]
+    ctx = nav.new_context(viewport={"width": 390, "height": 800}); page = ctx.new_page()
+    origine = base.split("/")[0] + "//" + base.split("/")[2]
+    ailleurs, polices = [], []
+    def note(req):
+        if not req.url.startswith(origine) and not req.url.startswith(("data:", "blob:", "about:")):
+            ailleurs.append(req.url[:80])
+        if req.resource_type == "font":
+            polices.append(req.url.rsplit("/", 1)[-1])
+    page.on("request", note)
+    page.goto(base + "/index.html", wait_until="load"); page.wait_for_selector("#feed", state="attached")
+    etat = page.evaluate("""async () => { await document.fonts.ready;
+        return { inter: document.fonts.check('16px "Inter"'), mono: document.fonts.check('700 16px "JetBrains Mono"'),
+                 chargees: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/["']/g, '')) }; }""")
+    check(not ailleurs, "[polices] aucune requête vers un autre site à l'ouverture (%s)" % ailleurs[:3])
+    check("JetBrains Mono" in etat["chargees"] and "Inter" in etat["chargees"],
+          "[polices] les deux polices sont réellement chargées (%s)" % etat["chargees"])
+    check(sorted(set(polices)) == ["inter-latin-wght-normal.woff2", "jetbrains-mono-latin-wght-normal.woff2"],
+          "[polices] seules les deux polices du site sont téléchargées, chacune une fois servie (%s)" % polices)
     ctx.close()
 
 
@@ -10821,6 +10855,7 @@ CONTROLES = [
     test_repetition_de_minuit,
     test_liste_du_jour_j,
     test_le_service_worker_coque,
+    test_polices_servies_par_le_site,
     test_le_service_worker_en_vrai,
     test_spoiler_debut_de_mot,
     test_agenda_sortie_du_19,

@@ -55,10 +55,20 @@
   }catch(e){ /* le défaut sombre de la feuille de style vaut */ }
 })();
 </script>
+<!-- La police du compte à rebours, en haut de page : préchargée pour que les chiffres ne changent pas de police à
+     l'affichage. crossorigin est obligatoire, même sur le même site : sans lui, le préchargement est jeté et refait. -->
+<link rel="preload" href="fonts/jetbrains-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  /* Polices servies par le site (21/11/2026) : jusque-là importées de fonts.googleapis.com, elles donnaient l'adresse IP
+     d'Antoni à Google à chaque visite et manquaient hors ligne (règle « rien qui piste »). Fichiers variables Fontsource
+     5.3.0, jeu « latin » (le même que celui que Google servait, français et « œ » compris), licence OFL dans fonts/OFL.txt :
+     un fichier couvre toutes les graisses utilisées (400 à 800). Mesuré : Inter 48 256 o, JetBrains Mono 40 404 o. */
+  @font-face{font-family:'Inter'; font-style:normal; font-display:swap; font-weight:100 900;
+    src:url("fonts/inter-latin-wght-normal.woff2") format("woff2"); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+  @font-face{font-family:'JetBrains Mono'; font-style:normal; font-display:swap; font-weight:100 800;
+    src:url("fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2"); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
 
   :root{
     --bg: #0a0d0f;

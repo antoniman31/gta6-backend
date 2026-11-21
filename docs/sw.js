@@ -28,8 +28,23 @@
 //     interceptée ; les autres pages passent sans que le service worker y touche.
 // Le changement de nom purge aussi, sur les téléphones, une copie déjà polluée.
 // v118 (16/11/2026) : docs/index.html change (le lien « Liste de contrôle du jour J » des Réglages).
-const CACHE_NAME = "gta6watch-shell-v141";
+// v142 (21/11/2026) : les polices quittent Google Fonts pour docs/fonts/ ; le service worker les précache et les sert
+// depuis le cache, pour que la page hors ligne ait enfin ses vraies polices (avant, elle retombait sur celles du système).
+const CACHE_NAME = "gta6watch-shell-v142";
 const SHELL_URL = "./index.html";
+// Les noms ne changent pas d'une version à l'autre : une nouvelle police impose un nouveau CACHE_NAME, qui purge l'ancienne.
+const POLICES = ["./fonts/inter-latin-wght-normal.woff2", "./fonts/jetbrains-mono-latin-wght-normal.woff2"];
+
+// La requête vise-t-elle une police du site ? Comparée au chemin complet, dans la portée, jamais à une autre origine.
+function estUnePolice(requete){
+  try{
+    const portee = (self.registration && self.registration.scope) || self.location.href;
+    const u = new URL(requete.url);
+    return POLICES.some((p) => { const v = new URL(p, portee); return u.origin === v.origin && u.pathname === v.pathname; });
+  }catch(e){
+    return false;
+  }
+}
 
 // La navigation est-elle celle de l'APP (la racine de la portée ou index.html) ? Les autres pages du dossier (repetition.html,
 // essai-confettis.html) ne sont ni mises en cache ni remplacées par la coque.
@@ -66,7 +81,11 @@ function retireAncienAbonnementPush(){
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.add(SHELL_URL))
+    caches.open(CACHE_NAME).then((cache) =>
+      // La coque d'abord, obligatoire. Les polices ensuite, sans bloquer l'installation si l'une manque : la page vit
+      // très bien avec les polices du système.
+      cache.add(SHELL_URL).then(() => cache.addAll(POLICES).catch(() => {}))
+    )
   );
   self.skipWaiting();
 });
@@ -103,6 +122,18 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(() => caches.match(SHELL_URL))
+    );
+  }
+  // Les polices : le cache d'abord (elles ne changent qu'avec CACHE_NAME), le réseau en secours, mis en cache s'il répond.
+  else if(estUnePolice(event.request)){
+    event.respondWith(
+      caches.match(event.request).then((copie) => copie || fetch(event.request).then((response) => {
+        if(response.ok){
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
+        return response;
+      }))
     );
   }
   // Toutes les autres requêtes (feed.json, favicons, etc.) passent
