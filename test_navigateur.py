@@ -1844,6 +1844,8 @@ def test_fenetre_du_compteur(nav, url):
         etiq = "[%dx%d, %s]" % (largeur, hauteur, schema)
         ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, color_scheme=schema,
                               timezone_id="Europe/Paris", reduced_motion="reduce")
+        # Horloge figée AVANT la sortie (21/11/2026) : la barre de progression qu'on mesure ici n'existe plus depuis le 19/11 ; le bloc suivant mesure la fenêtre APRÈS la sortie.
+        ctx.clock.install(time="2026-11-12T10:00:00+01:00")
         ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
         page = ctx.new_page()
         erreurs = []
@@ -1873,6 +1875,31 @@ def test_fenetre_du_compteur(nav, url):
               "%s la barre de progression est rectangulaire (%s)" % (etiq, m["barre"]))
         check(m["reste"] > 0.5, "%s la part restante de la barre se voit (%.1f px)" % (etiq, m["reste"]))
         check(not m["deborde"] and not erreurs, "%s rien ne déborde, aucune erreur JavaScript" % etiq)
+        ctx.close()
+
+    # LA FENÊTRE APRÈS LA SORTIE (21/11/2026) : centrée, quatre coins arrondis, rien ne déborde, sans barre de progression.
+    for largeur, hauteur, schema in ((320, 640, "dark"), (390, 844, "light")):
+        etiq = "[après la sortie %dx%d, %s]" % (largeur, hauteur, schema)
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, color_scheme=schema, timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.clock.install(time="2026-11-21T12:00:00+01:00")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page()
+        erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector("#countdown")
+        page.click("#countdown")
+        page.wait_for_selector("#compteurOverlay .sheet-panel", state="visible")
+        page.wait_for_timeout(300)
+        m = page.evaluate("""() => {
+            const p = document.querySelector('#compteurOverlay .sheet-panel'), r = p.getBoundingClientRect(), cs = getComputedStyle(p);
+            return {dx: Math.abs((r.left + r.right) / 2 - innerWidth / 2), dy: Math.abs((r.top + r.bottom) / 2 - innerHeight / 2),
+                    dedans: r.top >= 0 && innerHeight - r.bottom >= 0 && r.left >= 0 && innerWidth - r.right >= 0,
+                    rayons: [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomLeftRadius, cs.borderBottomRightRadius],
+                    barre: !!document.querySelector('#compteurOverlay .compteur-barre'), deborde: document.documentElement.scrollWidth > innerWidth}; }""")
+        check(m["dx"] <= 1.0 and m["dy"] <= 1.0 and m["dedans"], "%s la fenêtre est centrée et tient dans l'écran (écarts %.1f / %.1f px)" % (etiq, m["dx"], m["dy"]))
+        check(len(set(m["rayons"])) == 1 and m["rayons"][0] != "0px", "%s les quatre coins sont arrondis (%s)" % (etiq, m["rayons"]))
+        check(not m["barre"] and not m["deborde"] and not erreurs, "%s pas de barre de progression, rien ne déborde, aucune erreur JavaScript" % etiq)
         ctx.close()
 
     # LES ÉQUIVALENCES en cartes à icônes : le pire total (151 millions de secondes, à 320 px) tient dans sa carte.
@@ -3524,6 +3551,10 @@ def test_vignette_ouvre_larticle(nav, url):
                if r.request.resource_type == "image" else r.continue_())
     page.goto(url, wait_until="load")
     page.wait_for_selector("#feed", state="attached")
+    # RATTRAPAGE COUPÉ (21/11/2026) : sans cette ligne, l'historique complet arrive PENDANT le contrôle (mesuré : de 300 à 16 870 articles), l'app redessine le fil, la carte marquée plus bas
+    # perd son marqueur `data-test-vignette` et le clic ne trouve plus rien. D'où trois vérifications rouges sur certains passages de CI (#318 le 21/11, #320 le 21/11) et vertes sur
+    # d'autres, sans qu'une ligne de l'app ait changé : une COURSE entre le clic et la fin du chargement. Les autres contrôles du dossier posent déjà cette ligne.
+    page.evaluate("rattrapageLance = true;")
     page.evaluate("settings.backendUrl = '%s/feed.json';" % base)
     page.evaluate("async () => { await checkFromBackend(false); }")
     page.wait_for_timeout(300)
@@ -4512,8 +4543,12 @@ def test_panneau_du_compteur(nav, url):
     """
     print("\n[compteur] le détail derrière le compte à rebours")
 
+    # HORLOGE FIGÉE AU 12/11/2026 (21/11/2026, Antoni : « le jeu est déjà sorti »). Ce contrôle tournait à l'heure RÉELLE : depuis le 19/11 le panneau dit « Depuis la sortie »,
+    # sans dodos ni barre, et sept de ses vérifications d'avant-sortie échouaient sans que le code ait changé. Les vérifications d'avant-sortie gardent leur horloge d'avant ; le bloc
+    # d'APRÈS la sortie, plus bas, mesure ce que l'app affiche vraiment maintenant.
     ctx = nav.new_context(viewport={"width": 390, "height": 850},
                           timezone_id="Europe/Paris")
+    ctx.clock.install(time="2026-11-12T10:00:00+01:00")
     page = ctx.new_page()
     err = []
     page.on("pageerror", lambda e: err.append(str(e)))
@@ -4698,10 +4733,37 @@ def test_panneau_du_compteur(nav, url):
     check(not err, "[compteur] aucune erreur JavaScript (%s)" % err[:1])
     ctx.close()
 
+    # APRÈS LA SORTIE (le 21/11/2026 à midi : J+2). Mesuré tel que l'app l'affiche : plus de dodos, plus de barre, le décompte porte « depuis la sortie ».
+    ctx = nav.new_context(viewport={"width": 390, "height": 850}, timezone_id="Europe/Paris")
+    ctx.clock.install(time="2026-11-21T12:00:00+01:00")
+    page = ctx.new_page()
+    err2 = []
+    page.on("pageerror", lambda e: err2.append(str(e)))
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    ap = page.evaluate("""() => {
+        ouvreCompteur();
+        const t = document.getElementById('compteurContenu').textContent;
+        const g = document.querySelector('#compteurContenu .tuile-panneau .countdown');
+        return {titre: document.getElementById('titreCompteur').textContent, phrase: g ? g.getAttribute('aria-label') : null,
+                dodos: /dodo/.test(t), barre: !!document.querySelector('#compteurContenu .compteur-barre'),
+                note: (document.querySelector('.compteur-note') || {textContent: ''}).textContent.trim()};
+    }""")
+    check(ap["titre"] == "Depuis la sortie", "[compteur après la sortie] il s'intitule « Depuis la sortie » (« %s »)" % ap["titre"])
+    check("depuis la sortie" in (ap["phrase"] or "") and "J+2" in (ap["phrase"] or ""),
+          "[compteur après la sortie] le groupe de tuiles dit « depuis la sortie » et le jour J+2 (« %s »)" % ap["phrase"])
+    check(not ap["dodos"] and not ap["barre"],
+          "[compteur après la sortie] plus de dodos à compter ni de barre de progression (dodos %s, barre %s)" % (ap["dodos"], ap["barre"]))
+    check(ap["note"] == "Temps écoulé depuis la sortie du jeu, le 19/11/26",
+          "[compteur après la sortie] la note dit d'où part le décompte : la sortie du 19/11/26 (« %s »)" % ap["note"])
+    check(not err2, "[compteur après la sortie] aucune erreur JavaScript (%s)" % err2[:1])
+    ctx.close()
+
     # LA CIBLE TACTILE, des deux côtés. Vers le bas, un bouton de l'en-tête
     # commence 14 px plus bas à 390 px : la zone ne doit PAS l'atteindre.
     for largeur in (320, 390):
         ctx = nav.new_context(viewport={"width": largeur, "height": 850})
+        ctx.clock.install(time="2026-11-12T10:00:00+01:00")      # avant la sortie : voir le commentaire en tête de ce contrôle (21/11/2026)
         page = ctx.new_page()
         page.goto(url, wait_until="load")
         page.wait_for_selector("#feed", state="attached")
@@ -4990,6 +5052,7 @@ def test_panneau_du_compteur(nav, url):
     for theme in ("light", "dark"):
         ctx = nav.new_context(viewport={"width": 320, "height": 850},
                               timezone_id="Europe/Paris")
+        ctx.clock.install(time="2026-11-12T10:00:00+01:00")      # la barre n'existe qu'avant la sortie (21/11/2026)
         page = ctx.new_page()
         page.goto(url, wait_until="load")
         page.wait_for_selector("#feed", state="attached")
@@ -5600,33 +5663,49 @@ def test_contraste_partout(nav, url):
         # qui mettait le titre à 2,80:1 — passerait inaperçu. C'est
         # exactement le défaut pour lequel l'estompage a été relevé.
         page.evaluate("() => setTab('all')")
+        # TOUTES les cartes lues, pas la première (21/11/2026). Le contrôle lisait `backgroundColor` de la PREMIÈRE carte lue : une carte officielle ou RockstarMag a un fond
+        # transparent et un DÉGRADÉ clair (`background-image`), lu comme `rgba(0,0,0,0)` donc comme du NOIR, d'où un « 1,17:1 » qui n'existait que selon l'article tombé en tête du vrai
+        # fil (rouge sur main depuis la sortie, vert la veille). Cinquième fois que l'instrument est faux : le fond effectif remonte jusqu'à une couche opaque, et un dégradé compte
+        # pour son pire bord (le bord qui contraste le moins avec le texte).
         titre = page.evaluate("""() => {
-            const t = document.querySelector('.card.read .card-title a')
-                   || document.querySelector('.card.read .card-title');
-            if(!t) return null;
-            const lin = (c) => { c /= 255;
-              return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
-            const p = (css) => (css.match(/[\\d.]+/g) || []).map(Number);
+            const lin = (c) => { c /= 255; return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); };
             const Y = (c) => 0.2126*lin(c[0]) + 0.7152*lin(c[1]) + 0.0722*lin(c[2]);
-            let o = 1, n = t;
-            while(n && n.nodeType === 1){
-              const v = parseFloat(getComputedStyle(n).opacity);
-              if(!isNaN(v)) o *= v;
-              n = n.parentElement;
+            const rapport = (a, b) => { const x = Y(a), y = Y(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+            const nombres = (css) => (css.match(/[\\d.]+/g) || []).map(Number);
+            const couleurs = (css) => (css.match(/rgba?\\([^)]*\\)|color\\(srgb [^)]*\\)/g) || []).map(c => {
+                const v = nombres(c).slice(0, 3); return c.startsWith('color(') ? v.map(x => x * 255) : v; });
+            const fondDe = (el, texte) => {
+                for(let n = el; n && n.nodeType === 1; n = n.parentElement){
+                    const cs = getComputedStyle(n), bg = cs.backgroundColor, a = nombres(bg)[3];
+                    if(bg !== 'rgba(0, 0, 0, 0)' && (a === undefined || a > 0.99)) return nombres(bg).slice(0, 3);
+                    if(/gradient/.test(cs.backgroundImage)){
+                        const c = couleurs(cs.backgroundImage);
+                        if(c.length) return c.reduce((pire, x) => rapport(texte, x) < rapport(texte, pire) ? x : pire);
+                    }
+                }
+                return [255, 255, 255];
+            };
+            const pires = [];
+            for(const carte of document.querySelectorAll('#feed .card.read')){
+                const t = carte.querySelector('.card-title a') || carte.querySelector('.card-title');
+                if(!t) continue;
+                let o = 1, n = t;
+                while(n && n.nodeType === 1){ const v = parseFloat(getComputedStyle(n).opacity); if(!isNaN(v)) o *= v; n = n.parentElement; }
+                const av = nombres(getComputedStyle(t).color).slice(0, 3);
+                const ar = fondDe(carte, av);
+                const m = av.map((c, i) => c*o + ar[i]*(1-o));
+                pires.push({ratio: rapport(m, ar), texte: t.textContent.trim().slice(0, 30), opacite: o,
+                            genre: /official/.test(carte.className) ? 'officielle' : /card-rm/.test(carte.className) ? 'RockstarMag' : /card-majeur/.test(carte.className) ? 'majeure' : 'ordinaire'});
             }
-            const av = p(getComputedStyle(t).color).slice(0, 3);
-            const ar = p(getComputedStyle(document.querySelector('.card.read'))
-                         .backgroundColor).slice(0, 3);
-            const m = av.map((c, i) => c*o + ar[i]*(1-o));
-            const ya = Y(m), yb = Y(ar);
-            return {ratio: (Math.max(ya,yb)+0.05) / (Math.min(ya,yb)+0.05),
-                    texte: t.textContent.trim().slice(0, 30), opacite: o};
+            if(!pires.length) return null;
+            pires.sort((x, y) => x.ratio - y.ratio);
+            return Object.assign({n: pires.length, genres: [...new Set(pires.map(x => x.genre))].sort().join('+')}, pires[0]);
         }""")
-        detail = ("%.2f:1 à %.2f d'opacité, « %s »"
-                  % (titre["ratio"], titre["opacite"], titre["texte"])
+        detail = ("%d carte(s) lue(s) (%s), la pire : %.2f:1 à %.2f d'opacité, carte %s « %s »"
+                  % (titre["n"], titre["genres"], titre["ratio"], titre["opacite"], titre["genre"], titre["texte"])
                   ) if titre else "aucune carte lue trouvée"
         check(titre is not None and titre["ratio"] >= TITRE_LU_MINIMAL,
-              "[contraste %s] le titre d'un article LU reste lisible — "
+              "[contraste %s] le titre d'un article LU reste lisible, sur TOUTES les cartes lues — "
               "l'estompage ne doit pas l'emporter (%s)" % (theme, detail))
     ctx.close()
 
@@ -8500,7 +8579,14 @@ def test_rose_deuxieme_accent_et_vi_de_l_app(nav, url):
                 tab: tb ? [cs(tb).backgroundColor, cs(tb).color] : null, trait: h.backgroundImage, traitTaille: h.backgroundSize}; }"""
     for theme in ("dark", "light"):
         ctx, page, erreurs = _ouvre_effets(nav, url, VEILLE, {}, theme=theme)
-        page.evaluate("() => checkNow(true)")
+        # DES ARTICLES FABRIQUÉS, pas le vrai fil (21/11/2026). Ce contrôle chargeait le vrai fil (`checkNow`) puis marquait « nouvelles » ses deux premières cartes : depuis la sortie, les
+        # plus récentes sont souvent des « Actu majeure » (bordure rouge fixe), et le cadre « rose » du contrôle devenait rouge selon l'article tombé en tête (rouge sur main, vert la veille).
+        # Six articles ordinaires d'abord, un article MAJEUR (trois rédactions) en dernier : l'onglet « Actu majeure » a son compteur, et les deux cartes mesurées sont toujours ordinaires.
+        page.evaluate("""() => {
+            const art = (i, x) => Object.assign({title: 'Article de test numéro ' + (i + 1), link: 'https://ex.test/' + i, description: 'Résumé ' + i,
+                date: new Date(Date.now() - i * 3600e3).toISOString(), source: 'S' + (i % 3), lang: 'en'}, x || {});
+            lastItems = [0, 1, 2, 3, 4, 5].map(i => art(i)).concat([art(6, {extraSources: [{source: 'A', link: 'https://a.test/1'}, {source: 'B', link: 'https://b.test/1'}]})]);
+            lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 30; readSet = new Set(); misDeCote = new Set(); applyFilters(); }""")
         page.wait_for_selector("#feed .card", timeout=15000)
         page.wait_for_timeout(300)
         m = page.evaluate("() => { (" + PREP.strip() + ")(); return (" + LIT.strip() + ")(); }")   # un seul appel : l'app peut redessiner le fil entre deux

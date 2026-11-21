@@ -2078,7 +2078,9 @@
      position dit la durée). Les étiquettes sont ancrées sur leur repère, la dernière alignée à droite : aucune ne
      peut sortir de l'écran ni toucher sa voisine à 320 px. Le remplissage et les jalons passés suivent l'accent, donc
      le cycle ; le prochain jalon est en texte plein, les autres en gris. Une ligne de texte dit le prochain jalon. */
-  .frise-jalons{margin:10px 2px 2px; font-size:11px; line-height:1.2;}
+  /* 12 px, pas 11 (21/11/2026) : la règle du dépôt est « aucun texte sous 12 px » ; depuis la sortie, la frise est visible et le contrôle « texte 12 px » l'a relevée (20 éléments à 11 px,
+     à 320 comme à 390 px). La ligne des repères passe de 14 à 15 px pour garder la même marge sous le texte plus haut. */
+  .frise-jalons{margin:10px 2px 2px; font-size:12px; line-height:1.2;}
   .frise-jalons[hidden]{display:none;}
   .frise-jalons .fj-barre{position:relative; height:6px; border-radius:var(--r-full); background:color-mix(in srgb, var(--text-dim) 28%, transparent);}
   .frise-jalons .fj-plein{position:absolute; left:0; top:0; bottom:0; border-radius:var(--r-full); background:var(--c-fond);}
@@ -2086,7 +2088,7 @@
   html:not(.cycle-couleur) .frise-jalons .fj-plein{background:linear-gradient(90deg, var(--cycle-a), var(--cycle-b));}
   .frise-jalons .fj-repere{position:absolute; top:-3px; width:2px; height:12px; margin-left:-1px; border-radius:var(--r-full); background:var(--text-dim);}
   .frise-jalons .fj-repere.passe{background:var(--c-fond);}
-  .frise-jalons .fj-reperes{position:relative; height:14px; margin-top:4px;}
+  .frise-jalons .fj-reperes{position:relative; height:15px; margin-top:4px;}
   .frise-jalons .fj-nom{position:absolute; top:0; white-space:nowrap; color:var(--text-dim);}
   .frise-jalons .fj-nom.passe{color:var(--c-texte); font-weight:700;}
   .frise-jalons .fj-nom.prochain{color:var(--text); font-weight:700;}
