@@ -13115,3 +13115,17 @@ Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 400626
 ### Règles communes mises à jour — 21/11/2026
 
 Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 2005adb), par la propagation automatique.
+
+### Polices servies par le site — 21/11/2026
+
+Audit de la règle commune « Design » et de « rien qui piste » : la page importait JetBrains Mono et Inter de
+fonts.googleapis.com (chaque ouverture appelait Google, mesuré dans le navigateur de test : une feuille et deux fichiers de
+fonts.gstatic.com) et, hors ligne, retombait sur les polices du système. Elles sont désormais dans `docs/fonts/` : fichiers
+variables Fontsource 5.3.0, jeu « latin » (celui que Google servait), Inter 48 256 o et JetBrains Mono 40 404 o, licence
+OFL dans `docs/fonts/OFL.txt`. Le service worker (cache v142) les précache sans bloquer son installation et les sert depuis
+le cache ; la police du compteur est préchargée (avec `crossorigin`, sans quoi le préchargement est jeté et refait). Choix
+d'Antoni pour le cache hors ligne et le préchargement.
+
+Contrôles ajoutés, chacun vu en échec sur l'ancien code : `test_pipeline.py` (aucune ressource d'un autre site dans
+`docs/*.html`, les deux `@font-face` et leurs fichiers, le précache, la licence, le préchargement) ; dans le navigateur, trois
+cas de polices du service worker et une ouverture réelle qui ne doit appeler aucun autre site et charger les deux polices.

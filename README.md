@@ -7,7 +7,7 @@ web installable (PWA, un seul fichier HTML) l'affiche. Les nouveautés arrivent 
 
 **App en ligne :** https://antoniman31.github.io/gta6-backend/
 
-Quatre suites de contrôle gardent le tout. La principale compte **2417 vérifications** (nombre tenu à jour par un test, voir *Tests*).
+Quatre suites de contrôle gardent le tout. La principale compte **2427 vérifications** (nombre tenu à jour par un test, voir *Tests*).
 
 - Le contenu historique, daté lot par lot, est dans **`JOURNAL.md`**.
 - Ce qui reste à faire est dans **`RESTE-A-FAIRE.md`**.
@@ -60,6 +60,7 @@ pause nocturne comprise.
 | `mesure_actu_majeure.py` | Lecture seule : combien de sites distincts se cachent derrière une « actu majeure ». |
 | `docs/index.html` | Toute l'app : HTML, CSS et JS dans un seul fichier. |
 | `docs/sw.js`, `docs/manifest.json` | Service worker (cache de l'app) et manifeste PWA. |
+| `docs/fonts/` | Les deux polices de l'app (Inter, JetBrains Mono), servies par le site, et leur licence OFL. |
 | `docs/agenda.json` | L'agenda du compteur, tenu **à la main**. |
 | `decode-cache.json`, `tableau-discord.json` | Cache de décodage des liens Google News ; identifiant du message du tableau du jour. |
 | `.github/workflows/` | `update-feeds.yml` (le robot), `checks.yml` (les contrôles), `sonde.yml` (tester des URL avant de les ajouter), `test-discord.yml` (message de TEST à la demande). |
@@ -146,7 +147,7 @@ Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 
 - **Écran de chargement** : blanc en thème clair, noir en thème sombre (« système » suit le téléphone), avec le logo, GTA6_WATCH et le décompte du jour (« J-12 »). Il reste `SPLASH_DUREE_MIN_MS` après le premier
   affichage (1,5 s), bloque les touches, et un appui ou une touche le ferme. Le réglage « Écran de chargement » (Réglages › Apparence) le coupe ; piloté par un test, il est coupé tant que le réglage n'est pas allumé. Le petit script d'avant l'affichage, dans l'en-tête de la page, pose le thème pour que cet écran ne passe jamais par le sombre en thème clair.
 - **Icônes** : Material Design Icons de Google (style Outlined, licence Apache-2.0, texte dans `LICENSE-material-icons`), en SVG embarqués dans la page (sprite après `<body>`, aide `ic()`), plus aucun emoji dans l'interface.
-- **PWA** : installable, utilisable hors ligne pour la coque (avec les articles mémorisés dans `localStorage`) ; `docs/sw.js` ne gère que l'installation, l'activation et le cache. Depuis le 16/11/2026 il ne traite que la navigation vers la page de l'APP (la racine de la portée ou `index.html`) : `repetition.html` et `essai-confettis.html` passent sans qu'il y touche, et une erreur serveur 5xx sur l'app retombe sur la copie en cache comme un échec réseau (les 4xx non). **Le nom du cache de `docs/sw.js` se bumpe à chaque changement de `docs/index.html`.**
+- **PWA** : installable, utilisable hors ligne pour la coque (avec les articles mémorisés dans `localStorage`) ; `docs/sw.js` ne gère que l'installation, l'activation et le cache. Depuis le 16/11/2026 il ne traite que la navigation vers la page de l'APP (la racine de la portée ou `index.html`) : `repetition.html` et `essai-confettis.html` passent sans qu'il y touche, et une erreur serveur 5xx sur l'app retombe sur la copie en cache comme un échec réseau (les 4xx non). Depuis le 21/11/2026 il précache aussi les deux polices de `docs/fonts/` et les sert depuis le cache : rien n'est chargé d'un autre site (règle « rien qui piste »). **Le nom du cache de `docs/sw.js` se bumpe à chaque changement de `docs/index.html`.**
 
 L'heure de sortie est la constante `GTA6_RELEASE` de l'app ; un test vérifie qu'elle ne diverge pas du workflow.
 

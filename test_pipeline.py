@@ -11917,6 +11917,37 @@ def test_les_cles_publiees_ont_le_bon_type():
           "le contrôle distingue un booléen d'un nombre et d'un dictionnaire (true, false rejetés ; {} accepté)")
 
 
+
+def test_aucune_ressource_tierce_ni_police_distante():
+    """Rien n'est chargé depuis un autre site à l'ouverture de l'app (règle « rien qui piste », 21/11/2026).
+
+    Jusqu'au 21/11/2026, la page importait JetBrains Mono et Inter depuis fonts.googleapis.com : chaque visite donnait
+    l'adresse IP d'Antoni à Google, et hors ligne les polices manquaient. Elles sont désormais servies par le site
+    (docs/fonts/), précachées par le service worker, et la police du compteur est préchargée.
+    """
+    print("\n[tiers] aucune ressource chargée d'un autre site, polices servies par le site")
+    import glob as _glob
+    page = open("docs/index.html", encoding="utf-8").read()
+    sw = open("docs/sw.js", encoding="utf-8").read()
+    for chemin in sorted(_glob.glob("docs/*.html")):
+        src = open(chemin, encoding="utf-8").read()
+        distants = re.findall(r"@import\s+url\(\s*['\"]?https?:", src) \
+            + re.findall(r"<script[^>]+src\s*=\s*['\"]https?:", src, re.I) \
+            + re.findall(r"<link[^>]+href\s*=\s*['\"]https?:[^>]*>", src, re.I) \
+            + re.findall(r"url\(\s*['\"]?https?://[^)]*\)\s*format", src)
+        # Un <link> distant n'est fautif que s'il CHARGE quelque chose (feuille, police, préchargement), pas un lien canonique.
+        distants = [d for d in distants if not d.lower().startswith("<link") or re.search(r"rel\s*=\s*['\"](stylesheet|preload|preconnect|modulepreload)", d, re.I)]
+        check(not distants, "%s ne charge rien depuis un autre site (%s)" % (chemin, distants[:2]))
+    familles = dict(re.findall(r"@font-face\s*\{[^}]*font-family:\s*'([^']+)'[^}]*src:\s*url\(['\"]?(fonts/[^'\")]+)", page))
+    for famille in ("Inter", "JetBrains Mono"):
+        fichier = familles.get(famille)
+        check(bool(fichier) and os.path.isfile(os.path.join("docs", fichier or "")),
+              "la police %s est déclarée par @font-face et son fichier existe dans docs/ (%s)" % (famille, fichier))
+        check(bool(fichier) and fichier in sw, "le service worker précache la police %s (%s)" % (famille, fichier))
+    check(os.path.isfile("docs/fonts/OFL.txt"), "la licence OFL des polices accompagne les fichiers (docs/fonts/OFL.txt)")
+    check(re.search(r"<link[^>]+rel=\"preload\"[^>]+href=\"" + re.escape(familles.get("JetBrains Mono", "?")) + r"\"[^>]+crossorigin", page) is not None,
+          "la police du compteur est préchargée, avec crossorigin (sans lui le préchargement est jeté et refait)")
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -12078,6 +12109,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_alerte_panne_discord,
            test_le_suivi_des_sources_muettes_reste_un_dictionnaire,
            test_les_cles_publiees_ont_le_bon_type,
+           test_aucune_ressource_tierce_ni_police_distante,
            test_readme_annonce_le_bon_nombre):
     fn()
 
