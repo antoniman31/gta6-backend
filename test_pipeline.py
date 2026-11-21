@@ -11864,6 +11864,59 @@ def test_le_suivi_des_sources_muettes_reste_un_dictionnaire():
     check(plante is None and isinstance(suivi, dict), "avec `true` dans feed.json, le suivi des sources ne plante plus (%s)" % plante)
 
 
+def test_les_cles_publiees_ont_le_bon_type():
+    """Chaque clé que le robot publie (docs/feed.json et feed-recent.json) a le bon TYPE, et main() n'en écrit aucune sans que son type soit déclaré ici.
+
+    Panne du 21/11/2026 : la PR M a publié `"sources_silence": false` dès le 18/11, puis `true`. Le contrôle de données d'alors lisait `d.get(cle) or []` : `false` passait pour
+    une liste vide, et personne ne l'a vu pendant trois jours, jusqu'au planter du passage suivant. Le robot relit ce qu'il a publié (le suivi des sources, le mémoire des alertes,
+    les jalons envoyés) : un type faux dans le fichier est une panne différée. Ce contrôle l'attrape dès la première CI qui lit le fichier.
+
+    `bool` est un `int` en Python : `true` passerait pour un nombre. Les types numériques excluent donc explicitement les booléens.
+    """
+    print("\n[types publiés] chaque clé de feed.json et feed-recent.json a le bon type")
+    import ast
+    nombre = (int, float)
+    SCHEMA = {
+        "generated_at": (str,), "attente_recap": (dict,), "jalons_envoyes": (list,), "rockstarmag_envoyes": (list,),
+        "bilan_envoye_le": (str, type(None)), "couverture_depuis": (str, type(None)), "duration_seconds": nombre, "decode_failures": (int,),
+        "total_articles": (int,), "new_this_run": (int,), "hot_count": (int,), "hot_threshold": (int,), "sources_count": (int,),
+        "sources": (list,), "sources_health": (list,), "sources_silence": (dict,), "decodage_etat": (dict,), "sources_entries_history": (dict,),
+        "sources_declining": (dict,), "feed_http_state": (dict,), "sources_incidents": (list,), "sources_incidents_compte": (dict,), "items": (list,),
+    }
+    # Les seules clés en plus du fichier allégé : l'indication « partiel » et l'adresse du fichier complet.
+    SUPPLEMENT_ALLEGE = {"partial": (bool,), "full_url": (str,)}
+
+    def type_ok(valeur, attendus):
+        if isinstance(valeur, bool):
+            return bool in attendus
+        return isinstance(valeur, attendus)
+
+    # (1) Ce que main() écrit : exactement les clés du schéma. Une clé ajoutée sans type déclaré, ou retirée, fait échouer ce contrôle.
+    src = open("fetch_feeds.py", encoding="utf-8").read()
+    principal = next(n for n in ast.parse(src).body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    cles_ecrites = set()
+    for n in ast.walk(principal):
+        if isinstance(n, ast.Assign) and any(isinstance(c, ast.Name) and c.id == "output" for c in n.targets) and isinstance(n.value, ast.Dict):
+            cles_ecrites |= {k.value for k in n.value.keys if isinstance(k, ast.Constant) and isinstance(k.value, str)}
+    check(cles_ecrites == set(SCHEMA),
+          "main() écrit exactement les clés dont le type est déclaré (en trop : %s ; déclarées en trop : %s)"
+          % (sorted(cles_ecrites - set(SCHEMA)) or "aucune", sorted(set(SCHEMA) - cles_ecrites) or "aucune"))
+
+    # (2) Ce qui est publié.
+    for nom, supplement in (("feed.json", {}), ("feed-recent.json", SUPPLEMENT_ALLEGE)):
+        d = json.load(open("docs/" + nom, encoding="utf-8"))
+        attendu = {**SCHEMA, **supplement}
+        mauvais = {k: type(d[k]).__name__ for k in d if k in attendu and not type_ok(d[k], attendu[k])}
+        inconnues = sorted(k for k in d if k not in attendu)
+        manquantes = sorted(k for k in attendu if k not in d)
+        check(not mauvais, "%s : chaque clé a le bon type%s" % (nom, "" if not mauvais else " — faux : %s" % mauvais))
+        check(not inconnues and not manquantes,
+              "%s : aucune clé inconnue ni manquante%s" % (nom, "" if not (inconnues or manquantes) else " — inconnues %s, manquantes %s" % (inconnues, manquantes)))
+    # Le contrôle sait dire non : un booléen n'est pas un nombre, `false` n'est pas un dictionnaire.
+    check(not type_ok(True, nombre) and not type_ok(False, (dict,)) and type_ok({}, (dict,)) and type_ok(None, (str, type(None))) and type_ok(1.5, nombre),
+          "le contrôle distingue un booléen d'un nombre et d'un dictionnaire (true, false rejetés ; {} accepté)")
+
+
 def test_readme_annonce_le_bon_nombre():
     print("\n[doc] le README annonce le vrai nombre de vérifications")
     import re
@@ -12024,6 +12077,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_icones_de_lapp,
            test_alerte_panne_discord,
            test_le_suivi_des_sources_muettes_reste_un_dictionnaire,
+           test_les_cles_publiees_ont_le_bon_type,
            test_readme_annonce_le_bon_nombre):
     fn()
 
