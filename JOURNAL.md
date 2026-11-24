@@ -13129,3 +13129,32 @@ d'Antoni pour le cache hors ligne et le préchargement.
 Contrôles ajoutés, chacun vu en échec sur l'ancien code : `test_pipeline.py` (aucune ressource d'un autre site dans
 `docs/*.html`, les deux `@font-face` et leurs fichiers, le précache, la licence, le préchargement) ; dans le navigateur, trois
 cas de polices du service worker et une ouverture réelle qui ne doit appeler aucun autre site et charger les deux polices.
+
+### Version PC — 24/11/2026
+
+Demande d'Antoni : « faire une version PC du site ». Proposé d'abord (règle commune) : dix idées en schémas, puis la
+n° 1, « deux colonnes, menu à gauche, fil au centre », en maquette à l'échelle réelle (1280 px, 1920 px, téléphone) ;
+validée avec ses réponses : panneau de droite avec compteur, frise, état du robot et dernières actus majeures ; raccourcis
+`o`, `f`, `l`, `/` et `1` à `5` (pas de `j`/`k`) ; seuil à mesurer.
+
+Mesuré avant de coder, sur l'ancien code à 1280 et 1920 px : le site était une colonne de 640 px centrée, l'en-tête
+(255 px de haut) y occupait le haut du fil et la barre du bas s'étirait sur toute la largeur. Le bloc « bilan du robot »
+(`#runLine`) était déjà dans l'en-tête : le panneau n'a eu à gagner qu'une liste, les trois dernières actus majeures.
+
+Fait dans `docs/index.html` (un seul bloc CSS `@media (min-width:1100px)`, un panneau, deux fonctions JS) : grille à deux
+colonnes (fil 640 px, panneau 300 px) centrée à droite du rail de 84 px ; le rail est la barre du bas passée en
+`position:fixed` vertical ; l'en-tête devient le panneau, collé à 24 px du haut ; la barre du haut réduite et le fondu du
+bas disparaissent ; la languette « Reprendre » et le toast se recentrent sur le fil. Seuil 1100 px : mesuré, c'est la
+plus petite largeur où rail (84), fil (640) et panneau (300) tiennent avec leurs gouttières sans rien recouvrir
+(rail 0–84, fil 110–750, panneau 774–1074 pour 1100). Le panneau lit la même liste que le fil (`lastItems`), juge avec le
+même `estMajeur`, écarte les articles masqués par le mode sans spoiler (le panneau est toujours à l'écran sur PC) et les
+liens douteux (`safeUrl`). Les raccourcis agissent sur la carte sous le pointeur (identifiant retenu, pas l'élément :
+marquer lu refait tout le fil) ou au focus ; ignorés dans un champ, sous un panneau ouvert, avec Ctrl/Alt/Méta.
+`docs/sw.js` : cache v142 → v143.
+
+Contrôle : `test_version_pc` (36 contrôles), vu échouer sur l'ancien code (23 échecs, 13 passent parce qu'ils décrivent
+des propriétés que l'ancienne page tenait aussi : rien ne déborde, le toast est centré). Erreur de départ corrigée en
+route : mon premier essai d'un contrôle de `o` ciblait la quatrième carte, qui était justement celle au lien
+`javascript:` ; l'appli refusait de l'ouvrir, et c'était le bon comportement. Le contrôle choisit maintenant une carte au
+lien sûr et vérifie à part que le lien douteux n'ouvre rien. Non mesuré ici : le rendu sur l'écran Windows d'Antoni (voir RESTE-A-FAIRE 5 ter). « Stats » et « Réglages » gardent
+leur colonne de 640 px à 1280 px (mesuré : 640 px de large, rien ne déborde).
