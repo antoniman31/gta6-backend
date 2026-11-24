@@ -2978,6 +2978,11 @@
     body > .barre-bas button:hover{background:var(--bg-elevated); color:var(--text);}
     body::after, .barre-haut{display:none;}
     .panneau-tabs, body.bh-visible .panneau-tabs{top:8px;}
+    /* STATS : le panneau reste affiché (Antoni, 24/11/2026, forme A de la planche « Stats et Réglages en PC »). Avant, l'en-tête était masqué dans Stats
+       (il l'est sur téléphone, où la ligne réduite du haut prend le relais) : la colonne de droite restait vide et le contenu, calé à gauche, n'était
+       pas centré (mesuré à 1280 px : de 200 à 840 px, sans rien à droite). La grille est la même que celle du fil, sans saut d'une vue à l'autre. */
+    body.vue-stats .wrap > header.console{display:flex;}
+    body.vue-stats .wrap{padding-top:0;}
     /* Les éléments posés au centre de l'écran se recentrent sur le fil : milieu de la zone à droite du rail, moins la moitié du panneau. */
     .resume-chip{bottom:0;}
     .resume-chip, .toast{
