@@ -2998,6 +2998,9 @@
        pas centré (mesuré à 1280 px : de 200 à 840 px, sans rien à droite). La grille est la même que celle du fil, sans saut d'une vue à l'autre. */
     body.vue-stats .wrap > header.console{display:flex;}
     body.vue-stats .wrap{padding-top:0;}
+    /* RÉGLAGES : les 64 px du haut réservent la place de la barre fixe du téléphone ; ici elle n'existe plus (rail à gauche). Ils laissaient 90 px de vide
+       au-dessus du titre et poussaient le menu hors d'un écran couché de 360 px de haut (« Données » coupé, vu sur le S26 le 24/11/2026). */
+    body.vue-reglages .wrap{padding-top:8px;}
     /* Les éléments posés au centre de l'écran se recentrent sur le fil : milieu de la zone à droite du rail, moins la moitié du panneau. */
     .resume-chip{bottom:0;}
     .resume-chip, .toast{
@@ -3032,6 +3035,10 @@
     }
     #settingsOverlay .panneau-entete{grid-column:1 / -1;}
     #settingsOverlay .panneau-tabs{grid-column:1; flex-direction:column; margin:0; align-self:start;}
+    /* Menu vertical : les onglets gardent leur hauteur naturelle. Sans cela (rangée de la barre : flex:1 1 0), la colonne les écrasait à 48 px et le
+       libellé, rétréci à 10 px de haut avec overflow:hidden, était coupé en bas (vu sur le S26 en paysage le 24/11/2026 : « Apparence », « Filtres »). */
+    #settingsOverlay .panneau-tabs .tab{flex:none;}
+    #settingsOverlay .panneau-tabs .tab span{flex:none; line-height:1.3;}
     #settingsOverlay .panneau-onglet{grid-column:2;}
     .apercu-direct{display:block; grid-column:3; grid-row:2 / span 4; position:sticky; top:8px; align-self:start;}
     /* Dans la colonne, l'aperçu garde sa carte : même fond, même filet que les autres. */

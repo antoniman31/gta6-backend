@@ -13304,6 +13304,17 @@ portrait inchangé). Vu échouer sur l'ancien code (l'aperçu absent de la colon
 Antoni a vérifié sur le S26 : chiffres du compte à rebours en JetBrains Mono, reste de la page en Inter, comme avant, et
 les mêmes polices en mode avion. La section « 5 bis » de `RESTE-A-FAIRE.md` est close.
 
+### Réglages en paysage : libellés du menu coupés et vide en haut — 24/11/2026
+
+Antoni, sur le S26 couché : « il y a des bugs dans les paramètres ». Reproduit à 915 × 412 et 800 × 360 (planche + capture agrandie 3×). Deux défauts, tous deux de mon lot précédent :
+1. Les libellés du menu (« Apparence », « Filtres », « Sources », « Données ») étaient coupés en bas. Cause : les onglets gardaient `flex:1 1 0` de la rangée du téléphone ; dans la colonne ils
+   étaient écrasés à 48 px et le libellé, rétréci à 10 px de haut avec `overflow:hidden`, perdait le bas de ses lettres (mesuré : 10 px pour 15,6 px de texte). Maintenant `flex:none` : onglets de 54 px.
+2. 64 px de marge au-dessus de la page, réservés à la barre fixe du téléphone, qui n'existe plus dans la disposition PC : 85 px de vide avant le titre, et le menu sortait de l'écran
+   couché de 360 px (« Données » coupé). Maintenant 8 px ; le bas du menu est à 325 px sur 360.
+Pourquoi mes contrôles ne l'avaient pas vu : ils mesuraient les boîtes des onglets, pas le texte dedans (le piège « on mesure la boîte, pas le texte » déjà noté pour le rail). Contrôle ajouté à
+`test_reglages_menu_et_apercu_pc` (89 → 129) : aucun libellé du menu n'a `scrollHeight` > `clientHeight`, et le bas du menu reste dans l'écran. Le premier est vu échouer sur l'ancien code
+(4 libellés coupés à chacune des largeurs paysage, 8 échecs) ; le second passe aussi sur l'ancien code, il ne prouve donc que l'absence de régression. Cache v153.
+
 ### Couleurs en jetons — 24/11/2026
 
 Audit de la règle commune « Design » (couleurs par jetons, jamais en dur). L'audit du 21/11 annonçait une quinzaine de couleurs
@@ -13317,4 +13328,4 @@ Contrôle `test_aucune_couleur_en_dur_dans_la_page` : il lit les déclarations (
 couleur) et écarte trois cas, raison écrite : les jetons, la valeur initiale d'un `@property` (CSS l'exige littérale), les
 masques (`#000` n'y est qu'une opacité). Vu échouer sur l'ancien code (51 relevés). Trois contrôles existants lisaient les
 couleurs littérales (badge, jauges, paires fixes) : ils lisent désormais la règle et la valeur du jeton ; celui des paires
-fixes exige 10 paires au lieu de 2 et mesure les mêmes ratios (4,70 à 10,48:1). `docs/sw.js` : v152 → v153.
+fixes exige 10 paires au lieu de 2 et mesure les mêmes ratios (4,70 à 10,48:1). `docs/sw.js` : v153 → v154 (main était passé en v153 entre-temps, #339).
