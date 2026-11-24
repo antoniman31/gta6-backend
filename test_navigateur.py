@@ -7455,6 +7455,21 @@ def test_version_pc(nav, url):
                   "%s la languette « Reprendre » touche le bas de l'écran et reste centrée sur le fil (bas %.0f pour %d, centre %.0f contre %.0f)"
                   % (etiq, chip["bas"], chip["vh"], chip["centre"], chip["fil"]))
 
+            # STATS (24/11/2026, forme A) : le panneau reste affiché et la grille est celle du fil, sans saut d'une vue à l'autre.
+            avant_stats = page.evaluate("() => { const r = e => { const b = document.querySelector(e).getBoundingClientRect(); return [b.left, b.right]; }; return {fil: r('main'), en: r('header.console')}; }")
+            page.evaluate("() => setTab('stats')"); page.wait_for_timeout(400)
+            st = page.evaluate("""() => { const q = s => { const e = document.querySelector(s); const b = e.getBoundingClientRect(); return {l: b.left, r: b.right, h: b.height, d: getComputedStyle(e).display}; };
+                const en = q('header.console'), hs = en;
+                return {fil: q('main'), en, vw: innerWidth, sw: document.documentElement.scrollWidth, pad: parseFloat(getComputedStyle(document.querySelector('.wrap')).paddingTop),
+                        tuilesHors: [...document.querySelectorAll('header.console .cd-t')].filter(e => { const b = e.getBoundingClientRect(); return b.left < hs.l - 0.5 || b.right > hs.r + 0.5; }).length,
+                        tuiles: document.querySelectorAll('header.console .cd-t').length}; }""")
+            check(st["en"]["d"] != "none" and st["en"]["h"] > 100 and st["en"]["r"] <= st["vw"] + 0.5 and st["tuiles"] >= 4 and st["tuilesHors"] == 0,
+                  "%s dans Stats, le panneau reste affiché (%s, %.0f px de haut), dans l'écran, ses %d tuiles dans leur cadre" % (etiq, st["en"]["d"], st["en"]["h"], st["tuiles"]))
+            check(abs(st["fil"]["l"] - avant_stats["fil"][0]) < 1 and abs(st["en"]["l"] - avant_stats["en"][0]) < 1 and st["pad"] == 0 and st["sw"] <= st["vw"],
+                  "%s la grille de Stats est celle du fil : même place pour le contenu (%.0f px contre %.0f) et pour le panneau (%.0f contre %.0f), aucun décalage du haut (%.0f px), rien ne déborde"
+                  % (etiq, st["fil"]["l"], avant_stats["fil"][0], st["en"]["l"], avant_stats["en"][0], st["pad"]))
+            page.evaluate("() => setTab('all')"); page.wait_for_timeout(300)
+
             if hauteur < 600:
                 # Paysage de téléphone : le panneau est plus haut que l'écran, il défile en lui-même et la dernière actu majeure reste atteignable.
                 pa = page.evaluate("""() => { const en = document.querySelector('header.console'); const avant = en.scrollTop; en.scrollTop = en.scrollHeight;

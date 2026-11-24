@@ -13268,3 +13268,16 @@ Repéré sur la planche de Stats et de Réglages à 1920 px : dans l'aperçu « 
 s'empilait à la verticale. Cause : ma règle du rail de la disposition PC visait `.barre-bas`, et l'aperçu en recopie une avec la même classe ;
 il dessine pourtant le téléphone, dont la barre est horizontale. Corrigé : les règles du rail visent `body > .barre-bas`, c'est-à-dire la seule vraie
 barre. Contrôle dans `test_version_pc` (69 → 70 : la barre copiée reste horizontale, plus large que haute), vu échouer sur l'ancien code. Cache v150.
+
+### Stats sur PC et en paysage : le panneau reste affiché — 24/11/2026
+
+Demande d'Antoni (planche « Stats et Réglages en PC et en paysage », forme A choisie). Mesuré avant de coder, sur l'ancien code à 1280 px : dans Stats, l'en-tête
+était masqué (`body.vue-stats header.console{display:none}`, voulu sur téléphone où la ligne réduite du haut prend le relais) ; la colonne de droite de la
+grille restait vide et le contenu, calé à gauche, allait de 200 à 840 px : pas centré, avec 64 px de décalage du haut (`padding-top` du `.wrap`).
+
+Corrigé dans le bloc de la disposition PC : l'en-tête reste affiché (`display:flex`) et le décalage du haut est annulé dans Stats. La grille est celle du fil : le contenu et le
+panneau tiennent la même place d'une vue à l'autre (mesuré aux cinq largeurs : 96 contre 96, 130 contre 130, 110 contre 110, 200 contre 200, 520 contre 520). Le téléphone en
+portrait est inchangé. Cache v151.
+
+Contrôles ajoutés à `test_version_pc` (70 → 80, deux par largeur, cinq largeurs) : le panneau reste affiché dans Stats, dans l'écran, ses tuiles dans leur cadre ; la grille ne bouge pas
+d'une vue à l'autre. Vus échouer sur l'ancien code (10 échecs : panneau à `none`, 0 px, décalage de 64 px).
