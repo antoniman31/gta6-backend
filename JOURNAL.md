@@ -13249,3 +13249,15 @@ paysage, où la ligne réduite n'existe plus, elle se colle à 8 px du haut. Cac
 Contrôle : `test_onglets_reglages_en_carte` (12, trois largeurs), vu échouer sur l'ancien code. Repéré en route et NON corrigé ici (un sujet
 par PR) : l'aperçu « Couleurs » des réglages recopie l'en-tête, donc il montre en PC un titre « Dernières actus majeures » vide, et un
 identifiant en double (`panneauMajeursListe`), à cause du panneau ajouté le 24/11 ; à corriger dans une PR à part.
+
+### L'aperçu « Couleurs » ne recopie plus le bloc des actus majeures — 24/11/2026
+
+Repéré en regardant la planche des onglets des réglages à 1280 px : l'aperçu « Couleurs » recopie l'en-tête (`construitMaquette`, `copie("header.console")`),
+donc il recopiait aussi le bloc « Dernières actus majeures » ajouté le même jour pour la disposition PC, et montrait un titre vide.
+
+Correction d'une erreur de ma part : l'entrée précédente (« Les onglets des réglages en carte ») et la description de la PR #333 parlaient aussi
+d'« un identifiant en double (`panneauMajeursListe`) ». C'était faux : `construitMaquette` retire déjà tous les `id` de ses copies. Le contrôle le
+prouve (0 identifiant dans l'aperçu, avant comme après). Je l'avais écrit sans le vérifier dans le code.
+
+Corrigé : `.panneau-majeurs` rejoint `.frise-jalons` et `.compteur-sous` parmi ce que l'aperçu retire. Contrôle dans `test_version_pc` (68 → 69 :
+l'aperçu recopie bien l'en-tête, sans le bloc, sans aucun identifiant), vu échouer sur l'ancien code (le bloc est recopié, titre compris). Cache v149.
