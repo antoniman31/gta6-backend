@@ -13299,3 +13299,7 @@ Mesuré : 1280 → menu 180, contenu 560, aperçu 300 ; 915 et 800 en paysage �
 Contrôle ajouté, `test_reglages_menu_et_apercu_pc` (89 vérifications : sept largeurs, quatre rubriques, aperçu qui suit un réglage en direct, aperçu qui change de colonne avec la fenêtre,
 portrait inchangé). Vu échouer sur l'ancien code (l'aperçu absent de la colonne, menu en barre, réglage non suivi).
 
+### Polices servies par le site : vérifiées sur le S26 — 24/11/2026
+
+Antoni a vérifié sur le S26 : chiffres du compte à rebours en JetBrains Mono, reste de la page en Inter, comme avant, et
+les mêmes polices en mode avion. La section « 5 bis » de `RESTE-A-FAIRE.md` est close.
