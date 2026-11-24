@@ -13269,6 +13269,36 @@ s'empilait à la verticale. Cause : ma règle du rail de la disposition PC visai
 il dessine pourtant le téléphone, dont la barre est horizontale. Corrigé : les règles du rail visent `body > .barre-bas`, c'est-à-dire la seule vraie
 barre. Contrôle dans `test_version_pc` (69 → 70 : la barre copiée reste horizontale, plus large que haute), vu échouer sur l'ancien code. Cache v150.
 
+### Stats sur PC et en paysage : le panneau reste affiché — 24/11/2026
+
+Demande d'Antoni (planche « Stats et Réglages en PC et en paysage », forme A choisie). Mesuré avant de coder, sur l'ancien code à 1280 px : dans Stats, l'en-tête
+était masqué (`body.vue-stats header.console{display:none}`, voulu sur téléphone où la ligne réduite du haut prend le relais) ; la colonne de droite de la
+grille restait vide et le contenu, calé à gauche, allait de 200 à 840 px : pas centré, avec 64 px de décalage du haut (`padding-top` du `.wrap`).
+
+Corrigé dans le bloc de la disposition PC : l'en-tête reste affiché (`display:flex`) et le décalage du haut est annulé dans Stats. La grille est celle du fil : le contenu et le
+panneau tiennent la même place d'une vue à l'autre (mesuré aux cinq largeurs : 96 contre 96, 130 contre 130, 110 contre 110, 200 contre 200, 520 contre 520). Le téléphone en
+portrait est inchangé. Cache v151.
+
+Contrôles ajoutés à `test_version_pc` (70 → 80, deux par largeur, cinq largeurs) : le panneau reste affiché dans Stats, dans l'écran, ses tuiles dans leur cadre ; la grille ne bouge pas
+d'une vue à l'autre. Vus échouer sur l'ancien code (10 échecs : panneau à `none`, 0 px, décalage de 64 px).
+
+Erreur de ma part, vue en CI sur la PR (« Contrôles rendus » rouge, alors que la suite locale était verte, 2754/2754) : `test_version_pc` injecte ses propres articles, et le
+chargement du vrai fil, arrivé plus tard en CI, les remplaçait. Le panneau listait alors un vrai article (« GTA 6 : 39 millions de joueurs sur PS5… ») et une carte cherchée
+par le test n'existait plus (« Cannot read properties of undefined (reading 'id') »). C'est le piège que CLAUDE.md décrit (les tests lisent le vrai fil) et que le nouveau
+contrôle de Stats, plus long, a rendu visible. Reproduit avant de corriger : `checkFromBackend()` après l'injection fait passer `lastItems` de 1 à 300 articles ; le test bloque
+maintenant le chargement du fil et des archives (deux routes), et `lastItems` reste à 1. 80/80, deux fois de suite.
+
+### Réglages en PC et en paysage : menu à gauche, aperçu à droite — 24/11/2026
+
+Choix d'Antoni (maquette, puis « aussi en paysage sur téléphone ») : dès 1100 px, et dès 800 px en paysage, les Réglages passent en trois colonnes : le menu des rubriques en colonne verticale
+(180 px en PC avec icône et mot côte à côte, 84 px en paysage), les réglages au centre (560 px au plus : la page est plafonnée, sinon à 1920 px les cartes s'étiraient), et l'aperçu en direct
+à droite (300 px en PC, 224 px en paysage), collé en haut. L'aperçu des couleurs est un seul élément, déplacé par script entre son groupe (portrait) et `#apercuDirect` (colonne de droite)
+quand la fenêtre change de taille ; il se reconstruit après le déplacement, car sa taille dépend de la largeur de son conteneur. Il reste donc visible dans les quatre rubriques.
+Mesuré : 1280 → menu 180, contenu 560, aperçu 300 ; 915 et 800 en paysage → menu 84, contenu 463 et 348, aperçu 224 ; aucun débordement horizontal ; portrait inchangé. Cache v152.
+
+Contrôle ajouté, `test_reglages_menu_et_apercu_pc` (89 vérifications : sept largeurs, quatre rubriques, aperçu qui suit un réglage en direct, aperçu qui change de colonne avec la fenêtre,
+portrait inchangé). Vu échouer sur l'ancien code (l'aperçu absent de la colonne, menu en barre, réglage non suivi).
+
 ### Polices servies par le site : vérifiées sur le S26 — 24/11/2026
 
 Antoni a vérifié sur le S26 : chiffres du compte à rebours en JetBrains Mono, reste de la page en Inter, comme avant, et

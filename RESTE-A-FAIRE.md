@@ -110,7 +110,8 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - Sous 1100 px (fenêtre réduite) : la disposition du téléphone, comme avant.
 - Sur le S26 couché : faire défiler le panneau de droite avec le doigt ne lance plus l'actualisation et le panneau défile ; tirer vers le bas dans le fil (au centre) actualise toujours ; le bouton ↻ du panneau actualise.
 - Réglages (à regarder sur le S26 et le PC) : la barre Apparence / Filtres / Sources / Données est une carte arrondie, avec des marges autour des onglets ; elle reste collée en haut quand on défile.
-- Pas encore fait, à décider : adapter le mode « Réglages » et la page « Stats » à la largeur PC (elles gardent leur colonne de 640 px).
+- Stats en PC et en paysage : le panneau (compteur, frise, actus majeures) reste affiché à droite, le contenu est au centre, comme dans le fil.
+- Réglages en PC et en paysage : menu des rubriques à gauche, réglages au centre, aperçu des couleurs à droite (visible dans les quatre rubriques et qui suit un réglage) ; en portrait, rien n'a changé.
 - **Avant de regarder le paysage : désinstaller puis réinstaller l'app** (« Ajouter à l'écran d'accueil »). Le manifeste ne verrouille plus le portrait (24/11/2026), mais Android ne relit le manifeste d'une app installée qu'à sa mise à jour, qui peut prendre un jour ou plus. Dans un onglet Chrome normal, la rotation marche sans réinstaller ; vérifier aussi que la rotation automatique n'est pas verrouillée.
 - Téléphone en paysage (à regarder sur le S26) : le rail à gauche sans passer sous l'encoche, le fil et le panneau côte à côte, le panneau qui défile jusqu'à la dernière actu majeure ; en portrait, rien n'a changé.
 
