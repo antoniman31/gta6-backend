@@ -7440,6 +7440,20 @@ def test_version_pc(nav, url):
                 const b = t.getBoundingClientRect(), f = document.querySelector('main').getBoundingClientRect(); t.hidden = true; t.style.display = '';
                 return {toast: (b.left + b.right) / 2, fil: (f.left + f.right) / 2}; }""")
             check(abs(centre["toast"] - centre["fil"]) < 12, "%s le toast se centre sur le fil, pas sur l'écran (%.0f px contre %.0f px, scrollbar tolérée)" % (etiq, centre["toast"], centre["fil"]))
+            # Le libellé le plus large du rail (« Réglages », 57,6 px à 12 px) tient dans son bouton : à 72 px de rail, il dépassait de 2,6 px
+            # en paysage (vu sur la planche du 24/11/2026, alors que 36 contrôles de disposition étaient verts : aucun ne lisait le texte).
+            libelles = page.evaluate("""() => [...document.querySelectorAll('.barre-bas button')].map(b => { const rg = document.createRange(); rg.selectNodeContents(b);
+                return {id: b.id, texte: rg.getBoundingClientRect().width, bouton: b.clientWidth, deborde: b.scrollWidth - b.clientWidth}; })""")
+            check(all(x["deborde"] <= 0.5 and x["texte"] <= x["bouton"] + 0.5 for x in libelles),
+                  "%s chaque libellé du rail tient dans son bouton (%s)" % (etiq, [(x["id"], round(x["texte"], 1), x["bouton"]) for x in libelles]))
+            # La languette « Reprendre » était posée sur la barre du bas : sans elle, elle doit toucher le bas de l'écran (et non flotter à 16 px
+            # au-dessus en recouvrant le bouton d'une carte) et rester centrée sur le fil.
+            chip = page.evaluate("""() => { const c = document.getElementById('resumeChip'), av = c.style.display; c.style.display = 'block';
+                const b = c.getBoundingClientRect(), f = document.querySelector('main').getBoundingClientRect(); c.style.display = av;
+                return {bas: b.bottom, vh: innerHeight, centre: (b.left + b.right) / 2, fil: (f.left + f.right) / 2}; }""")
+            check(abs(chip["bas"] - chip["vh"]) < 1.5 and abs(chip["centre"] - chip["fil"]) < 12,
+                  "%s la languette « Reprendre » touche le bas de l'écran et reste centrée sur le fil (bas %.0f pour %d, centre %.0f contre %.0f)"
+                  % (etiq, chip["bas"], chip["vh"], chip["centre"], chip["fil"]))
 
             if hauteur < 600:
                 # Paysage de téléphone : le panneau est plus haut que l'écran, il défile en lui-même et la dernière actu majeure reste atteignable.

@@ -13215,3 +13215,20 @@ tirer depuis elle n'actualisait plus. Le test du fil l'a montré (zone 0 px) ; l
 
 Contrôle : `test_tirage_pas_dans_le_panneau` (7), vu échouer sur l'ancien code (2 échecs, ceux ci-dessus). Non vérifié : le S26 réel
 (les gestes du test sont des gestes tactiles simulés).
+
+### Paysage : le rail et la languette « Reprendre » — 24/11/2026
+
+Antoni a demandé de vérifier le mode paysage visuellement (« tout est bon, il y a pas des trucs cassés ? »). Passé en revue
+par captures à 915 × 412, tactile, dans les deux thèmes : fil, défilé, Actu majeure, chronologie Rockstar, toast, filtres,
+compteur, stats, réglages. Aucun débordement (scrollWidth 915 pour 915, aucun élément au-delà de la droite), aucune erreur
+JavaScript. Deux défauts que les 36 contrôles de disposition, verts, ne voyaient pas :
+
+- **Le rail était trop étroit en paysage** : le libellé « Réglages » fait 57,6 px à 12 px et son bouton 55 px (rail de 72 px) :
+  2,6 px de dépassement. Les captures du téléphone d'Antoni le montrent aussi (le fond du bouton plus étroit que le mot). Le
+  rail passe à 80 px en paysage (bouton de 63 px) ; en PC, 84 px, le libellé tenait déjà.
+- **La languette « Reprendre » flottait** à 16 px du bas, recouvrant le bouton d'une carte : elle était conçue pour être posée sur la
+  barre du bas, qui n'existe plus avec le rail. Elle touche maintenant le bas de l'écran, centrée sur le fil. Le toast garde ses 16 px.
+
+Mon erreur : les contrôles mesuraient des boîtes (largeurs, recouvrements, tuiles) et jamais le texte à l'intérieur ; la
+planche l'a vu en deux minutes. Deux contrôles ajoutés à `test_version_pc` (58 → 68 contrôles) : chaque libellé du rail tient dans
+son bouton, la languette touche le bas de l'écran et reste centrée sur le fil ; 7 échecs sur l'ancien code. Cache v147.

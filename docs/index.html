@@ -2970,10 +2970,11 @@
     body::after, .barre-haut{display:none;}
     body.bh-visible .panneau-tabs{top:0;}
     /* Les éléments posés au centre de l'écran se recentrent sur le fil : milieu de la zone à droite du rail, moins la moitié du panneau. */
+    .resume-chip{bottom:0;}
     .resume-chip, .toast{
       left:calc(var(--pc-rail) + env(safe-area-inset-left, 0px) + (100vw - var(--pc-rail) - env(safe-area-inset-left, 0px) - 32px - var(--pc-fil) - var(--pc-gouttiere) - var(--pc-panneau)) / 2 + 16px + var(--pc-fil) / 2);
-      bottom:16px;
     }
+    .toast{bottom:16px;}
     /* Le bloc ajouté dans l'en-tête : les dernières actus majeures. */
     .panneau-majeurs{display:block; margin-top:12px;}
     .panneau-majeurs h2{margin:0 0 6px; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--text-dim);}
@@ -2990,12 +2991,12 @@
   }
   /* LE TÉLÉPHONE EN PAYSAGE (Antoni, 24/11/2026 : « si sur mobile je passe en mode paysage ça m'affiche la version PC »). Mesuré à 915 × 412
      (la taille simulée d'un téléphone en paysage) : avec la disposition d'avant, l'en-tête (253 px) mangeait le premier tiers de l'écran et le premier article
-     commençait à 287 px sur 412. La disposition PC s'applique donc aussi à partir de 800 px en paysage, avec des jetons plus étroits : le rail passe à 72 px,
+     commençait à 287 px sur 412. La disposition PC s'applique donc aussi à partir de 800 px en paysage, avec des jetons plus étroits : le rail passe à 80 px (à 72, le libellé « Réglages » de 57,6 px dépassait de 2,6 px son bouton de 55 px : vu sur la planche du 24/11/2026),
      le fil à 440, le panneau à 280 et la gouttière à 16. Le panneau, plus haut que l'écran (506 px pour 362 visibles à 412 de haut), défile en lui-même
      (overflow-y déjà posé plus haut) : le choix d'Antoni est de garder les actus majeures dedans. Une fenêtre de bureau de 800 à 1099 px de large en
      paysage prend la même disposition, ce qui vaut mieux qu'une colonne de 640 px perdue au milieu. En portrait, rien ne change. */
   @media (min-width:800px) and (max-width:1099px) and (orientation:landscape){
-    :root{ --pc-rail:72px; --pc-fil:440px; --pc-panneau:280px; --pc-gouttiere:16px; }
+    :root{ --pc-rail:80px; --pc-fil:440px; --pc-panneau:280px; --pc-gouttiere:16px; }
   }
 </style>
 </head>
