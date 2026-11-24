@@ -7467,6 +7467,13 @@ def test_version_pc(nav, url):
                 check(all(h >= CIBLE_MINIMALE for h in pa["boutons"]),
                       "%s les boutons du rail font au moins %d px de haut au doigt (%s)" % (etiq, CIBLE_MINIMALE, pa["boutons"]))
             if largeur == 1280:
+                # ---- L'aperçu « Couleurs » des réglages recopie l'en-tête : il ne doit pas recopier le bloc des actus majeures (titre vide, vu le 24/11/2026).
+                page.evaluate("() => openSettings()"); page.wait_for_timeout(500); page.evaluate("() => construitMaquette()")
+                ap = page.evaluate("() => { const m = document.getElementById('apercuCouleurs'); return {copie: m.querySelectorAll('header, .console').length > 0, majeurs: m.querySelectorAll('.panneau-majeurs').length, "
+                                   "texte: m.textContent.includes('Dernières actus majeures'), ids: [...m.querySelectorAll('[id]')].length}; }")
+                check(ap["copie"] and ap["majeurs"] == 0 and not ap["texte"] and ap["ids"] == 0,
+                      "%s l'aperçu « Couleurs » recopie l'en-tête sans le bloc des actus majeures, et sans aucun identifiant (%s)" % (etiq, ap))
+                page.evaluate("() => retourFil()"); page.wait_for_timeout(300)
                 # ---- Le panneau : les trois plus récentes, dans l'ordre, échappées, le lien douteux écarté, la plus vieille absente.
                 liste = page.evaluate("() => [...document.querySelectorAll('#panneauMajeursListe a')].map(a => ({texte: a.firstChild.textContent, href: a.getAttribute('href'), b: a.querySelectorAll('b').length}))")
                 check([x["texte"] for x in liste] == ["Actu <b>majeure</b> récente & « citée »", "Actu majeure du milieu", "Actu majeure la plus ancienne"]

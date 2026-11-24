@@ -4479,7 +4479,9 @@ function construitMaquette(){
       for(const a of ["id", "onclick", "oninput", "onchange", "data-etat"]) x.removeAttribute(a);
       if(x.matches("button, input, a")) x.setAttribute("tabindex", "-1");
     }
-    for(const inutile of c.querySelectorAll(".frise-jalons, .compteur-sous")) inutile.remove();
+    // .panneau-majeurs : le bloc des actus majeures n'existe que dans la disposition PC ; copié dans l'aperçu, il y montrait un titre vide
+    // (vu le 24/11/2026 sur la planche des réglages à 1280 px). L'aperçu n'a que faire de la liste, comme de la frise et du compteur-sous.
+    for(const inutile of c.querySelectorAll(".frise-jalons, .compteur-sous, .panneau-majeurs")) inutile.remove();
     return c;
   };
   const barre = document.createElement("div");
