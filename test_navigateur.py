@@ -7689,6 +7689,61 @@ def test_onglets_reglages_en_carte(nav, url):
         ctx.close()
 
 
+def test_reglages_menu_et_apercu_pc(nav, url):
+    """Réglages sur PC et en paysage (24/11/2026, choix d'Antoni) : menu vertical à gauche, réglages au centre, aperçu en direct à droite.
+
+    Mesuré sur le vrai site, rubrique par rubrique : le menu est une colonne (onglets empilés), le contenu ne dépasse pas 560 px, l'aperçu des
+    couleurs est dans `#apercuDirect` (colonne de droite) et reste visible quand on change de rubrique, aucune tuile ne sort de l'écran. Il
+    suit un réglage en direct. En portrait, rien ne change : barre en haut, aperçu dans son groupe, colonne de droite vide.
+    """
+    print("\n[réglages PC] menu à gauche, aperçu à droite")
+    for largeur, hauteur, tactile, pc in ((1100, 720, False, True), (1280, 720, False, True), (1920, 1080, False, True), (800, 360, True, True), (915, 412, True, True), (390, 844, True, False), (1099, 1400, True, False)):
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, timezone_id="Europe/Paris", reduced_motion="reduce", has_touch=tactile, is_mobile=tactile)
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
+        page.evaluate("() => openSettings()"); page.wait_for_timeout(400)
+        etiq = "[réglages %d × %d]" % (largeur, hauteur)
+        for rubrique in [e for e in page.evaluate("() => [...document.querySelectorAll('.panneau-tabs .tab')].map(t => t.dataset.cible)")]:
+            page.evaluate("r => ongletParam(r)", rubrique); page.wait_for_timeout(250)
+            m = page.evaluate("""() => { const b = s => { const e = document.querySelector(s); if(!e) return {g: 0, d: 0, w: 0, ht: 0}; const r = e.getBoundingClientRect(); return {g: r.left, d: r.right, w: r.width, ht: r.height}; };
+                const tabs = [...document.querySelectorAll('.panneau-tabs .tab')].map(e => e.getBoundingClientRect());
+                const mq = document.querySelector('#apercuDirect .maq-ecran');
+                const hors = [...document.querySelectorAll('#settingsOverlay .panneau-tabs, #settingsOverlay .panneau-onglet:not([hidden]) > *, #apercuDirect')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.left < -1 || r.right > innerWidth + 1); }).length;
+                return {menu: b('.panneau-tabs'), contenu: b('.panneau-onglet:not([hidden])'), apercu: b('#apercuDirect'),
+                        colonne: tabs.length === 4 && tabs.every(t => Math.abs(t.left - tabs[0].left) < 2) && tabs[3].top > tabs[0].top,
+                        dedans: !!document.querySelector('#apercuDirect #apercuCouleurs'), maq: mq ? mq.children.length : 0,
+                        sw: document.documentElement.scrollWidth, hors}; }""")
+            if pc:
+                check(m["colonne"] and m["menu"]["d"] <= m["contenu"]["g"] + 1 and m["contenu"]["d"] <= m["apercu"]["g"] + 1,
+                      "%s %s menu vertical, puis contenu, puis aperçu, côte à côte (menu %.0f–%.0f, contenu %.0f–%.0f, aperçu %.0f–%.0f)" % (etiq, rubrique, m["menu"]["g"], m["menu"]["d"], m["contenu"]["g"], m["contenu"]["d"], m["apercu"]["g"], m["apercu"]["d"]))
+                check(m["contenu"]["w"] <= 561 and m["dedans"] and m["apercu"]["ht"] > 100 and m["maq"] >= 3,
+                      "%s %s contenu ≤ 560 px (%.0f), aperçu rempli et visible dans la colonne de droite (%.0f × %.0f, %d blocs)" % (etiq, rubrique, m["contenu"]["w"], m["apercu"]["w"], m["apercu"]["ht"], m["maq"]))
+            else:
+                check(not m["colonne"] and not m["dedans"] and m["apercu"]["ht"] < 2,
+                      "%s %s inchangé : barre en haut, aperçu resté dans son groupe, colonne de droite vide (%s)" % (etiq, rubrique, {k: m[k] for k in ("colonne", "dedans")}))
+            check(m["sw"] <= largeur and m["hors"] == 0, "%s %s aucune tuile ne sort de l'écran (défilement %d, hors %d)" % (etiq, rubrique, m["sw"], m["hors"]))
+        if pc:
+            page.evaluate("() => ongletParam('aff')"); page.wait_for_timeout(250)
+            avant = page.evaluate("() => !!document.querySelector('#apercuDirect .maq-barre-etat.teinte')")
+            page.evaluate("v => basculeEffet('coulBarreEtat', v)", not avant); page.wait_for_timeout(400)
+            apres = page.evaluate("() => !!document.querySelector('#apercuDirect .maq-barre-etat.teinte')")
+            check(avant != apres, "%s l'aperçu suit un réglage en direct (barre d'état teintée : %s puis %s)" % (etiq, avant, apres))
+        check(not erreurs, "%s aucune erreur JavaScript (%s)" % (etiq, erreurs[:2]))
+        ctx.close()
+    # Redimensionnement : l'aperçu retourne dans son groupe en portrait, puis revient en PC.
+    ctx = nav.new_context(viewport={"width": 1280, "height": 720}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+    page = ctx.new_page(); page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.evaluate("() => openSettings()"); page.wait_for_timeout(300)
+    lieu = "() => document.getElementById('apercuCouleurs').parentNode.id || document.getElementById('apercuCouleurs').parentNode.className"
+    a = page.evaluate(lieu); page.set_viewport_size({"width": 390, "height": 844}); page.wait_for_timeout(500)
+    b = page.evaluate(lieu); page.set_viewport_size({"width": 1280, "height": 720}); page.wait_for_timeout(500)
+    c = page.evaluate(lieu)
+    check(a == "apercuDirect" and b != "apercuDirect" and c == "apercuDirect", "[réglages] l'aperçu change de colonne avec la fenêtre (%s, %s, %s)" % (a, b, c))
+    ctx.close()
+
+
 def test_cycle_de_couleurs(nav, url):
     """Cycle de couleurs (10/11/2026) : d'office le jour J, activable et coupable dans les Réglages.
 
@@ -11147,6 +11202,7 @@ CONTROLES = [
     test_version_pc,
     test_tirage_pas_dans_le_panneau,
     test_onglets_reglages_en_carte,
+    test_reglages_menu_et_apercu_pc,
     test_cycle_de_couleurs,
     test_cycle_synchronise,
     test_contraste_du_cycle,

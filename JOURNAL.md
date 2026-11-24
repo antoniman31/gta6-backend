@@ -13287,3 +13287,15 @@ chargement du vrai fil, arrivé plus tard en CI, les remplaçait. Le panneau lis
 par le test n'existait plus (« Cannot read properties of undefined (reading 'id') »). C'est le piège que CLAUDE.md décrit (les tests lisent le vrai fil) et que le nouveau
 contrôle de Stats, plus long, a rendu visible. Reproduit avant de corriger : `checkFromBackend()` après l'injection fait passer `lastItems` de 1 à 300 articles ; le test bloque
 maintenant le chargement du fil et des archives (deux routes), et `lastItems` reste à 1. 80/80, deux fois de suite.
+
+### Réglages en PC et en paysage : menu à gauche, aperçu à droite — 24/11/2026
+
+Choix d'Antoni (maquette, puis « aussi en paysage sur téléphone ») : dès 1100 px, et dès 800 px en paysage, les Réglages passent en trois colonnes : le menu des rubriques en colonne verticale
+(180 px en PC avec icône et mot côte à côte, 84 px en paysage), les réglages au centre (560 px au plus : la page est plafonnée, sinon à 1920 px les cartes s'étiraient), et l'aperçu en direct
+à droite (300 px en PC, 224 px en paysage), collé en haut. L'aperçu des couleurs est un seul élément, déplacé par script entre son groupe (portrait) et `#apercuDirect` (colonne de droite)
+quand la fenêtre change de taille ; il se reconstruit après le déplacement, car sa taille dépend de la largeur de son conteneur. Il reste donc visible dans les quatre rubriques.
+Mesuré : 1280 → menu 180, contenu 560, aperçu 300 ; 915 et 800 en paysage → menu 84, contenu 463 et 348, aperçu 224 ; aucun débordement horizontal ; portrait inchangé. Cache v152.
+
+Contrôle ajouté, `test_reglages_menu_et_apercu_pc` (89 vérifications : sept largeurs, quatre rubriques, aperçu qui suit un réglage en direct, aperçu qui change de colonne avec la fenêtre,
+portrait inchangé). Vu échouer sur l'ancien code (l'aperçu absent de la colonne, menu en barre, réglage non suivi).
+

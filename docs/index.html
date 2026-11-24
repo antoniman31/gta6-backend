@@ -3003,6 +3003,30 @@
     /* Le survol et les raccourcis : la carte visée par le pointeur est celle sur laquelle o, f et l agissent. */
     #feed :is(.card, .chrono-point):hover{outline:2px solid var(--accent); outline-offset:-2px;}
   }
+  /* LES RÉGLAGES SUR PC ET EN PAYSAGE (Antoni, 24/11/2026, planche « Stats et Réglages en PC » : « menu à gauche + aperçu en direct à droite » ; aperçu aussi en
+     paysage sur téléphone, choix d'Antoni). La page passe en trois colonnes : le menu des rubriques (la barre en carte, à la verticale), le contenu, l'aperçu
+     de l'app, collé en haut, visible dans les quatre rubriques (il ne l'était que dans Apparence). La colonne de l'aperçu n'existe pas sous ces seuils :
+     le téléphone en portrait est inchangé par construction. */
+  .apercu-direct{display:none;}
+  @media (min-width:1100px), (min-width:800px) and (orientation:landscape){
+    :root{ --rg-menu:84px; --rg-apercu:224px; }
+    /* Le contenu garde une colonne lisible (560 px au plus) : à 1920 px, sans plafond, il s'étirait sur 1292 px. */
+    .page-reglages{max-width:calc(var(--rg-menu) + var(--rg-apercu) + 32px + 560px);}
+    #settingsOverlay .settings-panel{
+      display:grid; grid-template-columns:var(--rg-menu) minmax(0, 1fr) var(--rg-apercu); column-gap:16px; align-items:start;
+    }
+    #settingsOverlay .panneau-entete{grid-column:1 / -1;}
+    #settingsOverlay .panneau-tabs{grid-column:1; flex-direction:column; margin:0; align-self:start;}
+    #settingsOverlay .panneau-onglet{grid-column:2;}
+    .apercu-direct{display:block; grid-column:3; grid-row:2 / span 4; position:sticky; top:8px; align-self:start;}
+    /* Dans la colonne, l'aperçu garde sa carte : même fond, même filet que les autres. */
+    .apercu-direct .apercu-couleurs{margin:0;}
+  }
+  @media (min-width:1100px){
+    :root{ --rg-menu:180px; --rg-apercu:300px; }
+    #settingsOverlay .panneau-tabs .tab{flex-direction:row; justify-content:flex-start; gap:10px; padding:6px 12px;}
+    #settingsOverlay .panneau-tabs .tab span{text-align:left;}
+  }
   /* LE TÉLÉPHONE EN PAYSAGE (Antoni, 24/11/2026 : « si sur mobile je passe en mode paysage ça m'affiche la version PC »). Mesuré à 915 × 412
      (la taille simulée d'un téléphone en paysage) : avec la disposition d'avant, l'en-tête (253 px) mangeait le premier tiers de l'écran et le premier article
      commençait à 287 px sur 412. La disposition PC s'applique donc aussi à partir de 800 px en paysage, avec des jetons plus étroits : le rail passe à 80 px (à 72, le libellé « Réglages » de 57,6 px dépassait de 2,6 px son bouton de 55 px : vu sur la planche du 24/11/2026),
@@ -3752,6 +3776,10 @@
 
     </div>
 
+    <!-- L'APERÇU EN DIRECT (PC et paysage) : colonne de droite de la page des réglages, visible dans les quatre rubriques. Vide au départ ;
+         placeApercu() y range #apercuCouleurs quand l'écran est large, et le remet dans sa carte « Couleurs » sinon. -->
+    <aside id="apercuDirect" class="apercu-direct" aria-label="Aperçu en direct"></aside>
+
   </div>
 </section>
 
@@ -4442,6 +4470,25 @@ function majReglagesEffets(){
   if(compte) compte.textContent = n + " sur " + total + " allumés";
   construitMaquette();
 }
+// L'APERÇU EN DIRECT. Sur grand écran et en paysage, #apercuCouleurs quitte sa carte « Couleurs » (rubrique Apparence) pour la colonne de droite
+// de la page des réglages, où il se voit dans les quatre rubriques ; quand l'écran redevient étroit, il retourne à sa place d'origine (retenue par
+// son voisin de droite, qui ne bouge pas). Même condition que la disposition PC et que le CSS ci-dessus. On le reconstruit après chaque
+// déplacement : sa mise à l'échelle dépend de la largeur de son conteneur.
+const apercuEl = document.getElementById("apercuCouleurs");
+const apercuMaison = apercuEl ? { parent: apercuEl.parentNode, apres: apercuEl.nextSibling } : null;
+const mqApercuDirect = window.matchMedia("(min-width:1100px), (min-width:800px) and (orientation:landscape)");
+function placeApercu(){
+  const direct = document.getElementById("apercuDirect");
+  if(!apercuEl || !apercuMaison || !direct) return;
+  if(mqApercuDirect.matches){
+    if(apercuEl.parentNode !== direct) direct.appendChild(apercuEl);
+  }else if(apercuEl.parentNode === direct){
+    apercuMaison.parent.insertBefore(apercuEl, apercuMaison.apres);
+  }
+  requestAnimationFrame(construitMaquette);
+}
+mqApercuDirect.addEventListener("change", placeApercu);
+placeApercu();
 // LA MAQUETTE FIDÈLE (Antoni, 10/11/2026 : « maj l'aperçu pour le rendre vraiment précis »). On COPIE les vrais éléments de la
 // page (en-tête et tuiles du compteur, recherche, onglets, barre du bas) et on y pose un jour, un repère « nouveaux » et deux
 // cartes bâtis avec les vraies classes : toutes les règles de la feuille de style s'y appliquent, y compris les zones coupées.
