@@ -2967,13 +2967,15 @@
     .wrap > .stale-banner{grid-row:1;} .wrap > .update-banner{grid-row:2;}
     .wrap > main{grid-column:1; grid-row:3;}
     .wrap > .info-btn{grid-column:1; grid-row:4;}
-    /* Le rail : la barre du bas à la verticale. Le fondu et la barre du haut réduite n'ont plus de raison d'être (l'en-tête reste visible). */
-    .barre-bas{
+    /* Le rail : la barre du bas à la verticale. Le fondu et la barre du haut réduite n'ont plus de raison d'être (l'en-tête reste visible).
+       « body > » : SEULE la vraie barre devient un rail. L'aperçu « Couleurs » des réglages en recopie une, qui doit rester la barre du bas du
+       téléphone qu'il dessine ; sans ce préfixe elle s'empilait à la verticale dans l'aperçu (vu le 24/11/2026 sur la planche des réglages à 1920 px). */
+    body > .barre-bas{
       top:0; right:auto; width:calc(var(--pc-rail) + env(safe-area-inset-left, 0px)); flex-direction:column; justify-content:flex-start; gap:4px;
       padding:16px 8px 16px calc(8px + env(safe-area-inset-left, 0px)); border-width:0 1px 0 0; border-radius:0 var(--r-md) var(--r-md) 0; box-shadow:6px 0 24px rgba(0,0,0,.28);
     }
-    .barre-bas button{flex:none; min-height:64px;}
-    .barre-bas button:hover{background:var(--bg-elevated); color:var(--text);}
+    body > .barre-bas button{flex:none; min-height:64px;}
+    body > .barre-bas button:hover{background:var(--bg-elevated); color:var(--text);}
     body::after, .barre-haut{display:none;}
     .panneau-tabs, body.bh-visible .panneau-tabs{top:8px;}
     /* Les éléments posés au centre de l'écran se recentrent sur le fil : milieu de la zone à droite du rail, moins la moitié du panneau. */

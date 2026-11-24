@@ -13261,3 +13261,10 @@ prouve (0 identifiant dans l'aperçu, avant comme après). Je l'avais écrit san
 
 Corrigé : `.panneau-majeurs` rejoint `.frise-jalons` et `.compteur-sous` parmi ce que l'aperçu retire. Contrôle dans `test_version_pc` (68 → 69 :
 l'aperçu recopie bien l'en-tête, sans le bloc, sans aucun identifiant), vu échouer sur l'ancien code (le bloc est recopié, titre compris). Cache v149.
+
+### L'aperçu « Couleurs » : sa barre du bas ne s'empile plus à la verticale — 24/11/2026
+
+Repéré sur la planche de Stats et de Réglages à 1920 px : dans l'aperçu « Couleurs » des réglages, la barre du bas copiée (Fil, Stats, Réglages)
+s'empilait à la verticale. Cause : ma règle du rail de la disposition PC visait `.barre-bas`, et l'aperçu en recopie une avec la même classe ;
+il dessine pourtant le téléphone, dont la barre est horizontale. Corrigé : les règles du rail visent `body > .barre-bas`, c'est-à-dire la seule vraie
+barre. Contrôle dans `test_version_pc` (69 → 70 : la barre copiée reste horizontale, plus large que haute), vu échouer sur l'ancien code. Cache v150.
