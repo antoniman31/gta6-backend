@@ -13281,3 +13281,9 @@ portrait est inchangé. Cache v151.
 
 Contrôles ajoutés à `test_version_pc` (70 → 80, deux par largeur, cinq largeurs) : le panneau reste affiché dans Stats, dans l'écran, ses tuiles dans leur cadre ; la grille ne bouge pas
 d'une vue à l'autre. Vus échouer sur l'ancien code (10 échecs : panneau à `none`, 0 px, décalage de 64 px).
+
+Erreur de ma part, vue en CI sur la PR (« Contrôles rendus » rouge, alors que la suite locale était verte, 2754/2754) : `test_version_pc` injecte ses propres articles, et le
+chargement du vrai fil, arrivé plus tard en CI, les remplaçait. Le panneau listait alors un vrai article (« GTA 6 : 39 millions de joueurs sur PS5… ») et une carte cherchée
+par le test n'existait plus (« Cannot read properties of undefined (reading 'id') »). C'est le piège que CLAUDE.md décrit (les tests lisent le vrai fil) et que le nouveau
+contrôle de Stats, plus long, a rendu visible. Reproduit avant de corriger : `checkFromBackend()` après l'injection fait passer `lastItems` de 1 à 300 articles ; le test bloque
+maintenant le chargement du fil et des archives (deux routes), et `lastItems` reste à 1. 80/80, deux fois de suite.

@@ -7408,6 +7408,11 @@ def test_version_pc(nav, url):
         ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, timezone_id="Europe/Paris", reduced_motion="reduce",
                               has_touch=tactile, is_mobile=tactile)
         ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1')) localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        # Le vrai fil ne doit pas se charger : le test injecte ses propres articles, et le chargement, arrivé quelques centaines de ms plus tard (en CI,
+        # le 24/11/2026), les remplaçait par les vrais (le panneau listait un vrai article, puis une carte cherchée n'existait plus). Reproduit :
+        # checkFromBackend() après l'injection fait passer lastItems de 1 à 300 articles ; avec ces deux routes, il reste à 1.
+        ctx.route("**/feed*.json*", lambda r: r.abort())
+        ctx.route("**/archives/*.json*", lambda r: r.abort())
         page = ctx.new_page(); erreurs = []
         page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
         page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
