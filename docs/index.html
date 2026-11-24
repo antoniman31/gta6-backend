@@ -10950,6 +10950,21 @@ async function lancerTirage(){
   finally{ tirageEnCours = false; refermeZoneTirage(); }
 }
 
+// Le doigt est-il dans une zone qui défile en elle-même (le panneau de droite de la disposition PC et du paysage, un panneau
+// ouvert) ? Le tirage pour actualiser ne regarde que le défilement de la PAGE : sans cette garde, tirer vers le bas dans le
+// panneau lançait l'actualisation (Antoni, 24/11/2026, en paysage sur son S26) ET bloquait le défilement du panneau, parce que
+// le geste appelait preventDefault. En portrait l'en-tête n'est pas une zone défilante : le tirage y marche comme avant.
+function dansZoneDefilante(el){
+  for(let p = el; p && p !== document.body && p !== document.documentElement; p = p.parentElement){
+    const oy = getComputedStyle(p).overflowY;
+    // Il faut qu'elle DÉFILE en hauteur : la rangée d'onglets est en overflow:auto pour son défilement horizontal, et son
+    // overflowY vaut alors « auto » aussi, sans rien à faire défiler en hauteur. Sans ce test, tirer depuis elle n'actualisait plus
+    // (vu par le contrôle témoin du fil, avant la fusion).
+    if((oy === "auto" || oy === "scroll") && p.scrollHeight > p.clientHeight + 1) return true;
+  }
+  return false;
+}
+
 function surTouchStart(e){
   geste = null;
   if(e.touches.length !== 1) return;
@@ -10961,7 +10976,7 @@ function surTouchStart(e){
     x0: t.clientX, y0: t.clientY, axe: null, tirage: 0,
     enveloppe,
     carte: enveloppe ? enveloppe.querySelector(".card, .chrono-point") : null,
-    enHaut: window.scrollY <= 0
+    enHaut: window.scrollY <= 0 && !dansZoneDefilante(e.target)
   };
 }
 
