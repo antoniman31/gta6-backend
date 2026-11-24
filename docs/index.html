@@ -2943,9 +2943,9 @@
      donc inchangé par construction. Les largeurs (rail, fil, panneau) sont les jetons --pc-* : un seul endroit
      à changer, et le contrôle « rien ne déborde » les lit au lieu de recopier des nombres. */
   .panneau-majeurs{display:none;}
-  @media (min-width:1100px){
+  @media (min-width:1100px), (min-width:800px) and (orientation:landscape){
     :root{ --pc-rail:84px; --pc-fil:640px; --pc-panneau:300px; --pc-gouttiere:24px; }
-    body{padding-left:calc(var(--pc-rail) + 16px);}
+    body{padding-left:calc(var(--pc-rail) + 16px + env(safe-area-inset-left, 0px));}
     .wrap{
       max-width:none; display:grid; justify-content:center; align-items:start;
       grid-template-columns:minmax(0, var(--pc-fil)) var(--pc-panneau); column-gap:var(--pc-gouttiere);
@@ -2962,8 +2962,8 @@
     .wrap > .info-btn{grid-column:1; grid-row:4;}
     /* Le rail : la barre du bas à la verticale. Le fondu et la barre du haut réduite n'ont plus de raison d'être (l'en-tête reste visible). */
     .barre-bas{
-      top:0; right:auto; width:var(--pc-rail); flex-direction:column; justify-content:flex-start; gap:4px;
-      padding:16px 8px; border-width:0 1px 0 0; border-radius:0 var(--r-md) var(--r-md) 0; box-shadow:6px 0 24px rgba(0,0,0,.28);
+      top:0; right:auto; width:calc(var(--pc-rail) + env(safe-area-inset-left, 0px)); flex-direction:column; justify-content:flex-start; gap:4px;
+      padding:16px 8px 16px calc(8px + env(safe-area-inset-left, 0px)); border-width:0 1px 0 0; border-radius:0 var(--r-md) var(--r-md) 0; box-shadow:6px 0 24px rgba(0,0,0,.28);
     }
     .barre-bas button{flex:none; min-height:64px;}
     .barre-bas button:hover{background:var(--bg-elevated); color:var(--text);}
@@ -2971,7 +2971,7 @@
     body.bh-visible .panneau-tabs{top:0;}
     /* Les éléments posés au centre de l'écran se recentrent sur le fil : milieu de la zone à droite du rail, moins la moitié du panneau. */
     .resume-chip, .toast{
-      left:calc(var(--pc-rail) + (100vw - var(--pc-rail) - 32px - var(--pc-fil) - var(--pc-gouttiere) - var(--pc-panneau)) / 2 + 16px + var(--pc-fil) / 2);
+      left:calc(var(--pc-rail) + env(safe-area-inset-left, 0px) + (100vw - var(--pc-rail) - env(safe-area-inset-left, 0px) - 32px - var(--pc-fil) - var(--pc-gouttiere) - var(--pc-panneau)) / 2 + 16px + var(--pc-fil) / 2);
       bottom:16px;
     }
     /* Le bloc ajouté dans l'en-tête : les dernières actus majeures. */
@@ -2987,6 +2987,15 @@
     .panneau-majeurs .vide{color:var(--text-dim); font-size:12px;}
     /* Le survol et les raccourcis : la carte visée par le pointeur est celle sur laquelle o, f et l agissent. */
     #feed :is(.card, .chrono-point):hover{outline:2px solid var(--accent); outline-offset:-2px;}
+  }
+  /* LE TÉLÉPHONE EN PAYSAGE (Antoni, 24/11/2026 : « si sur mobile je passe en mode paysage ça m'affiche la version PC »). Mesuré à 915 × 412
+     (la taille simulée d'un téléphone en paysage) : avec la disposition d'avant, l'en-tête (253 px) mangeait le premier tiers de l'écran et le premier article
+     commençait à 287 px sur 412. La disposition PC s'applique donc aussi à partir de 800 px en paysage, avec des jetons plus étroits : le rail passe à 72 px,
+     le fil à 440, le panneau à 280 et la gouttière à 16. Le panneau, plus haut que l'écran (506 px pour 362 visibles à 412 de haut), défile en lui-même
+     (overflow-y déjà posé plus haut) : le choix d'Antoni est de garder les actus majeures dedans. Une fenêtre de bureau de 800 à 1099 px de large en
+     paysage prend la même disposition, ce qui vaut mieux qu'une colonne de 640 px perdue au milieu. En portrait, rien ne change. */
+  @media (min-width:800px) and (max-width:1099px) and (orientation:landscape){
+    :root{ --pc-rail:72px; --pc-fil:440px; --pc-panneau:280px; --pc-gouttiere:16px; }
   }
 </style>
 </head>

@@ -7401,18 +7401,22 @@ def test_version_pc(nav, url):
                 nbTuiles: document.querySelectorAll('.cd-t').length, nbCartes: document.querySelectorAll('#feed .card').length,
                 panneau: document.getElementById('panneauMajeurs') ? getComputedStyle(document.getElementById('panneauMajeurs')).display : 'absent',
                 barreHaut: getComputedStyle(document.getElementById('barreHaut')).display}; }"""
-    for largeur, hauteur in ((1099, 720), (1100, 720), (1280, 720), (1920, 1080)):
-        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, timezone_id="Europe/Paris", reduced_motion="reduce")
+    # (largeur, hauteur, disposition PC attendue, tactile). 1099 × 1400 est un portrait : le seuil de 1100 px ne vaut qu'en paysage de 800 px et plus
+    # (24/11/2026 : le téléphone en paysage prend la disposition PC) ; 799 × 360 est un paysage trop étroit.
+    for largeur, hauteur, attendu_pc, tactile in ((1099, 1400, False, False), (799, 360, False, True), (800, 360, True, True), (915, 412, True, True),
+                                                  (1100, 720, True, False), (1280, 720, True, False), (1920, 1080, True, False)):
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, timezone_id="Europe/Paris", reduced_motion="reduce",
+                              has_touch=tactile, is_mobile=tactile)
         ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1')) localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
         page = ctx.new_page(); erreurs = []
         page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
         page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
         page.evaluate(INJECTE); page.wait_for_timeout(200)
         m = page.evaluate(MESURE)
-        etiq = "[PC %d px]" % largeur
-        if largeur < 1100:
+        etiq = "[PC %d × %d]" % (largeur, hauteur)
+        if not attendu_pc:
             check(m["panneau"] == "none" and m["rail"]["w"] == largeur and m["rail"]["t"] > 0 and m["fil"]["w"] <= 640.5 and m["en"]["w"] <= 640.5,
-                  "%s sous le seuil, la disposition du téléphone : barre en bas sur toute la largeur, colonne de 640 px, pas de panneau (%s)"
+                  "%s hors des seuils (portrait, ou paysage sous 800 px), la disposition du téléphone : barre en bas sur toute la largeur, colonne de 640 px, pas de panneau (%s)"
                   % (etiq, {k: m[k] for k in ("panneau", "rail", "fil")}))
         else:
             j = m["jetons"]
@@ -7437,6 +7441,17 @@ def test_version_pc(nav, url):
                 return {toast: (b.left + b.right) / 2, fil: (f.left + f.right) / 2}; }""")
             check(abs(centre["toast"] - centre["fil"]) < 12, "%s le toast se centre sur le fil, pas sur l'écran (%.0f px contre %.0f px, scrollbar tolérée)" % (etiq, centre["toast"], centre["fil"]))
 
+            if hauteur < 600:
+                # Paysage de téléphone : le panneau est plus haut que l'écran, il défile en lui-même et la dernière actu majeure reste atteignable.
+                pa = page.evaluate("""() => { const en = document.querySelector('header.console'); const avant = en.scrollTop; en.scrollTop = en.scrollHeight;
+                    const liens = [...document.querySelectorAll('#panneauMajeursListe a')], dernier = liens[liens.length - 1].getBoundingClientRect(), cadre = en.getBoundingClientRect();
+                    return {defile: en.scrollHeight > en.clientHeight, tient: en.clientHeight <= innerHeight - 24, atteint: dernier.bottom <= cadre.bottom + 1 && dernier.top >= cadre.top - 1,
+                            liens: liens.length, avant, apres: en.scrollTop,
+                            boutons: [...document.querySelectorAll('.barre-bas button')].map(b => b.getBoundingClientRect().height)}; }""")
+                check(pa["defile"] and pa["tient"] and pa["atteint"] and pa["liens"] == 3 and pa["apres"] > pa["avant"],
+                      "%s le panneau défile en lui-même et la dernière des 3 actus majeures est atteignable (%s)" % (etiq, {k: pa[k] for k in ("defile", "tient", "atteint", "liens", "avant", "apres")}))
+                check(all(h >= CIBLE_MINIMALE for h in pa["boutons"]),
+                      "%s les boutons du rail font au moins %d px de haut au doigt (%s)" % (etiq, CIBLE_MINIMALE, pa["boutons"]))
             if largeur == 1280:
                 # ---- Le panneau : les trois plus récentes, dans l'ordre, échappées, le lien douteux écarté, la plus vieille absente.
                 liste = page.evaluate("() => [...document.querySelectorAll('#panneauMajeursListe a')].map(a => ({texte: a.firstChild.textContent, href: a.getAttribute('href'), b: a.querySelectorAll('b').length}))")

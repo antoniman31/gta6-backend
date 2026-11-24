@@ -13158,3 +13158,23 @@ route : mon premier essai d'un contrôle de `o` ciblait la quatrième carte, qui
 `javascript:` ; l'appli refusait de l'ouvrir, et c'était le bon comportement. Le contrôle choisit maintenant une carte au
 lien sûr et vérifie à part que le lien douteux n'ouvre rien. Non mesuré ici : le rendu sur l'écran Windows d'Antoni (voir RESTE-A-FAIRE 5 ter). « Stats » et « Réglages » gardent
 leur colonne de 640 px à 1280 px (mesuré : 640 px de large, rien ne déborde).
+
+### Téléphone en paysage : la disposition PC — 24/11/2026
+
+Demande d'Antoni : « si sur mobile je passe en mode paysage ça m'affiche la version PC ». Proposé d'abord (visuel et
+mesures), puis choix d'Antoni : garder « Dernières actus majeures » dans le panneau, avec défilement. Prévu comme une PR
+à part (règle « une PR, un sujet »), après la #328.
+
+Mesuré sur une simulation à 915 × 412 (taille simulée d'un téléphone en paysage, pas mesurée sur le S26) : avec la
+disposition d'avant, l'en-tête (253 px) faisait commencer le premier article à 287 px sur 412 ; avec la disposition PC,
+le fil commence à 24 px. Le panneau (506 px de contenu pour 362 visibles) défile en lui-même.
+
+Fait : la règle de la disposition PC s'applique aussi à `(min-width:800px) and (orientation:landscape)`, avec des jetons
+plus étroits de 800 à 1099 px (rail 72, fil 440, panneau 280, gouttière 16) ; l'encoche est prise en compte
+(`safe-area-inset-left` sur le rail, le rembourrage du corps et le recentrage du toast et de la languette). En portrait,
+rien ne change. Une fenêtre de bureau de 800 à 1099 px en paysage prend la même disposition. `docs/sw.js` : cache v144.
+
+Contrôle : `test_version_pc` passe de 36 à 58 contrôles (1099 × 1400 en portrait et 799 × 360 restent en disposition
+téléphone ; 800 × 360 et 915 × 412 au doigt : rien ne déborde, le panneau défile et sa dernière actu est atteignable, les
+boutons du rail font 64 px). Vu échouer sur l'ancien code : 12 échecs sur 58. Non mesuré : l'écran du S26 en paysage (la
+taille 915 × 412 est une simulation) et l'encoche réelle (`env(safe-area-inset-left)` vaut 0 dans le navigateur de test).
