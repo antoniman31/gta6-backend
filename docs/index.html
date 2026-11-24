@@ -119,8 +119,25 @@
     --cat-online:#19b2b3;    --cat-test:#2281df;
     --cat-gameplay:#7171eb;  --cat-mod:#a25de8;
     --cat-speedrun:#dc1fdc;  --cat-astuce:#e33b8f;
+    /* COULEURS SORTIES DES RÈGLES (audit « Design », 24/11/2026) : mêmes valeurs qu'avant, en jetons pour qu'un thème puisse
+       les corriger et que test_pipeline.py refuse d'en réécrire une en dur. Fixes dans les deux thèmes sauf mention. */
+    --tag-leak:#e11d48; --tag-video:#7c3aed; --tag-pc:#0369a1; --tag-preco:#15803d; --tag-prix:#b45309;
+    --tag-perso:#be185d; --tag-take2:#0f766e; --tag-rumeur:#57534e; --tag-date:#4338ca;
+    --sur-tag:#ffffff;                               /* texte des étiquettes pleines, mesuré par le contrôle navigateur */
+    --badge-officiel:#FFAB00; --sur-badge-officiel:#100800;   /* orange du logo Rockstar et son texte : ni cycle ni thème */
+    --pulse-rouge-0:rgba(255,77,77,0); --pulse-rouge:rgba(255,77,77,0.5);  /* bord du compte à rebours qui bat */
+    --run-echec:#ff4d4d;                             /* pastille d'un passage du robot en échec */
+    --rouge-chaud:#e04f5f;                           /* fond teinté de l'étiquette « chaud », hors cycle */
+    --ombre-flottant:rgba(0,0,0,.28); --ombre-bulle:rgba(0,0,0,.35); --ombre-legere:rgba(0,0,0,.18);
+    --voile:rgba(0,0,0,0.5);                         /* derrière une feuille ouverte */
+    --chiffre-bleu:#3380ff; --chiffre-rose:#f87db7; --chiffre-blanc:#ffffff; --chiffre-bleu-clair:#4a8dff;
+    --halo-bleu:rgba(51,128,255,.7); --halo-rose:rgba(248,125,183,.7); --halo-blanc:rgba(255,255,255,.7);
+    --flash-fete:#ffffff;                            /* éclair de la fête de sortie */
+    --noir-fixe:#000000;                             /* écran final et barre d'état de la maquette : noirs dans les deux thèmes */
+    --jauge-rockstar:#FFAB00; --jauge-autres:#9aa7b4; /* jauges « lus par source » (graphique : 3:1 suffit) */
   }
   html[data-theme="light"]{
+    --jauge-rockstar:#b36b00; --jauge-autres:#566b7e; /* #FFAB00 ne fait que 1,9:1 sur blanc */
     --bg: #f4f7fa;
     --bg-panel: #ffffff;
     --bg-panel-plein: #ffffff;
@@ -296,8 +313,8 @@
     50%{ opacity:0.55; }
   }
   @keyframes countdown-border-pulse{
-    0%, 100%{ box-shadow:0 0 0 0 rgba(255,77,77,0); }
-    50%{ box-shadow:0 0 0 2px rgba(255,77,77,0.5); }
+    0%, 100%{ box-shadow:0 0 0 0 var(--pulse-rouge-0); }
+    50%{ box-shadow:0 0 0 2px var(--pulse-rouge); }
   }
   .brand span{color:var(--c-texte);}
   .status-line{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); margin-top:6px;}
@@ -453,7 +470,7 @@
   .barre-haut{
     position:fixed; top:0; left:0; right:0; z-index:55;
     display:grid; grid-template-columns:minmax(0, 1fr) auto; grid-template-rows:52px auto; align-items:center; column-gap:10px; padding:env(safe-area-inset-top, 0px) max(14px, calc((100% - 468px) / 2)) 0;
-    background:var(--bg-panel-plein); border:1px solid var(--line); border-width:0 0 1px; border-radius:0 0 var(--r-md) var(--r-md); box-shadow:0 6px 24px rgba(0,0,0,.28);
+    background:var(--bg-panel-plein); border:1px solid var(--line); border-width:0 0 1px; border-radius:0 0 var(--r-md) var(--r-md); box-shadow:0 6px 24px var(--ombre-flottant);
     visibility:hidden; transform:translateY(-100%);
     transition:transform var(--t-moyen) var(--courbe);
   }
@@ -515,7 +532,7 @@
     position:fixed; left:0; right:0; bottom:0; z-index:60;
     display:flex; gap:2px; padding:6px max(6px, calc((100% - 484px) / 2)) calc(6px + env(safe-area-inset-bottom, 0px));
     background:var(--bg-panel-plein); border:1px solid var(--line); border-width:1px 0 0; border-radius:var(--r-md) var(--r-md) 0 0;
-    box-shadow:0 -6px 24px rgba(0,0,0,.28);
+    box-shadow:0 -6px 24px var(--ombre-flottant);
   }
   .barre-bas button{
     flex:1 1 0; min-width:0; min-height:50px; padding:0; border:0; background:none;
@@ -919,7 +936,7 @@
   }
   .official-badge{
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:800;
-    background:#FFAB00; color:#100800; border-radius:var(--r-sm);   /* orange du logo Rockstar, FIXE : ni cycle ni thème */
+    background:var(--badge-officiel); color:var(--sur-badge-officiel); border-radius:var(--r-sm);   /* orange du logo Rockstar, FIXE : ni cycle ni thème */
     letter-spacing:0.04em; white-space:nowrap;
   }
   /* 10 px et non 8 : le plus petit rôle typographique que Material 3
@@ -1076,15 +1093,15 @@
      Fixes dans les deux thèmes, comme LEAK et VIDÉO : un badge rouge reste
      rouge. Le contrôle les mesure directement — fixe ne veut pas dire
      dispensé. */
-  .tag-leak{background:#e11d48; color:#fff;}
-  .tag-video{background:#7c3aed; color:#fff;}
-  .tag-pc{background:#0369a1; color:#fff;}
-  .tag-preco{background:#15803d; color:#fff;}
-  .tag-prix{background:#b45309; color:#fff;}
-  .tag-perso{background:#be185d; color:#fff;}
-  .tag-take2{background:#0f766e; color:#fff;}
-  .tag-rumeur{background:#57534e; color:#fff;}
-  .tag-date{background:#4338ca; color:#fff;}
+  .tag-leak{background:var(--tag-leak); color:var(--sur-tag);}
+  .tag-video{background:var(--tag-video); color:var(--sur-tag);}
+  .tag-pc{background:var(--tag-pc); color:var(--sur-tag);}
+  .tag-preco{background:var(--tag-preco); color:var(--sur-tag);}
+  .tag-prix{background:var(--tag-prix); color:var(--sur-tag);}
+  .tag-perso{background:var(--tag-perso); color:var(--sur-tag);}
+  .tag-take2{background:var(--tag-take2); color:var(--sur-tag);}
+  .tag-rumeur{background:var(--tag-rumeur); color:var(--sur-tag);}
+  .tag-date{background:var(--tag-date); color:var(--sur-tag);}
   /* LA FAMILLE « CATÉGORIE », au trait plutôt qu'en aplat. Les douze
      badges de l'après-sortie disent de quoi l'article parle ; les neuf
      d'octobre disent qu'il s'est passé quelque chose. Un seul coup d'œil
@@ -1375,7 +1392,7 @@
     position:fixed; left:50%; transform:translateX(-50%); bottom:calc(63px + env(safe-area-inset-bottom, 0px)); z-index:60;
     background:var(--c-fond); color:var(--accent-contrast); border:none; border-radius:var(--r-md) var(--r-md) 0 0;
     height:36px; min-height:0; line-height:36px; padding:0 18px; font-family:'JetBrains Mono',monospace; font-size:12px;
-    font-weight:600; box-shadow:0 -6px 24px rgba(0,0,0,.28); cursor:pointer;
+    font-weight:600; box-shadow:0 -6px 24px var(--ombre-flottant); cursor:pointer;
   }
   .resume-chip::after{content:""; position:absolute; left:0; right:0; top:-12px; bottom:0;}
   .resume-chip .ic{vertical-align:middle;}
@@ -1612,7 +1629,7 @@
 
   /* ---------- Panneau Paramètres ---------- */
   .overlay{
-    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+    display:none; position:fixed; inset:0; background:var(--voile);
     z-index:100; align-items:flex-start; justify-content:center; padding:16px;
     overflow-y:auto;
   }
@@ -1899,12 +1916,12 @@
     50%{--accent:var(--cycle-c); --orange:var(--orange-c); --rouge:var(--rouge-c);}
   }
   @keyframes cycle-chiffre{
-    0%,100%{color:#3380ff; text-shadow:0 0 10px rgba(51,128,255,.7);}
-    25%,75%{color:#f87db7; text-shadow:0 0 10px rgba(248,125,183,.7);}
-    50%{color:#ffffff; text-shadow:0 0 10px rgba(255,255,255,.7);}
+    0%,100%{color:var(--chiffre-bleu); text-shadow:0 0 10px var(--halo-bleu);}
+    25%,75%{color:var(--chiffre-rose); text-shadow:0 0 10px var(--halo-rose);}
+    50%{color:var(--chiffre-blanc); text-shadow:0 0 10px var(--halo-blanc);}
   }
   @keyframes cycle-chiffre-clair{
-    0%,100%{color:#4a8dff;} 25%,75%{color:#f87db7;} 50%{color:#ffffff;}
+    0%,100%{color:var(--chiffre-bleu-clair);} 25%,75%{color:var(--chiffre-rose);} 50%{color:var(--chiffre-blanc);}
   }
   html.cycle-couleur{--accent-contrast:#0b0b14;}
   html[data-theme="light"].cycle-couleur{--accent-contrast:#ffffff;}
@@ -2029,7 +2046,7 @@
   .fete{position:fixed; inset:0; z-index:2147483001; pointer-events:none; overflow:hidden;}
   .fete .fete-flash{
     position:absolute; inset:0; opacity:0; animation:fete-flash .45s ease-out 1 both;
-    background:radial-gradient(circle at 50% 30%, #fff 0%, color-mix(in srgb, var(--cycle-a) 28%, #fff) 40%, transparent 80%);
+    background:radial-gradient(circle at 50% 30%, var(--flash-fete) 0%, color-mix(in srgb, var(--cycle-a) 28%, var(--flash-fete)) 40%, transparent 80%);
   }
   @keyframes fete-flash{0%{opacity:0;} 10%{opacity:.9;} 100%{opacity:0;}}
   .fete .fete-onde{
@@ -2058,7 +2075,7 @@
      était calculée avant l'animation et les lignes en héritaient une valeur figée. Il ne se pose jamais quand le téléphone
      réduit les animations (lanceHalo refuse alors de jouer). */
   .fete-final{
-    position:fixed; inset:0; z-index:2147483002; background:#000; color:var(--c-texte); cursor:pointer;
+    position:fixed; inset:0; z-index:2147483002; background:var(--noir-fixe); color:var(--c-texte); cursor:pointer;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:24px;
     text-align:center; font-weight:900; text-transform:uppercase; line-height:1.02; letter-spacing:.01em;
     animation:fete-final-in 1.2s ease-out 1 both;
@@ -2187,8 +2204,8 @@
   /* L'ÉCRAN RESSERRÉ (Antoni, 10/11/2026 : « 3, avec moins de hauteur, et enlève les détails inutiles ») : le conteneur ne prend que 74 %
      de la largeur (l'échelle baisse d'autant), la frise des jalons, le sous-titre, le jour, le repère « nouveaux », la date et les boutons des
      cartes sont retirés, les marges et les commandes sont resserrées. Reste tout ce qui change de couleur. */
-  .maq-ecran .maq-barre-etat{height:10px; background:#000;}
-  .maq-ecran .maq-barre-etat.teinte{background:color-mix(in srgb, var(--accent) 16%, #000);}
+  .maq-ecran .maq-barre-etat{height:10px; background:var(--noir-fixe);}
+  .maq-ecran .maq-barre-etat.teinte{background:color-mix(in srgb, var(--accent) 16%, var(--noir-fixe));}
   .maq-ecran header.console{display:block !important; position:static !important; margin:6px 10px;}
   .maq-ecran .maq-corps{padding:0 10px;}
   .maq-ecran .maq-corps .search-row, .maq-ecran .maq-corps .tab-row{margin-bottom:6px;}
@@ -2306,11 +2323,9 @@
   .stats-jauge i{display:block; height:100%; background:var(--c-fond); border-radius:var(--r-full);}
   /* LES JAUGES « LUS PAR SOURCE » PRENNENT LA COULEUR DE LEUR ONGLET (17/11/2026) : Rockstar orange, RockstarMag violet, Autres gris. Une barre est un
      graphique : 3:1 contre le fond suffit, d'où un orange plus profond en clair (#FFAB00 ne fait que 1,9:1 sur blanc). Fixes, comme les onglets. */
-  .stats-jauge-ligne.src-rockstar .stats-jauge i{background:#FFAB00;}
+  .stats-jauge-ligne.src-rockstar .stats-jauge i{background:var(--jauge-rockstar);}
   .stats-jauge-ligne.src-rockstarmag .stats-jauge i{background:var(--violet-rm);}
-  .stats-jauge-ligne.src-autres .stats-jauge i{background:#9aa7b4;}
-  html[data-theme="light"] .stats-jauge-ligne.src-rockstar .stats-jauge i{background:#b36b00;}
-  html[data-theme="light"] .stats-jauge-ligne.src-autres .stats-jauge i{background:#566b7e;}
+  .stats-jauge-ligne.src-autres .stats-jauge i{background:var(--jauge-autres);}
   .stats-tableau{margin-top:8px; font-size:12px;}
   .stats-tableau summary{cursor:pointer; color:var(--text-dim); min-height:32px;
     display:flex; align-items:center;}
@@ -2329,7 +2344,7 @@
     z-index:400; display:flex; align-items:center; gap:14px;
     background:var(--bg-elevated); color:var(--text);
     border:1px solid var(--line); border-radius:var(--r-md);
-    padding:12px 14px; box-shadow:0 6px 24px rgba(0,0,0,.35);
+    padding:12px 14px; box-shadow:0 6px 24px var(--ombre-bulle);
     max-width:min(440px, calc(100vw - 32px)); font-size:13px;
   }
   .toast[hidden]{display:none;}
@@ -2498,7 +2513,7 @@
     .tab-row:not(.tab-row-full) .tab{letter-spacing:0;}
   }
   .tag-badge.tag-hot{
-    background:color-mix(in srgb, #e04f5f 18%, transparent);
+    background:color-mix(in srgb, var(--rouge-chaud) 18%, transparent);
     color:var(--rouge-majeur); border:1px solid var(--rouge-majeur); font-weight:800;
   }
   .history-line{
@@ -2619,7 +2634,7 @@
   }
   .run-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
   .run-dot.success{background:var(--ok);}
-  .run-dot.failure{background:#ff4d4d;}
+  .run-dot.failure{background:var(--run-echec);}
   .run-dot.running{background:var(--c-fond); animation:countdown-pulse 1.2s ease-in-out infinite;}
   .run-dot.other{background:var(--text-dim);}
 
@@ -2756,7 +2771,7 @@
   .panneau-tabs{
     display:flex; gap:4px; position:sticky; top:0; z-index:2;
     margin:0 0 12px; padding:6px; background:var(--bg-panel-plein); border:1px solid var(--line); border-radius:var(--r-md);
-    box-shadow:0 6px 18px rgba(0,0,0,.18);
+    box-shadow:0 6px 18px var(--ombre-legere);
   }
   .panneau-tabs .tab:not(.active){background:transparent; border-color:transparent;}
   .panneau-tabs .tab{
@@ -2914,14 +2929,14 @@
      tombait sous 4,5:1 en clair), la photo passe donc à travers. Sans le voile général, ces textes devenaient illisibles sur le ciel rose et magenta (maquette du 17/11/2026). La couche est un
      pseudo-élément FIXE (pas d'attachement fixe du fond : il se redessine à chaque défilement sur mobile). Photos : 1 080 px de large, JPEG, 171 et 157 Ko. */
   html.photo-fond{
-    --photo-teinte:color-mix(in srgb, #0a0d0f var(--photo-voile, 55%), transparent); --photo-url:url("fond-sombre.jpg");
+    --photo-base:#0a0d0f; --photo-teinte:color-mix(in srgb, var(--photo-base) var(--photo-voile, 55%), transparent); --photo-url:url("fond-sombre.jpg");
     --bg-panel:color-mix(in srgb, #10151a 94%, transparent); --bg-elevated:color-mix(in srgb, #161c22 94%, transparent);
-    background-color:#0a0d0f;
+    background-color:var(--photo-base);
   }
   html[data-theme="light"].photo-fond{
-    --photo-teinte:color-mix(in srgb, #f4f7fa var(--photo-voile, 55%), transparent); --photo-url:url("fond-clair.jpg");
+    --photo-base:#f4f7fa; --photo-teinte:color-mix(in srgb, var(--photo-base) var(--photo-voile, 55%), transparent); --photo-url:url("fond-clair.jpg");
     --bg-panel:color-mix(in srgb, #ffffff 94%, transparent); --bg-elevated:color-mix(in srgb, #eef3f8 94%, transparent);
-    background-color:#f4f7fa;
+    background-color:var(--photo-base);
   }
   html[data-theme="light"].photo-fond{--rouge-majeur:#a81f2b;}   /* un cran plus sombre : le fond de la carte reçoit un peu de photo */
   html.photo-fond body{background:transparent;}
@@ -2972,7 +2987,7 @@
        téléphone qu'il dessine ; sans ce préfixe elle s'empilait à la verticale dans l'aperçu (vu le 24/11/2026 sur la planche des réglages à 1920 px). */
     body > .barre-bas{
       top:0; right:auto; width:calc(var(--pc-rail) + env(safe-area-inset-left, 0px)); flex-direction:column; justify-content:flex-start; gap:4px;
-      padding:16px 8px 16px calc(8px + env(safe-area-inset-left, 0px)); border-width:0 1px 0 0; border-radius:0 var(--r-md) var(--r-md) 0; box-shadow:6px 0 24px rgba(0,0,0,.28);
+      padding:16px 8px 16px calc(8px + env(safe-area-inset-left, 0px)); border-width:0 1px 0 0; border-radius:0 var(--r-md) var(--r-md) 0; box-shadow:6px 0 24px var(--ombre-flottant);
     }
     body > .barre-bas button{flex:none; min-height:64px;}
     body > .barre-bas button:hover{background:var(--bg-elevated); color:var(--text);}
