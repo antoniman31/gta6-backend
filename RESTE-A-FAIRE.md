@@ -120,6 +120,12 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 Mêmes valeurs qu'avant, rien ne doit changer à l'écran : étiquettes LEAK, VIDÉO, PC… ; badge « OFFICIEL » ; bord du compte à
 rebours qui bat ; jauges « lus par source » des Stats (orange plus foncé en clair) ; fond photo ; ombres des barres et feuilles.
 
+## 5 quinquies. Messages d'erreur (24/11/2026)
+
+- À regarder sur le S26 : importer un fichier qui n'est pas une sauvegarde (Réglages > Données) ; le message dit quoi choisir.
+- **Repéré, non corrigé** : `sauveReglages` (familles et zones de couleur) n'écrit l'échec que dans la console ; rien ne se voit à
+  l'écran si le stockage refuse l'écriture (règle commune « Robustesse »). À proposer à Antoni : le même toast que la photo de fond.
+
 ## 6. Mémos
 
 - Quatre suites vertes avant chaque commit (commandes dans `README.md`).
