@@ -7471,6 +7471,11 @@ def test_version_pc(nav, url):
                 page.evaluate("() => openSettings()"); page.wait_for_timeout(500); page.evaluate("() => construitMaquette()")
                 ap = page.evaluate("() => { const m = document.getElementById('apercuCouleurs'); return {copie: m.querySelectorAll('header, .console').length > 0, majeurs: m.querySelectorAll('.panneau-majeurs').length, "
                                    "texte: m.textContent.includes('Dernières actus majeures'), ids: [...m.querySelectorAll('[id]')].length}; }")
+                # La barre du bas copiée dans l'aperçu reste une barre HORIZONTALE (celle du téléphone qu'il dessine), et non un rail empilé à la verticale.
+                ap["barre"] = page.evaluate("() => { const b = document.querySelector('#apercuCouleurs .barre-bas'); if(!b) return null; const r = b.getBoundingClientRect();"
+                                            " return {sens: getComputedStyle(b).flexDirection, large: r.width > r.height}; }")
+                check(ap["barre"] is not None and ap["barre"]["sens"] == "row" and ap["barre"]["large"],
+                      "%s la barre du bas copiée dans l'aperçu « Couleurs » reste horizontale (%s)" % (etiq, ap["barre"]))
                 check(ap["copie"] and ap["majeurs"] == 0 and not ap["texte"] and ap["ids"] == 0,
                       "%s l'aperçu « Couleurs » recopie l'en-tête sans le bloc des actus majeures, et sans aucun identifiant (%s)" % (etiq, ap))
                 page.evaluate("() => retourFil()"); page.wait_for_timeout(300)
