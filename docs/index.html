@@ -5462,19 +5462,19 @@ function exporterSauvegarde(){
 function valideSauvegarde(brut){
   let data;
   try{ data = JSON.parse(brut); }
-  catch(e){ return { ok: false, raison: "Ce fichier n'est pas du JSON lisible." }; }
+  catch(e){ return { ok: false, raison: "Ce fichier n'est pas du JSON lisible : choisis le fichier créé par « Exporter » de GTA6 Watch." }; }
   if(!data || typeof data !== "object" || Array.isArray(data))
-    return { ok: false, raison: "Ce fichier ne contient pas une sauvegarde." };
+    return { ok: false, raison: "Ce fichier ne contient pas une sauvegarde : choisis le fichier créé par « Exporter » de GTA6 Watch." };
   if(data.app !== SAUVEGARDE_APP)
-    return { ok: false, raison: "Ce fichier vient d'une autre application." };
+    return { ok: false, raison: "Ce fichier vient d'une autre application : choisis le fichier créé par « Exporter » de GTA6 Watch." };
   if(typeof data.version !== "number" || data.version > SAUVEGARDE_VERSION)
-    return { ok: false, raison: "Cette sauvegarde vient d'une version plus récente de l'app." };
+    return { ok: false, raison: "Cette sauvegarde vient d'une version plus récente de l'app : recharge la page pour la mettre à jour, puis réessaie." };
   if(!data.settings || typeof data.settings !== "object" || Array.isArray(data.settings))
-    return { ok: false, raison: "Les réglages sont absents ou abîmés." };
+    return { ok: false, raison: "Les réglages sont absents ou abîmés : choisis le fichier créé par « Exporter » de GTA6 Watch." };
   if(!Array.isArray(data.lus))
-    return { ok: false, raison: "La liste des articles lus est absente ou abîmée." };
+    return { ok: false, raison: "La liste des articles lus est absente ou abîmée : choisis le fichier créé par « Exporter » de GTA6 Watch." };
   if(!data.vus || typeof data.vus !== "object" || Array.isArray(data.vus))
-    return { ok: false, raison: "La liste des articles déjà vus est absente ou abîmée." };
+    return { ok: false, raison: "La liste des articles déjà vus est absente ou abîmée : choisis le fichier créé par « Exporter » de GTA6 Watch." };
   return { ok: true, data };
 }
 
@@ -7949,7 +7949,7 @@ function basculeVueRockstar(){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){
     console.error("Erreur sauvegarde de la vue Rockstar", e);
-    if(typeof montreToast === "function") montreToast("Choix non enregistré : le stockage de l'appareil a refusé l'écriture.");
+    if(typeof montreToast === "function") montreToast("Choix non enregistré, le stockage de l'appareil a refusé l'écriture : libère de la place, puis réessaie.");
   }
   majBoutonVue();
   visibleCount = PAGE_SIZE;
@@ -10088,7 +10088,7 @@ function saveGithubToken(){
     return;
   }
   if(!storageSet(TOKEN_STORAGE_KEY, value)){
-    setTokenStatus("Impossible d'écrire dans le stockage de ce navigateur.", "warn");
+    setTokenStatus("Jeton non enregistré, le stockage du navigateur a refusé l'écriture : libère de la place, puis réessaie.", "warn");
     return;
   }
   // On vide le champ tout de suite : inutile de laisser le jeton en clair
@@ -10390,7 +10390,7 @@ function sauvePhotoFond(){
   try{ storageSet("settings-v1", JSON.stringify(settings)); }
   catch(e){
     console.error("Erreur sauvegarde de la photo de fond", e);
-    if(typeof montreToast === "function") montreToast("Réglage non enregistré : le stockage de l'appareil a refusé l'écriture.");
+    if(typeof montreToast === "function") montreToast("Réglage non enregistré, le stockage de l'appareil a refusé l'écriture : libère de la place, puis réessaie.");
   }
 }
 function basculePhotoFond(v){

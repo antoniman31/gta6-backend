@@ -5677,6 +5677,27 @@ def test_aucune_couleur_en_dur_dans_la_page():
           "il ignore les jetons, un sélecteur #feed et la valeur initiale d'un @property")
 
 
+def test_les_messages_derreur_disent_quoi_faire():
+    """Règle commune « Design » : un message d'erreur dit ce qui s'est passé ET comment corriger (revue du 24/11/2026).
+
+    Les raisons d'un import refusé, les deux toasts « le stockage a refusé l'écriture » et l'échec d'enregistrement du jeton
+    constataient sans dire quoi faire. Forme retenue : « constat : action ». Le contrôle vérifie la forme, pas le sens.
+    """
+    print("\n[app] les messages d'erreur à l'écran disent quoi faire")
+    html = open("docs/index.html", encoding="utf-8").read()
+    lecture = html[html.index("function valideSauvegarde("):]
+    lecture = lecture[:lecture.index("\n}")]
+    raisons = re.findall(r'raison: "([^"]+)"', lecture)
+    check(len(raisons) >= 7, "les raisons d'un import refusé sont trouvées (%d)" % len(raisons))
+    sans = [r for r in raisons if not re.search(r"\S : \S", r)]
+    check(sans == [], "chaque raison d'un import refusé dit quoi faire (sans action : %s)" % sans)
+    toasts = re.findall(r'montreToast\("([^"]*refusé l\'écriture[^"]*)"\)', html)
+    jeton = re.findall(r'setTokenStatus\("([^"]*stockage[^"]*)", "warn"\)', html)
+    check(len(toasts) == 2 and len(jeton) == 1, "les deux toasts de stockage et le message du jeton sont trouvés")
+    check(all(re.search(r"\S : \S.*(libère|réessaie)", m) for m in toasts + jeton),
+          "un enregistrement refusé par le stockage dit quoi faire (%s)" % (toasts + jeton))
+
+
 def test_ligne_etat_sans_double_compte():
     print("\n[app] la ligne d'état ne compte pas deux fois la même source")
     html = open("docs/index.html", encoding="utf-8").read()
@@ -12169,6 +12190,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_les_cles_publiees_ont_le_bon_type,
            test_aucune_ressource_tierce_ni_police_distante,
            test_aucune_couleur_en_dur_dans_la_page,
+           test_les_messages_derreur_disent_quoi_faire,
            test_readme_annonce_le_bon_nombre):
     fn()
 

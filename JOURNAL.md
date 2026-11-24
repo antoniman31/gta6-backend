@@ -13329,3 +13329,13 @@ couleur) et écarte trois cas, raison écrite : les jetons, la valeur initiale d
 masques (`#000` n'y est qu'une opacité). Vu échouer sur l'ancien code (51 relevés). Trois contrôles existants lisaient les
 couleurs littérales (badge, jauges, paires fixes) : ils lisent désormais la règle et la valeur du jeton ; celui des paires
 fixes exige 10 paires au lieu de 2 et mesure les mêmes ratios (4,70 à 10,48:1). `docs/sw.js` : v153 → v154 (main était passé en v153 entre-temps, #339).
+
+### Messages d'erreur : dire quoi faire — 24/11/2026
+
+Revue de la règle commune « Design » (un message d'erreur dit ce qui s'est passé et comment corriger). Les sept raisons d'un
+import refusé (« Ce fichier n'est pas du JSON lisible. »…), les deux toasts « le stockage de l'appareil a refusé l'écriture »
+et l'échec d'enregistrement du jeton constataient sans dire quoi faire. Ils prennent la forme « constat : action » (« choisis
+le fichier créé par « Exporter » de GTA6 Watch. », « libère de la place, puis réessaie. » ; une sauvegarde plus récente :
+recharger la page). Les « indisponible » qui portent un bouton « Réessayer » et le journal (outil technique) restent tels
+quels. Contrôle `test_les_messages_derreur_disent_quoi_faire` (vu échouer sur les anciens textes). Repéré, non corrigé :
+`sauveReglages` ne montre pas son échec à l'écran (noté dans `RESTE-A-FAIRE.md`). `docs/sw.js` : v154 → v155.
