@@ -13268,3 +13268,8 @@ Repéré sur la planche de Stats et de Réglages à 1920 px : dans l'aperçu « 
 s'empilait à la verticale. Cause : ma règle du rail de la disposition PC visait `.barre-bas`, et l'aperçu en recopie une avec la même classe ;
 il dessine pourtant le téléphone, dont la barre est horizontale. Corrigé : les règles du rail visent `body > .barre-bas`, c'est-à-dire la seule vraie
 barre. Contrôle dans `test_version_pc` (69 → 70 : la barre copiée reste horizontale, plus large que haute), vu échouer sur l'ancien code. Cache v150.
+
+### Polices servies par le site : vérifiées sur le S26 — 24/11/2026
+
+Antoni a vérifié sur le S26 : chiffres du compte à rebours en JetBrains Mono, reste de la page en Inter, comme avant, et
+les mêmes polices en mode avion. La section « 5 bis » de `RESTE-A-FAIRE.md` est close.

@@ -102,11 +102,6 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Lenteur corrigée le 14/11/2026 (à regarder sur le téléphone)** : l'historique complet qui arrive et la vue Stats ramaient (20 s et 4,8 s de blocage mesurés dans le navigateur de test) ; mesuré après : 0,9 s et 0,3 s. Dis-moi si ça te paraît fluide sur ton S26 ; sinon, prochaine étape : découper le calcul en tranches.
 - **Interface du 14/11/2026 (codée, à regarder sur le téléphone)** : icône « Mode compact » sur la ligne de comptage, ligne des soucis repliée au premier affichage (chevron pour tout voir), photo des cartes en 21:9. À regarder : l'icône est-elle trouvable, la photo rognée te va-t-elle ? Restent des idées non retenues : bouton flottant (A2), tuiles du compteur plus petites (B2 : trop petites sous la règle des 12 px), photo 2:1 (C1).
 
-## 5 bis. Polices servies par le site (21/11/2026) : à vérifier sur le S26
-
-- Les chiffres du compte à rebours sont bien en JetBrains Mono, le reste de la page en Inter, comme avant.
-- En mode avion, une fois l'app ouverte au moins une fois en ligne : les mêmes polices, pas celles du système.
-
 ## 5 ter. Version PC (24/11/2026) : à vérifier sur le PC
 
 - Au-dessus de 1100 px : le rail à gauche, le fil au centre, le panneau à droite ; l'en-tête reste collé en haut quand on fait défiler.
