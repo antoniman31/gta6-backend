@@ -13192,3 +13192,26 @@ Corrigé : `"orientation": "any"`. Deux contrôles dans `test_pipeline.py` (2427
 pas le portrait, et la page a bien la règle du paysage qu'il doit laisser passer ; vus échouer sur l'ancien manifeste. Cache
 `docs/sw.js` v145. Non vérifié ici : Android ne relit le manifeste d'une application installée qu'à sa mise à jour de WebAPK
 (un jour ou plus) ; le plus sûr est de désinstaller et de réinstaller l'app. Dans un onglet Chrome, la rotation marche déjà.
+
+### Le panneau de droite ne lance plus l'actualisation — 24/11/2026
+
+Antoni, après avoir réinstallé l'app (le paysage marche) : en faisant défiler le bloc de droite, avec le compteur, ça lance
+l'actualisation de la page ; « il faudrait peut-être séparer les deux éléments ».
+
+Cause, lue dans `surTouchStart` : le tirage pour actualiser part dès que la PAGE est en haut (`window.scrollY <= 0`), sans regarder
+si le doigt est dans une zone qui défile en elle-même ; et le geste appelle `preventDefault()`, ce qui coupait en plus le
+défilement du panneau. Reproduit avant de corriger, avec de vrais gestes tactiles à 915 × 412 : sur l'ancien code, un doigt vers le
+bas dans le panneau ouvre la zone à 70 px, lance une actualisation, annule 13 mouvements du doigt et le panneau ne bouge pas
+(94 → 94 px).
+
+Corrigé sans séparer les deux éléments : le tirage ne démarre plus quand le doigt est dans une zone qui défile vraiment en hauteur
+(`dansZoneDefilante` : `overflow-y` auto ou scroll ET `scrollHeight` plus grand que `clientHeight`). En portrait l'en-tête n'est pas
+une zone défilante : le tirage y marche comme avant (mesuré : zone de 80 px, une actualisation). Le bouton ↻ du panneau reste
+l'autre moyen d'actualiser. Cache `docs/sw.js` v146.
+
+Erreur de parcours, rattrapée par le contrôle témoin avant la fusion : ma première version de la garde regardait seulement
+`overflow-y`, et la rangée d'onglets (en `overflow:auto` pour son défilement horizontal) comptait alors comme une zone défilante :
+tirer depuis elle n'actualisait plus. Le test du fil l'a montré (zone 0 px) ; la garde exige maintenant que la zone défile en hauteur.
+
+Contrôle : `test_tirage_pas_dans_le_panneau` (7), vu échouer sur l'ancien code (2 échecs, ceux ci-dessus). Non vérifié : le S26 réel
+(les gestes du test sont des gestes tactiles simulés).

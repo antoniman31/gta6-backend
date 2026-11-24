@@ -7522,6 +7522,89 @@ def test_version_pc(nav, url):
         ctx.close()
 
 
+def test_tirage_pas_dans_le_panneau(nav, url):
+    """Tirer vers le bas dans le panneau de droite n'actualise pas la page (24/11/2026, Antoni, en paysage sur son S26).
+
+    « Quand je peux faire défiler le bloc à droite où il y a le compteur, ça lance l'actualisation de la page. » Le tirage pour actualiser
+    ne regardait que le défilement de la page ; le panneau défile en lui-même, et le geste appelait en plus preventDefault, ce qui coupait
+    son défilement. Le contrôle fait de VRAIS gestes tactiles : dans le panneau (en haut, puis défilé à mi-course), le tirage ne démarre pas, la
+    zone d'actualisation reste fermée, checkNow n'est pas appelé et aucun touchmove n'est annulé ; dans le fil et dans l'en-tête en portrait,
+    le tirage marche toujours (le fil seul, hors panneau, reste actualisable).
+    """
+    print("\n[tirage] pas d'actualisation en défilant le panneau, mais ailleurs oui")
+    INJECTE = """() => {
+        const t = (h) => new Date(Date.now() - h * 3600e3).toISOString();
+        lastItems = [1, 2, 3, 4].map(i => ({title: 'Actu majeure numéro ' + i, link: 'https://ex.test/maj' + i, description: 'R', date: t(i), source: 'Média ' + i,
+              official: false, lang: 'fr', extraSources: [{source: 'A', link: 'https://a.test/' + i}, {source: 'B', link: 'https://b.test/' + i}]}))
+          .concat(Array.from({length: 30}, (_, i) => ({title: 'Article ordinaire ' + (i + 1), link: 'https://ex.test/x' + i, description: 'R', date: t(10 + i), source: 'Média', official: false, lang: 'fr'})));
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 40; readSet = new Set(); misDeCote = new Set();
+        setTab('all'); applyFilters();
+        window.__actualisations = 0; window.checkNow = async () => { window.__actualisations++; };
+        window.__annules = 0; document.addEventListener('touchmove', e => { if(e.defaultPrevented) window.__annules++; }, {passive: true}); }"""
+
+    def ouvre(largeur, hauteur):
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, has_touch=True, is_mobile=True, timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
+        page.evaluate(INJECTE); page.wait_for_timeout(300)
+        return ctx, page, ctx.new_cdp_session(page), erreurs
+
+    def tire(page, cdp, x, y0, y1, pas=10):
+        """Un doigt de (x, y0) à (x, y1) ; renvoie la hauteur de la zone d'actualisation AVANT de relâcher."""
+        cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x, "y": y0}]})
+        sens = 1 if y1 > y0 else -1
+        y = y0
+        while (y1 - y) * sens > 0:
+            y += pas * sens
+            cdp.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": x, "y": y}]})
+            page.wait_for_timeout(8)
+        zone = page.evaluate("() => parseFloat(document.getElementById('pullZone').style.height) || 0")
+        cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        page.wait_for_timeout(250)
+        return zone
+
+    # ---- Paysage : le panneau défile en lui-même.
+    ctx, page, cdp, erreurs = ouvre(915, 412)
+    etiq = "[tirage 915 × 412]"
+    pan = page.evaluate("() => { const e = document.querySelector('header.console'), r = e.getBoundingClientRect(); return {x: (r.left + r.right) / 2, haut: r.top, bas: r.bottom, "
+                        "defile: e.scrollHeight > e.clientHeight, ov: getComputedStyle(e).overflowY}; }")
+    check(pan["defile"] and pan["ov"] == "auto", "%s le panneau défile en lui-même (%s)" % (etiq, pan))
+    # En haut du panneau, page en haut : un geste vers le bas ne doit rien actualiser.
+    zone = tire(page, cdp, pan["x"], pan["haut"] + 60, pan["haut"] + 200)
+    r = page.evaluate("() => ({n: window.__actualisations, annules: window.__annules, top: document.querySelector('header.console').scrollTop, y: window.scrollY})")
+    check(zone == 0 and r["n"] == 0 and r["annules"] == 0,
+          "%s tirer vers le bas dans le panneau, en haut : la zone d'actualisation reste fermée (%.0f px), aucune actualisation (%d), aucun défilement annulé (%d)"
+          % (etiq, zone, r["n"], r["annules"]))
+    # Panneau défilé jusqu'en bas, doigt vers le bas : il doit remonter (défilement natif), sans actualisation.
+    page.evaluate("() => { const e = document.querySelector('header.console'); e.scrollTop = e.scrollHeight; }"); page.wait_for_timeout(100)
+    avant = page.evaluate("() => document.querySelector('header.console').scrollTop")
+    zone2 = tire(page, cdp, pan["x"], pan["haut"] + 60, pan["haut"] + 200)
+    r2 = page.evaluate("() => ({n: window.__actualisations, annules: window.__annules, top: document.querySelector('header.console').scrollTop})")
+    check(zone2 == 0 and r2["n"] == 0 and r2["annules"] == 0 and r2["top"] < avant,
+          "%s panneau défilé en bas, doigt vers le bas : il remonte (%.0f → %.0f px), sans actualisation ni annulation (%s)" % (etiq, avant, r2["top"], r2))
+    # Le fil, lui, reste actualisable (page en haut, doigt dans la colonne centrale).
+    fil = page.evaluate("() => { const r = document.querySelector('main').getBoundingClientRect(); return {x: (r.left + r.right) / 2}; }")
+    page.evaluate("() => { window.scrollTo(0, 0); window.__actualisations = 0; }"); page.wait_for_timeout(100)
+    zone3 = tire(page, cdp, fil["x"], 100, 260)
+    n3 = page.evaluate("() => window.__actualisations")
+    check(zone3 > 0 and n3 == 1, "%s tirer vers le bas dans le fil, page en haut : l'actualisation démarre toujours (zone %.0f px, %d actualisation)" % (etiq, zone3, n3))
+    check(not erreurs, "%s aucune erreur JavaScript (%s)" % (etiq, erreurs[:2]))
+    ctx.close()
+
+    # ---- Portrait : l'en-tête n'est pas une zone défilante, le tirage depuis lui marche comme avant.
+    ctx, page, cdp, erreurs = ouvre(390, 800)
+    etiq = "[tirage 390 × 800]"
+    page.evaluate("() => { window.scrollTo(0, 0); window.__actualisations = 0; }"); page.wait_for_timeout(100)
+    x = page.evaluate("() => { const r = document.querySelector('header.console').getBoundingClientRect(); return (r.left + r.right) / 2; }")
+    zone4 = tire(page, cdp, x, 120, 280)
+    n4 = page.evaluate("() => window.__actualisations")
+    check(zone4 > 0 and n4 == 1, "%s tirer vers le bas depuis l'en-tête en portrait : l'actualisation démarre comme avant (zone %.0f px, %d actualisation)" % (etiq, zone4, n4))
+    check(not erreurs, "%s aucune erreur JavaScript (%s)" % (etiq, erreurs[:2]))
+    ctx.close()
+
+
 def test_cycle_de_couleurs(nav, url):
     """Cycle de couleurs (10/11/2026) : d'office le jour J, activable et coupable dans les Réglages.
 
@@ -10978,6 +11061,7 @@ CONTROLES = [
     test_balayage_des_cartes,
     test_vue_rockstar_et_balayage_chronologie,
     test_version_pc,
+    test_tirage_pas_dans_le_panneau,
     test_cycle_de_couleurs,
     test_cycle_synchronise,
     test_contraste_du_cycle,
