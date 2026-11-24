@@ -125,7 +125,9 @@ Les notifications push natives ont été retirées le 03/11/2026 ; le service wo
 
 ## L'app
 
-Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 320 et 390 px).
+Une PWA dans `docs/index.html`, pensée pour le téléphone (rendu vérifié à 320 et 390 px) et, depuis le 24/11/2026, dotée d'une disposition PC.
+
+- **Disposition PC** (24/11/2026, dès 1100 px de large) : un rail à gauche (la barre du bas à la verticale), le fil au centre, l'en-tête à droite en panneau collé en haut (compteur, frise, bilan du robot, trois dernières actus majeures). Les largeurs sont les jetons `--pc-rail`, `--pc-fil` et `--pc-panneau`, tout est dans un seul bloc `@media (min-width:1100px)` : sous le seuil, le téléphone est inchangé. Raccourcis clavier : `o` ouvre, `f` met de côté, `l` marque lu (sur la carte sous le pointeur ou au focus), `/` va au filtre, `1` à `5` changent d'onglet ; rien quand on écrit, sous un panneau ouvert ou avec Ctrl/Alt/Méta. Contrôle : `test_version_pc`.
 
 - **Fil** : onglets Tous les articles, Actu majeure, Autres, Rockstar, RockstarMag, Toutes langues, News FR, News EN ; recherche sans accents ; filtres qui survivent à la fermeture.
 - **Lecture** : lu/non-lu, mis de côté, reprise là où on s'est arrêté, aperçu d'article. Balayage d'une carte : vers la droite lu / non lu, vers la gauche mettre de côté / retirer (comme l'étoile). Mots à exclure (article masqué) et mots de spoiler (article flouté, mode actif par défaut).

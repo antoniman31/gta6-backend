@@ -7366,6 +7366,147 @@ LIT_COULEURS = """() => {
                                   return a ? a.effect.getTiming().delay : null; })}; }"""
 
 
+def test_version_pc(nav, url):
+    """La disposition PC à trois zones, le panneau des actus majeures et les raccourcis clavier (24/11/2026, Antoni, idée 1 de la planche).
+
+    Mesure à 1099 px (le seuil moins un : la disposition du téléphone, inchangée), puis à 1100, 1280 et 1920 px : le rail, le fil et le panneau ne se
+    recouvrent pas, rien ne sort de l'écran (CHAQUE tuile, pas seulement scrollWidth), l'en-tête reste collé en haut quand le fil défile, les
+    éléments centrés se recentrent sur le fil. Puis les trois dernières actus majeures du panneau (ordre, échappement, lien douteux écarté) et
+    les raccourcis : o, f et l sur la carte sous le pointeur, / vers le filtre, 1 à 5 pour les onglets, rien quand on écrit ou sous un panneau.
+    """
+    print("\n[version PC] trois zones, panneau, raccourcis")
+    INJECTE = """() => {
+        const t = (h) => new Date(Date.now() - h * 3600e3).toISOString();
+        const maj = (i, h, titre) => ({title: titre, link: 'https://ex.test/maj' + i, description: 'Résumé', date: t(h), source: 'Média ' + i, official: false, lang: 'fr',
+            extraSources: [{source: 'A' + i, link: 'https://a.test/' + i}, {source: 'B' + i, link: 'https://b.test/' + i}]});
+        lastItems = [
+          maj(1, 5, 'Actu majeure la plus ancienne'), maj(2, 1, 'Actu <b>majeure</b> récente & « citée »'), maj(3, 3, 'Actu majeure du milieu'),
+          maj(4, 2, 'Actu majeure au lien douteux'), maj(5, 9, 'Actu majeure trop vieille pour le panneau'),
+          ...Array.from({length: 30}, (_, i) => ({title: 'Article ordinaire ' + (i + 1), link: 'https://ex.test/x' + i, description: 'Résumé ' + i,
+              date: t(10 + i), source: 'Média ' + (i % 7), official: false, lang: 'fr'}))];
+        lastItems[3].link = 'javascript:alert(1)';
+        lastNewLinks = new Set(); historyPartial = false; rattrapageLance = true; visibleCount = 40;
+        readSet = new Set(); misDeCote = new Set(); setTab('all'); applyFilters(); }"""
+    MESURE = """() => {
+        const r = (e) => { const b = e.getBoundingClientRect(); return {l: b.left, t: b.top, r: b.right, b: b.bottom, w: b.width}; };
+        const cs = getComputedStyle(document.documentElement);
+        const px = (nom) => parseFloat(cs.getPropertyValue(nom));
+        const rail = document.querySelector('.barre-bas'), en = document.querySelector('header.console'), fil = document.querySelector('main');
+        const hors = (e, cadre) => { const b = e.getBoundingClientRect(); return b.left < cadre.l - 0.5 || b.right > cadre.r + 0.5; };
+        const cadreEn = r(en), cadreFil = r(fil);
+        return {rail: r(rail), en: cadreEn, fil: cadreFil, vw: innerWidth, sw: document.documentElement.scrollWidth,
+                jetons: {rail: px('--pc-rail'), fil: px('--pc-fil'), panneau: px('--pc-panneau')},
+                tuilesHors: [...document.querySelectorAll('.cd-t')].filter(e => hors(e, cadreEn)).length,
+                cartesHors: [...document.querySelectorAll('#feed .card')].filter(e => hors(e, cadreFil)).length,
+                nbTuiles: document.querySelectorAll('.cd-t').length, nbCartes: document.querySelectorAll('#feed .card').length,
+                panneau: document.getElementById('panneauMajeurs') ? getComputedStyle(document.getElementById('panneauMajeurs')).display : 'absent',
+                barreHaut: getComputedStyle(document.getElementById('barreHaut')).display}; }"""
+    for largeur, hauteur in ((1099, 720), (1100, 720), (1280, 720), (1920, 1080)):
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, timezone_id="Europe/Paris", reduced_motion="reduce")
+        ctx.add_init_script("try{if(!localStorage.getItem('gta6watch:settings-v1')) localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
+        page.evaluate(INJECTE); page.wait_for_timeout(200)
+        m = page.evaluate(MESURE)
+        etiq = "[PC %d px]" % largeur
+        if largeur < 1100:
+            check(m["panneau"] == "none" and m["rail"]["w"] == largeur and m["rail"]["t"] > 0 and m["fil"]["w"] <= 640.5 and m["en"]["w"] <= 640.5,
+                  "%s sous le seuil, la disposition du téléphone : barre en bas sur toute la largeur, colonne de 640 px, pas de panneau (%s)"
+                  % (etiq, {k: m[k] for k in ("panneau", "rail", "fil")}))
+        else:
+            j = m["jetons"]
+            check(abs(m["rail"]["w"] - j["rail"]) < 0.5 and m["rail"]["l"] == 0 and m["rail"]["t"] == 0 and m["rail"]["b"] >= hauteur - 1,
+                  "%s le rail fait la largeur du jeton (%.0f px), colle à gauche et occupe toute la hauteur (%s)" % (etiq, j["rail"], m["rail"]))
+            check(m["fil"]["w"] <= j["fil"] + 0.5 and abs(m["en"]["w"] - j["panneau"]) < 0.5,
+                  "%s le fil ne dépasse pas %.0f px et le panneau fait %.0f px (%.0f et %.0f mesurés)" % (etiq, j["fil"], j["panneau"], m["fil"]["w"], m["en"]["w"]))
+            check(m["rail"]["r"] <= m["fil"]["l"] + 0.5 and m["fil"]["r"] <= m["en"]["l"] + 0.5 and m["en"]["r"] <= m["vw"] + 0.5,
+                  "%s rail, fil et panneau se suivent sans se recouvrir, et le panneau reste dans l'écran (%s)" % (etiq, {k: round(m[k]["l"]) for k in ("rail", "fil", "en")}))
+            check(m["sw"] <= m["vw"] and m["nbTuiles"] >= 4 and m["tuilesHors"] == 0 and m["nbCartes"] > 10 and m["cartesHors"] == 0,
+                  "%s rien ne déborde, mesuré tuile par tuile : %d tuiles du compteur et %d cartes, %d + %d hors de leur cadre, scrollWidth %d pour %d"
+                  % (etiq, m["nbTuiles"], m["nbCartes"], m["tuilesHors"], m["cartesHors"], m["sw"], m["vw"]))
+            check(m["panneau"] == "block" and m["barreHaut"] == "none",
+                  "%s le panneau des actus majeures est affiché et la barre du haut réduite ne l'est plus (%s, %s)" % (etiq, m["panneau"], m["barreHaut"]))
+            # L'en-tête reste collé en haut quand le fil défile ; les blocs centrés se recentrent sur le fil.
+            page.evaluate("() => window.scrollTo(0, 500)"); page.wait_for_timeout(200)
+            haut = page.evaluate("() => document.querySelector('header.console').getBoundingClientRect().top")
+            check(abs(haut - 24) < 1.5, "%s l'en-tête reste collé en haut (24 px) quand le fil a défilé de 500 px (%.1f px)" % (etiq, haut))
+            page.evaluate("() => window.scrollTo(0, 0)")
+            centre = page.evaluate("""() => { const t = document.getElementById('toast'); t.hidden = false; t.style.display = 'flex';
+                const b = t.getBoundingClientRect(), f = document.querySelector('main').getBoundingClientRect(); t.hidden = true; t.style.display = '';
+                return {toast: (b.left + b.right) / 2, fil: (f.left + f.right) / 2}; }""")
+            check(abs(centre["toast"] - centre["fil"]) < 12, "%s le toast se centre sur le fil, pas sur l'écran (%.0f px contre %.0f px, scrollbar tolérée)" % (etiq, centre["toast"], centre["fil"]))
+
+            if largeur == 1280:
+                # ---- Le panneau : les trois plus récentes, dans l'ordre, échappées, le lien douteux écarté, la plus vieille absente.
+                liste = page.evaluate("() => [...document.querySelectorAll('#panneauMajeursListe a')].map(a => ({texte: a.firstChild.textContent, href: a.getAttribute('href'), b: a.querySelectorAll('b').length}))")
+                check([x["texte"] for x in liste] == ["Actu <b>majeure</b> récente & « citée »", "Actu majeure du milieu", "Actu majeure la plus ancienne"]
+                      and all(x["b"] == 0 for x in liste) and not any("javascript" in x["href"] for x in liste),
+                      "%s le panneau liste les 3 dernières actus majeures, la plus récente d'abord, le titre échappé, le lien douteux et la plus ancienne écartés (%s)" % (etiq, liste))
+                # ---- Les raccourcis, sur la carte sous le pointeur.
+                # Une carte ordinaire, au lien sûr : la quatrième du fil peut être l'actu au lien « javascript: », que o doit justement refuser.
+                indice = page.evaluate("() => [...document.querySelectorAll('#feed .card')].findIndex(c => itemsById[c.id.slice(5)].link.startsWith('https://ex.test/x'))")
+                carte = page.locator("#feed .card").nth(indice)
+                lien = page.evaluate("(i) => itemsById[document.querySelectorAll('#feed .card')[i].id.slice(5)].link", indice)
+                carte.hover(); page.wait_for_timeout(100)
+                page.keyboard.press("l")
+                lu = page.evaluate("(l) => readSet.has(l)", lien)
+                page.keyboard.press("l")
+                relu = page.evaluate("(l) => readSet.has(l)", lien)
+                check(lu and not relu, "%s l sur la carte survolée la marque lue, un second l la remet non lue (%s puis %s)" % (etiq, lu, relu))
+                page.keyboard.press("f")
+                cote = page.evaluate("(l) => misDeCote.has(l)", lien)
+                page.keyboard.press("f")
+                decote = page.evaluate("(l) => misDeCote.has(l)", lien)
+                check(cote and not decote, "%s f met la carte survolée de côté, un second f la retire (%s puis %s)" % (etiq, cote, decote))
+                # window.open est remplacé par un espion : avec « noopener » le navigateur ne rend aucune fenêtre à suivre, et un vrai onglet
+                # sur ex.test n'apprendrait rien de plus que l'appel lui-même (adresse, cible, noopener).
+                page.evaluate("() => { window.__ouverts = []; window.open = (...a) => { window.__ouverts.push(a); return null; }; }")
+                page.keyboard.press("o")
+                ouvert = page.evaluate("(l) => ({lu: readSet.has(l), appels: window.__ouverts})", lien)
+                check(ouvert["lu"] and ouvert["appels"] == [[lien, "_blank", "noopener"]],
+                      "%s o ouvre l'article dans un nouvel onglet (cible _blank, noopener) et le marque lu (%s)" % (etiq, ouvert))
+                # Le lien douteux : o ne l'ouvre pas (safeUrl le refuse) et ne marque rien lu.
+                douteux = page.evaluate("() => [...document.querySelectorAll('#feed .card')].findIndex(c => itemsById[c.id.slice(5)].link.startsWith('javascript:'))")
+                page.evaluate("() => { window.__ouverts = []; readSet = new Set(); }")
+                if douteux >= 0:
+                    page.locator("#feed .card").nth(douteux).hover(); page.wait_for_timeout(100)
+                    page.keyboard.press("o")
+                refus = page.evaluate("() => ({appels: window.__ouverts.length, lus: readSet.size})")
+                check(douteux >= 0 and refus == {"appels": 0, "lus": 0},
+                      "%s o sur une carte au lien « javascript: » n'ouvre rien et ne marque rien lu (carte trouvée : %s, %s)" % (etiq, douteux >= 0, refus))
+                # Sans carte visée, o, f et l ne font rien.
+                page.mouse.move(2, 2); page.evaluate("() => { carteSousLePointeur = null; document.activeElement.blur(); readSet = new Set(); misDeCote = new Set(); }")
+                page.keyboard.press("l"); page.keyboard.press("f")
+                rien = page.evaluate("() => readSet.size + misDeCote.size")
+                check(rien == 0, "%s sans carte sous le pointeur ni au focus, l et f ne font rien (%d changement)" % (etiq, rien))
+                # / et 1 à 5.
+                page.keyboard.press("/")
+                focus = page.evaluate("() => document.activeElement.id")
+                check(focus == "searchInput", "%s / met le curseur dans le filtre (focus sur « %s »)" % (etiq, focus))
+                # Dans le champ, les touches écrivent : ni onglet, ni marquage.
+                page.keyboard.type("l1o")
+                champ = page.evaluate("() => ({v: document.getElementById('searchInput').value, onglet: currentTab})")
+                check(champ["v"] == "l1o" and champ["onglet"] == "all", "%s dans le champ de recherche les touches écrivent : « l1o » saisi, l'onglet n'a pas bougé (%s)" % (etiq, champ))
+                page.evaluate("() => { clearSearch(); document.activeElement.blur(); }")
+                onglets = []
+                for touche in "12345":
+                    page.keyboard.press(touche); onglets.append(page.evaluate("() => currentTab"))
+                check(onglets == ["all", "majeur", "rockstar", "rockstarmag", "non-rockstar"], "%s les touches 1 à 5 changent d'onglet (%s)" % (etiq, onglets))
+                # Un panneau ouvert garde ses touches ; une touche modificatrice aussi (Ctrl+L est celui du navigateur).
+                page.evaluate("() => setTab('all')")
+                page.evaluate("() => openFiltersSheet()"); page.wait_for_timeout(200)
+                page.keyboard.press("2")
+                sous_panneau = page.evaluate("() => currentTab")
+                page.evaluate("() => { document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open')); }")
+                page.keyboard.press("Control+2")
+                avec_ctrl = page.evaluate("() => currentTab")
+                check(sous_panneau == "all" and avec_ctrl == "all",
+                      "%s sous un panneau ouvert, et avec Ctrl, les raccourcis ne font rien (%s, %s)" % (etiq, sous_panneau, avec_ctrl))
+        check(not erreurs, "%s aucune erreur JavaScript (%s)" % (etiq, erreurs[:2]))
+        ctx.close()
+
+
 def test_cycle_de_couleurs(nav, url):
     """Cycle de couleurs (10/11/2026) : d'office le jour J, activable et coupable dans les Réglages.
 
@@ -10821,6 +10962,7 @@ CONTROLES = [
     test_texte_douze_px_et_coins,
     test_balayage_des_cartes,
     test_vue_rockstar_et_balayage_chronologie,
+    test_version_pc,
     test_cycle_de_couleurs,
     test_cycle_synchronise,
     test_contraste_du_cycle,

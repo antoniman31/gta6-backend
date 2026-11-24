@@ -107,6 +107,14 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - Les chiffres du compte à rebours sont bien en JetBrains Mono, le reste de la page en Inter, comme avant.
 - En mode avion, une fois l'app ouverte au moins une fois en ligne : les mêmes polices, pas celles du système.
 
+## 5 ter. Version PC (24/11/2026) : à vérifier sur le PC
+
+- Au-dessus de 1100 px : le rail à gauche, le fil au centre, le panneau à droite ; l'en-tête reste collé en haut quand on fait défiler.
+- Le panneau « Dernières actus majeures » : trois lignes cliquables, qui ouvrent l'article dans un nouvel onglet.
+- Les raccourcis : `o`, `f`, `l` sur la carte sous la souris, `/` vers le filtre, `1` à `5` pour les onglets ; rien quand on écrit.
+- Sous 1100 px (fenêtre réduite) : la disposition du téléphone, comme avant.
+- Pas encore fait, à décider : adapter le mode « Réglages » et la page « Stats » à la largeur PC (elles gardent leur colonne de 640 px).
+
 ## 6. Mémos
 
 - Quatre suites vertes avant chaque commit (commandes dans `README.md`).
