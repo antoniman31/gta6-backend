@@ -11708,6 +11708,13 @@ def test_ecran_de_chargement_et_manifeste():
 
     html = open("docs/index.html", encoding="utf-8").read()
     manifeste = json.load(open("docs/manifest.json", encoding="utf-8"))
+    # LE PAYSAGE (24/11/2026). Le manifeste disait « orientation: portrait » : une fois installée, l'app restait couchée sur le côté
+    # pour Android, et la disposition PC dès 800 px en paysage (PR #329) n'arrivait jamais jusqu'à la page sur le téléphone d'Antoni.
+    # Aucun test du navigateur ne peut le voir (il simule une taille d'écran, pas le verrou d'Android) : on lit le manifeste.
+    check(manifeste.get("orientation", "any") not in ("portrait", "portrait-primary", "portrait-secondary"),
+          "le manifeste ne verrouille pas l'orientation en portrait (valeur : %r)" % manifeste.get("orientation"))
+    check("(min-width:800px) and (orientation:landscape)" in html,
+          "la page a bien la règle du paysage que le manifeste doit laisser passer")
     racine = re.search(r":root\{[^}]*?--bg:\s*(#[0-9a-fA-F]{6})", html, re.S)
     check(racine is not None, "le fond sombre se lit dans la feuille de style")
     fond = racine.group(1).lower() if racine else "?"

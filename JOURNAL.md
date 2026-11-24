@@ -13178,3 +13178,17 @@ Contrôle : `test_version_pc` passe de 36 à 58 contrôles (1099 × 1400 en port
 téléphone ; 800 × 360 et 915 × 412 au doigt : rien ne déborde, le panneau défile et sa dernière actu est atteignable, les
 boutons du rail font 64 px). Vu échouer sur l'ancien code : 12 échecs sur 58. Non mesuré : l'écran du S26 en paysage (la
 taille 915 × 412 est une simulation) et l'encoche réelle (`env(safe-area-inset-left)` vaut 0 dans le navigateur de test).
+
+### Le paysage n'arrivait pas jusqu'à la page : manifeste verrouillé en portrait — 24/11/2026
+
+Antoni, après la fusion de la #329 : « quand je mets mon téléphone en mode paysage ça change pas ». Cause trouvée en lisant
+`docs/manifest.json` : `"orientation": "portrait"`. Installée sur l'écran d'accueil, l'app est verrouillée en portrait par
+Android, et la règle `(min-width:800px) and (orientation:landscape)` n'a donc jamais eu l'occasion de s'appliquer. Mon erreur :
+j'avais testé la taille de l'écran (915 × 412 simulée) et pas le verrou, que le navigateur de test ne simule pas ; j'aurais dû
+lire le manifeste en proposant la fonction. Personne n'avait écrit pourquoi le portrait était imposé (rien dans README,
+JOURNAL ni les tests).
+
+Corrigé : `"orientation": "any"`. Deux contrôles dans `test_pipeline.py` (2427 → 2429 vérifications) : le manifeste ne verrouille
+pas le portrait, et la page a bien la règle du paysage qu'il doit laisser passer ; vus échouer sur l'ancien manifeste. Cache
+`docs/sw.js` v145. Non vérifié ici : Android ne relit le manifeste d'une application installée qu'à sa mise à jour de WebAPK
+(un jour ou plus) ; le plus sûr est de désinstaller et de réinstaller l'app. Dans un onglet Chrome, la rotation marche déjà.
