@@ -13232,3 +13232,20 @@ JavaScript. Deux défauts que les 36 contrôles de disposition, verts, ne voyaie
 Mon erreur : les contrôles mesuraient des boîtes (largeurs, recouvrements, tuiles) et jamais le texte à l'intérieur ; la
 planche l'a vu en deux minutes. Deux contrôles ajoutés à `test_version_pc` (58 → 68 contrôles) : chaque libellé du rail tient dans
 son bouton, la languette touche le bas de l'écran et reste centrée sur le fil ; 7 échecs sur l'ancien code. Cache v147.
+
+### Les onglets des réglages en carte — 24/11/2026
+
+Antoni, sur ses captures en portrait et en paysage : « le truc en haut avec Apparence et tout ça, je trouve que c'est moche ». Mesuré
+sur le vrai site : la barre était un rectangle plein de la couleur du fond (`rgb(244, 247, 250)`), de 71 px de haut, aux angles droits,
+et les quatre onglets touchaient ses bords (marge 0 à gauche comme à droite : « Données » collait à droite) ; sur la photo de fond, c'était
+une bande plate au milieu de cartes arrondies. Proposé en trois formes sur planche (A : une carte, B : pastilles flottantes, C : texte
+souligné) ; Antoni a choisi A.
+
+Fait : la barre prend la forme des autres cartes (angles `--r-md`, filet, ombre), reste PLEINE (`--bg-panel-plein`) parce qu'elle est
+collée et que la page défile dessous, avec 6 px de marge autour des onglets ; les onglets inactifs n'ont plus de cadre, seul l'actif est
+rempli. Les contraintes existantes sont gardées (`position:sticky; top:0`, collée à 52 px sous la ligne réduite en portrait) ; sur PC et en
+paysage, où la ligne réduite n'existe plus, elle se colle à 8 px du haut. Cache v148.
+
+Contrôle : `test_onglets_reglages_en_carte` (12, trois largeurs), vu échouer sur l'ancien code. Repéré en route et NON corrigé ici (un sujet
+par PR) : l'aperçu « Couleurs » des réglages recopie l'en-tête, donc il montre en PC un titre « Dernières actus majeures » vide, et un
+identifiant en double (`panneauMajeursListe`), à cause du panneau ajouté le 24/11 ; à corriger dans une PR à part.

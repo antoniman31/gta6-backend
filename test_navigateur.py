@@ -7619,6 +7619,44 @@ def test_tirage_pas_dans_le_panneau(nav, url):
     ctx.close()
 
 
+def test_onglets_reglages_en_carte(nav, url):
+    """La barre Apparence / Filtres / Sources / Données des réglages est une carte (24/11/2026, forme A choisie par Antoni).
+
+    « Le truc en haut avec Apparence et tout ça, je trouve que c'est moche » : un rectangle plein aux angles droits, dont les onglets touchaient
+    les bords (« Données » collait à droite), posé sur la photo de fond au milieu de cartes arrondies. Le contrôle mesure sur le vrai site, en
+    portrait, en paysage et sur PC : les angles de carte, un fond PLEIN (elle est collée, le fil défile dessous), une marge entre chaque bord et
+    les onglets, des onglets inactifs sans cadre et l'onglet actif rempli, et qu'elle reste collée en haut.
+    """
+    print("\n[onglets des réglages] une carte")
+    for largeur, hauteur, tactile in ((390, 844, True), (915, 412, True), (1280, 720, False)):
+        ctx = nav.new_context(viewport={"width": largeur, "height": hauteur}, timezone_id="Europe/Paris", reduced_motion="reduce", has_touch=tactile, is_mobile=tactile)
+        ctx.add_init_script("try{localStorage.setItem('gta6watch:settings-v1', JSON.stringify({splashActif:false}));}catch(e){}")
+        page = ctx.new_page(); erreurs = []
+        page.on("pageerror", lambda e, err=erreurs: err.append(str(e)))
+        page.goto(url, wait_until="load"); page.wait_for_selector("#feed", state="attached"); page.wait_for_timeout(300)
+        page.evaluate("() => openSettings()"); page.wait_for_timeout(400)
+        m = page.evaluate("""() => { const t = document.querySelector('.panneau-tabs'), cs = getComputedStyle(t), r = t.getBoundingClientRect();
+            const rayon = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--r-md'));
+            const fond = cs.backgroundColor.match(/[\\d.]+/g).map(Number);
+            const onglets = [...t.querySelectorAll('.tab')].map(e => { const q = e.getBoundingClientRect(), c = getComputedStyle(e);
+                return {actif: e.classList.contains('active'), gauche: q.left - r.left, droite: r.right - q.right, haut: q.top - r.top, bas: r.bottom - q.bottom,
+                        bordure: c.borderTopColor, fond: c.backgroundColor}; });
+            return {rayon: parseFloat(cs.borderTopLeftRadius), rayonCarte: rayon, alpha: fond.length > 3 ? fond[3] : 1, ombre: cs.boxShadow !== 'none', sticky: cs.position,
+                    onglets, hors: r.left < 0 || r.right > innerWidth}; }""")
+        etiq = "[onglets %d × %d]" % (largeur, hauteur)
+        check(m["rayon"] >= m["rayonCarte"] - 0.5 and m["alpha"] == 1 and m["ombre"] and m["sticky"] == "sticky" and not m["hors"],
+              "%s la barre a les angles d'une carte (%.0f px), un fond plein (alpha %s), une ombre, et reste collée (%s)" % (etiq, m["rayon"], m["alpha"], m["sticky"]))
+        marges = [(o["gauche"], o["droite"], o["haut"], o["bas"]) for o in m["onglets"]]
+        check(m["onglets"][0]["gauche"] >= 4 and m["onglets"][-1]["droite"] >= 4 and all(o["haut"] >= 4 and o["bas"] >= 4 for o in m["onglets"]),
+              "%s une marge d'au moins 4 px entre les bords de la carte et les onglets, première à gauche et dernière à droite comprises (%s)" % (etiq, [tuple(round(v) for v in x) for x in marges[:1] + marges[-1:]]))
+        inactifs = [o for o in m["onglets"] if not o["actif"]]; actifs = [o for o in m["onglets"] if o["actif"]]
+        check(len(actifs) == 1 and len(inactifs) == 3 and all(o["bordure"].endswith(", 0)") or o["bordure"] == "transparent" or "rgba(0, 0, 0, 0)" in o["bordure"] for o in inactifs)
+              and actifs[0]["fond"] != "rgba(0, 0, 0, 0)",
+              "%s les trois onglets inactifs n'ont pas de cadre visible, l'onglet actif est rempli (%s)" % (etiq, [(o["actif"], o["bordure"], o["fond"]) for o in m["onglets"]][:2]))
+        check(not erreurs, "%s aucune erreur JavaScript (%s)" % (etiq, erreurs[:2]))
+        ctx.close()
+
+
 def test_cycle_de_couleurs(nav, url):
     """Cycle de couleurs (10/11/2026) : d'office le jour J, activable et coupable dans les Réglages.
 
@@ -11076,6 +11114,7 @@ CONTROLES = [
     test_vue_rockstar_et_balayage_chronologie,
     test_version_pc,
     test_tirage_pas_dans_le_panneau,
+    test_onglets_reglages_en_carte,
     test_cycle_de_couleurs,
     test_cycle_synchronise,
     test_contraste_du_cycle,
