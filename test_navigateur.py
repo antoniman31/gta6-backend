@@ -7707,15 +7707,20 @@ def test_reglages_menu_et_apercu_pc(nav, url):
         etiq = "[réglages %d × %d]" % (largeur, hauteur)
         for rubrique in [e for e in page.evaluate("() => [...document.querySelectorAll('.panneau-tabs .tab')].map(t => t.dataset.cible)")]:
             page.evaluate("r => ongletParam(r)", rubrique); page.wait_for_timeout(250)
-            m = page.evaluate("""() => { const b = s => { const e = document.querySelector(s); if(!e) return {g: 0, d: 0, w: 0, ht: 0}; const r = e.getBoundingClientRect(); return {g: r.left, d: r.right, w: r.width, ht: r.height}; };
+            m = page.evaluate("""() => { const b = s => { const e = document.querySelector(s); if(!e) return {g: 0, d: 0, w: 0, ht: 0, bas: 0}; const r = e.getBoundingClientRect(); return {g: r.left, d: r.right, w: r.width, ht: r.height, bas: r.bottom}; };
                 const tabs = [...document.querySelectorAll('.panneau-tabs .tab')].map(e => e.getBoundingClientRect());
                 const mq = document.querySelector('#apercuDirect .maq-ecran');
                 const hors = [...document.querySelectorAll('#settingsOverlay .panneau-tabs, #settingsOverlay .panneau-onglet:not([hidden]) > *, #apercuDirect')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.left < -1 || r.right > innerWidth + 1); }).length;
                 return {menu: b('.panneau-tabs'), contenu: b('.panneau-onglet:not([hidden])'), apercu: b('#apercuDirect'),
                         colonne: tabs.length === 4 && tabs.every(t => Math.abs(t.left - tabs[0].left) < 2) && tabs[3].top > tabs[0].top,
                         dedans: !!document.querySelector('#apercuDirect #apercuCouleurs'), maq: mq ? mq.children.length : 0,
-                        sw: document.documentElement.scrollWidth, hors}; }""")
+                        sw: document.documentElement.scrollWidth, hors, hv: innerHeight,
+                        coupes: [...document.querySelectorAll('.panneau-tabs .tab span')].filter(e => e.scrollHeight > e.clientHeight + 1 || e.scrollWidth > e.clientWidth + 1).length}; }""")
             if pc:
+                # Libellés du menu entiers (le 24/11/2026, en paysage, ils étaient coupés en bas : 10 px de haut pour 15 de texte) et menu entier dans l'écran
+                # couché (64 px de marge inutile au-dessus du titre le poussaient hors d'un écran de 360 px).
+                check(m["coupes"] == 0, "%s %s aucun libellé du menu n'est coupé (%d coupé(s))" % (etiq, rubrique, m["coupes"]))
+                check(m["menu"]["bas"] <= m["hv"], "%s %s le menu tient en entier dans l'écran (bas à %.0f px, écran de %d)" % (etiq, rubrique, m["menu"]["bas"], m["hv"]))
                 check(m["colonne"] and m["menu"]["d"] <= m["contenu"]["g"] + 1 and m["contenu"]["d"] <= m["apercu"]["g"] + 1,
                       "%s %s menu vertical, puis contenu, puis aperçu, côte à côte (menu %.0f–%.0f, contenu %.0f–%.0f, aperçu %.0f–%.0f)" % (etiq, rubrique, m["menu"]["g"], m["menu"]["d"], m["contenu"]["g"], m["contenu"]["d"], m["apercu"]["g"], m["apercu"]["d"]))
                 check(m["contenu"]["w"] <= 561 and m["dedans"] and m["apercu"]["ht"] > 100 and m["maq"] >= 3,
