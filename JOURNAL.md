@@ -13299,6 +13299,11 @@ Mesuré : 1280 → menu 180, contenu 560, aperçu 300 ; 915 et 800 en paysage �
 Contrôle ajouté, `test_reglages_menu_et_apercu_pc` (89 vérifications : sept largeurs, quatre rubriques, aperçu qui suit un réglage en direct, aperçu qui change de colonne avec la fenêtre,
 portrait inchangé). Vu échouer sur l'ancien code (l'aperçu absent de la colonne, menu en barre, réglage non suivi).
 
+### Polices servies par le site : vérifiées sur le S26 — 24/11/2026
+
+Antoni a vérifié sur le S26 : chiffres du compte à rebours en JetBrains Mono, reste de la page en Inter, comme avant, et
+les mêmes polices en mode avion. La section « 5 bis » de `RESTE-A-FAIRE.md` est close.
+
 ### Réglages en paysage : libellés du menu coupés et vide en haut — 24/11/2026
 
 Antoni, sur le S26 couché : « il y a des bugs dans les paramètres ». Reproduit à 915 × 412 et 800 × 360 (planche + capture agrandie 3×). Deux défauts, tous deux de mon lot précédent :
@@ -13309,4 +13314,3 @@ Antoni, sur le S26 couché : « il y a des bugs dans les paramètres ». Reprodu
 Pourquoi mes contrôles ne l'avaient pas vu : ils mesuraient les boîtes des onglets, pas le texte dedans (le piège « on mesure la boîte, pas le texte » déjà noté pour le rail). Contrôle ajouté à
 `test_reglages_menu_et_apercu_pc` (89 → 129) : aucun libellé du menu n'a `scrollHeight` > `clientHeight`, et le bas du menu reste dans l'écran. Le premier est vu échouer sur l'ancien code
 (4 libellés coupés à chacune des largeurs paysage, 8 échecs) ; le second passe aussi sur l'ancien code, il ne prouve donc que l'absence de régression. Cache v153.
-
