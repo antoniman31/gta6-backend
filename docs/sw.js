@@ -30,7 +30,7 @@
 // v118 (16/11/2026) : docs/index.html change (le lien « Liste de contrôle du jour J » des Réglages).
 // v142 (21/11/2026) : les polices quittent Google Fonts pour docs/fonts/ ; le service worker les précache et les sert
 // depuis le cache, pour que la page hors ligne ait enfin ses vraies polices (avant, elle retombait sur celles du système).
-const CACHE_NAME = "gta6watch-shell-v143";
+const CACHE_NAME = "gta6watch-shell-v144";
 const SHELL_URL = "./index.html";
 // Les noms ne changent pas d'une version à l'autre : une nouvelle police impose un nouveau CACHE_NAME, qui purge l'ancienne.
 const POLICES = ["./fonts/inter-latin-wght-normal.woff2", "./fonts/jetbrains-mono-latin-wght-normal.woff2"];

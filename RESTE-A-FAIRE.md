@@ -114,6 +114,7 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - Les raccourcis : `o`, `f`, `l` sur la carte sous la souris, `/` vers le filtre, `1` à `5` pour les onglets ; rien quand on écrit.
 - Sous 1100 px (fenêtre réduite) : la disposition du téléphone, comme avant.
 - Pas encore fait, à décider : adapter le mode « Réglages » et la page « Stats » à la largeur PC (elles gardent leur colonne de 640 px).
+- Téléphone en paysage (à regarder sur le S26) : le rail à gauche sans passer sous l'encoche, le fil et le panneau côte à côte, le panneau qui défile jusqu'à la dernière actu majeure ; en portrait, rien n'a changé.
 
 ## 6. Mémos
 
