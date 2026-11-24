@@ -115,6 +115,11 @@ Les tâches planifiées vivent dans le compte, pas dans le dépôt : `list_trigg
 - **Avant de regarder le paysage : désinstaller puis réinstaller l'app** (« Ajouter à l'écran d'accueil »). Le manifeste ne verrouille plus le portrait (24/11/2026), mais Android ne relit le manifeste d'une app installée qu'à sa mise à jour, qui peut prendre un jour ou plus. Dans un onglet Chrome normal, la rotation marche sans réinstaller ; vérifier aussi que la rotation automatique n'est pas verrouillée.
 - Téléphone en paysage (à regarder sur le S26) : le rail à gauche sans passer sous l'encoche, le fil et le panneau côte à côte, le panneau qui défile jusqu'à la dernière actu majeure ; en portrait, rien n'a changé.
 
+## 5 quater. Couleurs en jetons (24/11/2026) : à regarder sur le S26
+
+Mêmes valeurs qu'avant, rien ne doit changer à l'écran : étiquettes LEAK, VIDÉO, PC… ; badge « OFFICIEL » ; bord du compte à
+rebours qui bat ; jauges « lus par source » des Stats (orange plus foncé en clair) ; fond photo ; ombres des barres et feuilles.
+
 ## 6. Mémos
 
 - Quatre suites vertes avant chaque commit (commandes dans `README.md`).

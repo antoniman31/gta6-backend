@@ -13314,3 +13314,18 @@ Antoni, sur le S26 couché : « il y a des bugs dans les paramètres ». Reprodu
 Pourquoi mes contrôles ne l'avaient pas vu : ils mesuraient les boîtes des onglets, pas le texte dedans (le piège « on mesure la boîte, pas le texte » déjà noté pour le rail). Contrôle ajouté à
 `test_reglages_menu_et_apercu_pc` (89 → 129) : aucun libellé du menu n'a `scrollHeight` > `clientHeight`, et le bas du menu reste dans l'écran. Le premier est vu échouer sur l'ancien code
 (4 libellés coupés à chacune des largeurs paysage, 8 échecs) ; le second passe aussi sur l'ancien code, il ne prouve donc que l'absence de régression. Cache v153.
+
+### Couleurs en jetons — 24/11/2026
+
+Audit de la règle commune « Design » (couleurs par jetons, jamais en dur). L'audit du 21/11 annonçait une quinzaine de couleurs
+écrites dans les règles ; le contrôle écrit pour ce lot en a trouvé **51** : neuf étiquettes pleines et leur texte blanc, le badge
+« OFFICIEL », la pulsation du compte à rebours, six ombres, le voile des feuilles, les chiffres du cycle et leurs halos, l'éclair
+de la fête, le noir de l'écran final et de la maquette, les jauges des Stats (avec leur variante claire), la pastille d'échec du
+robot, le fond teinté « chaud » et le fond des photos. Elles deviennent des jetons (`--tag-*`, `--sur-tag`, `--badge-officiel`,
+`--pulse-rouge*`, `--ombre-*`, `--voile`, `--chiffre-*`, `--halo-*`, `--noir-fixe`, `--jauge-*`, `--run-echec`, `--rouge-chaud`,
+`--photo-base`…), **mêmes valeurs** ; les jauges claires passent d'une règle à part à un jeton redéfini par le thème clair.
+Contrôle `test_aucune_couleur_en_dur_dans_la_page` : il lit les déclarations (pas les sélecteurs : `#feed` n'est pas une
+couleur) et écarte trois cas, raison écrite : les jetons, la valeur initiale d'un `@property` (CSS l'exige littérale), les
+masques (`#000` n'y est qu'une opacité). Vu échouer sur l'ancien code (51 relevés). Trois contrôles existants lisaient les
+couleurs littérales (badge, jauges, paires fixes) : ils lisent désormais la règle et la valeur du jeton ; celui des paires
+fixes exige 10 paires au lieu de 2 et mesure les mêmes ratios (4,70 à 10,48:1). `docs/sw.js` : v153 → v154 (main était passé en v153 entre-temps, #339).

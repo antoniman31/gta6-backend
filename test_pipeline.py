@@ -5635,6 +5635,48 @@ def test_filtre_officiel_du_mode_de_secours():
           "est bien la liste, pas un appel de fonction")
 
 
+def couleurs_en_dur(css, decalage=0):
+    """Couleurs écrites dans une déclaration CSS hors définition de jeton.
+
+    On lit les déclarations (« propriété: valeur ») des blocs les plus profonds, pas le texte brut : un sélecteur comme
+    « #feed » n'est pas une couleur. Exceptions, avec leur raison :
+      - `--…` : une définition de jeton, l'endroit où une couleur doit vivre ;
+      - `initial-value` de `@property` : CSS l'exige littérale, une var() y est refusée ;
+      - `-webkit-mask` / `mask` : le #000 n'y est qu'une opacité, jamais affiché.
+    """
+    sans = re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), css, flags=re.S)
+    trouvees = []
+    for bloc in re.finditer(r"\{([^{}]*)\}", sans):
+        debut = bloc.start(1)
+        for decl in re.finditer(r"([\w-]+)\s*:([^;]*)", bloc.group(1)):
+            prop = decl.group(1)
+            if prop.startswith("--") or prop in ("initial-value", "-webkit-mask", "mask"):
+                continue
+            for c in re.finditer(r"(?<![&\w])#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?)\(", decl.group(2)):
+                ligne = decalage + sans.count("\n", 0, debut + decl.start(2) + c.start()) + 1
+                trouvees.append("docs/index.html:%d %s %s" % (ligne, prop, c.group(0)))
+    return trouvees
+
+
+def test_aucune_couleur_en_dur_dans_la_page():
+    """Règle commune « Design » (21/11/2026) : couleurs par jetons, jamais en dur.
+
+    À l'audit du 24/11/2026, une cinquantaine de couleurs étaient écrites dans les règles elles-mêmes (étiquettes de
+    catégorie, badge officiel, ombres, pulsation du compte à rebours, jauges, écran final). Elles vivent maintenant en
+    jetons, mêmes valeurs ; ce contrôle refuse d'en réécrire une hors jeton.
+    """
+    print("\n[app] aucune couleur écrite en dur dans le CSS de la page")
+    html = open("docs/index.html", encoding="utf-8").read()
+    d, f = html.index("<style"), html.index("</style>")
+    trouvees = couleurs_en_dur(html[d:f], html[:d].count("\n"))
+    check(trouvees == [], "aucune couleur hors jeton (%d trouvée(s) : %s)" % (len(trouvees), ", ".join(trouvees[:6])))
+    # Le contrôle du contrôle : une expression cassée donnerait du vert partout.
+    check(len(couleurs_en_dur(".a{color:#fff; box-shadow:0 0 2px rgba(0,0,0,.5);}")) == 2,
+          "le détecteur voit une couleur hexadécimale et un rgba()")
+    check(couleurs_en_dur(":root{--x:#fff;} #feed .a:hover{color:var(--x);} @property --y{initial-value:#000;}") == [],
+          "il ignore les jetons, un sélecteur #feed et la valeur initiale d'un @property")
+
+
 def test_ligne_etat_sans_double_compte():
     print("\n[app] la ligne d'état ne compte pas deux fois la même source")
     html = open("docs/index.html", encoding="utf-8").read()
@@ -6120,7 +6162,9 @@ def test_derniers_reports_tactiles_et_courbes():
               "la bordure part de l'orange du logo Rockstar, #FFAB00 (mesuré sur l'image d'Antoni)")
         check(clair.group(2).lower() == "#000000" and sombre.group(2).lower() != "#000000",
               "le noir du logo n'est que dans le thème clair : en sombre il ferait disparaître la bordure (%s)" % sombre.group(2))
-    check(re.search(r"\.official-badge\{[^}]*background:#FFAB00; color:#100800", html) is not None, "le badge « OFFICIEL » est orange #FFAB00 fixe")
+    # 24/11/2026 : les deux couleurs du badge passent en jetons (fixes, hors cycle et hors thème) ; on lit la règle ET les valeurs.
+    check(re.search(r"\.official-badge\{[^}]*background:var\(--badge-officiel\); color:var\(--sur-badge-officiel\)", html) is not None
+          and "--badge-officiel:#FFAB00; --sur-badge-officiel:#100800;" in html, "le badge « OFFICIEL » est orange #FFAB00 fixe")
     # RockstarMag : badge violet FIXE (texte sur les trois fonds de chaque thème, 4,5:1) ; « Actu majeure » : rouge FIXE, sans --hot.
     violets = re.search(r":root\{--rouge-majeur:(#\w+); --violet-rm:(#\w+);[^}]*\}\s*html\[data-theme=\"light\"\]\{--rouge-majeur:(#\w+); --violet-rm:(#\w+);", html)
     check(violets is not None and "--hot" not in html, "« Actu majeure » (rouge) et RockstarMag (violet) ont des jetons fixes, et le jeton --hot n'existe plus")
@@ -6153,8 +6197,10 @@ def test_derniers_reports_tactiles_et_courbes():
     for theme, fond, encre in (("Actu majeure sombre", "#e04f5f", "#1a0612"), ("Actu majeure clair", "#b3202e", "#ffffff"), ("Rockstar", "#ffab00", "#100800"),
                                ("RockstarMag sombre", "#8488e7", "#0b0b14"), ("RockstarMag clair", "#5258c4", "#ffffff")):
         check(rap(fond, encre) >= 4.5, "onglet sélectionné %s : %s sur %s tient %.2f:1 (seuil 4,5)" % (theme, encre, fond, rap(fond, encre)))
-    check(".stats-jauge-ligne.src-rockstar .stats-jauge i{background:#FFAB00;}" in html and ".stats-jauge-ligne.src-rockstarmag .stats-jauge i{background:var(--violet-rm);}" in html
-          and ".stats-jauge-ligne.src-autres .stats-jauge i{background:#9aa7b4;}" in html and all(('"%s")' % c) in html for c in ("src-rockstar", "src-rockstarmag", "src-autres")),
+    # 24/11/2026 : orange et gris passent en jetons, redéfinis par le thème clair (plus foncés : graphique, 3:1).
+    check(".stats-jauge-ligne.src-rockstar .stats-jauge i{background:var(--jauge-rockstar);}" in html and ".stats-jauge-ligne.src-rockstarmag .stats-jauge i{background:var(--violet-rm);}" in html
+          and ".stats-jauge-ligne.src-autres .stats-jauge i{background:var(--jauge-autres);}" in html
+          and "--jauge-rockstar:#FFAB00; --jauge-autres:#9aa7b4;" in html and "--jauge-rockstar:#b36b00; --jauge-autres:#566b7e;" in html and all(('"%s")' % c) in html for c in ("src-rockstar", "src-rockstarmag", "src-autres")),
           "les jauges « lus par source » des statistiques prennent la couleur de leur onglet (orange, violet, gris)")
     for theme, fond in (("Rockstar clair", "#b36b00"), ("Autres clair", "#566b7e"), ("RockstarMag clair", "#5258c4"), ("Autres sombre", "#9aa7b4"), ("Rockstar sombre", "#ffab00"), ("RockstarMag sombre", "#8488e7")):
         fond_page = "#ffffff" if "clair" in theme else "#10151a"
@@ -8322,8 +8368,13 @@ def test_contraste_des_deux_themes():
     # Les couleurs volontairement fixes (un badge « LEAK » est rouge dans les
     # deux thèmes) échappent aux jetons, donc au contrôle par jeton ci-dessus.
     # On les mesure directement : fixe ne veut pas dire dispensé.
-    fixes = re.findall(r"background:\s*(#[0-9a-fA-F]{3,6})\s*;\s*color:\s*(#[0-9a-fA-F]{3,6})", html)
-    check(len(fixes) >= 2, "les paires de couleurs fixes sont trouvées (%d)" % len(fixes))
+    # Depuis le 24/11/2026 elles sont en jetons (--tag-*, --badge-officiel) : on lit la valeur de chaque jeton pour mesurer.
+    valeur = lambda nom: (re.search(r"--%s:\s*(#[0-9a-fA-F]{3,6})\b" % re.escape(nom), html) or [None, None])[1]
+    fixes = [(valeur(f), valeur(t)) for f, t in
+             re.findall(r"background:\s*var\(--((?:tag-[\w-]+)|badge-officiel)\)\s*;\s*color:\s*var\(--([\w-]+)\)", html)]
+    check(len(fixes) >= 10 and all(f and t for f, t in fixes),
+          "les paires de couleurs fixes sont trouvées, et chaque jeton a sa valeur (%d)" % len(fixes))
+    fixes = [(f, t) for f, t in fixes if f and t]
     for fond, texte in fixes:
         r = _contraste(texte, fond)
         check(r >= SEUIL, "couleur fixe %s sur %s = %.2f:1" % (texte, fond, r))
@@ -12117,6 +12168,7 @@ for fn in (test_parse_date_key, test_sort_and_cap, test_normalize_stored_dates,
            test_le_suivi_des_sources_muettes_reste_un_dictionnaire,
            test_les_cles_publiees_ont_le_bon_type,
            test_aucune_ressource_tierce_ni_police_distante,
+           test_aucune_couleur_en_dur_dans_la_page,
            test_readme_annonce_le_bon_nombre):
     fn()
 
