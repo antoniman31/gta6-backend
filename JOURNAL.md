@@ -13299,3 +13299,14 @@ Mesuré : 1280 → menu 180, contenu 560, aperçu 300 ; 915 et 800 en paysage �
 Contrôle ajouté, `test_reglages_menu_et_apercu_pc` (89 vérifications : sept largeurs, quatre rubriques, aperçu qui suit un réglage en direct, aperçu qui change de colonne avec la fenêtre,
 portrait inchangé). Vu échouer sur l'ancien code (l'aperçu absent de la colonne, menu en barre, réglage non suivi).
 
+### Réglages en paysage : libellés du menu coupés et vide en haut — 24/11/2026
+
+Antoni, sur le S26 couché : « il y a des bugs dans les paramètres ». Reproduit à 915 × 412 et 800 × 360 (planche + capture agrandie 3×). Deux défauts, tous deux de mon lot précédent :
+1. Les libellés du menu (« Apparence », « Filtres », « Sources », « Données ») étaient coupés en bas. Cause : les onglets gardaient `flex:1 1 0` de la rangée du téléphone ; dans la colonne ils
+   étaient écrasés à 48 px et le libellé, rétréci à 10 px de haut avec `overflow:hidden`, perdait le bas de ses lettres (mesuré : 10 px pour 15,6 px de texte). Maintenant `flex:none` : onglets de 54 px.
+2. 64 px de marge au-dessus de la page, réservés à la barre fixe du téléphone, qui n'existe plus dans la disposition PC : 85 px de vide avant le titre, et le menu sortait de l'écran
+   couché de 360 px (« Données » coupé). Maintenant 8 px ; le bas du menu est à 325 px sur 360.
+Pourquoi mes contrôles ne l'avaient pas vu : ils mesuraient les boîtes des onglets, pas le texte dedans (le piège « on mesure la boîte, pas le texte » déjà noté pour le rail). Contrôle ajouté à
+`test_reglages_menu_et_apercu_pc` (89 → 129) : aucun libellé du menu n'a `scrollHeight` > `clientHeight`, et le bas du menu reste dans l'écran. Le premier est vu échouer sur l'ancien code
+(4 libellés coupés à chacune des largeurs paysage, 8 échecs) ; le second passe aussi sur l'ancien code, il ne prouve donc que l'absence de régression. Cache v153.
+
