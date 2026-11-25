@@ -13351,3 +13351,7 @@ fois tant que le stockage reste plein ; un enregistrement réussi réarme le sig
 pas de `let` lu avant sa déclaration). Contrôle navigateur `test_reglage_non_enregistre_se_voit` (stockage plein simulé :
 vu échouer sur l'ancien code, 1/3) ; `test_pipeline` vérifie que les réglages ne s'écrivent plus qu'à cet endroit.
 `docs/sw.js` : v155 → v156.
+
+### Règles communes mises à jour — 25/11/2026
+
+Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 864f26d), par la propagation automatique.
