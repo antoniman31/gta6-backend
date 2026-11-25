@@ -123,8 +123,8 @@ rebours qui bat ; jauges « lus par source » des Stats (orange plus foncé en c
 ## 5 quinquies. Messages d'erreur (24/11/2026)
 
 - À regarder sur le S26 : importer un fichier qui n'est pas une sauvegarde (Réglages > Données) ; le message dit quoi choisir.
-- **Repéré, non corrigé** : `sauveReglages` (familles et zones de couleur) n'écrit l'échec que dans la console ; rien ne se voit à
-  l'écran si le stockage refuse l'écriture (règle commune « Robustesse »). À proposer à Antoni : le même toast que la photo de fond.
+- Fait (25/11/2026) : un réglage que le stockage refuse se voit à l'écran (toast). À regarder sur le S26 si l'occasion se présente
+  (stockage plein) : le toast « Réglage non enregistré… » apparaît une fois, pas à chaque case.
 
 ## 6. Mémos
 

@@ -833,6 +833,35 @@ def test_ecran_de_chargement(nav, url):
         ctx.close()
 
 
+def test_reglage_non_enregistre_se_voit(nav, url):
+    """Un réglage que le stockage refuse se voit à l'écran (règle commune « Robustesse », 25/11/2026).
+
+    storageSet() ne lève jamais d'erreur : il rend false. Les dix écritures des réglages l'entouraient d'un try/catch
+    qui ne se déclenchait donc jamais, y compris les deux qui prévoyaient un toast (vue Rockstar, photo de fond) :
+    un stockage plein faisait perdre les réglages au rechargement sans rien dire. Le contrôle simule le stockage plein.
+    """
+    ctx = nav.new_context(viewport={"width": 390, "height": 850})
+    page = ctx.new_page()
+    page.goto(url, wait_until="load")
+    page.wait_for_selector("#feed", state="attached")
+    texte = lambda: page.evaluate("""() => document.getElementById("toastTexte").textContent""")
+    plein = """() => { window.__setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(){ throw new DOMException("plein", "QuotaExceededError"); }; }"""
+    page.evaluate(plein)
+    page.evaluate("() => basculeVueRockstar()")
+    check(page.locator("#toast").is_visible() and "libère de la place" in texte(),
+          "stockage plein : changer la vue Rockstar montre le toast (« %s »)" % texte())
+    page.evaluate("""() => { document.getElementById("toastTexte").textContent = ""; basculeCouleurFamille("bord", true); }""")
+    check(texte() == "", "un seul toast tant que le stockage reste plein : pas de rafale à chaque réglage")
+    page.evaluate("""() => { Storage.prototype.setItem = window.__setItem; basculeVueRockstar(); }""")
+    page.evaluate(plein)
+    page.evaluate("() => basculeVueRockstar()")
+    check("libère de la place" in texte(),
+          "après un enregistrement réussi, un nouvel échec se signale de nouveau")
+    page.evaluate("() => { Storage.prototype.setItem = window.__setItem; }")
+    ctx.close()
+
+
 def test_toast_annuler(nav, url):
     """Ce qui se défait tout seul part sans question, et se reprend.
 
@@ -11169,6 +11198,7 @@ CONTROLES = [
     test_fenetre_du_compteur,
     test_compteurs_jumeaux,
     test_toast_annuler,
+    test_reglage_non_enregistre_se_voit,
     test_poids_de_tout_charger,
     test_plafond_des_lus,
     test_sauvegarde_export_import,
