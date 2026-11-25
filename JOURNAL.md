@@ -13355,3 +13355,15 @@ vu échouer sur l'ancien code, 1/3) ; `test_pipeline` vérifie que les réglages
 ### Règles communes mises à jour — 25/11/2026
 
 Bloc commun de `CLAUDE.md` aligné sur `regles-communes` (BLOC.md, commit 864f26d), par la propagation automatique.
+
+### Mention « Fait par AntoniMan31/Claude Code » et version — 25/11/2026
+
+Règle commune « Interface » écrite le même jour (choix d'Antoni). Le groupe « À propos » de l'onglet Données porte
+« Fait par AntoniMan31/Claude Code · version a1b2c3d du 25/11/2026 ». Le site est publié depuis `main` sans étape de build :
+rien ne peut écrire le commit dans la page à la mise en ligne. Choix d'Antoni : la page demande à l'API publique de GitHub le
+dernier commit de `docs/index.html`, sans jeton, une seule fois, à l'ouverture de l'onglet Données (le robot, qui pousse toutes
+les heures, ne touche pas ce fichier). La date est celle de ce commit, en heure de Paris ; la réponse est filtrée (un
+identifiant hexadécimal, une date) ; hors ligne ou en erreur : « version inconnue ». `CACHE_NAME` passe à v157. Contrôle
+`test_mention_et_version` (fuseau du navigateur à New York pour prouver l'heure de Paris, jeton présent qui ne doit pas
+partir, réponse en erreur) : vu échouer avant le code (4 échecs sur 6). Suites : pipeline 2437/2437, sources synchronisées,
+audit sans erreur, navigateur 2892/2892 (`--workers 3`).

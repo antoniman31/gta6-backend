@@ -3785,6 +3785,8 @@
     <div class="setting-group">
       <span class="setting-label">À propos</span>
       <div class="apropos-marque"><span class="logo-vi" aria-hidden="true"></span><div><b>GTA6<span>_WATCH</span></b><small>Veille de GTA VI · heure de Paris</small></div></div>
+      <!-- Règle commune « Interface » (25/11/2026) : la mention et la version publiée, lue sur GitHub (voir chargerVersion). -->
+      <div class="setting-desc" id="mentionVersion">Fait par AntoniMan31/Claude Code · version inconnue</div>
       <button class="pleine-largeur" onclick="closeSettings(); openInfo();"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-info"/></svg> Informations et derniers passages du robot</button>
     </div>
 
@@ -11454,7 +11456,39 @@ function rechargerApp(){
 // seule liste des sources. Les réglages qu'on touche souvent étaient derrière
 // ceux qu'on ne touche jamais, et les boutons Appliquer / Réinitialiser
 // n'étaient atteignables qu'après avoir tout défilé.
+// Mention et version (règle commune « Interface », 25/11/2026). Le site est publié depuis main sans étape de build :
+// rien ne peut écrire le commit dans la page au déploiement. La version est donc le dernier commit de docs/index.html,
+// demandé à l'API publique de GitHub, sans jeton (le dépôt est public), une seule fois et seulement à l'ouverture de
+// l'onglet Données. Le robot, qui pousse toutes les heures, ne touche pas ce fichier. Hors ligne : « version inconnue ».
+const JOUR_PARIS_VERSION = new Intl.DateTimeFormat("fr-FR", {timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric"});
+function ligneVersion(commit, dateIso){
+  const v = (typeof commit === "string" && commit.trim()) ? commit.trim() : "inconnue";
+  const d = new Date(typeof dateIso === "string" ? dateIso : NaN);
+  return "Fait par AntoniMan31/Claude Code · version " + v + (isNaN(d.getTime()) ? "" : " du " + JOUR_PARIS_VERSION.format(d));
+}
+let versionDemandee = false;
+async function chargerVersion(){
+  if(versionDemandee) return;
+  versionDemandee = true;
+  const el = document.getElementById("mentionVersion");
+  if(!el) return;
+  try{
+    const r = await fetch("https://api.github.com/repos/antoniman31/gta6-backend/commits?path=docs/index.html&per_page=1",
+      {headers: {"Accept": "application/vnd.github+json"}, cache: "no-store"});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const liste = await r.json();
+    // Réponse du réseau : entrée non fiable, on ne garde qu'un identifiant hexadécimal et une date.
+    const c = Array.isArray(liste) ? liste[0] : null;
+    const sha = c && typeof c.sha === "string" && /^[0-9a-f]{7,40}$/.test(c.sha) ? c.sha.slice(0, 7) : "";
+    const date = c && c.commit && c.commit.committer && typeof c.commit.committer.date === "string" ? c.commit.committer.date : "";
+    el.textContent = ligneVersion(sha, date);
+  }catch(e){
+    el.textContent = ligneVersion("", "");
+  }
+}
+
 function ongletParam(cle){
+  if(cle === "adv") chargerVersion();
   document.querySelectorAll("#settingsOverlay .panneau-onglet").forEach(o => {
     o.hidden = o.dataset.onglet !== cle;
   });

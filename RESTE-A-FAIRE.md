@@ -126,6 +126,11 @@ rebours qui bat ; jauges « lus par source » des Stats (orange plus foncé en c
 - Fait (25/11/2026) : un réglage que le stockage refuse se voit à l'écran (toast). À regarder sur le S26 si l'occasion se présente
   (stockage plein) : le toast « Réglage non enregistré… » apparaît une fois, pas à chaque case.
 
+## 5 sexies. Mention et version (25/11/2026) : à regarder sur le S26
+
+Réglages › Données › À propos : « Fait par AntoniMan31/Claude Code · version … du … », le dernier commit de la page lu sur
+GitHub à l'ouverture de l'onglet. Hors ligne, ou si GitHub limite (60 demandes par heure sans jeton) : « version inconnue ».
+
 ## 6. Mémos
 
 - Quatre suites vertes avant chaque commit (commandes dans `README.md`).
