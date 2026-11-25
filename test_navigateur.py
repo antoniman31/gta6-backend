@@ -9059,6 +9059,40 @@ def test_rose_deuxieme_accent_et_vi_de_l_app(nav, url):
     ctx.close()
 
 
+def test_mention_et_version(nav, url):
+    """Règle commune « Interface » (25/11/2026) : À propos porte « Fait par AntoniMan31/Claude Code · version … du … ».
+
+    Le site est publié depuis main, sans étape de build : la version est le dernier commit de docs/index.html, lu sur
+    l'API publique de GitHub à l'ouverture de l'onglet Données, sans jeton. Hors ligne : « version inconnue »."""
+    print("\n[mention] À propos : mention exacte, commit et date de Paris lus sur GitHub, « inconnue » hors ligne")
+    import json as _json
+    for reponse, attendu in (
+        ({"status": 200, "body": _json.dumps([{"sha": "a1b2c3d4e5f60718", "commit": {"committer": {"date": "2026-12-31T23:30:00Z"}}}])},
+         "Fait par AntoniMan31/Claude Code · version a1b2c3d du 01/01/2027"),
+        ({"status": 503, "body": "{}"}, "Fait par AntoniMan31/Claude Code · version inconnue"),
+    ):
+        ctx = nav.new_context(viewport={"width": 390, "height": 800}, timezone_id="America/New_York")
+        page = ctx.new_page()
+        demandes = []
+        def fabrique(r):
+            def repond(route):
+                demandes.append((route.request.url, route.request.headers.get("authorization")))
+                route.fulfill(status=r["status"], content_type="application/json", body=r["body"])
+            return repond
+        page.route("https://api.github.com/**", fabrique(reponse))
+        page.goto(url, wait_until="load")
+        page.wait_for_selector(".header-haut")
+        page.evaluate("() => { storageSet(TOKEN_STORAGE_KEY, 'jeton-de-test'); openSettings(); ongletParam('adv'); }")
+        page.wait_for_timeout(400)
+        texte = page.evaluate("() => { const e = document.getElementById('mentionVersion'); return e ? e.textContent.trim() : null; }")
+        check(texte == attendu, "[mention] À propos affiche « %s » (lu : %s)" % (attendu, texte))
+        lus = [d for d in demandes if "/commits" in d[0]]
+        check(len(lus) == 1 and ("path=docs/index.html" in lus[0][0] or "path=docs%2Findex.html" in lus[0][0]),
+              "[mention] une seule demande, sur le dernier commit de docs/index.html (%s)" % lus)
+        check(all(d[1] is None for d in lus), "[mention] la demande de version part sans jeton (%s)" % lus)
+        ctx.close()
+
+
 def test_grand_moment_de_minuit(nav, url):
     """Le grand moment de minuit (11/11/2026) : flash, deux ondes, halo qui respire, confettis, vibration, six secondes."""
     print("\n[minuit] le grand moment : flash, ondes, halo qui respire, confettis, vibration, 6 s, sans gêner les appuis")
@@ -11184,6 +11218,7 @@ def _controles_par_largeur(nav, url):
 # Les contrôles qui ouvrent leurs propres contextes, dans l'ordre d'origine. Hors de la boucle des
 # largeurs : ils ne regardent pas une géométrie et branchent leurs interceptions avant le chargement.
 CONTROLES = [
+    test_mention_et_version,
     test_repli_backend,
     test_vignette_ouvre_larticle,
     test_archive_dans_lapp,
